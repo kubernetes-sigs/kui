@@ -28,18 +28,25 @@ if [ ! -d "$THEME" ]; then
     exit 1
 fi
 
+# remove and relink any client css symlinks
+find packages/app/web/css -maxdepth 1 -type l -exec rm {} \;
+for i in "$THEME"/css/*.css; do
+    echo "linking in client css file `basename $i`"
+    (cd "$STAGING"/css && ln -s $i)
+done
+
 if [ -d "$THEME"/css/themes ]; then
-    echo "linking in theme css"
+    echo "linking in client themes"
     rm -f "$STAGING"/css/themes && \
         (cd "$STAGING"/css && ln -s "$THEME"/css/themes)
 fi
 if [ -d "$THEME"/icons ]; then
-    echo "linking in theme icons"
+    echo "linking in client icons"
     rm -f "$STAGING"/icons && \
         (cd "$STAGING" && ln -s "$THEME"/icons)
 fi
 if [ -d "$THEME"/images ]; then
-    echo "linking in theme images"
+    echo "linking in client images"
     rm -f "$STAGING"/images && \
         (cd "$STAGING" && ln -s "$THEME"/images)
 fi
