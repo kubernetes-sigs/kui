@@ -4,10 +4,12 @@ body.not-electron #sidecar-screenshot-button {
 }
 
 /* no context in webpack mode */
+body.not-electron .repl-prompt {
+  border-left: none;
+}
 body.not-electron .repl-context {
   display: none;
 }
-
 body.not-electron .repl-prompt-righty {
   margin-top: -3px;
 }

@@ -10,7 +10,7 @@ body[kui-theme="Light"] {
   --color-base07: #fff;
   --color-base08: #e71d32;
   --color-base09: #bf5b17;
-  --color-base0A: #fecf2f;
+  --color-base0A: #FDD13A;
   --color-base0B: #1dbd5a;
   --color-base0C: #399cd6;
   --color-base0D: #0072c3;
@@ -45,7 +45,7 @@ body[kui-theme="Light"] {
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);
-  --color-light-yellow: hsla(46, 99%, 59%, 50%);
+  --color-light-yellow: hsla(46, 98%, 61%, 50%);
 }
 
 /* mono-blue hightlightjs theme */
