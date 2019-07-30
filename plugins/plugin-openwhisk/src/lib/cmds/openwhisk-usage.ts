@@ -260,7 +260,7 @@ export const bind = 'Usage: bind <packageName> <bindName> [-p key value]...'
 
 // ACTION OPERATIONS
 export const actions = {
-  title: 'Action operations',
+  title: 'Action Operations',
   header: 'These commands will help you to work with actions.',
   example: 'wsk action <command>',
   commandPrefix: 'wsk action',

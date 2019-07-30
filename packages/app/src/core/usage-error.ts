@@ -166,10 +166,6 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
     const item = span()
     item.classList.add('bx--breadcrumb-item')
 
-    if (!options.preserveCase) {
-      item.classList.add('capitalize')
-    }
-
     const dom = span(label, 'bx--no-link')
     dom.setAttribute('data-label', label)
     item.appendChild(dom)
@@ -309,14 +305,11 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     //
     if (!options.noBreadcrumb) {
       // breadcrumb model chain
-      const rootCrumb = {
-        breadcrumb: { label: 'Shell Docs', command: 'help' }
-      }
       const parentChain = (usage.parents || []).map(breadcrumb => ({
         breadcrumb
       }))
       const thisCommand: CrumbOptions[] = breadcrumb ? [{ breadcrumb, noSlash: true, preserveCase }] : []
-      const breadcrumbs: CrumbOptions[] = [rootCrumb, ...parentChain, ...thisCommand]
+      const breadcrumbs: CrumbOptions[] = [...parentChain, ...thisCommand]
 
       // generate the breadcrumb Elements from the model
       const crumbs = await promiseEach(breadcrumbs, makeBreadcrumb)

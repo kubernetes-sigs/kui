@@ -40,7 +40,7 @@ localDescribe('Headless mode', function(this: common.ISuite) {
   it('should show command not found', () =>
     cli
       .do('actiono list', {}, { errOk: 1 })
-      .then(cli.expectError(127, /actiono: (command\s+)?not found/))
+      .then(cli.expectError(127, /(actiono:\s+)?(command\s+)?not found/))
       .catch(common.oops(this)))
 
   it(`should show current version`, () =>
@@ -58,42 +58,42 @@ localDescribe('Headless mode', function(this: common.ISuite) {
   it('should show top-level help with -v', () =>
     cli
       .do('-v', {}, { errOk: 1 })
-      .then(cli.expectError(500 - 256, 'Shell Docs / Getting Started'))
+      .then(cli.expectError(500 - 256, 'Getting Started'))
       .catch(common.oops(this)))
 
   it('should show top-level help with no arguments', () =>
     cli
       .do('', {}, { errOk: 1 })
-      .then(cli.expectError(500 - 256, 'Shell Docs / Getting Started'))
+      .then(cli.expectError(500 - 256, 'Getting Started'))
       .catch(common.oops(this)))
 
   it('should show top-level help with help', () =>
     cli
       .do('help', {}, { errOk: 1 })
-      .then(cli.expectError(500 - 256, 'Shell Docs / Getting Started'))
+      .then(cli.expectError(500 - 256, 'Getting Started'))
       .catch(common.oops(this)))
 
   it('should show wsk help with wsk', () =>
     cli
       .do('wsk', {}, { errOk: 1 })
-      .then(cli.expectError(500 - 256, 'Shell Docs / OpenWhisk'))
+      .then(cli.expectError(500 - 256, 'OpenWhisk'))
       .catch(common.oops(this)))
 
   it('should show wsk help with wsk help', () =>
     cli
       .do('wsk help', {}, { errOk: 1 })
-      .then(cli.expectError(500 - 256, 'Shell Docs / OpenWhisk'))
+      .then(cli.expectError(500 - 256, 'OpenWhisk'))
       .catch(common.oops(this)))
 
   it('should show wsk action get help with action get', () =>
     cli
       .do('action get', {}, { errOk: 1 })
-      .then(cli.expectError(497 - 256, 'Shell Docs / OpenWhisk / Action operations / Get'))
+      .then(cli.expectError(497 - 256, 'OpenWhisk / Action Operations / get'))
       .catch(common.oops(this)))
 
   /* bx plugin hard-codes that preview needs graphics
   it('should show preview help with preview', () => cli.do('preview', {}, { errOk: 1 })
-    .then(cli.expectError(497 - 256, 'Shell Docs / Composer / CRUD Operations / Preview composition'))
+    .then(cli.expectError(497 - 256, 'composer / CRUD Operations / preview composition'))
     .catch(common.oops(this)))
   */
 
@@ -117,8 +117,7 @@ localDescribe('Headless mode', function(this: common.ISuite) {
       cli
         .do(ls)
         .then(
-          cli.expectOK('foo private nodejs:6 0.0.1', {
-            exact: true,
+          cli.expectOK('foo private nodejs', {
             skipLines: 1,
             squish: true
           })

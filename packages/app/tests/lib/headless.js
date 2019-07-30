@@ -238,7 +238,7 @@ class CLI {
         const ok =
           typeof expectedOutput === 'string'
             ? actualOutput.indexOf(expectedOutput) >= 0
-            : !!actualOutput.match(expectedOutput) // expectedOutput is a RegExp
+            : expectedOutput.test(actualOutput) // expectedOutput is a RegExp
         if (!ok) {
           console.error(`mismatch; actual='${actualOutput}'; expected='${expectedOutput}'`)
         }

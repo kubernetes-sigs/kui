@@ -103,7 +103,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
             return {
               command: thisCommand.replace(/^\s*-\s+/, '').replace(/:\s*$/, ''),
               docs: docs && docs.replace(/^\s*:\s*/, ''),
-              commandPrefix: /Commands/i.test(title) && command,
+              commandPrefix: /Commands/i.test(title) && `${command} ${verb || ''}`,
               noclick: !title.match(/Common actions/i) && !title.match(/Commands/i)
             }
           }
