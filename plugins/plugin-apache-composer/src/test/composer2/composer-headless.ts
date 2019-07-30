@@ -209,8 +209,21 @@ class Validation {
                     skipLines: 0,
                     squish: true
                   })({ code: response.code, output: lines[0] }) // check the title line
-                  if (lines.indexOf(`${sessionId} ${nameWithoutPackage}`) === -1) {
-                    // Retry when not found, becuase the session might not yet be available for listing
+
+                  const containsExpectedLine = lines.some(line => {
+                    try {
+                      cli.expectOK(`${sessionId} ${nameWithoutPackage}`, {
+                        exact: true,
+                        skipLines: 0,
+                        squish: true
+                      })({ code: response.code, output: line })
+                      return true
+                    } catch (err) {
+                      return false
+                    }
+                  })
+
+                  if (!containsExpectedLine) {
                     if (retry < 10) {
                       console.error(`${retry} retry session list when not found ${sessionId} ${nameWithoutPackage}`)
                       debug('session list result', lines)

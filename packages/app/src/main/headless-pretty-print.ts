@@ -21,6 +21,7 @@ debug('loading')
 import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
+import { isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 
 const log = console.log
 const error = console.error
@@ -338,6 +339,25 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
           // msg.message is a DOM facade
           prettyDom(msg.message, logger, stream, color)
           logger()
+        } else if (isTable(msg) || isMultiTable(msg)) {
+          debug('printing table')
+
+          if (isMultiTable(msg)) {
+            msg.tables.map(_ => print(_, logger, stream, color, ok))
+          } else {
+            // strip off header row, as we'll make our own
+            const type =
+              (msg.header && (msg.header.prettyType || msg.header.type)) ||
+              (msg.body.length > 0 && (msg.body[0].prettyType || msg.body[0].type))
+
+            const print = type ? rowify[type] : rowify._default
+
+            logger(
+              require('columnify')(msg.body.map(print), {
+                headingTransform: _ => colors.dim(_)
+              })
+            )
+          }
         } else if (Array.isArray(msg)) {
           // msg is an array of stuff
           debug('printing array')
@@ -363,17 +383,6 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
                   }
                 })
                 return logger(colors.green(ok))
-              } else if (Array.isArray(msg[0])) {
-                msg.map(_ => print(_, logger, stream, color, ok))
-              } else {
-                // strip off header row, as we'll make our own
-                msg = msg.filter(row => !row.header && (!row.outerCSS || !row.outerCSS.match(/header-cell/)))
-                const print = rowify[msg[0].prettyType || msg[0].type] || rowify._default
-                logger(
-                  require('columnify')(msg.map(print), {
-                    headingTransform: _ => colors.dim(_)
-                  })
-                )
               }
             } catch (err) {
               error(err)

@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Table } from '@kui-shell/core/webapp/models/table'
 const debug = Debug('plugins/openwhisk/cmds/wipe')
 import cli = require('@kui-shell/core/webapp/cli')
 import repl = require('@kui-shell/core/core/repl')
@@ -73,7 +74,7 @@ const deleteAllOnce = entities =>
  * List the entities of a given entity type (e.g. actions)
  *
  */
-const list = type => repl.qexec(`${type} list --limit 200`)
+const list = type => repl.qexec(`${type} list --limit 200`).then((response: Table) => response.body)
 
 /**
  * Because we can only list at most 200 entities at a time, we'll need to loop...

@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { isSuccess, pathOf, latencyBucket, nLatencyBuckets } from './util'
+import { Row } from '@kui-shell/core/webapp/models/table'
 
 const durationOf = _ => {
   const waitAnno = _.annotations.find(({ key }) => key === 'waitTime')
@@ -438,7 +439,7 @@ const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
  * failure.
  *
  */
-export const groupByAction = (activations, options) => {
+export const groupByAction = (activations: Row[], options) => {
   const splitRequested = options.split
   const splitter = splitRequested && (options.split === true ? splitByVersion : splitAroundVersion(options.split))
 
