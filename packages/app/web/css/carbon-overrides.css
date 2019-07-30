@@ -41,12 +41,13 @@ body[kui-theme-style] .bx--link {
   text-decoration: underline;
   transition: 250ms;
   pointer-events: unset;
+  touch-action: unset;
 }
 body[kui-theme-style] .bx--link:hover {
   color: var(--color-hover-primary-text);
 }
 
-/** breadcrumbs */
+/* breadcrumbs */
 body[kui-theme-style] .bx--breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -61,4 +62,28 @@ body[kui-theme-style] .bx--breadcrumb-item .bx--link {
 }
 [kui-theme-style] .bx--breadcrumb-item::after {
   color: var(--color-text-02);
+}
+
+/* structured list */
+[kui-theme-style] .bx--structured-list-row.bx--structured-list-row--header-row,
+[kui-theme-style] .bx--structured-list-row {
+  border-bottom-color: var(--color-content-divider);
+}
+
+/* buttons */
+[kui-theme-style] .bx--btn--primary {
+  background-color: var(--color-base0D);
+  color: var(--color-text-01);
+}
+[kui-theme-style] .bx--btn--primary:hover {
+  background-color: var(--color-base0D);
+  filter: contrast(1.25);
+}
+[kui-theme-style] .bx--btn--secondary {
+  background-color: var(--color-ui-03);
+  color: var(--color-text-01);
+}
+[kui-theme-style] .bx--btn--secondary:hover {
+  background-color: var(--color-ui-03);
+  filter: contrast(0.75);
 }

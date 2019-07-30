@@ -1,18 +1,14 @@
 {
-  "fullscreen": true,
   "profile": "Welcome",
   "level": "Beginner",
   "time": "5 minutes",
-  "skills": ["Command Structure", "Tutorials"],
+  "height": "tall",
   "steps": [
     {
       "heading": "Developing with Kui",
-      "content": "The Kui terminal is a CLI with a GUI twist, an open-source terminal that offers fast visual assist where it matters, and gets out of the way when decades of enduring goodness is good enough. By combining the power of familiar **CLIs** with **visualizations** in high-impact areas, Kui enables you to manipulate complex JSON and YAML data models, integrate disparate tooling, and provides quick access to aggregate views of operational data.",
+      "content": "The Kui terminal is a CLI with a GUI twist, an open-source terminal that offers fast visual assist where it matters, and gets out of the way when decades of enduring goodness is good enough.",
       "renderingHints": "fifty-fifty",
       "extras": {
-        "learnMore": {
-          "doc": "All of the CRUD, and many of the view commands, are accessible **directly from your favorite terminal**. You can gracefully flip between the terminal and these visualizations, without having to switch to your browser, log in, wait for pages to load, and so on."
-        },
         "nextSteps": [
           {
             "command": "auth",
