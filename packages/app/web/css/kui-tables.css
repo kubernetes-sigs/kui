@@ -61,7 +61,7 @@
   color: var(--color-name);
   letter-spacing: 1px;
   font-weight: 600;
-  padding: 0.6875em;
+  padding: 0.6875em 0;
   font-family: var(--font-sans-serif);
 }
 .result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
