@@ -127,11 +127,11 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 }
 .xterm-rows .xterm-bg-0,
 .xterm-rows .xterm-bg-8 {
-  background-color: var(--color-black) !important;
+  background-color: var(--color-ui-01) !important;
 }
 .xterm-rows .xterm-fg-0,
 .xterm-rows .xterm-fg-8 {
-  color: var(--color-black) !important;
+  color: var(--color-ui-01) !important;
 }
 .xterm-rows .xterm-bg-1,
 .xterm-rows .xterm-bg-9 {
@@ -187,10 +187,6 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 }
 .xterm-rows .xterm-fg-7,
 .xterm-rows .xterm-fg-15 {
-  color: var(--color-white) !important;
-}
-.xterm-rows .xterm-fg-7.xterm-bg-0,
-.xterm-rows .xterm-fg-15.xterm-bg-8 {
   color: var(--color-text-01) !important;
 }
 .xterm-rows .xterm-fg-257 {
