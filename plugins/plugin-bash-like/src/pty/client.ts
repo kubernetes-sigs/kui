@@ -19,6 +19,7 @@
 import * as Debug from 'debug'
 
 import * as path from 'path'
+import { v4 as uuid } from 'uuid'
 import * as xterm from 'xterm'
 import stripClean from 'strip-ansi'
 import { safeLoad } from 'js-yaml'
@@ -461,7 +462,12 @@ const webviewChannelFactory: ChannelFactory = async () => {
  * websocket factory for remote/proxy connection
  *
  */
-const getOrCreateChannel = async (cmdline: string, tab: Tab, terminal: xterm.Terminal): Promise<Channel> => {
+const getOrCreateChannel = async (
+  cmdline: string,
+  uuid: string,
+  tab: Tab,
+  terminal: xterm.Terminal
+): Promise<Channel> => {
   const channelFactory = inBrowser()
     ? window['webview-proxy'] !== undefined
       ? webviewChannelFactory
@@ -473,6 +479,7 @@ const getOrCreateChannel = async (cmdline: string, tab: Tab, terminal: xterm.Ter
     const msg = {
       type: 'exec',
       cmdline,
+      uuid,
       rows: terminal.rows,
       cols: terminal.cols,
       cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
@@ -641,7 +648,8 @@ export const doExec = (
           xtermContainer.classList.add('xterm-terminated')
         }
 
-        const ws: Channel = await getOrCreateChannel(cmdline, tab, terminal).catch((err: Error) => {
+        const ourUUID = uuid()
+        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, terminal).catch((err: Error) => {
           console.error('error creating channel', err)
           cleanUpTerminal()
           throw err
@@ -665,12 +673,13 @@ export const doExec = (
 
         // relay keyboard input to the server
         let queuedInput: string
-        terminal.on('key', key => {
+        terminal.on('key', (key: string) => {
+          console.error('!!!!!!!!!', ws.readyState, key)
           if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
             debug('queued input out back', key)
             queuedInput += key
           } else {
-            ws.send(JSON.stringify({ type: 'data', data: key }))
+            ws.send(JSON.stringify({ type: 'data', data: key, uid: ourUUID }))
           }
         })
 
@@ -753,6 +762,10 @@ export const doExec = (
         const onMessage = async (data: string) => {
           const msg = JSON.parse(data)
 
+          if (msg.uuid !== ourUUID) {
+            return
+          }
+
           if (msg.type === 'state' && msg.state === 'ready') {
             const queuedInput = disableInputQueueing()
             if (queuedInput.length > 0) {
@@ -809,6 +822,8 @@ export const doExec = (
                     const tableModel = formatTable(command, verb, entityType, parsedOptions, tableRows)
                     debug('tableModel', tableModel)
                     pendingTable = tableModel
+                  } else if (raw.length > 1000) {
+                    definitelyNotTable = true
                   }
                 } else {
                   definitelyNotTable = true

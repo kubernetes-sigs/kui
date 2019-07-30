@@ -276,16 +276,16 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
             // send all PTY data out to the websocket client
             shell.on('data', (data: string) => {
-              ws.send(JSON.stringify({ type: 'data', data }))
+              ws.send(JSON.stringify({ type: 'data', data, uuid: msg.uuid }))
             })
 
             shell.on('exit', (exitCode: number) => {
               shell = undefined
-              ws.send(JSON.stringify({ type: 'exit', exitCode }))
+              ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
               // exitNow(exitCode)
             })
 
-            ws.send(JSON.stringify({ type: 'state', state: 'ready' }))
+            ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))
           } catch (err) {
             console.error('could not exec', err)
           }
