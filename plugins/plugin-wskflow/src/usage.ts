@@ -37,7 +37,7 @@ const srcJson = {
 export const preview = command => ({
   command,
   strict: command,
-  title: 'Preview composition',
+  title: 'preview composition',
   header: 'Visualize a composition, without deploying it.',
   example: `${command} <sourceFile>`,
   detailedExample: {

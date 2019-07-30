@@ -435,7 +435,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
   background: transparent;
   color: var(--color-text-01);
 }
-.fifty-fifty:first-child {
+.fifty-fifty:nth-last-child(2) {
   max-width: calc(50% - 3em);
   margin-right: 3em;
 }
@@ -1223,8 +1223,7 @@ sidecar .present-as-quotation {
   border-left-color: var(--color-base02);
 }
 .present-as-quotation {
-  border-left: 0.25em solid var(--color-base01);
-  padding: 0.375em 0 0.375em 0.375em;
+  padding: 0.375em 0;
   margin: 0.375em 0;
 }
 .do-not-overflow {
@@ -1451,7 +1450,7 @@ sidecar .result-as-table .big-top-pad:first-child {
 }
 .clickable-blatant {
   text-decoration: underline;
-  text-decoration-color: var(--color-base04);
+  text-decoration-color: var(--color-text-02);
 }
 .clickable:hover,
 .entity-name-group:not(.header-cell) .entity.actions:hover .entity-name {
@@ -2507,16 +2506,24 @@ sidecar.minimized [data-balloon]:after {
 .usage-error-wrapper {
   color: var(--color-text-01);
   font-weight: normal;
+  margin: 0 1em;
 }
 .usage-error-wrapper .marked-content {
   /* marked markdown renderer section */
   white-space: normal;
   font-size: 1em;
+  max-width: 45em;
+  border-left: 3px solid var(--color-ui-03);
+  padding: 0.375em;
+  background-color: var(--color-base01);
 }
 .usage-error-wrapper .marked-content p {
   /* marked markdown renderer paragraphs */
   margin: 0.25em 0;
   white-space: pre-wrap;
+}
+.usage-error-wrapper .bx--breadcrumb-item .bx--link {
+  letter-spacing: 2px;
 }
 .usage-error-wrapper .hideable {
   margin: 2em 0;
