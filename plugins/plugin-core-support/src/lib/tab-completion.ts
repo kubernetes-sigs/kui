@@ -24,6 +24,7 @@ import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { Table } from '@kui-shell/core/webapp/models/table'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { CommandLine } from '@kui-shell/core/models/command'
 import minimist = require('yargs-parser')
@@ -724,6 +725,7 @@ const suggest = (
     // can enumerate the entities of the specified type
     return repl
       .qexec(`${param.entity} list --limit 200`)
+      .then((response: Table) => response.body)
       .then(filterAndPresentEntitySuggestions(path.basename(last), block, prompt, temporaryContainer, lastIdx))
   }
 }

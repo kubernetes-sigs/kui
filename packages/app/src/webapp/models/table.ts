@@ -160,7 +160,9 @@ export class Table {
 export interface WatchableTable extends Table, Watchable {}
 
 export function isTable(model: Entity): model is Table {
-  return model !== undefined && (model instanceof Table || (model as Table).body !== undefined)
+  return (
+    model !== undefined && (model instanceof Table || ((model as Table).body && Array.isArray((model as Table).body)))
+  )
 }
 
 export interface MultiTable {
