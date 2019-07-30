@@ -84,7 +84,7 @@ const prettyDom = (
   debug('prettyDom')
 
   const isHeader = dom.nodeType === 'h1' || dom.nodeType === 'h2' || dom.nodeType === 'h3' || dom.nodeType === 'h4'
-  const capitalize = dom.className.indexOf('bx--no-link') >= 0
+  const capitalize = false
   const hasMargin =
     dom.className.indexOf('bx--breadcrumb-item--slash') >= 0 ||
     dom.className.indexOf('left-pad') >= 0 ||

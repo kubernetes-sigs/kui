@@ -23,8 +23,7 @@ const { cli, selectors } = ui
 const { localDescribe } = common
 
 /** expect the given folder within the help tree */
-export const header = folder => `Shell Docs
-${folder}`
+export const header = (folder: string) => folder
 
 /**
  * Check to see if the given executable is available
