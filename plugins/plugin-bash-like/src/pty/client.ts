@@ -744,7 +744,7 @@ export const doExec = (
         terminal.element.classList.add('fullscreen')
 
         let pendingUsage = false
-        let definitelyNotUsage = false
+        let definitelyNotUsage = argvNoOptions[0] === 'git' // short-term hack u ntil we fix up ascii-to-usage
         let pendingTable: Table
         let raw = ''
 
