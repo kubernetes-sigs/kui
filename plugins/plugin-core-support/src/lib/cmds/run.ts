@@ -23,7 +23,10 @@ import * as repl from '@kui-shell/core/core/repl'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { formatMultiListResult } from '@kui-shell/core/webapp/views/table'
+import { isTable, isMultiTable, Table, Row } from '@kui-shell/core/webapp/models/table'
+import { formatTable } from '@kui-shell/core/webapp/views/table'
+import { showCustom, isCustomSpec } from '@kui-shell/core/webapp/views/sidecar'
+import { isHTML } from '@kui-shell/core/util/types'
 const debug = Debug('plugins/core-support/run')
 
 const execInSequence = async function(arr, status, idx: number) {
@@ -106,7 +109,7 @@ const doRun = ({ argv }) =>
 
           const linesAfterVariableInjection = lines.map(injectVariables)
 
-          const table = linesAfterVariableInjection.map((line, idx) => ({
+          const body: Row[] = linesAfterVariableInjection.map((line, idx) => ({
             name: line,
             type: 'run',
             outerCSS: 'entity-name-group',
@@ -127,23 +130,21 @@ const doRun = ({ argv }) =>
 
           execInSequence(linesAfterVariableInjection, status, 0)
 
-          const headerRow = [
-            {
-              name: 'COMMAND',
-              type: 'run',
-              noSort: true,
-              outerCSS: 'header-cell',
-              attributes: [
-                {
-                  key: 'status',
-                  value: 'STATUS',
-                  outerCSS: 'header-cell very-narrow not-too-wide min-width-6em text-center'
-                }
-              ]
-            }
-          ]
+          const header: Row = {
+            name: 'COMMAND',
+            type: 'run',
+            attributes: [
+              {
+                key: 'status',
+                value: 'STATUS',
+                outerCSS: 'very-narrow not-too-wide min-width-6em text-center'
+              }
+            ]
+          }
 
-          resolve(headerRow.concat(table))
+          const table: Table = { header, body, noSort: true }
+
+          resolve(table)
         } catch (err) {
           reject(err)
         }
@@ -187,12 +188,12 @@ export default (commandTree: CommandRegistrar) => {
       scrollInner.classList.add('padding-content')
       content.appendChild(scrollInner)
 
-      if (Array.isArray(commandOutput)) {
+      if (isTable(commandOutput) || isMultiTable(commandOutput)) {
         const container = document.createElement('div')
         container.classList.add('result-as-table')
         scrollInner.appendChild(container)
 
-        formatMultiListResult(tab, !Array.isArray(commandOutput[0]) ? [commandOutput] : commandOutput, container)
+        formatTable(tab, commandOutput, container)
 
         return {
           type: 'custom',
@@ -201,10 +202,13 @@ export default (commandTree: CommandRegistrar) => {
           name: commandRest,
           content
         }
+      } else if (isCustomSpec(commandOutput)) {
+        showCustom(tab, commandOutput, {})
+        return commandOutput
       } else {
         if (typeof commandOutput === 'string') {
           scrollInner.innerText = commandOutput
-        } else {
+        } else if (isHTML(commandOutput)) {
           scrollInner.appendChild(commandOutput)
         }
 

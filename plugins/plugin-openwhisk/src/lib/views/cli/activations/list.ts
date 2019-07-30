@@ -19,6 +19,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
+import { Table, Row } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 
 import * as prettyPrintDuration from 'pretty-ms'
@@ -27,6 +28,22 @@ const debug = Debug('plugins/openwhisk/views/cli/activations/list')
 import repl = require('@kui-shell/core/core/repl')
 
 const viewName = 'Trace View'
+
+export interface ActivationListRow extends Row {
+  namespace?: string
+
+  annotations?: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  sessionId?: string
+
+  activationId?: string
+
+  statusCode?: number
+}
+
+export interface ActivationListTable extends Table {
+  body: ActivationListRow[]
+}
 
 /**
  * Turn a key->value map into a '--key1 value1 --key2 value2' cli opt string
@@ -576,27 +593,30 @@ const _render = args => {
         const listCommand = activations.every(activation => activation.sessionId !== undefined)
           ? 'session list'
           : 'wsk activation list'
-        return repl.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`).then(activationIds => {
-          if (activationIds.length === 0) {
-            // we're at the end! disable the next button
-            next.classList.add('list-paginator-button-disabled')
-            delete next.onclick
-          } else {
-            _render({
-              activationIds,
-              container,
-              noCrop,
-              noPip,
-              showResult,
-              showStart,
-              showTimeline,
-              skip,
-              limit,
-              tab,
-              parsedOptions
-            })
-          }
-        })
+        return repl
+          .qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
+          .then((activations: ActivationListTable) => activations.body)
+          .then(activationIds => {
+            if (activationIds.length === 0) {
+              // we're at the end! disable the next button
+              next.classList.add('list-paginator-button-disabled')
+              delete next.onclick
+            } else {
+              _render({
+                activationIds,
+                container,
+                noCrop,
+                noPip,
+                showResult,
+                showStart,
+                showTimeline,
+                skip,
+                limit,
+                tab,
+                parsedOptions
+              })
+            }
+          })
       }
       if (skip === 0) {
         // disable the back button when we're on the first page

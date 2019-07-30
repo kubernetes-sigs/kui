@@ -25,6 +25,7 @@
  */
 
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Table } from '@kui-shell/core/webapp/models/table'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 import minimist = require('yargs-parser')
@@ -125,16 +126,19 @@ export default async (commandTree: CommandRegistrar) => {
    */
   const BATCH = 200 // keep this at 200, but you can temporarily set it to lower values for debugging
   const fetch = (type, skip = 0, soFar = []) => {
-    return repl.qexec(`${type} list --limit ${BATCH} --skip ${skip}`).then(items => {
-      if (items.length === BATCH) {
-        // then there may be more
-        return fetch(type, skip + BATCH, soFar.concat(items))
-      } else if (items.length === 0) {
-        return soFar
-      } else {
-        return soFar.concat(items)
-      }
-    })
+    return repl
+      .qexec(`${type} list --limit ${BATCH} --skip ${skip}`)
+      .then((response: Table) => response.body)
+      .then(items => {
+        if (items.length === BATCH) {
+          // then there may be more
+          return fetch(type, skip + BATCH, soFar.concat(items))
+        } else if (items.length === 0) {
+          return soFar
+        } else {
+          return soFar.concat(items)
+        }
+      })
   }
 
   /**

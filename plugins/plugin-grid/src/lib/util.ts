@@ -29,6 +29,7 @@ import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
@@ -183,6 +184,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   const fetch = extraSkip =>
     repl
       .qexec(`wsk activation list ${nameFilter} --skip ${skip + extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`)
+      .then((activations: ActivationListTable) => activations.body)
       .catch(err => {
         // log but swallow errors, so that we can show the user something... hopefully, at least one of the fetches succeeds
         console.error(err)

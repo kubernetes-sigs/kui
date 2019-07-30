@@ -27,6 +27,7 @@
 const minimist = require('yargs-parser')
 
 import repl = require('@kui-shell/core/core/repl')
+import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
 const rootSynonyms = ['root', '$$']
 const defaultOptions = {
@@ -107,6 +108,7 @@ export default (commandTree, wsk) => {
 
     return repl
       .qexec(`wsk activations list ${serialize(options)}`, block)
+      .then((response: ActivationListTable) => response.body)
       .then(excludeIfCausedBySequence)
       .then(isFromIncludedPackage(argv[0]))
       .then(filterFn)

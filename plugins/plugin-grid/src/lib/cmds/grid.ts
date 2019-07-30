@@ -24,6 +24,7 @@ import * as prettyPrintDuration from 'pretty-ms'
 import * as repl from '@kui-shell/core/core/repl'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
+import { Row } from '@kui-shell/core/webapp/models/table'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { getSidecar, addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
@@ -520,14 +521,7 @@ interface Options {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (
-  tab: Tab,
-  options: Options,
-  header: Header,
-  uuid: string,
-  redraw = false
-  // eslint-disable-next-line @typescript-eslint/ban-types
-) => (activations: Object[]) => {
+const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redraw = false) => (activations: Row[]) => {
   debug('drawGrid', redraw)
 
   const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement

@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { registerListView } from '@kui-shell/core/webapp/cli'
+import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
 import { activations as usage } from '../openwhisk-usage'
 import { renderActivationListView } from '../../views/cli/activations/list'
@@ -47,7 +48,7 @@ const baseOptions: Options = {
  * The activation list impl.
  *
  */
-const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOptions }) => {
+const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOptions }): Promise<ActivationListTable> => {
   debug('command', command)
   debug('skip', parsedOptions.skip)
   debug('limit', parsedOptions.limit)
@@ -76,7 +77,7 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
       .activations.list(opts)
       .then(L => Promise.all(L.map(wsk.addPrettyType('activations', 'list'))))
 
-    return list
+    return { body: list, type: 'activations' }
   } catch (err) {
     throw err
   }

@@ -20,7 +20,7 @@ import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { formatOneListResult } from '@kui-shell/core/webapp/views/table'
+import { formatOneRowResult } from '@kui-shell/core/webapp/views/table'
 import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
@@ -390,23 +390,13 @@ export const showEntity = async (
       if (entity.actions) {
         entity.actions
           .map(fillInActionDetails(entity))
-          .map(
-            formatOneListResult(tab, {
-              excludePackageName: true,
-              alwaysShowType: true
-            })
-          )
+          .map(formatOneRowResult(tab, { excludePackageName: true }))
           .forEach(dom => actions.appendChild(dom))
       }
       if (entity.feeds) {
         entity.feeds
           .map(fillInActionDetails(entity, 'feeds'))
-          .map(
-            formatOneListResult(tab, {
-              excludePackageName: true,
-              alwaysShowType: true
-            })
-          )
+          .map(formatOneRowResult(tab, { excludePackageName: true }))
           .forEach(dom => actions.appendChild(dom))
       }
     }

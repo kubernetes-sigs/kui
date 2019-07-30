@@ -16,6 +16,7 @@
 
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
@@ -38,6 +39,7 @@ export default async (commandTree: CommandRegistrar) => {
       if (parsedOptions.last || parsedOptions['last-failed']) {
         return repl
           .qfexec('activation list --limit 200')
+          .then((activations: ActivationListTable) => activations.body)
           .then(activations => {
             return activations.find(activation => {
               if (
@@ -91,6 +93,7 @@ export default async (commandTree: CommandRegistrar) => {
         if (last) {
           return repl
             .qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
+            .then((activations: ActivationListTable) => activations.body)
             .then(activations => {
               if (activations.length === 0) {
                 throw new Error('No such activation found')

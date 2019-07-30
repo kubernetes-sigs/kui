@@ -50,25 +50,28 @@ export default async (commandTree: CommandRegistrar) => {
       const limit = parsedOptions.limit || 10 // limit 10 sessions in session list if users didn't specify --limit
 
       if (limit === 0) {
-        return []
+        return { body: [] }
       }
 
       return repl.qexec(argvNoOptions.join(' ').replace('app', 'action')).then(actions => {
         debug('filtering action list to find compositions', actions)
-        const apps = actions.filter(astUtil.isAnApp).map(app =>
-          Object.assign({}, app, {
-            prettyType,
-            prettyKind,
-            onclick: `app get "/${app.namespace}/${app.name}"`
-          })
-        )
+        if (actions.body) {
+          const apps = actions.body.filter(astUtil.isAnApp).map(app =>
+            Object.assign({}, app, {
+              type,
+              prettyType,
+              prettyKind,
+              onclick: `app get "/${app.namespace}/${app.name}"`
+            })
+          )
 
-        const skip = parsedOptions.skip || 0
-        const limit = parsedOptions.limit || apps.length
+          const skip = parsedOptions.skip || 0
+          const limit = parsedOptions.limit || apps.length
 
-        const paginated = apps.slice(skip, skip + limit)
+          const paginated = apps.slice(skip, skip + limit)
 
-        return parsedOptions.count ? paginated.length : withHeader(paginated, execOptions)
+          return parsedOptions.count ? paginated.length : withHeader(paginated, execOptions)
+        }
       })
     },
     { usage: appList('list') }

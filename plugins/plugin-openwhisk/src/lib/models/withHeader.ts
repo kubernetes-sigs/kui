@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Table, Row } from '@kui-shell/core/webapp/models/table'
+
 /**
  * Maybe add a header row for tables. If this is a nested call,
  * i.e. some other plugin is calling us for the data rather than the
@@ -21,33 +23,27 @@
  * actually wants us to add the header (showHeader).
  *
  */
-export default (rows, execOptions) => {
+export default (rows, execOptions): Table => {
   if (rows.length === 0 || (!execOptions.showHeader && (execOptions.nested || rows[0].type === 'activations'))) {
-    return rows
+    return { body: rows }
   } else {
     const cell = (value, outerCSS = '') => [{ value, outerCSS: `header-cell ${outerCSS}` }]
     const maybeCell = (field: string, value: string, outerCSS?: string) => (rows[0][field] ? cell(value, outerCSS) : [])
 
-    const type = rows[0].type
+    const type = rows[0].prettyType || rows[0].type
     const kind = type === 'actions' ? maybeCell('type', 'kind', 'entity-kind') : []
     const active = type === 'rules' ? cell('status') : []
     const version =
       type === 'rules' ? cell('rule', 'hide-with-sidecar') : maybeCell('version', 'version', 'hide-with-sidecar')
 
-    return [
-      [
-        {
-          title: rows[0].prettyType || type,
-          type,
-          name: 'name',
-          noSort: true,
-          onclick: false,
-          header: true,
-          outerCSS: 'header-cell',
-          annotations: [],
-          attributes: kind.concat(active).concat(version)
-        }
-      ].concat(rows)
-    ]
+    const header: Row = {
+      type,
+      name: 'name',
+      onclick: false,
+      outerCSS: 'header-cell',
+      attributes: kind.concat(active).concat(version)
+    }
+
+    return { header, body: rows, title: rows[0].prettyType || type, noSort: true }
   }
 }

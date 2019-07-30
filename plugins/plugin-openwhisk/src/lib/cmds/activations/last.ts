@@ -15,6 +15,7 @@
  */
 
 import repl = require('@kui-shell/core/core/repl')
+import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
 /**
  * wsk activation last: find and display the (temporally) last activation
@@ -24,13 +25,15 @@ const last = ({ argv: fullArgv }) => {
   const argv = fullArgv.slice(fullArgv.indexOf('last'))
 
   const limit = argv.length === 1 ? 1 : 200 // if no options, then we're showing just the last activation
-  return repl.qexec(`activation list --limit ${limit} ${argv.slice(1).join(' ')}`).then(response => {
-    if (response.length === 0) {
-      throw new Error(argv.length === 1 ? 'You have no activations' : 'No matching activations')
-    } else {
-      return repl.qexec(`activation get ${response[0].activationId}`)
-    }
-  })
+  return repl
+    .qexec(`activation list --limit ${limit} ${argv.slice(1).join(' ')}`)
+    .then((response: ActivationListTable) => {
+      if (response.body.length === 0) {
+        throw new Error(argv.length === 1 ? 'You have no activations' : 'No matching activations')
+      } else {
+        return repl.qexec(`activation get ${response.body[0].activationId}`)
+      }
+    })
 }
 
 export default (commandTree, { synonyms }) => {

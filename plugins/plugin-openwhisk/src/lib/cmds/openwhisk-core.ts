@@ -1284,9 +1284,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
         .then(pretty)
         .then(correctMissingBindingName(options))
         .then(response => (Array.isArray(response) ? Promise.all(response.map(pretty)) : response))
-        .then(response =>
-          Array.isArray(response) && response.length > 0 ? withHeader(response, execOptions) : response
-        )
+        .then(response => (Array.isArray(response) ? withHeader(response, execOptions) : response))
         .then(response => {
           if (
             commandTree &&

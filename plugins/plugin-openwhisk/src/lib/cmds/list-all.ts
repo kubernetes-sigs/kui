@@ -19,8 +19,12 @@
  *
  */
 
+import * as Debug from 'debug'
 import { wsk } from './openwhisk-usage'
 import repl = require('@kui-shell/core/core/repl')
+import { isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
+
+const debug = Debug('plugins/openwhisk/cmds/list-all')
 
 /** usage model */
 const usage = cmd => ({
@@ -41,10 +45,22 @@ const types = ['actions', 'packages', 'triggers', 'rules']
 const list = type => repl.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
 
 /** the command handler */
-const doList = () => () =>
-  Promise.all(types.map(list)).then(L => {
-    return L.map(_ => _[0] || []).filter(x => x.length > 0)
+const doList = () => async () => {
+  const response = await Promise.all(types.map(list)).then(result => {
+    return result.filter(
+      res =>
+        (isTable(res) && res.body.length > 0) || (isMultiTable(res) && res.tables.every(table => table.body.length > 0))
+    )
   })
+
+  debug('list-all result', response)
+
+  if (Array.isArray(response) && response.length > 0) {
+    return response.length === 1 ? response[0] : { tables: response }
+  }
+
+  return response
+}
 
 /**
  * Here is the module, where we register command handlers
