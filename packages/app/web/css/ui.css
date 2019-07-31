@@ -1747,7 +1747,7 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
   color: var(--color-text-02);
 }
 .log-lines .log-line .log-field.log-date.hljs-attribute {
-  color: var(--color-base0A);
+  color: var(--color-base0C);
 }
 .log-lines .log-line .log-message {
   white-space: pre-wrap;

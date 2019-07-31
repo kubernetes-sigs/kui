@@ -594,7 +594,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           output === 'json'
             ? JSON.parse(out)
             : verb === 'logs'
-            ? formatLogs(out)
+            ? formatLogs(out, execOptions)
             : output === 'yaml'
             ? redactYAML(out)
             : redactJSON(out)

@@ -36,7 +36,15 @@ import Store from '../main/store'
   } */
 
 class ClassList {
-  private classList: string[] = []
+  readonly classList: string[] = []
+
+  get length(): number {
+    return this.classList.length
+  }
+
+  forEach(fn: (str: string) => void) {
+    this.classList.forEach(fn)
+  }
 
   add(_: string) {
     return this.classList.push(_)
@@ -142,7 +150,7 @@ export class ElementMimic {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static isFakeDom(dom: any): dom is ElementMimic {
-    return (dom as ElementMimic)._isFakeDom
+    return dom && (dom as ElementMimic)._isFakeDom
   }
 }
 

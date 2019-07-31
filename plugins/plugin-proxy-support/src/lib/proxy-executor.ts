@@ -22,7 +22,7 @@ import { v4 as uuidgen } from 'uuid'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { ReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
 import { getValidCredentials } from '@kui-shell/core/core/capabilities'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { ExecOptions, withLanguage } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
 import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
@@ -72,6 +72,30 @@ debug('proxyServerConfig', proxyServerConfig)
 /** we may want to directly evaluate certain commands in the browser */
 const directEvaluator = new DirectReplEval()
 
+function renderDom(content: ElementMimic): HTMLElement {
+  const dom = document.createElement(content.nodeType)
+
+  if (content.className.length > 0) {
+    dom.className = content.className
+  } else if (content.classList.classList.length > 0) {
+    content.classList.classList.forEach(_ => {
+      dom.classList.add(_)
+    })
+  }
+
+  // TODO attrs
+
+  if (content.innerText) {
+    dom.innerText = content.innerText
+  } else if (content.children && content.children.length > 0) {
+    content.children.forEach(child => {
+      dom.appendChild(renderDom(child))
+    })
+  }
+
+  return dom
+}
+
 /**
  * A repl.exec implementation that proxies to the packages/proxy container
  *
@@ -92,14 +116,16 @@ class ProxyEvaluator implements ReplEval {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
-      const execOptionsForInvoke = Object.assign({}, execOptions, {
-        isProxied: true,
-        cwd: process.env.PWD,
-        env: process.env,
-        credentials: getValidCredentials(),
-        tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
-        rawResponse: true // we will post-process the response
-      })
+      const execOptionsForInvoke = withLanguage(
+        Object.assign({}, execOptions, {
+          isProxied: true,
+          cwd: process.env.PWD,
+          env: process.env,
+          credentials: getValidCredentials(),
+          tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
+          rawResponse: true // we will post-process the response
+        })
+      )
 
       if (command !== 'bash websocket open') {
         // eslint-disable-next-line no-async-promise-executor
@@ -132,13 +158,20 @@ class ProxyEvaluator implements ReplEval {
                   .split(MARKER)
                   .filter(_ => _)
                   .forEach(_ => {
-                    const response: { uuid: string; response: { code?: number; statusCode?: number } } = JSON.parse(_)
+                    const response: {
+                      uuid: string
+                      response: { code?: number; statusCode?: number; content: string | HTMLElement | ElementMimic }
+                    } = JSON.parse(_)
                     if (response.uuid === uuid) {
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
                         debug('rejecting', response.response)
                         reject(response.response)
+                      } else if (ElementMimic.isFakeDom(response.response.content)) {
+                        debug('rendering fakedom content', response.response.content)
+                        response.response.content = renderDom(response.response.content)
+                        resolve(response.response)
                       } else {
                         debug('response', response)
                         resolve(response.response)

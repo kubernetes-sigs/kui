@@ -73,11 +73,31 @@ export interface ExecOptions {
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+export interface LanguageBearing extends ExecOptions {
+  /** navigator.language */
+  language: string
+}
+
+export function hasLanguage(execOptions: ExecOptions): execOptions is LanguageBearing {
+  return (execOptions as LanguageBearing).language !== undefined
+}
+
+export function withLanguage(execOptions: ExecOptions): LanguageBearing {
+  if (hasLanguage(execOptions)) {
+    return execOptions
+  } else {
+    return Object.assign({}, execOptions, { language: typeof navigator !== 'undefined' && navigator.language })
+  }
+}
+
 export class DefaultExecOptions implements ExecOptions {
   readonly type: ExecType
 
+  readonly language: string
+
   constructor(type: ExecType = ExecType.TopLevel) {
     this.type = type
+    this.language = typeof navigator !== 'undefined' && navigator.language
   }
 }
 
