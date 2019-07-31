@@ -45,6 +45,7 @@ export const editUsage = command => ({
     }
   ],
   optional: [
+    { name: '--create', docs: 'Indicates that you want to create the file (and parent directories as needed)'},
     {
       name: '--language',
       hidden: true,

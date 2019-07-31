@@ -16,7 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { basename } from 'path'
+import { basename, dirname } from 'path'
+import { mkdir, writeFile } from 'fs'
 
 import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
@@ -84,6 +85,11 @@ export const fetchEntity = async (name: string, parsedOptions, execOptions): Pro
       if (!lastError || (err.code && err.code !== 404)) {
         lastError = err
       }
+      if (parsedOptions.create) {
+        // This seems a little arbitrary but we need to break up the hot-potato act between the editor and editor-extensions plugins.
+        // In a create situation, the user is expecting the local file system fetcher to act alone.  If it fails, that should be it.
+        throw lastError
+      }
     }
   }
 
@@ -92,17 +98,68 @@ export const fetchEntity = async (name: string, parsedOptions, execOptions): Pro
   }
 }
 
+// Recursively make a directory, ignoring failure
+function makeDirs(dir: string) {
+  return new Promise(function(resolve) {
+    mkdir(dir, { recursive: true }, () => {
+      // Ignore any error on the mkdir
+      resolve(undefined)
+    })
+  })
+}
+
+// Create a file then fetch it
+function createAndFetch(name: string) {
+  return new Promise(function(resolve, reject) {
+    writeFile(name, '', err => {
+      if (err) {
+        debug('file writing failed', err)
+        reject(err)
+      } else {
+        debug('wrote new empty file', name)
+        resolve(undefined)
+      }
+    })
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  }).then(() => fetchFile(name)) // no create flag here, so no infinite recursion
+}
+
+// Creates parent directories if needed, then creates a file then edits it
+async function createFile(name: string) {
+  const dir = dirname(name)
+  const base = basename(name)
+  if (base !== name) {
+    debug('making parent directories', name)
+    await makeDirs(dir)
+    return createAndFetch(name)
+  } else {
+    return createAndFetch(name)
+  }
+}
+
 /**
- * Read a local file
+ * Read a local file, optionally creating it
  *
  */
-export const fetchFile: IFetcher = async (name: string): Promise<Entity> => {
-  const stats: { isDirectory: boolean; filepath: string; data: string } = await qexec(
-    `fstat ${encodeComponent(name)} --with-data`
-  )
-
+export const fetchFile: IFetcher = async (name: string, parsedOptions): Promise<Entity> => {
+  const create = parsedOptions && parsedOptions.create
+  debug('create flag', create)
+  let stats: { isDirectory: boolean; filepath: string; data: string }
+  try {
+    stats = await qexec(`fstat ${encodeComponent(name)} --with-data`)
+  } catch (err) {
+    debug('error code', err.code)
+    if (create && err.code === '404') {
+      // Code is a string in this case, not a number
+      debug('creating file as requested')
+      return createFile(name)
+    }
+    throw err
+  }
   if (stats.isDirectory) {
     throw new Error('Specified file is a directory')
+  } else if (create) {
+    throw new Error(`'${name}' cannot be created because it already exists`)
   } else {
     const extension = name.substring(name.lastIndexOf('.') + 1)
     const kind =
