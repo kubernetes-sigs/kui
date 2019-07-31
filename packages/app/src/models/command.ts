@@ -89,6 +89,9 @@ export interface Event {
 export interface ParsedOptions {
   [key: string]: string
 }
+export interface ParsedOptionsFull {
+  [key: string]: string | boolean | number
+}
 
 /**
  * This information represents a command line, but split out in

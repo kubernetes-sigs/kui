@@ -27,6 +27,7 @@ export interface ExecOptions {
   env?: Record<string, string>
 
   isProxied?: boolean
+  forceProxy?: boolean
   noDelegation?: boolean
   delegationOk?: boolean
 
