@@ -39,12 +39,6 @@ describe('edit actions', function(this: common.ISuite) {
       .then(sidecar.expectShowing('file with spaces.yaml'))
       .catch(common.oops(this)))
 
-  it('should report 404 for edit non-existing action', () =>
-    cli
-      .do('edit nope', this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this)))
-
   it('should report 499 for edit --kind', () =>
     cli
       .do('edit nope --kind foo', this.app)

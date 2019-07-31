@@ -16,10 +16,12 @@
 
 import * as Debug from 'debug'
 
-import { basename } from 'path'
+import { basename, dirname } from 'path'
 
-import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
+import { encodeComponent, qexec, rexec } from '@kui-shell/core/core/repl'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
+import { ParsedOptionsFull } from '@kui-shell/core/models/command'
+import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { persisters } from './persisters'
 const debug = Debug('plugins/editor/fetchers')
@@ -52,65 +54,81 @@ export interface Entity extends MetadataBearing {
   annotations: KeyValuePair[]
 }
 
-export type IFetcher = (name: string, parsedOptions?, execOptions?) => Promise<Entity>
+export type IFetcher = (
+  entityName: string,
+  parsedOptions?: ParsedOptionsFull,
+  execOptions?: ExecOptions,
+  createIfAbsent?: boolean
+) => Promise<Entity>
 
 /**
  * Register an entity fetcher for a given entity kind
  *
  */
-const fetchers = []
+const fetchers: { fetcher: IFetcher }[] = []
 export const registerFetcher = (fetcher: IFetcher): void => {
   debug('registerFetcher')
   fetchers.push({ fetcher })
 }
 
 /**
- * See if we one of the registered entity fetchers knows how to fetch
- * the text for the given named entity
+ * Touch a local filepath
  *
  */
-export const fetchEntity = async (name: string, parsedOptions, execOptions): Promise<Entity> => {
-  let lastError
-  for (let idx = 0; idx < fetchers.length; idx++) {
-    const { fetcher } = fetchers[idx]
-
-    try {
-      const entity = await fetcher(name, parsedOptions, execOptions)
-      if (entity) {
-        return entity
-      }
-    } catch (err) {
-      debug('got error from fetcher', err)
-      if (!lastError || (err.code && err.code !== 404)) {
-        lastError = err
-      }
-    }
-  }
-
-  if (lastError) {
-    throw lastError
-  }
+function createFile(filepath: string, execOptions: ExecOptions) {
+  return rexec(`touch ${encodeComponent(filepath)}`, Object.assign({}, execOptions, { forceProxy: true }))
 }
 
 /**
- * Read a local file
+ * Creates parent directories if needed, then creates a file then edits it
  *
  */
-export const fetchFile: IFetcher = async (name: string): Promise<Entity> => {
-  const stats: { isDirectory: boolean; filepath: string; data: string } = await qexec(
-    `fstat ${encodeComponent(name)} --with-data`
-  )
+async function createFilepath(filepath: string, execOptions: ExecOptions) {
+  const dir = dirname(filepath)
+  const base = basename(filepath)
 
+  if (base !== filepath) {
+    debug('making parent directories', dir)
+    await rexec(`mkdir -p ${encodeComponent(dir)}`, Object.assign({}, execOptions, { forceProxy: true }))
+  }
+
+  return createFile(filepath, execOptions)
+}
+
+/**
+ * Read a local file, optionally creating it
+ *
+ */
+export const fetchFile: IFetcher = async (
+  filepath: string,
+  parsedOptions: ParsedOptionsFull,
+  execOptions: ExecOptions,
+  createIfAbsent: boolean
+): Promise<Entity> => {
+  let stats: { isDirectory: boolean; filepath: string; data: string }
+  try {
+    stats = await qexec(`fstat ${encodeComponent(filepath)} --with-data`)
+  } catch (err) {
+    debug('error code', err.code)
+    if (err.code === 404 && createIfAbsent) {
+      // Code is a string in this case, not a number
+      debug('creating file')
+      return createFilepath(filepath, execOptions).then(() => fetchFile(filepath, parsedOptions, execOptions)) // no create flag here, so no infinite recursion
+    }
+    throw err
+  }
   if (stats.isDirectory) {
     throw new Error('Specified file is a directory')
+  } else if (createIfAbsent) {
+    throw new Error(`'${filepath}' cannot be created because it already exists`)
   } else {
-    const extension = name.substring(name.lastIndexOf('.') + 1)
+    const extension = filepath.substring(filepath.lastIndexOf('.') + 1)
     const kind =
       extension === 'js' ? 'javascript' : extension === 'ts' ? 'typescript' : extension === 'py' ? 'python' : extension
 
     return {
       type: 'file',
-      name: basename(name),
+      name: basename(filepath),
       filepath: stats.filepath,
       exec: {
         kind,
@@ -120,6 +138,41 @@ export const fetchFile: IFetcher = async (name: string): Promise<Entity> => {
       persister: persisters.files
     }
   }
+}
+
+/**
+ * See if we one of the registered entity fetchers knows how to fetch
+ * the text for the given named entity
+ *
+ */
+export const fetchEntity = async (
+  entityName: string,
+  parsedOptions: ParsedOptionsFull,
+  execOptions: ExecOptions
+): Promise<Entity> => {
+  if (!parsedOptions.create) {
+    // The --create option means don't try any of the other fetchers;
+    // so we skip over this block of code, and proceed directly to the
+    // end, where we call fetchFile with createIfAbsent=true
+    for (let idx = 0; idx < fetchers.length; idx++) {
+      const { fetcher } = fetchers[idx]
+
+      try {
+        const entity = await fetcher(entityName, parsedOptions, execOptions, false)
+        if (entity) {
+          return entity
+        }
+      } catch (err) {
+        debug('got error from fetcher', err.code, err.statusCode, err)
+        if (err.code !== 404) {
+          throw err
+        }
+      }
+    }
+  }
+
+  debug('treating this as an createIfAbsent edit of a local filepath')
+  return fetchFile(entityName, parsedOptions, execOptions, true)
 }
 
 /* register the built-in local file fetcher */
