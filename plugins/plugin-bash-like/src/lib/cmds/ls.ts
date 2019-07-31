@@ -25,6 +25,7 @@ import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
 import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -135,9 +136,13 @@ const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
     stat(fullpath, (err, stats) => {
       if (err) {
         if (err.code === 'ENOENT') {
-          err.code = '404'
+          const error: CodedError = new Error(err.message)
+          error.stack = err.stack
+          error.code = 404
+          reject(error)
+        } else {
+          reject(err)
         }
-        reject(err)
       } else if (stats.isDirectory() || !parsedOptions['with-data']) {
         resolve({
           viewer,

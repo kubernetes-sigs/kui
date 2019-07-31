@@ -26,7 +26,8 @@ import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, ParsedOptionsFull } from '@kui-shell/core/models/command'
+
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 const debug = Debug('plugins/editor/cmds/edit')
 
@@ -46,10 +47,6 @@ class DefaultExecOptions {
   custom = new DefaultCustomization()
 }
 
-interface EditorOptions {
-  readOnly?: boolean
-}
-
 /**
  * Command handler for `edit <entity>`
  *
@@ -58,11 +55,11 @@ const editCmd = async ({
   tab,
   argvNoOptions = [],
   parsedOptions = {},
-  execOptions = new DefaultExecOptions()
+  execOptions
 }: {
   tab: Tab
   argvNoOptions: string[]
-  parsedOptions: EditorOptions
+  parsedOptions: ParsedOptionsFull
   execOptions: ExecOptions
 }) => {
   debug('edit command execution started', execOptions)
@@ -111,16 +108,16 @@ const editCmd = async ({
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (tab: Tab, entity: EditorEntity, options: EditorOptions) =>
+export const edit = (tab: Tab, entity: EditorEntity, options: ParsedOptionsFull, execOptions: ExecOptions) =>
   editCmd({
     tab,
     argvNoOptions: [],
     parsedOptions: options,
-    execOptions: {
+    execOptions: Object.assign({}, execOptions, {
       parameters: entity,
       custom: undefined,
       noSidecarHeader: true
-    }
+    })
   })
 
 export default async (commandTree: CommandRegistrar) => {
@@ -128,6 +125,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen('/editor/edit', editCmd, {
     usage: usage.editUsage('edit'),
     noAuthOk: true,
+    inBrowserOk: true,
     needsUI: true
   })
 }

@@ -141,6 +141,6 @@ export default (commandTree: CommandRegistrar) => {
     ({ tab, argvNoOptions: argv }) => {
       return open(tab, argv[argv.indexOf('open') + 1])
     },
-    { usage, needsUI: true, noAuthOk: true }
+    { usage, needsUI: true, inBrowserOk: true, noAuthOk: true }
   )
 }

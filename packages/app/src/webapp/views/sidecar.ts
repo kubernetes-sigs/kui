@@ -903,7 +903,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
             }
           }
 
-          const { content } = await edit(tab, entity, { readOnly: true })
+          const { content } = await edit(tab, entity, { readOnly: true }, options)
           container.appendChild(content)
 
           presentAs(tab, Presentation.FixedSize)

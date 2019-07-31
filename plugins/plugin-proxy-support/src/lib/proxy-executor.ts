@@ -112,6 +112,7 @@ class ProxyEvaluator implements ReplEval {
       isDisabled(proxyServerConfig) ||
       (isCommandHandlerWithEvents(evaluator) &&
         evaluator.options &&
+        !execOptions.forceProxy &&
         (evaluator.options.inBrowserOk || evaluator.options.needsUI))
     ) {
       debug('delegating to direct evaluator')
