@@ -16,6 +16,8 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
+import { DefaultExecOptions, LanguageBearing } from '@kui-shell/core/models/execOptions'
+
 function isDate(object: Date | string | number): object is Date {
   return object && typeof object !== 'string' && typeof object !== 'number' && 'getMonth' in object
 }
@@ -34,7 +36,8 @@ const span = (text: string): HTMLElement => {
 export const prettyPrintTime = (
   timestamp: Date | string | number,
   fmt = 'long',
-  previousTimestamp?: Date | string | number
+  previousTimestamp?: Date | string | number,
+  execOptions: LanguageBearing = new DefaultExecOptions()
 ) => {
   // compare now to then, to see if we need to show a year, etc.
   const now = new Date()
@@ -90,7 +93,7 @@ export const prettyPrintTime = (
         return sameDay()
       } else {
         return span(
-          then.toLocaleString(navigator.language, {
+          then.toLocaleString(execOptions.language, {
             weekday: fmt,
             month: fmt,
             day: 'numeric',
@@ -103,7 +106,7 @@ export const prettyPrintTime = (
     }
   } else if (now.getFullYear() === then.getFullYear()) {
     return span(
-      then.toLocaleString(navigator.language, {
+      then.toLocaleString(execOptions.language, {
         weekday: fmt,
         month: fmt,
         day: 'numeric',
