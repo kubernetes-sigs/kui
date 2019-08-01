@@ -285,29 +285,57 @@ repl .repl-block.using-custom-prompt .repl-input input {
 }
 .repl .repl-prompt-right-element-icon.deemphasize {
   margin-left: 0.5em;
-  color: transparent;
   font-size: 0.875em; /* see the comment for repl-input re: min-height; that should match this */
+  opacity: 1;
   transition: all 300ms ease-in-out;
 }
-.repl-block.processing .repl-prompt-right-element-icon {
-  background-color: var(--color-processing);
+.repl-prompt-right-element-icon.deemphasize .bx--loading {
+  width: unset;
+  height: unset;
+}
+.repl-prompt-right-element-icon.deemphasize .bx--loading__svg circle {
+  /* scaling from 16 to 20 circle; default 240, and 300 = 240*20/16; also see index.html for 46.875=37.5*20/16 */
+  stroke-dasharray: 300;
+}
+.repl-prompt-right-element-icon.deemphasize svg {
+  display: none;
+  filter: opacity(0.875);
+}
+.repl-prompt-right-element-icon.deemphasize svg.kui--icon-ok {
+  filter: opacity(0.75) grayscale(0.375);
+}
+.repl-block.processing .repl-prompt-right-element-icon.deemphasize {
+  opacity: 1;
+}
+.repl-block.processing .repl-prompt-right-element-icon .kui--icon-processing svg {
+  filter: none;
+}
+.repl-block.processing .repl-prompt-right-element-icon.deemphasize .kui--icon-processing svg,
+.repl-block.valid-response .repl-prompt-right-element-icon.deemphasize svg.kui--icon-ok,
+.repl-block.error .repl-prompt-right-element-icon.deemphasize svg.kui--icon-error {
+  display: block;
+}
+.repl-block.processing .repl-prompt-right-element-icon .kui--icon-processing svg circle {
+  stroke: var(--color-yellow);
+}
+.repl-block .repl-prompt-right-element-icon svg path[data-icon-path="inner-path"] {
+  opacity: 1;
+  stroke: var(--color-ui-01);
+  fill: var(--color-ui-01);
+}
+.repl-block.valid-response .repl-prompt-right-element-icon svg.kui--icon-ok path:not([data-icon-path="inner-path"]) {
+  fill: var(--color-ok);
+  stroke: var(--color-ok);
+  stroke-opacity: 0.5;
+}
+.repl-block.error .repl-prompt-right-element-icon svg.kui--icon-error path:not([data-icon-path="inner-path"]) {
+  fill: var(--color-error);
+  stroke: var(--color-error);
+  stroke-opacity: 0.5;
 }
 .repl-prompt-right-elements .repl-prompt-right-element-icon:hover {
   cursor: pointer;
   opacity: 1;
-}
-.repl-prompt-right-element-icon {
-  width: 0.75em;
-  height: 0.75em;
-  border-radius: 1px / 2px;
-}
-.repl-block.valid-response .repl-prompt-right-element-icon {
-  display: block;
-  background-color: var(--color-ok);
-}
-.repl-block.error .repl-prompt-right-element-icon {
-  display: block;
-  background-color: var(--color-error);
 }
 repl.sidecar-visible .repl-block:not(.processing) .repl-prompt-right-elements,
 .repl-active .repl-prompt-right-elements {
@@ -1308,6 +1336,7 @@ code.fancy-code.hljs {
   font-size: 0.75em;
   opacity: 0.7;
   vertical-align: middle;
+  transition: color 150ms ease-in-out;
 }
 .deemphasize.deemphasize-partial {
   font-weight: 400;
@@ -3109,55 +3138,6 @@ body {
 }
 .color-base0F {
   color: var(--color-base0F);
-}
-
-@-webkit-keyframes flip {
-  0% {
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-  }
-  25% {
-    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
-    transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
-  }
-  50% {
-    transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
-    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
-  }
-  75% {
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
-    transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
-  }
-  100% {
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
-    transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
-  }
-}
-
-.repl-block.processing .repl-prompt-right-element-icon {
-  animation: 3s flip ease-in-out infinite;
-}
-@keyframes flip {
-  0% {
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-  }
-  25% {
-    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
-    transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
-  }
-  50% {
-    transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
-    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
-  }
-  75% {
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
-    transform: perspective(120px) rotateX(0deg) rotateY(-180deg);
-  }
-  100% {
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
-    transform: perspective(120px) rotateX(0deg) rotateY(-360deg);
-  }
 }
 
 @media all and (max-width: 1100px) {
