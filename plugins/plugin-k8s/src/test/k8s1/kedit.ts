@@ -83,7 +83,7 @@ const verifyYAML = (expected: object) => async (app: Application): Promise<void>
 }
 // done with clone
 
-describe('electron kedit', function(this: common.ISuite) {
+common.localDescribe('electron kedit', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

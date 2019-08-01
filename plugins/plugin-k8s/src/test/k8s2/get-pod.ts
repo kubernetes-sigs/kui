@@ -74,13 +74,14 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
     for (let idx = 0; idx < 5; idx++) {
       it(`should eventually show ready containers if we click mid-creation iter=${idx}`, async () => {
         try {
-          const selector = await cli
+          const selector: string = await cli
             .do(
               `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
               this.app
             )
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
+          await waitForGreen(this.app, selector)
           await this.app.client.waitForExist(`${selector} .clickable`)
           this.app.client.click(`${selector} .clickable`)
           await sidecar

@@ -38,7 +38,13 @@ exports.waitForGreen = async (app, selector) => {
     throw Error(`caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
   }
 
-  await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+  try {
+    await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+  } catch (err) {
+    console.log(`Creation is still yellow after ${process.env.TIMEOUT || 60000}`)
+    const text = await app.client.getText(yellowBadge)
+    console.log(`Creatation status ${text}`)
+  }
 
   await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
   return badge
@@ -55,14 +61,24 @@ exports.waitForRed = async (app, selector) => {
   const yellowBadge = `${selector} badge.yellow-background`
 
   // the green badge should disapper, wait for 5 seconds at max
-  await app.client.waitForExist(badge.replace('red', 'green'), 5000, true)
+  try {
+    await app.client.waitForExist(badge.replace('red', 'green'), 5000, true)
+  } catch (err) {
+    console.log('Deletion is still green after 5000 ms')
+  }
 
   // no green badge any more, expecting a red badge or a blinky yellow badge
   if (await app.client.isExisting(yellowNotBlinkyBadge)) {
     throw Error(`caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
   }
 
-  await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+  try {
+    await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+  } catch (err) {
+    console.log(`Deletion is still yellow after ${process.env.TIMEOUT || 60000}`)
+    const text = await app.client.getText(yellowBadge)
+    console.log(`Deletion status ${text}`)
+  }
 
   await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
   return badge

@@ -31,7 +31,7 @@ const initialContext = execSync('kubectl config current-context')
   .toString()
   .trim()
 
-describe('electron context switching', function(this: common.ISuite) {
+common.localDescribe('electron context switching', function(this: common.ISuite) {
   before(common.before(this))
   after(
     common.after(this, () => {
