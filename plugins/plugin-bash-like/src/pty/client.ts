@@ -674,7 +674,6 @@ export const doExec = (
         // relay keyboard input to the server
         let queuedInput: string
         terminal.on('key', (key: string) => {
-          console.error('!!!!!!!!!', ws.readyState, key)
           if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
             debug('queued input out back', key)
             queuedInput += key
