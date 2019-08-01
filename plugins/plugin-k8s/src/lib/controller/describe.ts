@@ -15,14 +15,13 @@
  */
 
 import * as Debug from 'debug'
-
 import { safeDump } from 'js-yaml'
 
-import { isPopup } from '@kui-shell/core/webapp/cli'
 import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-
-import createdOn from '../util/created-on'
+import { Badge } from '@kui-shell/core/webapp/views/sidecar'
+import { Table } from '@kui-shell/core/webapp/models/table'
+import { EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 
 import { FinalState } from '../model/states'
 import {
@@ -37,17 +36,7 @@ import {
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
 
-const debug = Debug('k8s/controller/describe')
-
-/** conditionally add a field, if it exists */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function addField(label: string, value: any) {
-  if (value || value === 0) {
-    if (!Array.isArray(value) || value.length > 0) {
-      this[label] = value
-    }
-  }
-}
+const debug = Debug('k8s/controller/summary')
 
 /**
  * Render a describe summary
@@ -56,93 +45,23 @@ function addField(label: string, value: any) {
 const renderDescribe = async (
   command: string,
   getCmd: string,
-  describeCmd: string,
+  summaryCmd: string,
   resource: KubeResource,
-  parsedOptions
+  summary: Record<string, string>,
+  parsedOptions: ParsedOptions
 ) => {
-  debug('renderDescribe', command, resource)
+  debug('renderDescribe', command, resource, summary)
 
-  const { spec = {} } = resource
   const metadata: KubeMetadata = resource.metadata || new DefaultKubeMetadata()
   const status: KubeStatus = resource.status || new DefaultKubeStatus()
 
   const output = parsedOptions.o || parsedOptions.output || 'yaml'
-  const name = metadata.name
-  const ns = metadata.namespace
-
-  const summary = {}
-  const add = addField.bind(summary)
-
-  if (isPopup()) {
-    // popup mode may not display name and namespace in header
-    add('Name', name)
-    add('Namespace', ns)
-  }
-
-  // add('Kind', resource.kind)
-  add('Priority', spec.priority)
-  add('Node', spec.nodeName && spec.hostIP && `${spec.nodeName}/${spec.hostIP}`)
-  add('Start Time', status.startTime)
-  add('Labels', metadata.labels)
-  add('Annotations', metadata.annotations)
-  add('Selectors', spec.selector)
-  add('Type', spec.type)
-  add('Status', status.phase)
-  add(
-    'Controlled By',
-    metadata.ownerReferences &&
-      metadata.ownerReferences.length === 1 &&
-      `${metadata.ownerReferences[0].kind}/${metadata.ownerReferences[0].name}`
-  )
-
-  // Ingress
-  add('Address', status.loadBalancer && status.loadBalancer.ingress)
-  add('Rules', spec.rules)
-
-  // configmaps
-  add('Data', resource.data)
-
-  // services
-  add('IP', spec.clusterIP)
-  add('Ports', spec.ports)
-  add('Session Affinity', spec.sessionAffinity)
-
-  // deployments
-  add(
-    'Replicas',
-    status.replicas && {
-      desired: status.replicas || 0,
-      available: status.availableReplicas || 0,
-      ready: status.readyReplicas || 0,
-      updated: status.updatedReplicas || 0,
-      unavailable: status.unavailableReplicas || 0
-    }
-  )
-  add('StrategyType', spec.strategy && spec.strategy.type)
-  add('Strategy', spec.strategy)
-  // pods
-  add('IP', status.podIP)
-  // 'Init Containers': spec.initContainers,
-  // Containers: spec.containers,
-  // Conditions: status.conditions,
-  // Volumes: spec.volumes,
-  add('QoS Class', status.qosClass)
-  add(
-    'Tolerations',
-    (spec.tolerations || []).map(({ key, value, effect, tolerationSeconds }) => {
-      if (!effect) {
-        return { key, value }
-      } else {
-        return { tolerate: key, effect, for: `${tolerationSeconds}s` }
-      }
-    })
-  )
 
   const modes: SidecarMode[] = [
     {
       mode: 'summary',
       defaultMode: true,
-      direct: describeCmd,
+      direct: summaryCmd,
       execOptions: { delegationOk: true },
       leaveBottomStripeAlone: true
     }
@@ -166,45 +85,27 @@ const renderDescribe = async (
   })
   modes.push(deleteResourceButton())
 
-  const badges = []
-  // badges.push(metadata && metadata.generation && `Generation ${metadata.generation}`)
+  const badges: Badge[] = []
   badges.push(metadata && metadata.labels && metadata.labels.app)
-
-  if (Object.keys(summary).length === 0) {
-    debug('oops, we created an empty summary')
-
-    // smash in the entire resource
-    Object.assign(summary, resource)
-
-    // remove the "raw" mode, as it will be equivalent to the default "summary" mode
-    modes.splice(modes.findIndex(_ => _.mode === 'raw'), 1)
-  }
 
   // some resources have a notion of duration
   const startTime = resource && status && status.startTime && new Date(status.startTime)
   const endTime = resource && status && status.completionTime && new Date(status.completionTime)
   const duration = startTime && endTime && endTime.getTime() - startTime.getTime()
 
-  // some resources have a notion of version
-  const version = resource && metadata && metadata.labels && metadata.labels.version
-
   const description = {
     type: 'custom',
     isEntity: true,
-    name,
-    packageName: ns,
-    version,
     duration,
     badges: badges.filter(x => x),
-    contentType: output,
-    prettyType: resource.kind,
-    subtext: createdOn(resource),
+    createdOnString: resource.status && resource.status.startTime ? 'Started on ' : 'Created on ',
     toolbarText: {
       type: 'info',
       text: 'You are in read-only view mode'
     },
     resource,
     modes,
+    contentType: output,
     content: output === 'json' ? summary : safeDump(summary).trim()
   }
   debug('description', description, resource)
@@ -213,38 +114,45 @@ const renderDescribe = async (
 }
 
 /**
+ * Turn a one-row Table into a Map
+ *
+ */
+function toMap(table: Table): Record<string, string> {
+  return table.body.reduce(
+    (map, row) => {
+      map[row.key] = row.name
+
+      row.attributes.forEach(({ key, value }) => {
+        map[key] = value
+      })
+
+      return map
+    },
+    {} as Record<string, string>
+  )
+}
+
+/**
  * kubectl describe
  *
  */
-const describe = async ({ command, parsedOptions, execOptions }) => {
+const describe = async ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
   const noDelegationPlease = Object.assign({}, execOptions)
   delete noDelegationPlease.delegationOk
 
-  // in case of failure, we fall back to executing the original command
-  const fallback = () => $$(command, undefined, undefined, noDelegationPlease)
+  const getCmd = command.replace(/summary/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
+  const summaryCmd = command.replace(/get/, 'summary').replace(/(-o|--output)[= ](yaml|json)/, '')
+  debug('summaryCmd', summaryCmd)
+  debug('getCmd', getCmd)
 
-  try {
-    const getCmd = command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
+  const [resource, summary] = await Promise.all([
+    $(getCmd, noDelegationPlease) as Promise<KubeResource>,
+    $$(`${getCmd} -o wide`, undefined, undefined, noDelegationPlease).then(toMap)
+  ])
+  debug('resource', resource)
+  debug('summary', summary)
 
-    const describeCmd = command.replace(/get/, 'describe').replace(/(-o|--output)[= ](yaml|json)/, '')
-
-    debug('describeCmd', describeCmd)
-    debug('getCmd', getCmd)
-
-    const resource: KubeResource = await $(`${getCmd} -o json`, noDelegationPlease)
-
-    const response = await renderDescribe(command, getCmd, describeCmd, resource, parsedOptions)
-    if (!response || !response.content || response.content === '{}' || Object.keys(response.content).length === 0) {
-      debug('the describe summary is empty, falling back to base view')
-      return fallback()
-    } else {
-      return response
-    }
-  } catch (err) {
-    // failsafe in case we got too clever
-    console.error('error trying to be clever with describe', err)
-    return fallback()
-  }
+  return renderDescribe(command, getCmd, summaryCmd, resource, summary, parsedOptions)
 }
 
 export default describe

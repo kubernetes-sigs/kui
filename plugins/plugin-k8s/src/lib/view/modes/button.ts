@@ -34,10 +34,15 @@ interface Parameters {
   fn: Renderer
 }
 export const renderButton = async (tab: Tab, { overrides, fn }: Parameters, args): Promise<KubeResource> => {
-  const { prettyType: kind = '-f', name, resourceName = name, packageName, namespace = packageName } = args
+  const resource = args.resource || args
+  const { prettyType, kind = prettyType || '-f', metadata, name, resourceName, packageName, namespace: ns } = resource
+
+  const namespace = (metadata && metadata.namespace) || ns
 
   const response: KubeResource = await repl.pexec(
-    `kubectl ${overrides.mode} ${kind} ${resourceName} ${namespace ? '-n ' + namespace : ''}`,
+    `kubectl ${overrides.mode} ${kind} ${resourceName || name || (metadata && metadata.name)} ${
+      namespace ? '-n ' + namespace : ''
+    }`,
     { noStatus: !!fn, tab }
   )
   return fn ? fn(response) : response

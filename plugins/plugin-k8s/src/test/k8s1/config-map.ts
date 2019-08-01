@@ -27,7 +27,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe('electron configmap', function(this: common.ISuite) {
+describe(`electron configmap ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -75,6 +75,7 @@ describe('electron configmap', function(this: common.ISuite) {
             .then(sidecar.expectShowing(name))
 
           if (content) {
+            await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
             await expectContent(content)
           }
         } catch (err) {
@@ -117,7 +118,7 @@ describe('electron configmap', function(this: common.ISuite) {
 
     listAndClick('yoyo')
     listAndClick('momo', {
-      Data: {
+      data: {
         hello: 'world'
       }
     })

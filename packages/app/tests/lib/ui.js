@@ -595,8 +595,12 @@ exports.expectYAML = (struct1, subset = false, failFast = true) => string => {
     }
     return ok
   } catch (err) {
-    console.error('Error comparing subset for actual value=' + string)
-    throw err
+    if (failFast) {
+      return false
+    } else {
+      console.error('Error comparing subset for actual value=' + string)
+      throw err
+    }
   }
 }
 exports.expectYAMLSubset = (struct1, failFast = true) => exports.expectYAML(struct1, true, failFast)

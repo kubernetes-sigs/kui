@@ -42,19 +42,11 @@ describe('electron namespace', function(this: common.ISuite) {
         .then(res => res.value)
     }
 
-    /** expect to see some familiar bits of a pod in the editor under the raw tab */
-    const expectEditorText = () => {
+    /** expect to see some familiar bits of a pod in the editor under the Describe tab */
+    const expectDescribeText = (name: string) => () => {
       return this.app.client.waitUntil(async () => {
-        const ok: boolean = await getText().then(
-          expectYAMLSubset(
-            {
-              Status: 'Active'
-            },
-            false
-          )
-        )
-
-        return ok
+        const actualText = await getText()
+        return new RegExp(`Name:\\s+${name}`).test(actualText)
       })
     }
 
@@ -93,8 +85,8 @@ describe('electron namespace', function(this: common.ISuite) {
           .then(cli.expectJustOK)
           .then(sidecar.expectOpen)
           .then(sidecar.expectShowing(name))
-          .then(sidecar.expectMode(defaultModeForGet))
-          .then(expectEditorText)
+          .then(sidecar.expectMode('result'))
+          .then(expectDescribeText(name))
           .catch(common.oops(this))
       })
     }
