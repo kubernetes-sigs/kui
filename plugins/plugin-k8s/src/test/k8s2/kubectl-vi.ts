@@ -36,15 +36,21 @@ common.localDescribe('kubectl exec vi', function(this: common.ISuite) {
       .catch(common.oops(this))
   })
   it(`should exec vi commands through pty`, async () => {
-    return cli
-      .do(`kubectl exec -it ${podName2} vi`, this.app)
-      .then(() => this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`, 5000))
-      .then(() => {
-        this.app.client.keys(':q')
-        this.app.client.keys(keys.ENTER)
-      })
-      .then(() => cli.expectBlank)
-      .catch(common.oops(this))
+    try {
+      const res = cli.do(`kubectl exec -it ${podName2} vi`, this.app)
+      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`, 5000)
+
+      await this.app.client.keys(':wq')
+      await this.app.client.keys(keys.ENTER)
+
+      await this.app.client.keys(':q')
+      await this.app.client.keys(keys.ENTER)
+
+      // expect a clean exit, i.e. no error output on the console
+      await res.then(cli.expectBlank)
+    } catch (err) {
+      common.oops(this)(err)
+    }
   })
 
   deleteNS(this, ns)
