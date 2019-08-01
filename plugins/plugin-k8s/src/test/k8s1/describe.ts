@@ -27,7 +27,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe('electron describe', function(this: common.ISuite) {
+describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -78,19 +78,9 @@ describe('electron describe', function(this: common.ISuite) {
 
       // expect to see some familiar bits of a pod in the editor under the raw tab
       return ctx.app.client.waitUntil(async () => {
-        const ok: boolean = await getText(ctx).then(
-          expectYAMLSubset(
-            {
-              Status: 'Running',
-              Labels: {
-                name: 'nginx'
-              }
-            },
-            false
-          )
-        )
-
-        return ok
+        const name = 'nginx'
+        const actualText = await getText(ctx)
+        return new RegExp(`NAME:\\s+${name}`).test(actualText)
       })
     }
 
@@ -98,7 +88,7 @@ describe('electron describe', function(this: common.ISuite) {
 
     it(`should fail with 404 for unknown resource type via ${kubectl}`, () => {
       const fakeType = 'yoyoyo1334u890724'
-      return cli.do(`${kubectl} describe ${fakeType} productPage`, this.app).then(cli.expectError(404))
+      return cli.do(`${kubectl} summary ${fakeType} productPage`, this.app).then(cli.expectError(404))
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
@@ -112,9 +102,9 @@ describe('electron describe', function(this: common.ISuite) {
         .catch(common.oops(this))
     })
 
-    it(`should describe that pod via ${kubectl}`, () => {
+    it(`should summarize that pod via ${kubectl}`, () => {
       return cli
-        .do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
+        .do(`${kubectl} summary pod nginx -n ${ns}`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectMode(defaultModeForGet))
@@ -122,7 +112,7 @@ describe('electron describe', function(this: common.ISuite) {
         .catch(common.oops(this))
     })
 
-    it(`should flip around on describe tabs via ${kubectl}`, async () => {
+    it(`should flip around on summary tabs via ${kubectl}`, async () => {
       try {
         // flip back and forth a few times
         await testRawTab(this)
@@ -136,7 +126,7 @@ describe('electron describe', function(this: common.ISuite) {
 
     it('should delete the pod via sidecar deletion button', () => {
       return cli
-        .do(`${kubectl} describe pod nginx -n ${ns}`, this.app)
+        .do(`${kubectl} summary pod nginx -n ${ns}`, this.app)
         .then(async res => {
           await cli.expectJustOK(res)
           await this.app.client.click(selectors.BY_NAME('nginx')) // click nginx in the table and expect a new repl output with sidecar open

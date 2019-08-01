@@ -160,7 +160,7 @@ function findIndex(A: string[], pattern: RegExp, startIdx: number): number {
  * @return undefined if we don't have any log entries
  *
  */
-const parseZapr = (raw: string, execOptions: ExecOptions): ZaprEntry[] => {
+const parseZapr = (raw: string): ZaprEntry[] => {
   const pattern = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(DEBUG|INFO|ERROR)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/m
 
   const records = raw.split(pattern).filter(x => x !== '\n')
@@ -349,7 +349,7 @@ const notEmpty = (_: ZaprEntry) => _.timestamp || _.rest || _.origin || _.provid
  */
 export const formatLogs = (raw: string, execOptions: ExecOptions, options: Options = { asHTML: true }) => {
   const logEntries: ZaprEntry[] =
-    parseZapr(raw, execOptions) || parseIstio(raw, execOptions) || parseCloudLens(raw, execOptions, options)
+    parseZapr(raw) || parseIstio(raw, execOptions) || parseCloudLens(raw, execOptions, options)
   debug('logEntries', logEntries)
 
   if (!options.asHTML) {
