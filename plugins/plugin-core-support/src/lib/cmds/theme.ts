@@ -244,7 +244,7 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
   if (theme) {
     debug('switching to persisted theme choice')
     try {
-      switchTo(theme, webContents)
+      await switchTo(theme, webContents)
     } catch (err) {
       debug('error switching to persisted theme choice, using default')
       switchTo(getDefaultTheme(isDarkMode), webContents)
