@@ -22,7 +22,7 @@ import { dirname } from 'path'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
-describe('kubectl exec vi', function(this: common.ISuite) {
+common.localDescribe('kubectl exec vi', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
   const ns: string = createNS()
