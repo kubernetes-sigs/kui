@@ -38,7 +38,7 @@ describe('kubectl exec vi', function(this: common.ISuite) {
   it(`should exec vi commands through pty`, async () => {
     return cli
       .do(`kubectl exec -it ${podName2} vi`, this.app)
-      .then(() => this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`))
+      .then(() => this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`, 5000))
       .then(() => {
         this.app.client.keys(':q')
         this.app.client.keys(keys.ENTER)
