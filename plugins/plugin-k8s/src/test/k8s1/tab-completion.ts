@@ -30,18 +30,18 @@ describe('Tab completion for kubectl get', function(this: ISuite) {
   synonyms.forEach(kubectl => {
     // use a common prefix, so that we can test tab completion of
     // namespace names
-    const commonPrefix = 'foo-'
-    const uniquePrefix = 'blammmmmo-' // something prefix-distinct from the first two
-    const ns: string = createNS(`${commonPrefix}aaaa-`)
-    const ns2: string = createNS(`${commonPrefix}bbbb-`) // we want ns to be lexicographically < ns2
-    const ns3: string = createNS(uniquePrefix)
+    const commonPrefix: string = createNS()
+    const uniquePrefix: string = createNS()
+    const ns = `${commonPrefix}-aaaa`
+    const ns2 = `${commonPrefix}-bbbb` // we want ns to be lexicographically < ns2
+    const ns3 = `${uniquePrefix}-cccc` // something prefix-distinct from the first two
 
     allocateNS(this, ns)
     allocateNS(this, ns2)
     allocateNS(this, ns3)
 
     it(`should tab complete unique namespace`, () => {
-      return tabby(this.app, `k get pods -n ${uniquePrefix.charAt(0)}`, `k get pods -n ${ns3}`, false) // it's ok to have an error, as we don't have any pods, yet
+      return tabby(this.app, `k get pods -n ${uniquePrefix}`, `k get pods -n ${ns3}`, false) // it's ok to have an error, as we don't have any pods, yet
     })
 
     it(`should tab complete namespaces not unique`, () => {

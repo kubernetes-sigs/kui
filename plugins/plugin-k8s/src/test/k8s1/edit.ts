@@ -28,7 +28,7 @@ import {
 
 const kubectl = 'kubectl'
 
-describe('electron kubectl edit', function(this: common.ISuite) {
+common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

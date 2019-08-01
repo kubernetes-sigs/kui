@@ -20,7 +20,7 @@ import * as assert from 'assert'
 
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
-describe('helm commands', function(this: common.ISuite) {
+common.localDescribe('helm commands', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
