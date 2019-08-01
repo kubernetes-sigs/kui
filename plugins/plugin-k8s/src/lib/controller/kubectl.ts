@@ -290,7 +290,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     if (shouldSendToPTY(argv)) {
       execOptions.exec = 'qexec'
       debug('redirect exec command to PTY')
-      const commandToPTY = rawCommand.replace(/^k(\s)/, 'kubectl ')
+      const commandToPTY: string = rawCommand.replace(/^k(\s)/, 'kubectl ')
       repl
         .qexec(`! ${commandToPTY}`, block, undefined, execOptions)
         .then(resolve)
