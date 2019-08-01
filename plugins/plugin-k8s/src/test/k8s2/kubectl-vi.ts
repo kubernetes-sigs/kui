@@ -17,10 +17,12 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, keys, selectors } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-
-import { dirname } from 'path'
+import { dirname, join } from 'path'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
+
+/** we have a custom vimrc, to make sure INSERT shows up */
+const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
 
 common.localDescribe('kubectl exec vi', function(this: common.ISuite) {
   before(common.before(this))
@@ -35,6 +37,14 @@ common.localDescribe('kubectl exec vi', function(this: common.ISuite) {
       .then(selector => waitForGreen(this.app, selector))
       .catch(common.oops(this))
   })
+
+  it(`should copy the vimrc to the current container`, () => {
+    return cli
+      .do(`kubectl cp ${vimrc} ${ns}/${podName2}:.vimrc`, this.app)
+      .then(cli.expectOK)
+      .catch(common.oops(this))
+  })
+
   it(`should exec vi commands through pty`, async () => {
     try {
       const res = cli.do(`kubectl exec -it ${podName2} vi`, this.app)
@@ -46,7 +56,6 @@ common.localDescribe('kubectl exec vi', function(this: common.ISuite) {
       await this.app.client.keys(':q')
       await this.app.client.keys(keys.ENTER)
 
-      // expect a clean exit, i.e. no error output on the console
       await res.then(cli.expectBlank)
     } catch (err) {
       common.oops(this)(err)
