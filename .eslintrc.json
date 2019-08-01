@@ -16,6 +16,12 @@
   "rules": {
     "no-undef": "off",
     "import/first": "off",
+    "@typescript-eslint/no-object-literal-type-assertion": [
+      "error",
+      {
+        "allowAsParameter": true
+      }
+    ],
     "@typescript-eslint/camelcase": [
       "error",
       {

@@ -47,6 +47,7 @@ interface CreateSpec {
   name: string
   kind: string
   ns?: string
+  status: string
 }
 
 const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
@@ -63,13 +64,15 @@ const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
 
     const waitForDescribeContent = async () => {
       await waitForIcon()
-      await textExists(`Name: ${name}`)
 
-      if (!/namespace/i.test(kind)) {
-        await textExists(`Namespace: ${ns}`)
-      } else {
-        await textExists('Status: Active')
+      const textExists = async (key: string, value: string) => {
+        return this.app.client.waitUntil(async () => {
+          const actualText = await this.app.client.getText(`${selectors.SIDECAR} .monaco-editor .view-lines`)
+          return new RegExp(`${key.toUpperCase()}:\\s+${value}`).test(actualText)
+        })
       }
+
+      return Promise.all([textExists('Name', name), textExists('Status', spec.status)])
     }
 
     const waitForRawContent = async () => {
@@ -122,7 +125,7 @@ common.localDescribe(`popup create pod creating namespace ${ns1}`, function(this
   before(common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
   after(common.after(this))
 
-  waitForCreate.bind(this)({ name: ns1, kind: 'Namespace' })
+  waitForCreate.bind(this)({ name: ns1, kind: 'Namespace', status: 'Active' })
 })
 
 common.localDescribe(`popup create pod creating pod in ${ns1}`, function(this: common.ISuite) {
@@ -140,14 +143,14 @@ common.localDescribe(`popup create pod creating pod in ${ns1}`, function(this: c
   )
   after(common.after(this))
 
-  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1 })
+  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
 })
 
 common.localDescribe(`popup create pod creating namespace ${ns2}`, function(this: common.ISuite) {
   before(common.before(this, { popup: [kubectl, 'create', 'ns', ns2] }))
   after(common.after(this))
 
-  waitForCreate.bind(this)({ name: ns2, kind: 'Namespace' })
+  waitForCreate.bind(this)({ name: ns2, kind: 'Namespace', status: 'Active' })
 })
 
 common.localDescribe(`popup create pod creating pod in ${ns2}`, function(this: common.ISuite) {
@@ -165,7 +168,7 @@ common.localDescribe(`popup create pod creating pod in ${ns2}`, function(this: c
   )
   after(common.after(this))
 
-  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2 })
+  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2, status: 'Running' })
 })
 
 common.localDescribe(`popup create pod deleting pod in ${ns1}`, function(this: common.ISuite) {

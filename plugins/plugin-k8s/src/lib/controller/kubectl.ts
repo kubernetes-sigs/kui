@@ -300,10 +300,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       (!isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
       isKube &&
-      ((verb === 'describe' || (verb === 'get' && (output === 'yaml' || output === 'json'))) &&
+      ((verb === 'summary' || (verb === 'get' && (output === 'yaml' || output === 'json'))) &&
         (execOptions.type !== ExecType.Nested || execOptions.delegationOk))
     ) {
-      debug('delegating to describe', execOptions.delegationOk, ExecType[execOptions.type].toString())
+      debug('delegating to summary provider', execOptions.delegationOk, ExecType[execOptions.type].toString())
       const describeImpl = (await import('./describe')).default
       return describeImpl(opts)
         .then(resolve)
@@ -610,7 +610,8 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           {
             mode: 'result',
             direct: rawCommand,
-            label: output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
+            label:
+              verb === 'describe' ? 'describe' : output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
             defaultMode: true
           }
         ]
@@ -664,6 +665,15 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
             })
           )
           modes.push(deleteResourceButton())
+        } else if (verb === 'describe') {
+          const getCmd = opts.command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
+          modes.push({
+            mode: 'raw',
+            label: 'YAML',
+            direct: `${getCmd} -o yaml`,
+            order: 999,
+            leaveBottomStripeAlone: true
+          })
         }
 
         const content = result
@@ -678,7 +688,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
         const record = {
           type: 'custom',
-          isEntity: yaml && yaml.metadata !== undefined,
+          isEntity: verb === 'describe' || (yaml && yaml.metadata !== undefined),
           name: entity || verb,
           packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || '',
           namespace: options.namespace || options.n,
