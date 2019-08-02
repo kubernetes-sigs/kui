@@ -385,7 +385,7 @@ export default async (commandTree: CommandRegistrar) => {
                 '<div style="display: flex;justify-content:flex-end;align-items:baseline"><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform; cursor:pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z" stroke="white" fill="white"></path></svg></div>'
               closeButton.classList.add('screenshot-close-botton')
 
-              // go away after 10 seconds
+              // go away after SECONDS_TILL_AUTO_CLOSE seconds
               let timeleft = SECONDS_TILL_AUTO_CLOSE
               snapDom.kuiSnapshotTimer = setInterval(() => {
                 if (timeleft <= 0) {
@@ -398,11 +398,6 @@ export default async (commandTree: CommandRegistrar) => {
                 ) as HTMLElement).innerText = `Closing in ${timeleft}`
                 timeleft -= 1
               }, 1000)
-
-              // temporarily disable the repls
-              if (getCurrentPrompt(tab)) {
-                getCurrentPrompt(tab).readOnly = true
-              }
 
               // to capture the Escape key event
               const hiddenInput = document.createElement('input')
