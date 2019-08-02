@@ -168,6 +168,9 @@ class ProxyEvaluator implements ReplEval {
                       if (code !== undefined && code !== 200) {
                         debug('rejecting', response.response)
                         reject(response.response)
+                      } else if (ElementMimic.isFakeDom(response.response)) {
+                        debug('rendering fakedom', response.response)
+                        resolve(renderDom(response.response))
                       } else if (ElementMimic.isFakeDom(response.response.content)) {
                         debug('rendering fakedom content', response.response.content)
                         response.response.content = renderDom(response.response.content)
