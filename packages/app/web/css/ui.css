@@ -2808,7 +2808,6 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 .oops .oops-text-on-oops,
 .red-text {
   color: var(--color-error);
-  font-weight: 500;
 }
 .red-text > svg path {
   fill: var(--color-error);
