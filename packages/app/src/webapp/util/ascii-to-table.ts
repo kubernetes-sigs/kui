@@ -43,8 +43,6 @@ const split = (str: string, splits: number[], headerCells?: string[]): Pair[] =>
  *
  */
 export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingString?: string }[] => {
-  debug('preprocessTable', raw)
-
   return raw.map(table => {
     const header = table.substring(0, table.indexOf('\n')).replace(/\t/g, ' ')
 
@@ -52,7 +50,6 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       .split(/(\t|\s\s)+\s?/)
       .filter(x => x && !x.match(/(\t|\s\s)/))
       .map(_ => _.trim())
-    debug('headerCells', headerCells)
 
     // now we scan the header row to determine the column start indices
     const columnStarts: number[] = []
@@ -72,7 +69,9 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       jdx = newJdx + headerCells[idx].length
     }
 
-    debug('columnStarts', columnStarts, headerCells)
+    if (columnStarts.length > 1) {
+      debug('columnStarts', columnStarts, headerCells)
+    }
 
     // do we have just tiny columns? if so, it's not worth tabularizing
     const tinyColumns = columnStarts.reduce((yup, start, idx) => {

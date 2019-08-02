@@ -23,6 +23,7 @@ import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import * as path from 'path'
+
 const debug = Debug('plugins/core-support/zoom')
 
 /**
@@ -119,7 +120,6 @@ const listener = (event: KeyboardEvent): void => {
   if (event.shiftKey) {
     // if the shift key include in the chord, then this does not
     // represent a zoom event
-    debug('ignoring due to shift key', char)
     return
   }
 

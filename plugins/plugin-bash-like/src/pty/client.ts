@@ -743,7 +743,6 @@ export const doExec = (
         // will always receive a `refresh` event when the animation
         // frame is done. see https://github.com/IBM/kui/issues/1272
         terminal.on('refresh', (evt: { start: number; end: number }) => {
-          debug('refresh', evt.start, evt.end)
           resizer.hideTrailingEmptyBlanks()
           doScroll()
           notifyOfWriteCompletion()
@@ -808,7 +807,6 @@ export const doExec = (
             if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
               try {
                 const tables = preprocessTable(stripClean(raw).split(/^(?=NAME|Name|ID|\n\*)/m)).filter(x => x)
-                debug('tables', tables)
 
                 if (tables && tables.length > 0) {
                   const tableRows = tables.filter(_ => _.rows !== undefined).flatMap(_ => _.rows)
