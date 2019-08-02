@@ -64,11 +64,12 @@ const asciiToOptionsTable = (rows: string[]): Pair[] => {
 }
 
 export const formatUsage = (command: string, str: string, options: Options = new DefaultOptions()): UsageError => {
-  debug('raw', str)
   if (!matcher.test(str)) {
-    debug('this does not look like a ASCII usage model')
+    // this does not look like a ASCII usage model
     return
   }
+
+  debug('raw', str)
 
   const rows = `\n${str}`
     .split(splitter)
