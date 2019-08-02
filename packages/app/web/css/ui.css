@@ -2734,7 +2734,7 @@ body a:hover:not(.plain-anchor) {
 .dragover .ok-text-on-dragover {
   color: var(--color-ok);
 }
-.green-text > svg path {
+.green-text svg path {
   fill: var(--color-ok);
 }
 
@@ -2809,13 +2809,13 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 .red-text {
   color: var(--color-error);
 }
-.red-text > svg path {
+.red-text svg path {
   fill: var(--color-error);
 }
 .yellow-text {
   color: var(--color-support-03-darker);
 }
-.yellow-text > svg path {
+.yellow-text svg path {
   fill: var(--color-support-03-darker);
 }
 .cyan-text {
