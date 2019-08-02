@@ -111,25 +111,6 @@ if [ -n "$LAYERS" ]; then
     fi
 
     if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
-        # execute WAIT_LAYERS first; do not run MOCHA_TARGETS in parrell
-        if [ -n "$WAIT_LAYERS" ]; then
-          for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
-            echo "mocha target: $MOCHA_RUN_TARGET"
-            if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
-              echo "skip travis osx Webpack test since travis doesn't support docker on osx"
-            else
-              export MOCHA_RUN_TARGET
-              echo "running these non-headless layers and wait: $WAIT_LAYERS"
-              (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
-
-              children+=("$!")
-              childrenNames+=("mocha wait layers")
-              childrenStartTimes+=("$(date +%s)")
-            fi
-          done
-        fi
-
-        # execute LAYERS; run MOCHA_TARGETS in parrell
         PORT_OFFSET_BASE=1
         for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
           echo "mocha target: $MOCHA_RUN_TARGET"
@@ -140,8 +121,18 @@ if [ -n "$LAYERS" ]; then
             export MOCHA_RUN_TARGET
             export PORT_OFFSET_BASE
 
-            echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-            (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
+            if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$KUI_USE_PROXY" == "true" ]; then
+               # for now, we only test k8s2 to give us minimal proxy guards
+               (cd packages/tests && ./bin/runMochaLayers.sh k8s2) &
+            else
+              if [ -n "$WAIT_LAYERS" ]; then
+                  echo "running these non-headless layers and wait: $WAIT_LAYERS"
+                  (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
+              fi
+
+              echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
+              (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
+            fi
 
             children+=("$!")
             childrenNames+=("mocha layers")
