@@ -40,7 +40,7 @@ common.localDescribe('kubectl exec vi', function(this: common.ISuite) {
 
   it(`should copy the vimrc to the current container`, () => {
     return cli
-      .do(`kubectl cp ${vimrc} ${ns}/${podName2}:.vimrc`, this.app)
+      .do(`kubectl cp ${vimrc} ${ns}/${podName2}:./.vimrc`, this.app)
       .then(cli.expectOK)
       .catch(common.oops(this))
   })
