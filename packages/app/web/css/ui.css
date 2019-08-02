@@ -283,58 +283,84 @@ repl .repl-block.using-custom-prompt .repl-input input {
   flex: 0;
   white-space: nowrap;
 }
-.repl .repl-prompt-right-element-icon.deemphasize {
+.kui--repl-prompt-buttons {
+  margin-right: 1em;
+}
+.kui--repl-prompt-buttons .graphical-icon {
+  opacity: 0.0375;
+  transition: opacity 150ms ease-in-out;
+}
+.repl-block .repl-input:hover .kui--repl-prompt-buttons .graphical-icon {
+  opacity: 0.25;
+}
+.repl-block .repl-input .kui--repl-prompt-buttons .graphical-icon:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.repl-input .kui--repl-prompt-buttons .graphical-icon:hover svg path {
+  fill: var(--color-text-01);
+}
+.repl .repl-prompt-right-element-status-icon.deemphasize {
   margin-left: 0.5em;
   font-size: 0.875em; /* see the comment for repl-input re: min-height; that should match this */
   opacity: 1;
   transition: all 300ms ease-in-out;
 }
-.repl-prompt-right-element-icon.deemphasize .bx--loading {
+.repl-prompt-right-element-status-icon.deemphasize .bx--loading {
   width: unset;
   height: unset;
 }
-.repl-prompt-right-element-icon.deemphasize .bx--loading__svg circle {
+.repl-prompt-right-element-status-icon.deemphasize .bx--loading__svg circle {
   /* scaling from 16 to 20 circle; default 240, and 300 = 240*20/16; also see index.html for 46.875=37.5*20/16 */
   stroke-dasharray: 300;
 }
-.repl-prompt-right-element-icon.deemphasize svg {
+.repl-block:hover .repl-prompt-right-element-status-icon.deemphasize svg {
+  filter: opacity(0.75) grayscale(0.125);
+}
+.repl-prompt-right-element-status-icon.deemphasize svg {
   display: none;
-  filter: opacity(0.875);
+  filter: opacity(0.75) grayscale(0.5);
+  transition: filter 150ms ease-in-out;
 }
-.repl-prompt-right-element-icon.deemphasize svg.kui--icon-ok {
-  filter: opacity(0.75) grayscale(0.375);
+.repl-block:hover .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
+  filter: grayscale(0.25);
 }
-.repl-block.processing .repl-prompt-right-element-icon.deemphasize {
+.repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
+  filter: grayscale(0.5);
+}
+.repl-block.processing .repl-prompt-right-element-status-icon.deemphasize {
   opacity: 1;
 }
-.repl-block.processing .repl-prompt-right-element-icon .kui--icon-processing svg {
+.repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg {
   filter: none;
 }
-.repl-block.processing .repl-prompt-right-element-icon.deemphasize .kui--icon-processing svg,
-.repl-block.valid-response .repl-prompt-right-element-icon.deemphasize svg.kui--icon-ok,
-.repl-block.error .repl-prompt-right-element-icon.deemphasize svg.kui--icon-error {
+.repl-block.processing .repl-prompt-right-element-status-icon.deemphasize .kui--icon-processing svg,
+.repl-block.valid-response .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-ok,
+.repl-block.error .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
   display: block;
 }
-.repl-block.processing .repl-prompt-right-element-icon .kui--icon-processing svg circle {
+.repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle {
   stroke: var(--color-yellow);
 }
-.repl-block .repl-prompt-right-element-icon svg path[data-icon-path="inner-path"] {
+.repl-block .repl-prompt-right-element-status-icon svg path[data-icon-path="inner-path"] {
   opacity: 1;
   stroke: var(--color-ui-01);
   fill: var(--color-ui-01);
 }
-.repl-block.valid-response .repl-prompt-right-element-icon svg.kui--icon-ok path:not([data-icon-path="inner-path"]) {
+.repl-block.valid-response
+  .repl-prompt-right-element-status-icon
+  svg.kui--icon-ok
+  path:not([data-icon-path="inner-path"]) {
   fill: var(--color-ok);
   stroke: var(--color-ok);
   stroke-opacity: 0.5;
 }
-.repl-block.error .repl-prompt-right-element-icon svg.kui--icon-error path:not([data-icon-path="inner-path"]) {
+.repl-block.error .repl-prompt-right-element-status-icon svg.kui--icon-error path:not([data-icon-path="inner-path"]) {
   fill: var(--color-error);
   stroke: var(--color-error);
   stroke-opacity: 0.5;
 }
-.repl-prompt-right-elements .repl-prompt-right-element-icon:hover {
-  cursor: pointer;
+.repl-prompt-right-elements .repl-prompt-right-element-status-icon:hover {
   opacity: 1;
 }
 repl.sidecar-visible .repl-block:not(.processing) .repl-prompt-right-elements,
@@ -2133,7 +2159,7 @@ body.subwindow .sidecar-full-screen sidecar .sidecar-header .entity-name-line {
 body.subwindow .sidecar-full-screen sidecar .sidecar-header .action-content #version {
   min-height: 20px;
 }
-body.subwindow .repl-block.processing .repl-prompt-right-element-icon {
+body.subwindow .repl-block.processing .repl-prompt-right-element-status-icon {
   font-size: 3em;
 }
 

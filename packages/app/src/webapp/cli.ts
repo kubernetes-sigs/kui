@@ -388,7 +388,7 @@ export const setStatus = (block: HTMLElement, status: string) => {
     element('.repl-prompt-timestamp', block).innerText = new Date().toLocaleTimeString()
 
     // screenshot click handler
-    element('.repl-prompt-right-element-icon', block).onclick = async event => {
+    element('.kui--repl-prompt-buttons--screenshot', block).onclick = async event => {
       // intercept repl's scroll to bottom behavior
       event.stopPropagation()
 
