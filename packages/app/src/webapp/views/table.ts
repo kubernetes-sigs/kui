@@ -290,6 +290,53 @@ const registerWatcher = (
 }
 
 /**
+ * Replace fontawesome names with svgs
+ *
+ */
+function formatIcon(fontawesome: string) {
+  if (/fa-check$/.test(fontawesome)) {
+    // the first svg is radio-checked; the second is
+    // radio-unchecked; we will use css to swap between the two,
+    // governed by either :hover or .selected-row
+    const icon1 = document.createElement('i')
+    const icon2 = document.createElement('i')
+    icon1.innerHTML =
+      '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path><path d="M16 10a6 6 0 1 0 6 6 6 6 0 0 0-6-6z"></path></svg>'
+    icon2.innerHTML =
+      '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path></svg>'
+    icon1.classList.add('kui--radio-checked')
+    icon2.classList.add('kui--radio-unchecked')
+
+    const iconContainer = document.createElement('span')
+    iconContainer.appendChild(icon1)
+    iconContainer.appendChild(icon2)
+    return iconContainer
+  } else {
+    const icon = document.createElement('i')
+    icon.classList.add('cell-inner')
+    icon.classList.add('graphical-icon')
+
+    if (/fa-network/.test(fontawesome)) {
+      icon.innerHTML =
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M26 14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2v4.1a5 5 0 0 0-3.9 3.9H14v-2a2 2 0 0 0-2-2h-2v-4.1a5 5 0 1 0-2 0V18H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2h4.1a5 5 0 1 0 5.9-5.9V14zM6 9a3 3 0 1 1 3 3 3 3 0 0 1-3-3zm6 17H6v-6h6zm14-3a3 3 0 1 1-3-3 3 3 0 0 1 3 3zM20 6h6v6h-6z"></path></svg>'
+    } else if (/fa-times-circle/.test(fontawesome)) {
+      icon.innerHTML =
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 16A14 14 0 1 0 16 2 14 14 0 0 0 2 16zm23.15 7.75L8.25 6.85a12 12 0 0 1 16.9 16.9zM8.24 25.16a12 12 0 0 1-1.4-16.89l16.89 16.89a12 12 0 0 1-15.49 0z"></path></svg>'
+    } else if (/fa-question-circle/.test(fontawesome)) {
+      icon.innerHTML =
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 16A14 14 0 1 0 16 2 14 14 0 0 0 2 16zm23.15 7.75L8.25 6.85a12 12 0 0 1 16.9 16.9zM8.24 25.16a12 12 0 0 1-1.4-16.89l16.89 16.89a12 12 0 0 1-15.49 0z"></path></svg>'
+    } else if (/fa-check-circle/.test(fontawesome)) {
+      icon.innerHTML =
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path><path d="M14 21.5l-5-4.96 1.59-1.57L14 18.35 21.41 11 23 12.58l-9 8.92z"></path></svg>'
+    } else {
+      icon.className = fontawesome
+    }
+
+    return icon
+  }
+}
+
+/**
  * Format one row in the table
  *
  */
@@ -375,32 +422,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
   // click handler for the list result
   if (entity.fontawesome) {
-    if (/fa-check/.test(entity.fontawesome)) {
-      // the first svg is radio-checked; the second is
-      // radio-unchecked; we will use css to swap between the two,
-      // governed by either :hover or .selected-row
-      const icon1 = document.createElement('i')
-      const icon2 = document.createElement('i')
-      icon1.innerHTML =
-        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path><path d="M16 10a6 6 0 1 0 6 6 6 6 0 0 0-6-6z"></path></svg>'
-      icon2.innerHTML =
-        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12 12 12 0 0 1-12 12z"></path></svg>'
-      icon1.classList.add('kui--radio-checked')
-      icon2.classList.add('kui--radio-unchecked')
-      entityNameClickable.appendChild(icon1)
-      entityNameClickable.appendChild(icon2)
-    } else {
-      const icon = document.createElement('i')
-      entityNameClickable.appendChild(icon)
-      icon.classList.add('cell-inner')
-
-      if (/fa-network/.test(entity.fontawesome)) {
-        icon.innerHTML =
-          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M26 14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2v4.1a5 5 0 0 0-3.9 3.9H14v-2a2 2 0 0 0-2-2h-2v-4.1a5 5 0 1 0-2 0V18H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2h4.1a5 5 0 1 0 5.9-5.9V14zM6 9a3 3 0 1 1 3 3 3 3 0 0 1-3-3zm6 17H6v-6h6zm14-3a3 3 0 1 1-3-3 3 3 0 0 1 3 3zM20 6h6v6h-6z"></path></svg>'
-      } else {
-        icon.className = entity.fontawesome
-      }
-    }
+    const icon = formatIcon(entity.fontawesome)
+    entityNameClickable.appendChild(icon)
   } else if (typeof name === 'string') {
     entityNameClickable.title = name
     entityNameClickable.innerText = isHeaderCell ? name.toLowerCase() : name
@@ -479,9 +502,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
     if (fontawesome) {
       const addIcon = (theIcon: Icon) => {
-        const icon = document.createElement('i')
-        icon.className = theIcon.fontawesome
-        icon.classList.add('cell-inner')
+        const icon = formatIcon(theIcon.fontawesome)
 
         if (typeof onclick === 'function') {
           icon.onclick = onclick
