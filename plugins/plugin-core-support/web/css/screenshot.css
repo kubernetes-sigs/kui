@@ -104,9 +104,10 @@ body.no-tooltips-anywhere [data-balloon]:after {
 }
 
 #screenshot-captured .screenshot-image {
-  width: 5.5em;
+  width: 7.33em;
   height: 5.5em;
   margin: 0.5em;
+  object-fit: cover;
 }
 
 #screenshot-captured .sidecar-bottom-stripe .sidecar-bottom-stripe-button {
