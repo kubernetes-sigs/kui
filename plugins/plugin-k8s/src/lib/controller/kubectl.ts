@@ -271,7 +271,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const isKube = isKubeLike(command)
     debug('exec', command, isKube)
 
-    const verb = argv[1]
+    const verb = command === 'helm' && argv[1] === 'repo' ? argv[2] : argv[1]
     const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
     const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 

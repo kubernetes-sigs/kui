@@ -20,7 +20,7 @@ import { cli } from '@kui-shell/core/tests/lib/ui'
 const synonyms = ['helm']
 
 // TODO: enable this test when ISSUE https://github.com/IBM/kui/issues/1947 is solved
-common.localDescribe('helm repo add and search', function(this: common.ISuite) {
+common.localDescribe(`helm repo ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -30,6 +30,15 @@ common.localDescribe('helm repo add and search', function(this: common.ISuite) {
         return cli
           .do(`${helm} repo add bitnami https://charts.bitnami.com/bitnami`, this.app)
           .then(cli.expectOKWithAny)
+          .catch(common.oops(this))
+      })
+    }
+
+    const listRepos = () => {
+      it('should list helm repos', () => {
+        return cli
+          .do(`${helm} repo list`, this.app)
+          .then(cli.expectOKWith('bitnami')) // the repo we just added
           .catch(common.oops(this))
       })
     }
@@ -53,6 +62,7 @@ common.localDescribe('helm repo add and search', function(this: common.ISuite) {
     }
 
     addRepo()
+    listRepos()
     searchRepo('nginx')
     deleteRepo()
   })
