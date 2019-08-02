@@ -21,11 +21,16 @@ import { ChildProcess } from 'child_process'
 import { ExitHandler, onConnection } from './server'
 import { Channel, ReadyState } from './channel'
 
-const debugE = Debug('plugins/bash-like/pty/stdio-channel-kui-stderr')
+const debugE = Debug('plugins/bash-like/pty/stdio-channel-proxy-stderr')
 const debugW = Debug('plugins/bash-like/pty/stdio-channel-proxy')
 const debugK = Debug('plugins/bash-like/pty/stdio-channel-kui')
 
 const MARKER = '\n'
+
+function heartbeat() {
+  debugW('heartbeat')
+  this.isAlive = true
+}
 
 /**
  * stdin/stdout channel
@@ -43,8 +48,12 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
     this.wss = wss
   }
 
-  public async init(child: ChildProcess) {
+  public async init(child: ChildProcess, pollInterval = 30000) {
     debugW('StdioChannelWebsocketSide.init')
+
+    this.wss.on('error', (err: Error) => {
+      debugW('websocket error', err)
+    })
 
     this.wss.on('connection', (ws: Channel) => {
       debugW('got connection')
@@ -55,10 +64,36 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
         debugW('forwarding message downstream', data)
         child.stdin.write(data)
       })
+
+      // on pong response, indicate we remain alive
+      ws.on('pong', heartbeat)
+
+      ws.on('close', () => {
+        debugW('killing child process, because client connection is dead')
+        child.kill()
+      })
     })
+
+    const self = this
+    const interval = setInterval(function ping() {
+      self.wss['clients'].forEach(function each(ws) {
+        if (ws.isAlive === false) {
+          debugW('killing child process, because client connection did not respond to ping')
+          child.kill()
+          return ws.terminate()
+        }
+
+        // assume it is dead until we get a pong
+        ws.isAlive = false
+        ws.ping(() => {
+          // intentional no-op
+        })
+      })
+    }, pollInterval)
 
     child.on('exit', (code: number) => {
       debugW('child exit', code)
+      this.emit('exit', code)
     })
 
     child.stderr.on('data', (data: Buffer) => {
