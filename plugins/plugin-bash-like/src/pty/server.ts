@@ -200,8 +200,6 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
-    debug('got message')
-
     try {
       const msg: {
         type: string
