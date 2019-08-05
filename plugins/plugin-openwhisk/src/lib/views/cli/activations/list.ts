@@ -669,10 +669,11 @@ export const render = opts => {
  */
 export const renderActivationListView = (
   tab: Tab,
-  activations: Object[], // eslint-disable-line @typescript-eslint/ban-types
+  activationsTable: Table,
   container: Element,
   parsedOptions: ParsedOptions
 ) => {
+  const activations = activationsTable.body
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)

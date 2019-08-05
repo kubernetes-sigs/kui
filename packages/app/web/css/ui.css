@@ -209,6 +209,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   /* streaming output of stdout; make sure stderr occurs below */
   flex-direction: column;
 }
+.repl-result > p:not(:first-child) {
+  padding-top: 1em;
+}
 .repl.sidecar-visible p {
   white-space: normal;
 }

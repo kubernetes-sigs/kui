@@ -26,7 +26,14 @@ import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 import { installContext } from './prompt'
 
-import { Entity, SimpleEntity, isEntitySpec, isMessageBearingEntity } from '../models/entity'
+import {
+  Entity,
+  SimpleEntity,
+  isEntitySpec,
+  isMessageBearingEntity,
+  MixedResponsePart,
+  isMixedResponse
+} from '../models/entity'
 import { CommandHandlerWithEvents } from '../models/command'
 import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import * as historyModel from '../models/history'
@@ -484,7 +491,7 @@ const printTable = async (
   //
   const registeredListView = registeredListViews[response.type]
   if (registeredListView) {
-    await registeredListView(tab, response.body, resultDom, parsedOptions, execOptions)
+    await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
     return resultDom.children.length === 0
   }
 
@@ -1000,6 +1007,24 @@ export const printResults = (
 
         // we rendered the content
         return true
+      } else if (isMixedResponse(response)) {
+        debug('mixed response')
+        const paragraph = (part: MixedResponsePart) => {
+          if (typeof part === 'string') {
+            const para = document.createElement('p')
+            para.classList.add('kui--mixed-response--text')
+            para.innerText = part
+            return para
+          } else {
+            return part
+          }
+        }
+
+        response.forEach(part => {
+          printResults(block, nextBlock, tab, resultDom, echo, execOptions, parsedOptions, command, evaluator)(
+            paragraph(part)
+          )
+        })
       } else if (typeof response === 'object') {
         // render random json in the REPL directly
         const code = document.createElement('code')
