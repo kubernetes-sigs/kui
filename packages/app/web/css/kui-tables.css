@@ -100,23 +100,6 @@
   display: flex;
   align-items: flex-start;
 }
-.result-as-table-full-width .result-table,
-.result-as-table-full-width .log-lines {
-  width: 100%;
-}
-.repl.sidecar-visible .result-as-table .repl-result {
-  /* repl multi-table when sidecar is visible */
-  width: 100%;
-}
-.repl.sidecar-visible .result-as-table .result-table,
-body.sidecar-is-minimized .result-as-table .result-table {
-  /* repl table when sidecar is visible */
-  width: 100%;
-}
-.repl .result-as-table .result-table {
-  /* repl table */
-  /* width: 100%; */
-}
 
 .sidecar-visible .result-table .entity {
   /* in either one-column mode, or if the sidecar is visible, have list entries occupy a full row */
@@ -167,47 +150,6 @@ body.sidecar-is-minimized .result-as-table .result-table {
 .bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > th {
   padding-left: 0.375em;
   padding-right: 0.375em;
-}
-.entity .entity-kind {
-  width: 8em;
-}
-.entity .entity-narrow {
-  min-width: 5em;
-}
-.repl.sidecar-visible .entity .entity-narrow {
-  width: 5em;
-}
-.repl.sidecar-visible .repl-result .entity-name-group .entity-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.result-table .entity-name-group {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.repl.sidecar-visible
-  .result-table
-  .entity-name-group:first-child:not(.entity-name-group-narrow):not(.entity-name-group-extra-narrow):not(.not-a-name) {
-  /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
-  width: 100%;
-  max-width: 0; /* important! 0 not 0% */
-  min-width: 5em;
-}
-.result-table .entity-name-group-narrow {
-  max-width: 16em;
-}
-.result-table .entity-name-group-extra-narrow {
-  max-width: 10em;
-}
-.repl.sidecar-visible .log-lines,
-body.subwindow .repl .log-lines {
-  table-layout: fixed;
-}
-.repl.sidecar-visible .result-table .entity-name-group-extra-narrow {
-  width: 9em;
-  max-width: initial;
 }
 .header-cell {
   text-align: left; /* th defaults to text-align: center */
