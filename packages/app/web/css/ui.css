@@ -216,6 +216,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   white-space: normal;
 }
 .repl-prompt {
+  line-height: 1em;
   margin-right: 0.5em;
   white-space: nowrap;
   overflow: hidden;
@@ -259,7 +260,6 @@ repl .repl-block.using-custom-prompt .repl-input input {
 }
 .repl-prompt-righty {
   color: var(--color-brand-01);
-  margin-top: 1px; /* roughly center a ">" on the centerline of lowercase .repl-context text */
 }
 .repl-prompt-righty svg path {
   fill: var(--color-brand-01);
@@ -323,6 +323,9 @@ repl .repl-block.using-custom-prompt .repl-input input {
 }
 .repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg {
   filter: none;
+}
+.repl-block:not(.processing) .kui--icon-processing {
+  display: none;
 }
 .repl-block.processing .repl-prompt-right-element-status-icon.deemphasize .kui--icon-processing svg,
 .repl-block.valid-response .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-ok,
@@ -427,7 +430,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 }
 .repl-input {
   align-items: center;
-  min-height: 1em; /* so that when the sidecar is open (and the right-elements are display:none) we don't get a height adjustment */
+  min-height: 1.25em; /* so that when the sidecar is open (and the right-elements are display:none) we don't get a height adjustment */
 }
 .repl-input,
 .repl-output {
