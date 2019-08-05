@@ -73,12 +73,18 @@ export const renderStatus = async (tab: Tab, command: string, resource: Resource
   )} ${repl.encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
   debug('issuing command', fetchModels)
 
-  const model = await repl.qexec(fetchModels)
-  debug('renderStatus.models', model)
+  try {
+    const model = await repl.qexec(fetchModels)
+    debug('renderStatus.models', model)
 
-  const view = formatTable(tab, model)
-
-  return view
+    return formatTable(tab, model)
+  } catch (err) {
+    if (err.code === 404) {
+      return formatTable(tab, { body: [] })
+    } else {
+      throw err
+    }
+  }
 }
 
 /**
