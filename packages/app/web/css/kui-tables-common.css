@@ -1,3 +1,15 @@
+.result-as-table-full-width .result-table {
+  border: none;
+}
+.result-as-table .repl-result {
+  /* repl table */
+  display: table;
+}
+.result-as-table.result-as-multi-table.result-as-multi-table-flex-wrap .repl-result {
+  display: flex;
+  align-items: flex-start;
+}
+
 table.result-table[kui-table-style] th.header-cell {
   text-transform: capitalize;
 }
