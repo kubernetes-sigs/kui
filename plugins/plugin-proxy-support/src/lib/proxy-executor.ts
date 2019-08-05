@@ -26,6 +26,7 @@ import { ExecOptions, withLanguage } from '@kui-shell/core/models/execOptions'
 import { config } from '@kui-shell/core/core/settings'
 import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 // import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
 // copied for now, until we can figure out typescript compiler issues
@@ -160,14 +161,24 @@ class ProxyEvaluator implements ReplEval {
                   .forEach(_ => {
                     const response: {
                       uuid: string
-                      response: { code?: number; statusCode?: number; content: string | HTMLElement | ElementMimic }
+                      response: {
+                        code?: number
+                        statusCode?: number
+                        message?: string
+                        stack?: string
+                        content: string | HTMLElement | ElementMimic
+                      }
                     } = JSON.parse(_)
                     if (response.uuid === uuid) {
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
-                        debug('rejecting', response.response)
-                        reject(response.response)
+                        debug('rejecting', response)
+                        const err: CodedError = new Error(response.response.message)
+                        err.stack = response.response.stack
+                        err.code = err.statusCode = code
+                        err.body = response.response
+                        reject(err)
                       } else if (ElementMimic.isFakeDom(response.response)) {
                         debug('rendering fakedom', response.response)
                         resolve(renderDom(response.response))
@@ -235,9 +246,9 @@ class ProxyEvaluator implements ReplEval {
         if (response.statusCode !== 200) {
           debug('rethrowing non-200 response', response)
           // to trigger the catch just below
-          const err = new Error(response.body as string)
-          err['code'] = err['statusCode'] = response.statusCode
-          err['body'] = response.body
+          const err: CodedError = new Error(response.body as string)
+          err.code = err.statusCode = response.statusCode
+          err.body = response.body
           throw err
         } else {
           /*

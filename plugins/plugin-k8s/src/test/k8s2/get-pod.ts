@@ -66,6 +66,11 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
     const inNamespace = `-n ${ns}`
     allocateNS(this, ns)
 
+    it('should error out when getting non-existant pod', () => {
+      const noName = 'thisShouldNotExist'
+      return cli.do(`${kubectl} get pod ${noName}`, this.app).then(cli.expectError(404))
+    })
+
     /** TODO: enabe the following test once we have sidecar table poller ready
     // do this a few times, as we might get lucky and have the
     // containers ready by the time we click on the row; we are trying
@@ -103,7 +108,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
             this.app
           )
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-          .then(selector => waitForRed(this.app, selector))
+          .then((selector: string) => waitForRed(this.app, selector))
           .catch(common.oops(this))
       })
     }
@@ -151,13 +156,13 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
           this.app
         )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => waitForGreen(this.app, selector))
+        .then((selector: string) => waitForGreen(this.app, selector))
         .catch(common.oops(this))
     })
 
     it(`should list pods via ${kubectl} then click`, async () => {
       try {
-        const selector = await cli
+        const selector: string = await cli
           .do(`${kubectl} get pods ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
 
@@ -246,7 +251,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
           this.app
         )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-        .then(selector => waitForRed(this.app, selector))
+        .then((selector: string) => waitForRed(this.app, selector))
         .catch(common.oops(this))
     })
 
