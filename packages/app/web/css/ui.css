@@ -170,19 +170,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .repl-input input {
   font-family: var(--font-monospace);
 }
-.result-as-fixed-tables .result-table,
-.result-as-fixed-tables.result-table {
-  table-layout: fixed;
-  width: 100%;
-}
-.result-table .cell-inner.pretty-wide {
-  /* careful here, see https://github.com/IBM/kui/issues/1653 */
-  white-space: pre-wrap;
-}
-.result-as-table .result-table-outer-wrapper {
-  /* repl table */
-  display: table-row;
-}
 .scrollable[data-table-max-rows="4"],
 .scrollable-auto[data-table-max-rows="4"] {
   max-height: calc(4 * 3em + 2px);
