@@ -1,3 +1,73 @@
 table.result-table[kui-table-style] th.header-cell {
   text-transform: capitalize;
 }
+
+.entity .entity-kind {
+  width: 8em;
+}
+.entity .entity-narrow {
+  min-width: 5em;
+}
+.repl.sidecar-visible .entity .entity-narrow {
+  width: 5em;
+}
+.result-table .entity-name-group-narrow {
+  max-width: 16em;
+}
+.result-table .entity-name-group-extra-narrow {
+  max-width: 10em;
+}
+.repl.sidecar-visible .log-lines,
+body.subwindow .repl .log-lines {
+  table-layout: fixed;
+}
+.repl.sidecar-visible .result-table .entity-name-group-extra-narrow {
+  width: 9em;
+  max-width: initial;
+}
+.repl.sidecar-visible .repl-result .entity-name-group .entity-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.result-table .entity-name-group {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.repl.sidecar-visible
+  .result-table
+  .entity-name-group:first-child:not(.entity-name-group-narrow):not(.entity-name-group-extra-narrow):not(.not-a-name) {
+  /* extra magic to get text ellipsis working; this needs width: 100% on enclosing tables */
+  width: 100%;
+  max-width: 0; /* important! 0 not 0% */
+  min-width: 5em;
+}
+
+.result-as-table-full-width .result-table,
+.result-as-table-full-width .log-lines {
+  width: 100%;
+}
+.repl.sidecar-visible .result-as-table .repl-result {
+  /* repl multi-table when sidecar is visible */
+  width: 100%;
+}
+.repl.sidecar-visible .result-as-table .result-table,
+body.sidecar-is-minimized .result-as-table .result-table {
+  /* repl table when sidecar is visible */
+  width: 100%;
+}
+.result-as-fixed-tables .result-table,
+.result-as-fixed-tables.result-table {
+  table-layout: fixed;
+  width: 100%;
+}
+.result-table .cell-inner.pretty-wide {
+  /* careful here, see https://github.com/IBM/kui/issues/1653 */
+  white-space: pre-wrap;
+}
+.result-as-table .result-table-outer-wrapper {
+  /* repl table */
+  display: table-row;
+  width: 100%;
+}
