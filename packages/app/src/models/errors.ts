@@ -19,6 +19,7 @@ import UsageError from '../core/usage-error'
 export interface CodedError extends Error {
   code?: number
   statusCode?: number
+  body?: string | Record<string, any>
 }
 
 export function isCodedError(err: Error): err is CodedError {
