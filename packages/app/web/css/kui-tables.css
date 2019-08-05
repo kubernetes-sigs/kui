@@ -89,17 +89,6 @@
 .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
   border-bottom: 1px solid var(--color-content-divider);
 }
-.result-as-table-full-width .result-table {
-  border: none;
-}
-.result-as-table .repl-result {
-  /* repl table */
-  display: table;
-}
-.result-as-table.result-as-multi-table.result-as-multi-table-flex-wrap .repl-result {
-  display: flex;
-  align-items: flex-start;
-}
 
 .sidecar-visible .result-table .entity {
   /* in either one-column mode, or if the sidecar is visible, have list entries occupy a full row */
