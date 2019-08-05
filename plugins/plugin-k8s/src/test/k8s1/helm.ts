@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar, AppAndCount } from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
@@ -41,25 +41,31 @@ common.localDescribe('helm commands', function(this: common.ISuite) {
     })
   })
 
+  const checkHelmStatus = async (res: AppAndCount) => {
+    await cli.expectOKWithAny(res)
+
+    const table = await this.app.client.getText(`${selectors.OUTPUT_N(res.count)} .result-table-title`)
+    assert.strict.equal(table.length, 6)
+
+    const text = await this.app.client.getText(`${selectors.OUTPUT_N(res.count)} .kui--mixed-response--text`)
+    assert.ok(Array.isArray(text), 'expect more than one section of text output')
+    if (Array.isArray(text)) {
+      assert.ok(text.find(x => x && x.includes('NOTES:')), 'expect a NOTES section of streaming output')
+      assert.ok(text.find(x => x && x.includes('LAST DEPLOYED:')), 'expect a LAST DEPLOYED section of streaming output')
+    }
+  }
+
   it(`should create sample helm chart`, () => {
     return cli
       .do(`helm install --name ${name} stable/mysql ${inNamespace}`, this.app)
-      .then(async res => {
-        await cli.expectOKWithAny(res)
+      .then(checkHelmStatus)
+      .catch(common.oops(this))
+  })
 
-        const table = await this.app.client.getText(`${selectors.OUTPUT_N(res.count)} .result-table-title`)
-        assert.strict.equal(table.length, 6)
-
-        const text = await this.app.client.getText(`${selectors.OUTPUT_N(res.count)} .streaming-output`)
-        assert.ok(Array.isArray(text), 'expect more than one section of streaming output')
-        if (Array.isArray(text)) {
-          assert.ok(text.find(x => x && x.includes('NOTES:')), 'expect a NOTES section of streaming output')
-          assert.ok(
-            text.find(x => x && x.includes('LAST DEPLOYED:')),
-            'expect a LAST DEPLOYED section of streaming output'
-          )
-        }
-      })
+  it(`should show the status of that new release`, () => {
+    return cli
+      .do(`helm status ${name}`, this.app)
+      .then(checkHelmStatus)
       .catch(common.oops(this))
   })
 
