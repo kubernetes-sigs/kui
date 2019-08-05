@@ -441,7 +441,8 @@ const getDirectReferences = (command: string) => async ({
     const getter = () => {
       return repl.qexec(command, undefined, undefined, raw)
     }
-    const kubeEntity = finalState === FinalState.OfflineLike ? getter() : withRetryOn404(getter, command)
+
+    const kubeEntity = !finalState || finalState === FinalState.OfflineLike ? getter() : withRetryOn404(getter, command)
 
     if (execOptions.raw) {
       return kubeEntity
