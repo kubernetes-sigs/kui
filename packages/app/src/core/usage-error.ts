@@ -372,7 +372,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
     // keep track of the scroll regions we have created; if not
     // many, maybe we use outer scrolling inside of inner scrolling
-    const scrollRegions = []
+    const scrollRegions: HTMLElement[] = []
 
     // any minimally formatted sections? e.g. `intro` and `section` fields
     const makeSection = (parent = right, noMargin = false) => ({ title, content }: TitledContent) => {
@@ -502,6 +502,8 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
           return renderRow(rowData.fn(rowData.command))
         }
 
+        const isDir = rowData.available !== undefined || false
+
         // fields of the row model
         // debug('row', rowData)
         const {
@@ -519,7 +521,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
           advanced = false,
           available,
           example = numeric && 'N',
-          dir: isDir = available || false,
+          dir = isDir,
           title,
           header,
           docs = header || title,
@@ -789,7 +791,7 @@ export interface UsageRow {
   header?: string
   docs?: string
   partial?: boolean
-  defaultValue?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  defaultValue?: boolean | string | number
   available?: UsageRow[]
 
   // allow users to provide a prefix substring of an `allowed` value

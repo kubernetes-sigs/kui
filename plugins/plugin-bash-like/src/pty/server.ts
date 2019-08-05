@@ -31,6 +31,7 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
+import { CodedError } from '@kui-shell/core/models/errors'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -240,13 +241,18 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
                 response
               })
             )
-          } catch (err) {
-            debug('got error', err)
+          } catch (error) {
+            debug('got error', error)
+            const err: CodedError = error
             terminate(
               JSON.stringify({
                 type: 'object',
                 uuid: msg.uuid,
-                response: err
+                response: {
+                  code: err.code || err.statusCode,
+                  message: err.message,
+                  stack: err.stack
+                }
               })
             )
           }
@@ -469,7 +475,7 @@ export default (commandTree: CommandRegistrar) => {
           )
 
           const channel = `/exec/response/${N}`
-          ipcRenderer.once(channel, (event, arg: string) => {
+          ipcRenderer.once(channel, (event: never, arg: string) => {
             const message: { error?: Error; success?: boolean; returnValue: number } = JSON.parse(arg)
             if (!message.success) {
               reject(message.error)
