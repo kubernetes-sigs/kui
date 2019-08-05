@@ -22,9 +22,12 @@ import Resource from '../../model/resource'
 
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
-const debug = Debug('k8s/view/modes/status')
 
 import repl = require('@kui-shell/core/core/repl')
+import { CodedError } from '@kui-shell/core/models/errors'
+import { Table, MultiTable } from '@kui-shell/core/webapp/models/table'
+
+const debug = Debug('k8s/view/modes/status')
 
 /**
  * Return a sidecar mode button model that shows a status table for
@@ -73,12 +76,19 @@ export const renderStatus = async (tab: Tab, command: string, resource: Resource
   )} ${repl.encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
   debug('issuing command', fetchModels)
 
-  const model = await repl.qexec(fetchModels)
-  debug('renderStatus.models', model)
+  try {
+    const model: Table | MultiTable = await repl.qexec(fetchModels)
+    debug('renderStatus.models', model)
 
-  const view = formatTable(tab, model)
-
-  return view
+    return formatTable(tab, model)
+  } catch (error) {
+    const err: CodedError = error
+    if (err.code === 404) {
+      return formatTable(tab, { body: [] })
+    } else {
+      throw err
+    }
+  }
 }
 
 /**
