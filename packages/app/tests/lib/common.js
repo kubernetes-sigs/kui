@@ -63,6 +63,7 @@ const prepareElectron = (fuzz, popup = false) => {
   const opts = {
     env,
     chromeDriverArgs: ['--no-sandbox'],
+    startTimeout: process.env.TIMEOUT || 20000, // see https://github.com/IBM/kui/issues/2227
     waitTimeout: process.env.TIMEOUT || 20000
   }
 
