@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table, MultiTable } from '../webapp/models/table'
+import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { SidecarMode } from '../webapp/bottom-stripe'
 
@@ -89,16 +89,24 @@ export function isMetadataBearing(spec: EntitySpec): spec is MetadataBearing {
 export type SimpleEntity = Error | string | number | HTMLElement | MessageBearingEntity
 
 /**
- * A potentially more complex entity with a "spec"
- *
- * Note: Array<any> will go away once we have fully typed tables
+ * The plugin returns a mix of types; e.g. `helm status` returns
+ * [string, Table, string], where the status `Table` is sandwiched by
+ * preface and trailing `string` messages
  *
  */
-export type Entity =
-  | SimpleEntity
-  | EntitySpec
-  | CustomSpec
-  | boolean
-  | any[] // eslint-disable-line @typescript-eslint/no-explicit-any
-  | Table
-  | MultiTable
+export type MixedResponsePart = string | Table | MultiTable
+export type MixedResponse = MixedResponsePart[]
+
+export function isMixedResponse(response: Entity): response is MixedResponse {
+  return (
+    Array.isArray(response) &&
+    response.length > 0 &&
+    (typeof response[0] === 'string' || isTable(response[0]) || isMultiTable(response[0]))
+  )
+}
+
+/**
+ * A potentially more complex entity with a "spec"
+ *
+ */
+export type Entity = SimpleEntity | EntitySpec | CustomSpec | MixedResponse | boolean | Table | MultiTable

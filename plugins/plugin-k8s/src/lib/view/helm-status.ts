@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 
 import { Streamable } from '@kui-shell/core/webapp/cli'
+import { MixedResponse } from '@kui-shell/core/models/entity'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { preprocessTable, formatTable } from './formatTable'
@@ -116,19 +117,25 @@ export const format = async (
       }
     })
 
-  // helm status sometimes emits some text before the tables
-  if (headerString && !execOptions.nested) await stdout(headerString)
-
   const tables = Array.isArray(resourcesOut) ? { tables: resourcesOut } : resourcesOut
-  if (!execOptions.nested) {
-    await stdout(tables)
-  } else {
+  if (execOptions.nested) {
     debug('returning tables for nested call', tables)
     return tables
+  } else {
+    const result: MixedResponse = []
+
+    // helm status sometimes emits some text before the tables
+    if (headerString) {
+      result.push(await headerString)
+    }
+
+    result.push(await tables)
+
+    // helm status sometimes emits a "Notes" section after the tables
+    if (notesString) {
+      result.push(await notesString)
+    }
+
+    return result
   }
-
-  // helm status sometimes emits a "Notes" section after the tables
-  if (notesString && !execOptions.nested) await stdout(notesString)
-
-  return true
 }
