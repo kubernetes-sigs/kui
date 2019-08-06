@@ -473,8 +473,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
   content: "\00a0";
 }
 .repl-result pre {
-  /* invocation results */
-  margin: 0;
+  margin: 2px 0; /* firefox needs some vertical padding, otherwise descenders like "y" crop; weird */
 }
 .repl-result code {
   /* more invocation results */
