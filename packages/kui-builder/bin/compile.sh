@@ -55,15 +55,30 @@ fi
 npx --no-install tsc -h >& /dev/null
 if [ $? == 0 ]; then
     TSC="npx tsc"
+    FOUND_TSC=true
 else
     TSC="$TSCONFIG_HOME/node_modules/.bin/tsc"
-    echo "Using TSC=$TSC"
+    if [ ! -x "$TSC" ]; then
+        echo "Looking for alternate TSC location"
+        TSC="$CLIENT_HOME/../node_modules/.bin/tsc"
+    fi
+
+    if [ -x "$TSC" ]; then
+        FOUND_TSC=true
+        echo "Using TSC=$TSC"
+    else
+        echo "Warning: unable to find tsc; client plugins may not be available in the client builds"
+    fi
 fi
 set -e
 
 # compile source
 echo ""
-echo "compiling source $TSCONFIG_HOME"
-$TSC --build "$TSCONFIG"
+if [ -n "$FOUND_TSC" ]; then
+    echo "compiling source $TSCONFIG_HOME"
+    $TSC --build "$TSCONFIG"
+fi
 
-"$TSCONFIG_HOME"/bin/prescan.sh
+if [ -z "$NO_PRESCAN" ]; then
+    "$TSCONFIG_HOME"/bin/prescan.sh
+fi
