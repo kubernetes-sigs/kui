@@ -174,11 +174,17 @@ class ProxyEvaluator implements ReplEval {
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
                         debug('rejecting', response)
-                        const err: CodedError = new Error(response.response.message)
-                        err.stack = response.response.stack
-                        err.code = err.statusCode = code
-                        err.body = response.response
-                        reject(err)
+                        if (UsageError.isUsageError(response.response)) {
+                          // e.g. k get -h
+                          reject(response.response)
+                        } else {
+                          // e.g. k get pod nonExistantName
+                          const err: CodedError = new Error(response.response.message)
+                          err.stack = response.response.stack
+                          err.code = err.statusCode = code
+                          err.body = response.response
+                          reject(err)
+                        }
                       } else if (ElementMimic.isFakeDom(response.response)) {
                         debug('rendering fakedom', response.response)
                         resolve(renderDom(response.response))
