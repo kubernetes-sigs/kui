@@ -21,6 +21,7 @@ import gitDiff from './lib/cmds/git-diff'
 import gitStatus from './lib/cmds/git-status'
 import ptyServer from './pty/server'
 import exportCommand from './lib/cmds/export'
+import { registerCommands as sessionReady } from './pty/session'
 
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
@@ -36,6 +37,7 @@ export default async (commandTree: CommandRegistrar) => {
     ptyServer(commandTree),
     gitDiff(commandTree),
     gitStatus(commandTree),
+    sessionReady(commandTree),
     exportCommand(commandTree)
   ])
 }
