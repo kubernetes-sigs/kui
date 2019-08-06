@@ -34,6 +34,9 @@ touch ./node_modules/@kui-shell/prescan.json
 
 # pre-compile plugin registry
 if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
+    echo "compiling plugins"
+    NO_PRESCAN=true npx --no-install kui-compile
+
     for i in build/plugins/*; do
         if [ -d "$i"/src ]; then
             echo "linking in plugin $(basename $i)"
