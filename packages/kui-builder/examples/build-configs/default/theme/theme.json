@@ -49,7 +49,7 @@
       "style": "dark"
     }
   ],
-  "css": ["_test.css", "kui-tables.css", "carbon-overrides.css"],
+  "css": ["_test.css", "kui-ui.css", "kui-tables.css", "carbon-overrides.css"],
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Medium",
