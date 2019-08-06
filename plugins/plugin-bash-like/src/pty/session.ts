@@ -44,7 +44,7 @@ function newSessionForTab(tab: Tab) {
     try {
       debug('newSessionForTab', tab)
 
-      const sessionInitialization = qexec('/bin/sleep 5; echo initializing session', undefined, undefined, {
+      const sessionInitialization = qexec('echo initializing session', undefined, undefined, {
         tab,
         quiet: true,
         noHistory: true,
