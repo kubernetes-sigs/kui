@@ -20,7 +20,7 @@ debug('loading')
 
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
-import { inBottomInputMode } from '../core/settings'
+import { theme as settings, inBottomInputMode } from '../core/settings'
 import UsageError from '../core/usage-error'
 import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
@@ -362,7 +362,7 @@ export const setCustomCaret = (block: HTMLElement) => {
  * Set the processing/active status for the given block
  *
  */
-export const setStatus = (block: HTMLElement, status: string) => {
+export const setStatus = (block: HTMLElement, status: 'processing' | 'repl-active' | 'valid-response' | 'error') => {
   if (block) {
     block.classList.remove('processing')
     block.classList.remove('repl-active')
@@ -739,6 +739,7 @@ export const unlisten = (prompt: HTMLElement) => {
 export const listen = (prompt: HTMLInputElement) => {
   debug('listen', prompt, document.activeElement)
   prompt.readOnly = false
+  prompt.placeholder = settings.placeholder || ''
 
   const grandparent = prompt.parentNode.parentNode as Element
   grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
@@ -1254,7 +1255,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     // we'll go with our formatted message
     // wrap in a span so that drag text selection works; see shell issue #249
     const message = oopsMessage(err)
-    const span = document.createElement('span')
+    const span = document.createElement('pre')
     span.appendChild(document.createTextNode(message))
     oopsDom.appendChild(span)
   }

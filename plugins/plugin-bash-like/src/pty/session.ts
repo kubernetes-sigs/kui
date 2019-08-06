@@ -18,9 +18,10 @@ import * as Debug from 'debug'
 
 import { Channel } from './channel'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { qexec } from '@kui-shell/core/core/repl'
-import { config } from '@kui-shell/core/core/settings'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { getCurrentPrompt, getCurrentBlock, setStatus, Tab } from '@kui-shell/core/webapp/cli'
+import { pexec, qexec } from '@kui-shell/core/core/repl'
+import { theme as settings, config } from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/bash-like/pty/session')
 
@@ -42,18 +43,65 @@ function newSessionForTab(tab: Tab) {
   tab['_kui_session'] = new Promise(async (resolve, reject) => {
     try {
       debug('newSessionForTab', tab)
-      await qexec('echo hi', undefined, undefined, {
+
+      const sessionInitialization = qexec('/bin/sleep 5; echo initializing session', undefined, undefined, {
         tab,
         quiet: true,
         noHistory: true,
         replSilence: true,
         echo: false
       })
+
+      const block = getCurrentBlock(tab)
+      const prompt = getCurrentPrompt(tab)
+      prompt.readOnly = true
+      let placeholderChanged = false
+
+      // change the placeholder if sessionInitialization is slow
+      const placeholderAsync = setTimeout(() => {
+        prompt.placeholder = 'Please wait while we connect to your cloud'
+        setStatus(block, 'processing')
+        placeholderChanged = true
+      }, settings.millisBeforeProxyConnectionWarning || 750)
+
+      await sessionInitialization
+
+      clearTimeout(placeholderAsync)
+      prompt.readOnly = false
+      if (placeholderChanged) {
+        setStatus(block, 'repl-active')
+        await pexec('ready', { tab })
+      }
+
+      tab.classList.add('kui--session-init-done')
+
       resolve(getChannelForTab(tab))
     } catch (err) {
       reject(err)
     }
   })
+}
+
+export function registerCommands(commandTree: CommandRegistrar) {
+  // this is the default "session is ready" command handler
+  commandTree.listen(
+    '/ready',
+    () => {
+      const message = document.createElement('pre')
+      message.appendChild(
+        document.createTextNode('Successfully connected to your cloud. For next steps, try this command: ')
+      )
+
+      const clicky = document.createElement('span')
+      clicky.className = 'clickable clickable-blatant'
+      clicky.innerText = 'getting started'
+      clicky.onclick = () => pexec('getting started')
+      message.appendChild(clicky)
+
+      return message
+    },
+    { inBrowserOk: true, noAuthOk: true, hidden: true }
+  )
 }
 
 /**

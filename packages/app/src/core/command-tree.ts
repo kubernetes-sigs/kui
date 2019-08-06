@@ -356,14 +356,21 @@ const formatPartialMatches = (partialMatches: Command[]): UsageError => {
   )
 }
 
-export const suggestPartialMatches = (partialMatches?: Command[], noThrow = false, hide = false): CodedError => {
+export const suggestPartialMatches = (
+  command: string,
+  partialMatches?: Command[],
+  noThrow = false,
+  hide = false
+): CodedError => {
   debug('suggestPartialMatches', partialMatches)
 
   // filter out any partial matches without usage info
   const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
   const anyPartials = availablePartials.length > 0
 
-  const error: CodedError = anyPartials ? formatPartialMatches(availablePartials) : new Error(commandNotFoundMessage)
+  const error: CodedError = anyPartials
+    ? formatPartialMatches(availablePartials)
+    : new Error(`${commandNotFoundMessage}: ${command}`)
   error.code = 404
 
   // to allow for programmatic use of the partial matches, e.g. for tab completion
@@ -443,7 +450,7 @@ const withEvents = (
 
       if (err.code === 127) {
         // command not found
-        const suggestions = suggestPartialMatches(partialMatches, true, err['hide']) // true: don't throw an exception
+        const suggestions = suggestPartialMatches(command, partialMatches, true, err['hide']) // true: don't throw an exception
         debug('got suggestions after unresolvable command not found', suggestions)
         return suggestions
       }
@@ -685,7 +692,7 @@ const commandNotFound = async (argv: string[], partialMatches?: Command[], execO
     })
   }
 
-  return suggestPartialMatches(partialMatches)
+  return suggestPartialMatches(argv.join(' '), partialMatches)
 }
 
 /**

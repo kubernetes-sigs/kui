@@ -91,7 +91,7 @@ localDescribe('Text search', function(this: ISuite) {
     })
   }) */
 
-  it('should find 2 matches for grumble', async () => {
+  it('should find 4 matches for grumble', async () => {
     try {
       this.app.client.keys([ui.ctrlOrMeta, 'f'])
       await this.app.client.waitForVisible('#search-bar')
@@ -99,7 +99,7 @@ localDescribe('Text search', function(this: ISuite) {
       await this.app.client.waitUntil(async () => {
         await this.app.client.setValue('#search-input', `grumble${keys.ENTER}`)
         const txt = await this.app.client.getText('#search-found-text')
-        return txt === '2 matches' // two executions, no tab title match
+        return txt === '4 matches' // two executions plus two 'Command not found: grumble' matches, and no tab title match!
       })
     } catch (err) {
       oops(this)(err)
@@ -112,7 +112,7 @@ localDescribe('Text search', function(this: ISuite) {
       .click('#search-close-button')
       .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
       .catch(oops(this)))
-  it('should find 1 match for bojangles', () =>
+  it('should find 3 matches for bojangles', () =>
     this.app.client
       .keys([ui.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
@@ -122,7 +122,7 @@ localDescribe('Text search', function(this: ISuite) {
         this.app.client.waitUntil(async () => {
           await this.app.client.setValue('#search-input', `bojangles${keys.ENTER}`)
           const txt = await this.app.client.getText('#search-found-text')
-          return txt === '2 matches' // one execution, plus tab title match
+          return txt === '3 matches' // one execution, plus one "Command not found: bojangles" match, plus one tab title match
         })
       )
       .catch(oops(this)))

@@ -173,7 +173,12 @@ const expectOK = (appAndCount, opt) => {
 }
 
 /** grab focus for the repl */
-const grabFocus = app => {
+const grabFocus = async app => {
+  if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') {
+    // wait for the proxy session to be established
+    await app.client.waitForExist(`${selectors.CURRENT_TAB}.kui--session-init-done`)
+  }
+
   return app.client
     .click(selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.waitForEnabled(selectors.CURRENT_PROMPT_BLOCK))
