@@ -23,6 +23,8 @@ import { getCurrentPrompt, getCurrentBlock, setStatus, Tab } from '@kui-shell/co
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { theme as settings, config } from '@kui-shell/core/core/settings'
 
+import { setOnline, setOffline } from './ui'
+
 const debug = Debug('plugins/bash-like/pty/session')
 
 /**
@@ -34,6 +36,43 @@ export function getChannelForTab(tab: Tab): Channel {
 }
 
 /**
+ * Keep trying until we can establish a session
+ *
+ */
+export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
+  return new Promise(resolve => {
+    const once = () => {
+      debug('trying to establish session', tab)
+
+      return qexec('echo initializing session', block, undefined, {
+        tab,
+        quiet: true,
+        noHistory: true,
+        replSilence: true,
+        rethrowErrors: true,
+        echo: false
+      })
+        .then(() => {
+          try {
+            setOnline()
+          } catch (err) {
+            console.error('error updating UI to indicate that we are online', err)
+          }
+          resolve()
+        })
+        .catch(err => {
+          console.error('error establishing session', err)
+          setOffline()
+          setTimeout(once, 2000)
+          return 'Could not establish a new session'
+        })
+    }
+
+    once()
+  })
+}
+
+/**
  * This function establishes a promise of a websocket channel for the
  * given tab
  *
@@ -42,20 +81,12 @@ function newSessionForTab(tab: Tab) {
   // eslint-disable-next-line no-async-promise-executor
   tab['_kui_session'] = new Promise(async (resolve, reject) => {
     try {
-      debug('newSessionForTab', tab)
-
-      const sessionInitialization = qexec('echo initializing session', undefined, undefined, {
-        tab,
-        quiet: true,
-        noHistory: true,
-        replSilence: true,
-        echo: false
-      })
-
       const block = getCurrentBlock(tab)
       const prompt = getCurrentPrompt(tab)
       prompt.readOnly = true
       let placeholderChanged = false
+
+      const sessionInitialization = pollUntilOnline(tab, block)
 
       // change the placeholder if sessionInitialization is slow
       const placeholderAsync = setTimeout(() => {
