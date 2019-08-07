@@ -119,8 +119,6 @@ const lsOrOpen = (filepath: string) =>
         reject(err)
       } else if (stats.isDirectory()) {
         resolve(repl.pexec(`ls ${filepathForRepl}`))
-      } else if (fullpath.match(/\.sh$/)) {
-        resolve(repl.pexec(`run ${filepathForRepl}`))
       } else {
         resolve(repl.pexec(`${viewer} ${filepathForRepl}`))
       }
