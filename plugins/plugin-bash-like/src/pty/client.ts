@@ -47,7 +47,8 @@ import { Table } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
-import { getChannelForTab } from './session'
+import * as ui from './ui'
+import * as session from './session'
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 
 const debug = Debug('plugins/bash-like/pty/client')
@@ -490,7 +491,7 @@ const getOrCreateChannel = async (
     ws.send(JSON.stringify(msg))
   }
 
-  const cachedws = getChannelForTab(tab)
+  const cachedws = session.getChannelForTab(tab)
 
   if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
     debug('allocating new channel', channelFactory)
@@ -502,6 +503,13 @@ const getOrCreateChannel = async (
     // do we focus the terminal (till then, the CLI module will handle
     // queuing, and read out the value via disableInputQueueing()
     ws.on('open', () => doExec(ws))
+
+    // when the websocket has closed, notify the user
+    ws.on('close', () => {
+      debug('channel has closed')
+      ui.setOffline()
+      session.pollUntilOnline(tab)
+    })
 
     return ws
   } else {
@@ -742,7 +750,7 @@ export const doExec = (
         // receive updates after we receive a process exit event; but we
         // will always receive a `refresh` event when the animation
         // frame is done. see https://github.com/IBM/kui/issues/1272
-        terminal.on('refresh', (evt: { start: number; end: number }) => {
+        terminal.on('refresh', (/* evt: { start: number; end: number } */) => {
           resizer.hideTrailingEmptyBlanks()
           doScroll()
           notifyOfWriteCompletion()

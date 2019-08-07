@@ -19,6 +19,8 @@
 set -e
 set -o pipefail
 
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+
 echo "testing webpack build from $(pwd)"
 
 if [ "$1" == "wait" ]; then
@@ -67,8 +69,7 @@ EOF
     cd ${STAGING_DIR}/app && npm install
 
     # the docker image should be built successfully, but we don't use docker to start proxy for k8s tests
-    echo "run proxy"
-    cd ../kui && ../app/bin/www &
+    "$SCRIPTDIR"/proxy.sh &
 else
     # we aren't using the proxy; make sure to set this in the client config
     echo "not using proxy for webpack client"

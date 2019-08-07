@@ -2802,7 +2802,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
   color: var(--color-error);
 }
 .red-text svg path {
-  fill: var(--color-error);
+  fill: var(--color-error) !important;
 }
 .yellow-text {
   color: var(--color-support-03-darker);
@@ -3243,5 +3243,9 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
 
 /* hide table titles by default; themes can choose to show them by overriding this rule */
 .result-table-title-outer {
+  display: none;
+}
+
+#offline-button {
   display: none;
 }

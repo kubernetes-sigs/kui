@@ -117,7 +117,7 @@ exports.prepareElectron = prepareElectron
  * @param noApp do not spawn the electron parts
  *
  */
-exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
+exports.before = (ctx, { fuzz, noApp = false, popup, afterStart } = {}) => {
   if (process.env.TRAVIS_JOB_ID) {
     ctx.retries(2) // don't retry the mocha.it in local testing
   }
@@ -143,6 +143,10 @@ exports.before = (ctx, { fuzz, noApp = false, popup } = {}) => {
 
     await start()
     ctx.timeout(process.env.TIMEOUT || 60000)
+
+    if (afterStart) {
+      await afterStart()
+    }
   }
 }
 
