@@ -132,7 +132,8 @@ describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
           await this.app.client.click(selectors.BY_NAME('nginx')) // click nginx in the table and expect a new repl output with sidecar open
           await sidecar.expectOpen(this.app)
           await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete')) // click delete button
-
+          await this.app.client.waitForExist('#confirm-dialog')
+          await this.app.client.click('#confirm-dialog .bx--btn--danger')
           // a deletion command should be issued
           const newResourceSelector = await cli.expectOKWithCustom({
             selector: selectors.BY_NAME('nginx')

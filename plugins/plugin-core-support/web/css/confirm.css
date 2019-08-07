@@ -1,0 +1,37 @@
+body[kui-theme-style] {
+  /* provide default values for these color classes */
+  --color-confirm-background: var(--color-base01);
+  --color-confirm-foreground: var(--color-base06);
+}
+
+#confirm-dialog {
+  position: absolute;
+  top: 35%;
+  bottom: 1em;
+  left: 35%;
+  right: 1em;
+  width: 25em;
+  display: flex;
+  height: 15em;
+  flex-direction: column;
+  z-index: 5;
+  background: var(--color-confirm-background);
+  color: var(--color-confirm-foreground);
+}
+
+.close-button {
+  border: none;
+}
+
+.button-custon {
+  border: none !important;
+  outline: none;
+}
+
+.confirm-message {
+  word-wrap: break-word;
+}
+
+.confirm-content {
+  margin-bottom: 1em;
+}
