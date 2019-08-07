@@ -1,0 +1,29 @@
+#confirm-dialog {
+  position: absolute;
+  top: 35%;
+  bottom: 1em;
+  left: 35%;
+  right: 1em;
+  width: 25em;
+  display: flex;
+  height: 15em;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.close-button {
+  border: none;
+}
+
+.button-custon {
+  border: none;
+  outline: none;
+}
+
+.confirm-message {
+  word-wrap: break-word;
+}
+
+.confirm-content {
+  margin-bottom: 1em;
+}

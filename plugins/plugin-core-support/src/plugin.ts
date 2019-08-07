@@ -26,6 +26,7 @@ import openui from './lib/cmds/open-ui-from-terminal'
 import prompt from './lib/cmds/prompt'
 import sleep from './lib/cmds/sleep'
 import history from './lib/cmds/history/history'
+import confirm from './lib/cmds/confirm'
 
 // import updater from './lib/admin/updater'
 
@@ -43,7 +44,8 @@ export default async (commandTree: CommandRegistrar) => {
     prompt(commandTree),
     sleep(commandTree),
     history(commandTree),
-    about(commandTree)
+    about(commandTree),
+    confirm(commandTree)
   ])
 
   if (!isHeadless()) {

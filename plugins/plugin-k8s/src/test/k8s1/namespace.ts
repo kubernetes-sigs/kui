@@ -126,14 +126,16 @@ describe('electron namespace', function(this: common.ISuite) {
             await sidecar.expectOpen(this.app)
 
             const deletionButton = selectors.SIDECAR_MODE_BUTTON('delete')
-
             await this.app.client.waitForExist(deletionButton)
             await this.app.client.click(deletionButton)
+
+            await this.app.client.waitForExist('#confirm-dialog', 5000)
+            await this.app.client.click('#confirm-dialog .bx--btn--danger')
 
             // exepct a deletion table
             const deletionEntitySelector = await cli.expectOKWithCustom({
               selector: selectors.BY_NAME(ns)
-            })({ app: this.app, count: res.count + 1 })
+            })({ app: this.app, count: res.count + 2 })
 
             return waitForRed(this.app, deletionEntitySelector)
           })
