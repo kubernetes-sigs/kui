@@ -17,6 +17,7 @@
       "@kui-shell/plugin-apache-composer/*": ["plugins/plugin-apache-composer/src/*"],
       "@kui-shell/plugin-bash-like/*": ["plugins/plugin-base-like/src/*"],
       "@kui-shell/plugin-core-support/tests/*": ["plugins/plugin-core-support/tests/*"],
+      "@kui-shell/plugin-core-support/i18n/*": ["plugins/plugin-core-support/i18n/*"],
       "@kui-shell/plugin-core-support/*": ["plugins/plugin-core-support/src/*"],
       "@kui-shell/plugin-editor/*": ["plugins/plugin-editor/src/*"],
       "@kui-shell/plugin-grid/*": ["plugins/plugin-grid/src/*"],

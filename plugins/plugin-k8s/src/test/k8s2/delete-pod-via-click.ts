@@ -51,7 +51,8 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
   it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
     try {
       await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete'))
-
+      await this.app.client.waitForExist('#confirm-dialog')
+      await this.app.client.click('#confirm-dialog .bx--btn--danger')
       const selector = `${selectors.OUTPUT_LAST} ${selectors.BY_NAME('nginx')}`
 
       return waitForRed(this.app, selector)

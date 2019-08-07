@@ -44,6 +44,8 @@ body[kui-theme="Dark"] {
   --color-text-02: #b3bac1;
 
   --color-screenshot-background: var(--color-selection-background);
+  --color-confirm-background:#272c30;
+  --color-confirm-foreground:var(--color-base05);
 
   /* table header row */
   --color-ui-06: #373d42;

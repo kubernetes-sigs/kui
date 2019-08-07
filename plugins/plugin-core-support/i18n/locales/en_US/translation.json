@@ -17,5 +17,12 @@
   "themesUsageDocs": "List available themes",
   "themeResetUsageDocs": "Reset to default theme",
   "themeSetUsageDocs": "Set the current theme",
-  "themeSetUsageRequiredDocs": "The name of a theme to use"
+  "themeSetUsageRequiredDocs": "The name of a theme to use",
+  "pleaseConfirm": "Please confirm",
+  "areYouSure": "Are you sure?",
+  "aboutToExecute": "You are about to execuate the command",
+  "operationCancelled": "Operation cancelled",
+  "operationConfirmed": "Operation confirmed",
+  "yesIAmSure": "Yes, I'm sure",
+  "cancel": "Cancel"
 }

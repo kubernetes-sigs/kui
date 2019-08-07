@@ -15,14 +15,8 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import {
-  waitForGreen,
-  waitForRed,
-  defaultModeForGet,
-  createNS,
-  waitTillNone
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()
@@ -126,9 +120,11 @@ describe('electron namespace', function(this: common.ISuite) {
             await sidecar.expectOpen(this.app)
 
             const deletionButton = selectors.SIDECAR_MODE_BUTTON('delete')
-
             await this.app.client.waitForExist(deletionButton)
             await this.app.client.click(deletionButton)
+
+            await this.app.client.waitForExist('#confirm-dialog')
+            await this.app.client.click('#confirm-dialog .bx--btn--danger')
 
             // exepct a deletion table
             const deletionEntitySelector = await cli.expectOKWithCustom({
