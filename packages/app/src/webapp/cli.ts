@@ -1164,7 +1164,7 @@ export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBl
 
   scrollIntoView({ when: 100 })
 
-  eventBus.emit('/core/cli/install-block')
+  eventBus.emit('/core/cli/install-block', getTabFromTarget(currentBlock))
 
   await handleQueuedInput(nextBlock)
 }

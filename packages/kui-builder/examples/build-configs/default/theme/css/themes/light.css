@@ -33,6 +33,8 @@ body[kui-theme="Light"] {
   --color-selection-background: #b3e6ff;
 
   --color-screenshot-background: #0062FF;
+  --color-confirm-background:var(--color-base00);
+  --color-confirm-foreground:var(--color-base05);
 
   --color-processing: var(--color-base02);
   --color-ui-02: var(--color-base03);
@@ -41,7 +43,7 @@ body[kui-theme="Light"] {
   --color-stripe-01: var(--color-base03);
   --color-stripe-02: var(--color-base04);
   --color-sidecar-toolbar-background: #D7DCE3;
-  --color-sidecar-toolbar-foreground: var(--color-base05);
+  --color-sidecar-toolbar-foreground: var(--color-base06);
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);

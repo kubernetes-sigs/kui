@@ -72,3 +72,25 @@ body[kui-theme-style] .bx--breadcrumb-item .bx--link {
   background-color: var(--color-ui-03);
   filter: contrast(0.75);
 }
+[kui-theme-style] .bx--btn--danger {
+  background-color: var(--color-red);
+}
+
+[kui-theme-style] .bx--modal-close {
+  background-color: var(--color-confirm-background);
+}
+[kui-theme-style] .bx--modal-close:hover {
+  background-color: var(--color-confirm-background);
+  filter: contrast(0.75);
+}
+[kui-theme-style] .bx--modal-close svg path {
+  fill: var(--color-confirm-foreground);
+}
+
+[kui-theme-style] .bx--modal-header__heading {
+  color: var(--color-confirm-foreground);
+}
+
+[kui-theme-style] .bx--modal-content {
+  color: var(--color-confirm-foreground);
+}
