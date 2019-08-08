@@ -51,6 +51,7 @@ env:
     - KUI_USE_HTTP=true
     - TEST_ORG=testorg
     - TEST_SPACE=testspace
+    - CSP_ALLOWED_HOSTS="http://localhost:3000 ws://localhost:3000 http://localhost:9953"
     - LOCAL_OPENWHISK=true # allows e.g. openwhisk/src/test/openwhisk1/headless to avoid trying to host set <not-local>
     - NO_OPENWHISK_API_MGMT=true # no openwhisk api management support
     - IGNORE_CERTS=true # apache-composer needs this, because it doesn't obey INSECURE_SSL in wskprops
