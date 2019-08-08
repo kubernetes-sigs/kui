@@ -28,6 +28,10 @@ const { cli } = ui
 const testRepo = 'test-repo.git'
 const testClone = 'test-clone'
 
+/** skip the tests if we aren't doing a webpack+proxy test run */
+const runTheTests = process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true'
+const pit = runTheTests ? it : xit
+
 function gitInit(tmpdir: string) {
   return new Promise((resolve, reject) => {
     exec(`git init --bare ${testRepo}`, { cwd: tmpdir }, (error, stdout, stderr) => {
@@ -81,7 +85,8 @@ function makeBranch(branchName: string, tmpdir: string) {
   return checkout(branchName, tmpdir, '-b')
 }
 
-common.localDescribe('Tab completion for git branches', function(this: common.ISuite) {
+const suiteName = `Tab completion for git branches ${process.env.MOCHA_RUN_TARGET || ''}`
+describe(suiteName, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -93,37 +98,42 @@ common.localDescribe('Tab completion for git branches', function(this: common.IS
   const branch3 = 'zzz' // should be fully distinct from branch1 and branch2
 
   let tmpdir: string
-  it('should create temporary directory', () =>
-    new Promise((resolve, reject) => {
-      createTemporaryDirectory((err, path) => {
-        if (err) {
-          reject(err)
-        } else {
-          tmpdir = path
-          resolve()
-        }
+  pit(
+    'should create temporary directory',
+    () =>
+      new Promise((resolve, reject) => {
+        createTemporaryDirectory((err, path) => {
+          if (err) {
+            reject(err)
+          } else {
+            tmpdir = path
+            console.log(`tmpdir for ${suiteName}: ${tmpdir}`)
+            resolve()
+          }
+        })
       })
-    }))
+  )
 
-  it('should git init in that temporary directory', () => gitInit(tmpdir))
-  it('should git init in that temporary directory', () => gitClone(tmpdir))
-  it(`should make branch ${branch1} in that temporary directory`, () => makeBranch(branch1, tmpdir))
-  it(`should make branch ${branch2} in that temporary directory`, () => makeBranch(branch2, tmpdir))
-  it(`should make branch ${branch3} in that temporary directory`, () => makeBranch(branch3, tmpdir))
-  it('should checkout master', () => checkout('master', tmpdir))
+  pit('should git init in that temporary directory', () => gitInit(tmpdir))
+  pit('should git clone in that temporary directory', () => gitClone(tmpdir))
+  pit(`should make branch ${branch1} in that temporary directory`, () => makeBranch(branch1, tmpdir))
+  pit(`should make branch ${branch2} in that temporary directory`, () => makeBranch(branch2, tmpdir))
+  pit(`should make branch ${branch3} in that temporary directory`, () => makeBranch(branch3, tmpdir))
+  pit('should checkout master', () => checkout('master', tmpdir))
 
-  it('should cd to the clone directory', () =>
+  pit('should cd to the clone directory', () =>
     cli
       .do(`cd ${join(tmpdir, testClone)}`, this.app)
       .then(cli.expectOKWithString(tmpdir))
-      .catch(common.oops(this)))
+      .catch(common.oops(this))
+  )
 
-  it(`should tab complete ${branch3} without any options`, () => {
+  pit(`should tab complete ${branch3} without any options`, () => {
     // since branch3 is distinctly named
     return tabby(this.app, `git checkout ${branch3.charAt(0)}`, `git checkout ${branch3}`)
   })
 
-  it(`should tab complete branch names with options`, () => {
+  pit(`should tab complete branch names with options`, () => {
     return tabbyWithOptions(
       this.app,
       `git checkout ${commonBranchNamePrefix.charAt(0)}`, // e.g. git checkout b<tab>
@@ -133,8 +143,8 @@ common.localDescribe('Tab completion for git branches', function(this: common.IS
         click: 0,
         expectedPromptAfterTab: `git checkout ${commonBranchNamePrefix}` // e.g. git checkout b[ranch]
       }
-    )
+    ).catch(common.oops(this, true))
   })
 
-  it('should clean up temporary directory', () => remove(tmpdir))
+  pit('should clean up temporary directory', () => remove(tmpdir))
 })

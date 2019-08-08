@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-import { exec } from 'child_process'
+import * as Debug from 'debug'
 
+import { rexec as $ } from '@kui-shell/core/core/repl'
 import { CommandLine } from '@kui-shell/core/models/command'
 import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
+
+const debug = Debug('plugins/bash-like/tab-completion/git')
 
 /**
  * Tab completion handler for git branch names
  *
  */
 async function completeGitBranches(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
-  const { argvNoOptions: args } = commandLine
+  const args = commandLine.argvNoOptions
   const { toBeCompleted } = spec
 
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
-    return new Promise((resolve, reject) => {
-      // note how we push the prefix filter to the underlying
-      // enumeration command: note the '*' suffix wildcard in the
-      // --list option
-      exec(
-        `git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`,
-        (error, stdout, stderr) => {
-          if (error) {
-            if (stderr) {
-              console.error(stderr)
-            }
-            reject(error)
-          } else {
-            const completions = stdout.split(/[\n\r]/).map(_ => _.replace(/^\s*[*]\s+/, '').trim())
-            resolve(completions)
-          }
-        }
+    try {
+      const completions: string = await $(
+        `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`
       )
-    })
+
+      return completions
+        .split(/[\n\r]/)
+        .filter(_ => _)
+        .map(_ => _.trim())
+    } catch (err) {
+      debug('squashing error from attempted git tab completion', err)
+      return []
+    }
   }
 }
 

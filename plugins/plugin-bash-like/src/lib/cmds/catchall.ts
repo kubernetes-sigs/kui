@@ -47,9 +47,9 @@ export const dispatchToShell = async ({
     ? execOptions
     : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
-  if (isHeadless() || execOptions.raw) {
+  if (isHeadless() || (!inBrowser() && execOptions.raw)) {
     const { doExec } = await import('./bash-like')
-    const response = await doExec(command, eOptions).catch(cleanUpError)
+    const response = await doExec(command.replace(/^! /, ''), eOptions).catch(cleanUpError)
     if (execOptions.raw && typeof response === 'string') {
       try {
         return JSON.parse(response)
