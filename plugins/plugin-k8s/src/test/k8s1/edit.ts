@@ -28,7 +28,7 @@ import {
 
 const kubectl = 'kubectl'
 
-common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
+common.localDescribe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -36,18 +36,14 @@ common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
   const inNamespace = `-n ${ns}`
 
   /** delete the given pod */
-  const deleteIt = (name: string, errOk = false) => {
+  const deleteIt = (name: string) => {
     it(`should delete the pod ${name} via ${kubectl}`, () => {
       return cli
         .do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
         .then(selector => waitForRed(this.app, selector))
         .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
-        .catch(err => {
-          if (!errOk) {
-            return common.oops(this)(err)
-          }
-        })
+        .catch(common.oops(this))
     })
   }
 
@@ -76,17 +72,20 @@ common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
     })
   }
 
-  const editItWithoutSaving = (name: string, N: number, quit: string) => {
+  const editItWithoutSaving = (name: string, quit: string) => {
     it(`should edit it via ${kubectl} edit`, async () => {
-      const res = cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
+      const res = await cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
 
-      const rows = selectors.xtermRows(N)
+      const rows = selectors.xtermRows(res.count)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
 
+      // wait for vi to come up in alt buffer mode
+      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
+
       // hmm.. for some reason we can't type 'wq!' right away
-      await sleep(1000)
+      await sleep(2000)
 
       // quit without saving
       await this.app.client.keys(quit)
@@ -95,7 +94,7 @@ common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
       await this.app.client.waitUntil(() => {
         // first false: not exact
         // second false: don't assert, so that we can waitUntil
-        return res
+        return Promise.resolve(res)
           .then(cli.expectOKWithTextContent('cancelled', false, false))
           .then(() => true)
           .catch(() => false)
@@ -110,9 +109,8 @@ common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
 
   const nginx = 'nginx'
   createIt(nginx)
-  editItWithoutSaving(nginx, 3, ':wq!')
-  editItWithoutSaving(nginx, 4, ':wq')
-  deleteIt(nginx)
+  editItWithoutSaving(nginx, ':wq!')
+  editItWithoutSaving(nginx, ':wq')
 
   deleteNS(this, ns)
 })

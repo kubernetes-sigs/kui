@@ -201,7 +201,7 @@ const getStatusFromConditions = (response: KubeResource) => {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
     conditions.sort((a, b) => -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
-    debug('using condition for status', conditions[0], conditions)
+    // debug('using condition for status', conditions[0], conditions)
 
     const conditionForMessage = conditions.find(_ => _.message) || conditions[0]
 
@@ -281,7 +281,7 @@ export const getStatus = async (
     )} -o json`
     // debug('getStatus', cmd);
     const rawState = await repl.qexec(cmd, undefined, undefined, { raw: true })
-    debug('getStatus rawState', apiVersion, rawState)
+    // debug('getStatus rawState', apiVersion, rawState)
 
     const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
 

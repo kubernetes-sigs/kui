@@ -119,7 +119,7 @@ exports.prepareElectron = prepareElectron
  */
 exports.before = (ctx, { fuzz, noApp = false, popup, afterStart } = {}) => {
   if (process.env.TRAVIS_JOB_ID) {
-    ctx.retries(2) // don't retry the mocha.it in local testing
+    ctx.retries(1) // don't retry the mocha.it in local testing
   }
 
   return async function() {
@@ -205,11 +205,20 @@ exports.after = (ctx, f) => () => {
 
 exports.oops = ctx => err => {
   if (process.env.MOCHA_RUN_TARGET) {
-    console.log(`Error with mocha target ${process.env.MOCHA_RUN_TARGET}`)
+    console.log(`Error: mochaTarget=${process.env.MOCHA_RUN_TARGET} testTitle=${ctx.title}`)
   }
   console.log(err)
 
   if (ctx.app) {
+    try {
+      ctx.app.client.getHTML(ui.selectors.OUTPUT_LAST).then(html => {
+        console.log('here is the output of the last block:')
+        console.log(html)
+      })
+    } catch (err) {
+      console.error('error trying to get the output of the last block', err)
+    }
+
     ctx.app.client.getMainProcessLogs().then(logs =>
       logs.forEach(log => {
         if (log.indexOf('INFO:CONSOLE') < 0) {

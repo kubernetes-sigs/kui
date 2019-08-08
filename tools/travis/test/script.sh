@@ -26,6 +26,11 @@ fi
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$NEEDS_TOP" ]; then
+   "$SCRIPTDIR"/top.sh | tee /tmp/top.out &
+   TOP_PID=$!
+fi
+
 children=()
 childrenNames=()
 childrenStartTimes=()
@@ -147,3 +152,9 @@ fi
 
 wait_and_get_exit_codes "${children[@]}"
 if [ $EXIT_CODE != 0 ]; then exit $EXIT_CODE; fi
+
+if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$NEEDS_TOP" ]; then
+    kill $TOP_PID
+fi
+
+exit $EXIT_CODE

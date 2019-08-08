@@ -94,6 +94,7 @@ function go {
     NO_USAGE_TRACKING=true mocha \
                      -c \
                      --exit \
+                     --reporter ${MOCHA_REPORTER-spec} \
                      --bail \
                      --recursive \
                      --timeout ${TIMEOUT-60000} \

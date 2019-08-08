@@ -41,8 +41,12 @@ export default async (commandTree: CommandRegistrar) => {
   }
 
   if (isHeadless()) {
-    await prefetchShellState()
-    debug('done with state prefetch')
+    try {
+      await prefetchShellState()
+      debug('done with state prefetch')
+    } catch (err) {
+      console.error('error in state prefetch', err)
+    }
   }
 
   return registerCatchAll(commandTree)

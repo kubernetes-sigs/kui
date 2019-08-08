@@ -765,6 +765,19 @@ export const doExec = (
 
         let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
 
+        let alreadyFocused = false
+        const focus = () => {
+          if (!alreadyFocused) {
+            setTimeout(() => {
+              // expensive reflow, async it
+              if (!alreadyFocused) {
+                alreadyFocused = true
+                terminal.focus()
+              }
+            }, 0)
+          }
+        }
+
         const onMessage = async (data: string) => {
           const msg = JSON.parse(data)
 
@@ -781,13 +794,14 @@ export const doExec = (
 
             // now that we've grabbed queued input, focus on the terminal,
             // and it will handle input for now until the process exits
-            setTimeout(() => terminal.focus(), 0) // expensive reflow, async it
+            focus()
           } else if (msg.type === 'data') {
             // plain old data flowing out of the PTY; send it on to the xterm UI
 
             if (enterApplicationModePattern.test(msg.data)) {
               // e.g. less start
               resizer.enterApplicationMode()
+              focus()
             } else if (exitApplicationModePattern.test(msg.data)) {
               // e.g. less exit
               resizer.exitApplicationMode()
@@ -796,6 +810,7 @@ export const doExec = (
               // we need to fast-track this; xterm.js does not invoke the
               // setMode/resetMode handlers till too late; we might've
               // called raw += ... even though we are in alt buffer mode
+              focus()
               resizer.enterAltBufferMode()
             } else if (exitAltBufferPattern.test(msg.data)) {
               // ... same here

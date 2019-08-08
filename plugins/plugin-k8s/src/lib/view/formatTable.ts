@@ -190,7 +190,7 @@ export const formatTable = (
   options,
   preTable: Pair[][]
 ): Table => {
-  debug('formatTable', preTable)
+  // debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
