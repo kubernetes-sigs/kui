@@ -272,7 +272,7 @@ const registerWatcher = (
   // timer handler
   const watchIt = () => {
     if (--watchLimit < 0) {
-      debug('watchLimit exceeded')
+      console.error('watchLimit exceeded')
       job.abort()
     } else {
       try {

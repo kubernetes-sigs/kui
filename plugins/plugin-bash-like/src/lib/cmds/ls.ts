@@ -354,12 +354,14 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
  * ls command handler
  *
  */
-const doLs = (cmd: string) => ({
-  command,
-  execOptions,
-  argvNoOptions: argv,
-  parsedOptions: options
-}: EvaluatorArgs): Promise<true | Table> => {
+const doLs = (cmd: string) => async (opts: EvaluatorArgs) => {
+  const semi = await repl.semicolonInvoke(opts)
+  if (semi) {
+    return semi
+  }
+
+  const { command, execOptions, argvNoOptions: argv, parsedOptions: options } = opts
+
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = findFile(expandHomeDir(filepathAsGiven), {
     safe: true,

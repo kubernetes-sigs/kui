@@ -83,18 +83,14 @@ describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fu
     }
 
     /** delete the given namespace */
-    const deleteNs = (name: string, errOk = false) => {
+    const deleteNs = (name: string) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
         return cli
           .do(`${kubectl} delete namespace ${name}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
-          .catch(err => {
-            if (!errOk) {
-              return common.oops(this)(err)
-            }
-          })
+          .catch(common.oops(this))
       })
     }
 

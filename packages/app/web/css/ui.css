@@ -198,6 +198,12 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .scrollable-auto[data-table-max-rows="10"] {
   max-height: calc(10 * 3em + 2px);
 }
+.kui--repl-subblock:not(:first-child) {
+  padding-top: 1em;
+}
+.kui--repl-subblock:not(:last-child) {
+  padding-bottom: 1em;
+}
 .repl-result {
   display: flex;
   flex-wrap: wrap;

@@ -397,7 +397,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       // synchronous, and --wait defaults to true
       argvWithFileReplacements.push('--wait=false')
     }
-    debug('argvWithFileReplacements', argvWithFileReplacements)
+    // debug('argvWithFileReplacements', argvWithFileReplacements)
 
     const env = Object.assign({}, process.env)
     const cleanupCallback = await possiblyExportCredentials(execOptions as KubeExecOptions, env)
@@ -415,8 +415,13 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     const commandForSpawn = command === 'helm' ? await pickHelmClient(env) : command
     const child = spawn(commandForSpawn, argvWithFileReplacements, {
-      env,
-      shell: true
+      env
+    })
+
+    // this is needed e.g. to handle ENOENT; otherwise the kui process may die with an uncaught exception
+    child.on('error', (err: Error) => {
+      console.error('error spawning kubectl', err)
+      reject(err)
     })
 
     const file = options.f || options.filename
@@ -464,7 +469,8 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
                 debug('resource not found after status check, but that is ok because that is what we wanted')
                 return out
               } else {
-                throw err
+                console.error('error constructing status', err)
+                return err
               }
             })
         } else {
@@ -799,7 +805,12 @@ function helm(opts: EvaluatorArgs) {
 
 const shouldSendToPTY = (argv: string[]): boolean => (argv.length > 1 && argv[1] === 'exec') || argv.includes('|')
 
-function kubectl(opts: EvaluatorArgs) {
+async function kubectl(opts: EvaluatorArgs) {
+  const semi = await repl.semicolonInvoke(opts)
+  if (semi) {
+    return semi
+  }
+
   if (!isHeadless() && shouldSendToPTY(opts.argvNoOptions)) {
     // execOptions.exec = 'qexec'
     debug('redirect exec command to PTY')

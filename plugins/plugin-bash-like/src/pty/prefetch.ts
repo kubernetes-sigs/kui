@@ -28,20 +28,25 @@ import { getLoginShell, setShellAliases } from './server'
  *
  */
 function prefetchEnv() {
-  if (process.env.HOME) {
-    debug('skipping prefetchEnv')
-    return
-  }
-
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
-    exec(`${await getLoginShell()} -l -i -c printenv`, (err, stdout, stderr) => {
+    if (process.env.HOME) {
+      debug('skipping prefetchEnv')
+      return resolve()
+    }
+
+    debug('prefetchEnv')
+    const shell = await getLoginShell()
+    debug('prefetchEnv got shell', shell)
+
+    exec(`${shell} -l -c printenv`, (err, stdout, stderr) => {
       try {
         if (stderr) {
           debug(stderr)
         }
         if (err) {
-          debug('Error retrieving shell ENV', err)
+          debug('error in prefetchEnv 1', err)
+          reject(err)
         } else {
           const env = propertiesParser.parse(stdout.toString())
           debug('got env', env)
@@ -50,11 +55,11 @@ function prefetchEnv() {
               process.env[key] = env[key]
             }
           }
+          resolve()
         }
       } catch (err) {
+        console.error('error in prefetchEnv 2', err)
         reject(err)
-      } finally {
-        resolve()
       }
     })
   })
@@ -65,13 +70,13 @@ function prefetchEnv() {
  *
  */
 function prefetchHome() {
-  if (process.env.HOME) {
-    debug('skipping prefetchHome')
-    return
-  }
-
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
+    if (process.env.HOME) {
+      debug('skipping prefetchHome')
+      return resolve()
+    }
+
     exec('eval echo ~', (err, stdout, stderr) => {
       try {
         if (stderr) {
@@ -106,13 +111,13 @@ function unquote(val: string): string {
  *
  */
 function prefetchAliases() {
-  if (process.platform !== 'darwin') {
-    debug('skipping prefetchAliases')
-    return
-  }
-
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async resolve => {
+    if (process.platform !== 'darwin') {
+      debug('skipping prefetchAliases')
+      return resolve()
+    }
+
     execFile(await getLoginShell(), ['-l', '-i', '-c', 'alias'], (err, stdout, stderr) => {
       try {
         if (stderr) {
@@ -154,7 +159,7 @@ function prefetchAliases() {
 export default () =>
   Promise.all([prefetchEnv(), prefetchAliases(), prefetchHome()])
     .then(() => {
-      if (process.env._HOME) {
+      if (process.env._HOME && !process.env.HOME) {
         process.env.HOME = process.env._HOME
         delete process.env._HOME
       }

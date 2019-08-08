@@ -382,7 +382,7 @@ const getDirectReferences = (command: string) => async ({
   const name = argvNoOptions[idx + 1]
   const namespace = parsedOptions.namespace || parsedOptions.n || 'default'
   const finalState: FinalState = (parsedOptions as FinalStateOptions)['final-state'] || FinalState.NotPendingLike
-  debug('getDirectReferences', file, name)
+  // debug('getDirectReferences', file, name)
 
   /** format a --namespace cli option for the given kubeEntity */
   const ns = ({ metadata = {} } = {}) => {
@@ -523,7 +523,7 @@ const getDirectReferences = (command: string) => async ({
         ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically
         : flatten((await fetchFileString(file)).map(_ => parseYAML(_)))
       ).filter(_ => _) // in case there are empty paragraphs;
-      debug('specs', specs)
+      // debug('specs', specs)
 
       const kubeEntities = Promise.all(
         specs.map(spec => {
@@ -537,7 +537,7 @@ const getDirectReferences = (command: string) => async ({
       if (execOptions.raw) {
         return kubeEntities
       } else {
-        debug('kubeEntities', await kubeEntities)
+        // debug('kubeEntities', await kubeEntities)
         return {
           headerRow: headerRow({ title: file }),
           entities: kubeEntities
@@ -555,7 +555,7 @@ const findControlledResources = async (
   args: EvaluatorArgs,
   kubeEntities: KubeResource[]
 ): Promise<Row[] | KubeResource[]> => {
-  debug('findControlledResources', kubeEntities)
+  // debug('findControlledResources', kubeEntities)
 
   const raw = Object.assign({}, args.execOptions, { raw: true })
   const pods = removeDuplicateResources(
@@ -624,7 +624,7 @@ export const status = (command: string) => async (
   args: EvaluatorArgs
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-  debug('constructing status', args)
+  // debug('constructing status', args)
 
   const doWatch = args.parsedOptions.watch || args.parsedOptions.w
 
@@ -632,7 +632,7 @@ export const status = (command: string) => async (
 
   const direct = await getDirectReferences(command)(args)
 
-  debug('getDirectReferences', direct)
+  // debug('getDirectReferences', direct)
   if (Array.isArray(direct)) {
     const statusResult =
       args.parsedOptions.multi || Array.isArray(direct[0])
@@ -652,15 +652,15 @@ export const status = (command: string) => async (
 
   const controlled = await findControlledResources(args, directEntities)
 
-  debug('direct', maybe, directEntities)
-  debug('controlled', controlled)
+  // debug('direct', maybe, directEntities)
+  // debug('controlled', controlled)
 
   if (controlled.length === 0) {
     if (args.execOptions.raw) {
       return direct
     } else {
       return Promise.all(directEntities.map(formatEntity(args.parsedOptions))).then(formattedEntities => {
-        debug('formatted entities', formattedEntities)
+        // debug('formatted entities', formattedEntities)
         if (direct.headerRow) {
           const statusResult = statusTable([direct.headerRow].concat(...formattedEntities))
           return doWatch && isTable(statusResult)
