@@ -142,7 +142,10 @@ const describe = async ({ command, parsedOptions, execOptions }: EvaluatorArgs) 
   delete noDelegationPlease.delegationOk
 
   const getCmd = command.replace(/summary/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
-  const summaryCmd = command.replace(/get/, 'summary').replace(/(-o|--output)[= ](yaml|json)/, '')
+  const summaryCmd = command
+    .replace(/^_kubectl/, 'kubectl')
+    .replace(/get/, 'summary')
+    .replace(/(-o|--output)[= ](yaml|json)/, '')
   debug('summaryCmd', summaryCmd)
   debug('getCmd', getCmd)
 

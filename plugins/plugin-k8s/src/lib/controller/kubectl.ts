@@ -805,7 +805,7 @@ function kubectl(opts: EvaluatorArgs) {
     debug('redirect exec command to PTY')
     const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
     return repl.qexec(`sendtopty ${commandToPTY}`, opts.block, undefined, opts.execOptions)
-  } else if (!inBrowser()) {
+  } else if (!inBrowser() || opts.argvNoOptions[1] === 'summary') {
     debug('invoking _kubectl directly')
     return _kubectl(opts)
   } else {
