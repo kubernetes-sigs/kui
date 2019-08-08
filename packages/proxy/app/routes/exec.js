@@ -31,7 +31,19 @@ const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
 const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
 const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
 
+process.on('uncaughtException', async err => {
+  debug('uncaughtException')
+  debug(err)
+  console.error(err.toString())
+  process.exit(1)
+})
+
+process.on('exit', code => {
+  debug('proxy exiting', code)
+})
+
 async function allocateUser() {
+  debug('allocateUser')
   const uid = undefined
   const gid = undefined
 
@@ -51,6 +63,7 @@ function main(cmdline, execOptions, server, port, host, existingSession) {
       env: Object.assign(execOptions.env || {}, {
         DEBUG: process.env.DEBUG,
         DEVMODE: true,
+        TRAVIS_JOB_ID: process.env.TRAVIS_JOB_ID,
         KUI_HEADLESS: true,
         KUI_REPL_MODE: 'stdout',
         KUI_EXEC_OPTIONS: JSON.stringify(execOptions)
@@ -72,9 +85,11 @@ function main(cmdline, execOptions, server, port, host, existingSession) {
 
       const { wss } = await wssMain(N, server, port, cookie)
 
+      debug('spawning subprocess')
       const child = spawn(process.argv[0], [mainPath, 'bash', 'websocket', 'stdio'], options)
 
       child.on('error', err => {
+        debug('error spawning subprocess', err)
         reject(err)
       })
 

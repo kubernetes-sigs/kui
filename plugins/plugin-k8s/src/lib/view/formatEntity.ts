@@ -43,7 +43,7 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
  *
  */
 export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => async kubeEntity => {
-  debug('formatEntity', kubeEntity)
+  // debug('formatEntity', kubeEntity)
 
   if (!kubeEntity.metadata) {
     return kubeEntity

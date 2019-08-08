@@ -49,6 +49,7 @@ describe('electron apply pod', function(this: common.ISuite) {
               this.app
             )
             .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+            .catch(common.oops(this))
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)

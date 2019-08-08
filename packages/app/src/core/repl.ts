@@ -293,7 +293,7 @@ class InProcessExecutor implements Executor {
     // debug(`repl::exec ${new Date()}`)
     debug('exec', commandUntrimmed)
     const tab = execOptions.tab || cli.getCurrentTab()
-    debug('tab', tab)
+    // debug('tab', tab)
 
     if (!isHeadless()) {
       const storage = JSON.parse(sessionStore().getItem(key)) || {}
@@ -802,7 +802,7 @@ class InProcessExecutor implements Executor {
               (block && block['_isFakeDom'])
             ) {
               // the parent exec will deal with the repl
-              debug('passing control back to prompt processor or headless', response, commandUntrimmed)
+              debug('passing control back to prompt processor or headless')
               return Promise.resolve(response)
             } else {
               // we're the top-most exec, so deal with the repl!
@@ -1035,6 +1035,43 @@ export const encodeComponent = (component: string, quote = '"') => {
     return `${quote}${component}${quote}`
   } else {
     return component
+  }
+}
+
+/**
+ * Map a asynchronous function to an array sequentially from front to
+ * back.
+ *
+ */
+async function promiseEach<T, R>(arr: T[], fn: (t: T) => Promise<R>): Promise<R[]> {
+  const result = []
+  for (const item of arr) {
+    result.push(await fn(item))
+  }
+  return result
+}
+
+/**
+ * If the command is semicolon-separated, invoke each element of the
+ * split separately
+ *
+ */
+export async function semicolonInvoke(opts: EvaluatorArgs) {
+  const commands = opts.command.split(/\s*;\s*/)
+  if (commands.length > 1) {
+    debug('semicolonInvoke', commands)
+
+    const result = await promiseEach(commands.filter(_ => _), async command => {
+      const block = cli.subblock()
+      const entity = await qexec(command, block)
+      if (entity === true) {
+        // pty output
+        return block
+      } else {
+        return entity
+      }
+    })
+    return result
   }
 }
 

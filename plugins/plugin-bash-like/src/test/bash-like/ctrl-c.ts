@@ -21,7 +21,7 @@ import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } f
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors } = ui
 
-describe('Cancel via Ctrl+C', function(this: ISuite) {
+describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
@@ -52,6 +52,8 @@ describe('Cancel via Ctrl+C', function(this: ISuite) {
       // we want the ctrlC to go to the xterm input; we need to wait for it to be visible
       // TODO this belongs elsewhere
       await ui.waitForXtermInput(this.app, res.count)
+
+      await new Promise(resolve => setTimeout(resolve, 2000))
 
       await this.app.client.keys(ui.ctrlC)
       return this.app.client.waitUntil(async () => {

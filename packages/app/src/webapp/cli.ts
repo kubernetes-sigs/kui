@@ -230,6 +230,21 @@ export const getCurrentPromptLeft = (tab: Tab) => {
   return getPromptLeft(getCurrentBlock(tab))
 }
 
+/**
+ * Install a sub-block of output in the given block
+ *
+ */
+export function subblock() {
+  const block = document.createElement('div')
+  const blockResult = document.createElement('div')
+
+  blockResult.classList.add('repl-result')
+  block.classList.add('kui--repl-subblock')
+  block.appendChild(blockResult)
+
+  return block
+}
+
 const doPaste = (text: string) => {
   // const prompt = event.currentTarget
   const lines = text.split(/[\n\r]/)

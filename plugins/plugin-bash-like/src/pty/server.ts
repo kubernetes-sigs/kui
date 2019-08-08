@@ -151,25 +151,46 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  *
  */
 let cachedLoginShell: string
-export const getLoginShell = async (): Promise<string> =>
-  new Promise((resolve, reject) => {
+export const getLoginShell = (): Promise<string> => {
+  debug('getLoginShell')
+
+  return new Promise((resolve, reject) => {
     if (cachedLoginShell) {
+      debug('returning cached login shell', cachedLoginShell)
       resolve(cachedLoginShell)
+    } else if (process.env.SHELL) {
+      debug('returning env.SHELL')
+      resolve(process.env.SHELL)
     } else {
-      exec('/bin/bash -c "echo $SHELL"', (err, stdout, stderr) => {
-        if (err) {
-          console.error(err)
-          if (stderr) {
-            console.error(stderr)
-          }
-          reject(err)
-        } else {
-          cachedLoginShell = stdout.trim()
-          resolve(cachedLoginShell)
+      const defaultShell = process.platform === 'win32' ? 'cmd' : '/bin/bash'
+
+      if (process.env.TRAVIS_JOB_ID !== undefined || process.platform === 'win32') {
+        debug('using defaultShell for travis')
+        cachedLoginShell = defaultShell
+        resolve(cachedLoginShell)
+      } else {
+        try {
+          exec(`${defaultShell} -l -c "echo $SHELL"`, (err, stdout, stderr) => {
+            if (err) {
+              console.error('error in getLoginShell subroutine', err)
+              if (stderr) {
+                console.error(stderr)
+              }
+              reject(err)
+            } else {
+              cachedLoginShell = stdout.trim() || defaultShell
+              debug('login shell', cachedLoginShell)
+              resolve(cachedLoginShell)
+            }
+          })
+        } catch (err) {
+          console.error('error in exec of getLoginShell subroutine', err)
+          resolve(defaultShell)
         }
-      })
+      }
     }
   })
+}
 
 /**
  * Use precomputed shell aliases
@@ -233,7 +254,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
           try {
             const response = await exec(msg.cmdline, Object.assign({}, msg.execOptions, { rethrowErrors: true }))
-            debug('got response', response)
+            debug('got response')
             terminate(
               JSON.stringify({
                 type: 'object',
@@ -242,7 +263,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
               })
             )
           } catch (error) {
-            debug('got error', error)
+            debug('got error', error.message)
             const err: CodedError = error
             terminate(
               JSON.stringify({

@@ -176,7 +176,7 @@ module.exports = {
     compress: true,
     clientLogLevel: 'silent',
     watchOptions: {
-      poll: 1000,
+      poll: process.env.WEBPACK_POLL_INTERVAL || 2000,
       ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
     },
     contentBase: buildDir,

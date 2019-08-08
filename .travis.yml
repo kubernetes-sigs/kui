@@ -45,7 +45,9 @@ env:
   global:
     - TRAVIS_KUBE_VERSION=1.12
     - TRAVIS_HELM_VERSION=2.13.0
+    - NEEDS_TOP=true # uncomment this if you want cpu and memory utilization output
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
+    - WEBPACK_POLL_INTERVAL=200000 # no need to poll for updates while testing
     - WEB_COMPRESS=none
     - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true

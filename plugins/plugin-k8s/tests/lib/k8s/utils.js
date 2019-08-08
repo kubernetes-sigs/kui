@@ -85,7 +85,7 @@ exports.waitForRed = async (app, selector) => {
   return badge
 }
 
-exports.createNS = (prefix = '') => `${prefix}${uuid()}`
+exports.createNS = (prefix = '') => `${prefix}${uuid()}-kui`
 
 exports.allocateNS = (ctx, ns, theCli = cli) => {
   it(`should create a namespace ${ns} `, () => {

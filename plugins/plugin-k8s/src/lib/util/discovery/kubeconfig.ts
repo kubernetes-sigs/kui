@@ -29,6 +29,16 @@ const debug = Debug('k8s/discovery/kubeconfig')
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fillInPATH = (env: Record<string, any>) => {
+  if (!env.PATH) {
+    debug('failsafe for env.PATH')
+    env.PATH = '/usr/bin'
+
+    if (!process.env.PATH) {
+      debug('failsafe for process.env.PATH')
+      process.env.PATH = env.PATH
+    }
+  }
+
   if (!env.PATH.match(/\/usr\/local\/bin/)) {
     debug('adding /usr/local/bin to PATH')
     process.env.PATH = env.PATH = `${env.PATH}${delimiter}/usr/local/bin`
@@ -41,7 +51,7 @@ const fillInPATH = (env: Record<string, any>) => {
 const maybeKUBECONFIG = (file: string): string | void => {
   try {
     const maybe = execSync(`if [ -f ~/${file} ]; then echo $(. ~/${file} && echo $KUBECONFIG); fi`)
-    debug('maybe? KUBECONFIG from %s', file, maybe)
+    debug('maybe? KUBECONFIG from %s', file, maybe.toString())
     if (maybe.length > 1) {
       const kubeconfig = maybe.toString().trim()
       debug('all right! we got a candidate KUBECONFIG from %s', file, kubeconfig)

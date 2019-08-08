@@ -57,21 +57,58 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       .catch(common.oops(this))
   }) */
 
-  it(`should exec vi commands through pty`, async () => {
+  const filename = '/tmp/foo.txt'
+  const typeThisText = 'hello there'
+
+  it(`should use kubectl exec vi through pty`, async () => {
     try {
-      const res = cli.do(`kubectl exec -it ${podName} -n ${ns} vi`, this.app)
-      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`, 5000)
+      const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vi ${filename}`, this.app)
+
+      const rows = selectors.xtermRows(res.count)
+
+      // wait for vi to come up
+      await this.app.client.waitForExist(rows)
+
+      // wait for vi to come up in alt buffer mode
+      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
+
+      const lastRow = async (): Promise<string> => {
+        const text = await this.app.client.getText(`${rows} > div:not(.xterm-hidden-row)`)
+        return text[text.length - 1]
+      }
+
+      // enter insert mode, and wait for INSERT to appear at the bottom
+      await this.app.client.keys('i')
+      await this.app.client.waitUntil(async () => {
+        const txt = await lastRow()
+        return txt && /^I/i.test(txt)
+      })
+
+      // type our input
+      for (let idx = 0; idx < typeThisText.length; idx++) {
+        await this.app.client.keys(typeThisText.charAt(idx))
+        await new Promise(resolve => setTimeout(resolve, 5))
+      }
+      await this.app.client.keys(keys.ESCAPE)
+      await this.app.client.waitUntil(async () => {
+        const txt = await lastRow()
+        return txt && !/^I/i.test(txt)
+      })
 
       await this.app.client.keys(':wq')
       await this.app.client.keys(keys.ENTER)
 
-      await this.app.client.keys(':q')
-      await this.app.client.keys(keys.ENTER)
-
-      await res.then(cli.expectBlank)
+      await cli.expectBlank(res)
     } catch (err) {
       common.oops(this)(err)
     }
+  })
+
+  it('should use kubectl exec to cat the file we just edited', async () => {
+    return cli
+      .do(`kubectl exec ${podName} -n ${ns} -- cat ${filename}`, this.app)
+      .then(cli.expectOKWithString(typeThisText))
+      .catch(common.oops(this))
   })
 
   deleteNS(this, ns)

@@ -19,6 +19,8 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 const { localDescribe } = common
 
+const echoString = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
 localDescribe('directory listing', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
@@ -27,6 +29,30 @@ localDescribe('directory listing', function(this: common.ISuite) {
     cli
       .do(`ls ../../`, this.app)
       .then(cli.expectOKWith('package.json'))
+      .catch(common.oops(this)))
+
+  it('should ls with semicolons 1', () =>
+    cli
+      .do(`ls ../../ ; echo ${echoString}`, this.app)
+      .then(cli.expectOKWith('package.json'))
+      .catch(common.oops(this)))
+
+  it('should ls with semicolons 2', () =>
+    cli
+      .do(`ls ../../ ; echo ${echoString}`, this.app)
+      .then(cli.expectOKWithString(echoString))
+      .catch(common.oops(this)))
+
+  it('should ls with semicolons 3', () =>
+    cli
+      .do(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
+      .then(cli.expectOKWith('package.json'))
+      .catch(common.oops(this)))
+
+  it('should ls with semicolons 4', () =>
+    cli
+      .do(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
+      .then(cli.expectOKWithString(echoString))
       .catch(common.oops(this)))
 
   it('should use ls ../../README.md', () =>
