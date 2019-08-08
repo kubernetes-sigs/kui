@@ -24,7 +24,8 @@ import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-su
  *
  */
 async function getMatchingStrings(cmd: string, spec: TabCompletionSpec): Promise<string[]> {
-  const list: string[] = (await $$(cmd)).split(/[\n\r]/).map(_ => _.replace(/^\w+\//, ''))
+  const completions: string = await $$(cmd)
+  const list: string[] = completions.split(/[\n\r]/).map(_ => _.replace(/^\w+\//, ''))
 
   return list.filter(name => name.startsWith(spec.toBeCompleted))
 }
@@ -34,7 +35,7 @@ async function getMatchingStrings(cmd: string, spec: TabCompletionSpec): Promise
  *
  */
 function optionals(commandLine: CommandLine, filter: (key: string) => boolean = () => true) {
-  const { parsedOptions: options } = commandLine
+  const options = commandLine.parsedOptions
 
   return Object.keys(options)
     .filter(filter)
