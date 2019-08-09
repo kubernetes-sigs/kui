@@ -810,7 +810,7 @@ function kubectl(opts: EvaluatorArgs) {
     return _kubectl(opts)
   } else {
     debug('invoking _kubectl via qexec')
-    const command = opts.command.replace(/^kubectl(\s)/, '_kubectl$1').replace(/^k(\s)/, '_kubectl$1')
+    const command = opts.command.replace(/^kubectl(\s)?/, '_kubectl$1').replace(/^k(\s)?/, '_kubectl$1')
     return repl.qexec(command, opts.block, undefined, {
       tab: opts.tab,
       raw: opts.execOptions.raw,
