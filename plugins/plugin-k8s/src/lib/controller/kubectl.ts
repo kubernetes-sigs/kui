@@ -727,7 +727,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const namespace = options.namespace || options.n || 'default'
         debug('status after kubectl run', entity, namespace)
         repl
-          .qexec(`k status deploy "${entity}" -n "${namespace}"`)
+          .qexec(
+            `k status deploy "${entity}" -n "${namespace}" --final-state ${FinalState.OnlineLike.toString()} --watch`
+          )
           .then(cleanupAndResolve)
           .catch(reject)
       } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
