@@ -126,15 +126,15 @@ if [ -n "$LAYERS" ]; then
             export MOCHA_RUN_TARGET
             export PORT_OFFSET_BASE
 
+            if [ -n "$WAIT_LAYERS" ]; then
+                echo "running these non-headless layers and wait: $WAIT_LAYERS"
+                (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
+            fi
+
             if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$KUI_USE_PROXY" == "true" ]; then
                # for now, we only test k8s2 to give us minimal proxy guards
                (cd packages/tests && ./bin/runMochaLayers.sh k8s2) &
             else
-              if [ -n "$WAIT_LAYERS" ]; then
-                  echo "running these non-headless layers and wait: $WAIT_LAYERS"
-                  (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
-              fi
-
               echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
               (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
             fi
