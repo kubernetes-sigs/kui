@@ -31,6 +31,7 @@ const initialContext = execSync('kubectl config current-context')
   .toString()
   .trim()
 
+// TODO: enable this once proxy can find $HOME on travis
 common.localDescribe('electron context switching', function(this: common.ISuite) {
   before(common.before(this))
   after(
