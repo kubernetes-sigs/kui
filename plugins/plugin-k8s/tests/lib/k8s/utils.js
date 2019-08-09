@@ -36,15 +36,15 @@ exports.waitForGreen = async (app, selector) => {
 
   // expecting a green badge or a blinky yellow badge
   if (await app.client.isExisting(yellowNotBlinkyBadge)) {
-    throw Error(`caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
+    throw Error(`${process.env.MOCHA_RUN_TARGET}: Caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
   }
 
   try {
     await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
   } catch (err) {
-    console.log(`Creation is still yellow after ${process.env.TIMEOUT || 60000}`)
+    console.log(`${process.env.MOCHA_RUN_TARGET}: Creation is still yellow after ${process.env.TIMEOUT || 60000}`)
     const text = await app.client.getText(yellowBadge)
-    console.log(`Creatation status ${text}`)
+    console.log(`${process.env.MOCHA_RUN_TARGET}: Creatation status ${text}`)
   }
 
   await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
@@ -57,32 +57,33 @@ exports.waitForGreen = async (app, selector) => {
  */
 exports.waitForRed = async (app, selector) => {
   const notRepeatingPulse = 'td:not(.repeating-pulse)'
-  const badge = `${selector} ${notRepeatingPulse} badge.red-background`
+  const redBadge = `${selector} ${notRepeatingPulse} badge.red-background`
+  const greenBadge = `${selector} ${notRepeatingPulse} badge.green-background`
   const yellowNotBlinkyBadge = `${selector} ${notRepeatingPulse} badge.yellow-background`
   const yellowBadge = `${selector} badge.yellow-background`
 
   // the green badge should disapper, wait for 5 seconds at max
   try {
-    await app.client.waitForExist(badge.replace('red', 'green'), 5000, true)
+    await app.client.waitForExist(greenBadge, 5000, true)
   } catch (err) {
-    console.log('Deletion is still green after 5000 ms')
+    console.log(`${process.env.MOCHA_RUN_TARGET}: Deletion is still green after 5000 ms`)
   }
 
   // no green badge any more, expecting a red badge or a blinky yellow badge
   if (await app.client.isExisting(yellowNotBlinkyBadge)) {
-    throw Error(`caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
+    throw Error(`${process.env.MOCHA_RUN_TARGET}: Caught a not blinky yellow badge: ${yellowNotBlinkyBadge}`)
   }
 
   try {
     await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
   } catch (err) {
-    console.log(`Deletion is still yellow after ${process.env.TIMEOUT || 60000}`)
+    console.log(`${process.env.MOCHA_RUN_TARGET}: Deletion is still yellow after ${process.env.TIMEOUT || 60000}`)
     const text = await app.client.getText(yellowBadge)
-    console.log(`Deletion status ${text}`)
+    console.log(`${process.env.MOCHA_RUN_TARGET}: Deletion status ${text}`)
   }
 
-  await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
-  return badge
+  await app.client.waitForExist(redBadge, process.env.TIMEOUT || 60000)
+  return redBadge
 }
 
 exports.createNS = (prefix = '') => `${prefix}${uuid()}`

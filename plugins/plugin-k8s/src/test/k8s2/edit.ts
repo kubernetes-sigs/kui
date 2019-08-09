@@ -28,7 +28,7 @@ import {
 
 const kubectl = 'kubectl'
 
-common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
+describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -77,29 +77,46 @@ common.localDescribe('electron kubectl edit', function(this: common.ISuite) {
   }
 
   const editItWithoutSaving = (name: string, N: number, quit: string) => {
-    it(`should edit it via ${kubectl} edit`, async () => {
-      const res = cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
+    it(`should edit it via ${kubectl} edit, and quit via ${quit}`, async () => {
+      try {
+        const res = cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
 
-      const rows = selectors.xtermRows(N)
+        console.log(`typed ${kubectl} edit pod ${name} ${inNamespace}`)
 
-      // wait for vi to come up
-      await this.app.client.waitForExist(rows)
+        const rows = selectors.xtermRows(N)
 
-      // hmm.. for some reason we can't type 'wq!' right away
-      await sleep(1000)
+        // wait for vi to come up
+        await this.app.client.waitForExist(rows)
 
-      // quit without saving
-      await this.app.client.keys(quit)
-      await this.app.client.keys(keys.ENTER)
+        console.log(`got vi ${rows}`)
 
-      await this.app.client.waitUntil(() => {
-        // first false: not exact
-        // second false: don't assert, so that we can waitUntil
-        return res
-          .then(cli.expectOKWithTextContent('cancelled', false, false))
-          .then(() => true)
-          .catch(() => false)
-      })
+        // hmm.. for some reason we can't type 'wq!' right away
+        await sleep(1000)
+
+        console.log('end sleeping')
+
+        // quit without saving
+        await this.app.client.keys(quit)
+        await this.app.client.keys(keys.ENTER)
+
+        console.log('end keys')
+
+        await this.app.client.waitUntil(async () => {
+          // first false: not exact
+          // second false: don't assert, so that we can waitUntil
+          try {
+            const text = await res.then(cli.expectOKWithTextContent('cancelled', false, false))
+            return true
+          } catch (err) {
+            console.log(err)
+            return false
+          }
+        })
+
+        console.log('wait cancelled')
+      } catch (err) {
+        common.oops(this)(err)
+      }
     })
   }
 

@@ -275,16 +275,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
     const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 
-    if (!isHeadless() && isKube && verb === 'edit') {
-      debug('redirecting kubectl edit to shell')
-      execOptions.exec = 'qexec'
-      repl
-        .qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
-        .then(resolve)
-        .catch(reject)
-      return
-    }
-
     //
     // output format option
     //
@@ -797,7 +787,9 @@ function helm(opts: EvaluatorArgs) {
   }
 }
 
-const shouldSendToPTY = (argv: string[]): boolean => (argv.length > 1 && argv[1] === 'exec') || argv.includes('|')
+// send `kubectl exec`, `kubecl edit`, and pipe command to pty
+const shouldSendToPTY = (argv: string[]): boolean =>
+  (argv.length > 1 && (argv[1] === 'exec' || argv[1] === 'edit')) || argv.includes('|')
 
 function kubectl(opts: EvaluatorArgs) {
   if (!isHeadless() && shouldSendToPTY(opts.argvNoOptions)) {
