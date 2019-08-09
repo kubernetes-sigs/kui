@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { Channel } from './channel'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { getCurrentPrompt, getCurrentBlock, setStatus, Tab } from '@kui-shell/core/webapp/cli'
+import { getCurrentPrompt, getPrompt, getCurrentBlock, setStatus, Tab } from '@kui-shell/core/webapp/cli'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { theme as settings, config } from '@kui-shell/core/core/settings'
 
@@ -41,8 +41,24 @@ export function getChannelForTab(tab: Tab): Channel {
  */
 export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
   return new Promise(resolve => {
-    const once = () => {
+    let placeholderChanged = false
+    let previousText: string
+
+    const once = (iter = 0) => {
       debug('trying to establish session', tab)
+
+      if (!block) {
+        block = getCurrentBlock(tab)
+        const prompt = getPrompt(block)
+        prompt.readOnly = true
+        prompt.placeholder = 'Please wait while we connect to your cloud'
+
+        placeholderChanged = true
+        previousText = prompt.value
+        prompt.value = '' // to make the placeholder visible
+
+        setStatus(block, 'processing')
+      }
 
       return qexec('echo initializing session', block, undefined, {
         tab,
@@ -55,6 +71,19 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
         .then(() => {
           try {
             setOnline()
+
+            if (placeholderChanged) {
+              const prompt = getPrompt(block)
+              prompt.readOnly = false
+              prompt.placeholder = settings.placeholder || ''
+              setStatus(block, 'repl-active')
+
+              if (previousText) {
+                prompt.value = previousText
+                previousText = undefined
+              }
+              prompt.focus()
+            }
           } catch (err) {
             console.error('error updating UI to indicate that we are online', err)
           }
@@ -63,7 +92,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
         .catch(err => {
           console.error('error establishing session', err)
           setOffline()
-          setTimeout(once, 2000)
+          setTimeout(() => once(iter + 1), iter < 10 ? 1000 : iter < 100 ? 2000 : 10000)
           return 'Could not establish a new session'
         })
     }
