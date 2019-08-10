@@ -44,7 +44,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { Table } from '@kui-shell/core/webapp/models/table'
-import { ParsedOptions } from '@kui-shell/core/models/command'
+import { ExecType, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import * as ui from './ui'
@@ -653,7 +653,12 @@ export const doExec = (
           resizer.hideCursorOnlyRow()
 
           resizer.destroy()
-          xtermContainer.classList.add('xterm-terminated')
+
+          if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
+            xtermContainer.remove()
+          } else {
+            xtermContainer.classList.add('xterm-terminated')
+          }
         }
 
         const ourUUID = uuid()
@@ -864,15 +869,19 @@ export const doExec = (
                 definitelyNotUsage = true
               }
 
-              pendingWrites++
-              terminal.write(msg.data)
+              if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+                pendingWrites++
+                terminal.write(msg.data)
+              }
             }
           } else if (msg.type === 'exit') {
             // server told us that it is done
             debug('exit', msg.exitCode)
 
             if (pendingTable && pendingTable.body.length === 0) {
-              terminal.write(raw)
+              if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+                terminal.write(raw)
+              }
               pendingTable = undefined
             }
 

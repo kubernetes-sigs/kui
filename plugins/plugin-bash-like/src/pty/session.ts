@@ -122,7 +122,7 @@ function newSessionForTab(tab: Tab) {
         prompt.placeholder = 'Please wait while we connect to your cloud'
         setStatus(block, 'processing')
         placeholderChanged = true
-      }, settings.millisBeforeProxyConnectionWarning || 750)
+      }, settings.millisBeforeProxyConnectionWarning || 250)
 
       await sessionInitialization
 

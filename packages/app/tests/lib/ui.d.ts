@@ -182,6 +182,8 @@ declare class Selectors {
   CURRENT_PROMPT: string
   PROMPT_N: (N: number) => string
   OUTPUT_N: (N: number) => string
+  PROMPT_BLOCK_LAST: string
+  PROMPT_BLOCK_FINAL: string
   OUTPUT_LAST: string
   LIST_RESULTS_N: (N: number) => string
   LIST_RESULTS_BY_NAME_N: (N: number) => string

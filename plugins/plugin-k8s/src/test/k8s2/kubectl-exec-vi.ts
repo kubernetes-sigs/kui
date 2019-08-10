@@ -100,7 +100,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
       await cli.expectBlank(res)
     } catch (err) {
-      common.oops(this)(err)
+      return common.oops(this)(err)
     }
   })
 

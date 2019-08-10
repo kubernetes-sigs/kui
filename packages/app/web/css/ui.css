@@ -1545,6 +1545,7 @@ sidecar .result-as-table .big-top-pad:first-child {
   padding: 0 !important;
   margin: 0 !important;
   border: none !important;
+  min-height: 0; /* important for firefox */
 }
 .not-displayed {
   display: none !important;

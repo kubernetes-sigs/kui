@@ -275,16 +275,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
     const entity = command === 'helm' ? argv[2] : entityType === 'secret' ? argv[4] : argv[3]
 
-    if (!isHeadless() && isKube && verb === 'edit') {
-      debug('redirecting kubectl edit to shell')
-      execOptions.exec = 'qexec'
-      repl
-        .qexec(`! ${rawCommand}`, block, undefined, Object.assign({}, execOptions, { createOutputStream }))
-        .then(resolve)
-        .catch(reject)
-      return
-    }
-
     //
     // output format option
     //
@@ -805,7 +795,8 @@ function helm(opts: EvaluatorArgs) {
   }
 }
 
-const shouldSendToPTY = (argv: string[]): boolean => (argv.length > 1 && argv[1] === 'exec') || argv.includes('|')
+const shouldSendToPTY = (argv: string[]): boolean =>
+  (argv.length > 1 && (argv[1] === 'exec' || argv[1] === 'edit')) || argv.includes('|')
 
 async function kubectl(opts: EvaluatorArgs) {
   const semi = await repl.semicolonInvoke(opts)
@@ -818,7 +809,7 @@ async function kubectl(opts: EvaluatorArgs) {
     debug('redirect exec command to PTY')
     const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
     return repl.qexec(`sendtopty ${commandToPTY}`, opts.block, undefined, opts.execOptions)
-  } else if (!inBrowser()) {
+  } else if (!inBrowser() || opts.argvNoOptions[1] === 'summary') {
     debug('invoking _kubectl directly')
     return _kubectl(opts)
   } else {

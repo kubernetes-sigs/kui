@@ -82,10 +82,10 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
   }
 }
 
-describe('k status kubectl kui headless mode', function(this: common.ISuite) {
+common.localDescribe('k status kubectl kui headless mode', function(this: common.ISuite) {
   doHeadless(this, kubectl)
 })
 
-describe('k status bin/kui headless mode', function(this: common.ISuite) {
+common.localDescribe('k status bin/kui headless mode', function(this: common.ISuite) {
   doHeadless(this, kui)
 })
