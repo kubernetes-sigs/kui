@@ -28,6 +28,10 @@ console.log('explicit compression option?', webCompress || '<not set>')
 console.log('bundle compression disabled?', noCompression)
 console.log('bundle compression useGzip?', useGzip)
 
+// darwin/macos seems to have high cpu utilization without poll
+const pollInterval = process.platform === 'darwin' && (process.env.WEBPACK_POLL_INTERVAL || 2000)
+console.log('webpack poll interval', pollInterval)
+
 const isMonorepo = process.env.KUI_MONO_HOME !== undefined
 if (isMonorepo) {
   console.log('monorepo mode', process.env.KUI_MONO_HOME)
@@ -176,7 +180,7 @@ module.exports = {
     compress: true,
     clientLogLevel: 'silent',
     watchOptions: {
-      poll: process.env.WEBPACK_POLL_INTERVAL || 2000,
+      poll: pollInterval,
       ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
     },
     contentBase: buildDir,
