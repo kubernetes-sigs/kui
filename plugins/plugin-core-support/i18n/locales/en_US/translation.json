@@ -20,8 +20,8 @@
   "themeSetUsageRequiredDocs": "The name of a theme to use",
   "pleaseConfirm": "Please confirm",
   "areYouSure": "Are you sure?",
-  "aboutToExecute": "You are about to execuate the command",
-  "operationCancelled": "Operation cancelled",
+  "aboutToExecute": "You are about to execute the command",
+  "operationCancelled": "Operation canceled",
   "operationConfirmed": "Operation confirmed",
   "yesIAmSure": "Yes, I'm sure",
   "cancel": "Cancel"
