@@ -17,6 +17,7 @@
 import { dirname, join } from 'path'
 
 import eventBus from '@kui-shell/core/core/events'
+import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, ExecType } from '@kui-shell/core/models/command'
 import { UsageModel } from '@kui-shell/core/core/usage-error'
 import { keys } from '@kui-shell/core/webapp/keys'
@@ -58,8 +59,16 @@ export default async (commandTree: CommandRegistrar) => {
         const message = parsedOptions.asking || strings.areYouSure
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
 
-        const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-        injectCSS(join(root, 'web/css/confirm.css'))
+        if (inBrowser()) {
+          console.error('!!!!!!!')
+          injectCSS({
+            css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
+            key: 'plugin-core-support/confirm.css'
+          })
+        } else {
+          const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+          injectCSS(join(root, 'web/css/confirm.css'))
+        }
 
         const confirm = () => {
           const modal = document.createElement('div')

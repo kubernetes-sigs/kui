@@ -85,7 +85,9 @@ selectors.PROCESSING_N = N => `${selectors.PROMPT_BLOCK_N(N)}.processing`
 selectors.CURRENT_PROMPT = `${selectors.CURRENT_PROMPT_BLOCK} input`
 selectors.PROMPT_N = N => `${selectors.PROMPT_BLOCK_N(N)} input`
 selectors.OUTPUT_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result`
-selectors.OUTPUT_LAST = `${selectors.PROMPT_BLOCK}:nth-last-child(2) .repl-result`
+selectors.PROMPT_BLOCK_LAST = `${selectors.PROMPT_BLOCK}:nth-last-child(2)`
+selectors.PROMPT_BLOCK_FINAL = `${selectors.PROMPT_BLOCK}:nth-last-child(1)`
+selectors.OUTPUT_LAST = `${selectors.PROMPT_BLOCK_LAST} .repl-result`
 selectors.LIST_RESULTS_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
 selectors.LIST_RESULTS_BY_NAME_N = N => `${selectors.LIST_RESULTS_N(N)} .entity-name`
 selectors.LIST_RESULT_BY_N_FOR_NAME = (N, name) => `${selectors.LIST_RESULTS_N(N)}[data-name="${name}"]`
@@ -166,11 +168,6 @@ const expectOK = (appAndCount, opt) => {
 
 /** grab focus for the repl */
 const grabFocus = async app => {
-  if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') {
-    // wait for the proxy session to be established
-    await app.client.waitForExist(`${selectors.CURRENT_TAB}.kui--session-init-done`)
-  }
-
   return app.client
     .click(selectors.CURRENT_PROMPT_BLOCK)
     .then(() => app.client.waitForEnabled(selectors.CURRENT_PROMPT_BLOCK))

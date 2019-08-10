@@ -28,7 +28,7 @@ import {
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 
-describe('electron apply pod', function(this: common.ISuite) {
+describe(`${process.env.MOCHA_RUN_TARGET || ''} apply pod`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

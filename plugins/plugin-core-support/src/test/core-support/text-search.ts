@@ -116,8 +116,7 @@ localDescribe('Text search', function(this: ISuite) {
     this.app.client
       .keys([ui.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
-      .then(() => this.app.client.hasFocus('#search-input'))
-      .then(r => assert.ok(r, 'assert if search-input is focused'))
+      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() =>
         this.app.client.waitUntil(async () => {
           await this.app.client.setValue('#search-input', `bojangles${keys.ENTER}`)
@@ -138,8 +137,7 @@ localDescribe('Text search', function(this: ISuite) {
     this.app.client
       .keys([ui.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
-      .then(() => this.app.client.hasFocus('#search-input'))
-      .then(r => assert.ok(r, 'assert if search-input is focused'))
+      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() =>
         this.app.client.waitUntil(async () => {
           await this.app.client.setValue('#search-input', `waldo${keys.ENTER}`)
@@ -159,8 +157,7 @@ localDescribe('Text search', function(this: ISuite) {
     this.app.client
       .keys([ui.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
-      .then(() => this.app.client.hasFocus('#search-input'))
-      .then(r => assert.ok(r, 'assert if search-input is focused'))
+      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() => this.app.electron.clipboard.writeText('grumble'))
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
       .then(() => this.app.client.getValue('#search-input'))
