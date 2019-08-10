@@ -30,7 +30,8 @@ exports.defaultModeForGet = 'summary'
  */
 exports.waitForGreen = async (app, selector) => {
   const notRepeatingPulse = 'td:not(.repeating-pulse)'
-  const badge = `${selector} ${notRepeatingPulse} badge.green-background`
+  const badge = `${selector} badge`
+  const greenBadge = `${selector} ${notRepeatingPulse} badge.green-background`
   const yellowNotBlinkyBadge = `${selector} ${notRepeatingPulse} badge.yellow-background`
   const yellowBadge = `${selector} badge.yellow-background`
 
@@ -42,13 +43,13 @@ exports.waitForGreen = async (app, selector) => {
   try {
     await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
   } catch (err) {
-    console.log(`Creation is still yellow after ${process.env.TIMEOUT || 60000}`)
-    const text = await app.client.getText(yellowBadge)
-    console.log(`Creatation status ${text}`)
+    console.log(`Creation is still yellow after ${process.env.TIMEOUT || 60000} ${selector}`)
+    const text = await app.client.getText(badge)
+    console.log(`Creation status ${text}`)
   }
 
-  await app.client.waitForExist(badge, process.env.TIMEOUT || 60000)
-  return badge
+  await app.client.waitForExist(greenBadge, process.env.TIMEOUT || 60000)
+  return greenBadge
 }
 
 /**

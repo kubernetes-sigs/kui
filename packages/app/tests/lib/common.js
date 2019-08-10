@@ -144,6 +144,15 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart } = {}) => {
     await start()
     ctx.timeout(process.env.TIMEOUT || 60000)
 
+    if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') {
+      // wait for the proxy session to be established
+      try {
+        await ctx.app.client.waitForExist(`${ui.selectors.CURRENT_TAB}.kui--session-init-done`)
+      } catch (err) {
+        throw new Error('error waiting for proxy session init')
+      }
+    }
+
     if (afterStart) {
       await afterStart()
     }
@@ -212,8 +221,12 @@ exports.oops = ctx => err => {
   if (ctx.app) {
     try {
       ctx.app.client.getHTML(ui.selectors.OUTPUT_LAST).then(html => {
-        console.log('here is the output of the last block:')
-        console.log(html)
+        console.log('here is the output of the prior output:')
+        console.log(html.replace(/<style>.*<\/style>/, ''))
+      })
+      ctx.app.client.getHTML(ui.selectors.PROMPT_BLOCK_FINAL).then(html => {
+        console.log('here is the content of the last block:')
+        console.log(html.replace(/<style>.*<\/style>/, ''))
       })
     } catch (err) {
       console.error('error trying to get the output of the last block', err)

@@ -79,6 +79,7 @@ if [ -n "$TRAVIS_JOB_ID" ]; then
 else
     export DISPLAY=:0
 fi
+export DISPLAY
 
 #
 # note that, in the following, passing --bail to mocha means we fail

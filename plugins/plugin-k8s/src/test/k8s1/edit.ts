@@ -28,7 +28,7 @@ import {
 
 const kubectl = 'kubectl'
 
-common.localDescribe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
+describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -67,38 +67,42 @@ common.localDescribe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing(name))
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
   }
 
   const editItWithoutSaving = (name: string, quit: string) => {
     it(`should edit it via ${kubectl} edit`, async () => {
-      const res = await cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
+      try {
+        const res = await cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
 
-      const rows = selectors.xtermRows(res.count)
+        const rows = selectors.xtermRows(res.count)
 
-      // wait for vi to come up
-      await this.app.client.waitForExist(rows)
+        // wait for vi to come up
+        await this.app.client.waitForExist(rows)
 
-      // wait for vi to come up in alt buffer mode
-      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
+        // wait for vi to come up in alt buffer mode
+        await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
-      // hmm.. for some reason we can't type 'wq!' right away
-      await sleep(2000)
+        // hmm.. for some reason we can't type 'wq!' right away
+        await sleep(2000)
 
-      // quit without saving
-      await this.app.client.keys(quit)
-      await this.app.client.keys(keys.ENTER)
+        // quit without saving
+        await this.app.client.keys(quit)
+        await this.app.client.keys(keys.ENTER)
 
-      await this.app.client.waitUntil(() => {
-        // first false: not exact
-        // second false: don't assert, so that we can waitUntil
-        return Promise.resolve(res)
-          .then(cli.expectOKWithTextContent('cancelled', false, false))
-          .then(() => true)
-          .catch(() => false)
-      })
+        await this.app.client.waitUntil(() => {
+          // first false: not exact
+          // second false: don't assert, so that we can waitUntil
+          return Promise.resolve(res)
+            .then(cli.expectOKWithTextContent('cancelled', false, false))
+            .then(() => true)
+            .catch(() => false)
+        })
+      } catch (err) {
+        return common.oops(this)(err)
+      }
     })
   }
 
