@@ -116,7 +116,10 @@ interface HTerminal extends xterm.Terminal {
 
 class Resizer {
   /** our tab */
-  private tab: Tab
+  private readonly tab: Tab
+
+  /** execOptions */
+  private readonly execOptions: ExecOptions
 
   /** exit alt buffer mode async */
   private exitAlt?: NodeJS.Timeout
@@ -139,8 +142,9 @@ class Resizer {
 
   private readonly resizeNow: () => void
 
-  constructor(terminal: xterm.Terminal, tab: Tab) {
+  constructor(terminal: xterm.Terminal, tab: Tab, execOptions: ExecOptions) {
     this.tab = tab
+    this.execOptions = execOptions
     this.terminal = terminal as HTerminal
 
     this.resizeNow = this.resize.bind(this, true)
@@ -321,13 +325,13 @@ class Resizer {
   }
 
   /** flush=true means that it is likely that the dimensions might have changed; false means definitely have not changed */
-  resize(flush = false) {
+  resize(flush = false, force = false) {
     if (this.frozen) {
       return
     }
 
     const { rows, cols } = this.getSize(flush)
-    if (this.terminal.rows !== rows || this.terminal.cols !== cols) {
+    if (this.terminal.rows !== rows || this.terminal.cols !== cols || force) {
       debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
       try {
         if (!isNaN(rows) && !isNaN(cols)) {
@@ -374,7 +378,20 @@ class Resizer {
     if (this.exitAlt) {
       clearTimeout(this.exitAlt)
     }
-    this.tab.classList.add('xterm-alt-buffer-mode')
+
+    /** e.g. `kubectl exec -it mypod -- vi` doesn't seem to have the proper size */
+    if (this.execOptions['pty/force-resize']) {
+      const { rows, cols } = this.getSize(false)
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows + 1 }))
+        setTimeout(() => {
+          this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows }))
+          this.tab.classList.add('xterm-alt-buffer-mode')
+        }, 1)
+      }
+    } else {
+      this.tab.classList.add('xterm-alt-buffer-mode')
+    }
   }
 
   exitAltBufferMode() {
@@ -624,7 +641,7 @@ export const doExec = (
         const doInjectTheme = () => injectFont(terminal, true)
         eventBus.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
-        const resizer = new Resizer(terminal, tab)
+        const resizer = new Resizer(terminal, tab, execOptions)
 
         // respond to font zooming
         const doZoom = () => {

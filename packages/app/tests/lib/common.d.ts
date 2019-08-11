@@ -43,7 +43,7 @@ declare function dockerDescribe (msg: string, f: Function): SuiteFunction
 declare function remoteIt (msg: string, f: Function): TestFunction
 
 // never versus void? https://github.com/Microsoft/TypeScript/issues/13625#issuecomment-274566197
-declare function oops (ctx: Suite): ((err: Error) => never)
+declare function oops (ctx: Suite, wait?: boolean): ((err: Error) => never)
 
 declare function rp (opts: Object): any
 

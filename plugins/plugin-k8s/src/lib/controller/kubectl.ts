@@ -808,7 +808,12 @@ async function kubectl(opts: EvaluatorArgs) {
     // execOptions.exec = 'qexec'
     debug('redirect exec command to PTY')
     const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
-    return repl.qexec(`sendtopty ${commandToPTY}`, opts.block, undefined, opts.execOptions)
+    return repl.qexec(
+      `sendtopty ${commandToPTY}`,
+      opts.block,
+      undefined,
+      Object.assign({}, opts.execOptions, { 'pty/force-resize': opts.argvNoOptions[1] === 'exec' })
+    )
   } else if (!inBrowser() || opts.argvNoOptions[1] === 'summary') {
     debug('invoking _kubectl directly')
     return _kubectl(opts)

@@ -212,52 +212,72 @@ exports.after = (ctx, f) => () => {
   }
 }
 
-exports.oops = ctx => err => {
+exports.oops = (ctx, wait = false) => async err => {
   if (process.env.MOCHA_RUN_TARGET) {
     console.log(`Error: mochaTarget=${process.env.MOCHA_RUN_TARGET} testTitle=${ctx.title}`)
   }
   console.log(err)
 
+  const promises = []
+
   if (ctx.app) {
     try {
-      ctx.app.client.getHTML(ui.selectors.OUTPUT_LAST).then(html => {
-        console.log('here is the output of the prior output:')
-        console.log(html.replace(/<style>.*<\/style>/, ''))
-      })
-      ctx.app.client.getHTML(ui.selectors.PROMPT_BLOCK_FINAL).then(html => {
-        console.log('here is the content of the last block:')
-        console.log(html.replace(/<style>.*<\/style>/, ''))
-      })
+      promises.push(
+        ctx.app.client.getHTML(ui.selectors.OUTPUT_LAST).then(html => {
+          console.log('here is the output of the prior output:')
+          console.log(html.replace(/<style>.*<\/style>/, ''))
+        })
+      )
+      promises.push(
+        ctx.app.client.getHTML(ui.selectors.PROMPT_BLOCK_FINAL).then(html => {
+          console.log('here is the content of the last block:')
+          console.log(html.replace(/<style>.*<\/style>/, ''))
+        })
+      )
     } catch (err) {
       console.error('error trying to get the output of the last block', err)
     }
 
-    ctx.app.client.getMainProcessLogs().then(logs =>
-      logs.forEach(log => {
-        if (log.indexOf('INFO:CONSOLE') < 0) {
-          // don't log console messages, as these will show up in getRenderProcessLogs
-          console.log('MAIN'.bold.cyan, log)
-        }
-      })
+    promises.push(
+      ctx.app.client.getMainProcessLogs().then(logs =>
+        logs.forEach(log => {
+          if (log.indexOf('INFO:CONSOLE') < 0) {
+            // don't log console messages, as these will show up in getRenderProcessLogs
+            console.log('MAIN'.bold.cyan, log)
+          }
+        })
+      )
     )
-    ctx.app.client.getRenderProcessLogs().then(logs =>
-      logs.forEach(log => {
-        if (log.message.indexOf('%c') === -1) {
-          console.log('RENDER'.bold.yellow, log.message.red)
-        } else {
-          // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
-          const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-          console.log('RENDER'.bold.yellow, logMessage)
-        }
-      })
+    promises.push(
+      // filter out the "Not allowed to load local resource" font loading errors
+      ctx.app.client.getRenderProcessLogs().then(logs =>
+        logs
+          .filter(log => !/Not allowed to load local resource/.test(log))
+          .forEach(log => {
+            if (log.message.indexOf('%c') === -1) {
+              console.log('RENDER'.bold.yellow, log.message.red)
+            } else {
+              // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
+              const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
+              console.log('RENDER'.bold.yellow, logMessage)
+            }
+          })
+      )
     )
 
-    ctx.app.client.getText(ui.selectors.OOPS).then(anyErrors => {
-      if (anyErrors) {
-        console.log('Error from the UI'.bold.magenta, anyErrors)
-      }
-    })
+    promises.push(
+      ctx.app.client.getText(ui.selectors.OOPS).then(anyErrors => {
+        if (anyErrors) {
+          console.log('Error from the UI'.bold.magenta, anyErrors)
+        }
+      })
+    )
   }
+
+  if (wait) {
+    await Promise.all(promises)
+  }
+
   // swap these two if you want to debug failures locally
   // return new Promise((resolve, reject) => setTimeout(() => { reject(err) }, 100000))
   throw err
