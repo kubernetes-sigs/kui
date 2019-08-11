@@ -27,7 +27,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -111,7 +111,7 @@ describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         .then(sidecar.expectOpen)
         .then(sidecar.expectMode(defaultModeForGet))
         .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
-        .catch(common.oops(this))
+        .catch(common.oops(this, true))
     })
 
     it(`should flip around on summary tabs via ${kubectl}`, async () => {
@@ -122,7 +122,7 @@ describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         await testRawTab(this)
         await testSummaryTab(this)
       } catch (err) {
-        common.oops(this)(err)
+        await common.oops(this, true)(err)
       }
     })
 
@@ -131,7 +131,6 @@ describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         .do(`${kubectl} summary pod nginx -n ${ns}`, this.app)
         .then(async res => {
           await cli.expectJustOK(res)
-          await this.app.client.click(selectors.BY_NAME('nginx')) // click nginx in the table and expect a new repl output with sidecar open
           await sidecar.expectOpen(this.app)
           await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete')) // click delete button
           await this.app.client.waitForExist('#confirm-dialog')
@@ -142,7 +141,7 @@ describe(`electron summary ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
           })({ app: res.app, count: res.count + 1 })
           await waitForRed(this.app, newResourceSelector)
         })
-        .catch(common.oops(this))
+        .catch(common.oops(this, true))
     })
 
     deleteNS(this, ns)
