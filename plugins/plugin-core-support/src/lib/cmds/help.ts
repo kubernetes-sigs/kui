@@ -15,14 +15,17 @@
  */
 
 import * as Debug from 'debug'
+const debug = Debug('plugins/core-support/help')
+debug('loading')
 
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-const debug = Debug('plugins/core-support/help')
-debug('loading')
+
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-core-support')
 
 /**
  * Respond with a top-level usage document
@@ -48,7 +51,7 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
 
     // this will be our return value
     const topLevelUsage = {
-      title: 'Getting Started',
+      title: strings('helpUsageTitle'),
       header: 'A summary of the top-level command structure.',
       available: [],
       nRowsInViewport: 8 // show a few more rows for top-level help

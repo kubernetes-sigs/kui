@@ -1,0 +1,15 @@
+{
+  "rawMode": "bruto",
+  "cdUsageTitle": "mudar diretório ativo",
+  "cdUsageHeader": "Atualize o diretório atualmente em funcionamento para manipulações do sistema de arquivos locais",
+  "lsUsageTitle": "lista de arquivos locais",
+  "lsUsageHeader": "Listagem de diretórios de seu sistema de arquivos locais",
+  "lsDashAUsageDocs": "Liste todas as entradas, exceto para {0} e {1}",
+  "lsDashaUsageDocs": "Inclua entradas de diretório cujos nomes iniciam com um ponto ({0})",
+  "lsDashcUsageDocs": "Use o horário em que o status do arquivo foi modificado pela última vez para classificação ({0})",
+  "lsDashtUsageDocs": "Classificar por horário da modificação (modificação mais recente primeiro)",
+  "lsDashrUsageDocs": "Inverter a ordem de classificação natural",
+  "lsDashSUsageDocs": "Classificar arquivos por tamanho",
+  "openUsageTitle": "abrir o arquivo",
+  "openUsageHeader": "Visualizar os conteúdos de um arquivo"
+}

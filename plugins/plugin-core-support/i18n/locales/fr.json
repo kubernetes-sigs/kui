@@ -1,0 +1,21 @@
+{
+  "versionUsageTitle": "Informations sur la version",
+  "versionUsageHeader": "Imprimer la version en cours de l'interpréteur de commandes",
+  "versionUsageOptionalDocs": "rechercher également les mises à jour",
+  "helpUsageTitle": "Guide d'initiation",
+  "helpUsageHeader": "Récapitulatif de la structure de commande de niveau supérieur",
+  "screenshotUsageTitle": "Effectuer une capture d'écran",
+  "screenshotUsageHeader": "Effectuer une capture d'écran, éventuellement en indiquant la région de la fenêtre à capturer",
+  "screenshotSidecarUsageDocs": "capturer le contenu du composant sidecar",
+  "screenshotReplUsageDocs": "capturer le contenu REPL",
+  "screenshotLastUsageDocs": "capturer la sortie REPL de la dernière commande",
+  "screenshotFullUsageDocs": "capturer la page entière, en-tête inclus",
+  "screenshotUsageDocs": "capturer la page entière, à l'exception de l'en-tête",
+  "screenshotWhichUsageDocs": "région à capturer",
+  "screenshotNUsageDocs": "la nème région à capturer",
+  "currentTheme": "Vous utilisez le thème par défaut",
+  "themesUsageDocs": "Répertorier les thèmes disponibles",
+  "themeResetUsageDocs": "Restaurer le thème par défaut",
+  "themeSetUsageDocs": "Définir le thème en cours",
+  "themeSetUsageRequiredDocs": "Nom du thème à utiliser"
+}

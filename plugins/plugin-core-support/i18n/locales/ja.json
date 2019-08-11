@@ -1,0 +1,21 @@
+{
+  "versionUsageTitle": "バージョン情報",
+  "versionUsageHeader": "シェルの現行バージョンを出力",
+  "versionUsageOptionalDocs": "また、更新を確認します",
+  "helpUsageTitle": "はじめに",
+  "helpUsageHeader": "最上位のコマンド構造の要約",
+  "screenshotUsageTitle": "スクリーン・ショットの取り込み",
+  "screenshotUsageHeader": "スクリーン・ショットを取り込みます。必要に応じて、取り込むウィンドウの領域を指定します。",
+  "screenshotSidecarUsageDocs": "サイドカーの内容を取り込みます",
+  "screenshotReplUsageDocs": "REPL コンテンツを取り込みます",
+  "screenshotLastUsageDocs": "最後のコマンドの REPL 出力を取り込みます",
+  "screenshotFullUsageDocs": "ヘッダーを含むページ全体を取り込みます",
+  "screenshotUsageDocs": "ヘッダーを除くページ全体を取り込みます",
+  "screenshotWhichUsageDocs": "取り込む領域",
+  "screenshotNUsageDocs": "取り込む n 番目の領域",
+  "currentTheme": "デフォルトのテーマを使用しています",
+  "themesUsageDocs": "使用可能なテーマをリストします",
+  "themeResetUsageDocs": "デフォルトのテーマにリセットします",
+  "themeSetUsageDocs": "現行テーマを設定します",
+  "themeSetUsageRequiredDocs": "使用するテーマの名前"
+}

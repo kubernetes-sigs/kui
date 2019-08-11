@@ -1,0 +1,21 @@
+{
+  "versionUsageTitle": "버전 정보",
+  "versionUsageHeader": "쉘의 현재 버전 인쇄",
+  "versionUsageOptionalDocs": "업데이트도 확인",
+  "helpUsageTitle": "시작하기",
+  "helpUsageHeader": "최상위 레벨 명령 구조 요약",
+  "screenshotUsageTitle": "스크린샷 캡처",
+  "screenshotUsageHeader": "필요에 따라 캡처할 창의 구역을 지정하여 스크린샷을 캡처하십시오.",
+  "screenshotSidecarUsageDocs": "사이드카 컨텐츠 캡처",
+  "screenshotReplUsageDocs": "REPL 컨텐츠 캡처",
+  "screenshotLastUsageDocs": "마지막 명령의 REPL 출력 캡처",
+  "screenshotFullUsageDocs": "헤더를 포함하여 전체 페이지 캡처",
+  "screenshotUsageDocs": "헤더를 제외하고 전체 페이지 캡처",
+  "screenshotWhichUsageDocs": "캡처할 구역",
+  "screenshotNUsageDocs": "캡처할 n번째 구역",
+  "currentTheme": "기본 테마 사용 중",
+  "themesUsageDocs": "사용 가능한 테마 나열",
+  "themeResetUsageDocs": "기본 테마로 재설정",
+  "themeSetUsageDocs": "현재 테마 설정",
+  "themeSetUsageRequiredDocs": "사용할 테마의 이름"
+}

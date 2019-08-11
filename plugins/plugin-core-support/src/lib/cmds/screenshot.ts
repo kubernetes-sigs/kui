@@ -25,6 +25,9 @@ import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-core-support')
+
 /** number of seconds before the screenshot-captured UI disappears automatically */
 const SECONDS_TILL_AUTO_CLOSE = 10
 
@@ -35,33 +38,33 @@ const SECONDS_TILL_AUTO_CLOSE = 10
 const usage = {
   strict: 'screenshot',
   command: 'screenshot',
-  title: 'Capture screenshot',
-  header: 'Capture a screenshot, optionally specifying which region of the window to capture.',
+  title: strings('screenshotUsageTitle'),
+  header: strings('screenshotUsageHeader'),
   example: 'screenshot [which]',
   detailedExample: [
-    { command: 'screenshot sidecar', docs: 'capture the sidecar contents' },
-    { command: 'screenshot repl', docs: 'capture the REPL contents' },
+    { command: 'screenshot sidecar', docs: strings('screenshotSidecarUsageDocs') },
+    { command: 'screenshot repl', docs: strings('screenshotReplUsageDocs') },
     {
       command: 'screenshot last',
-      docs: 'capture the REPL output of the last command'
+      docs: strings('screenshotLastUsageDocs')
     },
     {
       command: 'screenshot full',
-      docs: 'capture the entire page, including header'
+      docs: strings('screenshotFullUsageDocs')
     },
     {
       command: 'screenshot',
-      docs: 'capture the entire page, except for header'
+      docs: strings('screenshotUsageDocs')
     }
   ],
   optional: [
     {
       name: 'which',
       positional: true,
-      docs: 'the region to capture',
+      docs: strings('screenshotWhichUsageDocs'),
       allowed: ['sidecar', 'repl', 'full', 'last', 'nth']
     },
-    { name: '--nth', docs: 'the nth region to capture', numeric: true }
+    { name: '--nth', docs: strings('screenshotNUsageDocs'), numeric: true }
   ]
 }
 
@@ -184,7 +187,7 @@ export default async (commandTree: CommandRegistrar) => {
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         if (inBrowser()) {
-          const error = new Error('Command not yet supported when running in a browser')
+          const error = new Error(strings('notSupportedInBrowser'))
           error['code'] = 500
           reject(error)
         }
@@ -211,13 +214,13 @@ export default async (commandTree: CommandRegistrar) => {
 
           if (which === 'last' && !selector) {
             // sanity check the last option
-            return reject(new Error('You requested to screenshot the last REPL output, but this is the first command'))
+            return reject(new Error(strings('screenshotREPLError')))
           } else if (!selector) {
             // either we couldn't find the area to
             return reject(new UsageError({ usage }))
           } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
             // sanity check the sidecar option
-            return reject(new Error('You requested to screenshot the sidecar, but it is not currently open'))
+            return reject(new Error(strings('screenshotSidecarNotOpen')))
           } else if (which === 'nth') {
             if (N === undefined) {
               return reject(new Error('You must provide a numeric value for the "nth" argument'))
@@ -228,7 +231,7 @@ export default async (commandTree: CommandRegistrar) => {
           if (!dom) {
             // either we couldn't find the area to capture :(
             console.error('bad selector', selector)
-            return reject(new Error('Internal Error: could not identify the screen region to capture'))
+            return reject(new Error(strings('screenshotInternalError')))
           }
 
           // remove any hover effects on the capture screenshot button

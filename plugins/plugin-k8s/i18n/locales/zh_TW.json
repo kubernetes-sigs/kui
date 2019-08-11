@@ -1,0 +1,22 @@
+{
+  "startedOn": "開始日期",
+  "createdOn": "建立於",
+  "sidecarToolbarText": "您正在使用唯讀檢視模式",
+  "contextsTableTitle": "Kubernetes 環境定義",
+  "deleteButtonBalloon": "刪除此資源",
+  "createButtonBalloon": "建立此資源",
+  "summarySidecarMode": "摘要",
+  "lastAppliedSidecarMode": "前次套用",
+  "previousSidecarMode": "前一個",
+  "latestSidecarMode": "最新",
+  "status": "狀態",
+  "saveSidecarMode": "儲存",
+  "revertSidecarMode": "回復",
+  "allTableTitle": "全部",
+  "keditUsageRequiredDocs": "kubernetes 資源檔或類型",
+  "keditUsageDocs": "編輯資源定義檔案",
+  "keditUsageOptionalDocs": "要檢視之檔案中的資源",
+  "conditions": "條件",
+  "logs": "日誌",
+  "containers": "儲存器"
+}

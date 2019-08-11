@@ -1,0 +1,15 @@
+{
+  "rawMode": "原始",
+  "cdUsageTitle": "更改工作目录",
+  "cdUsageHeader": "更新当前工作目录以用于本地文件系统操作",
+  "lsUsageTitle": "本地文件列表",
+  "lsUsageHeader": "本地文件系统的目录列表",
+  "lsDashAUsageDocs": "列出所有条目，{0} 和 {1} 除外",
+  "lsDashaUsageDocs": "包含名称以句点开头的目录条目 ({0})",
+  "lsDashcUsageDocs": "使用上次更改文件状态的时间进行排序 ({0})",
+  "lsDashtUsageDocs": "按修改时间进行排序（最近修改排第一）",
+  "lsDashrUsageDocs": "颠倒自然排序顺序",
+  "lsDashSUsageDocs": "按大小对文件进行排序",
+  "openUsageTitle": "打开文件",
+  "openUsageHeader": "查看文件的内容"
+}

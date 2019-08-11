@@ -1,0 +1,15 @@
+{
+  "rawMode": "raw",
+  "cdUsageTitle": "modifica directory di lavoro",
+  "cdUsageHeader": "Aggiorna la directory di lavoro corrente per le operazioni del file system locale",
+  "lsUsageTitle": "elenco file locale",
+  "lsUsageHeader": "Elenco di directory del file system locale",
+  "lsDashAUsageDocs": "Elenca tutte le voci tranne {0} e {1}",
+  "lsDashaUsageDocs": "Includi le voci di directory in cui nomi iniziano con un punto ({0}",
+  "lsDashcUsageDocs": "Utilizza l'orario dell'ultima modifica di stato del file per l'ordinamento ({0})",
+  "lsDashtUsageDocs": "Ordina per orario di modifica (prima la modifica più recente)",
+  "lsDashrUsageDocs": "Inverti il criterio di ordinamento naturale",
+  "lsDashSUsageDocs": "Ordina file per dimensione",
+  "openUsageTitle": "apri file",
+  "openUsageHeader": "Visualizza il contenuto di un file"
+}
