@@ -111,7 +111,7 @@ export const deployHTMLViaOpenWhisk = location =>
             } /*, {decodeEntities: true} */
           )
 
-          parser.write(data)
+          parser.write(data.toString())
           parser.end()
 
           // wait for the promises to complete
