@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors } from '@kui-shell/core/tests/lib/ui'
+import { cli, keys, selectors, getTextContent } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -77,6 +77,12 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         return text[text.length - 1]
       }
 
+      // wait for the filename to show up in the pty
+      await this.app.client.waitUntil(async () => {
+        const txt = await getTextContent(this.app, rows)
+        return txt.indexOf(filename) >= 0
+      })
+
       // enter insert mode, and wait for INSERT to appear at the bottom
       await this.app.client.keys('i')
       await this.app.client.waitUntil(async () => {
@@ -100,7 +106,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
       await cli.expectBlank(res)
     } catch (err) {
-      return common.oops(this)(err)
+      await common.oops(this, true)(err)
     }
   })
 

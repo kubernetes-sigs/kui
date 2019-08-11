@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors, sidecar, sleep } from '@kui-shell/core/tests/lib/ui'
+import { cli, keys, selectors, sidecar, sleep, getTextContent } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   waitForRed,
@@ -59,15 +59,8 @@ describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
-
-        // now click on the table row
-        this.app.client.click(`${selector} .clickable`)
-        await sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectMode(defaultModeForGet))
-          .then(sidecar.expectShowing(name))
       } catch (err) {
-        return common.oops(this)(err)
+        await common.oops(this, true)(err)
       }
     })
   }
@@ -85,8 +78,11 @@ describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function
         // wait for vi to come up in alt buffer mode
         await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
-        // hmm.. for some reason we can't type 'wq!' right away
-        await sleep(2000)
+        // wait for apiVersion: v<something> to show up in the pty
+        await this.app.client.waitUntil(async () => {
+          const txt = await getTextContent(this.app, rows)
+          return /apiVersion: v/.test(txt)
+        })
 
         // quit without saving
         await this.app.client.keys(quit)
@@ -101,7 +97,7 @@ describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function
             .catch(() => false)
         })
       } catch (err) {
-        return common.oops(this)(err)
+        await common.oops(this, true)(err)
       }
     })
   }
