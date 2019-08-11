@@ -20,7 +20,7 @@
   "dependencies": {},
   "devDependencies": {
     "@lerna/bootstrap": "3.16.2",
-    "electron": "5.0.8"
+    "electron": "5.0.9"
   },
   "husky": {
     "hooks": {
