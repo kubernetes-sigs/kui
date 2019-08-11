@@ -1,0 +1,21 @@
+{
+  "versionUsageTitle": "Versionsinformationen",
+  "versionUsageHeader": "Aktuelle Version der Shell ausgeben",
+  "versionUsageOptionalDocs": "Auch auf Aktualisierungen prüfen",
+  "helpUsageTitle": "Erste Schritte",
+  "helpUsageHeader": "Zusammenfassung der Befehlsstruktur der höchsten Ebene",
+  "screenshotUsageTitle": "Screenshot aufzeichnen",
+  "screenshotUsageHeader": "Zeichnen Sie einen Screenshot auf und geben Sie optional an, welcher Bereich des Fensters aufgezeichnet werden soll.",
+  "screenshotSidecarUsageDocs": "Inhalt des Sidecars aufzeichnen",
+  "screenshotReplUsageDocs": "REPL-Inhalt aufzeichnen",
+  "screenshotLastUsageDocs": "REPL-Ausgabe des letzten Befehls aufzeichnen",
+  "screenshotFullUsageDocs": "Gesamte Seite einschließlich des Headers aufzeichnen",
+  "screenshotUsageDocs": "Gesamte Seite außer dem Header aufzeichnen",
+  "screenshotWhichUsageDocs": "Zu erfassender Bereich",
+  "screenshotNUsageDocs": "n-ter zu erfassender Bereich",
+  "currentTheme": "Sie verwenden das Standardmotiv",
+  "themesUsageDocs": "Verfügbare Motive auflisten",
+  "themeResetUsageDocs": "Auf Standardmotiv zurücksetzen",
+  "themeSetUsageDocs": "Aktuelles Motiv festlegen",
+  "themeSetUsageRequiredDocs": "Der Name des zu verwendenden Motivs"
+}

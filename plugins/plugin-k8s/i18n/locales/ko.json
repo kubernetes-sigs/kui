@@ -1,0 +1,22 @@
+{
+  "startedOn": "시작일",
+  "createdOn": "작성일",
+  "sidecarToolbarText": "읽기 전용 보기 모드임",
+  "contextsTableTitle": "Kubernetes 컨텍스트",
+  "deleteButtonBalloon": "이 리소스 삭제",
+  "createButtonBalloon": "이 리소스 작성",
+  "summarySidecarMode": "요약",
+  "lastAppliedSidecarMode": "마지막 적용",
+  "previousSidecarMode": "이전",
+  "latestSidecarMode": "최신",
+  "status": "상태",
+  "saveSidecarMode": "저장",
+  "revertSidecarMode": "되돌리기",
+  "allTableTitle": "모두",
+  "keditUsageRequiredDocs": "kubernetes 리소스 파일 또는 유형",
+  "keditUsageDocs": "리소스 정의 파일 편집",
+  "keditUsageOptionalDocs": "볼 파일 내의 리소스",
+  "conditions": "조건",
+  "logs": "로그",
+  "containers": "컨테이너"
+}

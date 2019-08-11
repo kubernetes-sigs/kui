@@ -1,0 +1,21 @@
+{
+  "versionUsageTitle": "Informações sobre Versão",
+  "versionUsageHeader": "Imprimir a versão atual do Shell",
+  "versionUsageOptionalDocs": "verificar também atualizações",
+  "helpUsageTitle": "Como Começar",
+  "helpUsageHeader": "Um resumo da estrutura de comando de nível superior",
+  "screenshotUsageTitle": "Capturar captura de tela",
+  "screenshotUsageHeader": "Faça uma captura de tela, especificando, opcionalmente, qual região da janela será capturada.",
+  "screenshotSidecarUsageDocs": "capturar os conteúdos do sidecar",
+  "screenshotReplUsageDocs": "capturar os conteúdos do REPL",
+  "screenshotLastUsageDocs": "capturar a saída do REPL do último comando",
+  "screenshotFullUsageDocs": "capturar a página inteira, incluindo o cabeçalho",
+  "screenshotUsageDocs": "capturar a página inteira, exceto o cabeçalho",
+  "screenshotWhichUsageDocs": "a região a ser capturada",
+  "screenshotNUsageDocs": "a enésima região a ser capturada",
+  "currentTheme": "Você está usando o tema padrão",
+  "themesUsageDocs": "Listar temas disponíveis",
+  "themeResetUsageDocs": "Reconfigurar para o tema padrão",
+  "themeSetUsageDocs": "Configurar o tema atual.",
+  "themeSetUsageRequiredDocs": "O nome de um tema a ser usado"
+}

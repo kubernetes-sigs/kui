@@ -25,7 +25,8 @@ import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { getCurrentPrompt, Tab } from '@kui-shell/core/webapp/cli'
 import repl = require('@kui-shell/core/core/repl')
 
-import strings = require('@kui-shell/plugin-core-support/i18n/locales/en_US/translation.json')
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-core-support')
 
 const usage: UsageModel = {
   command: 'confirm',
@@ -35,13 +36,13 @@ const usage: UsageModel = {
   optional: [
     {
       name: '--asking',
-      docs: 'Confirmation message'
+      docs: strings('confirmationMessage')
     }
   ],
   required: [
     {
       name: 'command',
-      docs: 'Command to be executed'
+      docs: strings('commandToBeExecuted')
     }
   ]
 }
@@ -56,11 +57,10 @@ export default async (commandTree: CommandRegistrar) => {
     ({ tab, argvNoOptions, parsedOptions, execOptions }) =>
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
-        const message = parsedOptions.asking || strings.areYouSure
+        const message = parsedOptions.asking || strings('areYouSure')
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
 
         if (inBrowser()) {
-          console.error('!!!!!!!')
           injectCSS({
             css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
             key: 'plugin-core-support/confirm.css'
@@ -88,9 +88,9 @@ export default async (commandTree: CommandRegistrar) => {
             }, 0)
 
             if (success) {
-              resolve(strings.operationConfirmed)
+              resolve(strings('operationConfirmed'))
             } else {
-              reject(strings.operationCancelled)
+              reject(strings('operationCancelled'))
             }
           }
           const cancel = () => destroy(false)
@@ -160,7 +160,7 @@ export default async (commandTree: CommandRegistrar) => {
           const headerText = document.createElement('p')
           headerText.classList.add('bx--modal-header__heading')
           headerText.classList.add('bx--type-beta')
-          headerText.innerText = strings.pleaseConfirm
+          headerText.innerText = strings('pleaseConfirm')
 
           header.appendChild(headerText)
 
@@ -179,7 +179,7 @@ export default async (commandTree: CommandRegistrar) => {
           content.classList.add('confirm-content')
           const confirmMessage = document.createElement('div')
           confirmMessage.classList.add('confirm-message')
-          confirmMessage.innerHTML = `<p>${strings.aboutToExecute}<br><strong>${command}</strong><br>${message}</p>`
+          confirmMessage.innerHTML = `<p>${strings('aboutToExecute')}<br><strong>${command}</strong><br>${message}</p>`
           content.appendChild(confirmMessage)
 
           footer.classList.add('bx--modal-footer')
@@ -193,14 +193,14 @@ export default async (commandTree: CommandRegistrar) => {
           cancelButton.classList.add('bx--btn--secondary')
           cancelButton.classList.add('button-custon')
           cancelButton.setAttribute('type', 'button')
-          cancelButton.innerText = strings.cancel
+          cancelButton.innerText = strings('cancel')
           cancelButton.onclick = cancel
 
           continueButton.classList.add('bx--btn')
           continueButton.classList.add('bx--btn--danger')
           continueButton.classList.add('button-custon')
           continueButton.setAttribute('type', 'button')
-          continueButton.innerText = strings.yesIAmSure
+          continueButton.innerText = strings('yesIAmSure')
           continueButton.onclick = exec
 
           // temporarily disable the repl

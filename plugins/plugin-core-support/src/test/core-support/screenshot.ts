@@ -55,7 +55,9 @@ localDescribe('screenshot', function(this: ISuite) {
   it('should fail take screenshot last as the first command', () =>
     cli
       .do(`screenshot last`, this.app)
-      .then(cli.expectError(0, 'You requested to screenshot the last REPL output, but this is the first command')))
+      .then(
+        cli.expectError(0, 'You requested to screenshot the last command line output, but this is the first command')
+      ))
 
   it('should fail to take screenshot with bogus arg', () =>
     cli.do(`screenshot goober`, this.app).then(cli.expectError(500, 'Capture a screenshot'))) // part of the usage message
