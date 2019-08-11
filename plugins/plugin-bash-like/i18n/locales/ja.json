@@ -1,0 +1,15 @@
+{
+  "rawMode": "raw",
+  "cdUsageTitle": "作業ディレクトリーの変更",
+  "cdUsageHeader": "ローカル・ファイル・システム操作の現行作業ディレクトリーを更新",
+  "lsUsageTitle": "ローカル・ファイル・リスト",
+  "lsUsageHeader": "ローカル・ファイル・システムのディレクトリー・リスト",
+  "lsDashAUsageDocs": "{0} と {1} を除くすべてのエントリーをリストします",
+  "lsDashaUsageDocs": "名前がドットで始まるディレクトリー・エントリーを含めます ({0}",
+  "lsDashcUsageDocs": "ファイル状況が最後に変更された時刻をソートに使用します ({0})",
+  "lsDashtUsageDocs": "変更された時刻でソート (最近変更された時刻が最初になる)",
+  "lsDashrUsageDocs": "自然なソート順を逆にします",
+  "lsDashSUsageDocs": "サイズでファイルをソート",
+  "openUsageTitle": "ファイルを開く",
+  "openUsageHeader": "ファイルの内容を表示"
+}

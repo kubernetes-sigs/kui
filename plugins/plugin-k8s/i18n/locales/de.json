@@ -1,0 +1,22 @@
+{
+  "startedOn": "Gestartet am",
+  "createdOn": "Erstellt am",
+  "sidecarToolbarText": "Sie verwenden den schreibgeschützten Anzeigemodus",
+  "contextsTableTitle": "Kubernetes-Kontexte",
+  "deleteButtonBalloon": "Diese Ressource löschen",
+  "createButtonBalloon": "Diese Ressource erstellen",
+  "summarySidecarMode": "Zusammenfassung",
+  "lastAppliedSidecarMode": "zuletzt angewendet",
+  "previousSidecarMode": "Vorheriger",
+  "latestSidecarMode": "Neuester",
+  "status": "Status",
+  "saveSidecarMode": "Speichern",
+  "revertSidecarMode": "Zurücksetzen",
+  "allTableTitle": "Alle",
+  "keditUsageRequiredDocs": "Eine Kubernetes-Ressourcendatei oder -art",
+  "keditUsageDocs": "Ressourcendefinitionsdatei bearbeiten",
+  "keditUsageOptionalDocs": "Eine Ressource in der anzuzeigenden Datei",
+  "conditions": "Bedingungen",
+  "logs": "Protokolle",
+  "containers": "Container"
+}

@@ -530,8 +530,9 @@ export async function initElectron(
     return promise
   } else if (!electron) {
     debug('loading electron')
-    electron = await import('electron')
-    app = electron.app
+    const Electron = await import('electron')
+    electron = Electron
+    app = Electron.app
 
     if (!app) {
       // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron
@@ -559,7 +560,7 @@ export async function initElectron(
       // DEBUG=* or DEBUG=main
       const env = Object.assign({}, process.env, windowOptions)
       delete env.KUI_HEADLESS
-      const child = spawn(electron, args, {
+      const child = spawn(Electron.toString(), args, {
         stdio: debug.enabled ? 'inherit' : 'ignore',
         env
       })

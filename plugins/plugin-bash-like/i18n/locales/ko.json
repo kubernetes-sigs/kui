@@ -1,0 +1,15 @@
+{
+  "rawMode": "원시",
+  "cdUsageTitle": "작업 디렉토리 변경",
+  "cdUsageHeader": "로컬 파일 시스템 조작을 위한 현재 작업 디렉토리 업데이트",
+  "lsUsageTitle": "로컬 파일 목록",
+  "lsUsageHeader": "로컬 파일 시스템의 디렉토리 목록",
+  "lsDashAUsageDocs": "{0} 및 {1}을(를) 제외한 모든 항목 나열",
+  "lsDashaUsageDocs": "이름이 점으로 시작하는 디렉토리 항목 포함({0}",
+  "lsDashcUsageDocs": "파일 상태가 정렬을 위해 마지막으로 변경된 시간 사용({0})",
+  "lsDashtUsageDocs": "수정된 시간 기준 정렬(가장 최근에 수정된 사항이 처음에 옴)",
+  "lsDashrUsageDocs": "자연 정렬 순서 반전",
+  "lsDashSUsageDocs": "크기별 파일 정렬",
+  "openUsageTitle": "파일 열기",
+  "openUsageHeader": "파일의 컨텐츠 보기"
+}

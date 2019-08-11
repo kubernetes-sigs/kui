@@ -1,0 +1,15 @@
+{
+  "rawMode": "unformatiert",
+  "cdUsageTitle": "Arbeitsverzeichnis ändern",
+  "cdUsageHeader": "Aktuelles Arbeitsverzeichnis für Änderungen des lokalen Dateisystems ändern",
+  "lsUsageTitle": "Liste der lokalen Dateien",
+  "lsUsageHeader": "Verzeichnisliste des lokalen Dateisystems",
+  "lsDashAUsageDocs": "Alle Einträge auflisten, mit Ausnahme von {0} und {1}",
+  "lsDashaUsageDocs": "Verzeichniseinträge einschließen, deren Namen mit einem Punkt beginnen ({0})",
+  "lsDashcUsageDocs": "Zeit der letzten Dateistatusänderung  zum Sortieren verwenden ({0})",
+  "lsDashtUsageDocs": "Nach Änderungszeit sortieren (zuletzt geänderte zuerst)",
+  "lsDashrUsageDocs": "Normale Sortierreihenfolge umkehren",
+  "lsDashSUsageDocs": "Dateien nach Größe sortieren",
+  "openUsageTitle": "Datei öffnen",
+  "openUsageHeader": "Inhalt einer Datei anzeigen"
+}

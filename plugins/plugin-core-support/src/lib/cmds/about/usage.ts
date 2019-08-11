@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-core-support')
+
 export default {
   version: {
     strict: 'version',
     command: 'version',
-    title: 'Version Information',
-    header: 'Print the current version of the Shell',
+    title: strings('versionUsageTitle'),
+    header: strings('versionUsageHeader'),
     example: 'version',
     optional: [
       {
         name: '--update-check',
         alias: '-u',
-        docs: 'also check for updates'
+        docs: strings('versionUsageOptionalDocs')
       }
     ]
   }

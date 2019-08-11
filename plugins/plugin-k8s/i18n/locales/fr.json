@@ -1,0 +1,22 @@
+{
+  "startedOn": "Démarré le",
+  "createdOn": "Créé le",
+  "sidecarToolbarText": "Vous êtes en mode d'affichage lecture seule",
+  "contextsTableTitle": "Contextes Kubernetes",
+  "deleteButtonBalloon": "Supprimer cette ressource",
+  "createButtonBalloon": "Créer cette ressource",
+  "summarySidecarMode": "récapitulatif",
+  "lastAppliedSidecarMode": "dernière application",
+  "previousSidecarMode": "précédent",
+  "latestSidecarMode": "La dernière",
+  "status": "statut",
+  "saveSidecarMode": "sauvegarder",
+  "revertSidecarMode": "revenir",
+  "allTableTitle": "tout",
+  "keditUsageRequiredDocs": "Type ou fichier de ressources Kubernetes",
+  "keditUsageDocs": "Editer un fichier de définition de ressource",
+  "keditUsageOptionalDocs": "ressource au sein du fichier à afficher",
+  "conditions": "conditions",
+  "logs": "journaux",
+  "containers": "conteneurs"
+}
