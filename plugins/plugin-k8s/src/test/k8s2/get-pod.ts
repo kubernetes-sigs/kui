@@ -242,6 +242,18 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
     it(`should click on containers sidecar tab and show containers table`, testContainersTab)
 
+    it(`should be able to show table with grep`, async () => {
+      try {
+        const res = await cli.do(`${kubectl} get pods ${inNamespace} | grep nginx`, this.app)
+        const rows = selectors.xtermRows(res.count)
+
+        await this.app.client.waitForExist(rows)
+        await cli.expectOKWithString('nginx')
+      } catch (err) {
+        await common.oops(this, true)(err)
+      }
+    })
+
     it(`should delete the sample pod from URL via ${kubectl}`, () => {
       return cli
         .do(
