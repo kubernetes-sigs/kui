@@ -795,6 +795,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   display: flex;
   align-items: center;
   flex: 1;
+  overflow: hidden;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
@@ -802,6 +803,12 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
   display: none !important;
+}
+sidecar
+  .sidecar-bottom-stripe-toolbar
+  .sidecar-toolbar-text:not([data-type])
+  + .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:not(:empty) {
+  flex: 1;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
@@ -822,9 +829,11 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] 
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
   font-size: 0.75em;
-  display: flex;
-  align-items: center;
+  display: block;
   letter-spacing: 0.32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
   display: flex;
@@ -846,7 +855,7 @@ sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
   padding: 0 1em;
   display: flex;
-  flex: 1;
+  flex: initial;
 }
 sidecar .sidecar-bottom-stripe-toolbar .fill-container.flush-right > * + * {
   margin-left: 1.5em;
