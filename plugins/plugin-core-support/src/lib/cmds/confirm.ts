@@ -31,7 +31,7 @@ const strings = i18n('plugin-core-support')
 const usage: UsageModel = {
   command: 'confirm',
   strict: 'confirm',
-  example: 'confirm [--asking <confirmation message>] --then <your-command-to-execute>',
+  example: 'confirm [--asking <confirmation message>] <your-command-to-execute>',
   docs: 'Confirmation Modal',
   optional: [
     {
