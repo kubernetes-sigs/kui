@@ -33,6 +33,10 @@ import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
 import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
+
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-bash-like')
+
 const debug = Debug('plugins/bash-like/cmds/general')
 
 export const doExec = (
@@ -203,8 +207,8 @@ const usage = {
   cd: {
     strict: 'cd',
     command: 'cd',
-    title: 'change working directory',
-    header: 'Update the current working directory for local filesystem manipulations',
+    title: strings('cdUsageTitle'),
+    header: strings('cdUsageHeader'),
     optional: localFilepath
   }
 }

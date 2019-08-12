@@ -39,20 +39,23 @@ import generateForm from '../view/form'
 
 import repl = require('@kui-shell/core/core/repl')
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('k8s/controller/kedit')
 
 const usage = {
   kedit: {
     command: 'kedit',
     strict: 'kedit',
-    docs: 'Edit a resource definition file',
+    docs: strings('keditUsageDocs'),
     example: 'kedit @seed/cloud-functions/function/echo.yaml',
-    required: [{ name: 'file', file: true, docs: 'A kubernetes resource file or kind' }],
+    required: [{ name: 'file', file: true, docs: strings('keditUsageRequiredDocs') }],
     optional: [
       {
         name: 'resource',
         positional: true,
-        docs: 'A resource within the file to view'
+        docs: strings('keditUsageOptionalDocs')
       }
     ]
   }

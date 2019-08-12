@@ -19,6 +19,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { Row } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
+import repl = require('@kui-shell/core/core/repl')
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -27,9 +28,10 @@ import { TrafficLight } from '../../model/states'
 import insertView from '../insert-view'
 import { getActiveView, formatTable } from '../formatMultiTable'
 
-const debug = Debug('k8s/view/modes/containers')
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
 
-import repl = require('@kui-shell/core/core/repl')
+const debug = Debug('k8s/view/modes/containers')
 
 /** for drilldown back button */
 const viewName = 'Containers'
@@ -44,6 +46,7 @@ export const containersButton = (command: string, resource: Resource, overrides?
     {},
     {
       mode: 'containers',
+      label: strings('containers'),
       direct: {
         plugin: 'k8s',
         module: 'lib/view/modes/containers',

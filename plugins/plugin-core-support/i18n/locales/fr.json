@@ -13,9 +13,9 @@
   "screenshotUsageDocs": "capturer la page entière, à l'exception de l'en-tête",
   "screenshotWhichUsageDocs": "région à capturer",
   "screenshotNUsageDocs": "la nème région à capturer",
-  "currentTheme": "Vous utilisez le thème par défaut",
-  "themesUsageDocs": "Répertorier les thèmes disponibles",
-  "themeResetUsageDocs": "Restaurer le thème par défaut",
-  "themeSetUsageDocs": "Définir le thème en cours",
-  "themeSetUsageRequiredDocs": "Nom du thème à utiliser"
+  "theme.currentTheme": "Vous utilisez le thème par défaut",
+  "theme.usageDocs": "Répertorier les thèmes disponibles",
+  "theme.resetUsageDocs": "Restaurer le thème par défaut",
+  "theme.setUsageDocs": "Définir le thème en cours",
+  "theme.setUsageRequiredDocs": "Nom du thème à utiliser"
 }

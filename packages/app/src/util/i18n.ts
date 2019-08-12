@@ -18,20 +18,26 @@ export default (plugin: string): ((key: string) => string) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/locales/en_US.json`)
 
-  const locale = typeof navigator !== 'undefined' && navigator.language
+  const locale = process.env.LOCALE || (typeof navigator !== 'undefined' && navigator.language)
 
   const i18n = (locale: string): Record<string, string> => {
     try {
-      return locale && require(`@kui-shell/${plugin}/i18n/locales/${locale}.json`)
+      return (locale && require(`@kui-shell/${plugin}/i18n/locales/${locale}.json`)) || defaultStrings
     } catch (err) {
-      console.error('Could not find translation for given locale', locale)
-      return defaultStrings
+      try {
+        return (
+          (locale && require(`@kui-shell/${plugin}/i18n/locales/${locale.replace(/-.*$/, '')}.json`)) || defaultStrings
+        )
+      } catch (err) {
+        console.error('Could not find translation for given locale', locale)
+        return defaultStrings
+      }
     }
   }
 
   const _strings = i18n(locale)
 
   return function(key: string): string {
-    return _strings[key] || defaultStrings[key]
+    return _strings[key] || defaultStrings[key] || key
   }
 }

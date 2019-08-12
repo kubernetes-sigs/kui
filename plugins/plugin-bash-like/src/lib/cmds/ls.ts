@@ -27,6 +27,10 @@ import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/cor
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
+
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-bash-like')
+
 const debug = Debug('plugins/bash-like/cmds/ls')
 
 /** flatten an array of arrays */
@@ -390,31 +394,31 @@ const doLs = (cmd: string) => async (opts: EvaluatorArgs) => {
 
 const usage = (command: string) => ({
   command,
-  title: 'local file list',
-  header: 'Directory listing of your local filesystem',
+  title: strings('lsUsageTitle'),
+  header: strings('lsUsageHeader'),
   noHelpAlias: true,
   optional: localFilepath.concat([
-    { name: '-A', boolean: true, docs: 'List all entries except for . and ..' },
+    { name: '-A', boolean: true, docs: strings('lsDashAUsageDocs') },
     {
       name: '-a',
       boolean: true,
-      docs: 'Include directory entries whose names begin with a dot (.)'
+      docs: strings('lsDashaUsageDocs')
     },
     {
       name: '-c',
       boolean: true,
-      docs: 'Use time when file status was last changed for sorting (-t)'
+      docs: strings('lsDashcUsageDocs')
     },
     { name: '-l', boolean: true, hidden: true },
     { name: '-h', boolean: true, hidden: true },
     {
       name: '-t',
       boolean: true,
-      docs: 'Sort by time modified (most recently modified first)'
+      docs: strings('lsDashtUsageDocs')
     },
-    { name: '-r', boolean: true, docs: 'Reverse the natural sort order' },
+    { name: '-r', boolean: true, docs: strings('lsDashrUsageDocs') },
     { name: '-s', boolean: true, hidden: true }, // "show size", which we always do; so hidden: true
-    { name: '-S', boolean: true, docs: 'Sort files by size' }
+    { name: '-S', boolean: true, docs: strings('lsDashSUsageDocs') }
   ])
 })
 

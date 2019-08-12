@@ -24,6 +24,9 @@ import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { Resource, KubeResource } from '../../model/resource'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('k8s/view/modes/last-applied')
 
 /**
@@ -57,6 +60,7 @@ export const lastAppliedMode: ModeRegistration<KubeResource> = {
     try {
       return {
         mode: 'last applied',
+        label: strings('lastApplied'),
         leaveBottomStripeAlone: true,
         direct: {
           plugin: 'k8s',

@@ -54,6 +54,9 @@ import helmGet from './helm/get'
 
 import repl = require('@kui-shell/core/core/repl')
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface KubeExecOptions extends ExecOptions {
   /*  credentials?: {
@@ -224,8 +227,7 @@ const usage = (command: string): UsageModel => ({
   optional: [
     {
       name: '-f',
-      file: true,
-      docs: 'Filename, directory, or URL to files to use to create the resource'
+      file: true
     }
   ]
 })
@@ -611,8 +613,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           {
             mode: 'result',
             direct: rawCommand,
-            label:
-              verb === 'describe' ? 'describe' : output === 'json' || output === 'yaml' ? output.toUpperCase() : output,
+            label: strings(
+              verb === 'describe' ? 'describe' : output === 'json' || output === 'yaml' ? output.toUpperCase() : output
+            ),
             defaultMode: true
           }
         ]
@@ -699,7 +702,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           subtext,
           toolbarText: {
             type: 'info',
-            text: 'You are in read-only view mode'
+            text: strings('readonly')
           },
           noCost: true, // don't display the cost in the UI
           modes,

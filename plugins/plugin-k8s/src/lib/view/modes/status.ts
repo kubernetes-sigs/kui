@@ -27,6 +27,9 @@ import repl = require('@kui-shell/core/core/repl')
 import { CodedError } from '@kui-shell/core/models/errors'
 import { Table, MultiTable } from '@kui-shell/core/webapp/models/table'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('k8s/view/modes/status')
 
 /**
@@ -39,6 +42,7 @@ export const statusButton = (command: string, resource: Resource, finalState: Fi
     {},
     {
       mode: 'status',
+      label: strings('status'),
       direct: {
         plugin: 'k8s',
         module: 'lib/view/modes/status',

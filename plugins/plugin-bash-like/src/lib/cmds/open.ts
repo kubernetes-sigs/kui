@@ -29,6 +29,9 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-bash-like')
+
 declare let hljs
 const debug = Debug('plugins/bash-like/cmds/open')
 
@@ -129,8 +132,8 @@ const open = async (tab: Tab, filepath: string, hljs) => {
 const usage = {
   strict: 'open',
   command: 'open',
-  title: 'open file',
-  header: 'View the contents a file',
+  title: strings('openUsageTitle'),
+  header: strings('openUsageHeader'),
   optional: localFilepath
 }
 

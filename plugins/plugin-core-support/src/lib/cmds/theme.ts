@@ -26,6 +26,9 @@ import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
 import { theme as settings, env } from '@kui-shell/core/core/settings'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-core-support')
+
 const debug = Debug('plugins/core-support/theme')
 
 /**
@@ -50,23 +53,23 @@ const usage = {
   themes: {
     command: 'themes',
     strict: 'themes',
-    docs: 'List available themes'
+    docs: strings('theme.usageDocs')
   },
   list: {
     command: 'list',
     strict: 'list',
-    docs: 'List available themes'
+    docs: strings('theme.usageDocs')
   },
   reset: {
     command: 'reset',
     strict: 'reset',
-    docs: 'Reset to default theme'
+    docs: strings('theme.resetUsageDocs')
   },
   set: {
     command: 'set',
     strict: 'set',
     docs: 'Set the current theme',
-    required: [{ name: 'string', docs: 'The name of a theme to use' }]
+    required: [{ name: 'string', docs: strings('theme.setUsageRequiredDocs') }]
   }
 }
 
@@ -183,7 +186,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
   const themeModel = (settings.themes || []).find(_ => _.name === theme)
   if (!themeModel) {
     debug('could not find theme', theme, settings)
-    const error = new Error('Unknown theme')
+    const error = new Error(strings('theme.unknown'))
     error['code'] = 404
     throw error
   }
@@ -303,11 +306,11 @@ export const plugin = (commandTree: CommandRegistrar) => {
   })
 
   // returns the current persisted theme choice; helpful for debugging
-  commandTree.listen(
-    '/theme/current',
-    async () => (await getPersistedThemeChoice()) || 'You are using the default theme',
-    { noAuthOk: true, inBrowserOk: true, hidden: true }
-  ) // for debugging
+  commandTree.listen('/theme/current', async () => (await getPersistedThemeChoice()) || strings('theme.currentTheme'), {
+    noAuthOk: true,
+    inBrowserOk: true,
+    hidden: true
+  }) // for debugging
 
   commandTree.listen('/theme/reset', resetToDefault, {
     usage: usage.reset,

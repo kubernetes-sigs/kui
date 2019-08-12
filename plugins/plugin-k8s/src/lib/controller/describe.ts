@@ -36,6 +36,9 @@ import {
 import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('k8s/controller/summary')
 
 /**
@@ -60,6 +63,7 @@ const renderDescribe = async (
   const modes: SidecarMode[] = [
     {
       mode: 'summary',
+      label: strings('summary'),
       defaultMode: true,
       direct: summaryCmd,
       execOptions: { delegationOk: true },
@@ -99,10 +103,10 @@ const renderDescribe = async (
     isEntity: true,
     duration,
     badges: badges.filter(x => x),
-    createdOnString: resource.status && resource.status.startTime ? 'Started on ' : 'Created on ',
+    createdOnString: resource.status && resource.status.startTime ? strings('startedOn') : strings('createdOn'),
     toolbarText: {
       type: 'info',
-      text: 'You are in read-only view mode'
+      text: strings('readonly')
     },
     resource,
     modes,
