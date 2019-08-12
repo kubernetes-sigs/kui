@@ -453,7 +453,13 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
         return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => pexec(entity.onclick, { tab })
+      entityNameClickable.onclick = () => {
+        if (!entity.onclickExec || entity.onclickExec === 'pexec') {
+          pexec(entity.onclick, { tab })
+        } else {
+          qexec(entity.onclick, undefined, undefined, { tab })
+        }
+      }
     } else {
       entityNameClickable.onclick = entity.onclick
     }
