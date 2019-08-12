@@ -92,6 +92,7 @@
   opacity: 0;
   width: 0;
   height: 0;
+  pointer-events: none;
 }
 #sidecar.is-modified .custom-header-content .editor-status:not(.is-new) .is-modified,
 #sidecar:not(.is-modified) .custom-header-content .editor-status:not(.is-new) .is-up-to-date,
@@ -100,6 +101,7 @@
   opacity: 1;
   width: auto;
   height: auto;
+  pointer-events: unset;
 }
 
 /* wskflow container while editing compositions */
