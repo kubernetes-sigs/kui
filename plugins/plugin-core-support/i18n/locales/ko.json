@@ -13,9 +13,9 @@
   "screenshotUsageDocs": "헤더를 제외하고 전체 페이지 캡처",
   "screenshotWhichUsageDocs": "캡처할 구역",
   "screenshotNUsageDocs": "캡처할 n번째 구역",
-  "currentTheme": "기본 테마 사용 중",
-  "themesUsageDocs": "사용 가능한 테마 나열",
-  "themeResetUsageDocs": "기본 테마로 재설정",
-  "themeSetUsageDocs": "현재 테마 설정",
-  "themeSetUsageRequiredDocs": "사용할 테마의 이름"
+  "theme.currentTheme": "기본 테마 사용 중",
+  "theme.usageDocs": "사용 가능한 테마 나열",
+  "theme.resetUsageDocs": "기본 테마로 재설정",
+  "theme.setUsageDocs": "현재 테마 설정",
+  "theme.setUsageRequiredDocs": "사용할 테마의 이름"
 }

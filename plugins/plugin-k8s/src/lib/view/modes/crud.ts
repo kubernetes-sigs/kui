@@ -18,12 +18,14 @@ import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import makeButton from './button'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 export const createResourceButton = (fn?): SidecarMode =>
   makeButton(
     {
       mode: 'create',
-      fontawesome: 'fas fa-plus-circle',
-      balloon: 'Create this resource'
+      label: strings('createResource')
     },
     fn
   )
@@ -32,8 +34,7 @@ export const deleteResourceButton = (fn?): SidecarMode =>
   makeButton(
     {
       mode: 'delete',
-      label: 'Delete',
-      balloon: 'Delete this resource'
+      label: strings('deleteResource')
     },
     fn
   )

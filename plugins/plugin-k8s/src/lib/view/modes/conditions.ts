@@ -25,6 +25,9 @@ import { Resource, KubeResource, KubeStatusCondition } from '../../model/resourc
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('k8s/view/modes/conditions')
 
 /**
@@ -37,6 +40,7 @@ export const conditionsButton = (command: string, resource: Resource, overrides?
     {},
     {
       mode: 'conditions',
+      label: strings('conditions'),
       direct: {
         plugin: 'k8s',
         module: 'lib/view/modes/conditions',

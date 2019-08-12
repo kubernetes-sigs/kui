@@ -19,6 +19,9 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import repl = require('@kui-shell/core/core/repl')
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const usage = {
   context: command => ({
     command,
@@ -67,7 +70,7 @@ const addClickHandlers = (table: Table, execOptions): Table => {
   return new Table({
     header: table.header,
     body: body,
-    title: 'Kubernetes Contexts'
+    title: strings('contextsTableTitle')
   })
 }
 

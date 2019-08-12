@@ -571,8 +571,9 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
 /** format the creation time of a resource */
 const createdOn = (resource: MetadataBearing, entity: CustomSpec): HTMLElement => {
   const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
-  const prefixText =
-    /* resource.status && resource.status.startTime ? 'Started on ' : */ entity.createdOnString || 'Created on '
+  const prefixText = /* resource.status && resource.status.startTime ? 'Started on ' : */ entity.createdOnString
+    ? `${entity.createdOnString} `
+    : 'Created on '
 
   if (!startTime) {
     return

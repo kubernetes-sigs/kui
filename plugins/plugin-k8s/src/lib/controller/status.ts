@@ -24,6 +24,7 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
 import { Row, Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { CodedError } from '@kui-shell/core/models/errors'
+import repl = require('@kui-shell/core/core/repl')
 
 import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory } from '../util/util'
@@ -32,15 +33,11 @@ import { CRDResource, KubeResource } from '../model/resource'
 import { States, FinalState } from '../model/states'
 
 import { formatContextAttr, formatEntity } from '../view/formatEntity'
-const debug = Debug('k8s/controller/status')
-debug('loading')
-import repl = require('@kui-shell/core/core/repl')
 
-const strings = {
-  allContexts: 'Resources Across All Contexts',
-  currentContext: 'This is your current context',
-  notCurrentContext: 'This is not your current context'
-}
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
+const debug = Debug('k8s/controller/status')
 
 /** administartive core controllers that we want to ignore */
 const adminCoreFilter = '-l provider!=kubernetes'
@@ -276,7 +273,7 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
           // icon to represent kubernetes cluster/context
           const thisContextIsCurrent = (await currentContext) === name
           const tableCSS = thisContextIsCurrent ? 'selected-row' : ''
-          const balloon = thisContextIsCurrent ? strings.currentContext : strings.notCurrentContext
+          const balloon = thisContextIsCurrent ? strings['currentContext'] : strings['notCurrentContext']
 
           if (!parsedOptions.multi) {
             return Promise.all(resources.map(formatEntity(parsedOptions, name)))
@@ -305,10 +302,10 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
       return []
     } else {
       const header = headerRow({
-        title: parsedOptions.all ? strings.allContexts : await currentContext,
+        title: parsedOptions.all ? strings['allContexts'] : await currentContext,
         context: true,
         tableCSS: 'selected-row',
-        balloon: strings.currentContext
+        balloon: strings['currentContext']
       })
       return [header].concat(resources)
     }

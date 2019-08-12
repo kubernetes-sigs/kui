@@ -21,6 +21,9 @@ import { KubeResource } from '../model/resource'
 import { Formatter } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('k8s/util/created-on')
 
 /**
@@ -54,7 +57,7 @@ export const format = (parameters: Parameters): Element => {
   const { resource } = parameters
 
   const startTime = (resource.status && resource.status.startTime) || resource.metadata.creationTimestamp
-  const prefixText = resource.status && resource.status.startTime ? 'Started on ' : 'Created on '
+  const prefixText = resource.status && resource.status.startTime ? strings('startedOn') : strings('createdOn')
 
   const message = document.createElement('div')
   const datePart = document.createElement('span')

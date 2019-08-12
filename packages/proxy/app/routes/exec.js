@@ -51,7 +51,7 @@ async function allocateUser() {
 }
 
 /** thin wrapper on child_process.exec */
-function main(cmdline, execOptions, server, port, host, existingSession) {
+function main(cmdline, execOptions, server, port, host, existingSession, locale) {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     const { uid, gid } = existingSession || (await allocateUser())
@@ -61,6 +61,7 @@ function main(cmdline, execOptions, server, port, host, existingSession) {
       gid,
       cwd: execOptions.cwd || '/',
       env: Object.assign(execOptions.env || {}, {
+        LOCALE: locale,
         DEBUG: process.env.DEBUG,
         DEVMODE: true,
         TRAVIS_JOB_ID: process.env.TRAVIS_JOB_ID,
@@ -166,6 +167,9 @@ module.exports = (server, port) => {
         // so that our catch (err) below is used upon command execution failure
         execOptions.rethrowErrors = true
 
+        // parse the user's locale
+        const locale = req.headers['accept-language'] && req.headers['accept-language'].split(',')[0]
+
         /* if (execOptions && execOptions.credentials) {
           // FIXME this should not be a global
           setValidCredentials(execOptions.credentials)
@@ -178,7 +182,15 @@ module.exports = (server, port) => {
           }) */
         const sessionToken = parseCookie(req.headers.cookie || '')[sessionKey]
         const session = sessionToken && JSON.parse(Buffer.from(sessionToken, 'base64').toString('utf-8'))
-        const { type, cookie, response } = await main(command, execOptions, server, port, req.headers.host, session)
+        const { type, cookie, response } = await main(
+          command,
+          execOptions,
+          server,
+          port,
+          req.headers.host,
+          session,
+          locale
+        )
 
         if (cookie) {
           res.header('Access-Control-Allow-Credentials', 'true')

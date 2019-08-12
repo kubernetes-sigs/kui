@@ -13,9 +13,9 @@
   "screenshotUsageDocs": "Gesamte Seite außer dem Header aufzeichnen",
   "screenshotWhichUsageDocs": "Zu erfassender Bereich",
   "screenshotNUsageDocs": "n-ter zu erfassender Bereich",
-  "currentTheme": "Sie verwenden das Standardmotiv",
-  "themesUsageDocs": "Verfügbare Motive auflisten",
-  "themeResetUsageDocs": "Auf Standardmotiv zurücksetzen",
-  "themeSetUsageDocs": "Aktuelles Motiv festlegen",
-  "themeSetUsageRequiredDocs": "Der Name des zu verwendenden Motivs"
+  "theme.currentTheme": "Sie verwenden das Standardmotiv",
+  "theme.usageDocs": "Verfügbare Motive auflisten",
+  "theme.resetUsageDocs": "Auf Standardmotiv zurücksetzen",
+  "theme.setUsageDocs": "Aktuelles Motiv festlegen",
+  "theme.setUsageRequiredDocs": "Der Name des zu verwendenden Motivs"
 }
