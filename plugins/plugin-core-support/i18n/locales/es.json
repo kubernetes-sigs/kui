@@ -13,9 +13,9 @@
   "screenshotUsageDocs": "capturar toda la página, excepto la cabecera",
   "screenshotWhichUsageDocs": "la zona que debe capturarse",
   "screenshotNUsageDocs": "la zona n que debe capturarse",
-  "currentTheme": "Está utilizando el tema predeterminado",
-  "themesUsageDocs": "Listar temas disponibles",
-  "themeResetUsageDocs": "Restablecer el tema predeterminado",
-  "themeSetUsageDocs": "Establecer el tema actual.",
-  "themeSetUsageRequiredDocs": "El nombre de un tema que debe utilizarse"
+  "theme.currentTheme": "Está utilizando el tema predeterminado",
+  "theme.usageDocs": "Listar temas disponibles",
+  "theme.resetUsageDocs": "Restablecer el tema predeterminado",
+  "theme.setUsageDocs": "Establecer el tema actual.",
+  "theme.setUsageRequiredDocs": "El nombre de un tema que debe utilizarse"
 }

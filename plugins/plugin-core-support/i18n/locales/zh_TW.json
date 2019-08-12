@@ -13,9 +13,9 @@
   "screenshotUsageDocs": "擷取整個頁面，但標頭除外",
   "screenshotWhichUsageDocs": "要擷取的區域",
   "screenshotNUsageDocs": "要擷取的第 N 個區域",
-  "currentTheme": "您正在使用預設佈景主題",
-  "themesUsageDocs": "列出可用的佈景主題",
-  "themeResetUsageDocs": "重設為預設佈景主題",
-  "themeSetUsageDocs": "設定現行佈景主題",
-  "themeSetUsageRequiredDocs": "要使用的佈景主題名稱"
+  "theme.currentTheme": "您正在使用預設佈景主題",
+  "theme.usageDocs": "列出可用的佈景主題",
+  "theme.resetUsageDocs": "重設為預設佈景主題",
+  "theme.setUsageDocs": "設定現行佈景主題",
+  "theme.setUsageRequiredDocs": "要使用的佈景主題名稱"
 }

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-bash-like')
+
 /**
  * A parameter that is a local file
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const localFilepath: any[] = [{ name: 'path', docs: 'local file path', file: true, positional: true }]
+export const localFilepath: any[] = [{ name: 'path', docs: strings('localFilePath'), file: true, positional: true }]

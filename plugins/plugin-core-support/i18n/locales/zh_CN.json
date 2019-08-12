@@ -13,9 +13,9 @@
   "screenshotUsageDocs": "捕获整个页面，不包含标题",
   "screenshotWhichUsageDocs": "要捕获的区域",
   "screenshotNUsageDocs": "要捕获的第 n 个区域",
-  "currentTheme": "您正在使用缺省主题",
-  "themesUsageDocs": "列出可用主题",
-  "themeResetUsageDocs": "重置为缺省主题",
-  "themeSetUsageDocs": "设置当前主题",
-  "themeSetUsageRequiredDocs": "要使用的主题的名称"
+  "theme.currentTheme": "您正在使用缺省主题",
+  "theme.usageDocs": "列出可用主题",
+  "theme.resetUsageDocs": "重置为缺省主题",
+  "theme.setUsageDocs": "设置当前主题",
+  "theme.setUsageRequiredDocs": "要使用的主题的名称"
 }

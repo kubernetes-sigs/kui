@@ -4,12 +4,13 @@
   "cdUsageHeader": "Update the current working directory for local filesystem manipulations",
   "lsUsageTitle": "local file list",
   "lsUsageHeader": "Directory listing of your local filesystem",
-  "lsDashAUsageDocs": "List all entries except for {0} and {1}",
-  "lsDashaUsageDocs": "Include directory entries whose names begin with a dot ({0}",
-  "lsDashcUsageDocs": "Use time when file status was last changed for sorting ({0})",
+  "lsDashAUsageDocs": "List all entries except for . and ..",
+  "lsDashaUsageDocs": "Include directory entries whose names begin with a dot (.)",
+  "lsDashcUsageDocs": "Use time when file status was last changed for sorting",
   "lsDashtUsageDocs": "Sort by time modified (most recently modified first)",
   "lsDashrUsageDocs": "Reverse the natural sort order",
   "lsDashSUsageDocs": "Sort files by size",
   "openUsageTitle": "open file",
-  "openUsageHeader": "View the contents a file"
+  "openUsageHeader": "View the contents a file",
+  "localFilePath": "local file path"
 }

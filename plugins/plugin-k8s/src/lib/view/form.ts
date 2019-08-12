@@ -23,6 +23,10 @@ import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as Resources from '../model/resource'
+
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-k8s')
+
 const debug = Debug('plugin-k8s/view/form')
 
 interface FormElement {
@@ -374,7 +378,7 @@ export const generateForm = (tab: Tab) => (
   const modes: SidecarMode[] = [
     {
       mode: 'save',
-      label: 'Save',
+      label: strings('save'),
       flush: 'right',
       actAsButton: true,
       direct: doSave(tab, form, yaml, filepath, onSave),
@@ -382,7 +386,7 @@ export const generateForm = (tab: Tab) => (
     },
     {
       mode: 'revert',
-      label: 'Revert',
+      label: strings('revert'),
       flush: 'right',
       actAsButton: true,
       direct: () => form.reset(),
