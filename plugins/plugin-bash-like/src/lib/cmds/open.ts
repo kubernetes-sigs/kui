@@ -21,7 +21,7 @@ import { readFile } from 'fs'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { qexec } from '@kui-shell/core/core/repl'
+import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
@@ -82,50 +82,46 @@ const open = async (tab: Tab, filepath: string, hljs) => {
   } else if (suffix === 'pkl' || suffix === 'sab') {
     throw new Error('Opening of binary files not supported')
   } else {
-    return new Promise((resolve, reject) => {
-      readFile(fullpath, async (err, fileContent) => {
-        if (err) {
-          if (err.code === 'EISDIR') {
-            debug('trying to open a directory; delegating to ls')
-            qexec(`ls "${filepath}"`).then(resolve, reject)
-          } else {
-            reject(err)
-          }
-        } else {
-          const enclosingDirectory = dirname(filepath)
+    const stats: { isDirectory: boolean; filepath: string; data: string } = await qexec(
+      `fstat ${encodeComponent(filepath)} --with-data`
+    )
 
-          let data: string | Element = fileContent.toString()
-          let name = basename(filepath)
-          let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
+    if (stats.isDirectory) {
+      debug('trying to open a directory; delegating to ls')
+      return qexec(`ls ${encodeComponent(filepath)}`)
+    } else {
+      const enclosingDirectory = dirname(filepath)
 
-          if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
-            const { title, body } = await markdownify(tab, suffix, data, fullpath, hljs)
+      let data: string | Element = stats.data
+      let name = basename(filepath)
+      let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
-            data = body
+      if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
+        const { title, body } = await markdownify(tab, suffix, data, fullpath, hljs)
 
-            if (title) {
-              // use the first <h1> as the sidecar title
-              // and use the filename as the "packageName" subtitle
-              packageName = name
-              name = title.innerText
-            }
-          }
+        data = body
 
-          resolve({
-            type: 'custom',
-            isEntity: true,
-            prettyType: 'file',
-            name,
-            packageName,
-            contentType: suffix === 'sh' ? 'shell' : suffix,
-            contentTypeProjection: 'data',
-            content: {
-              data
-            }
-          })
+        if (title) {
+          // use the first <h1> as the sidecar title
+          // and use the filename as the "packageName" subtitle
+          packageName = name
+          name = title.innerText
         }
-      })
-    })
+      }
+
+      return {
+        type: 'custom',
+        isEntity: true,
+        prettyType: 'file',
+        name,
+        packageName,
+        contentType: suffix === 'sh' ? 'shell' : suffix,
+        contentTypeProjection: 'data',
+        content: {
+          data
+        }
+      }
+    }
   }
 }
 
