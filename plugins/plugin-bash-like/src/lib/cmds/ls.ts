@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { lstat, readdir, stat } from 'fs'
+import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
@@ -112,22 +112,62 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
  * If the given filepath is a directory, then ls it, otherwise cat it
  *
  */
-const lsOrOpen = (filepath: string) =>
-  new Promise((resolve, reject) => {
+const lsOrOpen = async ({ argvNoOptions }: EvaluatorArgs) => {
+  const filepath = argvNoOptions[argvNoOptions.indexOf('lsOrOpen') + 1]
+
+  const stats: { isDirectory: boolean; viewer: string } = await repl.qexec(`fstat ${repl.encodeComponent(filepath)}`)
+
+  const filepathForRepl = repl.encodeComponent(filepath)
+
+  if (stats.isDirectory) {
+    return repl.pexec(`ls ${filepathForRepl}`)
+  } else {
+    return repl.pexec(`${stats.viewer} ${filepathForRepl}`)
+  }
+}
+
+/**
+ * Kui command for fs.stat
+ *
+ */
+const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
+  return new Promise((resolve, reject) => {
+    const filepath = argvNoOptions[1]
+
     const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
-    const filepathForRepl = repl.encodeComponent(filepath)
+    debug('fullpath', fullpath, filepath, expandHomeDir(filepath))
 
     // note: stat not lstat, because we want to follow the link
     stat(fullpath, (err, stats) => {
       if (err) {
+        if (err.code === 'ENOENT') {
+          err.code = '404'
+        }
         reject(err)
-      } else if (stats.isDirectory()) {
-        resolve(repl.pexec(`ls ${filepathForRepl}`))
+      } else if (stats.isDirectory() || !parsedOptions['with-data']) {
+        resolve({
+          viewer,
+          filepath,
+          isDirectory: stats.isDirectory()
+        })
       } else {
-        resolve(repl.pexec(`${viewer} ${filepathForRepl}`))
+        readFile(fullpath, (err, data) => {
+          if (err) {
+            reject(err)
+          } else {
+            console.error('!@!@')
+            resolve({
+              viewer,
+              filepath,
+              data: data.toString(),
+              isDirectory: false
+            })
+          }
+        })
       }
     })
   })
+}
 
 /**
  * Turn ls output into a REPL table
@@ -139,6 +179,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
   debug('tabularize', parent, parentAsGiven)
 
   if (output.length === 0) {
+    debug('tabularize empty')
     return true
   }
 
@@ -337,7 +378,8 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
       return new Row({
         type: cmd,
         name: nameForDisplay,
-        onclick: () => lsOrOpen(isAbsolute(name) ? name : join(parentAsGiven, name)), // note: ls -l file results in an absolute path
+        onclickExec: 'qexec',
+        onclick: `lsOrOpen ${repl.encodeComponent(isAbsolute(name) ? name : join(parentAsGiven, name))}`, // note: ls -l file results in an absolute path
         css,
         attributes: permissionAttrs.concat(normalAttributes)
       })
@@ -427,6 +469,16 @@ const usage = (command: string) => ({
  *
  */
 export default (commandTree: CommandRegistrar) => {
+  commandTree.listen('/fstat', fstat, {
+    hidden: true,
+    noAuthOk: true,
+    requiresLocal: true
+  })
+  commandTree.listen('/lsOrOpen', lsOrOpen, {
+    hidden: true,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
   const ls = commandTree.listen('/ls', doLs('ls'), {
     usage: usage('ls'),
     noAuthOk: true,

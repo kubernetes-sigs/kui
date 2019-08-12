@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 import { basename } from 'path'
 import { lstat, readFile } from 'fs'
 
+import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
@@ -103,52 +104,30 @@ export const fetchEntity = async (name: string, parsedOptions, execOptions): Pro
  * Read a local file
  *
  */
-export const fetchFile: IFetcher = (name: string) => {
-  debug('fetching local file', name)
+export const fetchFile: IFetcher = async (name: string): Promise<Entity> => {
+  const stats: { isDirectory: boolean; filepath: string; data: string } = await qexec(
+    `fstat ${encodeComponent(name)} --with-data`
+  )
 
-  return new Promise<Entity>((resolve, reject) => {
-    const filepath = findFile(expandHomeDir(name))
+  if (stats.isDirectory) {
+    throw new Error('Specified file is a directory')
+  } else {
+    const extension = name.substring(name.lastIndexOf('.') + 1)
+    const kind =
+      extension === 'js' ? 'javascript' : extension === 'ts' ? 'typescript' : extension === 'py' ? 'python' : extension
 
-    lstat(filepath, (err2: ErrorWithAnyCode, stats) => {
-      if (err2) {
-        if (err2.code === 'ENOENT') {
-          err2.code = 404
-        }
-        reject(err2)
-      } else if (!stats.isDirectory) {
-        const error = new Error('Specified file is a directory')
-        reject(error)
-      } else {
-        readFile(filepath, (err, data) => {
-          if (err) {
-            reject(err)
-          } else {
-            const extension = name.substring(name.lastIndexOf('.') + 1)
-            const kind =
-              extension === 'js'
-                ? 'javascript'
-                : extension === 'ts'
-                ? 'typescript'
-                : extension === 'py'
-                ? 'python'
-                : extension
-
-            resolve({
-              type: 'file',
-              name: basename(name),
-              filepath,
-              exec: {
-                kind,
-                code: data.toString()
-              },
-              annotations: [],
-              persister: persisters.files
-            })
-          }
-        })
-      }
-    })
-  })
+    return {
+      type: 'file',
+      name: basename(name),
+      filepath: stats.filepath,
+      exec: {
+        kind,
+        code: stats.data
+      },
+      annotations: [],
+      persister: persisters.files
+    }
+  }
 }
 
 /* register the built-in local file fetcher */
