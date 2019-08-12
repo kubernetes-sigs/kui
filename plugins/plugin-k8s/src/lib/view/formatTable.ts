@@ -253,7 +253,7 @@ export const formatTable = (
         }
       }
 
-      const rowIsSelected = rows[0].key === 'CURRENT' && nameForDisplay === '*'
+      const rowIsSelected = rows[0].key === 'CURRENT' && rows[0].value === '*'
       const rowKey = rows[0].key
       const rowValue = rows[0].value
       const rowCSS = [
