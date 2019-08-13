@@ -25,7 +25,7 @@ const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-exec.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
 /** we have a custom vimrc, to make sure INSERT shows up */
-const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
+// const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
 
 describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))

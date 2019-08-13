@@ -8,5 +8,5 @@ spec:
     command:
       - /bin/sh
       - "-c"
-      - "sleep 60m"
+      - "while true; do echo hi; sleep 1; done"
     name: alpine
