@@ -220,16 +220,7 @@ const table = (
 const usage = (command: string): UsageModel => ({
   title: command,
   command,
-  strict: command,
-  onlyEnforceOptions: ['-f'],
-  noHelp: true, // kubectl and helm both provide their own -h output
-  docs: `Execute ${command} commands`,
-  optional: [
-    {
-      name: '-f',
-      file: true
-    }
-  ]
+  noHelp: true // kubectl and helm both provide their own -h output
 })
 
 const prepareUsage = async (command: string): Promise<UsageModel> => {
@@ -798,8 +789,11 @@ function helm(opts: EvaluatorArgs) {
   }
 }
 
-const shouldSendToPTY = (argv: string[]): boolean =>
-  (argv.length > 1 && (argv[1] === 'exec' || argv[1] === 'edit')) || argv.includes('|')
+const shouldSendToPTY = (opts: EvaluatorArgs): boolean =>
+  (opts.argvNoOptions.length > 1 && (opts.argvNoOptions[1] === 'exec' || opts.argvNoOptions[1] === 'edit')) ||
+  (opts.argvNoOptions[1] === 'logs' &&
+    (opts.parsedOptions.f !== undefined || (opts.parsedOptions.follow && opts.parsedOptions.follow !== 'false'))) ||
+  opts.argvNoOptions.includes('|')
 
 async function kubectl(opts: EvaluatorArgs) {
   const semi = await repl.semicolonInvoke(opts)
@@ -807,7 +801,7 @@ async function kubectl(opts: EvaluatorArgs) {
     return semi
   }
 
-  if (!isHeadless() && shouldSendToPTY(opts.argvNoOptions)) {
+  if (!isHeadless() && shouldSendToPTY(opts)) {
     // execOptions.exec = 'qexec'
     debug('redirect exec command to PTY')
     const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
