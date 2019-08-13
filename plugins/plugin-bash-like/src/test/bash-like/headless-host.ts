@@ -15,14 +15,28 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli } from '@kui-shell/core/tests/lib/headless'
+import { cli as headfullCLI } from '@kui-shell/core/tests/lib/ui'
+import { cli as headlessCLI } from '@kui-shell/core/tests/lib/headless'
+
+const isHeadless = process.env.MOCHA_RUN_TARGET === 'headless'
 
 describe('bash-like host catchall', function(this: common.ISuite) {
-  before(common.before(this, { noApp: true }))
+  before(common.before(this, { noApp: isHeadless }))
+  if (!isHeadless) {
+    after(common.after(this))
+  }
 
-  it('should show some output for host google.com', () =>
-    cli
-      .do('host google.com')
-      .then(cli.expectOK('has address'))
-      .catch(common.oops(this)))
+  if (isHeadless) {
+    it('should show some output for host google.com in headless mode', () =>
+      headlessCLI
+        .do('host google.com')
+        .then(headlessCLI.expectOK('has address'))
+        .catch(common.oops(this)))
+  } else {
+    it('should show some output for host google.com in non-headless mode', () =>
+      headfullCLI
+        .do('host google.com', this.app)
+        .then(headfullCLI.expectOKWithString('has address'))
+        .catch(common.oops(this)))
+  }
 })

@@ -32,7 +32,7 @@ export const header2 = (folder1: string, folder2: string) => `${header(folder1)}
 ${folder2}`
 
 /** helper method, used in the tests below: ask for help */
-export const doHelp = function(cmd, { code = 500, expect = undefined } = {}) {
+export const doHelp = function(cmd, { code = 500, expect = undefined }: { code?: number; expect?: string } = {}) {
   return it(`should show help via ${cmd}`, () =>
     cli
       .do(cmd, this.app)

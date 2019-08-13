@@ -278,6 +278,7 @@ export const subtree = (route: string, options: CommandOptions) => {
       noArgs: true,
       subtreeHandler: true,
       noAuthOk: true,
+      inBrowserOk: true,
       requiresFullyQualifiedRoute: true
     }
     myListen(route, help, Object.assign({}, options, opts))

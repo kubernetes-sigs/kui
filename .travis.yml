@@ -13,9 +13,10 @@ os:
 env:
   matrix:
     - SCRIPTS="lint.sh typecov.sh"
+      WAIT_LAYERS="bash-like-wait"
       LAYERS="core bash-like core-support editor"
       MOCHA_TARGETS="webpack electron"
-      KUI_USE_PROXY=false
+      KUI_USE_PROXY=true
       NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
 
     - SCRIPTS="build-webpack-client.sh"

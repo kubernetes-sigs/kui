@@ -28,7 +28,7 @@ const expectConsoleToBeClear = ({ app }) => {
   })
 }
 
-describe('Clear the console', function(this: ISuite) {
+describe(`Clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
@@ -79,7 +79,7 @@ describe('Clear the console', function(this: ISuite) {
   )
 
   // get something on the screen
-  localIt(`should list files`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
+  it(`should sleep`, () => cli.do('sleep 1', this.app).catch(oops(this, true)))
 
   it('should clear the console', () =>
     cli
@@ -88,7 +88,7 @@ describe('Clear the console', function(this: ISuite) {
       .catch(oops(this)))
 
   // get something on the screen
-  localIt(`should list files again`, () => cli.do('ls ../..', this.app).then(cli.expectOKWith('README.md')))
+  it(`should sleep again`, () => cli.do('sleep 1', this.app).catch(oops(this, true)))
 
   const JUNK = 'junk text that should stay'
   it('should clear the console with ctrl+l', () =>
@@ -111,19 +111,16 @@ describe('Clear the console', function(this: ISuite) {
   })
 
   // get something on the screen
-  localIt(`should list files yet again`, () =>
-    cli
-      .do('ls ../..', this.app)
-      .then(cli.expectOKWith('README.md'))
-      .catch(oops(this))
-  )
+  it(`should sleep yet again`, () => cli.do('sleep 1', this.app).catch(oops(this, true)))
 
-  it('should clear properly despite existing prompt', () =>
+  // FIXME prompt does not work in webpack+proxy
+  localIt('should clear properly despite existing prompt', () =>
     cli
       .do('prompt', this.app) // wipe will change the placeholder text
       .then(async () => {
         await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
         return expectConsoleToBeClear({ app: this.app })
       })
-      .catch(oops(this)))
+      .catch(oops(this))
+  )
 })

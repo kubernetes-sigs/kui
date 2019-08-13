@@ -17,9 +17,11 @@
 const ui = require('./ui')
 require('colors')
 
-/** electron targets in travis use the clients/default version */
+/** non-headless targets in travis use the clients/default version */
 exports.expectedVersion =
-  process.env.MOCHA_RUN_TARGET === 'electron' ? '0.0.1' : require('@kui-shell/settings/package.json').version
+  process.env.MOCHA_RUN_TARGET === 'electron' || process.env.MOCHA_RUN_TARGET === 'webpack'
+    ? '0.0.1'
+    : require('@kui-shell/settings/package.json').version
 
 /**
  * Mimic the request-promise functionality, but with retry
@@ -304,4 +306,9 @@ exports.dockerDescribe = (msg, func) => {
 /** only execute the test in non-proxy browser */
 exports.remoteIt = (msg, func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') return it(msg, func)
+}
+
+/** only execute the test in proxy+browser client */
+exports.proxyIt = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') return it(msg, func)
 }

@@ -86,7 +86,7 @@ describe('pty session status offline at start', function(this: ISuite) {
       .catch(oops(this))
   })
 
-  pit('should echo hi now that the proxy is onlineo', () =>
+  pit('should echo hi now that the proxy is online', () =>
     cli
       .do('echo hi', this.app)
       .then(cli.expectOKWithString('hi'))

@@ -29,7 +29,7 @@ export default (plugin: string): ((key: string) => string) => {
           (locale && require(`@kui-shell/${plugin}/i18n/locales/${locale.replace(/-.*$/, '')}.json`)) || defaultStrings
         )
       } catch (err) {
-        console.error('Could not find translation for given locale', locale)
+        console.error('Could not find translation for given locale', plugin, locale)
         return defaultStrings
       }
     }
