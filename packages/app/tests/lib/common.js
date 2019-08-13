@@ -119,7 +119,7 @@ exports.prepareElectron = prepareElectron
  * @param noApp do not spawn the electron parts
  *
  */
-exports.before = (ctx, { fuzz, noApp = false, popup, afterStart } = {}) => {
+exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, noProxySessionWait = false } = {}) => {
   if (process.env.TRAVIS_JOB_ID) {
     ctx.retries(1) // don't retry the mocha.it in local testing
   }
@@ -127,6 +127,10 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart } = {}) => {
   return async function() {
     if (!noApp) {
       ctx.app = prepareElectron(fuzz, popup)
+    }
+
+    if (beforeStart) {
+      await beforeStart()
     }
 
     // start the app, if requested
@@ -139,14 +143,14 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart } = {}) => {
               // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
               // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
               .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
-              .then(() => ui.cli.waitForRepl(ctx.app))
+              .then(() => !noProxySessionWait && ui.cli.waitForRepl(ctx.app))
           ) // should have an active repl
         }
 
     await start()
     ctx.timeout(process.env.TIMEOUT || 60000)
 
-    if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') {
+    if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
       // wait for the proxy session to be established
       try {
         await ctx.app.client.waitForExist(`${ui.selectors.CURRENT_TAB}.kui--session-init-done`)
@@ -268,11 +272,16 @@ exports.oops = (ctx, wait = false) => async err => {
     )
 
     promises.push(
-      ctx.app.client.getText(ui.selectors.OOPS).then(anyErrors => {
-        if (anyErrors) {
-          console.log('Error from the UI'.bold.magenta, anyErrors)
-        }
-      })
+      ctx.app.client
+        .getText(ui.selectors.OOPS)
+        .then(anyErrors => {
+          if (anyErrors) {
+            console.log('Error from the UI'.bold.magenta, anyErrors)
+          }
+        })
+        .catch(() => {
+          // it's ok if there are no such error elements on the page
+        })
     )
   }
 

@@ -46,6 +46,7 @@ import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ExecType, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import * as ui from './ui'
 import * as session from './session'
@@ -458,7 +459,11 @@ const remoteChannelFactory: ChannelFactory = async () => {
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
   } catch (err) {
-    console.error('error opening websocket', err)
+    const error = err as CodedError
+    if (error.statusCode !== 503) {
+      // don't bother complaining too much about connection refused
+      console.error('error opening websocket', err)
+    }
     throw err
   }
 }
@@ -679,8 +684,11 @@ export const doExec = (
         }
 
         const ourUUID = uuid()
-        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, terminal).catch((err: Error) => {
-          console.error('error creating channel', err)
+        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, terminal).catch((err: CodedError) => {
+          if (err.code !== 503) {
+            // don't bother complaining too much about connection refused
+            console.error('error creating channel', err)
+          }
           cleanUpTerminal()
           throw err
         })
@@ -994,14 +1002,22 @@ export const doExec = (
         }
 
         ws.on('message', onMessage)
-      } catch (err) {
-        console.error('error in pty/client', err)
-        if (err['code'] === 127 || err['code'] === 404) {
-          err['code'] = 127
+      } catch (error) {
+        const err = error as CodedError
+        if (err.code === 127 || err.code === 404) {
+          err.code = 127
           reject(err)
         } else {
-          debug('error in client', err)
-          reject(new Error('Internal Error'))
+          if (err.code !== 503) {
+            // don't bother complaining too much about connection refused
+            debug('error in pty/client', err)
+          }
+
+          if (!err.message) {
+            err.message = 'Internal Error'
+          }
+
+          reject(err)
         }
       }
     }

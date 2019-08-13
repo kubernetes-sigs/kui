@@ -24,7 +24,9 @@ interface ISuite extends Suite {
 interface IBeforeOptions {
   noApp?: boolean
   popup?: string[]
+  noProxySessionWait?: boolean
   afterStart?: () => Promise<void>
+  beforeStart?: () => Promise<void>
 }
 
 declare function before (ctx: Suite, options?: IBeforeOptions): HookFunction

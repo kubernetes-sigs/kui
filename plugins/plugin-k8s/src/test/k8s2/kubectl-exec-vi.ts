@@ -101,7 +101,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         return txt && !/^I/i.test(txt)
       })
 
-      await this.app.client.keys(':wq')
+      await this.app.client.keys([':', 'w', 'q'])
       await this.app.client.keys(keys.ENTER)
 
       await cli.expectBlank(res)

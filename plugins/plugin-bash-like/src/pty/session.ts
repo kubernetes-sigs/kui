@@ -19,9 +19,17 @@ import * as Debug from 'debug'
 import { Channel } from './channel'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { getCurrentPrompt, getPrompt, getCurrentBlock, setStatus, Tab } from '@kui-shell/core/webapp/cli'
+import {
+  getCurrentPrompt,
+  getPrompt,
+  getCurrentBlock,
+  getCurrentProcessingBlock,
+  setStatus,
+  Tab
+} from '@kui-shell/core/webapp/cli'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { theme as settings, config } from '@kui-shell/core/core/settings'
+import { CodedError } from '@kui-shell/core/models/errors'
 
 import { setOnline, setOffline } from './ui'
 
@@ -40,7 +48,7 @@ export function getChannelForTab(tab: Tab): Channel {
  *
  */
 export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
-  return new Promise(resolve => {
+  const sessionInitialization = new Promise(resolve => {
     let placeholderChanged = false
     let previousText: string
 
@@ -48,7 +56,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
       debug('trying to establish session', tab)
 
       if (!block) {
-        block = getCurrentBlock(tab)
+        block = getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
         const prompt = getPrompt(block)
         prompt.readOnly = true
         prompt.placeholder = 'Please wait while we connect to your cloud'
@@ -87,18 +95,25 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
           } catch (err) {
             console.error('error updating UI to indicate that we are online', err)
           }
-          resolve()
+          resolve(getChannelForTab(tab))
         })
-        .catch(err => {
-          console.error('error establishing session', err)
+        .catch(error => {
+          const err = error as CodedError
+          if (err.code !== 503) {
+            // don't bother complaining too much about connection refused
+            console.error('error establishing session', err.code, err.statusCode, err)
+          }
           setOffline()
-          setTimeout(() => once(iter + 1), iter < 10 ? 1000 : iter < 100 ? 2000 : 10000)
+          setTimeout(() => once(iter + 1), iter < 10 ? 2000 : iter < 100 ? 4000 : 10000)
           return 'Could not establish a new session'
         })
     }
 
     once()
   })
+
+  tab['_kui_session'] = sessionInitialization
+  return sessionInitialization
 }
 
 /**
