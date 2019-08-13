@@ -155,7 +155,6 @@ const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
           if (err) {
             reject(err)
           } else {
-            console.error('!@!@')
             resolve({
               viewer,
               filepath,
@@ -403,6 +402,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
 const doLs = (cmd: string) => async (opts: EvaluatorArgs) => {
   const semi = await repl.semicolonInvoke(opts)
   if (semi) {
+    debug('ls with semi', semi)
     return semi
   }
 

@@ -29,7 +29,7 @@ import {
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
 
-describe('Version command', function(this: ISuite) {
+describe(`Version command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 

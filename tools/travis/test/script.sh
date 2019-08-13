@@ -109,7 +109,7 @@ if [ -n "$LAYERS" ]; then
         export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
         . ${WSK_CONFIG_FILE}
         #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
-        (cd /tmp/kui && npm run test) & # see ./install.sh for the /tmp/kui target
+        (cd /tmp/kui && MOCHA_RUN_TARGET=headless npm run test) & # see ./install.sh for the /tmp/kui target
         children+=("$!")
         childrenNames+=("headless layer")
         childrenStartTimes+=("$(date +%s)")
@@ -127,17 +127,20 @@ if [ -n "$LAYERS" ]; then
             export PORT_OFFSET_BASE
 
             if [ -n "$WAIT_LAYERS" ]; then
-                echo "running these non-headless layers and wait: $WAIT_LAYERS"
+                echo "running these non-headless layers with $MOCHA_RUN_TARGET and wait: $WAIT_LAYERS"
                 (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
             fi
 
             if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$KUI_USE_PROXY" == "true" ]; then
-               # for now, we only test k8s2 to give us minimal proxy guards
-               (cd packages/tests && ./bin/runMochaLayers.sh k8s2) &
+                # for now, k8s1 is problematic with the proxy
+                echo "trimming k8s1"
+                TEST_THESE_LAYERS=${NON_HEADLESS_LAYERS# k8s1}
             else
-              echo "running these non-headless layers: $NON_HEADLESS_LAYERS"
-              (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
+                TEST_THESE_LAYERS=$NON_HEADLESS_LAYERS
             fi
+
+            echo "running these non-headless layers with $MOCHA_RUN_TARGET: $NON_HEADLESS_LAYERS"
+            (cd packages/tests && ./bin/runMochaLayers.sh $TEST_THESE_LAYERS) &
 
             children+=("$!")
             childrenNames+=("mocha layers")
