@@ -26,6 +26,8 @@
 set -e
 set -o pipefail
 
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+
 if [ -n "$1" ]; then
     ROOT=$(cd "$1" && pwd)
 else
@@ -48,7 +50,12 @@ stop() {
     PID=$(cat /tmp/kuiproxy_subprocess.pid)
     echo "stop proxy $PID"
     kill $PID
-    kill $((PID+1))
+
+    set -e
+    sleep 2
+    PID=$(ps aux | grep www | grep -v grep| awk '{ print $2 }')
+    kill $PID
+    set +e
 }
 
 fakecrash() {

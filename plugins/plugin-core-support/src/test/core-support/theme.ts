@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, remoteIt } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  localIt,
+  remoteIt
+} from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 
 const resetTheme = (ctx: ISuite) => {
@@ -24,7 +31,7 @@ const resetTheme = (ctx: ISuite) => {
       .then(cli.expectJustOK)
       .catch(oops(ctx)))
 
-  it('should show that we are using the default theme', () =>
+  it('should show that we are using the default (dark) theme', () =>
     cli
       .do('theme current', ctx.app)
       .then(cli.expectOKWithString('default theme'))
@@ -63,7 +70,7 @@ const go = (theme: Theme) => (ctx: ISuite) => {
  */
 const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
   // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
-  remoteIt(`should still be using ${theme.name} theme after a browser restart`, () =>
+  localIt(`should still be using ${theme.name} theme after a browser restart`, () =>
     ctx.app.client
       .refresh()
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
@@ -77,11 +84,12 @@ const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
  *
  */
 const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
-  it(`should still be using ${theme.name} theme after a reload`, () =>
+  localIt(`should still be using ${theme.name} theme after a reload`, () =>
     ctx.app.client
       .refresh()
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(oops(ctx)))
+      .catch(oops(ctx))
+  )
 }
 
 /**
