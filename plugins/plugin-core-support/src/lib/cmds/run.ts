@@ -22,14 +22,19 @@ import { dirname } from 'path'
 import * as repl from '@kui-shell/core/core/repl'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Entity } from '@kui-shell/core/models/entity'
 import { isTable, isMultiTable, Table, Row } from '@kui-shell/core/webapp/models/table'
 import { formatTable } from '@kui-shell/core/webapp/views/table'
 import { showCustom, isCustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { isHTML } from '@kui-shell/core/util/types'
 const debug = Debug('plugins/core-support/run')
 
-const execInSequence = async function(arr, status, idx: number) {
+const execInSequence = async function(
+  arr: string[],
+  status: { value: string; css: string; done?: boolean; onclick?: (evt: MouseEvent) => void }[],
+  idx: number
+) {
   const item = arr[idx]
 
   try {
@@ -37,7 +42,7 @@ const execInSequence = async function(arr, status, idx: number) {
     status[idx].value = 'Done'
     status[idx].css = status[idx].css.replace(/yellow-background/, 'green-background')
     status[idx].done = true
-    status[idx].onclick = event => {
+    status[idx].onclick = (event: MouseEvent) => {
       event.stopPropagation()
       repl.pexec('show', {
         parameters: {
@@ -49,7 +54,7 @@ const execInSequence = async function(arr, status, idx: number) {
     }
   } catch (err) {
     const content = await Promise.resolve(err.message)
-    const isWarning = (typeof content === 'string' ? content : err.raw.message).match(/already exists|already has/i)
+    const isWarning = /already exists|already has/i.test(typeof content === 'string' ? content : err.raw.message)
 
     status[idx].value = isWarning ? 'Warning' : 'Error'
     if (!isWarning) {
@@ -73,7 +78,7 @@ const execInSequence = async function(arr, status, idx: number) {
   }
 }
 
-const doRun = ({ argv }) =>
+const doRun = ({ argv }: EvaluatorArgs) =>
   new Promise((resolve, reject) => {
     const filepath = argv[argv.indexOf('run') + 1]
     const fullpath = findFile(expandHomeDir(filepath))
@@ -174,7 +179,7 @@ export default (commandTree: CommandRegistrar) => {
         throw new Error('Nothing to show')
       }
 
-      const { command, content: commandOutput } = execOptions.parameters
+      const { command, content: commandOutput }: { command: string; content: Entity } = execOptions.parameters
 
       const commandName = command.substring(0, command.indexOf(' ')).trim()
       const commandRest = command.substring(command.indexOf(' ')).trim()

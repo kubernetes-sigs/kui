@@ -18,8 +18,6 @@
 
 import * as Debug from 'debug'
 
-import installReplFocusHandlers from './repl-focus'
-
 import {
   isVisible as isSidecarVisible,
   toggle,
@@ -261,8 +259,9 @@ const closeTab = (tab = getCurrentTab()) => {
   const tabButton = getTabButton(tab)
   const tabId = parseInt(tabButton.getAttribute('data-tab-button-index'), 10)
 
-  if (tab['state'].jobs) {
-    ;(tab['state'] as TabState).jobs.forEach(job => job.abort())
+  const tabState: TabState = tab['state']
+  if (tabState.jobs) {
+    tabState.jobs.forEach(job => job.abort())
   }
 
   tab.parentNode.removeChild(tab)
@@ -290,11 +289,6 @@ const perTabInit = (tab: Tab, doListen = true) => {
   if (doListen) {
     listen(getCurrentPrompt(tab))
   }
-
-  // we want to focus the current repl input when the user clicks, but
-  // the logic here is a bit complicated; so we'll push the logic out
-  // to a separate source file
-  installReplFocusHandlers()
 
   // tab close button
   getTabCloser(tab).onclick = (event: MouseEvent) => {
