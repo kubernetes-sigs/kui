@@ -27,7 +27,8 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+// TODO: this has issue on webpack
+common.localDescribe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
