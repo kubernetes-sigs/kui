@@ -195,9 +195,12 @@ const showAsTable = async (
     }
   }
 
-  return Promise.all(yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))).then(formattedEntities => {
-    return new Table({ body: formattedEntities })
+  const formattedEntities = yamls.map(yaml => {
+    if (!yaml.metadata) return yaml
+    return formatEntity(Object.assign({}, parsedOptions, ourOptions))(yaml)
   })
+
+  return new Table({ body: formattedEntities })
 }
 
 /**

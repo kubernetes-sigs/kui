@@ -41,14 +41,15 @@ exports.waitForGreen = async (app, selector) => {
   }
 
   try {
-    await app.client.waitForExist(yellowBadge, process.env.TIMEOUT || 60000, true)
+    await app.client.waitForExist(greenBadge, process.env.TIMEOUT || 60000)
   } catch (err) {
-    console.log(`Creation is still yellow after ${process.env.TIMEOUT || 60000} ${selector}`)
+    console.log(`Creation is still not green after ${process.env.TIMEOUT || 60000}`)
     const text = await app.client.getText(badge)
     console.log(`Creation status ${text}`)
+
+    throw err
   }
 
-  await app.client.waitForExist(greenBadge, process.env.TIMEOUT || 60000)
   return greenBadge
 }
 

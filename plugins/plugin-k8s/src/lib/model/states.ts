@@ -196,10 +196,10 @@ const kindForQuery = (apiVersion: string, kind: string): string => {
  * Get a status struct from the status.conditions array
  *
  */
-const getStatusFromConditions = (response: KubeResource) => {
-  if (response.status && !response.status.state && response.status.conditions) {
+const getStatusFromConditions = (kubeEntity: KubeResource) => {
+  if (kubeEntity.status && !kubeEntity.status.state && kubeEntity.status.conditions) {
     // use the status.conditions, rather than status.state
-    const conditions = response.status.conditions
+    const conditions = kubeEntity.status.conditions
     conditions.sort((a, b) => -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
     // debug('using condition for status', conditions[0], conditions)
 
@@ -267,26 +267,16 @@ const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: Fina
  * Get the deployment status of the given resource name of the given kind
  *
  */
-export const getStatus = async (
-  desiredFinalState: FinalState,
-  apiVersion: string,
-  kind: string,
-  name: string,
-  namespace?: string,
-  context?: string
-): Promise<Status> => {
+export const getStatus = (rawState: KubeResource, desiredFinalState: FinalState): Status => {
+  if (rawState.status && rawState.status.state) {
+    return rawState.status
+  }
+
+  const { kind, apiVersion } = rawState
+
   try {
-    const cmd = `kubectl get ${contextOption(context)} ${kindForQuery(apiVersion, kind)} ${name} ${ns(
-      namespace
-    )} -o json`
-    // debug('getStatus', cmd);
-    const rawState = await repl.qexec(cmd, undefined, undefined, { raw: true })
-    // debug('getStatus rawState', apiVersion, rawState)
-
-    const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
-
     if (
-      !response.status || // resource does not define a status; consider it Online
+      !rawState.status || // resource does not define a status; consider it Online
       kind === 'Secret' ||
       kind === 'Ingress' ||
       kind === 'ConfigMap' ||
@@ -300,10 +290,10 @@ export const getStatus = async (
     ) {
       // some resource types don't have a notion of deployment state :(
       return genericOnlineMessage
-    } else if (apiVersion && apiVersion.match(/^v/) && kind === 'Service' && response.status) {
+    } else if (apiVersion && apiVersion.match(/^v/) && kind === 'Service' && rawState.status) {
       return genericOnlineMessage
     } else if (kind === 'ReplicaSet') {
-      const hasReplicas = response.status.readyReplicas > 0
+      const hasReplicas = rawState.status.readyReplicas > 0
       return {
         state:
           desiredFinalState === FinalState.NotPendingLike ||
@@ -313,20 +303,26 @@ export const getStatus = async (
             : States.Pending
       }
     } else if (kind === 'Deployment') {
-      return getStatusOfDeployment(response, desiredFinalState)
+      return getStatusOfDeployment(rawState, desiredFinalState)
     } else {
+      // NOTE: Mengting is debugging
+      if (rawState.status && rawState.status.phase && rawState.status.phase === 'Running') {
+        return {
+          state: 'Running',
+          message: new Date().toString()
+        }
+      }
+
       // the Service controller currently puts the state field
       // at the top level, hence the state.state check
       const status =
-        getStatusFromConditions(response) ||
-        (response.status && (response.status.state || response.status.phase)
-          ? response.status
-          : response.state
-          ? response
-          : response.apiVersion.match(/istio\.io/)
+        getStatusFromConditions(rawState) ||
+        (rawState.status && (rawState.status.state || rawState.status.phase)
+          ? rawState.status
+          : rawState.apiVersion.match(/istio\.io/)
           ? {
               state: States.Online,
-              message: new Date()
+              message: new Date().toString()
             }
           : undefined)
 
@@ -352,48 +348,23 @@ export const getStatus = async (
 }
 
 /**
- * Check the deployment status of an openwhisk entity
- *
- */
-// const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
-//   .then(() => ({ state: States.Online }))
-//   .catch(err => {
-//     if (err.statusCode === 404) {
-//       return {
-//         state: States.Offline
-//       }
-//     } else {
-//       throw err
-//     }
-//   })
-
-interface Watch {
-  apiVersion: string
-  kind: string
-  name: string
-  type: string
-  fqn: string
-  namespace?: string
-  context?: string
-  labels?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-/**
  * Watch a resource for its deployment status
  *
  */
-export const watchStatus = async (watch: Watch, finalStateStr: string | FinalState, count = 120) => {
+export const renderStatus = (kubeEntity: KubeResource, finalStateStr: string | FinalState, count = 120) => {
   const finalState: FinalState = typeof finalStateStr === 'string' ? FinalState[finalStateStr] : finalStateStr
 
-  const { kind, name, namespace, type, fqn, context } = watch
+  const {
+    kind,
+    apiVersion,
+    metadata: { name, namespace }
+  } = kubeEntity
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
 
   try {
     // const [ status, detail ] = await Promise.all([
-    const [status] = await Promise.all([
-      getStatus(finalState, watch.apiVersion, kind, name, namespace, context)
-      // type !== 'unknown' ? getOpenWhiskStatus(type, fqn) : undefined
-    ])
+    const status = getStatus(kubeEntity, finalState)
+    debug('got status', status)
     // debug('watchStatus status', type, status, /*detail,*/ kind, name);
 
     const state = status.state || status.phase
@@ -431,46 +402,23 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
 
-    const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
-    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(
-      name
-    )} ${contextOption(context)} ${ns(namespace)} -o yaml`
-
-    const tryGetOpenWhiskResource = () =>
-      getOpenWhiskResource('qexec')
-        .then(() => getOpenWhiskResource('pexec'))
-        .catch(err => {
-          if (err.statusCode === 404) {
-            // hmm, then there is a disparity:
-            // kubernetes thinks the resource is
-            // alive, but OpenWhisk does not
-            return repl.pexec(getKubernetesResource)
-          } else {
-            throw err
-          }
-        })
-
-    const isOpenWhiskLike = /* kind === 'Function' && */ type !== 'unknown'
-
-    const onclick = /* status && state === States.Online && */ isOpenWhiskLike
-      ? tryGetOpenWhiskResource
-      : getKubernetesResource
+    const getKubernetesResource = `kubectl get ${kindForQuery(apiVersion, kind)} ${repl.encodeComponent(name)} ${ns(
+      namespace
+    )} -o yaml`
 
     // should we start a slowPoll?
     const slowPoll = done && finalState === FinalState.NotPendingLike
 
     if (done) {
-      debug('watchStatus done', slowPoll, newState, watch.kind, watch.name, FinalState[finalState])
+      debug('watchStatus done', slowPoll, newState, kind, name, FinalState[finalState])
     }
 
     // this is the update spec
     return {
       outerCSS: done ? '' : rendering.outerCSS,
       value: newState,
-      onclick,
-      slowPoll: slowPoll && 5000,
+      onclick: getKubernetesResource,
       done: done && !slowPoll, // terminate completely if we are done and have chosen not to slowPoll
-
       css: rendering.cssForState(newState),
       others
     }

@@ -15,12 +15,10 @@
  */
 
 import * as Debug from 'debug'
-
-import eventBus from '@kui-shell/core/core/events'
 import { ParsedOptions } from '@kui-shell/core/models/execOptions'
-
-import { toOpenWhiskFQN } from '../util/util'
-import { FinalState, watchStatus, rendering as stateRendering } from '../model/states'
+import { FinalState, renderStatus, rendering as stateRendering } from '../model/states'
+import { KubeResource } from '../model/resource'
+import { Table, Row } from '@kui-shell/core/webapp/models/table'
 
 const debug = Debug('k8s/util/formatEntity')
 
@@ -42,21 +40,16 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
  * Return a repl attribute for the given readiness
  *
  */
-export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => async kubeEntity => {
-  // debug('formatEntity', kubeEntity)
-
-  if (!kubeEntity.metadata) {
-    return kubeEntity
-  }
+export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => (kubeEntity: KubeResource): Row => {
+  debug('formatEntity', kubeEntity)
 
   const finalState = parsedOptions['final-state'] || FinalState.NotPendingLike
 
   const {
-    apiVersion,
     kind,
-    metadata: { name, namespace, labels, annotations = {} }
+    metadata: { name, namespace, annotations = {} }
   } = kubeEntity
-  const { type, actionName, packageName, fqn } = toOpenWhiskFQN(kubeEntity)
+
   const { cssForState } = stateRendering
 
   // masquerade: allows the spec to override/pretty-print certain fields
@@ -70,37 +63,8 @@ export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => 
   const kindAttr: any[] = [{ key: 'kind', value: kindForDisplay, outerCSS: 'entity-kind' }]
   const contextAttr = parsedOptions.multi || !context ? [] : formatContextAttr(context)
 
-  // see if anyone else changes the expected final state
-  const watch = {
-    apiVersion,
-    kind,
-    name,
-    namespace,
-    type,
-    fqn,
-    context,
-    labels
-  }
-  const eventType = '/kubectl/state/expect'
-  const listener = ({ watch: other, finalState: otherFinalState }) => {
-    if (
-      watch.kind === other.kind &&
-      watch.name === other.name &&
-      watch.context === other.context &&
-      finalState !== otherFinalState
-    ) {
-      debug('conflicting final states', watch, finalState, otherFinalState)
-
-      eventBus.removeListener(eventType, listener)
-    }
-  }
-  eventBus.on(eventType, listener)
-
-  // let everyone know that this resource has a new expected final state
-  eventBus.emit('/kubectl/state/expect', { watch, finalState })
-
   const namespaceAttrs =
-    !watch.kind || watch.kind.match(/(ns|Namespace)/i)
+    !kind || kind.match(/(ns|Namespace)/i)
       ? []
       : [
           {
@@ -110,7 +74,7 @@ export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => 
           }
         ]
 
-  const status = await watchStatus(watch, finalState)
+  const status = renderStatus(kubeEntity, finalState)
 
   const statusAttrs = parsedOptions['no-status']
     ? []
@@ -141,14 +105,12 @@ export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => 
     .concat(namespaceAttrs)
     .concat(statusAttrs)
 
-  return Object.assign({}, kubeEntity, {
+  return {
     type: 'status',
     prettyType: kindForDisplay,
-    name: title || actionName || fqn,
-    packageName,
-    noSort: true,
+    name: title || name,
     onclick: parsedOptions.onclickFn ? parsedOptions.onclickFn(kubeEntity) : status.onclick ? status.onclick : false,
     done: status.done,
     attributes
-  })
+  }
 }

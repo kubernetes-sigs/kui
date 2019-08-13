@@ -249,7 +249,6 @@ const reportVersion = ({ argv }: EvaluatorArgs) => {
 export default (commandTree: CommandRegistrar) => {
   debug('init')
 
-  // for menu
   if (!commandTree) {
     return aboutWindow()
   }

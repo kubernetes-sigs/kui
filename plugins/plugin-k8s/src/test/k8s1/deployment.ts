@@ -43,12 +43,6 @@ describe('electron deployment', function(this: common.ISuite) {
           .do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
 
-        const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
-
-        await this.app.client
-          .getText(`${selectorPrefix} .result-table-title`)
-          .then(titles => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'))
-
         await waitForGreen(this.app, selector)
 
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
@@ -87,13 +81,7 @@ describe('electron deployment', function(this: common.ISuite) {
           .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
           .then((title: string) => assert.ok(title === 'PODS'))
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
-          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="Deployment pods"]`))
-          .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
-          .then((titles: string | string[]) => {
-            assert.ok(
-              Array.isArray(titles) && titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'
-            )
-          })
+          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="Deployment"]`))
       } catch (err) {
         common.oops(this)(err)
       }
