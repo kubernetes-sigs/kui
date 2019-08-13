@@ -22,7 +22,7 @@ export default (plugin: string): ((key: string) => string) => {
 
   const i18n = (locale: string): Record<string, string> => {
     try {
-      return (locale && require(`@kui-shell/${plugin}/i18n/locales/${locale}.json`)) || defaultStrings
+      return locale && require(`@kui-shell/${plugin}/i18n/locales/${locale.replace(/-/, '_')}.json`)
     } catch (err) {
       try {
         return (
