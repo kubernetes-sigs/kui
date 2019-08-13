@@ -2462,13 +2462,15 @@ sidecar [data-balloon]:after {
 sidecar.minimized {
   flex: 0 0 calc(0.375rem * 2 + 0.75rem); /* designed to match the ? in the header */
   align-items: stretch;
-  opacity: 0.9;
 }
 sidecar.minimized header.sidecar-header {
   display: none;
 }
 sidecar.minimized .header-left-bits {
   overflow: visible;
+}
+sidecar .sidecar-header-icon-wrapper > span {
+  padding: 0 0.5em;
 }
 sidecar.minimized .sidecar-header-icon-wrapper {
   width: calc(0.375rem * 2 + 0.75rem); /* match sidecar.minimized flex-basis */
@@ -2519,6 +2521,8 @@ sidecar.minimized .sidecar-bottom-stripe {
   box-shadow: none;
   flex: 1;
   flex-direction: column;
+  border-left: 1px solid var(--color-base03);
+  border-bottom: none;
 }
 sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
   /*flex: 0;*/
@@ -2532,7 +2536,6 @@ sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
 sidecar.minimized .graphical-icon {
   justify-content: center;
   transform: scaleX(-1);
-  mix-blend-mode: difference;
   height: unset !important;
   padding: 0 !important;
 }
