@@ -151,11 +151,11 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 }
 .xterm-rows .xterm-bg-3,
 .xterm-rows .xterm-bg-11 {
-  background-color: var(--color-yellow) !important;
+  background-color: var(--color-yellow-text) !important;
 }
 .xterm-rows .xterm-fg-3,
 .xterm-rows .xterm-fg-11 {
-  color: var(--color-yellow) !important;
+  color: var(--color-yellow-text) !important;
 }
 .xterm-rows .xterm-bg-4,
 .xterm-rows .xterm-bg-12 {
