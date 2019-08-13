@@ -17,6 +17,9 @@ body[kui-theme="IBM Light"] {
   --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
 
+  /* xterm ANSI yellow text color */
+  --color-yellow-text: #bb9002;
+
   --color-brand-01: #0062ff;
   --color-brand-02: #171717;
   --color-brand-03: #0062ff;
