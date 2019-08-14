@@ -28,7 +28,7 @@ export const renderCell = (
   returnTo: string,
   cell: HTMLElement,
   activation: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-  isFailure: boolean = !activation.response.success,
+  isFailure = !activation.response.success,
   duration: number = activation.end - activation.start,
   latBucket: number = isFailure ? -1 : latencyBucket(duration),
   options

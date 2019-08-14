@@ -15,18 +15,8 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import {
-  assertTableTitleMatches,
-  waitForGreen,
-  waitForRed,
-  defaultModeForGet,
-  createNS,
-  allocateNS,
-  deleteNS
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-
-import * as assert from 'assert'
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 

@@ -14,14 +14,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
-    "no-undef": "off",
     "import/first": "off",
-    "@typescript-eslint/no-object-literal-type-assertion": [
-      "error",
-      {
-        "allowAsParameter": true
-      }
-    ],
     "@typescript-eslint/camelcase": [
       "error",
       {
@@ -36,14 +29,18 @@
         ]
       }
     ],
-    "@typescript-eslint/no-parameter-properties": "off",
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-var-requires": "off"
   },
   "overrides": [
     {
-      "files": ["**/*.js"],
+      "files": [
+        "packages/app/tests/**/*.js",
+        "plugins/*/tests/**/*.js",
+        "plugins/plugin-apache-composer/samples/@demos/**/*.js"
+      ],
       "rules": {
-        "@typescript-eslint/no-var-requires": "off"
+        "no-undef": "off"
       }
     }
   ]

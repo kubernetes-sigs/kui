@@ -401,7 +401,7 @@ interface Watch {
 export const watchStatus = async (watch: Watch, finalStateStr: string | FinalState, count = 120) => {
   const finalState: FinalState = typeof finalStateStr === 'string' ? FinalState[finalStateStr] : finalStateStr
 
-  const { kind, name, namespace, type, fqn, context } = watch
+  const { kind, name, namespace, context } = watch
   // debug('watchStatus', finalStateStr, FinalState[finalState], kind, name);
 
   try {

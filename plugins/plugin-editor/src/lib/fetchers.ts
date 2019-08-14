@@ -17,20 +17,12 @@
 import * as Debug from 'debug'
 
 import { basename } from 'path'
-import { lstat, readFile } from 'fs'
 
 import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 
 import { persisters } from './persisters'
 const debug = Debug('plugins/editor/fetchers')
-
-/** allows us to reassign a string code to a numeric one */
-interface ErrorWithAnyCode extends Error {
-  code: any // eslint-disable-line @typescript-eslint/no-explicit-any
-}
 
 interface ExecSpec {
   kind: string
