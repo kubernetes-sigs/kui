@@ -427,7 +427,7 @@ class InProcessExecutor implements Executor {
             evaluator.options.synonymFor &&
             evaluator.options.synonymFor.options &&
             evaluator.options.synonymFor.options.flags) ||
-          ({} as YargsParserFlags) // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
+          ({} as YargsParserFlags)
         const optional = builtInOptions.concat(
           (evaluator.options && evaluator.options.usage && evaluator.options.usage.optional) || []
         )

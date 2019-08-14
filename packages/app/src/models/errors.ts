@@ -19,6 +19,7 @@ import UsageError from '../core/usage-error'
 export interface CodedError extends Error {
   code?: number
   statusCode?: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body?: string | Record<string, any>
 }
 

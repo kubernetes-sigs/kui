@@ -242,15 +242,7 @@ const usage = (command: string): UsageModel => ({
 const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    const {
-      block,
-      argv: rawArgv,
-      argvNoOptions: argv,
-      execOptions,
-      parsedOptions: options,
-      command: rawCommand,
-      createOutputStream
-    } = opts
+    const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
 
     const isKube = isKubeLike(command)
     debug('exec', command, isKube)
