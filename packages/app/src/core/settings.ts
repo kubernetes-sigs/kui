@@ -17,6 +17,7 @@
 import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
 import { TableStyle } from '@kui-shell/core/webapp/models/table'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let devOverrides: Record<string, any>
@@ -30,6 +31,8 @@ interface Theme {
   productName: string
   gettingStarted?: string
   ogDescription?: string
+
+  about?: SidecarMode[]
 
   /** prompt placeholder text (default: '') */
   placeholder?: string

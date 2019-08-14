@@ -16,7 +16,6 @@
             "doc": "To create and invoke, you will need to be authenticated",
             "when": "no-auth"
           },
-          { "command": "themes", "doc": "Choose a Theme" },
           {
             "command": "tutorial kubernetes starter",
             "display": "kubernetes basics",

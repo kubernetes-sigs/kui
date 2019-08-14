@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 import * as colors from 'colors/safe'
 
 import * as repl from '@kui-shell/core/core/repl'
+import { renderResult } from '@kui-shell/core/webapp/cli'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
@@ -26,44 +27,16 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
-import { bugs, description, homepage, license, version } from '@kui-shell/settings/package.json'
+import { homepage, license, version } from '@kui-shell/settings/package.json'
 import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
 
 const debug = Debug('plugins/core-support/about')
 
-/** should we show low-level version info, e.g. electron version etc.? */
-const showVersionInfo = true
-
-/**
- * The repl allows plugins to provide their own window, via the
- * `bringYourOwnWindow` attribute. Here, we define our
- * bringYourOwnWindow behavior, for the `about` command.
- *
- */
-const aboutWindow = async () => {
-  /* bringYourOwnWindow impl */
-  debug('aboutWindow')
-
-  const { remote, shell } = await import('electron')
-
-  try {
-    injectCSS({
-      css: require('@kui-shell/plugin-core-support/web/css/about.css'),
-      key: 'about-window-css'
-    })
-  } catch (err) {
-    const { dirname, join } = await import('path')
-    const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(join(ourRootDir, 'web/css/about.css'))
-  }
-
-  // this is the main container for the dom
-  const content = document.createElement('div')
-  content.classList.add('about-window')
+async function renderAbout() {
+  const { shell } = await import('electron')
 
   const flexContent = document.createElement('div')
   flexContent.classList.add('page-content')
-  content.appendChild(flexContent)
 
   const topContent = document.createElement('div')
   topContent.classList.add('about-window-top-content')
@@ -71,14 +44,13 @@ const aboutWindow = async () => {
 
   const badges = []
 
-  const name = settings.productName || remote.app.getName()
   const openHome = () => shell.openExternal(homepage)
 
   if (license) {
     badges.push(license)
   }
 
-  const subtext = settings.byline || description
+  // const subtext = settings.byline || description
   /* subtext.appendChild(document.createTextNode('Distributed under an '))
   const licenseDom = document.createElement('strong')
   licenseDom.innerText = license
@@ -113,74 +85,162 @@ const aboutWindow = async () => {
     }
   }
 
+  return flexContent
+}
+
+function renderVersion(name: string) {
   const bottomContent = document.createElement('div')
   bottomContent.classList.add('about-window-bottom-content')
-  flexContent.appendChild(bottomContent)
 
-  if (showVersionInfo) {
-    const table = document.createElement('table')
-    table.classList.add('log-lines')
-    table.classList.add('versions')
-    table.classList.add('somewhat-smaller-text')
-    bottomContent.appendChild(table)
+  const table = document.createElement('table')
+  table.classList.add('bx--data-table')
+  table.classList.add('result-table')
+  table.classList.add('versions')
+  table.setAttribute('kui-table-style', 'Medium')
+  bottomContent.appendChild(table)
 
-    const versionModel = process.versions
-    versionModel[name] = version
-    versionModel['build'] = extras['build-info']
+  const versionModel = process.versions
+  versionModel[name] = version
+  versionModel['build'] = extras['build-info']
 
-    const headerRow = table.insertRow(-1)
-    headerRow.className = 'log-line header-row'
-    const column1 = headerRow.insertCell(-1)
-    column1.innerText = 'component'
-    column1.className = 'header-cell log-field'
-    const column2 = headerRow.insertCell(-1)
-    column2.innerText = 'version'
-    column2.className = 'header-cell log-field'
+  const thead = document.createElement('thead')
+  thead.classList.add('entity')
+  table.appendChild(thead)
+  const headerRow = document.createElement('tr')
+  thead.appendChild(headerRow)
+  headerRow.className = 'header-row entity-attributes'
+  const column1 = document.createElement('th')
+  const column1Text = document.createElement('span')
+  column1Text.classList.add('cell-inner')
+  column1Text.classList.add('bx--table-header-label')
+  column1.appendChild(column1Text)
+  headerRow.appendChild(column1)
+  column1Text.innerText = 'component'
+  column1.className = 'header-cell'
+  const column2 = document.createElement('th')
+  const column2Text = document.createElement('span')
+  column2Text.classList.add('cell-inner')
+  column2Text.classList.add('bx--table-header-label')
+  column2.appendChild(column2Text)
+  headerRow.appendChild(column2)
+  column2Text.innerText = 'version'
+  column2.className = 'header-cell'
 
-    for (const component of [name, 'build', 'electron', 'chrome', 'node', 'v8']) {
-      const version = versionModel[component]
+  // table body
+  const tbody = document.createElement('tbody')
+  tbody.classList.add('entity')
+  table.appendChild(tbody)
+  for (const component of [name, 'build', 'electron', 'chrome', 'node', 'v8']) {
+    const version = versionModel[component]
 
-      if (version !== undefined) {
-        const row = table.insertRow(-1)
-        row.classList.add('log-line')
+    if (version !== undefined) {
+      const row = document.createElement('tr')
+      row.classList.add('entity-attributes')
+      tbody.appendChild(row)
 
-        const nameCell = row.insertCell(-1)
-        nameCell.classList.add('log-field')
-        nameCell.innerText = component
+      const nameCell = row.insertCell(-1)
+      const nameCellText = document.createElement('span')
+      nameCell.appendChild(nameCellText)
+      nameCellText.classList.add('cell-inner')
+      nameCellText.innerText = component
 
-        const versionCell = row.insertCell(-1)
-        versionCell.classList.add('log-field')
-        versionCell.innerText = versionModel[component]
-        row.appendChild(versionCell)
+      const versionCell = row.insertCell(-1)
+      const versionCellText = document.createElement('span')
+      versionCell.appendChild(versionCellText)
+      versionCellText.classList.add('cell-inner')
+      versionCellText.innerText = versionModel[component]
+      row.appendChild(versionCell)
 
-        if (component === name) {
-          nameCell.classList.add('semi-bold')
-          nameCell.classList.add('cyan-text')
-          versionCell.classList.add('semi-bold')
-          versionCell.classList.add('cyan-text')
-        } else {
-          nameCell.classList.add('lighter-text')
-        }
+      if (component === name) {
+        nameCell.classList.add('semi-bold')
+        nameCell.classList.add('cyan-text')
+        versionCell.classList.add('semi-bold')
+        versionCell.classList.add('cyan-text')
+      } else {
+        nameCell.classList.add('lighter-text')
       }
     }
   }
 
-  const modes: SidecarMode[] = [
-    { mode: 'tutorials', label: 'Tutorials', flush: 'right', direct: settings.gettingStarted || 'getting started' },
-    { mode: 'bugs', label: 'Bugs', flush: 'right', url: bugs.url },
-    { mode: 'github', label: 'GitHub', flush: 'right', url: homepage }
+  return bottomContent
+}
+
+/**
+ * The repl allows plugins to provide their own window, via the
+ * `bringYourOwnWindow` attribute. Here, we define our
+ * bringYourOwnWindow behavior, for the `about` command.
+ *
+ */
+const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) => {
+  /* bringYourOwnWindow impl */
+  debug('aboutWindow')
+
+  try {
+    injectCSS({
+      css: require('@kui-shell/plugin-core-support/web/css/about.css'),
+      key: 'about-window-css'
+    })
+  } catch (err) {
+    const { dirname, join } = await import('path')
+    const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    injectCSS(join(ourRootDir, 'web/css/about.css'))
+  }
+
+  const name = settings.productName || (await import('electron')).app.getName()
+
+  // this is the main container for the dom
+  const content = document.createElement('div')
+  content.classList.add('about-window')
+
+  const defaultMode = parsedOptions.mode || 'about'
+  debug('defaultMode', defaultMode)
+
+  if (parsedOptions.content) {
+    const response = await repl.qexec(parsedOptions.content)
+    debug('rendering content', parsedOptions.content, response)
+
+    const container = document.createElement('div')
+    const innerContainer = document.createElement('div')
+    container.classList.add('about-window-bottom-content')
+    innerContainer.style.display = 'flex'
+    innerContainer.style.flex = '1'
+    container.appendChild(innerContainer)
+
+    if (await renderResult(response, tab, execOptions, parsedOptions, innerContainer, false, true)) {
+      content.appendChild(container)
+    }
+  } else if (defaultMode === 'version') {
+    content.appendChild(await renderVersion(name))
+  } else if (defaultMode === 'about') {
+    content.appendChild(await renderAbout())
+  }
+
+  const standardModes: SidecarMode[] = [
+    { mode: 'about', label: 'About', direct: 'about' },
+    {
+      mode: 'gettingStarted',
+      label: 'Getting Started',
+      direct: `about --mode gettingStarted --content ${repl.encodeComponent(
+        settings.gettingStarted || 'getting started'
+      )}`
+    },
+    { mode: 'configure', label: 'Configure', direct: 'about --mode configure --content themes' },
+    { mode: 'version', label: 'Version', direct: 'about --mode version' }
   ]
+  const modes: SidecarMode[] = standardModes.concat(settings.about || [])
+
+  modes.find(_ => _.mode === defaultMode).defaultMode = true
 
   return {
     type: 'custom',
     isEntity: true,
     prettyType: 'about',
-    presentation: document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen,
+    presentation:
+      (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
     modes,
     name,
-    badges,
-    version,
-    subtext,
+    // badges,
+    // version,
     content
   }
 }
@@ -251,7 +311,7 @@ export default (commandTree: CommandRegistrar) => {
 
   // for menu
   if (!commandTree) {
-    return aboutWindow()
+    return aboutWindow({} as EvaluatorArgs)
   }
 
   // these commands don't require any auth
@@ -282,6 +342,5 @@ export default (commandTree: CommandRegistrar) => {
 
 export const preload = () => {
   // install click handlers
-  ;(document.querySelector('#help-button') as HTMLElement).onclick = () =>
-    repl.pexec(settings.gettingStarted || 'getting started')
+  ;(document.querySelector('#help-button') as HTMLElement).onclick = () => repl.pexec('about')
 }

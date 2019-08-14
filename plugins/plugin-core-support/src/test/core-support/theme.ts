@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  localIt,
-  remoteIt
-} from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 
 const resetTheme = (ctx: ISuite) => {
@@ -100,16 +93,22 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nCl
   it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
       await ctx.app.client.click('#help-button')
-      await ctx.app.client.waitForVisible('#tutorialPane .tutorial-content-command[data-command="themes"]')
-      await ctx.app.client.waitForVisible('#tutorialPane .tCloseButton')
+      await ctx.app.client.waitForVisible(selectors.SIDECAR)
+      await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('configure'))
+      console.error('1')
+      await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON('configure'))
+      console.error('2', selectors.SIDECAR_MODE_BUTTON('configure'))
+      await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON_SELECTED('configure'))
       await new Promise(resolve => setTimeout(resolve, 300))
-      await ctx.app.client.click('#tutorialPane .tutorial-content-command[data-command="themes"]')
 
-      const checkMarkCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
-      const nameCell = `${selectors.OUTPUT_LAST} .entity.theme[data-name="${clickOn.name}"] > tr > .clickable`
+      const checkMarkCell = `${selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
+      const nameCell = `${selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] > tr > .clickable`
 
+      console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
+      console.error('2')
       await ctx.app.client.waitForVisible(nameCell)
+      console.error('3')
 
       for (let idx = 0; idx < nClicks; idx++) {
         if (idx === 0) {

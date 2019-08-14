@@ -8,28 +8,23 @@ body[kui-theme-style] {
 
 body[kui-theme-style] sidecar .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
   color: var(--color-text-01);
-  border-bottom-color: var(--color-brand-03);
+  border-color: var(--color-brand-03);
   opacity: 1;
 }
 body[kui-theme-style="dark"] sidecar .bx--tabs__nav-item a.bx--tabs__nav-link {
-  color: var(--color-text-02);
-  border-bottom-color: var(--color-base05);
+  color: var(--color-text-01);
+  border-color: var(--color-base05);
   opacity: 0.6;
   transition: opacity 70ms cubic-bezier(0.2, 0, 0.38, 0.9), color 70ms cubic-bezier(0.2, 0, 0.38, 0.9),
-    border-bottom-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    border-color 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
 }
 body[kui-theme-style="dark"]
   sidecar
   .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-text-01);
-  border-bottom-color: var(--color-base05);
+  border-color: var(--color-base05);
   opacity: 1;
-}
-
-body[kui-theme-style] .bx--structured-list-th,
-body[kui-theme-style] .bx--structured-list-td {
-  color: inherit;
 }
 
 /* breadcrumbs */
