@@ -277,6 +277,10 @@ const closeTab = (tab = getCurrentTab()) => {
   return true
 }
 
+function isElement(target: EventTarget): target is Element {
+  return (target as Element).classList !== undefined
+}
+
 /**
  * Initialize events for a new tab
  *
@@ -289,6 +293,15 @@ const perTabInit = (tab: Tab, doListen = true) => {
   if (doListen) {
     listen(getCurrentPrompt(tab))
   }
+
+  // keep repl prompt focused, if possible
+  tab.querySelector('.repl-inner').addEventListener('click', (evt: MouseEvent) => {
+    if (isElement(evt.target)) {
+      if (evt.target.classList.contains('repl-inner') || evt.target.classList.contains('repl-output')) {
+        getCurrentPrompt(tab).focus()
+      }
+    }
+  })
 
   // tab close button
   getTabCloser(tab).onclick = (event: MouseEvent) => {
