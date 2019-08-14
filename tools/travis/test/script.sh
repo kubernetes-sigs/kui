@@ -131,13 +131,7 @@ if [ -n "$LAYERS" ]; then
                 (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
             fi
 
-            if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$KUI_USE_PROXY" == "true" ]; then
-                # for now, k8s1 is problematic with the proxy
-                echo "trimming k8s1"
-                TEST_THESE_LAYERS=${NON_HEADLESS_LAYERS# k8s1}
-            else
-                TEST_THESE_LAYERS=$NON_HEADLESS_LAYERS
-            fi
+            TEST_THESE_LAYERS=$NON_HEADLESS_LAYERS
 
             echo "running these non-headless layers with $MOCHA_RUN_TARGET: $NON_HEADLESS_LAYERS"
             (cd packages/tests && ./bin/runMochaLayers.sh $TEST_THESE_LAYERS) &
