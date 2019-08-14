@@ -74,6 +74,7 @@ selectors.SIDECAR_BADGES = `${selectors.SIDECAR} .sidecar-header .badges`
 selectors.SIDECAR_CUSTOM_CONTENT = `${selectors.SIDECAR} .custom-content`
 selectors.SIDECAR_MODE_BUTTONS = `${selectors.SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 selectors.SIDECAR_MODE_BUTTON = mode => `${selectors.SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
+selectors.SIDECAR_MODE_BUTTON_SELECTED = mode => `${selectors.SIDECAR_MODE_BUTTON(mode)}.bx--tabs__nav-item--selected`
 selectors.SIDECAR_BACK_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
 selectors.SIDECAR_MAXIMIZE_BUTTON = `${selectors.SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
 selectors.SIDECAR_CLOSE_BUTTON = `${selectors.SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe

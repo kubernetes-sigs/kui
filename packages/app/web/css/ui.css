@@ -1450,6 +1450,9 @@ pre.monospace {
   /* intended for fontawesome table cells */
   width: 2em;
 }
+.radio-button-width {
+  width: 3em !important;
+}
 .double-icon-width {
   /* intended for fontawesome table cells */
   width: 4em;
@@ -2830,10 +2833,10 @@ sidecar.rule-enabled-false .sidecar-header-icon,
   fill: var(--color-support-03-darker);
 }
 .cyan-text {
-  color: var(--color-cyan);
+  color: var(--color-cyan) !important;
 }
 .cyan-text > svg path {
-  fill: var(--color-cyan);
+  fill: var(--color-cyan) !important;
 }
 
 sidecar.activation-success-false .sidecar-header-icon,
@@ -3096,7 +3099,7 @@ body {
   --color-text-02: var(--color-base04);
 
   --color-sidecar-background: var(--color-ui-02);
-  --color-sidecar-border: #e4e4e4;
+  --color-sidecar-border: var(--color-ui-04);
   --color-sidecar-header: var(--color-ui-01);
 
   --color-selection-background: var(--color-base04);

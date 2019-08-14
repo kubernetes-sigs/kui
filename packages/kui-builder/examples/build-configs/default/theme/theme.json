@@ -5,7 +5,7 @@
   "ogTitle": "Kui Shell: The Hybrid CLI Cloud Shell",
   "ogUrl": "https://kui.tools",
   "byline": "The CLI with a GUI twist",
-  "ogDescription": "**Kui** offers a new development experience for building cloud-native applications. By combining the power of familiar CLIs with **visualizations** in high-impact areas, Kui enables you to manipulate complex **JSON and YAML** data models, integrate disparate tooling, and provides quick access to aggregate views of **operational data**.",
+  "ogDescription": "**Kui** is a platform for enhancing the terminal experience with visualizations. It provides users a modern alternative to ASCII terminals and web-based consoles. It provides tool developers an opportunity to unify these experiences.",
   "ogImage": "http://content.kui-shell.org/images/ogImage.jpg",
   "ogLabel1": "Clone on GitHub",
   "ogData1": "https://github.com/IBM/kui",
@@ -16,6 +16,7 @@
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
   "gettingStarted": "getting started",
+  "about": [{ "mode": "contexts", "label": "Contexts", "direct": "about --mode contexts --content contexts" }],
   "defaultTheme": "Dark",
   "themes": [
     {
