@@ -70,8 +70,14 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
-        .then(ui.expectStruct(expectedResult))
+        .then(() =>
+          this.app.client.waitUntil(async () => {
+            const ok = await this.app.client
+              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(ui.expectStruct(expectedResult, false, true))
+            return ok
+          })
+        )
         .catch(common.oops(this))
     })
 
@@ -81,8 +87,14 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
       return sidecar
         .expectOpen(this.app)
         .then(sidecar.expectShowing(name))
-        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`))
-        .then(ui.expectSubset({ name, namespace: ui.expectedNamespace() })) // parts of the raw annotation record
+        .then(() =>
+          this.app.client.waitUntil(async () => {
+            const ok = await this.app.client
+              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(ui.expectSubset({ name, namespace: ui.expectedNamespace() }, false)) // parts of the raw annotation record
+            return ok
+          })
+        )
         .catch(common.oops(this))
     })
   }

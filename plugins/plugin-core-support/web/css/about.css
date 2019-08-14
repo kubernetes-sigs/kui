@@ -9,13 +9,12 @@
 
 .about-window .logo {
   display: flex;
+  flex-direction: column;
 }
 .about-window .logo img {
-  float: left;
   width: 8em;
   height: 8em;
   max-width: none;
-  margin-right: 1.5em;
   transition: all 0.8s ease-in-out;
 }
 .about-window .logo img:hover {
@@ -32,14 +31,13 @@
   flex-direction: column;
   font-family: var(--font-sans-serif);
   white-space: normal;
-  padding: 3em;
-  max-width: 50em;
+  padding: 0 1.5em;
 }
 
 .about-window-inside-content {
   display: flex;
   justify-content: space-between;
-  padding: 3em;
+  padding: 1em;
   background: var(--color-base03);
 }
 
@@ -52,16 +50,14 @@
 .about-window-icon-stack > div {
   margin-top: 0.375em;
 }
-.about-window .about-window-inside-content a {
-  font-size: 3em;
-  color: var(--color-base05);
-}
 
 .about-window-bottom-content {
   display: flex;
-  justify-content: center;
-  padding: 3em;
+  padding: 4em 1.5em 1em;
 }
-.about-window-bottom-content .log-lines {
-  width: calc(100% - 6em);
+
+.about-window .page-content p {
+  font-weight: 300;
+  margin-left: 0;
+  margin-right: 0;
 }

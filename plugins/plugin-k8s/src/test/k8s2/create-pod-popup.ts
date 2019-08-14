@@ -110,7 +110,7 @@ const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
       await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
       await waitForRawContent()
     } catch (err) {
-      common.oops(this)(err)
+      common.oops(this, true)(err)
     }
   })
 }

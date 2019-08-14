@@ -17,7 +17,7 @@
 // DO NOT USE IMPORT
 // as it conflicts with the kui-builder kui-link-source-assets.sh
 // the typescript compiler moves the json files into the builddir, if we use import
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { CommandRegistrar, ExecType } from '@kui-shell/core/models/command'
 /* eslint-disable @typescript-eslint/no-var-requires */
 const {
   name: gettingStartedDocs
@@ -38,11 +38,18 @@ import repl = require('@kui-shell/core/core/repl')
  */
 export default async (commandTree: CommandRegistrar) => {
   // getting started shortcut
-  commandTree.listen('/getting/started', () => repl.qexec('tutorial play @tutorials/getting-started'), {
-    usage: { command: 'started', docs: gettingStartedDocs },
-    needsUI: true,
-    noAuthOk: true
-  })
+  commandTree.listen(
+    '/getting/started',
+    ({ execOptions }) =>
+      repl.qexec(
+        `tutorial play @tutorials/getting-started ${execOptions.type === ExecType.Nested ? '' : '--top-level'}`
+      ),
+    {
+      usage: { command: 'started', docs: gettingStartedDocs },
+      needsUI: true,
+      noAuthOk: true
+    }
+  )
 
   // kubernetes coding basics shortcut
   commandTree.listen('/tutorial/kubernetes/starter', () => repl.qexec('tutorial play @tutorials/kubernetes-basics'), {

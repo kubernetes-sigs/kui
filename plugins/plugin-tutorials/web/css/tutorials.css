@@ -1,4 +1,4 @@
-body.subwindow #tutorialPane .tutorial-header {
+body.subwindow .tutorialPane .tutorial-header {
   padding-top: 1em;
   -webkit-app-region: drag;
 }
@@ -36,41 +36,41 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   flex-basis: 34em;
 }
 
-#tutorialPane .scrollable {
+.tutorialPane .scrollable {
   overflow-y: auto;
 }
-#tutorialPane .scrollable:focus {
+.tutorialPane .scrollable:focus {
   outline: none;
 }
 
-#tutorialPane .tutorial-template {
+.tutorialPane .tutorial-template {
   /* don't show any templates */
   display: none;
 }
 
-#tutorialPane .tButtonGroup {
+.tutorialPane .tButtonGroup {
   margin-top: 1em;
   white-space: nowrap;
   display: flex;
   justify-content: flex-end;
 }
 
-#tutorialPane .tutorial-header {
+.tutorialPane .tutorial-header {
   display: flex;
   border-bottom: 1px solid var(--color-content-divider);
   background-color: var(--color-sidecar-header);
   padding: 0 1.8125em;
 }
-#tutorialPane .tutorial-header .tutorial-header-names {
+.tutorialPane .tutorial-header .tutorial-header-names {
   flex: 1;
   font-size: 2em;
   padding: calc(1em / 2) 0 calc(1em / 2);
 }
-#tutorialPane .tutorial-header .tutorial-header-tutorial-name-stripe {
+.tutorialPane .tutorial-header .tutorial-header-tutorial-name-stripe {
   display: flex;
   font-size: 0.5em;
 }
-#tutorialPane .tutorial-header .tutorial-header-tutorial-name {
+.tutorialPane .tutorial-header .tutorial-header-tutorial-name {
   color: var(--color-text-02);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -79,57 +79,60 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   font-variant: small-caps;
 }
 
-#tutorialPane .tutorial-header .tutorial-heading {
+.tutorialPane .tutorial-header .tutorial-heading {
   display: inline-block;
 }
 
-#tutorialPane .tutorial-top-stripe {
+.tutorialPane .tutorial-top-stripe {
   float: right;
   text-align: right;
 }
 
-#tutorialPane .tutorial-body {
+.tutorialPane .tutorial-body {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-#tutorialPane .tutorial-body .tutorial-content {
+.tutorialPane .tutorial-body .tutorial-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden; /* needed for firefox inner scrolling; safari and chrome seem not to need this */
-  background-color: var(--color-sidecar-background);
   padding-top: 2em;
 }
 
-#tutorialPane .tutorial-body .tutorial-top,
-#tutorialPane .tutorial-body .tutorial-bottom {
+#tutorialPane .tutorial-body .tutorial-content {
+  background-color: var(--color-sidecar-background);
+}
+
+.tutorialPane .tutorial-body .tutorial-top,
+.tutorialPane .tutorial-body .tutorial-bottom {
   display: flex;
 }
-#tutorialPane .tutorial-body .tutorial-bottom,
-#tutorialPane .tutorial-body .tutorial-top .scrollable,
-#tutorialPane .tutorial-body .tutorial-top .tButtonGroup {
+.tutorialPane .tutorial-body .tutorial-bottom,
+.tutorialPane .tutorial-body .tutorial-top .scrollable,
+.tutorialPane .tutorial-body .tutorial-top .tButtonGroup {
   padding: 0 1.8125em;
 }
-#tutorialPane .tutorial-body .tutorial-top {
+.tutorialPane .tutorial-body .tutorial-top {
   flex: 6;
   padding-bottom: 1em;
   overflow: hidden; /* needed for firefox inner scrolling; safari and chrome seem not to need this */
 }
-#tutorialPane .tutorial-body .tutorial-bottom {
+.tutorialPane .tutorial-body .tutorial-bottom {
   flex: 0 0 0%; /* note: firefox needs flex: 0 0 0%; chrome is happy with flex: 0 */
   min-height: 0;
 }
 
-#tutorialPane .tutorial-body .tutorial-content .tutorial-left {
+.tutorialPane .tutorial-body .tutorial-content .tutorial-left {
   flex: 1;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   padding-right: 1em; /* keep a gap between the content and the scrollbar */
 }
-#tutorialPane .tutorial-body .tutorial-content .tutorial-right {
+.tutorialPane .tutorial-body .tutorial-content .tutorial-right {
   overflow-y: hidden; /* the enclosed elements will be scrollable */
   display: flex;
   flex-direction: column;
@@ -139,58 +142,59 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   min-width: 40%;
   margin-left: 2em;
 }
-#tutorialPane[data-rendering-hints="fifty-fifty"] .tutorial-body .tutorial-content .tutorial-left {
+.tutorialPane[data-rendering-hints="fifty-fifty"] .tutorial-body .tutorial-content .tutorial-left {
   flex: 4;
 }
-#tutorialPane[data-rendering-hints="fifty-fifty"] .tutorial-body .tutorial-content .tutorial-right {
+.tutorialPane[data-rendering-hints="fifty-fifty"] .tutorial-body .tutorial-content .tutorial-right {
   flex: 5;
 }
-#tutorialPane .tutorial-body .tutorial-content .tutorial-paragraphs {
+.tutorialPane .tutorial-body .tutorial-content .tutorial-paragraphs {
   max-height: 100%;
   max-width: 46rem;
   min-width: 20em;
+  padding-bottom: 2em;
 }
-#tutorialPane .tutorial-paragraphs li {
+.tutorialPane .tutorial-paragraphs li {
   margin: 0.375em 0;
 }
 
-#tutorialPane .tutorial-content-extras {
+.tutorialPane .tutorial-content-extras {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
 }
-#tutorialPane .tutorial-content-extras:not(.visible) {
+.tutorialPane .tutorial-content-extras:not(.visible) {
   display: none;
 }
-#tutorialPane .tutorial-content-extras-title {
+.tutorialPane .tutorial-content-extras-title {
   margin-bottom: 0.375em;
 }
-#tutorialPane .tutorial-right .tutorial-content-extras-title {
+.tutorialPane .tutorial-right .tutorial-content-extras-title {
   margin-top: 0;
 }
-#tutorialPane .tutorial-content-extras-body {
+.tutorialPane .tutorial-content-extras-body {
   margin-bottom: 0;
 }
 
-#tutorialPane .tutorial-body .tutorial-content p:first-child {
+.tutorialPane .tutorial-body .tutorial-content p:first-child {
   margin-top: 0;
 }
-#tutorialPane .tutorial-body .tutorial-content p:last-child {
+.tutorialPane .tutorial-body .tutorial-content p:last-child {
   margin-bottom: 0;
 }
 
-#tutorialPane .tutorial-body .tutorial-content p,
-#tutorialPane .tutorial-body .tutorial-content li {
+.tutorialPane .tutorial-body .tutorial-content p,
+.tutorialPane .tutorial-body .tutorial-content li {
   font-size: 1.125em;
 }
-#tutorialPane .tutorial-body .tutorial-left p {
+.tutorialPane .tutorial-body .tutorial-left p {
   text-align: justify;
 }
-#tutorialPane .tutorial-body .tutorial-content li:not(:first-child) {
+.tutorialPane .tutorial-body .tutorial-content li:not(:first-child) {
   margin-top: 0.375em;
 }
 
-#tutorialPane .bx--btn:not(:first-child) {
+.tutorialPane .bx--btn:not(:first-child) {
   margin-left: 1em;
 }
 
@@ -199,13 +203,13 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   animation-direction: alternate;
 }
 
-#tutorialPane .tutorial-skills {
+.tutorialPane .tutorial-skills {
   display: flex;
   align-items: flex-end;
   height: 1.875em; /* attempt to baseline align with the tutorial-header-tutorial-name text */
 }
 
-#tutorialPane .tutorial-header-right {
+.tutorialPane .tutorial-header-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -214,13 +218,13 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 
 /* "breadcrumb" blocks */
-#tutorialPane .tutorial-header-blocks {
+.tutorialPane .tutorial-header-blocks {
   display: flex;
   align-items: flex-end;
   flex: 1;
   padding-bottom: 0.5em; /* attempt to baseline align with the .tutorial-heading text */
 }
-#tutorialPane .tutorial-step-block {
+.tutorialPane .tutorial-step-block {
   width: 2em;
   height: 2em;
   border: 4px solid var(--color-ui-05);
@@ -229,17 +233,17 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   transition: all 500ms ease-in-out;
   filter: opacity(0.5) blur(1px);
 }
-#tutorialPane .tutorial-step-block.active,
-#tutorialPane .tutorial-step-block:hover {
+.tutorialPane .tutorial-step-block.active,
+.tutorialPane .tutorial-step-block:hover {
   background-color: var(--color-base09);
   filter: opacity(1);
 }
-#tutorialPane .tutorial-step-block:hover {
+.tutorialPane .tutorial-step-block:hover {
   cursor: pointer;
   filter: opacity(0.6);
 }
 
-#tutorialPane[num-steps="1"] .tNext {
+.tutorialPane[num-steps="1"] .tNext {
   /* no next button for one-step tutorials */
   display: none;
 }
@@ -259,68 +263,68 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 
 /* showcase */
-#tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-content {
+.tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-content {
   overflow: hidden;
 }
-#tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-bottom {
+.tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-bottom {
   margin: 0;
   padding: 0;
   flex: 4;
   align-items: flex-start;
   background-color: var(--color-ui-01);
 }
-#tutorialPane .bx--structured-list {
+.tutorialPane .bx--structured-list {
   min-width: unset;
 }
-#tutorialPane:not([tutorial-is-fullscreen]) .tutorial-bottom {
+.tutorialPane:not([tutorial-is-fullscreen]) .tutorial-bottom {
   display: none;
 }
-#tutorialPane:not([tutorial-is-fullscreen]) .bx--structured-list-row:last-child .bx--structured-list-td {
+.tutorialPane:not([tutorial-is-fullscreen]) .bx--structured-list-row:last-child .bx--structured-list-td {
   padding-bottom: 0;
 }
-#tutorialPane:not([tutorial-is-fullscreen])
+.tutorialPane:not([tutorial-is-fullscreen])
   .bx--structured-list-row:last-child:not(.bx--structured-list-row--header-row) {
   border-bottom-color: transparent;
 }
-#tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-content-extras-title {
+.tutorialPane[tutorial-has-showcase][tutorial-is-fullscreen] .tutorial-content-extras-title {
   display: block;
 }
-#tutorialPane .tutorial-showcase-group {
+.tutorialPane .tutorial-showcase-group {
   display: flex;
   flex-direction: column;
 }
-#tutorialPane .tutorial-showcase-group:not(:last-child) {
+.tutorialPane .tutorial-showcase-group:not(:last-child) {
   margin-right: 1em;
 }
-#tutorialPane .tutorial-showcase-group img {
+.tutorialPane .tutorial-showcase-group img {
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
   transition: all 300ms ease-in-out;
 }
-/*#tutorialPane .tutorial-bottom:hover .tutorial-showcase-group img:not(:hover) {
+/*.tutorialPane .tutorial-bottom:hover .tutorial-showcase-group img:not(:hover) {
     filter: opacity(0.6) blur(1px) grayscale(1);
 }*/
-#tutorialPane .tutorial-showcase-group img.active-overlay,
-#tutorialPane .tutorial-showcase-group img:hover {
+.tutorialPane .tutorial-showcase-group img.active-overlay,
+.tutorialPane .tutorial-showcase-group img:hover {
   filter: grayscale(0.75) blur(1px);
   /*opacity: 0.7;*/
   /*transform: scale(1.1);
     transform-origin: bottom;*/
 }
-#tutorialPane .tutorial-showcase-group:first-child img:hover {
+.tutorialPane .tutorial-showcase-group:first-child img:hover {
   transform-origin: bottom left;
 }
-#tutorialPane .tutorial-showcase-group:last-child img:hover {
+.tutorialPane .tutorial-showcase-group:last-child img:hover {
   transform-origin: bottom right;
 }
 
 /* showcase overlays */
-#tutorialPane .tutorial-showcase-element {
+.tutorialPane .tutorial-showcase-element {
   position: relative;
 }
-#tutorialPane .tutorial-showcase-element-overlay {
+.tutorialPane .tutorial-showcase-element-overlay {
   position: absolute;
   top: 10%;
   left: 10%;
@@ -334,31 +338,31 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   flex-direction: column;
   align-items: center;
 }
-#tutorialPane .tutorial-showcase-element:hover .tutorial-showcase-element-overlay {
+.tutorialPane .tutorial-showcase-element:hover .tutorial-showcase-element-overlay {
   opacity: 1;
 }
-#tutorialPane .tutorial-showcase-element-overlay-title {
+.tutorialPane .tutorial-showcase-element-overlay-title {
   text-align: center;
   border-bottom: 1px solid var(--color-ui-05);
   padding: 0 0.375em;
 }
 
 /* fullscreen tutorials */
-#tutorialPane.visible[tutorial-is-fullscreen] {
+.tutorialPane.visible[tutorial-is-fullscreen] {
   flex: 1;
   background-color: var(--color-ui-03);
   box-shadow: none;
 }
 
 /* minimized form */
-#tutorialPane:not(.minimized) .tutorial-minimized-message {
+.tutorialPane:not(.minimized) .tutorial-minimized-message {
   display: none;
 }
-#tutorialPane.visible.minimized {
+.tutorialPane.visible.minimized {
   flex-basis: 14em;
   border-top: 1px solid var(--color-base01);
 }
-#tutorialPane.minimized .tutorial-hide-when-minimized {
+.tutorialPane.minimized .tutorial-hide-when-minimized {
   margin: 0;
   width: 0;
   height: 0;
@@ -368,37 +372,37 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 
 /* restore button */
-#tutorialPane .tRestoreButton {
+.tutorialPane .tRestoreButton {
   /* no restore button if tutorial does not have a showcase */
   display: none;
 }
-#tutorialPane.minimized .tRestoreButton {
+.tutorialPane.minimized .tRestoreButton {
   /* yes restore button if tutorial has a showcase, but is currently full screen */
   display: initial;
 }
-#tutorialPane.minimized .tBack,
-#tutorialPane.minimized .tNext {
+.tutorialPane.minimized .tBack,
+.tutorialPane.minimized .tNext {
   display: none;
 }
 
 /* code snippets */
-#tutorialPane.tutorial-no-extras .tutorial-code-snippet,
-#tutorialPane .tutorial-code-snippet {
+.tutorialPane.tutorial-no-extras .tutorial-code-snippet,
+.tutorialPane .tutorial-code-snippet {
   display: none;
 }
-#tutorialPane:not(.tutorial-no-extras) .tutorial-code-snippet.has-code {
+.tutorialPane:not(.tutorial-no-extras) .tutorial-code-snippet.has-code {
   display: flex;
   margin-top: 1em;
   flex: 1;
   overflow: auto;
 }
-#tutorialPane .bx--snippet--multi {
+.tutorialPane .bx--snippet--multi {
   font-size: 0.875em;
   padding-bottom: 1rem; /* i don't know why carbon components has more bottom padding than top */
 }
 
 /* font graphics */
-#tutorialPane .tutorial-font-graphics {
+.tutorialPane .tutorial-font-graphics {
   font-size: 9em;
   display: flex;
   justify-content: space-around;
@@ -406,25 +410,25 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
   color: var(--color-ui-04);
   opacity: 0.6;
 }
-#tutorialPane .tutorial-font-graphics.visible {
+.tutorialPane .tutorial-font-graphics.visible {
   flex: 1;
 }
-#tutorialPane .tutorial-font-graphics svg {
+.tutorialPane .tutorial-font-graphics svg {
   margin: 2rem 0 1rem;
 }
 
 /* learn more */
-#tutorialPane .tutorial-learn-more:not(.has-learn-more) {
+.tutorialPane .tutorial-learn-more:not(.has-learn-more) {
   display: none;
 }
 
 /* special rendering of links for next steps/tabular view */
-#tutorialPane div.bx--link {
+.tutorialPane div.bx--link {
   display: inline-block;
 }
 
 /* zoom in */
-#tutorialPane .zoom-in {
+.tutorialPane .zoom-in {
   animation: zoomIn 3s 1;
   transform-origin: left center;
 }
@@ -467,18 +471,18 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 
 /* full-width table */
-#tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"] .tutorial-top {
+.tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"] .tutorial-top {
   flex-direction: column;
 }
-#tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"] .tutorial-top .tutorial-left {
+.tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"] .tutorial-top .tutorial-left {
   flex: initial;
 }
-#tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"] .tutorial-top .tutorial-right {
+.tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"] .tutorial-top .tutorial-right {
   align-items: stretch;
   margin-left: 0;
   flex: 1;
 }
-#tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"]
+.tutorialPane[tutorial-is-fullscreen][data-rendering-hints="full-width-table"]
   .tutorial-body
   .tutorial-content
   .tutorial-paragraphs {
@@ -486,34 +490,34 @@ body[kui-theme-style="dark"] #tutorialPane.minimized {
 }
 
 /* tables */
-#tutorialPane .tutorial-content-extras-as-structured-list {
+.tutorialPane .tutorial-content-extras-as-structured-list {
   flex: 1;
   min-width: calc(50% - 1em);
 }
-#tutorialPane[data-rendering-hints="full-width-table"]
+.tutorialPane[data-rendering-hints="full-width-table"]
   .tutorial-top
   .tutorial-right
   .tutorial-content-extras-as-structured-list {
   margin-top: 2em;
 }
-#tutorialPane[data-rendering-hints="full-width-table"]
+.tutorialPane[data-rendering-hints="full-width-table"]
   .tutorial-top
   .tutorial-right
   .tutorial-content-extras-as-structured-list:nth-child(2n) {
   margin-right: 1em;
 }
-#tutorialPane:not([tutorial-is-fullscreen]) .tutorial-content-extras-as-structured-list:only-child h2 {
+.tutorialPane:not([tutorial-is-fullscreen]) .tutorial-content-extras-as-structured-list:only-child h2 {
   /* don't show the header for single-child case */
   display: none;
 }
 
 /*@media screen and (max-width: 1064px) {
-    #tutorialPane .tutorial-content-extras-as-structured-list {
+    .tutorialPane .tutorial-content-extras-as-structured-list {
         min-width: unset;
     }
 }*/
 @media screen and (max-width: 900px) {
-  #tutorialPane .tutorial-content-extras-as-structured-list {
+  .tutorialPane .tutorial-content-extras-as-structured-list {
     min-width: 100%;
   }
 }

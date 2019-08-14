@@ -31,6 +31,7 @@
 enum Presentation {
   Default,
   FixedSize,
+  SidecarThin,
   SidecarFullscreen,
   SidecarFullscreenForPopups
 }

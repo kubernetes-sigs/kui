@@ -293,11 +293,13 @@ const registerWatcher = (
  * Replace fontawesome names with svgs
  *
  */
-function formatIcon(fontawesome: string) {
+function formatIcon(fontawesome: string, cell: HTMLElement) {
   if (/fa-check$/.test(fontawesome)) {
     // the first svg is radio-checked; the second is
     // radio-unchecked; we will use css to swap between the two,
     // governed by either :hover or .selected-row
+    cell.classList.add('radio-button-width')
+
     const icon1 = document.createElement('i')
     const icon2 = document.createElement('i')
     icon1.innerHTML =
@@ -422,7 +424,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
   // click handler for the list result
   if (entity.fontawesome) {
-    const icon = formatIcon(entity.fontawesome)
+    const icon = formatIcon(entity.fontawesome, entityNameGroup)
     entityNameClickable.appendChild(icon)
   } else if (typeof name === 'string') {
     entityNameClickable.title = name
@@ -508,7 +510,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
     if (fontawesome) {
       const addIcon = (theIcon: Icon) => {
-        const icon = formatIcon(theIcon.fontawesome)
+        const icon = formatIcon(theIcon.fontawesome, cell)
 
         if (typeof onclick === 'function') {
           icon.onclick = onclick

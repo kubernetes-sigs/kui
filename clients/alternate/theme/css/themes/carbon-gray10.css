@@ -17,6 +17,14 @@ body[kui-theme="IBM Light"] {
   --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
 
+  /* SidecarThin */
+  --color-background-inverted01: #272d33;
+  --color-background-inverted02: #32383d;
+  --color-text-inverted01: #fff;
+  --color-text-inverted02: var(--color-text-inverted01);
+  --color-text-inverted03: var(--color-text-01);
+  --color-tab-selected-inverted: #5a99e2;
+
   /* xterm ANSI yellow text color */
   --color-yellow-text: #bb9002;
 
