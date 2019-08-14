@@ -200,8 +200,22 @@ const getStatusFromConditions = (response: KubeResource) => {
   if (response.status && !response.status.state && response.status.conditions) {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
-    conditions.sort((a, b) => -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime()))
-    // debug('using condition for status', conditions[0], conditions)
+
+    // NOTE: Mengting is debugging
+    conditions.sort((a, b) => {
+      // sort by lastTransitionTime
+      let compo = -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime())
+      // sort by type
+      if (compo === 0 && a.status === b.status) {
+        if (isPendingLike(a.type) && !isPendingLike(b.type)) {
+          compo = 1
+        }
+      }
+
+      return compo
+    })
+
+    debug('using condition for status', conditions[0], conditions)
 
     const conditionForMessage = conditions.find(_ => _.message) || conditions[0]
 

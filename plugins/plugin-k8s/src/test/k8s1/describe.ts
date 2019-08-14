@@ -27,7 +27,8 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+// NOTE: mengting is testing ui fix, disable this test for now
+common.localDescribe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
