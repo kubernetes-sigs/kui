@@ -36,7 +36,7 @@ const globp = (dir, patternSuffix, dirWildcard = false) =>
   })
 
 /** flatten array of arrays */
-const flatten = arrays => [].concat.apply([], arrays)
+const flatten = arrays => [].concat(...arrays)
 
 /**
  * Set the acl for the given bucket to public-read

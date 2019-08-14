@@ -17,11 +17,7 @@
 // DO NOT USE IMPORT
 // as it conflicts with the kui-builder kui-link-source-assets.sh
 // the typescript compiler moves the json files into the builddir, if we use import
-import { CommandRegistrar, ExecType } from '@kui-shell/core/models/command'
-/* eslint-disable @typescript-eslint/no-var-requires */
-const {
-  name: gettingStartedDocs
-} = require('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 const {
   name: kubernetesBasicsDocs
 } = require('@kui-shell/plugin-tutorials/samples/@tutorials/kubernetes-basics/package.json')

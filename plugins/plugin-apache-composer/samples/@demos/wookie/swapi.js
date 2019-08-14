@@ -1,11 +1,11 @@
-var request = require('request')
+const request = require('request')
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function main(params) {
   // Language Translation Service Credentials
-  var search = params.search
+  const search = params.search
 
-  var url = 'https://swapi.co/api/people/?search=' + search
+  const url = 'https://swapi.co/api/people/?search=' + search
 
   return new Promise(function(resolve) {
     request.get(

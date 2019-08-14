@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const common = require('./common')
 const assert = require('assert')
 const timeout = Math.max(5000, process.env.TIMEOUT || 60000)
 const constants = {
