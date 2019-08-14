@@ -162,7 +162,7 @@ const calculateLadder = (initial: number): number[] => {
  */
 const registerWatcher = (
   tab: Tab,
-  watchLimit: number = 100000,
+  watchLimit = 100000,
   command: string,
   resultDom: HTMLElement,
   tableViewInfo: TableViewInfo | TableViewInfo[],

@@ -18,13 +18,10 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, keys, selectors, getTextContent } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
-  waitForRed,
   createNS,
   allocateNS,
   deleteNS,
-  typeSlowly,
-  waitTillNone
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+  typeSlowly} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 

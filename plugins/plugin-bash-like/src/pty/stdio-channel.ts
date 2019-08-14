@@ -74,8 +74,8 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
       })
     })
 
-    const self = this
-    const interval = setInterval(function ping() {
+    const self = this // eslint-disable-line @typescript-eslint/no-this-alias
+    setInterval(function ping() {
       self.wss['clients'].forEach(function each(ws) {
         if (ws.isAlive === false) {
           debugW('killing child process, because client connection did not respond to ping')

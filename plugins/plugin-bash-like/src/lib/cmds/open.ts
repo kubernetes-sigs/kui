@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { basename, dirname } from 'path'
-import { readFile } from 'fs'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { isHeadless } from '@kui-shell/core/core/capabilities'

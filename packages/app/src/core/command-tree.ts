@@ -23,6 +23,7 @@ import {
   CommandTree,
   CommandTreeResolution,
   Disambiguator,
+  EvaluatorArgs,
   ExecType,
   CatchAllOffer,
   CatchAllHandler,
@@ -39,14 +40,15 @@ import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Tab } from '../webapp/cli'
+import { PluginResolver } from './plugins'
 
 /**
  * The command tree module
  *
  */
-const root = () => undefined // this will trigger a re-parse using Context.current as the path prefix
+const root = (): CommandHandler => undefined // this will trigger a re-parse using Context.current as the path prefix
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const interior = (x?: string[], y?: number, z?: number) => undefined // this will trigger a re-parse using Context.current as the path prefix
+const interior = (x?: string[], y?: number, z?: number): CommandHandler => undefined // this will trigger a re-parse using Context.current as the path prefix
 const newTree = (): CommandTree => ({
   $: root(),
   key: '/',
@@ -88,8 +90,8 @@ export const endScan = (state: Disambiguator): Disambiguator => {
  * Plugin registry
  *
  */
-let resolver
-export const setPluginResolver = _ => {
+let resolver: PluginResolver
+export const setPluginResolver = (_: PluginResolver) => {
   debug('setPluginResolver')
   resolver = _
 }
@@ -131,7 +133,7 @@ const treeMatch = (
   noWildcard = false
 ): Command => {
   let parent = model
-  let cur
+  let cur: Command
 
   for (let idx = idxStart; idx < path.length; idx++) {
     cur = parent.children && parent.children[path[idx]]
@@ -421,14 +423,14 @@ const withEvents = (
     }
   }
 
-  return {
+  const handler: CommandHandlerWithEvents = {
     subtree: leaf,
     route: leaf.route,
     eval: evaluator,
     options: leaf && leaf.options,
-    success: ({ tab, type: execType, command, isDrilldown = false, parsedOptions }) => {
+    success: ({ tab, type, command, isDrilldown = false, parsedOptions }) => {
       event.tab = tab
-      event.execType = execType
+      event.execType = type
       event.command = command
       event.isDrilldown = isDrilldown
 
@@ -459,6 +461,8 @@ const withEvents = (
       return err
     }
   }
+
+  return handler
 }
 
 /**
@@ -614,7 +618,7 @@ const areCompatible = (A: string[], B: string[]): boolean => {
 const disambiguate = async (argv: string[], noRetry = false) => {
   debug('disambiguate')
 
-  let idx
+  let idx: number
   const resolutions =
     (((idx = 0) || true) && resolver.disambiguate(argv[idx])) ||
     (argv.length > 1 && ((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) ||

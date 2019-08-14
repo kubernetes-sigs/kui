@@ -20,7 +20,7 @@ debug('loading')
 
 import * as commandTree from './command-tree'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
-import { Disambiguator, CatchAllHandler } from '../models/command'
+import { CommandBase, Disambiguator, CatchAllHandler } from '../models/command'
 
 /**
  * Plugin preloading support
@@ -439,11 +439,19 @@ export const preload = () => {
   preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 }
 
+export interface PluginResolver {
+  resolve: (route: string, options?: { subtree: boolean }) => void
+  disambiguate: (route: string) => CommandBase[]
+  disambiguatePartial: (partial: string) => string[]
+  resolveOne: (route: string) => Promise<void>
+  isOverridden: (route: string) => boolean
+}
+
 /**
  * Make a plugin resolver from a given prescan model
  *
  */
-const makeResolver = (prescan: PrescanModel) => {
+const makeResolver = (prescan: PrescanModel): PluginResolver => {
   debug('makeResolver')
 
   /** memoize resolved plugins */
@@ -500,9 +508,9 @@ const makeResolver = (prescan: PrescanModel) => {
     },
 
     /** given a partial command, do we have a disambiguation of it? e.g. "gr" => "grid" */
-    disambiguatePartial: (partial: string) => {
+    disambiguatePartial: (partial: string): string[] => {
       debug('attempting to disambiguate partial', partial)
-      const matches = []
+      const matches: string[] = []
       if (prescan.disambiguator) {
         for (const command in prescan.disambiguator) {
           if (command.indexOf(partial) === 0) {

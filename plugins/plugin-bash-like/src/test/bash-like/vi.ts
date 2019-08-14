@@ -22,7 +22,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 const { cli, keys, selectors } = ui
-const { pit, refresh } = common
+const { pit } = common
 
 /** helpful selectors */
 const rows = (N: number) => selectors.xtermRows(N)

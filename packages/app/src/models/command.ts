@@ -32,6 +32,9 @@ export enum ExecType {
 }
 
 export interface CommandOptions extends CapabilityRequirements {
+  /** does this command accept no arguments of any sort (neither positional nor optional)? */
+  noArgs?: boolean
+
   // explicitly provided usage model?
   usage?: UsageModel
 
@@ -59,12 +62,11 @@ export interface CommandOptions extends CapabilityRequirements {
   // show this placeholder text when executing the command in popup mode (instead of the command line)
   placeholder?: string
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  listen?: any // FIXME
+  listen?: CommandListener
   docs?: string
   synonymFor?: Command
   hide?: boolean
-  override?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  override?: CommandHandler
   plugin?: string
   okOptions?: string[]
   isIntention?: boolean
@@ -79,7 +81,7 @@ export interface Event {
   plugin?: string
   isIntention?: boolean
   error?: string
-  options?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  options?: string[]
   execType?: ExecType
   isDrilldown?: boolean
 }
@@ -169,6 +171,7 @@ export interface Evaluator {
 
 export interface CommandBase {
   route: string
+  plugin?: string
   options?: CommandOptions
 }
 
@@ -201,19 +204,23 @@ export interface CapabilityRequirements {
   fullscreen?: boolean
 }
 
+export type OnSuccess = (args: {
+  tab: Tab
+  type: ExecType
+  command: string
+  isDrilldown: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parsedOptions: { [key: string]: any }
+}) => void
+
+export type OnError = (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
+
 export interface CommandHandlerWithEvents extends Evaluator {
   subtree: CommandBase
   route: string
   options: CommandOptions
-  success: (args: {
-    tab: Tab
-    type: ExecType
-    command: string
-    isDrilldown: boolean
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    parsedOptions: { [key: string]: any }
-  }) => void
-  error: (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
+  success: OnSuccess
+  error: OnError
 }
 export function isCommandHandlerWithEvents(evaluator: Evaluator): evaluator is CommandHandlerWithEvents {
   const handler = evaluator as CommandHandlerWithEvents
@@ -231,12 +238,14 @@ export interface CatchAllHandler extends CommandBase {
   prio: number
   plugin: string // registered plugin
   offer: CatchAllOffer // does the handler accept the given command?
-  eval // command evaluator
+  eval: CommandHandler // command evaluator
 }
+
+type CommandListener = (route: string, handler: CommandHandler, options: CommandOptions) => Command
 
 export interface CommandRegistrar {
   find: (route: string, noOverride?: boolean) => Promise<Command>
-  listen: (route: string, handler: CommandHandler, options: CommandOptions) => Command
+  listen: CommandListener
   synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) => void
   subtree: (route: string, options: CommandOptions) => Command
   subtreeSynonym: (route: string, masterTree: Command) => void

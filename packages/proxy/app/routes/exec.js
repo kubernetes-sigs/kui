@@ -107,7 +107,7 @@ function main(cmdline, execOptions, server, port, host, existingSession, locale)
       const channel = new StdioChannelWebsocketSide(wss)
       await channel.init(child, process.env.KUI_HEARTBEAT_INTERVAL || 30000)
 
-      channel.once('closed', (exitCode /* : number */) => {
+      channel.once('closed', () => {
         debug('channel closed')
       })
 

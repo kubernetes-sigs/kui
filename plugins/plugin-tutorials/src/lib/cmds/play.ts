@@ -198,13 +198,6 @@ const close = (tab: cli.Tab, pane: TutorialPane, obj: TutorialDefinition, delay 
   })
 
 /**
- * Is this tutorial a one-page full-screener?
- *
- */
-const isOnePageFullscreenTutorial = (obj: TutorialDefinition) =>
-  obj.steps !== undefined && obj.steps.length === 1 && obj.fullscreen !== undefined
-
-/**
  * If a tutorial step specifies to highlight a region, this method
  * will help in positioning the highlight overlay.
  *

@@ -20,7 +20,7 @@ import { theme } from '@kui-shell/core/core/settings'
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
 const isDev = false
-const { productName, gettingStarted } = theme
+const { productName } = theme
 
 /**
  * Tell the renderer to execute a command

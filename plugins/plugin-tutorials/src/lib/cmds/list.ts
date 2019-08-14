@@ -50,7 +50,7 @@ const doList = (): Promise<Table> =>
 
         const tutorials: Row[] = (await Promise.all(
           files.map(async name => {
-            const { disabled, sort, description, level } = await import(
+            const { disabled, description, level } = await import(
               '@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json'
             )
 

@@ -4,7 +4,7 @@ const request = require('request')
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function main(params) {
-  var options = {
+  const options = {
     url: 'http://api.funtranslations.com/translate/shakespeare.json',
     qs: { text: params.text, api_key: params.apiKey ? params.apiKey : '' },
     json: true

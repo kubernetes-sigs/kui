@@ -20,7 +20,7 @@ debug('loading')
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
+import { UsageModel } from '@kui-shell/core/core/usage-error'
 import {
   CommandRegistrar,
   CommandHandler,
@@ -242,15 +242,7 @@ const usage = (command: string): UsageModel => ({
 const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    const {
-      block,
-      argv: rawArgv,
-      argvNoOptions: argv,
-      execOptions,
-      parsedOptions: options,
-      command: rawCommand,
-      createOutputStream
-    } = opts
+    const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
 
     const isKube = isKubeLike(command)
     debug('exec', command, isKube)
