@@ -62,6 +62,7 @@ describe(`${process.env.MOCHA_RUN_TARGET || ''} apply pod`, function(this: commo
             .then(sidecar.expectShowing('nginx'))
 
           // make sure we have a last applied tab
+          await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('last applied'))
           await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('last applied'))
 
           return this.app.client.waitUntil(() => {
