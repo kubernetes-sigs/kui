@@ -63,17 +63,14 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   it(`should use kubectl exec vi through pty`, async () => {
     try {
       const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vi ${filename}`, this.app)
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV1')
 
       const rows = selectors.xtermRows(res.count)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV2')
 
       // wait for vi to come up in alt buffer mode
       await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV3')
 
       const lastRow = async (): Promise<string> => {
         const text = await this.app.client.getText(`${rows} > div:not(.xterm-hidden-row)`)
@@ -85,32 +82,25 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         const txt = await getTextContent(this.app, rows)
         return txt.indexOf(filename) >= 0
       })
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV4')
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       await this.app.client.keys('i')
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow()
-        console.error(`VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV5 ${txt}`)
         return txt && /^I/i.test(txt)
       })
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV6')
 
       // type our input
       await typeSlowly(this.app, typeThisText)
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV7')
       await this.app.client.keys(keys.ESCAPE)
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow()
-        console.error(`VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV8 ${txt}`)
         return txt && !/^I/i.test(txt)
       })
 
       await typeSlowly(this.app, `:wq${keys.ENTER}`)
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV9')
 
       await cli.expectBlank(res)
-      console.error('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV10')
     } catch (err) {
       await common.oops(this, true)(err)
     }
