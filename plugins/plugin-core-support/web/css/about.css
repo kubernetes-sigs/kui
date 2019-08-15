@@ -61,3 +61,7 @@
   margin-left: 0;
   margin-right: 0;
 }
+.about-window .page-content,
+.about-window .tutorialPane {
+  padding: 1em;
+}

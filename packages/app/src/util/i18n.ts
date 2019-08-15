@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+const defaultLocale = 'en_US'
+
+function getLocale() {
+  return process.env.LOCALE || (typeof navigator !== 'undefined' && navigator.language)
+}
+
+function getLocale2() {
+  return getLocale().replace(/-/, '_')
+}
+
+export function fromMap(map: Record<string, string>) {
+  return map[getLocale()] || map[getLocale2()] || map[defaultLocale]
+}
+
 export default (plugin: string): ((key: string) => string) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/locales/en_US.json`)
 
-  const locale = process.env.LOCALE || (typeof navigator !== 'undefined' && navigator.language)
+  const locale = getLocale()
 
   const i18n = (locale: string): Record<string, string> => {
     try {

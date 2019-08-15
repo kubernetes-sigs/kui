@@ -27,8 +27,11 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
+import * as i18n from '@kui-shell/core/util/i18n'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
 import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
+
+const strings = i18n.default('plugin-core-support')
 
 const debug = Debug('plugins/core-support/about')
 
@@ -70,18 +73,20 @@ async function renderAbout() {
   icon.src = settings.largeIcon
 
   if (settings.ogDescription) {
-    try {
-      const marked = await import('marked')
-      const longDescription = document.createElement('div')
-      longDescription.classList.add('about-window-long-description')
-      longDescription.innerHTML = marked(settings.ogDescription)
-      logo.appendChild(longDescription)
-    } catch (err) {
-      debug('error rendering markdown', err)
-      const longDescription = document.createElement('p')
-      longDescription.classList.add('about-window-long-description')
-      longDescription.innerText = settings.ogDescription
-      logo.appendChild(longDescription)
+    const marked = await import('marked')
+    const longDescription = document.createElement('div')
+    longDescription.classList.add('about-window-long-description')
+    logo.appendChild(longDescription)
+
+    if (typeof settings.ogDescription === 'string') {
+      try {
+        longDescription.innerHTML = marked(settings.ogDescription)
+      } catch (err) {
+        console.error('error rendering markdown', err)
+        longDescription.innerText = settings.ogDescription
+      }
+    } else {
+      longDescription.innerHTML = marked(i18n.fromMap(settings.ogDescription))
     }
   }
 
@@ -165,6 +170,18 @@ function renderVersion(name: string) {
   return bottomContent
 }
 
+async function renderGettingStarted() {
+  if (settings.gettingStarted && typeof settings.gettingStarted !== 'string') {
+    const marked = await import('marked')
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('page-content')
+    wrapper.innerHTML = marked(i18n.fromMap(settings.gettingStarted))
+    return wrapper
+  } else {
+    return repl.qexec((typeof settings.gettingStarted === 'string' && settings.gettingStarted) || 'getting started')
+  }
+}
+
 /**
  * The repl allows plugins to provide their own window, via the
  * `bringYourOwnWindow` attribute. Here, we define our
@@ -209,6 +226,8 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) =
     if (await renderResult(response, tab, execOptions, parsedOptions, innerContainer, false, true)) {
       content.appendChild(container)
     }
+  } else if (defaultMode === 'gettingStarted') {
+    content.appendChild(await renderGettingStarted())
   } else if (defaultMode === 'version') {
     content.appendChild(await renderVersion(name))
   } else if (defaultMode === 'about') {
@@ -216,16 +235,14 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) =
   }
 
   const standardModes: SidecarMode[] = [
-    { mode: 'about', label: 'About', direct: 'about' },
+    { mode: 'about', label: strings('About'), direct: 'about' },
     {
       mode: 'gettingStarted',
-      label: 'Getting Started',
-      direct: `about --mode gettingStarted --content ${repl.encodeComponent(
-        settings.gettingStarted || 'getting started'
-      )}`
+      label: strings('Getting Started'),
+      direct: 'about --mode gettingStarted'
     },
-    { mode: 'configure', label: 'Configure', direct: 'about --mode configure --content themes' },
-    { mode: 'version', label: 'Version', direct: 'about --mode version' }
+    { mode: 'configure', label: strings('Configure'), direct: 'about --mode configure --content themes' },
+    { mode: 'version', label: strings('Version'), direct: 'about --mode version' }
   ]
   const modes: SidecarMode[] = standardModes.concat(settings.about || [])
 
