@@ -201,14 +201,14 @@ const getStatusFromConditions = (response: KubeResource) => {
     // use the status.conditions, rather than status.state
     const conditions = response.status.conditions
 
-    conditions.sort((a, b) => {
+    conditions.sort((highIndex, lowIndex) => {
       // sort conditions by their lastTransitionTime
-      let swap = -(new Date(a.lastTransitionTime).getTime() - new Date(b.lastTransitionTime).getTime())
+      let swap = -(new Date(highIndex.lastTransitionTime).getTime() - new Date(lowIndex.lastTransitionTime).getTime())
       // for conditions with the same lastTransitionTime and status, sort them by type
-      if (swap === 0 && a.status === b.status) {
-        // for conition with the same status, put not pending type at lower index
-        if (isPendingLike(a.type) && !isPendingLike(b.type)) {
-          swap = 1
+      if (swap === 0 && highIndex.status === lowIndex.status) {
+        // for conitions with the same status, put the one with Not-Pending-Type at lower index
+        if (!isPendingLike(highIndex.type) && isPendingLike(lowIndex.type)) {
+          swap = -1 // swap the condition from high index to lower index
         }
       }
 
