@@ -39,7 +39,7 @@ export class Row {
 
   setUnselected?: () => void
 
-  nameCss?: string
+  nameCss?: string | string[]
 
   key?: string
 

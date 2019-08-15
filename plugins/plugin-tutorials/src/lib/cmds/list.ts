@@ -15,11 +15,12 @@
  */
 
 import { readdir } from 'fs'
+
+import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+import repl = require('@kui-shell/core/core/repl')
 
 import { contentDir } from './util'
-
-import repl = require('@kui-shell/core/core/repl')
 
 /**
  * Sort the available tutorials
@@ -39,7 +40,7 @@ const sort = list => {
  * The tutorials list command handler
  *
  */
-const doList = () =>
+const doList = (): Promise<Table> =>
   new Promise((resolve, reject) => {
     readdir(contentDir, async (err, files) => {
       if (err) {
@@ -48,7 +49,7 @@ const doList = () =>
         const pane = document.querySelector('#tutorialPane')
         const nowPlaying = pane && pane.getAttribute('now-playing')
 
-        const tutorials = (await Promise.all(
+        const tutorials: Row[] = (await Promise.all(
           files.map(async name => {
             const { disabled, sort, description, level } = await import(
               '@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json'
@@ -89,20 +90,26 @@ const doList = () =>
             })
 
             // here is the entity model for list elements
-            return {
+            const row: Row = {
               type: 'tutorials',
               name: name.replace(/-/g, ' '),
-              nameCss: ['capitalize', 'semi-bold'], // 'sans-serif',
-              sort,
-              level,
-              noSort: true, // we have already sorted the list
-              onclick: () => repl.pexec(`tutorial play @tutorials/${name}`),
+              nameCss: ['capitalize', 'semi-bold'],
+              // sort,
+              // level,
+              onclick: `tutorial play @tutorials/${name}`,
               attributes
             }
+
+            return row
           })
         )).filter(x => x) // filter out any nils due to disabled tutorials
 
-        resolve(sort(tutorials))
+        const table: Table = {
+          noSort: true,
+          body: sort(tutorials)
+        }
+
+        resolve(table)
       }
     })
   })
