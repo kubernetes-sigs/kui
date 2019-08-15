@@ -81,7 +81,7 @@ describe(`${process.env.MOCHA_RUN_TARGET || ''} apply pod`, function(this: commo
             )
           })
         } catch (err) {
-          common.oops(this, true)(err)
+          await common.oops(this, true)(err)
         }
       })
 
