@@ -957,7 +957,7 @@ export const printResults = (
   }
 
   if (echo) {
-    setStatus(block, 'valid-response')
+    setStatus(block, response === false ? 'error' : 'valid-response')
   }
 
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
