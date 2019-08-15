@@ -63,7 +63,7 @@ body[data-presentation="SidecarThin"] {
   font-size: 1.375em;
 }
 
-.kui--sidecar-header-and-body {
+sidecar.visible .kui--sidecar-header-and-body {
   display: flex;
   flex-direction: column;
   flex: 1;
