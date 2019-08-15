@@ -31,5 +31,9 @@
   "operationConfirmed": "Operation confirmed",
   "yesIAmSure": "Yes, I am sure",
   "cancel": "Cancel",
-  "notSupportedInBrowser": "Command not yet supported when running in a browser"
+  "notSupportedInBrowser": "Command not yet supported when running in a browser",
+  "About": "About",
+  "Getting Started": "Getting Started",
+  "Configure": "Configure",
+  "Version": "Version"
 }

@@ -29,8 +29,8 @@ try {
 
 interface Theme {
   productName: string
-  gettingStarted?: string
-  ogDescription?: string
+  gettingStarted?: string | Record<string, string>
+  ogDescription?: string | Record<string, string>
 
   about?: SidecarMode[]
 

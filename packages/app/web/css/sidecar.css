@@ -49,7 +49,6 @@ body[data-presentation="SidecarThin"] {
 [data-presentation="SidecarThin"] sidecar .sidecar-bottom-stripe-toolbar,
 [data-presentation="SidecarThin"] sidecar .custom-header-content,
 [data-presentation="SidecarThin"] sidecar .sidecar-header-icon-wrapper,
-[data-presentation="SidecarThin"] sidecar .sidecar-non-window-buttons,
 [data-presentation="SidecarThin"] sidecar .sidecar-bottom-stripe-back-button,
 [data-presentation="SidecarThin"] sidecar .toggle-sidecar-button {
   display: none;

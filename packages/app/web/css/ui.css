@@ -2652,7 +2652,6 @@ sidecar .usage-error-wrapper .hideable {
   font-weight: 300;
   letter-spacing: 0;
   line-height: 1.25;
-  margin: -1.15em 0 0 -3px;
   padding: 0;
   transition: 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 }
