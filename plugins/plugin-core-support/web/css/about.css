@@ -15,10 +15,15 @@
   width: 8em;
   height: 8em;
   max-width: none;
-  transition: all 0.8s ease-in-out;
+  transition: filter 70ms ease-in-out;
+}
+.about-window .logo img.kui--wide-icon {
+  width: 100%;
+  height: auto;
+  padding: 1em 0;
 }
 .about-window .logo img:hover {
-  filter: brightness(1.1);
+  filter: brightness(0.875);
 }
 
 .xxabout-window .page-content {

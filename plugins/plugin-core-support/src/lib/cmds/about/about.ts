@@ -35,6 +35,21 @@ const strings = i18n.default('plugin-core-support')
 
 const debug = Debug('plugins/core-support/about')
 
+/**
+ * Produce a suitable markdown renderer that generates an HTML string
+ *
+ */
+async function markdown(): Promise<(raw: string) => string> {
+  const marked = await import('marked')
+  const renderer = new marked.Renderer()
+
+  renderer.link = (href: string, title: string, text: string) => {
+    return `<a href="${href}" title="${title}" class="bx--link">${text}</a>`
+  }
+
+  return (raw: string) => marked(raw, { renderer })
+}
+
 async function renderAbout() {
   const { shell } = await import('electron')
 
@@ -47,7 +62,7 @@ async function renderAbout() {
 
   const badges = []
 
-  const openHome = () => shell.openExternal(homepage)
+  const openHome = () => shell.openExternal(settings.ogUrl || homepage)
 
   if (license) {
     badges.push(license)
@@ -64,16 +79,19 @@ async function renderAbout() {
   topContent.appendChild(logo)
   logo.classList.add('logo')
 
-  const iconP = document.createElement('p')
+  const iconP = document.createElement('div')
   const icon = document.createElement('img')
   icon.addEventListener('click', openHome)
   icon.classList.add('clickable')
   iconP.appendChild(icon)
   logo.appendChild(iconP)
-  icon.src = settings.largeIcon
+  icon.src = settings.wideIcon || settings.largeIcon
+  if (settings.wideIcon) {
+    icon.classList.add('kui--wide-icon')
+  }
 
   if (settings.ogDescription) {
-    const marked = await import('marked')
+    const marked = await markdown()
     const longDescription = document.createElement('div')
     longDescription.classList.add('about-window-long-description')
     logo.appendChild(longDescription)
@@ -172,7 +190,7 @@ function renderVersion(name: string) {
 
 async function renderGettingStarted() {
   if (settings.gettingStarted && typeof settings.gettingStarted !== 'string') {
-    const marked = await import('marked')
+    const marked = await markdown()
     const wrapper = document.createElement('div')
     wrapper.classList.add('page-content')
     wrapper.innerHTML = marked(i18n.fromMap(settings.gettingStarted))

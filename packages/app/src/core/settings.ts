@@ -31,6 +31,7 @@ interface Theme {
   productName: string
   gettingStarted?: string | Record<string, string>
   ogDescription?: string | Record<string, string>
+  ogUrl?: string
 
   about?: SidecarMode[]
 
@@ -43,6 +44,7 @@ interface Theme {
   tableStyle?: keyof typeof TableStyle
 
   largeIcon: string
+  wideIcon?: string
 
   userAgent?: string
 

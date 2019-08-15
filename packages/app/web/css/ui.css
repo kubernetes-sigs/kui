@@ -2633,6 +2633,10 @@ sidecar .usage-error-wrapper .hideable {
 .page-content {
   flex: 1;
 }
+.page-content hr {
+  margin: 2em 1em;
+  border-color: var(--color-ui-04);
+}
 .page-content img {
   max-width: 100%;
 }
