@@ -21,6 +21,8 @@ import { pexec } from '@kui-shell/core/core/repl'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
+declare let hljs
+
 interface Markdown {
   title: HTMLElement
   body: HTMLElement
@@ -65,7 +67,7 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
  * Wrap a formatted innerHTML
  *
  */
-const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown => {
+const wrap = (tab: Tab, htmlString: string, fullpath: string): Markdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
   body.classList.add('overflow-auto')
@@ -112,10 +114,12 @@ const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown =>
     title.parentNode.removeChild(title)
   }
 
-  const codes = wrapper.querySelectorAll('pre > code')
-  for (let idx = 0; idx < codes.length; idx++) {
-    codes[idx].classList.add('fancy-code')
-    setTimeout(() => hljs.highlightBlock(codes[idx]), 0)
+  if (typeof hljs !== 'undefined') {
+    const codes = wrapper.querySelectorAll('pre > code')
+    for (let idx = 0; idx < codes.length; idx++) {
+      codes[idx].classList.add('fancy-code')
+      setTimeout(() => hljs.highlightBlock(codes[idx]), 0)
+    }
   }
 
   const tables = wrapper.querySelectorAll('table')
@@ -151,7 +155,7 @@ const wrap = (tab: Tab, htmlString: string, fullpath: string, hljs): Markdown =>
  * Render a markdown file as HTML
  *
  */
-const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Promise<Markdown> => {
+const markdownify = async (tab: Tab, source: string, fullpath: string): Promise<Markdown> => {
   // use marked, but render links specially
   const Marked = await import('marked')
   const renderer = new Marked.Renderer()
@@ -205,15 +209,15 @@ const markdownify = async (tab: Tab, source: string, fullpath: string, hljs): Pr
   const marked = _ => Marked(_, { renderer })
   const htmlString = marked(source)
 
-  return wrap(tab, htmlString, fullpath, hljs)
+  return wrap(tab, htmlString, fullpath)
 }
 
 /**
  * Render a markdown file as HTML
  *
  */
-export default (tab: Tab, suffix: string, source: string, fullpath: string, hljs): Promise<Markdown> => {
+export default (tab: Tab, suffix: string, source: string, fullpath: string): Promise<Markdown> => {
   if (suffix === 'md') {
-    return markdownify(tab, source, fullpath, hljs)
+    return markdownify(tab, source, fullpath)
   }
 }

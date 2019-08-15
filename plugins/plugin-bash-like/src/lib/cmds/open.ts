@@ -32,14 +32,13 @@ import { localFilepath } from '../util/usage-helpers'
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-bash-like')
 
-declare let hljs
 const debug = Debug('plugins/bash-like/cmds/open')
 
 /**
  * Decide how to display a given filepath
  *
  */
-const open = async (tab: Tab, filepath: string, hljs) => {
+const open = async (tab: Tab, filepath: string) => {
   debug('open', filepath)
 
   const fullpath = findFile(expandHomeDir(filepath))
@@ -97,7 +96,7 @@ const open = async (tab: Tab, filepath: string, hljs) => {
       let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
       if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
-        const { title, body } = await markdownify(tab, suffix, data, fullpath, hljs)
+        const { title, body } = await markdownify(tab, suffix, data, fullpath)
 
         data = body
 
@@ -141,7 +140,7 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/open',
     ({ tab, argvNoOptions: argv }) => {
-      return open(tab, argv[argv.indexOf('open') + 1], hljs)
+      return open(tab, argv[argv.indexOf('open') + 1])
     },
     { usage, needsUI: true, noAuthOk: true }
   )
