@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <title>${productTitle}</title>
 
-    <link href="${cssHome}carbon-components.min.css" rel="stylesheet" type="text/css" />
-    <link href="${cssHome}carbon-overrides-common.css" rel="stylesheet" type="text/css" />
+    <link href="${cssHome}carbon-components.min.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
+    <link href="${cssHome}carbon-overrides-common.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
 
-    <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" />
-    <link href="${cssHome}kui-tables-common.css" rel="stylesheet" type="text/css" />
-    <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" />
-    <link href="${cssHome}sidecar.css" rel="stylesheet" type="text/css" />
-    <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" />
+    <link href="${cssHome}not-electron.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
+    <link href="${cssHome}kui-tables-common.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
+    <link href="${cssHome}ui.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
+    <link href="${cssHome}sidecar.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
+    <link href="${cssHome}${tabStripe}" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
     <!-- css overrides go here -->
-    <link href="${cssHome}/vendor/balloon-css/balloon.min.css" rel="stylesheet" type="text/css" />
+    <link href="${cssHome}vendor/balloon-css/balloon.min.css" rel="stylesheet" type="text/css" nonce="kuiDefaultNonce" />
 
     <link rel="shortcut icon" href="${imageHome}${favicon}" />
 
@@ -35,7 +35,9 @@
     <meta name="twitter:label2" value="${ogLabel2}" />
     <meta name="twitter:data2" value="${ogData2}" />
 
-    <script>
+    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />
+
+    <script nonce="kuiDefaultNonce">
       window['_kuiWebpackHash'] = '${hash}'
       window['_kuiWebpackResourceRoot'] = '${resourceRoot}'
     </script>
@@ -46,11 +48,11 @@
       <main class="main">
         <div class="left-tab-stripe kui-header">
           <div class="kui-header__title">${productName}</div>
-          <div class="application-icon" id="about-button" style="background-image:url('${largeIcon}')"></div>
+          <div class="application-icon" id="about-button"></div>
 
-          <div style="opacity: 0; height: 0; width: 0">
-            <div class="clickable" id="openwhisk-api-host" title="Your API host. Click to change to another host." style="pointer-events:none"></div>
-            <div class="clickable" id="openwhisk-namespace" title="Your currently selected namespace. Click to list your other namespaces." style="pointer-events:none"></div>
+          <div class="hidden">
+            <div class="clickable" id="openwhisk-api-host" title="Your API host. Click to change to another host."></div>
+            <div class="clickable" id="openwhisk-namespace" title="Your currently selected namespace. Click to list your other namespaces."></div>
           </div>
 
           <div class="left-tab-stripe-buttons">
@@ -58,7 +60,7 @@
               <i class="fas fa-square repl-prompt-right-element-icon deemphasize"></i>
               <div class="kui-tab--label left-tab-stripe-button-label">&nbsp;</div>
               <div class="left-tab-stripe-button-closer">
-                <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 16 16" aria-hidden="true">
                   <path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path>
                 </svg>
               </div>
@@ -66,13 +68,13 @@
           </div>
           <div class="left-tab-stripe-bottom-buttons">
             <div class="left-tab-stripe-button smaller-button kui-new-tab" id="new-tab-button" data-balloon-disabled="Open a new tab" data-balloon-pos="right" data-balloon-length="fit">
-              <svg class="kui-new-tab__plus" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+              <svg class="kui-new-tab__plus" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                 <path d="M17 15V7h-2v8H7v2h8v8h2v-8h8v-2h-8z"></path>
               </svg>
             </div>
             <div id="kui--custom-top-tab-stripe-button-container"></div>
             <div class="left-tab-stripe-button smaller-button" id="help-button">
-              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+              <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                 <path d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 23a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 25zm1.14-7.75v2.5h-2.25V15H17a2.38 2.38 0 0 0 0-4.75h-1.5a2.38 2.38 0 0 0-2.38 2.37v.64h-2.23v-.64A4.63 4.63 0 0 1 15.52 8H17a4.63 4.63 0 0 1 .12 9.25z"></path>
               </svg>
             </div>
@@ -100,7 +102,7 @@
                         <span class="repl-prompt-right-elements">
                           <div class="kui--repl-prompt-buttons">
                             <div class="graphical-icon kui--repl-prompt-buttons--screenshot kui--hide-in-webpack">
-                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                                 <path d="M29 26H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h6.46l1.71-2.55A1 1 0 0 1 12 4h8a1 1 0 0 1 .83.45L22.54 7H29a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1zM4 24h24V9h-6a1 1 0 0 1-.83-.45L19.46 6h-6.92l-1.71 2.55A1 1 0 0 1 10 9H4z"></path>
                                 <path d="M16 22a6 6 0 1 1 6-6 6 6 0 0 1-6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0-4-4z"></path>
                               </svg>
@@ -109,16 +111,16 @@
 
                           <span class="repl-prompt-timestamp deemphasize"></span>
                           <div class="repl-prompt-right-element-status-icon deemphasize">
-                            <svg class="kui--icon-error" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="kui--icon-error" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
                               <path d="M10 1c-5 0-9 4-9 9s4 9 9 9 9-4 9-9-4-9-9-9zm3.5 13.5l-8-8 1-1 8 8-1 1z"></path>
                               <path d="M13.5 14.5l-8-8 1-1 8 8-1 1z" data-icon-path="inner-path" opacity="0"></path>
                             </svg>
-                            <svg class="kui--icon-ok" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="kui--icon-ok" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
                               <path d="M10 1c-4.9 0-9 4.1-9 9s4.1 9 9 9 9-4 9-9-4-9-9-9zM8.7 13.5l-3.2-3.2 1-1 2.2 2.2 4.8-4.8 1 1-5.8 5.8z"></path>
                               <path d="M8.7 13.5l-3.2-3.2 1-1 2.2 2.2 4.8-4.8 1 1-5.8 5.8z" data-icon-path="inner-path" opacity="0"></path>
                             </svg>
                             <div data-loading class="bx--loading kui--icon-processing">
-                              <svg class="bx--loading__svg" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-75 -75 150 150" aria-hidden="true">
+                              <svg class="bx--loading__svg" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-75 -75 150 150" aria-hidden="true">
                                 <circle class="bx--loading__stroke-kui" cx="0" cy="0" r="48.875" />
                                 <circle class="bx--loading__stroke" cx="0" cy="0" r="46.875" />
                               </svg>
@@ -155,7 +157,7 @@
                                         <div class="repl-prompt hide-with-screenshot">
                                           <span class="repl-prompt-righty">
                                             <!-- ChevronRight20 -->
-                                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                                               <path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path>
                                             </svg>
                                           </span>
@@ -245,15 +247,15 @@
                       <div class="sidecar-bottom-stripe-toolbar">
                         <div class="sidecar-toolbar-text">
                           <div class="sidecar-toolbar-text-icon">
-                            <svg class="kui--info-icon" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                            <svg class="kui--info-icon" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                               <path d="M8.5 11V6.5h-2v1h1V11H6v1h4v-1zM8 3.5c-.4 0-.8.3-.8.8s.4.7.8.7.8-.3.8-.8-.4-.7-.8-.7z"></path>
                               <path d="M8 15c-3.9 0-7-3.1-7-7s3.1-7 7-7 7 3.1 7 7-3.1 7-7 7zM8 2C4.7 2 2 4.7 2 8s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6z"></path>
                             </svg>
-                            <svg class="kui--warning-icon" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                            <svg class="kui--warning-icon" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                               <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zm0 13c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"></path>
                               <path d="M7.5 4h1v5h-1zm.5 6.2c-.4 0-.8.3-.8.8s.3.8.8.8c.4 0 .8-.3.8-.8s-.4-.8-.8-.8z"></path>
                             </svg>
-                            <svg class="kui--error-icon" focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                            <svg class="kui--error-icon" focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                               <path d="M14.5 14h-13c-.2 0-.3-.1-.4-.2-.1-.2-.1-.3 0-.5l6.5-12c.1-.3.4-.4.6-.2.1 0 .2.1.2.2l6.5 12c.1.2.1.3 0 .5 0 .1-.2.2-.4.2zM2.3 13h11.3L8 2.5 2.3 13z"></path>
                               <path d="M7.5 6h1v3.5h-1zm.5 4.8c-.4 0-.8.3-.8.8s.3.8.8.8c.4 0 .8-.3.8-.8s-.4-.8-.8-.8z"></path>
                             </svg>
@@ -308,7 +310,7 @@
                       <div class="sidecar-bottom-stripe-back-bits sidecar-bottom-stripe-button-container">
                         <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-back-button" data-balloon-pos="down-left">
                           <div class="graphical-icon">
-                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                               <path d="M13 26l1.41-1.41L6.83 17H29v-2H6.83l7.58-7.59L13 6 3 16l10 10z"></path>
                             </svg>
                           </div>
@@ -331,7 +333,7 @@
                         <!-- screenshot button -->
                         <div class="kui--hide-in-webpack sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button" data-balloon="Capture Screenshot" data-balloon-length="medium" data-balloon-pos="down-right">
                           <div class="graphical-icon">
-                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                               <path d="M29 26H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h6.46l1.71-2.55A1 1 0 0 1 12 4h8a1 1 0 0 1 .83.45L22.54 7H29a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1zM4 24h24V9h-6a1 1 0 0 1-.83-.45L19.46 6h-6.92l-1.71 2.55A1 1 0 0 1 10 9H4z"></path>
                               <path d="M16 22a6 6 0 1 1 6-6 6 6 0 0 1-6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0-4-4z"></path>
                             </svg>
@@ -344,14 +346,14 @@
                         <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button">
                           <span class="maximize-button-label">
                             <div class="graphical-icon" data-balloon="Expand to full width" data-balloon-length="medium" data-balloon-pos="down-right">
-                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                                 <path d="M10 1v1h3.3L8.5 6.8l.7.7L14 2.7V6h1V1zM7.5 9.2l-.7-.7L2 13.3V10H1v5h5v-1H2.7z"></path>
                               </svg>
                             </div>
                           </span>
                           <span class="unmaximize-button-label">
                             <div class="graphical-icon" data-balloon="Restore split screen" data-balloon-length="medium" data-balloon-pos="down-right">
-                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                              <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                                 <path d="M3 9v1h2.3L1 14.3l.7.7L6 10.7V13h1V9zm10-2V6h-2.3L15 1.7l-.7-.7L10 5.3V3H9v4z"></path>
                               </svg>
                             </div>
@@ -361,7 +363,7 @@
                         <!-- close button -->
                         <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button" data-balloon="Minimize" data-balloon-length="small" data-balloon-pos="down-right">
                           <div class="graphical-icon">
-                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                               <path d="M11 8l-5 5-.7-.7L9.6 8 5.3 3.7 6 3z"></path>
                             </svg>
                           </div>
@@ -371,7 +373,7 @@
                         <div class="sidecar-bottom-stripe-button sidecar-bottom-stripe-quit" data-balloon="Close" data-balloon-length="small" data-balloon-pos="down-right">
                           <div class="graphical-icon">
                             <!-- sign out button -->
-                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                            <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                               <path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z"></path>
                             </svg>
                           </div>
@@ -391,7 +393,7 @@
                       <span class="repl-selection clickable" title="The current selection"></span>
                       <span class="repl-prompt-righty">
                         <!-- ChevronRight20 -->
-                        <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+                        <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
                           <path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path>
                         </svg>
                       </span>
@@ -408,7 +410,7 @@
       <textarea id="invisible-global-input" class="not-tabbable" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 
       <div id="restart-needed-warning">
-        <svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+        <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
           <path d="M12 1C5.9 1 1 5.9 1 12s4.9 11 11 11 11-4.9 11-11S18.1 1 12 1zm4.3 16.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z"></path>
           <path d="M16.3 17.5L6.5 7.7l1.2-1.2 9.8 9.8-1.2 1.2z" data-icon-path="inner-path" opacity="0"></path>
         </svg>
@@ -419,5 +421,5 @@
     </div>
   </body>
 
-  <script src="${jsHome}${main}"></script>
+  <script src="${jsHome}${main}" nonce="kuiDefaultNonce"></script>
 </html>

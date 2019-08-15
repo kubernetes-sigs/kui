@@ -3278,3 +3278,8 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
 #offline-button {
   display: none;
 }
+
+#openwhisk-api-host,
+#openwhisk-namespace {
+  pointer-events: none;
+}

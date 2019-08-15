@@ -35,10 +35,11 @@ localDescribe('Create action with implicit entity type, then list it', function(
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo')))
+      .then(sidecar.expectShowing('foo'))
+      .catch(common.oops(this, true)))
 
   // toggle sidebar closed
   it('should toggle the sidebar closed with escape', async () => {
@@ -54,12 +55,18 @@ localDescribe('Create action with implicit entity type, then list it', function(
 
   // list tests
   ui.aliases.list.forEach(cmd => {
-    it(`should find the new action with "${cmd}"`, () => cli.do(cmd, this.app).then(cli.expectOKWithOnly('foo')))
-    it(`should find the new action with "action ${cmd}"`, () =>
-      cli.do(`action ${cmd}`, this.app).then(cli.expectOKWithOnly('foo')))
+    it(`should find the new action with "wsk action ${cmd}"`, () =>
+      cli.do(`wsk action ${cmd}`, this.app).then(cli.expectOKWithOnly('foo')))
   })
 
   // toggle sidebar closed by clicking on the Close button
-  it('should toggle the sidebar closed with close button click', () =>
-    this.app.client.click(ui.selectors.SIDECAR_CLOSE_BUTTON).then(() => sidecar.expectClosed(this.app)))
+  it('should toggle the sidebar closed with close button click', async () => {
+    try {
+      await this.app.client.waitForVisible(ui.selectors.SIDECAR_CLOSE_BUTTON)
+      await this.app.client.click(ui.selectors.SIDECAR_CLOSE_BUTTON)
+      await sidecar.expectClosed(this.app)
+    } catch (err) {
+      await common.oops(this, true)
+    }
+  })
 })

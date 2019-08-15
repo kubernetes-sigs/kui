@@ -44,7 +44,15 @@ async function registerListener() {
   const searchBar = document.createElement('div')
   searchBar.setAttribute('id', 'search-bar')
   searchBar.style.opacity = '0' // we need the initial opacity:0 due to injectCSS's asynchronicity
-  searchBar.innerHTML = `<div id='search-container'><div id='search-input-container'><input id='search-input' placeholder='search term' onfocus='this.select();' onclick='event.stopPropagation(); return false;'/><span id='search-found-text' class='no-search-yet'></span></div><span id='search-close-button'><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path></svg></span></div>`
+
+  searchBar.innerHTML = `<div id='search-container'><div id='search-input-container'><input id='search-input' placeholder='search term'/><span id='search-found-text' class='no-search-yet'></span></div><span id='search-close-button'><svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path></svg></span></div>`
+
+  const input = searchBar.querySelector('#search-input') as HTMLInputElement
+  input.onfocus = () => input.select()
+  input.onclick = (evt: Event) => {
+    evt.stopPropagation()
+    return false
+  }
 
   const page = document.querySelector('body > .page')
   page.insertBefore(searchBar, page.querySelector('main').nextSibling)
