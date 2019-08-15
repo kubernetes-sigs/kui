@@ -63,7 +63,7 @@ describe(`electron create pod ${process.env.MOCHA_RUN_TARGET}`, function(this: c
             .then(sidecar.expectMode(defaultModeForGet))
             .then(sidecar.expectShowing('nginx'))
         } catch (err) {
-          common.oops(this, true)(err)
+          await common.oops(this, true)(err)
         }
       })
 

@@ -153,3 +153,15 @@ exports.assertTableTitleMatches = async function(self, tableSelector, expectedTi
 
   assert.strictEqual(tableTitle.toLowerCase(), expectedTitle)
 }
+
+/**
+ * Type slowly, this helps with some odd webpack+proxy issues
+ *
+ */
+exports.typeSlowly = async (app, txt) => {
+  for (let idx = 0; idx < txt.length; idx++) {
+    await new Promise(resolve => setTimeout(resolve, 10))
+    await app.client.keys(txt.charAt(idx))
+  }
+  await new Promise(resolve => setTimeout(resolve, 10))
+}

@@ -23,12 +23,13 @@ import {
   createNS,
   allocateNS,
   deleteNS,
+  typeSlowly,
   waitTillNone
 } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 
-describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
+describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -43,7 +44,7 @@ describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
         .then(selector => waitForRed(this.app, selector))
         .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
-        .catch(common.oops(this))
+        .catch(common.oops(this, true))
     })
   }
 
@@ -85,8 +86,7 @@ describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function
         })
 
         // quit without saving
-        await this.app.client.keys(quit)
-        await this.app.client.keys(keys.ENTER)
+        await typeSlowly(this.app, `${quit}${keys.ENTER}`)
 
         await this.app.client.waitUntil(() => {
           // first false: not exact
