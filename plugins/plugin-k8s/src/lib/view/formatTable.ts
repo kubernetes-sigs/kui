@@ -50,7 +50,6 @@ const outerCSSForKey = {
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
   UPDATED: 'min-width-date-like', // helm ls
-  'REVISION UPDATED': 'hide-with-sidecar', // helm ls
   REVISION: 'hide-with-sidecar', // helm ls
   AGE: 'hide-with-sidecar very-narrow', // e.g. helm status and kubectl get svc
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
@@ -146,6 +145,12 @@ const split = (str: string, splits: number[], headerCells?: string[]): Pair[] =>
 }
 
 /**
+ * Replace tab characters with a sequence of whitespaces
+ *
+ */
+const detabbify = (str: string) => str.replace(/\t/g, '   ')
+
+/**
  * Find the column splits
  *
  */
@@ -153,8 +158,12 @@ export const preprocessTable = (raw: string[]) => {
   debug('preprocessTable', raw)
 
   return raw.map(table => {
-    const header = table.substring(0, table.indexOf('\n')).replace(/\t/g, ' ')
-    const headerCells = header.split(/(\t|\s\s)+\s?/).filter(x => x && !x.match(/(\t|\s\s)/))
+    const header = detabbify(table.substring(0, table.indexOf('\n')))
+    const headerCells = header
+      .split(/(\s\s)+\s?/)
+      .map(x => x && x.trim())
+      .filter(x => x)
+
     const columnStarts: number[] = []
     for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
       const { offset, prefix } = idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
@@ -174,6 +183,7 @@ export const preprocessTable = (raw: string[]) => {
     return table
       .split(/\n/)
       .filter(x => x)
+      .map(detabbify)
       .map(line => split(line, columnStarts, headerCells))
   })
 }
@@ -190,7 +200,7 @@ export const formatTable = (
   options,
   preTable: Pair[][]
 ): Table => {
-  // debug('formatTable', preTable)
+  debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -214,7 +224,7 @@ export const formatTable = (
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
   const drilldownKind = (nameSplit: string[], row: Pair[]) => {
-    debug('drilldownKind', nameSplit)
+    // debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
       const kind =
         kindColumnIdx >= 0 ? row[kindColumnIdx].value : nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
