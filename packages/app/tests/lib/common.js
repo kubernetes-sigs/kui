@@ -289,17 +289,14 @@ exports.oops = (ctx, wait = false) => async err => {
     if (wait) {
       await Promise.all(promises)
     }
-
-    // swap these two if you want to debug failures locally
-    // return new Promise((resolve, reject) => setTimeout(() => { reject(err) }, 100000))
-    throw err // eslint no-unsafe-finally: "throw"
   } catch (err2) {
     // log our common.oops error
     console.error('error in common.oops', err2)
-
-    // but still throw the original error
-    throw err
   }
+
+  // swap these two if you want to debug failures locally
+  // return new Promise((resolve, reject) => setTimeout(() => { reject(err) }, 100000))
+  throw err
 }
 
 /** only execute the test in local */
