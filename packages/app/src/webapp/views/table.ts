@@ -15,6 +15,7 @@
  */
 
 import * as Debug from 'debug'
+import minimist = require('yargs-parser')
 
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'
@@ -35,7 +36,7 @@ import { applyDiffTable } from '../views/diffTable'
 import { theme } from '@kui-shell/core/core/settings'
 import { _split as split, Split } from '@kui-shell/core/core/repl'
 import { WatchableJob } from '@kui-shell/core/core/job'
-import minimist = require('yargs-parser')
+import { isHTML } from '@kui-shell/core/util/types'
 
 const debug = Debug('webapp/views/table')
 
@@ -552,15 +553,19 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 
         inner.appendChild(container)
       } else {
-        Promise.resolve(valueDom).then(valueDom =>
-          inner.appendChild(valueDom.nodeName ? valueDom : document.createTextNode(valueDom.toString()))
-        )
+        Promise.resolve(valueDom).then(valueDom => {
+          if (isHTML(valueDom)) {
+            inner.appendChild(valueDom)
+          } else {
+            valueDom.appendChild(document.createTextNode(valueDom.toString()))
+          }
+        })
       }
     } else if (value !== undefined) {
       // value could be an empty string
       Promise.resolve(value).then(value => {
         inner.title = value
-        inner.appendChild(document.createTextNode(isHeaderCell ? value.toLowerCase() : value))
+        inner.appendChild(document.createTextNode(isHeaderCell ? value.toLowerCase() : value || '\u00a0'))
       })
     } else {
       console.error('Invalid cell model, no value field', theCell)
