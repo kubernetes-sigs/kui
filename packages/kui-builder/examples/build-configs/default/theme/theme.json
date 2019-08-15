@@ -52,6 +52,7 @@
       "style": "dark"
     }
   ],
+  "contentSecurityPolicy": "default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'unsafe-eval' 'strict-dynamic'; font-src 'self' file:; connect-src 'self'",
   "css": ["_test.css", "kui-ui.css", "kui-tables.css", "carbon-overrides.css"],
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
