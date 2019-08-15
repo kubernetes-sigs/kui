@@ -38,10 +38,11 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo')))
+      .then(sidecar.expectShowing('foo'))
+      .catch(common.oops(this, true)))
 
   it('should switch to parameters mode', () =>
     cli

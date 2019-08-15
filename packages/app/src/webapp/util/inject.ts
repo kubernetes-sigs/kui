@@ -42,7 +42,7 @@ type StylesheetSpec = StylesheetDirect | StylesheetFile | string
  *
  */
 export const injectCSS = (file: StylesheetSpec): void => {
-  if (isHeadless()) {
+  if (isHeadless() || typeof document === 'undefined' || !document.getElementById) {
     return
   }
 
