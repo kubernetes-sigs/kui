@@ -68,3 +68,9 @@ declare function waitForRed (app: Application, selector: string): Promise<string
  *
  */
 declare function assertTableTitleMatches(self: ISuite, tableSelector: string, expectedTitle: string): Promise<never>
+
+/**
+ * Type slowly, this helps with some odd webpack+proxy issues
+ *
+ */
+declare function typeSlowly(app: Application, txt: string): Promise<void>
