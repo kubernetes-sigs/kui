@@ -41,6 +41,7 @@ declare function expectYAML (struct1: object, subset?: boolean, failFast?: boole
 declare function expectYAMLSubset (struct1: object, failFast?: boolean): (str: string) => boolean
 declare function expectSubset (struct1: object, failFast?: boolean): (str: string) => boolean
 declare function expectValidActivationId (): (activationId: string) => boolean
+declare function expectText (app: Application, expectedText: string): (selector: string) => Promise<void>
 
 declare function expectedNamespace (space?: string, org?: string): string
 
@@ -189,6 +190,7 @@ declare class Selectors {
   LIST_RESULTS_N: (N: number) => string
   LIST_RESULTS_BY_NAME_N: (N: number) => string
   LIST_RESULT_BY_N_FOR_NAME: (N: number, name: string) => string
+  TABLE_CELL: (rowKey: string, cellKey: string) => string
   BY_NAME: (name: string) => string
   LIST_RESULT_BY_N_AND_NAME: (N: number, name: string) => string
   OK_N: (N: number) => string

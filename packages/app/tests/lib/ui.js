@@ -92,6 +92,8 @@ selectors.OUTPUT_LAST = `${selectors.PROMPT_BLOCK_LAST} .repl-result`
 selectors.LIST_RESULTS_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
 selectors.LIST_RESULTS_BY_NAME_N = N => `${selectors.LIST_RESULTS_N(N)} .entity-name`
 selectors.LIST_RESULT_BY_N_FOR_NAME = (N, name) => `${selectors.LIST_RESULTS_N(N)}[data-name="${name}"]`
+selectors.TABLE_CELL = (rowKey, cellKey) =>
+  `.entity:not(.header-row)[data-name="${rowKey}"] .cell-inner[data-key="${cellKey}"]`
 selectors.BY_NAME = name => `.entity:not(.header-row)[data-name="${name}"]`
 selectors.LIST_RESULT_BY_N_AND_NAME = (N, name) => `${selectors.LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
 selectors.OK_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-output .ok`
@@ -482,6 +484,11 @@ exports.sidecar = {
         }
       })
       .then(() => app)
+}
+
+exports.expectText = (app, expectedText) => async selector => {
+  const actualText = await app.client.getText(selector)
+  assert.strictEqual(actualText, expectedText)
 }
 
 /** get the monaco editor text */

@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, AppAndCount } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar, AppAndCount, expectText } from '@kui-shell/core/tests/lib/ui'
 import * as assert from 'assert'
 
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
@@ -63,17 +63,35 @@ common.localDescribe('helm commands', function(this: common.ISuite) {
       .catch(common.oops(this))
   })
 
-  it(`should show the status of that new release`, () => {
+  it(`should show history`, () => {
     return cli
-      .do(`helm status ${name}`, this.app)
-      .then(checkHelmStatus)
+      .do(`helm history ${name}`, this.app)
+      .then(cli.expectOKWithCustom({ selector: selectors.TABLE_CELL('1', 'REVISION') }))
+      .then(expectText(this.app, '1'))
       .catch(common.oops(this))
   })
 
+  // confirm that helm list shows a row for our release
   it(`should list that new release via helm list`, () => {
     return cli
       .do(`helm list ${inNamespace}`, this.app)
       .then(cli.expectOKWith(name))
+      .catch(common.oops(this))
+  })
+
+  // also confirm that there is a REVISION column in that row
+  it(`should list that new release via helm list`, () => {
+    return cli
+      .do(`helm list ${inNamespace}`, this.app)
+      .then(cli.expectOKWithCustom({ selector: selectors.TABLE_CELL(name, 'REVISION') }))
+      .then(expectText(this.app, '1'))
+      .catch(common.oops(this))
+  })
+
+  it(`should show the status of that new release`, () => {
+    return cli
+      .do(`helm status ${name}`, this.app)
+      .then(checkHelmStatus)
       .catch(common.oops(this))
   })
 
