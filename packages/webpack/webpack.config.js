@@ -114,6 +114,11 @@ plugins.push({
 
         const overrides = {
           build: { writeConfig: false },
+          theme: {
+            // this should match clients/default/theme.json, with unsafe-eval added to script-src for webpack-dev-server
+            contentSecurityPolicy: `default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
+              .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 ws://localhost:8081 ws://localhost:9080'}`
+          },
           env: { main, hash, resourceRoot: '.' }
         }
 
@@ -173,10 +178,7 @@ module.exports = {
     'electron'
   ],
   devServer: {
-    headers: {
-      'Content-Security-Policy': `default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src * data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com; connect-src 'self' ${process
-        .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 ws://localhost:8081'}`
-    },
+    headers: {},
     compress: true,
     clientLogLevel: 'silent',
     watchOptions: {
