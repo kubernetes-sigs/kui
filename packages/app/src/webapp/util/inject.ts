@@ -86,7 +86,8 @@ export const injectCSS = (file: StylesheetSpec): void => {
  *
  */
 export const uninjectCSS = ({ key }): void => {
-  if (!isHeadless()) {
+  if (isHeadless() || typeof document === 'undefined' || !document.getElementById) {
+  } else {
     const id = `injected-css-${key}`
     const link = document.getElementById(id)
 
@@ -102,8 +103,12 @@ export const uninjectCSS = ({ key }): void => {
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const injectScript = (url: any): Promise<any> =>
-  new Promise(resolve => {
+export const injectScript = (url: any): Promise<any> => {
+  if (isHeadless() || typeof document === 'undefined' || !document.getElementById) {
+    return
+  }
+
+  return new Promise(resolve => {
     const type = 'script'
     const id = `injected-${type}-${url.key || url}`
 
@@ -132,6 +137,7 @@ export const injectScript = (url: any): Promise<any> =>
       resolve()
     }
   })
+}
 
 /**
  * Inject HTML stored in the given local file
