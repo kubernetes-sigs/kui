@@ -19,12 +19,13 @@ li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {
 body[kui-theme-style] .bx--link {
   font-weight: 600;
   color: var(--color-brand-01);
-  text-decoration: underline;
+  /* text-decoration: underline; */
   transition: 250ms;
   pointer-events: unset;
   touch-action: unset;
 }
-body[kui-theme-style] .bx--link:not([href]) {
+body[kui-theme-style] .bx--link:not([href]),
+body[kui-theme-style] .bx--link:visited {
   color: var(--color-brand-01);
 }
 body[kui-theme-style] .bx--link:hover {
