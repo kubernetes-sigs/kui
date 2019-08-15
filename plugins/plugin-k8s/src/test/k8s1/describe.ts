@@ -114,7 +114,8 @@ describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: commo
         .catch(common.oops(this, true))
     })
 
-    it(`should flip around on summary tabs via ${kubectl}`, async () => {
+    // TODO: [20190815 myan] please enable webpack test once this issue is solved: https://github.com/IBM/kui/issues/2361
+    common.localIt(`should flip around on summary tabs via ${kubectl}`, async () => {
       try {
         // flip back and forth a few times
         await testRawTab(this)

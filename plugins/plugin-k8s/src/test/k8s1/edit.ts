@@ -28,7 +28,8 @@ import {
 
 const kubectl = 'kubectl'
 
-describe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
+// TODO: [20190815 myan] please enable webpack test once this issue is solved: https://github.com/IBM/kui/issues/2360
+common.localDescribe(`electron kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
