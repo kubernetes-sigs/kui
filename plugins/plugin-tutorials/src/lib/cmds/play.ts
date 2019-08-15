@@ -58,6 +58,10 @@ try {
   debug('not loading jquery in headless mode ')
 }
 
+interface TutorialPane extends HTMLDivElement {
+  cancellables: (() => void)[]
+}
+
 /**
  * Row filters for tables
  *
@@ -158,7 +162,7 @@ const clearHighlights = () => {
  * Close the current tutorial
  *
  */
-const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () =>
+const close = (tab: cli.Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
   new Promise<boolean>(resolve => {
     debug('close')
 
@@ -197,7 +201,7 @@ const close = (tab: cli.Tab, pane: Element, obj, delay = 500) => () =>
  * Is this tutorial a one-page full-screener?
  *
  */
-const isOnePageFullscreenTutorial = obj =>
+const isOnePageFullscreenTutorial = (obj: TutorialDefinition) =>
   obj.steps !== undefined && obj.steps.length === 1 && obj.fullscreen !== undefined
 
 /**
@@ -220,7 +224,7 @@ const setHighlightPosition = ({ selector }) => {
  * Execute a command, handling the fullscreen toggle
  *
  */
-const commandFromFullscreen = (pane, command, display = command) => () => {
+const commandFromFullscreen = (pane: TutorialPane, command: string, display = command, nested = false) => () => {
   const go = () => {
     repl.pexec(command)
 
@@ -231,12 +235,20 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
     }
   }
 
+  if (nested) {
+    go()
+    return
+  }
+
   if (pane.hasAttribute('tutorial-is-fullscreen')) {
     pane.setAttribute('tutorial-was-fullscreen', '1')
     pane.removeAttribute('tutorial-is-fullscreen')
     document.body.classList.remove('tutorial-is-fullscreen')
   } else if (pane.hasAttribute('tutorial-was-fullscreen')) {
-    pane.setAttribute('tutorial-was-fullscreen', 1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10))
+    pane.setAttribute(
+      'tutorial-was-fullscreen',
+      (1 + parseInt(pane.getAttribute('tutorial-was-fullscreen'), 10)).toString()
+    )
   }
 
   // switch to minimized mode, unless this is a tutorial play
@@ -268,7 +280,7 @@ const commandFromFullscreen = (pane, command, display = command) => () => {
  * @param table the model
  *
  */
-const renderOneTable = (parent, pane) => table => {
+const renderOneTable = (parent: Element, pane: TutorialPane, nested = false) => table => {
   const template = document.querySelector('#tutorial-structured-list-template')
   const tableDom = template.cloneNode(true) as HTMLElement
   const tableBody = tableDom.querySelector('.bx--structured-list-tbody')
@@ -311,7 +323,8 @@ const renderOneTable = (parent, pane) => table => {
 
         row.forEach((cell, idx) => {
           const value = typeof cell === 'string' ? cell : cell.value
-          const onclick = cell.onclick || (cell.command && commandFromFullscreen(pane, cell.command, cell.display))
+          const onclick =
+            cell.onclick || (cell.command && commandFromFullscreen(pane, cell.command, cell.display, nested))
 
           debug('cell', value)
           const cellDom = document.createElement('td')
@@ -342,7 +355,13 @@ const renderOneTable = (parent, pane) => table => {
  * Handle transitions between steps
  *
  */
-const transitionSteps = (tab: cli.Tab, stepNum: number, obj: TutorialDefinition, pane: HTMLElement) => {
+const transitionSteps = (
+  tab: cli.Tab,
+  stepNum: number,
+  obj: TutorialDefinition,
+  pane: TutorialPane,
+  nested = false
+) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks
@@ -462,7 +481,7 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj: TutorialDefinition,
               {
                 value: display,
                 when,
-                onclick: commandFromFullscreen(pane, command, display)
+                onclick: commandFromFullscreen(pane, command, display, nested)
               },
               doc
             ])
@@ -480,9 +499,9 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj: TutorialDefinition,
       } else {
         // ok, then the page model specifies one or more tables
         if (Array.isArray(table)) {
-          table.forEach(renderOneTable(extrasPart, pane))
+          table.forEach(renderOneTable(extrasPart, pane, nested))
         } else {
-          renderOneTable(extrasPart, pane)(table)
+          renderOneTable(extrasPart, pane, nested)(table)
         }
       }
 
@@ -497,7 +516,7 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj: TutorialDefinition,
           element.className = 'tutorial-showcase-element'
 
           if (command) {
-            element.onclick = commandFromFullscreen(pane, command, display)
+            element.onclick = commandFromFullscreen(pane, command, display, nested)
           }
 
           const imagePart = document.createElement('img')
@@ -675,8 +694,8 @@ const transitionSteps = (tab: cli.Tab, stepNum: number, obj: TutorialDefinition,
  *
  */
 const focusOnBiggestScrollable = () => {
-  const allScrollables = document.querySelectorAll('#tutorialPane .scrollable')
-  let biggest
+  const allScrollables: NodeListOf<HTMLElement> = document.querySelectorAll('#tutorialPane .scrollable')
+  let biggest: { element: HTMLElement; rect: ClientRect }
   for (let idx = 0; idx < allScrollables.length; idx++) {
     const rect = allScrollables[idx].getBoundingClientRect()
     if (!biggest || rect.height > biggest.rect.height) {
@@ -699,7 +718,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
   // remove the sidecar, if it's open
   clearSelection(tab)
 
-  const pane = document.querySelector('#tutorialPane') as HTMLElement
+  const pane = document.querySelector('#tutorialPane') as TutorialPane
   pane.classList.remove('minimized')
   pane.removeAttribute('tutorial-has-showcase')
 
@@ -861,7 +880,7 @@ const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOpt
 
   if (execOptions.type === ExecType.Nested && !parsedOptions['top-level']) {
     // initiate just the first step
-    const pane = document.createElement('div')
+    const pane = document.createElement('div') as TutorialPane
     pane.classList.add('tutorialPane')
     const body = document.createElement('div')
     body.classList.add('tutorial-body')
@@ -881,7 +900,7 @@ const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOpt
     const list = document.createElement('div')
     list.classList.add('tutorial-content-extras-as-structured-list')
     extras.appendChild(list)
-    transitionSteps(tab, 0, tutorial || config.tutorial, pane)
+    transitionSteps(tab, 0, tutorial || config.tutorial, pane, true)
     return pane
   } else {
     return showTutorial(tab, config.name, tutorial || config.tutorial)
