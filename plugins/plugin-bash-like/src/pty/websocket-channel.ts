@@ -25,14 +25,16 @@ const debug = Debug('plugins/bash-like/pty/channel')
  * Thin wrapper on top of browser WebSocket impl
  *
  */
-class WebSocketChannel extends WebSocket implements Channel {
+class WebSocketChannel implements Channel {
+  private readonly ws: WebSocket
+
   private readonly uid: number
 
   private readonly gid: number
 
   constructor(url: string, uid: number, gid: number) {
     debug('WebSocketChannel init', url)
-    super(url, undefined /*, { rejectUnauthorized: false } */)
+    this.ws = new WebSocket(url)
     this.uid = uid
     this.gid = gid
   }
@@ -43,7 +45,15 @@ class WebSocketChannel extends WebSocket implements Channel {
       uid: this.uid,
       gid: this.gid
     })
-    return super.send(JSON.stringify(withUser))
+    return this.ws.send(JSON.stringify(withUser))
+  }
+
+  get readyState(): number {
+    return this.ws.readyState
+  }
+
+  removeEventListener(eventType: string, handler: any) {
+    this.ws.removeEventListener(eventType, handler)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,23 +61,23 @@ class WebSocketChannel extends WebSocket implements Channel {
     switch (eventType) {
       case 'open':
         debug('WebSocketChannel: installing onopen handler')
-        this.addEventListener(eventType, handler)
+        this.ws.addEventListener(eventType, handler)
         break
 
       case 'message':
         debug('WebSocketChannel: installing onmessage handler')
         // this.onmessage = message => handler(message.data)
-        this.addEventListener(eventType, message => handler(message.data))
+        this.ws.addEventListener(eventType, message => handler(message.data))
         break
 
       case 'error':
         debug('WebSocketChannel: installing onerror handler')
-        this.addEventListener(eventType, handler)
+        this.ws.addEventListener(eventType, handler)
         break
 
       case 'close':
         debug('WebSocketChannel: installing onclose handler')
-        this.addEventListener(eventType, handler)
+        this.ws.addEventListener(eventType, handler)
         break
     }
   }
