@@ -32,21 +32,34 @@ describe('About command', function(this: ISuite) {
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(settings.productName))
-      .catch(oops(this)))
+      .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .catch(oops(this, true)))
 
-  it('should open the getting started tutor via button click', async () => {
+  it('should open the about via button click', async () => {
     try {
       await this.app.client.refresh()
+      await this.app.client.waitForVisible('#help-button')
+
+      await cli.do('sleep 1', this.app).then(cli.expectBlank)
+
       await this.app.client.click('#help-button')
 
-      await this.app.client.waitForVisible('#tutorialPane')
-
-      const tutorialName = await this.app.client.getText(
-        '#tutorialPane .tutorial-header .tutorial-header-tutorial-name'
-      )
-      assert.strict.equal(tutorialName.toLowerCase(), 'getting started')
+      await this.app.client.waitForVisible(ui.selectors.SIDECAR)
+      await this.app.client.waitForVisible(ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
     } catch (err) {
-      oops(this)(err)
+      await oops(this, true)(err)
     }
+  })
+
+  it('should open the getting started via button click', async () => {
+    await this.app.client.refresh()
+
+    return cli
+      .do('getting started', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(settings.productName))
+      .then(() => this.app.client.waitForVisible(ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('gettingStarted')))
+      .catch(oops(this, true))
   })
 })
