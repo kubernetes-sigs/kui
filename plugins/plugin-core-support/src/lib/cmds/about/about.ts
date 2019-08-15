@@ -351,10 +351,16 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.listen('/about', aboutWindow, {
     hidden: true, // don't list about in the help menu
     needsUI: true, // about requires a window
+    inBrowserOk: true,
     noAuthOk // about doesn't require openwhisk authentication
   })
 
-  debug('init done')
+  // getting started shortcut
+  commandTree.listen('/getting/started', () => repl.qexec('about --mode gettingStarted'), {
+    noAuthOk,
+    needsUI: true,
+    inBrowserOk: true
+  })
 }
 
 export const preload = () => {
