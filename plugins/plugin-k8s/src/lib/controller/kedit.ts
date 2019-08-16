@@ -32,7 +32,6 @@ import { get as relevantModes } from '@kui-shell/core/webapp/views/registrar/mod
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
 
-import { redactYAML } from '../view/redact'
 import { statusButton } from '../view/modes/status'
 import { formatEntity } from '../view/formatEntity'
 import generateForm from '../view/form'
@@ -141,7 +140,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
     lock: false, // we don't want a lock icon
     extract,
     filepath,
-    source: redactYAML(safeDump(yaml)),
+    source: safeDump(yaml),
     resource: yaml
   }
 

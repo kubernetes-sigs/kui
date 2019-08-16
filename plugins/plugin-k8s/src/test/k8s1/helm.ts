@@ -20,6 +20,8 @@ import * as assert from 'assert'
 
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
+const lists = ['list', 'ls']
+
 // TODO: enable this once proxy can find $HOME on travis
 common.localDescribe('helm commands', function(this: common.ISuite) {
   before(common.before(this))
@@ -29,9 +31,42 @@ common.localDescribe('helm commands', function(this: common.ISuite) {
   const inNamespace = `--namespace ${ns}`
   const name = `test-release-${ns}`
 
-  allocateNS(this, ns)
+  it('should show 500 error for helm get', () => {
+    return cli
+      .do('helm get', this.app)
+      .then(cli.expectError(500, 'Error: release name is required'))
+      .catch(common.oops(this, true))
+  })
 
-  const lists = ['list', 'ls']
+  it('should show 500 error for helm get -h', () => {
+    return cli
+      .do('helm get -h', this.app)
+      .then(cli.expectError(500))
+      .catch(common.oops(this, true))
+  })
+
+  it('should show 500 error for helm create', () => {
+    return cli
+      .do('helm create', this.app)
+      .then(cli.expectError(500, 'Error: the name of the new chart is required'))
+      .catch(common.oops(this, true))
+  })
+
+  it('should show 500 error for helm install', () => {
+    return cli
+      .do('helm install', this.app)
+      .then(cli.expectError(500, 'Error: This command needs 1 argument: chart name'))
+      .catch(common.oops(this, true))
+  })
+
+  it('should show 500 error for helm delete', () => {
+    return cli
+      .do('helm delete', this.app)
+      .then(cli.expectError(500, "Error: command 'delete' requires a release name"))
+      .catch(common.oops(this, true))
+  })
+
+  allocateNS(this, ns)
 
   lists.forEach(list => {
     it(`should list empty releases via helm ${list}`, () => {
