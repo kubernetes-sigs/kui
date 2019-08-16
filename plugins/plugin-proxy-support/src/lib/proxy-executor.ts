@@ -173,12 +173,13 @@ class ProxyEvaluator implements ReplEval {
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
-                        debug('rejecting', response)
                         if (UsageError.isUsageError(response.response)) {
                           // e.g. k get -h
+                          debug('rejecting as usage error', response)
                           reject(response.response)
                         } else {
                           // e.g. k get pod nonExistantName
+                          debug('rejecting as other error', response)
                           const err: CodedError = new Error(response.response.message)
                           err.stack = response.response.stack
                           err.code = err.statusCode = code
