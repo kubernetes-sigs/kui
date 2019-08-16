@@ -194,22 +194,24 @@ exports.after = (ctx, f) => () => {
   // failed
   if (anyFailed && ctx.app && ctx.app.client) {
     ctx.app.client.getRenderProcessLogs().then(logs =>
-      logs.forEach(log => {
-        if (
-          log.level === 'SEVERE' && // only console.error messages
-          log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
-          log.message.indexOf('Error compiling app source') < 0 &&
-          log.message.indexOf('ReferenceError') < 0 &&
-          log.message.indexOf('SyntaxError') < 0 &&
-          log.message.indexOf('ENOENT') < 0 && // we probably caused file not found errors
-          log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
-          log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
-          log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
-        ) {
-          const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-          console.log(`${log.source} ${log.level}`.bold.red, logMessage)
-        }
-      })
+      logs
+        .filter(log => !/Not allowed to load local resource/.test(log.message))
+        .forEach(log => {
+          if (
+            log.level === 'SEVERE' && // only console.error messages
+            log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
+            log.message.indexOf('Error compiling app source') < 0 &&
+            log.message.indexOf('ReferenceError') < 0 &&
+            log.message.indexOf('SyntaxError') < 0 &&
+            log.message.indexOf('ENOENT') < 0 && // we probably caused file not found errors
+            log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
+            log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
+            log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
+          ) {
+            const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
+            console.log(`${log.source} ${log.level}`.bold.red, logMessage)
+          }
+        })
     )
   }
 
@@ -259,7 +261,7 @@ exports.oops = (ctx, wait = false) => async err => {
         // filter out the "Not allowed to load local resource" font loading errors
         ctx.app.client.getRenderProcessLogs().then(logs =>
           logs
-            .filter(log => !/Not allowed to load local resource/.test(log))
+            .filter(log => !/Not allowed to load local resource/.test(log.message))
             .forEach(log => {
               if (log.message.indexOf('%c') === -1) {
                 console.log('RENDER'.bold.yellow, log.message.red)

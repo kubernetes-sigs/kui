@@ -31,7 +31,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 
-describe(`electron create pod ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+describe(`kubectl create pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -57,7 +57,7 @@ describe(`electron create pod ${process.env.MOCHA_RUN_TARGET}`, function(this: c
           await waitForGreen(this.app, selector)
 
           // now click on the table row
-          this.app.client.click(`${selector} .clickable`)
+          await this.app.client.click(`${selector} .clickable`)
           await sidecar
             .expectOpen(this.app)
             .then(sidecar.expectMode(defaultModeForGet))

@@ -710,13 +710,29 @@ export const doExec = (
          }) */
 
         // relay keyboard input to the server
-        let queuedInput: string
+        let queuedInput = ''
+        let flushAsync: NodeJS.Timeout
         terminal.on('key', (key: string) => {
           if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
             debug('queued input out back', key)
             queuedInput += key
           } else {
-            ws.send(JSON.stringify({ type: 'data', data: key, uid: ourUUID }))
+            // even with the xterm active, buffer input and flush in
+            // chunks to increase responsiveness for fast typing, and
+            // to reduce load in the proxy server (compared to sending
+            // one message per keypress)
+            queuedInput += key
+
+            if (flushAsync) {
+              clearTimeout(flushAsync)
+            }
+            flushAsync = setTimeout(() => {
+              if (queuedInput && ws.readyState === WebSocket.OPEN) {
+                const data = queuedInput
+                queuedInput = ''
+                ws.send(JSON.stringify({ type: 'data', data, uid: ourUUID }))
+              }
+            }, 20)
           }
         })
 
@@ -789,11 +805,11 @@ export const doExec = (
         terminal.element.classList.add('fullscreen')
 
         let pendingUsage = false
-        let definitelyNotUsage = argvNoOptions[0] === 'git' // short-term hack u ntil we fix up ascii-to-usage
+        let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
         let pendingTable: Table
         let raw = ''
 
-        let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' // short-term hack until we fix up ascii-to-table
+        let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
 
         let alreadyFocused = false
         const focus = () => {
@@ -828,8 +844,18 @@ export const doExec = (
           } else if (msg.type === 'data') {
             // plain old data flowing out of the PTY; send it on to the xterm UI
 
+            const flush = () => {
+              if (pendingTable) {
+                pendingTable = undefined
+                definitelyNotTable = true
+                definitelyNotUsage = true
+                terminal.write(raw)
+              }
+            }
+
             if (enterApplicationModePattern.test(msg.data)) {
               // e.g. less start
+              flush()
               resizer.enterApplicationMode()
               focus()
             } else if (exitApplicationModePattern.test(msg.data)) {
@@ -840,6 +866,7 @@ export const doExec = (
               // we need to fast-track this; xterm.js does not invoke the
               // setMode/resetMode handlers till too late; we might've
               // called raw += ... even though we are in alt buffer mode
+              flush()
               focus()
               resizer.enterAltBufferMode()
             } else if (exitAltBufferPattern.test(msg.data)) {
@@ -865,7 +892,8 @@ export const doExec = (
                   const tableRows = tables.filter(_ => _.rows !== undefined).flatMap(_ => _.rows)
 
                   if (tableRows && tableRows.length > 0) {
-                    debug('tableRows', tableRows)
+                    debug(`table came from ${stripClean(raw)}`)
+                    debug(`tableRows ${tableRows.length}`)
                     const command = argvNoOptions[0]
                     const verb = argvNoOptions[1]
                     const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
@@ -876,6 +904,7 @@ export const doExec = (
                     definitelyNotTable = true
                   }
                 } else {
+                  debug('definitelyNotTable')
                   definitelyNotTable = true
                 }
               } catch (err) {

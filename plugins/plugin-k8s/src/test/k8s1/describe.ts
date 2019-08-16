@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, expectYAMLSubset, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { cli, expectYAMLSubset, getValueFromMonaco as getText, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   waitForRed,
@@ -27,31 +27,24 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+// this test is still oddly buggy with webpack+proxy, hence the localDescribe
+common.localDescribe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
 
-    /** return the editor text */
-    const getText = (ctx: common.ISuite) => {
-      return ctx.app.client
-        .execute(() => {
-          return document.querySelector('.monaco-editor-wrapper')['editor'].getValue()
-        })
-        .then(res => res.value)
-    }
-
     /**
      * Interact with the Raw tab
      *
      */
     const testRawTab = async (ctx: common.ISuite) => {
+      await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('raw'))
       await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
 
       return ctx.app.client.waitUntil(async () => {
-        const ok: boolean = await getText(ctx).then(
+        const ok: boolean = await getText(ctx.app).then(
           expectYAMLSubset(
             {
               apiVersion: 'v1',
@@ -74,12 +67,13 @@ describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: commo
      *
      */
     const testSummaryTab = async (ctx: common.ISuite) => {
+      await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
       await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
 
       // expect to see some familiar bits of a pod in the editor under the raw tab
       return ctx.app.client.waitUntil(async () => {
         const name = 'nginx'
-        const actualText = await getText(ctx)
+        const actualText = await getText(ctx.app)
         return new RegExp(`NAME:\\s+${name}`).test(actualText)
       })
     }
@@ -90,7 +84,10 @@ describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: commo
     // localIt will have it run only in electron for now
     common.localIt(`should fail with 404 for unknown resource type via ${kubectl}`, () => {
       const fakeType = 'yoyoyo1334u890724'
-      return cli.do(`${kubectl} summary ${fakeType} productPage`, this.app).then(cli.expectError(404))
+      return cli
+        .do(`${kubectl} summary ${fakeType} productPage`, this.app)
+        .then(cli.expectError(404))
+        .catch(common.oops(this, true))
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
@@ -101,7 +98,7 @@ describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: commo
         )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
-        .catch(common.oops(this))
+        .catch(common.oops(this, true))
     })
 
     it(`should summarize that pod via ${kubectl}`, () => {
@@ -114,34 +111,53 @@ describe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function(this: commo
         .catch(common.oops(this, true))
     })
 
-    it(`should flip around on summary tabs via ${kubectl}`, async () => {
+    // flip around the tabs a bit
+    it(`should flip to raw tab`, () => testRawTab(this).catch(common.oops(this, true)))
+    it(`should flip to summary tab`, () => testSummaryTab(this).catch(common.oops(this, true)))
+    it(`should flip to raw tab`, () => testRawTab(this).catch(common.oops(this, true)))
+    it(`should flip to summary tab`, () => testSummaryTab(this).catch(common.oops(this, true)))
+
+    // click delete button
+    it('should initiate deletion of the pod via sidecar deletion button', async () => {
       try {
-        // flip back and forth a few times
-        await testRawTab(this)
-        await testSummaryTab(this)
-        await testRawTab(this)
-        await testSummaryTab(this)
+        await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('delete'))
+        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete'))
+
+        // wait for delete confirmation popup
+        await this.app.client.waitForExist('#confirm-dialog .bx--btn--danger')
+        await this.app.client.click('#confirm-dialog .bx--btn--danger')
+        await this.app.client.waitForExist('#confirm-dialog', 20000, true) // go away!
       } catch (err) {
-        await common.oops(this, true)(err)
+        await common.oops(this, true)
       }
     })
 
-    it('should delete the pod via sidecar deletion button', () => {
-      return cli
-        .do(`${kubectl} summary pod nginx -n ${ns}`, this.app)
-        .then(async res => {
-          await cli.expectJustOK(res)
-          await sidecar.expectOpen(this.app)
-          await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete')) // click delete button
-          await this.app.client.waitForExist('#confirm-dialog')
-          await this.app.client.click('#confirm-dialog .bx--btn--danger')
-          // a deletion command should be issued
-          const newResourceSelector = await cli.expectOKWithCustom({
-            selector: selectors.BY_NAME('nginx')
-          })({ app: res.app, count: res.count + 1 })
-          await waitForRed(this.app, newResourceSelector)
+    it('should show that the click-delete has started', () => {
+      // a deletion command should be issued
+      let idx = 0
+      return this.app.client
+        .waitUntil(async () => {
+          const value = await this.app.client.getValue(selectors.PROMPT_FINAL)
+          if (++idx > 5) {
+            console.error(`kubectl summary ${process.env.MOCHA_RUN_TARGET || ''} still waiting for delete command`)
+          }
+
+          return /delete/.test(value)
         })
         .catch(common.oops(this, true))
+    })
+
+    it('should wait for that click-delete to finish', async () => {
+      try {
+        const count = parseInt(await this.app.client.getAttribute(selectors.PROMPT_BLOCK_FINAL, 'data-input-count'), 10)
+        const newResourceSelector = await cli.expectOKWithCustom({
+          selector: selectors.BY_NAME('nginx')
+        })({ app: this.app, count })
+
+        await waitForRed(this.app, newResourceSelector)
+      } catch (err) {
+        await common.oops(this, true)
+      }
     })
 
     deleteNS(this, ns)

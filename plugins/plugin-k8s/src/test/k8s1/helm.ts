@@ -23,7 +23,7 @@ import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/
 const lists = ['list', 'ls']
 
 // TODO: enable this once proxy can find $HOME on travis
-common.localDescribe('helm commands', function(this: common.ISuite) {
+describe('helm commands', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

@@ -33,7 +33,8 @@ const synonyms = ['kubectl']
  * deployments.
  *
  */
-describe('electron apply deployment against URL that has redirects', function(this: common.ISuite) {
+describe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_RUN_TARGET ||
+  ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -59,13 +60,13 @@ describe('electron apply deployment against URL that has redirects', function(th
         await waitForGreen(this.app, selector)
 
         // now click on the table row
-        this.app.client.click(`${selector} .clickable`)
+        await this.app.client.click(`${selector} .clickable`)
         await sidecar
           .expectOpen(this.app)
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('nginx-deployment'))
       } catch (err) {
-        common.oops(this)(err)
+        await common.oops(this, true)(err)
       }
     })
 
@@ -78,7 +79,7 @@ describe('electron apply deployment against URL that has redirects', function(th
           })
         )
         .then(selector => waitForRed(this.app, selector))
-        .catch(common.oops(this))
+        .catch(common.oops(this, true))
     })
 
     deleteNS(this, ns)

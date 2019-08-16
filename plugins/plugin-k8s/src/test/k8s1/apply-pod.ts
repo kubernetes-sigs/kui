@@ -28,7 +28,7 @@ import {
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 
-describe(`${process.env.MOCHA_RUN_TARGET || ''} apply pod`, function(this: common.ISuite) {
+describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -55,7 +55,7 @@ describe(`${process.env.MOCHA_RUN_TARGET || ''} apply pod`, function(this: commo
           await waitForGreen(this.app, selector)
 
           // now click on the table row
-          this.app.client.click(`${selector} .clickable`)
+          await this.app.client.click(`${selector} .clickable`)
           await sidecar
             .expectOpen(this.app)
             .then(sidecar.expectMode(defaultModeForGet))
@@ -93,7 +93,7 @@ describe(`${process.env.MOCHA_RUN_TARGET || ''} apply pod`, function(this: commo
           )
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
-          .catch(common.oops(this))
+          .catch(common.oops(this, true))
       })
 
       deleteNS(this, ns)

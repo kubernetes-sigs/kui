@@ -88,6 +88,7 @@ selectors.PROMPT_N = N => `${selectors.PROMPT_BLOCK_N(N)} input`
 selectors.OUTPUT_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result`
 selectors.PROMPT_BLOCK_LAST = `${selectors.PROMPT_BLOCK}:nth-last-child(2)`
 selectors.PROMPT_BLOCK_FINAL = `${selectors.PROMPT_BLOCK}:nth-last-child(1)`
+selectors.PROMPT_FINAL = `${selectors.PROMPT_BLOCK_FINAL} input`
 selectors.OUTPUT_LAST = `${selectors.PROMPT_BLOCK_LAST} .repl-result`
 selectors.LIST_RESULTS_N = N => `${selectors.PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
 selectors.LIST_RESULTS_BY_NAME_N = N => `${selectors.LIST_RESULTS_N(N)} .entity-name`
@@ -220,9 +221,7 @@ exports.cli = {
 
   /** wait for the repl to be active */
   waitForRepl: async app => {
-    // if it takes more than 10 seconds to have an active prompt,
-    // treat that as a failure
-    await app.client.waitForEnabled(selectors.CURRENT_PROMPT, 10000)
+    await app.client.waitForEnabled(selectors.CURRENT_PROMPT)
     return app
   },
 
@@ -332,7 +331,12 @@ exports.waitForXtermInput = (app, N) => {
 exports.getTextContent = (app, selector) => {
   return app.client
     .execute(selector => {
-      return document.querySelector(selector).textContent
+      try {
+        return document.querySelector(selector).textContent
+      } catch (err) {
+        console.error('error in getTextContent', err)
+        // intentionally returning undefined
+      }
     }, selector)
     .then(_ => _.value)
 }
@@ -498,9 +502,18 @@ exports.getValueFromMonaco = async (app /*: Application */, prefix = '') => {
 
   return app.client
     .execute(selector => {
-      return document.querySelector(selector)['editor'].getValue()
+      try {
+        return document.querySelector(selector)['editor'].getValue()
+      } catch (err) {
+        console.error('error in getValueFromMonaco1', err)
+        // intentionally returning undefined
+      }
     }, selector)
     .then(_ => _.value)
+    .catch(err => {
+      console.error('error in getValueFromMonaco2', err)
+      // intentionally returning undefined
+    })
 }
 
 /**

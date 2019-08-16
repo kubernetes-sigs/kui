@@ -29,7 +29,7 @@ import {
 
 const kubectl = 'kubectl'
 
-describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
+common.localDescribe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -66,8 +66,8 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
     })
   }
 
-  const editItWithoutSaving = (name: string, quit: string) => {
-    it(`should edit it via ${kubectl} edit`, async () => {
+  const editIt = (name: string, quit: string) => {
+    it(`should edit it via ${kubectl} edit, and using ${quit} to quit`, async () => {
       try {
         const res = await cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
 
@@ -81,8 +81,13 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
 
         // wait for apiVersion: v<something> to show up in the pty
         await this.app.client.waitUntil(async () => {
-          const txt = await getTextContent(this.app, rows)
-          return /apiVersion: v/.test(txt)
+          try {
+            const txt = await getTextContent(this.app, rows)
+            return /apiVersion: v/.test(txt)
+          } catch (err) {
+            console.error(err)
+            return false
+          }
         })
 
         // quit without saving
@@ -109,8 +114,8 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
 
   const nginx = 'nginx'
   createIt(nginx)
-  editItWithoutSaving(nginx, ':wq!')
-  editItWithoutSaving(nginx, ':wq')
+  editIt(nginx, ':wq!')
+  editIt(nginx, ':wq')
 
   deleteNS(this, ns)
 })

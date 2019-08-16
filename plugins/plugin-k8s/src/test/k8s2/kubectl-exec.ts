@@ -36,7 +36,7 @@ describe(`kubectl exec basic stuff ${process.env.MOCHA_RUN_TARGET || ''}`, funct
     return cli
       .do(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
       .then(cli.expectOKWithString(podName))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   it('should wait for the pod to come up', () => {
@@ -44,21 +44,21 @@ describe(`kubectl exec basic stuff ${process.env.MOCHA_RUN_TARGET || ''}`, funct
       .do(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) }))
       .then(selector => waitForGreen(this.app, selector))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   it('should exec ls through pty', () => {
     return cli
       .do(`kubectl exec ${podName} -n ${ns} -- ls`, this.app)
       .then(cli.expectOKWithString('bin'))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   it('should exec pwd through pty', () => {
     return cli
       .do(`kubectl exec ${podName} -n ${ns} -- pwd`, this.app)
       .then(cli.expectOKWithString('/'))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   deleteNS(this, ns)
