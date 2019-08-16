@@ -44,7 +44,6 @@ import { FinalState } from '../model/states'
 import { Table, MultiTable, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
-import { redactJSON, redactYAML } from '../view/redact'
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
 import { deleteResourceButton } from '../view/modes/crud'
@@ -223,18 +222,6 @@ const usage = (command: string): UsageModel => ({
   command,
   noHelp: true // kubectl and helm both provide their own -h output
 })
-
-const prepareUsage = async (command: string): Promise<UsageModel> => {
-  debug('prepareUsage', command)
-
-  try {
-    const usage: UsageError = await repl.qexec(`${command} -h`, undefined, undefined, { failWithUsage: true })
-    return usage.getUsageModel()
-  } catch (err) {
-    console.error('Error preparing usage')
-    return undefined
-  }
-}
 
 /**
  * Spawn a local executable
@@ -461,13 +448,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           return Promise.resolve(true)
         }
       } else if (code && code !== 0) {
-        return Promise.reject(
-          new UsageError({
-            code,
-            message: stderr || `${command} exited with an error`,
-            usage: await prepareUsage(command)
-          })
-        )
+        const error: CodedError = new Error(stderr || `${command} exited with an error`)
+        error.code = code
+        return Promise.reject(error)
       } else {
         return Promise.resolve(out || true)
       }
@@ -518,13 +501,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           if (execOptions.failWithUsage) {
             reject(new Error(undefined))
           } else {
-            const usage = await prepareUsage(command)
-            if (!usage) {
-              // error generating usage
-              reject(message)
-            } else {
-              reject(new UsageError({ message: err, code: codeForREPL, usage }))
-            }
+            const error: CodedError = new Error(message)
+            error.code = codeForREPL
+            reject(error)
           }
         }
 
@@ -585,14 +564,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         //
         debug('formatting structured output', output)
 
-        const result =
-          output === 'json'
-            ? JSON.parse(out)
-            : verb === 'logs'
-            ? formatLogs(out, execOptions)
-            : output === 'yaml'
-            ? redactYAML(out)
-            : redactJSON(out)
+        const result = output === 'json' ? JSON.parse(out) : verb === 'logs' ? formatLogs(out, execOptions) : out
 
         // debug('structured output', result)
 

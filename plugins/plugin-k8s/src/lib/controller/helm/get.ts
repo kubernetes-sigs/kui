@@ -66,7 +66,13 @@ export default async function helmGet(args: EvaluatorArgs) {
   const idx = args.argvNoOptions.indexOf('get')
 
   const maybeVerb = args.argvNoOptions[idx + 1]
-  if (maybeVerb === 'hooks' || maybeVerb === 'manifest' || maybeVerb === 'notes' || maybeVerb === 'values') {
+  if (
+    !maybeVerb ||
+    maybeVerb === 'hooks' ||
+    maybeVerb === 'manifest' ||
+    maybeVerb === 'notes' ||
+    maybeVerb === 'values'
+  ) {
     debug('delegating to underlining helm')
     return _helm(args)
   }
