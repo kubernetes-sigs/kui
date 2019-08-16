@@ -92,6 +92,28 @@ if [ -n "$LAYERS" ]; then
     # in the else clause below
     NON_HEADLESS_LAYERS=${LAYERS#HEADLESS}
 
+    # first, run any "wait layers", i.e. layers that need to be
+    # run sequentially, e.g. because they mess with some global
+    # state such as current context
+    if [ -n "$WAIT_LAYERS" ]; then
+        if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
+            PORT_OFFSET_BASE=1
+
+            for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
+                if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
+                    echo "skip travis osx Webpack test since travis doesn't support docker on osx"
+                else
+                    export MOCHA_RUN_TARGET
+                    export PORT_OFFSET_BASE
+
+                    echo "running these non-headless layers with $MOCHA_RUN_TARGET and wait: $WAIT_LAYERS"
+                    (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
+                fi
+            done
+            echo "done with wait layers"
+        fi
+    fi
+
     # is "HEADLESS" on the LAYERS list?
     if [ "$NON_HEADLESS_LAYERS" != "$LAYERS" ]; then
         #
@@ -106,8 +128,10 @@ if [ -n "$LAYERS" ]; then
         # fail if we don't have TEST_SPACE.
 
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_1"
-        export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
-        . ${WSK_CONFIG_FILE}
+        if [ -n "$NEEDS_OPENWHISK" ]; then
+            export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
+            . ${WSK_CONFIG_FILE}
+        fi
         #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
         (cd /tmp/kui && MOCHA_RUN_TARGET=headless npm run test) & # see ./install.sh for the /tmp/kui target
         children+=("$!")
@@ -115,8 +139,10 @@ if [ -n "$LAYERS" ]; then
         childrenStartTimes+=("$(date +%s)")
     fi
 
+    # here is where we start scheduling the mocha test layers that can be run concurrently
     if [ -n "$NON_HEADLESS_LAYERS" ] && [ -n "$MOCHA_TARGETS" ]; then
         PORT_OFFSET_BASE=1
+
         for MOCHA_RUN_TARGET in $MOCHA_TARGETS; do
           echo "mocha target: $MOCHA_RUN_TARGET"
           if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
@@ -126,22 +152,8 @@ if [ -n "$LAYERS" ]; then
             export MOCHA_RUN_TARGET
             export PORT_OFFSET_BASE
 
-            if [ -n "$WAIT_LAYERS" ]; then
-                echo "running these non-headless layers with $MOCHA_RUN_TARGET and wait: $WAIT_LAYERS"
-                (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
-            fi
-
-            if [ "$MOCHA_RUN_TARGET" == "webpack" ] && [ "$KUI_USE_PROXY" == "true" ]; then
-                # for now, k8s1 is problematic with the proxy
-                echo "trimming k8s1"
-                TEST_THESE_LAYERS=${NON_HEADLESS_LAYERS# k8s1}
-            else
-                TEST_THESE_LAYERS=$NON_HEADLESS_LAYERS
-            fi
-
             echo "running these non-headless layers with $MOCHA_RUN_TARGET: $NON_HEADLESS_LAYERS"
-            (cd packages/tests && ./bin/runMochaLayers.sh $TEST_THESE_LAYERS) &
-
+            (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
             children+=("$!")
             childrenNames+=("mocha layers")
             childrenStartTimes+=("$(date +%s)")
@@ -153,6 +165,7 @@ if [ -n "$LAYERS" ]; then
     fi
 fi
 
+# finally, wait for the parallel subtasks to finish
 wait_and_get_exit_codes "${children[@]}"
 if [ $EXIT_CODE != 0 ]; then exit $EXIT_CODE; fi
 

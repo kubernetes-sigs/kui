@@ -59,13 +59,20 @@ const readFileAsync = (fd /* : number */) =>
  */
 const pollForEndMarker = async (fd /*: number */) /* : Promise<string> */ => {
   return new Promise((resolve, reject) => {
-    const iter = async () => {
+    const iter = async (idx = 0) => {
       try {
         const maybe = await readFileAsync(fd)
         if (maybe.indexOf(KUI_TEE_TO_FILE_END_MARKER) >= 0) {
           resolve(maybe.toString().replace(KUI_TEE_TO_FILE_END_MARKER, ''))
         } else {
-          setTimeout(iter, 500)
+          if (idx > 10) {
+            console.error(
+              'pollForEndMarker still waiting',
+              maybe.length,
+              maybe.slice(Math.max(0, maybe.length - 20)).toString()
+            )
+          }
+          setTimeout(() => iter(idx + 1), 1000)
         }
       } catch (err) {
         reject(err)

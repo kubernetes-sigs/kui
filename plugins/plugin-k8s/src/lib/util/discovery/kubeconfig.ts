@@ -31,12 +31,12 @@ const debug = Debug('k8s/discovery/kubeconfig')
 const fillInPATH = (env: Record<string, any>) => {
   if (!env.PATH) {
     debug('failsafe for env.PATH')
-    env.PATH = '/usr/bin'
+    env.PATH = '/bin:/usr/bin'
 
-    if (!process.env.PATH) {
+    /* if (!process.env.PATH) {
       debug('failsafe for process.env.PATH')
       process.env.PATH = env.PATH
-    }
+    } */
   }
 
   if (!env.PATH.match(/\/usr\/local\/bin/)) {

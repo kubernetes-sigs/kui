@@ -41,10 +41,15 @@ export const renderButton = async (tab: Tab, { overrides, fn }: Parameters, args
   const commandToExec = `kubectl ${overrides.mode} ${kind} ${resourceName || name || (metadata && metadata.name)} ${
     namespace ? '-n ' + namespace : ''
   }`
-  const response: KubeResource = await repl.qexec(`confirm '${commandToExec}'`, undefined, undefined, {
-    noStatus: !!fn,
-    tab
-  })
+  const response: KubeResource = await repl.qexec(
+    `confirm ${repl.encodeComponent(commandToExec)}`,
+    undefined,
+    undefined,
+    {
+      noStatus: !!fn,
+      tab
+    }
+  )
   return fn ? fn(response) : response
 }
 

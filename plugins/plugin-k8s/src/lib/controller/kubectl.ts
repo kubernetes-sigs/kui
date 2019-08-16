@@ -782,7 +782,7 @@ async function kubectl(opts: EvaluatorArgs) {
       `sendtopty ${commandToPTY}`,
       opts.block,
       undefined,
-      Object.assign({}, opts.execOptions, { 'pty/force-resize': opts.argvNoOptions[1] === 'exec' })
+      Object.assign({}, opts.execOptions, { rawResponse: true })
     )
   } else if (!inBrowser() || opts.argvNoOptions[1] === 'summary') {
     debug('invoking _kubectl directly')
@@ -859,7 +859,7 @@ export default async (commandTree: CommandRegistrar) => {
       const tableModel = table(out, '', command, verb, command === 'helm' ? '' : entityType, undefined, {}, execOptions)
       return tableModel
     },
-    { noAuthOk: true }
+    { noAuthOk: true, inBrowserOk: true }
   )
 
   //

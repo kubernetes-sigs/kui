@@ -45,7 +45,7 @@ const createNS = async function(this: common.ISuite, kubectl: string) {
     try {
       await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
     } catch (err) {
-      common.oops(this)(err)
+      await common.oops(this, false)(err)
     }
   })
 }
@@ -60,7 +60,7 @@ const deleteNS = function(this: common.ISuite, kubectl: string) {
 
       await waitForOffline(res)
     } catch (err) {
-      common.oops(this)(err)
+      await common.oops(this, false)(err)
     }
   })
 }
@@ -111,7 +111,7 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
         // and, conversely, that watch had better eventually show Offline
         await this.app.client.waitForExist(selector2ButOffline)
       } catch (err) {
-        common.oops(this)(err)
+        await common.oops(this, false)(err)
       }
     })
   })
@@ -119,7 +119,7 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
 
 const synonyms = ['kubectl']
 
-describe('electron watch namespace', function(this: common.ISuite) {
+describe(`kubectl watch namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
