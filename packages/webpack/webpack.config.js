@@ -32,6 +32,16 @@ console.log('bundle compression useGzip?', useGzip)
 const pollInterval = process.platform === 'darwin' && (process.env.WEBPACK_POLL_INTERVAL || 2000)
 console.log('webpack poll interval', pollInterval)
 
+const contentSecurityPolicyForDevServer =
+  process.env.WEBPACK_DEV_SERVER &&
+  `default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
+    .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 ws://localhost:8081 ws://localhost:9080'}`
+if (contentSecurityPolicyForDevServer) {
+  console.log('ContentSecurityPolicy: dev-server')
+} else {
+  console.log('ContentSecurityPolicy: from-client')
+}
+
 const isMonorepo = process.env.KUI_MONO_HOME !== undefined
 if (isMonorepo) {
   console.log('monorepo mode', process.env.KUI_MONO_HOME)
@@ -114,12 +124,16 @@ plugins.push({
 
         const overrides = {
           build: { writeConfig: false },
-          theme: {
-            // this should match clients/default/theme.json, with unsafe-eval added to script-src for webpack-dev-server
-            contentSecurityPolicy: `default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
-              .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 ws://localhost:8081 ws://localhost:9080'}`
-          },
           env: { main, hash, resourceRoot: '.' }
+        }
+
+        if (contentSecurityPolicyForDevServer) {
+          overrides.theme = {
+            // only override the CSP when running webpack-dev-server;
+            // otherwise, we will inherit the settings from theme.json
+            // https://github.com/IBM/kui/pull/2395
+            contentSecurityPolicy: contentSecurityPolicyForDevServer
+          }
         }
 
         if (isWatching) {
