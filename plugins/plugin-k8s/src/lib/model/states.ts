@@ -205,10 +205,13 @@ const getStatusFromConditions = (response: KubeResource) => {
       // sort conditions by their lastTransitionTime
       let swap = -(new Date(highIndex.lastTransitionTime).getTime() - new Date(lowIndex.lastTransitionTime).getTime())
       // for conditions with the same lastTransitionTime and status, sort them by type
-      if (swap === 0 && highIndex.status === lowIndex.status) {
+
+      if (swap === 0) {
         // for conitions with the same status, put the one with Not-Pending-Type at lower index
         if (!isPendingLike(highIndex.type) && isPendingLike(lowIndex.type)) {
           swap = -1 // swap the condition from high index to lower index
+        } else if (isPendingLike(highIndex.type) && !isPendingLike(lowIndex.type)) {
+          swap = 1
         }
       }
 
