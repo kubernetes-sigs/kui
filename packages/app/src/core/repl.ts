@@ -113,7 +113,7 @@ export const init = (prefs = {}) => {
 }
 
 const patterns = {
-  commentLine: /\s*#.*$/,
+  commentLine: /\s+#.*$/,
   dash: /-([^\s]*)/,
   whitespace: /\s/
 }

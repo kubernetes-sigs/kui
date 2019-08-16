@@ -35,6 +35,15 @@ describe('About command', function(this: ISuite) {
       .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
       .catch(oops(this, true)))
 
+  it('should open the about window via command execution with comment', () =>
+    cli
+      .do('about #About Kui', this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(settings.productName))
+      .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .catch(oops(this, true)))
+
   it('should open the about via button click', async () => {
     try {
       await this.app.client.refresh()

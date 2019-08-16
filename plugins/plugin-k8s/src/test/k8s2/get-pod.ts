@@ -66,10 +66,56 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
     const inNamespace = `-n ${ns}`
     allocateNS(this, ns)
 
-    it('should error out when getting non-existant pod', () => {
-      const noName = 'thisShouldNotExist'
-      return cli.do(`${kubectl} get pod ${noName}`, this.app).then(cli.expectError(404))
+    /** error handling starts */
+    it('should error out when getting non-existent pod', () => {
+      const noName = 'shouldNotExist'
+      return cli
+        .do(`${kubectl} get pod ${noName}`, this.app)
+        .then(cli.expectError(404, `Error from server (NotFound): pods "${noName}" not found`))
+        .catch(common.oops(this))
     })
+
+    it('should error out when getting non-existent pod, with incorrect comment space', () => {
+      const noName = 'shouldNotExist#comment'
+      return cli
+        .do(`${kubectl} get pod ${noName}`, this.app)
+        .then(cli.expectError(404, `Error from server (NotFound): pods "${noName}" not found`))
+        .catch(common.oops(this))
+    })
+
+    it('should error out when getting non-existent pod, with correct comment', () => {
+      const noName = 'shouldNotExist'
+      return cli
+        .do(`${kubectl} get pod ${noName} #comment`, this.app)
+        .then(cli.expectError(404, `Error from server (NotFound): pods "${noName}" not found`))
+        .catch(common.oops(this))
+    })
+
+    /**
+     * NOTE [myan 20190816]: In the test case below, The error message is different based on kube version
+     * With version 1.12, the output is 'Error from server (NotFound): pods "shouldNotExist1" not found' only.
+     * With higher versions e.g. 1.14, the output is:
+     *  'Error from server (NotFound): pods "shouldNotExist1" not found
+     *   Error from server (NotFound): pods "shouldNotExist2" not found'
+     *
+     * TODO: We should test against different kube version
+     */
+    it('should error out when getting 2 non-existent pods', () => {
+      const noName1 = 'shouldNotExist1'
+      const noName2 = 'shouldNotExist2'
+      return cli
+        .do(`${kubectl} get pod ${noName1} ${noName2}`, this.app)
+        .then(cli.expectError(404))
+        .catch(common.oops(this))
+    })
+
+    it('should error out when getting pods with incorrect comments', () => {
+      return cli
+        .do(`${kubectl} get pod# comment #comment`, this.app)
+        .then(cli.expectError(404, 'error: the server doesn\'t have a resource type "pod#"'))
+        .catch(common.oops(this))
+    })
+    /** error handling ends */
 
     /** TODO: enabe the following test once we have sidecar table poller ready
     // do this a few times, as we might get lucky and have the
