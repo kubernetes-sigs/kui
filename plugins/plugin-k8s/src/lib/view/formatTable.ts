@@ -33,6 +33,7 @@ const outerCSSForKey = {
   NAME: 'entity-name-group',
   READY: 'a-few-numbers-wide',
   KIND: 'max-width-id-like entity-kind',
+  NAMESPACE: 'entity-name-group hide-with-sidecar not-a-name', // kubectl get pods --all-namespaces
 
   CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
   AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
