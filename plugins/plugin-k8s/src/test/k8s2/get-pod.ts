@@ -40,7 +40,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
      *
      */
     const testContainersTab = async (fast = false) => {
-      this.app.client.click(selectors.SIDECAR_MODE_BUTTON('containers'))
+      await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('containers'))
 
       const table = `${selectors.SIDECAR} [k8s-table="Containers"]`
       await this.app.client.waitForExist(table)
@@ -89,7 +89,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
           await waitForGreen(this.app, selector)
           await this.app.client.waitForExist(`${selector} .clickable`)
-          this.app.client.click(`${selector} .clickable`)
+          await this.app.client.click(`${selector} .clickable`)
           await sidecar
             .expectOpen(this.app)
             .then(sidecar.expectMode(defaultModeForGet))
@@ -126,7 +126,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
         await waitForGreen(this.app, selector)
         await this.app.client.waitForExist(`${selector} .clickable`)
-        this.app.client.click(`${selector} .clickable`)
+        await this.app.client.click(`${selector} .clickable`)
         await sidecar
           .expectOpen(this.app)
           .then(sidecar.expectMode(defaultModeForGet))
@@ -170,7 +170,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         await waitForGreen(this.app, selector)
 
         // now click on the table row
-        this.app.client.click(`${selector} .clickable`)
+        await this.app.client.click(`${selector} .clickable`)
         await sidecar
           .expectOpen(this.app)
           .then(sidecar.expectMode(defaultModeForGet))
@@ -182,7 +182,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
     it(`should click on status sidecar tab and show status table`, async () => {
       try {
-        this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
+        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
 
         const table = `${selectors.SIDECAR} [k8s-table="Pod"]`
         await this.app.client.waitForExist(table)
@@ -198,7 +198,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
     it('should click on the sidecar maximize button', async () => {
       try {
-        this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
+        await this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
         await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
       } catch (err) {
         common.oops(this)(err)
@@ -206,7 +206,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
     })
 
     it(`should click on conditions sidecar tab and show conditions table`, async () => {
-      this.app.client.click(selectors.SIDECAR_MODE_BUTTON('conditions'))
+      await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('conditions'))
 
       const table = `${selectors.SIDECAR} [k8s-table="Conditions"]`
       await this.app.client.waitForExist(table)
@@ -233,8 +233,8 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
     it('should click on the sidecar maximize button to restore split screen', async () => {
       try {
-        this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
-        await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN, 5000, true)
+        await this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
+        await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN, 20000, true)
       } catch (err) {
         common.oops(this)(err)
       }

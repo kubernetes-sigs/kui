@@ -26,8 +26,8 @@ import { execSync } from 'child_process'
 const runTheTests = process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true'
 const pit = runTheTests ? it : xit
 
-/** the proxy should come back online within 10 seconds; add a few seconds of slop */
-const timeItTakesForProxyToComeBack = 15000
+/** the proxy should come back online within 10 seconds; add some slop */
+const timeItTakesForProxyToComeBack = 30000
 
 describe('pty session status offline after start', function(this: ISuite) {
   before(commonBefore(this))

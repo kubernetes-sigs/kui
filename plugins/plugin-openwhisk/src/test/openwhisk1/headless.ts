@@ -23,15 +23,20 @@ import { cli } from '@kui-shell/core/tests/lib/headless'
 
 import { dirname, join } from 'path'
 
-const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
+
+function odescribe(name: string, suite: (this: common.ISuite) => void) {
+  if ((!process.env.TRAVIS_JOB_ID || process.env.NEEDS_OPENWHISK) && process.env.MOCHA_RUN_TARGET !== 'webpack') {
+    describe(name, suite)
+  }
+}
 
 export const {
   version: expectedVersion
   // eslint-disable-next-line @typescript-eslint/no-var-requires
 } = require('@kui-shell/settings/package.json')
 
-localDescribe('Headless mode', function(this: common.ISuite) {
+odescribe('openwhisk headless mode', function(this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
   // intentional typo with "actiono"

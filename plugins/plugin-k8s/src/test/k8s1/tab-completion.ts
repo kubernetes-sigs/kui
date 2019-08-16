@@ -23,7 +23,7 @@ import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 const synonyms = ['kubectl']
 
-describe('Tab completion for kubectl get', function(this: ISuite) {
+describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
@@ -60,7 +60,7 @@ describe('Tab completion for kubectl get', function(this: ISuite) {
         )
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
-        .catch(oops(this))
+        .catch(oops(this, true))
     })
 
     it(`should create tab-completion pod via ${kubectl}`, async () => {
@@ -72,7 +72,7 @@ describe('Tab completion for kubectl get', function(this: ISuite) {
           })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(oops(this))
+        .catch(oops(this, true))
     })
 
     it(`should create tab-completion2 pod via ${kubectl}`, async () => {
@@ -84,7 +84,7 @@ describe('Tab completion for kubectl get', function(this: ISuite) {
           })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(oops(this))
+        .catch(oops(this, true))
     })
 
     it(`should tab complete pods`, () => {

@@ -56,7 +56,7 @@ describe('electron create hpa HorizontalPodAutoscaler', function(this: common.IS
         await waitForGreen(this.app, selector)
 
         // now click on the table row
-        this.app.client.click(`${selector} .clickable`)
+        await this.app.client.click(`${selector} .clickable`)
         await sidecar
           .expectOpen(this.app)
           .then(sidecar.expectMode(defaultModeForGet))

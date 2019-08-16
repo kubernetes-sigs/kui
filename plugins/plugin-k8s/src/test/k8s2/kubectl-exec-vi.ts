@@ -62,9 +62,14 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it(`should use kubectl exec vi through pty`, async () => {
     try {
-      const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vi ${filename}`, this.app)
+      const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vim ${filename}`, this.app)
 
       const rows = selectors.xtermRows(res.count)
+      const lastRowSelector = `${rows} > div:last-child`
+
+      const lastRow = async (): Promise<string> => {
+        return this.app.client.getText(lastRowSelector)
+      }
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows)
@@ -72,30 +77,29 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       // wait for vi to come up in alt buffer mode
       await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
-      const lastRow = async (): Promise<string> => {
-        const text = await this.app.client.getText(`${rows} > div:not(.xterm-hidden-row)`)
-        return text[text.length - 1]
-      }
-
-      // wait for the filename to show up in the pty
-      await this.app.client.waitUntil(async () => {
-        const txt = await getTextContent(this.app, rows)
-        return txt.indexOf(filename) >= 0
-      })
-
       // enter insert mode, and wait for INSERT to appear at the bottom
+      let iter = 0
       await this.app.client.keys('i')
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow()
-        return txt && /^I/i.test(txt)
+        if (++iter > 5) {
+          console.error('kubectl exec vi still waiting for Insert mode', txt)
+        }
+        return /INSERT/i.test(txt)
       })
 
       // type our input
       await typeSlowly(this.app, typeThisText)
+
+      // exit vi input mode
+      iter = 0
       await this.app.client.keys(keys.ESCAPE)
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow()
-        return txt && !/^I/i.test(txt)
+        if (++iter > 5) {
+          console.error('kubectl exec vi still waiting to exit insert mode', txt)
+        }
+        return !/INSERT/i.test(txt)
       })
 
       await typeSlowly(this.app, `:wq${keys.ENTER}`)
@@ -110,7 +114,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     return cli
       .do(`kubectl exec ${podName} -n ${ns} -- cat ${filename}`, this.app)
       .then(cli.expectOKWithString(typeThisText))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   deleteNS(this, ns)

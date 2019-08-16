@@ -92,6 +92,7 @@ const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
 const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nClicks = 1) => {
   it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
+      await ctx.app.client.waitForVisible('#help-button')
       await ctx.app.client.click('#help-button')
       await ctx.app.client.waitForVisible(selectors.SIDECAR)
       await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('configure'))
@@ -125,7 +126,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nCl
         }
       }
     } catch (err) {
-      oops(ctx)(err)
+      await oops(ctx, true)(err)
     }
   })
 

@@ -26,6 +26,12 @@ import * as ui from '@kui-shell/core/tests/lib/ui'
 import { cli } from '@kui-shell/core/tests/lib/headless'
 const debug = Debug('plugins/apache-composer/tests/headless')
 
+function odescribe(name: string, suite: (this: common.ISuite) => void) {
+  if (process.env.NEEDS_OPENWHISK) {
+    describe(name, suite)
+  }
+}
+
 interface Response {
   code: number
   output: {}
@@ -275,10 +281,10 @@ class Validation {
   }
 }
 
-describe('Composer Headless Test', function(this: common.ISuite) {
+odescribe('Composer Headless Test', function(this: common.ISuite) {
   before(openwhisk.before(this, { noApp: true }))
 
-  describe('should create simple composition from @demos', function(this: common.ISuite) {
+  odescribe('should create simple composition from @demos', function(this: common.ISuite) {
     it('app create test1 @demos/hello.js', () =>
       cli
         .do('app create test1 @demos/hello.js')
@@ -292,7 +298,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     })
   })
 
-  describe('app list options', function(this: common.ISuite) {
+  odescribe('app list options', function(this: common.ISuite) {
     it('should get empty result by app list --limit 0', () =>
       cli
         .do('app list --limit 0')
@@ -318,7 +324,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
         .catch(common.oops(this)))
   })
 
-  describe('should create composition with package', function(this: common.ISuite) {
+  odescribe('should create composition with package', function(this: common.ISuite) {
     it('should fail with 404 when creating composition with non-existing package', () =>
       cli
         .do('app create testing/subtest1 @demos/hello.js')
@@ -351,7 +357,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
   })
 
   if (ui.expectedNamespace()) {
-    describe('should create composition with namespace', function(this: common.ISuite) {
+    odescribe('should create composition with namespace', function(this: common.ISuite) {
       it('should create package first', () =>
         cli
           .do('wsk package update testing')
@@ -374,7 +380,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     })
   }
 
-  describe('should fail when creating composition from non-exisiting file', function(this: common.ISuite) {
+  odescribe('should fail when creating composition from non-exisiting file', function(this: common.ISuite) {
     it('fails app create error error.js', () =>
       cli
         .do('app create error error.js')
@@ -382,7 +388,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
         .catch(common.oops(this)))
   })
 
-  describe('should create compostion and dependent actions with implicity entity', function(this: common.ISuite) {
+  odescribe('should create compostion and dependent actions with implicity entity', function(this: common.ISuite) {
     it('validate app create test2 @demos/if.js', () =>
       cli
         .do('app create test2 @demos/if.js')
@@ -396,7 +402,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
         .catch(common.oops(this)))
   })
 
-  describe('should update simple composition', function(this: common.ISuite) {
+  odescribe('should update simple composition', function(this: common.ISuite) {
     it('validate app update test1 @demos/let.js', () =>
       cli
         .do('app update test1 @demos/let.js')
@@ -405,7 +411,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     new Validation(this).do({ name: 'test1', output: { ok: true } })
   })
 
-  describe('should update simple composition with packageName', function(this: common.ISuite) {
+  odescribe('should update simple composition with packageName', function(this: common.ISuite) {
     it('validate app update testing/subtest1 @demos/let.js', () =>
       cli
         .do('app update testing/subtest1 @demos/let.js')
@@ -423,7 +429,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
   })
 
   if (ui.expectedNamespace()) {
-    describe('should update simple composition with namespace', function(this: common.ISuite) {
+    odescribe('should update simple composition with namespace', function(this: common.ISuite) {
       it('should create package first', () =>
         cli
           .do('wsk package update testing')
@@ -444,7 +450,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     })
   }
 
-  describe('should fail when updating with non-existing path', function(this: common.ISuite) {
+  odescribe('should fail when updating with non-existing path', function(this: common.ISuite) {
     it('should fail when updating with non-existing path', () =>
       cli
         .do('app update test2 @demos/dummy.js')
@@ -452,7 +458,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
         .catch(common.oops(this)))
   })
 
-  describe('should delete tests', function(this: common.ISuite) {
+  odescribe('should delete tests', function(this: common.ISuite) {
     it('validate app delete test1', () =>
       cli
         .do('app delete test1')
@@ -480,7 +486,7 @@ describe('Composer Headless Test', function(this: common.ISuite) {
     }
   })
 
-  describe('error handling with non-exisiting composition', function(this: common.ISuite) {
+  odescribe('error handling with non-exisiting composition', function(this: common.ISuite) {
     it('should 404 when invoking deleted composition', () =>
       cli
         .do('app invoke test2')

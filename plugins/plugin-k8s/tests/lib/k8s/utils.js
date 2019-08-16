@@ -62,7 +62,7 @@ exports.waitForRed = async (app, selector) => {
   const yellowNotBlinkyBadge = `${selector} ${notRepeatingPulse} badge.yellow-background`
   const yellowBadge = `${selector} badge.yellow-background`
 
-  // the green badge should disapper, wait for 5 seconds at max
+  // the green badge should disappear, wait for 5 seconds at max
   try {
     await app.client.waitForExist(badge.replace('red', 'green'), 5000, true)
   } catch (err) {
@@ -94,7 +94,7 @@ exports.allocateNS = (ctx, ns, theCli = cli) => {
       .do(`kubectl create namespace ${ns}`, ctx.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
       .then(selector => exports.waitForGreen(ctx.app, selector))
-      .catch(common.oops(ctx))
+      .catch(common.oops(ctx, true))
   })
 }
 
@@ -106,7 +106,7 @@ exports.deleteNS = (ctx, ns, theCli = cli) => {
         .do(`kubectl delete namespace ${ns}`, ctx.app)
         .then(cli.expectOKWithCustom({ selector: ui.selectors.BY_NAME(ns) }))
         .then(selector => exports.waitForRed(ctx.app, selector))
-        .catch(common.oops(ctx))
+        .catch(common.oops(ctx, true))
     })
   }
 }

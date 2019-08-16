@@ -73,7 +73,7 @@ const createAndDeletePod = function(this: common.ISuite, kubectl: string, ns: st
       await this.app.client.waitForExist(selector2)
       await this.app.client.waitForExist(selector3)
     } catch (err) {
-      common.oops(this)(err)
+      await common.oops(this, true)(err)
     }
   })
 }
@@ -111,7 +111,7 @@ const watchPods = function(this: common.ISuite, kubectl: string, ns: string) {
       // and, conversely, that watch had better NOT show Offline
       await this.app.client.waitForExist(selector2ButOffline, 20000, true)
     } catch (err) {
-      common.oops(this)(err)
+      await common.oops(this, true)(err)
     }
   })
 }
@@ -129,7 +129,7 @@ const checkWatchableJobs = function(
         const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
         await waitForOnline(await cli.do(`${kubectl} get pods -w -n ${ns}`, this.app))
       } catch (err) {
-        common.oops(this)(err)
+        await common.oops(this, true)(err)
       }
     })
   }
@@ -156,14 +156,14 @@ const checkWatchableJobs = function(
         }
       }
     } catch (err) {
-      common.oops(this)(err)
+      await common.oops(this, true)(err)
     }
   })
 }
 
 const synonyms = ['k']
 
-describe(`electron watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -195,12 +195,13 @@ describe(`electron watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: co
         .do('tab new', this.app)
         .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
         .then(() => cli.waitForRepl(this.app)) // should have an active repl
-        .catch(common.oops(this)))
+        .catch(common.oops(this, true)))
 
     // undefined means that the new tab shouldn't have jobs even initialized
     checkJob(undefined, false)
 
-    it(`should switch back to first tab via command`, () => cli.do('tab switch 1', this.app).catch(common.oops(this)))
+    it(`should switch back to first tab via command`, () =>
+      cli.do('tab switch 1', this.app).catch(common.oops(this, true)))
 
     // the original tab should still have 2 jobs running
     checkJob(2, false)
@@ -209,11 +210,11 @@ describe(`electron watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: co
       cli
         .do('tab close', this.app)
         .then(() =>
-          this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 5000, true)
+          this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 20000, true)
         )
         .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
         .then(() => cli.waitForRepl(this.app)) // should have an active repl
-        .catch(common.oops(this)))
+        .catch(common.oops(this, true)))
 
     // undefined means that the current tab shouldn't have jobs even initialized
     checkJob(undefined, false)

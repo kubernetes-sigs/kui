@@ -71,7 +71,7 @@ describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fu
           await this.app.client.waitForExist(`${selector} .clickable [data-key="NAME"]`)
 
           // now click on that cell
-          this.app.client.click(`${selector} .clickable`)
+          await this.app.client.click(`${selector} .clickable`)
           await sidecar
             .expectOpen(this.app)
             .then(sidecar.expectMode(defaultModeForGet))

@@ -83,8 +83,11 @@ export default async (commandTree: CommandRegistrar) => {
 
             setTimeout(() => {
               document.body.removeChild(modal)
-              getCurrentPrompt(tab).readOnly = false
-              getCurrentPrompt(tab).focus()
+              const prompt = getCurrentPrompt(tab)
+              if (prompt) {
+                prompt.readOnly = false
+                prompt.focus()
+              }
             }, 0)
 
             if (success) {

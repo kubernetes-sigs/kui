@@ -35,7 +35,7 @@ common.localDescribe(`edit helm template ${process.env.MOCHA_RUN_TARGET}`, funct
   })
 
   it('should close sidecar', async () => {
-    this.app.client.click(selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+    await this.app.client.click(selectors.SIDECAR_FULLY_CLOSE_BUTTON)
     await sidecar.expectFullyClosed(this.app)
   })
 

@@ -28,32 +28,32 @@ const doTests = (ctx: common.ISuite, impl: CLI) => {
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
 
-  it(`should create a namespace ${ns} `, () => {
+  xit(`should create a namespace ${ns} `, () => {
     return kui
       .do(`kubectl create namespace ${ns}`, ctx.app)
       .then(kui.expectOK(`namespace/${ns} created`))
-      .catch(common.oops(ctx))
+      .catch(common.oops(ctx, true))
   })
 
-  it('should create sample pod from local file', () => {
+  xit('should create sample pod from local file', () => {
     return kui
       .do(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
       .then(kui.expectOK('nginx'))
-      .catch(common.oops(ctx))
+      .catch(common.oops(ctx, true))
   })
 
-  it('should list the new pod in electron', () => {
+  xit('should list the new pod in electron', () => {
     return impl
       .do(`kubectl get pods ${inNamespace} --ui`, ctx.app)
       .then(impl.expectOK('nginx'))
-      .catch(common.oops(ctx))
+      .catch(common.oops(ctx, true))
   })
 
-  it(`should delete the namespace ${ns} `, () => {
+  xit(`should delete the namespace ${ns} `, () => {
     return kui
       .do(`kubectl delete namespace ${ns}`, ctx.app)
       .then(kui.expectOK(`namespace "${ns}" deleted`)) // TODO: weird: why create and delte has different output
-      .catch(common.oops(ctx))
+      .catch(common.oops(ctx, true))
   })
 }
 

@@ -40,7 +40,6 @@ env:
       NEEDS_KUBERNETES=true
       NEEDS_HELM=true
       NEEDS_HEADLESS=true
-      NEEDS_OPENWHISK=true
       TIMEOUT=100000
 
   global:
@@ -78,7 +77,7 @@ matrix:
     - os: osx
       env: LAYERS="openwhisk2 openwhisk4 composer1 composer2" MOCHA_TARGETS="electron" NEEDS_OPENWHISK=true NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_NODEJS8=true NEEDS_OPENWHISK_JAVA8=true NEEDS_SECOND_OPENWHISK_AUTH=true
     - os: osx
-      env: WAIT_LAYERS="k8s" LAYERS="HEADLESS k8s1 k8s2" KUI_USE_PROXY=true MOCHA_TARGETS="webpack electron" NEEDS_KUBERNETES=true NEEDS_HELM=true NEEDS_HEADLESS=true NEEDS_OPENWHISK=true TIMEOUT=100000
+      env: WAIT_LAYERS="k8s" LAYERS="HEADLESS k8s1 k8s2" KUI_USE_PROXY=true MOCHA_TARGETS="webpack electron" NEEDS_KUBERNETES=true NEEDS_HELM=true NEEDS_HEADLESS=true TIMEOUT=100000
 
 install: ./tools/travis/test/install.sh
 script: ./tools/travis/test/script.sh

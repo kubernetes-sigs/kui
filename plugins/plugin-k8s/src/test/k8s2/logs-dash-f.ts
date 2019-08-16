@@ -35,6 +35,11 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-exec.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
+/** The number of seconds to sleep while we wait for more log entries
+ * to accumulate. Making this value larger will provide more test
+ * stability, but also increase test time. */
+const sleepTime = 8
+
 function getTextContent(app: Application, selector) {
   return app.client.getText(selector)
 }
@@ -57,7 +62,7 @@ describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET}`, function(this: c
     return cli
       .do(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
       .then(cli.expectOKWithString(podName))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   it(`should wait for the pod to come up`, () => {
@@ -65,44 +70,48 @@ describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET}`, function(this: c
       .do(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) }))
       .then(selector => waitForGreen(this.app, selector))
-      .catch(common.oops(this))
+      .catch(common.oops(this, true))
   })
 
   it(`should follow the logs`, async () => {
-    const res = await cli.do(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app)
+    try {
+      const res = await cli.do(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app)
 
-    const rows = selectors.xtermRows(res.count)
+      const rows = selectors.xtermRows(res.count)
 
-    await sleep(4)
-    const text1 = await getTextContent(this.app, rows)
-    const nRows1 = text1.split(/\n/).length
-    console.log('nRows1', nRows1)
+      await sleep(sleepTime)
+      const text1 = await getTextContent(this.app, rows)
+      const nRows1 = text1.split(/\n/).length
+      console.log('nRows1', nRows1)
 
-    await sleep(4)
-    const text2 = await getTextContent(this.app, rows)
-    const nRows2 = text2.split(/\n/).length
-    console.log('nRows2', nRows2)
-    assert.ok(nRows2 > nRows1, `${nRows2} is not > ${nRows1}`)
+      await sleep(sleepTime)
+      const text2 = await getTextContent(this.app, rows)
+      const nRows2 = text2.split(/\n/).length
+      console.log('nRows2', nRows2)
+      assert.ok(nRows2 > nRows1, `${nRows2} is not > ${nRows1}`)
 
-    await sleep(4)
-    const text3 = await getTextContent(this.app, rows)
-    const nRows3 = text3.split(/\n/).length
-    console.log('nRows3', nRows3)
-    assert.ok(nRows3 > nRows2, `${nRows3} is not > ${nRows2}`)
+      await sleep(sleepTime)
+      const text3 = await getTextContent(this.app, rows)
+      const nRows3 = text3.split(/\n/).length
+      console.log('nRows3', nRows3)
+      assert.ok(nRows3 > nRows2, `${nRows3} is not > ${nRows2}`)
 
-    await this.app.client.click(rows)
-    await this.app.client.keys(ctrlC)
+      await this.app.client.click(rows)
+      await this.app.client.keys(ctrlC)
 
-    await sleep(4)
-    const text4 = await getTextContent(this.app, rows)
-    const nRows4 = text4.split(/\n/).length
-    console.log('nRows4', nRows4)
+      await sleep(sleepTime)
+      const text4 = await getTextContent(this.app, rows)
+      const nRows4 = text4.split(/\n/).length
+      console.log('nRows4', nRows4)
 
-    await sleep(4)
-    const text5 = await getTextContent(this.app, rows)
-    const nRows5 = text5.split(/\n/).length
-    console.log('nRows5', nRows5)
-    assert.strictEqual(nRows5, nRows4)
+      await sleep(sleepTime)
+      const text5 = await getTextContent(this.app, rows)
+      const nRows5 = text5.split(/\n/).length
+      console.log('nRows5', nRows5)
+      assert.strictEqual(nRows5, nRows4)
+    } catch (err) {
+      await common.oops(this, true)(err)
+    }
   })
 
   deleteNS(this, ns)
