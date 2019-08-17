@@ -824,6 +824,18 @@ export const doExec = (
           }
         }
 
+        const onFirstMessage = () => {
+          const queuedInput = disableInputQueueing()
+          if (queuedInput.length > 0) {
+            debug('queued input up front', queuedInput)
+            setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
+          }
+
+          // now that we've grabbed queued input, focus on the terminal,
+          // and it will handle input for now until the process exits
+          focus()
+        }
+
         const onMessage = async (data: string) => {
           const msg = JSON.parse(data)
 
@@ -832,17 +844,13 @@ export const doExec = (
           }
 
           if (msg.type === 'state' && msg.state === 'ready') {
-            const queuedInput = disableInputQueueing()
-            if (queuedInput.length > 0) {
-              debug('queued input up front', queuedInput)
-              setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
-            }
-
-            // now that we've grabbed queued input, focus on the terminal,
-            // and it will handle input for now until the process exits
-            focus()
+            onFirstMessage()
           } else if (msg.type === 'data') {
             // plain old data flowing out of the PTY; send it on to the xterm UI
+
+            if (!alreadyFocused) {
+              onFirstMessage()
+            }
 
             const flush = () => {
               if (pendingTable) {
