@@ -35,8 +35,6 @@ body[kui-theme="IBM Light"] {
   --color-ui-05: #171717;
   --color-text-02: #565656;
 
-  --color-sidecar-toolbar-foreground: var(--color-text-01);
-
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);
 
@@ -55,6 +53,8 @@ body[kui-theme="IBM Light"] {
   --color-screenshot-background: #0062ff;
 
   --color-stripe-01: #f5f7fa;
+  --tab-gray-text-color: #5a6872;
+  --active-tab-color: #3d70b2;
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);
