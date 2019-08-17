@@ -16,7 +16,7 @@
 
 import * as assert from 'assert'
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
 
@@ -28,7 +28,7 @@ const expectConsoleToBeClear = ({ app }) => {
   })
 }
 
-describe(`Clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
+describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
@@ -55,7 +55,7 @@ describe(`Clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         return cli.expectOKWithString(enteredString)(res)
       }
     } catch (err) {
-      oops(this)(err)
+      await oops(this, true)(err)
     }
   }
   const enteredString = 'does this work?'
@@ -85,7 +85,7 @@ describe(`Clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     cli
       .do('clear', this.app)
       .then(expectConsoleToBeClear)
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   // get something on the screen
   it(`should sleep again`, () => cli.do('sleep 1', this.app).catch(oops(this, true)))
@@ -100,27 +100,26 @@ describe(`Clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       })
       .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
       .then(text => assert.strictEqual(text, JUNK))
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   // hit enter, and expect that JUNK to fail
   it(`should fail with command not found`, () => {
     return cli
       .do('nope', this.app)
       .then(cli.expectError(404))
-      .catch(oops(this))
+      .catch(oops(this, true))
   })
 
   // get something on the screen
   it(`should sleep yet again`, () => cli.do('sleep 1', this.app).catch(oops(this, true)))
 
   // FIXME prompt does not work in webpack+proxy
-  localIt('should clear properly despite existing prompt', () =>
+  it('should clear properly despite existing prompt', () =>
     cli
       .do('prompt', this.app) // wipe will change the placeholder text
       .then(async () => {
         await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
         return expectConsoleToBeClear({ app: this.app })
       })
-      .catch(oops(this))
-  )
+      .catch(oops(this, true)))
 })

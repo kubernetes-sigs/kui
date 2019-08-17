@@ -35,7 +35,7 @@ console.log('webpack poll interval', pollInterval)
 const contentSecurityPolicyForDevServer =
   process.env.WEBPACK_DEV_SERVER &&
   `default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
-    .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 ws://localhost:8081 ws://localhost:9080'}`
+    .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 http://localhost:9953 ws://localhost:8081 ws://localhost:9080'}`
 if (contentSecurityPolicyForDevServer) {
   console.log('ContentSecurityPolicy: dev-server')
 } else {
