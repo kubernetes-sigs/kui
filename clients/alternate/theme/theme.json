@@ -17,7 +17,10 @@
   "userAgent": "Kui-Shell",
   "gettingStarted": "getting started",
   "defaultTheme": "IBM Light",
-  "themes": [{ "name": "IBM Light", "css": "themes/carbon-gray10.css", "style": "light" }],
+  "themes": [
+    { "name": "IBM Light", "css": "themes/carbon-gray10.css", "style": "light" },
+    { "name": "IBM Dark", "css": "themes/carbon-gray90.css", "style": "dark" }
+  ],
   "css": [
     "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,500,700&display=swap"
   ],

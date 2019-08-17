@@ -2886,9 +2886,6 @@ badge.clickable:not(.badge-as-fontawesome):hover {
   background: var(--color-stripe-02);
   transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
 }
-body[kui-theme-style="dark"] .sidecar-bottom-stripe {
-  color: var(--color-text-01);
-}
 .sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
   border-right: 1px solid var(--color-table-border1);
 }
