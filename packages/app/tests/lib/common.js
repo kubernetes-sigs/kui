@@ -46,6 +46,33 @@ exports.rp = opts => {
 }
 
 /**
+ * Wait, if needed, for a proxy session
+ *
+ */
+function waitForSession(ctx, noProxySessionWait = false) {
+  if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
+    // wait for the proxy session to be established
+    try {
+      return ctx.app.client.waitForExist(`${ui.selectors.CURRENT_TAB}.kui--session-init-done`)
+    } catch (err) {
+      throw new Error('error waiting for proxy session init')
+    }
+  }
+}
+
+/** reload the app */
+exports.refresh = async ctx => {
+  await ctx.app.client.refresh()
+  return waitForSession(ctx)
+}
+
+/** restart the app */
+exports.restart = async ctx => {
+  await ctx.app.restart()
+  return waitForSession(ctx)
+}
+
+/**
  * Get the electron parts set up, and return an Application
  * instance. Note that this won't actually start the electron process,
  * which can subsequently be done by calling `start()` on the return
@@ -150,14 +177,7 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
     await start()
     ctx.timeout(process.env.TIMEOUT || 60000)
 
-    if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
-      // wait for the proxy session to be established
-      try {
-        await ctx.app.client.waitForExist(`${ui.selectors.CURRENT_TAB}.kui--session-init-done`)
-      } catch (err) {
-        throw new Error('error waiting for proxy session init')
-      }
-    }
+    await waitForSession(ctx, noProxySessionWait)
 
     if (afterStart) {
       await afterStart()

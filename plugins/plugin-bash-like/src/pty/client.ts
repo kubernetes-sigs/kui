@@ -575,7 +575,7 @@ export const doExec = (
       parsedOptions.output ||
       parsedOptions.out ||
       (argvNoOptions[0] === 'cat' && /json$/.test(argvNoOptions[1]) && 'json') ||
-      (argvNoOptions[0] === 'cat' && /yaml$/.test(argvNoOptions[1]) && 'yaml')
+      (argvNoOptions[0] === 'cat' && (/yaml$/.test(argvNoOptions[1]) || /yml$/.test(argvNoOptions[1])) && 'yaml')
     const expectingSemiStructuredOutput = /yaml|json/.test(contentType)
 
     const injectingCSS = !alreadyInjectedCSS
