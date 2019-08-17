@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, refresh } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import { theme as settings } from '@kui-shell/core/core/settings'
 
 const { cli, sidecar } = ui
 
-describe('About command', function(this: ISuite) {
+describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
@@ -46,7 +44,7 @@ describe('About command', function(this: ISuite) {
 
   it('should open the about via button click', async () => {
     try {
-      await this.app.client.refresh()
+      await refresh(this)
       await this.app.client.waitForVisible('#help-button')
 
       await cli.do('sleep 1', this.app).then(cli.expectBlank)
@@ -60,8 +58,8 @@ describe('About command', function(this: ISuite) {
     }
   })
 
-  it('should open the getting started via button click', async () => {
-    await this.app.client.refresh()
+  it('should open the getting started via command execution', async () => {
+    await refresh(this)
 
     return cli
       .do('getting started', this.app)

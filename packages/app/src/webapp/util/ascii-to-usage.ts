@@ -20,9 +20,9 @@ import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'
 const debug = Debug('core/webapp/util/ascii-to-usage')
 
-const sectionHeader = /([A-Za-z ]+):\s*$/
-const splitter = /[\n\r]([A-Za-z ]+:\s*[\n\r])/
-const matcher = /[\n\r]([A-Za-z ]+:\s[\n\r])\s+\w+/
+const sectionHeader = /^[^#%]([A-Za-z ]+):\s*$/
+const splitter = /[\n\r]^[^#%]([A-Za-z ]+:\s*[\n\r])/
+const matcher = /[\n\r]^[^#%]([A-Za-z ]+:\s[\n\r])\s+\w+/
 const doubleNewline = /(\n\n)|(\r\r)|(\r\n\r\n)/
 
 interface Options {

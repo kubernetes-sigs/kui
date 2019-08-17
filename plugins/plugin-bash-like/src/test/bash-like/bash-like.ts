@@ -14,16 +14,57 @@
  * limitations under the License.
  */
 
+import { v4 as uuid } from 'uuid'
+import { basename } from 'path'
+import { exec } from 'child_process'
+import { fileSync as tmpFile } from 'tmp'
+import { unlinkSync, rmdirSync, writeFileSync } from 'fs'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
-import { exec } from 'child_process'
-import { unlinkSync, rmdirSync } from 'fs'
-const { cli, selectors } = ui
-const { localDescribe } = common
+const { cli, selectors, sidecar } = ui
+const { localIt } = common
 
 /** expect the given folder within the help tree */
 export const header = (folder: string) => folder
+
+/** skip the tests if we aren't doing a webpack+proxy test run */
+const runTheTests = process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true'
+const pit = runTheTests ? it : xit
+
+const yamlContent = `#
+# notes:
+#   - hello
+#   - you
+#   - weird
+#   - world
+#
+# the rest of the file is unchanged from that origin:
+
+# This is a simple example of using a config map to create a single page static site.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "nginx.fullname" . }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "nginx.name" . }}
+data:
+  # When the config map is mounted as a volume, these will be created as files.
+  index.html: {{ .Values.index | quote }}
+  test.txt: test
+`
+const ymlFile = tmpFile({ postfix: '.yml' })
+writeFileSync(ymlFile.fd, yamlContent)
+const yamlFile = tmpFile({ postfix: '.yaml' })
+writeFileSync(yamlFile.fd, yamlContent)
+
+const jsonContent = JSON.stringify({ x: 3 })
+const jsonFile = tmpFile({ postfix: '.json' })
+writeFileSync(jsonFile.fd, jsonContent)
 
 /**
  * Check to see if the given executable is available
@@ -34,37 +75,65 @@ const hasExe = (exe: string): Promise<boolean> =>
     exec(exe, err => resolve(!err))
   })
 
-localDescribe('shell commands', function(this: common.ISuite) {
+describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it('should give 404 for unknown outer command', () =>
+  pit('should give 404 for unknown outer command', () =>
     cli
       .do(`ibmcloudo target`, this.app)
       .then(cli.expectError(404))
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
+
+  pit('should cat a json file', () =>
+    cli
+      .do(`cat ${jsonFile.name}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(basename(jsonFile.name)))
+      .catch(common.oops(this, true))
+  )
+  pit('should cat a yml file', () =>
+    cli
+      .do(`cat ${ymlFile.name}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(basename(ymlFile.name)))
+      .catch(common.oops(this, true))
+  )
+  pit('should cat a yaml file', () =>
+    cli
+      .do(`cat ${yamlFile.name}`, this.app)
+      .then(cli.expectJustOK)
+      .then(sidecar.expectOpen)
+      .then(sidecar.expectShowing(basename(yamlFile.name)))
+      .catch(common.oops(this, true))
+  )
 
   // these two are useful as a pair; git usage responds with exit code
   // 1, whereas ibmcloud responds with exit code 0
-  it('should give usage for git', () =>
+  pit('should give usage for git', () =>
     cli
       .do(`git`, this.app)
       .then(cli.expectError(1))
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 
   // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
   it.skip('should give usage for ibmcloud', () =>
     cli
       .do(`ibmcloud`, this.app)
       .then(cli.expectError(500, header('ibmcloud')))
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true)))
 
   if (!process.env.LOCAL_OPENWHISK) {
-    it('should give ok for known outer command: ibmcloud target', () =>
+    pit('should give ok for known outer command: ibmcloud target', () =>
       cli
         .do(`ibmcloud target`, this.app)
         .then(cli.expectOK)
-        .catch(common.oops(this)))
+        .catch(common.oops(this, true))
+    )
   }
 
   if (hasExe('ibmcloud')) {
@@ -73,7 +142,7 @@ localDescribe('shell commands', function(this: common.ISuite) {
       cli
         .do(`ibmcloud config`, this.app)
         .then(cli.expectError(2, undefined))
-        .catch(common.oops(this)))
+        .catch(common.oops(this, true)))
 
     // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
     it.skip('should give usage for ibmcloud app', () =>
@@ -91,105 +160,109 @@ localDescribe('shell commands', function(this: common.ISuite) {
             )
           ])
         )
-        .catch(common.oops(this)))
+        .catch(common.oops(this, true)))
   }
 
-  it('should answer which ls with /bin/ls', () =>
+  pit('should answer which ls with /bin/ls', () =>
     cli
       .do(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G
       .then(cli.expectOKWithCustom({ expect: '/bin/ls', exact: false }))
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 
-  it('should echo hi', () =>
+  pit('should echo hi', () =>
     cli
       .do(`echo hi`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'hi' }))
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 
-  it('should change working directory', () =>
+  pit('should change working directory', () =>
     cli
       .do(`cd bin`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 
-  it('should list core/', () =>
+  localIt('should list core/', () =>
     cli
       .do(`ls`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'runTest.sh' }))
-      .catch(common.oops(this)))
-
-  // clean up possible previous test leftovers
-  try {
-    unlinkSync('data/foo bar/testTmp')
-  } catch (err) {
-    // ok, we're just cleaning up from previous runs
-  }
-  try {
-    rmdirSync('data/foo bar/foo2 bar2')
-  } catch (err) {
-    // ok, we're just cleaning up from previous runs
-  }
-  try {
-    rmdirSync('data/foo bar')
-  } catch (err) {
-    // ok, we're just cleaning up from previous runs
-  }
+      .catch(common.oops(this, true))
+  )
 
   /* it('should list directory properly that contains prefix matches', () => cli.do(`ls @demos`, this.app)
     .then(cli.expectOKWithCustom({ expect: 'try-retain.js' }))
-    .catch(common.oops(this)))
+    .catch(common.oops(this, true)))
   it('should list directory properly that contains prefix matches', () => cli.do(`ls @demos`, this.app)
     .then(cli.expectOKWithCustom({ expect: 'retain.js' }))
-    .catch(common.oops(this)))
+    .catch(common.oops(this, true)))
   it('should list directory properly that contains prefix matches', () => cli.do(`ls @demos`, this.app)
     .then(cli.expectOKWithCustom({ expect: 'try.js' }))
-    .catch(common.oops(this))) */
+    .catch(common.oops(this, true))) */
 
-  it('should mkdir with spaces', () =>
+  pit('should cd to /tmp', () =>
     cli
-      .do(`mkdir "foo bar"`, this.app)
+      .do('cd /tmp', this.app)
+      .then(cli.expectOKWithString('/tmp'))
+      .catch(common.oops(this, true))
+  )
+
+  const dirname = `kui__${uuid()} bar`
+  pit('should mkdir with spaces', () =>
+    cli
+      .do(`mkdir "${dirname}"`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
-  it('should fail to mkdir again', () =>
+      .catch(common.oops(this, true))
+  )
+  pit('should fail to mkdir again', () =>
     cli
-      .do(`mkdir "foo bar"`, this.app)
+      .do(`mkdir "${dirname}"`, this.app)
       .then(cli.expectError(409))
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 
-  it('should echo ho to a file', () =>
+  pit('should echo ho to a file', () =>
     cli
-      .do(`echo ho > "foo bar"/testTmp`, this.app)
+      .do(`echo ho > "${dirname}"/testTmp`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
-  it('should cat that file', () =>
+      .catch(common.oops(this, true))
+  )
+  pit('should cat that file', () =>
     cli
-      .do(`cat "foo bar"/testTmp`, this.app)
+      .do(`cat "${dirname}"/testTmp`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'ho' }))
-      .catch(common.oops(this)))
-  it('should rm that file', () =>
+      .catch(common.oops(this, true))
+  )
+  pit('should rm that file', () =>
     cli
-      .do(`rm "foo bar"/testTmp`, this.app)
+      .do(`rm "${dirname}"/testTmp`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 
-  it('should mkdir a subdir with spaces', () =>
+  pit('should mkdir a subdir with spaces', () =>
     cli
-      .do(`mkdir "foo bar"/"foo2 bar2"`, this.app)
+      .do(`mkdir "${dirname}"/"foo2 bar2"`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
-  it('should list the new directory with spaces', () =>
+      .catch(common.oops(this, true))
+  )
+  pit('should list the new directory with spaces', () =>
     cli
-      .do(`lls "foo bar"`, this.app) // test the lls synonym for ls
+      .do(`ls "${dirname}"`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'foo2 bar2' }))
-      .catch(common.oops(this)))
-  it('should rmdir a subdir with spaces', () =>
+      .catch(common.oops(this, true))
+  )
+  pit('should rmdir a subdir with spaces', () =>
     cli
-      .do(`rmdir "foo bar"/"foo2 bar2"`, this.app)
+      .do(`rmdir "${dirname}"/"foo2 bar2"`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
-  it('should rmdir a dir with spaces', () =>
+      .catch(common.oops(this, true))
+  )
+  pit('should rmdir a dir with spaces', () =>
     cli
-      .do(`rmdir "foo bar"`, this.app)
+      .do(`rmdir "${dirname}"`, this.app)
       .then(cli.expectOK)
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true))
+  )
 })

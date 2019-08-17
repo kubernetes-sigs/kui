@@ -14,134 +14,152 @@
  * limitations under the License.
  */
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  localDescribe
-} from '@kui-shell/core/tests/lib/common'
-
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
 import { existsSync } from 'fs'
+import { v4 as uuid } from 'uuid'
 import { dirname, join, normalize } from 'path'
 
-const { cli } = ui
+import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import * as ui from '@kui-shell/core/tests/lib/ui'
+import expandHomeDir from '@kui-shell/core/util/home'
+
+const { cli, selectors } = ui
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = (dir: string) => join(ROOT, dir)
 
-localDescribe('Change local shell directory', function(this: ISuite) {
+/** skip the tests if we aren't doing a webpack+proxy test run */
+const runTheTests = process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true'
+const pit = runTheTests ? it : xit
+
+describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
+  let initialDirectory: string
+  pit('should echo current directory', () =>
+    cli
+      .do('pwd', this.app)
+      .then(cli.expectOKWithAny)
+      .then(async () => {
+        initialDirectory = await this.app.client.getText(selectors.OUTPUT_LAST)
+      })
+      .catch(oops(this, true))
+  )
+
   const previous = () => {
-    it(`should execute 'cd -' to change to previous dir`, () =>
+    it(`should execute 'cd -' to change to previous dir ${initialDirectory}`, () =>
       cli
         .do(`cd -`, this.app)
-        .then(cli.expectOKWithString(normalize(process.env.TEST_ROOT)))
-        .catch(oops(this)))
+        .then(cli.expectOKWithString(normalize(initialDirectory)))
+        .catch(oops(this, true)))
   }
 
-  let offset = 0
-  while (existsSync(`/tmp/foo bar${offset}`)) {
-    offset++
-  }
-
-  const bar = `bar${offset}`
-  it('should mkdir with spaces', () =>
+  const bar = `bar${uuid()}`
+  pit('should mkdir with spaces', () =>
     cli
-      .do(`mkdir /tmp/"foo ${bar}"`, this.app)
-      .then(cli.expectOK)
-      .catch(oops(this)))
+      .do(`mkdir /tmp/"kui ${bar}"`, this.app)
+      .then(cli.expectJustOK)
+      .catch(oops(this, true))
+  )
 
-  it(`should execute 'cd /tmp/"foo ${bar}"'`, () =>
+  pit(`should execute 'cd /tmp/"kui ${bar}"'`, () =>
     cli
-      .do(`cd /tmp/"foo ${bar}"`, this.app)
-      .then(cli.expectOKWithString('foo bar'))
-      .catch(oops(this)))
+      .do(`cd /tmp/"kui ${bar}"`, this.app)
+      .then(cli.expectOKWithString('kui bar'))
+      .catch(oops(this, true))
+  )
 
   previous()
 
-  it(`should execute 'cd "/tmp/foo ${bar}"'`, () =>
+  pit(`should execute 'cd "/tmp/kui ${bar}"'`, () =>
     cli
-      .do(`cd "/tmp/foo ${bar}"`, this.app)
-      .then(cli.expectOKWithString('foo bar'))
-      .catch(oops(this)))
+      .do(`cd "/tmp/kui ${bar}"`, this.app)
+      .then(cli.expectOKWithString('kui bar'))
+      .catch(oops(this, true))
+  )
 
   previous()
 
-  it(`should execute 'cd /tmp/foo ${bar}'`, () =>
+  pit(`should execute 'cd /tmp/kui ${bar}'`, () =>
     cli
-      .do(`cd /tmp/foo\\ ${bar}`, this.app)
-      .then(cli.expectOKWithString('foo bar'))
-      .catch(oops(this)))
+      .do(`cd /tmp/kui\\ ${bar}`, this.app)
+      .then(cli.expectOKWithString('kui bar'))
+      .catch(oops(this, true))
+  )
 
   // ls with space and trailing slash; see https://github.com/IBM/kui/issues/1389
-  it(`should execute 'ls /tmp/foo ${bar}/'`, () =>
+  pit(`should execute 'ls /tmp/kui ${bar}/'`, () =>
     cli
-      .do(`ls /tmp/foo\\ ${bar}/`, this.app)
+      .do(`ls /tmp/kui\\ ${bar}/`, this.app)
       .then(cli.expectOKWithAny)
-      .catch(oops(this)))
-  it(`should execute 'ls /tmp/"foo ${bar}"/'`, () =>
+      .catch(oops(this, true))
+  )
+  pit(`should execute 'ls /tmp/"kui ${bar}"/'`, () =>
     cli
-      .do(`ls /tmp/"foo ${bar}"/`, this.app)
+      .do(`ls /tmp/"kui ${bar}"/`, this.app)
       .then(cli.expectOKWithAny)
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
   previous()
 
-  it(`should execute 'cd data'`, () =>
+  pit(`should execute 'cd data'`, () =>
     cli
       .do(`cd ${ROOT}/data`, this.app)
       .then(cli.expectOKWithString(rootRelative('data')))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
   previous()
 
-  it(`should execute 'cd -' again to change to previous-previous dir`, () =>
+  pit(`should execute 'cd -' again to change to previous-previous dir`, () =>
     cli
       .do(`cd -`, this.app)
       .then(cli.expectOKWithString(rootRelative('data')))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
   previous()
 
   // now we should be able to change back to data
-  it(`should execute 'cd data'`, () =>
+  pit(`should execute 'cd data'`, () =>
     cli
       .do(`cd ${ROOT}/data`, this.app)
       .then(cli.expectOKWithString(rootRelative('data')))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
-  it(`should handle cd error`, () =>
+  pit(`should handle cd error`, () =>
     cli
       .do(`cd notexist`, this.app)
       .then(cli.expectError(500, 'cd: no such file or directory: notexist'))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
-  it(`should handle cd error`, () =>
+  pit(`should handle cd error`, () =>
     cli
       .do(`cd ../notexist`, this.app)
       .then(cli.expectError(500, 'cd: no such file or directory: ../notexist'))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
-  it(`should handle cd error`, () =>
+  pit(`should handle cd error`, () =>
     cli
       .do(`cd -/..`, this.app)
       .then(cli.expectError(499, 'Unsupported optional parameter /'))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
-  it(`should execute cd without arguments`, () =>
+  pit(`should execute cd without arguments`, () =>
     cli
       .do('cd', this.app)
       .then(cli.expectOKWithString(expandHomeDir('~')))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 
-  it(`should execute cd ${ROOT}`, () =>
+  pit(`should execute cd ${ROOT}`, () =>
     cli
       .do(`cd ${ROOT}`, this.app)
       .then(cli.expectOKWithString(ROOT))
-      .catch(oops(this)))
+      .catch(oops(this, true))
+  )
 })

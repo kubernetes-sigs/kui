@@ -18,7 +18,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, keys, selectors } = ui
 
-describe('input queueing', function(this: common.ISuite) {
+common.localDescribe('input queueing', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -52,7 +52,7 @@ describe('input queueing', function(this: common.ISuite) {
               }).then(verify)
             }
           } catch (err) {
-            common.oops(this)(err)
+            return common.oops(this, true)(err)
           }
         })
       }

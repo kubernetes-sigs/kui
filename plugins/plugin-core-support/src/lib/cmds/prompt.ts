@@ -56,6 +56,6 @@ export default (commandTree: CommandRegistrar) => {
         }
       )
     },
-    { usage, noAuthOk: true }
+    { usage, noAuthOk: true, inBrowserOk: true }
   )
 }
