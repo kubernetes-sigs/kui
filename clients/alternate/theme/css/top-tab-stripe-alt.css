@@ -1,9 +1,7 @@
 /* mostly an example of an alternate top tab stripe UI */
 
 :root {
-  --active-tab-color: #3d70b2;
   --header-padding-y: 12px;
-  --tab-gray-text-color: #5a6872;
 }
 
 .kui-header__title,
@@ -20,7 +18,7 @@
   width: 100%;
   height: 48px;
   display: flex;
-  background-color: #f5f7fa;
+  background-color: var(--color-stripe-01);
   padding: var(--header-padding-y) 72px;
   font-weight: 600;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15);
@@ -28,7 +26,7 @@
 }
 
 .kui-header #help-button {
-    display: none;
+  display: none;
 }
 
 .kui-header__title {
