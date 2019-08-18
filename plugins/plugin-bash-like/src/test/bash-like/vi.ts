@@ -28,7 +28,7 @@ const { pit, refresh } = common
 const rows = (N: number) => selectors.xtermRows(N)
 const lastRow = (N: number) => `${rows(N)} > div:last-child`
 
-describe(`xterm vi ${process.env.MOCHA_RUN_TARGT || ''}`, function(this: common.ISuite) {
+describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -38,7 +38,7 @@ describe(`xterm vi ${process.env.MOCHA_RUN_TARGT || ''}`, function(this: common.
 
   pit('use vi to create a new file', async () => {
     try {
-      const res = await cli.do(`vim ${file.name}`, this.app)
+      const res = await cli.do(`vim -i NONE ${file.name}`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows(res.count))
@@ -93,12 +93,15 @@ describe(`xterm vi ${process.env.MOCHA_RUN_TARGT || ''}`, function(this: common.
     // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
     await promisify(unlink)(file.name)
   })
+})
 
-  pit('should reload', () => refresh(this).catch(common.oops(this)))
+describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
+  before(common.before(this))
+  after(common.after(this))
 
   pit('open vi :wq then :q, and expect no error', async () => {
     try {
-      const res = await cli.do(`vim`, this.app)
+      const res = await cli.do(`vim -i NONE`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows(res.count))
@@ -109,11 +112,6 @@ describe(`xterm vi ${process.env.MOCHA_RUN_TARGT || ''}`, function(this: common.
       // :wq
       await this.app.client.keys(':wq')
       await this.app.client.keys(keys.ENTER)
-      /* await this.app.client.waitUntil(async () => {
-        const txt = await ui.getTextContent(this.app, lastRow(res.count))
-        console.error('txt %s', txt)
-        return /No file name/i.test(txt)
-      }) */
 
       // :q
       await this.app.client.keys(':q')

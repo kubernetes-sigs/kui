@@ -15,11 +15,10 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors, sidecar, sleep, getTextContent } from '@kui-shell/core/tests/lib/ui'
+import { cli, keys, selectors, getTextContent } from '@kui-shell/core/tests/lib/ui'
 import {
   waitForGreen,
   waitForRed,
-  defaultModeForGet,
   createNS,
   allocateNS,
   deleteNS,
@@ -35,18 +34,6 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
-
-  /** delete the given pod */
-  const deleteIt = (name: string) => {
-    it(`should delete the pod ${name} via ${kubectl}`, () => {
-      return cli
-        .do(`${kubectl} delete pod ${name} ${inNamespace}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
-        .then(selector => waitForRed(this.app, selector))
-        .then(() => waitTillNone('pod', undefined, name, undefined, inNamespace))
-        .catch(common.oops(this, true))
-    })
-  }
 
   const createIt = (name: string) => {
     it(`should create sample pod ${name} from URL via ${kubectl}`, async () => {

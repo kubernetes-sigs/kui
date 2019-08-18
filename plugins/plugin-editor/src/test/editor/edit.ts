@@ -20,6 +20,7 @@ import {
   before as commonBefore,
   after as commonAfter,
   oops,
+  refresh,
   localDescribe
 } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -152,15 +153,13 @@ localDescribe('editor basics', function(this: ISuite) {
       .catch(oops(this)))
 
   /** reload the app, and wait for a repl prompt */
-  const refresh = () => {
-    it('should reload the app', () => this.app.restart())
-  }
+  const reload = () => it('should reload the app', () => refresh(this))
 
   // make sure pasting text in the editor doesn't result in the editor losing focus
   const textToPaste = 'hello world'
   const textToTypeAfterPaste = ' and sun and moon'
   const finalTextAfterPasteTest = `${textToPaste}${textToTypeAfterPaste}`
-  refresh()
+  reload()
   it('should edit, then paste, and still have focus', () =>
     cli
       .do(`edit ${tmpFilepath}`, this.app)
@@ -178,7 +177,7 @@ localDescribe('editor basics', function(this: ISuite) {
           .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
           .then(save(this.app))
       }))
-  refresh()
+  reload()
   it('should have that pasted text after refresh', () =>
     cli
       .do(`edit ${tmpFilepath}`, this.app)

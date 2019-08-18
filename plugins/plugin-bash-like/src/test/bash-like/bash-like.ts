@@ -18,7 +18,7 @@ import { v4 as uuid } from 'uuid'
 import { basename } from 'path'
 import { exec } from 'child_process'
 import { fileSync as tmpFile } from 'tmp'
-import { unlinkSync, rmdirSync, writeFileSync } from 'fs'
+import { writeFileSync } from 'fs'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
