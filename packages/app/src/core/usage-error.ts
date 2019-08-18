@@ -828,7 +828,7 @@ export interface UsageModel {
   onlyEnforceOptions?: boolean | string[]
 
   // yargs-parser configuration to override the default settings
-  configuration?: { [key: string]: string }
+  configuration?: Record<'short-option-groups', string | boolean | number>
 
   breadcrumb?: string
   title?: string

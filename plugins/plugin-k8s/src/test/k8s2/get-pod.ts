@@ -30,7 +30,7 @@ import assert = require('assert')
 
 const synonyms = ['kubectl']
 
-describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
