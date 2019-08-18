@@ -19,7 +19,8 @@ require('colors')
 
 /** non-headless targets in travis use the clients/default version */
 exports.expectedVersion =
-  process.env.MOCHA_RUN_TARGET === 'electron' || process.env.MOCHA_RUN_TARGET === 'webpack'
+  process.env.TRAVIS_JOB_ID &&
+  (process.env.MOCHA_RUN_TARGET === 'electron' || process.env.MOCHA_RUN_TARGET === 'webpack')
     ? '0.0.1'
     : require('@kui-shell/settings/package.json').version
 
@@ -60,10 +61,28 @@ function waitForSession(ctx, noProxySessionWait = false) {
   }
 }
 
+/**
+ * Try to avoid restarting electron if we can; then, when all is said
+ * and done, quit that singleton electron
+ *
+ */
+let app
+after(async () => {
+  if (app && app.isRunning()) {
+    await app.stop()
+  }
+})
+
 /** reload the app */
-exports.refresh = async ctx => {
+exports.refresh = async (ctx, wait = true, clean = false) => {
   await ctx.app.client.refresh()
-  return waitForSession(ctx)
+  if (clean) {
+    await ctx.app.client.localStorage('DELETE') // clean out local storage
+  }
+  if (wait) {
+    await waitForSession(ctx)
+    await ui.cli.waitForRepl(ctx.app)
+  }
 }
 
 /** restart the app */
@@ -152,8 +171,25 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
   }
 
   return async function() {
+    // by default, we expect not to have to destroy the app when this
+    // describe is done
+    ctx._kuiDestroyAfter = false
+
     if (!noApp) {
+      if (app && !popup) {
+        if (!beforeStart && !afterStart) {
+          ctx.app = app
+          await exports.refresh(ctx, !noProxySessionWait, true)
+          return
+        }
+      }
       ctx.app = prepareElectron(fuzz, popup)
+      if (popup) {
+        // for popups, we want to destroy the app when the describe is done
+        ctx._kuiDestroyAfter = true
+      } else {
+        app = ctx.app
+      }
     }
 
     if (beforeStart) {
@@ -189,8 +225,8 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
  * This is the method that will be called when a test completes
  *
  */
-exports.after = (ctx, f) => () => {
-  if (f) f()
+exports.after = (ctx, f) => async () => {
+  if (f) await f()
 
   //
   // write out test coverage data from the renderer process
@@ -235,7 +271,7 @@ exports.after = (ctx, f) => () => {
     )
   }
 
-  if (ctx.app && ctx.app.isRunning()) {
+  if (ctx.app && ctx.app.isRunning() && ctx._kuiDestroyAfter) {
     return ctx.app.stop()
   }
 }
@@ -351,5 +387,5 @@ exports.proxyIt = (msg, func) => {
 
 /** only execute the test in electron or proxy+browser client */
 exports.pit = (msg, func) => {
-  if (process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true') return it(msg, func)
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true') return it(msg, func)
 }

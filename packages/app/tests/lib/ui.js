@@ -186,20 +186,27 @@ exports.cli = {
    * Execute a CLI command, and return the data-input-count of that command
    *
    */
-  do: async (cmd, app, noNewline = false) => {
+  do: async (cmd, app, noNewline = false, noCopyPaste = false) => {
     return app.client
       .waitForExist(selectors.CURRENT_PROMPT_BLOCK)
       .then(() => grabFocus(app))
       .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
-      .then(count =>
-        app.client
-          .getValue(selectors.CURRENT_PROMPT)
-          .then(currentValue => app.client.setValue(selectors.CURRENT_PROMPT, `${currentValue}${cmd}`))
-          .then(() => {
-            if (noNewline !== true) app.client.keys(keys.ENTER)
-          })
-          .then(() => ({ app: app, count: parseInt(count) }))
-      )
+      .then(async count => {
+        if (!noCopyPaste && cmd.length > 1) {
+          // use the clipboard for a fast path
+          await app.client.execute(
+            text => navigator.clipboard.writeText(text).then(() => document.execCommand('paste')),
+            cmd
+          )
+        } else {
+          // slow path
+          const currentValue = await app.client.getValue(selectors.CURRENT_PROMPT)
+          const doThis = `${currentValue}${cmd}`
+          await app.client.setValue(selectors.CURRENT_PROMPT, doThis)
+        }
+        if (noNewline !== true) await app.client.keys(keys.ENTER)
+        return { app: app, count: parseInt(count) }
+      })
   },
 
   /**

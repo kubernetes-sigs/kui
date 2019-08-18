@@ -80,7 +80,6 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
           (isActivationSpec(selection) && selection.response[mode])
         )
       ) {
-        console.error('!!!!!!!!', selection)
         throw new Error(`The current entity does not support viewing ${mode}`)
       } else {
         showSidecar(tab)

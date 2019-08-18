@@ -56,7 +56,7 @@ declare function oops (ctx: Suite, wait?: boolean): ((err: Error) => never)
 declare function rp (opts: Object): any
 
 /** reload the app */
-declare function refresh (ctx: Suite): Promise<void>
+declare function refresh (ctx: Suite, wait?: boolean): Promise<void>
 
 /** restart the app */
 declare function restart (ctx: Suite): Promise<void>

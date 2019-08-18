@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { existsSync } from 'fs'
 import { v4 as uuid } from 'uuid'
 import { dirname, join, normalize } from 'path'
 

@@ -48,21 +48,24 @@ describe('Create an action via let with dots', function(this: common.ISuite) {
         .do(`let ${actionName1} = ${fileWithSpacesAndQuotes[idx]}`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName1)))
+        .then(sidecar.expectShowing(actionName1))
+        .catch(common.oops(this)))
 
     it(`should create an action with spaces in the filename, variant ${idx}b`, () =>
       cli
         .do(`let ${actionName2} = "${fileWithSpacesAndQuotes[idx]}"`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName2)))
+        .then(sidecar.expectShowing(actionName2))
+        .catch(common.oops(this)))
 
     it(`should create an action with spaces in the filename, variant ${idx}c`, () =>
       cli
         .do(`let "${actionName3}" = "${fileWithSpacesAndQuotes[idx]}"`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName3)))
+        .then(sidecar.expectShowing(actionName3))
+        .catch(common.oops(this)))
   }
 
   it('should create an action with dots in the filename, with external quotes', () =>
@@ -70,40 +73,46 @@ describe('Create an action via let with dots', function(this: common.ISuite) {
       .do(`let ${actionName1} = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1)))
+      .then(sidecar.expectShowing(actionName1))
+      .catch(common.oops(this)))
 
   it('should create a packaged action with dots, variant 1', () =>
     cli
       .do(`let ${packageName1}/${actionName1} = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1, undefined, undefined, packageName1)))
+      .then(sidecar.expectShowing(actionName1, undefined, undefined, packageName1))
+      .catch(common.oops(this)))
 
   it('should create a packaged action with dots, variant 2', () =>
     cli
       .do(`let "${packageName1}/${actionName2}" = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName1)))
+      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName1))
+      .catch(common.oops(this)))
 
   it('should create a packaged action with dots, variant 3', () =>
     cli
       .do(`let "${packageName1}/${actionName3}" = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3, undefined, undefined, packageName1)))
+      .then(sidecar.expectShowing(actionName3, undefined, undefined, packageName1))
+      .catch(common.oops(this)))
 
   it('should create a packaged action with dots, variant 4', () =>
     cli
       .do(`let "${packageName2}/${actionName1}" = x=>x`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1, undefined, undefined, packageName2)))
+      .then(sidecar.expectShowing(actionName1, undefined, undefined, packageName2))
+      .catch(common.oops(this)))
 
   it('should create a packaged action with dots, variant 5', () =>
     cli
       .do(`let "${packageName2}/${actionName2}" = "${fileWithSpaces}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName2)))
+      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName2))
+      .catch(common.oops(this)))
 })

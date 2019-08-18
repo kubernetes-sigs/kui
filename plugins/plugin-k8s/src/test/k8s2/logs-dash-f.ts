@@ -18,16 +18,8 @@ import * as assert from 'assert'
 import { Application } from 'spectron'
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, ctrlC, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import {
-  assertTableTitleMatches,
-  waitForGreen,
-  waitForRed,
-  defaultModeForGet,
-  createNS,
-  allocateNS,
-  deleteNS
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { cli, ctrlC, selectors } from '@kui-shell/core/tests/lib/ui'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'

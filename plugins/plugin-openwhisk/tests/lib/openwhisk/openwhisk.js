@@ -188,7 +188,7 @@ exports.before = (ctx, opts) => {
               .then(cli.expectOK)
               .catch(err => {
                 console.log(`Failed at command: wsk host set ${apihost}`)
-                common.oops(ctx)(err)
+                return common.oops(ctx)(err)
               })
 
     const addWskAuth =
@@ -200,7 +200,7 @@ exports.before = (ctx, opts) => {
               .then(cli.expectOK)
               .catch(err => {
                 console.log(`Failed at command: wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`)
-                common.oops(ctx)(err)
+                return common.oops(ctx)(err)
               })
 
     // clean openwhisk assets from previous runs, then start the app

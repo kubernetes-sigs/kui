@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors, getTextContent } from '@kui-shell/core/tests/lib/ui'
+import { cli, keys, selectors } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, createNS, allocateNS, deleteNS, typeSlowly } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -62,7 +62,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it(`should use kubectl exec vi through pty`, async () => {
     try {
-      const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vim ${filename}`, this.app)
+      const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app)
 
       const rows = selectors.xtermRows(res.count)
       const lastRowSelector = `${rows} > div:last-child`
