@@ -17,10 +17,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
-import * as assert from 'assert'
-import { promisify } from 'util'
 import { v4 as uuid } from 'uuid'
-import { dirname, join } from 'path'
 
 const { cli, keys, selectors } = ui
 

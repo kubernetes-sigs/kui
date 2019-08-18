@@ -57,5 +57,6 @@ describe('Create a javascript web action via let', function(this: common.ISuite)
       .then(href => this.app.client.url(href))
       .then(() => this.app.client.getText('#hello'))
       .then(content => assert.strictEqual(content, 'hello'))
+      .then(() => common.restart(this)) // to unsmash the .url call
       .catch(common.oops(this)))
 })

@@ -47,7 +47,7 @@ describe('no .wskprops tests', function(this: common.ISuite) {
         .then(cli.expectJustOK)
         .catch(common.oops(this)))
 
-    it('should restart', () => this.app.restart()) // TODO: investigate
+    it('should restart', () => common.refresh(this)) // TODO: investigate
 
     it('shoule see error when action list', () =>
       cli
@@ -60,7 +60,7 @@ describe('no .wskprops tests', function(this: common.ISuite) {
       process.env.WSK_CONFIG_FILE = '~/.tmp_wskprops'
     })
 
-    it('should restart', () => this.app.restart())
+    it('should restart', () => common.refresh(this))
 
     it('shoule see action list', () =>
       cli

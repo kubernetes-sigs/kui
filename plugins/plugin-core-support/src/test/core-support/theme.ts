@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  localIt,
+  refresh
+} from '@kui-shell/core/tests/lib/common'
 import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
 
 const resetTheme = (ctx: ISuite) => {
@@ -64,8 +71,7 @@ const go = (theme: Theme) => (ctx: ISuite) => {
 const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
   // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
   localIt(`should still be using ${theme.name} theme after a browser restart`, () =>
-    ctx.app.client
-      .refresh()
+    refresh(ctx)
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
       .catch(oops(ctx))
   )
@@ -78,8 +84,7 @@ const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
  */
 const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
   localIt(`should still be using ${theme.name} theme after a reload`, () =>
-    ctx.app.client
-      .refresh()
+    refresh(ctx)
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
       .catch(oops(ctx))
   )
