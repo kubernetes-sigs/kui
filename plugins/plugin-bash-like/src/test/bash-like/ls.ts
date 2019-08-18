@@ -17,7 +17,6 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli } = ui
-const { localDescribe } = common
 
 const echoString = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 

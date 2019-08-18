@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
+import { dirname } from 'path'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 const { cli } = ui
-const { localDescribe } = common
+const { pit } = common
 
-localDescribe('pty output with many lines', function(this: common.ISuite) {
+const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
+
+describe('pty output with many lines', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  it(`should execute a recursive grep that emits many lines`, () =>
+  pit(`should execute a recursive grep that emits many lines`, () =>
     cli
-      .do(`grep -r localDescribe ../../plugins`, this.app)
-      .then(cli.expectOKWithString('localDescribe'))
-      .catch(common.oops(this)))
+      .do(`grep -r describe\\( "${ROOT}/../../../plugins"`, this.app)
+      .then(cli.expectOKWithString('describe'))
+      .catch(common.oops(this))
+  )
 
-  it('should still have a prompt that works', () =>
+  pit('should still have a prompt that works', () =>
     cli
       .do('echo hi', this.app)
       .then(cli.expectOKWithString('hi'))
-      .catch(common.oops(this)))
+      .catch(common.oops(this))
+  )
 })
