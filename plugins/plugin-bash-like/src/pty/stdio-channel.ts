@@ -119,6 +119,12 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
     })
   }
 
+  /** Forcibly close the channel */
+  public close() {
+    debugW('closing stdio channel')
+    this.emit('exit')
+  }
+
   /** emit 'message' on the other side */
   public send(msg: string) {
     debugW('send', this.readyState === ReadyState.OPEN)
@@ -164,6 +170,12 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
     })
 
     this.send('open')
+  }
+
+  /** Forcibly close the channel */
+  public close() {
+    debugW('closing stdio channel')
+    this.emit('close')
   }
 
   /** emit 'message' on the other side */

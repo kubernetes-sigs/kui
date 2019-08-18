@@ -25,7 +25,12 @@ import { onConnection, disableBashSessions } from './server'
 const debug = Debug('plugins/bash-like/pty/channel')
 
 export interface Channel {
+  /** Forcibly close the channel */
+  close: () => void
+
+  /** Send a message over the channel */
   send: (msg: string | Buffer) => void
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on: (eventType: string, handler: any) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,6 +73,11 @@ export class InProcessChannel extends EventEmitter implements Channel {
     debug('IPC init done')
   }
 
+  /** Forcibly close the channel */
+  close() {
+    // no-op
+  }
+
   /** emit 'message' on the other side */
   send(msg: string) {
     if (this.otherSide.readyState === ReadyState.OPEN) {
@@ -107,6 +117,11 @@ export class WebViewChannelRendererSide extends EventEmitter implements Channel 
     // emit 'open' on our side
     this.emit('open')
     debug('IPC init done')
+  }
+
+  /** Forcibly close the channel */
+  close() {
+    this.emit('exit')
   }
 
   /** emit 'message' on the other side */

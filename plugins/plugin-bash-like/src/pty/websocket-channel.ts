@@ -39,6 +39,12 @@ class WebSocketChannel implements Channel {
     this.gid = gid
   }
 
+  /** Forcibly close the channel */
+  close() {
+    debug('closing websocket channel')
+    this.ws.close()
+  }
+
   send(msg: string) {
     // inject uid and gid into the payload
     const withUser = Object.assign(JSON.parse(msg), {
@@ -52,6 +58,7 @@ class WebSocketChannel implements Channel {
     return this.ws.readyState
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener(eventType: string, handler: any) {
     this.ws.removeEventListener(eventType, handler)
   }

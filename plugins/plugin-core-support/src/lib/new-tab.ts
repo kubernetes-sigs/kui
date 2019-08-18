@@ -72,6 +72,9 @@ const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-st
  *
  */
 class TabState {
+  /** is the tab closed? */
+  closed: boolean
+
   /** environment variables */
   private _env: Record<string, string>
 
@@ -263,6 +266,7 @@ const closeTab = (tab = getCurrentTab()) => {
   if (tabState.jobs) {
     tabState.jobs.forEach(job => job.abort())
   }
+  tabState.closed = true
 
   tab.parentNode.removeChild(tab)
   tabButton.parentNode.removeChild(tabButton)
@@ -273,6 +277,8 @@ const closeTab = (tab = getCurrentTab()) => {
   getCurrentPrompt().focus()
 
   reindexTabs()
+
+  eventBus.emit('/tab/close', tab)
 
   return true
 }
