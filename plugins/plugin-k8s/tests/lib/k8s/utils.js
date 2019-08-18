@@ -89,7 +89,7 @@ exports.waitForRed = async (app, selector) => {
 exports.createNS = (prefix = '') => `${prefix}${uuid()}-kui`
 
 exports.allocateNS = (ctx, ns, theCli = cli) => {
-  it(`should create a namespace ${ns} `, () => {
+  it(`should create a namespace ${ns} for test: ${ctx.title}`, () => {
     return theCli
       .do(`kubectl create namespace ${ns}`, ctx.app)
       .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))

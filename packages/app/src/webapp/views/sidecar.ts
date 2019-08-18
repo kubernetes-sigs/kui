@@ -896,7 +896,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
           presentAs(tab, Presentation.FixedSize)
           return Presentation.FixedSize
         } catch (err) {
-          debug('erroring in loading editor', err)
+          console.error('error loading editor', err)
           // intentional fall-through
         }
       }

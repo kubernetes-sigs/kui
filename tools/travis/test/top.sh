@@ -28,7 +28,7 @@
 
 while true; do
     echo
-    top -c -bn1 -w 160 | head -16 | awk 'FNR <= 6 { if (FNR == 3) color = 31; else color = 34; printf "\033[1;%dm%s\033[0m\n", color, $0 } FNR > 6 { sub(/\/home\/travis\/build\/[^/]+\//, "", $12); printf("%-6s %-10s \033[1;31m%-5s\033[0m %-4s %-8s \033[1;33m%s\033[0m\n", $1, $6, $9, $10, $11, $12) }'
+    top -c -bn1 -w 160 | head -20 | awk 'FNR <= 6 { if (FNR == 3) color = 31; else color = 34; printf "\033[1;%dm%s\033[0m\n", color, $0 } FNR > 6 { sub(/\/home\/travis\/build\/[^/]+\//, "", $12); printf("%-6s %-10s \033[1;31m%-5s\033[0m %-4s %-8s \033[1;33m%s\033[0m\n", $1, $6, $9, $10, $11, $12) }'
 
     # in case you want to know what's going on with anonymous "node" processes
     if [ -n "$NEEDS_TOP_PS" ]; then

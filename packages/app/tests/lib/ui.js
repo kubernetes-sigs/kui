@@ -16,7 +16,7 @@
 
 const common = require('./common')
 const assert = require('assert')
-const timeout = process.env.TIMEOUT || 60000
+const timeout = Math.max(5000, process.env.TIMEOUT || 60000)
 const constants = {
   API_HOST: process.env.API_HOST,
   // CLI_PLACEHOLDER: process.env.CLI_PLACEHOLDER || 'enter your command',
@@ -108,7 +108,7 @@ const expectOK = (appAndCount, opt) => {
 
   return (
     app.client
-      .waitForVisible(selectors.PROMPT_N(N), timeout) // wait for the next prompt to appear
+      .waitForVisible(selectors.PROMPT_N(N), timeout - 5000) // wait for the next prompt to appear
       .then(() => app.client.getAttribute(selectors.PROMPT_N(N), 'placeholder')) // it should have a placeholder text
       // .then(attr => assert.strictEqual(attr, constants.CLI_PLACEHOLDER)) //      ... verify that
       .then(() => app.client.getValue(selectors.PROMPT_N(N), timeout)) // it should have an empty value
@@ -188,7 +188,7 @@ exports.cli = {
    */
   do: async (cmd, app, noNewline = false, noCopyPaste = false) => {
     return app.client
-      .waitForExist(selectors.CURRENT_PROMPT_BLOCK)
+      .waitForExist(selectors.CURRENT_PROMPT_BLOCK, timeout - 5000)
       .then(() => grabFocus(app))
       .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(async count => {
@@ -504,8 +504,18 @@ exports.expectText = (app, expectedText) => async selector => {
 
 /** get the monaco editor text */
 exports.getValueFromMonaco = async (app /*: Application */, prefix = '') => {
-  const selector = `${prefix} .monaco-editor-wrapper`
-  await app.client.waitForExist(selector)
+  const editor = '.monaco-editor-wrapper'
+  const selector = prefix ? `${prefix} ${editor}` : editor
+  try {
+    await app.client.waitForExist(selector, timeout - 5000)
+  } catch (err) {
+    console.error('cannot find editor', err)
+    await app.client.getHTML(selectors.SIDECAR).then(html => {
+      console.log('here is the content of the sidecar:')
+      console.log(html)
+    })
+    throw err
+  }
 
   return app.client
     .execute(selector => {
