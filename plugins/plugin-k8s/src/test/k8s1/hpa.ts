@@ -62,7 +62,7 @@ describe('electron create hpa HorizontalPodAutoscaler', function(this: common.IS
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('travelapp-hpa'))
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
 

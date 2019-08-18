@@ -92,7 +92,7 @@ localDescribe('git diff', function(this: common.ISuite) {
       await restoreTopLevelReadme()
     } catch (err) {
       await restoreTopLevelReadme()
-      common.oops(this)(err)
+      return common.oops(this)(err)
     }
   })
 })

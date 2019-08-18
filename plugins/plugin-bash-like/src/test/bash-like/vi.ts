@@ -76,7 +76,7 @@ localDescribe('xterm vi 1', function(this: common.ISuite) {
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), 'hello there')
     } catch (err) {
-      common.oops(this)(err)
+      return common.oops(this)(err)
     } finally {
       // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
       await promisify(unlink)(file.name)
@@ -113,7 +113,7 @@ localDescribe('xterm vi 2', function(this: common.ISuite) {
       // expect a clean exit, i.e. no error output on the console
       await res.then(cli.expectBlank)
     } catch (err) {
-      common.oops(this)(err)
+      return common.oops(this)(err)
     }
   })
 })
