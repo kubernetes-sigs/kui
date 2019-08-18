@@ -179,8 +179,13 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
       if (app && !popup) {
         if (!beforeStart && !afterStart) {
           ctx.app = app
-          await exports.refresh(ctx, !noProxySessionWait, true)
-          return
+          try {
+            await exports.refresh(ctx, !noProxySessionWait, true)
+            return
+          } catch (err) {
+            console.error('error refreshing in before for reuse start', err)
+            throw err
+          }
         }
       }
       ctx.app = prepareElectron(fuzz, popup)
@@ -192,31 +197,35 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
       }
     }
 
-    if (beforeStart) {
-      await beforeStart()
-    }
+    try {
+      if (beforeStart) {
+        await beforeStart()
+      }
 
-    // start the app, if requested
-    const start = noApp
-      ? () => Promise.resolve()
-      : () => {
-          return (
-            ctx.app
-              .start() // this will launch electron
-              // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
-              // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
-              .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
-              .then(() => !noProxySessionWait && ui.cli.waitForRepl(ctx.app))
-          ) // should have an active repl
-        }
+      // start the app, if requested
+      const start = noApp
+        ? () => Promise.resolve()
+        : () => {
+            return (
+              ctx.app
+                .start() // this will launch electron
+                // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
+                // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
+                .then(() => waitForSession(ctx, noProxySessionWait))
+                .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
+                .then(() => !noProxySessionWait && ui.cli.waitForRepl(ctx.app))
+            ) // should have an active repl
+          }
 
-    await start()
-    ctx.timeout(process.env.TIMEOUT || 60000)
+      ctx.timeout(process.env.TIMEOUT || 60000)
+      await start()
 
-    await waitForSession(ctx, noProxySessionWait)
-
-    if (afterStart) {
-      await afterStart()
+      if (afterStart) {
+        await afterStart()
+      }
+    } catch (err) {
+      console.error('error refreshing in before for fresh start', err)
+      throw err
     }
   }
 }
@@ -251,7 +260,7 @@ exports.after = (ctx, f) => async () => {
   if (anyFailed && ctx.app && ctx.app.client) {
     ctx.app.client.getRenderProcessLogs().then(logs =>
       logs
-        .filter(log => !/Not allowed to load local resource/.test(log.message))
+        .filter(log => !/SFMono-Regular.otf/.test(log.message))
         .forEach(log => {
           if (
             log.level === 'SEVERE' && // only console.error messages
@@ -317,7 +326,7 @@ exports.oops = (ctx, wait = false) => async err => {
         // filter out the "Not allowed to load local resource" font loading errors
         ctx.app.client.getRenderProcessLogs().then(logs =>
           logs
-            .filter(log => !/Not allowed to load local resource/.test(log.message))
+            .filter(log => !/SFMono-Regular.otf/.test(log.message))
             .forEach(log => {
               if (log.message.indexOf('%c') === -1) {
                 console.log('RENDER'.bold.yellow, log.message.red)

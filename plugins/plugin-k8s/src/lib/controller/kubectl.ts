@@ -220,6 +220,10 @@ const table = (
 const usage = (command: string): UsageModel => ({
   title: command,
   command,
+  configuration: {
+    // kubectl and helm don't have short option combining semantics
+    'short-option-groups': false
+  },
   noHelp: true // kubectl and helm both provide their own -h output
 })
 
@@ -395,10 +399,12 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       reject(err)
     })
 
+    // the boolean type check is to guard against yargs-parser going crazy.
+    // see https://github.com/IBM/kui/issues/2332
     const file = options.f || options.filename
-    const hasFileArg = file !== undefined
+    const hasFileArg = file !== undefined && typeof file !== 'boolean'
 
-    const isProgrammatic = file && file.charAt(0) === '!'
+    const isProgrammatic = hasFileArg && file.charAt(0) === '!'
     const programmaticResource = isProgrammatic && execOptions.parameters[file.slice(1)]
     if (isProgrammatic) {
       const param = file.slice(1)
