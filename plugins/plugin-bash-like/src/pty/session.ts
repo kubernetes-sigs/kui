@@ -193,5 +193,15 @@ export async function init() {
     eventBus.on('/tab/new', (tab: Tab) => {
       newSessionForTab(tab)
     })
+
+    // listen for closed tabs
+    eventBus.on('/tab/close', async (tab: Tab) => {
+      try {
+        debug('closing session for tab')
+        getChannelForTab(tab).close()
+      } catch (err) {
+        console.error('error terminating session for closed tab', err)
+      }
+    })
   }
 }

@@ -529,8 +529,11 @@ const getOrCreateChannel = async (
     // when the websocket has closed, notify the user
     ws.on('close', () => {
       debug('channel has closed')
-      ui.setOffline()
-      session.pollUntilOnline(tab)
+      if (!tab['state'].closed) {
+        debug('attempting to reestablish connection, because the tab is still open ')
+        ui.setOffline()
+        session.pollUntilOnline(tab)
+      }
     })
 
     return ws
