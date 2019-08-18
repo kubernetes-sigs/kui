@@ -102,9 +102,20 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         return !/INSERT/i.test(txt)
       })
 
-      await typeSlowly(this.app, `:wq${keys.ENTER}`)
+      // wait for vi to exit and the next prompt block to appear
+      iter = 0
+      await this.app.client.waitUntil(async () => {
+        await this.app.client.keys(keys.ESCAPE)
+        await typeSlowly(this.app, `:wq${keys.ENTER}`)
 
-      await cli.expectBlank(res)
+        try {
+          await this.app.client.waitForVisible(selectors.PROMPT_N(res.count + 1), 5000)
+          return true
+        } catch (err) {
+          console.error(`hmm, prompt block not yet visible at iter ${iter++}`)
+          return false
+        }
+      })
     } catch (err) {
       await common.oops(this, true)(err)
     }

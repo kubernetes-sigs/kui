@@ -160,8 +160,8 @@ exports.assertTableTitleMatches = async function(self, tableSelector, expectedTi
  */
 exports.typeSlowly = async (app, txt) => {
   for (let idx = 0; idx < txt.length; idx++) {
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await new Promise(resolve => setTimeout(resolve, 20))
     await app.client.keys(txt.charAt(idx))
   }
-  await new Promise(resolve => setTimeout(resolve, 10))
+  await new Promise(resolve => setTimeout(resolve, 20))
 }

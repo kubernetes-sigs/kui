@@ -29,7 +29,7 @@ import {
 
 const kubectl = 'kubectl'
 
-common.localDescribe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
+describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -90,10 +90,11 @@ common.localDescribe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, funct
           }
         })
 
-        // quit without saving
-        await typeSlowly(this.app, `${quit}${keys.ENTER}`)
+        await this.app.client.waitUntil(async () => {
+          // quit without saving
+          await this.app.client.keys(keys.ESCAPE)
+          await typeSlowly(this.app, `${quit}${keys.ENTER}`)
 
-        await this.app.client.waitUntil(() => {
           // first false: not exact
           // second false: don't assert, so that we can waitUntil
           return Promise.resolve(res)
