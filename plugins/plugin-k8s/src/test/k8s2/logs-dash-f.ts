@@ -38,7 +38,7 @@ const inputEncoded = inputBuffer.toString('base64')
 /** The number of seconds to sleep while we wait for more log entries
  * to accumulate. Making this value larger will provide more test
  * stability, but also increase test time. */
-const sleepTime = 8
+const sleepTime = 15
 
 function getTextContent(app: Application, selector) {
   return app.client.getText(selector)
@@ -49,7 +49,7 @@ function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
-describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
+describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
