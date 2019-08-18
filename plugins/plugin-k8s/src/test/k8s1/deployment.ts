@@ -58,7 +58,7 @@ describe('electron deployment', function(this: common.ISuite) {
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('myapp', undefined, undefined, ns))
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
   }
@@ -95,7 +95,7 @@ describe('electron deployment', function(this: common.ISuite) {
             )
           })
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
   }
@@ -118,7 +118,7 @@ describe('electron deployment', function(this: common.ISuite) {
         await this.app.client.click('#confirm-dialog .bx--btn--danger')
         await waitTillNone('deployment', undefined, 'myapp', undefined, inNamespace)
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
   }

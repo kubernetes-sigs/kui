@@ -66,7 +66,7 @@ localDescribe('Basic Functionality', function(this: ISuite) {
       assert.strictEqual(attr, CLI_PLACEHOLDER)
       return await this.app.client.waitForValue(selectors.PROMPT, timeout, true) // true: expect no value in the prompt input
     } catch (err) {
-      common.oops(this)(err)
+      return oops(this)(err)
     }
   }) */
 })
@@ -79,7 +79,7 @@ describe('bodyCss', function(this: ISuite) {
     try {
       await this.app.client.waitForExist('body.kui.in-electron')
     } catch (err) {
-      oops(this)(err)
+      return oops(this)(err)
     }
   })
 
@@ -87,7 +87,7 @@ describe('bodyCss', function(this: ISuite) {
     try {
       await this.app.client.waitForExist('body.kui.not-electron')
     } catch (err) {
-      oops(this)(err)
+      return oops(this)(err)
     }
   })
 })

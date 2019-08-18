@@ -102,7 +102,7 @@ describe('grid visualization', function(this: common.ISuite) {
                 console.error('retry!')
                 setTimeout(() => once(iter + 1, resolve, reject), 1000)
               } else {
-                common.oops(this)(err)
+                return common.oops(this)(err)
               }
             })
         }
@@ -298,7 +298,7 @@ describe('grid visualization', function(this: common.ISuite) {
                   console.error('retry in tableTest')
                   setTimeout(() => tableTest(iter + 1, resolve, reject), 1000)
               } else {
-                  common.oops(this)(err)
+                  return common.oops(this)(err)
               }
           });
     it(`should open table view, click on table row, and observe switch to grid view actionName=${actionName}`, () => new Promise((resolve, reject) => tableTest(0, resolve, reject))) */

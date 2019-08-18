@@ -77,7 +77,7 @@ describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fu
             .then(sidecar.expectMode(defaultModeForGet))
             .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
         } catch (err) {
-          common.oops(this)(err)
+          return common.oops(this)(err)
         }
       })
     }
