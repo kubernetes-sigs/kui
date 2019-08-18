@@ -24,14 +24,10 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 const { cli, selectors, sidecar } = ui
-const { localIt } = common
+const { localIt, pit } = common
 
 /** expect the given folder within the help tree */
 export const header = (folder: string) => folder
-
-/** skip the tests if we aren't doing a webpack+proxy test run */
-const runTheTests = process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true'
-const pit = runTheTests ? it : xit
 
 const yamlContent = `#
 # notes:
