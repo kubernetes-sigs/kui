@@ -67,7 +67,7 @@ describe('wsk package list tests', function(this: common.ISuite) {
 
       await sidecar.expectOpen(this.app).then(sidecar.expectShowing(action, undefined, undefined, pckage))
     } catch (err) {
-      common.oops(this)(err)
+      return common.oops(this)(err)
     }
   })
 

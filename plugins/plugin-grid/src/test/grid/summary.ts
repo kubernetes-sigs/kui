@@ -83,7 +83,7 @@ const _openTableExpectCountOf = function(ctx, expectedCount, expectedErrorRate, 
           }
           setTimeout(() => once(iter + 1, resolve, reject), 2000)
         } else {
-          common.oops(ctx)(err)
+          return common.oops(ctx)(err)
         }
       })
 

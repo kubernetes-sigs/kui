@@ -29,7 +29,7 @@ const waitForDelete = function(this: common.ISuite, { name }: { name: string }) 
     try {
       await waitForRed(this.app, selectors.BY_NAME(name))
     } catch (err) {
-      common.oops(this)(err)
+      return common.oops(this)(err)
     }
   })
 }
@@ -110,7 +110,7 @@ const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
       await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
       await waitForRawContent()
     } catch (err) {
-      common.oops(this, true)(err)
+      return common.oops(this, true)(err)
     }
   })
 }

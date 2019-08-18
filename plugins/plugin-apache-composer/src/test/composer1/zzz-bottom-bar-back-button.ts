@@ -156,7 +156,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
           if (iter < 20) {
             return once(iter + 1)
           } else {
-            common.oops(this)(err)
+            return common.oops(this)(err)
           }
         })
 
@@ -196,7 +196,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
           if (iter < 20) {
             return once(iter + 1)
           } else {
-            common.oops(this)(err)
+            return common.oops(this)(err)
           }
         })
 

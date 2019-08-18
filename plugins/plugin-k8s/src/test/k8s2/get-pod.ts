@@ -143,7 +143,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
           await testContainersTab(true)
         } catch (err) {
-          common.oops(this)(err)
+          return common.oops(this)(err)
         }
       })
 
@@ -180,7 +180,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
 
         await testContainersTab(true)
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
 
@@ -222,7 +222,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('nginx'))
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
 
@@ -238,7 +238,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         // wait for the badge to become green
         await waitForGreen(this.app, `${table} .entity[data-name="nginx"]`) // [data-key="status"]
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
 
@@ -247,7 +247,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         await this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
         await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
 
@@ -282,7 +282,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         await this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
         await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN, 20000, true)
       } catch (err) {
-        common.oops(this)(err)
+        return common.oops(this)(err)
       }
     })
 
@@ -296,7 +296,7 @@ describe(`electron get pod ${process.env.MOCHA_RUN_TARGET}`, function(this: comm
         await this.app.client.waitForExist(rows)
         await cli.expectOKWithString('nginx')
       } catch (err) {
-        await common.oops(this, true)(err)
+        return common.oops(this, true)(err)
       }
     })
 
