@@ -348,3 +348,8 @@ exports.remoteIt = (msg, func) => {
 exports.proxyIt = (msg, func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') return it(msg, func)
 }
+
+/** only execute the test in electron or proxy+browser client */
+exports.pit = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true') return it(msg, func)
+}

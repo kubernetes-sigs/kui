@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-import { dirname, join } from 'path'
-import { readFileSync, unlink } from 'fs'
+import { unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
 
@@ -24,75 +22,86 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 
 const { cli, keys, selectors } = ui
-const { localDescribe } = common
+const { pit, refresh } = common
 
 /** helpful selectors */
-const rows = selectors.xtermRows(0)
-const lastRow = `${rows} > div:last-child`
+const rows = (N: number) => selectors.xtermRows(N)
+const lastRow = (N: number) => `${rows(N)} > div:last-child`
 
-/** we have a custom vimrc, to make sure INSERT shows up */
-const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
-
-localDescribe('xterm vi 1', function(this: common.ISuite) {
+describe(`xterm vi ${process.env.MOCHA_RUN_TARGT || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   const typeThisText = 'hello there'
 
-  it('use vi to create a new file', async () => {
-    const file = tmpFile()
+  const file = tmpFile()
 
+  pit('use vi to create a new file', async () => {
     try {
-      const res = cli.do(`vi -u "${vimrc}" ${file.name}`, this.app)
+      const res = await cli.do(`vim ${file.name}`, this.app)
 
       // wait for vi to come up
-      await this.app.client.waitForExist(rows)
+      await this.app.client.waitForExist(rows(res.count))
 
       // wait for vi to come up in alt buffer mode
       await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
 
       // enter insert mode, and wait for INSERT to appear at the bottom
+      let iter = 0
       await this.app.client.keys('i')
       await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(lastRow)
+        const txt = await this.app.client.getText(lastRow(res.count))
+        if (++iter > 5) {
+          console.error('xterm vi still waiting for Insert mode', txt)
+        }
         return /INSERT/i.test(txt)
       })
 
       // type our input
       await this.app.client.keys(typeThisText)
+
+      // exit from insert mode
+      iter = 0
       await this.app.client.keys(keys.ESCAPE)
       await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(lastRow)
-        return txt.length === 0
+        const txt = await lastRow(res.count)
+        if (++iter > 5) {
+          console.error('xterm vi still waiting to exit insert mode', txt)
+        }
+        return !/INSERT/i.test(txt)
       })
 
       await this.app.client.keys(':wq')
       await this.app.client.keys(keys.ENTER)
 
-      await res.then(cli.expectBlank)
+      await cli.expectBlank(res)
 
       await cli.do(`cat ${file.name}`, this.app).then(cli.expectOKWithString('hello there'))
-
-      const contents = readFileSync(file.name).toString()
-      assert.strictEqual(contents.replace(/[\n\r]$/, ''), 'hello there')
     } catch (err) {
       return common.oops(this)(err)
-    } finally {
-      // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
-      await promisify(unlink)(file.name)
     }
   })
-})
 
-localDescribe('xterm vi 2', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
-  it('open vi :wq then :q, and expect no error', async () => {
+  pit('should cat the file contents', () =>
+    cli
+      .do(`cat "${file.name}"`, this.app)
+      .then(cli.expectOKWithString('hello there'))
+      .catch(common.oops(this))
+  )
+
+  pit('should remove the temp file', async () => {
+    // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
+    await promisify(unlink)(file.name)
+  })
+
+  pit('should reload', () => refresh(this).catch(common.oops(this)))
+
+  pit('open vi :wq then :q, and expect no error', async () => {
     try {
-      const res = cli.do(`vi -u "${vimrc}"`, this.app)
+      const res = await cli.do(`vim`, this.app)
 
       // wait for vi to come up
-      await this.app.client.waitForExist(rows)
+      await this.app.client.waitForExist(rows(res.count))
 
       // wait for vi to come up in alt buffer mode
       await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
@@ -101,7 +110,7 @@ localDescribe('xterm vi 2', function(this: common.ISuite) {
       await this.app.client.keys(':wq')
       await this.app.client.keys(keys.ENTER)
       /* await this.app.client.waitUntil(async () => {
-        const txt = await ui.getTextContent(this.app, lastRow)
+        const txt = await ui.getTextContent(this.app, lastRow(res.count))
         console.error('txt %s', txt)
         return /No file name/i.test(txt)
       }) */
@@ -111,7 +120,7 @@ localDescribe('xterm vi 2', function(this: common.ISuite) {
       await this.app.client.keys(keys.ENTER)
 
       // expect a clean exit, i.e. no error output on the console
-      await res.then(cli.expectBlank)
+      await cli.expectBlank(res)
     } catch (err) {
       return common.oops(this)(err)
     }
