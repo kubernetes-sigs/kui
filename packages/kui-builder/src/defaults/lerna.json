@@ -1,6 +1,6 @@
 {
   "packages": ["packages/*", "plugins/*"],
-  "version": "independent",
+  "version": "3.0.0",
   "command": {
     "publish": {
       "conventionalCommits": true,
