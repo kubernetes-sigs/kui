@@ -260,7 +260,7 @@ exports.after = (ctx, f) => async () => {
   if (anyFailed && ctx.app && ctx.app.client) {
     ctx.app.client.getRenderProcessLogs().then(logs =>
       logs
-        .filter(log => !/SFMono-Regular.otf/.test(log.message))
+        .filter(log => !/SFMono/.test(log.message))
         .forEach(log => {
           if (
             log.level === 'SEVERE' && // only console.error messages
@@ -326,7 +326,7 @@ exports.oops = (ctx, wait = false) => async err => {
         // filter out the "Not allowed to load local resource" font loading errors
         ctx.app.client.getRenderProcessLogs().then(logs =>
           logs
-            .filter(log => !/SFMono-Regular.otf/.test(log.message))
+            .filter(log => !/SFMono/.test(log.message))
             .forEach(log => {
               if (log.message.indexOf('%c') === -1) {
                 console.log('RENDER'.bold.yellow, log.message.red)
