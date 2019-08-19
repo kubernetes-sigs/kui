@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.0.0 (2019-08-19)
+
+
+### Bug Fixes
+
+* **apache-composer:** remove app create -r ([af0a428](https://github.com/IBM/kui/commit/af0a428)), closes [#316](https://github.com/IBM/kui/issues/316) [#318](https://github.com/IBM/kui/issues/318)
+* **packages/app:** remove stale entries from OS Help menu ([21f59c5](https://github.com/IBM/kui/commit/21f59c5)), closes [#1703](https://github.com/IBM/kui/issues/1703)
+* **plugins/plugin-tutorial:** tutorials versus dark mode fixes ([8f842ab](https://github.com/IBM/kui/commit/8f842ab)), closes [#531](https://github.com/IBM/kui/issues/531)
+* **plugins/plugin-tutorials:** getting started updates ([238666f](https://github.com/IBM/kui/commit/238666f)), closes [#1705](https://github.com/IBM/kui/issues/1705)
+* **plugins/plugin-tutorials:** now playing text is too small ([416c582](https://github.com/IBM/kui/commit/416c582)), closes [#1150](https://github.com/IBM/kui/issues/1150)
+* **plugins/plugin-tutorials:** remove old graphics from getting started ([864ca59](https://github.com/IBM/kui/commit/864ca59)), closes [#2041](https://github.com/IBM/kui/issues/2041)
+* **plugins/plugin-tutorials:** webpack versus tutorial play ([924f664](https://github.com/IBM/kui/commit/924f664)), closes [#1157](https://github.com/IBM/kui/issues/1157)
+* color contrast issues with dark mode ([15afe23](https://github.com/IBM/kui/commit/15afe23)), closes [#605](https://github.com/IBM/kui/issues/605)
+* getting started refinements ([811589b](https://github.com/IBM/kui/commit/811589b)), closes [#2170](https://github.com/IBM/kui/issues/2170)
+* improved proxy multitenancy ([f8f816f](https://github.com/IBM/kui/commit/f8f816f)), closes [#1938](https://github.com/IBM/kui/issues/1938)
+* multiple fixes for tab management ([c125f7f](https://github.com/IBM/kui/commit/c125f7f)), closes [#1493](https://github.com/IBM/kui/issues/1493)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* wskflow versus popup mode ([629bf44](https://github.com/IBM/kui/commit/629bf44)), closes [#1107](https://github.com/IBM/kui/issues/1107)
+
+
+### Features
+
+* **packages/app:** dark theme support ([51f8736](https://github.com/IBM/kui/commit/51f8736)), closes [#522](https://github.com/IBM/kui/issues/522)
+* kiali graph ([d51e3e1](https://github.com/IBM/kui/commit/d51e3e1)), closes [#965](https://github.com/IBM/kui/issues/965) [#966](https://github.com/IBM/kui/issues/966)
+* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+* **plugins/plugin-tutorial:** add more types to tutorial ([aebff14](https://github.com/IBM/kui/commit/aebff14)), closes [#1291](https://github.com/IBM/kui/issues/1291)
+* **plugins/plugins-tutorials:** getting started shouldn't focus on Apache Composer ([7d77767](https://github.com/IBM/kui/commit/7d77767)), closes [#1127](https://github.com/IBM/kui/issues/1127)
+* reroute getting started to use the about command ([b455c8d](https://github.com/IBM/kui/commit/b455c8d)), closes [#2352](https://github.com/IBM/kui/issues/2352)
+* switch about window to use a sidecar DOM ([90d3ad3](https://github.com/IBM/kui/commit/90d3ad3)), closes [#746](https://github.com/IBM/kui/issues/746)
+* updated about UI ([cce0edf](https://github.com/IBM/kui/commit/cce0edf)), closes [#2334](https://github.com/IBM/kui/issues/2334)
+
+
+
+
+
 # 0.34.0 (2019-06-17)
 
 ### Bug Fixes

@@ -1,5 +1,8 @@
 {
-  "packages": ["packages/*", "plugins/*"],
+  "packages": [
+    "packages/*",
+    "plugins/*"
+  ],
   "version": "3.0.0",
   "command": {
     "publish": {

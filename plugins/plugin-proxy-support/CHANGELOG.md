@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.0.0 (2019-08-19)
+
+
+### Bug Fixes
+
+* 404 errors do not flow back from proxy properly ([9cf76d3](https://github.com/IBM/kui/commit/9cf76d3)), closes [#2237](https://github.com/IBM/kui/issues/2237)
+* avoid catchall registration if in browser and no proxy ([5de02c2](https://github.com/IBM/kui/commit/5de02c2)), closes [#1494](https://github.com/IBM/kui/issues/1494)
+* **plugins/plugin-proxy-support:** try to unwind the returned fakedom in proxy executor, throw execption if necessary ([6be1aa0](https://github.com/IBM/kui/commit/6be1aa0)), closes [#1687](https://github.com/IBM/kui/issues/1687)
+* fixes for auth in browser+proxy mode ([a441c33](https://github.com/IBM/kui/commit/a441c33)), closes [#287](https://github.com/IBM/kui/issues/287) [#286](https://github.com/IBM/kui/issues/286) [#289](https://github.com/IBM/kui/issues/289)
+* **packages/app:** register capabilities before preloading plugins ([871d9de](https://github.com/IBM/kui/commit/871d9de)), closes [#1724](https://github.com/IBM/kui/issues/1724)
+* **packages/kui-builder:** theming fixes for webpack ([5254b73](https://github.com/IBM/kui/commit/5254b73)), closes [#524](https://github.com/IBM/kui/issues/524)
+* **plugin-proxy-support:** needle url issue ([d17856f](https://github.com/IBM/kui/commit/d17856f)), closes [#310](https://github.com/IBM/kui/issues/310)
+* **plugins/plugin-bash-like:** proxy session reconnect issues ([8bb48f0](https://github.com/IBM/kui/commit/8bb48f0)), closes [#2311](https://github.com/IBM/kui/issues/2311)
+* **plugins/plugin-k8s:** helm error handling in webpack ([c760a3a](https://github.com/IBM/kui/commit/c760a3a)), closes [#2340](https://github.com/IBM/kui/issues/2340)
+* **plugins/plugin-proxy-executor:** also look for statusCode ([2ebfc65](https://github.com/IBM/kui/commit/2ebfc65)), closes [#2154](https://github.com/IBM/kui/issues/2154)
+* **plugins/plugin-proxy-executor:** error handling fixes for proxy-executor ([de67a7c](https://github.com/IBM/kui/commit/de67a7c)), closes [#651](https://github.com/IBM/kui/issues/651)
+* **plugins/plugin-proxy-executor:** proxy-executor versus string responses ([4682f67](https://github.com/IBM/kui/commit/4682f67)), closes [#2208](https://github.com/IBM/kui/issues/2208)
+* **plugins/plugin-proxy-support:** override execOptions.tab in proxy executor ([a3af5e1](https://github.com/IBM/kui/commit/a3af5e1)), closes [#1649](https://github.com/IBM/kui/issues/1649)
+* improved proxy multitenancy ([b6b339c](https://github.com/IBM/kui/commit/b6b339c)), closes [#1907](https://github.com/IBM/kui/issues/1907) [#1923](https://github.com/IBM/kui/issues/1923) [#1920](https://github.com/IBM/kui/issues/1920)
+* improved proxy multitenancy ([f8f816f](https://github.com/IBM/kui/commit/f8f816f)), closes [#1938](https://github.com/IBM/kui/issues/1938)
+* kubectl logs versus webpack+proxy ([cea804a](https://github.com/IBM/kui/commit/cea804a)), closes [#1684](https://github.com/IBM/kui/issues/1684)
+* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+* **plugins/plugin-proxy-support:** restore usage error rendering in proxy clients ([4c16aff](https://github.com/IBM/kui/commit/4c16aff)), closes [#2246](https://github.com/IBM/kui/issues/2246)
+* **plugins/plugin-proxy-support:** webpack+proxy versus usage errors ([4557a72](https://github.com/IBM/kui/commit/4557a72)), closes [#733](https://github.com/IBM/kui/issues/733)
+
+
+### Features
+
+* **plugins/plugin-k8s:** support a gamut of helm client versions in proxy ([abc00d8](https://github.com/IBM/kui/commit/abc00d8)), closes [#570](https://github.com/IBM/kui/issues/570)
+* allow for client-provided localStorage impl ([829bc1d](https://github.com/IBM/kui/commit/829bc1d)), closes [#1294](https://github.com/IBM/kui/issues/1294)
+* **plugins/plugin-proxy-executor:** channel all proxied commands through websocket ([70c6206](https://github.com/IBM/kui/commit/70c6206)), closes [#2066](https://github.com/IBM/kui/issues/2066)
+* kubectl exec support ([81c6e5a](https://github.com/IBM/kui/commit/81c6e5a)), closes [#2117](https://github.com/IBM/kui/issues/2117)
+* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+
+
+
+
+
 # 0.34.0 (2019-06-17)
 
 ### Bug Fixes
