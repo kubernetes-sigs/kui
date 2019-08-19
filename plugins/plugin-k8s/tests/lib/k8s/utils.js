@@ -141,6 +141,34 @@ exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace 
   })
 
 /**
+ * Keep poking the given kind till no more such entities exist
+ *
+ */
+exports.waitTillTerminating = (kind, theCli = cli, name, inNamespace) => app =>
+  new Promise(resolve => {
+    // fetch the entities
+    const fetch = () =>
+      theCli
+        .do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
+          errOk: theCli.exitCode(404)
+        })
+        .then(res => {
+          return /Terminating/.test(res.output)
+        })
+
+    const iter = async () => {
+      const isTerminating = await fetch()
+      if (isTerminating) {
+        resolve()
+      } else {
+        setTimeout(iter, 3000)
+      }
+    }
+
+    iter()
+  })
+
+/**
  * Confirm that the table title matches
  *
  */
