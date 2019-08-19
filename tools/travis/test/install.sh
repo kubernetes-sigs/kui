@@ -137,7 +137,11 @@ if [ -n "$LAYERS" ]; then
             # we aren't yet ready to build these in parallel; TODO we
             # will need to call link:init first for each in sequence,
             # then we can build the clients in parallel
-            ./tools/travis/test/target.d/$MOCHA_TARGET.sh
+            if [ "$MOCHA_TARGET" == "webpack" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
+                echo "skipping webpack target install for osx"
+            else
+                ./tools/travis/test/target.d/$MOCHA_TARGET.sh
+            fi
         done
     fi
 

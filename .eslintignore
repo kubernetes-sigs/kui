@@ -1,5 +1,7 @@
 build/
+packages/kui-builder
 clients/**/*/dist/
+plugins/**/*/dist/
 packages/app/dist/
 **/*/node_modules/
 **/*.d.ts
