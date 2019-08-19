@@ -61,6 +61,10 @@ body[kui-theme="IBM Light"] {
   --color-light-yellow: hsla(46, 99%, 59%, 50%);
 }
 
+body[kui-theme="IBM Dark"] .bx--data-table {
+  font-family: var(--font-sans-serif);
+}
+
 /* mono-blue hightlightjs theme */
 .hljs {
   display: block;
