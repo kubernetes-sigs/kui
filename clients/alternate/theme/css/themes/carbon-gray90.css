@@ -36,10 +36,6 @@ body[kui-theme="IBM Dark"] {
 
   --color-text-02: #bebebe; /**/
 
-  --color-table-border1: #9e9fa1;
-  --color-table-border2: #3d4144;
-  --color-table-border3: #a5adb4;
-
   --color-sidecar-header: #3d3d3d;
   --color-sidecar-background: #171717;
   --color-sidecar-border: transparent;
@@ -63,9 +59,13 @@ body[kui-theme="IBM Dark"] {
 }
 
 /* some carbon-overrides */
+body[kui-theme="IBM Dark"] .bx--data-table {
+  font-family: var(--font-sans-serif);
+}
 body[kui-theme="IBM Dark"] .bx--data-table tr:hover td,
 body[kui-theme="IBM Dark"] .bx--data-table tr:hover th {
   color: var(--color-text-01);
+  border-color: var(--color-base02);
   background-color: #4c4c4c;
 }
 body[kui-theme="IBM Dark"] .bx--data-table th {
@@ -73,7 +73,8 @@ body[kui-theme="IBM Dark"] .bx--data-table th {
   background-color: var(--color-base02); /* ui-03 */
 }
 body[kui-theme="IBM Dark"] .bx--data-table td {
-  color: var(--color-text-01);
+  color: var(--color-text-02); /* lighter text for body, as specified by design */
+  border-color: var(--color-base02);
   background-color: #3d3d3d; /* ui-01 */
 }
 body[kui-theme="IBM Dark"] .bx--tabs__nav-link {
