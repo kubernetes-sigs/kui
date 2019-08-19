@@ -88,22 +88,11 @@ const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
-const mapOf = (plugin, entry, path) => {
-  const map = {}
-  map[`${plugin}.${entry}`] = path
-  return map
-}
 const pluginEntries = fs.readdirSync(pluginBase).map(dir => {
   try {
     const pjson = path.join(pluginBase, dir, 'package.json')
     const { kui } = require(pjson)
     const providedEntries = (kui && kui.webpack && kui.webpack.entry) || {}
-
-    const pluginEntryPath = `${pluginBase}/${dir}/plugin.js`
-    const pluginEntry = fs.existsSync(pluginEntryPath) ? mapOf(dir, 'plugin', pluginEntryPath) : {}
-
-    const preloadEntryPath = `${pluginBase}/${dir}/preload.js`
-    const preloadEntry = fs.existsSync(preloadEntryPath) ? mapOf(dir, 'preload', preloadEntryPath) : {}
 
     // return Object.assign({}, providedEntries, pluginEntry, preloadEntry)
     return providedEntries
@@ -125,9 +114,6 @@ const optimization = {
   minimize: false
 }
 
-const splitChunks2 = {
-  chunks: 'all'
-}
 const splitChunks = {
   chunks: 'async',
   name: false,

@@ -20,7 +20,7 @@ debug('loading')
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
+import { UsageModel } from '@kui-shell/core/core/usage-error'
 import {
   CommandRegistrar,
   CommandHandler,
