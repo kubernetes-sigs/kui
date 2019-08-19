@@ -33,6 +33,9 @@ import { CodedError } from '@kui-shell/core/models/errors'
 
 import { setOnline, setOffline } from './ui'
 
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-bash-like')
+
 const debug = Debug('plugins/bash-like/pty/session')
 
 /**
@@ -59,7 +62,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
         block = getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
         const prompt = getPrompt(block)
         prompt.readOnly = true
-        prompt.placeholder = 'Please wait while we connect to your cloud'
+        prompt.placeholder = strings('Please wait while we connect to your cloud')
 
         placeholderChanged = true
         previousText = prompt.value
@@ -105,7 +108,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
           }
           setOffline()
           setTimeout(() => once(iter + 1), iter < 10 ? 2000 : iter < 100 ? 4000 : 10000)
-          return 'Could not establish a new session'
+          return strings('Could not establish a new session')
         })
     }
 
@@ -134,7 +137,7 @@ function newSessionForTab(tab: Tab) {
 
       // change the placeholder if sessionInitialization is slow
       const placeholderAsync = setTimeout(() => {
-        prompt.placeholder = 'Please wait while we connect to your cloud'
+        prompt.placeholder = strings('Please wait while we connect to your cloud')
         setStatus(block, 'processing')
         placeholderChanged = true
       }, settings.millisBeforeProxyConnectionWarning || 250)
@@ -164,7 +167,7 @@ export function registerCommands(commandTree: CommandRegistrar) {
     () => {
       const message = document.createElement('pre')
       message.appendChild(
-        document.createTextNode('Successfully connected to your cloud. For next steps, try this command: ')
+        document.createTextNode(strings('Successfully connected to your cloud. For next steps, try this command: '))
       )
 
       const clicky = document.createElement('span')

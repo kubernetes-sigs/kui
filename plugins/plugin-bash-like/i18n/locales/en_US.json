@@ -12,5 +12,8 @@
   "lsDashSUsageDocs": "Sort files by size",
   "openUsageTitle": "open file",
   "openUsageHeader": "View the contents a file",
-  "localFilePath": "local file path"
+  "localFilePath": "local file path",
+  "Please wait while we connect to your cloud": "Please wait while we connect to your cloud",
+  "Could not establish a new session": "Could not establish a new session",
+  "Successfully connected to your cloud. For next steps, try this command: ": "Successfully connected to your cloud. For next steps, try this command: "
 }
