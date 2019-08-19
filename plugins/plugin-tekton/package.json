@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-tekton",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Visualizations for Tekton Pipelines",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
