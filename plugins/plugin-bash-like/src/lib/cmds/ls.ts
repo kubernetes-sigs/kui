@@ -20,6 +20,7 @@ import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
+import { flatten } from '@kui-shell/core/core/utility'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
@@ -32,11 +33,6 @@ import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-bash-like')
 
 const debug = Debug('plugins/bash-like/cmds/ls')
-
-/** flatten an array of arrays */
-function flatten<T>(arrays: T[][]): T[] {
-  return [].concat(...arrays)
-}
 
 /**
  * From the end of the given string, scan for the idx that marks the

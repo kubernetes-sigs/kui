@@ -23,6 +23,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
+import { flatten } from '@kui-shell/core/core/utility'
 import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
@@ -556,11 +557,6 @@ const standardViewModes = (defaultMode, fn?) => {
   } else {
     return () => ({ modes: () => makeModes() })
   }
-}
-
-/** flatten an array of arrays */
-function flatten<T>(arrays: T[][]): T[] {
-  return [].concat(...arrays)
 }
 
 export const agent = isLinux

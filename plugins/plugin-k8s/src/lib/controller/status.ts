@@ -20,6 +20,7 @@ import { basename, join } from 'path'
 import { safeLoadAll as parseYAML } from 'js-yaml'
 
 import { findFile } from '@kui-shell/core/core/find-file'
+import { flatten } from '@kui-shell/core/core/utility'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
 import { Row, Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
@@ -27,7 +28,7 @@ import { CodedError } from '@kui-shell/core/models/errors'
 import { qexec } from '@kui-shell/core/core/repl'
 
 import { withRetryOn404 } from '../util/retry'
-import { flatten, isDirectory } from '../util/util'
+import { isDirectory } from '../util/util'
 
 import { CRDResource, KubeResource } from '../model/resource'
 import { States, FinalState } from '../model/states'

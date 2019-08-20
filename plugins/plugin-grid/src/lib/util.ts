@@ -23,6 +23,7 @@ import * as prettyPrintDuration from 'pretty-ms'
 import eventBus from '@kui-shell/core/core/events'
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { flatten } from '@kui-shell/core/core/utility'
 import * as repl from '@kui-shell/core/core/repl'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
@@ -53,12 +54,6 @@ export const isUUIDPattern = /.*[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][
 
 /** title to use when viewing general activity, i.e. without a name filter */
 export const titleWhenNothingSelected = 'Recent Activity'
-
-/**
- * Flatten an array of arrays
- *
- */
-const flatten = arrays => [].concat(...arrays)
 
 /** return the path attribute of the given activation */
 export const pathOf = activation => `/${activation.annotations.find(({ key }) => key === 'path').value}`
