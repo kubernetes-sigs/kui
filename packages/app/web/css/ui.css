@@ -847,7 +847,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"
   transition: color 150ms ease-in-out;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
-  color: var(--color-brand-01);
+  color: var(--color-base0D);
 }
 sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
   fill: var(--color-sidecar-toolbar-foreground);
