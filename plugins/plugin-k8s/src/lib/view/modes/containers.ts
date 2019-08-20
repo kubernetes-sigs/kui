@@ -19,7 +19,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { Row } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import repl = require('@kui-shell/core/core/repl')
+import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -81,9 +81,9 @@ export const containersMode: ModeRegistration<KubeResource> = {
  *
  */
 const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
-  const podName = repl.encodeComponent(pod.metadata.name)
-  const containerName = repl.encodeComponent(container.name)
-  const ns = repl.encodeComponent(pod.metadata.namespace)
+  const podName = encodeComponent(pod.metadata.name)
+  const containerName = encodeComponent(container.name)
+  const ns = encodeComponent(pod.metadata.namespace)
 
   // a bit convoluted, so we can delay the call to getActiveView
   return (evt: Event) => {
@@ -209,13 +209,13 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
 export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
   debug('renderContainers', command, resource)
 
-  const fetchPod = `kubectl get pod ${repl.encodeComponent(resource.resource.metadata.name)} -n "${
+  const fetchPod = `kubectl get pod ${encodeComponent(resource.resource.metadata.name)} -n "${
     resource.resource.metadata.namespace
   }" -o json`
   debug('issuing command', fetchPod)
 
   try {
-    const podResource = await repl.qexec(fetchPod)
+    const podResource = await qexec(fetchPod)
     debug('renderContainers.response', podResource)
 
     return formatTable(tab, {

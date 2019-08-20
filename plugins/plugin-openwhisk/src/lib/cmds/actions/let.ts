@@ -52,10 +52,10 @@ const debug = Debug('plugin/openwhisk/cmds/actions/let')
 
 const baseName = process.env.BASE_NAME || 'anon'
 
-import minimist = require('yargs-parser')
-import needle = require('needle')
-import withRetry = require('promise-retry')
-import repl = require('@kui-shell/core/core/repl')
+import * as minimist from 'yargs-parser'
+import * as needle from 'needle'
+import * as withRetry from 'promise-retry'
+import * as repl from '@kui-shell/core/core/repl'
 
 interface StatusCodeError extends Error {
   statusCode: number

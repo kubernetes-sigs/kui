@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { ExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
-const debug = require('debug')('k8s/util/retry')
+import * as Debug from 'debug'
 
-import repl = require('@kui-shell/core/core/repl')
+import { ExecOptions, DefaultExecOptions } from '@kui-shell/core/models/execOptions'
+import { qexec } from '@kui-shell/core/core/repl'
+
+const debug = Debug('k8s/util/retry')
 
 export const withRetryOnCode = (code: number) => (fn, cmd: string) =>
   new Promise((resolve, reject) => {
@@ -46,7 +48,7 @@ export const withRetryOn404 = withRetryOnCode(404)
  */
 export const okIf404 = async (command: string, execOptions: ExecOptions = new DefaultExecOptions()) => {
   try {
-    await repl.qexec(command, undefined, undefined, execOptions)
+    await qexec(command, undefined, undefined, execOptions)
   } catch (err) {
     if (err.code === 404) {
       // no worries!

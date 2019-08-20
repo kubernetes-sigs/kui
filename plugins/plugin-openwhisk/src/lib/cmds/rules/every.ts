@@ -23,10 +23,9 @@
  *
  */
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const parse = require('parse-duration')
+import * as parse from 'parse-duration'
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 const MILLIS_PER_SECOND = 1000
 

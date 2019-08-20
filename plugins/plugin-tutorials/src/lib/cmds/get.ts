@@ -25,10 +25,12 @@ import { join } from 'path' // markdown to
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-const debug = require('debug')('tutorial get')
+import * as Debug from 'debug'
+const debug = Debug('tutorial get')
 debug('loading')
-import marked = require('marked')
-import repl = require('@kui-shell/core/core/repl')
+
+import * as marked from 'marked'
+import * as repl from '@kui-shell/core/core/repl'
 
 debug('finished loading modules')
 
