@@ -64,6 +64,7 @@ const cssForKey = {
   NAME: 'entity-name',
   SOURCE: 'lighter-text smaller-text',
   SUBOBJECT: 'lighter-text smaller-text',
+  MESSAGE: 'somewhat-smaller-text slightly-deemphasize',
   'CREATED AT': 'lighter-text smaller-text',
 
   AGE: 'slightly-deemphasize',
@@ -73,6 +74,7 @@ const cssForKey = {
 }
 
 const tagForKey = {
+  REASON: 'badge', // k get events
   STATUS: 'badge'
 }
 
@@ -116,6 +118,7 @@ const cssForValue = {
   Rebooted: 'green-background',
   Started: 'green-background',
   Created: 'green-background',
+  Scheduled: 'green-background',
   SuccessfulCreate: 'green-background',
   SuccessfulMountVol: 'green-background',
   ContainerCreating: 'yellow-background',
@@ -311,7 +314,7 @@ export const formatTable = (
               header +
               ' ' +
               outerCSSForKey[key] +
-              (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+              (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS|REASON/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1); REASON for k get events --all-namespaces
             css: css + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
             value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
           }))
