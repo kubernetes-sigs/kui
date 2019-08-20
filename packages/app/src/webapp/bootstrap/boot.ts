@@ -45,9 +45,12 @@ const domReady = prefs => async () => {
       })
     )
 
-    waitForThese.push(electronEvents.then(_ => _.init()))
-
-    waitForThese.push(repl.then(_ => _.init(prefs)))
+    waitForThese.push(
+      electronEvents
+        .then(_ => _.init())
+        .then(() => repl)
+        .then(_ => _.init(prefs))
+    )
 
     // const namespace = require('../../../plugins/modules/openwhisk/plugin/lib/models/namespace')
     // const nsInit = namespace.init(plugins.prequire, prefs && prefs.noAuthOk, prefs)
