@@ -2,6 +2,8 @@ build/
 packages/kui-builder
 clients/**/*/dist/
 plugins/**/*/dist/
+plugins/*/lib/**/*.js
+plugins/*/*.js
 packages/app/dist/
 **/*/node_modules/
 **/*.d.ts
