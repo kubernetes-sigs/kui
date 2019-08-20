@@ -21,8 +21,8 @@ import store from '@kui-shell/core/models/store'
 
 import { apiHost, auth as authModel } from './auth'
 const debug = Debug('plugins/openwhisk/models/namespace')
-import cli = require('@kui-shell/core/webapp/cli')
-import repl = require('@kui-shell/core/core/repl')
+import * as cli from '@kui-shell/core/webapp/cli'
+import * as repl from '@kui-shell/core/core/repl'
 
 /** localStorage key */
 const key = 'wsk.namespaces'

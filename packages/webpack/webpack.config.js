@@ -88,16 +88,29 @@ const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
-const pluginEntries = fs
-  .readdirSync(pluginBase)
-  .map(dir => {
-    try {
-      const pjson = path.join(pluginBase, dir, 'package.json')
-      const { kui } = require(pjson)
-      return kui && kui.webpack && kui.webpack.entry
-    } catch (err) {}
-  })
-  .filter(x => x)
+const mapOf = (plugin, entry, path) => {
+  const map = {}
+  map[`${plugin}.${entry}`] = path
+  return map
+}
+const pluginEntries = fs.readdirSync(pluginBase).map(dir => {
+  try {
+    const pjson = path.join(pluginBase, dir, 'package.json')
+    const { kui } = require(pjson)
+    const providedEntries = (kui && kui.webpack && kui.webpack.entry) || {}
+
+    const pluginEntryPath = `${pluginBase}/${dir}/plugin.js`
+    const pluginEntry = fs.existsSync(pluginEntryPath) ? mapOf(dir, 'plugin', pluginEntryPath) : {}
+
+    const preloadEntryPath = `${pluginBase}/${dir}/preload.js`
+    const preloadEntry = fs.existsSync(preloadEntryPath) ? mapOf(dir, 'preload', preloadEntryPath) : {}
+
+    // return Object.assign({}, providedEntries, pluginEntry, preloadEntry)
+    return providedEntries
+  } catch (err) {
+    return {}
+  }
+})
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
 
@@ -109,8 +122,42 @@ if (CompressionPlugin) {
 }
 
 const optimization = {
-  usedExports: true
+  minimize: false
 }
+
+const splitChunks2 = {
+  chunks: 'all'
+}
+const splitChunks = {
+  chunks: 'async',
+  name: false,
+  /* fs.readdirSync(pluginBase).reduce(
+    (groups, dir) => {
+      if (/plugin/.test(dir)) {
+        groups[dir] = {
+          test: (module, chunk) => {
+            const include = module && module.context && module.context.indexOf(dir) >= 0
+            return include
+          },
+          minSize:0, minChunks: 1, reuseExistingChunk: true, enforce: true,
+          chunks: 'all',
+          name: dir
+        }
+      }
+      return groups
+    }, */
+  cacheGroups: {
+    vendors: {
+      test: /[\\/]node_modules[\\/]/,
+      name: 'vendors',
+      priority: -10,
+      chunks: 'all'
+    }
+  }
+  //  )
+}
+console.error('!!!!!!!', splitChunks)
+// optimization.splitChunks = splitChunks
 
 // the Kui builder plugin
 plugins.push({
@@ -196,6 +243,7 @@ module.exports = {
     compress: true,
     clientLogLevel: 'silent',
     watchOptions: {
+      'info-verbosity': 'verbose',
       poll: pollInterval,
       ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
     },

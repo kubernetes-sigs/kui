@@ -41,14 +41,14 @@ declare const hljs
 // markdown to html note how we override the link rendering to add our
 // bx-link css class; it'd be nice if this were cleaner, but that's
 // marked, as far as i can tell
-import Marked = require('marked')
+import * as Marked from 'marked'
 const renderer = new Marked.Renderer()
 renderer.link = (href: string, title: string, text: string) => {
   return `<a class='bx--link' href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
 }
 const marked = _ => Marked(_, { renderer })
-import cli = require('@kui-shell/core/webapp/cli')
-import repl = require('@kui-shell/core/core/repl')
+import * as cli from '@kui-shell/core/webapp/cli'
+import { hasAuth, pexec } from '@kui-shell/core/core/repl'
 
 // TODO eliminate this jquery dependence
 let $
@@ -68,10 +68,10 @@ interface TutorialPane extends HTMLDivElement {
  */
 const rowFilters = {
   auth: () => {
-    return repl.hasAuth()
+    return hasAuth()
   },
   'no-auth': () => {
-    return !repl.hasAuth()
+    return !hasAuth()
   }
 }
 
@@ -226,7 +226,7 @@ const setHighlightPosition = ({ selector }) => {
  */
 const commandFromFullscreen = (pane: TutorialPane, command: string, display = command, nested = false) => () => {
   const go = () => {
-    repl.pexec(command)
+    pexec(command)
 
     if (command.startsWith('preview')) {
       // start a cycle of hover effects
@@ -673,7 +673,7 @@ const transitionSteps = (
   // Execute a command
   if (execute) {
     debug('execute', execute)
-    repl.pexec(execute)
+    pexec(execute)
   }
 
   // Preview a composition
@@ -682,7 +682,7 @@ const transitionSteps = (
 
     if (file) {
       debug('preview', file)
-      repl.pexec(`preview ${file}`)
+      pexec(`preview ${file}`)
     }
   }
 }

@@ -24,7 +24,7 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
-import repl = require('@kui-shell/core/core/repl')
+import { qexec } from '@kui-shell/core/core/repl'
 
 /**
  * These options help guide the help system; this command needs a
@@ -87,7 +87,7 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
       }
     } else if (args.length === 3 || args.length === 4) {
       // activation logs xxx or wsk activation logs xxx
-      const activation = await repl.qexec(`${entityType} get ${entityId}`)
+      const activation = await qexec(`${entityType} get ${entityId}`)
       if (isHeadless()) {
         return activation[mode]
       } else {

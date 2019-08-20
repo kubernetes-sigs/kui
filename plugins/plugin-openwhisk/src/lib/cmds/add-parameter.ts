@@ -20,7 +20,7 @@ import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { update } from './openwhisk-core'
 import { currentSelection } from '../models/openwhisk-entity'
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * This plugin introduces

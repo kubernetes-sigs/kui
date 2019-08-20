@@ -30,12 +30,13 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import expandHomeDir from '@kui-shell/core/util/home'
 import UsageError from '@kui-shell/core/core/usage-error'
+import * as repl from '@kui-shell/core/core/repl'
+import * as namespace from '../models/namespace'
 
 import { getClient, owOpts } from './openwhisk-core'
 import { apiHost, auth as authModel } from '../models/auth'
+
 const debug = Debug('plugins/openwhisk/cmds/auth')
-import repl = require('@kui-shell/core/core/repl')
-import namespace = require('../models/namespace')
 
 /**
  * Location of the wskprops file

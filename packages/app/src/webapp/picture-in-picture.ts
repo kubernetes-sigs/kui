@@ -24,9 +24,8 @@ import Presentation from './views/presentation'
 import { popupListen, Tab } from './cli'
 import { ExecOptions } from '../models/execOptions'
 import { EntitySpec } from '../models/entity'
-
-import repl = require('../core/repl')
-import bottomStripe = require('./bottom-stripe')
+import { pexec, qexec } from '../core/repl'
+import { css, rawCSS } from './bottom-stripe'
 
 const _highlight = (op: string) => (highlightThis?: Element | Element[]) => {
   if (highlightThis) {
@@ -133,8 +132,8 @@ const pip = (
   const sidecar = getSidecar(tab)
   const sidecarClass = sidecar.className
   const escapeHandler = undefined // we don't want to override the escape key behavior
-  const backContainer = bottomStripe.css.backContainer(tab)
-  const backButton = bottomStripe.css.backButton(tab)
+  const backContainer = css.backContainer(tab)
+  const backButton = css.backButton(tab)
   const restoreFn = restore(
     tab,
     container,
@@ -246,8 +245,8 @@ export const drilldown = (
   const capturedHeader5 = capture(tab, '.sidecar-header-secondary-content')
 
   // for the footer, we need to capture the modeButton renderer, so we can reattach the click events
-  const modeButtons = bottomStripe.css.modeContainer(tab)['capture']
-  const capturedFooter = capture(tab, bottomStripe.rawCSS.buttons, modeButtons && modeButtons())
+  const modeButtons = css.modeContainer(tab)['capture']
+  const capturedFooter = capture(tab, rawCSS.buttons, modeButtons && modeButtons())
 
   debug('container', container)
   debug('alreadyPipped', alreadyPipped)
@@ -288,9 +287,9 @@ export const drilldown = (
     )
 
     if (!options || options.exec === 'pexec') {
-      return repl.pexec(command, execOptions).catch(restoreFn)
+      return pexec(command, execOptions).catch(restoreFn)
     } else {
-      return repl.qexec(command, undefined, undefined, execOptions).catch(restoreFn)
+      return qexec(command, undefined, undefined, execOptions).catch(restoreFn)
     }
   } else if (typeof command === 'function') {
     return command().catch(restoreFn)

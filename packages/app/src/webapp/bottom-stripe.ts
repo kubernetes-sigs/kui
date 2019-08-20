@@ -24,7 +24,7 @@ import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
-import repl = require('../core/repl')
+import { pexec, qexec } from '../core/repl'
 
 const debug = Debug('webapp/picture-in-picture')
 
@@ -66,9 +66,9 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
-      return repl.pexec(makeView, execOptions)
+      return pexec(makeView, execOptions)
     } else {
-      return repl.qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
+      return qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
     }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
@@ -433,7 +433,7 @@ const _addModeButton = (
         }
       } else {
         try {
-          await repl.pexec(command(entity), { echo, noHistory, replSilence })
+          await pexec(command(entity), { echo, noHistory, replSilence })
           if (leaveBottomStripeAlone) {
             changeActiveButton()
           }

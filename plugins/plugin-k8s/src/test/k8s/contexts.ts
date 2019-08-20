@@ -17,13 +17,13 @@
 import { execSync } from 'child_process'
 import { readFileSync, writeFileSync } from 'fs'
 import { safeDump, safeLoad as parseYAML } from 'js-yaml'
+import * as path from 'path'
+import * as assert from 'assert'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-import path = require('path')
-import assert = require('assert')
 
 const synonyms = ['kubectl']
 
@@ -155,7 +155,7 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
             )
             .then(selector => this.app.client.getText(selector))
 
-          assert.equal(currentContextAsIndicatedByContextsTable, currentContext)
+          assert.strictEqual(currentContextAsIndicatedByContextsTable, currentContext)
         } catch (err) {
           return common.oops(this)(err)
         }

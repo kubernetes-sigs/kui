@@ -15,18 +15,19 @@
  */
 
 import * as Debug from 'debug'
-
 import * as fs from 'fs'
 import { join } from 'path'
+import * as mkdirp from 'mkdirp'
 import { spawn } from 'child_process'
 import * as colors from 'colors/safe'
+
 import { theme } from '@kui-shell/settings/config.json'
+
 const debug = Debug('fetch-ui')
 
 if (require.main === module) {
   debug('called directly')
 }
-import mkdirp = require('mkdirp')
 
 const variants = {
   win32: 'win32-x64.zip',

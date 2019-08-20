@@ -18,7 +18,6 @@ import { readdir } from 'fs'
 
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import repl = require('@kui-shell/core/core/repl')
 
 import { contentDir } from './util'
 

@@ -21,7 +21,7 @@ import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
 import { config } from '@kui-shell/core/core/settings'
 import store from '@kui-shell/core/models/store'
 import expandHomeDir from '@kui-shell/core/util/home'
-import openwhisk = require('openwhisk')
+import * as openwhisk from 'openwhisk'
 
 const debug = Debug('plugins/openwhisk/models/auth')
 

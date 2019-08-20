@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-import boot from './boot'
-boot()
+import('./boot').then(_ => _.default())

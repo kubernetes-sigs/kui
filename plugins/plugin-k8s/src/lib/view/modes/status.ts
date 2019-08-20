@@ -23,7 +23,7 @@ import Resource from '../../model/resource'
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
-import repl = require('@kui-shell/core/core/repl')
+import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { Table, MultiTable } from '@kui-shell/core/webapp/models/table'
 
@@ -75,13 +75,13 @@ export const renderStatus = async (tab: Tab, command: string, resource: Resource
   // kubectl status => k8s status
   const commandForRepl = command === 'kubectl' ? 'k8s' : command
 
-  const fetchModels = `${commandForRepl} status ${repl.encodeComponent(
+  const fetchModels = `${commandForRepl} status ${encodeComponent(
     resource.filepathForDrilldown || resource.kind || resource.resource.kind
-  )} ${repl.encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
+  )} ${encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
   debug('issuing command', fetchModels)
 
   try {
-    const model: Table | MultiTable = await repl.qexec(fetchModels)
+    const model: Table | MultiTable = await qexec(fetchModels)
     debug('renderStatus.models', model)
 
     return formatTable(tab, model)

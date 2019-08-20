@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-import minimist = require('yargs-parser')
+import * as minimist from 'yargs-parser'
 
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
 import { pexec, qexec } from '../../core/repl'

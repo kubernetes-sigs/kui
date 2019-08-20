@@ -16,12 +16,12 @@
 
 import * as Debug from 'debug'
 import { spawn } from 'child_process'
-const debug = Debug('fetcher')
+import * as fs from 'fs'
+import * as path from 'path'
+import * as needle from 'needle'
+import * as extract from 'extract-zip'
 
-import fs = require('fs')
-import path = require('path')
-import needle = require('needle')
-import extract = require('extract-zip')
+const debug = Debug('fetcher')
 
 /**
  * Initiate a fetch

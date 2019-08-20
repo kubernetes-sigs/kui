@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('core/preloader')
 debug('loading')
 
-import * as commandTree from './command-tree'
+import { proxy } from './command-tree'
 import { PrescanModel } from './plugins'
 import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
 
@@ -28,7 +28,7 @@ import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
  *
  */
 export default async (prescan: PrescanModel, options) => {
-  debug('init')
+  debug('init', prescan)
 
   const jobs = Promise.all(
     prescan.preloads.map(async module => {
@@ -61,7 +61,7 @@ export default async (prescan: PrescanModel, options) => {
           // ./plugins.ts
           const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
           const registration: PreloadRegistration = registrationRef.default || registrationRef
-          await registration(commandTree.proxy(module.route), options)
+          await registration(proxy(module.route), options)
           debug('done preloading %s', module.path)
         } catch (err) {
           debug('error invoking preload', module.path, err)

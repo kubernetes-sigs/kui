@@ -31,6 +31,7 @@ import {
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { CodedError } from '@kui-shell/core/models/errors'
+import { encodeComponent, qexec, semicolonInvoke } from '@kui-shell/core/core/repl'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -50,8 +51,6 @@ import { deleteResourceButton } from '../view/modes/crud'
 import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 import helmGet from './helm/get'
-
-import repl = require('@kui-shell/core/core/repl')
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
@@ -429,27 +428,24 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
           const finalState = `--final-state ${expectedState.toString()}`
           const resourceNamespace =
-            options.n || options.namespace ? `-n ${repl.encodeComponent(options.n || options.namespace)}` : ''
+            options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
 
           debug('about to get status', file, entityType, entity, resourceNamespace)
-          return repl
-            .qexec(
-              `${statusCommand} status ${file || entityType} ${entity ||
-                ''} ${finalState} ${resourceNamespace} --watch`,
-              undefined,
-              undefined,
-              { parameters: execOptions.parameters }
-            )
-            .catch(err => {
-              if (err.code === 404 && expectedState === FinalState.OfflineLike) {
-                // that's ok!
-                debug('resource not found after status check, but that is ok because that is what we wanted')
-                return out
-              } else {
-                console.error('error constructing status', err)
-                return err
-              }
-            })
+          return qexec(
+            `${statusCommand} status ${file || entityType} ${entity || ''} ${finalState} ${resourceNamespace} --watch`,
+            undefined,
+            undefined,
+            { parameters: execOptions.parameters }
+          ).catch(err => {
+            if (err.code === 404 && expectedState === FinalState.OfflineLike) {
+              // that's ok!
+              debug('resource not found after status check, but that is ok because that is what we wanted')
+              return out
+            } else {
+              console.error('error constructing status', err)
+              return err
+            }
+          })
         } else {
           return Promise.resolve(true)
         }
@@ -689,10 +685,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const entity = argv[2]
         const namespace = options.namespace || options.n || 'default'
         debug('status after kubectl run', entity, namespace)
-        repl
-          .qexec(
-            `k status deploy "${entity}" -n "${namespace}" --final-state ${FinalState.OnlineLike.toString()} --watch`
-          )
+        qexec(`k status deploy "${entity}" -n "${namespace}" --final-state ${FinalState.OnlineLike.toString()} --watch`)
           .then(cleanupAndResolve)
           .catch(reject)
       } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
@@ -775,7 +768,7 @@ const shouldSendToPTY = (opts: EvaluatorArgs): boolean =>
   opts.argvNoOptions.includes('|')
 
 async function kubectl(opts: EvaluatorArgs) {
-  const semi = await repl.semicolonInvoke(opts)
+  const semi = await semicolonInvoke(opts)
   if (semi) {
     return semi
   }
@@ -784,7 +777,7 @@ async function kubectl(opts: EvaluatorArgs) {
     // execOptions.exec = 'qexec'
     debug('redirect exec command to PTY')
     const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
-    return repl.qexec(
+    return qexec(
       `sendtopty ${commandToPTY}`,
       opts.block,
       undefined,
@@ -796,7 +789,7 @@ async function kubectl(opts: EvaluatorArgs) {
   } else {
     debug('invoking _kubectl via qexec')
     const command = opts.command.replace(/^kubectl(\s)?/, '_kubectl$1').replace(/^k(\s)?/, '_kubectl$1')
-    return repl.qexec(command, opts.block, undefined, {
+    return qexec(command, opts.block, undefined, {
       tab: opts.tab,
       raw: opts.execOptions.raw,
       noDelegation: opts.execOptions.noDelegation,

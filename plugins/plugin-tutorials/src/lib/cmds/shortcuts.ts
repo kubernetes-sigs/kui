@@ -29,7 +29,7 @@ const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-import repl = require('@kui-shell/core/core/repl')
+import { qexec } from '@kui-shell/core/core/repl'
 
 /**
  * Here we register as a listener for "shortcut" commands, that make
@@ -40,7 +40,7 @@ export default async (commandTree: CommandRegistrar) => {
   // kubernetes coding basics shortcut
   commandTree.listen(
     '/tutorial/kubernetes/starter',
-    () => repl.qexec('tutorial play @tutorials/kubernetes-basics --top-level'),
+    () => qexec('tutorial play @tutorials/kubernetes-basics --top-level'),
     {
       usage: { command: 'basics', docs: kubernetesBasicsDocs },
       needsUI: true,
@@ -50,19 +50,15 @@ export default async (commandTree: CommandRegistrar) => {
   )
 
   // coding basics shortcut
-  commandTree.listen(
-    '/tutorial/composer/basics',
-    () => repl.qexec('tutorial play @tutorials/coding-basics --top-level'),
-    {
-      usage: { command: 'basics', docs: codingBasicsDocs },
-      needsUI: true,
-      inBrowserOk: true,
-      noAuthOk: true
-    }
-  )
+  commandTree.listen('/tutorial/composer/basics', () => qexec('tutorial play @tutorials/coding-basics --top-level'), {
+    usage: { command: 'basics', docs: codingBasicsDocs },
+    needsUI: true,
+    inBrowserOk: true,
+    noAuthOk: true
+  })
 
   // combinators shortcut
-  commandTree.listen('/tutorial/combinators', () => repl.qexec('tutorial play @tutorials/combinators --top-level'), {
+  commandTree.listen('/tutorial/combinators', () => qexec('tutorial play @tutorials/combinators --top-level'), {
     usage: { command: 'started', docs: combinatorsDocs },
     needsUI: true,
     inBrowserOk: true,

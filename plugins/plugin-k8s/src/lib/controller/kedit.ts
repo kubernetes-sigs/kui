@@ -28,6 +28,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 import { get as relevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
+import { encodeComponent, pexec, qexec } from '@kui-shell/core/core/repl'
 
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
@@ -35,8 +36,6 @@ import { KubeResource, Resource } from '../model/resource'
 import { statusButton } from '../view/modes/status'
 import { formatEntity } from '../view/formatEntity'
 import generateForm from '../view/form'
-
-import repl = require('@kui-shell/core/core/repl')
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
@@ -148,16 +147,14 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   const openInEditor = () => {
     debug('openInEditor', yaml.metadata.name)
 
-    return repl
-      .qexec(
-        `edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
-        undefined,
-        undefined,
-        {
-          parameters: editorEntity
-        }
-      )
-      .then(addModeButtons('raw'))
+    return qexec(
+      `edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
+      undefined,
+      undefined,
+      {
+        parameters: editorEntity
+      }
+    ).then(addModeButtons('raw'))
   }
 
   /** open the content as a pretty-printed form */
@@ -187,9 +184,7 @@ const showAsTable = async (
     onclickFn: kubeEntity => {
       return evt => {
         evt.stopPropagation() // row versus name click handling; we don't want both
-        return repl.pexec(
-          `kedit ${repl.encodeComponent(filepathAsGiven)} ${repl.encodeComponent(kubeEntity.metadata.name)}`
-        )
+        return pexec(`kedit ${encodeComponent(filepathAsGiven)} ${encodeComponent(kubeEntity.metadata.name)}`)
       }
     }
   }
@@ -221,7 +216,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
       throw new Error('The specified file is empty')
     } else if (yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0) {
       debug('The specified file does not contain any Kubernetes resource definitions')
-      return repl.qexec(`edit "${filepathAsGiven}"`)
+      return qexec(`edit "${filepathAsGiven}"`)
     } else if (yamls.length > 1 && !resource) {
       return showAsTable(yamls, filepathAsGiven, parsedOptions)
     } else {
@@ -234,7 +229,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
     }
   } catch (err) {
     console.error('error parsing yaml')
-    return repl.qexec(`edit "${filepathAsGiven}"`)
+    return qexec(`edit "${filepathAsGiven}"`)
   }
 }
 

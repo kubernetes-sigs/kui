@@ -16,8 +16,8 @@
 
 import { Graphics } from './graphics'
 
-import parseDuration = require('parse-duration')
-import prettyPrintDuration = require('pretty-ms')
+import * as parseDuration from 'parse-duration'
+import * as prettyPrintDuration from 'pretty-ms'
 
 export const i18n = {
   requestsPerSec: 'REQUESTS PER SECOND',

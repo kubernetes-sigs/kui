@@ -18,10 +18,10 @@
 
 import { lstat, readFile } from 'fs'
 import { dirname, resolve as pathResolve } from 'path'
-import expandHomeDir from '@kui-shell/core/util/home'
-import htmlparser = require('htmlparser2')
+import * as htmlparser from 'htmlparser2'
 
-import repl = require('@kui-shell/core/core/repl')
+import expandHomeDir from '@kui-shell/core/util/home'
+import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * Deploy a linked asset

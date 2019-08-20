@@ -21,10 +21,10 @@ import { EvaluatorArgs } from '@kui-shell/core/models/command'
 import { getCreds } from './openwhisk'
 const debug = Debug('wrk/scriptgen')
 
-import fs = require('fs')
-import tmp = require('tmp')
-import url = require('url')
-import path = require('path')
+import * as fs from 'fs'
+import * as tmp from 'tmp'
+import * as url from 'url'
+import * as path from 'path'
 
 /**
  * User has requested to test an openwhisk action
@@ -61,7 +61,7 @@ export const generateScriptForAction = ({ options }) => action =>
                       if (err) {
                         reject(err)
                       } else {
-                        const apiHostParse = url.parse(apiHost)
+                        const apiHostParse = new url.URL(apiHost)
                         if (options.direct) {
                           // talk directly to the openwhisk controller
                           apiHostParse.protocol = 'http:'

@@ -20,7 +20,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
-import marked = require('marked')
+import * as marked from 'marked'
 
 const debug = Debug('plugin/operator-framework/view/modes/description')
 

@@ -15,17 +15,17 @@
  */
 
 import * as Debug from 'debug'
+import * as prettyPrintDuration from 'pretty-ms'
+
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 import { Table, Row } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
+import { encodeComponent, qexec, pexec } from '@kui-shell/core/core/repl'
 
-import * as prettyPrintDuration from 'pretty-ms'
 const debug = Debug('plugins/openwhisk/views/cli/activations/list')
-
-import repl = require('@kui-shell/core/core/repl')
 
 const viewName = 'Trace View'
 
@@ -56,7 +56,7 @@ const mapToOptions = (baseMap: Record<string, any>, overrides = {}) => {
     if (key === '_' || typeof map[key] === 'object') {
       return opts
     } else {
-      return `${opts} --${key} ${repl.encodeComponent(map[key])}`
+      return `${opts} --${key} ${encodeComponent(map[key])}`
     }
   }, '')
 }
@@ -71,7 +71,7 @@ const fetch = async (activationIds: string[]) => {
   const activations = await Promise.all(
     activationIds.map(_ => {
       if (typeof _ === 'string') {
-        return repl.qexec(`wsk activation get ${_}`).catch(err => {
+        return qexec(`wsk activation get ${_}`).catch(err => {
           console.error(err)
         })
       } else {
@@ -97,14 +97,14 @@ const show = activation => () => {
     // optimistically assume this is a session. the sesion get
     // code will fall back to an activation get, if not
     const sessionId = activation.logs[0]
-    return repl.pexec(`session get ${sessionId}`)
+    return pexec(`session get ${sessionId}`)
   } else if (activation.sessionId) {
     // we know for certain that this is a session
-    return repl.pexec(`session get ${activation.sessionId}`)
+    return pexec(`session get ${activation.sessionId}`)
   } else {
     // we know of certain that this is a plain activation, and
     // already have it in hand! no need to re-fetch
-    return repl.pexec(`activation get ${activation.activationId}`)
+    return pexec(`activation get ${activation.activationId}`)
   }
 }
 
@@ -196,7 +196,7 @@ const _render = args => {
 
   return Promise.all([
     fetch(activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
-    parsedOptions && repl.qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`)
+    parsedOptions && qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`)
   ]).then(([activations, count]) => {
     // duration of the activation. this will be helpful for
     // normalizing the bar dimensions
@@ -333,13 +333,13 @@ const _render = args => {
       // command to be executed when clicking on the entity name cell
       const path = activation.annotations && activation.annotations.find(({ key }) => key === 'path')
       const gridCommand = activation.sessionId
-        ? `grid ${repl.encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
+        ? `grid ${encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
         : !path
-        ? `grid ${repl.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
-        : `grid ${repl.encodeComponent(`/${path.value}`)}`
+        ? `grid ${encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
+        : `grid ${encodeComponent(`/${path.value}`)}`
 
       nameClick.onclick = pip(
-        () => repl.pexec(gridCommand)
+        () => pexec(gridCommand)
         /* undefined, logTable, viewName, { parent: container } */
       )
 
@@ -552,7 +552,7 @@ const _render = args => {
           button.classList.add('clickable')
 
           buttonContainer.setAttribute('data-button-command', command)
-          buttonContainer.onclick = () => repl.pexec(command)
+          buttonContainer.onclick = () => pexec(command)
         })
 
         // description of current page
@@ -593,8 +593,7 @@ const _render = args => {
         const listCommand = activations.every(activation => activation.sessionId !== undefined)
           ? 'session list'
           : 'wsk activation list'
-        return repl
-          .qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
+        return qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
           .then((activations: ActivationListTable) => activations.body)
           .then(activationIds => {
             if (activationIds.length === 0) {

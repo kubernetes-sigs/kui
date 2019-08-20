@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import * as fs from 'fs'
 import * as path from 'path'
-import minimist = require('yargs-parser')
+import * as minimist from 'yargs-parser'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { keys } from '@kui-shell/core/webapp/keys'

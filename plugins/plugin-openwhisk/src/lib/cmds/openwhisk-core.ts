@@ -33,9 +33,9 @@ import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
-import repl = require('@kui-shell/core/core/repl')
-import historyModel = require('@kui-shell/core/models/history')
-import namespace = require('../models/namespace')
+import * as repl from '@kui-shell/core/core/repl'
+import * as historyModel from '@kui-shell/core/models/history'
+import * as namespace from '../models/namespace'
 
 const debug = Debug('plugins/openwhisk/cmds/core-commands')
 
@@ -44,8 +44,8 @@ const debug = Debug('plugins/openwhisk/cmds/core-commands')
  *
  */
 
-import minimist = require('yargs-parser')
-import usage = require('./openwhisk-usage')
+import * as minimist from 'yargs-parser'
+import * as usage from './openwhisk-usage'
 const isLinux = osType() === 'Linux'
 
 debug('modules loaded')

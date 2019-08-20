@@ -23,10 +23,9 @@
  *
  */
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const minimist = require('yargs-parser')
+import * as minimist from 'yargs-parser'
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
 const rootSynonyms = ['root', '$$']

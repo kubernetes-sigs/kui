@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import events = require('events')
+import { EventEmitter } from 'events'
 
-const eventBus = new events.EventEmitter()
+const eventBus = new EventEmitter()
 eventBus.setMaxListeners(100)
 
 export default eventBus

@@ -26,7 +26,7 @@ import {
   deleteNS
 } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
-import assert = require('assert')
+import * as assert from 'assert'
 
 const synonyms = ['kubectl']
 

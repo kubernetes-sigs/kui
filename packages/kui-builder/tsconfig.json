@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "target": "ES2016",
     "outDir": "../../build",
     "sourceMap": true,
