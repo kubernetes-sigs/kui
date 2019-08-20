@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 
 import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'
+import { flatten } from '@kui-shell/core/core/utility'
 const debug = Debug('core/webapp/util/ascii-to-usage')
 
 const sectionHeader = /^[^#%]([A-Za-z ]+):\s*$/
@@ -71,10 +72,7 @@ export const formatUsage = (command: string, str: string, options: Options = new
 
   debug('raw', str)
 
-  const rows = `\n${str}`
-    .split(splitter)
-    .flatMap(row => row.split(doubleNewline))
-    .filter(x => x)
+  const rows = flatten(`\n${str}`.split(splitter).map(row => row.split(doubleNewline))).filter(x => x)
   debug('rows!', rows)
 
   if (rows.length > 2) {
