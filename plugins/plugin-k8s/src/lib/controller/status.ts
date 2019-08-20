@@ -24,7 +24,7 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
 import { Row, Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { CodedError } from '@kui-shell/core/models/errors'
-import repl = require('@kui-shell/core/core/repl')
+import { qexec } from '@kui-shell/core/core/repl'
 
 import { withRetryOn404 } from '../util/retry'
 import { flatten, isDirectory } from '../util/util'
@@ -153,7 +153,7 @@ interface Context {
  * @param {Boolean} fetchAllNS If set to true, fetch all the namespaces of a cluster
  */
 const allContexts = async (execOptions: ExecOptions, { fetchAllNS = false } = {}): Promise<Context[]> => {
-  const table: Table = await repl.qexec(`k8s contexts`, undefined, undefined, execOptions)
+  const table: Table = await qexec(`k8s contexts`, undefined, undefined, execOptions)
 
   if (!fetchAllNS) {
     return table.body.map(({ attributes }) => ({
@@ -165,8 +165,7 @@ const allContexts = async (execOptions: ExecOptions, { fetchAllNS = false } = {}
   return flatten(
     await Promise.all(
       table.body.map(cluster => {
-        const ns: Promise<Context[]> = repl
-          .qexec(`k get ns --context ${cluster.name}`, undefined, undefined, execOptions)
+        const ns: Promise<Context[]> = qexec(`k get ns --context ${cluster.name}`, undefined, undefined, execOptions)
           .then((nsTable: Table) =>
             nsTable.body.map(({ name }) => ({
               name: cluster.name,
@@ -201,7 +200,7 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
 ) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
-  const currentContext: Promise<string> = repl.qexec(`kubectl config current-context`, undefined, undefined, raw)
+  const currentContext: Promise<string> = qexec(`kubectl config current-context`, undefined, undefined, raw)
 
   if (contexts.length === 0) {
     const ccName = await currentContext
@@ -224,16 +223,14 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
         const inNamespace = namespace ? `-n "${namespace}"` : ''
 
         debug('fetching kubectl get all', name, namespace)
-        const coreResources: Promise<KubeResource[]> = repl
-          .qexec(
-            `kubectl get --context "${name}" ${inNamespace} all ${adminCoreFilter} -o json`,
-            undefined,
-            undefined,
-            raw
-          )
-          .catch(handleError)
+        const coreResources: Promise<KubeResource[]> = qexec(
+          `kubectl get --context "${name}" ${inNamespace} all ${adminCoreFilter} -o json`,
+          undefined,
+          undefined,
+          raw
+        ).catch(handleError)
         debug('fetching crds', name, namespace)
-        const crds: CRDResource[] = await repl.qexec(
+        const crds: CRDResource[] = await qexec(
           `kubectl get --context "${name}" ${inNamespace} crds ${adminCRDFilter} -o json`,
           undefined,
           undefined,
@@ -248,14 +245,12 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
           await Promise.all(
             filteredCRDs.map(crd => {
               const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
-              const resource: Promise<KubeResource[]> = repl
-                .qexec(
-                  `kubectl get --context "${name}" ${inNamespace} ${adminCoreFilter} "${kind}" -o json`,
-                  undefined,
-                  undefined,
-                  raw
-                )
-                .catch(handleError)
+              const resource: Promise<KubeResource[]> = qexec(
+                `kubectl get --context "${name}" ${inNamespace} ${adminCoreFilter} "${kind}" -o json`,
+                undefined,
+                undefined,
+                raw
+              ).catch(handleError)
               return resource
             })
           )
@@ -414,7 +409,7 @@ const getDirectReferences = (command: string) => async ({
     debug('status by programmatic parameter', resources)
     const entities = await Promise.all(
       resources.map(_ => {
-        return repl.qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`, undefined, undefined, raw)
+        return qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`, undefined, undefined, raw)
       })
     )
     if (execOptions.raw) {
@@ -436,7 +431,7 @@ const getDirectReferences = (command: string) => async ({
     // note: don't retry the getter on 404 if we're expecting the
     // element (eventually) not to exist
     const getter = () => {
-      return repl.qexec(command, undefined, undefined, raw)
+      return qexec(command, undefined, undefined, raw)
     }
 
     const kubeEntity = !finalState || finalState === FinalState.OfflineLike ? getter() : withRetryOn404(getter, command)
@@ -482,23 +477,26 @@ const getDirectReferences = (command: string) => async ({
       // each yaml file in the given directory
       return Promise.all(
         yamlsWithMainFirst.map(filepath =>
-          repl.qexec(`k status "${filepath}" --final-state ${finalState}`, undefined, undefined, execOptions)
+          qexec(`k status "${filepath}" --final-state ${finalState}`, undefined, undefined, execOptions)
         )
       )
     } else if (isDir === undefined) {
       // then the file does not exist; maybe the user specified a resource kind, e.g. k status pods
       debug('status by resource kind', file, name)
 
-      const kubeEntities = repl
-        .qexec(`kubectl get "${file}" "${name || ''}" ${ns()} -o json`, undefined, undefined, raw)
-        .catch(err => {
-          if (err.code === 404) {
-            // then no such resource type exists
-            throw err
-          } else {
-            return errorEntity(execOptions, undefined, namespace)(err)
-          }
-        })
+      const kubeEntities = qexec(
+        `kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
+        undefined,
+        undefined,
+        raw
+      ).catch(err => {
+        if (err.code === 404) {
+          // then no such resource type exists
+          throw err
+        } else {
+          return errorEntity(execOptions, undefined, namespace)(err)
+        }
+      })
 
       if (execOptions.raw) {
         return kubeEntities
@@ -524,9 +522,12 @@ const getDirectReferences = (command: string) => async ({
 
       const kubeEntities = Promise.all(
         specs.map(spec => {
-          return repl
-            .qexec(`kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`, undefined, undefined, raw)
-            .catch(errorEntity(execOptions, spec, namespace))
+          return qexec(
+            `kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`,
+            undefined,
+            undefined,
+            raw
+          ).catch(errorEntity(execOptions, spec, namespace))
         })
       )
 
@@ -561,7 +562,7 @@ const findControlledResources = async (
         kubeEntities
           .map(({ kind, metadata: { labels, namespace } }) => {
             if (labels && labels.app && kind !== 'Pod') {
-              const pods: Promise<KubeResource[]> = repl.qexec(
+              const pods: Promise<KubeResource[]> = qexec(
                 `kubectl get pods -n "${namespace || 'default'}" -l "app=${labels.app}" -o json`,
                 undefined,
                 undefined,

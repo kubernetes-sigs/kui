@@ -39,8 +39,9 @@ import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
 
-import minimist = require('yargs-parser')
-import cli = require('../webapp/cli')
+import * as cli from '../webapp/cli'
+
+import * as minimist from 'yargs-parser'
 
 debug('finished loading modules')
 

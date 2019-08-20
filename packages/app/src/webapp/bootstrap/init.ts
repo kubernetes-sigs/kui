@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+const debug = Debug('webapp/bootstrap/init')
+debug('loading')
+
 import { inElectron } from '../../core/capabilities'
 import eventBus from '../../core/events'
 import { extractSearchKey } from '../util/search'
-
-const debug = require('debug')('webapp/bootstrap/init')
-debug('loading')
-import commandTree = require('../../core/command-tree')
+import { setDefaultCommandContext as setDefault } from '../../core/command-tree'
 
 /**
  * We don't (at least not for now) want to support drag and drop at the global scope
@@ -50,7 +51,7 @@ const setDefaultCommandContext = () => {
   if (contextString) {
     try {
       const context = JSON.parse(contextString)
-      commandTree.setDefaultCommandContext(context)
+      setDefault(context)
       return
     } catch (err) {
       debug('Error parsing KAON_CONTEXT', err)
@@ -143,7 +144,7 @@ export const preinit = () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { remote } = require('electron')
     const subwindow = remote && remote.getCurrentWindow()['subwindow']
-    debug('subwindow', subwindow)
+    debug('subwindow', subwindow.fullscreen, subwindow)
     if (subwindow && subwindow.fullscreen !== false) {
       // sidecarOnly = subwindow.sidecarOnly === undefined ? true : subwindow.sidecarOnly
       document.title = typeof subwindow === 'string' ? subwindow : subwindow.title

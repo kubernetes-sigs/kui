@@ -23,7 +23,7 @@ import { UsageModel } from '@kui-shell/core/core/usage-error'
 import { keys } from '@kui-shell/core/webapp/keys'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { getCurrentPrompt, Tab } from '@kui-shell/core/webapp/cli'
-import repl = require('@kui-shell/core/core/repl')
+import { pexec } from '@kui-shell/core/core/repl'
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-core-support')
@@ -135,7 +135,7 @@ export default async (commandTree: CommandRegistrar) => {
           }
           initMouseEvents()
 
-          const executeCommandForReal = () => repl.pexec(command, { tab })
+          const executeCommandForReal = () => pexec(command, { tab })
           const executeCommand = (thatTab: Tab) => {
             if (thatTab === tab) {
               executeCommandForReal()
