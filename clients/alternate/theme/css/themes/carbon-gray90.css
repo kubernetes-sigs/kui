@@ -1,21 +1,21 @@
 /* color variables */
-body[kui-theme="IBM Dark"] {
-  --color-base00: #282828; /**/
-  --color-base01: #171717; /**/
-  --color-base02: #565656; /**/
-  --color-base03: #565656; /**/
-  --color-base04: #8c8c8c; /**/
-  --color-base05: #adadad; /**/
-  --color-base06: #f3f3f3; /**/
+body[kui-theme="IBM Dark"][kui-theme-style] {
+  --color-base00: #282828;
+  --color-base01: #171717;
+  --color-base02: #565656;
+  --color-base03: #565656;
+  --color-base04: #8c8c8c;
+  --color-base05: #adadad;
+  --color-base06: #f3f3f3;
   --color-base07: #fff;
-  --color-base08: #fb4b53; /**/
+  --color-base08: #fb4b53;
   --color-base09: #bf5b17;
-  --color-base0A: #fdd13a; /**/
-  --color-base0B: #3dbb61; /**/
-  --color-base0C: #97c1ff; /**/
-  --color-base0D: #0353e9; /**/
-  --color-base0E: hsla(354, 100%, 75%, 1);
-  --color-base0F: #bb8eff; /**/
+  --color-base0A: #fdd13a;
+  --color-base0B: #3dbb61;
+  --color-base0C: #30b0ff;
+  --color-base0D: #0353e9;
+  --color-base0E: #fa75a6;
+  --color-base0F: #bb8eff;
 
   /* SidecarThin */
   --color-background-inverted01: var(--color-sidecar-background);
@@ -25,8 +25,8 @@ body[kui-theme="IBM Dark"] {
   --color-text-inverted03: var(--color-text-01);
   --color-tab-selected-inverted: var(--active-tab-color);
 
-  /* xterm ANSI yellow text color */
-  /*--color-yellow-text: #bb9002;*/
+  --color-confirm-background: var(--color-sidecar-header);
+  --color-confirm-foreground: var(--color-base06);
 
   --color-brand-01: #97c1ff;
   --color-brand-03: #0062ff;
@@ -59,6 +59,9 @@ body[kui-theme="IBM Dark"] {
 }
 
 /* some carbon-overrides */
+body[kui-theme="IBM Dark"] .bx--modal-close__icon {
+  fill: #ebebeb;
+}
 body[kui-theme="IBM Dark"] .bx--data-table {
   font-family: var(--font-sans-serif);
 }
@@ -75,7 +78,7 @@ body[kui-theme="IBM Dark"] .bx--data-table th {
 body[kui-theme="IBM Dark"] .bx--data-table td {
   color: var(--color-text-02); /* lighter text for body, as specified by design */
   border-color: var(--color-base02);
-  background-color: #3d3d3d; /* ui-01 */
+  background-color: var(--color-sidecar-header); /* ui-01 */
 }
 body[kui-theme="IBM Dark"] .bx--tabs__nav-link {
   color: var(--color-base06);
@@ -88,6 +91,16 @@ body[kui-theme="IBM Dark"]
   .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-text-01);
+}
+body[kui-theme="IBM Dark"] .bx--modal-header__heading,
+body[kui-theme="IBM Dark"] .bx--modal-content {
+  color: var(--color-text-01);
+}
+body[kui-theme="IBM Dark"] .bx--btn--secondary {
+  background-color: #6f6f6f;
+}
+body[kui-theme="IBM Dark"] .bx--btn--danger {
+  background-color: #ff3751;
 }
 
 /* mono-blue hightlightjs theme */
@@ -141,4 +154,9 @@ body[kui-theme="IBM Dark"]
 }
 .hljs-emphasis {
   font-style: italic;
+}
+
+/* input placeholder text */
+body[kui-theme="IBM Dark"][kui-theme-style] ::placeholder {
+  opacity: 0.875 !important;
 }
