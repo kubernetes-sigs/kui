@@ -81,5 +81,30 @@ body.sidecar-is-minimized .result-as-table .result-table {
 .result-as-table .result-table-outer-wrapper {
   /* repl table */
   display: table-row;
-  width: 100%;
+  /* width: 100%; */
+}
+
+.repl .result-table-outer-wrapper.big-top-pad {
+  margin-top: 1em;
+}
+
+.repl .bx--data-table {
+  width: auto;
+}
+
+.result-as-multi-table .result-table-title-outer {
+  display: flex;
+}
+.result-table-title-outer {
+  display: none;
+  align-items: flex-end;
+  letter-spacing: 1px;
+  font-weight: 600;
+  padding: 0.6875em;
+  background: var(--color-sidecar-header);
+  font-family: var(--font-sans-serif);
+}
+.bx--data-table-header__title {
+  color: var(--color-text-01);
+  font-size: inherit;
 }

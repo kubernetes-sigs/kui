@@ -3267,11 +3267,6 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
   height: 16px;
 }
 
-/* hide table titles by default; themes can choose to show them by overriding this rule */
-.result-table-title-outer {
-  display: none;
-}
-
 #offline-button {
   display: none;
 }

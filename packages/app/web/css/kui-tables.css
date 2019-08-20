@@ -55,14 +55,10 @@
 .result-as-table .result-table-outer .result-table {
   margin-top: 0;
 }
-.result-table-title-outer {
-  display: flex;
-  align-items: flex-end;
+[kui-theme-style] .result-table-title-outer {
+  background-color: transparent;
   color: var(--color-name);
-  letter-spacing: 1px;
-  font-weight: 600;
   padding: 0.6875em 0;
-  font-family: var(--font-sans-serif);
 }
 .result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
   padding-top: 0;
