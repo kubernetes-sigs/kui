@@ -23,6 +23,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { keys } from '@kui-shell/core/webapp/keys'
 import * as cli from '@kui-shell/core/webapp/cli'
 import { split, _split, Split, qexec } from '@kui-shell/core/core/repl'
+import { flatten } from '@kui-shell/core/core/utility'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { Table } from '@kui-shell/core/webapp/models/table'
@@ -50,13 +51,16 @@ export interface TabCompletionSpec {
   toBeCompletedIdx: number
 }
 type Enumerator = (commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
+
 const enumerators: Enumerator[] = []
+
 export function registerEnumerator(enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
+
 async function applyEnumerator(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
-  return lists.flatMap(x => x).filter(x => x)
+  return flatten(lists.map(x => x)).filter(x => x)
 }
 
 /**

@@ -110,8 +110,3 @@ export class NotFoundError extends StatusError {
     this.code = code
   }
 }
-
-/** flatten an array of arrays */
-export function flatten<T>(arrays: T[][]): T[] {
-  return [].concat(...arrays)
-}

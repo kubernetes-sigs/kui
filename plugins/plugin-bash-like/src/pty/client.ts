@@ -41,6 +41,7 @@ import {
   Tab
 } from '@kui-shell/core/webapp/cli'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { flatten } from '@kui-shell/core/core/utility'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { Table } from '@kui-shell/core/webapp/models/table'
@@ -900,7 +901,7 @@ export const doExec = (
                 const tables = preprocessTable(stripClean(raw).split(/^(?=NAME|Name|ID|\n\*)/m)).filter(x => x)
 
                 if (tables && tables.length > 0) {
-                  const tableRows = tables.filter(_ => _.rows !== undefined).flatMap(_ => _.rows)
+                  const tableRows = flatten(tables.filter(_ => _.rows !== undefined).map(_ => _.rows))
 
                   if (tableRows && tableRows.length > 0) {
                     debug(`table came from ${stripClean(raw)}`)

@@ -17,6 +17,7 @@
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { rexec as $ } from '@kui-shell/core/core/repl'
+import { flatten } from '@kui-shell/core/core/utility'
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 
@@ -39,40 +40,42 @@ const mode: SidecarMode = {
       $(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
     ])
 
-    const containers: Row[] = pods.flatMap(pod => {
-      const taskName = pod.metadata.labels['tekton.dev/task']
-      const taskRun = taskRuns.find(_ => _.metadata.labels['tekton.dev/task'] === taskName)
+    const containers: Row[] = flatten(
+      pods.map(pod => {
+        const taskName = pod.metadata.labels['tekton.dev/task']
+        const taskRun = taskRuns.find(_ => _.metadata.labels['tekton.dev/task'] === taskName)
 
-      return pod.spec.containers.map((container, idx) => {
-        const { containerID } = pod.status.containerStatuses[idx]
-        const stepRun = taskRun.status.steps.find(_ => _.terminated.containerID === containerID)
-        const status = stepRun && stepRun.terminated.reason
+        return pod.spec.containers.map((container, idx) => {
+          const { containerID } = pod.status.containerStatuses[idx]
+          const stepRun = taskRun.status.steps.find(_ => _.terminated.containerID === containerID)
+          const status = stepRun && stepRun.terminated.reason
 
-        return {
-          name: taskName,
-          css: 'slightly-deemphasize',
-          onclick: `kubectl get task ${taskName} -o yaml`,
-          attributes: [
-            {
-              key: 'STEP',
-              value: container.name
-            },
-            {
-              key: 'STATUS',
-              value: status,
-              tag: 'badge',
-              css: cssForValue[status]
-            },
-            {
-              key: 'ACTIONS',
-              value: 'View Logs',
-              outerCSS: 'clickable clickable-color',
-              onclick: `kubectl logs ${pod.metadata.name} ${container.name} -n ${pod.metadata.namespace}`
-            }
-          ]
-        }
+          return {
+            name: taskName,
+            css: 'slightly-deemphasize',
+            onclick: `kubectl get task ${taskName} -o yaml`,
+            attributes: [
+              {
+                key: 'STEP',
+                value: container.name
+              },
+              {
+                key: 'STATUS',
+                value: status,
+                tag: 'badge',
+                css: cssForValue[status]
+              },
+              {
+                key: 'ACTIONS',
+                value: 'View Logs',
+                outerCSS: 'clickable clickable-color',
+                onclick: `kubectl logs ${pod.metadata.name} ${container.name} -n ${pod.metadata.namespace}`
+              }
+            ]
+          }
+        })
       })
-    })
+    )
 
     const table: Table = {
       title: 'Container Logs',

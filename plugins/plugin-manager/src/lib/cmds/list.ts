@@ -21,18 +21,13 @@ import * as path from 'path'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
+import { flatten } from '@kui-shell/core/core/utility'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { list as usage } from '../../usage'
 const debug = Debug('plugins/plugin-manager/cmd/list')
 
 debug('finished module imports')
-
-/**
- * Flatten an array of arrays
- *
- */
-const flatten = arrays => [].concat(...arrays)
 
 /**
  * Pull out the sub-directories in the given directory, if it is an @-style npm group

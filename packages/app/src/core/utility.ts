@@ -82,3 +82,8 @@ export const handleError = (err: Error, reject?: (reason: any) => void) => {
     throw err
   }
 }
+
+/** flatten an array of arrays */
+export function flatten<T>(arrays: T[][]): T[] {
+  return [].concat(...arrays)
+}
