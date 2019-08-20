@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/IBM/kui/compare/v3.0.0...v3.0.1) (2019-08-20)
+
+
+### Bug Fixes
+
+* flatmap is not supported by some browsers ([2b8fec4](https://github.com/IBM/kui/commit/2b8fec4)), closes [#2358](https://github.com/IBM/kui/issues/2358)
+
+
+
+
+
 # 3.0.0 (2019-08-19)
 
 

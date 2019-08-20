@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/IBM/kui/compare/v3.0.0...v3.0.1) (2019-08-20)
+
+
+### Bug Fixes
+
+* **packages/app:** clean up multi-table title UI ([8363e8c](https://github.com/IBM/kui/commit/8363e8c)), closes [#2444](https://github.com/IBM/kui/issues/2444) [#2337](https://github.com/IBM/kui/issues/2337)
+* **packages/app:** in electron builds, first prompt lacks CWD ([cc572fb](https://github.com/IBM/kui/commit/cc572fb)), closes [#2448](https://github.com/IBM/kui/issues/2448)
+* flatmap is not supported by some browsers ([2b8fec4](https://github.com/IBM/kui/commit/2b8fec4)), closes [#2358](https://github.com/IBM/kui/issues/2358)
+* poor rendering of confirm dialog in clients/alternate dark theme ([222a6db](https://github.com/IBM/kui/commit/222a6db)), closes [#2437](https://github.com/IBM/kui/issues/2437)
+
+
+
+
+
 # 3.0.0 (2019-08-19)
 
 
