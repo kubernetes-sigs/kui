@@ -16,8 +16,7 @@
 
 import { Row, Table, MultiTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-
-import repl = require('@kui-shell/core/core/repl')
+import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
@@ -50,8 +49,8 @@ const addClickHandlers = (table: Table, execOptions): Table => {
       nameAttr.outerCSS += ' entity-name-group-narrow'
 
       const onclick = async () => {
-        await repl.qexec(
-          `kubectl config use-context ${repl.encodeComponent(contextName)}`,
+        await qexec(
+          `kubectl config use-context ${encodeComponent(contextName)}`,
           undefined,
           undefined,
           Object.assign({}, execOptions, { raw: true })
@@ -79,13 +78,11 @@ const addClickHandlers = (table: Table, execOptions): Table => {
  *
  */
 const listContexts = opts =>
-  repl
-    .qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions)
-    .then((contexts: Table | MultiTable) =>
-      isMultiTable(contexts)
-        ? contexts.tables.map(context => addClickHandlers(context, opts.execOptions))
-        : addClickHandlers(contexts, opts.execOptions)
-    )
+  qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions).then((contexts: Table | MultiTable) =>
+    isMultiTable(contexts)
+      ? contexts.tables.map(context => addClickHandlers(context, opts.execOptions))
+      : addClickHandlers(contexts, opts.execOptions)
+  )
 
 /**
  * Register the commands
@@ -95,7 +92,7 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/k8s/context',
     async ({ execOptions }) => {
-      return (await repl.qexec(
+      return (await qexec(
         `kubectl config current-context`,
         undefined,
         undefined,

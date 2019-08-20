@@ -24,7 +24,7 @@ import { isHeadless } from './capabilities'
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
 import { isHTML } from '../util/types'
-import repl = require('@kui-shell/core/core/repl')
+import { pexec, qexec } from '@kui-shell/core/core/repl'
 
 interface UsageOptions {
   noHide?: boolean
@@ -132,7 +132,7 @@ function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
  *
  */
 const breadcrumbFromCommand = async (command: string): Promise<string> => {
-  const usageError: UsageError = await repl.qexec(command, undefined, undefined, { failWithUsage: true })
+  const usageError: UsageError = await qexec(command, undefined, undefined, { failWithUsage: true })
 
   if (isMessageWithUsageModel(usageError.raw)) {
     const usage = usageError.raw.usage
@@ -176,7 +176,7 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
 
     if (cmd) {
       dom.classList.add('bx--link')
-      dom.onclick = () => repl.pexec(cmd)
+      dom.onclick = () => pexec(cmd)
     }
 
     return item
@@ -569,7 +569,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
               const dirPart = isDir && span('/')
 
               if (!noclick) {
-                cmdPart.onclick = () => repl.pexec(commandForExec(alias))
+                cmdPart.onclick = () => pexec(commandForExec(alias))
               }
 
               aliasesPart.appendChild(cmdCell)
@@ -615,7 +615,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
                     'Previous Usage'
                   )(event)
                 } else {
-                  return repl.pexec(commandForExec(command, name !== command ? name : undefined))
+                  return pexec(commandForExec(command, name !== command ? name : undefined))
                 }
               }
             }
@@ -723,7 +723,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
         commandPart.appendChild(commaPart)
         commandPart.appendChild(clickablePart)
-        clickablePart.onclick = () => repl.pexec(command)
+        clickablePart.onclick = () => pexec(command)
 
         listPart.appendChild(commandPart)
       })

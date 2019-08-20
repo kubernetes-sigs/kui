@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { KubeResource } from './resource'
 import { maybeAsDate, TryLaterError } from '../util/util'
 
-import repl = require('@kui-shell/core/core/repl')
+import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 
 const debug = Debug('k8s/states')
 
@@ -170,7 +170,7 @@ const contextOption = (context?: string) => (context ? '--context "' + context +
 
 /** format a CLI --namespace option, if we have one */
 const ns = (namespace?: string) =>
-  namespace && namespace !== 'default' ? `--namespace ${repl.encodeComponent(namespace)}` : ''
+  namespace && namespace !== 'default' ? `--namespace ${encodeComponent(namespace)}` : ''
 
 /**
  * Pretty generic online message; hepful for resource kinds that
@@ -296,7 +296,7 @@ export const getStatus = async (
       namespace
     )} -o json`
     // debug('getStatus', cmd);
-    const rawState = await repl.qexec(cmd, undefined, undefined, { raw: true })
+    const rawState = await qexec(cmd, undefined, undefined, { raw: true })
     // debug('getStatus rawState', apiVersion, rawState)
 
     const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
@@ -371,7 +371,7 @@ export const getStatus = async (
  * Check the deployment status of an openwhisk entity
  *
  */
-// const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => repl.qexec(`wsk ${type} get "${fqn}"`)
+// const getOpenWhiskStatus = (type: string, fqn: string): Promise<IStatus> => qexec(`wsk ${type} get "${fqn}"`)
 //   .then(() => ({ state: States.Online }))
 //   .catch(err => {
 //     if (err.statusCode === 404) {
@@ -447,30 +447,11 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
 
-    const getOpenWhiskResource = (exec: string) => repl[exec](`wsk ${type} get ${repl.encodeComponent(fqn)}`)
-    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${repl.encodeComponent(
+    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${encodeComponent(
       name
     )} ${contextOption(context)} ${ns(namespace)} -o yaml`
 
-    const tryGetOpenWhiskResource = () =>
-      getOpenWhiskResource('qexec')
-        .then(() => getOpenWhiskResource('pexec'))
-        .catch(err => {
-          if (err.statusCode === 404) {
-            // hmm, then there is a disparity:
-            // kubernetes thinks the resource is
-            // alive, but OpenWhisk does not
-            return repl.pexec(getKubernetesResource)
-          } else {
-            throw err
-          }
-        })
-
-    const isOpenWhiskLike = /* kind === 'Function' && */ type !== 'unknown'
-
-    const onclick = /* status && state === States.Online && */ isOpenWhiskLike
-      ? tryGetOpenWhiskResource
-      : getKubernetesResource
+    const onclick = getKubernetesResource
 
     // should we start a slowPoll?
     const slowPoll = done && finalState === FinalState.NotPendingLike

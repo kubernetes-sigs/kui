@@ -15,16 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
 import { exec } from 'child_process'
+import * as parseDuration from 'parse-duration'
 
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { pexec, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
 
 import * as client from '../clients/kiali'
 import { States, TrafficLight } from '../model/states'
+
 const debug = Debug('k8s/controller/kiali')
-import parseDuration = require('parse-duration')
 
 /**
  * Install Kiali

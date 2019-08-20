@@ -143,7 +143,7 @@ function initWebpack {
 function webpack {
     pushd "$STAGING_DIR" > /dev/null
     rm -f "$BUILDDIR"/*.js*
-    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode development
+    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode production
     popd > /dev/null
 }
 
