@@ -28,9 +28,9 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
-import minimist = require('yargs-parser')
+import * as minimist from 'yargs-parser'
 
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isAnonymousLet } = require('./actions/let-core')

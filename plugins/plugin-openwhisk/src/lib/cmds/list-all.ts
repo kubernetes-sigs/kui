@@ -21,7 +21,7 @@
 
 import * as Debug from 'debug'
 import { wsk } from './openwhisk-usage'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 import { isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 
 const debug = Debug('plugins/openwhisk/cmds/list-all')

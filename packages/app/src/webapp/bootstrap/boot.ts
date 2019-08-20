@@ -16,20 +16,8 @@
 
 // we don't want to treat this file as a script;
 // adding this bit tells tsc to treat this source as a module, rather than a script
-// otherwise, we'd get fonclits with electron.ts, which *is* a script, rather than a module
+// otherwise, we'd get conflicts with electron.ts, which *is* a script, rather than a module
 // https://stackoverflow.com/questions/40900791/cannot-redeclare-block-scoped-variable-in-unrelated-files
-
-// process.env.DEBUG = '*'
-import * as initializer from './init'
-import eventBus from '../../core/events'
-import * as plugins from '../../core/plugins'
-import * as repl from '../../core/repl'
-import * as query from '../query'
-import * as sidecar from '../views/sidecar'
-import * as electronEvents from '../electron-events'
-
-const debug = require('debug')('webapp/bootstrap/boot')
-debug('loading')
 
 function catastrophe(err: Error) {
   console.error('restart needed')
@@ -39,44 +27,48 @@ function catastrophe(err: Error) {
 
 // note: the q npm doesn't like functions called "bootstrap"!
 const domReady = prefs => async () => {
-  debug('domReady')
+  const initializer = import('./init')
+  const plugins = import('../../core/plugins')
+  const repl = import('../../core/repl')
+  const sidecar = import('../views/sidecar')
+  const electronEvents = import('../electron-events')
+  const events = import('../../core/events')
+  // const query = import('../query')
 
   try {
-    await plugins.init()
-    debug('plugins init done')
+    const waitForThese = []
 
-    await electronEvents.init()
+    waitForThese.push(
+      plugins.then(async _ => {
+        await _.init()
+        await _.preload()
+      })
+    )
 
-    await repl.init(prefs)
-    debug('repl init done')
+    waitForThese.push(electronEvents.then(_ => _.init()))
+
+    waitForThese.push(repl.then(_ => _.init(prefs)))
 
     // const namespace = require('../../../plugins/modules/openwhisk/plugin/lib/models/namespace')
     // const nsInit = namespace.init(plugins.prequire, prefs && prefs.noAuthOk, prefs)
 
-    sidecar.init()
+    sidecar.then(_ => _.init())
 
-    await initializer.init(prefs)
-    debug('initializer init done')
+    waitForThese[1].then(() => initializer).then(_ => _.init(prefs))
 
-    debug('preloading plugins')
-    await plugins.preload()
-    debug('preloading plugins done')
+    // await query.then(_ => _.init())
 
-    await query.init()
-    debug('query init done')
-
-    // await nsInit
-    // debug('ns init done')
+    await Promise.all(waitForThese)
 
     document.body.classList.remove('still-loading')
-    eventBus.emit('/init/done')
+    events.then(eventBus => eventBus.default.emit('/init/done'))
   } catch (err) {
     catastrophe(err)
   }
 }
 
 export default async () => {
-  const prefs = initializer.preinit()
+  const prefs = import('./init').then(_ => _.preinit())
 
   window.addEventListener('load', domReady(prefs), { once: true })
 }

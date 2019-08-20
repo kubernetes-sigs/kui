@@ -24,7 +24,7 @@ import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
 
 import { CMD as copy } from './copy'
-import repl = require('@kui-shell/core/core/repl')
+import * as repl from '@kui-shell/core/core/repl'
 
 /** name for the command */
 export const CMD = 'rename'

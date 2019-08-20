@@ -434,7 +434,10 @@ const prequire = async (route: string, options?: object) => {
 
   return registrar[route]
 }
-export const preload = () => preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
+export const preload = () => {
+  debug('invoking preloader')
+  preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
+}
 
 /**
  * Make a plugin resolver from a given prescan model
