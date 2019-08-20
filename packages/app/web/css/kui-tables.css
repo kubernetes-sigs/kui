@@ -185,6 +185,11 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
   padding-top: 0;
   padding-bottom: 0;
 }
+
+.bx--data-table.result-table .entity-attributes > td.not-too-compact {
+  padding-top: 0.375em;
+  padding-bottom: 0.375em;
+}
 .result-as-table .bx--data-table.result-table[kui-table-style="Light"],
 .result-as-table .bx--data-table.result-table[kui-table-style="Medium"] {
   border: none;

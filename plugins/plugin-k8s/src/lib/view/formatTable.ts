@@ -32,6 +32,8 @@ const outerCSSForKey = {
   READY: 'a-few-numbers-wide',
   KIND: 'max-width-id-like entity-kind',
   NAMESPACE: 'entity-name-group hide-with-sidecar not-a-name', // kubectl get pods --all-namespaces
+  MESSAGE: 'not-too-compact',
+  TYPE: 'hide-with-sidecar',
 
   CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
   AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
@@ -60,6 +62,7 @@ const cssForKey = {
   NAME: 'entity-name',
   SOURCE: 'lighter-text smaller-text',
   SUBOBJECT: 'lighter-text smaller-text',
+  MESSAGE: 'somewhat-smaller-text pre-wrap slightly-deemphasize',
   'CREATED AT': 'lighter-text smaller-text',
 
   AGE: 'slightly-deemphasize',
@@ -69,6 +72,7 @@ const cssForKey = {
 }
 
 const tagForKey = {
+  REASON: 'badge', // k get events
   STATUS: 'badge'
 }
 
@@ -112,6 +116,7 @@ const cssForValue = {
   Rebooted: 'green-background',
   Started: 'green-background',
   Created: 'green-background',
+  Scheduled: 'green-background',
   SuccessfulCreate: 'green-background',
   SuccessfulMountVol: 'green-background',
   ContainerCreating: 'yellow-background',
@@ -121,6 +126,7 @@ const cssForValue = {
   Deleting: 'yellow-background',
   Pulling: 'yellow-background',
   BackOff: 'yellow-background',
+  Unhealthy: 'red-background',
   FailedScheduling: 'red-background',
   FailedKillPod: 'red-background'
 }
@@ -230,7 +236,7 @@ export const formatTable = (
   }
 
   // maximum column count across all rows
-  const nameColumnIdx = Math.max(0, preTable[0].findIndex(({ key }) => key === 'NAME'))
+  const nameColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAME')
   const namespaceColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAMESPACE')
   const maxColumns = preTable.reduce((max, columns) => Math.max(max, columns.length), 0)
 
@@ -240,7 +246,7 @@ export const formatTable = (
 
   const rows = preTable.map(
     (rows, idx): Row => {
-      const name = rows[nameColumnIdx].value
+      const name = nameColumnIdx >= 0 ? rows[nameColumnIdx].value : ''
       const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
       const nameForDisplay = nameSplit[1] || rows[0].value
       const nameForDrilldown = nameSplit[1] || name
@@ -283,6 +289,14 @@ export const formatTable = (
 
       const header = idx === 0 ? 'header-cell' : ''
 
+      // for `k get events`, show REASON and MESSAGE columns when sidecar open
+      const columnVisibleWithSidecar = new RegExp(/STATUS|REASON|MESSAGE/i)
+
+      // show red-background if it's a failure reason in `k  get events`
+      const maybeRed = (reason: string) => {
+        return /failed/i.test(reason) ? 'red-background' : ''
+      }
+
       return {
         key: rows[0].key,
         name: nameForDisplay,
@@ -301,8 +315,10 @@ export const formatTable = (
               header +
               ' ' +
               outerCSSForKey[key] +
-              (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
-            css: css + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || ''),
+              (colIdx <= 1 || colIdx === nameColumnIdx - 1 || columnVisibleWithSidecar.test(key)
+                ? ''
+                : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
+            css: css + ' ' + ((idx > 0 && cssForKey[key]) || '') + ' ' + (cssForValue[column] || maybeRed(column)),
             value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
           }))
           .concat(fillTo(rows.length, maxColumns))
