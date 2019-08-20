@@ -911,7 +911,9 @@ export const formatTable = (
 
       tableOuter.classList.add('result-table-outer')
       titleOuter.classList.add('result-table-title-outer')
+      titleOuter.classList.add('bx--data-table-header')
       titleInner.classList.add('result-table-title')
+      titleInner.classList.add('bx--data-table-header__title')
       titleInner.innerText = table.title
 
       if (table.tableCSS) {
