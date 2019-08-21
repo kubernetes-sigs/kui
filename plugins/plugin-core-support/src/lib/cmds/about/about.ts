@@ -79,15 +79,18 @@ async function renderAbout() {
   topContent.appendChild(logo)
   logo.classList.add('logo')
 
-  const iconP = document.createElement('div')
-  const icon = document.createElement('img')
-  icon.addEventListener('click', openHome)
-  icon.classList.add('clickable')
-  iconP.appendChild(icon)
-  logo.appendChild(iconP)
-  icon.src = settings.wideIcon || settings.largeIcon
-  if (settings.wideIcon) {
-    icon.classList.add('kui--wide-icon')
+  const aboutImage = settings.wideIcon || settings.largeIcon
+  if (aboutImage) {
+    const iconP = document.createElement('div')
+    const icon = document.createElement('img')
+    icon.addEventListener('click', openHome)
+    icon.classList.add('clickable')
+    iconP.appendChild(icon)
+    logo.appendChild(iconP)
+    icon.src = aboutImage
+    if (settings.wideIcon) {
+      icon.classList.add('kui--wide-icon')
+    }
   }
 
   const description = settings.description || settings.ogDescription
