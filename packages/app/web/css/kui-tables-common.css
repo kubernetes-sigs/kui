@@ -108,3 +108,8 @@ body.sidecar-is-minimized .result-as-table .result-table {
   color: var(--color-text-01);
   font-size: inherit;
 }
+
+[kui-theme-style] .bx--data-table td {
+  vertical-align: middle;
+  display: table-cell;
+}
