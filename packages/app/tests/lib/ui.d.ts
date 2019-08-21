@@ -145,6 +145,7 @@ declare class Selectors {
   NAMESPACE: string
   CURRENT_TAB: string
   TAB_N: (N: number) => string
+  TAB_SELECTED_N: (N: number) => string
   SIDECAR_BASE: string
   SIDECAR_FULLSCREEN: string
   PROMPT_BLOCK: string

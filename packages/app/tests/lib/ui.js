@@ -44,7 +44,8 @@ const selectors = {
   APIHOST: '#openwhisk-api-host',
   NAMESPACE: '#openwhisk-namespace',
   CURRENT_TAB: 'tab.visible',
-  TAB_N: N => `tab[data-tab-index="${N}"]`
+  TAB_N: N => `tab:nth-child(${N})`,
+  TAB_SELECTED_N: N => `${selectors.TAB_N(N)}.visible`
 }
 selectors.SIDECAR_BASE = `${selectors.CURRENT_TAB} sidecar`
 selectors.SIDECAR_FULLSCREEN = `${selectors.CURRENT_TAB}.sidecar-full-screen sidecar.visible`

@@ -193,8 +193,8 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     it('should add new tab via command', () =>
       cli
         .do('tab new', this.app)
-        .then(() => this.app.client.waitForVisible('.left-tab-stripe-button-selected[data-tab-button-index="2"]'))
-        .then(() => cli.waitForRepl(this.app)) // should have an active repl
+        .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
+        .then(() => common.waitForSession(this)) // should have an active repl
         .catch(common.oops(this, true)))
 
     // undefined means that the new tab shouldn't have jobs even initialized
@@ -209,10 +209,8 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     it('should close tab via "tab close" command', () =>
       cli
         .do('tab close', this.app)
-        .then(() =>
-          this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="2"]', 20000, true)
-        )
-        .then(() => this.app.client.waitForExist('.left-tab-stripe-button-selected[data-tab-button-index="1"]'))
+        .then(() => this.app.client.waitForExist(selectors.TAB_N(2), 20000, true))
+        .then(() => this.app.client.waitForExist(selectors.TAB_SELECTED_N(1)))
         .then(() => cli.waitForRepl(this.app)) // should have an active repl
         .catch(common.oops(this, true)))
 

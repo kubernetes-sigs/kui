@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, pit } from '@kui-shell/core/tests/lib/common'
+import {
+  ISuite,
+  before as commonBefore,
+  after as commonAfter,
+  oops,
+  pit,
+  waitForSession
+} from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
+const { cli, selectors } = ui
 
 /*
  * Report on export testcases
@@ -28,23 +35,83 @@ const { cli } = ui
  * yes: export FOO=bar\ baz; echo $FOO -> bar baz
  */
 
+const value1 = 'nnnnnn'
+const value2 = 'bar baz'
+const value3 = 'mmmmmm'
+
 describe('export command', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
 
-  pit('should export foo bar', () =>
+  pit(`should export foo=${value1}`, () =>
     cli
-      .do('export foo=bar', this.app)
+      .do(`export foo=${value1}`, this.app)
       .then(cli.expectJustOK)
-      .then(() => cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar')))
+      .then(() => cli.do('printenv foo', this.app).then(cli.expectOKWithString(value1)))
       .catch(oops(this))
   )
 
   pit('should export foo bar baz with space in string', () =>
     cli
-      .do('export foo="bar baz"', this.app)
+      .do(`export foo="${value2}"`, this.app)
       .then(cli.expectJustOK)
-      .then(() => cli.do('echo $foo', this.app).then(cli.expectOKWithString('bar baz')))
+      .then(() => cli.do('printenv foo', this.app).then(cli.expectOKWithString(value2)))
+      .catch(oops(this))
+  )
+
+  pit('should open new tab', () =>
+    cli
+      .do('tab new', this.app)
+      .then(() => waitForSession(this))
+      .catch(oops(this))
+  )
+
+  pit('should show no value for foo in the new tab', () =>
+    cli
+      .do('printenv foo', this.app)
+      .then(cli.expectBlank)
+      .catch(oops(this))
+  )
+
+  pit(`should export foo ${value3}`, () =>
+    cli
+      .do(`export foo=${value3}`, this.app)
+      .then(cli.expectJustOK)
+      .catch(oops(this))
+  )
+
+  pit('should printenv the new value for foo in the second tab', () =>
+    cli
+      .do('printenv foo', this.app)
+      .then(cli.expectOKWithString(value3))
+      .catch(oops(this))
+  )
+
+  pit('should switch back to the first tab', () =>
+    cli
+      .do('tab switch 1', this.app)
+      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
+      .catch(oops(this))
+  )
+
+  pit('should show the first-tab value for foo in the first tab', () =>
+    cli
+      .do('printenv foo', this.app)
+      .then(cli.expectOKWithString(value2))
+      .catch(oops(this))
+  )
+
+  pit('should switch back to the second tab', () =>
+    cli
+      .do('tab switch 2', this.app)
+      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
+      .catch(oops(this))
+  )
+
+  pit('should show the second-tab value for foo in the second tab', () =>
+    cli
+      .do('printenv foo', this.app)
+      .then(cli.expectOKWithString(value3))
       .catch(oops(this))
   )
 })

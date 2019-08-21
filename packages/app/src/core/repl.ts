@@ -36,20 +36,14 @@ import { UsageError, UsageModel, UsageRow } from './usage-error'
 
 import { isHeadless, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
-import sessionStore from '@kui-shell/core/models/sessionStore'
 import { isHTML } from '../util/types'
+import SymbolTable from './symbol-table'
 
 import * as cli from '../webapp/cli'
 
 import * as minimist from 'yargs-parser'
 
 debug('finished loading modules')
-
-/**
- * the key in localStorage to get the symbol table
- *
- */
-export const key = 'kui.symbol_table'
 
 /**
  * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
@@ -297,10 +291,12 @@ class InProcessExecutor implements Executor {
     // debug('tab', tab)
 
     if (!isHeadless()) {
-      const storage = JSON.parse(sessionStore().getItem(key)) || {}
-      const curDic = storage[cli.getTabIndex(tab)]
+      const curDic = SymbolTable.read(tab)
       if (typeof curDic !== 'undefined') {
-        process.env = Object.assign({}, process.env, curDic)
+        if (!execOptions.env) {
+          execOptions.env = {}
+        }
+        execOptions.env = Object.assign({}, execOptions.env, curDic)
       }
     }
 
