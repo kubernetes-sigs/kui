@@ -16,26 +16,23 @@
 
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import sessionStore from '@kui-shell/core/models/sessionStore'
-import { getTabIndex, getCurrentTab } from '@kui-shell/core/webapp/cli'
-import { key } from '@kui-shell/core/core/repl'
+import { getTabId, getCurrentTab } from '@kui-shell/core/webapp/cli'
+import SymbolTable from '@kui-shell/core/core/symbol-table'
 
 /**
  * export command
  *
  */
-const exportCommand = ({ parsedOptions }: EvaluatorArgs) => {
-  const storage = JSON.parse(sessionStore().getItem(key)) || {}
+const exportCommand = ({ tab, parsedOptions }: EvaluatorArgs) => {
+  const curDic = SymbolTable.read(tab)
 
-  const tabId = getTabIndex(getCurrentTab())
-  const curDic = storage[tabId] || {}
   const toBeParsed = parsedOptions._[1]
-
   const arr = toBeParsed.split('=')
 
   curDic[arr[0]] = arr[1]
 
-  storage[tabId] = curDic
-  sessionStore().setItem(key, JSON.stringify(storage))
+  SymbolTable.write(tab, curDic)
+
   return true
 }
 

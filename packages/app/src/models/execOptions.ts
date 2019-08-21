@@ -23,6 +23,9 @@ export interface ExecOptions {
   // force execution in a given tab?
   tab?: Tab
 
+  /** environment variable map */
+  env?: Record<string, string>
+
   isProxied?: boolean
   noDelegation?: boolean
   delegationOk?: boolean
