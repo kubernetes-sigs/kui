@@ -84,7 +84,7 @@ body.sidecar-is-minimized .result-as-table .result-table {
   /* width: 100%; */
 }
 
-.repl .result-table-outer-wrapper.big-top-pad {
+.result-table-outer-wrapper.big-top-pad {
   margin-top: 1em;
 }
 
@@ -92,7 +92,7 @@ body.sidecar-is-minimized .result-as-table .result-table {
   width: auto;
 }
 
-.result-as-multi-table .result-table-title-outer {
+.result-table-outer-wrapper:not(:only-child) .result-table-title-outer {
   display: flex;
 }
 .result-table-title-outer {
