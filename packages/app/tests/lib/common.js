@@ -50,7 +50,7 @@ exports.rp = opts => {
  * Wait, if needed, for a proxy session
  *
  */
-function waitForSession(ctx, noProxySessionWait = false) {
+exports.waitForSession = (ctx, noProxySessionWait = false) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
     // wait for the proxy session to be established
     try {
@@ -80,7 +80,7 @@ exports.refresh = async (ctx, wait = true, clean = false) => {
     await ctx.app.client.localStorage('DELETE') // clean out local storage
   }
   if (wait) {
-    await waitForSession(ctx)
+    await exports.waitForSession(ctx)
     await ui.cli.waitForRepl(ctx.app)
   }
 }
@@ -88,7 +88,7 @@ exports.refresh = async (ctx, wait = true, clean = false) => {
 /** restart the app */
 exports.restart = async ctx => {
   await ctx.app.restart()
-  return waitForSession(ctx)
+  return exports.waitForSession(ctx)
 }
 
 /**
@@ -211,7 +211,7 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
                 .start() // this will launch electron
                 // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
                 // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
-                .then(() => waitForSession(ctx, noProxySessionWait))
+                .then(() => exports.waitForSession(ctx, noProxySessionWait))
                 .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
                 .then(() => !noProxySessionWait && ui.cli.waitForRepl(ctx.app))
             ) // should have an active repl

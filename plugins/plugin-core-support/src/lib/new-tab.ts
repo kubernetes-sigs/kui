@@ -16,7 +16,8 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
+import { v4 as uuid } from 'uuid'
 
 import {
   isVisible as isSidecarVisible,
@@ -26,21 +27,16 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import {
-  isPopup,
-  listen,
-  getCurrentPrompt,
-  getCurrentTab,
-  getTabIndex,
-  Tab,
-  setStatus
-} from '@kui-shell/core/webapp/cli'
+import { isPopup, listen, getCurrentPrompt, getCurrentTab, getTabId, Tab, setStatus } from '@kui-shell/core/webapp/cli'
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { theme, config } from '@kui-shell/core/core/settings'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { inElectron, inBrowser } from '@kui-shell/core/core/capabilities'
 import { WatchableJob } from '@kui-shell/core/core/job'
+
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('plugin-core-support')
 
 const debug = Debug('plugins/core-support/new-tab')
 
@@ -58,13 +54,22 @@ const usage = {
 }
 
 /**
+ * Given a tab index, return the tab id
+ *
+ */
+function getTabFromIndex(idx: number): Tab {
+  return element(`.main tab:nth-child(${idx})`) as Tab
+}
+
+/**
  * Helper methods to crawl the DOM
  *
  */
 const getTabButton = (tab: Tab) =>
-  element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${getTabIndex(tab)}"]`)
+  element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-id="${getTabId(tab)}"]`)
 const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-label') as HTMLElement
+const getTabButtonLabel = (tab: Tab) =>
+  getTabButton(tab).querySelector('.left-tab-stripe-button-label .kui-tab--label-text') as HTMLElement
 const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
 
 /**
@@ -124,42 +129,45 @@ class TabState {
   }
 }
 
-const switchTab = (tabIndex: number, activateOnly = false) => {
-  debug('switchTab', tabIndex)
+const switchTab = (tabId: string, activateOnly = false) => {
+  debug('switchTab', tabId)
 
   const currentTab = getCurrentTab()
-  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-index="${tabIndex}"]`)
-  const nextTabButton = document.querySelector(
-    `.main .left-tab-stripe .left-tab-stripe-button[data-tab-button-index="${tabIndex}"]`
-  )
-  debug('nextTab', nextTab)
-  debug('nextTabButton', nextTabButton)
+  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-id="${tabId}"]`) as Tab
+  const nextTabButton = document.querySelector(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-id="${tabId}"]`)
+  // debug('nextTab', nextTab)
+  // debug('nextTabButton', nextTabButton)
 
   if (!nextTab || !nextTabButton) {
-    throw new Error('Cannot find the given tab')
-  } else {
-    if (!activateOnly) {
-      // then deactivate the current tab
-      const currentVisibleTab = getCurrentTab()
-      const currentTabButton = getCurrentTabButton()
-      currentVisibleTab.classList.remove('visible')
-      currentTabButton.classList.remove('left-tab-stripe-button-selected')
-      currentTabButton.classList.remove('kui-tab--active')
-    }
-
-    nextTab.classList.add('visible')
-    nextTabButton.classList.add('left-tab-stripe-button-selected')
-    nextTabButton.classList.add('kui-tab--active')
-
-    if (currentTab) {
-      ;(currentTab['state'] as TabState).capture()
-    }
-    if (nextTab['state']) {
-      ;(nextTab['state'] as TabState).restore()
-    }
-
-    return true
+    debug('Cannot find the desired tab to switch to')
   }
+
+  if (!activateOnly) {
+    // then deactivate the current tab
+    const currentVisibleTab = getCurrentTab()
+    const currentTabButton = getCurrentTabButton()
+    currentVisibleTab.classList.remove('visible')
+    currentTabButton.classList.remove('left-tab-stripe-button-selected')
+    currentTabButton.classList.remove('kui-tab--active')
+  }
+
+  nextTab.classList.add('visible')
+  nextTabButton.classList.add('left-tab-stripe-button-selected')
+  nextTabButton.classList.add('kui-tab--active')
+
+  if (currentTab) {
+    ;(currentTab['state'] as TabState).capture()
+  }
+  if (nextTab['state']) {
+    ;(nextTab['state'] as TabState).restore()
+  }
+
+  const promptToFocus = getCurrentPrompt(nextTab)
+  if (promptToFocus) {
+    promptToFocus.focus()
+  }
+
+  return true
 }
 
 /**
@@ -186,7 +194,7 @@ const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/complete', (event: Event) => {
     if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
-      debug('got event', event)
+      // debug('got event', event)
       getTabButton(event.tab).classList.remove('processing')
     }
   })
@@ -194,7 +202,7 @@ const addCommandEvaluationListeners = (): void => {
   eventBus.on('/command/start', (event: Event) => {
     if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
-      debug('got event', event)
+      // debug('got event', event)
 
       const tab = event.tab
 
@@ -225,58 +233,37 @@ const addCommandEvaluationListeners = (): void => {
 }
 
 /**
- * Ensure the tabs have ids in consecutive order.
- *
- */
-const reindexTabs = () => {
-  const tabs = document.querySelectorAll('.main > .tab-container > tab')
-  for (let idx = 0; idx < tabs.length; idx++) {
-    const id = idx + 1 // indexed from 1
-    tabs[idx].setAttribute('data-tab-index', id.toString())
-  }
-
-  const tabButtons = document.querySelectorAll(
-    '.main .left-tab-stripe .left-tab-stripe-buttons .left-tab-stripe-button'
-  )
-  for (let idx = 0; idx < tabButtons.length; idx++) {
-    const id = idx + 1 // also indexed from 1
-    const button = tabButtons[idx] as HTMLElement
-
-    button.setAttribute('data-tab-button-index', id.toString())
-    button.onclick = () => qexec(`tab switch ${id}`)
-  }
-}
-
-/**
  * Close the current tab
  *
  */
 const closeTab = (tab = getCurrentTab()) => {
+  debug('closeTab', tab)
+
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
   if (nTabs <= 1) {
-    debug('closing window')
-    qexec('window close')
+    if (inElectron()) {
+      debug('closing window on close of last tab')
+      qexec('window close')
+    }
     return true
   }
 
-  const tabButton = getTabButton(tab)
-  const tabId = parseInt(tabButton.getAttribute('data-tab-button-index'), 10)
+  // note: true means we only want to activate the given tab.
+  const makeThisTabActive = (tab.nextElementSibling as Tab) || (tab.previousElementSibling as Tab)
+  debug('makeThisTabActive', makeThisTabActive, tab.nextSibling)
+  switchTab(getTabId(makeThisTabActive), true)
 
+  // remove the tab state for the current tab
   const tabState: TabState = tab['state']
   if (tabState.jobs) {
     tabState.jobs.forEach(job => job.abort())
   }
   tabState.closed = true
 
+  // remove the UI for the current tab
+  const tabButton = getTabButton(tab)
   tab.parentNode.removeChild(tab)
   tabButton.parentNode.removeChild(tabButton)
-
-  // true means we only want to activate the given tab
-  switchTab(tabId === 1 ? 2 : tabId - 1, true)
-
-  getCurrentPrompt().focus()
-
-  reindexTabs()
 
   eventBus.emit('/tab/close', tab)
 
@@ -291,8 +278,13 @@ function isElement(target: EventTarget): target is Element {
  * Initialize events for a new tab
  *
  */
-const perTabInit = (tab: Tab, doListen = true) => {
+const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
   tab['state'] = new TabState()
+
+  const newTabId = uuid()
+  tab.setAttribute('data-tab-id', newTabId)
+  tabButton.setAttribute('data-tab-id', newTabId)
+  tabButton.onclick = () => switchTab(newTabId)
 
   eventBus.emit('/tab/new', tab)
 
@@ -368,8 +360,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
 
   const newTab = currentVisibleTab.cloneNode(true) as HTMLElement
-  const newTabId = (nTabs + 1).toString()
-  newTab.setAttribute('data-tab-index', newTabId)
   newTab.className = 'visible'
 
   const currentTabButton = getCurrentTabButton()
@@ -380,12 +370,9 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   newTabButton.classList.add('left-tab-stripe-button-selected')
   newTabButton.classList.add('kui-tab--active')
   newTabButton.classList.remove('processing')
-  newTabButton.setAttribute('data-tab-button-index', newTabId)
   currentTabButton.parentNode.appendChild(newTabButton)
 
-  getTabButtonLabel(newTab).innerText = topTabs.names === 'fixed' ? `Tab ${getTabIndex(newTab)}` : 'New Tab'
-
-  newTabButton.onclick = () => qexec(`tab switch ${newTabId}`)
+  getTabButtonLabel(newTab).innerText = topTabs.names === 'fixed' ? strings('Tab') : strings('New Tab')
 
   const currentlyProcessingBlock: true | HTMLElement = await qexec(
     'clear --keep-current-active',
@@ -407,7 +394,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   removeAllDomChildren(newTab.querySelector('.repl-result'))
 
   clearSelection(newTab)
-  perTabInit(newTab)
+  perTabInit(newTab, newTabButton)
 
   newTabButton.scrollIntoView()
 
@@ -425,9 +412,9 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
  *
  */
 const oneTimeInit = (): void => {
+  const initialTab = getTabFromIndex(1)
   const initialTabButton = getCurrentTabButton()
-  const initialTabId = initialTabButton.getAttribute('data-tab-button-index')
-  initialTabButton.onclick = () => qexec(`tab switch ${initialTabId}`)
+  const initialTabId = initialTabButton.getAttribute('data-tab-id')
 
   if (document.body.classList.contains('subwindow')) {
     element(tabButtonSelector).onclick = () => window.open(window.location.href, '_blank')
@@ -439,10 +426,9 @@ const oneTimeInit = (): void => {
   addCommandEvaluationListeners()
 
   // initialize the first tab
-  perTabInit(getCurrentTab(), false)
+  perTabInit(initialTab, initialTabButton, false)
 
-  getTabButtonLabel(getCurrentTab()).innerText =
-    topTabs.names === 'fixed' ? `Tab ${getTabIndex(getCurrentTab())}` : theme['productName']
+  getTabButtonLabel(getCurrentTab()).innerText = topTabs.names === 'fixed' ? strings('Tab') : theme['productName']
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
@@ -470,7 +456,8 @@ const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/tab/switch',
-    ({ argvNoOptions }) => switchTab(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)),
+    ({ argvNoOptions, parsedOptions }) =>
+      switchTab(getTabId(getTabFromIndex(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)))),
     { usage, needsUI: true, noAuthOk: true }
   )
   commandTree.listen('/tab/new', newTabAsync, {

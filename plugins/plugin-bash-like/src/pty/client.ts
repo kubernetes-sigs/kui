@@ -490,6 +490,7 @@ const getOrCreateChannel = async (
   cmdline: string,
   uuid: string,
   tab: Tab,
+  execOptions: ExecOptions,
   terminal: xterm.Terminal
 ): Promise<Channel> => {
   const channelFactory = inBrowser()
@@ -497,6 +498,8 @@ const getOrCreateChannel = async (
       ? webviewChannelFactory
       : remoteChannelFactory
     : electronChannelFactory
+
+  const env = Object.assign({}, process.env, execOptions.env || {})
 
   // tell the server to start a subprocess
   const doExec = (ws: Channel) => {
@@ -507,7 +510,7 @@ const getOrCreateChannel = async (
       rows: terminal.rows,
       cols: terminal.cols,
       cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
-      env: Object.keys(process.env).length > 0 && process.env // VERY IMPORTANT: don't send an empty process.env
+      env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
     }
     debug('exec after open', msg)
 
@@ -688,14 +691,16 @@ export const doExec = (
         }
 
         const ourUUID = uuid()
-        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, terminal).catch((err: CodedError) => {
-          if (err.code !== 503) {
-            // don't bother complaining too much about connection refused
-            console.error('error creating channel', err)
+        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, execOptions, terminal).catch(
+          (err: CodedError) => {
+            if (err.code !== 503) {
+              // don't bother complaining too much about connection refused
+              console.error('error creating channel', err)
+            }
+            cleanUpTerminal()
+            throw err
           }
-          cleanUpTerminal()
-          throw err
-        })
+        )
         resizer.ws = ws
 
         let currentScrollAsync

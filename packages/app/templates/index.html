@@ -58,7 +58,11 @@
           <div class="left-tab-stripe-buttons">
             <div class="kui-tab kui-tab--active left-tab-stripe-button left-tab-stripe-button-selected" data-tab-button-index="1">
               <i class="fas fa-square repl-prompt-right-element-icon deemphasize"></i>
-              <div class="kui-tab--label left-tab-stripe-button-label">&nbsp;</div>
+              <div class="kui-tab--label left-tab-stripe-button-label">
+                &nbsp;
+                <span class="kui-tab--label-text"></span>
+                <span class="kui-tab--label-index"></span>
+              </div>
               <div class="left-tab-stripe-button-closer">
                 <svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 16 16" aria-hidden="true">
                   <path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path>
@@ -82,7 +86,7 @@
         </div>
 
         <div class="tab-container">
-          <tab data-tab-index="1" class="visible">
+          <tab class="visible">
             <div class="kui--rows">
               <div class="kui--columns">
                 <repl class="repl" id="main-repl">
