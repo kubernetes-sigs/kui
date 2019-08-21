@@ -29,11 +29,12 @@ try {
 
 interface Theme {
   productName: string
-  gettingStarted?: string | Record<string, string>
-  ogDescription?: string | Record<string, string>
+  ogDescription?: string
   ogUrl?: string
 
   about?: SidecarMode[]
+  gettingStarted?: string | Record<string, string>
+  description?: string | Record<string, string>
 
   /** prompt placeholder text (default: '') */
   placeholder?: string

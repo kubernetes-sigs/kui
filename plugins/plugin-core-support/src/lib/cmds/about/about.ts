@@ -90,21 +90,22 @@ async function renderAbout() {
     icon.classList.add('kui--wide-icon')
   }
 
-  if (settings.ogDescription) {
+  const description = settings.description || settings.ogDescription
+  if (description) {
     const marked = await markdown()
     const longDescription = document.createElement('div')
     longDescription.classList.add('about-window-long-description')
     logo.appendChild(longDescription)
 
-    if (typeof settings.ogDescription === 'string') {
+    if (typeof description === 'string') {
       try {
-        longDescription.innerHTML = marked(settings.ogDescription)
+        longDescription.innerHTML = marked(description)
       } catch (err) {
         console.error('error rendering markdown', err)
-        longDescription.innerText = settings.ogDescription
+        longDescription.innerText = description
       }
     } else {
-      longDescription.innerHTML = marked(i18n.fromMap(settings.ogDescription))
+      longDescription.innerHTML = marked(i18n.fromMap(description))
     }
   }
 
