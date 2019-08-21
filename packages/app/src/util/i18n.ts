@@ -28,19 +28,20 @@ export function fromMap(map: Record<string, string>) {
   return map[getLocale()] || map[getLocale2()] || map[defaultLocale]
 }
 
-export default (plugin: string): ((key: string) => string) => {
+export default (plugin: string, namespace = 'resources'): ((key: string) => string) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/locales/en_US.json`)
+  const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/${namespace}_en_US.json`)
 
   const locale = getLocale()
 
   const i18n = (locale: string): Record<string, string> => {
     try {
-      return locale && require(`@kui-shell/${plugin}/i18n/locales/${locale.replace(/-/, '_')}.json`)
+      return locale && require(`@kui-shell/${plugin}/i18n/${namespace}_${locale.replace(/-/, '_')}.json`)
     } catch (err) {
       try {
         return (
-          (locale && require(`@kui-shell/${plugin}/i18n/locales/${locale.replace(/-.*$/, '')}.json`)) || defaultStrings
+          (locale && require(`@kui-shell/${plugin}/i18n/${namespace}_${locale.replace(/-.*$/, '')}.json`)) ||
+          defaultStrings
         )
       } catch (err) {
         console.error('Could not find translation for given locale', plugin, locale)
