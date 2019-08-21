@@ -110,7 +110,7 @@ const list = async () => {
     type: 'theme',
     name: '',
     outerCSS: 'not-a-name',
-    attributes: [{ value: 'THEME' }, { value: 'STYLE' }]
+    attributes: [{ value: strings('Theme') }, { value: strings('Style') }]
   }
 
   const currentTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
@@ -128,11 +128,11 @@ const list = async () => {
         rowCSS: theme.name === currentTheme && 'selected-row',
         attributes: [
           {
-            value: theme.description || theme.name,
+            value: strings(theme.description) || strings(theme.name),
             css: 'not-too-wide',
             onclick: undefined
           },
-          { value: theme.style, css: 'pretty-narrow' }
+          { value: strings(theme.style), css: 'pretty-narrow' }
         ],
         onclick: undefined,
         setSelected: undefined
