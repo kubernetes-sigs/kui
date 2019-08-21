@@ -164,9 +164,15 @@ const tabTagPattern = /tab/i
 export function isTab(node: Element): node is Tab {
   return tabTagPattern.test(node.tagName)
 }
-export const getTabIndex = (tab: Tab): number => parseInt(tab.getAttribute('data-tab-index'), 10)
+/**
+ * Return the unique identifier for the given tab
+ *
+ */
+export function getTabId(tab: Tab) {
+  return tab.getAttribute('data-tab-id')
+}
 export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
-  return getTabIndex(tab1) === getTabIndex(tab2)
+  return getTabId(tab1) === getTabId(tab2)
 }
 export const getTabFromTarget = (target: EventTarget): Tab => {
   if (target) {

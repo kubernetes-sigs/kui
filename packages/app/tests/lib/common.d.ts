@@ -60,5 +60,8 @@ declare function refresh (ctx: Suite, wait?: boolean): Promise<void>
 
 /** restart the app */
 declare function restart (ctx: Suite): Promise<void>
-  
+
+/** wait until a session exists for the current tab */
+declare function waitForSession(ctx: Suite, noProxySessionWait?: boolean)
+
 declare var expectedVersion: string
