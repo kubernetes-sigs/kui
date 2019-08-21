@@ -24,6 +24,13 @@ if [ $TRAVIS_OS_NAME = "osx" ]; then
     exit 0
 fi
 
+if [ "$TRAVIS_REPO_SLUG" == "IBM/kui" ] && [ "$TRAVIS_BRANCH" != "master" ]; then
+    echo "skipping typecov for non-master-branch runs on the main fork $TRAVIS_REPO_SLUG $TRAVIS_BRANCH"
+    exit 0
+fi
+
+echo "commencing typecov with slug=$TRAVIS_REPO_SLUG branch=$TRAVIS_BRANCH"
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 (cd "$SCRIPTDIR"/../../../typecov && npm run typecov)
