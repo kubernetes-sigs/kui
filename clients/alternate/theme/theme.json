@@ -15,7 +15,9 @@
   "productSubName": "Kui",
   "shellName": "Shell",
   "userAgent": "Kui-Shell",
-  "gettingStarted": "getting started",
+  "gettingStarted": {
+    "en_US": "Getting started with Kui..."
+  },
   "defaultTheme": "IBM Light",
   "themes": [
     { "name": "IBM Light", "css": "themes/carbon-gray10.css", "style": "light" },
@@ -25,7 +27,7 @@
     "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,700|IBM+Plex+Sans:300,400,500,700&display=swap"
   ],
   "cssOverrides": ["top-tab-stripe-alt.css", "ibm-plex.css"],
-  "bodyCss": ["kui", "kui-alternate"],
+  "bodyCss": ["kui", "kui-alternate", "kui--bottom-input"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Medium",
   "appIcon": "icons/png/kui.png",

@@ -102,6 +102,9 @@ body[kui-theme="IBM Dark"] .bx--btn--secondary {
 body[kui-theme="IBM Dark"] .bx--btn--danger {
   background-color: #ff3751;
 }
+body[kui-theme="IBM Dark"] .repl {
+  background-color: var(--color-base00);
+}
 
 /* mono-blue hightlightjs theme */
 .hljs {
