@@ -20,14 +20,6 @@ import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
 
-const expectConsoleToBeClear = ({ app }) => {
-  return app.client.waitUntil(() => {
-    return app.client.elements(selectors.PROMPT_BLOCK).then(elements => elements.value.length === 1)
-    /* .then(() => app.client.getAttribute('#main-repl .repl-block input', 'placeholder'))
-      .then(placeholderText => placeholderText === 'enter your command') */
-  })
-}
-
 describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
@@ -84,7 +76,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   it('should clear the console', () =>
     cli
       .do('clear', this.app)
-      .then(expectConsoleToBeClear)
+      .then(() => cli.expectConsoleToBeClear(this.app))
       .catch(oops(this, true)))
 
   // get something on the screen
@@ -96,7 +88,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .do(JUNK, this.app, true)
       .then(async () => {
         await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
-        return expectConsoleToBeClear({ app: this.app })
+        return cli.expectConsoleToBeClear(this.app)
       })
       .then(() => this.app.client.getValue(selectors.CURRENT_PROMPT))
       .then(text => assert.strictEqual(text, JUNK))
@@ -119,7 +111,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .do('prompt', this.app) // wipe will change the placeholder text
       .then(async () => {
         await this.app.client.keys([ui.keys.CONTROL, 'l', 'NULL']) // use control-l to clear
-        return expectConsoleToBeClear({ app: this.app })
+        return cli.expectConsoleToBeClear(this.app)
       })
       .catch(oops(this, true)))
 })
