@@ -44,7 +44,7 @@ interface Theme {
 
   tableStyle?: keyof typeof TableStyle
 
-  largeIcon: string
+  largeIcon?: string
   wideIcon?: string
 
   userAgent?: string
