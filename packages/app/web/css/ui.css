@@ -660,7 +660,7 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
   display: flex;
   z-index: 5;
   background-color: var(--color-stripe-02);
-  border-bottom: 1px inset var(--color-ui-02);
+  border-bottom: 1px inset var(--color-ui-03);
   order: -1;
 }
 /* sidecar .sidecar-bottom-stripe {
@@ -3204,12 +3204,12 @@ body {
     width: 100%;
     height: 2.75em;*/
   flex-basis: 2.75em;
-  border-top: 1px inset var(--color-ui-03);
-  background-color: var(--color-ui-02);
+  background-color: var(--color-stripe-01);
   transition: border-color 150ms ease-in-out, background-color 150ms ease-in-out;
 }
 body.kui--bottom-input .kui--input-stripe {
   display: flex;
+  padding: 1.5em 5em 1.5em 1em;
 }
 body.kui--bottom-input .repl-active .repl-input {
   display: none;
@@ -3220,13 +3220,18 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
 .kui--input-stripe .repl-block {
   flex: 1;
   padding: 0;
-  padding-left: 0.375em;
 }
 .kui--input-stripe .repl-input {
+  font-size: 0.875em;
   flex: 1;
+  background-color: var(--color-sidecar-header);
+  padding: 0.5em 0.375em;
 }
 .kui--input-stripe input {
-  font-size: 1em;
+  background-color: transparent;
+}
+body.kui--bottom-input .repl-context {
+  display: none;
 }
 .kui--input-stripe .repl-context {
   display: none;
@@ -3235,6 +3240,9 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
   height: auto;
   border: none;
   background: none;
+}
+.kui--input-stripe .repl-prompt {
+  border: none;
 }
 .kui--input-stripe .repl-prompt-righty {
   font-size: 1.125em;

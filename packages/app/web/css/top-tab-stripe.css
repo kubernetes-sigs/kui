@@ -133,6 +133,7 @@ body.not-electron .repl-input {
   padding-right: 0.75rem;
 }
 
+.left-tab-stripe-button svg circle,
 .left-tab-stripe-button svg path {
   fill: var(--color-text-02);
   transition: fill 150ms ease-in-out;
