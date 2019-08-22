@@ -53,7 +53,7 @@ describe('core new tab switch tabs', function(this: common.ISuite) {
 })
 
 // test that new tab does not copy any output over from the cloned tab
-common.localDescribe('core new tab from pty active tab via click', function(this: common.ISuite) {
+common.pDescribe('core new tab from pty active tab via click', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -64,11 +64,18 @@ common.localDescribe('core new tab from pty active tab via click', function(this
       .then(sidecar.expectOpen)
       .catch(common.oops(this)))
 
+  common.proxyIt('should cd to the test dir', () =>
+    cli
+      .do(`cd ${process.env.TEST_ROOT}`, this.app)
+      .then(cli.expectOKWithString('packages/tests'))
+      .catch(common.oops(this, true))
+  )
+
   it('should less README.md', async () => {
     try {
-      cli.do('less ../../README.md', this.app)
+      const res = await cli.do('less ../../README.md', this.app)
 
-      const selector = `${selectors.OUTPUT_N(1)} .xterm`
+      const selector = `${selectors.OUTPUT_N(res.count)} .xterm`
       await this.app.client.waitForExist(selector)
     } catch (err) {
       return common.oops(this)(err)
@@ -87,7 +94,7 @@ common.localDescribe('core new tab from pty active tab via click', function(this
     this.app.client.waitForVisible(`${selectors.CURRENT_TAB} .xterm`, 5000, true).catch(common.oops(this)))
 })
 
-common.localDescribe('core new tab from quiescent tab via command', function(this: common.ISuite) {
+describe('core new tab from quiescent tab via command', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -196,7 +203,7 @@ common.localDescribe('core new tab from quiescent tab via command', function(thi
       .catch(common.oops(this)))
 })
 
-common.localDescribe('core new tab from quiescent tab via button click', function(this: common.ISuite) {
+describe('core new tab from quiescent tab via button click', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -230,7 +237,7 @@ common.localDescribe('core new tab from quiescent tab via button click', functio
       .catch(common.oops(this)))
 })
 
-common.localDescribe('core new tab from active tab via button click', function(this: common.ISuite) {
+describe('core new tab from active tab via button click', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -250,7 +257,7 @@ common.localDescribe('core new tab from active tab via button click', function(t
       .catch(common.oops(this)))
 })
 
-common.localDescribe('core new tab from pty active tab via button click', function(this: common.ISuite) {
+describe('core new tab from pty active tab via button click', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -271,9 +278,7 @@ common.localDescribe('core new tab from pty active tab via button click', functi
       .catch(common.oops(this)))
 })
 
-common.localDescribe('core new tab from active tab that is emitting output via button click', function(
-  this: common.ISuite
-) {
+describe('core new tab from active tab that is emitting output via button click', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
