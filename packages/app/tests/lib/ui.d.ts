@@ -129,6 +129,7 @@ declare class CLI {
   expectErrorWithPassthrough: (statusCode: number | string, expect?: string) => (res: AppAndCount) => Promise<number>
   expectBlankWithOpts: (opts: { nonBlankPromptOk?: boolean }) => AppAndCountVerifier
   expectBlank: AppAndCountVerifier
+  expectConsoleToBeClear: (app: Application) => any /** `any` comes from webdriverio waitUntil */
   expectOKWithCustom: (custom: ICustomSpec) => (res: AppAndCount) => any // FIXME; is string | Application
   expectOKWithString: (expect: string, exact?: boolean) => AppAndCountVerifier
   expectOKWithAny: AppAndCountVerifier /** as long as its ok, accept anything */
