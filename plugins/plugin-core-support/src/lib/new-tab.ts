@@ -96,7 +96,7 @@ class TabState {
 
   capture() {
     this._env = Object.assign({}, process.env)
-    this._cwd = process.cwd().slice(0) // just in case, copy the string
+    this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
     debug('captured tab state', this.cwd)
   }
@@ -195,7 +195,11 @@ const addCommandEvaluationListeners = (): void => {
     if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       // debug('got event', event)
-      getTabButton(event.tab).classList.remove('processing')
+      const button = getTabButton(event.tab)
+      if (button) {
+        // the tab might no longer be visible
+        button.classList.remove('processing')
+      }
     }
   })
 
