@@ -15,8 +15,6 @@
  */
 
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import sessionStore from '@kui-shell/core/models/sessionStore'
-import { getTabId, getCurrentTab } from '@kui-shell/core/webapp/cli'
 import SymbolTable from '@kui-shell/core/core/symbol-table'
 
 /**
