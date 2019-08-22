@@ -280,6 +280,11 @@ exports.cli = {
     }),
   expectBlankWithOpts: (opts = {}) => res => expectOK(res, Object.assign({ selector: '', expectError: true }, opts)),
   expectBlank: res => exports.cli.expectBlankWithOpts()(res),
+  expectConsoleToBeClear: app => {
+    return app.client.waitUntil(async () => {
+      return app.client.elements(selectors.PROMPT_BLOCK).then(elements => elements.value.length === 1)
+    })
+  },
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
   expectOKWithString: (expect, exact = false) => res => {
     // first try innerText

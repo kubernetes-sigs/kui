@@ -220,6 +220,15 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     // create a new watchable job and expect 1 jobs in the tab
     checkJob(1, true)
 
+    it('should clear the console', () =>
+      cli
+        .do('clear', this.app)
+        .then(() => cli.expectConsoleToBeClear(this.app))
+        .catch(common.oops(this, true)))
+
+    // after `clear`, the current tab should have jobs = []
+    checkJob(0, false)
+
     deleteNS(this, ns)
   })
 })

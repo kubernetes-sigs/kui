@@ -76,7 +76,7 @@ const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-st
  * Otherwise global state that we want to keep per tab
  *
  */
-class TabState {
+export class TabState {
   /** is the tab closed? */
   closed: boolean
 

@@ -20,6 +20,7 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { resetCount } from '@kui-shell/core/webapp/cli'
+import { TabState } from '../new-tab'
 const debug = Debug('plugins/core-support/clear')
 
 const usage = {
@@ -36,6 +37,12 @@ const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
       // don't keep the current active prompt
       debug('clearing everything, the repl loop will set up the next prompt for us')
       removeAllDomChildren(tab.querySelector('.repl-inner'))
+
+      // abort the jobs for the current tab
+      const tabState: TabState = tab['state']
+      if (tabState.jobs) {
+        tabState.jobs.forEach(job => job.abort())
+      }
     } else {
       // keep the current active prompt
       debug('preserving the current active prompt')
