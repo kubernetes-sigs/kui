@@ -144,7 +144,9 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
       })
       .catch(async err => {
         await this.app.client.keys(ui.ctrlC) // clear the line
-        return common.oops(this)(err)
+        if (!err['failedAsExpected']) {
+          return common.oops(this)(err)
+        }
       })
   }
 
