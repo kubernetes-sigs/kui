@@ -1,9 +1,6 @@
 {
-  "packages": [
-    "packages/*",
-    "plugins/*"
-  ],
-  "version": "3.0.2",
+  "packages": ["packages/*", "plugins/*"],
+  "version": "3.0.3",
   "command": {
     "publish": {
       "conventionalCommits": true,

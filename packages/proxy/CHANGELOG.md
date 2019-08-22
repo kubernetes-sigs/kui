@@ -3,58 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.2](https://github.com/IBM/kui/compare/v3.0.1...v3.0.2) (2019-08-21)
+## [3.0.3](https://github.com/IBM/kui/compare/v3.0.2...v3.0.3) (2019-08-22)
 
 **Note:** Version bump only for package @kui-shell/proxy
 
+## [3.0.2](https://github.com/IBM/kui/compare/v3.0.1...v3.0.2) (2019-08-21)
 
-
-
+**Note:** Version bump only for package @kui-shell/proxy
 
 ## [3.0.1](https://github.com/IBM/kui/compare/v3.0.0...v3.0.1) (2019-08-20)
 
 **Note:** Version bump only for package @kui-shell/proxy
 
-
-
-
-
 # 3.0.0 (2019-08-19)
-
 
 ### Bug Fixes
 
-* fixes for auth in browser+proxy mode ([a441c33](https://github.com/IBM/kui/commit/a441c33)), closes [#287](https://github.com/IBM/kui/issues/287) [#286](https://github.com/IBM/kui/issues/286) [#289](https://github.com/IBM/kui/issues/289)
-* improve support for semicolon-separated kube commands ([c841ae0](https://github.com/IBM/kui/commit/c841ae0)), closes [#2264](https://github.com/IBM/kui/issues/2264)
-* **packages/proxy:** send error from proxy in case that error.message is not defined ([863a531](https://github.com/IBM/kui/commit/863a531)), closes [#867](https://github.com/IBM/kui/issues/867)
-* improved proxy multitenancy ([f8f816f](https://github.com/IBM/kui/commit/f8f816f)), closes [#1938](https://github.com/IBM/kui/issues/1938)
-* improved proxy multitenancy ([b6b339c](https://github.com/IBM/kui/commit/b6b339c)), closes [#1907](https://github.com/IBM/kui/issues/1907) [#1923](https://github.com/IBM/kui/issues/1923) [#1920](https://github.com/IBM/kui/issues/1920)
-* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
-* **kui-builder:** improve webpack building process for external clients ([14763ca](https://github.com/IBM/kui/commit/14763ca)), closes [#433](https://github.com/IBM/kui/issues/433)
-* **packages/proxy:** fix helm running in webpack+proxy clients ([deac3f7](https://github.com/IBM/kui/commit/deac3f7)), closes [#1840](https://github.com/IBM/kui/issues/1840)
-* **packages/proxy:** fix the issue that external proxy build can't find .keys ([a753abb](https://github.com/IBM/kui/commit/a753abb)), closes [#857](https://github.com/IBM/kui/issues/857)
-* **packages/proxy:** leaking subprocesses on websocket channel death ([08f2c7c](https://github.com/IBM/kui/commit/08f2c7c)), closes [#2199](https://github.com/IBM/kui/issues/2199)
-* webpack versus editor ([956a72f](https://github.com/IBM/kui/commit/956a72f)), closes [#1333](https://github.com/IBM/kui/issues/1333)
-* webpack+proxy versus pty ([0f8a19a](https://github.com/IBM/kui/commit/0f8a19a)), closes [#1170](https://github.com/IBM/kui/issues/1170)
-* **packages/proxy:** proxy build fails for non-bluemix, non-kubernetes users ([2a70aae](https://github.com/IBM/kui/commit/2a70aae)), closes [#1647](https://github.com/IBM/kui/issues/1647)
-* **proxy:** improve support for building proxy server from an external custom client ([177fac8](https://github.com/IBM/kui/commit/177fac8)), closes [#438](https://github.com/IBM/kui/issues/438)
-* **proxy:** we weren't handling execOptions undefined ([5a31f8d](https://github.com/IBM/kui/commit/5a31f8d)), closes [#291](https://github.com/IBM/kui/issues/291)
-
+- fixes for auth in browser+proxy mode ([a441c33](https://github.com/IBM/kui/commit/a441c33)), closes [#287](https://github.com/IBM/kui/issues/287) [#286](https://github.com/IBM/kui/issues/286) [#289](https://github.com/IBM/kui/issues/289)
+- improve support for semicolon-separated kube commands ([c841ae0](https://github.com/IBM/kui/commit/c841ae0)), closes [#2264](https://github.com/IBM/kui/issues/2264)
+- **packages/proxy:** send error from proxy in case that error.message is not defined ([863a531](https://github.com/IBM/kui/commit/863a531)), closes [#867](https://github.com/IBM/kui/issues/867)
+- improved proxy multitenancy ([f8f816f](https://github.com/IBM/kui/commit/f8f816f)), closes [#1938](https://github.com/IBM/kui/issues/1938)
+- improved proxy multitenancy ([b6b339c](https://github.com/IBM/kui/commit/b6b339c)), closes [#1907](https://github.com/IBM/kui/issues/1907) [#1923](https://github.com/IBM/kui/issues/1923) [#1920](https://github.com/IBM/kui/issues/1920)
+- proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
+- **kui-builder:** improve webpack building process for external clients ([14763ca](https://github.com/IBM/kui/commit/14763ca)), closes [#433](https://github.com/IBM/kui/issues/433)
+- **packages/proxy:** fix helm running in webpack+proxy clients ([deac3f7](https://github.com/IBM/kui/commit/deac3f7)), closes [#1840](https://github.com/IBM/kui/issues/1840)
+- **packages/proxy:** fix the issue that external proxy build can't find .keys ([a753abb](https://github.com/IBM/kui/commit/a753abb)), closes [#857](https://github.com/IBM/kui/issues/857)
+- **packages/proxy:** leaking subprocesses on websocket channel death ([08f2c7c](https://github.com/IBM/kui/commit/08f2c7c)), closes [#2199](https://github.com/IBM/kui/issues/2199)
+- webpack versus editor ([956a72f](https://github.com/IBM/kui/commit/956a72f)), closes [#1333](https://github.com/IBM/kui/issues/1333)
+- webpack+proxy versus pty ([0f8a19a](https://github.com/IBM/kui/commit/0f8a19a)), closes [#1170](https://github.com/IBM/kui/issues/1170)
+- **packages/proxy:** proxy build fails for non-bluemix, non-kubernetes users ([2a70aae](https://github.com/IBM/kui/commit/2a70aae)), closes [#1647](https://github.com/IBM/kui/issues/1647)
+- **proxy:** improve support for building proxy server from an external custom client ([177fac8](https://github.com/IBM/kui/commit/177fac8)), closes [#438](https://github.com/IBM/kui/issues/438)
+- **proxy:** we weren't handling execOptions undefined ([5a31f8d](https://github.com/IBM/kui/commit/5a31f8d)), closes [#291](https://github.com/IBM/kui/issues/291)
 
 ### Features
 
-* allow PTY websockets to piggyback on an existing https server ([4aeced5](https://github.com/IBM/kui/commit/4aeced5)), closes [#1183](https://github.com/IBM/kui/issues/1183)
-* **packages/proxy:** allow builders to choose kubectl verison for proxy ([61cb254](https://github.com/IBM/kui/commit/61cb254)), closes [#1806](https://github.com/IBM/kui/issues/1806)
-* **plugins/plugin-k8s:** support a gamut of helm client versions in proxy ([abc00d8](https://github.com/IBM/kui/commit/abc00d8)), closes [#570](https://github.com/IBM/kui/issues/570)
-* **webpack:** dockerized webpack build ([bc65dc2](https://github.com/IBM/kui/commit/bc65dc2)), closes [#274](https://github.com/IBM/kui/issues/274)
-* initial i18n for k8s and bash-like ([2e7c720](https://github.com/IBM/kui/commit/2e7c720)), closes [#2298](https://github.com/IBM/kui/issues/2298) [#2150](https://github.com/IBM/kui/issues/2150)
-* kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
-* multi-tenant proxy ([3a4b40f](https://github.com/IBM/kui/commit/3a4b40f)), closes [#1907](https://github.com/IBM/kui/issues/1907)
-* update sidecar tab UI ([9639811](https://github.com/IBM/kui/commit/9639811)), closes [#1867](https://github.com/IBM/kui/issues/1867)
-
-
-
-
+- allow PTY websockets to piggyback on an existing https server ([4aeced5](https://github.com/IBM/kui/commit/4aeced5)), closes [#1183](https://github.com/IBM/kui/issues/1183)
+- **packages/proxy:** allow builders to choose kubectl verison for proxy ([61cb254](https://github.com/IBM/kui/commit/61cb254)), closes [#1806](https://github.com/IBM/kui/issues/1806)
+- **plugins/plugin-k8s:** support a gamut of helm client versions in proxy ([abc00d8](https://github.com/IBM/kui/commit/abc00d8)), closes [#570](https://github.com/IBM/kui/issues/570)
+- **webpack:** dockerized webpack build ([bc65dc2](https://github.com/IBM/kui/commit/bc65dc2)), closes [#274](https://github.com/IBM/kui/issues/274)
+- initial i18n for k8s and bash-like ([2e7c720](https://github.com/IBM/kui/commit/2e7c720)), closes [#2298](https://github.com/IBM/kui/issues/2298) [#2150](https://github.com/IBM/kui/issues/2150)
+- kuiproxy ([530c278](https://github.com/IBM/kui/commit/530c278)), closes [#266](https://github.com/IBM/kui/issues/266) [#278](https://github.com/IBM/kui/issues/278) [#279](https://github.com/IBM/kui/issues/279)
+- multi-tenant proxy ([3a4b40f](https://github.com/IBM/kui/commit/3a4b40f)), closes [#1907](https://github.com/IBM/kui/issues/1907)
+- update sidecar tab UI ([9639811](https://github.com/IBM/kui/commit/9639811)), closes [#1867](https://github.com/IBM/kui/issues/1867)
 
 # 0.34.0 (2019-06-17)
 

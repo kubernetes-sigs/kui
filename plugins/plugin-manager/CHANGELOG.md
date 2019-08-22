@@ -3,35 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/IBM/kui/compare/v3.0.2...v3.0.3) (2019-08-22)
+
+**Note:** Version bump only for package @kui-shell/plugin-manager
+
 ## [3.0.2](https://github.com/IBM/kui/compare/v3.0.1...v3.0.2) (2019-08-21)
 
 **Note:** Version bump only for package @kui-shell/plugin-manager
 
-
-
-
-
 ## [3.0.1](https://github.com/IBM/kui/compare/v3.0.0...v3.0.1) (2019-08-20)
-
 
 ### Bug Fixes
 
-* flatmap is not supported by some browsers ([2b8fec4](https://github.com/IBM/kui/commit/2b8fec4)), closes [#2358](https://github.com/IBM/kui/issues/2358)
-
-
-
-
+- flatmap is not supported by some browsers ([2b8fec4](https://github.com/IBM/kui/commit/2b8fec4)), closes [#2358](https://github.com/IBM/kui/issues/2358)
 
 # 3.0.0 (2019-08-19)
 
-
 ### Bug Fixes
 
-* proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
-
-
-
-
+- proxy package and plugin have improper package.json ([d6f474d](https://github.com/IBM/kui/commit/d6f474d)), closes [#355](https://github.com/IBM/kui/issues/355)
 
 ## 0.0.40 (2019-06-17)
 

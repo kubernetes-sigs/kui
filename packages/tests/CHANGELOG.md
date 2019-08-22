@@ -3,41 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.2](https://github.com/IBM/kui/compare/v3.0.1...v3.0.2) (2019-08-21)
+## [3.0.3](https://github.com/IBM/kui/compare/v3.0.2...v3.0.3) (2019-08-22)
 
 **Note:** Version bump only for package @kui-shell/test
 
+## [3.0.2](https://github.com/IBM/kui/compare/v3.0.1...v3.0.2) (2019-08-21)
 
-
-
+**Note:** Version bump only for package @kui-shell/test
 
 ## [3.0.1](https://github.com/IBM/kui/compare/v3.0.0...v3.0.1) (2019-08-20)
 
 **Note:** Version bump only for package @kui-shell/test
 
-
-
-
-
 # 3.0.0 (2019-08-19)
-
 
 ### Bug Fixes
 
-* **packages/tests:** regression in LAYER env var ([df217af](https://github.com/IBM/kui/commit/df217af))
-* **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com/IBM/kui/commit/1f7c263)), closes [#510](https://github.com/IBM/kui/issues/510) [#425](https://github.com/IBM/kui/issues/425)
-* improve support for semicolon-separated kube commands ([c841ae0](https://github.com/IBM/kui/commit/c841ae0)), closes [#2264](https://github.com/IBM/kui/issues/2264)
-* **plugins/plugin-core-support:** fix confirm dialog in webpack ([0936cb4](https://github.com/IBM/kui/commit/0936cb4)), closes [#2275](https://github.com/IBM/kui/issues/2275) [#2290](https://github.com/IBM/kui/issues/2290)
-* **test:** refactor /tests ([98f6096](https://github.com/IBM/kui/commit/98f6096)), closes [#496](https://github.com/IBM/kui/issues/496)
-
+- **packages/tests:** regression in LAYER env var ([df217af](https://github.com/IBM/kui/commit/df217af))
+- **packages/tests:** remove bin/corral from test runner ([1f7c263](https://github.com/IBM/kui/commit/1f7c263)), closes [#510](https://github.com/IBM/kui/issues/510) [#425](https://github.com/IBM/kui/issues/425)
+- improve support for semicolon-separated kube commands ([c841ae0](https://github.com/IBM/kui/commit/c841ae0)), closes [#2264](https://github.com/IBM/kui/issues/2264)
+- **plugins/plugin-core-support:** fix confirm dialog in webpack ([0936cb4](https://github.com/IBM/kui/commit/0936cb4)), closes [#2275](https://github.com/IBM/kui/issues/2275) [#2290](https://github.com/IBM/kui/issues/2290)
+- **test:** refactor /tests ([98f6096](https://github.com/IBM/kui/commit/98f6096)), closes [#496](https://github.com/IBM/kui/issues/496)
 
 ### Features
 
-* update sidecar tab UI ([9639811](https://github.com/IBM/kui/commit/9639811)), closes [#1867](https://github.com/IBM/kui/issues/1867)
-
-
-
-
+- update sidecar tab UI ([9639811](https://github.com/IBM/kui/commit/9639811)), closes [#1867](https://github.com/IBM/kui/issues/1867)
 
 ## 0.0.30 (2019-06-17)
 
