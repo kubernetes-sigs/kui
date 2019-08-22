@@ -199,7 +199,7 @@ async function renderGettingStarted() {
     wrapper.classList.add('page-content')
     wrapper.innerHTML = marked(i18n.fromMap(settings.gettingStarted))
     return wrapper
-  } else if (typeof settings.gettingStarted === 'string') {
+  } else if (typeof settings.gettingStarted === 'string' && settings.gettingStarted !== 'getting started') {
     return repl.qexec(settings.gettingStarted)
   } else {
     console.error('no getting started content defined by client')

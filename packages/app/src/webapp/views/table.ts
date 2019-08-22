@@ -835,7 +835,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
  */
 function adoptCarbonTableStyle(tableDom: HTMLElement) {
   if (tableDom.getAttribute('kui-table-style') === 'Light') {
-    tableDom.classList.add('bx--data-table--compact')
+    tableDom.classList.add('bx--data-table--short')
   } else if (tableDom.getAttribute('kui-table-style') === 'Medium') {
     tableDom.classList.add('bx--data-table--short')
   }

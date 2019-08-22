@@ -18,12 +18,12 @@ body[kui-theme="IBM Light"] {
   --color-base0F: #8a3ffc;
 
   /* SidecarThin */
-  --color-background-inverted01: #272d33;
-  --color-background-inverted02: #32383d;
+  --color-background-inverted01: var(--color-sidecar-background);
+  --color-background-inverted02: var(--color-sidecar-header);
   --color-text-inverted01: #fff;
   --color-text-inverted02: var(--color-text-inverted01);
   --color-text-inverted03: var(--color-text-01);
-  --color-tab-selected-inverted: #5a99e2;
+  --color-tab-selected-inverted: var(--color-name);
 
   /* xterm ANSI yellow text color */
   --color-yellow-text: #bb9002;
@@ -35,15 +35,18 @@ body[kui-theme="IBM Light"] {
   --color-ui-05: #171717;
   --color-text-02: #565656;
 
-  --color-name: var(--color-base0D);
-  --color-map-key: var(--color-base0D);
+  --color-name: #6ea6ff;
+  --color-map-key: #6ea6ff;
 
   --color-table-border1: #9e9fa1;
   --color-table-border2: #3d4144;
   --color-table-border3: #a5adb4;
 
-  --color-sidecar-header: var(--color-base04);
-  --color-sidecar-background: var(--color-base01);
+  --color-sidecar-toolbar-background: #bebebe;
+  --color-sidecar-toolbar-foreground: var(--color-text-01);
+
+  --color-sidecar-header: #282828;
+  --color-sidecar-background: var(--color-base06);
   --color-sidecar-border: #e4e4e4;
 
   --color-brand-03: #008fff;
@@ -53,16 +56,70 @@ body[kui-theme="IBM Light"] {
   --color-screenshot-background: #0062ff;
 
   --color-stripe-01: #f5f7fa;
-  --tab-gray-text-color: #5a6872;
-  --active-tab-color: #3d70b2;
+  --color-stripe-02: var(--color-base03);
+  --tab-gray-text-color: var(--color-text-01);
+  --active-tab-color: #0062ff;
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);
   --color-light-yellow: hsla(46, 99%, 59%, 50%);
 }
 
-body[kui-theme="IBM Dark"] .bx--data-table {
+body[kui-theme="IBM Light"] sidecar,
+body[kui-theme="IBM Light"] sidecar .sidecar-bottom-stripe,
+body[kui-theme="IBM Light"] sidecar .monaco-editor,
+body[kui-theme="IBM Light"] sidecar .monaco-editor .mtk5,
+body[kui-theme="IBM Light"]
+  sidecar
+  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
+  .bx--tabs__nav-link {
+  color: var(--color-base07);
+}
+body[kui-theme="IBM Light"]
+  sidecar
+  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
+  .bx--tabs__nav-link {
+  border-bottom-color: var(--color-name);
+}
+body[kui-theme="IBM Light"] sidecar svg path {
+  fill: var(--color-base07);
+}
+body[kui-theme="IBM Light"] sidecar a.bx--tabs__nav-link,
+body[kui-theme="IBM Light"] sidecar .sidecar-bottom-stripe {
+  background-color: var(--color-sidecar-header);
+  border-bottom-color: #6f6f6f;
+  color: var(--color-sidecar-toolbar-background);
+}
+body[kui-theme="IBM Light"] .monaco-editor .margin-view-overlays .current-line-margin,
+body[kui-theme="IBM Light"] .monaco-editor .view-overlays .current-line {
+  border-color: #565656;
+}
+body[kui-theme="IBM Light"] sidecar .sidecar-header-secondary-content,
+body[kui-theme="IBM Light"] sidecar .monaco-editor .mtk7,
+body[kui-theme="IBM Light"] sidecar .monaco-editor .line-numbers {
+  color: var(--color-sidecar-toolbar-background);
+}
+body[kui-theme="IBM Light"] .monaco-editor .current-line ~ .line-numbers {
+  color: #fa75a6;
+}
+body[kui-theme="IBM Light"] .kui--input-stripe .repl-input {
+  background-color: var(--color-base04);
+}
+body[kui-theme="IBM Light"] .repl {
+  background-color: var(--color-base01);
+}
+body[kui-theme="IBM Light"] .kui--input-stripe {
+  background-color: var(--color-base00);
+}
+body[kui-theme="IBM Light"] .kui--input-stripe input {
+  background-color: var(--color-base01);
+}
+
+body[kui-theme="IBM Light"] .bx--data-table {
   font-family: var(--font-sans-serif);
+}
+body[kui-theme="IBM Light"] .bx--data-table td {
+  background-color: var(--color-base00);
 }
 
 /* mono-blue hightlightjs theme */
