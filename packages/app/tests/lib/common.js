@@ -253,7 +253,7 @@ exports.after = (ctx, f) => async () => {
   // when we're done with a test suite, look for any important
   // SEVERE errors in the chrome console logs. try to ignore
   // intentional failures as much as possible!
-  const anyFailed = ctx.tests.some(test => test.state === 'failed')
+  const anyFailed = ctx.tests && ctx.tests.some(test => test.state === 'failed')
 
   // print out log messages from the electron app, if any of the tests
   // failed
@@ -261,6 +261,7 @@ exports.after = (ctx, f) => async () => {
     ctx.app.client.getRenderProcessLogs().then(logs =>
       logs
         .filter(log => !/SFMono/.test(log.message))
+        .filter(log => !/fonts.gstatic/.test(log.message))
         .forEach(log => {
           if (
             log.level === 'SEVERE' && // only console.error messages
@@ -327,6 +328,7 @@ exports.oops = (ctx, wait = false) => async err => {
         ctx.app.client.getRenderProcessLogs().then(logs =>
           logs
             .filter(log => !/SFMono/.test(log.message))
+            .filter(log => !/fonts.gstatic/.test(log.message))
             .forEach(log => {
               if (log.message.indexOf('%c') === -1) {
                 console.log('RENDER'.bold.yellow, log.message.red)
@@ -387,6 +389,11 @@ exports.dockerDescribe = (msg, func) => {
 /** only execute the test in non-proxy browser */
 exports.remoteIt = (msg, func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') return it(msg, func)
+}
+
+/** only execute the test suite in electron or proxy+browser clients */
+exports.pDescribe = (msg, func) => {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true') return it(msg, func)
 }
 
 /** only execute the test in proxy+browser client */
