@@ -41,6 +41,9 @@ declare function localDescribe (msg: string, f: Function): SuiteFunction
 /** only execute the test suite in an environment that has docker */
 declare function dockerDescribe (msg: string, f: Function): SuiteFunction
 
+/** only execute the test suite in electron or proxy+browser clients */
+declare function pDescribe (msg: string, f: Function): SuiteFunction
+
 /** only execute the test in non-proxy browser */
 declare function remoteIt (msg: string, f: Function): TestFunction
 

@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
+import { dirname } from 'path'
+
 import {
   ISuite,
   before as commonBefore,
   after as commonAfter,
   oops,
+  proxyIt,
   localDescribe
 } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
+
+const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
+
 const { cli } = ui
 
-// TODO: test this in webpack
-localDescribe('History', function(this: ISuite) {
+describe('command history', function(this: ISuite) {
   before(commonBefore(this))
   after(commonAfter(this))
+
+  proxyIt('should cd to the test dir', () =>
+    cli
+      .do(`cd ${process.env.TEST_ROOT}`, this.app)
+      .then(cli.expectOKWithString('packages/tests'))
+      .catch(oops(this, true))
+  )
 
   const listCommand = 'ls ../..'
   it('should list local files', () =>

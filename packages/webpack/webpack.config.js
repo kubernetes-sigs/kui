@@ -142,7 +142,6 @@ const splitChunks = {
   }
   //  )
 }
-console.error('!!!!!!!', splitChunks)
 // optimization.splitChunks = splitChunks
 
 // the Kui builder plugin

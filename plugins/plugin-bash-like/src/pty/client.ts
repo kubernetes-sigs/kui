@@ -806,6 +806,7 @@ export const doExec = (
         // will always receive a `refresh` event when the animation
         // frame is done. see https://github.com/IBM/kui/issues/1272
         terminal.on('refresh', (/* evt: { start: number; end: number } */) => {
+          debug('!!!!!!!!!')
           resizer.hideTrailingEmptyBlanks()
           doScroll()
           notifyOfWriteCompletion()
@@ -1042,7 +1043,7 @@ export const doExec = (
               // flowing over the Channel; we need to get more
               // sophisticated here, but a small delay will help, for
               // the time being.
-              setTimeout(finishUp, 100)
+              setTimeout(finishUp, 400)
             }
           }
         }
