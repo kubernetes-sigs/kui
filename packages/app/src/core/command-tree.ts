@@ -23,7 +23,6 @@ import {
   CommandTree,
   CommandTreeResolution,
   Disambiguator,
-  EvaluatorArgs,
   ExecType,
   CatchAllOffer,
   CatchAllHandler,

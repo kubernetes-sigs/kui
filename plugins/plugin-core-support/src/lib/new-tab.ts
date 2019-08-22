@@ -357,8 +357,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   const currentVisibleTab = getCurrentTab()
   ;(currentVisibleTab['state'] as TabState).capture()
 
-  const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
-
   const newTab = currentVisibleTab.cloneNode(true) as HTMLElement
   newTab.className = 'visible'
 
@@ -414,7 +412,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 const oneTimeInit = (): void => {
   const initialTab = getTabFromIndex(1)
   const initialTabButton = getCurrentTabButton()
-  const initialTabId = initialTabButton.getAttribute('data-tab-id')
 
   if (document.body.classList.contains('subwindow')) {
     element(tabButtonSelector).onclick = () => window.open(window.location.href, '_blank')
@@ -456,8 +453,7 @@ const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
 const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/tab/switch',
-    ({ argvNoOptions, parsedOptions }) =>
-      switchTab(getTabId(getTabFromIndex(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)))),
+    ({ argvNoOptions }) => switchTab(getTabId(getTabFromIndex(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)))),
     { usage, needsUI: true, noAuthOk: true }
   )
   commandTree.listen('/tab/new', newTabAsync, {

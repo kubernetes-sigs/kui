@@ -28,11 +28,11 @@ class SymbolTable {
     return JSON.parse(sessionStore().getItem(this.symbolTableSessionStorageKey)) || {}
   }
 
-  static read(tab: Tab): Record<string, string> {
+  public static read(tab: Tab): Record<string, string> {
     return this.getSymbolTable()[getTabId(tab)] || {}
   }
 
-  static write(tab: Tab, curDic: Record<string, string>) {
+  public static write(tab: Tab, curDic: Record<string, string>) {
     const storage = this.getSymbolTable()
     storage[getTabId(tab)] = curDic
     sessionStore().setItem(this.symbolTableSessionStorageKey, JSON.stringify(storage))
