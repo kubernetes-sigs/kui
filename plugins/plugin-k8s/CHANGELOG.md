@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/IBM/kui/compare/v3.0.4...v3.0.5) (2019-08-23)
+
+### Bug Fixes
+
+- improved display of helm status ([c3c6905](https://github.com/IBM/kui/commit/c3c6905)), closes [#2483](https://github.com/IBM/kui/issues/2483)
+- **plugins/plugin-core-support:** `clear` should terminate pollers ([1b3bb1a](https://github.com/IBM/kui/commit/1b3bb1a)), closes [#2481](https://github.com/IBM/kui/issues/2481)
+
 ## [3.0.4](https://github.com/IBM/kui/compare/v3.0.3...v3.0.4) (2019-08-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-k8s

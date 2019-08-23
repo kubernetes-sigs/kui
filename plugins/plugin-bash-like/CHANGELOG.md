@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/IBM/kui/compare/v3.0.4...v3.0.5) (2019-08-23)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** pwd state in webpack+proxy versus tab switching ([006b26c](https://github.com/IBM/kui/commit/006b26c)), closes [#2478](https://github.com/IBM/kui/issues/2478)
+
 ## [3.0.4](https://github.com/IBM/kui/compare/v3.0.3...v3.0.4) (2019-08-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like

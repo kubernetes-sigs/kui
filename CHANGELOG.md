@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/IBM/kui/compare/v3.0.4...v3.0.5) (2019-08-23)
+
+### Bug Fixes
+
+- clients/alternate tab ui glitches ([f5a81fa](https://github.com/IBM/kui/commit/f5a81fa)), closes [#2491](https://github.com/IBM/kui/issues/2491)
+- **packages/app:** sidecar content sometimes does not scroll ([9cb53a8](https://github.com/IBM/kui/commit/9cb53a8)), closes [#2504](https://github.com/IBM/kui/issues/2504)
+- improve handling of contextRoot for custom clients ([6488920](https://github.com/IBM/kui/commit/6488920)), closes [#2482](https://github.com/IBM/kui/issues/2482)
+- improved display of helm status ([c3c6905](https://github.com/IBM/kui/commit/c3c6905)), closes [#2483](https://github.com/IBM/kui/issues/2483)
+- refine clients/alternate light theme ([77a3016](https://github.com/IBM/kui/commit/77a3016)), closes [#2488](https://github.com/IBM/kui/issues/2488)
+- sidecar multitable header glitch for clients/alternate light ([2e61d23](https://github.com/IBM/kui/commit/2e61d23)), closes [#2497](https://github.com/IBM/kui/issues/2497)
+- **plugins/plugin-core-support:** `clear` should terminate pollers ([1b3bb1a](https://github.com/IBM/kui/commit/1b3bb1a)), closes [#2481](https://github.com/IBM/kui/issues/2481)
+- **plugins/plugin-core-support:** pwd state in webpack+proxy versus tab switching ([006b26c](https://github.com/IBM/kui/commit/006b26c)), closes [#2478](https://github.com/IBM/kui/issues/2478)
+
 ## [3.0.4](https://github.com/IBM/kui/compare/v3.0.3...v3.0.4) (2019-08-22)
 
 ### Bug Fixes
