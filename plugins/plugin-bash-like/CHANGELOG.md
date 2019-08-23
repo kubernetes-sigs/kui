@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6](https://github.com/IBM/kui/compare/v3.0.5...v3.0.6) (2019-08-23)
+
+### Bug Fixes
+
+- **packages/app:** improve ascii-to-usage for oc -h ([65573d7](https://github.com/IBM/kui/commit/65573d7)), closes [#2516](https://github.com/IBM/kui/issues/2516)
+- **plugins/plugin-bash-like:** xterm background should be transparent ([e24f2fc](https://github.com/IBM/kui/commit/e24f2fc)), closes [#2510](https://github.com/IBM/kui/issues/2510)
+
 ## [3.0.5](https://github.com/IBM/kui/compare/v3.0.4...v3.0.5) (2019-08-23)
 
 ### Bug Fixes

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6](https://github.com/IBM/kui/compare/v3.0.5...v3.0.6) (2019-08-23)
+
+### Bug Fixes
+
+- **packages/app:** improve ascii-to-usage for oc -h ([65573d7](https://github.com/IBM/kui/commit/65573d7)), closes [#2516](https://github.com/IBM/kui/issues/2516)
+- **packages/app:** paste versus bottom input ([560d1ad](https://github.com/IBM/kui/commit/560d1ad)), closes [#2402](https://github.com/IBM/kui/issues/2402)
+- **packages/app:** protect against navigator.language being undefined ([ee9fc53](https://github.com/IBM/kui/commit/ee9fc53)), closes [#2513](https://github.com/IBM/kui/issues/2513)
+- **packages/app:** reverse-i-search versus bottom input ([afb2421](https://github.com/IBM/kui/commit/afb2421)), closes [#2402](https://github.com/IBM/kui/issues/2402)
+- **plugins/plugin-bash-like:** xterm background should be transparent ([e24f2fc](https://github.com/IBM/kui/commit/e24f2fc)), closes [#2510](https://github.com/IBM/kui/issues/2510)
+
 ## [3.0.5](https://github.com/IBM/kui/compare/v3.0.4...v3.0.5) (2019-08-23)
 
 ### Bug Fixes
