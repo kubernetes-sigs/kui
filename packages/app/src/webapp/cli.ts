@@ -235,7 +235,11 @@ export const getPromptLeft = (block: Element) => {
   return block.querySelector('.repl-prompt-righty')
 }
 export const getCurrentPromptLeft = (tab: Tab) => {
-  return getPromptLeft(getCurrentBlock(tab))
+  if (inBottomInputMode) {
+    return getPromptLeft(element('.kui--input-stripe'))
+  } else {
+    return getPromptLeft(getCurrentBlock(tab))
+  }
 }
 
 /**
