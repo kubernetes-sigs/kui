@@ -156,7 +156,7 @@ plugins.push({
 
         const overrides = {
           build: { writeConfig: false },
-          env: { main, hash, resourceRoot: '.' }
+          env: { main, hash }
         }
 
         if (contentSecurityPolicyForDevServer) {
