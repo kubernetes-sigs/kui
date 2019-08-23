@@ -374,8 +374,6 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   newTabButton.classList.remove('processing')
   currentTabButton.parentNode.appendChild(newTabButton)
 
-  getTabButtonLabel(newTab).innerText = topTabs.names === 'fixed' ? strings('Tab') : strings('New Tab')
-
   const currentlyProcessingBlock: true | HTMLElement = await qexec(
     'clear --keep-current-active',
     undefined,
@@ -404,6 +402,8 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   currentVisibleTab.classList.remove('visible')
   currentVisibleTab.parentNode.appendChild(newTab)
   getCurrentPrompt(newTab).focus()
+
+  getTabButtonLabel(newTab).innerText = topTabs.names === 'fixed' ? strings('Tab') : strings('New Tab')
 
   return true
 }
