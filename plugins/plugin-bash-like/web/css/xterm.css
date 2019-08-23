@@ -113,7 +113,7 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 /* themes */
 .xterm-container .xterm-viewport,
 .xterm-rows {
-  background: var(--color-ui-01) !important;
+  background: transparent !important;
 }
 .xterm-rows {
   font-size: 1em !important;
