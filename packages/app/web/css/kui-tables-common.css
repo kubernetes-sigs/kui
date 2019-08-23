@@ -1,7 +1,8 @@
 .result-as-table-full-width .result-table {
   border: none;
 }
-.result-as-table .repl-result {
+.result-as-table .repl-result,
+.result-as-table.repl-result {
   /* repl table */
   flex-wrap: unset;
   flex-direction: column;

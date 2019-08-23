@@ -71,6 +71,9 @@ body[kui-theme="IBM Light"] sidecar .sidecar-header {
 body[kui-theme="IBM Light"] .result-table-title-outer {
   background-color: transparent;
 }
+body[kui-theme="IBM Light"] sidecar .bx--data-table-header__title {
+  color: var(--color-base07);
+}
 
 body[kui-theme="IBM Light"] sidecar,
 body[kui-theme="IBM Light"] sidecar .sidecar-bottom-stripe,
