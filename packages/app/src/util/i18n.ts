@@ -21,7 +21,10 @@ function getLocale() {
 }
 
 function getLocale2() {
-  return getLocale().replace(/-/, '_')
+  // protect against navigator.language being undefined
+  // https://github.com/IBM/kui/issues/2513
+  const locale = getLocale()
+  return locale && locale.replace(/-/, '_')
 }
 
 export function fromMap(map: Record<string, string>) {
