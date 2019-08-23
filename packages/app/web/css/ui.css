@@ -222,6 +222,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   white-space: normal;
 }
 .repl-prompt {
+  font: var(--font-monospace);
   line-height: 1em;
   margin-right: 0.5em;
   white-space: nowrap;
@@ -255,12 +256,12 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   letter-spacing: 0.32px;
   filter: opacity(87.5%) grayscale(50%);
 }
-repl .repl-block.using-custom-prompt .repl-prompt-righty > svg,
-repl .repl-block.using-custom-prompt .repl-prompt-righty > i,
-repl .repl-block.using-custom-prompt .repl-context {
+.repl-block.using-custom-prompt .repl-prompt-righty > svg,
+.repl-block.using-custom-prompt .repl-prompt-righty > i,
+.repl-block.using-custom-prompt .repl-context {
   display: none;
 }
-repl .repl-block.using-custom-prompt .repl-input input {
+.repl-block.using-custom-prompt .repl-input input {
   opacity: 0;
   width: 0;
 }
