@@ -16,6 +16,7 @@
 
 import * as Debug from 'debug'
 
+import { theme as settings } from '@kui-shell/core/core/settings'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as monaco from 'monaco-editor'
@@ -34,7 +35,11 @@ let initDone
 self['MonacoEnvironment'] = {
   getWorkerUrl: function(moduleId, label) {
     const hash: string = window['_kuiWebpackHash']
-    const root: string = window['_kuiWebpackResourceRoot'] || '.'
+
+    const root: string =
+      settings.resourceRoot ||
+      (window['_kuiWebpackResourceRoot'] !== '${resourceRoot}' ? window['_kuiWebpackResourceRoot'] : '.') // eslint-disable-line no-template-curly-in-string
+    debug('monaco resource root', root)
 
     if (label === 'json') {
       return `${root}/json.worker.${hash}.bundle.js`
