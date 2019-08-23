@@ -222,6 +222,8 @@ export const isPopup = () => document.body.classList.contains('subwindow')
 export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
   if (isPopup()) {
     return getSidecar(tab).querySelector('input')
+  } else if (inBottomInputMode) {
+    return getPrompt(element('.kui--input-stripe'))
   } else {
     return getPrompt(getCurrentBlock(tab))
   }
@@ -251,7 +253,7 @@ export function subblock() {
   return block
 }
 
-const doPaste = (text: string) => {
+const doPaste = (text: string, tab = getCurrentTab()) => {
   // const prompt = event.currentTarget
   const lines = text.split(/[\n\r]/)
 
@@ -264,7 +266,7 @@ const doPaste = (text: string) => {
       return pasteLooper(idx + 1) */
     } else if (idx <= lines.length - 2) {
       // then this is a command line with a trailing newline
-      const prompt = getCurrentPrompt()
+      const prompt = getCurrentPrompt(tab)
       const repl = await import('../core/repl')
       return repl.pexec(prompt.value + lines[idx]).then(() => pasteLooper(idx + 1))
     } else {
@@ -281,7 +283,7 @@ const doPaste = (text: string) => {
 
       // and, then, when we are done, will position the caret just
       // after the pasted text:
-      const prompt = getCurrentPrompt()
+      const prompt = getCurrentPrompt(tab)
       const newCaretPosition = prompt.selectionStart + lines[idx].length
 
       // note how this will either place the new text at the caret
@@ -1499,6 +1501,10 @@ export const init = async (prefs = {}) => {
         input.setSelectionRange(0, input.value.length)
       }
     })
+  }
+
+  if (inBottomInputMode) {
+    getCurrentPrompt(tab).onpaste = paste
   }
 
   // if you want to have the current directory displayed with the initial prompt
