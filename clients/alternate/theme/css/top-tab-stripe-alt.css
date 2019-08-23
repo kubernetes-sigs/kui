@@ -37,7 +37,6 @@
 
 .kui-tab {
   position: relative;
-  margin: 0 26px;
   border: none;
   background: transparent;
 }
@@ -47,6 +46,10 @@
   font-size: 0.875rem;
   font-weight: 600;
   padding: 0.5em 0 0;
+  border: none !important;
+}
+body.kui-alternate .left-tab-stripe-buttons .left-tab-stripe-button-closer {
+  transform: translateY(calc(-50% + 0.25em));
 }
 
 .left-tab-stripe-button.processing .kui-tab--label {
@@ -58,12 +61,11 @@
 }
 
 .kui-tab--active {
-  margin: 0;
   color: var(--active-tab-color);
 }
 
-.kui-tab:hover .kui-tab--label {
-  color: var(--active-tab-color);
+.kui-tab.left-tab-stripe-button-selected {
+  margin-top: 0;
 }
 
 .kui-tab::after {
