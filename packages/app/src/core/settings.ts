@@ -36,6 +36,9 @@ interface Theme {
   gettingStarted?: string | Record<string, string>
   description?: string | Record<string, string>
 
+  /** context root */
+  resourceRoot?: string
+
   /** prompt placeholder text (default: '') */
   placeholder?: string
 
