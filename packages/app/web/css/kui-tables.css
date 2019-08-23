@@ -44,9 +44,6 @@
 }
 
 /* base stylings? */
-.result-as-multi-table .result-table-outer {
-  display: table-cell;
-}
 .result-as-fixed-tables.result-as-table .result-table-outer {
   /* if these are fixed tables, then they will occupy the full width of
        the container, so we don't need a margin-right */
