@@ -88,6 +88,7 @@ async function renderAbout() {
     iconP.appendChild(icon)
     logo.appendChild(iconP)
     icon.src = aboutImage
+    icon.alt = settings.productName
     if (settings.wideIcon) {
       icon.classList.add('kui--wide-icon')
     }
