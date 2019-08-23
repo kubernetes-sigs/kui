@@ -21,9 +21,9 @@ import { split } from '../../core/repl'
 import { flatten } from '@kui-shell/core/core/utility'
 const debug = Debug('core/webapp/util/ascii-to-usage')
 
-const sectionHeader = /^[^#%]([A-Za-z ]+):\s*$/
-const splitter = /[\n\r]^[^#%]([A-Za-z ]+:\s*[\n\r])/
-const matcher = /[\n\r]^[^#%]([A-Za-z ]+:\s[\n\r])\s+\w+/
+const sectionHeader = /^([^#%][A-Za-z ]+):\s*$/
+const splitter = /[\n\r]([^#%][A-Za-z ]+:\s*[\n\r])([-]+[\n\r])?/
+const matcher = /[\n\r]([^#%][A-Za-z ]+:\s*[\n\r])\s+\w+/
 const doubleNewline = /(\n\n)|(\r\r)|(\r\n\r\n)/
 
 interface Options {
@@ -72,7 +72,12 @@ export const formatUsage = (command: string, str: string, options: Options = new
 
   debug('raw', str)
 
-  const rows = flatten(`\n${str}`.split(splitter).map(row => row.split(doubleNewline))).filter(x => x)
+  const rows = flatten(
+    `\n${str}`
+      .split(splitter)
+      .filter(x => x)
+      .map(row => row.split(doubleNewline))
+  ).filter(x => x)
   debug('rows!', rows)
 
   if (rows.length > 2) {

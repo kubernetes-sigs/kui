@@ -806,7 +806,6 @@ export const doExec = (
         // will always receive a `refresh` event when the animation
         // frame is done. see https://github.com/IBM/kui/issues/1272
         terminal.on('refresh', (/* evt: { start: number; end: number } */) => {
-          debug('!!!!!!!!!')
           resizer.hideTrailingEmptyBlanks()
           doScroll()
           notifyOfWriteCompletion()
@@ -863,6 +862,7 @@ export const doExec = (
             }
 
             const flush = () => {
+              console.error('@@@@@@!!!!!', pendingTable)
               if (pendingTable) {
                 pendingTable = undefined
                 definitelyNotTable = true
