@@ -36,9 +36,7 @@ import {
   clearTextSelection,
   disableInputQueueing,
   pasteQueuedInput,
-  scrollIntoView,
-  sameTab,
-  Tab
+  scrollIntoView
 } from '@kui-shell/core/webapp/cli'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { flatten } from '@kui-shell/core/core/utility'
@@ -46,6 +44,7 @@ import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ExecType, ParsedOptions } from '@kui-shell/core/models/command'
+import { Tab, sameTab } from '@kui-shell/core/models/tab'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { CodedError } from '@kui-shell/core/models/errors'
 

@@ -16,10 +16,11 @@
 
 import * as Debug from 'debug'
 
-import { ok, Tab } from '@kui-shell/core/webapp/cli'
+import { ok } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { pexec } from '@kui-shell/core/core/repl'
 import { EntitySpec } from '@kui-shell/core/models/entity'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import { current as currentNamespace } from '../../../models/namespace'
 import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'

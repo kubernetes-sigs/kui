@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'

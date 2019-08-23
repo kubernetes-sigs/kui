@@ -18,12 +18,13 @@ import { dirname, join } from 'path'
 
 import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { getCurrentPrompt, Tab } from '@kui-shell/core/webapp/cli'
+import { getCurrentPrompt } from '@kui-shell/core/webapp/cli'
 import { keys } from '@kui-shell/core/webapp/keys'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-core-support')

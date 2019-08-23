@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import { FinalState } from '../../model/states'
 import Resource from '../../model/resource'

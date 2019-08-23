@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import { qexec as $$ } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 

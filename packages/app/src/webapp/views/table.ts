@@ -17,7 +17,8 @@
 import * as Debug from 'debug'
 import * as minimist from 'yargs-parser'
 
-import { Tab, isPopup, getCurrentPrompt } from '../cli'
+import { isPopup, getCurrentPrompt } from '../cli'
+import { Tab } from '../../models/tab'
 import { pexec, qexec } from '../../core/repl'
 import {
   Table,

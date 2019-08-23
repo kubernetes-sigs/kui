@@ -22,7 +22,7 @@ debug('loading')
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab, isPopup, scrollIntoView, oops, getTabFromTarget } from '../cli'
+import { isPopup, scrollIntoView, oops } from '../cli'
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
@@ -32,6 +32,7 @@ import { ShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
 import { MetadataBearing, isMetadataBearing, EntitySpec, Entity } from '../../models/entity'
+import { Tab, getTabFromTarget } from '../../models/tab'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 

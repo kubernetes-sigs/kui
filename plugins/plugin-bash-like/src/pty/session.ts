@@ -24,12 +24,12 @@ import {
   getPrompt,
   getCurrentBlock,
   getCurrentProcessingBlock,
-  setStatus,
-  Tab
+  setStatus
 } from '@kui-shell/core/webapp/cli'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { theme as settings, config } from '@kui-shell/core/core/settings'
 import { CodedError } from '@kui-shell/core/models/errors'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import { setOnline, setOffline } from './ui'
 

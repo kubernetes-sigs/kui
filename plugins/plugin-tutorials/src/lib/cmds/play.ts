@@ -32,6 +32,7 @@ import {
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar, EvaluatorArgs, ExecType } from '@kui-shell/core/models/command'
+import { Tab } from '@kui-shell/core/models/tab'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -135,12 +136,12 @@ const cancelAsyncs = obj => {
 
 /** Sidecar management. TODO extract this */
 const sidecarManager = {
-  enterFullscreen: (tab: cli.Tab) => {
+  enterFullscreen: (tab: Tab) => {
     showSidecar(tab)
     toggleMaximization(tab)
   },
 
-  exitFullscreen: (tab: cli.Tab) => {
+  exitFullscreen: (tab: Tab) => {
     clearSelection(tab)
     toggleMaximization(tab)
   }
@@ -162,7 +163,7 @@ const clearHighlights = () => {
  * Close the current tutorial
  *
  */
-const close = (tab: cli.Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
+const close = (tab: Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
   new Promise<boolean>(resolve => {
     debug('close')
 
@@ -348,13 +349,7 @@ const renderOneTable = (parent: Element, pane: TutorialPane, nested = false) => 
  * Handle transitions between steps
  *
  */
-const transitionSteps = (
-  tab: cli.Tab,
-  stepNum: number,
-  obj: TutorialDefinition,
-  pane: TutorialPane,
-  nested = false
-) => {
+const transitionSteps = (tab: Tab, stepNum: number, obj: TutorialDefinition, pane: TutorialPane, nested = false) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks
@@ -705,7 +700,7 @@ const focusOnBiggestScrollable = () => {
  * Launches the specified tutorial
  *
  */
-const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinition) => {
+const showTutorial = (tab: Tab, tutorialName: string, obj: TutorialDefinition) => {
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open

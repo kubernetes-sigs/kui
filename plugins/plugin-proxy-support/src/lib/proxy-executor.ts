@@ -30,7 +30,7 @@ import { CodedError } from '@kui-shell/core/models/errors'
 
 // import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
 // copied for now, until we can figure out typescript compiler issues
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 interface Channel {
   send: (msg: string) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

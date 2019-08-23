@@ -39,6 +39,7 @@ import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOp
 import * as historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
 import { Table, isTable, MultiTable, isMultiTable } from './models/table'
+import { Tab, getCurrentTab, getTabFromTarget } from '../models/tab'
 
 import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
@@ -155,45 +156,6 @@ export const pasteQueuedInput = (value: string) => {
   const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
   invisibleHand.value = value
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Tab extends HTMLElement {}
-const tabTagPattern = /tab/i
-export function isTab(node: Element): node is Tab {
-  return tabTagPattern.test(node.tagName)
-}
-/**
- * Return the unique identifier for the given tab
- *
- */
-export function getTabId(tab: Tab) {
-  return tab.getAttribute('data-tab-id')
-}
-export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
-  return getTabId(tab1) === getTabId(tab2)
-}
-export const getTabFromTarget = (target: EventTarget): Tab => {
-  if (target) {
-    let iter = target as Element
-
-    while (iter && !isTab(iter)) {
-      iter = iter.parentElement
-    }
-
-    if (iter && isTab(iter)) {
-      return iter
-    }
-
-    // debug('current tab fallthrough', target)
-  }
-
-  // fallthrough
-  return document.querySelector('tab.visible')
-}
-export const getCurrentTab = (): Tab => {
-  return getTabFromTarget(document.activeElement)
-}
-
 const getInitialBlock = (tab: Tab): HTMLElement => {
   return tab.querySelector('.repl .repl-block.repl-initial')
 }

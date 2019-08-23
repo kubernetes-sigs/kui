@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '../cli'
+import { Tab } from '../..//models/tab'
 import { RowDiff, Row } from '../models/table'
 import { formatOneRowResult, RowFormatOptions } from '../views/table'
 const debug = Debug('webapp/views/diff')

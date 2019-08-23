@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 

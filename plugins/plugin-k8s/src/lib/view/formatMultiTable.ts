@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { formatTable as format } from '@kui-shell/core/webapp/views/table'
 import { Table, MultiTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 const debug = Debug('k8s/view/formatMultiTable')

@@ -17,7 +17,7 @@
 import { CodedError } from './errors'
 import { ExecOptions } from './execOptions'
 import { UsageModel } from '../core/usage-error'
-import { Tab } from '../webapp/cli'
+import { Tab } from './tab'
 
 /**
  * "top-level", meaning the user hit enter in the CLI,

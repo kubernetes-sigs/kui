@@ -21,7 +21,7 @@ import { basename, dirname } from 'path'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 

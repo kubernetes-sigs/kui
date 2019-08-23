@@ -21,7 +21,7 @@
  *
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 

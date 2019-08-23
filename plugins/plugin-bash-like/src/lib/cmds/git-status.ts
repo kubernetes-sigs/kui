@@ -19,9 +19,10 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { partial, Tab } from '@kui-shell/core/webapp/cli'
+import { partial } from '@kui-shell/core/webapp/cli'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'

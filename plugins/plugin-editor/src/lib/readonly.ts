@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 const debug = Debug('plugins/editor/readonly')
 
 /**

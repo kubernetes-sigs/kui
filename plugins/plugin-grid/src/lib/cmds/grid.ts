@@ -22,7 +22,7 @@ import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { Row } from '@kui-shell/core/webapp/models/table'
 import Presentation from '@kui-shell/core/webapp/views/presentation'

@@ -600,13 +600,14 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
             cmdPart.classList.add('clickable-blatant')
             cmdPart.onclick = async event => {
               const cli = await import('../webapp/cli')
+              const { getCurrentTab } = await import('../models/tab')
               if (partial) {
                 return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
                 if (drilldownWithPip) {
                   const { drilldown } = await import('@kui-shell/core/webapp/picture-in-picture')
                   return drilldown(
-                    cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
+                    getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
                     commandForExec(command, name !== command ? name : undefined),
                     undefined,
                     resultWrapper.parentNode.parentNode as Element,

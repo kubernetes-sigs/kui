@@ -18,6 +18,7 @@ import * as Debug from 'debug'
 
 import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { formatOneRowResult } from '@kui-shell/core/webapp/views/table'
@@ -44,7 +45,7 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
+const wskflow = async (tab: Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
   const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
@@ -63,7 +64,7 @@ const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
  *
  */
 export const showEntity = async (
-  tab: cli.Tab,
+  tab: Tab,
   entity,
   sidecar: Element,
   options: ShowOptions = new DefaultShowOptions()

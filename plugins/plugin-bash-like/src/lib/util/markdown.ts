@@ -18,7 +18,7 @@ import * as url from 'url'
 import * as path from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
 declare let hljs

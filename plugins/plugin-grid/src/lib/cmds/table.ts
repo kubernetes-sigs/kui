@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'

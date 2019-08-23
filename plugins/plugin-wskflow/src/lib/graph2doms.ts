@@ -20,7 +20,7 @@ import * as d3 from 'd3'
 import * as $ from 'jquery'
 import * as ELK from 'elkjs/lib/elk.bundled.js'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 

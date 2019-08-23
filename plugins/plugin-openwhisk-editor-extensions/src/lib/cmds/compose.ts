@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'

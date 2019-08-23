@@ -21,7 +21,7 @@ import * as events from 'events'
 
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'

@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 import { addBadge, BadgeSpec, BadgeOptions } from '@kui-shell/core/webapp/views/sidecar'
 import { SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'

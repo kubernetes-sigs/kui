@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, getTabId } from '@kui-shell/core/webapp/cli'
+import { Tab, getTabId } from '@kui-shell/core/models/tab'
 import sessionStore from '@kui-shell/core/models/sessionStore'
 
 /**

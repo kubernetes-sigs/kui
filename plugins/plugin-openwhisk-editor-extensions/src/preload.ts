@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/preload')
 debug('loading')
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 debug('done loading prereqs')

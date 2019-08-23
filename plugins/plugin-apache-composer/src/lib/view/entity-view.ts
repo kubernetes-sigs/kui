@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import * as util from '../utility/ast'

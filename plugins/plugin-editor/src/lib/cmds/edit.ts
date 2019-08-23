@@ -25,7 +25,7 @@ import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 const debug = Debug('plugins/editor/cmds/edit')

@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { safeDump } from 'js-yaml'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 

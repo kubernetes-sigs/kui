@@ -26,6 +26,7 @@ const debug = Debug('core/repl')
 debug('loading')
 
 import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'
+import { getTabFromTarget, getCurrentTab } from '../models/tab'
 
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
 import eventBus from '@kui-shell/core/core/events'
@@ -285,7 +286,7 @@ class InProcessExecutor implements Executor {
   name = 'InProcessExecutor'
 
   async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
-    const tab = execOptions.tab || cli.getCurrentTab()
+    const tab = execOptions.tab || getCurrentTab()
 
     if (!isHeadless()) {
       const curDic = SymbolTable.read(tab)
@@ -931,7 +932,7 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
     block['completion'](prompt.value)
   } else {
     // otherwise, this is a plain old eval, resulting from the user hitting Enter
-    return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))
+    return exec(command, new DefaultExecOptionsForTab(getTabFromTarget(prompt)))
   }
 }
 

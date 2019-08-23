@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { getActiveView, presentAs } from '@kui-shell/core/webapp/views/sidecar'
 const debug = Debug('k8s/view/insert-view')
 

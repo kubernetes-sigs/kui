@@ -17,7 +17,8 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { ExecType } from './command'
-import { Tab, Streamable } from '../webapp/cli'
+import { Streamable } from '../webapp/cli'
+import { Tab } from './tab'
 
 export interface ExecOptions {
   // force execution in a given tab?

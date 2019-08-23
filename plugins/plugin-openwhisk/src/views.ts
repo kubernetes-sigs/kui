@@ -15,10 +15,11 @@
  */
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { Tab, ViewHandler, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
+import { ViewHandler, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
 import { registerEntityView as registerSidecarEntityView } from '@kui-shell/core/webapp/views/sidecar'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
 import { Entity } from '@kui-shell/core/models/entity'
+import { Tab } from '@kui-shell/core/models/tab'
 
 export default () => {
   if (!isHeadless()) {

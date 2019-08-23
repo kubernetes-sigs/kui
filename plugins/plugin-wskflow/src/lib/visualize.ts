@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 import injectCSS from './inject'

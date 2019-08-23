@@ -16,13 +16,13 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable, isMultiTable } from './models/table'
 import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
+import { Tab } from '../models/tab'
 import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
 import { pexec, qexec } from '../core/repl'
 

@@ -24,7 +24,7 @@ import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core/models/tab'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'

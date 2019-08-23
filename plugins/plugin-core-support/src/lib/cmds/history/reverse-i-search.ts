@@ -19,13 +19,8 @@
 import * as Debug from 'debug'
 
 import * as historyModel from '@kui-shell/core/models/history'
-import {
-  Tab,
-  getTabFromTarget,
-  getBlockOfPrompt,
-  getCurrentPrompt,
-  getCurrentPromptLeft
-} from '@kui-shell/core/webapp/cli'
+import { Tab, getTabFromTarget } from '@kui-shell/core/models/tab'
+import { getBlockOfPrompt, getCurrentPrompt, getCurrentPromptLeft } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 
