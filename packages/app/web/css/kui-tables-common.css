@@ -3,7 +3,8 @@
 }
 .result-as-table .repl-result {
   /* repl table */
-  display: table;
+  flex-wrap: unset;
+  flex-direction: column;
 }
 .result-as-table.result-as-multi-table.result-as-multi-table-flex-wrap .repl-result {
   display: flex;
@@ -78,14 +79,13 @@ body.sidecar-is-minimized .result-as-table .result-table {
   /* careful here, see https://github.com/IBM/kui/issues/1653 */
   white-space: pre-wrap;
 }
-.result-as-table .result-table-outer-wrapper {
-  /* repl table */
-  display: table-row;
-  /* width: 100%; */
+
+.result-table-outer-wrapper.big-top-pad:not(:first-child) {
+  margin-top: 1em;
 }
 
-.result-table-outer-wrapper.big-top-pad {
-  margin-top: 1em;
+.repl:not(.sidecar-visible) .result-table-outer {
+  display: table;
 }
 
 .repl .bx--data-table {

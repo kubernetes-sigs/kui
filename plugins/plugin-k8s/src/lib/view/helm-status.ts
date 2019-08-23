@@ -103,7 +103,6 @@ export const format = async (
   const resourcesOut = resources
     .map(({ kind, table }) => {
       table.title = kind
-      table.flexWrap = true
       return table
     })
     .sort((a, b) => {
