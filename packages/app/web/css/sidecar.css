@@ -67,6 +67,7 @@ sidecar.visible .kui--sidecar-header-and-body {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow-y: hidden;
 }
 
 sidecar .sidecar-content-container {
@@ -167,4 +168,8 @@ sidecar .sidecar-content-container {
 [data-presentation="SidecarThin"] .result-table-title-outer {
   /* table titles */
   color: var(--color-base0C);
+}
+
+sidecar .bx--data-table {
+  white-space: normal;
 }
