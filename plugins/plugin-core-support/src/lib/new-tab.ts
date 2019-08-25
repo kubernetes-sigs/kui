@@ -86,6 +86,13 @@ export class TabState {
   /** current working directory */
   private _cwd: string
 
+  /** jobs attached to this tab */
+  private _jobs: WatchableJob[]
+
+  private _age: number[]
+
+  private _ageCounter = 0
+
   get env() {
     return this._env
   }
@@ -101,19 +108,85 @@ export class TabState {
     debug('captured tab state', this.cwd)
   }
 
-  /** current watchable jobs */
-  private _jobs: WatchableJob[]
-
-  get jobs() {
-    return this._jobs
+  /**
+   * @return the number of attached jobs
+   */
+  get jobs(): number {
+    return !this._jobs ? 0 : this._jobs.filter(_ => _ !== undefined).length
   }
 
+  /** INTERNAL: abort the oldest job, and return the index of its slot */
+  private abortOldestJob(): number {
+    const oldestSlot = this._age.reduce((minAgeIdx, age, idx, ages) => {
+      if (minAgeIdx === -1) {
+        return idx
+      } else if (ages[minAgeIdx] > age) {
+        return idx
+      } else {
+        return minAgeIdx
+      }
+    }, -1)
+
+    this._jobs[oldestSlot].abort()
+    return oldestSlot
+  }
+
+  /** INTERNAL: find a free job slot, aborting the oldest job if necessary to free up a slot */
+  private findFreeJobSlot(): number {
+    const idx = this._jobs.findIndex(_ => _ === undefined)
+    if (idx === -1) {
+      return this.abortOldestJob()
+    } else {
+      return idx
+    }
+  }
+
+  /** attach a job to this tab */
   captureJob(job: WatchableJob) {
-    this._jobs = !this._jobs ? [job] : this._jobs.concat([job])
+    if (!this._jobs) {
+      const maxJobs = theme.maxWatchersPerTab || 2
+      this._jobs = new Array<WatchableJob>(maxJobs)
+      this._age = new Array<number>(maxJobs)
+    }
+    const slot = this.findFreeJobSlot()
+    this._jobs[slot] = job
+    this._age[slot] = this._ageCounter++
   }
 
+  /**
+   * Abort all jobs attached to this tab
+   *
+   */
+  public abortAllJobs() {
+    if (this._jobs) {
+      this._jobs.forEach((job, idx) => {
+        this.abortAt(idx)
+      })
+    }
+  }
+
+  /** INTERNAL: abort the job at the given index */
+  private abortAt(idx: number) {
+    this._jobs[idx].abort()
+    this.clearAt(idx)
+  }
+
+  /** INTERNAL: clear the references to the job at the given index */
+  private clearAt(idx: number) {
+    this._jobs[idx] = undefined
+    this._age[idx] = undefined
+  }
+
+  /**
+   * Clear any references to the given job. It is assumed that the
+   * caller is responsible for aborting the job.
+   *
+   */
   removeJob(job: WatchableJob) {
-    this._jobs = this._jobs.filter(existingJob => existingJob.id !== job.id)
+    if (this._jobs) {
+      const idx = this._jobs.findIndex(existingJob => existingJob && existingJob.id === job.id)
+      this.clearAt(idx)
+    }
   }
 
   restore() {
@@ -259,9 +332,7 @@ const closeTab = (tab = getCurrentTab()) => {
 
   // remove the tab state for the current tab
   const tabState: TabState = tab['state']
-  if (tabState.jobs) {
-    tabState.jobs.forEach(job => job.abort())
-  }
+  tabState.abortAllJobs()
   tabState.closed = true
 
   // remove the UI for the current tab
