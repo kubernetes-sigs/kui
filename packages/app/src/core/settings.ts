@@ -36,6 +36,9 @@ interface Theme {
   gettingStarted?: string | Record<string, string>
   description?: string | Record<string, string>
 
+  /** maximum number of watchers per tab (default: 2) */
+  maxWatchersPerTab?: number
+
   /** context root */
   resourceRoot?: string
 

@@ -17,7 +17,6 @@
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-import run from './lib/cmds/run'
 import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
 import about from './lib/cmds/about/about'
@@ -37,7 +36,6 @@ import confirm from './lib/cmds/confirm'
 export default async (commandTree: CommandRegistrar) => {
   await Promise.all([
     openui(commandTree),
-    run(commandTree),
     quit(commandTree),
     clear(commandTree),
     base64(commandTree),
