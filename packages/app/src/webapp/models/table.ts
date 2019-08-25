@@ -89,10 +89,6 @@ export class Cell {
 
   key?: string
 
-  watch?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-
-  watchLimit?: number
-
   fontawesome?: string[] | string
 
   tag?: string

@@ -477,11 +477,9 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       innerClassName = '',
       parent = entityName,
       onclick,
-      watch,
       key,
       fontawesome,
       css = '',
-      watchLimit = 100000,
       tag = 'span',
       tagClass
     } = theCell
@@ -604,142 +602,6 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       cell.classList.add(pulse)
     }
 
-    if (watch) {
-      cell.classList.add(pulse)
-      // we'll ping the watcher at most watchLimit times
-      let count = watchLimit
-
-      // the current watch interval; used for clear/reset/stop
-      let job: WatchableJob
-
-      // are we currently slowPolling?
-      let slowPolling = false
-
-      const stopWatching = () => {
-        job.abort()
-        cell.classList.remove(pulse)
-      }
-
-      // if we are presenting in popup mode, then when the sidecar is
-      // replaced, also terminate watching
-      // revisit this when we can handle restoring after a back and forth
-      /* if (isPopup()) {
-        eventBus.once('/sidecar/replace', stopWatching)
-      } */
-
-      /** the watch interval handler */
-      // NOTE: the cell watcher is only used by outdated sidecar table
-      const watchIt = () => {
-        if (--count < 0) {
-          debug('watchLimit exceeded', value)
-          stopWatching()
-          return
-        }
-
-        try {
-          Promise.resolve(watch(watchLimit - count - 1)).then(
-            ({ value, done = false, css, onclick, others = [], unchanged = false, outerCSS, slowPoll = false }) => {
-              if (unchanged) {
-                // nothing to do, yet
-                return
-              }
-
-              // debug('watch update', done)
-              // stopWatching()
-
-              // are we done polling for updates?
-              if (value === null || value === undefined || done) {
-                stopWatching()
-              }
-
-              // update onclick
-              if (onclick) {
-                debug('updating onclick', entity.onclick)
-                entityNameClickable.classList.add('clickable')
-                if (typeof onclick === 'string') {
-                  entityNameClickable.onclick = () => {
-                    return pexec(onclick, { tab })
-                  }
-                } else {
-                  entityNameClickable.onclick = onclick
-                }
-              }
-
-              // update the styling
-              if (css) {
-                inner.className = css
-              }
-
-              // update the outer styling i.e. of the table cell
-              if (outerCSS !== undefined && outerCSS !== false) {
-                const isPulsing = cell.classList.contains(pulse)
-                cell.className = outerCSS
-                if (isPulsing) {
-                  cell.classList.add(pulse)
-                }
-              }
-
-              // update the text
-              if (value) {
-                inner.innerText = ''
-                inner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
-              }
-
-              // any other cells to update?
-              others.forEach(({ key, value, css, fontawesome }) => {
-                const otherInner = parent.querySelector(`.cell-inner[data-key="${key}"]`) as HTMLElement
-                if (otherInner) {
-                  otherInner.setAttribute('data-value', value)
-                  if (css) {
-                    otherInner.className = `cell-inner ${css}`
-                  }
-                  if (fontawesome) {
-                    otherInner.querySelector('i').className = fontawesome
-                  } else {
-                    otherInner.innerText = ''
-                    otherInner.appendChild(value.nodeName ? value : document.createTextNode(value.toString()))
-                  }
-                }
-              })
-
-              // here we manage the slowPoll transitions
-              if (slowPoll) {
-                // the model provider has requested a new, "slow polling" watch
-                if (!slowPolling) {
-                  debug('entering slowPoll mode', slowPoll)
-                  slowPolling = true
-                  stopWatching() // this will remove the "pulse" effect, which is what we want
-                  // NOTE: the cell watcher is only used by outdated sidecar table
-                  job = new WatchableJob(tab, watchIt, slowPoll)
-                  job.start()
-                  // job = registerWatchableJob(tab, watchIt, slowPoll) // this will NOT re-establish the pulse, which is also what we want
-                }
-              } else if (slowPolling) {
-                // we were told not to slowPoll, but we are currently
-                // slowPolling, and so we exit slowPoll mode
-                debug('exiting slowPoll mode')
-                slowPolling = false
-                cell.classList.add(pulse)
-                stopWatching()
-                // NOTE: the cell watcher is only used by outdated sidecar table
-                job = new WatchableJob(tab, watchIt, mediumPolling + ~~(100 * Math.random()))
-                job.start()
-              }
-            }
-          )
-        } catch (err) {
-          console.error('Error watching value', err)
-          stopWatching()
-          cell.classList.remove(pulse)
-        }
-      }
-
-      // establish the initial watch interval
-      // NOTE: the cell watcher is only used by outdated sidecar table
-      job = new WatchableJob(tab, watchIt, mediumPolling + ~~(100 * Math.random()))
-      job.start()
-    }
-
     return cell
   }
 
@@ -762,21 +624,17 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   //
   if (entity.attributes) {
     // the entity provider wants to take complete control
-    entity.attributes.forEach(
-      ({ key, value, css = '', outerCSS = '', watch, watchLimit, onclick, fontawesome, tag }) => {
-        addCellToRow({
-          className: outerCSS,
-          value,
-          innerClassName: css,
-          onclick,
-          watch,
-          key,
-          fontawesome,
-          watchLimit,
-          tag
-        })
-      }
-    )
+    entity.attributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome, tag }) => {
+      addCellToRow({
+        className: outerCSS,
+        value,
+        innerClassName: css,
+        onclick,
+        key,
+        fontawesome,
+        tag
+      })
+    })
   } else {
     // otherwise, we have some generic attribute handlers, here
     const addKind = () => {

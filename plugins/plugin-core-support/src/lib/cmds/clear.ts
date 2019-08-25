@@ -40,9 +40,7 @@ const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
 
       // abort the jobs for the current tab
       const tabState: TabState = tab['state']
-      if (tabState.jobs) {
-        tabState.jobs.forEach(job => job.abort())
-      }
+      tabState.abortAllJobs()
     } else {
       // keep the current active prompt
       debug('preserving the current active prompt')

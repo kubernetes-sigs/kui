@@ -120,8 +120,8 @@ const checkWatchableJobs = function(
   this: common.ISuite,
   kubectl: string,
   ns: string,
-  jobCount: number,
-  createResource: boolean
+  jobCount = 0,
+  createResource = false
 ) {
   if (createResource) {
     it(`should create a watchable job via ${kubectl} get pods -w`, async () => {
@@ -139,22 +139,8 @@ const checkWatchableJobs = function(
       const watchableJobsRaw = await this.app.client.execute(() => {
         return document.querySelector('tab.visible')['state'].jobs
       })
-      const jobs = watchableJobsRaw.value
-
-      if (jobCount === undefined) {
-        // tab.state.jobs shouldn't be initialized
-        assert.ok(!jobs)
-      } else {
-        // tab.state.jobs should be an array of length jobCount and every job in the array has an id
-        // console.log(jobs)
-        assert.ok(
-          Array.isArray(jobs) && jobs.length === jobCount && jobs.filter(job => job._id === undefined).length === 0
-        )
-        // check the maximum watch timeout
-        if (jobs.some(job => job.timeout > finalPolling + 100)) {
-          throw Error(`timeout for the watchable job exceeds ${finalPolling}`)
-        }
-      }
+      const actualJobCount = watchableJobsRaw.value
+      assert.strictEqual(actualJobCount, jobCount)
     } catch (err) {
       await common.oops(this, true)(err)
     }
@@ -188,6 +174,12 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     checkJob(1, false)
 
     // create a new watchable job and expect 2 jobs in the tab
+    checkJob(2, true)
+
+    // ensure that we still have only 2 watchable jobs, since that is the default maximum watchers per tab
+    checkJob(2, true)
+    checkJob(2, true)
+    checkJob(2, true)
     checkJob(2, true)
 
     it('should add new tab via command', () =>
