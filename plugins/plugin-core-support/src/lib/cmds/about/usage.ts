@@ -23,13 +23,6 @@ export default {
     command: 'version',
     title: strings('versionUsageTitle'),
     header: strings('versionUsageHeader'),
-    example: 'version',
-    optional: [
-      {
-        name: '--update-check',
-        alias: '-u',
-        docs: strings('versionUsageOptionalDocs')
-      }
-    ]
+    example: 'version'
   }
 }
