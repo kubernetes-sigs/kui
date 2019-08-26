@@ -116,7 +116,7 @@ export const hide = (tab: Tab, clearSelectionToo = false) => {
   return true
 }
 
-export const clearSelection = async (tab: Tab) => {
+export const clearSelection = (tab: Tab) => {
   // true means also clear selection model
   return hide(tab, true)
 }
@@ -1050,7 +1050,16 @@ export const toggleMaximization = (tab: Tab, cause?: MaximizationCause) => {
  * Toggle sidecar visibility
  *
  */
-export const toggle = (tab: Tab) => (isVisible(tab) ? hide(tab) : show(tab))
+export const toggle = (tab: Tab) => {
+  if (!isVisible(tab)) {
+    return show(tab)
+  } else {
+    const presentation: Presentation =
+      document.body.getAttribute('data-presentation') && Presentation[document.body.getAttribute('data-presentation')]
+    // Key.Escape for Presentation.SidecarThin is interpreted as Close
+    return presentation === Presentation.SidecarThin ? clearSelection(tab) : hide(tab)
+  }
+}
 
 /**
  * Generic entity rendering
