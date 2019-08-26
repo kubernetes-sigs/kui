@@ -3212,7 +3212,7 @@ body.kui--bottom-input .kui--input-stripe {
   display: flex;
   padding: 1.5em 5em 1.5em 1em;
 }
-body.kui--bottom-input .repl-active .repl-input {
+body.kui--bottom-input .repl .repl-active .repl-input {
   display: none;
 }
 body.kui--bottom-input tab > .kui--rows > .kui--columns {

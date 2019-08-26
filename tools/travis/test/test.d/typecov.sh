@@ -61,7 +61,7 @@ if [ $COMPARO == 0 ]; then
     MASTER_GAP=$(( MASTER_TOTAL - MASTER_KNOWN ))
     BRANCH_GAP=$(( BRANCH_TOTAL - BRANCH_KNOWN ))
 
-    COMPARO=$(echo ${BRANCH_GAP}'<'${MASTER_GAP} | bc -l)
+    COMPARO=$(echo ${BRANCH_GAP}'<='${MASTER_GAP} | bc -l)
 
     if [ $COMPARO == 0 ]; then
         # the tput bits set this to use red text

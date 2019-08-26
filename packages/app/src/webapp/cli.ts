@@ -210,7 +210,7 @@ export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return block && block.querySelector && block.querySelector('input')
 }
 const getBottomPrompt = (tab: Tab): HTMLInputElement => {
-  return getPrompt(tab.querySelector('.kui--input-stripe .repl-block'))
+  return getPrompt(element('.kui--input-stripe .repl-block'))
 }
 const getInitialPrompt = (tab: Tab): HTMLInputElement => {
   return getPrompt(getInitialBlock(tab))
