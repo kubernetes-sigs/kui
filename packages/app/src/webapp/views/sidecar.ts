@@ -79,7 +79,6 @@ interface Sidecar extends HTMLElement {
   uuid?: string
 }
 export const getSidecar = (tab: Tab): Sidecar => {
-  debug('getSidecar', tab)
   return tab.querySelector('sidecar') as Sidecar
 }
 
