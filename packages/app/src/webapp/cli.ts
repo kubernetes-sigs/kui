@@ -132,8 +132,6 @@ export const disableInputQueueing = (): string => {
     return
   }
 
-  debug('disableInputQueueing')
-
   const invisibleHand =
     _invisibleHand || (_invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement)
 
@@ -186,7 +184,7 @@ export const getTabFromTarget = (target: EventTarget): Tab => {
       return iter
     }
 
-    debug('current tab fallthrough', target)
+    // debug('current tab fallthrough', target)
   }
 
   // fallthrough
@@ -764,7 +762,6 @@ export const unlisten = (prompt: HTMLElement) => {
   }
 }
 export const listen = (prompt: HTMLInputElement) => {
-  debug('listen', prompt, document.activeElement)
   prompt.readOnly = false
   prompt.placeholder = settings.placeholder || ''
 

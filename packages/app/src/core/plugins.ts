@@ -397,8 +397,6 @@ const loadPrescan = async (userDataDir: string): Promise<PrescanModel> => {
 
 /** export the prequire function */
 const prequire = async (route: string, options?: object) => {
-  debug('prequire %s', route)
-
   try {
     if (!Object.prototype.hasOwnProperty.call(registrar, route)) {
       // note how we stash a promise in the registrar immediately, to
@@ -417,7 +415,6 @@ const prequire = async (route: string, options?: object) => {
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 
             resolve(registration(commandTree.proxy(route), combinedOptions))
-            debug('prequire success %s', route)
           } catch (err) {
             console.error(`prequire error ${route}`, err)
             reject(err)
@@ -425,8 +422,6 @@ const prequire = async (route: string, options?: object) => {
         }
       })
     }
-
-    debug('prequire success', route)
   } catch (err) {
     debug('prequire failure', route)
     console.error(err)
@@ -435,7 +430,6 @@ const prequire = async (route: string, options?: object) => {
   return registrar[route]
 }
 export const preload = () => {
-  debug('invoking preloader')
   preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
 }
 
@@ -444,15 +438,11 @@ export const preload = () => {
  *
  */
 const makeResolver = (prescan: PrescanModel) => {
-  debug('makeResolver')
-
   /** memoize resolved plugins */
   const isResolved = {}
 
   /** resolve one given plugin */
   const resolveOne = async (plugin: string): Promise<KuiPlugin> => {
-    debug('resolveOne', plugin)
-
     try {
       if (!plugin) {
         return
@@ -462,21 +452,16 @@ const makeResolver = (prescan: PrescanModel) => {
           try {
             const prereqs = prescan.topological[plugin]
             if (prereqs) {
-              debug('resolveOne loading prereqs', plugin)
               await Promise.all(prereqs.map(route => prequire(route)))
             }
 
-            debug('resolveOne loading plugin', plugin)
             const loadedPlugin = prequire(plugin)
-            debug('resolveOne loading plugin done', plugin)
             resolve(loadedPlugin)
           } catch (err) {
             console.error(`Error resolving plugin ${plugin}`, err)
             reject(err)
           }
         })
-      } else {
-        debug('already resolved', plugin)
       }
 
       // NOTE: even if isResolved[plugin] already has an entry, we may
@@ -484,7 +469,7 @@ const makeResolver = (prescan: PrescanModel) => {
       // two threads trying to load the plugin
       return isResolved[plugin]
     } finally {
-      debug('resolveOne done', plugin)
+      // debug('resolveOne done', plugin)
     }
   } /* resolveOne */
 
@@ -495,13 +480,11 @@ const makeResolver = (prescan: PrescanModel) => {
     resolveOne,
 
     disambiguate: (command: string) => {
-      debug('attempting to disambiguate command', command)
       return prescan.disambiguator[command]
     },
 
     /** given a partial command, do we have a disambiguation of it? e.g. "gr" => "grid" */
     disambiguatePartial: (partial: string) => {
-      debug('attempting to disambiguate partial', partial)
       const matches = []
       if (prescan.disambiguator) {
         for (const command in prescan.disambiguator) {
@@ -512,15 +495,12 @@ const makeResolver = (prescan: PrescanModel) => {
         }
       }
 
-      debug('disambiguate partial', partial, matches)
       return matches
     },
 
     /** load any plugins required by the given command */
     resolve: (command: string, { subtree = false } = {}) => {
       // subpath if we are looking for plugins for a subtree, e.g. for cd /auth
-      debug('resolve', command)
-
       let plugin
       let matchLen
       for (const route in prescan.commandToPlugin) {
@@ -538,13 +518,11 @@ const makeResolver = (prescan: PrescanModel) => {
         return resolveOne(plugin)
       } else if (prescan.catchalls.length > 0) {
         // see if we have catchall
-        debug('scanning catchalls', prescan.catchalls)
         return Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin)))
       }
     }
   } /* resolver */
 
-  debug('makeResolver done')
   return resolver
 } /* makeResolver */
 
