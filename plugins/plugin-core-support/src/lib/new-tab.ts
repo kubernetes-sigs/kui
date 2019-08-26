@@ -325,10 +325,12 @@ const closeTab = (tab = getCurrentTab()) => {
     return true
   }
 
-  // note: true means we only want to activate the given tab.
-  const makeThisTabActive = (tab.nextElementSibling as Tab) || (tab.previousElementSibling as Tab)
-  debug('makeThisTabActive', makeThisTabActive, tab.nextSibling)
-  switchTab(getTabId(makeThisTabActive), true)
+  if (tab === getCurrentTab()) {
+    // note: true means we only want to activate the given tab.
+    const makeThisTabActive = (tab.nextElementSibling as Tab) || (tab.previousElementSibling as Tab)
+    debug('makeThisTabActive', makeThisTabActive, tab.nextSibling)
+    switchTab(getTabId(makeThisTabActive), true)
+  }
 
   // remove the tab state for the current tab
   const tabState: TabState = tab['state']
