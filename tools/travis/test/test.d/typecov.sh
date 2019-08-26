@@ -58,12 +58,14 @@ if [ $COMPARO == 0 ]; then
     MASTER_KNOWN=$(echo $MASTER_RAW | jq .knownTypes)
     MASTER_TOTAL=$(echo $MASTER_RAW | jq .totalTypes)
 
-    KNOWN_DELTA=$(( MASTER_KNOWN - BRANCH_KNOWN ))
-    TOTAL_DELTA=$(( MASTER_TOTAL - BRANCH_TOTAL ))
+    MASTER_GAP=$(( MASTER_TOTAL - MASTER_KNOWN ))
+    BRANCH_GAP=$(( BRANCH_TOTAL - BRANCH_KNOWN ))
 
-    if [[ $KNOWN_DELTA != $TOTAL_DELTA ]]; then
+    COMPARO=$(echo ${BRANCH_GAP}'<'${MASTER_GAP} | bc -l)
+
+    if [ $COMPARO == 0 ]; then
         # the tput bits set this to use red text
-        echo "$(tput setaf 1)failing: type coverage regression$(tput sgr0)"
+        echo "$(tput setaf 1)failing: type coverage regression branchGap=${BRANCH_GAP} masterGap=${MASTER_GAP}$(tput sgr0)"
         exit 1
     else
         #
@@ -80,8 +82,10 @@ if [ $COMPARO == 0 ]; then
         # the total delta is also 1. We have one less known type, but
         # also one less identifier that could have been typed.
         #
-        echo "warning: type coverage change; you probably removed some well-typed code"
+        # the tput bits set this to use yellow text
+        echo "$(tput setaf 3)warning: type coverage change; you probably removed some well-typed code$(tput sgr0)"
     fi
 else
+    # the tput bits set this to use green text
     echo "$(tput setaf 2)ok: type coverage looks good$(tput sgr0)"
 fi

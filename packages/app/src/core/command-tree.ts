@@ -90,7 +90,6 @@ export const endScan = (state: Disambiguator): Disambiguator => {
  */
 let resolver
 export const setPluginResolver = _ => {
-  debug('setPluginResolver')
   resolver = _
 }
 
@@ -164,7 +163,6 @@ const treeMatch = (
   if (!cur && !noWildcard) {
     // prefix match, e.g. "cleanAll !!!" should match a /cleanAll listener, as we have an implicit suffix wildcard
     // console.log('end of the line', parent)
-    // debug('match to parent', path, parent)
     cur = parent
   }
 
@@ -173,7 +171,6 @@ const treeMatch = (
     // it takes no extra arguments, we can fast-path this as a
     // non-match, if cur's route doesn't contain the requested
     // command path
-    // debug('no match', path, cur)
   } else {
     return cur
   }
@@ -258,8 +255,6 @@ export const subtree = (route: string, options: CommandOptions) => {
     }
 
     const help = () => {
-      debug('subtree help', route, options)
-
       // the usage message
       const usage =
         options.usage || (options.synonymFor && options.synonymFor.options && options.synonymFor.options.usage)
@@ -363,8 +358,6 @@ export const suggestPartialMatches = (
   noThrow = false,
   hide = false
 ): CodedError => {
-  debug('suggestPartialMatches', partialMatches)
-
   // filter out any partial matches without usage info
   const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
   const anyPartials = availablePartials.length > 0
@@ -452,7 +445,6 @@ const withEvents = (
       if (err.code === 127) {
         // command not found
         const suggestions = suggestPartialMatches(command, partialMatches, true, err['hide']) // true: don't throw an exception
-        debug('got suggestions after unresolvable command not found', suggestions)
         return suggestions
       }
 
@@ -485,7 +477,6 @@ const _read = async (
 ): Promise<boolean | CommandHandlerWithEvents> => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
-  debug('read', argv)
 
   if (!evaluator) {
     //
@@ -493,24 +484,15 @@ const _read = async (
     // loaded, yet; so: invoke the plugin resolver and retry
     //
     const route = `/${argv.join('/')}`
-    debug('attempting to resolve plugin', route)
     await resolver.resolve(route)
     leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
     evaluator = leaf && leaf.$
-    if (!leaf) {
-      debug('plugin resolution not helpful')
-    } else {
-      debug('resolution success', route)
-    }
   }
 
   if (!evaluator) {
-    debug('not yet resolved')
     if (!contextRetry) {
-      debug('giving up')
       return false
     } else if (contextRetry.length === 0) {
-      debug('no context')
       return _read(model, originalArgv, undefined, originalArgv)
     } else if (
       contextRetry.length > 0 &&
@@ -525,18 +507,15 @@ const _read = async (
       )
 
       if (maybeInContextRetry) {
-        debug('context retry helped', maybeInContextRetry)
         return maybeInContextRetry
       }
 
       // oof, fallback plan: look in /wsk/action
-      debug('fallback to wsk action')
       const newContext = _defaultContext.concat(originalArgv).filter((elt, idx, A) => elt !== A[idx - 1])
       const maybeInWskAction = _read(model, newContext, contextRetry.slice(0, contextRetry.length - 1), originalArgv)
       return maybeInWskAction
     } else {
       // if we get here, we can't find a matching command
-      debug('no matching command')
       return false
     }
   } else {
@@ -546,9 +525,7 @@ const _read = async (
         // e.g. executing "help" we don't want to use the default
         // context (see "subtree help" above for an example use of
         // this feature)
-        debug('mismatch on fully qualified route %s!=%s', leaf.route, routeWithoutContext)
         if (argv.length === originalArgv.length && argv.every((elt, idx) => elt === originalArgv[idx])) {
-          debug('giving up')
           return false
         } else {
           return _read(model, originalArgv, undefined, originalArgv)
@@ -576,7 +553,6 @@ const Context = {
  *
  */
 export const setDefaultCommandContext = (commandContext: string[]) => {
-  debug('using context', commandContext)
   Context.current = _defaultContext = commandContext
 }
 
@@ -612,18 +588,14 @@ const areCompatible = (A: string[], B: string[]): boolean => {
  *
  */
 const disambiguate = async (argv: string[], noRetry = false) => {
-  debug('disambiguate')
-
   let idx
   const resolutions =
     (((idx = 0) || true) && resolver.disambiguate(argv[idx])) ||
     (argv.length > 1 && ((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) ||
     []
-  debug('disambiguate', idx, argv, resolutions)
 
   if (resolutions.length === 0 && !noRetry) {
     // maybe we haven't loaded the plugin, yet
-    debug('disambiguate attempting to resolve plugins')
     await resolver.resolve(`/${argv.join('/')}`)
     return disambiguate(argv, true)
   } else if (resolutions.length === 1) {
@@ -634,36 +606,27 @@ const disambiguate = async (argv: string[], noRetry = false) => {
     const leaf =
       cmdMatch && cmdMatch.$ ? areCompatible(argvForMatch, argv) && cmdMatch : treeMatch(intentions, argvForMatch)
 
-    debug('disambiguate single match', idx, argv)
-
     if (!leaf || !leaf.$) {
       if (!noRetry && resolutions[0].plugin) {
-        debug('disambiguate attempting to resolve plugins 2')
         await resolver.resolveOne(resolutions[0].plugin)
         return disambiguate(argv, true)
       } else {
-        debug('disambiguate nope', intentions)
         return
       }
     } else if (idx === argv.length - 1 && leaf.children) {
       // then the match is indeed a subtree
-      debug('validating disambiguation')
       const next = argv[argv.length - 1]
       for (const cmd in leaf.children) {
         if (cmd === next) {
-          debug('found child', cmd, leaf.children[cmd])
           return withEvents(leaf.children[cmd].$, leaf.children[cmd])
         }
       }
 
-      debug('disambiguate blocked due to subtree mismatch')
       return
     } else if (idx < argv.length - 1 && leaf.children) {
-      debug('disambigaute blocked due to partial match')
       return
     }
 
-    debug(`disambiguate success ${leaf.route}`)
     return withEvents(leaf.$, leaf)
   }
 }
@@ -680,7 +643,6 @@ const commandNotFound = async (argv: string[], partialMatches?: Command[], execO
       .filter(({ offer }) => offer(argv))
       .sort(({ prio: prio1 }, { prio: prio2 }) => prio2 - prio1)[0]
     if (catchallHandler) {
-      debug('found catchall', catchallHandler)
       return withEvents(catchallHandler.eval, catchallHandler, partialMatches)
     }
 
@@ -703,8 +665,6 @@ const commandNotFound = async (argv: string[], partialMatches?: Command[], execO
  *
  */
 const findPartialMatchesAt = (subtree: Command, partial: string): Command[] => {
-  debug('scanning for partial matches', partial, subtree)
-
   const matches = []
 
   if (subtree && subtree.children && partial) {
@@ -779,14 +739,12 @@ export const read = async (
   let cmd = await disambiguate(argv)
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
-    debug('overridden')
     await resolver.resolve(cmd.route)
     return read(argv, true, noSubtreeRetry, execOptions)
   }
 
   if (!cmd) {
     if (!noRetry) {
-      debug('forcing a plugin resolution')
       await resolver.resolve(`/${argv.join('/')}`)
       cmd = (await disambiguate(argv)) || (await internalRead(model, argv))
     }
@@ -794,7 +752,6 @@ export const read = async (
 
   if (!cmd) {
     try {
-      debug('falling back on intention')
       cmd = await readIntention(argv)
     } catch (err) {
       if (err.code === 404 && !noSubtreeRetry) {
@@ -805,15 +762,11 @@ export const read = async (
   }
 
   if (!cmd) {
-    debug('command not found, searching for partial matches')
-
     // command not found, but maybe we can find partial matches
     // that might be helpful?
     let matches
 
     if (argv.length === 1) {
-      debug('searching for partial matches at root')
-
       // disambiguatePartial takes a partial command, and
       // returns an array of matching full commands, which we
       // can turn into leafs via `disambiguate`
@@ -830,8 +783,6 @@ export const read = async (
       const last = argv[argv.length - 1]
 
       const parent = (await internalRead(model, allButLast)) || (await disambiguate(allButLast))
-      debug('searching for partial matches for subcommand', allButLast, parent)
-
       if (parent) {
         matches = await removeDuplicates(findPartialMatchesAt(parent.subtree, last))
       }
@@ -839,7 +790,7 @@ export const read = async (
 
     // found some partial matches?
     if (matches && matches.length > 0) {
-      debug('found partial matches', matches)
+      // debug('found partial matches', matches)
     } else {
       matches = undefined
     }
@@ -907,7 +858,6 @@ export const proxy = (plugin: string) => ({
     const cmd = match(route.split('/').slice(1), true)
     if (!cmd || cmd.route !== route || (!noOverride && resolver && resolver.isOverridden(cmd.route))) {
       if (resolver) {
-        debug('find invoking resolver', route, cmd, noOverride)
         await resolver.resolve(route)
       }
       return match(route.split('/').slice(1), true)
