@@ -349,6 +349,27 @@ function isElement(target: EventTarget): target is Element {
   return (target as Element).classList !== undefined
 }
 
+function getSelectionText() {
+  if (window.getSelection) {
+    return window.getSelection().toString()
+  }
+}
+
+function isInViewport(el: Element) {
+  const scroll = window.scrollY || window.pageYOffset
+  const boundsTop = el.getBoundingClientRect().top + scroll
+
+  const viewportTop = scroll
+  const viewportBottom = scroll + window.innerHeight
+
+  const boundsBottom = boundsTop + el.clientHeight
+
+  return (
+    (boundsBottom >= viewportTop && boundsBottom <= viewportBottom) ||
+    (boundsTop <= viewportBottom && boundsTop >= viewportTop)
+  )
+}
+
 /**
  * Initialize events for a new tab
  *
@@ -369,10 +390,19 @@ const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
 
   // keep repl prompt focused, if possible
   tab.querySelector('.repl-inner').addEventListener('click', (evt: MouseEvent) => {
-    if (isElement(evt.target)) {
-      if (evt.target.classList.contains('repl-inner') || evt.target.classList.contains('repl-output')) {
-        getCurrentPrompt(tab).focus()
-      }
+    const target = evt.target
+    if (isElement(target)) {
+      setTimeout(() => {
+        const prompt = getCurrentPrompt(tab)
+        if (
+          getSelectionText().length === 0 &&
+          (target.classList.contains('repl-inner') || target.classList.contains('repl-output'))
+        ) {
+          if (target.classList.contains('repl-inner') || isInViewport(prompt)) {
+            prompt.focus()
+          }
+        }
+      }, 0)
     }
   })
 
