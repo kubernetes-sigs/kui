@@ -176,7 +176,6 @@ const table = (
   options: ParsedOptions,
   execOptions: KubeExecOptions
 ): Table | MultiTable | HTMLElement | Delete => {
-  debug('displaying as table', command, verb, entityType)
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
@@ -245,7 +244,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
     const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
 
     const isKube = isKubeLike(command)
-    debug('exec', command, isKube)
 
     const verb = command === 'helm' && argv[1] === 'repo' ? argv[2] : argv[1]
     const entityType = command === 'helm' ? command : verb && verb.match(/log(s)?/) ? verb : argv[2]
@@ -377,7 +375,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     await fillInTheBlanks(env || {})
 
-    debug('kubeconfig', env.KUBECONFIG)
+    // debug('kubeconfig', env.KUBECONFIG)
 
     const commandForSpawn = command === 'helm' ? await pickHelmClient(env) : command
     const child = spawn(commandForSpawn, argvWithFileReplacements, {
@@ -705,7 +703,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         //
         // tabular output
         //
-        debug('attempting to display as a table')
         const tableModel = table(
           out,
           err,
@@ -776,10 +773,10 @@ async function kubectl(opts: EvaluatorArgs) {
       Object.assign({}, opts.execOptions, { rawResponse: true })
     )
   } else if (!inBrowser() || opts.argvNoOptions[1] === 'summary') {
-    debug('invoking _kubectl directly')
+    // debug('invoking _kubectl directly')
     return _kubectl(opts)
   } else {
-    debug('invoking _kubectl via qexec')
+    // debug('invoking _kubectl via qexec')
     const command = opts.command.replace(/^kubectl(\s)?/, '_kubectl$1').replace(/^k(\s)?/, '_kubectl$1')
     return qexec(command, opts.block, undefined, {
       tab: opts.tab,

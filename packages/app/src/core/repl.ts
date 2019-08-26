@@ -285,10 +285,7 @@ class InProcessExecutor implements Executor {
   name = 'InProcessExecutor'
 
   async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
-    // debug(`repl::exec ${new Date()}`)
-    debug('exec', commandUntrimmed)
     const tab = execOptions.tab || cli.getCurrentTab()
-    // debug('tab', tab)
 
     if (!isHeadless()) {
       const curDic = SymbolTable.read(tab)
@@ -374,8 +371,6 @@ class InProcessExecutor implements Executor {
         }
         return emptyPromise()
       }
-
-      debug(`issuing ${command} ${new Date()}`)
 
       // add a history entry
       if (!execOptions || !execOptions.noHistory) {
@@ -723,7 +718,6 @@ class InProcessExecutor implements Executor {
         //
         // the Eval part of REPL
         //
-        debug('eval', currentEvaluatorImpl.name)
         return Promise.resolve()
           .then(() => {
             eventBus.emit('/command/start', {
@@ -803,7 +797,6 @@ class InProcessExecutor implements Executor {
               return Promise.resolve(response)
             } else {
               // we're the top-most exec, so deal with the repl!
-              debug('displaying response')
               const resultDom = block.querySelector('.repl-result') as HTMLElement
               return new Promise(resolve => {
                 cli
@@ -852,7 +845,7 @@ class InProcessExecutor implements Executor {
 
               if (!nested && !rethrowIt) {
                 debug('reporting command execution error to user via repl')
-                console.error(err)
+                // console.error(err)
                 oops(command, block, nextBlock)(err)
               } else {
                 debug('rethrowing command execution error')
@@ -1012,7 +1005,6 @@ export const pexec = (command: string, execOptions?: ExecOptions) => {
  *
  */
 export const setExecutorImpl = (impl: Executor): void => {
-  debug('updating executor impl', impl.name)
   currentExecutorImpl = impl
 }
 

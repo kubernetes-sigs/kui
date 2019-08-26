@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { encodeComponent } from '@kui-shell/core/core/repl'
-
-const debug = Debug('k8s/formatters/formatTable')
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length, maxColumns) => {
@@ -158,8 +154,6 @@ const detabbify = (str: string) => str.replace(/\t/g, '   ')
  *
  */
 export const preprocessTable = (raw: string[]) => {
-  debug('preprocessTable', raw)
-
   return raw.map(table => {
     const header = detabbify(table.substring(0, table.indexOf('\n')))
     const headerCells = header
@@ -181,8 +175,6 @@ export const preprocessTable = (raw: string[]) => {
       columnStarts.push(jdx + offset)
     }
 
-    debug('columnStarts', columnStarts, headerCells)
-
     return table
       .split(/\n/)
       .filter(x => x)
@@ -203,7 +195,6 @@ export const formatTable = (
   options,
   preTable: Pair[][]
 ): Table => {
-  debug('formatTable', preTable)
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -227,7 +218,6 @@ export const formatTable = (
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
   const drilldownKind = (nameSplit: string[], row: Pair[]) => {
-    // debug('drilldownKind', nameSplit)
     if (drilldownVerb === 'get') {
       const kind =
         kindColumnIdx >= 0 ? row[kindColumnIdx].value : nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
