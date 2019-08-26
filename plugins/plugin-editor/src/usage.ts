@@ -40,6 +40,7 @@ export const editUsage = command => ({
     {
       name: '<filepath>',
       docs: 'The local file path or entity name to edit',
+      file: true,
       implicitOK: ['actions', 'activations']
     }
   ],
