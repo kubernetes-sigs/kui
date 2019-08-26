@@ -148,6 +148,7 @@ function newSessionForTab(tab: Tab) {
       prompt.readOnly = false
       if (placeholderChanged) {
         setStatus(block, 'repl-active')
+        prompt.placeholder = settings.placeholder || ''
         await pexec('ready', { tab })
       }
 
