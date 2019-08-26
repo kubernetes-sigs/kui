@@ -305,45 +305,13 @@ const getVersion = () => {
 const reportVersion = ({ argv }: EvaluatorArgs) => {
   debug('reportVersion')
 
-  const checkForUpdates = argv.find(_ => _ === '-u' || _ === '--update-check')
   const version = getVersion()
 
-  if (!checkForUpdates) {
-    // we were asked only to report the installed version
-    if (extras['build-info']) {
-      return `${version} (build ${extras['build-info']})`
-    }
-    return version
+  // we were asked only to report the installed version
+  if (extras['build-info']) {
+    return `${version} (build ${extras['build-info']})`
   }
-
-  //
-  // otherwise, we were asked to check for updates
-  //
-  if (isHeadless()) {
-    console.log('You are currently on version ' + colors.blue(version))
-    process.stdout.write(colors.dim('Checking for updates... '))
-  }
-
-  return repl.qexec('updater check').then(updates => {
-    if (updates === true) {
-      // then we're up to date, so just report the version
-      if (isHeadless()) {
-        return 'you are up to date!'
-      } else {
-        return version
-      }
-    } else {
-      // then updates are available, so report the updates available message
-      if (isHeadless()) {
-        // above, we left with a process.stdout.write, so
-        // now we need to clear a newline see shell issue
-        // #194
-        console.log('')
-        console.log('')
-      }
-      return updates
-    }
-  })
+  return version
 }
 
 /**
