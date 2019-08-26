@@ -3284,3 +3284,8 @@ body.kui--bottom-input .repl-context {
 #openwhisk-namespace {
   pointer-events: none;
 }
+
+#kui--custom-top-tab-stripe-button-container {
+  /* e.g. holds the session disconnected icon */
+  display: flex;
+}
