@@ -759,11 +759,13 @@ const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string)
 export const unlisten = (prompt: HTMLElement) => {
   if (prompt && !prompt.classList.contains('sidecar-header-input')) {
     prompt.onkeypress = null
+    prompt.tabIndex = -1 // don't tab through old inputs
   }
 }
 export const listen = (prompt: HTMLInputElement) => {
   prompt.readOnly = false
   prompt.placeholder = settings.placeholder || ''
+  prompt.tabIndex = 1
 
   const grandparent = prompt.parentNode.parentNode as Element
   grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
