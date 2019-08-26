@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.7](https://github.com/IBM/kui/compare/v3.0.6...v3.0.7) (2019-08-26)
+
+**Note:** Version bump only for package @kui-shell/plugin-manager
+
 ## [3.0.6](https://github.com/IBM/kui/compare/v3.0.5...v3.0.6) (2019-08-23)
 
 **Note:** Version bump only for package @kui-shell/plugin-manager

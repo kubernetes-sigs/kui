@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.7](https://github.com/IBM/kui/compare/v3.0.6...v3.0.7) (2019-08-26)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** bound the maximum number of watchers per tab ([43cd247](https://github.com/IBM/kui/commit/43cd247)), closes [#2512](https://github.com/IBM/kui/issues/2512)
+
 ## [3.0.6](https://github.com/IBM/kui/compare/v3.0.5...v3.0.6) (2019-08-23)
 
 ### Bug Fixes
