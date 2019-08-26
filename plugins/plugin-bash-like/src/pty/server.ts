@@ -152,14 +152,11 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  */
 let cachedLoginShell: string
 export const getLoginShell = (): Promise<string> => {
-  debug('getLoginShell')
-
   return new Promise((resolve, reject) => {
     if (cachedLoginShell) {
       debug('returning cached login shell', cachedLoginShell)
       resolve(cachedLoginShell)
     } else if (process.env.SHELL) {
-      debug('returning env.SHELL')
       resolve(process.env.SHELL)
     } else {
       const defaultShell = process.platform === 'win32' ? 'cmd' : '/bin/bash'

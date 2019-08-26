@@ -33,8 +33,6 @@ export const dispatchToShell = async ({
   parsedOptions,
   createOutputStream
 }: EvaluatorArgs) => {
-  debug('handling catchall', command)
-
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
   const cleanUpError = err => {
     if (err.message && typeof err.message === 'string') {

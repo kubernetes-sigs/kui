@@ -46,8 +46,6 @@ export const injectCSS = (file: StylesheetSpec): void => {
     return
   }
 
-  debug('injectCSS', file)
-
   const contentType = 'text/css'
   const rel = 'stylesheet'
 
@@ -61,11 +59,11 @@ export const injectCSS = (file: StylesheetSpec): void => {
 
     if (isAStylesheetDirect(file)) {
       // then we have the content, not a filename
-      debug('injecting stylesheet from given content')
+      // debug('injecting stylesheet from given content')
       link = document.createElement('style')
       link.appendChild(document.createTextNode(file.css))
     } else {
-      debug('injecting stylesheet from file ref')
+      // debug('injecting stylesheet from file ref')
       link = document.createElement('link')
       link.rel = rel
       if (isAStylesheetFile(file)) {
@@ -91,7 +89,7 @@ export const uninjectCSS = ({ key }): void => {
     const id = `injected-css-${key}`
     const link = document.getElementById(id)
 
-    debug('uninjectCSS', id, link)
+    // debug('uninjectCSS', id, link)
     if (link && link.parentNode) {
       link.parentNode.removeChild(link)
     }
@@ -118,14 +116,14 @@ export const injectScript = (url: any): Promise<any> => {
       link.id = id
 
       if (url.src) {
-        debug('injecting raw script')
+        // debug('injecting raw script')
         link.appendChild(document.createTextNode(url.src))
       } else {
-        debug('injecting remote script')
+        // debug('injecting remote script')
         link.async = true
         link.src = url
         link.addEventListener('load', () => {
-          debug('injected script', url, id, link)
+          // debug('injected script', url, id, link)
           // done!
           resolve()
         })
@@ -149,10 +147,10 @@ export const loadHTML = (file: any): Promise<string> =>
   new Promise(async (resolve, reject) => {
     if (file.html) {
       // then we have the raw content already
-      debug('loadHTML from string')
+      // debug('loadHTML from string')
       resolve(file.html)
     } else {
-      debug('loadHTML from file', file)
+      // debug('loadHTML from file', file)
       const { readFile } = await import('fs')
       return readFile(file, (err, data) => {
         if (err) {

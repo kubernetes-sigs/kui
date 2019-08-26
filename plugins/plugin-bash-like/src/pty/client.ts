@@ -284,7 +284,7 @@ class Resizer {
   private getSize(forceRecompute: boolean) {
     const cachedSize = getCachedSize(this.tab)
     if (!forceRecompute && cachedSize !== undefined) {
-      debug('getSize using cached size', cachedSize.rows, cachedSize.cols)
+      // using cached size
       return cachedSize
     }
 
@@ -362,13 +362,13 @@ class Resizer {
   }
 
   enterApplicationMode() {
-    debug('switching to application mode')
+    // switching to application mode
     this.app = true
     this.tab.classList.add('xterm-application-mode')
   }
 
   exitApplicationMode() {
-    debug('switching out of application mode')
+    // switching out of application mode
     this.app = false
     this.tab.classList.remove('xterm-application-mode')
   }
@@ -397,7 +397,7 @@ class Resizer {
   }
 
   exitAltBufferMode() {
-    debug('switching to normal buffer mode')
+    // switching to normal buffer mode
     this.alt = false
     this.tab.classList.remove('xterm-alt-buffer-mode')
   }
@@ -520,9 +520,8 @@ const getOrCreateChannel = async (
   const cachedws = session.getChannelForTab(tab)
 
   if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
-    debug('allocating new channel', channelFactory)
+    // allocating new channel
     const ws = await channelFactory()
-    debug('allocated new channel', ws)
     tab['ws'] = ws
 
     // when the websocket is ready, handle any queued input; only then
@@ -542,7 +541,7 @@ const getOrCreateChannel = async (
 
     return ws
   } else {
-    debug('reusing existing websocket')
+    // reusing existing websocket
     doExec(cachedws)
     return cachedws
   }
@@ -575,8 +574,6 @@ export const doExec = (
   execOptions: ExecOptions
 ) =>
   new Promise((resolve, reject) => {
-    debug('doExec', cmdline)
-
     const contentType =
       parsedOptions.o ||
       parsedOptions.output ||
@@ -630,7 +627,7 @@ export const doExec = (
 
         const cachedSize = getCachedSize(tab)
         const { fontFamily, fontSize } = getFontProperties(false)
-        debug('creating terminal', cachedSize)
+        // creating terminal
         const terminal = new xterm.Terminal({
           rendererType: 'dom',
           cols: cachedSize && cachedSize.cols,
@@ -781,7 +778,7 @@ export const doExec = (
                     how: 'scrollIntoView'
                   })
                 } else {
-                  debug('skipping scroll to bottom for terminated xterm')
+                  // skipping scroll to bottom for terminated xterm
                 }
               }, 50)
             }
@@ -947,9 +944,7 @@ export const doExec = (
               }
             }
           } else if (msg.type === 'exit') {
-            // server told us that it is done
-            debug('exit', msg.exitCode)
-
+            // server told us that it is done with msg.exitCode
             if (pendingTable && pendingTable.body.length === 0) {
               if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
                 terminal.write(raw)

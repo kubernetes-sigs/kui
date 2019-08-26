@@ -66,8 +66,6 @@ const scanForFilename = (str: string, fileMap: Record<string, boolean>, endIdx =
  */
 const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
   new Promise((resolve, reject) => {
-    debug('readdir', dir)
-
     const toMap = (files: string[]) => {
       return files.reduce((M, file) => {
         M[file] = true
@@ -171,8 +169,6 @@ const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
 const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', parentAsGiven = '') => async (
   output: string
 ): Promise<true | Table> => {
-  debug('tabularize', parent, parentAsGiven)
-
   if (output.length === 0) {
     debug('tabularize empty')
     return true
@@ -267,7 +263,6 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     .map(row => row.filter(x => x))
     .filter(x => x.length > 0)
     .filter(row => !row[row.length - 1].match(/~$/)) // hack for now: remove emacs ~ temporary files
-  debug('rows', rows)
 
   const outerCSS = 'header-cell'
   const outerCSSSecondary = `${outerCSS} hide-with-sidecar`
@@ -409,8 +404,6 @@ const doLs = (cmd: string) => async (opts: EvaluatorArgs) => {
     safe: true,
     keepRelative: true
   })
-
-  debug('doLs filepath', filepathAsGiven, filepath)
 
   if (filepath.match(/app.asar/) && isSpecialDirectory(filepathAsGiven)) {
     // for now, we don't support ls of @ directories
