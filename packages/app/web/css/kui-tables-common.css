@@ -93,7 +93,7 @@ body.sidecar-is-minimized .result-as-table .result-table {
   width: auto;
 }
 
-.result-table-outer-wrapper:not(:only-child) .result-table-title-outer {
+.result-table-outer-wrapper:not(:only-of-type) .result-table-title-outer {
   display: flex;
 }
 .result-table-title-outer {

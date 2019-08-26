@@ -611,7 +611,7 @@ export const doExec = (
       // attach the terminal to the DOM
       try {
         const parent = block.querySelector('.repl-result')
-        const xtermContainer = document.createElement('div')
+        const xtermContainer = document.createElement('xterm')
         xtermContainer.classList.add('xterm-container')
         xtermContainer.classList.add('repl-output-like')
         // xtermContainer.classList.add('zoomable')
