@@ -916,17 +916,37 @@ export default () => {
 
             const gotSomeCompletions = await new Promise<boolean>((resolve, reject) => {
               if (currentEnumeratorAsync) {
+                // overruled case 1: after we started the async, we
+                // notice that there is an outstanding tab completion
+                // request; here we try cancelling it, in the hopes
+                // that it hasn't already started its remote fetch;
+                // this is request2 overruling request1
                 clearTimeout(currentEnumeratorAsync)
               }
-              currentEnumeratorAsync = setTimeout(async () => {
+
+              const myEnumeratorAsync = setTimeout(async () => {
                 const completions = await applyEnumerator(commandLine, spec)
+
+                if (myEnumeratorAsync !== currentEnumeratorAsync) {
+                  // overruled case 2: while waiting to fetch the
+                  // completions, a second tab completion request was
+                  // initiated; this is request1 overruling itself,
+                  // after noticing that a (later) request2 is also in
+                  // flight --- the rest of this method is
+                  // synchronous, so this should be the last necessary
+                  // race check
+                  return
+                }
+
                 if (completions && completions.length > 0) {
                   presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
+                  currentEnumeratorAsync = undefined
                   resolve(true)
                 } else {
                   resolve(false)
                 }
               })
+              currentEnumeratorAsync = myEnumeratorAsync
             })
 
             if (gotSomeCompletions) {
