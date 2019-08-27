@@ -477,6 +477,11 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   newTabButton.classList.remove('processing')
   currentTabButton.parentNode.appendChild(newTabButton)
 
+  const temps = newTab.querySelectorAll('.repl-temporary')
+  for (let idx = 0; idx < temps.length; idx++) {
+    temps[idx].remove()
+  }
+
   const currentlyProcessingBlock: true | HTMLElement = await qexec(
     'clear --keep-current-active',
     undefined,
