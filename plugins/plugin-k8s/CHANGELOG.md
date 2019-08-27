@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.9](https://github.com/IBM/kui/compare/v3.0.8...v3.0.9) (2019-08-27)
+
+### Bug Fixes
+
+- **plugins/plugin-k8s:** kube tab completion of namespaces blank start ([a4a2fe2](https://github.com/IBM/kui/commit/a4a2fe2)), closes [#2549](https://github.com/IBM/kui/issues/2549)
+
 ## [3.0.8](https://github.com/IBM/kui/compare/v3.0.7...v3.0.8) (2019-08-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-k8s

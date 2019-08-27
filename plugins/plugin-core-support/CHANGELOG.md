@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.9](https://github.com/IBM/kui/compare/v3.0.8...v3.0.9) (2019-08-27)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** new tab name carries over ([ebf2351](https://github.com/IBM/kui/commit/ebf2351)), closes [#2486](https://github.com/IBM/kui/issues/2486)
+- **plugins/plugin-core-support:** remove repl temps when cloning tabs ([171dd8e](https://github.com/IBM/kui/commit/171dd8e)), closes [#2544](https://github.com/IBM/kui/issues/2544)
+- **plugins/plugin-core-support:** repl UI glitch with bottom input ([63b4673](https://github.com/IBM/kui/commit/63b4673)), closes [#2557](https://github.com/IBM/kui/issues/2557)
+
 ## [3.0.8](https://github.com/IBM/kui/compare/v3.0.7...v3.0.8) (2019-08-27)
 
 ### Bug Fixes
