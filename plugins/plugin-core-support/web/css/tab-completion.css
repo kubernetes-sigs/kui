@@ -95,7 +95,11 @@
   flex-direction: column;
 }
 .kui--bottom-input .repl-block.repl-active {
+  display: flex;
   flex: 1;
+}
+.kui--bottom-input .repl-block {
+  display: block;
 }
 .kui--bottom-input .tab-completion-temporary {
   flex: 1;
