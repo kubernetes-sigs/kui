@@ -488,7 +488,7 @@ const presentEnumeratorSuggestions = (
   temporaryContainer: TemporaryContainer,
   lastIdx: number,
   last: string
-) => (filteredList: string[]) => {
+) => (filteredList: string[]): void => {
   debug('presentEnumeratorSuggestions', filteredList)
   if (filteredList.length === 1) {
     complete(filteredList[0], prompt, { partial: last, dirname: false })
@@ -752,6 +752,7 @@ export default () => {
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
+  let currentEnumeratorAsync: number
   document.addEventListener('keydown', async (evt: KeyboardEvent) => {
     const block = cli.getCurrentBlock()
     const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
@@ -913,12 +914,26 @@ export default () => {
               toBeCompleted: last // how much of that argv has been filled in so far
             }
 
-            const completions = await applyEnumerator(commandLine, spec)
-            if (completions && completions.length > 0) {
-              return presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
+            const gotSomeCompletions = await new Promise<boolean>((resolve, reject) => {
+              if (currentEnumeratorAsync) {
+                clearTimeout(currentEnumeratorAsync)
+              }
+              currentEnumeratorAsync = setTimeout(async () => {
+                const completions = await applyEnumerator(commandLine, spec)
+                if (completions && completions.length > 0) {
+                  presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
+                  resolve(true)
+                } else {
+                  resolve(false)
+                }
+              })
+            })
+
+            if (gotSomeCompletions) {
+              return
             }
 
-            // intentional fallthrough
+            // intentional fall-through
           }
 
           try {
