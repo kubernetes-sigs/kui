@@ -18,6 +18,7 @@
 
 import * as Debug from 'debug'
 
+import eventBus from '@kui-shell/core/core/events'
 import * as historyModel from '@kui-shell/core/models/history'
 import {
   Tab,
@@ -28,6 +29,7 @@ import {
 } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { inBottomInputMode } from '@kui-shell/core/core/settings'
 
 const debug = Debug('core-support/history/reverse-i-search')
 
@@ -37,7 +39,7 @@ interface KeyboardEventPlusPlus extends KeyboardEvent {
 
 // TODO externalize
 const strings = {
-  prompt: "(reverse-i-search$1):`$2' "
+  prompt: "(reverse-i-search$1)`$2': "
 }
 
 /** state of the reverse-i-search */
@@ -46,9 +48,9 @@ class ActiveISearch {
 
   private readonly tab: Tab
 
-  private readonly currentOnKeypress
+  private readonly currentOnKeypress: (evt: KeyboardEvent) => void
 
-  private readonly currentOnInput
+  private readonly currentOnInput: (evt: KeyboardEvent) => void
 
   private currentSearchIdx = -1
 
@@ -80,6 +82,7 @@ class ActiveISearch {
     this.placeholder.classList.add('repl-temporary')
     this.placeholder.classList.add('normal-text')
     this.placeholderFixedPart.classList.add('smaller-text')
+    this.placeholderFixedPart.classList.add('small-right-pad')
     this.promptLeft.appendChild(this.placeholder)
 
     getBlockOfPrompt(this.prompt).classList.add('using-custom-prompt')
@@ -118,7 +121,7 @@ class ActiveISearch {
     if (this.isSearchActive) {
       this.isSearchActive = false
 
-      if (!isCtrlC) {
+      if (!isCtrlC || inBottomInputMode) {
         getBlockOfPrompt(this.prompt).classList.remove('using-custom-prompt')
         if (this.placeholder.parentNode) {
           this.placeholder.parentNode.removeChild(this.placeholder)
@@ -157,7 +160,7 @@ class ActiveISearch {
       this.currentSearchIdx = newSearchIdx
 
       this.placeholderFixedPart.innerText = strings.prompt
-        .replace(/\$1/, ` ${newSearchIdx}`)
+        .replace(/\$1/, '') // ` ${newSearchIdx}`
         .replace(/\$2/, this.prompt.value)
 
       const newValue = historyModel.lines[this.currentSearchIdx].raw
@@ -219,6 +222,15 @@ function registerListener() {
     return
   }
 
+  if (inBottomInputMode) {
+    eventBus.on('/core/cli/install-block', (tab: Tab) => {
+      const activeSearch: ActiveISearch = tab['_kui_active_i_search']
+      if (activeSearch) {
+        activeSearch.cancelISearch()
+      }
+    })
+  }
+
   /**
    * Listen for ctrl+r
    *
@@ -242,13 +254,13 @@ function registerListener() {
         ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
     ) {
       const tab = getTabFromTarget(evt.srcElement)
-      const activeSearch = tab['_kui_active_i_search']
+      const activeSearch: ActiveISearch = tab['_kui_active_i_search']
 
       if (evt.keyCode === keys.R) {
         debug('got ctrl+r')
         if (activeSearch) {
           debug('continuation of existing reverse-i-search')
-          activeSearch.doSearch(evt)
+          activeSearch.doSearch(evt as KeyboardEventPlusPlus)
         } else {
           debug('new reverse-i-search')
           tab['_kui_active_i_search'] = new ActiveISearch(tab)
