@@ -2664,7 +2664,7 @@ sidecar .usage-error-wrapper .hideable {
 .page-h2 {
   font-size: 1.75em;
   font-weight: 300;
-  margin: 1em 1rem 0.5em;
+  margin: 1em 0;
   position: relative;
   line-height: 1.25;
 }
