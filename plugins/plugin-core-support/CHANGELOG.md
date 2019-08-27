@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.8](https://github.com/IBM/kui/compare/v3.0.7...v3.0.8) (2019-08-27)
+
+### Bug Fixes
+
+- **packages/app:** add label to input element ([439c6de](https://github.com/IBM/kui/commit/439c6de)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+- improved prompt focusing behavior ([7e9779a](https://github.com/IBM/kui/commit/7e9779a)), closes [#2528](https://github.com/IBM/kui/issues/2528)
+- **plugins/plugin-core-support:** make sibling tab alive only when closing the current tab ([17fc7ca](https://github.com/IBM/kui/commit/17fc7ca)), closes [#2541](https://github.com/IBM/kui/issues/2541)
+- **plugins/plugin-core-support:** remove `version --update-check` command ([b494bc4](https://github.com/IBM/kui/commit/b494bc4)), closes [#2529](https://github.com/IBM/kui/issues/2529)
+- **plugins/plugin-core-support:** tab completion can give repeats for quick tab keypresses ([4bdcaf4](https://github.com/IBM/kui/commit/4bdcaf4)), closes [#2540](https://github.com/IBM/kui/issues/2540)
+
 ## [3.0.7](https://github.com/IBM/kui/compare/v3.0.6...v3.0.7) (2019-08-26)
 
 ### Bug Fixes

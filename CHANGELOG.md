@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.8](https://github.com/IBM/kui/compare/v3.0.7...v3.0.8) (2019-08-27)
+
+### Bug Fixes
+
+- **packages/app:** "thin" sidecars can be minmized with no restore button ([39f51de](https://github.com/IBM/kui/commit/39f51de)), closes [#2537](https://github.com/IBM/kui/issues/2537)
+- **packages/app:** add label to input element ([439c6de](https://github.com/IBM/kui/commit/439c6de)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+- **packages/app:** add lang attribute to the page element ([b47bdfc](https://github.com/IBM/kui/commit/b47bdfc)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+- **packages/app:** An element with WAI-ARIA role must be contained within a valid element ([9bc5eb7](https://github.com/IBM/kui/commit/9bc5eb7)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+- **packages/app:** bottom input element should be global, not per-tab ([0be86fa](https://github.com/IBM/kui/commit/0be86fa)), closes [#2545](https://github.com/IBM/kui/issues/2545)
+- **packages/app:** increase color contrast of repl timestamp ([67d7aa7](https://github.com/IBM/kui/commit/67d7aa7)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+- **plugins/plugin-bash-like:** session placeholder text never goes away ([11b2aa2](https://github.com/IBM/kui/commit/11b2aa2)), closes [#2532](https://github.com/IBM/kui/issues/2532)
+- **plugins/plugin-bash-like:** singleton tables emitted by bash-like have table title ([f24768c](https://github.com/IBM/kui/commit/f24768c)), closes [#2530](https://github.com/IBM/kui/issues/2530)
+- **plugins/plugin-core-support:** make sibling tab alive only when closing the current tab ([17fc7ca](https://github.com/IBM/kui/commit/17fc7ca)), closes [#2541](https://github.com/IBM/kui/issues/2541)
+- improved prompt focusing behavior ([7e9779a](https://github.com/IBM/kui/commit/7e9779a)), closes [#2528](https://github.com/IBM/kui/issues/2528)
+- **plugins/plugin-core-support:** remove `version --update-check` command ([b494bc4](https://github.com/IBM/kui/commit/b494bc4)), closes [#2529](https://github.com/IBM/kui/issues/2529)
+- **plugins/plugin-core-support:** tab completion can give repeats for quick tab keypresses ([4bdcaf4](https://github.com/IBM/kui/commit/4bdcaf4)), closes [#2540](https://github.com/IBM/kui/issues/2540)
+- **plugins/plugin-editor:** tab-completion for command `edit` ([979a63f](https://github.com/IBM/kui/commit/979a63f)), closes [#2527](https://github.com/IBM/kui/issues/2527)
+
 ## [3.0.7](https://github.com/IBM/kui/compare/v3.0.6...v3.0.7) (2019-08-26)
 
 ### Bug Fixes

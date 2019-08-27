@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.8](https://github.com/IBM/kui/compare/v3.0.7...v3.0.8) (2019-08-27)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** session placeholder text never goes away ([11b2aa2](https://github.com/IBM/kui/commit/11b2aa2)), closes [#2532](https://github.com/IBM/kui/issues/2532)
+- **plugins/plugin-bash-like:** singleton tables emitted by bash-like have table title ([f24768c](https://github.com/IBM/kui/commit/f24768c)), closes [#2530](https://github.com/IBM/kui/issues/2530)
+
 ## [3.0.7](https://github.com/IBM/kui/compare/v3.0.6...v3.0.7) (2019-08-26)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like

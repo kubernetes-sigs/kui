@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.8](https://github.com/IBM/kui/compare/v3.0.7...v3.0.8) (2019-08-27)
+
+### Bug Fixes
+
+- **packages/app:** An element with WAI-ARIA role must be contained within a valid element ([9bc5eb7](https://github.com/IBM/kui/commit/9bc5eb7)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+
 ## [3.0.7](https://github.com/IBM/kui/compare/v3.0.6...v3.0.7) (2019-08-26)
 
 ### Bug Fixes
