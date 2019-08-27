@@ -859,7 +859,6 @@ export const doExec = (
             }
 
             const flush = () => {
-              console.error('@@@@@@!!!!!', pendingTable)
               if (pendingTable) {
                 pendingTable = undefined
                 definitelyNotTable = true
