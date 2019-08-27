@@ -267,9 +267,14 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 .repl-prompt-righty {
   color: var(--color-brand-01);
+  min-height: 1.25em;
 }
 .repl-prompt-righty svg path {
   fill: var(--color-brand-01);
+}
+.repl-prompt-righty .repl-temporary {
+  display: flex;
+  align-items: center;
 }
 
 /* repl right-hand decorations */
