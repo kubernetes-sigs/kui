@@ -52,8 +52,8 @@ async function completeResourceNames(commandLine: CommandLine, spec: TabCompleti
   const { argvNoOptions, argv, parsedOptions } = commandLine
 
   // index of the arg just before the one to be completed
-  const previous = spec.toBeCompletedIdx === -1 ? commandLine.argv.length : spec.toBeCompletedIdx - 1
-  if (previous >= 0 && (argv[previous] === '-n' || argv[previous] === '--namespace')) {
+  const previous = spec.toBeCompletedIdx === -1 ? commandLine.argv.length - 1 : spec.toBeCompletedIdx - 1
+  if (previous > 0 && (argv[previous] === '-n' || argv[previous] === '--namespace')) {
     //
     // then we are being asked to complete a namespace
     //
