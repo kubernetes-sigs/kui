@@ -49,6 +49,7 @@ export const doExec = (
     // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
 
     const proc = exec(cmdLine, {
+      maxBuffer: 5 * 1024 * 1024,
       env: Object.assign({}, process.env, execOptions['env'] || {})
     })
 
@@ -227,7 +228,7 @@ const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
 }
 
 const bcd = async ({ command, execOptions }: EvaluatorArgs) => {
-  const pwd = await repl.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
+  const pwd: string = await repl.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
   debug('pwd', pwd)
   process.env.PWD = pwd
   return pwd
