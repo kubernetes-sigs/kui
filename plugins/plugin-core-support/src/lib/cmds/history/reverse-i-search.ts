@@ -81,6 +81,7 @@ class ActiveISearch {
     this.placeholder.appendChild(this.placeholderFixedPart)
     this.placeholder.classList.add('repl-temporary')
     this.placeholder.classList.add('normal-text')
+    this.placeholder.classList.add('monospace')
     this.placeholderFixedPart.classList.add('smaller-text')
     this.placeholderFixedPart.classList.add('small-right-pad')
     this.promptLeft.appendChild(this.placeholder)
@@ -91,7 +92,7 @@ class ActiveISearch {
     //    this.prompt.style.width = '0'
 
     this.placeholderContentPart = document.createElement('span') // container for Typed and Matched
-    this.placeholderTypedPart = document.createElement('span') // what the user has typed; e.g. "is" in "history"
+    this.placeholderTypedPart = document.createElement('strong') // what the user has typed; e.g. "is" in "history"
     this.placeholderMatchedPrefixPart = document.createElement('span') // what was matched, but not typed; e.g. "h" in "history"
     this.placeholderMatchedSuffixPart = document.createElement('span') // what was matched, but not typed; e.g. "tory" in "history"
     this.placeholderContentPart.appendChild(this.placeholderMatchedPrefixPart)
@@ -101,6 +102,7 @@ class ActiveISearch {
     this.placeholder.appendChild(this.placeholderContentPart)
 
     this.placeholderTypedPart.classList.add('red-text')
+    this.placeholderTypedPart.classList.add('kui--prompt-like')
     this.placeholderMatchedPrefixPart.classList.add('slightly-deemphasize')
     this.placeholderMatchedSuffixPart.classList.add('slightly-deemphasize')
 

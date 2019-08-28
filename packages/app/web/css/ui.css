@@ -391,14 +391,18 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .repl-input input,
 .repl-input-like {
+  --color-caret: var(--color-support-01);
   color: var(--color-text-01);
   background: transparent;
   border: none;
   flex: 1;
-  caret-color: var(--color-support-01);
+  caret-color: var(--color-caret);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.kui--prompt-like:empty {
+  border-right: 1ex solid var(--color-caret);
 }
 .repl-input input:focus,
 .repl-input-like:focus {
@@ -3234,6 +3238,9 @@ body.kui--bottom-input tab > .kui--rows > .kui--columns {
   flex: 1;
   background-color: var(--color-sidecar-header);
   padding: 0.5em 0.375em;
+}
+.kui--input-stripe .repl-input-like {
+  overflow: unset;
 }
 .kui--input-stripe input {
   background-color: transparent;
