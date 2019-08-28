@@ -6,11 +6,6 @@ body[kui-theme-style] {
   line-height: unset;
 }
 
-body[kui-theme-style] sidecar .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
-  color: var(--color-text-01);
-  border-color: var(--color-brand-03);
-  opacity: 1;
-}
 body[kui-theme-style="dark"] sidecar .bx--tabs__nav-item a.bx--tabs__nav-link {
   color: var(--color-text-01);
   border-color: var(--color-base05);

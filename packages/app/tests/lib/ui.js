@@ -186,10 +186,12 @@ exports.cli = {
    * Execute a CLI command, and return the data-input-count of that command
    *
    */
-  do: async (cmd, app, noNewline = false, noCopyPaste = false) => {
+  do: async (cmd, app, noNewline = false, noCopyPaste = false, noFocus = false) => {
     return app.client
       .waitForExist(selectors.CURRENT_PROMPT_BLOCK, timeout - 5000)
-      .then(() => grabFocus(app))
+      .then(() => {
+        if (!noFocus) return grabFocus(app)
+      })
       .then(() => app.client.getAttribute(selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(async count => {
         if (!noCopyPaste && cmd.length > 1) {

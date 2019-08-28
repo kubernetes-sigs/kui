@@ -108,7 +108,7 @@ interface ICustomSpec {
 
 declare class CLI {
   /** execute a command */
-  do: (cmd: string, app: Application, noNewline?: boolean, noCopyPaste?: boolean) => Promise<AppAndCount>
+  do: (cmd: string, app: Application, noNewline?: boolean, noCopyPaste?: boolean, noFocus?: boolean) => Promise<AppAndCount>
 
   /**
    * Exit code code for the given http status code; this is an identity function; for headless mode, there is the -256 part.

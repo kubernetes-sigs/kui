@@ -120,7 +120,7 @@ sidecar .sidecar-content-container {
   .bx--tabs__nav-item.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-text-inverted02);
-  padding: 1em 1.5em;
+  padding: 1em 1.5em !important; /* override focus padding */
   height: unset;
   font-size: inherit;
 }

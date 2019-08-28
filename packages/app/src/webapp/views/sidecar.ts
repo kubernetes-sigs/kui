@@ -87,11 +87,24 @@ export const currentSelection = (tab: Tab): EntitySpec | CustomSpec => {
   return sidecar && sidecar.entity
 }
 
+const enableTabIndex = (sidecar: Sidecar, tabbable = true) => {
+  const notabElements = document.querySelectorAll('.kui--notab-when-sidecar-hidden')
+
+  notabElements.forEach(element => {
+    if (tabbable) {
+      element.removeAttribute('tabindex')
+    } else {
+      element.setAttribute('tabindex', '-1')
+    }
+  })
+}
+
 export const hide = (tab: Tab, clearSelectionToo = false) => {
   debug('hide')
 
   const sidecar = getSidecar(tab)
   sidecar.classList.remove('visible')
+  enableTabIndex(sidecar, false)
 
   if (!clearSelectionToo) {
     // only minimize if we weren't asked to clear the selection
@@ -707,6 +720,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   debug('showCustom', custom, options, resultDom)
 
   const sidecar = getSidecar(tab)
+  enableTabIndex(sidecar)
 
   // tell the current view that they're outta here
   if (sidecar.entity || sidecar.uuid) {
@@ -978,6 +992,7 @@ const setVisible = (sidecar: Sidecar) => {
   const tab = getEnclosingTab(sidecar)
 
   setVisibleClass(sidecar)
+  enableTabIndex(sidecar)
   tab.classList.remove('sidecar-is-minimized')
   sidecar.classList.remove('minimized')
   document.body.classList.add('sidecar-visible')
@@ -996,6 +1011,7 @@ export const show = (tab: Tab, block?: HTMLElement, nextBlock?: HTMLElement) => 
   const sidecar = getSidecar(tab)
   if (currentSelection(tab) || sidecar.className.indexOf('custom-content') >= 0) {
     setVisible(sidecar)
+    enableTabIndex(sidecar)
     return true
   } else if (block && nextBlock) {
     oops(undefined, block, nextBlock)(new Error('You have no entity to show'))

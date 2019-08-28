@@ -16,6 +16,39 @@ li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {
   flex: 1;
 }
 
+body[kui-theme-style] sidecar .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
+  color: var(--color-text-01);
+  border-color: var(--color-brand-03);
+  opacity: 1;
+}
+a.bx--tabs__nav-link:focus,
+a.bx--tabs__nav-link:active {
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
+a.bx--tabs__nav-link:focus,
+a.bx--tabs__nav-link:active {
+  outline-color: var(--color-brand-01);
+}
+
+/* mimic bx--tabs__navlink:focus */
+.kui-tab.left-tab-stripe-button:focus,
+a.kui--tab-navigatable:focus {
+  outline: 2px solid var(--color-brand-01);
+  outline-offset: -2px;
+}
+
+a.kui-new-tab__plus:focus,
+a.kui-new-tab__plus:active,
+sidecar a.graphical-icon:focus,
+sidecar a.graphical-icon:active,
+.sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:focus,
+.sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:active {
+  outline: 2px solid var(--color-brand-01);
+  outline-offset: -2px;
+}
+
 body[kui-theme-style] .bx--link {
   font-weight: 600;
   color: var(--color-brand-01);

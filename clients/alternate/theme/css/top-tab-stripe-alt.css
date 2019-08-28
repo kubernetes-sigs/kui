@@ -27,7 +27,7 @@
 
 .kui-header #help-button {
   position: absolute;
-  bottom: 2.25em;
+  bottom: 1.75em;
   right: 2.25em;
 }
 
@@ -89,9 +89,8 @@ body.kui-alternate .left-tab-stripe-buttons .left-tab-stripe-button-closer {
   padding-top: 0.5em;
 }
 
-svg.kui-new-tab__plus {
-  margin-right: 6px;
-  margin-left: 1em;
+.kui-header a.kui--tab-navigatable {
+  padding: 0.5em;
 }
 
 .kui-new-tab__text {
