@@ -2190,6 +2190,10 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
 .fill-container.flush-right {
   justify-content: flex-end;
 }
+a.kui--tab-navigatable {
+  /* remove the hyperlink underline */
+  text-decoration: none;
+}
 .graphical-icon {
   /* font awesome icons in the bottom stripe */
   display: flex;
@@ -3288,4 +3292,12 @@ body.kui--bottom-input .repl-context {
 #kui--custom-top-tab-stripe-button-container {
   /* e.g. holds the session disconnected icon */
   display: flex;
+}
+
+/* override the carbon color whhen tabbing through sidecar tabs*/
+.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
+  .bx--tabs__nav-link:focus,
+.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
+  a.bx--tabs__nav-link:active {
+  color: var(--color-text-inverted02);
 }

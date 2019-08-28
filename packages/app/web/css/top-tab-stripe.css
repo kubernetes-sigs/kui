@@ -193,6 +193,15 @@ body[kui-theme-style="dark"]
   border-right-color: var(--color-table-border1);
 }
 
+/* mimic bx--tabs__navlink:focus */
+.kui-tab.left-tab-stripe-button:focus {
+  width: 100%;
+  margin: 0;
+  padding-left: 16px;
+  outline: 2px solid #0062ff;
+  outline-offset: -2px;
+}
+
 .left-tab-stripe-button-selected {
   background: var(--color-ui-01);
   border-color: var(--color-base03);
