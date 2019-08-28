@@ -82,7 +82,7 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
         if (next) {
           current.classList.remove('selected')
           next.classList.add('selected')
-          next.scrollIntoViewIfNeeded(false)
+          next.scrollIntoView()
           evt.preventDefault() // prevent REPL processing
         }
       }
@@ -226,7 +226,7 @@ const makeCompletionContainer = (
   // in case the container scrolls off the bottom TODO we should
   // probably have it positioned above, so as not to introduce
   // scrolling?
-  setTimeout(cli.scrollIntoView, 0)
+  setTimeout(() => block.scrollIntoView(), 0)
 
   return temporaryContainer
 }
@@ -806,7 +806,7 @@ export default () => {
             if (next) {
               current.classList.remove('selected')
               next.classList.add('selected')
-              next['scrollIntoViewIfNeeded'](false)
+              next.scrollIntoView()
             }
             return
           }
