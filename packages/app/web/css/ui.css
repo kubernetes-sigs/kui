@@ -2,7 +2,8 @@
   box-sizing: border-box;
 }
 ::selection {
-  background: var(--color-selection-background);
+  background-color: var(--color-selection-background);
+  color: var(--color-selection-foreground);
 }
 html,
 body,
@@ -3109,6 +3110,7 @@ body {
   --color-sidecar-header: var(--color-ui-01);
 
   --color-selection-background: var(--color-base04);
+  --color-selection-foreground: var(--color-text-01);
 
   --color-tag-ibm-text: var(--color-text-01);
   --color-ok: var(--color-green);
