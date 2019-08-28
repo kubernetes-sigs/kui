@@ -31,7 +31,7 @@ import { isPopup, listen, getCurrentPrompt, getCurrentTab, getTabId, Tab, setSta
 import eventBus from '@kui-shell/core/core/events'
 import { pexec, qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { theme, config } from '@kui-shell/core/core/settings'
+import { theme, config, inBottomInputMode } from '@kui-shell/core/core/settings'
 import { inElectron, inBrowser } from '@kui-shell/core/core/capabilities'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
@@ -93,6 +93,8 @@ export class TabState {
 
   private _ageCounter = 0
 
+  private _currentBottomInputValue = ''
+
   get env() {
     return this._env
   }
@@ -101,9 +103,17 @@ export class TabState {
     return this._cwd
   }
 
+  get currentBottomInputValue() {
+    return this._currentBottomInputValue
+  }
+
   capture() {
     this._env = Object.assign({}, process.env)
     this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
+
+    if (inBottomInputMode) {
+      this._currentBottomInputValue = getCurrentPrompt().value
+    }
 
     debug('captured tab state', this.cwd)
   }
@@ -198,6 +208,10 @@ export class TabState {
     } else {
       debug('changing cwd', process.cwd(), this._cwd)
       process.chdir(this._cwd)
+    }
+
+    if (inBottomInputMode) {
+      getCurrentPrompt().value = this.currentBottomInputValue
     }
   }
 }
