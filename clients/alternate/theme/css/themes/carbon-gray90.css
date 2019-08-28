@@ -42,9 +42,11 @@ body[kui-theme="IBM Dark"][kui-theme-style] {
 
   --color-brand-03: #408bfc;
   --color-content-divider: #4c4c4c;
-  --color-selection-background: #b3e6ff;
 
-  --color-screenshot-background: #0062ff;
+  --color-selection-background: #0353e9;
+  --color-selection-foreground: #97c1ff;
+
+  --color-screenshot-background: var(--color-brand-03);
 
   --color-stripe-01: var(--color-base02);
   --color-stripe-02: var(--color-sidecar-header);
