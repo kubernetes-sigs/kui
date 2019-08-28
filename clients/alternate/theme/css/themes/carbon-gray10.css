@@ -10,9 +10,9 @@ body[kui-theme="IBM Light"] {
   --color-base07: #fff;
   --color-base08: #da1e28;
   --color-base09: #bf5b17;
-  --color-base0A: #fdd13a;
-  --color-base0B: #24a249;
-  --color-base0C: #1191e6;
+  --color-base0A: #8e6926;
+  --color-base0B: #198038;
+  --color-base0C: #0072c3;
   --color-base0D: #054ada;
   --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
@@ -24,9 +24,6 @@ body[kui-theme="IBM Light"] {
   --color-text-inverted02: var(--color-text-inverted01);
   --color-text-inverted03: var(--color-text-01);
   --color-tab-selected-inverted: var(--color-name);
-
-  /* xterm ANSI yellow text color */
-  --color-yellow-text: #bb9002;
 
   --color-brand-01: #0062ff;
   --color-brand-02: #171717;

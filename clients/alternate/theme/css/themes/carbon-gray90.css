@@ -11,7 +11,7 @@ body[kui-theme="IBM Dark"][kui-theme-style] {
   --color-base08: #fb4b53;
   --color-base09: #bf5b17;
   --color-base0A: #fdd13a;
-  --color-base0B: #3dbb61;
+  --color-base0B: #56d679;
   --color-base0C: #30b0ff;
   --color-base0D: #0353e9;
   --color-base0E: #fa75a6;
@@ -43,8 +43,7 @@ body[kui-theme="IBM Dark"][kui-theme-style] {
   --color-brand-03: #408bfc;
   --color-content-divider: #4c4c4c;
 
-  --color-selection-background: #0353e9;
-  --color-selection-foreground: #97c1ff;
+  --color-selection-background: #6f6f6f;
 
   --color-screenshot-background: var(--color-brand-03);
 
