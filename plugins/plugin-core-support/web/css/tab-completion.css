@@ -94,11 +94,11 @@
   display: flex;
   flex-direction: column;
 }
-.kui--bottom-input .repl-block.repl-active {
+.kui--bottom-input .repl .repl-block.repl-active {
   display: flex;
   flex: 1;
 }
-.kui--bottom-input .repl-block {
+.kui--bottom-input .repl .repl-block {
   display: block;
 }
 .kui--bottom-input .tab-completion-temporary {
