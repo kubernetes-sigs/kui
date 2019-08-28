@@ -201,11 +201,18 @@ const _addModeButton = (
 
   // create the button dom, and attach it
   const isTab = !(flush === 'right' || flush === 'weak')
-  const button = document.createElement(isTab ? 'li' : 'div')
+  const button = document.createElement(isTab ? 'li' : 'a')
   const buttonAction = document.createElement(isTab ? 'a' : 'span')
   button.appendChild(buttonAction)
   button.setAttribute('role', 'presentation')
   buttonAction.setAttribute('role', 'tab')
+  if (isTab) {
+    buttonAction.setAttribute('href', '#')
+    buttonAction.classList.add('kui--tab-navigatable', 'kui--notab-when-sidecar-hidden')
+  } else {
+    button.setAttribute('href', '#')
+    button.classList.add('kui--tab-navigatable', 'kui--notab-when-sidecar-hidden')
+  }
 
   if (visibleWhen && visibleWhen !== show) {
     // only visible when a specific mode is active!
