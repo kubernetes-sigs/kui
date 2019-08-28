@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.10](https://github.com/IBM/kui/compare/v3.0.9...v3.0.10) (2019-08-28)
+
+### Bug Fixes
+
+- **packages/app:** contrast issues with text selection ([f29e71e](https://github.com/IBM/kui/commit/f29e71e)), closes [#2574](https://github.com/IBM/kui/issues/2574)
+- **packages/app:** improved rendering of help breadcrumbs ([0b77a03](https://github.com/IBM/kui/commit/0b77a03)), closes [#2561](https://github.com/IBM/kui/issues/2561)
+- **plugins-plugin-core-support:** reverse-i-search glitches with bottom input ([9aa96dc](https://github.com/IBM/kui/commit/9aa96dc)), closes [#2560](https://github.com/IBM/kui/issues/2560) [#2559](https://github.com/IBM/kui/issues/2559)
+
 ## [3.0.9](https://github.com/IBM/kui/compare/v3.0.8...v3.0.9) (2019-08-27)
 
 **Note:** Version bump only for package @kui-shell/core

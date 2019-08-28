@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.10](https://github.com/IBM/kui/compare/v3.0.9...v3.0.10) (2019-08-28)
+
+### Bug Fixes
+
+- **plugins-plugin-core-support:** reverse-i-search glitches with bottom input ([9aa96dc](https://github.com/IBM/kui/commit/9aa96dc)), closes [#2560](https://github.com/IBM/kui/issues/2560) [#2559](https://github.com/IBM/kui/issues/2559)
+- **plugins/plugin-core-support:** bottom input text versus tab switching ([0005cb5](https://github.com/IBM/kui/commit/0005cb5)), closes [#2576](https://github.com/IBM/kui/issues/2576)
+- **plugins/plugin-core-support:** improved fix for tab completion races ([b44cd84](https://github.com/IBM/kui/commit/b44cd84)), closes [#2540](https://github.com/IBM/kui/issues/2540)
+- **plugins/plugin-core-support:** tab completion UI might not scroll into view ([9318c16](https://github.com/IBM/kui/commit/9318c16)), closes [#2572](https://github.com/IBM/kui/issues/2572)
+
 ## [3.0.9](https://github.com/IBM/kui/compare/v3.0.8...v3.0.9) (2019-08-27)
 
 ### Bug Fixes
