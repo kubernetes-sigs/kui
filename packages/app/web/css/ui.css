@@ -3,7 +3,7 @@
 }
 ::selection {
   background-color: var(--color-selection-background);
-  color: var(--color-selection-foreground);
+  color: inherit;
 }
 html,
 body,
