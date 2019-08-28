@@ -10,9 +10,6 @@ body.not-electron .repl-prompt {
 body.not-electron .repl-context {
   display: none;
 }
-body.not-electron .repl-prompt-righty {
-  margin-top: -3px;
-}
 
 body.not-electron .kui--hide-in-webpack {
   /* e.g. don't show screenshot buttons in webpack clients */
