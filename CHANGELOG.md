@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.12](https://github.com/IBM/kui/compare/v3.0.11...v3.0.12) (2019-08-29)
+
+### Bug Fixes
+
+- **packages/app:** wrong spacing between editor Save and Revert buttons ([65b1c5b](https://github.com/IBM/kui/commit/65b1c5b)), closes [#2589](https://github.com/IBM/kui/issues/2589)
+- **plugins/plugin-editor:** in clients/alternate light theme, editor keys sometimes too low contrast ([8f4a2ec](https://github.com/IBM/kui/commit/8f4a2ec)), closes [#2595](https://github.com/IBM/kui/issues/2595)
+
+### Features
+
+- tab navigation ([c32a49f](https://github.com/IBM/kui/commit/c32a49f)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+
 ## [3.0.11](https://github.com/IBM/kui/compare/v3.0.10...v3.0.11) (2019-08-29)
 
 ### Bug Fixes

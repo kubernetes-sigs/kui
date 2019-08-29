@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.12](https://github.com/IBM/kui/compare/v3.0.11...v3.0.12) (2019-08-29)
+
+### Bug Fixes
+
+- **plugins/plugin-editor:** in clients/alternate light theme, editor keys sometimes too low contrast ([8f4a2ec](https://github.com/IBM/kui/commit/8f4a2ec)), closes [#2595](https://github.com/IBM/kui/issues/2595)
+
 ## [3.0.11](https://github.com/IBM/kui/compare/v3.0.10...v3.0.11) (2019-08-29)
 
 **Note:** Version bump only for package @kui-shell/plugin-editor
