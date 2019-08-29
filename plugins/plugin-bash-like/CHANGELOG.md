@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.11](https://github.com/IBM/kui/compare/v3.0.10...v3.0.11) (2019-08-29)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** ls on large directories has poor output ([96f2e54](https://github.com/IBM/kui/commit/96f2e54)), closes [#2584](https://github.com/IBM/kui/issues/2584)
+
 ## [3.0.10](https://github.com/IBM/kui/compare/v3.0.9...v3.0.10) (2019-08-28)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.11](https://github.com/IBM/kui/compare/v3.0.10...v3.0.11) (2019-08-29)
+
+### Bug Fixes
+
+- reverse-i-search should use monospace ([a5f6a38](https://github.com/IBM/kui/commit/a5f6a38))
+- **packages/app:** green and cyan text colors with high contrast ([76501a8](https://github.com/IBM/kui/commit/76501a8)), closes [#2507](https://github.com/IBM/kui/issues/2507)
+- **packages/app:** links in ls output have low contrast ([7f0b8ad](https://github.com/IBM/kui/commit/7f0b8ad)), closes [#2582](https://github.com/IBM/kui/issues/2582)
+
 ## [3.0.10](https://github.com/IBM/kui/compare/v3.0.9...v3.0.10) (2019-08-28)
 
 ### Bug Fixes
