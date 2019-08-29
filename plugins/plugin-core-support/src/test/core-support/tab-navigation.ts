@@ -25,9 +25,12 @@ describe('tab navigation', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
-  const testPromptIsSelected = (hitTab = false) => {
+  const testPromptIsSelected = (hitTab = false, waitForSessionInit = false) => {
     it('should focus on repl input since we just hit Enter', async () => {
       try {
+        if (waitForSessionInit) {
+          await common.waitForSession(this)
+        }
         if (hitTab) {
           await this.app.client.keys(keys.TAB)
         }
@@ -102,14 +105,14 @@ describe('tab navigation', function(this: common.ISuite) {
   }
 
   // when repl has content, tab navigation should not occur
-  testPromptIsSelected()
+  testPromptIsSelected(false, true)
   testNoTabNavigation()
   hitBackspace()
 
   // tab to new tab button and hit enter
   testSelector(TAB_BUTTON_N(1))
   testSelector(tabButtonSelector, true, selectors.TAB_SELECTED_N(2))
-  testPromptIsSelected()
+  testPromptIsSelected(false, true)
 
   // test a full tab cycle
   testFullCycle()
