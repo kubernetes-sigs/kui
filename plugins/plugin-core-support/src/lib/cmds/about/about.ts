@@ -44,7 +44,7 @@ async function markdown(): Promise<(raw: string) => string> {
   const renderer = new marked.Renderer()
 
   renderer.link = (href: string, title: string, text: string) => {
-    return `<a href="${href}" title="${title}" class="bx--link">${text}</a>`
+    return `<a href="${href}" title="${title}" class="kui--tab-navigatable kui--notab-when-sidecar-hidden bx--link">${text}</a>`
   }
 
   return (raw: string) => marked(raw, { renderer })

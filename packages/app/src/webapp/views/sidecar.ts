@@ -22,7 +22,7 @@ debug('loading')
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab, isPopup, scrollIntoView, oops, getTabFromTarget } from '../cli'
+import { Tab, isPopup, scrollIntoView, oops, getTabFromTarget, getCurrentPrompt } from '../cli'
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
@@ -117,8 +117,11 @@ export const hide = (tab: Tab, clearSelectionToo = false) => {
   const replView = tab.querySelector('.repl')
   replView.classList.remove('sidecar-visible')
 
-  // we just hid the sidecar. make sure the current prompt is active for text input
-  // cli.getCurrentPrompt().focus()
+  // we just hide the sidecar. make sure the current prompt is active for text input
+  const promptToFocus = getCurrentPrompt(tab)
+  if (promptToFocus) {
+    promptToFocus.focus()
+  }
 
   // were we asked also to clear the selection?
   if (clearSelectionToo && sidecar.entity) {

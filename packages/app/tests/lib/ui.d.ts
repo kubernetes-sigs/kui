@@ -176,6 +176,7 @@ declare class Selectors {
   SIDECAR_MODE_BUTTON: (mode: string) => string
   SIDECAR_MODE_BUTTON_SELECTED: (mode: string) => string
   SIDECAR_BACK_BUTTON: string
+  SIDECAR_SCREENSHOT_BUTTON: string
   SIDECAR_MAXIMIZE_BUTTON: string
   SIDECAR_CLOSE_BUTTON: string
   SIDECAR_FULLY_CLOSE_BUTTON: string

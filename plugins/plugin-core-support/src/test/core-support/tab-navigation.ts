@@ -16,17 +16,17 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import { theme } from '@kui-shell/core/core/settings'
 const { cli, selectors, keys } = ui
 
 import { tabButtonSelector } from '@kui-shell/plugin-core-support/lib/new-tab'
+const navigatable = '.kui--tab-navigatable'
 
-describe('tab navigation', function(this: common.ISuite) {
+describe('tab keyboard navigation', function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   const testPromptIsSelected = (hitTab = false, waitForSessionInit = false) => {
-    it('should focus on repl input since we just hit Enter', async () => {
+    it(`should focus on repl input, hitTab=${hitTab}, waitForSessionInit=${waitForSessionInit}`, async () => {
       try {
         if (waitForSessionInit) {
           await common.waitForSession(this)
@@ -69,10 +69,14 @@ describe('tab navigation', function(this: common.ISuite) {
 
   const testAboutMode = (mode: string, hitEnter = false) => {
     testSelector(
-      `${selectors.SIDECAR_MODE_BUTTON(mode)} .kui--tab-navigatable`,
+      `${selectors.SIDECAR_MODE_BUTTON(mode)} ${navigatable}`,
       hitEnter,
       selectors.SIDECAR_MODE_BUTTON_SELECTED(mode)
     )
+  }
+
+  const testSidecarButton = (selector: string, hitEnter = false, selectedSelection?: string) => {
+    testSelector(`${selector} ${navigatable}`, hitEnter, selectedSelection)
   }
 
   const testNoTabNavigation = () => {
@@ -104,6 +108,45 @@ describe('tab navigation', function(this: common.ISuite) {
     it('should be the end of the full cycle', () => true)
   }
 
+  // NOTE: users may have more tabs in local environment
+  const testSidecarTabs = () => {
+    testAboutMode('about')
+    testAboutMode('gettingStarted')
+    testAboutMode('configure')
+    testAboutMode('version')
+  }
+
+  const testOpenSidecar = (hitEnter = true) => {
+    testSelector(TAB_BUTTON_N(1))
+    testSelector(TAB_BUTTON_N(2))
+    testSelector(tabButtonSelector)
+    if (!hitEnter) {
+      testSelector('#help-button')
+    } else {
+      testSelector('#help-button', true, selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
+      testPromptIsSelected()
+    }
+  }
+
+  const testSidecarButtons = (closeSidecar = false) => {
+    if (process.env.MOCHA_RUN_TARGET !== 'webpack') {
+      testSidecarButton(selectors.SIDECAR_SCREENSHOT_BUTTON)
+    }
+    testSidecarButton(selectors.SIDECAR_MAXIMIZE_BUTTON) // maximize button
+    testSidecarButton(selectors.SIDECAR_MAXIMIZE_BUTTON) // unmaximize button but invisible FIXME: we should fix this in our code base
+    testSidecarButton(selectors.SIDECAR_FULLY_CLOSE_BUTTON, closeSidecar, selectors.CURRENT_PROMPT)
+  }
+
+  const testFullCycleWithSidecar = (closeSidecar = false) => {
+    testOpenSidecar(false) // <-- do not hit Enter on help button
+    testSidecarTabs()
+    testSidecarButtons(closeSidecar)
+    testPromptIsSelected(!closeSidecar) // hit tab, unless we just hit sidecar close button
+    it('should be the end of the full cycle with sidecar open', () => true)
+  }
+
+  /* now start the tests */
+
   // when repl has content, tab navigation should not occur
   testPromptIsSelected(false, true)
   testNoTabNavigation()
@@ -120,20 +163,45 @@ describe('tab navigation', function(this: common.ISuite) {
   testFullCycle()
 
   // tab to help button and hit enter
-  testSelector(TAB_BUTTON_N(1))
-  testSelector(TAB_BUTTON_N(2))
-  testSelector(tabButtonSelector)
-  testSelector('#help-button', true, selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
-  testPromptIsSelected()
+  testOpenSidecar()
 
   // now the sidecar is open, so cycle through the sidecar tabs
-  testSelector(TAB_BUTTON_N(1))
-  testSelector(TAB_BUTTON_N(2))
-  testSelector(tabButtonSelector)
-  testSelector('#help-button')
+  testOpenSidecar(false) // <-- do not hit Enter on help button
   testAboutMode('about')
   testAboutMode('gettingStarted')
   testAboutMode('configure')
   testAboutMode('version', true) // hit enter on the Version tab
   testPromptIsSelected() // because we just hit enter
+
+  // test a full tab cycle with sidecar open
+  testFullCycleWithSidecar()
+  testFullCycleWithSidecar()
+  testFullCycleWithSidecar()
+  testFullCycleWithSidecar(true) // close sidecar after the cycle
+
+  // test the full cycle when sidecar close
+  testFullCycle()
+  testFullCycle()
+  testFullCycle()
+
+  // tab to help button and hit enter
+  testOpenSidecar()
+
+  // now the sidecar is open, so cycle through the sidecar tabs
+  testOpenSidecar(false) // <-- do not hit Enter on help button
+  testAboutMode('about')
+  testAboutMode('gettingStarted')
+  testAboutMode('configure', true) // hit enter on the Version tab
+  testPromptIsSelected() // because we just hit enter
+
+  // test a full tab cycle with sidecar open
+  testFullCycleWithSidecar()
+  testFullCycleWithSidecar()
+  testFullCycleWithSidecar()
+  testFullCycleWithSidecar(true) // close sidecar after the cycle
+
+  // test the full cycle when sidecar close
+  testFullCycle()
+  testFullCycle()
+  testFullCycle()
 })
