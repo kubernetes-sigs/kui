@@ -94,7 +94,7 @@
 [kui-theme-style] .monaco-editor .selector-id,
 [kui-theme-style] .monaco-editor .selector-class {
   transition: color 300ms ease-in-out;
-  color: var(--color-base0D);
+  color: var(--color-map-key);
 }
 
 [kui-theme-style] .monaco-editor .meta,
