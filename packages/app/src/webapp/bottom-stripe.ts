@@ -306,7 +306,7 @@ const _addModeButton = (
 
   let container = modeStripe
   if (!isTab) {
-    let fillContainer = bottomStripe.querySelector('.fill-container.flush-right [role="tablist"]')
+    let fillContainer = bottomStripe.querySelector('.fill-container.flush-right[role="tablist"]')
     if (!fillContainer) {
       fillContainer = document.createElement('div')
       fillContainer.className = 'fill-container flush-right'
