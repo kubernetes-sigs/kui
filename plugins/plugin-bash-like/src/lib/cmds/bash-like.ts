@@ -22,7 +22,7 @@
 
 import * as Debug from 'debug'
 
-import { exec } from 'child_process'
+import { exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
@@ -48,10 +48,15 @@ export const doExec = (
   new Promise(async (resolve, reject) => {
     // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
 
-    const proc = exec(cmdLine, {
-      maxBuffer: 5 * 1024 * 1024,
+    const options: ChildProcessExecOptions = {
+      maxBuffer: 1 * 1024 * 1024,
       env: Object.assign({}, process.env, execOptions['env'] || {})
-    })
+    }
+    if (process.env.SHELL) {
+      options.shell = process.env.SHELL
+    }
+
+    const proc = exec(cmdLine, options)
 
     // accumulate doms from the output of the subcommand
     let rawOut = ''
