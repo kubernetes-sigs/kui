@@ -23,13 +23,20 @@ import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/
 const lists = ['list', 'ls']
 
 // TODO: enable this once proxy can find $HOME on travis
-describe('helm commands', function(this: common.ISuite) {
+describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
   const ns: string = createNS()
   const inNamespace = `--namespace ${ns}`
   const name = `test-release-${ns}`
+
+  it('should show 500 error for helm help --tls', () => {
+    return cli
+      .do('helm help --tls', this.app)
+      .then(cli.expectError(500, 'Error: unknown flag: --tls'))
+      .catch(common.oops(this, true))
+  })
 
   it('should show 500 error for helm get', () => {
     return cli
