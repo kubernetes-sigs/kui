@@ -1052,7 +1052,7 @@ export async function semicolonInvoke(opts: EvaluatorArgs) {
 
     const result = await promiseEach(commands.filter(_ => _), async command => {
       const block = cli.subblock()
-      const entity = await qexec(command, block, undefined, { quiet: false })
+      const entity = await qexec(command, block, undefined, Object.assign({}, opts.execOptions, { quiet: false }))
       if (entity === true) {
         // pty output
         return block
