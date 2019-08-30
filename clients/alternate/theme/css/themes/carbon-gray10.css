@@ -33,6 +33,7 @@ body[kui-theme="IBM Light"] {
   --color-text-02: #565656;
 
   --color-map-key: #6ea6ff;
+  --color-map-value: var(--color-text-inverted-01);
 
   --color-table-border1: #9e9fa1;
   --color-table-border2: #3d4144;
