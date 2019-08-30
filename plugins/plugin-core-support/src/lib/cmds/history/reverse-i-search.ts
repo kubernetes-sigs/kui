@@ -25,6 +25,8 @@ import {
   getTabFromTarget,
   getBlockOfPrompt,
   getCurrentPrompt,
+  setUsingCustomPrompt,
+  unsetUsingCustomPrompt,
   getCurrentPromptLeft
 } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
@@ -86,7 +88,7 @@ class ActiveISearch {
     this.placeholderFixedPart.classList.add('small-right-pad')
     this.promptLeft.appendChild(this.placeholder)
 
-    getBlockOfPrompt(this.prompt).classList.add('using-custom-prompt')
+    setUsingCustomPrompt(getBlockOfPrompt(this.prompt))
 
     //    this.prompt.style.opacity = '0'
     //    this.prompt.style.width = '0'
@@ -124,7 +126,7 @@ class ActiveISearch {
       this.isSearchActive = false
 
       if (!isCtrlC || inBottomInputMode) {
-        getBlockOfPrompt(this.prompt).classList.remove('using-custom-prompt')
+        unsetUsingCustomPrompt(getBlockOfPrompt(this.prompt))
         if (this.placeholder.parentNode) {
           this.placeholder.parentNode.removeChild(this.placeholder)
         }
