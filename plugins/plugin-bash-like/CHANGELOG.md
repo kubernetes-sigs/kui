@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.13](https://github.com/IBM/kui/compare/v3.0.12...v3.0.13) (2019-08-30)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** improved proxy security ([9cd9d01](https://github.com/IBM/kui/commit/9cd9d01)), closes [#2604](https://github.com/IBM/kui/issues/2604)
+
 ## [3.0.12](https://github.com/IBM/kui/compare/v3.0.11...v3.0.12) (2019-08-29)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like

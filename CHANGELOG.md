@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.13](https://github.com/IBM/kui/compare/v3.0.12...v3.0.13) (2019-08-30)
+
+### Bug Fixes
+
+- **packages/app:** sidecar toolbar buttons spaced too widely ([3305a0e](https://github.com/IBM/kui/commit/3305a0e)), closes [#2607](https://github.com/IBM/kui/issues/2607)
+- **plugins/plugin-bash-like:** improved proxy security ([9cd9d01](https://github.com/IBM/kui/commit/9cd9d01)), closes [#2604](https://github.com/IBM/kui/issues/2604)
+- **plugins/plugin-editor:** editor text and cursor can be invisible ([ed284ee](https://github.com/IBM/kui/commit/ed284ee)), closes [#2606](https://github.com/IBM/kui/issues/2606)
+- reverse-i-search versus caret motion bugs ([f4e0245](https://github.com/IBM/kui/commit/f4e0245)), closes [#2613](https://github.com/IBM/kui/issues/2613)
+- **plugins/plugin-k8s:** helm help --tls should fail nicely ([5572a37](https://github.com/IBM/kui/commit/5572a37)), closes [#2610](https://github.com/IBM/kui/issues/2610)
+
 ## [3.0.12](https://github.com/IBM/kui/compare/v3.0.11...v3.0.12) (2019-08-29)
 
 ### Bug Fixes

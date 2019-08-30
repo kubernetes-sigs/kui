@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.13](https://github.com/IBM/kui/compare/v3.0.12...v3.0.13) (2019-08-30)
+
+### Bug Fixes
+
+- reverse-i-search versus caret motion bugs ([f4e0245](https://github.com/IBM/kui/commit/f4e0245)), closes [#2613](https://github.com/IBM/kui/issues/2613)
+
 ## [3.0.12](https://github.com/IBM/kui/compare/v3.0.11...v3.0.12) (2019-08-29)
 
 ### Features
