@@ -45,7 +45,7 @@ sidecar a.graphical-icon:focus,
 sidecar a.graphical-icon:active,
 .sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:focus,
 .sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:active {
-  outline: 2px solid var(--color-brand-01);
+  outline: 2px solid var(--color-brand-03);
   outline-offset: -2px;
 }
 
