@@ -143,3 +143,8 @@
 [kui-theme-style] .monaco-editor .view-overlays .current-line {
   border-color: var(--color-base03);
 }
+
+/* cursor */
+[kui-theme-style] .monaco-editor .cursor {
+  background-color: var(--color-support-01);
+}
