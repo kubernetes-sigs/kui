@@ -849,7 +849,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-te
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
   display: flex;
   line-height: 1.5em;
-  padding: 0 1em;
+  padding: 0 0.5em;
   color: inherit;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
@@ -869,9 +869,6 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-
   padding: 0 1em;
   display: flex;
   flex: initial;
-}
-sidecar .sidecar-bottom-stripe-toolbar .fill-container.flush-right > * + * {
-  margin-left: 1.5em;
 }
 
 /* custom content */
