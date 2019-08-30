@@ -792,6 +792,13 @@ export default () => {
       const prompt = cli.getCurrentPrompt()
 
       if (prompt) {
+        if (cli.isUsingCustomPrompt(prompt)) {
+          // there is a custom prompt, we want to swallow the tab, to
+          // maintain focus on the prompt
+          evt.preventDefault()
+          return true
+        }
+
         const value = prompt.value
         if (value) {
           evt.preventDefault() // for now at least, we want to keep the focus on the current <input>

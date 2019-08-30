@@ -700,6 +700,30 @@ export const removeAnyTemps = (block: HTMLElement): HTMLElement => {
 }
 
 /**
+ * A plugin temporary wishes to manage the prompt, e.g. reverse-i-search
+ *
+ */
+export function setUsingCustomPrompt(block: HTMLElement) {
+  block.classList.add('using-custom-prompt')
+}
+
+/**
+ * A plugin temporary wishes to relinquish management of the prompt
+ *
+ */
+export function unsetUsingCustomPrompt(block: HTMLElement) {
+  block.classList.remove('using-custom-prompt')
+}
+
+/**
+ * Has a plugin taken ownership of the prompt?
+ *
+ */
+export function isUsingCustomPrompt(prompt: HTMLInputElement) {
+  return getBlockOfPrompt(prompt).classList.contains('using-custom-prompt')
+}
+
+/**
  * Clear current text selection
  *
  */
@@ -794,9 +818,15 @@ export const listen = (prompt: HTMLInputElement) => {
 
     if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
       // go to previous command in history
-      const newValue = (historyModel.previous() || { raw: '' }).raw
-      if (newValue) {
-        updateInputAndMoveCaretToEOL(prompt, newValue)
+      if (!isUsingCustomPrompt(prompt)) {
+        const newValue = (historyModel.previous() || { raw: '' }).raw
+        if (newValue) {
+          updateInputAndMoveCaretToEOL(prompt, newValue)
+        }
+      } else {
+        // squash the up arrow if we are in custom prompt mode;
+        // otherwise, e.g. the browser may change the caret position
+        event.preventDefault()
       }
     } else if (char === keys.PAGEUP) {
       if (inBrowser()) {
@@ -852,8 +882,15 @@ export const listen = (prompt: HTMLInputElement) => {
       updateInputAndMoveCaretToEOL(prompt, newValue)
     } else if (char === keys.DOWN || (char === keys.N && event.ctrlKey)) {
       // going DOWN past the last history item will result in '', i.e. a blank line
-      const newValue = (historyModel.next() || { raw: '' }).raw
-      updateInputAndMoveCaretToEOL(prompt, newValue)
+      if (!isUsingCustomPrompt(prompt)) {
+        console.error('DOWNNN')
+        const newValue = (historyModel.next() || { raw: '' }).raw
+        updateInputAndMoveCaretToEOL(prompt, newValue)
+      } else {
+        // squash the up arrow if we are in custom prompt mode;
+        // otherwise, e.g. the browser may change the caret position
+        event.preventDefault()
+      }
     }
   }
 
