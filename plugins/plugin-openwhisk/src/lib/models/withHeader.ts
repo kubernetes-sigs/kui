@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { DefaultExecOptions, ExecOptions } from '@kui-shell/core/models/execOptions'
 import { Table, Row } from '@kui-shell/core/webapp/models/table'
 
 /**
@@ -23,7 +24,7 @@ import { Table, Row } from '@kui-shell/core/webapp/models/table'
  * actually wants us to add the header (showHeader).
  *
  */
-export default (rows, execOptions): Table => {
+export default (rows: Row[], execOptions: ExecOptions = new DefaultExecOptions()): Table => {
   if (rows.length === 0 || (!execOptions.showHeader && (execOptions.nested || rows[0].type === 'activations'))) {
     return { body: rows }
   } else {

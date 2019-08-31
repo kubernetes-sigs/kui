@@ -28,6 +28,7 @@ import eventBus from '@kui-shell/core/core/events'
 import { theme as settings } from '@kui-shell/core/core/settings'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
@@ -517,9 +518,8 @@ const fqn = (name: string): string => {
 
 /** for parametrizable entity types, e.g. actions, packages, the standard view modes */
 const standardViewModes = (defaultMode, fn?) => {
-  const makeModes = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let modes: any[] = [
+  const makeModes = (): SidecarMode[] => {
+    let modes: SidecarMode[] = [
       { mode: 'parameters', label: 'params', command: () => 'parameters' },
       { mode: 'annotations', command: () => 'annotations' },
       { mode: 'raw', command: () => 'raw' }

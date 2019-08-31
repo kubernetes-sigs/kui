@@ -54,10 +54,10 @@ describe('wsk package list tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(package2))
       .catch(common.oops(this)))
 
-  it(`should list ${pckage} with kui package list`, async () => {
+  it(`should list ${pckage} with wsk package list then click`, async () => {
     try {
       const selector = await cli
-        .do(`kui package list`, this.app)
+        .do(`wsk package list`, this.app)
         .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(pckage) }))
 
       await this.app.client.click(`${selector} .clickable`)
@@ -107,9 +107,9 @@ describe('wsk package list tests', function(this: common.ISuite) {
       .then(cli.expectOKWith(action))
       .catch(common.oops(this)))
 
-  it(`should list actions in ${pckage} with kui action list ${pckage}`, () =>
+  it(`should list actions in ${pckage} with wsk action list ${pckage}`, () =>
     cli
-      .do(`kui action list ${pckage}`, this.app)
+      .do(`wsk action list ${pckage}`, this.app)
       .then(cli.expectOKWith(action))
       .catch(common.oops(this)))
 
