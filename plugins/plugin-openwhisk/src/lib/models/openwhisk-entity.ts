@@ -20,6 +20,7 @@ import { currentSelection as baseSelection } from '@kui-shell/core/webapp/views/
 
 export interface OpenWhiskEntity extends EntitySpec {
   namespace: string
+  annotations: { key: string; value: string | number | boolean }[]
   exec?: {
     kind: string
     code?: string

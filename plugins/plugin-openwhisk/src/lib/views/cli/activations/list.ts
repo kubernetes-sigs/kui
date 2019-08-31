@@ -25,6 +25,10 @@ import { Table, Row } from '@kui-shell/core/webapp/models/table'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { encodeComponent, qexec, pexec } from '@kui-shell/core/core/repl'
 
+import { Activation } from '../../../models/activation'
+
+declare let hljs
+
 const debug = Debug('plugins/openwhisk/views/cli/activations/list')
 
 const viewName = 'Trace View'
@@ -61,34 +65,37 @@ const mapToOptions = (baseMap: Record<string, any>, overrides = {}) => {
   }, '')
 }
 
+function isArrayOfStrings(a: (Activation | string)[]): a is string[] {
+  return typeof a[0] === 'string'
+}
+
 /**
  * Fetch activation records
  *
  */
-const fetch = async (activationIds: string[]) => {
+const fetch = async (activationIds: Activation[] | string[]): Promise<Activation[]> => {
   debug('fetching', activationIds)
 
-  const activations = await Promise.all(
-    activationIds.map(_ => {
-      if (typeof _ === 'string') {
+  if (!isArrayOfStrings(activationIds)) {
+    return activationIds
+  } else {
+    const activations: Activation[] = await Promise.all(
+      activationIds.map(_ => {
         return qexec(`wsk activation get ${_}`).catch(err => {
           console.error(err)
         })
-      } else {
-        // already an activation, nothing to fetch
-        return _
-      }
-    })
-  )
+      })
+    )
 
-  return activations.filter(x => x) // error recovery. remove blanks
+    return activations.filter(x => x) // error recovery. remove blanks
+  }
 }
 
 /**
  * Show an activation
  *
  */
-const show = activation => () => {
+const show = (activation: Activation): string => {
   debug('show', activation)
 
   if (activation.logs && activation.logs.length === 1 && activation.logs[0].match(/^[0-9a-f]{32}$/)) {
@@ -97,27 +104,42 @@ const show = activation => () => {
     // optimistically assume this is a session. the sesion get
     // code will fall back to an activation get, if not
     const sessionId = activation.logs[0]
-    return pexec(`session get ${sessionId}`)
+    return `session get ${sessionId}`
   } else if (activation.sessionId) {
     // we know for certain that this is a session
-    return pexec(`session get ${activation.sessionId}`)
+    return `session get ${activation.sessionId}`
   } else {
     // we know of certain that this is a plain activation, and
     // already have it in hand! no need to re-fetch
-    return pexec(`activation get ${activation.activationId}`)
+    return `activation get ${activation.activationId}`
   }
 }
 
-const findItemInAnnotations = (name, activation) => {
+const findItemInAnnotations = (name: string, activation?: Activation): number => {
   // this function is for finding waitTime of initTime in activation annotations
   if (activation && activation.annotations && activation.annotations.find(item => item.key === name)) {
-    return activation.annotations.find(item => item.key === name).value
+    return activation.annotations.find(item => item.key === name).value as number
   } else {
     return 0
   } // if no time item, return 0
 }
 
-const _render = args => {
+interface Args {
+  tab: Tab
+  entity?: Activation
+  activationIds: Activation[] | string[]
+  container: Element
+  noCrop?: boolean
+  noPip?: boolean
+  showResult?: boolean
+  showStart?: boolean
+  showTimeline?: boolean
+  skip?: number
+  limit?: number
+  parsedOptions?: ParsedOptions
+}
+
+const _render = (args: Args) => {
   const {
     entity,
     activationIds,
@@ -133,7 +155,7 @@ const _render = args => {
   } = args
   const tab: Tab = args.tab
 
-  const currentRows = container.querySelectorAll('tr.log-line')
+  const currentRows: NodeListOf<HTMLTableRowElement> = container.querySelectorAll('tr.log-line')
 
   // trim any extra rows
   for (let idx = 0; idx < Math.min(currentRows.length, activationIds.length); idx++) {
@@ -158,12 +180,7 @@ const _render = args => {
       // add a legned
       legend.className = 'legend-trace'
       legend.innerHTML = legendHTMLtext
-    } else if (activationIds && activationIds.find(item => item.annotations)) {
-      // assumption: currently, session activation does not have
-      // annotations. if none of the activations in activationIds has
-      // annotations, then the cmd is `session list` and we don't show
-      // the legend.
-
+    } else {
       // create a legend only for `activation list`.
       legend.className = 'legend-trace legend-list'
       legend.innerHTML = legendHTMLtext
@@ -172,7 +189,7 @@ const _render = args => {
     }
   }
 
-  let logTable = container.querySelector('table.log-lines')
+  let logTable: HTMLTableElement = container.querySelector('table.log-lines')
   const newTable = !logTable
   if (newTable) {
     logTable = document.createElement('table')
@@ -187,16 +204,16 @@ const _render = args => {
   }
 
   // picture in picture
-  const pip = cmd =>
+  const pip = (cmd: string) =>
     noPip
-      ? cmd
+      ? () => pexec(cmd)
       : pictureInPicture(tab, cmd, undefined, logTable, viewName, {
           parent: container
         })
 
   return Promise.all([
     fetch(activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
-    parsedOptions && qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`)
+    parsedOptions && (qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`) as Promise<number>)
   ]).then(([activations, count]) => {
     // duration of the activation. this will be helpful for
     // normalizing the bar dimensions
@@ -208,8 +225,8 @@ const _render = args => {
     const dur = Math.max(1, entity ? entity.end - entity.start : maxEnd - start, maxEnd - start)
 
     let tgap = 0
-    let gaps // eslint-disable-line prefer-const
-    const normalize = (value, idx) => {
+    let gaps: number[] // eslint-disable-line prefer-const
+    const normalize = (value: number, idx: number) => {
       // console.error(value, value-start, gaps[idx], value-start-gaps[idx], dur-tgap, (value - start - gaps[idx]) / (dur - tgap))
       return (value - start - gaps[idx]) / (dur - tgap)
     }
@@ -264,7 +281,7 @@ const _render = args => {
         : activation.response && activation.response.success
 
       // row dom
-      let line = currentRows && currentRows[idx]
+      let line: HTMLTableRowElement = currentRows && currentRows[idx]
       const newLine = !line
       if (newLine) line = logTable.insertRow(-1)
       else line.classList.remove('not-displayed')
@@ -274,11 +291,12 @@ const _render = args => {
       if (entity && idx === 0) line.classList.add('log-line-root')
 
       let cellIdx = 0
-      const nextCell = () => (newLine ? line.insertCell(-1) : line.children[cellIdx++])
+      const nextCell = (): HTMLTableCellElement =>
+        newLine ? line.insertCell(-1) : (line.children[cellIdx++] as HTMLTableCellElement)
 
       // column 1: activationId cell
       const id = nextCell()
-      const clicky = newLine ? document.createElement('span') : id.querySelector('.clickable')
+      const clicky: HTMLElement = newLine ? document.createElement('span') : id.querySelector('.clickable')
       clicky.className = 'clickable'
       if (newLine) id.appendChild(clicky)
       id.className = 'log-field activationId'
@@ -289,46 +307,15 @@ const _render = args => {
 
       // column 2: name cell
       const name = nextCell()
-      const nameClick = newLine ? document.createElement('span') : name.querySelector('.clickable')
+      const nameClick: HTMLSpanElement = newLine ? document.createElement('span') : name.querySelector('.clickable')
+      const nameWithPackage = activation.annotations
+        .find(_ => _.key === 'path')
+        .value.toString()
+        .replace(`${activation.namespace}/`, '')
       name.className = 'slightly-deemphasize log-field entity-name'
       nameClick.className = 'clickable'
-      nameClick.innerText = activation.name
+      nameClick.innerText = nameWithPackage
       if (newLine) name.appendChild(nameClick)
-
-      // special cases for sessions; note that with composer
-      // v2, we won't be able to do isSessionRelated
-      // properly. the backend needs to store info to help
-      // us distinguish between interstitial conductor
-      // activations and top-most conductor activations; as
-      // of now, the interstitial ones don't have a
-      // conductor:true annotation
-      /* const isSessionRelated = activation.annotations && activation.annotations.find(({key, value}) => key === 'conductor' && value)
-           if (isSessionRelated && activation.logs) {
-           if (activation.logs.find(_ => _.indexOf('Entering state') >= 0)) {
-           nameClick.innerText = 'entering next task'
-           } else if(activation.logs.findIndex(log => log.indexOf('Entering echo_') >= 0) == 0){
-           nameClick.innerText = 'entering next task'
-           } else if (activation.logs.find(_ => _.indexOf('Entering function_') >= 0)) {
-           nameClick.innerText = 'executing inline function'
-           } else if (activation.logs.findIndex(log => log.indexOf('Entering choice_') >= 0) == 0) {
-           nameClick.innerText = 'executing if condition'
-           } else if (activation.logs.find(_ => _.indexOf('Entering final state') >= 0)) {
-           nameClick.innerText = 'finishing up'
-           } else {
-           console.error(activation.logs)
-           }
-
-           echo = activation.logs.findIndex(log => log.indexOf('Entering echo_')>=0);
-           }
-           else if(activation.name === 'echo' && echo != -1){
-           if(echo == 0)
-           nameClick.innerText = 'echo to log input'
-           else
-           nameClick.innerText = 'echo to log function output'
-           }
-           else{
-           echo = -1;
-           } */
 
       // command to be executed when clicking on the entity name cell
       const path = activation.annotations && activation.annotations.find(({ key }) => key === 'path')
@@ -338,10 +325,7 @@ const _render = args => {
         ? `grid ${encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
         : `grid ${encodeComponent(`/${path.value}`)}`
 
-      nameClick.onclick = pip(
-        () => pexec(gridCommand)
-        /* undefined, logTable, viewName, { parent: container } */
-      )
+      nameClick.onclick = pip(gridCommand)
 
       // column 3: duration cell
       const duration = nextCell()
@@ -372,7 +356,7 @@ const _render = args => {
         result.className = 'somewhat-smaller-text lighter-text log-field activation-result'
         if (activation.response) {
           code.innerText = JSON.stringify(activation.response.result || {}).substring(0, 40)
-          setTimeout(() => global['hljs'].highlightBlock(code), 0)
+          setTimeout(() => hljs.highlightBlock(code), 0)
         }
       }
 
@@ -413,8 +397,8 @@ const _render = args => {
         bar.onmouseout = () => legend.removeAttribute('data-hover-type')
 
         // container initialization bar
-        let initTimeBar
-        let waitTimeBar
+        let initTimeBar: HTMLElement
+        let waitTimeBar: HTMLElement
         if (initTime > 0 && !isRootBar) {
           initTimeBar = document.createElement('div')
           const l = normalize(activation.start, idx)
@@ -496,9 +480,9 @@ const _render = args => {
 
     // paginator
     if (!entity) {
-      let description
-      let prev
-      let next
+      let description: HTMLElement
+      let prev: HTMLElement
+      let next: HTMLElement
 
       if (newTable) {
         const paginator = document.createElement('div')
@@ -589,7 +573,7 @@ const _render = args => {
       description.innerText = `${skip + 1}\u2013${skip + activationIds.length} items${ofNText}`
 
       // pagination click handlers
-      const goto = skip => () => {
+      const goto = (skip: number) => () => {
         const listCommand = activations.every(activation => activation.sessionId !== undefined)
           ? 'session list'
           : 'wsk activation list'
@@ -602,7 +586,7 @@ const _render = args => {
               delete next.onclick
             } else {
               _render({
-                activationIds,
+                activationIds: activationIds.map(_ => _.activationId),
                 container,
                 noCrop,
                 noPip,
@@ -652,7 +636,7 @@ const _render = args => {
  * the given container
  *
  */
-export const render = opts => {
+export const render = (opts: Args) => {
   debug('render', opts)
 
   try {
@@ -672,7 +656,7 @@ export const renderActivationListView = (
   container: Element,
   parsedOptions: ParsedOptions
 ) => {
-  const activations = activationsTable.body
+  const activations = activationsTable.body as Activation[]
   debug('rendering activation list view', activations)
 
   const subset = Object.assign({}, parsedOptions)
@@ -685,11 +669,12 @@ export const renderActivationListView = (
   delete subset.agent
 
   render({
+    tab,
     activationIds: activations,
     container,
     parsedOptions: subset,
-    skip: parsedOptions.skip || 0,
-    limit: parsedOptions.limit || activations.length,
+    skip: parsedOptions.skip ? parseInt(parsedOptions.skip, 10) : 0,
+    limit: parsedOptions.limit ? parseInt(parsedOptions.limit, 10) : activations.length,
     noPip: true,
     showResult: false,
     showStart: true,

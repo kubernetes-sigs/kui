@@ -1740,9 +1740,9 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
   font-weight: 500;
 }
 .log-lines .log-line .log-field.activationId:not(.full-width) {
-  max-width: 8em;
+  width: 6em;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 .repl.sidecar-visible .log-lines .log-line .log-field.activationId:not(.full-width) {
