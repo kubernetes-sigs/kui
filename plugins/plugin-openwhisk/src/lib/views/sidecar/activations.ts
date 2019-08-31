@@ -190,6 +190,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
   ) {
     // special rendering of sequence "logs", which is really an array of activationIds
     renderActivationTable({
+      tab,
       entity,
       activationIds: entity[show],
       container: sidecar.querySelector('.activation-result')
