@@ -231,12 +231,6 @@ body[kui-theme-style="dark"]
   display: flex;
 }
 
-#new-tab-button {
-  flex: 1;
-  justify-content: flex-start;
-  -webkit-font-smoothing: antialiased;
-}
-
 .left-tab-stripe-bottom-buttons .left-tab-stripe-button {
   margin: 0;
   min-width: unset;
