@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+import { OpenWhiskEntity } from './openwhisk-entity'
+
 /** does a string look like an OpenWhisk activation id? */
 export const isActivationIdPattern = /^[a-fA-f0-9]{32}/
 export const isActivationId = (str: string) => str.match(isActivationIdPattern)
+
+export interface Activation extends OpenWhiskEntity {
+  activationId: string
+  originalActivationId?: string
+  logs: string[]
+  sessionId?: string
+  start: number
+  end: number
+  duration: number
+  response?: {
+    success: boolean
+    result: Record<string, any>
+  }
+  statusCode: number
+}

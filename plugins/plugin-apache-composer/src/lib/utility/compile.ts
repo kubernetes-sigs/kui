@@ -169,7 +169,7 @@ export const implicitInputFile = (tab: Tab, inputFile?: string, name?: string) =
       const inputAnnotation = selection.annotations.find(({ key }) => key === 'file')
 
       if (inputAnnotation) {
-        inputFile = inputAnnotation.value
+        inputFile = inputAnnotation.value.toString()
         debug('using preview for inputFile', inputFile)
 
         if (!name) {
