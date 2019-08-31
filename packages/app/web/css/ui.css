@@ -3308,6 +3308,8 @@ body.kui--bottom-input .repl-context {
 #kui--custom-top-tab-stripe-button-container {
   /* e.g. holds the session disconnected icon */
   display: flex;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 /* override the carbon color whhen tabbing through sidecar tabs*/

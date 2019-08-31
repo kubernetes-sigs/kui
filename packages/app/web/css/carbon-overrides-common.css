@@ -35,7 +35,7 @@ a.bx--tabs__nav-link:active {
 /* mimic bx--tabs__navlink:focus */
 .kui-tab.left-tab-stripe-button:focus,
 a.kui--tab-navigatable:focus {
-  outline: 2px solid var(--color-brand-01);
+  outline: 2px solid var(--color-brand-03);
   outline-offset: -2px;
 }
 
