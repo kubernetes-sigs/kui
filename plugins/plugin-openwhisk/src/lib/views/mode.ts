@@ -74,6 +74,7 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
     ) {
       if (
         mode !== 'raw' &&
+        mode !== 'default' &&
         !(
           selection[mode] ||
           (selection.exec && selection.exec[mode]) ||

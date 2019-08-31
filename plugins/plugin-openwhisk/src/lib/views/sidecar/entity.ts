@@ -20,7 +20,7 @@ import * as cli from '@kui-shell/core/webapp/cli'
 import * as repl from '@kui-shell/core/core/repl'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { formatOneRowResult } from '@kui-shell/core/webapp/views/table'
+import { formatTable } from '@kui-shell/core/webapp/views/table'
 import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
@@ -29,6 +29,7 @@ import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
 import { fillInActionDetails } from '../../cmds/openwhisk-core'
+import withHeader from '../../models/withHeader'
 
 declare let hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/entity')
@@ -374,30 +375,31 @@ export const showEntity = async (
     feedCountDom.setAttribute('data-is-plural', (feedCount !== 1).toString())
     element('.package-content-count', feedCountDom).innerText = feedCount
 
-    const actions = sidecar.querySelector('.package-action-list')
-    const feeds = sidecar.querySelector('.package-feed-list')
-    const source = element('.package-content .package-source', sidecar)
-    removeAllDomChildren(actions)
-    removeAllDomChildren(feeds)
-    removeAllDomChildren(source)
+    const packageContent = element('.sidecar-content .package-content', sidecar)
+    removeAllDomChildren(packageContent)
 
     if (options && options.show !== 'content' && options.show !== 'default') {
       //
       // show some other attribute of the action
       //
-      renderField(source, entity, options.show)
+      const source = document.createElement('pre')
+      const sourceCode = document.createElement('code')
+      source.className = 'package-source'
+      source.appendChild(sourceCode)
+      packageContent.appendChild(source)
+      renderField(sourceCode, entity, options.show)
     } else {
       if (entity.actions) {
-        entity.actions
-          .map(fillInActionDetails(entity))
-          .map(formatOneRowResult(tab, { excludePackageName: true }))
-          .forEach(dom => actions.appendChild(dom))
+        const list = document.createElement('div')
+        list.className = 'package-action-list'
+        packageContent.appendChild(list)
+        formatTable(tab, withHeader(entity.actions.map(fillInActionDetails(entity))), list)
       }
       if (entity.feeds) {
-        entity.feeds
-          .map(fillInActionDetails(entity, 'feeds'))
-          .map(formatOneRowResult(tab, { excludePackageName: true }))
-          .forEach(dom => actions.appendChild(dom))
+        const list = document.createElement('div')
+        list.className = 'package-feed-list'
+        packageContent.appendChild(list)
+        formatTable(tab, withHeader(entity.feeds.map(fillInActionDetails(entity, 'feeds'))), list)
       }
     }
   } else if (entity.type === 'activations') {
