@@ -113,7 +113,11 @@ const list = async () => {
     attributes: [{ value: strings('Theme') }, { value: strings('Style') }]
   }
 
-  const currentTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
+  // careful: the user's chosen theme might not be available in the
+  // settings.themes model; e.g. they previously selected a theme that
+  // has since been eliminated
+  const chosenTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
+  const currentTheme = settings.themes.find(_ => _.name === chosenTheme) ? chosenTheme : getDefaultTheme()
   debug('currentTheme', currentTheme)
   debug('theme list', settings.themes)
 
