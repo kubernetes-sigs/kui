@@ -40,7 +40,7 @@ const strings = i18n('plugin-core-support')
 
 const debug = Debug('plugins/core-support/new-tab')
 
-export const tabButtonSelector = '#new-tab-button > a'
+export const tabButtonSelector = '#new-tab-button'
 
 interface TabConfig {
   topTabs?: { names: 'fixed' | 'command' }
