@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.14](https://github.com/IBM/kui/compare/v3.0.13...v3.0.14) (2019-09-01)
+
+**Note:** Version bump only for package @kui-shell/plugin-wrk
+
 ## [3.0.13](https://github.com/IBM/kui/compare/v3.0.12...v3.0.13) (2019-08-30)
 
 **Note:** Version bump only for package @kui-shell/plugin-wrk

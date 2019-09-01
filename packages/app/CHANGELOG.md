@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.14](https://github.com/IBM/kui/compare/v3.0.13...v3.0.14) (2019-09-01)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** remove debugging printf from kubectl.ts ([2bca37c](https://github.com/IBM/kui/commit/2bca37c)), closes [#2624](https://github.com/IBM/kui/issues/2624)
+
 ## [3.0.13](https://github.com/IBM/kui/compare/v3.0.12...v3.0.13) (2019-08-30)
 
 ### Bug Fixes
