@@ -883,7 +883,6 @@ export const listen = (prompt: HTMLInputElement) => {
     } else if (char === keys.DOWN || (char === keys.N && event.ctrlKey)) {
       // going DOWN past the last history item will result in '', i.e. a blank line
       if (!isUsingCustomPrompt(prompt)) {
-        console.error('DOWNNN')
         const newValue = (historyModel.next() || { raw: '' }).raw
         updateInputAndMoveCaretToEOL(prompt, newValue)
       } else {

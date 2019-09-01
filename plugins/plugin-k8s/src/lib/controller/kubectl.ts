@@ -464,7 +464,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       // but we'd like to display them the same
       const originalCode = code
       const isUsage = code !== 0 && verb === 'config' && !entityType && !entity
-      console.error('!!!!!!!!!', isUsage)
       if (isUsage) {
         code = 0
         out = err
