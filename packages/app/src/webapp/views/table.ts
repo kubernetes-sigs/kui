@@ -390,7 +390,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   }
   if ((!options || !options.excludePackageName) && entity.packageName) {
     const packagePrefix = document.createElement('span')
-    packagePrefix.className = 'package-prefix lighter-text smaller-text'
+    packagePrefix.className = 'package-prefix sub-text'
     packagePrefix.innerText = entity.packageName + '/'
     entityNameGroup.appendChild(packagePrefix)
   }

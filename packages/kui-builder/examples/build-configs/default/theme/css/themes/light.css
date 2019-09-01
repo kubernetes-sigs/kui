@@ -49,10 +49,6 @@ body[kui-theme="Light"] {
   --color-stripe-02: var(--color-base04);
   --color-sidecar-toolbar-background: #D7DCE3;
   --color-sidecar-toolbar-foreground: var(--color-base06);
-
-  --color-light-red: hsla(354, 81%, 51%, 50%);
-  --color-light-green: hsla(143, 73%, 43%, 50%);
-  --color-light-yellow: hsla(46, 98%, 61%, 50%);
 }
 
 /* mono-blue hightlightjs theme */
