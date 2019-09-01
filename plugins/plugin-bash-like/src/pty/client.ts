@@ -939,6 +939,7 @@ export const doExec = (
 
               if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
                 pendingWrites++
+                definitelyNotUsage = true
                 terminal.write(msg.data)
               }
             }
