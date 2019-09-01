@@ -32,7 +32,7 @@ body a.plain-anchor {
   transition: none;
 }
 body a {
-  transition: color 150ms ease-in-out;
+  transition-property: color;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -147,7 +147,6 @@ body.still-loading .repl {
   margin: 0;
   padding-top: 1rem;
   flex: 4;
-  transition: flex 300ms ease-in-out, opacity 300ms ease-in-out, background-color 300ms ease-in-out;
   background-color: var(--color-ui-01);
 }
 .repl-inner {
@@ -245,7 +244,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 .repl-prompt-righty {
   display: flex;
-  transition: border-color 150ms ease-in-out;
 }
 .repl-context {
   font-size: 0.875em;
@@ -253,7 +251,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   background-color: var(--color-prompt-background);
   display: flex;
   align-items: center;
-  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
   letter-spacing: 0.32px;
   filter: opacity(87.5%) grayscale(50%);
 }
@@ -268,7 +265,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 .repl-prompt-righty {
   color: var(--color-brand-01);
-  min-height: 1.25em;
 }
 .repl-prompt-righty svg path {
   fill: var(--color-brand-01);
@@ -291,7 +287,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 .kui--repl-prompt-buttons .graphical-icon {
   opacity: 0.0375;
-  transition: opacity 150ms ease-in-out;
 }
 .repl-block .repl-input:hover .kui--repl-prompt-buttons .graphical-icon {
   opacity: 0.25;
@@ -307,7 +302,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   margin-left: 0.5em;
   font-size: 0.875em; /* see the comment for repl-input re: min-height; that should match this */
   opacity: 1;
-  transition: all 300ms ease-in-out;
+  transition-property: all;
 }
 .repl-prompt-right-element-status-icon.deemphasize .bx--loading {
   width: unset;
@@ -323,7 +318,6 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .repl-prompt-right-element-status-icon.deemphasize svg {
   display: none;
   filter: opacity(0.75) grayscale(0.5);
-  transition: filter 150ms ease-in-out;
 }
 .repl-block:hover .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
   filter: grayscale(0.25);
@@ -480,7 +474,6 @@ sidecar.rule-enabled-false .sidecar-header-icon,
   height: auto;
   width: auto;
   opacity: 1;
-  transition-property: background-color;
   transition-delay: 100ms; /* only show the spinner block if the command takes a bit longer */
   display: inline-block;
   background-color: var(--color-processing);
@@ -491,6 +484,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 }
 .repl-result pre {
   margin: 2px 0; /* firefox needs some vertical padding, otherwise descenders like "y" crop; weird */
+  white-space: pre-wrap;
 }
 .repl-result code {
   /* more invocation results */
@@ -562,7 +556,6 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
-  transition: all 150ms ease-in-out;
   background: transparent;
 }
 .repl-result .activation-start-time {
@@ -592,7 +585,6 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
 .repl-result-prefix,
 .sidecar-header badge:not(.badge-as-image) {
   font-weight: 500;
-  transition: all 150ms ease-in-out;
   font-size: 0.825em;
   border-radius: 0.9375em;
   margin: 0.1875em;
@@ -606,9 +598,6 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
 badge:only-child {
   /* we only need margins around badges if there is more than one badge */
   margin: 0;
-}
-badge {
-  transition: color 300ms ease-in-out, background-color 300ms ease-in-out;
 }
 sidecar .sidecar-header badge.version {
   /* badge for action version */
@@ -645,8 +634,8 @@ badge.clickable:hover {
 sidecar {
   flex: 0 0 0%;
   min-width: 0;
-  transition: flex 300ms ease-in-out, background-color 150ms ease-in-out, color 150ms ease-in-out,
-    border-color 150ms ease-in-out;
+  transition-property: flex, background-color, color, border-color;
+  transition-duration: calc(var(--transition-duration) * 2); /* twice the normal duration */
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
@@ -702,7 +691,7 @@ sidecar
 sidecar .sidecar-bottom-stripe-close-icon {
   letter-spacing: -1ex;
   opacity: 0.6;
-  transition: all 150ms ease-in-out;
+  transition-property: all;
 }
 body.os-win32 sidecar .sidecar-bottom-stripe-close-icon {
   /* dunno why windows is weird here */
@@ -717,7 +706,6 @@ sidecar .sidecar-bottom-stripe .sidecar-bottom-stripe-maximize {
 }
 .maximize-button-label,
 .unmaximize-button-label {
-  transition: opacity 300ms ease-in-out;
   display: inline-block;
 }
 body:not(.subwindow) .sidecar-full-screen sidecar .sidecar-bottom-stripe-maximize .maximize-button-label,
@@ -731,9 +719,6 @@ body:not(.subwindow) tab:not(.sidecar-full-screen) sidecar .sidecar-bottom-strip
 .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button[data-mode] {
   /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
   text-transform: capitalize;
-}
-sidecar .sidecar-bottom-stripe-button {
-  transition: all 150ms ease-in-out, border-color 300ms ease-in-out;
 }
 sidecar .sidecar-bottom-stripe .package-prefix {
   /* kubectl namespace and openwhisk package name, etc. */
@@ -780,7 +765,6 @@ sidecar .sidecar-bottom-stripe-back-bits,
   margin-right: 0.475rem;
 }
 sidecar .sidecar-bottom-stripe-back-bits > div {
-  transition: all 150ms ease-in-out;
   display: flex;
   align-items: center;
 }
@@ -857,7 +841,6 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
   font-size: 0.875em;
-  transition: color 150ms ease-in-out;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
   color: var(--color-base0D);
@@ -897,7 +880,6 @@ sidecar .sidecar-header {
   border-bottom: 1px solid var(--color-content-divider);
   flex-basis: 8rem;
   min-height: 8rem; /* see shell issue #712 */
-  transition: background-color 300ms ease-in-out, border-color 300ms ease-in-out;
 }
 sidecar .sidecar-header .header-main-content {
   flex: 1;
@@ -1004,10 +986,6 @@ sidecar .sidecar-header .badges {
 sidecar .sidecar-header .badges:first-child {
   margin-left: 0;
 }
-sidecar .sidecar-header badge {
-  /* badges next to the entity name */
-  transition: all 150ms ease-in-out;
-}
 sidecar .sidecar-header badge.clickable:hover {
   filter: brightness(1.1);
 }
@@ -1045,7 +1023,6 @@ sidecar.entity-is-activations .sidecar-header-name .activation-id {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: all 150ms ease-in-out;
 }
 sidecar.entity-is-activations .sidecar-header-name .package-prefix {
   /* don't display package name for activations? hmm */
@@ -1188,7 +1165,6 @@ sidecar:not(.entity-is-sequence) .sequence-components {
   justify-content: center;
   padding: 1em;
   position: relative;
-  transition: all 150ms ease-in-out;
 }
 .sequence-component:before {
   content: " ";
@@ -1379,7 +1355,6 @@ code.fancy-code.hljs {
   font-size: 0.75em;
   opacity: 0.7;
   vertical-align: middle;
-  transition: color 150ms ease-in-out;
 }
 .deemphasize.deemphasize-partial {
   font-weight: 400;
@@ -1485,10 +1460,6 @@ pre.monospace {
 .top-pad {
   margin-top: 1em;
 }
-.repl .big-top-pad > div,
-.big-top-pad:not(:first-child) > div {
-  padding-top: 0.25em;
-}
 .repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div,
 body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
   padding-right: 2em;
@@ -1516,10 +1487,6 @@ sidecar .result-as-table .big-top-pad:first-child {
 .count-with-label[data-is-plural="true"] .label-singular {
   display: none;
 }
-.clickable,
-.clickable-block {
-  transition: color 150ms ease-in-out, text-decoration-color 150ms ease-in-out;
-}
 .clickable-color {
   color: var(--color-base09);
 }
@@ -1533,14 +1500,10 @@ sidecar .result-as-table .big-top-pad:first-child {
   text-decoration: underline;
 }
 .clickable-block {
-  transition: border-color 150ms ease-in-out;
   cursor: pointer;
 }
 .clickable-block:hover {
   border-color: var(--color-ui-05) !important;
-}
-.graphical-clickable {
-  transition: all 150ms ease-in-out;
 }
 .graphical-clickable:hover {
   cursor: pointer;
@@ -1549,7 +1512,7 @@ sidecar .result-as-table .big-top-pad:first-child {
   display: none;
 }
 .toggle-visibility-on-hover .visible-on-hover {
-  transition: opacity 500ms ease-in-out;
+  transition-property: opacity;
   font-size: 70%;
   font-weight: 900;
   opacity: 0;
@@ -1558,7 +1521,7 @@ sidecar .result-as-table .big-top-pad:first-child {
   opacity: 0.5;
 }
 .hideable {
-  transition: all 150ms ease-in-out;
+  transition-property: all;
 }
 .hidden {
   opacity: 0;
@@ -1633,7 +1596,6 @@ sidecar .result-as-table .big-top-pad:first-child {
 }
 .help-option {
   display: table-row;
-  transition: all 150ms ease-in-out;
 }
 .help-option > div {
   display: table-cell;
@@ -1643,7 +1605,6 @@ sidecar .result-as-table .big-top-pad:first-child {
 .help-option-left-column {
   font-weight: bold; /* make the command name bold */
   text-align: right;
-  transition: all 150ms ease-in-out;
   border-left: 3px solid transparent;
   width: 10em;
 }
@@ -1655,7 +1616,6 @@ sidecar .result-as-table .big-top-pad:first-child {
 .help-option .help-option-synonyms-column {
   padding-right: 1.5em;
   width: 10em;
-  transition: all 150ms ease-in-out;
 }
 .sidecar-visible .help-option .help-option-synonyms-column {
   /* with the sidecar visible, there isn't room for the synonyms column */
@@ -1665,9 +1625,6 @@ sidecar .result-as-table .big-top-pad:first-child {
   color: transparent;
   width: 0;
   padding: 0;
-}
-.help-option .help-option-synonym {
-  transition: all 150ms ease-in-out;
 }
 .help-option-synonyms-list {
   display: flex;
@@ -1784,7 +1741,6 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
   min-width: 2px;
   height: 1.25em;
   position: absolute;
-  transition: all 180ms ease-in-out;
 }
 .log-lines .log-line:hover .log-line-bar {
   z-index: 10; /* tooltip layering */
@@ -1843,7 +1799,7 @@ sidecar .log-lines .log-line:nth-child(2n) .log-field {
 }
 .legend-list {
   padding-bottom: 0.75em;
-  transition: height 300ms ease-in-out, width 300ms ease-in-out;
+  transition-property: height, width;
 }
 .repl.sidecar-visible .legend-list {
   /* don't show legend when the sidecar is open. see issue #138 */
@@ -1890,9 +1846,6 @@ sidecar .log-lines .log-line:nth-child(2n) .log-field {
 .legend-trace[data-hover-type] .legend-entry {
   /* legend entries that don't match the current hover type get more opaque */
   opacity: 0.3;
-}
-.legend-entry {
-  transition: all 600ms ease-in-out;
 }
 .legend-list:hover .legend-entry,
 .legend-trace:hover .legend-entry {
@@ -2214,8 +2167,6 @@ a.kui--tab-navigatable:hover {
   /* these two rules are an attempt to push the tooltips just above the bottom stripe */
   height: 100%;
   align-items: center;
-
-  transition: opacity 150ms ease-in-out;
 }
 .graphical-icon.disabled {
   opacity: 0.3;
@@ -2232,7 +2183,6 @@ a.kui--tab-navigatable:hover {
 }
 .graphical-icon svg path {
   fill: var(--color-text-against-dark-bg);
-  transition: fill 150ms ease-in-out;
 }
 body:not(.no-tooltips-anywhere) .graphical-icon:hover svg path {
   fill: var(--color-brand-01);
@@ -2298,7 +2248,6 @@ body:not(.oops-total-catastrophe) #restart-needed-warning {
   opacity: 0;
 }
 #restart-needed-warning {
-  transition: all 300ms ease-in-out;
   position: absolute;
   top: 0;
   left: 0;
@@ -2399,13 +2348,13 @@ sidecar [data-balloon]:after {
 }
 
 .go-away-able {
-  transition: opacity 450ms ease-in-out;
+  transition-property: opacity;
 }
 .go-away {
   opacity: 0;
 }
 .go-away-able .go-away-button {
-  transition: all 150ms ease-in-out;
+  transition-property: all;
 }
 .go-away-able .go-away-button:hover {
   filter: brightness(1.2);
@@ -2417,21 +2366,20 @@ sidecar [data-balloon]:after {
   justify-content: flex-end;
   font-family: var(--font-sans-serif);
   color: var(--color-text-02);
-  background: var(--color-ui-01);
+  background-color: transparent;
   border: 1px solid var(--color-ui-04);
   border-top: none;
-  height: 3em;
+  height: 2em;
 }
 .list-paginator .list-paginator-left-buttons {
   display: flex;
   align-items: center;
-  padding: 0.5rem 1rem;
+  padding: 0 1em;
   flex: 1;
-  letter-spacing: 1px;
 }
 .list-paginator .list-paginator-left-buttons > span {
   /* a list paginator left button */
-  transition: all 150ms ease-in-out;
+  transition-property: all;
 }
 .list-paginator .list-paginator-left-buttons > span:hover {
   opacity: 1;
@@ -2452,7 +2400,7 @@ sidecar [data-balloon]:after {
 }
 .list-paginator .list-paginator-button {
   border-left: 1px solid var(--color-ui-04);
-  transition: all 250ms;
+  transition-property: all;
   width: 2.625rem;
   display: flex;
   align-items: center;
@@ -2461,10 +2409,9 @@ sidecar [data-balloon]:after {
 }
 .list-paginator .list-paginator-button svg path {
   fill: var(--color-text-02);
-  transition: fill 150ms ease-in-out;
 }
 .list-paginator .list-paginator-button.list-paginator-button-disabled svg path {
-  fill: var(--color-ui-04);
+  fill: var(--color-ui-05);
 }
 .list-paginator .list-paginator-button:not(.list-paginator-button-disabled):hover {
   cursor: pointer;
@@ -2674,7 +2621,6 @@ sidecar .usage-error-wrapper .hideable {
   letter-spacing: 0;
   line-height: 1.25;
   padding: 0;
-  transition: 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 }
 .page-content h2,
 .page-h2 {
@@ -2861,7 +2807,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 
 sidecar.activation-success-false .sidecar-header-icon,
 span[data-extra-decoration="application error"] {
-  color: var(--color-support-01-lighter);
+  color: var(--color-red);
 }
 
 .repl-block.processing .repl-input input {
@@ -2871,7 +2817,7 @@ span[data-extra-decoration="application error"] {
 sidecar .sidecar-header badge.version {
   /* badge for action version */
   background-color: var(--color-tag-ibm-fill);
-  color: var(--color-tag-ibm-text);
+  mix-blend-mode: difference;
 }
 
 badge.clickable:not(.badge-as-fontawesome):hover {
@@ -2901,7 +2847,6 @@ badge.clickable:not(.badge-as-fontawesome):hover {
 .sidecar-bottom-stripe {
   color: var(--color-text-01);
   background: var(--color-stripe-02);
-  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
 }
 .sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
   border-right: 1px solid var(--color-table-border1);
@@ -3100,7 +3045,6 @@ body {
 
   --color-text-against-dark-bg: var(--color-text-01);
   --color-support-01: var(--color-red);
-  --color-support-01-lighter: var(--color-light-red);
   --color-support-02: var(--color-green);
   --color-support-03: var(--color-yellow);
   --color-support-03-darker: var(--color-yellow);
@@ -3122,7 +3066,6 @@ body {
   --color-selection-background: var(--color-base04);
   --color-selection-foreground: var(--color-text-01);
 
-  --color-tag-ibm-text: var(--color-text-01);
   --color-ok: var(--color-green);
   --color-error: var(--color-red);
 
@@ -3137,7 +3080,6 @@ body {
   --color-tag-beta-fill: var(--color-base05);
   --color-tag-beta-text: var(--color-base01);
   --color-tag-ibm-fill: var(--color-base0D);
-  --color-tag-ibm-text: var(--color-base01);
 
   /* default latency color spectrum */
   --color-latency-0: #2166ac;
@@ -3223,7 +3165,6 @@ body {
     height: 2.75em;*/
   flex-basis: 2.75em;
   background-color: var(--color-stripe-01);
-  transition: border-color 150ms ease-in-out, background-color 150ms ease-in-out;
 }
 body.kui--bottom-input .kui--input-stripe {
   display: flex;
@@ -3274,10 +3215,6 @@ body.kui--bottom-input .repl-context {
   font-size: 1.25em;
   color: var(--color-brand-03);
   animation: selected-pulse 300ms 3;
-  transition: all 150ms ease-in-out;
-}
-.row-selection-context .selected-entity svg path {
-  transition: fill 300ms ease-in-out;
 }
 .row-selection-context.selected-row .selected-entity svg path {
   fill: var(--color-name) !important;

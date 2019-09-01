@@ -21,8 +21,11 @@ const common = require('@kui-shell/core/tests/lib/common')
 const ui = require('@kui-shell/core/tests/lib/ui')
 const { cli, selectors } = ui
 
-// the default tab we expect to see on "get"
+/** the default tab we expect to see on "get" */
 exports.defaultModeForGet = 'summary'
+
+/** Do singleton tables have a title decoration? */
+exports.singletonTablesHaveTitle = false
 
 /**
  * Wait for a green badge

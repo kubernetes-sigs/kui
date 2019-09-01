@@ -21,10 +21,6 @@ body[kui-theme="Paraiso"] {
   --color-base0E: hsl(271, 29%, 60%); /* from L=50% #815ba4 */
   --color-base0F: #e96ba8;
 
-  --color-light-red: hsla(5, 83%, 64%, 0.75);
-  --color-light-green: hsla(153, 43%, 50%, 0.75);
-  --color-light-yellow: hsla(45, 99%, 55%, 0.75);
-
   --color-latency-0: #542788;
   --color-latency-1: #998ec3;
   --color-latency-2: #d8daeb;

@@ -1,7 +1,7 @@
 /* carbon overrides */
 
-[kui-theme-style] .result-table-title-outer {
-  display: flex;
+[kui-theme-style] .result-as-table .result-table:not([kui-table-style="Light"]) {
+  font-family: var(--font-sans-serif);
 }
 
 [kui-theme-style] .result-as-table .result-table {
@@ -9,7 +9,6 @@
   border-spacing: 0;
   border-collapse: collapse;
   border: 1px solid var(--color-ui-04);
-  margin-top: 0.75em;
   /* this causes odd flickering on chrome: transition: border-color 300ms ease-in-out; */
   background: transparent;
 }
@@ -34,6 +33,10 @@
 
 [kui-theme-style] .bx--data-table td {
   color: var(--color-text-01);
+}
+[kui-theme-style] .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
+  /* for Light tables, there is no th background color, thus no need for extra space above */
+  padding-top: 0;
 }
 [kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) th.header-cell {
   border-bottom: none;
@@ -107,7 +110,6 @@
   display: table-cell;
   vertical-align: middle;
   padding: 0.6875em;
-  transition: all 300ms ease-in-out;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -172,7 +174,6 @@
 .result-table .entity:nth-child(2n + 1) .entity-attributes {
   /* table row striping */
   background-color: var(--color-ui-02);
-  transition: background-color 300ms ease-in-out;
 }
 body sidecar .result-table .entity:nth-child(2n + 1) td,
 body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
@@ -193,7 +194,6 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
 .result-as-table .bx--data-table.result-table[kui-table-style="Light"],
 .result-as-table .bx--data-table.result-table[kui-table-style="Medium"] {
   border: none;
-  margin-top: 0;
 }
 .result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell,
 .result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell {

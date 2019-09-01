@@ -26,10 +26,6 @@ body[kui-theme="Solarized"] {
   --color-base0E: #6c71c4;
   --color-base0F: #d33682;
 
-  --color-light-red: hsla(1, 71%, 52%, 0.75);
-  --color-light-green: hsla(68, 100%, 30%, 0.75);
-  --color-light-yellow: hsla(45, 100%, 35%, 0.75);
-
   --color-ui-06: hsla(194, 20%, 20%, 0.8);
 
   --color-latency-0: #4575b4;
