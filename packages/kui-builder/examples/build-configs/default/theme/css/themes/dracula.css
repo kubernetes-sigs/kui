@@ -20,11 +20,8 @@ body[kui-theme="Dracula"] {
   --color-base0E: #b45bcf;
   --color-base0F: #00f769;
 
-  --color-light-red: hsla(322, 78%, 62%, 0.75);
   --color-green: var(--color-base0A);
-  --color-light-green: hsla(146, 100%, 48%, 0.75);
   --color-yellow: var(--color-base0B);
-  --color-light-yellow: hsla(70, 100%, 76%, 0.75);
 
   --color-latency-0: #4d4d4d;
   --color-latency-1: #999999;

@@ -40,10 +40,6 @@ body[kui-theme="Dark"] {
   --color-content-divider: #3F4548;
   --color-selection-background: #0074C7;
 
-  --color-light-red: hsla(357, 96%, 64%, 50%);
-  --color-light-green: hsla(134, 43%, 52%, 50%);
-  --color-light-yellow: hsla(46, 98%, 61%, 50%);
-
   --color-brand-03: #418cff;
   --color-tag-beta-fill: #202529;
   --color-tag-beta-text: var(--color-text-01);

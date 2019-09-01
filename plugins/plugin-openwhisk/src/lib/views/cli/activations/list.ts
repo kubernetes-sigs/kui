@@ -194,6 +194,7 @@ const _render = (args: Args) => {
   if (newTable) {
     logTable = document.createElement('table')
     logTable.className = 'log-lines fixed-table-layout log-lines-loose'
+    logTable.setAttribute('kui-table-style', 'Medium')
 
     if (entity) {
       // for the sidecar only, clean things out
@@ -507,14 +508,14 @@ const _render = (args: Args) => {
           {
             command: 'summary',
             icon:
-              '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M29 5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2zm-2 0v4H5V5zm0 22H5v-4h22zm0-6H5v-4h22zm0-6H5v-4h22z"></path></svg>',
+              '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/1600/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M29 5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2zm-2 0v4H5V5zm0 22H5v-4h22zm0-6H5v-4h22zm0-6H5v-4h22z"></path></svg>',
             balloon: 'Open a statistical summary view'
           },
           // 'timeline', // disabled for now shell issue #794
           {
             command: 'grid',
             icon:
-              '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 8H6V6h6zm14-8h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 8h-6V6h6zm-14 6H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2zm0 8H6v-6h6zm14-8h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2zm0 8h-6v-6h6z"></path></svg>',
+              '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 8H6V6h6zm14-8h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 8h-6V6h6zm-14 6H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2zm0 8H6v-6h6zm14-8h-6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2zm0 8h-6v-6h6z"></path></svg>',
             balloon: 'Open a grid view',
             balloonPos: 'up-left'
           }
@@ -530,7 +531,8 @@ const _render = (args: Args) => {
           buttonContainer.setAttribute('data-balloon', balloon)
           buttonContainer.setAttribute('data-balloon-pos', balloonPos)
 
-          const iconContainer = document.createElement('span')
+          const iconContainer = document.createElement('div')
+          iconContainer.style.display = 'flex'
           iconContainer.innerHTML = icon
           button.appendChild(iconContainer)
           button.classList.add('clickable')
@@ -551,12 +553,12 @@ const _render = (args: Args) => {
 
         const nextSVG = document.createElement('span')
         nextSVG.innerHTML =
-          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>'
+          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path></svg>'
         next.appendChild(nextSVG)
 
         const prevSVG = document.createElement('span')
         prevSVG.innerHTML =
-          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path></svg>'
+          '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"></path></svg>'
         prev.appendChild(prevSVG)
       } else {
         const paginator = container.querySelector('.list-paginator')

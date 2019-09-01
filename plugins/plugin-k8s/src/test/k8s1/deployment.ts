@@ -22,6 +22,7 @@ import {
   createNS,
   allocateNS,
   deleteNS,
+  singletonTablesHaveTitle,
   waitTillNone
 } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
@@ -74,9 +75,11 @@ describe('electron deployment', function(this: common.ISuite) {
 
         const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
 
-        await this.app.client
-          .getText(`${selectorPrefix} .result-table-title`)
-          .then((title: string) => assert.ok(title === 'DEPLOYMENT'))
+        if (singletonTablesHaveTitle) {
+          await this.app.client
+            .getText(`${selectorPrefix} .result-table-title`)
+            .then((title: string) => assert.ok(title === 'DEPLOYMENT'))
+        }
 
         await sidecar
           .expectOpen(this.app)
@@ -84,8 +87,14 @@ describe('electron deployment', function(this: common.ISuite) {
           .then(sidecar.expectShowing('myapp', undefined, undefined, ns))
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('pods')))
           .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="pods"]`))
-          .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))
-          .then((title: string) => assert.ok(title === 'PODS'))
+          .then(async () => {
+            if (singletonTablesHaveTitle) {
+              const actualTitle = await this.app.client.getText(
+                `${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`
+              )
+              assert.strictEqual(actualTitle, 'PODS')
+            }
+          })
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status')))
           .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="Deployment pods"]`))
           .then(() => this.app.client.getText(`${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`))

@@ -104,7 +104,6 @@ body.kui-alternate .kui--input-stripe {
 body.kui-alternate .repl .repl-input {
   padding-left: 2em;
   padding-right: 2em;
-  padding-bottom: 0.5em;
 }
 
 body.kui-alternate .repl-output {

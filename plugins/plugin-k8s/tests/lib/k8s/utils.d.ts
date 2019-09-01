@@ -26,6 +26,12 @@ import { CLI as ui } from '@kui-shell/core/tests/lib/ui'
 declare var defaultModeForGet: string
 
 /**
+ * Do singleton tables have a title decoration?
+ *
+ */
+declare let singletonTablesHaveTitle: boolean
+
+/**
  * Allocate a new unique namespace name
  *
  * @param prefix the (optional) prefix of the generated namespace name

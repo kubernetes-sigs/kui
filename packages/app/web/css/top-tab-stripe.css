@@ -35,7 +35,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
   padding-left: 1ex;
   min-width: 0;
   background-color: var(--color-stripe-01);
-  transition: background-color 150ms ease-in-out;
+  transition-property: background-color;
 }
 
 .left-tab-stripe-buttons {
@@ -53,7 +53,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
   align-items: center;
   justify-content: center;
   font-size: 3em;
-  transition: filter 150ms ease-in-out, color 150ms ease-in-out, background-color 150ms ease-in-out;
+  transition-property: filter, color, background-color;
 }
 
 /* these two rules give us the tab index label that appears inside of the tabs */
@@ -66,13 +66,13 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
   right: 0.25em;
   transform: translateY(-50%);
   font-size: 1em;
-  transition: background-color 150ms ease-in-out;
+  transition-property: background-color;
   padding: 1px;
   display: flex;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button-closer svg path {
   fill: transparent;
-  transition: fill 150ms ease-in-out;
+  transition-property: fill;
 }
 .left-tab-stripe-buttons .left-tab-stripe-button:hover .left-tab-stripe-button-closer {
   cursor: pointer;
@@ -118,25 +118,17 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 body.not-electron .repl-input {
   padding-left: 0.375rem;
 }
-.repl-output {
-  padding-top: 0.375rem;
-  padding-left: 0.375rem;
-}
-.repl-result > div,
-.repl:not(.sidecar-visible) .repl-result .result-table-outer {
-  padding-right: 0.375rem;
+.repl .repl-block:not(.processing) .repl-result:not(:empty) {
+  padding: 0.625em 1.25em 0;
 }
 .repl-prompt-right-elements {
   padding-right: 0.375rem;
-}
-.repl.sidecar-visible .repl-output {
-  padding-right: 0.75rem;
 }
 
 .left-tab-stripe-button svg circle,
 .left-tab-stripe-button svg path {
   fill: var(--color-text-02);
-  transition: fill 150ms ease-in-out;
+  transition-property: fill;
 }
 
 #help-button.left-tab-stripe-button {
@@ -167,7 +159,7 @@ body.not-electron .repl-input {
   border-bottom: none;
   border-top-left-radius: 3px 6px;
   border-top-right-radius: 3px 6px;
-  transition: all 150ms ease-in-out;
+  transition-property: all;
 }
 
 .left-tab-stripe-button:not(.left-tab-stripe-button-selected) .left-tab-stripe-button-label {
@@ -176,7 +168,7 @@ body.not-electron .repl-input {
 
   border-left: 1px solid transparent;
   border-right: 1px solid transparent;
-  transition: color 150ms ease-in-out;
+  transition-property: color;
 }
 body[kui-theme-style="dark"]
   .left-tab-stripe-button:not(.left-tab-stripe-button-selected)

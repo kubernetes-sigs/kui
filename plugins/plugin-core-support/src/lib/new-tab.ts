@@ -405,14 +405,17 @@ const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
   }
 
   // keep repl prompt focused, if possible
-  tab.querySelector('.repl-inner').addEventListener('click', (evt: MouseEvent) => {
+  const grabFocus = (checkPath: boolean) => (evt: MouseEvent) => {
     const target = evt.target
     if (isElement(target)) {
       setTimeout(() => {
         const prompt = getCurrentPrompt(tab)
         if (
           getSelectionText().length === 0 &&
-          (target.classList.contains('repl-inner') || target.classList.contains('repl-output'))
+          (target.classList.contains('repl-inner') ||
+            target.classList.contains('repl-output') ||
+            target.classList.contains('kui--tab-navigatable') ||
+            (checkPath && evt['path'] && evt['path'].find(_ => isElement(_) && /header/i.test(_.tagName))))
         ) {
           if (target.classList.contains('repl-inner') || isInViewport(prompt)) {
             prompt.focus()
@@ -420,7 +423,9 @@ const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
         }
       }, 0)
     }
-  })
+  }
+  tab.querySelector('sidecar').addEventListener('click', grabFocus(false))
+  tab.querySelector('.repl-inner').addEventListener('click', grabFocus(true))
 
   // tab close button
   getTabCloser(tab).onclick = (event: MouseEvent) => {

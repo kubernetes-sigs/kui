@@ -19,10 +19,6 @@ body[kui-theme="Monokai"] {
   --color-base0D: #66d9ef;
   --color-base0E: #ae81ff;
   --color-base0F: #cc6633;
-
-  --color-light-red: hsla(338, 95%, 56%, 0.75);
-  --color-light-green: hsla(80, 76%, 53%, 0.75);
-  --color-light-yellow: hsla(35, 85%, 71%, 0.75);
 }
 
 /* monokai highlightjs theme */

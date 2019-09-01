@@ -22,12 +22,7 @@ body[kui-theme="Lucario"] {
   --color-base0E: #ff73fd;
   --color-base0F: #e6b5ff;
 
-  /*     --color-support-01: #e3bf21; */
   --color-ui-06: hsla(209, 25%, 22%, 1);
-
-  --color-light-red: rgba(255, 108, 96, 50%);
-  --color-light-green: hsla(108, 67%, 68%, 50%);
-  --color-light-yellow: rgba(255, 255, 182, 50%);
 
   --color-latency-0: #1b7837;
   --color-latency-1: #7fbf7b;
