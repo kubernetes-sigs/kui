@@ -1532,6 +1532,11 @@ sidecar .result-as-table .big-top-pad:first-child {
   border: none !important;
   min-height: 0; /* important for firefox */
 }
+.offscreen {
+  position: absolute;
+  top: -1000px;
+  left: -1000px;
+}
 .not-displayed {
   display: none !important;
 }
