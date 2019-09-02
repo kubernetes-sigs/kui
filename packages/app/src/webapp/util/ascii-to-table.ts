@@ -19,6 +19,10 @@ import * as Debug from 'debug'
 import * as repl from '@kui-shell/core/core/repl'
 import { ParsedOptions } from '@kui-shell/core/models/command'
 import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
+
+import i18n from '@kui-shell/core/util/i18n'
+const strings = i18n('core')
+
 const debug = Debug('core/webapp/util/ascii-to-table')
 
 /**
@@ -36,6 +40,24 @@ const split = (str: string, splits: number[], headerCells?: string[]): Pair[] =>
       value: str.substring(splitIndex, splits[idx + 1] || str.length).trim()
     }
   })
+}
+
+/**
+ * Format as a link, if the given string looks like a URL
+ *
+ */
+function maybeURL(str: string): HTMLAnchorElement {
+  try {
+    const url = new URL(str)
+    const link = document.createElement('a')
+    link.target = '_blank'
+    link.innerText = strings('link')
+    link.title = str
+    link.href = str
+    return link
+  } catch (err) {
+    // ok, it's not a URL
+  }
 }
 
 /**
@@ -359,10 +381,14 @@ export const formatTable = (
       .slice(1)
       .map(({ key, value: column }, colIdx) => ({
         key,
-        tag: idx > 0 && tagForKey[key],
+        value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
+      }))
+      .map(({ key, value: column }, colIdx) => ({
+        key,
+        tag: (idx > 0 && tagForKey[key]) || undefined,
         onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
         outerCSS:
-          outerCSSForKey[key] +
+          (outerCSSForKey[key] || '') +
           (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
         css:
           css +
@@ -371,7 +397,8 @@ export const formatTable = (
           ((idx > 0 && cssForKey[key]) || '') +
           ' ' +
           (cssForValue[column] || ''),
-        value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
+        valueDom: maybeURL(column),
+        value: column
       }))
       .concat(fillTo(columns.length, maxColumns))
 

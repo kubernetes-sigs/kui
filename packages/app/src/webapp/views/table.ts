@@ -487,7 +487,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     const cell = document.createElement(isHeaderCell ? 'th' : 'td')
     const inner = document.createElement(tag)
 
-    cell.className = className
+    cell.className = className || 'not-too-compact'
 
     inner.className = innerClassName
     inner.classList.add('cell-inner')
@@ -624,10 +624,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   //
   if (entity.attributes) {
     // the entity provider wants to take complete control
-    entity.attributes.forEach(({ key, value, css = '', outerCSS = '', onclick, fontawesome, tag }) => {
+    entity.attributes.forEach(({ key, value, valueDom, css = '', outerCSS = '', onclick, fontawesome, tag }) => {
       addCellToRow({
         className: outerCSS,
         value,
+        valueDom,
         innerClassName: css,
         onclick,
         key,
