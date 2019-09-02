@@ -94,7 +94,7 @@ export type SimpleEntity = Error | string | number | HTMLElement | MessageBearin
  * preface and trailing `string` messages
  *
  */
-export type MixedResponsePart = string | Table | MultiTable
+export type MixedResponsePart = string | Table | MultiTable | HTMLElement
 export type MixedResponse = MixedResponsePart[]
 
 export function isMixedResponse(response: Entity): response is MixedResponse {

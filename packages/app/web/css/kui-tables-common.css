@@ -62,8 +62,10 @@ body.subwindow .repl .log-lines {
 .result-as-table-full-width .log-lines {
   width: 100%;
 }
-.repl.sidecar-visible .result-as-table .repl-result {
+.repl.sidecar-visible .result-as-table .repl-result,
+.repl.sidecar-visible .result-as-table.repl-result {
   /* repl multi-table when sidecar is visible */
+  /* the second rule covers MixedResponse that contains a table; e.g. `ibmcloud ks clusters` */
   width: 100%;
 }
 .repl.sidecar-visible .result-as-table .result-table,
