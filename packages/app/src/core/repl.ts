@@ -37,6 +37,7 @@ import { UsageError, UsageModel, UsageRow } from './usage-error'
 import { isHeadless, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import { isHTML } from '../util/types'
+import { promiseEach } from '../util/async'
 import SymbolTable from './symbol-table'
 
 import * as cli from '../webapp/cli'
@@ -1025,19 +1026,6 @@ export const encodeComponent = (component: string, quote = '"') => {
   } else {
     return component
   }
-}
-
-/**
- * Map a asynchronous function to an array sequentially from front to
- * back.
- *
- */
-async function promiseEach<T, R>(arr: T[], fn: (t: T) => Promise<R>): Promise<R[]> {
-  const result = []
-  for (const item of arr) {
-    result.push(await fn(item))
-  }
-  return result
 }
 
 /**
