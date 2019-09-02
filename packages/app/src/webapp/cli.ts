@@ -25,6 +25,7 @@ import UsageError from '../core/usage-error'
 import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 import { installContext } from './prompt'
+import { promiseEach } from '../util/async'
 
 import {
   Entity,
@@ -32,6 +33,7 @@ import {
   isEntitySpec,
   isMessageBearingEntity,
   MixedResponsePart,
+  MixedResponse,
   isMixedResponse
 } from '../models/entity'
 import { CommandHandlerWithEvents } from '../models/command'
@@ -534,19 +536,16 @@ const printTable = async (
  * Stream output to the given block
  *
  */
-export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec
+export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec | MixedResponse
 export const streamTo = (tab: Tab, block: Element) => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
   // so we can scroll this into view as streaming output arrives
 
   let previousLine: HTMLElement
-  return async (response: Streamable, killLine = false) => {
+  return (response: Streamable, killLine = false) => {
     //
     debug('stream', response)
 
-    const pre = document.createElement('pre')
-    pre.classList.add('streaming-output')
-    resultDom.appendChild(pre)
     resultDom.setAttribute('data-stream', 'data-stream')
     ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
 
@@ -555,27 +554,39 @@ export const streamTo = (tab: Tab, block: Element) => {
       previousLine = undefined
     }
 
-    if (UsageError.isUsageError(response)) {
-      previousLine = await UsageError.getFormattedMessage(response)
-      pre.appendChild(previousLine)
-      pre.classList.add('oops')
-      pre.setAttribute('data-status-code', response.code.toString())
-    } else if (isHTML(response)) {
-      previousLine = response
-      pre.appendChild(previousLine)
-    } else if (isMultiTable(response)) {
-      response.tables.forEach(async _ => printTable(tab, _, resultDom))
-      const br = document.createElement('br')
-      resultDom.appendChild(br)
-    } else if (isTable(response)) {
-      await printTable(tab, response, resultDom)
-    } else if (isCustomSpec(response)) {
-      showCustom(tab, response, {})
-    } else {
-      previousLine = document.createElement('div')
-      previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
-      pre.appendChild(previousLine)
+    const formatPart = async (response: Streamable, resultDom) => {
+      if (UsageError.isUsageError(response)) {
+        previousLine = await UsageError.getFormattedMessage(response)
+        resultDom.appendChild(previousLine)
+        resultDom.classList.add('oops')
+        resultDom.setAttribute('data-status-code', response.code.toString())
+      } else if (isMixedResponse(response)) {
+        promiseEach(response, _ => {
+          const para = document.createElement('p')
+          para.classList.add('kui--mixed-response--text')
+          resultDom.appendChild(para)
+          return formatPart(_, para)
+        })
+      } else if (isHTML(response)) {
+        previousLine = response
+        resultDom.appendChild(previousLine)
+      } else if (isMultiTable(response)) {
+        response.tables.forEach(async _ => printTable(tab, _, resultDom))
+        const br = document.createElement('br')
+        resultDom.appendChild(br)
+      } else if (isTable(response)) {
+        await printTable(tab, response, resultDom)
+      } else if (isCustomSpec(response)) {
+        showCustom(tab, response, {})
+      } else {
+        previousLine = document.createElement('pre')
+        previousLine.classList.add('streaming-output')
+        previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
+        resultDom.appendChild(previousLine)
+      }
     }
+
+    return formatPart(response, resultDom)
 
     // scrollIntoView({ when: 0, element: spinner })
   }

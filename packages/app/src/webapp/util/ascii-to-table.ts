@@ -15,6 +15,7 @@
  */
 
 import * as Debug from 'debug'
+import stripClean from 'strip-ansi'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { ParsedOptions } from '@kui-shell/core/models/command'
@@ -32,12 +33,15 @@ const debug = Debug('core/webapp/util/ascii-to-table')
 interface Pair {
   key: string
   value: string
+  css: string
 }
 const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
+  const stripped = stripClean(str)
   return splits.map((splitIndex, idx) => {
     return {
       key: headerCells && headerCells[idx],
-      value: str.substring(splitIndex, splits[idx + 1] || str.length).trim()
+      value: stripped.substring(splitIndex, splits[idx + 1] || stripped.length).trim(),
+      css: ''
     }
   })
 }
@@ -66,7 +70,15 @@ function maybeURL(str: string): HTMLAnchorElement {
  */
 export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingString?: string }[] => {
   return raw.map(table => {
-    const header = table.substring(0, table.indexOf('\n')).replace(/\t/g, ' ')
+    const firstNewlineIdx = table.indexOf('\n')
+    let header = stripClean(table.substring(0, firstNewlineIdx).replace(/\t/g, ' '))
+
+    if (header.trim().length === 0) {
+      // the first line might be blank (except for control characters)
+      table = table.slice(firstNewlineIdx + 1)
+      const secondNewlineIdx = table.indexOf('\n')
+      header = stripClean(table.substring(0, secondNewlineIdx).replace(/\t/g, ' '))
+    }
 
     const headerCells = header
       .split(/(\t|\s\s)+\s?/)
@@ -97,8 +109,8 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
 
     // do we have just tiny columns? if so, it's not worth tabularizing
     const tinyColumns = columnStarts.reduce((yup, start, idx) => {
-      return yup || (idx > 0 && start - columnStarts[idx - 1] <= 2)
-    }, false)
+      return yup && (idx > 0 && start - columnStarts[idx - 1] <= 2)
+    }, true)
 
     if (columnStarts.length <= 1 || tinyColumns) {
       // probably not a table
@@ -112,14 +124,14 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       // look to see if any of the possibleRows violate the
       // columnStarts alignment; this is a good indication that the
       // possibleRows are not really rows of a table
-      const endOfTable = possibleRows.findIndex(row => {
+      const endOfTable = possibleRows.map(stripClean).findIndex(row => {
         const nope = columnStarts.findIndex(idx => {
           return idx > 0 && !/\s/.test(row[idx - 1])
         })
 
         return nope !== -1
       })
-      debug('endOfTable', endOfTable, possibleRows)
+      debug('endOfTable', endOfTable, possibleRows.map(stripClean))
 
       const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
@@ -313,7 +325,7 @@ export const formatTable = (
       ? 'status'
       : isHelmStatus
       ? 'get'
-      : undefined) || undefined
+      : undefined) || verb
 
   // helm doesn't support --output
   const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
@@ -323,12 +335,14 @@ export const formatTable = (
 
   const config = options.config ? `--config ${repl.encodeComponent(options.config)}` : ''
 
-  const drilldownKind = nameSplit => {
+  const drilldownKind = (nameSplit: string[]): string => {
     if (drilldownVerb === 'get') {
       const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
       return kind ? ' ' + kind : ''
       /* } else if (drilldownVerb === 'config') {
-        return ' use-context'; */
+         return ' use-context'; */
+    } else if (drilldownVerb === verb && entityType) {
+      return ` ${entityType.replace(/s$/, '')}-get`
     } else {
       return ''
     }
@@ -347,8 +361,7 @@ export const formatTable = (
     const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
     const nameForDisplay = columns[0].value
     const nameForDrilldown = nameSplit[1] || name
-    const css = ''
-    const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT' ? css : 'selected-entity'
+    const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT' ? '' : 'selected-entity'
 
     const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
     const rowKey = columns[0].key
@@ -379,11 +392,12 @@ export const formatTable = (
 
     const attributes: Cell[] = columns
       .slice(1)
-      .map(({ key, value: column }, colIdx) => ({
+      .map(({ key, value: column, css }, colIdx) => ({
         key,
-        value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column
+        value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column,
+        css
       }))
-      .map(({ key, value: column }, colIdx) => ({
+      .map(({ key, value: column, css }, colIdx) => ({
         key,
         tag: (idx > 0 && tagForKey[key]) || undefined,
         onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
