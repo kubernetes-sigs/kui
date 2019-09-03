@@ -238,7 +238,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         case 'exit':
           return exitNow(msg.exitCode)
 
-        case 'request':
+        case 'request': {
           const { exec } = await import('@kui-shell/core/core/repl')
           if (msg.env) {
             process.env = msg.env
@@ -275,8 +275,9 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             )
           }
           break
+        }
 
-        case 'exec':
+        case 'exec': {
           const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
 
           if (process.env.DEBUG && (!msg.env || !msg.env.DEBUG)) {
@@ -317,6 +318,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             console.error('could not exec', err)
           }
           break
+        }
 
         case 'data':
           try {

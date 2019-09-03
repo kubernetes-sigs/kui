@@ -35,18 +35,6 @@ const debug = Debug('plugins/editor/cmds/edit')
 // IEntity model
 export type EditorEntity = EditorEntity
 
-class DefaultCustomization {
-  lock: object = undefined
-}
-
-class DefaultExecOptions {
-  noSidecarHeader = false
-
-  parameters: EditorEntity = undefined
-
-  custom = new DefaultCustomization()
-}
-
 /**
  * Command handler for `edit <entity>`
  *

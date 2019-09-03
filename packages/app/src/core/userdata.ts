@@ -42,9 +42,10 @@ export const userDataDir = (): string => {
     switch (process.platform) {
       case 'darwin':
         return join(process.env.HOME, 'Library', 'Application Support', name)
-      case 'linux':
+      case 'linux': {
         const home = process.env.XDG_CONFIG_HOME || expandHomeDir('~/.config')
         return join(home, name)
+      }
       case 'win32':
         return join(process.env.APPDATA, name)
     }

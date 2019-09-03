@@ -16,7 +16,6 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import { theme } from '@kui-shell/core/core/settings'
 const { cli, selectors, keys } = ui
 
 import { tabButtonSelector } from '@kui-shell/plugin-core-support/lib/new-tab'
