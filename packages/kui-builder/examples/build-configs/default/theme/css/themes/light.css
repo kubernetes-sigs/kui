@@ -17,6 +17,8 @@ body[kui-theme="Light"] {
   --color-base0E: #d12764;
   --color-base0F: #8a3ffc;
 
+  --color-yellow-text: hsl(46, 87%, 37%);
+
   /* SidecarThin */
   --color-background-inverted01: #272c30;
   --color-background-inverted02: #373d42;

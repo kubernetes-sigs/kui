@@ -25,6 +25,8 @@ export class Row {
 
   name: string
 
+  nameDom?: Element
+
   type?: string
 
   packageName?: string

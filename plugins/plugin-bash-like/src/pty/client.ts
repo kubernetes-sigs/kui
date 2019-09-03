@@ -28,7 +28,6 @@ import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 import eventBus from '@kui-shell/core/core/events'
 import { qexec as $ } from '@kui-shell/core/core/repl'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { promiseEach } from '@kui-shell/core/util/async'
 import { MixedResponse } from '@kui-shell/core/models/entity'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import {
@@ -46,14 +45,14 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { flatten } from '@kui-shell/core/core/utility'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Table, isTable } from '@kui-shell/core/webapp/models/table'
 import { ExecType, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { CodedError } from '@kui-shell/core/models/errors'
+import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 
 import * as ui from './ui'
 import * as session from './session'
-import formatAsPty from './pretty-print'
 import { cleanupTerminalAfterTermination } from './util'
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 
@@ -559,11 +558,6 @@ function safeLoadWithCatch(raw: string): Record<string, any> {
   }
 }
 
-function isPromise<T>(content: Table | Promise<T>): content is Promise<T> {
-  const promise = content as Promise<T>
-  return !!promise.then
-}
-
 /**
  *
  *
@@ -818,7 +812,7 @@ export const doExec = (
         let sawCode: number
         let pendingUsage = false
         let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
-        let pendingTable: (Table | Promise<HTMLElement>)[]
+        let pendingTable: MixedResponse
         let raw = ''
 
         let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
@@ -919,8 +913,8 @@ export const doExec = (
                   const tableRows = flatten(tables.filter(_ => _.rows !== undefined).map(_ => _.rows))
 
                   if (tableRows && tableRows.length > 0) {
-                    debug(`table came from ${stripClean(raw)}`)
-                    debug(`tableRows ${tableRows.length}`)
+                    // debug(`table came from ${stripClean(raw)}`)
+                    // debug(`tableRows ${tableRows.length}`)
                     const command = argvNoOptions[0]
                     const verb = argvNoOptions[1]
                     const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
@@ -929,8 +923,16 @@ export const doExec = (
 
                     const trailingStrings = tables.map(_ => _.trailingString).filter(x => x)
                     if (trailingStrings && trailingStrings.length > 0) {
-                      pendingTable = [tableModel, formatAsPty(trailingStrings, fontFamily, fontSize)]
+                      const trailers = formatAsPty(trailingStrings)
+                      if (!trailers) {
+                        // nothing worth formatting
+                        pendingTable = [tableModel]
+                      } else {
+                        // some trailing strings worth formatting
+                        pendingTable = [tableModel, trailers]
+                      }
                     } else {
+                      // no trailing strings
                       pendingTable = [tableModel]
                     }
                   } else if (raw.length > 1000) {
@@ -971,7 +973,7 @@ export const doExec = (
             }
           } else if (msg.type === 'exit') {
             // server told us that it is done with msg.exitCode
-            if (pendingTable && !pendingTable.some(_ => !isPromise(_) && _.body.length > 0)) {
+            if (pendingTable && !pendingTable.some(_ => isTable(_) && _.body.length > 0)) {
               if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
                 bytesWereWritten = true
                 sawCode = /File exists/i.test(raw)
@@ -997,9 +999,7 @@ export const doExec = (
                 )
                 xtermContainer.classList.add('xterm-invisible')
               } else if (pendingTable) {
-                // some machinations to make typescript happy
-                const response: MixedResponse = []
-                await promiseEach(pendingTable, async _ => response.push(await _))
+                const response = pendingTable
                 execOptions.stdout(response.length === 1 ? response[0] : response)
               } else if (expectingSemiStructuredOutput) {
                 try {

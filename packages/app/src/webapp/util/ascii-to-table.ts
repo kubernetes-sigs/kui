@@ -14,36 +14,56 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
 import stripClean from 'strip-ansi'
 
 import * as repl from '@kui-shell/core/core/repl'
 import { ParsedOptions } from '@kui-shell/core/models/command'
-import { Cell, Row, Table } from '@kui-shell/core/webapp/models/table'
+import { Cell, Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
+
+import formatAsPty from './pretty-print'
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('core')
 
-const debug = Debug('core/webapp/util/ascii-to-table')
+// eslint-disable-next-line no-control-regex
+const isAnsi = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-PRZcf-nqry=><]/
 
-/**
- * Split the given string at the given split indices
- *
- */
-interface Pair {
-  key: string
-  value: string
-  css: string
-}
-const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
-  const stripped = stripClean(str)
-  return splits.map((splitIndex, idx) => {
-    return {
-      key: headerCells && headerCells[idx],
-      value: stripped.substring(splitIndex, splits[idx + 1] || stripped.length).trim(),
-      css: ''
+function indexOf(haystack: string, needle: string, startIdx: number): { startIdx: number; endIdx: number } {
+  const idx = haystack.indexOf(needle, startIdx)
+  if (idx !== -1) {
+    return { startIdx, endIdx: idx + needle.length }
+  }
+
+  let hidx = startIdx
+  let nidx = 0
+  let fidx: number
+  while (hidx < haystack.length && nidx < needle.length) {
+    const h = haystack.charAt(hidx)
+    const n = needle.charAt(nidx)
+    if (h === '\x1b') {
+      do {
+        hidx++
+      } while (hidx < haystack.length && !(haystack.charAt(hidx) === 'm'))
+      hidx++
+    } else if (nidx > 0 && isAnsi.test(h)) {
+      hidx++
+    } else if (h !== n) {
+      hidx++
+      nidx = 0
+    } else {
+      if (nidx === 0) {
+        fidx = hidx
+      }
+      hidx++
+      nidx++
     }
-  })
+  }
+
+  if (nidx === needle.length) {
+    return { startIdx, endIdx: hidx }
+  } else {
+    return { startIdx, endIdx: startIdx + needle.length }
+  }
 }
 
 /**
@@ -53,15 +73,48 @@ const split = (str: string, splits: number[], headerCells?: string[]): Pair[] =>
 function maybeURL(str: string): HTMLAnchorElement {
   try {
     const url = new URL(str)
-    const link = document.createElement('a')
-    link.target = '_blank'
-    link.innerText = strings('link')
-    link.title = str
-    link.href = str
-    return link
+    if (url.host) {
+      const link = document.createElement('a')
+      link.target = '_blank'
+      link.innerText = strings('link')
+      link.title = str
+      link.href = str
+      return link
+    }
   } catch (err) {
     // ok, it's not a URL
   }
+}
+
+/**
+ * Split the given string at the given split indices
+ *
+ */
+interface Pair {
+  key: string
+  value: string
+  valueDom: Element
+  css: string
+}
+const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
+  const stripped = stripClean(str)
+
+  let lastEnd = 0
+  return splits.map((splitIndex, idx) => {
+    const plain = stripped.substring(splitIndex, splits[idx + 1] || stripped.length).trim()
+    const { startIdx, endIdx } = indexOf(str, plain, lastEnd)
+    const value = str.slice(startIdx, endIdx).trim()
+    const valueDom = maybeURL(plain) || formatAsPty([value], false)
+
+    lastEnd = endIdx
+
+    return {
+      key: headerCells && headerCells[idx],
+      value: plain,
+      valueDom,
+      css: ''
+    }
+  })
 }
 
 /**
@@ -103,10 +156,6 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       jdx = newJdx + headerCells[idx].length
     }
 
-    if (columnStarts.length > 1) {
-      debug('columnStarts', columnStarts, headerCells)
-    }
-
     // do we have just tiny columns? if so, it's not worth tabularizing
     const tinyColumns = columnStarts.reduce((yup, start, idx) => {
       return yup && (idx > 0 && start - columnStarts[idx - 1] <= 2)
@@ -119,7 +168,6 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
       }
     } else {
       const possibleRows = table.split(/\n/)
-      debug('possibleRows', possibleRows)
 
       // look to see if any of the possibleRows violate the
       // columnStarts alignment; this is a good indication that the
@@ -131,7 +179,6 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
 
         return nope !== -1
       })
-      debug('endOfTable', endOfTable, possibleRows.map(stripClean))
 
       const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
@@ -140,10 +187,8 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
           return split(line, columnStarts, headerCells)
         })
         .filter(x => x)
-      debug('preprocessed', preprocessed)
 
       const trailingString = endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
-      debug('trailingString', trailingString)
 
       return {
         trailingString,
@@ -155,7 +200,7 @@ export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingStrin
 
 /** normalize the status badge by capitalization */
 const capitalize = (str: string): string => {
-  return str[0].toUpperCase() + str.slice(1).toLowerCase()
+  return str.length === 0 ? str : str[0].toUpperCase() + str.slice(1).toLowerCase()
 }
 
 /**
@@ -341,7 +386,7 @@ export const formatTable = (
       return kind ? ' ' + kind : ''
       /* } else if (drilldownVerb === 'config') {
          return ' use-context'; */
-    } else if (drilldownVerb === verb && entityType) {
+    } else if (drilldownVerb === verb && entityType && !/-get$/.test(entityType)) {
       return ` ${entityType.replace(/s$/, '')}-get`
     } else {
       return ''
@@ -382,7 +427,7 @@ export const formatTable = (
 
     // idx === 0: don't click on header row
     const onclick =
-      idx === 0
+      idx === 0 || /[":]/.test(nameForDrilldown)
         ? false
         : drilldownVerb
         ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(
@@ -392,12 +437,13 @@ export const formatTable = (
 
     const attributes: Cell[] = columns
       .slice(1)
-      .map(({ key, value: column, css }) => ({
+      .map(({ key, value: column, valueDom, css }) => ({
         key,
         value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column,
+        valueDom,
         css
       }))
-      .map(({ key, value: column, css }, colIdx) => ({
+      .map(({ key, value: column, valueDom, css }, colIdx) => ({
         key,
         tag: (idx > 0 && tagForKey[key]) || undefined,
         onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
@@ -411,7 +457,7 @@ export const formatTable = (
           ((idx > 0 && cssForKey[key]) || '') +
           ' ' +
           (cssForValue[column] || ''),
-        valueDom: maybeURL(column),
+        valueDom,
         value: column
       }))
       .concat(fillTo(columns.length, maxColumns))
@@ -419,6 +465,7 @@ export const formatTable = (
     const row: Row = {
       key: keyForFirstColumn,
       name: nameForDisplay,
+      nameDom: columns[0].valueDom,
       fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
       onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
       css: firstColumnCSS,
@@ -435,10 +482,17 @@ export const formatTable = (
   const header = hasHeader ? allRows[0] : undefined
   const body = hasHeader ? allRows.slice(1) : allRows
 
-  return {
+  // if we don't have a header, use zebra striping; otherwise use
+  // Light, which is closest to a pure terminal style
+  const style: TableStyle = !header ? TableStyle.Light : TableStyle.Light
+
+  const model: Table = {
     title: entityType,
     header,
     body,
+    style,
     noSort: true
   }
+
+  return model
 }

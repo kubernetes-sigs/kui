@@ -25,6 +25,7 @@
     "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
   },
   "dependencies": {
+    "ansi-to-html": "0.6.11",
     "cookie": "0.4.0",
     "debug": "4.1.1",
     "diff2html": "2.11.2",
