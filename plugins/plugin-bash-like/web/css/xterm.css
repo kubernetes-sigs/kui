@@ -111,6 +111,10 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 }
 
 /* themes */
+.xterm-container .xterm-viewport::-webkit-scrollbar {
+  background: transparent !important;
+}
+
 .xterm-container .xterm-viewport,
 .xterm-rows {
   background: transparent !important;
@@ -200,7 +204,7 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
  * only for line wrapping, so that we can reflow them
  * naturally. Please see `reflowLineWraps()` in `src/pty/client.ts`
  * for the logic that establishes the `.xterm-is-wrapped` property.
- * 
+ *
  */
 .xterm-terminated .xterm-rows > div {
   white-space: pre-wrap;
