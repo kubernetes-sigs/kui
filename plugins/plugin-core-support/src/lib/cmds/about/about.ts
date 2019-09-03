@@ -16,14 +16,11 @@
 
 import * as Debug from 'debug'
 
-import * as colors from 'colors/safe'
-
 import * as repl from '@kui-shell/core/core/repl'
 import { renderResult } from '@kui-shell/core/webapp/cli'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
@@ -302,7 +299,7 @@ const getVersion = () => {
  * Report the current version, and availability of updates
  *    For headless, return a textual concatenation of the two.
  */
-const reportVersion = ({ argv }: EvaluatorArgs) => {
+const reportVersion = () => {
   debug('reportVersion')
 
   const version = getVersion()

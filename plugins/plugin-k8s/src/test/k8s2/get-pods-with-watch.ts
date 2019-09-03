@@ -17,13 +17,10 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-import { theme } from '@kui-shell/core/core/settings'
 import * as assert from 'assert'
 
 /** name of the pod */
 const podName = 'nginx'
-/** final polling rate (do not increase the interval beyond this!) */
-const finalPolling = (theme && theme.tablePollingInterval) || 5000
 
 /** source for the resource spec */
 const url = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'

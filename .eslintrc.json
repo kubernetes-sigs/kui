@@ -1,7 +1,6 @@
 {
   "extends": [
     "standard",
-    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier",
     "prettier/standard",
@@ -14,6 +13,8 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "dot-notation": "off",
+    "no-undef": "off",
     "import/first": "off",
     "@typescript-eslint/camelcase": [
       "error",
@@ -30,17 +31,14 @@
       }
     ],
     "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-member-accessibility": "error",
     "@typescript-eslint/no-var-requires": "off"
   },
   "overrides": [
     {
-      "files": [
-        "packages/app/tests/**/*.js",
-        "plugins/*/tests/**/*.js",
-        "plugins/plugin-apache-composer/samples/@demos/**/*.js"
-      ],
+      "files": ["*.js"],
       "rules": {
-        "no-undef": "off"
+        "@typescript-eslint/explicit-member-accessibility": "off"
       }
     }
   ]

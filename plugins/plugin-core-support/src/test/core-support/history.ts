@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-import { dirname } from 'path'
-
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  proxyIt,
-  localDescribe
-} from '@kui-shell/core/tests/lib/common'
+import { ISuite, before as commonBefore, after as commonAfter, oops, proxyIt } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-
-const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
 const { cli } = ui
 

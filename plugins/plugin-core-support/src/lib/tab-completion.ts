@@ -921,7 +921,7 @@ export default () => {
               toBeCompleted: last // how much of that argv has been filled in so far
             }
 
-            const gotSomeCompletions = await new Promise<boolean>((resolve, reject) => {
+            const gotSomeCompletions = await new Promise<boolean>(resolve => {
               if (currentEnumeratorAsync) {
                 // overruled case 1: after we started the async, we
                 // notice that there is an outstanding tab completion
