@@ -648,7 +648,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
         const record = {
           type: 'custom',
-          isEntity: verb === 'describe' || (yaml && yaml.metadata !== undefined),
+          isEntity: verb === 'logs' || verb === 'describe' || (yaml && yaml.metadata !== undefined),
           name: entity || verb,
           packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || '',
           namespace: options.namespace || options.n,
