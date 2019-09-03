@@ -139,7 +139,7 @@ export const formatUsage = (command: string, str: string, options: Options = new
         {
           command: breadcrumbs.pop(),
           parents: breadcrumbs,
-          commandPrefix: command.replace(new RegExp('(?<=\\s)--?\\w+'), ''),
+          commandPrefix: command.replace(new RegExp('\\s--?\\w+'), ''),
           commandSuffix: '--help',
           header,
           example,
