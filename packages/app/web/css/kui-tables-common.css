@@ -78,7 +78,7 @@ body.sidecar-is-minimized .result-as-table .result-table {
   table-layout: fixed;
   width: 100%;
 }
-.result-table .cell-inner.pretty-wide {
+.result-table .cell-inner.pretty-wide:not([data-key="ID"]) {
   /* careful here, see https://github.com/IBM/kui/issues/1653 */
   white-space: pre-wrap;
 }
