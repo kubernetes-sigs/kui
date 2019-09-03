@@ -74,7 +74,7 @@ debug('proxyServerConfig', proxyServerConfig)
 const directEvaluator = new DirectReplEval()
 
 function renderDom(content: ElementMimic): HTMLElement {
-  const dom = document.createElement(content.nodeType)
+  const dom = document.createElement(content.nodeType || 'span')
 
   if (content.className.length > 0) {
     dom.className = content.className
