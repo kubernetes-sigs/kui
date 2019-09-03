@@ -392,7 +392,7 @@ export const formatTable = (
 
     const attributes: Cell[] = columns
       .slice(1)
-      .map(({ key, value: column, css }, colIdx) => ({
+      .map(({ key, value: column, css }) => ({
         key,
         value: idx > 0 && /STATUS|STATE/i.test(key) ? capitalize(column) : column,
         css
