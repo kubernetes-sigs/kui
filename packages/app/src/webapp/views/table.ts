@@ -421,7 +421,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   }
 
   // name of the entity
-  const name = entity.prettyName || entity.name
+  const name = entity.nameDom || entity.prettyName || entity.name
 
   // click handler for the list result
   if (entity.fontawesome) {
@@ -434,7 +434,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     entityNameClickable.appendChild(name)
   }
 
-  entityNameClickable.setAttribute('data-value', name) // in case tests need the actual value, not the icon
+  // in case tests need the actual value, not the icon
+  entityNameClickable.setAttribute('data-value', entity.prettyName || entity.name)
   if (entity.fullName) {
     entityNameClickable.setAttribute('title', entity.fullName)
   }
@@ -705,7 +706,7 @@ function adoptCarbonTableStyle(tableDom: HTMLElement) {
  *
  */
 function setStyle(tableDom: HTMLElement, table: Table) {
-  if (table.style !== undefined) {
+  if (table.style !== undefined && TableStyle[table.style] !== undefined) {
     tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
   } else if (theme.tableStyle) {
     tableDom.setAttribute('kui-table-style', theme.tableStyle)

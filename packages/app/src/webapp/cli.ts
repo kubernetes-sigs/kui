@@ -543,8 +543,7 @@ export const streamTo = (tab: Tab, block: Element) => {
 
   let previousLine: HTMLElement
   return (response: Streamable, killLine = false) => {
-    //
-    debug('stream', response)
+    // debug('stream', response)
 
     resultDom.setAttribute('data-stream', 'data-stream')
     ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')

@@ -118,7 +118,7 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 body.not-electron .repl-input {
   padding-left: 0.375rem;
 }
-.repl .repl-block:not(.processing) .repl-result:not(:empty) {
+.repl .repl-block:not(.processing) .result-as-table .repl-result:not(:empty) {
   padding: 0.625em 1.25em 0;
 }
 .repl-prompt-right-elements {
