@@ -27,7 +27,7 @@ describe('app init --reset', function(this: common.ISuite) {
   after(common.after(this))
 
   /** app config; v1 validates the redis URL; v2 validates the type (private versus shared) */
-  // const assertConfig = (v1, v2) => it(`should show valid app configuration`, () => cli.do('app config', this.app)
+  // const assertConfig = (v1, v2) => it(`should show valid app configuration`, () => cli.do('wsk app config', this.app)
   //   .then(cli.expectOKWithCustom({ selector: 'code' })) // extract the JSON bit
   //   .then(selector => this.app.client.getText(selector))
   //   .then(ui.expectSubset({ redis: v1, type: v2 })) // validate redis and type fields, using the provided validators

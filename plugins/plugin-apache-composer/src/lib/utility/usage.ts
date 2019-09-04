@@ -169,7 +169,7 @@ export const sessionGet = command => ({
   command,
   title: 'Show composer session',
   header: strings[`session_${command}`],
-  example: `session ${command} <sessionId>`,
+  example: `wsk session ${command} <sessionId>`,
   oneof: [
     { name: 'sessionId', docs: 'show a specific session id' },
     {

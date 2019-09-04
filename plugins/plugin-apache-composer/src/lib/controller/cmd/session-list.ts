@@ -63,7 +63,7 @@ export default async (commandTree: CommandRegistrar) => {
         // find sessions in activation list
         const findSessions = async (skip = 0, name = '', limit = 20) => {
           return repl
-            .qfexec(`activation list ${name} --skip ${skip} --limit ${limit}`)
+            .qfexec(`wsk activation list "${name}" --skip ${skip} --limit ${limit}`)
             .then((activations: ActivationListTable) => {
               // filter activations to find session
               debug('finding sessions in activation list', activations)

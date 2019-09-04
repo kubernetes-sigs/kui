@@ -79,7 +79,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
 
   it('should preview an empty composition', () =>
     cli
-      .do(`app preview ${ROOT}/data/composer/composer-source/empty.js`, this.app)
+      .do(`wsk app preview ${ROOT}/data/composer/composer-source/empty.js`, this.app)
       .then(verifyTheBasicStuff('empty.js'))
       .then(verifyEdgeExists('Entry', 'Exit'))
       .then(verifyPreviewNoticeExist())
@@ -90,7 +90,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
     // no openwhisk catalog in local openwhisk travis
     it(`show visualization from javascript source ${demoSeq.path}`, () =>
       cli
-        .do(`app viz ${demoSeq.path}`, this.app)
+        .do(`wsk app viz ${demoSeq.path}`, this.app)
         .then(verifyTheBasicStuff(demoSeq.file))
         .then(verifyNodeExists('date', true))
         .then(verifyNodeExists('echo', true))
@@ -102,7 +102,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   }
 
   /** test: load an FSM */
-  const syns = ['preview', 'app viz', 'app preview', 'wsk app viz', 'wsk app preview']
+  const syns = ['preview', 'wsk app viz', 'wsk app preview']
   syns.forEach(cmd => {
     it(`show visualization via ${cmd} from FSM file ${fsm.path}`, () =>
       cli
@@ -122,14 +122,14 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: app preview on its own should show usage */
   it(`should show usage for "app preview"`, () =>
     cli
-      .do('app preview', this.app)
+      .do('wsk app preview', this.app)
       .then(cli.expectError(497)) // 497 insufficient required parameters
       .catch(common.oops(this)))
 
   /** test: load an AST, but show the raw AST */
   it(`show raw AST from AST file ${fsm.path}`, () =>
     cli
-      .do(`app viz --ast ${fsm.path}`, this.app)
+      .do(`wsk app viz --ast ${fsm.path}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(fsm.file))
@@ -140,7 +140,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: ibid, but alternate placement of --fsm on command line */
   it(`show raw AST from AST file ${fsm.path}, alterate option placement`, () =>
     cli
-      .do(`app viz ${fsm.path} --ast`, this.app)
+      .do(`wsk app viz ${fsm.path} --ast`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(fsm.file))
@@ -152,7 +152,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   baseComposerInputs.forEach(input => {
     it(`show visualization from javascript source ${input.path}`, () =>
       cli
-        .do(`app viz ${input.path}`, this.app)
+        .do(`wsk app viz ${input.path}`, this.app)
         .then(verifyTheBasicStuff(input.file))
         .then(verifyNodeExists('RandomError', false)) // is not deployed
         .then(verifyEdgeExists('Entry', 'Try-Catch'))
@@ -161,14 +161,14 @@ describe('show the composer visualization without creating openwhisk assets', fu
         .catch(common.oops(this)))
   })
   //
-  // /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
+  // /* it('should initialize composer', () => cli.do(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
   //       .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
   //      .catch(common.oops(this))) */
   //
   /** test: sequence js file */
   it(`show visualization from javascript source ${seq.path}`, () =>
     cli
-      .do(`app viz ${seq.path}`, this.app)
+      .do(`wsk app viz ${seq.path}`, this.app)
       .then(verifyTheBasicStuff(seq.file))
       .then(verifyNodeExists('seq1'))
       .then(verifyNodeExists('seq2'))
@@ -180,7 +180,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: viz, then create with no args, testing for handling of implicit entity */
   it(`should create with implicit entity`, () =>
     cli
-      .do('app create', this.app)
+      .do('wsk app create', this.app)
       .then(verifyTheBasicStuff(seq.file))
       .then(verifyNodeExists('seq1', false)) // not deployed
       .then(verifyNodeExists('seq2', false)) // not deployed
@@ -193,7 +193,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: preview wookiechat */
   it(`show visualization from javascript source ${seq.path}`, () =>
     cli
-      .do(`app preview @demos/wookie/app.js`, this.app)
+      .do(`wsk app preview @demos/wookie/app.js`, this.app)
       .then(verifyTheBasicStuff('app.js'))
       .then(verifyNodeExists('swapi', false)) // not yet deployed
       .then(verifyNodeExists('stapi', false)) // not yet deployed
@@ -213,7 +213,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: viz, then create with -r, testing for handling of implicit entity and auto-deploy */
   it(`should create wookiechat and dependent actions with implicit entity`, () =>
     cli
-      .do('app update', this.app)
+      .do('wsk app update', this.app)
       .then(verifyTheBasicStuff('app.js'))
       .then(verifyNodeExists('swapi', false)) // expect not to be deployed
       .then(verifyNodeExists('stapi', false)) // expect not to be deployed
@@ -228,7 +228,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   // /** test: if js file */
   it(`show visualization from javascript source ${If.path}`, () =>
     cli
-      .do(`app viz ${If.path}`, this.app)
+      .do(`wsk app viz ${If.path}`, this.app)
       .then(verifyTheBasicStuff(If.file))
       .then(verifyNodeExists('seq1'))
       .then(verifyNodeExists('seq2'))
@@ -251,7 +251,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   loopers.forEach(({ file, path }) => {
     it(`show visualization from javascript source ${path}`, () =>
       cli
-        .do(`app viz ${path}`, this.app)
+        .do(`wsk app viz ${path}`, this.app)
         .then(verifyTheBasicStuff(file))
         .then(verifyNodeExists('seq1'))
         .then(verifyNodeExists('seq2'))
@@ -273,7 +273,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   })
 
   /* this one manifests a wskflow bug, disabling for now
-    it(`show visualization from javascript source ${retry5Times.path}`, () => cli.do(`app viz ${retry5Times.path}`, this.app)
+    it(`show visualization from javascript source ${retry5Times.path}`, () => cli.do(`wsk app viz ${retry5Times.path}`, this.app)
        .then(verifyTheBasicStuff(retry5Times.file))
        .catch(common.oops(this)))
     */
@@ -281,7 +281,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${demo.path}`, () =>
     cli
-      .do(`app viz ${demo.path}`, this.app)
+      .do(`wsk app viz ${demo.path}`, this.app)
       .then(verifyTheBasicStuff(demo.file))
       .then(verifyNodeExists('isNotOne'))
       .then(verifyNodeExists('isEven'))
@@ -294,7 +294,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${demoRetain.path}`, () =>
     cli
-      .do(`app viz ${demoRetain.path}`, this.app)
+      .do(`wsk app viz ${demoRetain.path}`, this.app)
       .then(verifyTheBasicStuff(demoRetain.file))
       .then(verifyNodeExists('DivideByTwo'))
       .then(verifyNodeExists('TripleAndIncrement'))
@@ -305,7 +305,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${mask.path}`, () =>
     cli
-      .do(`app viz ${mask.path}`, this.app)
+      .do(`wsk app viz ${mask.path}`, this.app)
       .then(verifyTheBasicStuff(mask.file))
       .then(verifyNodeExists('echo1'))
       .then(verifyNodeExists('echo2'))
@@ -315,7 +315,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${requireAbsolute.path}`, () =>
     cli
-      .do(`app viz ${requireAbsolute.path}`, this.app)
+      .do(`wsk app viz ${requireAbsolute.path}`, this.app)
       .then(verifyTheBasicStuff(requireAbsolute.file))
       .then(verifyNodeExists('echo1'))
       .then(verifyNodeExists('echo2'))
@@ -325,7 +325,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${requireRelative.path}`, () =>
     cli
-      .do(`app viz ${requireRelative.path}`, this.app)
+      .do(`wsk app viz ${requireRelative.path}`, this.app)
       .then(verifyTheBasicStuff(requireRelative.file))
       .then(verifyNodeExists('echo1'))
       .then(verifyNodeExists('echo2'))
@@ -336,7 +336,7 @@ describe('show the composer visualization without creating openwhisk assets', fu
   /** test: from the openwhisk-composer/samples directory */
   it(`show visualization from javascript source ${fsRead.path}`, () =>
     cli
-      .do(`app viz ${fsRead.path}`, this.app)
+      .do(`wsk app viz ${fsRead.path}`, this.app)
       .then(verifyTheBasicStuff(fsRead.file))
       .catch(common.oops(this)))
 

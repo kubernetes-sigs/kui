@@ -35,7 +35,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
 
   it('should fail with 404 to delete non-existent numeric name', () =>
     cli
-      .do(`rimraf 3`, this.app)
+      .do(`wsk action rimraf 3`, this.app)
       .then(cli.expectError(404))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
@@ -43,7 +43,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -52,7 +52,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create another action', () =>
     cli
-      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -61,20 +61,20 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   // delete them both
   it('should delete them both', () =>
     cli
-      .do(`rimraf ${actionName} ${actionName2}`, this.app)
+      .do(`wsk action rimraf ${actionName} ${actionName2}`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
 
   it('should NOT find a deleted action', () =>
     cli
-      .do(`action get ${actionName} --no-retry`, this.app)
+      .do(`wsk action get ${actionName} --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
   it('should FAIL to delete a non-existent action', () =>
     cli
-      .do(`rimraf ${actionName} --no-retry`, this.app)
+      .do(`wsk action rimraf ${actionName} --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
@@ -97,23 +97,23 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
       .catch(common.oops(this)))
   it('should delete the package recursively', () =>
     cli
-      .do(`package rimraf -r ${packageName}`, this.app)
+      .do(`wsk package rimraf -r ${packageName}`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
   it('should FAIL to delete the removed package', () =>
     cli
-      .do(`package rimraf -r ${packageName} --no-retry`, this.app)
+      .do(`wsk package rimraf -r ${packageName} --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
   it('should NOT find the deleted package', () =>
     cli
-      .do(`action get ${packageName} --no-retry`, this.app)
+      .do(`wsk action get ${packageName} --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
   it('should NOT find the deleted package action', () =>
     cli
-      .do(`action get ${packageName}/${actionName} --no-retry`, this.app)
+      .do(`wsk action get ${packageName}/${actionName} --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
@@ -129,23 +129,23 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
       .catch(common.oops(this)))
   it('should delete the package recursively', () =>
     cli
-      .do(`package rimraf -r "${packageNameWithSpaces}"`, this.app)
+      .do(`wsk package rimraf -r "${packageNameWithSpaces}"`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
   it('should FAIL to delete the removed package', () =>
     cli
-      .do(`package rimraf -r "${packageNameWithSpaces}" --no-retry`, this.app)
+      .do(`wsk package rimraf -r "${packageNameWithSpaces}" --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
   it('should NOT find the deleted package', () =>
     cli
-      .do(`action get "${actionNameWithSpaces}" --no-retry`, this.app)
+      .do(`wsk action get "${actionNameWithSpaces}" --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
   it('should NOT find the deleted package action', () =>
     cli
-      .do(`action get "${packageNameWithSpaces}/${actionNameWithSpaces}" --no-retry`, this.app)
+      .do(`wsk action get "${packageNameWithSpaces}/${actionNameWithSpaces}" --no-retry`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
@@ -154,14 +154,14 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
   //
   it('should create an action', () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
       .catch(common.oops(this)))
   it('should create another action', () =>
     cli
-      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -175,7 +175,7 @@ describe('Delete multiple actions using rimraf', function(this: common.ISuite) {
       .catch(common.oops(this)))
   it('should delete the sequence recursively', () =>
     cli
-      .do(`rimraf -r ${seqName}`, this.app)
+      .do(`wsk action rimraf -r ${seqName}`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))

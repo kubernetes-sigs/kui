@@ -88,7 +88,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
 
   it('should get the new action, edit the action content but not deployed', () =>
     cli
-      .do('action get foo2', this.app)
+      .do('wsk action get foo2', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2'))
@@ -120,7 +120,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
 
   it('should get the new action, edit the action content and deployed', () =>
     cli
-      .do('action get foo2', this.app)
+      .do('wsk action get foo2', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2'))
@@ -160,7 +160,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
 
   it('should invoke the new action', () =>
     cli
-      .do('invoke foo2', this.app)
+      .do('wsk action invoke foo2', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2'))
@@ -174,7 +174,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .then(sidecar.expectShowing('foo3\n*'))
       .then(deploy(this.app, 'foo3'))
       .catch(common.oops(this)))
-  /* it('should invoke the new python action, with implicit entity', () => cli.do('invoke', this.app)
+  /* it('should invoke the new python action, with implicit entity', () => cli.do('wsk action invoke', this.app)
        .then(cli.expectOK)
        .then(sidecar.expectOpen)
        .then(sidecar.expectShowing('foo3'))

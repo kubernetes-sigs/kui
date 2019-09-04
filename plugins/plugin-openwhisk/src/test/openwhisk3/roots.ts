@@ -58,12 +58,12 @@ describe('List root-most activations with $$', function() {
     .catch(common.oops(this)))
 
   // invoke the sequence
-  it(`should do an async of the sequence ${seqName}, using implicit context`, () => cli.do(`async -p y 3`, this.app)
+  it(`should do an async of the sequence ${seqName}, using implicit context`, () => cli.do(`wsk action async -p y 3`, this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))
 
   // call await
-  it('should await successful completion of the activation', () => cli.do(`$ await`, this.app)
+  it('should await successful completion of the activation', () => cli.do(`wsk $ await`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(seqName))
@@ -72,11 +72,11 @@ describe('List root-most activations with $$', function() {
     .catch(common.oops(this)))
 
   // call $ roots
-  it('should call $ roots successfully', () => cli.do(`$ roots`, this.app)
+  it('should call $ roots successfully', () => cli.do(`wsk $ roots`, this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))
 
-  it('should list only the sequence activation', () => cli.do(`$ roots --limit 200`, this.app)
+  it('should list only the sequence activation', () => cli.do(`wsk $ roots --limit 200`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true}))
     .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => filter(namesInList, name => actionNames.indexOf(name) >= 0)) // any of the actionNames? there better not be!
@@ -84,21 +84,21 @@ describe('List root-most activations with $$', function() {
     .catch(common.oops(this)))
 
   // call $$
-  it('should call $$ successfully', () => cli.do(`$$`, this.app)
+  it('should call $$ successfully', () => cli.do(`wsk $$`, this.app)
     .then(cli.expectJustOK)
     .catch(common.oops(this)))
-  it('should list only the sequence activation with $$', () => cli.do(`$$ --limit 200`, this.app)
+  it('should list only the sequence activation with $$', () => cli.do(`wsk $$ --limit 200`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true}))
     .then(N => this.app.client.getText(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => namesInList.filter(name => actionNames.indexOf(name) >= 0)) // any of the actionNames? there better not be!
     .then(expectToBeEmpty => assert.equal(expectToBeEmpty.length, 0))
     .catch(common.oops(this)))
-  it('should list nothing with $$ xxx', () => cli.do(`$$ xxxyyyzzzyfdsfdasfjasfdas --limit 200`, this.app)
+  it('should list nothing with $$ xxx', () => cli.do(`wsk $$ xxxyyyzzzyfdsfdasfjasfdas --limit 200`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true}))
     .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => assert.equal(namesInList.value.length, 0)) // with a junk "xxx" filter, the seq better not appear
     .catch(common.oops(this)))
-  it(`should list the sequence activation with $$ ${seqName}`, () => cli.do(`$$ ${seqName} --limit 200`, this.app)
+  it(`should list the sequence activation with $$ ${seqName}`, () => cli.do(`wsk $$ ${seqName} --limit 200`, this.app)
     .then(cli.expectOKWithCustom({ passthrough: true}))
     .then(N => this.app.client.getText(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => namesInList === seqName ? [namesInList] : namesInList.filter(name => seqName === name))
@@ -107,7 +107,7 @@ describe('List root-most activations with $$', function() {
 
   // double check that $ list shows a, b, and c
   actionNames.forEach(actionName => {
-    it('should list all of the activations', () => cli.do(`$ list --limit 100 --name ${actionName}`, this.app)
+    it('should list all of the activations', () => cli.do(`wsk $ list --limit 100 --name ${actionName}`, this.app)
       .then(cli.expectOKWith(actionName))
       .catch(common.oops(this)))
   }) */

@@ -175,15 +175,15 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
       .catch(common.oops(this)))
 
   // expect b to autocomplete with only tab, since we only have one action starting with b
-  it('should tab complete action get bar', () => tabby(this.app, 'action get b', 'action get bar'))
-  it('should tab complete action invoke bar', () => tabby(this.app, 'action invoke b', 'action invoke bar'))
-  it('should tab complete invoke bar', () => tabby(this.app, 'invoke b', 'invoke bar'))
-  it('should tab complete async bar', () => tabby(this.app, 'async b', 'async bar'))
+  it('should tab complete action get bar', () => tabby(this.app, 'wsk action get b', 'wsk action get bar'))
+  it('should tab complete action invoke bar', () => tabby(this.app, 'wsk action invoke b', 'wsk action invoke bar'))
+  it('should tab complete invoke bar', () => tabby(this.app, 'wsk action invoke b', 'wsk action invoke bar'))
+  it('should tab complete async bar', () => tabby(this.app, 'wsk action async b', 'wsk action async bar'))
 
   it('should tab complete action foo2 with options', async () => {
-    await tabbyWithOptions(this.app, 'action get f', ['foofoo/yum', 'foo2', 'foo'], 'action get foo2', {
+    await tabbyWithOptions(this.app, 'wsk action get f', ['foofoo/yum', 'foo2', 'foo'], 'wsk action get foo2', {
       click: 1,
-      expectedPromptAfterTab: 'action get foo'
+      expectedPromptAfterTab: 'wsk action get foo'
     })
 
     return Promise.resolve(this.app)
@@ -193,7 +193,7 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
   })
 
   it('should tab complete action foo with options (no prefix)', async () => {
-    await tabbyWithOptions(this.app, 'action get ', ['foofoo/yum', 'bar', 'foo2', 'foo'], 'action get foo', {
+    await tabbyWithOptions(this.app, 'wsk action get ', ['foofoo/yum', 'bar', 'foo2', 'foo'], 'wsk action get foo', {
       click: 3
     })
 
@@ -205,7 +205,7 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
 
   it('should not tab complete action without trailing whitespace', async () => {
     try {
-      await tabbyWithOptions(this.app, 'action get')
+      await tabbyWithOptions(this.app, 'wsk action get')
     } catch (err) {
       if (!err.failedAsExpected) {
         throw err

@@ -39,7 +39,7 @@ localDescribe('wsk activation get --last', function(this: common.ISuite) {
   // create an action
   it(`should create an action ${actionName1}`, () =>
     cli
-      .do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -47,7 +47,7 @@ localDescribe('wsk activation get --last', function(this: common.ISuite) {
 
   it(`should invoke it ${actionName1}`, () =>
     cli
-      .do(`invoke -p name lastTestIPromise`, this.app)
+      .do(`wsk action invoke -p name lastTestIPromise`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -56,7 +56,7 @@ localDescribe('wsk activation get --last', function(this: common.ISuite) {
   // create another action
   it(`should create an action ${actionName2}`, () =>
     cli
-      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -79,7 +79,7 @@ localDescribe('wsk activation get --last', function(this: common.ISuite) {
 
   it(`should invoke it ${actionName2}`, () =>
     cli
-      .do(`invoke ${actionName2} -p name lastTestIPromise`, this.app)
+      .do(`wsk action invoke ${actionName2} -p name lastTestIPromise`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))

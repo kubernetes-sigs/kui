@@ -31,13 +31,13 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
+  /* it('should initialize composer', () => cli.do(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
         .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
        .catch(common.oops(this))) */
 
   it('create sequence that invokes without error', () =>
     cli
-      .do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
+      .do(`wsk app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -46,7 +46,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it(`should invoke ${seqName1}`, () =>
     cli
-      .do(`app invoke ${seqName1} -p xxx 333`, this.app)
+      .do(`wsk app invoke ${seqName1} -p xxx 333`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -56,7 +56,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it('create sequence that invokes WITH ERROR', () =>
     cli
-      .do(`app update ${seqName2} ${ROOT}/data/composer/composer-source/error-sequence.js`, this.app)
+      .do(`wsk app update ${seqName2} ${ROOT}/data/composer/composer-source/error-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName2))
@@ -66,7 +66,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName1} with session get --last`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last`, this.app)
+        .do(`wsk session get --last`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName1, undefined, undefined, undefined, undefined, 500))
@@ -77,7 +77,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it('create another sequence that invokes without error', () =>
     cli
-      .do(`app update ${seqName3} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
+      .do(`wsk app update ${seqName3} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
@@ -86,7 +86,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it(`should invoke ${seqName3}`, () =>
     cli
-      .do(`app invoke ${seqName3} -p zzz 555`, this.app)
+      .do(`wsk app invoke ${seqName3} -p zzz 555`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
@@ -97,7 +97,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName1} with session get --last ${seqName1}`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last ${seqName1}`, this.app)
+        .do(`wsk session get --last ${seqName1}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName1, undefined, undefined, undefined, undefined, 500))
@@ -109,7 +109,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName3} with session get --last`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last`, this.app)
+        .do(`wsk session get --last`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName3, undefined, undefined, undefined, undefined, 500))
@@ -120,7 +120,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it(`should invoke ${seqName2}`, () =>
     cli
-      .do(`app invoke ${seqName2} -p yyy 444`, this.app)
+      .do(`wsk app invoke ${seqName2} -p yyy 444`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpenWithFailure)
       .then(sidecar.expectShowing(seqName2))
@@ -131,7 +131,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName1} with session get --last ${seqName1}`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last ${seqName1}`, this.app)
+        .do(`wsk session get --last ${seqName1}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName1, undefined, undefined, undefined, undefined, 500))
@@ -143,7 +143,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName2} with session get --last-failed`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last-failed`, this.app)
+        .do(`wsk session get --last-failed`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName2, undefined, undefined, undefined, undefined, 500))
@@ -154,7 +154,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
 
   it(`should invoke ${seqName3}`, () =>
     cli
-      .do(`app invoke ${seqName3} -p zzz 555`, this.app)
+      .do(`wsk app invoke ${seqName3} -p zzz 555`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
@@ -165,7 +165,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName2} with session get --last-failed`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last-failed`, this.app)
+        .do(`wsk session get --last-failed`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName2, undefined, undefined, undefined, undefined, 500))
@@ -179,7 +179,7 @@ describe('session get --last and --last-failed', function(this: common.ISuite) {
   it(`should show ${seqName2} with session get --last-failed`, () =>
     this.app.client.waitUntil(() => {
       return cli
-        .do(`session get --last-failed`, this.app)
+        .do(`wsk session get --last-failed`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(seqName2, undefined, undefined, undefined, undefined, 500))

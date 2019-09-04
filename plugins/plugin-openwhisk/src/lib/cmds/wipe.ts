@@ -47,7 +47,7 @@ const logThen = f => (msg: string) => {
 const deleteAllOnce = entities =>
   Promise.all(
     entities.map(entity => {
-      const tryDelete = () => repl.qexec(`${entity.type} delete "/${entity.namespace}/${entity.name}"`)
+      const tryDelete = () => repl.qexec(`wsk ${entity.type} delete "/${entity.namespace}/${entity.name}"`)
 
       // with retries...
       return tryDelete()
@@ -74,7 +74,7 @@ const deleteAllOnce = entities =>
  * List the entities of a given entity type (e.g. actions)
  *
  */
-const list = type => repl.qexec(`${type} list --limit 200`).then((response: Table) => response.body)
+const list = type => repl.qexec(`wsk ${type} list --limit 200`).then((response: Table) => response.body)
 
 /**
  * Because we can only list at most 200 entities at a time, we'll need to loop...

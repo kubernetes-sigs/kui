@@ -43,7 +43,7 @@ describe('show the composer visualization with no wskauth', function(this: commo
   before(openwhisk.before(this, fuzz)) // fuzz testing: eliminate authentication bits
   after(common.after(this))
 
-  const cmd = 'app preview'
+  const cmd = 'wsk app preview'
   const hello = { file: 'hello.js', path: '@demos/hello.js' }
   const If = composerInput('if.js')
   const whileSeq = composerInput('while-seq.js')
@@ -79,7 +79,7 @@ describe('show the composer visualization with no wskauth', function(this: commo
   /** test: while with nested sequence, from js file */
   it(`show visualization from javascript source ${whileSeq.path}`, () =>
     cli
-      .do(`app viz ${whileSeq.path}`, this.app)
+      .do(`wsk app viz ${whileSeq.path}`, this.app)
       .then(verifyTheBasicStuff(whileSeq.file))
       .then(verifyNodeExists('seq1'))
       .then(verifyNodeExists('seq2'))

@@ -46,7 +46,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -55,7 +55,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should add a parameter with explicit action name', () =>
     cli
-      .do('set x=1 in foo', this.app)
+      .do('wsk action set x=1 in foo', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -64,7 +64,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should add a parameter with implicit action name', () =>
     cli
-      .do('set y=1', this.app)
+      .do('wsk action set y=1', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -73,7 +73,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should update a parameter value with implicit action name', () =>
     cli
-      .do('set x=2', this.app)
+      .do('wsk action set x=2', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -82,7 +82,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should update an inner structure parameter with implicit action name', () =>
     cli
-      .do('set z={}', this.app)
+      .do('wsk action set z={}', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -91,7 +91,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should update an inner-inner structure parameter with implicit action name', () =>
     cli
-      .do('set z.z=true', this.app)
+      .do('wsk action set z.z=true', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -100,7 +100,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should update a parameter to false, with implicit action name', () =>
     cli
-      .do('set x=false', this.app)
+      .do('wsk action set x=false', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -109,7 +109,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should update a parameter with spaces', () =>
     cli
-      .do('set humble pie="rumble tummy"', this.app)
+      .do('wsk action set humble pie="rumble tummy"', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -125,7 +125,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should update an nested parameter with spaces', () =>
     cli
-      .do('set z.humble pie="rumble tummy"', this.app)
+      .do('wsk action set z.humble pie="rumble tummy"', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -141,7 +141,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should remove a nested parameter with spaces', () =>
     cli
-      .do('unset z.humble pie', this.app)
+      .do('wsk action unset z.humble pie', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -157,7 +157,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should remove a top-level parameter with spaces', () =>
     cli
-      .do('unset humble pie', this.app)
+      .do('wsk action unset humble pie', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -166,7 +166,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should add a structure', () =>
     cli
-      .do('set sss={"phone home": 345}', this.app)
+      .do('wsk action set sss={"phone home": 345}', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -182,7 +182,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should remove that structure', () =>
     cli
-      .do('unset sss', this.app)
+      .do('wsk action unset sss', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -191,7 +191,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should add with a pathy key', () =>
     cli
-      .do('set m.n={"phone home": 345}', this.app)
+      .do('wsk action set m.n={"phone home": 345}', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -207,7 +207,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should remove with a pathy key', () =>
     cli
-      .do('unset m.n', this.app)
+      .do('wsk action unset m.n', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -216,7 +216,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should push to a new array', () =>
     cli
-      .do('push 3 to a', this.app)
+      .do('wsk action push 3 to a', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -225,7 +225,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should push to an existing array', () =>
     cli
-      .do('push 4 to a', this.app)
+      .do('wsk action push 4 to a', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -234,7 +234,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should push to a new pathy array', () =>
     cli
-      .do('push 5 to m.n', this.app)
+      .do('wsk action push 5 to m.n', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -251,7 +251,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should push to an existing pathy array', () =>
     cli
-      .do('push 6 to m.n', this.app)
+      .do('wsk action push 6 to m.n', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -268,7 +268,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should push to a struct to an existing pathy array', () =>
     cli
-      .do('push {"y": 7 } to m.n', this.app) // <-- some spaces in the value, for good measure
+      .do('wsk action push {"y": 7 } to m.n', this.app) // <-- some spaces in the value, for good measure
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -285,7 +285,7 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
 
   it('should switch back to code mode', () =>
     cli
-      .do('code', this.app)
+      .do('wsk action code', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))

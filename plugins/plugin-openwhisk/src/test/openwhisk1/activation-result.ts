@@ -37,7 +37,7 @@ localDescribe('wsk activation result and wsk activation logs', function(this: co
   // create an action
   it(`should create an action ${actionName1}`, () =>
     cli
-      .do(`create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName1} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -45,7 +45,7 @@ localDescribe('wsk activation result and wsk activation logs', function(this: co
 
   it(`should async that action then show its logs and result`, () =>
     cli
-      .do(`async ${actionName1}`, this.app)
+      .do(`wsk action async ${actionName1}`, this.app)
       .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)

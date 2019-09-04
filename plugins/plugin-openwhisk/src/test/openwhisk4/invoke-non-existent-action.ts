@@ -27,13 +27,13 @@ describe('Check error handling for invoking a non-existent action', function(thi
 
   it('invoke a non-existent action', () =>
     cli
-      .do(`invoke xxxxxx`, this.app)
+      .do(`wsk action invoke xxxxxx`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
   it('async a non-existent action', () =>
     cli
-      .do(`async xxxxxx`, this.app)
+      .do(`wsk action async xxxxxx`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
@@ -47,7 +47,7 @@ describe('Check error handling for invoking a non-existent action', function(thi
 
   it('invoke with a non-existent package, but existing action name', () =>
     cli
-      .do(`invoke xxxxxx/${actionName}`, this.app)
+      .do(`wsk action invoke xxxxxx/${actionName}`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 
@@ -65,7 +65,7 @@ describe('Check error handling for invoking a non-existent action', function(thi
 
   it('async with a non-existent package, but existing action name', () =>
     cli
-      .do(`async xxxxxx/${actionName}`, this.app)
+      .do(`wsk action async xxxxxx/${actionName}`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 })

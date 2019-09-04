@@ -38,14 +38,14 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo')))
 
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -54,7 +54,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should add a parameter with explicit action name', () =>
     cli
-      .do('annotate x=1 in foo', this.app)
+      .do('wsk action annotate x=1 in foo', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -63,7 +63,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should add a parameter with implicit action name', () =>
     cli
-      .do('annotate y=1', this.app)
+      .do('wsk action annotate y=1', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -72,7 +72,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should update a parameter value with implicit action name', () =>
     cli
-      .do('annotate x=2', this.app)
+      .do('wsk action annotate x=2', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -81,7 +81,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should update an inner structure parameter with implicit action name', () =>
     cli
-      .do('annotate z={}', this.app)
+      .do('wsk action annotate z={}', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -90,7 +90,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should update an inner-inner structure parameter with implicit action name', () =>
     cli
-      .do('annotate z.z=true', this.app)
+      .do('wsk action annotate z.z=true', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -99,7 +99,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should update a parameter to false, with implicit action name', () =>
     cli
-      .do('annotate x=false', this.app)
+      .do('wsk action annotate x=false', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -108,7 +108,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should update a parameter with spaces', () =>
     cli
-      .do('annotate humble pie="rumble tummy"', this.app)
+      .do('wsk action annotate humble pie="rumble tummy"', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -124,7 +124,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should update an nested parameter with spaces', () =>
     cli
-      .do('annotate z.humble pie="rumble tummy"', this.app)
+      .do('wsk action annotate z.humble pie="rumble tummy"', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -140,7 +140,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should remove a nested parameter with spaces', () =>
     cli
-      .do('deannotate z.humble pie', this.app)
+      .do('wsk action deannotate z.humble pie', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -156,7 +156,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should remove a top-level parameter with spaces', () =>
     cli
-      .do('deannotate humble pie', this.app)
+      .do('wsk action deannotate humble pie', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -165,7 +165,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should add a structure', () =>
     cli
-      .do('annotate sss={"phone home": 345}', this.app)
+      .do('wsk action annotate sss={"phone home": 345}', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -181,7 +181,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should remove that structure', () =>
     cli
-      .do('deannotate sss', this.app)
+      .do('wsk action deannotate sss', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -190,7 +190,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should add with a pathy key', () =>
     cli
-      .do('annotate m.n={"phone home": 345}', this.app)
+      .do('wsk action annotate m.n={"phone home": 345}', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -206,7 +206,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should remove with a pathy key', () =>
     cli
-      .do('deannotate m.n', this.app)
+      .do('wsk action deannotate m.n', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -215,7 +215,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should push to a new array', () =>
     cli
-      .do('apush 3 to a', this.app)
+      .do('wsk action apush 3 to a', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -224,7 +224,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should push to an existing array', () =>
     cli
-      .do('apush 4 to a', this.app)
+      .do('wsk action apush 4 to a', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -233,7 +233,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should push to a new pathy array', () =>
     cli
-      .do('apush 5 to m.n', this.app)
+      .do('wsk action apush 5 to m.n', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -250,7 +250,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should push to an existing pathy array', () =>
     cli
-      .do('apush 6 to m.n', this.app)
+      .do('wsk action apush 6 to m.n', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -267,7 +267,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should push to a struct to an existing pathy array', () =>
     cli
-      .do('apush {"y": 7 } to m.n', this.app) // <-- some spaces in the value, for good measure
+      .do('wsk action apush {"y": 7 } to m.n', this.app) // <-- some spaces in the value, for good measure
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -284,7 +284,7 @@ localDescribe('Modify annotations', function(this: common.ISuite) {
 
   it('should switch back to code mode', () =>
     cli
-      .do('code', this.app)
+      .do('wsk action code', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))

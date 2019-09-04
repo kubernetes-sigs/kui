@@ -32,7 +32,7 @@ describe('Create jar actions', function(this: common.ISuite) {
 
   it('should create a jar action', () =>
     cli
-      .do(`action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
+      .do(`wsk action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -43,7 +43,7 @@ describe('Create jar actions', function(this: common.ISuite) {
 
   it('should invoke the jar action', () =>
     cli
-      .do(`invoke -p x 3`, this.app)
+      .do(`wsk action invoke -p x 3`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))

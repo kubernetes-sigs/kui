@@ -849,7 +849,7 @@ class InProcessExecutor implements Executor {
                 // console.error(err)
                 oops(command, block, nextBlock)(err)
               } else {
-                debug('rethrowing command execution error')
+                debug('rethrowing command execution error', err)
                 if (reportIt) {
                   // maybe the caller also wants us to report it via the repl?
                   debug('also reporting command execution error to user via repl')
@@ -863,7 +863,7 @@ class InProcessExecutor implements Executor {
     } catch (err) {
       const e = err as Error
 
-      if (isHeadless()) {
+      if (isHeadless() && err.code !== 404) {
         try {
           debug('attempting to run the command graphically', e)
           const command = commandUntrimmed.trim().replace(patterns.commentLine, '')

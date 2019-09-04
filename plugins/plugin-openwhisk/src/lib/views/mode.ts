@@ -61,7 +61,10 @@ const idMatch = (entity, entityId) => {
 }
 
 export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
-  const switchSidecarMode = (entityType, mode) => async ({ argvNoOptions: args, tab }: EvaluatorArgs) => {
+  const switchSidecarMode = (entityType: string, mode: string) => async ({
+    argvNoOptions: args,
+    tab
+  }: EvaluatorArgs) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection(tab)
 
@@ -88,7 +91,7 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
       }
     } else if (args.length === 3 || args.length === 4) {
       // activation logs xxx or wsk activation logs xxx
-      const activation = await qexec(`${entityType} get ${entityId}`)
+      const activation = await qexec(`wsk ${entityType} get ${entityId}`)
       if (isHeadless()) {
         return activation[mode]
       } else {

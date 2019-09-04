@@ -79,25 +79,25 @@ describe('wsk package list tests', function(this: common.ISuite) {
 
   it(`should list ${package2} with package list`, () =>
     cli
-      .do(`package list`, this.app)
+      .do(`wsk package list`, this.app)
       .then(cli.expectOKWith(package2))
       .catch(common.oops(this)))
 
   it(`should list ${package2} with package list`, () =>
     cli
-      .do(`package list`, this.app)
+      .do(`wsk package list`, this.app)
       .then(cli.expectOKWith(package2))
       .catch(common.oops(this)))
 
   it(`should list ${pckage} with package list /${ui.expectedNamespace()}`, () =>
     cli
-      .do(`package list /${ui.expectedNamespace()}`, this.app)
+      .do(`wsk package list /${ui.expectedNamespace()}`, this.app)
       .then(cli.expectOKWith(package2))
       .catch(common.oops(this)))
 
   it(`should list ${package2} with package list /${ui.expectedNamespace()}`, () =>
     cli
-      .do(`package list /${ui.expectedNamespace()}`, this.app)
+      .do(`wsk package list /${ui.expectedNamespace()}`, this.app)
       .then(cli.expectOKWith(package2))
       .catch(common.oops(this)))
 
@@ -115,7 +115,7 @@ describe('wsk package list tests', function(this: common.ISuite) {
 
   it(`should list actions in ${pckage} with action list ${pckage}`, () =>
     cli
-      .do(`action list ${pckage}`, this.app)
+      .do(`wsk action list ${pckage}`, this.app)
       .then(cli.expectOKWith(action))
       .catch(common.oops(this)))
 })

@@ -110,7 +110,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
 
   it(`should invoke ${actionName}`, () =>
     cli
-      .do(`action invoke ${actionName} -p z 3`, this.app)
+      .do(`wsk action invoke ${actionName} -p z 3`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -119,7 +119,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: co
 
   it(`should invoke ${actionName}`, () =>
     cli
-      .do(`action invoke ${actionName} -p z 99`, this.app)
+      .do(`wsk action invoke ${actionName} -p z 99`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

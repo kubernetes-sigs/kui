@@ -132,6 +132,7 @@ export const initOW = () => {
   }
 
   ow = initOWFromConfig(owConfig)
+  return ow
 }
 if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
   initOW()

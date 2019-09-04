@@ -36,7 +36,7 @@ localDescribe('Create two actions with implicit entity type, then list them', fu
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo')))
@@ -44,15 +44,14 @@ localDescribe('Create two actions with implicit entity type, then list them', fu
   // create the second action
   it('should create an action', () =>
     cli
-      .do(`create foo2 ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo2 ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2')))
 
   // list tests
   ui.aliases.list.forEach(cmd => {
-    it(`should find the new action with "${cmd}"`, () => cli.do(cmd, this.app).then(cli.expectOKWith('foo')))
-    it(`should find the new action with "action ${cmd}"`, () =>
-      cli.do(`action ${cmd}`, this.app).then(cli.expectOKWith('foo2')))
+    it(`should find the new action with "${cmd}"`, () =>
+      cli.do(`wsk action ${cmd}`, this.app).then(cli.expectOKWith('foo')))
   })
 })

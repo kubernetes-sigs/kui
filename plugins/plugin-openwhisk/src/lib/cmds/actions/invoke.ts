@@ -49,7 +49,7 @@ const docs = () => ({
  * record. One thing these partial records lack is logs.
  *
  */
-const fetchActivation = partialActivation => repl.qfexec(`await ${partialActivation.activationId}`)
+const fetchActivation = partialActivation => repl.qfexec(`wsk activations await ${partialActivation.activationId}`)
 const fetchFromError = error => {
   if (error['statusCode'] === 502) {
     // then this is a action error, display it as an activation failure

@@ -38,7 +38,7 @@ export default async (commandTree: CommandRegistrar) => {
     ({ command, parsedOptions }) => {
       if (parsedOptions.last || parsedOptions['last-failed']) {
         return repl
-          .qfexec('activation list --limit 200')
+          .qfexec('wsk activation list --limit 200')
           .then((activations: ActivationListTable) => activations.body)
           .then(activations => {
             return activations.find(activation => {
@@ -69,7 +69,7 @@ export default async (commandTree: CommandRegistrar) => {
             })
           })
           .then(activation => {
-            return repl.qfexec(`session get ${activation.activationId}`)
+            return repl.qfexec(`wsk session get ${activation.activationId}`)
           })
           .catch(err => err)
       } else {

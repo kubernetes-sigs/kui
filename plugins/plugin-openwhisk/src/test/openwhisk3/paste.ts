@@ -68,7 +68,7 @@ common.localDescribe('Execute commands via paste', function(this: common.ISuite)
 
   it('should get the action created by the first line', () =>
     cli
-      .do(`action get ${actionName4}`, this.app)
+      .do(`wsk action get ${actionName4}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName4))
@@ -89,14 +89,14 @@ common.localDescribe('Execute commands via paste', function(this: common.ISuite)
 
   it('should get the action created by the first line', () =>
     cli
-      .do(`action get ${actionName6}`, this.app)
+      .do(`wsk action get ${actionName6}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName6))
       .catch(common.oops(this)))
   it('should get the action created by the second line', () =>
     cli
-      .do(`action get ${actionName7}`, this.app)
+      .do(`wsk action get ${actionName7}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName7))

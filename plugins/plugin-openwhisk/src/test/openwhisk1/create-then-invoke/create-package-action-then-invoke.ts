@@ -45,7 +45,7 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
   // invoke it asynchronously with no params
   it('should async that action', () =>
     cli
-      .do(`async`, this.app)
+      .do(`wsk action async`, this.app)
       .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
@@ -56,7 +56,7 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
 
   it('should get/open the package', () =>
     cli
-      .do(`package get ppp`, this.app)
+      .do(`wsk package get ppp`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('ppp'))
@@ -65,7 +65,7 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
   // re-open the packaged action and invoke it, for good measure
   it('should create re-open the packaged action', () =>
     cli
-      .do(`action get ppp/foo`, this.app)
+      .do(`wsk action get ppp/foo`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo', undefined, undefined, 'ppp'))
@@ -74,7 +74,7 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
   // invoke it asynchronously with no params
   it('should async that action', () =>
     cli
-      .do(`async`, this.app)
+      .do(`wsk action async`, this.app)
       .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)

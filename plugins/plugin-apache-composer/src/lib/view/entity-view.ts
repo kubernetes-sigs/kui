@@ -35,7 +35,7 @@ export const formatSessionResponse = activation => {
   const path = activation.annotations.find(({ key }) => key === 'path').value
 
   // entity onclick handler
-  activation.onclick = () => repl.pexec(`app get "/${path}"`)
+  activation.onclick = () => repl.pexec(`wsk app get "/${path}"`)
 
   // add our visualization view mode
   if (!activation.modes) activation.modes = []
@@ -44,7 +44,7 @@ export const formatSessionResponse = activation => {
   activation.modes.push({
     mode: defaultMode,
     label: 'Session Flow',
-    direct: () => repl.pexec(`session flow ${activation.activationId}`)
+    direct: `wsk session flow ${activation.activationId}`
   })
 
   debug('session response', activation)
@@ -52,12 +52,12 @@ export const formatSessionResponse = activation => {
 }
 
 export const formatCompositionEntity = execOptions => response => {
-  return isHeadless() ? response : repl.qfexec(`app get "${response.name}"`, undefined, undefined, execOptions)
+  return isHeadless() ? response : repl.qfexec(`wsk app get "${response.name}"`, undefined, undefined, execOptions)
 }
 
 export const formatCompositionResult = (result, options) => {
   if (options.result || options.r) return result
-  else return isHeadless() ? result.response.result : repl.qfexec(`activation get ${result.activationId}`)
+  else return isHeadless() ? result.response.result : repl.qfexec(`wsk activation get ${result.activationId}`)
 }
 
 export const formatDeleteResult = response => {

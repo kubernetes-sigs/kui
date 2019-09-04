@@ -219,7 +219,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   if (name && !nocrawl) {
     // then the user asked to filter; first see if this is an app
     return repl
-      .qexec(`app get "${name}"`)
+      .qexec(`wsk app get "${name}"`)
       .then(extractTasks)
       .then(tasks => (all ? tasks.concat([name]) : tasks)) // if options.all, then add the app to the list of actions
       .then(tasks =>

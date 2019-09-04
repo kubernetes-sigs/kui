@@ -151,7 +151,7 @@ describe('Webbify actions', function(this: common.ISuite) {
   //
   it('should create a web action via action create --web', () =>
     cli
-      .do(`action create ${actionName7} ${ROOT}/data/openwhisk/foo.js --web`, this.app)
+      .do(`wsk action create ${actionName7} ${ROOT}/data/openwhisk/foo.js --web`, this.app)
       // make sure the REPL output has the proper href:
       .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))

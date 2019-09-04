@@ -55,7 +55,7 @@ describe('wskflow test bring up the composer visualization when the sidecar is m
 
   it('should show the if composition graph again', () =>
     cli
-      .do(`app preview ${ROOT}/data/composer/composer-source/if.js`, this.app)
+      .do(`wsk app preview ${ROOT}/data/composer/composer-source/if.js`, this.app)
       .then(() => sidecar.expectOpen(this.app))
       .catch(common.oops(this)))
 
@@ -197,7 +197,7 @@ describe('wskflow test create a if composition, invoke, verify session flow is s
 
   it(`should create an app with ${appFile}`, () =>
     cli
-      .do(`app create ${appName} ${appFile}`, this.app)
+      .do(`wsk app create ${appName} ${appFile}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))
@@ -205,7 +205,7 @@ describe('wskflow test create a if composition, invoke, verify session flow is s
 
   it(`should invoke ${appName} with condition equals true`, () =>
     cli
-      .do(`app invoke ${appName} -p condition true`, this.app)
+      .do(`wsk app invoke ${appName} -p condition true`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .catch(common.oops(this)))
@@ -224,7 +224,7 @@ describe('wskflow test create a if composition, invoke, verify session flow is s
 
   it(`should invoke ${appName} with condition equals false`, () =>
     cli
-      .do(`app invoke ${appName} -p condition false`, this.app)
+      .do(`wsk app invoke ${appName} -p condition false`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .catch(common.oops(this)))
@@ -254,7 +254,7 @@ describe('wskflow test drilldown to action from wskflow', function(this: common.
 
   it(`should deploy action ${actionName}`, () =>
     cli
-      .do(`action create ${actionName} ${actionFile}`, this.app)
+      .do(`wsk action create ${actionName} ${actionFile}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -262,7 +262,7 @@ describe('wskflow test drilldown to action from wskflow', function(this: common.
 
   it(`should create an app with ${appFile}`, () =>
     cli
-      .do(`app create ${appName} ${appFile}`, this.app)
+      .do(`wsk app create ${appName} ${appFile}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))
@@ -290,7 +290,7 @@ describe('wskflow test test if pressing a node, dragging and releasing triggers 
 
   it(`should create an app with ${appFile}`, () =>
     cli
-      .do(`app create ${appName} ${appFile}`, this.app)
+      .do(`wsk app create ${appName} ${appFile}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))
@@ -298,7 +298,7 @@ describe('wskflow test test if pressing a node, dragging and releasing triggers 
 
   it(`should invoke ${appName} with condition equals true`, () =>
     cli
-      .do(`app invoke ${appName} -p condition true`, this.app)
+      .do(`wsk app invoke ${appName} -p condition true`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .catch(common.oops(this)))

@@ -98,7 +98,7 @@ export default (commandTree: CommandRegistrar) => {
 
       // fetch the session, then fetch the trace (so we can show the flow) and action (to get the AST)
       return repl
-        .qexec(`session get ${sessionId}`)
+        .qexec(`wsk session get ${sessionId}`)
         .then(session => Promise.all([session, fetchTrace(session), fetchTheAction(session)]))
         .then(async ([session, activations, action]) => {
           let ast

@@ -44,7 +44,7 @@ localDescribe('Create actions, add parameters with quotes', function(this: commo
 
   it('should add a parameter with double quotes around value', () =>
     cli
-      .do('set z="bbb"', this.app)
+      .do('wsk action set z="bbb"', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))

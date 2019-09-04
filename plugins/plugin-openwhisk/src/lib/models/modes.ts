@@ -40,15 +40,15 @@ export const activationModes = (opts = {}) =>
       {
         mode: 'result',
         defaultMode: true,
-        command: () => 'wsk activation result'
+        direct: 'wsk activation result'
       },
       {
         mode: 'logs',
         label: entity.prettyType === 'sequence' ? 'trace' : 'logs',
-        command: () => 'wsk activation logs'
+        direct: 'wsk activation logs'
       },
-      { mode: 'annotations', command: () => 'annotations' },
-      { mode: 'raw', command: () => 'raw' }
+      { mode: 'annotations', direct: 'wsk action annotations' },
+      { mode: 'raw', direct: 'wsk action raw' }
     ]
   })
 

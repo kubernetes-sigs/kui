@@ -31,7 +31,7 @@ const configuration = {
 const context = type => [{ command: 'wsk' }, { command: `wsk ${type}` }]
 
 /** deployed variant of an entity name */
-const deployed = entity => [Object.assign({}, entity[0], { entity: entity[0].name })]
+const deployed = entity => [Object.assign({}, entity[0], { entity: `wsk ${entity[0].name}` })]
 
 /** required action parameter */
 const action = [{ name: 'action', docs: 'an action name' }]
@@ -76,7 +76,7 @@ const sourceFile: Option[] = [
 
 /** required activationId parameter */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', entity: 'activation' }]
+const activationID: any[] = [{ name: 'activationId', docs: 'an activation ID', entity: 'wsk activation' }]
 
 /** optional parameters having to do with parameter bindings */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,7 +128,7 @@ const feed = [
     name: '--feed',
     alias: '-f',
     docs: 'create a feed from a given provider',
-    entity: 'action'
+    entity: 'wsk action'
   }
 ]
 
@@ -349,7 +349,7 @@ export const actions = {
           {
             name: 'package',
             positional: true,
-            entity: 'package',
+            entity: 'wsk package',
             docs: 'list all actions in a given package'
           }
         ].concat(skipAndLimit),

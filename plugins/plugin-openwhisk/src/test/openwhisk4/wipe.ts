@@ -52,7 +52,7 @@ describe('wipe command', function(this: common.ISuite) {
 
   it('should successfully execute the wipe command', () =>
     cli
-      .do('wipe', this.app)
+      .do('wsk wipe', this.app)
       .then(async res => {
         await this.app.client.keys(`yes${keys.ENTER}`)
         return res
@@ -68,7 +68,7 @@ describe('wipe command', function(this: common.ISuite) {
 
   it('should successfully cancel the wipe command', () =>
     cli
-      .do('wipe', this.app)
+      .do('wsk wipe', this.app)
       .then(async res => {
         await this.app.client.keys(`no${keys.ENTER}`)
         return res
@@ -87,7 +87,7 @@ describe('wipe command', function(this: common.ISuite) {
 
   it('should successfully cancel the wipe command again', () =>
     cli
-      .do('wipe', this.app)
+      .do('wsk wipe', this.app)
       .then(async res => {
         // just enter this time
         await this.app.client.keys(`${keys.ENTER}`)
@@ -117,7 +117,7 @@ describe('wipe command', function(this: common.ISuite) {
   it('should handle concurrent deletions', () =>
     Promise.all([
       // the repl wipe
-      cli.do('wipe', this.app).then(async res => {
+      cli.do('wsk wipe', this.app).then(async res => {
         await this.app.client.keys(`yes${keys.ENTER}`)
         return res
       }),

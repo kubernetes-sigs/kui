@@ -27,8 +27,8 @@ describe('History', function(this: common.ISuite) {
   after(common.after(this))
 
   const entityName = 'foo'
-  const createCommand = `create ${entityName} ${ROOT}/data/openwhisk/foo.js`
-  const listCommand = 'list'
+  const createCommand = `wsk action create ${entityName} ${ROOT}/data/openwhisk/foo.js`
+  const listCommand = 'wsk action list'
 
   it('should create an action', () =>
     cli

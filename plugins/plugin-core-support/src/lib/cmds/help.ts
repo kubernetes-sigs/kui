@@ -93,11 +93,11 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
  *
  */
 export default async (commandTree: CommandRegistrar, { usage }) => {
-  const helpCmd = commandTree.listen('/help', help(usage), {
+  commandTree.listen('/help', help(usage), {
     noAuthOk: true,
     inBrowserOk: true
   })
-  commandTree.synonym('/?', help(usage), helpCmd, {
+  commandTree.listen('/?', help(usage), {
     noAuthOk: true,
     inBrowserOk: true
   })

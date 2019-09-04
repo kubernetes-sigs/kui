@@ -637,16 +637,17 @@ export const generatePrescanModel = async (opts: PrescanOptions): Promise<Presca
     const A = route.split('/')
     for (let idx = 1; idx < A.length; idx++) {
       const cmd = `/${A.slice(idx).join('/')}`
-      if (!disambiguator[cmd]) {
-        // this is, so far, an unambiguous resolution
+      if (!disambiguator[cmd] && (route === cmd || !commandToPlugin[route])) {
+        // this is, so far, an unambiguous resolution, and we don't
+        // have a specific resolution for this cmd
         disambiguator[cmd] = route
         commandToPlugin[cmd] = commandToPlugin[route]
-      } else {
+      } else if (disambiguator[cmd]) {
         // a conflict. is it a subtree-synonym conflcit? if so ignore the conflict
         const subtree = route.substring(0, route.lastIndexOf('/'))
         if (!isSubtreeSynonym[subtree]) {
           if (disambiguator[cmd] === cmd) {
-            // rule in favor of what we ahve
+            // rule in favor of what we have
           } else if (route === cmd) {
             // rule in favor of the new one
             disambiguator[cmd] = route

@@ -32,7 +32,7 @@ const ruleName = `on_${triggerName}_do_${actionNameInPackage.replace(/\//g, '_')
 
 describe('List all OpenWhisk entities', function(this: common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this, () => cli.do(`wsk rule rm ${ruleName}`, this.app)))
+  after(common.after(this, () => cli.do(`wsk rule delete ${ruleName}`, this.app)))
 
   // create action
   it('should create a packaged action', () =>

@@ -36,19 +36,19 @@ describe('Invoke asynchronously and await', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/long.js`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/long.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName)))
 
   // create the second action
   it('should do an async of the action, using implicit context', () =>
-    cli.do(`async`, this.app).then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
+    cli.do(`wsk action async`, this.app).then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
 
   // call await
   it('should await completion of the activation', () =>
     cli
-      .do(`$ await`, this.app)
+      .do(`wsk $ await`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName)))

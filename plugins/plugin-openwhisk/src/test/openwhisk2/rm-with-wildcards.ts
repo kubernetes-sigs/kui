@@ -50,12 +50,12 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
     list.forEach(actionName => {
       it('should NOT find a deleted action', () =>
         cli
-          .do(`action get ${actionName} --no-retry`, this.app)
+          .do(`wsk action get ${actionName} --no-retry`, this.app)
           .then(cli.expectError(404))
           .catch(common.oops(this)))
       it('should FAIL to delete a non-existent action', () =>
         cli
-          .do(`rimraf ${actionName} --no-retry`, this.app)
+          .do(`wsk action rimraf ${actionName} --no-retry`, this.app)
           .then(cli.expectError(404))
           .catch(common.oops(this)))
     })
@@ -70,7 +70,7 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
 
     it(`should delete via rimraf ${cmd}`, () =>
       cli
-        .do(`rimraf ${cmd}`, this.app)
+        .do(`wsk action rimraf ${cmd}`, this.app)
         .then(
           cli.expectOKWithCustom({
             expect: `deleted ${listToBeDeleted.length} elements`,
@@ -87,7 +87,7 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
 
   it('should delete nothing with rimraf zzz*', () =>
     cli
-      .do(`rimraf zzz*`, this.app)
+      .do(`wsk action rimraf zzz*`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 0 elements', exact: true }))
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
@@ -95,7 +95,7 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
 
   it('should delete foo and foo2 with rimraf foo*', () =>
     cli
-      .do(`rimraf foo*`, this.app)
+      .do(`wsk action rimraf foo*`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 2 elements', exact: true }))
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
@@ -104,12 +104,12 @@ describe('Delete using rimraf with wildcards', function(this: common.ISuite) {
   // goo should still show up in the list and get views
   it('should list goo', () =>
     cli
-      .do(`list`, this.app)
+      .do(`wsk action list`, this.app)
       .then(cli.expectOKWithOnly(actions[2]))
       .catch(common.oops(this)))
   it('should find a not-deleted action', () =>
     cli
-      .do(`action get ${actions[2]}`, this.app)
+      .do(`wsk action get ${actions[2]}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actions[2]))

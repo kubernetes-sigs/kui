@@ -69,7 +69,7 @@ const testPagination = (ctx: common.ISuite, actionName?: string) => {
 
   return (
     cli
-      .do(`$ list --limit ${limit} ${extraArgs}`, app)
+      .do(`wsk $ list --limit ${limit} ${extraArgs}`, app)
       .then(cli.expectOKWithAny)
       .then(() =>
         app.client.waitUntil(() => {
@@ -121,14 +121,14 @@ describe('Activation list paginator', function(this: common.ISuite) {
 
   it(`should create an action ${actionName}`, () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName)))
 
   it(`should create an action ${actionName2}`, () =>
     cli
-      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2)))

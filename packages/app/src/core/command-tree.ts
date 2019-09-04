@@ -40,6 +40,7 @@ import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Tab } from '../webapp/cli'
 import { PluginResolver } from './plugins'
+import { theme } from './settings'
 
 /**
  * The command tree module
@@ -465,7 +466,7 @@ const withEvents = (
  * by calling `setDefaultCommandContext`.
  *
  */
-let _defaultContext: string[] = ['wsk', 'action'] // TODO take this from the site config
+let _defaultContext: string[] = (theme && theme.defaultContext) || []
 export const getDefaultCommandContext = () => _defaultContext
 
 /**
@@ -513,10 +514,15 @@ const _read = async (
         return maybeInContextRetry
       }
 
-      // oof, fallback plan: look in /wsk/action
+      // oof, fallback plan: look in the default context
       const newContext = _defaultContext.concat(originalArgv).filter((elt, idx, A) => elt !== A[idx - 1])
-      const maybeInWskAction = _read(model, newContext, contextRetry.slice(0, contextRetry.length - 1), originalArgv)
-      return maybeInWskAction
+      const maybeInDefaultContext = _read(
+        model,
+        newContext,
+        contextRetry.slice(0, contextRetry.length - 1),
+        originalArgv
+      )
+      return maybeInDefaultContext
     } else {
       // if we get here, we can't find a matching command
       return false
@@ -850,10 +856,11 @@ export const proxy = (plugin: string) => ({
     options: CommandOptions = new DefaultCommandOptions()
   ) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
   listen: (route: string, handler: CommandHandler, options: CommandOptions) =>
-    listen(route, handler, Object.assign({}, options, { plugin: plugin })),
+    listen(route, handler, Object.assign({}, options, { plugin })),
   intention: (route: string, handler: CommandHandler, options: CommandOptions) =>
-    intention(route, handler, Object.assign({}, options, { plugin: plugin })),
-  synonym,
+    intention(route, handler, Object.assign({}, options, { plugin })),
+  synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) =>
+    synonym(route, handler, master, Object.assign({}, options, { plugin })),
   subtree,
   subtreeSynonym,
   commandNotFoundMessage,

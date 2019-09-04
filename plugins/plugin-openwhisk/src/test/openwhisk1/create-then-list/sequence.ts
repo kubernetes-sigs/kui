@@ -36,7 +36,7 @@ localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo')))
@@ -44,7 +44,7 @@ localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
   // create the second action
   it('should create an action', () =>
     cli
-      .do(`create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .do(`wsk action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2')))
@@ -52,7 +52,7 @@ localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
   // create a sequence
   it('should create a sequence', () =>
     cli
-      .do(`create sss1 --sequence foo,foo2`, this.app)
+      .do(`wsk action create sss1 --sequence foo,foo2`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('sss1')))
@@ -60,7 +60,7 @@ localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
   // create a sequence
   it('should create a sequence, alternate --sequence order', () =>
     cli
-      .do(`create sss2 foo,foo2 --sequence`, this.app)
+      .do(`wsk action create sss2 foo,foo2 --sequence`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('sss2')))
@@ -68,17 +68,20 @@ localDescribe('Create a sequence, then list it', function(this: common.ISuite) {
   // create a sequence
   it('should create a sequence, another alternate --sequence order', () =>
     cli
-      .do(`create --sequence sss3 foo,foo2`, this.app)
+      .do(`wsk action create --sequence sss3 foo,foo2`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('sss3')))
 
   // list tests
-  it(`should find foo with "list"`, () => cli.do('list', this.app).then(cli.expectOKWith('foo')))
-  it(`should find foo2 "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('foo2')))
-  it(`should find sss1 with "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('sss1')))
-  it(`should find sss2 with "list"`, () => cli.do(`list`, this.app).then(cli.expectOKWith('sss2')))
-  it(`should find sss3 with "action list"`, () => cli.do(`action list`, this.app).then(cli.expectOKWith('sss3')))
+  it(`should find foo with "wsk action list"`, () => cli.do('wsk action list', this.app).then(cli.expectOKWith('foo')))
+  it(`should find foo2 "wsk action list"`, () => cli.do(`wsk action list`, this.app).then(cli.expectOKWith('foo2')))
+  it(`should find sss1 with "wsk action list"`, () =>
+    cli.do(`wsk action list`, this.app).then(cli.expectOKWith('sss1')))
+  it(`should find sss2 with "wsk action list"`, () =>
+    cli.do(`wsk action list`, this.app).then(cli.expectOKWith('sss2')))
+  it(`should find sss3 with "wsk action list"`, () =>
+    cli.do(`wsk action list`, this.app).then(cli.expectOKWith('sss3')))
 
   // click on a sequence component bubble
   it('should show action after clicking on bubble', async () => {

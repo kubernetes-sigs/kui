@@ -82,7 +82,7 @@ describe('blackbox actions', function(this: common.ISuite) {
 
   it(`should invoke bb2`, () =>
     cli
-      .do(`invoke bb2`, this.app)
+      .do(`wsk action invoke bb2`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('bb2'))

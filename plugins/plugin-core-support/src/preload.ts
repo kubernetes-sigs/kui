@@ -20,8 +20,6 @@ debug('loading')
 
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 
-import help from './lib/cmds/help'
-
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { PreloadRegistration } from '@kui-shell/core/models/plugin'
 
@@ -30,7 +28,7 @@ import { PreloadRegistration } from '@kui-shell/core/models/plugin'
  *
  */
 const registration: PreloadRegistration = async (commandTree: CommandRegistrar, options?) => {
-  const asyncs = [help(commandTree, options)]
+  const asyncs = []
 
   if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.default(commandTree)))

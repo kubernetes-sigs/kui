@@ -26,7 +26,7 @@ describe('parameter parsing with quotes', function(this: common.ISuite) {
   const createWith = params => {
     return it(`should create package with -p creds ${params}`, () =>
       cli
-        .do(`package update ppp -p creds ${params}`, this.app)
+        .do(`wsk package update ppp -p creds ${params}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing('ppp'))
@@ -36,7 +36,7 @@ describe('parameter parsing with quotes', function(this: common.ISuite) {
   const expectParams = params => {
     return it('should show parameters', () =>
       cli
-        .do('params', this.app)
+        .do('wsk action params', this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing('ppp'))

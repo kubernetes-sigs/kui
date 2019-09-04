@@ -31,7 +31,7 @@ describe('no .wskprops tests', function(this: common.ISuite) {
 
     it('shoule see empty action list', () =>
       cli
-        .do('action list', this.app)
+        .do('wsk action list', this.app)
         .then(cli.expectJustOK)
         .catch(common.oops(this)))
 
@@ -51,7 +51,7 @@ describe('no .wskprops tests', function(this: common.ISuite) {
 
     it('shoule see error when action list', () =>
       cli
-        .do('action list', this.app)
+        .do('wsk action list', this.app)
         .then(cli.expectError(403, 'Command requires authentication'))
         .catch(common.oops(this)))
 
@@ -64,7 +64,7 @@ describe('no .wskprops tests', function(this: common.ISuite) {
 
     it('shoule see action list', () =>
       cli
-        .do('action list', this.app)
+        .do('wsk action list', this.app)
         .then(cli.expectJustOK)
         .catch(common.oops(this)))
 

@@ -33,25 +33,25 @@ describe('app create where app name is also a package name', function(this: comm
 
   it('should create an app named foo in package foo', () =>
     cli
-      .do('app create foo/foo @demos/hello.js', this.app)
+      .do('wsk app create foo/foo @demos/hello.js', this.app)
       .then(cli.expectOK)
       .catch(common.oops(this)))
 
   it('should app get mo expecting 409', () =>
     cli
-      .do('app get foo', this.app)
+      .do('wsk app get foo', this.app)
       .then(cli.expectError(409))
       .catch(common.oops(this)))
 
   it('should app get /_/mo expecting 409', () =>
     cli
-      .do('app get /_/foo', this.app)
+      .do('wsk app get /_/foo', this.app)
       .then(cli.expectError(409))
       .catch(common.oops(this)))
 
   it('should app list then click on foo/foo', () =>
     cli
-      .do('app list', this.app)
+      .do('wsk app list', this.app)
       .then(
         cli.expectOKWithCustom({
           selector: '.entity[data-name="foo"][data-package-name="foo"] .entity-name.clickable',

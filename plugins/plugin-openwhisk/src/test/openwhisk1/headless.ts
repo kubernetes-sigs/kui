@@ -44,7 +44,7 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
   //   (macOS versus linux, i think)
   it('should show command not found', () =>
     cli
-      .do('actiono list', {}, { errOk: 1 })
+      .do('wsk actiono list', {}, { errOk: 1 })
       .then(cli.expectError(127, /(actiono:\s+)?(command\s+)?not found/))
       .catch(common.oops(this)))
 
@@ -56,7 +56,7 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
 
   it(`should show current namespace`, () =>
     cli
-      .do('namespace current')
+      .do('wsk namespace current')
       .then(cli.expectOK(ui.expectedNamespace(), { exact: true, squish: true }))
       .catch(common.oops(this)))
 
@@ -92,7 +92,7 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
 
   it('should show wsk action get help with action get', () =>
     cli
-      .do('action get', {}, { errOk: 1 })
+      .do('wsk action get', {}, { errOk: 1 })
       .then(cli.expectError(497 - 256, 'OpenWhisk / Action Operations / get'))
       .catch(common.oops(this)))
 
@@ -102,7 +102,7 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
     .catch(common.oops(this)))
   */
 
-  const listers = ['action list', 'wsk action list']
+  const listers = ['wsk action list']
   listers.forEach(ls => {
     it(`should show empty ${ls}`, () =>
       cli
@@ -113,7 +113,7 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
 
   it('should create an action', () =>
     cli
-      .do(`action create foo ${join(ROOT, 'data/openwhisk/headless/foo.js')}`)
+      .do(`wsk action create foo ${join(ROOT, 'data/openwhisk/headless/foo.js')}`)
       .then(cli.expectOK('ok: updated action foo\n', { exact: true }))
       .catch(common.oops(this)))
 
@@ -132,25 +132,25 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
 
   it('should create an action with an env var parameter', () =>
     cli
-      .do(`action create envfun ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun $FUN`, { FUN: 3 })
+      .do(`wsk action create envfun ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun $FUN`, { FUN: 3 })
       .then(cli.expectOK('ok: updated action envfun\n', { exact: true }))
       .catch(common.oops(this)))
 
   it('should create an action with params-with-spaces', () =>
     cli
-      .do(`action create spacey ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun "space cadet"`)
+      .do(`wsk action create spacey ${join(ROOT, 'data/openwhisk/headless/echo.js')} -p fun "space cadet"`)
       .then(cli.expectOK('ok: updated action spacey\n', { exact: true }))
       .catch(common.oops(this)))
 
   it('should invoke spacey', () =>
     cli
-      .do('action invoke spacey')
+      .do('wsk action invoke spacey')
       .then(cli.expectOK('"fun": "space cadet"'))
       .catch(common.oops(this)))
 
   it('should async spacey', () =>
     cli
-      .do('action async spacey')
+      .do('wsk action async spacey')
       .then(cli.expectOK('ok: invoked spacey with id'))
       .catch(common.oops(this)))
 
@@ -161,7 +161,7 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
       .catch(common.oops(this)))
   it('should async seq', () =>
     cli
-      .do('async seq')
+      .do('wsk action async seq')
       .then(cli.expectOK('ok: invoked seq with id'))
       .then(line => {
         const match = line.match(/with id (.*)[\s]*$/)

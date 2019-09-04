@@ -29,14 +29,15 @@ describe('List entities with a clean slate', function(this: common.ISuite) {
   after(common.after(this))
 
   // implicit entity type
-  it(`should list actions with "list"`, () => cli.do(`list`, this.app).then(cli.expectJustOK))
+  it(`should list actions with "list"`, () => cli.do(`wsk action list`, this.app).then(cli.expectJustOK))
 
   // explicit entity type
   openwhisk.entities.forEach(entity => {
-    it(`should list ${entity} with "list"`, () => cli.do(`${entity} list`, this.app).then(cli.expectJustOK))
+    it(`should list ${entity} with "list"`, () => cli.do(`wsk ${entity} list`, this.app).then(cli.expectJustOK))
   })
 
   // activations
-  it(`should list actions with "$ list"`, () => cli.do(`$ list`, this.app).then(cli.expectOKWithAny))
-  it(`should list actions with "activation list"`, () => cli.do(`activation list`, this.app).then(cli.expectOKWithAny))
+  it(`should list actions with "$ list"`, () => cli.do(`wsk $ list`, this.app).then(cli.expectOKWithAny))
+  it(`should list actions with "activation list"`, () =>
+    cli.do(`wsk activation list`, this.app).then(cli.expectOKWithAny))
 })

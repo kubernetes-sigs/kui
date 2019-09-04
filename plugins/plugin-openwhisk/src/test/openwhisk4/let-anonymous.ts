@@ -36,7 +36,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName1)))
   it('should do an invoke of the action, using implicit context', () =>
     cli
-      .do(`invoke -p y 8fdsfdas`, this.app)
+      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -51,7 +51,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName2)))
   it('should do an invoke of the action, using implicit context', () =>
     cli
-      .do(`invoke -p y 8fdsfdas`, this.app)
+      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -66,7 +66,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(sidecar.expectShowing(seqName1)))
   it('should do an invoke of the action, using implicit context', () =>
     cli
-      .do(`invoke -p y 8fdsfdas`, this.app)
+      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -81,7 +81,7 @@ describe('Create anonymous actions via let', function(this: common.ISuite) {
       .then(sidecar.expectShowing(seqName2)))
   it('should do an invoke of the action, using implicit context', () =>
     cli
-      .do(`invoke -p y 8fdsfdas`, this.app)
+      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName2))

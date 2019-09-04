@@ -69,7 +69,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(seqName5)))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName5))
@@ -196,7 +196,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName22)))
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName22))
@@ -204,7 +204,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(ui.expectStruct({ y: 4 })))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName22))
@@ -220,7 +220,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_WEB_ACTION_URL)))
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName8))
@@ -228,7 +228,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(ui.expectStruct({ y: 4 })))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName8))
@@ -321,7 +321,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName4)))
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName4))
@@ -329,7 +329,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(text => assert.strictEqual(text, 'This entity has no parameters')))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName4))
@@ -337,7 +337,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(ui.expectSubset({})))
   it('should switch to parameters mode via params', () =>
     cli
-      .do('params', this.app)
+      .do('wsk action params', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName4))
@@ -353,7 +353,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName5)))
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName5))
@@ -361,7 +361,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(ui.expectStruct({ y: 4 })))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName5))
@@ -377,7 +377,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName6)))
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName6))
@@ -385,7 +385,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(ui.expectStruct({ y: 4, yy: 44 })))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName6))
@@ -401,7 +401,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName7)))
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName7))
@@ -409,7 +409,7 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
       .then(ui.expectStruct({ y: 4 })))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName7))
@@ -425,12 +425,12 @@ describe('Create an action via let core tests', function(this: common.ISuite) {
 
   // invoke it
   it('should do an async of the action, using implicit context', () =>
-    cli.do(`async -p y 3`, this.app).then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
+    cli.do(`wsk action async -p y 3`, this.app).then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
 
   // call await
   it('should await successful completion of the activation', () =>
     cli
-      .do(`$ await`, this.app)
+      .do(`wsk $ await`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

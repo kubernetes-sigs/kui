@@ -38,7 +38,7 @@ localDescribe('Create an action with implicit entity type, then invoke it, then 
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo'))
@@ -47,7 +47,7 @@ localDescribe('Create an action with implicit entity type, then invoke it, then 
   // invoke it asynchronously with no params
   it('should async that action', () =>
     cli
-      .do(`async foo`, this.app)
+      .do(`wsk action async foo`, this.app)
       .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
@@ -61,7 +61,7 @@ localDescribe('Create an action with implicit entity type, then invoke it, then 
     it(`should find the new action with "$ ${cmd}"`, () =>
       this.app.client.waitUntil(() => {
         return cli
-          .do(`$ ${cmd}`, this.app)
+          .do(`wsk $ ${cmd}`, this.app)
           .then(cli.expectOKWith('foo'))
           .then(() => true)
           .catch(() => false)
@@ -70,7 +70,7 @@ localDescribe('Create an action with implicit entity type, then invoke it, then 
     it(`should find the new action with "activation ${cmd}"`, () =>
       this.app.client.waitUntil(() => {
         return cli
-          .do(`activation ${cmd}`, this.app)
+          .do(`wsk activation ${cmd}`, this.app)
           .then(cli.expectOKWith('foo'))
           .then(() => true)
           .catch(() => false)

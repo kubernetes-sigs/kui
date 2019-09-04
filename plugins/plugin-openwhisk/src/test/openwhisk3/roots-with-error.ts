@@ -56,7 +56,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(this:
       .catch(common.oops(this)))
   it('should create an erroring action', () =>
     cli
-      .do(`update ${errorActionName} ${ROOT}/data/openwhisk/error.js`, this.app)
+      .do(`wsk action update ${errorActionName} ${ROOT}/data/openwhisk/error.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(errorActionName))
@@ -88,7 +88,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(this:
   // call await
   it('should await successful completion of the activation', () =>
     cli
-      .do(`$ await`, this.app)
+      .do(`wsk $ await`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(goodSeqName))
@@ -105,7 +105,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(this:
   // call await
   it('should await not-successful completion of the activation', () =>
     cli
-      .do(`$ await`, this.app)
+      .do(`wsk $ await`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(errorSeqName))
@@ -116,13 +116,13 @@ localDescribe('List root-most non-erroring activations with $$!', function(this:
   // call $ roots
   it('should call $$! successfully', () =>
     cli
-      .do(`$$!`, this.app)
+      .do(`wsk $$!`, this.app)
       .then(cli.expectOKWithAny)
       .catch(common.oops(this)))
 
   it('should list the erroring sequence activation', () =>
     cli
-      .do(`$$!`, this.app)
+      .do(`wsk $$!`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
       .then(namesInList => filter(namesInList, name => name === errorSeqName))
@@ -131,7 +131,7 @@ localDescribe('List root-most non-erroring activations with $$!', function(this:
 
   it('should not list the non-erroring sequence activation', () =>
     cli
-      .do(`$$!`, this.app)
+      .do(`wsk $$!`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
       .then(namesInList => filter(namesInList, name => name === goodSeqName))

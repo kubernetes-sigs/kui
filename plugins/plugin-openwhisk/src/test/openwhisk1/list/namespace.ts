@@ -31,6 +31,6 @@ describe('Namespaces list', function(this: common.ISuite) {
   // implicit entity type
   ui.aliases.list.forEach(cmd => {
     it(`should list namespaces with "namespaces ${cmd}"`, () =>
-      cli.do(`namespaces ${cmd}`, this.app).then(cli.expectOKWithOnly(ui.expectedNamespace())))
+      cli.do(`wsk namespaces ${cmd}`, this.app).then(cli.expectOKWithOnly(ui.expectedNamespace())))
   })
 })

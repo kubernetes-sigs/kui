@@ -62,7 +62,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
     // verify that annotations survived the copy
     it('should switch to annotations mode', () =>
       cli
-        .do('annotations', this.app)
+        .do('wsk action annotations', this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
@@ -73,7 +73,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
     // invoke the copy
     it(`should invoke the copied action ${bFull}`, () =>
       cli
-        .do(`invoke -p "${key}" "${value}"`, this.app)
+        .do(`wsk action invoke -p "${key}" "${value}"`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(b))
@@ -93,7 +93,7 @@ describe('Use copy to copy openwhisk entities', function(this: common.ISuite) {
     // verify that original annotations survived the copy
     it('should switch to annotations mode', () =>
       cli
-        .do('annotations', this.app)
+        .do('wsk action annotations', this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(a, undefined, undefined, aPackage))

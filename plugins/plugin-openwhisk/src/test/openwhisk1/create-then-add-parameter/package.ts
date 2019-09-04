@@ -41,7 +41,7 @@ localDescribe('Add parameters to packages', function(this: common.ISuite) {
 
   it('should add a parameter with explicit package name', () =>
     cli
-      .do(`package set x=1 in ${packageName}`, this.app)
+      .do(`wsk package set x=1 in ${packageName}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(packageName))
@@ -50,7 +50,7 @@ localDescribe('Add parameters to packages', function(this: common.ISuite) {
 
   it('should add a parameter with implicit package name', () =>
     cli
-      .do('set y=1', this.app)
+      .do('wsk package set y=1', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(packageName))
@@ -59,7 +59,7 @@ localDescribe('Add parameters to packages', function(this: common.ISuite) {
 
   it('should update a parameter value with implicit package name', () =>
     cli
-      .do('set x=2', this.app)
+      .do('wsk package set x=2', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(packageName))

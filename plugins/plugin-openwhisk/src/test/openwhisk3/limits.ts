@@ -45,7 +45,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with -m 129', () =>
     cli
-      .do(`action update ${actionName1} ${ROOT}/data/openwhisk/foo.js -m 129`, this.app)
+      .do(`wsk action update ${actionName1} ${ROOT}/data/openwhisk/foo.js -m 129`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))
@@ -54,7 +54,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with --memory 131', () =>
     cli
-      .do(`action update ${actionName2} ${ROOT}/data/openwhisk/foo.js --memory 131`, this.app)
+      .do(`wsk action update ${actionName2} ${ROOT}/data/openwhisk/foo.js --memory 131`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -63,7 +63,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with -t 1000', () =>
     cli
-      .do(`action update ${actionName3} ${ROOT}/data/openwhisk/foo.js -t 1000`, this.app)
+      .do(`wsk action update ${actionName3} ${ROOT}/data/openwhisk/foo.js -t 1000`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName3))
@@ -72,7 +72,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with --timeout 2000', () =>
     cli
-      .do(`action update ${actionName4} ${ROOT}/data/openwhisk/foo.js --timeout 2000`, this.app)
+      .do(`wsk action update ${actionName4} ${ROOT}/data/openwhisk/foo.js --timeout 2000`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName4))
@@ -81,7 +81,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with --timeout 3s', () =>
     cli
-      .do(`action update ${actionName5} ${ROOT}/data/openwhisk/foo.js --timeout 3s`, this.app)
+      .do(`wsk action update ${actionName5} ${ROOT}/data/openwhisk/foo.js --timeout 3s`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName5))
@@ -90,7 +90,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with --timeout 5m', () =>
     cli
-      .do(`action update ${actionName6} ${ROOT}/data/openwhisk/foo.js --timeout 5m`, this.app)
+      .do(`wsk action update ${actionName6} ${ROOT}/data/openwhisk/foo.js --timeout 5m`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName6))
@@ -99,7 +99,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with -l 1', () =>
     cli
-      .do(`action update ${actionName7} ${ROOT}/data/openwhisk/foo.js -l 1`, this.app)
+      .do(`wsk action update ${actionName7} ${ROOT}/data/openwhisk/foo.js -l 1`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName7))
@@ -108,13 +108,13 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should fail to create an action with --logs 2', () =>
     cli
-      .do(`action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logs 2`, this.app)
+      .do(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logs 2`, this.app)
       .then(cli.expectError(499)) // unsupported optional parameter
       .catch(common.oops(this)))
 
   it('should create an action with --logsize 2', () =>
     cli
-      .do(`action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 2`, this.app)
+      .do(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 2`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName8))
@@ -124,7 +124,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
   // updating the action8 this time
   it('should create an action with --logsize 3', () =>
     cli
-      .do(`action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
+      .do(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName8))
@@ -133,7 +133,7 @@ localDescribe('Create an action with limits', function(this: common.ISuite) {
 
   it('should create an action with --logsize 3', () =>
     cli
-      .do(`action update ${actionName9} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
+      .do(`wsk action update ${actionName9} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName9))
