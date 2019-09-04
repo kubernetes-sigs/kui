@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.16](https://github.com/IBM/kui/compare/v3.0.15...v3.0.16) (2019-09-04)
+
+### Bug Fixes
+
+- **plugins/plugin-k8s:** the status/phase of kubenetes resources sometimes is not reliable ([f361d60](https://github.com/IBM/kui/commit/f361d60)), closes [#2651](https://github.com/IBM/kui/issues/2651)
+
 ## [3.0.15](https://github.com/IBM/kui/compare/v3.0.14...v3.0.15) (2019-09-04)
 
 ### Bug Fixes
