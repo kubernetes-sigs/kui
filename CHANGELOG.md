@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.15](https://github.com/IBM/kui/compare/v3.0.14...v3.0.15) (2019-09-04)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** removed regex positive lookbehind ([9256055](https://github.com/IBM/kui/commit/9256055)), closes [#2640](https://github.com/IBM/kui/issues/2640)
+- **plugins/plugin-k8s:** k logs does not change sidecar title ([974f6ee](https://github.com/IBM/kui/commit/974f6ee)), closes [#2646](https://github.com/IBM/kui/issues/2646)
+- **plugins/plugin-proxy-support:** proxy-executor renderDom fails if nodeType is undefined ([8d7b947](https://github.com/IBM/kui/commit/8d7b947)), closes [#2644](https://github.com/IBM/kui/issues/2644)
+
 ## [3.0.14](https://github.com/IBM/kui/compare/v3.0.13...v3.0.14) (2019-09-01)
 
 ### Bug Fixes

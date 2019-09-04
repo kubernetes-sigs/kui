@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-apache-composer",
-  "version": "3.0.14",
+  "version": "3.0.15",
   "description": "Kui plugin for the Apache OpenWhisk Composer",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
