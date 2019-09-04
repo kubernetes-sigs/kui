@@ -226,22 +226,6 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       }
     })
 
-    it(`should click on status sidecar tab and show status table`, async () => {
-      try {
-        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
-
-        const table = `${selectors.SIDECAR} [k8s-table="Pod"]`
-        await this.app.client.waitForExist(table)
-
-        await assertTableTitleMatches(this, table, 'pod')
-
-        // wait for the badge to become green
-        await waitForGreen(this.app, `${table} .entity[data-name="nginx"]`) // [data-key="status"]
-      } catch (err) {
-        return common.oops(this)(err)
-      }
-    })
-
     it('should click on the sidecar maximize button', async () => {
       try {
         await this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)

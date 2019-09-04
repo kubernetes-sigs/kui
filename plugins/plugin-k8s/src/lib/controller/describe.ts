@@ -23,17 +23,8 @@ import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 
-import { FinalState } from '../model/states'
-import {
-  KubeStatus,
-  DefaultKubeStatus,
-  KubeMetadata,
-  DefaultKubeMetadata,
-  KubeResource,
-  Resource
-} from '../model/resource'
+import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource } from '../model/resource'
 
-import { statusButton } from '../view/modes/status'
 import { deleteResourceButton } from '../view/modes/crud'
 
 import i18n from '@kui-shell/core/util/i18n'
@@ -70,16 +61,7 @@ const renderDescribe = async (
       leaveBottomStripeAlone: true
     }
   ]
-  const yaml = resource
-  {
-    const command = 'kubectl'
-    const resource: Resource = {
-      kind: yaml.kind,
-      name: yaml.metadata.name,
-      resource: yaml
-    }
-    modes.push(statusButton(command, resource, FinalState.NotPendingLike))
-  }
+
   modes.push({
     mode: 'raw',
     label: 'YAML',
