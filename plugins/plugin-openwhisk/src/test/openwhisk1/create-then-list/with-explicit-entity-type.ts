@@ -46,13 +46,13 @@ localDescribe('Create with explicit entity type, then list', function(this: comm
     // create, using the implicit entity type
     it(`should create ${entity}`, () =>
       cli
-        .do(`${entity} create ${name} ${args[entity]}`, this.app)
+        .do(`wsk ${entity} create ${name} ${args[entity]}`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name)))
 
     // list tests
     it(`should find the new ${entity} with "${entity} list"`, () =>
-      cli.do(`${entity} list`, this.app).then(cli.expectOKWithOnly(name)))
+      cli.do(`wsk ${entity} list`, this.app).then(cli.expectOKWithOnly(name)))
   })
 })

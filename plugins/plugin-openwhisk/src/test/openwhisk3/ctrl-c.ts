@@ -36,7 +36,7 @@ describe('Cancel via Ctrl+C', function(this: common.ISuite) {
 
   it('should invoke the long-running action, then cancel', () =>
     cli
-      .do(`invoke -p name openwhisk`, this.app)
+      .do(`wsk action invoke -p name openwhisk`, this.app)
       .then(res => new Promise(resolve => setTimeout(() => resolve(res), delay / 3)))
       .then(appAndCount => this.app.client.keys(ui.ctrlC).then(() => appAndCount))
       .then(cli.expectBlank)

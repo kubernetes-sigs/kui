@@ -104,14 +104,14 @@ const show = (activation: Activation): string => {
     // optimistically assume this is a session. the sesion get
     // code will fall back to an activation get, if not
     const sessionId = activation.logs[0]
-    return `session get ${sessionId}`
+    return `wsk session get ${sessionId}`
   } else if (activation.sessionId) {
     // we know for certain that this is a session
-    return `session get ${activation.sessionId}`
+    return `wsk session get ${activation.sessionId}`
   } else {
     // we know of certain that this is a plain activation, and
     // already have it in hand! no need to re-fetch
-    return `activation get ${activation.activationId}`
+    return `wsk activation get ${activation.activationId}`
   }
 }
 

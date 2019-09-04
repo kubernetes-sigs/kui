@@ -173,7 +173,7 @@ export const setNeedsNamespace = async (err?: Error) => {
   if (localSelectedNS) {
     debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
     try {
-      return await repl.qexec(`auth switch ${localSelectedNS}`)
+      return await repl.qexec(`wsk auth switch ${localSelectedNS}`)
     } catch (err) {
       console.error('The previously selected namespace probably does not align with the currently selected host', err)
 
@@ -192,7 +192,7 @@ export const setNeedsNamespace = async (err?: Error) => {
       // user has one namespace, so select it
       const singleNamespace = auths[0].namespace
       debug('user has just one namespace, auto-selecting it', singleNamespace)
-      repl.qexec(`auth switch ${singleNamespace}`)
+      repl.qexec(`wsk auth switch ${singleNamespace}`)
     } else {
       // user has many namespaces, and didn't select one previously, so list them
       debug('user has more than one namespace, listing them')

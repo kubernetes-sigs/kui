@@ -39,7 +39,7 @@ localDescribe('Test synchronous action invocation', function(this: common.ISuite
 
   it('should create an action', () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -47,7 +47,7 @@ localDescribe('Test synchronous action invocation', function(this: common.ISuite
 
   it('should invoke that action with implicit entity', () =>
     cli
-      .do(`invoke -p name openwhisk`, this.app)
+      .do(`wsk action invoke -p name openwhisk`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -67,7 +67,7 @@ localDescribe('Test synchronous action invocation', function(this: common.ISuite
 
   it('should invoke that action with implicit entity', () =>
     cli
-      .do(`invoke -p name openwhisker`, this.app)
+      .do(`wsk action invoke -p name openwhisker`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -79,7 +79,7 @@ localDescribe('Test synchronous action invocation', function(this: common.ISuite
 
   it('should invoke the first action with explicit entity', () =>
     cli
-      .do(`invoke ${actionName} -p name openwhiskers`, this.app)
+      .do(`wsk action invoke ${actionName} -p name openwhiskers`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

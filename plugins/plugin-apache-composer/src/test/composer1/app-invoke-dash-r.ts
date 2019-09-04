@@ -42,7 +42,7 @@ describe('app invoke -r', function(this: common.ISuite) {
 
   it('should create a composer sequence', () =>
     cli
-      .do(`app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
+      .do(`wsk app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -51,7 +51,7 @@ describe('app invoke -r', function(this: common.ISuite) {
   for (let idx = 0; idx < 5; idx++) {
     it(`should invoke ${seqName1} with implicit entity idx=${idx}`, () =>
       cli
-        .do(`app invoke -r -p name grumble${idx}`, this.app)
+        .do(`wsk app invoke -r -p name grumble${idx}`, this.app)
         .then(cli.expectOKWithCustom({ selector: '.json' }))
         .then(selector => this.app.client.getText(selector))
         .then(ui.expectStruct({ name: `grumble${idx}` }))

@@ -228,7 +228,7 @@ const composer = {
   getSessions: (
     app: Application,
     nDone: number,
-    { cmd = 'session list', expect = [] }: { cmd?: string; expect: string[] }
+    { cmd = 'wsk session list', expect = [] }: { cmd?: string; expect: string[] }
   ) => {
     return cli
       .do(cmd, app)
@@ -278,7 +278,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
 
   // app init
   /* {
-        const cmd = `app init --url ${sharedURL}`
+        const cmd = `wsk app init --url ${sharedURL}`
         it(cmd, () => cli.do(cmd, this.app)
             .then(cli.expectOKWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
            .catch(common.oops(this)))
@@ -286,7 +286,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
 
     // app init --cleanse
     const cleanseRedis = () => {
-        const cmd = `app init --cleanse --url ${sharedURL}`
+        const cmd = `wsk app init --cleanse --url ${sharedURL}`
         it(cmd, () => cli.do(cmd, this.app)
             .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
            .catch(common.oops(this)))
@@ -295,7 +295,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // session list, expect empty
   /* const expectNoSessions = () => {
         // expect 0 live and 0 done, since we just did an app init --cleanse
-        const cmd = 'session list',
+        const cmd = 'wsk session list',
               nLive = 0,
               nDone = 0
         it(`should list sessions via ${cmd} nLive=${nLive} nDone=${nDone}`, () => {
@@ -310,7 +310,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app create
   {
     const { appName: appName1 } = inputs[0]
-    const cmd = `app create ${appName1} @demos/${appName1}.js -a turkey shoot`
+    const cmd = `wsk app create ${appName1} @demos/${appName1}.js -a turkey shoot`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -341,7 +341,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
 
   // app create, 409 conflict
   const { appName: appName1 } = inputs[0]
-  const cmd = `app create ${appName1} @demos/${appName1}.js`
+  const cmd = `wsk app create ${appName1} @demos/${appName1}.js`
   it(`${cmd} expect conflict`, () =>
     cli
       .do(cmd, this.app)
@@ -351,7 +351,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app invoke hello -p name composer
   const invokeHello = (): Promise<string> => {
     const { appName: appName1, expectedStructa: expectedStruct1 } = inputs[0]
-    const cmd = `app invoke ${appName1} -p name composer`
+    const cmd = `wsk app invoke ${appName1} -p name composer`
     return cli
       .do(cmd, this.app)
       .then(cli.expectOK)
@@ -393,7 +393,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(activationId =>
           ui
             .waitForSession(this.app, activationId, { name: appName1 })
-            .then(() => cli.do(`session result ${activationId}`, this.app))
+            .then(() => cli.do(`wsk session result ${activationId}`, this.app))
         )
         .then(cli.expectOKWithCustom({ selector: 'code' }))
         .then(selector => this.app.client.getText(selector))
@@ -404,7 +404,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app preview hello.js
   {
     const { appName: appName1 } = inputs[0]
-    const cmd = `app preview @demos/${appName1}.js`
+    const cmd = `wsk app preview @demos/${appName1}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -437,7 +437,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         .then(activationId =>
           ui
             .waitForSession(this.app, activationId, { name: appName1 })
-            .then(() => cli.do(`session get ${activationId}`, this.app))
+            .then(() => cli.do(`wsk session get ${activationId}`, this.app))
         )
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
@@ -456,7 +456,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app preview if.js
   {
     const { appName: appName2 } = inputs[1]
-    const cmd = `app preview @demos/${appName2}.js`
+    const cmd = `wsk app preview @demos/${appName2}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -499,7 +499,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app create if.js, confirming deployed decoration shows up
   {
     const { appName: appName2 } = inputs[1]
-    const cmd = `app create ${appName2} @demos/${appName2}.js`
+    const cmd = `wsk app create ${appName2} @demos/${appName2}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -518,7 +518,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app invoke if
   {
     const { appName: appName2, expectedStructa: expectedStruct2a } = inputs[1]
-    const cmd = `app invoke ${appName2}`
+    const cmd = `wsk app invoke ${appName2}`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -540,7 +540,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   //  app invoke if -p token secret -p name if-combinator
   {
     const { appName: appName2, expectedStructb: expectedStruct2b } = inputs[1]
-    const cmd = `app invoke ${appName2} -p token secret -p name if-combinator`
+    const cmd = `wsk app invoke ${appName2} -p token secret -p name if-combinator`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -563,7 +563,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     // expect 3 done sessions, and that the done list contain appName2
     const { appName: appName1 } = inputs[0]
     const { appName: appName2 } = inputs[1]
-    const cmd = 'session list --limit 200'
+    const cmd = 'wsk session list --limit 200'
     const expected = [appName1, appName2] // appName1 and appName2 had both better be in the list
     const nDone = 3
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
@@ -575,7 +575,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   {
     // expect 1 done sessions, and that the done list contain appName1
     const { appName: appName1 } = inputs[0]
-    const cmd = `session list ${appName1}`
+    const cmd = `wsk session list ${appName1}`
     const expected = [appName1] // appName1 had better be in the list
     const nDone = 1
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
@@ -587,7 +587,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   {
     // expect 1 done sessions, and that the done list contain appName1
     const { appName: appName2 } = inputs[1]
-    const cmd = `session list --name ${appName2}`
+    const cmd = `wsk session list --name ${appName2}`
     const expected = [appName2] // appName2 had better be in the list
     const nDone = 2
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
@@ -598,7 +598,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app preview try.js
   {
     const { appName: appName3 } = inputs[2]
-    const cmd = `app preview @demos/${appName3}.js`
+    const cmd = `wsk app preview @demos/${appName3}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -641,7 +641,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app create try.js, confirming deployed decoration shows up
   {
     const { appName: appName3 } = inputs[2]
-    const cmd = `app create ${appName3} @demos/${appName3}.js`
+    const cmd = `wsk app create ${appName3} @demos/${appName3}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -660,7 +660,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   //  app invoke try -p str aGVsbG8gdHJ5IQ==
   {
     const { appName: appName3, expectedStructa: expectedStruct3a } = inputs[2]
-    const cmd = `app invoke ${appName3} -p str aGVsbG8gdHJ5IQ==`
+    const cmd = `wsk app invoke ${appName3} -p str aGVsbG8gdHJ5IQ==`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -682,7 +682,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   //  app invoke try -p str bogus
   {
     const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]
-    const cmd = `app invoke ${appName3} -p str bogus`
+    const cmd = `wsk app invoke ${appName3} -p str bogus`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -705,7 +705,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   {
     // expect 1 done sessions, and that the done list contain appName3
     const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]
-    const cmd = 'session get --last try'
+    const cmd = 'wsk session get --last try'
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -716,7 +716,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
               .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct3b))
+              .then(ui.expectStruct(expectedStruct3b, false, true))
             return ok
           })
         )
@@ -730,7 +730,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app create retain.js
   {
     const { appName: appName4 } = inputs[3]
-    const cmd = `app create ${appName4} @demos/${appName4}.js`
+    const cmd = `wsk app create ${appName4} @demos/${appName4}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -749,7 +749,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   //  app invoke retain -p str aGVsbG8gdHJ5IQ==
   {
     const { appName: appName4, expectedStructa: expectedStruct4a } = inputs[3]
-    const cmd = `app invoke ${appName4} -p str aGVsbG8gdHJ5IQ==`
+    const cmd = `wsk app invoke ${appName4} -p str aGVsbG8gdHJ5IQ==`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -771,7 +771,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   //  app invoke retain -p str bogus
   {
     const { appName: appName4, expectedStructb: expectedStruct4b } = inputs[3]
-    const cmd = `app invoke ${appName4} -p str bogus`
+    const cmd = `wsk app invoke ${appName4} -p str bogus`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -793,7 +793,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   // app create let.js
   {
     const { appName: appName5 } = inputs[4]
-    const cmd = `app create ${appName5} @demos/${appName5}.js`
+    const cmd = `wsk app create ${appName5} @demos/${appName5}.js`
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -812,7 +812,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   //  app invoke retain -p str bogus
   {
     const { appName: appName5, expectedStructa: expectedStruct5a } = inputs[4]
-    const cmd = `app invoke ${appName5}`
+    const cmd = `wsk app invoke ${appName5}`
     it(cmd, () =>
       cli
         .do(cmd, this.app)

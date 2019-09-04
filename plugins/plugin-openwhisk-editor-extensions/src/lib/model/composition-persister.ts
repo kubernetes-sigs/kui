@@ -119,7 +119,7 @@ export const persister = {
             if (err) {
               reject(err)
             } else {
-              return pexec(`app update ${app.name} ${filepath} --kind ${app.exec.kind}`)
+              return pexec(`wsk app update ${app.name} ${filepath} --kind ${app.exec.kind}`)
                 .then(app => {
                   cleanup()
                   resolve(app)

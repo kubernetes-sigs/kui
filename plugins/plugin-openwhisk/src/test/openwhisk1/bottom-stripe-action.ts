@@ -81,7 +81,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: c
   // create an action, using the implicit entity type
   it(`should create an action ${actionName}`, () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -90,7 +90,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: c
   // create an action, using the implicit entity type
   it(`should create an action ${actionName2}`, () =>
     cli
-      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
+      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -100,7 +100,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: c
 
   it(`should get ${actionName}`, () =>
     cli
-      .do(`action get ${actionName}`, this.app)
+      .do(`wsk action get ${actionName}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

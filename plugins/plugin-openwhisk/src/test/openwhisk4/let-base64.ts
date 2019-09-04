@@ -46,7 +46,7 @@ describe('Invoke an action with a binary-formatted parameter', function(this: co
 
   it('should invoke it with a fake-binary file argument', () =>
     cli
-      .do(`invoke -p image @${file}`, this.app)
+      .do(`wsk action invoke -p image @${file}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName1))

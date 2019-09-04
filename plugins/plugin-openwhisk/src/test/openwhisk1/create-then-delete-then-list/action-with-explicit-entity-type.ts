@@ -39,19 +39,19 @@ localDescribe('Create an action, list it, delete it, then list nothing explicit 
     // create an action, using the implicit entity type
     it('should create an action', () =>
       cli
-        .do(`action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+        .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing('foo')))
 
     // list it
-    it(`should find the new action with "list"`, () =>
-      cli.do('action list', this.app).then(cli.expectOKWithOnly('foo')))
+    it(`should find the new action with "wsk action list"`, () =>
+      cli.do('wsk action list', this.app).then(cli.expectOKWithOnly('foo')))
 
     // delete the action
     it(`should delete the newly created action using "${cmd}"`, () =>
       cli
-        .do(`action ${cmd} foo`, this.app)
+        .do(`wsk action ${cmd} foo`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectClosed))
   })

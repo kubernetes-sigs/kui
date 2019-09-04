@@ -39,7 +39,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
 
   it('should switch to parameters mode', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -47,16 +47,16 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .then(ui.expectStruct({ x: 3 }))
       .catch(common.oops(this)))
 
-  it('should update the action with no code via kui action update', () =>
+  it('should update the action with no code via kuwsk action update', () =>
     cli
-      .do(`kui action update ${actionName} -p y 5`, this.app)
+      .do(`wsk action update ${actionName} -p y 5`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
       .catch(common.oops(this)))
   it('should switch to parameters mode and verify updated params', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -73,7 +73,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
       .catch(common.oops(this)))
   it('should switch to parameters mode and verify updated params', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -91,7 +91,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
 
   it('should switch to parameters mode and verify updated params', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -110,7 +110,7 @@ describe('wsk action update without input file', function(this: common.ISuite) {
 
   localIt('should switch to parameters mode and verify updated params', () =>
     cli
-      .do('parameters', this.app)
+      .do('wsk action parameters', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))

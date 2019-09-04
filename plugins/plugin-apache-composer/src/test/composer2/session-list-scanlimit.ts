@@ -38,7 +38,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
   const invokeApp = appName => {
     it(`should invoke ${appName}`, () =>
       cli
-        .do(`app invoke ${appName}`, this.app)
+        .do(`wsk app invoke ${appName}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(appName))
@@ -77,7 +77,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should create app ${appName}`, () =>
     cli
-      .do(`app create ${appName} @demos/hello.js`, this.app)
+      .do(`wsk app create ${appName} @demos/hello.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(appName))
@@ -87,13 +87,13 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should show just ok in session list --scan-limit 0`, () =>
     cli
-      .do(`session list --scan-limit 0`, this.app)
+      .do(`wsk session list --scan-limit 0`, this.app)
       .then(cli.expectJustOK)
       .catch(common.oops(this)))
 
   it(`should show session ${appName} in session list --scan-limit 1`, () =>
     cli
-      .do(`session list --scan-limit 1`, this.app)
+      .do(`wsk session list --scan-limit 1`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -106,7 +106,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should create app if`, () =>
     cli
-      .do(`app create if @demos/if.js`, this.app)
+      .do(`wsk app create if @demos/if.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('if'))
@@ -116,7 +116,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should not show session ${appName} in session list --scan-limit 1`, () =>
     cli
-      .do(`session list --scan-limit 1`, this.app)
+      .do(`wsk session list --scan-limit 1`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -129,7 +129,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should show session ${appName} in session list ${appName} --scan-limit 1`, () =>
     cli
-      .do(`session list ${appName} --scan-limit 1`, this.app)
+      .do(`wsk session list ${appName} --scan-limit 1`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -146,7 +146,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should show session 11 ${appName} in session list ${appName} --scan-limit 11`, () =>
     cli
-      .do(`session list ${appName} --scan-limit 11`, this.app)
+      .do(`wsk session list ${appName} --scan-limit 11`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -159,13 +159,13 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should show session 11 in session list ${appName} --scan-limit 11 --count`, () =>
     cli
-      .do(`session list ${appName} --scan-limit 11 --count`, this.app)
+      .do(`wsk session list ${appName} --scan-limit 11 --count`, this.app)
       .then(cli.expectOKWithString('11'))
       .catch(common.oops(this)))
 
   it(`should show session 10 ${appName} in session list ${appName} --skip 1 --scan-limit 10`, () =>
     cli
-      .do(`session list ${appName} --skip 1 --scan-limit 10`, this.app)
+      .do(`wsk session list ${appName} --skip 1 --scan-limit 10`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -178,7 +178,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should show session 10 ${appName} in session list ${appName} --skip 1 --scan-limit 11`, () =>
     cli
-      .do(`session list ${appName} --skip 1 --scan-limit 11`, this.app)
+      .do(`wsk session list ${appName} --skip 1 --scan-limit 11`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -195,7 +195,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
 
   it(`should show session 21 ${appName} in session list ${appName} --scan-limit 21`, () =>
     cli
-      .do(`session list ${appName} --scan-limit 21`, this.app)
+      .do(`wsk session list ${appName} --scan-limit 21`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
@@ -209,7 +209,7 @@ describe('session list --scan-limit --skip', function(this: common.ISuite) {
   // Note: this test may take longer than expected, since it's trying to find 21 sessions in all activations
   it(`should show session 21 ${appName} in session list ${appName} --scan-limit 30`, () =>
     cli
-      .do(`session list ${appName} --scan-limit 30`, this.app)
+      .do(`wsk session list ${appName} --scan-limit 30`, this.app)
       .then(cli.expectOKWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({

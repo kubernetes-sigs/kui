@@ -61,7 +61,7 @@ export default async (commandTree: CommandRegistrar) => {
               type,
               prettyType,
               prettyKind,
-              onclick: `app get "/${app.namespace}/${app.name}"`
+              onclick: `wsk app get "/${app.namespace}/${app.name}"`
             })
           )
 

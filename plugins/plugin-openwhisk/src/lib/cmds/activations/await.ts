@@ -72,7 +72,7 @@ const fetch = activationId =>
   new Promise((resolve, reject) => {
     const fetchPoll = () =>
       (isConductorActivation(activationId)
-        ? repl.qexec(`session get ${activationId}`)
+        ? repl.qexec(`wsk session get ${activationId}`)
         : repl.qexec(`wsk activation get ${activationId}`)
       )
         .then(resolve)

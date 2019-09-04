@@ -38,36 +38,37 @@ localDescribe('Create a sequence, list it, delete it', function(this: common.ISu
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo')))
   it('should create a second action', () =>
     cli
-      .do(`action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .do(`wsk action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2')))
 
   it('should create a sequence', () =>
     cli
-      .do(`action create --sequence sss foo,foo2`, this.app)
+      .do(`wsk action create --sequence sss foo,foo2`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('sss')))
 
   // list it
-  it(`should find the new sequence with "list"`, () => cli.do('action list', this.app).then(cli.expectOKWith('sss')))
+  it(`should find the new sequence with "list"`, () =>
+    cli.do('wsk action list', this.app).then(cli.expectOKWith('sss')))
 
   // delete the actions, keeping the sequence around
   it(`should delete the newly created action using "${rm}"`, () =>
     cli
-      .do(`action ${rm} foo`, this.app)
+      .do(`wsk action ${rm} foo`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
   it(`should delete the other newly created action using "${rm}"`, () =>
     cli
-      .do(`action ${rm} foo2`, this.app)
+      .do(`wsk action ${rm} foo2`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
 

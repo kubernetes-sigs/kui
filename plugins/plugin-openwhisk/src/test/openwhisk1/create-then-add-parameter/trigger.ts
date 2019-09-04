@@ -34,7 +34,7 @@ describe('Add parameters to triggers', function(this: common.ISuite) {
 
   it('should add a parameter with explicit trigger name', () =>
     cli
-      .do(`set x=1 in ${triggerName}`, this.app)
+      .do(`wsk trigger set x=1 in ${triggerName}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(triggerName))
@@ -43,7 +43,7 @@ describe('Add parameters to triggers', function(this: common.ISuite) {
 
   it('should add a parameter with implicit trigger name', () =>
     cli
-      .do('set y=1', this.app)
+      .do('wsk trigger set y=1', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(triggerName))
@@ -52,7 +52,7 @@ describe('Add parameters to triggers', function(this: common.ISuite) {
 
   it('should update a parameter value with implicit trigger name', () =>
     cli
-      .do('set x=2', this.app)
+      .do('wsk trigger set x=2', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(triggerName))
