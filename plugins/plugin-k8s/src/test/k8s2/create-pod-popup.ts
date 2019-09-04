@@ -82,33 +82,22 @@ const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
     }
 
     try {
-      /** see NOTE just below; we use the STATUS mode as the "clear the editor" intermission */
-      const intermission = async () => {
-        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('status'))
-        await waitForGreen(this.app, `${selectors.SIDECAR} ${selectors.BY_NAME(name)}`)
-      }
-
       // first wait for the table entry to turn green
       await waitForGreen(this.app, selectors.BY_NAME(name))
 
       // then click on the table row and switch back and forth between
       // raw and summary modes, each time ensuring that the editor
       // shows the expected content await this.app.client.click(`${selectors.BY_NAME(name)} .clickable`)
-      //
-      // NOTE: we use intermission() to clear out the editor, so the
-      // waitFor...Content is checking the *new* content
-      //
       await this.app.client.click(`${selectors.BY_NAME(name)} .clickable`)
       await waitForDescribeContent()
-      await intermission()
+      await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('raw'))
       await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
       await waitForRawContent()
-      await intermission()
+      await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('summary'))
       await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('summary'))
       await waitForDescribeContent()
-      await intermission()
+      await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('raw'))
       await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
-      await waitForRawContent()
     } catch (err) {
       return common.oops(this, true)(err)
     }
