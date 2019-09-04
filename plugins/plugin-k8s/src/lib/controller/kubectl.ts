@@ -40,15 +40,13 @@ import { fillInTheBlanks } from '../util/discovery/kubeconfig'
 import pickHelmClient from '../util/discovery/helm-client'
 import createdOn from '../util/created-on'
 
-import { Resource, KubeResource } from '../model/resource'
+import { KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
 import { Table, MultiTable, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
-import { deleteResourceButton } from '../view/modes/crud'
-import { statusButton, renderAndViewStatus } from '../view/modes/status'
 import { status as statusImpl } from './status'
 import helmGet from './helm/get'
 
@@ -609,23 +607,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const badges = []
         // badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
 
-        if (verb === 'get') {
-          const resource: Resource = {
-            kind: command !== 'helm' && yaml.kind,
-            name: entity,
-            resource: yaml
-          }
-          modes.push(statusButton(command, resource, FinalState.NotPendingLike))
-
-          deleteResourceButton(() =>
-            renderAndViewStatus(opts.tab, {
-              command,
-              resource,
-              finalState: FinalState.OfflineLike
-            })
-          )
-          modes.push(deleteResourceButton())
-        } else if (verb === 'describe') {
+        if (verb === 'describe') {
           const getCmd = opts.command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
           modes.push({
             mode: 'raw',
