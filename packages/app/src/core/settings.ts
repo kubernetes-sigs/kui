@@ -61,6 +61,9 @@ interface Theme {
   /** millis to wait for webpack->proxy connection before warning the user to explain the delay (default: 750ms) */
   millisBeforeProxyConnectionWarning?: number
 
+  /** default command execution context; e.g. ['k8s'] or ['wsk', 'action'] */
+  defaultContext?: string[]
+
   defaultTheme: string
   themes: { name: string; css: string; description?: string; style: string }[]
 }

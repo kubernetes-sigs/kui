@@ -31,7 +31,7 @@ describe('List activations, then drill down to summary views', function(this: co
   const drilldownWith = command => {
     return it(`should list activations and click on ${command}`, () =>
       cli
-        .do(`$ list`, this.app)
+        .do(`wsk $ list`, this.app)
         .then(cli.expectOKWithCustom({ passthrough: true }))
         .then(N =>
           sidecar

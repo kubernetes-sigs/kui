@@ -38,13 +38,14 @@ describe('auth tests', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action foo', () =>
     cli
-      .do(`create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo')))
 
   // list should show only foo
-  it(`should find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
+  it(`should find the foo action with "list"`, () =>
+    cli.do('wsk action list', this.app).then(cli.expectOKWithOnly('foo')))
 
   it(`should show ${ns1} for wsk namespace current`, () =>
     cli.do('wsk namespace current', this.app).then(cli.expectOKWithString(ns1)))
@@ -59,18 +60,19 @@ describe('auth tests', function(this: common.ISuite) {
     cli.do('wsk namespace current', this.app).then(cli.expectOKWithString(ns2)))
 
   // list should show no actions
-  it(`should NOT find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectJustOK))
+  it(`should NOT find the foo action with "list"`, () => cli.do('wsk action list', this.app).then(cli.expectJustOK))
 
   // create the second action
   it('should create an action foo2', () =>
     cli
-      .do(`create foo2 ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .do(`wsk action create foo2 ${ROOT}/data/openwhisk/foo.js`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('foo2')))
 
   // list should show only foo2
-  it(`should find the foo2 action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
+  it(`should find the foo2 action with "list"`, () =>
+    cli.do('wsk action list', this.app).then(cli.expectOKWithOnly('foo2')))
 
   // switch to first namespace
   it('should switch to the first namespace, using the CLI switch command', () =>
@@ -79,7 +81,8 @@ describe('auth tests', function(this: common.ISuite) {
       .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns1}` })))
 
   // list should show only foo
-  it(`should find the foo action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo')))
+  it(`should find the foo action with "list"`, () =>
+    cli.do('wsk action list', this.app).then(cli.expectOKWithOnly('foo')))
 
   // switch back to second namespace
   it('should switch to the second namespace, using the CLI switch command', () =>
@@ -88,7 +91,8 @@ describe('auth tests', function(this: common.ISuite) {
       .then(cli.expectOKWithCustom({ selector: '', expect: `namespace ${ns2}` })))
 
   // list should show only foo2
-  it(`should find the foo2 action with "list"`, () => cli.do('list', this.app).then(cli.expectOKWithOnly('foo2')))
+  it(`should find the foo2 action with "list"`, () =>
+    cli.do('wsk action list', this.app).then(cli.expectOKWithOnly('foo2')))
 
   // wsk auth list should so both installed namespaces
   ui.aliases.list.forEach(cmd => {
@@ -125,7 +129,7 @@ describe('auth tests', function(this: common.ISuite) {
 
   // check the current namespace is not changed by namespace switch --no-save
   it('should see the first namespace', () =>
-    cli.do('namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
+    cli.do('wsk namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
 
   // switch to the second namespace and save it
   it('should switch to the second namespace and save it locally, using the CLI wsk auth switch --save command', () =>
@@ -138,7 +142,7 @@ describe('auth tests', function(this: common.ISuite) {
 
   // check the current namespace is changed by namespace switch --save
   it('should see the second namespace', () =>
-    cli.do('namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns2}` })))
+    cli.do('wsk namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns2}` })))
 
   // switch to the first namespace and save it
   it('should switch to the first namespace and save it locally, using the CLI wsk auth switch command', () =>
@@ -151,5 +155,5 @@ describe('auth tests', function(this: common.ISuite) {
 
   // check the current namespace is changed by namespace switch
   it('should see the first namespace', () =>
-    cli.do('namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
+    cli.do('wsk namespace current', this.app).then(cli.expectOKWithCustom({ selector: '', expect: `${ns1}` })))
 })

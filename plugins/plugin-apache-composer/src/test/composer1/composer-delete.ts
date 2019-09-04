@@ -44,7 +44,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
   const invoke = (name, key, value, extraExpect, expectIsIt = false) => {
     it(`should invoke the composition ${name} with ${key}=${value}`, () =>
       cli
-        .do(`app invoke ${name} -p ${key} ${value}`, this.app)
+        .do(`wsk app invoke ${name} -p ${key} ${value}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))
@@ -64,7 +64,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
   // we have to make an app before we can delete it
   it('should create a composer sequence', () =>
     cli
-      .do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
+      .do(`wsk app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))
@@ -74,7 +74,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
 
   it(`should get ${seqName1} via app get`, () =>
     cli
-      .do(`app get ${seqName1}`, this.app)
+      .do(`wsk app get ${seqName1}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1)) // and sidecar should be showing it, too
@@ -84,7 +84,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
   // show up in the list prior to deletion
   it(`should list ${seqName1} via app list`, () =>
     cli
-      .do(`app list`, this.app)
+      .do(`wsk app list`, this.app)
       .then(cli.expectOKWithOnly(seqName1)) // seqName1 had better still be in the list
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1)) // and sidecar should be showing it, too
@@ -93,7 +93,7 @@ describe('Use the app delete command to delete an invokeable composition', funct
 
   it(`should delete a composer sequence`, () =>
     cli
-      .do(`app delete ${seqName1}`, this.app)
+      .do(`wsk app delete ${seqName1}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectClosed)
       .catch(common.oops(this)))
@@ -108,14 +108,14 @@ describe('Use the app delete command to delete an invokeable composition', funct
 
   it(`should fail to delete an unexisting composer sequence`, () =>
     cli
-      .do(`app delete ${seqName1}`, this.app)
+      .do(`wsk app delete ${seqName1}`, this.app)
       .then(cli.expectError(404, 'The requested resource does not exist'))
       .catch(common.oops(this)))
 
   // now the package binding should NOT exist
   it('should fail to get the package binding', () =>
     cli
-      .do(`package get openwhisk-composer.${seqName1}`, this.app)
+      .do(`wsk package get openwhisk-composer.${seqName1}`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this)))
 })

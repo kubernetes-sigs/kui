@@ -52,7 +52,7 @@ describe('wsk action invoke with implicit entity', function(this: common.ISuite)
 
   it(`should invoke ${actionName} with implicit entity and --param-file`, () =>
     cli
-      .do(`invoke --param-file ${ROOT}/data/openwhisk/params.json`, this.app)
+      .do(`wsk action invoke --param-file ${ROOT}/data/openwhisk/params.json`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -62,7 +62,7 @@ describe('wsk action invoke with implicit entity', function(this: common.ISuite)
 
   it(`should invoke ${actionName} with implicit entity and -P`, () =>
     cli
-      .do(`invoke -P ${ROOT}/data/openwhisk/params.json`, this.app)
+      .do(`wsk action invoke -P ${ROOT}/data/openwhisk/params.json`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -72,7 +72,7 @@ describe('wsk action invoke with implicit entity', function(this: common.ISuite)
 
   it(`should invoke ${actionName} with explicit entity and -P`, () =>
     cli
-      .do(`invoke ${actionName} -P ${ROOT}/data/openwhisk/params.json`, this.app)
+      .do(`wsk action invoke ${actionName} -P ${ROOT}/data/openwhisk/params.json`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -82,7 +82,7 @@ describe('wsk action invoke with implicit entity', function(this: common.ISuite)
 
   it(`should fail when requesting parameters of an activation`, () =>
     cli
-      .do('params', this.app)
+      .do('wsk action params', this.app)
       .then(cli.expectError(0, 'The current entity does not support viewing parameters'))
       .catch(common.oops(this)))
 })

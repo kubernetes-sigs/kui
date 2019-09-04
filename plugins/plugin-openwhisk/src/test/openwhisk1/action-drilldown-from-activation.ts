@@ -37,7 +37,7 @@ describe('activation list, activation get, click on header', function(this: comm
 
   it('should async that action and click on the activation id', () =>
     cli
-      .do(`async ${actionName}`, this.app)
+      .do(`wsk action async ${actionName}`, this.app)
       .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)

@@ -101,7 +101,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(() =>
         this.app.client.waitUntil(() =>
           cli
-            .do('app invoke compSimple', this.app)
+            .do('wsk app invoke compSimple', this.app)
             .then(cli.expectOK)
             .then(() => true)
             .catch(() => false)
@@ -124,13 +124,13 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(() => this.app.client.waitForExist('.editor.parse-error-decoration', 2000, true))
       .catch(common.oops(this)))
 
-  /* it('should initialize composer', () => cli.do(`app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
+  /* it('should initialize composer', () => cli.do(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
        .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
        .catch(common.oops(this))) */
 
   it('should create an app from FSM', () =>
     cli
-      .do(`app create compFromFSM ${ROOT}/data/composer/fsm.json`, this.app)
+      .do(`wsk app create compFromFSM ${ROOT}/data/composer/fsm.json`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('compFromFSM'))
@@ -144,7 +144,7 @@ describe('edit compositions', function(this: common.ISuite) {
 
   it('should create an app from source', () =>
     cli
-      .do(`app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`, this.app)
+      .do(`wsk app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing('compFromSrc'))
@@ -180,7 +180,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(() =>
         this.app.client.waitUntil(() =>
           cli
-            .do('app invoke compFromTpl -p name compose', this.app)
+            .do('wsk app invoke compFromTpl -p name compose', this.app)
             .then(cli.expectOK)
             .then(sidecar.expectOpen)
             .then(sidecar.expectShowing('compFromTpl'))

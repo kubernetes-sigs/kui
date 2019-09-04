@@ -33,7 +33,7 @@ import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
-import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
+import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig, initOW } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
 import * as repl from '@kui-shell/core/core/repl'
 import * as historyModel from '@kui-shell/core/models/history'
@@ -520,9 +520,9 @@ const fqn = (name: string): string => {
 const standardViewModes = (defaultMode, fn?) => {
   const makeModes = (): SidecarMode[] => {
     let modes: SidecarMode[] = [
-      { mode: 'parameters', label: 'params', command: () => 'parameters' },
-      { mode: 'annotations', command: () => 'annotations' },
-      { mode: 'raw', command: () => 'raw' }
+      { mode: 'parameters', label: 'params', direct: 'wsk action parameters' },
+      { mode: 'annotations', direct: 'wsk action annotations' },
+      { mode: 'raw', direct: 'wsk action raw' }
     ]
 
     if (defaultMode) {
@@ -533,7 +533,7 @@ const standardViewModes = (defaultMode, fn?) => {
           modes.splice(0, 0, {
             mode,
             defaultMode: typeof mode === 'string' || mode.default,
-            command: () => mode
+            direct: `wsk action ${mode}`
           })
         }
       } else {
@@ -1443,16 +1443,18 @@ const makeInit = commandTree => async (isReinit = false) => {
 
   if (isReinit) return
 
-  // for each entity type
-  commandTree.subtree(`/wsk`, { usage: usage.wsk })
-
   //
   // here we use globalOW, but only to introspect on the Class fields
   // and methods, not to make authenticated requests against its
   // methods
   //
-  for (const api in globalOW) {
-    const clazz = globalOW[api].constructor
+  const ow = isReinit ? globalOW : initOW()
+
+  // for each entity type
+  commandTree.subtree(`/wsk`, { usage: usage.wsk })
+
+  for (const api in ow) {
+    const clazz = ow[api].constructor
     const props = Object.getOwnPropertyNames(clazz.prototype).concat(extraVerbs(api) || [])
     // alsoInstallAtRoot = api === 'actions'
 

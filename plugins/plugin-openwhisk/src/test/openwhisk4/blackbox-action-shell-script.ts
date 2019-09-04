@@ -50,7 +50,7 @@ describe('blackbox actions from a shell script', function(this: common.ISuite) {
   const N1 = 3
   it(`should invoke the native action with implicit entity`, () =>
     cli
-      .do(`invoke -p n ${N1}`, this.app)
+      .do(`wsk action invoke -p n ${N1}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(flip))
@@ -64,7 +64,7 @@ describe('blackbox actions from a shell script', function(this: common.ISuite) {
   const N2 = 4
   it(`should invoke (again) the native action with implicit entity`, () =>
     cli
-      .do(`invoke -p n ${N2}`, this.app)
+      .do(`wsk action invoke -p n ${N2}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(flip))
@@ -111,7 +111,7 @@ describe('blackbox actions from a shell script', function(this: common.ISuite) {
   const N3 = 5
   it(`should invoke (again) the native action, now with explicit`, () =>
     cli
-      .do(`invoke ${flip} -p n ${N3}`, this.app)
+      .do(`wsk action invoke ${flip} -p n ${N3}`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(flip))

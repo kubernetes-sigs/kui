@@ -59,7 +59,7 @@ describe('Create a rule using every', function() {
     .then(M => { priorActivations = M }))
 
   // create an action, using the implicit entity type
-  it('should create an action', () => cli.do(`create ${actionName} ./data/openwhisk/foo.js`, this.app)
+  it('should create an action', () => cli.do(`wsk action create ${actionName} ./data/openwhisk/foo.js`, this.app)
     .then(cli.expectJustOK)
     .then(sidecar.expectOpen)
     .then(sidecar.expectShowing(actionName)))
@@ -73,7 +73,7 @@ describe('Create a rule using every', function() {
   // list tests
   ui.aliases.list.forEach(cmd => {
     it(`should find the new rule with "${cmd}"`, () => cli.do(cmd, this.app).then(cli.expectOKWithOnly(ruleName)))
-    it(`should find the new rule with "rule ${cmd}"`, () => cli.do(`rule ${cmd}`, this.app).then(cli.expectOKWithOnly(ruleName)))
+    it(`should find the new rule with "rule ${cmd}"`, () => cli.do(`wsk rule ${cmd}`, this.app).then(cli.expectOKWithOnly(ruleName)))
     it(`should find the new rule with "wsk rule ${cmd}"`, () => cli.do(`wsk rule ${cmd}`, this.app).then(cli.expectOKWithOnly(ruleName)))
   })
 

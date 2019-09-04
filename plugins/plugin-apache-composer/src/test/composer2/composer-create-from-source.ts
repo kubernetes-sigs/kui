@@ -38,7 +38,7 @@ describe('composer create from source', function(this: common.ISuite) {
     if (file.endsWith('.js') && file !== 'echo.js') {
       it(`should create a composer sequence from source ${file}`, () =>
         cli
-          .do(`app create ${name} ${join(srcDir, file)}`, this.app)
+          .do(`wsk app create ${name} ${join(srcDir, file)}`, this.app)
           .then(cli.expectOK)
           .then(sidecar.expectOpen)
           .then(sidecar.expectShowing(name))

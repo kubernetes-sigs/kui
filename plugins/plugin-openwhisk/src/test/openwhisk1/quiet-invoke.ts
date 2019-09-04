@@ -38,7 +38,7 @@ localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
 
   it('should create an action', () =>
     cli
-      .do(`create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
+      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName)))
@@ -46,7 +46,7 @@ localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
   // create an action, using the implicit entity type
   it('should create an action', () =>
     cli
-      .do(`create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
+      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2)))
@@ -54,7 +54,7 @@ localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
   // quiet invoke shouldn't affect the sidecar
   it('should invoke -q', () =>
     cli
-      .do(`invoke ${actionName} -q`, this.app)
+      .do(`wsk action invoke ${actionName} -q`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2)))

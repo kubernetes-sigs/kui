@@ -96,7 +96,7 @@ class Validation {
     if (namespace !== '') {
       it(`validate app list /${namespace}`, () =>
         cli
-          .do(`app list /${namespace}`)
+          .do(`wsk app list /${namespace}`)
           .then(expect.appList({ name, packageName }))
           .catch(common.oops(this.ctx)))
     }
@@ -104,14 +104,14 @@ class Validation {
     if (packageName !== '') {
       it(`validate app list ${packageName}/`, () =>
         cli
-          .do(`app list ${packageName}/`)
+          .do(`wsk app list ${packageName}/`)
           .then(expect.appList({ name, packageName }))
           .catch(common.oops(this.ctx)))
     }
 
     it(`validate app list`, () =>
       cli
-        .do(`app list`)
+        .do(`wsk app list`)
         .then(expect.appList({ name, packageName }))
         .catch(common.oops(this.ctx)))
   }
@@ -122,12 +122,12 @@ class Validation {
     if (namespace !== '') name = `/${namespace}/${name}`
 
     const invokers = [
-      `app invoke ${name} ${params}`,
-      `app invoke ${name} -b ${params}`,
-      `app invoke ${name} -r ${params}`,
-      `app invoke ${name} -br ${params}`,
-      `app invoke ${name} --result ${params}`,
-      `app invoke ${name} --blocking --result ${params}`
+      `wsk app invoke ${name} ${params}`,
+      `wsk app invoke ${name} -b ${params}`,
+      `wsk app invoke ${name} -r ${params}`,
+      `wsk app invoke ${name} -br ${params}`,
+      `wsk app invoke ${name} --result ${params}`,
+      `wsk app invoke ${name} --blocking --result ${params}`
     ]
 
     invokers.forEach(invoker => {
@@ -145,13 +145,13 @@ class Validation {
 
     it(`validate async ${name}`, () =>
       cli
-        .do(`app async ${name}`)
+        .do(`wsk app async ${name}`)
         .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
         .catch(common.oops(this.ctx)))
 
     it(`validate async ${name} ; session get ; session list`, () =>
       cli
-        .do(`app async ${name}`)
+        .do(`wsk app async ${name}`)
         .then(cli.expectOK(`ok: invoked ${name} with id`, { exact: false }))
         .then(line => {
           // session get
@@ -163,7 +163,7 @@ class Validation {
           return new Promise((resolve, reject) => {
             const fetch = retry =>
               cli
-                .do(`session get ${sessionId}`)
+                .do(`wsk session get ${sessionId}`)
                 .then(response => {
                   if (response.code === 404 - 256) {
                     // retry on 404, because the session might not yet be available
@@ -204,7 +204,7 @@ class Validation {
           return new Promise((resolve, reject) => {
             const fetchList = retry =>
               cli
-                .do(`session list`)
+                .do(`wsk session list`)
                 .then(response => {
                   const lines = response.output.split(/\n/)
                   const names = name.split('/')
@@ -260,7 +260,7 @@ class Validation {
 
     it(`validate app get ${name}`, () =>
       cli
-        .do(`app get ${name}`)
+        .do(`wsk app get ${name}`)
         .then(expect.json({ expectedOutput: undefined, expectedKeys: expectedKeys }))
         .catch(common.oops(this.ctx)))
   }
@@ -287,7 +287,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should create simple composition from @demos', function(this: common.ISuite) {
     it('app create test1 @demos/hello.js', () =>
       cli
-        .do('app create test1 @demos/hello.js')
+        .do('wsk app create test1 @demos/hello.js')
         .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
         .catch(common.oops(this)))
     new Validation(this).do({
@@ -301,25 +301,25 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('app list options', function(this: common.ISuite) {
     it('should get empty result by app list --limit 0', () =>
       cli
-        .do('app list --limit 0')
+        .do('wsk app list --limit 0')
         .then(cli.expectOK('', { exact: true }))
         .catch(common.oops(this)))
 
     it('should get 1 by app list --count', () =>
       cli
-        .do('app list --count')
+        .do('wsk app list --count')
         .then(cli.expectOK('1\n', { exact: true }))
         .catch(common.oops(this)))
 
     it('should get test1 by app list --limit 1', () =>
       cli
-        .do('app list --limit 1')
+        .do('wsk app list --limit 1')
         .then(expect.appList({ name: 'test1', packageName: '' }))
         .catch(common.oops(this)))
 
     it('should get empty result by app list --skip 1', () =>
       cli
-        .do('app list --skip 1')
+        .do('wsk app list --skip 1')
         .then(cli.expectOK('', { exact: true }))
         .catch(common.oops(this)))
   })
@@ -327,7 +327,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should create composition with package', function(this: common.ISuite) {
     it('should fail with 404 when creating composition with non-existing package', () =>
       cli
-        .do('app create testing/subtest1 @demos/hello.js')
+        .do('wsk app create testing/subtest1 @demos/hello.js')
         .then(cli.expectError(cli.exitCode(404)))
         .catch(common.oops(this)))
 
@@ -339,7 +339,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
 
     it('validate app create testing/subtest1 @demos/hello.js', () =>
       cli
-        .do('app create testing/subtest1 @demos/hello.js')
+        .do('wsk app create testing/subtest1 @demos/hello.js')
         .then(
           cli.expectOK('ok: updated composition /_/testing/subtest1\n', {
             exact: true
@@ -366,7 +366,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
 
       it('validate app create with namespace', () =>
         cli
-          .do(`app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
+          .do(`wsk app create /${ui.expectedNamespace()}/testing/subtest2 @demos/hello.js`)
           .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
           .catch(common.oops(this)))
       new Validation(this).do({
@@ -383,7 +383,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should fail when creating composition from non-exisiting file', function(this: common.ISuite) {
     it('fails app create error error.js', () =>
       cli
-        .do('app create error error.js')
+        .do('wsk app create error error.js')
         .then(cli.expectError(1))
         .catch(common.oops(this)))
   })
@@ -391,13 +391,13 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should create compostion and dependent actions with implicity entity', function(this: common.ISuite) {
     it('validate app create test2 @demos/if.js', () =>
       cli
-        .do('app create test2 @demos/if.js')
+        .do('wsk app create test2 @demos/if.js')
         .then(cli.expectOK('ok: updated composition /_/test2\n', { exact: true }))
         .catch(common.oops(this)))
 
     it('validate app invoke test2 fails', () =>
       cli
-        .do('app invoke test2')
+        .do('wsk app invoke test2')
         .then(res => res.output.indexOf('Failed to resolve action') !== -1)
         .catch(common.oops(this)))
   })
@@ -405,7 +405,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should update simple composition', function(this: common.ISuite) {
     it('validate app update test1 @demos/let.js', () =>
       cli
-        .do('app update test1 @demos/let.js')
+        .do('wsk app update test1 @demos/let.js')
         .then(cli.expectOK('ok: updated composition /_/test1\n', { exact: true }))
         .catch(common.oops(this)))
     new Validation(this).do({ name: 'test1', output: { ok: true } })
@@ -414,7 +414,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should update simple composition with packageName', function(this: common.ISuite) {
     it('validate app update testing/subtest1 @demos/let.js', () =>
       cli
-        .do('app update testing/subtest1 @demos/let.js')
+        .do('wsk app update testing/subtest1 @demos/let.js')
         .then(
           cli.expectOK('ok: updated composition /_/testing/subtest1\n', {
             exact: true
@@ -438,7 +438,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
 
       it(`validate app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`, () =>
         cli
-          .do(`app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
+          .do(`wsk app update /${ui.expectedNamespace()}/testing/subtest2 @demos/let.js`)
           .then(cli.expectOK(`ok: updated composition /${ui.expectedNamespace()}/testing/subtest2\n`, { exact: true }))
           .catch(common.oops(this)))
       new Validation(this).do({
@@ -453,7 +453,7 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should fail when updating with non-existing path', function(this: common.ISuite) {
     it('should fail when updating with non-existing path', () =>
       cli
-        .do('app update test2 @demos/dummy.js')
+        .do('wsk app update test2 @demos/dummy.js')
         .then(cli.expectError(1))
         .catch(common.oops(this)))
   })
@@ -461,26 +461,26 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('should delete tests', function(this: common.ISuite) {
     it('validate app delete test1', () =>
       cli
-        .do('app delete test1')
+        .do('wsk app delete test1')
         .then(cli.expectOK())
         .catch(common.oops(this)))
 
     it('validate app delete test2', () =>
       cli
-        .do('app delete test2')
+        .do('wsk app delete test2')
         .then(cli.expectOK())
         .catch(common.oops(this)))
 
     it('validate app delete testing/subtest1', () =>
       cli
-        .do('app delete testing/subtest1')
+        .do('wsk app delete testing/subtest1')
         .then(cli.expectOK())
         .catch(common.oops(this)))
 
     if (ui.expectedNamespace()) {
       it(`validate app delete /${ui.expectedNamespace()}/testing/subtest2`, () =>
         cli
-          .do(`app delete /${ui.expectedNamespace()}/testing/subtest2`)
+          .do(`wsk app delete /${ui.expectedNamespace()}/testing/subtest2`)
           .then(cli.expectOK())
           .catch(common.oops(this)))
     }
@@ -489,19 +489,19 @@ odescribe('Composer Headless Test', function(this: common.ISuite) {
   odescribe('error handling with non-exisiting composition', function(this: common.ISuite) {
     it('should 404 when invoking deleted composition', () =>
       cli
-        .do('app invoke test2')
+        .do('wsk app invoke test2')
         .then(cli.expectError(cli.exitCode(404)))
         .catch(common.oops(this)))
 
     it('should 404 when invoking non-existent composition', () =>
       cli
-        .do('app invoke dummy')
+        .do('wsk app invoke dummy')
         .then(cli.expectError(cli.exitCode(404)))
         .catch(common.oops(this)))
 
     it('should 404 when deleting non-existent composition', () =>
       cli
-        .do('app delete dummy')
+        .do('wsk app delete dummy')
         .then(cli.expectError(cli.exitCode(404)))
         .catch(common.oops(this)))
   })

@@ -89,7 +89,7 @@ describe('Create a sequence via let', function(this: common.ISuite) {
 
   // invoke one of the sequences
   it('should do an async of the sequence, using implicit context', () =>
-    cli.do(`async -p y 3`, this.app).then(cli.expectOKWithString(seqName3))) // e.g. "invoked `seqname3` with id:"
+    cli.do(`wsk action async -p y 3`, this.app).then(cli.expectOKWithString(seqName3))) // e.g. "invoked `seqname3` with id:"
 
   // call await
   it('should await successful completion of the activation', () =>

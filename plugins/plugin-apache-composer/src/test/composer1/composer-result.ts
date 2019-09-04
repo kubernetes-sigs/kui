@@ -49,14 +49,14 @@ describe('kill composer invocation', function(this: common.ISuite) {
 
     it(`should invoke the composition ${name} with ${key}=${value}, then get its result`, () =>
       cli
-        .do(`app invoke -p ${key} ${value}`, this.app)
+        .do(`wsk app invoke -p ${key} ${value}`, this.app)
         .then(cli.expectOK)
         .then(sidecar.expectOpen)
         .then(sidecar.expectShowing(name))
         .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
         .then(sessionId =>
           cli
-            .do(`session get ${sessionId}`, this.app)
+            .do(`wsk session get ${sessionId}`, this.app)
             .then(cli.expectOK)
             .then(sidecar.expectOpen)
             .then(sidecar.expectShowing(name))
@@ -67,7 +67,7 @@ describe('kill composer invocation', function(this: common.ISuite) {
             .then(() => {
               console.log('Now issuing app result')
             })
-            .then(() => cli.do(`session result ${sessionId}`, this.app))
+            .then(() => cli.do(`wsk session result ${sessionId}`, this.app))
             .then(cli.expectOKWithCustom({ selector: '.hljs' }))
             .then(selector => this.app.client.getText(selector))
             .then(ui.expectStruct(expectedOutput))
@@ -84,7 +84,7 @@ describe('kill composer invocation', function(this: common.ISuite) {
 
   it('should create a composer sequence', () =>
     cli
-      .do(`app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
+      .do(`wsk app update ${seqName1} ${ROOT}/data/composer/composer-source/echo-sequence.js`, this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName1))

@@ -53,7 +53,7 @@ describe('Create zip actions', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
-  const makeActionFromZip = (cmd, name) => {
+  const makeActionFromZip = (cmd: string, name: string) => {
     it(cmd, () =>
       cli
         .do(cmd, this.app)
@@ -164,7 +164,10 @@ function main(args) {
   }
 
   makeActionFromZip(`let ${actionName1} = ${ROOT}/data/openwhisk/zip/sendmail.zip`, actionName1)
-  makeActionFromZip(`action update ${actionName2} ${ROOT}/data/openwhisk/zip/sendmail.zip --kind nodejs:6`, actionName2)
+  makeActionFromZip(
+    `wsk action update ${actionName2} ${ROOT}/data/openwhisk/zip/sendmail.zip --kind nodejs:6`,
+    actionName2
+  )
 
   //
   // zip action without npm install, with params and annotations
@@ -181,7 +184,7 @@ function main(args) {
       .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src('openwhisk/zip/index.js').replace(/\s+/g, ''))))
   it('should switch to annotations mode', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16b))
@@ -190,7 +193,7 @@ function main(args) {
   // invoke it
   it('should do an invoke of the action, using implicit context', () =>
     cli
-      .do(`invoke`, this.app)
+      .do(`wsk action invoke`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16b))
@@ -227,13 +230,13 @@ function main(args) {
   // invoke it
   it('should do an async of the action, using implicit context', () =>
     cli
-      .do(`async -p y 3`, this.app)
+      .do(`wsk action async -p y 3`, this.app)
       .then(cli.expectOKWithString(actionName16)) // e.g. "invoked `actionName16` with id:"
       .catch(common.oops(this)))
   // call await
   it('should await successful completion of the activation', () =>
     cli
-      .do(`$ await`, this.app)
+      .do(`wsk $ await`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16))
@@ -255,13 +258,13 @@ function main(args) {
   // invoke it
   it('should do an async of the action, using implicit context', () =>
     cli
-      .do(`async --param lines '["and now", "for something completely", "different" ]'`, this.app)
+      .do(`wsk action async --param lines '["and now", "for something completely", "different" ]'`, this.app)
       .then(cli.expectOKWithString(actionName18)) // e.g. "invoked `actionName18` with id:"
       .catch(common.oops(this)))
   // call await
   it('should await successful completion of the activation', () =>
     cli
-      .do(`$ await`, this.app)
+      .do(`wsk $ await`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName18))

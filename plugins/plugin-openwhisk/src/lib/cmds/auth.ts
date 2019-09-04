@@ -495,7 +495,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
         } else if (auths.length === 1) {
           // if there's just one namespace, then select it
           debug('found exactly one auth')
-          return repl.qfexec(`auth switch ${auths[0].namespace}`)
+          return repl.qfexec(`wsk auth switch ${auths[0].namespace}`)
         } else {
           // otherwise, offer a list of them to the user
           debug('found multiple auths')

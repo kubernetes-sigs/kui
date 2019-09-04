@@ -37,8 +37,6 @@ describe('Help command', function(this: common.ISuite) {
   doHelp.call(this, 'wsk', { expect: header('OpenWhisk') })
   doHelp.call(this, 'wsk action', { expect: actionHelpHeader })
   doHelp.call(this, 'wsk action help', { expect: actionHelpHeader })
-  // doHelp.call(this, 'action help', { expect: actionHelpHeader })
-  // doHelp.call(this, 'help action', { expect: actionHelpHeader })
   doHelp.call(this, 'help wsk action', { expect: actionHelpHeader })
   doHelp.call(this, 'composer', { expect: header('Composer') })
   doHelp.call(this, 'wsk action create', { code: 497 }) // insufficient arguments

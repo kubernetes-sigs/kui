@@ -31,9 +31,6 @@ describe('composer config', function(this: common.ISuite) {
         .then(cli.expectOKWithCustom({ expect: 'Composer version' }))
         .catch(common.oops(this)))
 
-  getConfig('app properties')
-  getConfig('app props')
-  getConfig('app config')
   getConfig('wsk app properties')
   getConfig('wsk app props')
   getConfig('wsk app config')

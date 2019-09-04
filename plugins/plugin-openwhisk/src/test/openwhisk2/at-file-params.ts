@@ -51,7 +51,7 @@ describe('@file params and annotations', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName2)))
   it('should switch to parameters mode via "params" and show the @file params', () =>
     cli
-      .do('params', this.app)
+      .do('wsk action params', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName2))
@@ -70,7 +70,7 @@ describe('@file params and annotations', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName3)))
   it('should switch to parameters mode via "params" and show the @file params', () =>
     cli
-      .do('params', this.app)
+      .do('wsk action params', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName3))
@@ -86,7 +86,7 @@ describe('@file params and annotations', function(this: common.ISuite) {
       .then(sidecar.expectShowing(actionName)))
   it('should switch to parameters mode via "params" and show the @file params', () =>
     cli
-      .do('params', this.app)
+      .do('wsk action params', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName))
@@ -102,7 +102,7 @@ describe('@file params and annotations', function(this: common.ISuite) {
       .then(sidecar.expectShowing(seqName)))
   it('should switch to annotations mode via "annotations" and show the @file annotations', () =>
     cli
-      .do('annotations', this.app)
+      .do('wsk action annotations', this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName))
