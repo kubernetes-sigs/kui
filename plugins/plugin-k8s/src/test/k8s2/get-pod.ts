@@ -39,8 +39,10 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
      * Interact with the Containers tab
      *
      */
-    const testContainersTab = async (fast = false) => {
-      await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('containers'))
+    const testContainersTab = async (fast = false, click = true) => {
+      if (click) {
+        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('containers'))
+      }
 
       const table = `${selectors.SIDECAR} [k8s-table="Containers"]`
       await this.app.client.waitForExist(table)
@@ -60,6 +62,21 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       await this.app.client.waitForExist(
         `${table} .entity[data-name="nginx"] [data-key="ready"].green-text .cell-inner.graphical-icon`
       )
+    }
+
+    const testLogTabs = async () => {
+      const container = `${selectors.SIDECAR} [k8s-table="Containers"] .entity[data-name="nginx"] .entity-name`
+      await this.app.client.click(container)
+      await sidecar.expectOpen(this.app)
+
+      await this.app.client.waitForVisible(selectors.SIDECAR_BACK_BUTTON) // make sure the back button exists
+      await this.app.client.waitForExist(selectors.SIDECAR_MODE_BUTTON('result')) // Latest Tab
+      await this.app.client.waitForExist(selectors.SIDECAR_MODE_BUTTON('previous'))
+
+      await this.app.client.waitForVisible(selectors.SIDECAR_BACK_BUTTON) // make sure the back button exists
+      await this.app.client.click(selectors.SIDECAR_BACK_BUTTON) // transition back to the previous view
+
+      await this.app.client.waitForExist(selectors.SIDECAR_MODE_BUTTON('containers'))
     }
 
     const ns: string = createNS()
@@ -179,6 +196,10 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
           .then(sidecar.expectShowing('nginx'))
 
         await testContainersTab(true)
+        await testLogTabs()
+        await testContainersTab(true, false) // testing back button, don't click the container tab
+        await testLogTabs()
+        await testContainersTab(true, false) // testing back button, don't click the container tab
       } catch (err) {
         return common.oops(this)(err)
       }
@@ -271,6 +292,14 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     })
 
     it(`should click on containers sidecar tab and show containers table`, testContainersTab)
+
+    it('should drill down to log when container is clicked', testLogTabs)
+
+    it('should transition back from log and see containers table', testContainersTab.bind(this, false, false)) // testing back button, do not click the Container tab
+
+    it('should drill down to log when container is clicked', testLogTabs)
+
+    it('should transition back from log and see containers table', testContainersTab.bind(this, false, false)) // testing back button, do not click the Container tab
 
     it(`should be able to show table with grep`, async () => {
       try {
