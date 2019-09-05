@@ -19,6 +19,7 @@ import { Tab } from '@kui-shell/core/webapp/cli'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { Row } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
+import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
 import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 
 import { Resource, KubeResource } from '../../model/resource'
@@ -26,7 +27,7 @@ import { Resource, KubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
 
 import insertView from '../insert-view'
-import { getActiveView, formatTable } from '../formatMultiTable'
+import { formatTable } from '../formatMultiTable'
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
