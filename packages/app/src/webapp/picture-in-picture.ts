@@ -85,7 +85,6 @@ const restore = (
     const curHeaderParent = curHeader.parentNode
 
     curHeaderParent.removeChild(curHeader)
-    // curHeaderParent.appendChild(node)
     curHeaderParent.insertBefore(node, nextSibling)
 
     if (redraw) {
@@ -204,12 +203,22 @@ interface CapturedHeader {
  *
  */
 const capture = (tab: Tab, selector: string, redraw?: Function): CapturedHeader => {
+  // capture the current dom via deep clone
   const node = tab.querySelector(selector)
+  const clone = node.cloneNode(true) as Element
+
+  // remember this, so we can reattach in the right place (using insertBefore)
+  const parent = node.parentNode
+  const nextSibling = node.nextSibling as Element
+
+  node.remove()
+  parent.insertBefore(clone, nextSibling)
+
   return {
     selector, // remember how to find the replacement
-    node: node.cloneNode(true) as Element, // capture the current dom via deep clone
+    node,
     redraw, // any redraw helper that might've been registered
-    nextSibling: node.nextSibling as Element // remember this, so we can reattach in the right place (using insertBefore)
+    nextSibling
   }
 }
 
@@ -247,10 +256,6 @@ export const drilldown = (
   // for the footer, we need to capture the modeButton renderer, so we can reattach the click events
   const modeButtons = css.modeContainer(tab)['capture']
   const capturedFooter = capture(tab, rawCSS.buttons, modeButtons && modeButtons())
-
-  debug('container', container)
-  debug('alreadyPipped', alreadyPipped)
-  debug('presentation', presentation)
 
   const capturedHeaders = [
     capturedHeader,
