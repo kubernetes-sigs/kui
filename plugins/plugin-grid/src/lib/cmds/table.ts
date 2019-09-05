@@ -717,6 +717,7 @@ export default async (commandTree: CommandRegistrar) => {
     usage,
     needsUI: true,
     viewName,
+    noAuthOk: true, // the underlying data queries will ensure whatever auth they need
     width: windowDefaults.width,
     height: windowDefaults.height
   }
