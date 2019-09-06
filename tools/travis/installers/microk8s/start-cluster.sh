@@ -5,6 +5,9 @@ set -o pipefail
 
 sudo snap install microk8s --classic
 
+# do this in advance, so that microk8s running as sudo doesn't create it
+mkdir -p ~/.kube
+
 # Download and install misc packages and utilities
 pushd /tmp
   # Download and install kubectl
@@ -32,13 +35,15 @@ popd
 
 # waiting till microk8s is ready
 echo "waiting for microk8s to become available"
-microk8s.status --wait-ready
+sudo microk8s.status --wait-ready
 echo "microk8s is ready for e-business"
 
 # smash the microk8s config into the place kubectl expects it to be found
 echo "smashing microk8s kubeconfig into .kube/config"
-mkdir -p ~/.kube
-microk8s.kubectl config view --raw > ~/.kube/config
+sudo sh -c "microk8s.kubectl config view --raw > /tmp/kubeconfig"
+sudo chmod a+r /tmp/kubeconfig
+sudo chmod -R a+r ~/.kube
+cp /tmp/kubeconfig ~/.kube/config
 echo "smashing microk8s kubeconfig into .kube/config [SUCCESS]"
 
 # Pods running in kube-system namespace should have cluster-admin role
