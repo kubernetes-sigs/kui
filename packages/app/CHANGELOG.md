@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.17](https://github.com/IBM/kui/compare/v3.0.16...v3.0.17) (2019-09-06)
+
+### Bug Fixes
+
+- **pacakges/app:** Accessibility Violations: Hyperlinks must contain link text ([0f4c72d](https://github.com/IBM/kui/commit/0f4c72d)), closes [#2656](https://github.com/IBM/kui/issues/2656)
+- **packages/app:** back button does not restore click handlers ([f83c7c7](https://github.com/IBM/kui/commit/f83c7c7)), closes [#2654](https://github.com/IBM/kui/issues/2654) [#921](https://github.com/IBM/kui/issues/921)
+
 ## [3.0.16](https://github.com/IBM/kui/compare/v3.0.15...v3.0.16) (2019-09-04)
 
 **Note:** Version bump only for package @kui-shell/core

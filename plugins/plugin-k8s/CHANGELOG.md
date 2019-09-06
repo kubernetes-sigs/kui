@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.17](https://github.com/IBM/kui/compare/v3.0.16...v3.0.17) (2019-09-06)
+
+### Bug Fixes
+
+- **plugins/plugin-k8s:** Back button on logs sidecar disappears after viewing second time from pod sidecar ([526f58a](https://github.com/IBM/kui/commit/526f58a)), closes [#2659](https://github.com/IBM/kui/issues/2659)
+
 ## [3.0.16](https://github.com/IBM/kui/compare/v3.0.15...v3.0.16) (2019-09-04)
 
 ### Bug Fixes
