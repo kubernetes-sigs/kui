@@ -1,0 +1,24 @@
+{
+  "name": "@kui-shell/plugin-tutorials",
+  "version": "4.0.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "@types/marked": {
+      "version": "0.6.5",
+      "resolved": "https://registry.npmjs.org/@types/marked/-/marked-0.6.5.tgz",
+      "integrity": "sha512-6kBKf64aVfx93UJrcyEZ+OBM5nGv4RLsI6sR1Ar34bpgvGVRoyTgpxn4ZmtxOM5aDTAaaznYuYUH8bUX3Nk3YA==",
+      "dev": true
+    },
+    "jquery": {
+      "version": "3.4.1",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.4.1.tgz",
+      "integrity": "sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw=="
+    },
+    "marked": {
+      "version": "0.7.0",
+      "resolved": "https://registry.npmjs.org/marked/-/marked-0.7.0.tgz",
+      "integrity": "sha512-c+yYdCZJQrsRjTPhUx7VKkApw9bwDkNbHUKo1ovgcfDjb2kc8rLuRbIFyXL5WOEUwzSSKo3IXpph2K6DqB/KZg=="
+    }
+  }
+}
