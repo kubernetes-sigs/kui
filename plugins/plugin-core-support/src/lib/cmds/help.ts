@@ -18,17 +18,11 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import UsageError from '@kui-shell/core/core/usage-error'
-import { CodedError } from '@kui-shell/core/models/errors'
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import i18n from '@kui-shell/core/util/i18n'
-const strings = i18n('plugin-core-support')
-
 /**
- * Respond with a top-level usage document
+ * Respond with a top-level usage document or Open the About Sidecar
  *
  */
 const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
@@ -40,51 +34,13 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
     debug('reversal')
     return repl.qexec(
       rest
-        .concat('help')
+        .concat('--help')
         .map(val => repl.encodeComponent(val))
         .join(' ')
     )
-
-    // } else if (args.length !== 1) {
-  } else if (usage) {
-    debug('usage-based', args)
-
-    // this will be our return value
-    const topLevelUsage = {
-      title: strings('helpUsageTitle'),
-      header: 'A summary of the top-level command structure.',
-      available: [],
-      nRowsInViewport: 8 // show a few more rows for top-level help
-    }
-
-    // traverse the top-level usage documents, populating topLevelUsage.available
-    for (const key in usage) {
-      const { route, usage: model } = usage[key]
-      if (
-        model &&
-        !model.synonymFor &&
-        (isHeadless() || !model.headlessOnly) &&
-        (!inBrowser() || !model.requiresLocal)
-      ) {
-        topLevelUsage.available.push({
-          label: route.substring(1),
-          available: model.available,
-          hidden: model.hidden,
-          synonyms: model.synonyms,
-          command: model.commandPrefix || model.command, // either subtree or leaf command
-          docs: model.command ? model.header : model.title // for leaf commands, print full header
-        })
-      }
-    }
-
-    debug('generated top-level usage model')
-    throw new UsageError({ usage: topLevelUsage })
   } else {
-    debug('no usage model')
-
-    const error: CodedError = new Error('No documentation found')
-    error.code = 404
-    throw error
+    // open the About Sidecar
+    return repl.qexec('about')
   }
 }
 

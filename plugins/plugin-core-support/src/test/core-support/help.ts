@@ -47,7 +47,5 @@ describe('Help command', function(this: ISuite) {
   //
   // and now here come the tests...
   //
-
-  doHelp.call(this, 'help', { expect: header('Getting Started') })
   doHelp.call(this, 'editor')
 })
