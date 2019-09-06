@@ -1,0 +1,120 @@
+{
+  "name": "@kui-shell/plugin-apache-composer",
+  "version": "4.0.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "app-module-path": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/app-module-path/-/app-module-path-2.2.0.tgz",
+      "integrity": "sha1-ZBqlXft9am8KgUHEucCqULbCTdU="
+    },
+    "buffer-from": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.1.tgz",
+      "integrity": "sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A=="
+    },
+    "commander": {
+      "version": "2.20.0",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.0.tgz",
+      "integrity": "sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ=="
+    },
+    "debug": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-4.1.1.tgz",
+      "integrity": "sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==",
+      "requires": {
+        "ms": "^2.1.1"
+      }
+    },
+    "iconv-lite": {
+      "version": "0.4.24",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
+      "integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
+      "requires": {
+        "safer-buffer": ">= 2.1.2 < 3"
+      }
+    },
+    "minimist": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz",
+      "integrity": "sha1-o1AIsg9BOD7sH7kU9M1d95omQoQ="
+    },
+    "ms": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",
+      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w=="
+    },
+    "needle": {
+      "version": "2.4.0",
+      "resolved": "https://registry.npmjs.org/needle/-/needle-2.4.0.tgz",
+      "integrity": "sha512-4Hnwzr3mi5L97hMYeNl8wRW/Onhy4nUKR/lVemJ8gJedxxUyBLm9kkrDColJvoSfwi0jCNhD+xCdOtiGDQiRZg==",
+      "requires": {
+        "debug": "^3.2.6",
+        "iconv-lite": "^0.4.4",
+        "sax": "^1.2.4"
+      },
+      "dependencies": {
+        "debug": {
+          "version": "3.2.6",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.6.tgz",
+          "integrity": "sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==",
+          "requires": {
+            "ms": "^2.1.1"
+          }
+        }
+      }
+    },
+    "openwhisk": {
+      "version": "3.20.0",
+      "resolved": "https://registry.npmjs.org/openwhisk/-/openwhisk-3.20.0.tgz",
+      "integrity": "sha512-WzB69ij39kb+lVpM9DncaPbRZ00tcARgOI0/XfaVqZDexspLwBZ/1TswuLSuxV2ocozMqclD+1lKlmmVn0DU0g==",
+      "requires": {
+        "needle": "^2.4.0"
+      }
+    },
+    "openwhisk-composer": {
+      "version": "github:starpit/incubator-openwhisk-composer#4e900f2db6d804167fbf4c64a0b4b676330ad104",
+      "from": "github:starpit/incubator-openwhisk-composer#agent",
+      "requires": {
+        "minimist": "^1.2.0",
+        "openwhisk": "^3.18.0",
+        "terser": "^3.8.2"
+      }
+    },
+    "safer-buffer": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="
+    },
+    "sax": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/sax/-/sax-1.2.4.tgz",
+      "integrity": "sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw=="
+    },
+    "source-map": {
+      "version": "0.6.1",
+      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz",
+      "integrity": "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="
+    },
+    "source-map-support": {
+      "version": "0.5.13",
+      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.13.tgz",
+      "integrity": "sha512-SHSKFHadjVA5oR4PPqhtAVdcBWwRYVd6g6cAXnIbRiIwc2EhPrTuKUBdSLvlEKyIP3GCf89fltvcZiP9MMFA1w==",
+      "requires": {
+        "buffer-from": "^1.0.0",
+        "source-map": "^0.6.0"
+      }
+    },
+    "terser": {
+      "version": "3.17.0",
+      "resolved": "https://registry.npmjs.org/terser/-/terser-3.17.0.tgz",
+      "integrity": "sha512-/FQzzPJmCpjAH9Xvk2paiWrFq+5M6aVOf+2KRbwhByISDX/EujxsK+BAvrhb6H+2rtrLCHK9N01wO014vrIwVQ==",
+      "requires": {
+        "commander": "^2.19.0",
+        "source-map": "~0.6.1",
+        "source-map-support": "~0.5.10"
+      }
+    }
+  }
+}
