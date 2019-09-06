@@ -28,6 +28,9 @@ CLIENT_HOME="$(pwd)"
 BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
 PROXY_HOME="$BUILDER_HOME"/../proxy
 
+# we aren't using docker for now
+NO_DOCKER=true
+
 # prep the staging area
 function init {
     rm -rf "$STAGING_DIR"
@@ -39,9 +42,13 @@ function init {
 function initProxy {
     pushd "$STAGING_DIR" > /dev/null
     cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore,app} .
+
     # mkdir .kube and .bluemix if they don't exist, see issue: https://github.com/IBM/kui/issues/1647
-    if [ -d ~/.kube ]; then cp -a ~/.kube .; else mkdir .kube; fi
-    if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; else mkdir .bluemix; fi
+    if [ -z "$NO_DOCKER" ]; then
+        if [ -d ~/.kube ]; then cp -a ~/.kube .; else mkdir .kube; fi
+        if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; else mkdir .bluemix; fi
+    fi
+
     npm install --no-package-lock
     popd > /dev/null
 }
@@ -66,9 +73,11 @@ function cert {
 
 # create a docker image that can host the proxy
 function docker {
-    pushd "$STAGING_DIR" > /dev/null
-    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
-    popd > /dev/null
+    if [ -z "$NO_DOCKER" ]; then
+        pushd "$STAGING_DIR" > /dev/null
+        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
+        popd > /dev/null
+    fi
 }
 
 # clean up the staging area
