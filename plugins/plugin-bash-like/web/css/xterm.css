@@ -91,6 +91,11 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 .xterm-terminated .xterm-rows .xterm-cursor {
   display: none;
 }
+.xterm-terminated .xterm-rows,
+.xterm-terminated .xterm-viewport .xterm-terminated .xterm-scroll-area {
+  /* we don't want scrollbars to appear for terminated xterms */
+  overflow: hidden;
+}
 .xterm-terminated .xterm-screen {
   width: auto !important;
 }

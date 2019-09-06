@@ -18,13 +18,15 @@ import { Application } from 'spectron'
 
 import { ISuite } from './common'
 
-declare var keys: Record<string, string>
-declare var aliases: Record<string, string[]>
+declare const waitTimeout: number
 
-declare var apiHost: string
+declare const keys: Record<string, string>
+declare const aliases: Record<string, string[]>
+
+declare const apiHost: string
 
 /** keyboard character for ctrl or meta, platform dependent */
-declare var ctrlOrMeta: string
+declare const ctrlOrMeta: string
 
 /** keyboard chording for ctrl+C */
 declare var ctrlC: Array<string>
@@ -132,6 +134,7 @@ declare class CLI {
   expectConsoleToBeClear: (app: Application) => any /** `any` comes from webdriverio waitUntil */
   expectOKWithCustom: (custom: ICustomSpec) => (res: AppAndCount) => any // FIXME; is string | Application
   expectOKWithString: (expect: string, exact?: boolean) => AppAndCountVerifier
+  expectOKWithStringEventually: (expect: string, exact?: boolean) => AppAndCountVerifier
   expectOKWithAny: AppAndCountVerifier /** as long as its ok, accept anything */
   expectOKWithOnly: (entityName: string) => AppAndCountVerifier /** expect ok and *only* the given result value */
   expectOKWith: (entityName: string) => AppAndCountVerifier /** expect ok and at least the given result value */

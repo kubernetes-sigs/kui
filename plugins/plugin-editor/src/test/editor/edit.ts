@@ -77,7 +77,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(nonExistFileName))
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   it(`should open ${nonExistFilePath}`, () =>
     cli
@@ -85,13 +85,13 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(nonExistFileName))
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   it(`should rm ${nonExistFilePath}`, () =>
     cli
       .do(`rm ${nonExistFilePath}`, this.app)
       .then(cli.expectJustOK)
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   // editor save not yet supported in proxy mode
   localIt('should edit and save the content of a non-existing file', () =>
@@ -102,7 +102,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(sidecar.expectShowing(nonExistFileName2))
       .then(() => setValue(this.app, 'testing edit non-existing file'))
       .then(save(this.app))
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
   localIt(`should open ${nonExistFilePath2} and see changed content`, () =>
     cli
@@ -111,13 +111,13 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(nonExistFileName2))
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, 'testing edit non-existing file'))
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
   localIt(`should rm ${nonExistFilePath2}`, () =>
     cli
       .do(`rm ${nonExistFilePath2}`, this.app)
       .then(cli.expectJustOK)
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
 
   const initialFile = 'edit-file.txt'
@@ -131,7 +131,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
     cli
       .do(`cp ${initialFilepath} ${tmpFilepath}`, this.app)
       .then(cli.expectJustOK)
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   it('should edit but not save the content of an existing file', () =>
     cli
@@ -140,7 +140,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(sidecar.expectOpen)
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
       .then(() => setValue(this.app, 'should not be saved'))
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   it('should re-open the file and see the unchanged content', () =>
     cli
@@ -148,7 +148,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-      .catch(oops(this)))
+      .catch(oops(this, true)))
 
   // editor save not yet supported in proxy mode
   localIt('should edit and save the content', () =>
@@ -159,7 +159,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
       .then(() => setValue(this.app, updatedText))
       .then(save(this.app))
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
   localIt('should re-open the initial file and see the unchanged content', () =>
     cli
@@ -167,7 +167,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
   localIt('should re-open the edited file and see the updated content', () =>
     cli
@@ -175,7 +175,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
 
   /** reload the app, and wait for a repl prompt */
@@ -211,6 +211,6 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
       .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
-      .catch(oops(this))
+      .catch(oops(this, true))
   )
 })
