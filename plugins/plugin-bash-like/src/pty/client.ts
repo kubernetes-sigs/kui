@@ -45,7 +45,7 @@ import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { flatten } from '@kui-shell/core/core/utility'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
-import { Table, isTable } from '@kui-shell/core/webapp/models/table'
+import { isTable } from '@kui-shell/core/webapp/models/table'
 import { ExecType, ParsedOptions } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { CodedError } from '@kui-shell/core/models/errors'
@@ -479,6 +479,22 @@ const webviewChannelFactory: ChannelFactory = async () => {
   return channel
 }
 
+interface KuiTerminal extends HTerminal {
+  _kuiAlreadyFocused: boolean
+}
+
+const focus = (terminal: KuiTerminal) => {
+  if (!terminal._kuiAlreadyFocused) {
+    setTimeout(() => {
+      // expensive reflow, async it
+      if (!terminal._kuiAlreadyFocused) {
+        terminal._kuiAlreadyFocused = true
+        terminal.focus()
+      }
+    }, 0)
+  }
+}
+
 /**
  * websocket factory for remote/proxy connection
  *
@@ -488,7 +504,7 @@ const getOrCreateChannel = async (
   uuid: string,
   tab: Tab,
   execOptions: ExecOptions,
-  terminal: xterm.Terminal
+  terminal: KuiTerminal
 ): Promise<Channel> => {
   const channelFactory = inBrowser()
     ? window['webview-proxy'] !== undefined
@@ -540,7 +556,7 @@ const getOrCreateChannel = async (
   } else {
     // reusing existing websocket
     doExec(cachedws)
-    terminal.focus()
+    focus(terminal)
     return cachedws
   }
 }
@@ -555,6 +571,65 @@ function safeLoadWithCatch(raw: string): Record<string, any> {
     return safeLoad(raw)
   } catch (err) {
     console.error(err)
+  }
+}
+
+/**
+ * In one xterm-row, squash consecutive spans that have the same
+ * className. We do this to avoid costly reflows, which xterm.js
+ * causes a huge number of, and that cost O(numSpans). xterm.js
+ * creates one span per character :(
+ *
+ */
+function squashRow(row: HTMLElement) {
+  if (row.children.length > 1) {
+    let previous = row.children[0] as HTMLElement
+    let current = row.children[1] as HTMLElement
+    let runningSquash = previous.innerText
+
+    while (current) {
+      const next = current.nextElementSibling as HTMLElement
+      if (previous.className === current.className) {
+        current.remove()
+        runningSquash += current.innerText
+      } else {
+        if (runningSquash !== previous.innerText) {
+          previous.innerText = runningSquash
+        }
+
+        previous = current
+        runningSquash = previous.innerText
+      }
+      current = next
+    }
+
+    if (runningSquash !== previous.innerText) {
+      previous.innerText = runningSquash
+    }
+  }
+
+  // if, after squashing, we have a single span child, inline its text
+  // directly into the row element
+  if (row.children.length === 1) {
+    const singleton = row.firstElementChild as HTMLElement
+    if (!singleton.className) {
+      // only for undecorated solitary children
+      singleton.remove()
+      row.innerText = singleton.innerText
+    }
+  }
+}
+
+/**
+ * See the above comment for squashRow(). This is the enclosing method
+ * that iterates over the rows. This is expected to be called only
+ * after the process terminates.
+ *
+ */
+function squash(elt: HTMLElement) {
+  const rows = elt.querySelectorAll('.xterm-rows > div') as NodeListOf<HTMLElement>
+  for (let idx = 0; idx < rows.length; idx++) {
+    squashRow(rows[idx])
   }
 }
 
@@ -618,6 +693,7 @@ export const doExec = (
         if (execOptions.replSilence) {
           debug('repl silence')
           xtermContainer.style.display = 'none'
+          xtermContainer.classList.add('repl-temporary')
         }
 
         // xtermjs will handle the "block"
@@ -632,7 +708,7 @@ export const doExec = (
           rows: cachedSize && cachedSize.rows,
           fontFamily,
           fontSize
-        })
+        }) as KuiTerminal
 
         // used to manage the race between pending writes to the
         // terminal canvas and process exit; see
@@ -778,7 +854,7 @@ export const doExec = (
                 } else {
                   // skipping scroll to bottom for terminated xterm
                 }
-              }, 50)
+              }, 250)
             }
           } catch (err) {
             console.error(err)
@@ -800,11 +876,12 @@ export const doExec = (
         // receive updates after we receive a process exit event; but we
         // will always receive a `refresh` event when the animation
         // frame is done. see https://github.com/IBM/kui/issues/1272
-        terminal.on('refresh', (/* evt: { start: number; end: number } */) => {
+        const onRefresh = (/* evt: { start: number; end: number } */) => {
           resizer.hideTrailingEmptyBlanks()
           doScroll()
           notifyOfWriteCompletion()
-        })
+        }
+        terminal.on('refresh', onRefresh)
 
         terminal.element.classList.add('fullscreen')
 
@@ -814,21 +891,9 @@ export const doExec = (
         let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
         let pendingTable: MixedResponse
         let raw = ''
+        let nLinesRaw = 0
 
         let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
-
-        let alreadyFocused = false
-        const focus = () => {
-          if (!alreadyFocused) {
-            setTimeout(() => {
-              // expensive reflow, async it
-              if (!alreadyFocused) {
-                alreadyFocused = true
-                terminal.focus()
-              }
-            }, 0)
-          }
-        }
 
         const onFirstMessage = () => {
           const queuedInput = disableInputQueueing()
@@ -839,7 +904,7 @@ export const doExec = (
 
           // now that we've grabbed queued input, focus on the terminal,
           // and it will handle input for now until the process exits
-          focus()
+          focus(terminal)
         }
 
         const onMessage = async (data: string) => {
@@ -854,7 +919,7 @@ export const doExec = (
           } else if (msg.type === 'data') {
             // plain old data flowing out of the PTY; send it on to the xterm UI
 
-            if (!alreadyFocused) {
+            if (!terminal._kuiAlreadyFocused) {
               onFirstMessage()
             }
 
@@ -878,7 +943,7 @@ export const doExec = (
               // e.g. less start
               flush()
               resizer.enterApplicationMode()
-              focus()
+              focus(terminal)
             } else if (exitApplicationModePattern.test(msg.data)) {
               // e.g. less exit
               resizer.exitApplicationMode()
@@ -888,7 +953,7 @@ export const doExec = (
               // setMode/resetMode handlers till too late; we might've
               // called raw += ... even though we are in alt buffer mode
               flush()
-              focus()
+              focus(terminal)
               resizer.enterAltBufferMode()
             } else if (exitAltBufferPattern.test(msg.data)) {
               // ... same here
@@ -967,6 +1032,11 @@ export const doExec = (
                   : /no such/i.test(raw) || /not found/i.test(raw)
                   ? 404
                   : sawCode
+                for (let idx = 0; idx < msg.data.length; idx++) {
+                  if (msg.data[idx] === '\n') {
+                    nLinesRaw++
+                  }
+                }
                 terminal.write(msg.data)
                 raw = ''
               }
@@ -987,10 +1057,8 @@ export const doExec = (
               pendingTable = undefined
             }
 
-            const finishUp = async () => {
-              ws.removeEventListener('message', onMessage)
-              cleanUpTerminal()
-
+            /** emit our final response and return control to the repl */
+            const respondToRepl = () => {
               if (pendingUsage) {
                 execOptions.stdout(
                   formatUsage(cmdline, stripClean(raw), {
@@ -1030,15 +1098,6 @@ export const doExec = (
                 }
               }
 
-              // grab a copy of the terminal now that it has terminated;
-              // see https://github.com/IBM/kui/issues/1393
-              const copy = terminal.element.cloneNode(true) as HTMLElement
-              const viewport = copy.querySelector('.xterm-viewport')
-              copy.removeChild(viewport)
-              copy.classList.remove('enable-mouse-events')
-              xtermContainer.removeChild(terminal.element)
-              xtermContainer.appendChild(copy)
-
               // vi, then :wq, then :q, you will get an exit code of
               // 1, but with no output (!bytesWereWritten); note how
               // we treat this as "ok", i.e. no error thrown
@@ -1066,15 +1125,69 @@ export const doExec = (
               }
             }
 
+            /** called after final resize */
+            const finishUpAfterFinalResize = () => {
+              scrollIntoView()
+
+              ws.removeEventListener('message', onMessage)
+              cleanUpTerminal()
+
+              // grab a copy of the terminal now that it has terminated;
+              // see https://github.com/IBM/kui/issues/1393
+              const copy = terminal.element.cloneNode(true) as HTMLElement
+              const viewport = copy.querySelector('.xterm-viewport')
+              squash(copy)
+              copy.removeChild(viewport)
+              copy.classList.remove('enable-mouse-events')
+              xtermContainer.removeChild(terminal.element)
+              xtermContainer.appendChild(copy)
+
+              // respond to the REPL
+              respondToRepl()
+            }
+
+            /** called after final refresh */
+            const finishUp = () => {
+              const internalRows = terminal._core.buffer.lines
+              const nLines = internalRows.length
+
+              if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+                // no need to resize: output is shorter than viewport
+                finishUpAfterFinalResize()
+              } else {
+                // resize the terminal to house the expected number of
+                // lines, then wait for the final refresh event that will
+                // be sent after the resize has manifested in the DOM
+                terminal.off('refresh', onRefresh)
+                terminal.on('refresh', finishUpAfterFinalResize)
+                terminal.resize(terminal.cols, nLines)
+              }
+            }
+
+            xtermContainer.classList.add('xterm-terminated')
+
+            const internalRows = terminal._core.buffer.lines
+            const nLines = internalRows.length
+
             if (pendingWrites > 0) {
-              cbAfterPendingWrites = finishUp
+              if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+                cbAfterPendingWrites = finishUp
+              } else {
+                // re: setTimeout, this is the same refresh issue
+                // discussed in the next comment
+                cbAfterPendingWrites = () => setTimeout(finishUp, 0)
+              }
             } else {
               // there seems to be a 10% chance that the 'refresh' event
               // is sent to us while there is still pending information
               // flowing over the Channel; we need to get more
               // sophisticated here, but a small delay will help, for
               // the time being.
-              setTimeout(finishUp, 400)
+              if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+                setTimeout(finishUp, 100)
+              } else {
+                setTimeout(finishUp, 400)
+              }
             }
           }
         }
