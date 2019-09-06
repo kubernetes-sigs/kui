@@ -16,7 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { kubectl, cli as kui, CLI } from '@kui-shell/core/tests/lib/headless'
-import { createNS, waitTillTerminating } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
@@ -76,7 +76,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
       return impl
         .do(`${kubectl} delete -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
         .then(impl.expectOK('pod "nginx" deleted'))
-        .then(() => waitTillTerminating('pods', impl, 'nginx', inNamespace)(ctx.app))
+        .then(() => waitTillNone('pods', impl, 'nginx', undefined, inNamespace)(ctx.app))
         .catch(common.oops(ctx, true))
     })
 

@@ -22,7 +22,7 @@ import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
 
-const { cli, keys, selectors } = ui
+const { cli, keys, selectors, waitTimeout } = ui
 const { refresh } = common
 
 /** helpful selectors */
@@ -50,11 +50,11 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
           console.error('still waiting for emitted text', actualText, res.count)
         }
         return actualText === emittedText
-      })
+      }, waitTimeout)
 
       console.log('now should copy from xterm output and paste outside of xterm')
 
-      await this.app.client.doubleClick(`${firstRow(res.count)} > span:first-child`)
+      await this.app.client.doubleClick(firstRow(res.count))
       await this.app.client.execute(() => document.execCommand('copy'))
 
       await this.app.client.click(selectors.CURRENT_PROMPT_BLOCK)
@@ -67,7 +67,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
         ])
 
         return expectedValue === actualValue
-      })
+      }, waitTimeout)
     } catch (err) {
       return common.oops(this, true)(err)
     }
@@ -91,7 +91,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.waitUntil(async () => {
         const actualText = await this.app.client.getValue(selectors.CURRENT_PROMPT)
         return actualText === text
-      })
+      }, waitTimeout)
 
       // copy the content of the current prompt
       console.error('CP4')
@@ -119,7 +119,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.waitUntil(async () => {
         const txt = await this.app.client.getText(lastRow(res.count))
         return /INSERT/i.test(txt)
-      })
+      }, waitTimeout)
 
       // now paste into the xterm vi
       console.error('CP11')
@@ -132,7 +132,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.waitUntil(async () => {
         const txt = await this.app.client.getText(lastRow(res.count))
         return txt.length === 0
-      })
+      }, waitTimeout)
 
       console.error('CP14')
       await this.app.client.keys(':wq')

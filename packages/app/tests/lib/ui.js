@@ -16,6 +16,7 @@
 
 const assert = require('assert')
 const timeout = Math.max(5000, process.env.TIMEOUT || 60000)
+exports.waitTimeout = timeout - 5000
 const constants = {
   API_HOST: process.env.API_HOST,
   // CLI_PLACEHOLDER: process.env.CLI_PLACEHOLDER || 'enter your command',
@@ -288,6 +289,15 @@ exports.cli = {
     })
   },
   expectOKWithCustom: custom => res => expectOK(res, custom), // as long as its ok, accept anything
+  expectOKWithStringEventually: (expect, exact = false) => res => {
+    return res.app.client.waitUntil(() => {
+      try {
+        return exports.cli.expectOKWithString(expect, exact)(res)
+      } catch (err) {
+        // swallow
+      }
+    }, timeout - 5000)
+  },
   expectOKWithString: (expect, exact = false) => res => {
     // first try innerText
     return exports.cli
