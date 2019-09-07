@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.19](https://github.com/IBM/kui/compare/v3.0.18...v3.0.19) (2019-09-07)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** long output from pty gets truncated ([ff3c6b6](https://github.com/IBM/kui/commit/ff3c6b6)), closes [#1883](https://github.com/IBM/kui/issues/1883)
+
 ## [3.0.18](https://github.com/IBM/kui/compare/v3.0.17...v3.0.18) (2019-09-06)
 
 **Note:** Version bump only for package @kui-shell/plugin-editor
