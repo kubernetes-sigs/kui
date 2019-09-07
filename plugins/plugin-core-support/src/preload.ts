@@ -27,7 +27,7 @@ import { PreloadRegistration } from '@kui-shell/core/models/plugin'
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree: CommandRegistrar, options?) => {
+const registration: PreloadRegistration = async (commandTree: CommandRegistrar) => {
   const asyncs = []
 
   if (!isHeadless()) {

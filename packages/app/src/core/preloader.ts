@@ -28,7 +28,7 @@ import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
  *
  */
 export default async (prescan: PrescanModel, options) => {
-  debug('init', prescan)
+  debug('init')
 
   const jobs = Promise.all(
     prescan.preloads.map(async module => {

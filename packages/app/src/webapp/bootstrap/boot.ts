@@ -52,12 +52,9 @@ const domReady = prefs => async () => {
         .then(_ => _.init(prefs))
     )
 
-    // const namespace = require('../../../plugins/modules/openwhisk/plugin/lib/models/namespace')
-    // const nsInit = namespace.init(plugins.prequire, prefs && prefs.noAuthOk, prefs)
-
     sidecar.then(_ => _.init())
 
-    waitForThese[1].then(() => initializer).then(_ => _.init(prefs))
+    waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init()))
 
     // await query.then(_ => _.init())
 

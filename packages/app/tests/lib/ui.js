@@ -392,8 +392,10 @@ exports.sidecar = {
 
   expectSource: expectedSource => app =>
     app.client
-      .getText(selectors.SIDECAR_ACTION_SOURCE)
-      .then(actualSource => assert.strictEqual(actualSource.replace(/\s+/g, ''), expectedSource.replace(/\s+/g, '')))
+      .waitUntil(async () => {
+        const actualSource = await app.client.getText(selectors.SIDECAR_ACTION_SOURCE)
+        return actualSource.replace(/\s+/g, '') === expectedSource.replace(/\s+/g, '')
+      }, exports.waitTimeout)
       .then(() => app),
 
   expectResult: (expectedResult, failFast = true) => app =>

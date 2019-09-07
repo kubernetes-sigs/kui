@@ -838,7 +838,7 @@ class InProcessExecutor implements Executor {
               debug('returning command execution error', err.code, err)
               return err
             } else if (isHeadless()) {
-              debug('rethrowing error because we are in headless mode')
+              debug('rethrowing error because we are in headless mode', err)
               throw err
             } else {
               // indicate that the command was NOT successfuly completed
@@ -1040,11 +1040,21 @@ export async function semicolonInvoke(opts: EvaluatorArgs) {
 
     const result = await promiseEach(commands.filter(_ => _), async command => {
       const block = cli.subblock()
+
+      // note: xterm.js 3.14 requires that this subblock be attached
+      // somewhere; it'll be reattached in the right place by
+      // cli.printResults, when the commands are all done
+      if (typeof opts.block !== 'boolean') {
+        opts.block.querySelector('.repl-result').appendChild(block)
+      }
+
       const entity = await qexec(command, block, undefined, Object.assign({}, opts.execOptions, { quiet: false }))
       if (entity === true) {
         // pty output
         return block
       } else {
+        // not a pty, so remove that subblock, as we have an entity response
+        block.remove()
         return entity
       }
     })

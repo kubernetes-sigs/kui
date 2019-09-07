@@ -6,12 +6,7 @@ body[kui-theme="tomorrow-night"] {
   --color-base00: #1d1f21; /* Default Background */
   --color-base01: #282a2e; /* Lighter Background (Used for status bars) */
   --color-base02: #373b41; /* Selection Background */
-  --color-base03: hsla(
-    120,
-    1%,
-    59%,
-    0.15
-  ); /*dialed down opacity #969896*/ /* Comments, Invisibles, Line Highlighting */
+  --color-base03: #2D2F33; /* dialed down opacity #969896 to 15% */ /* Comments, Invisibles, Line Highlighting */
   --color-base04: #b4b7b4; /* Dark Foreground (Used for status bars) */
   --color-base05: #c5c8c6; /* Default Foreground, Caret, Delimiters, Operators */
   --color-base06: #e0e0e0; /* Light Foreground (Not often used) */
@@ -24,6 +19,9 @@ body[kui-theme="tomorrow-night"] {
   --color-base0D: #81a2be; /* BLUE: Functions, Methods, Attribute IDs, Headings */
   --color-base0E: #b294bb; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
   --color-base0F: #a3685a; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+  --color-background-inverted01: var(--color-base01);
+  --color-text-inverted01: var(--color-text-01);
 
   --color-black: var(--color-base05); /* e.g. husky's "No partially staged files found" */
 }

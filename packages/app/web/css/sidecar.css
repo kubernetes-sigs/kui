@@ -107,7 +107,6 @@ sidecar .sidecar-content-container {
 }
 [data-presentation="SidecarThin"] .bx--tabs__nav-item:not(.bx--tabs__nav-item--selected) .bx--tabs__nav-link {
   color: var(--color-text-inverted02);
-  opacity: 0.875;
   border: none;
   border-left: 3px solid transparent;
   transition: all 70ms cubic-bezier(0.2, 0, 0.38, 0.9);

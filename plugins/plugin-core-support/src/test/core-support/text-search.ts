@@ -21,6 +21,7 @@ import {
   before as commonBefore,
   after as commonAfter,
   oops,
+  refresh,
   localDescribe
 } from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -147,12 +148,8 @@ localDescribe('Text search', function(this: ISuite) {
       )
       .catch(oops(this)))
 
-  // paste test
-  it('should close the search bar if clicking the close button', () =>
-    this.app.client
-      .click('#search-close-button')
-      .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
-      .catch(oops(this)))
+  // paste test; reload first to start with a clean slate in the text search box
+  it('should reload the app', () => refresh(this))
   it('should paste into the text search box', () =>
     this.app.client
       .keys([ui.ctrlOrMeta, 'f'])

@@ -209,13 +209,13 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
   // compiler does not work versus node-pty's eager loading of the
   // native modules -- we compile the native modules against electron,
   // but the plugin compiler uses the platform nodejs :(
-  const { spawn } = await import('node-pty')
+  const { spawn } = await import('node-pty-prebuilt-multiarch')
 
   // re: importing node-pty twice: this is clumsy because typescript
   // doesn't support module imports for dynamic imports, and node-pty
   // exports IPty under a module of its creation
   // @see https://github.com/microsoft/TypeScript/issues/22445
-  let shell: import('node-pty').IPty
+  let shell: import('node-pty-prebuilt-multiarch').IPty
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {

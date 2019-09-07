@@ -114,36 +114,6 @@ const optimization = {
   minimize: false
 }
 
-const splitChunks = {
-  chunks: 'async',
-  name: false,
-  /* fs.readdirSync(pluginBase).reduce(
-    (groups, dir) => {
-      if (/plugin/.test(dir)) {
-        groups[dir] = {
-          test: (module, chunk) => {
-            const include = module && module.context && module.context.indexOf(dir) >= 0
-            return include
-          },
-          minSize:0, minChunks: 1, reuseExistingChunk: true, enforce: true,
-          chunks: 'all',
-          name: dir
-        }
-      }
-      return groups
-    }, */
-  cacheGroups: {
-    vendors: {
-      test: /[\\/]node_modules[\\/]/,
-      name: 'vendors',
-      priority: -10,
-      chunks: 'all'
-    }
-  }
-  //  )
-}
-// optimization.splitChunks = splitChunks
-
 // the Kui builder plugin
 plugins.push({
   apply: compiler => {
@@ -203,7 +173,7 @@ module.exports = {
     'request', // needed by some apache-composer samples
     'babel-core/register', // wskflow
     'aws-sdk', // wskflow
-    'node-pty', // bash-like
+    'node-pty-prebuilt-multiarch', // bash-like
     './es6/crc9_1wire', // k8s
     './es6/crc17_xmodem', // k8s, openwhisk
     './es6/crc17_modbus', // k8s, openwhisk
