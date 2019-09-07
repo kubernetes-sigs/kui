@@ -18,7 +18,7 @@
 
 import { lstat, readFile } from 'fs'
 import { dirname, resolve as pathResolve } from 'path'
-import * as htmlparser from 'htmlparser2'
+import { Parser } from 'htmlparser2/lib/Parser'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import * as repl from '@kui-shell/core/core/repl'
@@ -85,7 +85,7 @@ export const deployHTMLViaOpenWhisk = location =>
           const Ps = [] // for any other assets we may need to create
           let text = '' // we may need to rewrite the content
 
-          const parser = new htmlparser.Parser(
+          const parser = new Parser(
             {
               onopentag: (name, attribs) => {
                 if (name === 'script' && attribs.src) {
