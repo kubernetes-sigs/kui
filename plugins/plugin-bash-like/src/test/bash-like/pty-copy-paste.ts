@@ -57,6 +57,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.doubleClick(firstRow(res.count))
       await this.app.client.execute(() => document.execCommand('copy'))
 
+      await this.app.client.waitForExist(selectors.CURRENT_PROMPT_BLOCK)
       await this.app.client.click(selectors.CURRENT_PROMPT_BLOCK)
       await this.app.client.execute(() => document.execCommand('paste'))
 
