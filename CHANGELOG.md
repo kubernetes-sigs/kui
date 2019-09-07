@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.21](https://github.com/IBM/kui/compare/v3.0.20...v3.0.21) (2019-09-07)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** pty output with line wrapping has vertical gaps ([1e32fbc](https://github.com/IBM/kui/commit/1e32fbc)), closes [#2681](https://github.com/IBM/kui/issues/2681)
+
 ## [3.0.20](https://github.com/IBM/kui/compare/v3.0.19...v3.0.20) (2019-09-07)
 
 **Note:** Version bump only for package kui-shell
