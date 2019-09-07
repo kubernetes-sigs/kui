@@ -211,7 +211,7 @@ export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
 export const getPrompt = (block: HTMLElement): HTMLInputElement => {
   return block && block.querySelector && block.querySelector('input')
 }
-const getBottomPrompt = (tab: Tab): HTMLInputElement => {
+const getBottomPrompt = (): HTMLInputElement => {
   return getPrompt(element('.kui--input-stripe .repl-block'))
 }
 const getInitialPrompt = (tab: Tab): HTMLInputElement => {
@@ -251,6 +251,7 @@ export function subblock() {
   const blockResult = document.createElement('div')
 
   blockResult.classList.add('repl-result')
+  block.classList.add('processing')
   block.classList.add('kui--repl-subblock')
   block.appendChild(blockResult)
 
@@ -413,8 +414,7 @@ export const setStatus = (block: HTMLElement, status: 'processing' | 'repl-activ
       if (!prompt.value) {
         // this guards pexecs, i.e. input filled programmatically via
         // a click
-        const tab = getTabFromTarget(block)
-        prompt.value = getBottomPrompt(tab).value
+        prompt.value = getBottomPrompt().value
       }
     }
 
@@ -792,7 +792,7 @@ const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string)
 
 export const unlisten = (prompt: HTMLInputElement) => {
   if (inBottomInputMode) {
-    prompt = getBottomPrompt(getTabFromTarget(prompt))
+    prompt = getBottomPrompt()
   }
 
   if (prompt) {
@@ -809,7 +809,7 @@ export const unlisten = (prompt: HTMLInputElement) => {
 }
 export const listen = (prompt: HTMLInputElement) => {
   if (inBottomInputMode) {
-    const bottomPrompt = getBottomPrompt(getTabFromTarget(prompt))
+    const bottomPrompt = getBottomPrompt()
     bottomPrompt.readOnly = false
     bottomPrompt.tabIndex = 1
   }
@@ -821,8 +821,7 @@ export const listen = (prompt: HTMLInputElement) => {
   grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
 
   if (inBottomInputMode) {
-    const tab = getTabFromTarget(prompt)
-    prompt = getBottomPrompt(tab)
+    prompt = getBottomPrompt()
     prompt.value = ''
   }
 

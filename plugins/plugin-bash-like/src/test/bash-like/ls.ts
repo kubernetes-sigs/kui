@@ -37,37 +37,29 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .then(cli.expectOKWith('package.json'))
       .catch(common.oops(this)))
 
-  // FIXME
-  common.localIt('should ls with semicolons 1', () =>
+  it('should ls with semicolons 1', () =>
     cli
       .do(`ls ../../ ; echo ${echoString}`, this.app)
       .then(cli.expectOKWith('package.json'))
-      .catch(common.oops(this))
-  )
+      .catch(common.oops(this)))
 
-  // FIXME
-  common.localIt('should ls with semicolons 2', () =>
+  it('should ls with semicolons 2', () =>
     cli
       .do(`ls ../../ ; echo ${echoString}`, this.app)
       .then(cli.expectOKWithString(echoString))
-      .catch(common.oops(this))
-  )
+      .catch(common.oops(this)))
 
-  // FIXME
-  common.localIt('should ls with semicolons 3', () =>
+  it('should ls with semicolons 3', () =>
     cli
       .do(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
       .then(cli.expectOKWith('package.json'))
-      .catch(common.oops(this))
-  )
+      .catch(common.oops(this)))
 
-  // FIXME
-  common.localIt('should ls with semicolons 4', () =>
+  it('should ls with semicolons 4', () =>
     cli
       .do(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
       .then(cli.expectOKWithString(echoString))
-      .catch(common.oops(this))
-  )
+      .catch(common.oops(this)))
 
   it('should use ls ../../README.md', () =>
     cli

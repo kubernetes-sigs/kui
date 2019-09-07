@@ -21,8 +21,8 @@ body[kui-theme="Dark"] {
   --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
   /* SidecarThin */
-  --color-background-inverted01: var(--color-stripe-01);
-  --color-background-inverted02: var(--color-stripe-02);
+  --color-background-inverted01: var(--color-sidecar-background);
+  --color-background-inverted02: var(--color-sidecar-header);
   --color-text-inverted01: var(--color-text-01);
   --color-text-inverted02: var(--color-text-01);
 
@@ -37,8 +37,7 @@ body[kui-theme="Dark"] {
   --color-sidecar-toolbar-background: #D7DCE3;
   --color-sidecar-toolbar-foreground: var(--color-base02);
 
-  --color-content-divider: #3F4548;
-  --color-selection-background: #0074C7;
+  --color-selection-background: var(--color-base05);
 
   --color-brand-03: #418cff;
   --color-tag-beta-fill: #202529;

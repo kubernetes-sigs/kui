@@ -36,7 +36,6 @@ function indexOf(haystack: string, needle: string, startIdx: number): { startIdx
 
   let hidx = startIdx
   let nidx = 0
-  let fidx: number
   while (hidx < haystack.length && nidx < needle.length) {
     const h = haystack.charAt(hidx)
     const n = needle.charAt(nidx)
@@ -51,9 +50,6 @@ function indexOf(haystack: string, needle: string, startIdx: number): { startIdx
       hidx++
       nidx = 0
     } else {
-      if (nidx === 0) {
-        fidx = hidx
-      }
       hidx++
       nidx++
     }

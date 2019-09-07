@@ -1,26 +1,5 @@
 {
   "name": "@kui-shell/plugin-grid",
   "version": "4.0.0",
-  "lockfileVersion": 1,
-  "requires": true,
-  "dependencies": {
-    "parse-ms": {
-      "version": "2.1.0",
-      "resolved": "https://registry.npmjs.org/parse-ms/-/parse-ms-2.1.0.tgz",
-      "integrity": "sha512-kHt7kzLoS9VBZfUsiKjv43mr91ea+U05EyKkEtqp7vNbHxmaVuEqN7XxeEVnGrMtYOAxGrDElSi96K7EgO1zCA=="
-    },
-    "pretty-ms": {
-      "version": "5.0.0",
-      "resolved": "https://registry.npmjs.org/pretty-ms/-/pretty-ms-5.0.0.tgz",
-      "integrity": "sha512-94VRYjL9k33RzfKiGokPBPpsmloBYSf5Ri+Pq19zlsEcUKFob+admeXr5eFDRuPjFmEOcjJvPGdillYOJyvZ7Q==",
-      "requires": {
-        "parse-ms": "^2.1.0"
-      }
-    },
-    "uuid": {
-      "version": "3.3.2",
-      "resolved": "https://registry.npmjs.org/uuid/-/uuid-3.3.2.tgz",
-      "integrity": "sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA=="
-    }
-  }
+  "lockfileVersion": 1
 }

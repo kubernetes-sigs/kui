@@ -179,7 +179,8 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   )
 
   /** reload the app, and wait for a repl prompt */
-  const reload = () => it('should reload the app', () => refresh(this))
+  const reload = () => localIt('should reload the app', () => refresh(this))
+  // note on localIt   ^^^^^^^ <-- because the following are all localIt tests
 
   // make sure pasting text in the editor doesn't result in the editor losing focus
   const textToPaste = 'hello world'
