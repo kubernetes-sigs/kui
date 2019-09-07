@@ -660,7 +660,7 @@ body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
   display: flex;
   z-index: 5;
   background-color: var(--color-stripe-02);
-  border-bottom: 1px inset var(--color-ui-03);
+  border-bottom: 1px inset var(--color-ui-02);
   order: -1;
 }
 /* sidecar .sidecar-bottom-stripe {
@@ -2606,8 +2606,8 @@ sidecar .usage-error-wrapper .hideable {
   flex: 1;
 }
 .page-content hr {
-  margin: 2em 1em;
-  border-color: var(--color-ui-04);
+  margin: 2em 0;
+  border: 0.5px solid var(--color-content-divider);
 }
 .page-content img {
   max-width: 100%;

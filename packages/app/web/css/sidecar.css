@@ -12,7 +12,6 @@ body[data-presentation="SidecarThin"] {
 }
 [data-presentation="SidecarThin"] sidecar {
   font-size: 0.875em;
-  border-top: 1px solid var(--color-sidecar-border);
 }
 
 [data-presentation="SidecarThin"] sidecar .sidecar-header,
