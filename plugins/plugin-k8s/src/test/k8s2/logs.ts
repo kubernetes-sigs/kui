@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-import { Application } from 'spectron'
-
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
@@ -26,20 +23,6 @@ import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-exec.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
-
-/** The number of seconds to sleep while we wait for more log entries
- * to accumulate. Making this value larger will provide more test
- * stability, but also increase test time. */
-const sleepTime = 8
-
-function getTextContent(app: Application, selector) {
-  return app.client.getText(selector)
-}
-
-/** sleep for N seconds */
-function sleep(N: number) {
-  return new Promise(resolve => setTimeout(resolve, N * 1000))
-}
 
 describe(`kubectl logs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))

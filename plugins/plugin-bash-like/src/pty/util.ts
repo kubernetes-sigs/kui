@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { Terminal } from 'xterm'
-
 /**
  * After termination, it is nice not to show a row that contains only
  * the xterm.js cursor block
  *
  */
-export function cleanupTerminalAfterTermination(terminal: Terminal) {
-  const cursor = terminal.element.querySelector('.xterm-rows .xterm-cursor')
+export function cleanupTerminalAfterTermination(element: Element) {
+  const cursor = element.querySelector('.xterm-rows .xterm-cursor')
   const cursorRow = cursor && (cursor.parentNode as Element)
   if (cursorRow) {
     if (cursorRow.children.length === 1) {
-      cursorRow.classList.add('hide')
+      // cursorRow.classList.add('hide')
+      cursorRow.remove()
     }
   }
 }

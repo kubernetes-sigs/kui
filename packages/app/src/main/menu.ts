@@ -133,9 +133,9 @@ export const install = (createWindow: () => void) => {
           { role: 'cut' },
           { role: 'copy' },
           { role: 'paste' },
-          { role: 'pasteandmatchstyle' },
+          { role: 'pasteAndMatchStyle' },
           { role: 'delete' },
-          { role: 'selectall' }
+          { role: 'selectAll' }
         ]
       },
 
@@ -149,11 +149,11 @@ export const install = (createWindow: () => void) => {
             role: 'reload'
           },
           //          { role: 'forcereload' },
-          { role: 'toggledevtools' },
+          { role: 'toggleDevTools' },
           { type: 'separator' },
-          { role: 'resetzoom' },
-          { role: 'zoomin' },
-          { role: 'zoomout' },
+          { role: 'resetZoom' },
+          { role: 'zoomIn' },
+          { role: 'zoomOut' },
           { type: 'separator' },
           { role: 'togglefullscreen' }
         ]
@@ -181,20 +181,23 @@ export const install = (createWindow: () => void) => {
       }
     }
 
+    const separator: MenuItemConstructorOptions = { type: 'separator' }
+    const submenu: MenuItemConstructorOptions[] = [
+      about,
+      separator,
+      { role: 'services', submenu: [] as MenuItemConstructorOptions[] },
+      separator,
+      { role: 'hide' },
+      { role: 'hideOthers' },
+      { role: 'unhide' },
+      separator,
+      { role: 'quit' }
+    ]
+
     if (process.platform === 'darwin') {
       menuTemplate.unshift({
         label: productName,
-        submenu: [
-          about,
-          { type: 'separator' },
-          { role: 'services', submenu: [] },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideothers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
+        submenu
       })
     } else {
       // for windows and linux, put About in the Help menu

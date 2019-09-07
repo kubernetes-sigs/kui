@@ -111,6 +111,10 @@ export class ElementMimic {
     return v
   }
 
+  remove() {
+    // no-op for now
+  }
+
   removeAttribute(k: string): string {
     const attr = this._attrs[k]
     delete this._attrs[k]

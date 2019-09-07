@@ -111,8 +111,8 @@ const prepareElectron = (fuzz, popup = false) => {
   const opts = {
     env,
     chromeDriverArgs: ['--no-sandbox'],
-    startTimeout: process.env.TIMEOUT || 20000, // see https://github.com/IBM/kui/issues/2227
-    waitTimeout: process.env.TIMEOUT || 20000
+    startTimeout: process.env.TIMEOUT || 60000, // see https://github.com/IBM/kui/issues/2227
+    waitTimeout: process.env.TIMEOUT || 60000
   }
 
   if (process.env.PORT_OFFSET) {

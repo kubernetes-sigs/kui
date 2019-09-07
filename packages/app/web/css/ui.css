@@ -3,7 +3,7 @@
 }
 ::selection {
   background-color: var(--color-selection-background);
-  color: inherit;
+  color: var(--color-selection-foreground);
 }
 html,
 body,
@@ -203,6 +203,11 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 .kui--repl-subblock:not(:last-child) {
   padding-bottom: 1em;
+}
+.kui--repl-subblock > .repl-result {
+  /* don't double-do the font-size for nested repl-result */
+  font-size: inherit;
+  padding: 0 !important;
 }
 .repl-result {
   display: flex;
@@ -3083,7 +3088,7 @@ body {
   --color-scrollbar-track: transparent;
 
   --color-hover-primary-text: var(--color-cyan);
-  --color-content-divider: var(--color-cyan);
+  --color-content-divider: var(--color-ui-03);
 
   --color-tag-beta-fill: var(--color-base05);
   --color-tag-beta-text: var(--color-base01);

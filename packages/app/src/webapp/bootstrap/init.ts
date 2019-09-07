@@ -60,7 +60,7 @@ const setDefaultCommandContext = () => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const init = (prefs = {}) => {
+export const init = () => {
   debug('init')
 
   debug('window init')
@@ -144,7 +144,6 @@ export const preinit = () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { remote } = require('electron')
     const subwindow = remote && remote.getCurrentWindow()['subwindow']
-    debug('subwindow', subwindow.fullscreen, subwindow)
     if (subwindow && subwindow.fullscreen !== false) {
       // sidecarOnly = subwindow.sidecarOnly === undefined ? true : subwindow.sidecarOnly
       document.title = typeof subwindow === 'string' ? subwindow : subwindow.title

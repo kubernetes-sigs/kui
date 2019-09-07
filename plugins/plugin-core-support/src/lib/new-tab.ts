@@ -411,6 +411,7 @@ const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
       setTimeout(() => {
         const prompt = getCurrentPrompt(tab)
         if (
+          prompt &&
           getSelectionText().length === 0 &&
           (target.classList.contains('repl-inner') ||
             target.classList.contains('repl-output') ||

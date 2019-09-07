@@ -14,6 +14,8 @@
 }
 .xterm-container .xterm-rows > div > span {
   width: auto !important;
+}
+.xterm-container:not(.xterm-terminated) .xterm-rows > div > span {
   white-space: pre;
 }
 
@@ -229,4 +231,9 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
 
 .repl-block.processing .xterm-rows {
   margin-bottom: 0.25em;
+}
+
+/* we never want to see inner scrollbars */
+.xterm-container .xterm-viewport::-webkit-scrollbar {
+  background-color: transparent !important;
 }

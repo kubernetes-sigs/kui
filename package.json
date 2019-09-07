@@ -9,18 +9,20 @@
     "test": "cd packages/tests && npm run test",
     "compile": "CLIENT=${CLIENT-default}; MONOREPO_MODE=true CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/compile.sh",
     "watch": "./packages/kui-builder/bin/watch.sh",
-    "preinstall": "cp packages/kui-builder/npmrc .npmrc",
-    "build:configure": "CLIENT=${CLIENT-default}; rm node_modules/@kui-shell/settings/config-dev.json; CLIENT_HOME=./clients/$CLIENT node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/seticon.js",
-    "build:electron-for-development": "npm run build:configure && npm run compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done",
+    "pty:rebuild": "cd node_modules/node-pty-prebuilt-multiarch && npm run install",
+    "pty:electron": "rm -f .npmrc; cp packages/kui-builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild",
+    "pty:nodejs": "rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild",
+    "build:configure": "CLIENT=${CLIENT-default}; rm node_modules/@kui-shell/settings/config-dev.json; npm run -s pty:electron && CLIENT_HOME=./clients/$CLIENT node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/seticon.js",
+    "build:electron-for-development": "npm run -s build:configure && npm run -s compile && for i in plugins/*; do if [ -d $i/node_modules ]; then (cd build/plugins/`basename $i` && rm -rf node_modules && cp -a ../../../$i/node_modules .); fi; done",
     "build:hoist": "node ./packages/kui-builder/bin/hoist.js",
-    "postinstall": "npm run build:hoist && npm run build:electron-for-development",
+    "postinstall": "npm run -s build:hoist && npm run -s build:electron-for-development",
     "start": "node bin/kui shell",
-    "watch:webpack": "export CLIENT=${CLIENT-default}; npm run build:configure && if [ ! -d node_modules/webpack ]; then echo \"$(tput setaf 1)!!! re-run WEBPACK=true npm install$(tput sgr0)\"; exit 1; fi && rm -rf clients/$CLIENT/dist/webpack && mkdir -p clients/$CLIENT/dist/webpack/css && (cd clients/$CLIENT/dist/webpack && ln -s ../../theme/icons && ln -s ../../theme/images && cd css && for i in ../../../../../packages/app/web/css/*; do ln -s $i; done && for i in ../../../theme/css/*; do ln -s $i; done); (cd node_modules/@kui-shell/settings && rm -f config-dev.json; if [ -f ../../../clients/$CLIENT/theme/config.json ]; then echo \"linking config-dev.json\"; cp ../../../clients/$CLIENT/theme/config.json config-dev.json; fi) && export KUI_MONO_HOME=$(cd ./ && pwd); if [ -z \"$TRAVIS_JOB_ID\" ]; then PROGRESS=\"--progress\"; fi; webpack-dev-server $PROGRESS --config packages/webpack/webpack.config.js"
+    "watch:webpack": "export CLIENT=${CLIENT-default}; npm run -s build:configure && npm run -s pty:nodejs && if [ ! -d node_modules/webpack ]; then echo \"$(tput setaf 1)!!! re-run WEBPACK=true npm install$(tput sgr0)\"; exit 1; fi && rm -rf clients/$CLIENT/dist/webpack && mkdir -p clients/$CLIENT/dist/webpack/css && (cd clients/$CLIENT/dist/webpack && ln -s ../../theme/icons && ln -s ../../theme/images && cd css && for i in ../../../../../packages/app/web/css/*; do ln -s $i; done && for i in ../../../theme/css/*; do ln -s $i; done); (cd node_modules/@kui-shell/settings && rm -f config-dev.json; if [ -f ../../../clients/$CLIENT/theme/config.json ]; then echo \"linking config-dev.json\"; cp ../../../clients/$CLIENT/theme/config.json config-dev.json; fi) && export KUI_MONO_HOME=$(cd ./ && pwd); if [ -z \"$TRAVIS_JOB_ID\" ]; then PROGRESS=\"--progress\"; fi; webpack-dev-server $PROGRESS --config packages/webpack/webpack.config.js"
   },
   "dependencies": {},
   "devDependencies": {
     "@lerna/bootstrap": "3.16.2",
-    "electron": "5.0.9"
+    "electron": "6.0.8"
   },
   "husky": {
     "hooks": {

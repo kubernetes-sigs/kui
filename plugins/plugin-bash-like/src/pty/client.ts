@@ -98,16 +98,13 @@ function setCachedSize(tab: Tab, { rows, cols }: { rows: number; cols: number })
 
 interface HTerminal extends xterm.Terminal {
   _core: {
-    buffer: {
-      lines: { length: number; get: (idx: number) => { isWrapped: boolean } }
-    }
-    renderer: {
+    viewport: {
       _terminal: {
         cols: number
         options: { letterSpacing: number }
         charMeasure: { width: number }
       }
-      dimensions: {
+      _dimensions: {
         scaledCharWidth: number
         actualCellWidth: number
         actualCellHeight: number
@@ -145,15 +142,27 @@ class Resizer {
 
   private _ws: Channel
 
+  // remember any global event handlers that we registered in the
+  // constructor, so that we can remove them in destroy()
   private readonly resizeNow: () => void
+  private readonly clearXtermSelectionNow: () => void
 
   constructor(terminal: xterm.Terminal, tab: Tab, execOptions: ExecOptions) {
     this.tab = tab
     this.execOptions = execOptions
     this.terminal = terminal as HTerminal
 
+    // window resize; WARNING: since this is a global event, make sure
+    // to remove the event listener in the destroy() method
     this.resizeNow = this.resize.bind(this, true)
-    window.addEventListener('resize', this.resizeNow) // window resize
+    window.addEventListener('resize', this.resizeNow)
+
+    // text selection; WARNING: since this is a global event, make
+    // sure to remove the event listener in the destroy() method
+    this.clearXtermSelectionNow = () => {
+      terminal.clearSelection()
+    }
+    document.addEventListener('select', this.clearXtermSelectionNow)
 
     const ourTab = tab
     eventBus.on('/sidecar/toggle', ({ tab }: { tab: Tab }) => {
@@ -177,7 +186,10 @@ class Resizer {
   }
 
   destroy() {
+    this.exitAltBufferMode()
+    this.exitApplicationMode()
     window.removeEventListener('resize', this.resizeNow)
+    document.removeEventListener('select', this.clearXtermSelectionNow)
   }
 
   private isEmptyCursorRow(row: Element): boolean {
@@ -190,12 +202,12 @@ class Resizer {
    * naturally (in tandem with some CSS)
    *
    */
-  reflowLineWraps() {
-    const rows = this.terminal.element.querySelector('.xterm-rows').children
-    const internalRows = this.terminal._core.buffer.lines
-    for (let idx = 0; idx < internalRows.length - 1; idx++) {
-      const line = internalRows.get(idx)
-      const nextLine = internalRows.get(idx + 1)
+  reflowLineWraps(element = this.terminal.element) {
+    const rows = element.querySelector('.xterm-rows').children
+    const nLines = this.terminal.buffer.length
+    for (let idx = 0; idx < nLines - 1; idx++) {
+      const line = this.terminal.buffer.getLine(idx)
+      const nextLine = this.terminal.buffer.getLine(idx + 1)
       if (nextLine.isWrapped) {
         if (rows[idx + 1]) {
           rows[idx + 1].classList.add('xterm-is-wrapped')
@@ -222,7 +234,7 @@ class Resizer {
    * Hide trailing empty blanks
    *
    */
-  hideTrailingEmptyBlanks(remove = false, from = 0) {
+  hideTrailingEmptyBlanks(remove = false, element = this.terminal.element, from = 0) {
     if (this.frozen) {
       // we have already trimmed trailing empty blanks by removal from
       // the DOM; this is irreversible
@@ -232,7 +244,7 @@ class Resizer {
     // debug('hideTrailingEmptyBlanks', remove, from)
 
     if (!remove) {
-      const hidden = this.terminal.element.querySelectorAll('.xterm-rows > .xterm-hidden-row')
+      const hidden = element.querySelectorAll('.xterm-rows > .xterm-hidden-row')
       for (let idx = 0; idx < hidden.length; idx++) {
         hidden[idx].classList.remove('xterm-hidden-row')
       }
@@ -240,11 +252,11 @@ class Resizer {
       this.frozen = true
     }
 
-    const rows = this.terminal.element.querySelector('.xterm-rows').children
+    const rows = element.querySelector('.xterm-rows').children
     for (let idx = rows.length - 1; idx >= from; idx--) {
       if (rows[idx].children.length === 0) {
         if (remove) {
-          rows[idx].parentNode.removeChild(rows[idx])
+          rows[idx].remove()
         } else {
           rows[idx].classList.add('xterm-hidden-row')
         }
@@ -258,8 +270,8 @@ class Resizer {
    * Render a row that contains only the cursor as invisible
    *
    */
-  hideCursorOnlyRow() {
-    cleanupTerminalAfterTermination(this.terminal)
+  static hideCursorOnlyRow(element: Element) {
+    cleanupTerminalAfterTermination(element)
   }
 
   static paddingHorizontal(elt: Element) {
@@ -286,8 +298,8 @@ class Resizer {
     }
 
     const _core = this.terminal._core
-    const hack = _core.renderer
-    const dimensions = hack.dimensions
+    const hack = _core.viewport
+    const dimensions = hack._dimensions
     const scaledCharWidth = hack._terminal.charMeasure.width * window.devicePixelRatio
     const ratio = scaledCharWidth / dimensions.scaledCharWidth
 
@@ -302,8 +314,8 @@ class Resizer {
     const width = enclosingRect.width - Resizer.paddingHorizontal(widthPadElement)
     const height = enclosingRect.height - Resizer.paddingVertical(heightPadElement)
 
-    const cols = Math.floor(width / this.terminal._core.renderer.dimensions.actualCellWidth / ratio)
-    const rows = Math.floor(height / this.terminal._core.renderer.dimensions.actualCellHeight)
+    const cols = Math.floor(width / dimensions.actualCellWidth / ratio)
+    const rows = Math.floor(height / dimensions.actualCellHeight)
 
     debug('getSize', cols, rows, width, height)
 
@@ -360,12 +372,14 @@ class Resizer {
 
   enterApplicationMode() {
     // switching to application mode
+    debug('switching to application mode')
     this.app = true
     this.tab.classList.add('xterm-application-mode')
   }
 
   exitApplicationMode() {
     // switching out of application mode
+    debug('switching from application mode')
     this.app = false
     this.tab.classList.remove('xterm-application-mode')
   }
@@ -395,6 +409,7 @@ class Resizer {
 
   exitAltBufferMode() {
     // switching to normal buffer mode
+    debug('switching from alt buffer mode')
     this.alt = false
     this.tab.classList.remove('xterm-alt-buffer-mode')
   }
@@ -634,10 +649,42 @@ function squash(elt: HTMLElement) {
 }
 
 /**
- *
+ * Inject xterm.css if we haven't already
  *
  */
 let alreadyInjectedCSS: boolean
+function injectXtermCSS() {
+  if (!alreadyInjectedCSS) {
+    if (inBrowser()) {
+      injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
+      injectCSS({
+        css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
+        key: 'kui-xtermjs'
+      })
+    } else {
+      injectCSS({
+        path: path.join(path.dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
+        key: 'xtermjs'
+      })
+      injectCSS({
+        path: path.join(path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'),
+        key: 'kui-xtermjs'
+      })
+    }
+    alreadyInjectedCSS = true
+
+    // we did indeed inject the css this time around
+    return true
+  } else {
+    // we didn't inject the css this time around
+    return false
+  }
+}
+
+/**
+ *
+ *
+ */
 export const doExec = (
   tab: Tab,
   block: HTMLElement,
@@ -655,29 +702,7 @@ export const doExec = (
       (argvNoOptions[0] === 'cat' && (/yaml$/.test(argvNoOptions[1]) || /yml$/.test(argvNoOptions[1])) && 'yaml')
     const expectingSemiStructuredOutput = /yaml|json/.test(contentType)
 
-    const injectingCSS = !alreadyInjectedCSS
-    if (injectingCSS) {
-      if (inBrowser()) {
-        injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
-        injectCSS({
-          css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
-          key: 'kui-xtermjs'
-        })
-      } else {
-        injectCSS({
-          path: path.join(path.dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
-          key: 'xtermjs'
-        })
-        injectCSS({
-          path: path.join(
-            path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')),
-            'web/css/xterm.css'
-          ),
-          key: 'kui-xtermjs'
-        })
-      }
-      alreadyInjectedCSS = true
-    }
+    const injectingCSS = injectXtermCSS()
 
     // this is the main work
     const exec = async () => {
@@ -742,16 +767,13 @@ export const doExec = (
         terminal.element.classList.add('xterm-empty-row-heuristic')
         setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
+        //
+        // on exit, remove event handlers and the like
+        //
         const cleanUpTerminal = () => {
           terminal.blur()
 
           cleanupEventHandlers()
-          resizer.exitAltBufferMode()
-          resizer.exitApplicationMode()
-          resizer.reflowLineWraps()
-          resizer.hideTrailingEmptyBlanks(true)
-          resizer.hideCursorOnlyRow()
-
           resizer.destroy()
 
           if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
@@ -761,6 +783,9 @@ export const doExec = (
           }
         }
 
+        //
+        // create a channel to the underlying node-pty
+        //
         const ourUUID = uuid()
         const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, execOptions, terminal).catch(
           (err: CodedError) => {
@@ -774,22 +799,10 @@ export const doExec = (
         )
         resizer.ws = ws
 
-        let currentScrollAsync
-        // let currentScrollAsync = scrollIntoView({ which: '.repl-block:last-child', when: 10 })
-        // scrollRegion.scrollTop = scrollRegion.scrollHeight
-
-        // tell server that we are done, so that it can clean up
-        /* window.addEventListener('beforeunload', () => {
-         try {
-         if (ws.readyState === WebSocket.OPEN) {
-         ws.send(JSON.stringify({ type: 'exit', exitCode: 0 }))
-         }
-         } catch (err) {
-         console.error(err)
-         }
-         }) */
-
-        // relay keyboard input to the server
+        //
+        // here, we deal with user typing! we need to relay keyboard
+        // input to the node-pty, but we do so with a bit of debouncing
+        //
         let queuedInput = ''
         let flushAsync: NodeJS.Timeout
         terminal.on('key', (key: string) => {
@@ -816,6 +829,9 @@ export const doExec = (
           }
         })
 
+        //
+        // here, we align browser selection and xterm.js selection models
+        //
         const maybeClearSelection = () => {
           if (!terminal.hasSelection()) {
             clearPendingTextSelection()
@@ -823,20 +839,19 @@ export const doExec = (
         }
         terminal.on('focus', maybeClearSelection)
         terminal.on('blur', maybeClearSelection)
-        document.addEventListener('select', () => {
-          terminal.clearSelection()
-        })
-
         terminal.on('paste', (data: string) => {
           ws.send(JSON.stringify({ type: 'data', data }))
         })
-
         terminal.on('selection', () => {
-          debug('xterm selection', terminal.getSelection())
+          // debug('xterm selection', terminal.getSelection())
           clearTextSelection()
           setPendingTextSelection(terminal.getSelection())
         })
 
+        //
+        // here, we debounce scroll to bottom events
+        //
+        let currentScrollAsync: NodeJS.Timeout
         const doScroll = () => {
           try {
             if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
@@ -854,7 +869,7 @@ export const doExec = (
                 } else {
                   // skipping scroll to bottom for terminated xterm
                 }
-              }, 250)
+              }, 5)
             }
           } catch (err) {
             console.error(err)
@@ -876,14 +891,16 @@ export const doExec = (
         // receive updates after we receive a process exit event; but we
         // will always receive a `refresh` event when the animation
         // frame is done. see https://github.com/IBM/kui/issues/1272
-        const onRefresh = (/* evt: { start: number; end: number } */) => {
-          resizer.hideTrailingEmptyBlanks()
-          doScroll()
+        let first = true
+        const onRefresh = async (evt: { start: number; end: number }) => {
+          if (evt.end > evt.start || first) {
+            resizer.hideTrailingEmptyBlanks()
+            doScroll()
+          }
           notifyOfWriteCompletion()
+          first = false
         }
         terminal.on('refresh', onRefresh)
-
-        terminal.element.classList.add('fullscreen')
 
         let bytesWereWritten = false
         let sawCode: number
@@ -1135,10 +1152,19 @@ export const doExec = (
               // grab a copy of the terminal now that it has terminated;
               // see https://github.com/IBM/kui/issues/1393
               const copy = terminal.element.cloneNode(true) as HTMLElement
-              const viewport = copy.querySelector('.xterm-viewport')
               squash(copy)
-              copy.removeChild(viewport)
+              copy.querySelector('.xterm-viewport').remove()
+              copy.querySelector('.xterm-helpers').remove()
+              copy.querySelector('.xterm-selection').remove()
+              const styles = copy.querySelectorAll('style')
+              for (let idx = 0; idx < styles.length; idx++) {
+                styles[idx].remove()
+              }
               copy.classList.remove('enable-mouse-events')
+              resizer.reflowLineWraps(copy)
+              resizer.hideTrailingEmptyBlanks(true, copy)
+              Resizer.hideCursorOnlyRow(copy)
+
               xtermContainer.removeChild(terminal.element)
               xtermContainer.appendChild(copy)
 
@@ -1148,12 +1174,11 @@ export const doExec = (
 
             /** called after final refresh */
             const finishUp = () => {
-              const internalRows = terminal._core.buffer.lines
-              const nLines = internalRows.length
+              const nLines = terminal.buffer.length
 
-              if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+              if (resizer.wasEverInAltBufferMode() || (nLines <= terminal.rows && nLinesRaw < terminal.rows)) {
                 // no need to resize: output is shorter than viewport
-                finishUpAfterFinalResize()
+                setTimeout(finishUpAfterFinalResize, 0)
               } else {
                 // resize the terminal to house the expected number of
                 // lines, then wait for the final refresh event that will
@@ -1164,18 +1189,16 @@ export const doExec = (
               }
             }
 
-            xtermContainer.classList.add('xterm-terminated')
-
-            const internalRows = terminal._core.buffer.lines
-            const nLines = internalRows.length
+            const nLines = terminal.buffer.length
 
             if (pendingWrites > 0) {
-              if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+              if (!resizer.wasEverInAltBufferMode() && nLines <= terminal.rows && nLinesRaw < terminal.rows) {
                 cbAfterPendingWrites = finishUp
               } else {
                 // re: setTimeout, this is the same refresh issue
                 // discussed in the next comment
-                cbAfterPendingWrites = () => setTimeout(finishUp, 0)
+                doScroll()
+                cbAfterPendingWrites = () => setTimeout(finishUp, 50)
               }
             } else {
               // there seems to be a 10% chance that the 'refresh' event
