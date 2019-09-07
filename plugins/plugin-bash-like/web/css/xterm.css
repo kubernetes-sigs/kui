@@ -217,6 +217,9 @@ tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor
   /* see https://github.com/IBM/kui/issues/1605 */
   display: block;
   content: "";
+
+  /* see https://github.com/IBM/kui/issues/2681 */
+  height: 0;
 }
 
 /* in case we change our minds and want to hide it */
