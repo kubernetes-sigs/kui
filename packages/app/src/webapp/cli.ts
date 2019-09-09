@@ -790,13 +790,25 @@ const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string)
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
 
-export const unlisten = (prompt: HTMLElement) => {
+export const unlisten = (prompt: HTMLInputElement) => {
+  if (inBottomInputMode) {
+    const bottomPrompt = getBottomPrompt(getTabFromTarget(prompt))
+    bottomPrompt.readOnly = true
+  } else if (prompt) {
+    prompt.readOnly = true
+  }
+
   if (prompt && !prompt.classList.contains('sidecar-header-input')) {
     prompt.onkeypress = null
     prompt.tabIndex = -1 // don't tab through old inputs
   }
 }
 export const listen = (prompt: HTMLInputElement) => {
+  if (inBottomInputMode) {
+    const bottomPrompt = getBottomPrompt(getTabFromTarget(prompt))
+    bottomPrompt.readOnly = false
+    bottomPrompt.tabIndex = 1
+  }
   prompt.readOnly = false
   prompt.placeholder = settings.placeholder || ''
   prompt.tabIndex = 1
@@ -1507,7 +1519,6 @@ export const prompt = (
   block['completion'] = (value: string) => {
     block.className = `${block.getAttribute('data-base-class')} processing`
     unlisten(promptDom)
-    promptDom.readOnly = true
     const completer = completion(Object.assign({}, options, { field: value }))
 
     if (isRequestingReprompt(completer)) {
