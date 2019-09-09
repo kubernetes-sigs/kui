@@ -4,12 +4,16 @@
   "cdUsageHeader": "Aktuelles Arbeitsverzeichnis für Änderungen des lokalen Dateisystems ändern",
   "lsUsageTitle": "Liste der lokalen Dateien",
   "lsUsageHeader": "Verzeichnisliste des lokalen Dateisystems",
-  "lsDashAUsageDocs": "Alle Einträge auflisten, mit Ausnahme von {0} und {1}",
-  "lsDashaUsageDocs": "Verzeichniseinträge einschließen, deren Namen mit einem Punkt beginnen ({0})",
-  "lsDashcUsageDocs": "Zeit der letzten Dateistatusänderung  zum Sortieren verwenden ({0})",
+  "lsDashAUsageDocs": "Alle Einträge mit Ausnahme von . und .. auflisten",
+  "lsDashaUsageDocs": "Verzeichniseinträge einschließen, deren Namen mit einem Punkt (.) beginnen",
+  "lsDashcUsageDocs": "Zeit der letzten Dateistatusänderung  zum Sortieren verwenden",
   "lsDashtUsageDocs": "Nach Änderungszeit sortieren (zuletzt geänderte zuerst)",
   "lsDashrUsageDocs": "Normale Sortierreihenfolge umkehren",
   "lsDashSUsageDocs": "Dateien nach Größe sortieren",
   "openUsageTitle": "Datei öffnen",
-  "openUsageHeader": "Inhalt einer Datei anzeigen"
+  "openUsageHeader": "Inhalt einer Datei anzeigen",
+  "localFilePath": "Lokaler Dateipfad",
+  "Please wait while we connect to your cloud": "Bitte warten Sie, während die Verbindung zur Cloud hergestellt wird",
+  "Could not establish a new session": "Es konnte keine neue Sitzung erstellt werden",
+  "Successfully connected to your cloud. For next steps, try this command: ": "Die Verbindung zur Cloud wurde erfolgreich hergestellt. Führen Sie mit dem folgenden Befehl die nächsten Schritte aus: "
 }

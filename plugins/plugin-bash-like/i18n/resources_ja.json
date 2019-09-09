@@ -4,12 +4,16 @@
   "cdUsageHeader": "ローカル・ファイル・システム操作の現行作業ディレクトリーを更新",
   "lsUsageTitle": "ローカル・ファイル・リスト",
   "lsUsageHeader": "ローカル・ファイル・システムのディレクトリー・リスト",
-  "lsDashAUsageDocs": "{0} と {1} を除くすべてのエントリーをリストします",
-  "lsDashaUsageDocs": "名前がドットで始まるディレクトリー・エントリーを含めます ({0}",
-  "lsDashcUsageDocs": "ファイル状況が最後に変更された時刻をソートに使用します ({0})",
+  "lsDashAUsageDocs": ". と . を除くすべてのエントリーをリストします。",
+  "lsDashaUsageDocs": "名前がドット (.) で始まるディレクトリー・エントリーを含めます",
+  "lsDashcUsageDocs": "ファイル状況が最後に変更された時刻をソートに使用します",
   "lsDashtUsageDocs": "変更された時刻でソート (最近変更された時刻が最初になる)",
   "lsDashrUsageDocs": "自然なソート順を逆にします",
   "lsDashSUsageDocs": "サイズでファイルをソート",
   "openUsageTitle": "ファイルを開く",
-  "openUsageHeader": "ファイルの内容を表示"
+  "openUsageHeader": "ファイルの内容を表示",
+  "localFilePath": "ローカル・ファイル・パス",
+  "Please wait while we connect to your cloud": "クラウドに接続しています。お待ちください",
+  "Could not establish a new session": "新しいセッションを確立できませんでした",
+  "Successfully connected to your cloud. For next steps, try this command: ": "クラウドに正常に接続しました。次のステップに進むために、次のコマンドを試してください。"
 }

@@ -4,12 +4,16 @@
   "cdUsageHeader": "Atualize o diretório atualmente em funcionamento para manipulações do sistema de arquivos locais",
   "lsUsageTitle": "lista de arquivos locais",
   "lsUsageHeader": "Listagem de diretórios de seu sistema de arquivos locais",
-  "lsDashAUsageDocs": "Liste todas as entradas, exceto para {0} e {1}",
-  "lsDashaUsageDocs": "Inclua entradas de diretório cujos nomes iniciam com um ponto ({0})",
-  "lsDashcUsageDocs": "Use o horário em que o status do arquivo foi modificado pela última vez para classificação ({0})",
+  "lsDashAUsageDocs": "Listar todas as entradas, exceto para . e ..",
+  "lsDashaUsageDocs": "Incluir entradas de diretório cujos nomes comecem com um ponto (.)",
+  "lsDashcUsageDocs": "Usar horário em que o status do arquivo foi mudado pela última vez para classificação",
   "lsDashtUsageDocs": "Classificar por horário da modificação (modificação mais recente primeiro)",
   "lsDashrUsageDocs": "Inverter a ordem de classificação natural",
   "lsDashSUsageDocs": "Classificar arquivos por tamanho",
   "openUsageTitle": "abrir o arquivo",
-  "openUsageHeader": "Visualizar os conteúdos de um arquivo"
+  "openUsageHeader": "Visualizar os conteúdos de um arquivo",
+  "localFilePath": "caminho do arquivo local",
+  "Please wait while we connect to your cloud": "Aguarde enquanto nos conectamos com sua nuvem.",
+  "Could not establish a new session": "Não foi possível estabelecer uma nova sessão",
+  "Successfully connected to your cloud. For next steps, try this command: ": "Conectado com êxito à sua nuvem. Para as próximas etapas, experimente este comando: "
 }

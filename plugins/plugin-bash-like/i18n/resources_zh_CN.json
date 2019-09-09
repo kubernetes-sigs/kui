@@ -4,12 +4,16 @@
   "cdUsageHeader": "更新当前工作目录以用于本地文件系统操作",
   "lsUsageTitle": "本地文件列表",
   "lsUsageHeader": "本地文件系统的目录列表",
-  "lsDashAUsageDocs": "列出所有条目，{0} 和 {1} 除外",
-  "lsDashaUsageDocs": "包含名称以句点开头的目录条目 ({0})",
-  "lsDashcUsageDocs": "使用上次更改文件状态的时间进行排序 ({0})",
+  "lsDashAUsageDocs": "列出除 . 和 .. 以外的所有条目",
+  "lsDashaUsageDocs": "包含名称以点 (.) 开头的目录条目",
+  "lsDashcUsageDocs": "使用上次更改文件状态的时间进行排序",
   "lsDashtUsageDocs": "按修改时间进行排序（最近修改排第一）",
   "lsDashrUsageDocs": "颠倒自然排序顺序",
   "lsDashSUsageDocs": "按大小对文件进行排序",
   "openUsageTitle": "打开文件",
-  "openUsageHeader": "查看文件的内容"
+  "openUsageHeader": "查看文件的内容",
+  "localFilePath": "本地文件路径",
+  "Please wait while we connect to your cloud": "正在连接到云，请稍候",
+  "Could not establish a new session": "无法建立新会话",
+  "Successfully connected to your cloud. For next steps, try this command: ": "已成功连接到云。对于后续步骤，请尝试以下命令："
 }

@@ -4,12 +4,16 @@
   "cdUsageHeader": "Mise à jour du répertoire de travail en cours pour les manipulations du système de fichiers local",
   "lsUsageTitle": "liste de fichiers locaux",
   "lsUsageHeader": "Liste de répertoires de votre système de fichiers local",
-  "lsDashAUsageDocs": "Répertorier toutes les entrées à l'exception de {0} et {1}",
-  "lsDashaUsageDocs": "Inclure les entrées de répertoire dont le nom commence par un point ({0})",
-  "lsDashcUsageDocs": "Utiliser l'heure quand le statut de fichier a été modifié en dernier pour le tri ({0})",
+  "lsDashAUsageDocs": "Répertorier toutes les entrées à l'exception de . et ..",
+  "lsDashaUsageDocs": "Inclure les entrées de répertoire dont le nom commence par un point (.)",
+  "lsDashcUsageDocs": "Utiliser l'heure quand le statut de fichier a été modifié en dernier pour le tri",
   "lsDashtUsageDocs": "Trier par heure de modification (modification la plus récente en premier)",
   "lsDashrUsageDocs": "Inverser l'ordre de tri naturel",
   "lsDashSUsageDocs": "Trier les fichiers par taille",
   "openUsageTitle": "ouvrir le fichier",
-  "openUsageHeader": "Afficher le contenu d'un fichier"
+  "openUsageHeader": "Afficher le contenu d'un fichier",
+  "localFilePath": "Chemin de fichier local",
+  "Please wait while we connect to your cloud": "Merci de patienter durant la connexion à votre cloud",
+  "Could not establish a new session": "Impossible d'établir une nouvelle session",
+  "Successfully connected to your cloud. For next steps, try this command: ": "Connexion à votre cloud établie. Pour les étapes suivantes, essayez cette commande : "
 }
