@@ -792,10 +792,14 @@ const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string)
 
 export const unlisten = (prompt: HTMLInputElement) => {
   if (inBottomInputMode) {
-    const bottomPrompt = getBottomPrompt(getTabFromTarget(prompt))
-    bottomPrompt.readOnly = true
-  } else if (prompt) {
+    prompt = getBottomPrompt(getTabFromTarget(prompt))
+  }
+
+  if (prompt) {
     prompt.readOnly = true
+    prompt.onkeypress = null
+    prompt.onkeydown = null
+    prompt.onpaste = null
   }
 
   if (prompt && !prompt.classList.contains('sidecar-header-input')) {
