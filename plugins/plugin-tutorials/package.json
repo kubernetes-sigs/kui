@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-tutorials",
-  "version": "3.0.24",
+  "version": "3.0.25",
   "description": "IBM Cloud shell plugin for tutorials",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -41,5 +41,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "7d09a81479367bc817fb3107da411a8c883a8745"
+  "gitHead": "60a18d596e467b2f96e138e75c1429d6bca394b0"
 }
