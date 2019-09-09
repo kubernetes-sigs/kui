@@ -343,7 +343,7 @@ export default async (commandTree: CommandRegistrar) => {
               const location = join(app.getPath('desktop'), filename)
 
               saveButton.className = 'screenshot-save-button'
-              saveButton.innerHTML = 'Save to desktop'
+              saveButton.innerHTML = strings('Save to desktop')
 
               saveButton.onclick = () => {
                 remote.require('fs').writeFile(location, img.toPNG(), async () => {
@@ -368,13 +368,12 @@ export default async (commandTree: CommandRegistrar) => {
 
               snapContent.classList.add('screenshot-content')
               message.classList.add('screenshot-success-message')
-              message.innerText = 'Screenshot copied to clipboard'
+              message.innerText = strings('Screenshot copied to clipboard')
               messageContent.classList.add('screenshot-message')
               messageContent.appendChild(message)
               const closeMessage = document.createElement('div')
               closeMessage.classList.add('screenshot-closing-message')
               closeMessage.setAttribute('id', 'close-msg')
-              closeMessage.innerHTML = `Closing in <span id="kui--screenshot-countdown">${SECONDS_TILL_AUTO_CLOSE}</span>`
               messageContent.appendChild(closeMessage)
               snapContent.append(messageContent)
               snapContent.appendChild(saveButton)
@@ -396,9 +395,11 @@ export default async (commandTree: CommandRegistrar) => {
                   finish()
                 }
 
-                ;(snapDom.querySelector(
-                  '.screenshot-closing-message'
-                ) as HTMLElement).innerText = `Closing in ${timeleft}`
+                ;(snapDom.querySelector('.screenshot-closing-message') as HTMLElement).innerText = strings(
+                  'Closing in {0} seconds',
+                  timeleft.toString()
+                )
+
                 timeleft -= 1
               }, 1000)
 
@@ -435,7 +436,7 @@ export default async (commandTree: CommandRegistrar) => {
               }
 
               screenshotButton.classList.remove('force-no-hover')
-              resolve('Successfully captured a screenshot to the clipboard')
+              resolve(strings('Successfully captured a screenshot to the clipboard'))
             }
 
             //

@@ -45,5 +45,9 @@
   "About": "About",
   "Getting Started": "Getting Started",
   "Configure": "Configure",
-  "Version": "Version"
+  "Version": "Version",
+  "Closing in {0} seconds": "Closing in {0} seconds",
+  "Save to desktop": "Save to desktop",
+  "Screenshot copied to clipboard": "Screenshot copied to clipboard",
+  "Successfully captured a screenshot to the clipboard": "Successfully captured a screenshot to the clipboard"
 }
