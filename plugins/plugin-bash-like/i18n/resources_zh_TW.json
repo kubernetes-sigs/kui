@@ -4,12 +4,16 @@
   "cdUsageHeader": "更新本端檔案系統操作的現行工作目錄",
   "lsUsageTitle": "本端檔案清單",
   "lsUsageHeader": "本端檔案系統的目錄清單",
-  "lsDashAUsageDocs": "列出除 {0} 和 {1} 以外的全部項目",
-  "lsDashaUsageDocs": "併入其名稱以點 ({0}) 開頭的目錄項目",
-  "lsDashcUsageDocs": "使用檔案狀態前次變更的時間以進行排序 ({0})",
+  "lsDashAUsageDocs": "列出除 . 及 .. 以外的全部項目",
+  "lsDashaUsageDocs": "併入其名稱以點 (.) 開頭的目錄項目",
+  "lsDashcUsageDocs": "使用檔案狀態前次變更的時間以進行排序",
   "lsDashtUsageDocs": "依修改時間（首先依最近修改時間）排序",
   "lsDashrUsageDocs": "反向自然排序",
   "lsDashSUsageDocs": "依大小排序檔案",
   "openUsageTitle": "開啟舊檔",
-  "openUsageHeader": "檢視檔案內容"
+  "openUsageHeader": "檢視檔案內容",
+  "localFilePath": "本端檔案路徑",
+  "Please wait while we connect to your cloud": "我們正在連接至您的雲端，請稍候",
+  "Could not establish a new session": "無法建立新的階段作業",
+  "Successfully connected to your cloud. For next steps, try this command: ": "已順利連接至您的雲端。對於後續步驟，請嘗試此指令："
 }
