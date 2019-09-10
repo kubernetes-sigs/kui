@@ -144,7 +144,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await cli.expectBlank(res)
 
       console.error('CP17')
-      await cli.do(`cat ${file.name}`, this.app).then(cli.expectOKWithString(text))
+      await cli.do(`cat ${file.name}`, this.app).then(cli.expectOKWithStringEventually(text))
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), text)
