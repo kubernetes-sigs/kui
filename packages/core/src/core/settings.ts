@@ -76,3 +76,16 @@ export const inBottomInputMode =
 export const theme: Theme = t as Theme
 export const env = e
 export const config = Object.assign({}, c, devOverrides)
+
+/**
+ * export the theme to a given directory
+ *
+ */
+export async function exportTo(dirpath: string) {
+  const [{ writeJSON, ensureFile }, { join }] = await Promise.all([import('fs-extra'), import('path')])
+
+  const filepath = join(dirpath, 'node_modules/@kui-shell/settings/config.json')
+  await ensureFile(filepath)
+
+  await writeJSON(filepath, theme)
+}

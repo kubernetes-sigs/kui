@@ -39,7 +39,7 @@ import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Tab } from '../webapp/cli'
-import { PluginResolver } from './plugins'
+import { PluginResolver } from './plugin-resolver'
 import { theme } from './settings'
 
 /**
@@ -59,20 +59,20 @@ const newTree = (): CommandTree => ({
 const model: CommandTree = newTree() // this is the model of registered listeners, a tree
 const intentions: CommandTree = newTree() // this is the model of registered intentional listeners
 
-let disambiguator: Disambiguator = {} // map from command name to disambiguations
+const disambiguator: Disambiguator = {} // map from command name to disambiguations
 export const catchalls: CatchAllHandler[] = [] // handlers for command not found
 
 debug('finished loading modules')
 
 // for plugins.js
-export const startScan = (): Disambiguator => {
+/* export const startScan = (): Disambiguator => {
   const state = disambiguator
   disambiguator = {}
   debug('startScan', disambiguator)
   return state
-}
-export const endScan = (state: Disambiguator): Disambiguator => {
-  debug('finishing up')
+} */
+export const endScan = (/* state: Disambiguator */): Disambiguator => {
+  debug('finishing up', disambiguator)
   const map: Disambiguator = {}
   for (const command in disambiguator) {
     map[command] = disambiguator[command].map(({ route, options }) => ({
@@ -80,10 +80,33 @@ export const endScan = (state: Disambiguator): Disambiguator => {
       plugin: options && options.plugin
     }))
   }
-  if (state) {
+  /* if (state) {
     disambiguator = state
-  }
+  } */
   return map
+}
+
+/**
+ * In support of plugin removal, cull the disambiguator cache
+ *
+ */
+export function cullFromDisambiguator(pluginToBeRemoved: string) {
+  for (const key in disambiguator) {
+    disambiguator[key] = disambiguator[key].filter(({ plugin }) => {
+      if (plugin !== pluginToBeRemoved) {
+        debug('cullFromDisambiguator deleted', key)
+        return false
+      } else {
+        return true
+      }
+    })
+    const after = disambiguator[key].length
+    if (after === 0) {
+      debug('cullFromDisambiguator purged', key, disambiguator[key])
+      delete disambiguator[key]
+    }
+  }
+  debug('cullFromDisambiguator done', disambiguator)
 }
 
 /**
@@ -192,7 +215,7 @@ const _listen = (
   route: string,
   handler: CommandHandler,
   options: CommandOptions = new DefaultCommandOptions()
-) => {
+): Command => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(model, path, false, options.hide)
 
@@ -252,7 +275,11 @@ export const subtree = (route: string, options: CommandOptions) => {
 
     if (options) {
       leaf.options = options
+    } else {
+      leaf.options = {}
     }
+
+    leaf.options.isDirectory = true
 
     const help = () => {
       // the usage message
@@ -596,6 +623,7 @@ const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHan
     (((idx = 0) || true) && resolver.disambiguate(argv[idx])) ||
     (argv.length > 1 && ((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) ||
     []
+  debug('disambiguate', argv, resolutions)
 
   if (resolutions.length === 0 && !noRetry) {
     // maybe we haven't loaded the plugin, yet
@@ -804,6 +832,10 @@ export const read = async (
   }
 }
 
+/**
+ * The exported interface around our internal command model
+ *
+ */
 class CommandModel {
   /**
    * Call the given callback function `fn` for each node in the command tree
@@ -865,7 +897,7 @@ export const proxy = (plugin: string) => ({
   intention: (route: string, handler: CommandHandler, options: CommandOptions) =>
     intention(route, handler, Object.assign({}, options, { plugin })),
   synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) =>
-    synonym(route, handler, master, Object.assign({}, options, { plugin })),
+    synonym(route, handler, master, options && Object.assign({}, options, { plugin })),
   subtree,
   subtreeSynonym,
   commandNotFoundMessage,
