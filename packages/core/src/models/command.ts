@@ -64,6 +64,9 @@ export interface CommandOptions extends CapabilityRequirements {
   // show this placeholder text when executing the command in popup mode (instead of the command line)
   placeholder?: string
 
+  /** is this an interior node ("directory", versus a leaf-node with a command handler */
+  isDirectory?: boolean
+
   listen?: CommandListener
   docs?: string
   synonymFor?: Command

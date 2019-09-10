@@ -43,7 +43,7 @@ export const install = {
   strict: 'install',
   command: 'install',
   breadcrumb: 'Install plugin',
-  docs: 'install a Shell plugin',
+  docs: 'install a plugin',
   example: 'plugin install <plugin>',
   detailedExample: {
     command: 'plugin install shell-sample-plugin',
@@ -66,7 +66,7 @@ export const list = {
   strict: 'list',
   command: 'list',
   breadcrumb: 'List plugins',
-  docs: 'list installed Shell plugins',
+  docs: 'list installed plugins',
   example: 'plugin list',
   optional: [{ name: '--limit', hidden: true }], // to make tab completion happy
   parents
@@ -80,7 +80,7 @@ export const remove = (command: string) => ({
   strict: command,
   command,
   breadcrumb: 'Remove plugin',
-  docs: 'remove an installed Shell plugin',
+  docs: 'remove an installed plugin',
   example: 'plugin remove <plugin>',
   required: installedPlugin,
   parents

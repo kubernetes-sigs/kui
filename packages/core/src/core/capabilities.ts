@@ -63,7 +63,8 @@ const state: State = new State()
 export const getMedia = () => state.media
 export const isHeadless = () => state.media === Media.Headless
 export const inElectron = () => state.media === Media.Electron
-export const inBrowser = () => state.media === Media.Browser
+export const inBrowser = () =>
+  state.media === Media.Browser || (!isHeadless() && document.body.classList.contains('not-electron'))
 
 /**
  * Is Kui supported by a remote proxy?

@@ -19,7 +19,7 @@ const debug = Debug('core/preloader')
 debug('loading')
 
 import { proxy } from './command-tree'
-import { PrescanModel } from './plugins'
+import { PrescanModel } from './prescan'
 import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
 
 /**

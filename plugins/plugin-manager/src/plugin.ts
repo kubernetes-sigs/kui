@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-/* disabled for now; not compatible with webpack */
+import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-/*
 const usagePerCommand = require('./usage')
+
+import commands from './controller/commands'
+import compile from './controller/compile'
+import install from './controller/install'
+import list from './controller/list'
+import home from './controller/home'
+import remove from './controller/remove'
 
 const toUsage = (models, { commandPrefix, title, docs, breadcrumb = title }) => {
   const usage = {
@@ -30,27 +37,31 @@ const toUsage = (models, { commandPrefix, title, docs, breadcrumb = title }) => 
     nRowsInViewport: 4 // the default is 3, but we have 4, so just show them all
   }
 
-  for (let command in models) {
+  for (const command in models) {
     usage.available.push(models[command])
   }
 
   return usage
 }
-*/
 
-export default () => {
-  /* disabled for now; not compatible with webpack */
-  /* commandTree.subtree('/plugin', {
-    usage: toUsage(usagePerCommand, {
-      commandPrefix: 'plugin',
-      title: 'Plugin management',
-      docs: 'Commands for managing installed plugins'
+export default async (commandTree: CommandRegistrar) => {
+  if (!inBrowser()) {
+    commandTree.subtree('/plugin', {
+      usage: toUsage(usagePerCommand, {
+        commandPrefix: 'plugin',
+        title: 'Plugin management',
+        docs: 'Commands for managing installed plugins'
+      })
     })
-  })
 
-  require('./lib/commands')(commandTree)
-  require('./lib/compile-command')(commandTree)
-  require('./lib/install')(commandTree)
-  require('./lib/list')(commandTree)
-  require('./lib/remove')(commandTree) */
+    await Promise.all([
+      commands(commandTree),
+      compile(commandTree),
+      install(commandTree),
+      install(commandTree),
+      list(commandTree),
+      home(commandTree),
+      remove(commandTree)
+    ])
+  }
 }

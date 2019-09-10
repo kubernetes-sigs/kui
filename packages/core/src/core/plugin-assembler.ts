@@ -16,16 +16,14 @@
 
 import Debug from 'debug'
 
-import * as fs from 'fs-extra'
-import * as path from 'path'
+import { readFile, readdirSync, statSync, writeFile } from 'fs-extra'
+import { basename, join, relative } from 'path'
 
-import { PrescanUsage } from '../models/plugin'
+import { PrescanCommandDefinitions, PrescanDocs, PrescanModel, PrescanUsage } from './prescan'
 import * as plugins from './plugins'
-import * as commandTree from './command-tree'
+import { getModel, cullFromDisambiguator } from './command-tree'
 
 const debug = Debug('core/plugin-assembler')
-debug('loading')
-debug('modules loaded')
 
 /**
  * Return the location of the pre-scanned cache file
@@ -37,20 +35,20 @@ const prescanned = (): string => require.resolve('@kui-shell/prescan')
  * Write the plugin list to the .pre-scanned.json file in app/plugins/.pre-scanned.json
  *
  */
-const writeToFile = async (modules: plugins.PrescanModel): Promise<void> => {
-  debug('writeToFile', process.cwd(), prescanned())
+const writePrescanned = async (modules: PrescanModel, destFile = prescanned()): Promise<void> => {
+  debug('writePrescanned', process.cwd(), destFile, modules)
 
   const str = JSON.stringify(modules)
-  await fs.writeFile(prescanned(), str)
+  await writeFile(destFile, str)
 }
 
 /**
  * Read the current .pre-scanned.json file
  *
  */
-const readFile = async (): Promise<Prescan> => {
+const readPrescanned = async (): Promise<Prescan> => {
   try {
-    const data = (await fs.readFile(prescanned())).toString()
+    const data = (await readFile(prescanned())).toString()
 
     if (data.trim().length === 0) {
       // it was empty
@@ -97,13 +95,13 @@ const diff = (beforeModel: Prescan, afterModel: Prescan, reverseDiff = false): P
  */
 const readDirRecursively = (dir: string): string[] => {
   if (
-    path.basename(dir) !== 'helpers' &&
-    path.basename(dir) !== 'bin' &&
-    path.basename(dir) !== 'modules' &&
-    path.basename(dir) !== 'node_modules' &&
-    fs.statSync(dir).isDirectory()
+    basename(dir) !== 'helpers' &&
+    basename(dir) !== 'bin' &&
+    basename(dir) !== 'modules' &&
+    basename(dir) !== 'node_modules' &&
+    statSync(dir).isDirectory()
   ) {
-    return Array.prototype.concat(...fs.readdirSync(dir).map((f: string) => readDirRecursively(path.join(dir, f))))
+    return Array.prototype.concat(...readdirSync(dir).map((f: string) => readDirRecursively(join(dir, f))))
   } else {
     return [dir] // was dir
   }
@@ -141,7 +139,7 @@ type PrescanDiff = string[]
  * structure based on the "/path/hierarchy"
  *
  */
-const makeTree = (map: PrescanUsage, docs: plugins.PrescanDocs) => {
+const makeTree = (map: PrescanUsage, docs: PrescanDocs) => {
   const keys = Object.keys(map)
   if (keys.length === 0) {
     debug('interesting, not a single command registered a usage model')
@@ -201,11 +199,11 @@ const makeTree = (map: PrescanUsage, docs: plugins.PrescanDocs) => {
  * of commands.
  *
  */
-const amendWithUsageModels = (modules: plugins.PrescanModel) => {
+const amendWithUsageModels = (modules: PrescanModel) => {
   modules.docs = {}
   modules.usage = {}
 
-  commandTree.getModel().forEachNode(({ route, options, synonyms }) => {
+  getModel().forEachNode(({ route, options, synonyms }) => {
     if (options && options.usage) {
       modules.usage[route] = options.usage
       if (options.needsUI) modules.usage[route].needsUI = true
@@ -213,6 +211,9 @@ const amendWithUsageModels = (modules: plugins.PrescanModel) => {
       if (options.noAuthOk) modules.usage[route].noAuthOk = true
       if (options.synonymFor) modules.usage[route].synonymFor = options.synonymFor.route
       if (synonyms) modules.usage[route].synonyms = Object.keys(synonyms).map(route => synonyms[route].key)
+      if (options.usage.docs) {
+        modules.docs[route] = options.usage.docs
+      }
     }
 
     if (options && options.docs) {
@@ -233,50 +234,65 @@ const amendWithUsageModels = (modules: plugins.PrescanModel) => {
  * and write the list to the .pre-scanned.json file
  *
  */
-export default async (
-  pluginRoot = process.env.PLUGIN_ROOT || path.join(__dirname, plugins.pluginRoot),
+export const compile = async (
+  pluginRoot = process.env.PLUGIN_ROOT || join(__dirname, plugins.pluginRoot),
   externalOnly = false,
   reverseDiff = false
 ) => {
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 
-  const before = await readFile()
+  const before = await readPrescanned()
   debug('before', before)
 
   // const modules = await plugins.assemble({ pluginRoot, externalOnly })
-  const modules = await plugins.assemble({ externalOnly })
+  const modules = await plugins.assemble({ externalOnly, pluginRoot })
 
   /** make the paths relative to the root directory */
   const fixupOnePath = (filepath: string): string => {
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts
-    return (
-      path
-        .relative(pluginRoot, filepath)
-        // .replace(/\/src/, '') // client-hosted plugins
-        .replace(/^(.*\/)(plugin-.*)$/, '$2')
-    ) // client-required plugins
+    const fixed = externalOnly ? filepath : relative(pluginRoot, filepath).replace(/^(.*\/)(plugin-.*)$/, '$2')
+    return fixed
   }
-  const fixupPaths = (pluginList: plugins.PrescanCommandDefinitions) =>
+  const fixupPaths = (pluginList: PrescanCommandDefinitions) =>
     pluginList.map(plugin =>
       Object.assign(plugin, {
         path: fixupOnePath(plugin.path)
       })
     )
 
-  const model: plugins.PrescanModel = Object.assign(modules, {
+  const model: PrescanModel = Object.assign(modules, {
     preloads: fixupPaths(modules.preloads),
     flat: fixupPaths(modules.flat)
   })
 
   const modelWithUsage = amendWithUsageModels(model)
 
-  await Promise.all([writeToFile(modelWithUsage)])
+  const destFile = externalOnly ? join(pluginRoot, '@kui-shell/prescan.json') : prescanned()
+  await Promise.all([writePrescanned(modelWithUsage, destFile)])
+
+  if (externalOnly) {
+    // then this is a live install, we need to smash it into the live model
+    plugins._useUpdatedUserPrescan(modelWithUsage)
+  }
 
   // resolve with what is new
   return diff(before, modelWithUsage, reverseDiff)
 }
+
+export async function compileUserInstalled(pluginToBeRemoved?: string) {
+  debug('compileUserInstalled', pluginToBeRemoved)
+
+  if (pluginToBeRemoved) {
+    cullFromDisambiguator(pluginToBeRemoved)
+  }
+
+  const home = await plugins.userInstalledHome()
+  await compile(join(home, 'node_modules'), true)
+}
+
+export default compile
 
 debug('loading done')

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from './command'
+import { Commands, Plugins, Tables } from '@kui-shell/core'
 
-import { PrescanUsage } from '../core/prescan'
+import { commands as usage } from '../usage'
 
-export type KuiPlugin = void | Promise<void>
+const doList = ({ argvNoOptions }: Commands.Arguments): Promise<Tables.Table> => {
+  const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
+  return Plugins.commandsOffered(plugin)
+}
 
-export type PluginRegistration = (commandTree: CommandRegistrar, options?: { usage: PrescanUsage }) => KuiPlugin
-
-export type PreloadRegistration = (commandTree: CommandRegistrar) => Promise<void | void[]>
-
-export type CapabilityRegistration = () => Promise<void>
+export default (commandTree: Commands.Registrar) => {
+  commandTree.listen('/plugin/commands', doList, {
+    usage
+  })
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from './command'
+import { Capabilities, Commands, Plugins, REPL } from '@kui-shell/core'
 
-import { PrescanUsage } from '../core/prescan'
+export default function(commandTree: Commands.Registrar) {
+  commandTree.listen('/plugin/home', async () => {
+    const home = await Plugins.userHome()
 
-export type KuiPlugin = void | Promise<void>
-
-export type PluginRegistration = (commandTree: CommandRegistrar, options?: { usage: PrescanUsage }) => KuiPlugin
-
-export type PreloadRegistration = (commandTree: CommandRegistrar) => Promise<void | void[]>
-
-export type CapabilityRegistration = () => Promise<void>
+    if (Capabilities.isHeadless()) {
+      return home
+    } else {
+      const link = document.createElement('div')
+      link.classList.add('clickable')
+      link.innerText = home
+      link.onclick = () => REPL.pexec(`ls ${REPL.encodeComponent(home)}`)
+      return link
+    }
+  })
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import { Commands, Settings } from '@kui-shell/core'
-import compile from '@kui-shell/core/core/plugin-assembler'
-
-import { success } from '../util'
+import { Commands, Plugins } from '@kui-shell/core'
 
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen(
-    '/plugin/compile',
-    () => {
-      const rootDir = Settings.userDataDir()
-      return compile(rootDir, true).then(([newCommands]) =>
-        success('installed', 'will be available, after reload', newCommands)
-      )
-    },
-    {}
-  )
+  commandTree.listen('/plugin/compile', async ({ argvNoOptions }) => {
+    await Plugins.compile(argvNoOptions[argvNoOptions.indexOf('compile') + 1])
+    return true
+  })
 }
