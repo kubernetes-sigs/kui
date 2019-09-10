@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.27](https://github.com/IBM/kui/compare/v3.0.26...v3.0.27) (2019-09-10)
+
+### Bug Fixes
+
+- **packages/app:** typo in one of the aria-labels ([d050142](https://github.com/IBM/kui/commit/d050142)), closes [#2707](https://github.com/IBM/kui/issues/2707)
+- clients/alternate zebra striping for k logs has poor contrast ([28fe852](https://github.com/IBM/kui/commit/28fe852)), closes [#2710](https://github.com/IBM/kui/issues/2710)
+
 ## [3.0.26](https://github.com/IBM/kui/compare/v3.0.25...v3.0.26) (2019-09-10)
 
 ### Bug Fixes
