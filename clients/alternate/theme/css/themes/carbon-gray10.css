@@ -30,6 +30,7 @@ body[kui-theme="IBM Light"] {
   --color-brand-03: #0062ff;
 
   --color-ui-05: #171717;
+  --color-ui-03: var(--color-background-inverted02);
   --color-text-02: #565656;
 
   --color-map-key: #6ea6ff;
