@@ -15,20 +15,17 @@
  */
 
 import Debug from 'debug'
-import * as path from 'path'
-import { remove } from 'fs-extra'
+import { join } from 'path'
+import { execFile } from 'child_process'
 
-import { Commands, Settings } from '@kui-shell/core'
-import compile from '@kui-shell/core/core/plugin-assembler'
+import { Commands, REPL, Settings } from '@kui-shell/core'
 
-import { success } from '../util'
-import { remove as usage } from '../../usage'
+import locateNpm from '../util/locate-npm'
+import { remove as usage } from '../usage'
+
 const debug = Debug('plugins/plugin-manager/cmd/remove')
-debug('loading')
 
-debug('finished module imports')
-
-const doRemove = ({ argvNoOptions }: Commands.Arguments) => {
+const doRemove = async ({ argvNoOptions }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)
@@ -36,17 +33,36 @@ const doRemove = ({ argvNoOptions }: Commands.Arguments) => {
   const name = argvNoOptions.shift()
 
   const rootDir = Settings.userDataDir()
-  const moduleDir = path.join(rootDir, 'plugins', 'modules')
-  const pluginHome = path.join(moduleDir, name)
+  const pluginHome = join(rootDir, 'plugins')
 
   debug(`remove plugin ${name} in ${pluginHome}`)
 
-  return remove(pluginHome)
-    .then(() => compile(rootDir, true, true)) // first true: externalOnly; second true: we want a reverse diff
-    .then(removedCommands => success('removed', 'will no be longer available, after reload', removedCommands))
+  const resolved = await locateNpm()
+  if (!resolved) {
+    throw new Error('npm could not be found. Please install npm and try again')
+  }
+
+  const { npm, env } = resolved
+
+  await new Promise((resolve, reject) => {
+    execFile(npm, ['uninstall', name, '--no-package-lock'], { cwd: pluginHome, env }, (err, stdout, stderr) => {
+      if (stderr) {
+        console.error(stderr)
+      }
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+
+  await REPL.qexec(`plugin compile ${name}`)
+
+  return true
 }
 
-module.exports = (commandTree: Commands.Registrar) => {
+export default (commandTree: Commands.Registrar) => {
   const cmd = commandTree.listen('/plugin/remove', doRemove, {
     usage: usage('remove')
   })
@@ -54,5 +70,3 @@ module.exports = (commandTree: Commands.Registrar) => {
     usage: usage('uninstall')
   })
 }
-
-debug('loading done')

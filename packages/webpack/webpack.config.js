@@ -126,7 +126,7 @@ plugins.push({
 
         const overrides = {
           build: { writeConfig: false },
-          env: { main, hash }
+          env: { main, hash, bodyCss: ['not-electron'] }
         }
 
         if (contentSecurityPolicyForDevServer) {

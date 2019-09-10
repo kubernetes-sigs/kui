@@ -40,3 +40,5 @@ export namespace Tables {
 
   export import format = TableView.formatTable
 }
+
+export default Tables
