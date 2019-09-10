@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.26](https://github.com/IBM/kui/compare/v3.0.25...v3.0.26) (2019-09-10)
+
+### Bug Fixes
+
+- **packages/app:** remove event listenerse from older/inactive prompts ([bea96b4](https://github.com/IBM/kui/commit/bea96b4)), closes [#2703](https://github.com/IBM/kui/issues/2703)
+
 ## [3.0.25](https://github.com/IBM/kui/compare/v3.0.24...v3.0.25) (2019-09-09)
 
 **Note:** Version bump only for package @kui-shell/core
