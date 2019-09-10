@@ -771,8 +771,6 @@ export const doExec = (
         // on exit, remove event handlers and the like
         //
         const cleanUpTerminal = () => {
-          terminal.blur()
-
           cleanupEventHandlers()
           resizer.destroy()
 
@@ -851,30 +849,13 @@ export const doExec = (
         //
         // here, we debounce scroll to bottom events
         //
-        let currentScrollAsync: NodeJS.Timeout
+        const activeDiv = tab.querySelector('.repl-inner')
         const doScroll = () => {
-          try {
-            if (!resizer.inAltBufferMode() && block.classList.contains('processing')) {
-              if (currentScrollAsync) {
-                clearTimeout(currentScrollAsync)
-              }
-
-              currentScrollAsync = setTimeout(() => {
-                if (!resizer.frozen) {
-                  scrollIntoView({
-                    which: '.repl-block.processing',
-                    when: 0,
-                    how: 'scrollIntoView'
-                  })
-                } else {
-                  // skipping scroll to bottom for terminated xterm
-                }
-              }, 5)
-            }
-          } catch (err) {
-            console.error(err)
+          if (!resizer.inAltBufferMode()) {
+            activeDiv.scrollTop = activeDiv.scrollHeight
           }
         }
+        const scrollPoll = setInterval(doScroll, 200)
 
         const notifyOfWriteCompletion = () => {
           if (pendingWrites > 0) {
@@ -895,7 +876,6 @@ export const doExec = (
         const onRefresh = async (evt: { start: number; end: number }) => {
           if (evt.end > evt.start || first) {
             resizer.hideTrailingEmptyBlanks()
-            doScroll()
           }
           notifyOfWriteCompletion()
           first = false
@@ -1144,7 +1124,8 @@ export const doExec = (
 
             /** called after final resize */
             const finishUpAfterFinalResize = () => {
-              scrollIntoView()
+              clearInterval(scrollPoll)
+              doScroll()
 
               ws.removeEventListener('message', onMessage)
               cleanUpTerminal()
@@ -1178,7 +1159,7 @@ export const doExec = (
 
               if (resizer.wasEverInAltBufferMode() || (nLines <= terminal.rows && nLinesRaw < terminal.rows)) {
                 // no need to resize: output is shorter than viewport
-                setTimeout(finishUpAfterFinalResize, 0)
+                setTimeout(finishUpAfterFinalResize, 50)
               } else {
                 // resize the terminal to house the expected number of
                 // lines, then wait for the final refresh event that will
@@ -1191,13 +1172,13 @@ export const doExec = (
 
             const nLines = terminal.buffer.length
 
+            doScroll()
             if (pendingWrites > 0) {
               if (!resizer.wasEverInAltBufferMode() && nLines <= terminal.rows && nLinesRaw < terminal.rows) {
                 cbAfterPendingWrites = finishUp
               } else {
                 // re: setTimeout, this is the same refresh issue
                 // discussed in the next comment
-                doScroll()
                 cbAfterPendingWrites = () => setTimeout(finishUp, 50)
               }
             } else {
