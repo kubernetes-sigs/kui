@@ -1,0 +1,3 @@
+# ignore any underscore files; e.g. _test.css specified by clients/default
+# see https://github.com/IBM/kui/issues/2716
+_*.css
