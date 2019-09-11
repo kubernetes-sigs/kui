@@ -232,7 +232,7 @@ export function isCommandHandlerWithEvents(evaluator: Evaluator): evaluator is C
 
 export type CommandTreeResolution = boolean | CommandHandlerWithEvents | CodedError
 
-export type YargsParserFlags = {
+export interface YargsParserFlags {
   boolean?: string[]
   alias?: string[]
 }
