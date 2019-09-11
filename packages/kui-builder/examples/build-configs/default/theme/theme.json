@@ -35,6 +35,18 @@
       "style": "dark"
     },
     { "name": "Atelier", "css": "themes/atelier-seaside.css", "style": "dark" },
+    {
+      "name": "Carbon Gray10",
+      "css": ["themes/carbon-gray10.css", "top-tab-stripe-alt.css"],
+      "attrs": ["kui--alternate"],
+      "style": "light"
+    },
+    {
+      "name": "Carbon Gray90",
+      "css": ["themes/carbon-gray90.css", "top-tab-stripe-alt.css"],
+      "attrs": ["kui--alternate"],
+      "style": "dark"
+    },
     { "name": "Dracula", "css": "themes/dracula.css", "style": "dark" },
     {
       "name": "Gruvbox",
