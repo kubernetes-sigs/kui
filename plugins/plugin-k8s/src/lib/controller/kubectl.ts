@@ -32,6 +32,7 @@ import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { encodeComponent, qexec, semicolonInvoke } from '@kui-shell/core/core/repl'
+import { flatten } from '@kui-shell/core/core/utility'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -503,7 +504,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
             debug('return an empty watch table')
             return cleanupAndResolve(
               formatWatchableTable(new Table({ body: [] }), {
-                refreshCommand: rawCommand.replace(/--watch|-w/g, ''),
+                refreshCommand: rawCommand.replace(
+                  /--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g,
+                  ''
+                ),
                 watchByDefault: true
               })
             )
@@ -699,7 +703,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
           cleanupAndResolve(
             formatWatchableTable(tableModel, {
-              refreshCommand: rawCommand.replace(/--watch|-w/g, ''),
+              refreshCommand: rawCommand.replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, ''),
               watchByDefault: true
             })
           )
@@ -788,6 +792,26 @@ const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: EvaluatorAr
   return delegate(opts)
 }
 
+// use boolean flags here to tell yarg parser
+// that arguments should be parsed as booleans
+// TODO: find a better solution here to avoid hard-coding
+const flags = {
+  boolean: [
+    'w',
+    'watch',
+    'watch-only',
+    'A',
+    'all-namespaces',
+    'ignore-not-found',
+    'no-headers',
+    'R',
+    'recursive',
+    'server-print',
+    'show-kind',
+    'show-labels'
+  ]
+}
+
 /**
  * Register the commands
  *
@@ -795,22 +819,26 @@ const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: EvaluatorAr
 export default async (commandTree: CommandRegistrar) => {
   await commandTree.listen('/k8s/_kubectl', _kubectl, {
     usage: usage('kubectl'),
+    flags,
     requiresLocal: true,
     noAuthOk: ['openwhisk']
   })
   const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, {
     usage: usage('kubectl'),
+    flags,
     inBrowserOk: true,
     noAuthOk: ['openwhisk']
   })
   await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, {
     usage: usage('kubectl'),
+    flags,
     inBrowserOk: true,
     noAuthOk: ['openwhisk']
   })
 
   await commandTree.listen('/k8s/helm', helm, {
     usage: usage('helm'),
+    flags,
     requiresLocal: true,
     noAuthOk: ['openwhisk']
   })
@@ -848,6 +876,7 @@ export default async (commandTree: CommandRegistrar) => {
     shorthands.map(verb => {
       return commandTree.listen(`/k8s/${verb}`, dispatchViaDelegationTo(kubectl), {
         usage: usage('kubectl'),
+        flags,
         requiresLocal: true,
         noAuthOk: ['openwhisk']
       })
