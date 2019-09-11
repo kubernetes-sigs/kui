@@ -32,9 +32,13 @@ const registration: PreloadRegistration = async (commandTree: CommandRegistrar) 
 
   if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.default(commandTree)))
-    asyncs.push(import('./lib/new-tab').then(_ => _.default(commandTree)))
+    asyncs.push(
+      import('./lib/cmds/theme')
+        .then(_ => _.preload())
+        .then(() => import('./lib/new-tab'))
+        .then(_ => _.default(commandTree))
+    )
     asyncs.push(import('./lib/cmds/history/reverse-i-search').then(_ => _.default()))
-    asyncs.push(import('./lib/cmds/theme').then(_ => _.preload()))
     asyncs.push(import('./lib/cmds/about/about').then(_ => _.preload()))
     asyncs.push(import('./lib/tab-completion').then(_ => _.default()))
   }

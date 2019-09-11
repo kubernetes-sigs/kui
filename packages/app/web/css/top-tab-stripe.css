@@ -247,7 +247,7 @@ body[kui-theme-style="dark"]
   border-bottom: 0.5px solid var(--color-content-divider);
   box-shadow: 0 1px 10px 0 rgba(21, 41, 53, 0.1);
 }
-.kui-header__title {
+[kui-theme-style] .kui-header__title {
   /* by default, don't show tool name in top tab */
   display: none;
 }

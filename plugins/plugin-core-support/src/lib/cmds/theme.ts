@@ -31,6 +31,14 @@ const strings = i18n('plugin-core-support')
 
 const debug = Debug('plugins/core-support/theme')
 
+interface Theme {
+  name: string
+  description?: string
+  css: string | string[]
+  attrs?: string[]
+  style: string
+}
+
 /**
  * Key into userdata preference model that indicates that currently selected theme
  *
@@ -50,6 +58,11 @@ const getPersistedThemeChoice = (): Promise<string> => {
  *
  */
 const usage = {
+  theme: {
+    command: 'theme',
+    strict: 'theme',
+    docs: strings('theme.usageDocs')
+  },
   themes: {
     command: 'themes',
     strict: 'themes',
@@ -74,6 +87,14 @@ const usage = {
 }
 
 /**
+ * @return the Theme model associated with the given theme name
+ *
+ */
+function findThemeByName(name: string): Theme {
+  return (settings.themes || []).find(_ => _.name === name)
+}
+
+/**
  * @return the name of the default theme
  *
  */
@@ -81,7 +102,7 @@ const getDefaultTheme = (isDarkMode = false) => {
   let defaultTheme = settings.defaultTheme
 
   if (isDarkMode) {
-    const darkTheme = settings.themes.find(_ => _.name === 'Dark')
+    const darkTheme = findThemeByName('Dark')
     if (darkTheme) {
       defaultTheme = darkTheme.name
     }
@@ -117,12 +138,12 @@ const list = async () => {
   // settings.themes model; e.g. they previously selected a theme that
   // has since been eliminated
   const chosenTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
-  const currentTheme = settings.themes.find(_ => _.name === chosenTheme) ? chosenTheme : getDefaultTheme()
+  const currentTheme = findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
   debug('currentTheme', currentTheme)
   debug('theme list', settings.themes)
 
   const body: Row[] = (settings.themes || []).map(
-    (theme): Row => {
+    (theme: Theme): Row => {
       const row = {
         type: 'theme',
         name: theme.name,
@@ -167,19 +188,17 @@ const list = async () => {
  * @return the path to the given theme's css
  *
  */
-const getCssFilepathForGivenTheme = (themeModel): string => {
+const getCssFilepathForGivenTheme = (addon: string): string => {
   const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
-  return join(prefix, env.cssHome, themeModel.css)
+  return join(prefix, env.cssHome, addon)
 }
 
 /**
- * @return the path to the currently selected theme's css
+ * An HTML-friendly id for the given theme name
  *
  */
-export const getCssFilepathForCurrentTheme = async (): Promise<string> => {
-  const theme = (await getPersistedThemeChoice()) || getDefaultTheme()
-  const themeModel = (settings.themes || []).find(_ => _.name === theme)
-  return getCssFilepathForGivenTheme(themeModel)
+function id(theme: string) {
+  return `kui-theme-css-${theme.replace(/\s/g, '_')}`
 }
 
 /**
@@ -187,7 +206,7 @@ export const getCssFilepathForCurrentTheme = async (): Promise<string> => {
  *
  */
 const switchTo = async (theme: string, webContents?: WebContents): Promise<void> => {
-  const themeModel = (settings.themes || []).find(_ => _.name === theme)
+  const themeModel = findThemeByName(theme)
   if (!themeModel) {
     debug('could not find theme', theme, settings)
     const error = new Error(strings('theme.unknown'))
@@ -197,48 +216,105 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
 
   debug('switching to theme %s', theme, env)
 
-  try {
-    if (webContents) {
-      const { readFile } = await import('fs-extra')
-      const css = (await readFile(getCssFilepathForGivenTheme(themeModel))).toString()
-      debug('using electron to pre-inject CSS before the application loads, from the main process')
-      webContents.insertCSS(css)
-      webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${theme}')`)
-      webContents.executeJavaScript(`document.body.setAttribute('kui-theme-style', '${themeModel.style}')`)
-    } else {
-      const previousKey = document.body.getAttribute('kui-theme-key')
-      const newKey = `kui-theme-css-${theme}`
+  // css addons defined by the theme
+  const addons = typeof themeModel.css === 'string' ? [themeModel.css] : themeModel.css
 
-      if (previousKey !== newKey) {
-        debug(
-          'using kui to inject CSS after the application has loaded, from the renderer process',
-          previousKey,
-          newKey
-        )
-        const css = {
-          key: newKey,
-          path: getCssFilepathForGivenTheme(themeModel)
-        }
+  const themeKey = id(theme)
 
-        // set the theme attributes on document.body
-        document.body.setAttribute('kui-theme-key', newKey)
-        document.body.setAttribute('kui-theme', theme)
-        document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
+  const previousTheme = document.body.getAttribute('kui-theme')
+  if (!webContents) {
+    if (previousTheme === theme) {
+      // nothing to do
+      return
+    } else if (previousTheme) {
+      //
+      // Notes:
+      //
+      // 1) Don't blindly uninject! only if we are actually
+      // changing themes.
+      //
+      // 2) This is only for dynamic injection; webContents means this
+      // is happening in the main loading process; see the comments
+      // below for more info.
+      //
+      const previousThemeModel = findThemeByName(previousTheme)
+      const previousKey = id(previousTheme)
+      const previousNumAddons = typeof previousThemeModel.css === 'string' ? 1 : previousThemeModel.css.length
+      for (let idx = 0; idx < previousNumAddons; idx++) {
+        const addonKey = `${previousKey}-${idx}`
+        await uninjectCSS({ key: addonKey })
+      }
 
-        // inject the new css
-        await injectCSS(css)
-
-        // warning: don't blindly uninject! only if we are actually changing themes
-        await uninjectCSS({ key: previousKey })
-
-        // let others know that the theme has changed
-        setTimeout(() => eventBus.emit('/theme/change', { theme }))
+      if (previousThemeModel.attrs) {
+        previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
       }
     }
+  }
+
+  try {
+    await Promise.all(
+      addons.map(async (addon, idx) => {
+        debug('injecting theme addon', addon)
+
+        const addonKey = `${themeKey}-${idx}`
+
+        if (webContents) {
+          //
+          // see packages/app/src/main/spawn-electron, where we use the
+          // electron API to set inject the theme into the main webview
+          // before the window opens
+          //
+          const { readFile } = await import('fs-extra')
+          const css = (await readFile(getCssFilepathForGivenTheme(addon))).toString()
+          debug('using electron to pre-inject CSS before the application loads, from the main process')
+          webContents.insertCSS(css)
+        } else {
+          const css = {
+            key: addonKey,
+            path: getCssFilepathForGivenTheme(addon)
+          }
+
+          // inject the new css
+          return injectCSS(css)
+        }
+      })
+    )
   } catch (err) {
     debug('error loading theme')
     console.error(err)
     throw err
+  }
+
+  // set the theme attributes on document.body
+  if (webContents) {
+    //
+    // see packages/app/src/main/spawn-electron, where we use the
+    // electron API to set inject the theme into the main webview
+    // before the window opens
+    //
+    let script = `
+document.body.setAttribute('kui-theme', '${theme}');
+document.body.setAttribute('kui-theme-key', '${themeKey}');
+document.body.setAttribute('kui-theme-style', '${themeModel.style}');`
+
+    if (themeModel.attrs) {
+      themeModel.attrs.forEach(attr => {
+        script = `${script}document.body.classList.add('${attr}')`
+      })
+    }
+
+    webContents.executeJavaScript(script)
+  } else {
+    document.body.setAttribute('kui-theme-key', themeKey)
+    document.body.setAttribute('kui-theme', theme)
+    document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
+
+    if (themeModel.attrs) {
+      themeModel.attrs.forEach(attr => document.body.classList.add(attr))
+    }
+
+    // let others know that the theme has changed
+    setTimeout(() => eventBus.emit('/theme/change', { theme }))
   }
 }
 
@@ -302,6 +378,11 @@ export const plugin = (commandTree: CommandRegistrar) => {
     noAuthOk: true,
     inBrowserOk: true
   })
+  commandTree.listen('/theme', list, {
+    usage: usage.theme,
+    noAuthOk: true,
+    inBrowserOk: true
+  })
 
   commandTree.listen('/theme/set', set, {
     usage: usage.set,
@@ -331,7 +412,7 @@ export const preload = () => {
   if (!isHeadless()) {
     if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
       debug('loading theme for webpack client')
-      switchToPersistedThemeChoice()
+      return switchToPersistedThemeChoice()
     }
   }
 }
