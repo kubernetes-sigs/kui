@@ -15,8 +15,13 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
-import { waitForGreen, waitForRed, createNS as create } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { cli, selectors, AppAndCount, sidecar } from '@kui-shell/core/tests/lib/ui'
+import {
+  waitForGreen,
+  waitForRed,
+  createNS as create,
+  defaultModeForGet
+} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 /** name of the namespace */
 const nsName: string = create()
 
@@ -65,9 +70,26 @@ const deleteNS = function(this: common.ISuite, kubectl: string) {
   })
 }
 
+/** drilldown the watch table */
+const testDrilldown = async (name: string, res: AppAndCount) => {
+  const selector = await cli.expectOKWithCustom({
+    selector: selectors.BY_NAME(nsName)
+  })(res)
+
+  await res.app.client.click(`${selector} .entity-name`)
+
+  await sidecar
+    .expectOpen(res.app)
+    .then(sidecar.expectMode(defaultModeForGet))
+    .then(sidecar.expectShowing(name))
+
+  await res.app.client.click(selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+  await sidecar.expectClosed(res.app)
+}
+
 /** k get ns -w */
 const watchNS = function(this: common.ISuite, kubectl: string) {
-  const watchCmds = [`${kubectl} get ns -w`, `${kubectl} get ns ${nsName} -w`]
+  const watchCmds = [`${kubectl} get ns -w`, `${kubectl} get ns ${nsName} -w`, `${kubectl} get -w ns ${nsName}`]
 
   watchCmds.forEach(watchCmd => {
     it(`should watch namespaces via ${watchCmd}`, async () => {
@@ -75,41 +97,45 @@ const watchNS = function(this: common.ISuite, kubectl: string) {
         const waitForOnline = waitForStatus.bind(this, Status.Online)
         const waitForOffline = waitForStatus.bind(this, Status.Offline)
 
-        const selector1 = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
-        const selector2 = await waitForOnline(await cli.do(watchCmd, this.app))
-        const selector2ButOffline = selector2.replace(Status.Online, Status.Offline)
-        const selector3 = await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
+        const createBadge = await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
+
+        const testWatch = await cli.do(watchCmd, this.app)
+        const watchBadge = await waitForOnline(testWatch)
+        const watchBadgeButOffline = watchBadge.replace(Status.Online, Status.Offline)
+        await testDrilldown(nsName, testWatch)
+
+        const deleteBadge = await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
 
         // the create and delete badges had better still exist
-        await this.app.client.waitForExist(selector1)
-        await this.app.client.waitForExist(selector3)
+        await this.app.client.waitForExist(createBadge)
+        await this.app.client.waitForExist(deleteBadge)
 
         // the "online" badge from the watch had better *NOT* exist after the delete
         // (i.e. we had better actually be watching!)
-        await this.app.client.waitForExist(selector2, 20000, true)
+        await this.app.client.waitForExist(watchBadge, 20000, true)
 
         // and, conversely, that watch had better eventually show Offline
-        await this.app.client.waitForExist(selector2ButOffline)
+        await this.app.client.waitForExist(watchBadgeButOffline)
 
         // create again
         await waitForOnline(await cli.do(`${kubectl} create ns ${nsName}`, this.app))
 
         // the "online" badge from the watch had better now exist again after the create
         // (i.e. we had better actually be watching!)
-        await this.app.client.waitForExist(selector2)
+        await this.app.client.waitForExist(watchBadge)
 
         // and, conversely, that watch had better NOT show Offline
-        await this.app.client.waitForExist(selector2ButOffline, 20000, true)
+        await this.app.client.waitForExist(watchBadgeButOffline, 20000, true)
 
         // delete again
         await waitForOffline(await cli.do(`${kubectl} delete ns ${nsName}`, this.app))
 
         // the "online" badge from the watch had better *NOT* exist after the delete
         // (i.e. we had better actually be watching!)
-        await this.app.client.waitForExist(selector2, 20000, true)
+        await this.app.client.waitForExist(watchBadge, 20000, true)
 
         // and, conversely, that watch had better eventually show Offline
-        await this.app.client.waitForExist(selector2ButOffline)
+        await this.app.client.waitForExist(watchBadgeButOffline)
       } catch (err) {
         await common.oops(this, false)(err)
       }

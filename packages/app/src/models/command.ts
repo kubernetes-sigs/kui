@@ -232,7 +232,10 @@ export function isCommandHandlerWithEvents(evaluator: Evaluator): evaluator is C
 
 export type CommandTreeResolution = boolean | CommandHandlerWithEvents | CodedError
 
-export type YargsParserFlags = { [key in 'boolean' | 'alias']: string[] }
+export type YargsParserFlags = {
+  boolean?: string[]
+  alias?: string[]
+}
 
 /** a catch all handler is presented with an offer to handle a given argv */
 export type CatchAllOffer = (argv: string[]) => boolean
