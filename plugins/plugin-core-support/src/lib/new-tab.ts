@@ -53,6 +53,10 @@ const usage = {
   required: [{ name: 'tabIndex', numeric: true, docs: 'Switch to the given tab index' }]
 }
 
+function isUsingCommandName() {
+  return topTabs.names !== 'fixed' && !document.body.classList.contains('kui--alternate')
+}
+
 /**
  * Given a tab index, return the tab id
  *
@@ -308,12 +312,12 @@ const addCommandEvaluationListeners = (): void => {
           // need to find a way to capture that sidecar-producing
           // command
           if (!isSidecarVisible(tab)) {
-            if (topTabs.names === 'command') {
+            if (isUsingCommandName()) {
               getTabButtonLabel(tab).innerText = theme['productName']
             }
           }
         } else {
-          if (topTabs.names === 'command') {
+          if (isUsingCommandName()) {
             getTabButtonLabel(tab).innerText = event.command
           }
           getTabButton(tab).classList.add('processing')
@@ -531,7 +535,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   currentVisibleTab.parentNode.appendChild(newTab)
   getCurrentPrompt(newTab).focus()
 
-  getTabButtonLabel(newTab).innerText = topTabs.names === 'fixed' ? strings('Tab') : strings('New Tab')
+  getTabButtonLabel(newTab).innerText = !isUsingCommandName() ? strings('Tab') : strings('New Tab')
 
   return true
 }
@@ -557,7 +561,7 @@ const oneTimeInit = (): void => {
   // initialize the first tab
   perTabInit(initialTab, initialTabButton, false)
 
-  getTabButtonLabel(getCurrentTab()).innerText = topTabs.names === 'fixed' ? strings('Tab') : theme['productName']
+  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : theme['productName']
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
@@ -601,6 +605,16 @@ const registerCommandHandlers = (commandTree: CommandRegistrar) => {
 export default async (commandTree: CommandRegistrar) => {
   if (typeof document !== 'undefined') {
     oneTimeInit()
+
+    eventBus.on('/theme/change', () => {
+      const tabLabels = document.querySelectorAll('.main .kui-header .kui-tab--label-text') as NodeListOf<HTMLElement>
+      const usingCommandName = isUsingCommandName()
+      if (!usingCommandName) {
+        for (let idx = 0; idx < tabLabels.length; idx++) {
+          tabLabels[idx].innerText = strings('Tab')
+        }
+      }
+    })
 
     return registerCommandHandlers(commandTree)
   }
