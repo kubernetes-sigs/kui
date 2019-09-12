@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.28](https://github.com/IBM/kui/compare/v3.0.27...v3.0.28) (2019-09-12)
+
+### Bug Fixes
+
+- **plugins/plugin-k8s:** drilldown failed for `k get -w pods` ([8c871f1](https://github.com/IBM/kui/commit/8c871f1)), closes [#2719](https://github.com/IBM/kui/issues/2719)
+
 ## [3.0.27](https://github.com/IBM/kui/compare/v3.0.26...v3.0.27) (2019-09-10)
 
 **Note:** Version bump only for package @kui-shell/plugin-k8s
