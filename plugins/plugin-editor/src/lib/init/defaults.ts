@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export default options => ({
+interface Options {
+  readOnly?: boolean
+  simple?: boolean
+}
+
+export default (options: Options) => ({
   automaticLayout: false, // respond to window layout changes?
   minimap: {
     enabled: false
@@ -30,7 +35,7 @@ export default options => ({
   fontFamily: 'var(--font-monospace)',
   fontSize:
     parseInt(
-      getComputedStyle(document.body)
+      getComputedStyle(document.querySelector('.repl-inner'))
         .getPropertyValue('font-size')
         .replace(/px$/, ''),
       10
