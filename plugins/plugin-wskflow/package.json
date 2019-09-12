@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-wskflow",
-  "version": "3.0.29",
+  "version": "3.0.30",
   "description": "Visualizations for Composer apps",
   "license": "Apache-2.0",
   "author": "Kerry Chang",
@@ -56,5 +56,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "60a18d596e467b2f96e138e75c1429d6bca394b0"
+  "gitHead": "b15b3843cd94e3291f3c8b052f42cd1834c313b4"
 }
