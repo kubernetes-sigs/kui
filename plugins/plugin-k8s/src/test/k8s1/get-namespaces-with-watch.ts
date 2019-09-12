@@ -97,7 +97,11 @@ const testDrilldown = async (nsName: string, res: AppAndCount) => {
 
 /** k get ns -w */
 const watchNS = function(this: common.ISuite, kubectl: string) {
-  const watchCmds = [`${kubectl} get ns -w`, `${kubectl} get ns ${nsName} -w`, `${kubectl} get -w ns ${nsName}`]
+  const watchCmds = [
+    `${kubectl} get ns -w`,
+    `${kubectl} get ns ${nsName} -w`,
+    `${kubectl} get -w=true --watch ns ${nsName} --watch=true -w`
+  ]
 
   watchCmds.forEach((_watchCmd, idx) => {
     const nsNameForIter = `${nsName}-${idx}`
