@@ -184,30 +184,9 @@ export function createWindow(
       if (mainWindow) {
         try {
           const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support/lib/cmds/theme')
-          switchToPersistedThemeChoice(mainWindow.webContents, isDarkMode)
+          await switchToPersistedThemeChoice(mainWindow.webContents, isDarkMode)
         } catch (err) {
-          debug('theme support not found', err)
-          const { theme, env } = await import('@kui-shell/core/core/settings')
-          const { readFile } = await import('fs')
-          const { join, dirname } = await import('path')
-          const themeModel = theme.themes.find(_ => _.name === theme.defaultTheme)
-          const filepath = join(
-            dirname(require.resolve('@kui-shell/settings/package.json')),
-            env.cssHome,
-            themeModel.css
-          )
-          debug('default theme filepath', filepath)
-          readFile(filepath, (err, data) => {
-            if (err) {
-              throw err
-            } else {
-              mainWindow.webContents.insertCSS(data.toString())
-              mainWindow.webContents.executeJavaScript(`document.body.setAttribute('kui-theme', '${themeModel.name}')`)
-              mainWindow.webContents.executeJavaScript(
-                `document.body.setAttribute('kui-theme-style', '${themeModel.style}')`
-              )
-            }
-          })
+          console.error('error initializing themes')
         }
       }
     })

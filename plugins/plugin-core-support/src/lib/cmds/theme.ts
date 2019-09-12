@@ -214,7 +214,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
     throw error
   }
 
-  debug('switching to theme %s', theme, env)
+  debug('switching to theme', theme, document.body.getAttribute('kui-theme'))
 
   // css addons defined by the theme
   const addons = typeof themeModel.css === 'string' ? [themeModel.css] : themeModel.css
@@ -223,17 +223,11 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
 
   if (!webContents) {
     const previousTheme = document.body.getAttribute('kui-theme')
-    if (previousTheme === theme) {
-      // nothing to do
-      return
-    } else if (previousTheme) {
+    if (previousTheme) {
       //
       // Notes:
       //
-      // 1) Don't blindly uninject! only if we are actually
-      // changing themes.
-      //
-      // 2) This is only for dynamic injection; webContents means this
+      // This is only for dynamic injection; webContents means this
       // is happening in the main loading process; see the comments
       // below for more info.
       //
@@ -267,7 +261,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
           const { readFile } = await import('fs-extra')
           const css = (await readFile(getCssFilepathForGivenTheme(addon))).toString()
           debug('using electron to pre-inject CSS before the application loads, from the main process')
-          webContents.insertCSS(css)
+          return webContents.insertCSS(css)
         } else {
           const css = {
             key: addonKey,
@@ -275,6 +269,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
           }
 
           // inject the new css
+          debug('injecting CSS', css)
           return injectCSS(css)
         }
       })
@@ -305,8 +300,8 @@ document.body.setAttribute('kui-theme-style', '${themeModel.style}');`
 
     webContents.executeJavaScript(script)
   } else {
-    document.body.setAttribute('kui-theme-key', themeKey)
     document.body.setAttribute('kui-theme', theme)
+    document.body.setAttribute('kui-theme-key', themeKey)
     document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
 
     if (themeModel.attrs) {
@@ -330,11 +325,11 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
       await switchTo(theme, webContents)
     } catch (err) {
       debug('error switching to persisted theme choice, using default')
-      switchTo(getDefaultTheme(isDarkMode), webContents)
+      await switchTo(getDefaultTheme(isDarkMode), webContents)
     }
   } else {
     debug('no persisted theme choice')
-    switchTo(getDefaultTheme(), webContents)
+    await switchTo(getDefaultTheme(), webContents)
   }
 }
 
@@ -411,7 +406,7 @@ export const plugin = (commandTree: CommandRegistrar) => {
 export const preload = () => {
   if (!isHeadless()) {
     if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
-      debug('loading theme for webpack client')
+      debug('loading theme')
       return switchToPersistedThemeChoice()
     }
   }
