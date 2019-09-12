@@ -32,7 +32,6 @@ import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { encodeComponent, qexec, semicolonInvoke } from '@kui-shell/core/core/repl'
-import { flatten } from '@kui-shell/core/core/utility'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -224,6 +223,15 @@ const usage = (command: string): UsageModel => ({
   noHelp: true // kubectl and helm both provide their own -h output
 })
 
+const stripThese = {
+  '-w': true,
+  '--watch': true,
+  '--watch-only': true,
+  '-w=true': true,
+  '--watch=true': true,
+  '--watch-only=true': true
+}
+
 /**
  * Spawn a local executable
  *
@@ -302,18 +310,16 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
       rawArgv.push('1000')
     }
 
-    if (options.watch || options.w || options['watch-only']) {
-      const idxs = [
-        rawArgv.indexOf('--watch'),
-        rawArgv.indexOf('--watch=true'),
-        rawArgv.indexOf('-w'),
-        rawArgv.indexOf('-w=true'),
-        rawArgv.indexOf('--watch-only'),
-        rawArgv.indexOf('--watch-only=true')
-      ].filter(_ => _ !== -1)
-
-      idxs.map(idx => rawArgv.splice(idx, 1))
-    }
+    //
+    // we will handle the watcher separately,
+    // so starting from the third raw argument,
+    // we strip off the watch flags from the raw arguments
+    // e.g. For commands like 'kubectl -w get pods', don't strip off the '-w'
+    //
+    const rawArgvWithoutWatchFlag =
+      options.watch || options.w || options['watch-only']
+        ? rawArgv.filter((argv, index) => index < 2 || !stripThese[argv])
+        : rawArgv
 
     // strip trailing e.g. .app
     const entityTypeWithoutTrailingSuffix =
@@ -324,7 +330,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     // replace @seed/yo.yaml with full path
     const argvWithFileReplacements: string[] = await Promise.all(
-      rawArgv.slice(1).map(
+      rawArgvWithoutWatchFlag.slice(1).map(
         async (_: string): Promise<string> => {
           if (_.match(/^!.*/)) {
             // !foo params mean they flow programatically via execOptions.parameters.foo

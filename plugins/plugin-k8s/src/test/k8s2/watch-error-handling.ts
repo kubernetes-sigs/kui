@@ -33,19 +33,17 @@ describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function
     })
   }
 
-  const testWrongCommand = (watchCmd: string, resourceName: string) => {
-    const errorMessage = `error: the server doesn't have a resource type "${resourceName}"`
-
+  const testWrongCommand = (watchCmd: string, code: number, errMessage?: string) => {
     it(`should error out with wrong command ${watchCmd}`, () => {
       return cli
         .do(watchCmd, this.app)
-        .then(cli.expectError(404, errorMessage))
+        .then(errMessage ? cli.expectError(code, errMessage) : cli.expectError(code))
         .catch(common.oops(this))
     })
   }
 
-  // here comes the tests that expect failure due to not existant resources
-  const flags = ['-w', '--watch=true']
+  // here comes the tests that expect failure due to non-existant resources
+  const flags = ['-w', '--watch=true', '-w -w -w']
   flags.forEach(watch => {
     testResourceNotFound(`k get ns shouldNotExist ${watch}`, 'namespaces', 'shouldNotExist')
     testResourceNotFound(`k get ns ${watch} shouldNotExist`, 'namespaces', 'shouldNotExist')
@@ -60,8 +58,10 @@ describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function
   const wrongFlags = ['--watch true', '-w true']
   wrongFlags.forEach(watch => {
     testResourceNotFound(`k get pod ${watch}`, 'pods', 'true') // the command is parsed as `kubectl get pod true`
-    testWrongCommand(`k get ${watch} pod`, 'true') // the command is parsed as `kubectl get true pod`
+    testWrongCommand(`k get ${watch} pod`, 404, 'error: the server doesn\'t have a resource type "true"') // the command is parsed as `kubectl get true pod`
   })
+
+  testWrongCommand(`k -w get pod`, 500)
 
   // here comes the tests should be successful
   const ns = createNS()
