@@ -109,15 +109,10 @@ export default (editorWrapper: HTMLElement, options) => {
               initDone = true
             }
 
-            // see if we are in dark mode
-            const theme = {
-              theme: document.querySelector('body').getAttribute('kui-theme-style') === 'dark' ? 'vs-dark' : 'vs'
-            }
-
             // here we instantiate an editor widget
             editor = global['monaco'].editor.create(
               editorWrapper,
-              Object.assign(defaultMonacoOptions(options), theme, options)
+              Object.assign(defaultMonacoOptions(options), options)
             )
 
             resolve(editor)

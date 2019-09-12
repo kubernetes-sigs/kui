@@ -87,20 +87,15 @@ let pre2 = false
 /**
  * Inject the current theme into the editor
  *
- * @param editorWrapper null allows for pre-injecting of CSS (performance optimization)
  */
-const injectTheme = (editorWrapper?: Element, force = false) => {
-  if (pre && !force) {
-    debug('skipping injectTheme', pre, force)
+const injectTheme = () => {
+  if (pre) {
+    debug('skipping injectTheme', pre)
     return
   }
   debug('injectTheme')
 
-  const currentTheme = document.querySelector('body').getAttribute('kui-theme')
-
-  const previousKey = editorWrapper && editorWrapper.getAttribute('kui-theme-key')
-  const key = `editor.theme-${currentTheme}`
-  if (editorWrapper) editorWrapper.setAttribute('kui-theme-key', key)
+  const key = `kui.editor.theme`
 
   // dangit: in webpack we can require the CSS; but in plain nodejs,
   // we cannot, so have to use filesystem operations to acquire the
@@ -115,13 +110,6 @@ const injectTheme = (editorWrapper?: Element, force = false) => {
     // oh well, try filesystem style
     const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
     injectCSS({ key, path: path.join(ourRoot, 'web/css/theme-alignment.css') })
-  }
-
-  // remove previous theme; for some reason, if we don't do this as an
-  // async, chrome flashes as we change themes!
-  if (editorWrapper) {
-    setTimeout(() => uninjectCSS({ key: previousKey }), 0)
-    pre = false
   }
 }
 
@@ -200,8 +188,8 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
     evt.stopPropagation()
   }
 
-  injectTheme(editorWrapper) // inject right now
-  globalEventBus.on('/theme/change', () => injectTheme(editorWrapper, true)) // and re-inject when the theme changes
+  // inject the kui-to-monaco theme alignment css
+  injectTheme()
 
   /**
    * Given an editor instance, return a function that can update
