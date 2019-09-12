@@ -499,8 +499,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
 
         if (codeForREPL === 404 || codeForREPL === 409 || codeForREPL === 412) {
-          if (codeForREPL === 404 && verb === 'get' && (options.w || options.watch)) {
-            // NOTE(5.30.2019): for now, we only support watchable table, so we have to return an empty table here
+          if (codeForREPL === 404 && originalCode === 0 && verb === 'get' && (options.w || options.watch)) {
+            // NOTE: although the error message is 'resource not found',
+            // kubectl doesn't treat this as an error when the command is a watch command,
+            // so we return an empty result and watch for changes
             debug('return an empty watch table')
             return cleanupAndResolve(
               formatWatchableTable(new Table({ body: [] }), {
