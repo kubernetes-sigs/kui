@@ -221,8 +221,8 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
 
   const themeKey = id(theme)
 
-  const previousTheme = document.body.getAttribute('kui-theme')
   if (!webContents) {
+    const previousTheme = document.body.getAttribute('kui-theme')
     if (previousTheme === theme) {
       // nothing to do
       return
