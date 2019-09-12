@@ -20,9 +20,7 @@
 [kui-theme-style] .bx--data-table thead,
 [kui-theme-style] .bx--data-table tbody {
   background: transparent;
-  font-size: unset;
   font-weight: unset;
-  line-height: unset;
   letter-spacing: unset;
   width: unset;
 }

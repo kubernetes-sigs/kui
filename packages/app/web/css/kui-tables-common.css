@@ -1,3 +1,13 @@
+[kui-theme-style] .bx--data-table thead,
+[kui-theme-style] .bx--data-table tbody {
+  font-size: unset;
+  line-height: unset;
+}
+.bx--data-table.result-table .entity tr.entity-attributes,
+.log-lines[kui-table-style="Medium"] .log-line {
+  height: 2em;
+}
+
 .result-as-table-full-width .result-table {
   border: none;
 }
