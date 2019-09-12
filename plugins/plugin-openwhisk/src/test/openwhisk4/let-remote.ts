@@ -44,7 +44,8 @@ const packageName = 'ppp'
 const packageName2 = 'ppp2'
 const packageName3 = 'ppp3'
 
-describe('Create an action via let from a remote resource', function(this: common.ISuite) {
+// disable, see https://github.com/IBM/kui/issues/2732
+xdescribe('Create an action via let from a remote resource', function(this: common.ISuite) {
   before(openwhisk.before(this))
   after(common.after(this))
 
