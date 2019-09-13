@@ -26,7 +26,7 @@ const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = (dir: string) => join(ROOT, dir)
 
 /** skip the tests if we aren't doing a webpack+proxy test run */
-const runTheTests = process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true'
+const runTheTests = process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true'
 const pit = runTheTests ? it : xit
 
 describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
