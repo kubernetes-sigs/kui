@@ -480,7 +480,7 @@ export const formatTable = (
 
   // if we don't have a header, use zebra striping; otherwise use
   // Light, which is closest to a pure terminal style
-  const style: TableStyle = !header ? TableStyle.Light : TableStyle.Light
+  const style: TableStyle = !header ? TableStyle.Light : TableStyle.Medium
 
   const model: Table = {
     title: entityType,

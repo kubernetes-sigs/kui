@@ -37,7 +37,6 @@ import {
   clearTextSelection,
   disableInputQueueing,
   pasteQueuedInput,
-  scrollIntoView,
   sameTab,
   Tab
 } from '@kui-shell/core/webapp/cli'
@@ -797,6 +796,9 @@ export const doExec = (
         )
         resizer.ws = ws
 
+        let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
+        let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
+
         //
         // here, we deal with user typing! we need to relay keyboard
         // input to the node-pty, but we do so with a bit of debouncing
@@ -813,6 +815,10 @@ export const doExec = (
             // to reduce load in the proxy server (compared to sending
             // one message per keypress)
             queuedInput += key
+
+            // if the user typed something, be very conservative
+            definitelyNotTable = true
+            definitelyNotUsage = true
 
             if (flushAsync) {
               clearTimeout(flushAsync)
@@ -885,12 +891,9 @@ export const doExec = (
         let bytesWereWritten = false
         let sawCode: number
         let pendingUsage = false
-        let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
         let pendingTable: MixedResponse
         let raw = ''
         let nLinesRaw = 0
-
-        let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
 
         const onFirstMessage = () => {
           const queuedInput = disableInputQueueing()
@@ -1018,6 +1021,8 @@ export const doExec = (
             } else {
               if (raw.length > 500) {
                 definitelyNotUsage = true
+              } else if (raw.length > 1500) {
+                definitelyNotTable = true
               }
 
               if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
