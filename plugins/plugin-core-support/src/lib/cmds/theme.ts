@@ -214,7 +214,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
     throw error
   }
 
-  debug('switching to theme', theme, document.body.getAttribute('kui-theme'))
+  debug('switching to theme', theme)
 
   // css addons defined by the theme
   const addons = typeof themeModel.css === 'string' ? [themeModel.css] : themeModel.css
