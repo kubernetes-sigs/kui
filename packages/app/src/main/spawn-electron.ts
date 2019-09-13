@@ -92,12 +92,22 @@ export function createWindow(
       return
     }
 
+    const {
+      theme,
+      env
+    }: {
+      theme: { productName: string; filesystemIcons: { linux: string } }
+      env: { imageHome: string }
+    } = await import('@kui-shell/settings/config.json')
+
     const Electron = await import('electron')
     const opts: Electron.BrowserWindowConstructorOptions = Object.assign(
       {
+        title: theme.productName,
         width,
         height,
         webPreferences: {
+          backgroundThrottling: false,
           nodeIntegration: true // prior to electron 5, this was the default
         },
         show: false // do not remove without consulting the ready-to-show comment below
@@ -105,6 +115,16 @@ export function createWindow(
       },
       subwindowPrefs && subwindowPrefs.position
     )
+
+    const { dirname, join } = await import('path')
+    const root = dirname(require.resolve('@kui-shell/settings/package.json'))
+    if (process.platform === 'linux') {
+      const icon = join(root, env.imageHome, '/../..', theme.filesystemIcons.linux)
+      opts.icon = icon
+    }
+    if (process.platform === 'linux' || process.platform === 'win32') {
+      opts.autoHideMenuBar = true
+    }
 
     if (subwindowPlease) {
       // this tells electron to size content to the given width and height,
@@ -175,11 +195,6 @@ export function createWindow(
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
       const isDarkMode = Electron.systemPreferences.isDarkMode()
-      const productName = (await import('@kui-shell/settings/config.json')).theme.productName
-
-      if (mainWindow) {
-        mainWindow.setTitle(productName)
-      }
 
       if (mainWindow) {
         try {
@@ -232,9 +247,8 @@ export function createWindow(
     }
 
     // and load the index.html of the app.
-    const root = require('path').dirname(require.resolve('@kui-shell/settings/package.json'))
     const urlSpec = {
-      pathname: require('path').join(root, 'index.html'),
+      pathname: join(root, 'index.html'),
       protocol: 'file:',
       search: commandContext ? `?${commandContext}` : '',
       slashes: true
@@ -591,7 +605,7 @@ export async function initElectron(
 
   if (process.env.RUNNING_SHELL_TEST) {
     /* app.on('before-quit', function () {
-      const config = { tempDirectory: require('path').join(__dirname, '../tests/.nyc_output') }
+      const config = { tempDirectory: join(__dirname, '../tests/.nyc_output') }
       const nyc = new (require('nyc'))(config) // create the nyc instance
 
       nyc.createTempDirectory() // in case we are the first to the line

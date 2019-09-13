@@ -1,5 +1,5 @@
 {
-  "name": "@kui-shell/client",
+  "name": "Kui",
   "version": "0.0.1",
   "description": "The default Kui client definition",
   "scripts": {
