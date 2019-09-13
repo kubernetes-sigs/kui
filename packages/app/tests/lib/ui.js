@@ -174,7 +174,7 @@ const expectOK = (appAndCount, opt) => {
 /** grab focus for the repl */
 const grabFocus = async app => {
   return app.client
-    .click(selectors.CURRENT_PROMPT_BLOCK)
+    .click(selectors.CURRENT_PROMPT)
     .then(() => app.client.waitForEnabled(selectors.CURRENT_PROMPT_BLOCK))
     .catch(err => {
       console.error(err)
@@ -373,7 +373,10 @@ exports.sidecar = {
   expectFullscreen: app => app.client.waitForVisible(selectors.SIDECAR_FULLSCREEN, timeout).then(() => app),
 
   // either minimized or fully closed
-  expectClosed: app => app.client.waitForExist(selectors.SIDECAR_HIDDEN, timeout).then(() => app),
+  expectClosed: async app => {
+    await app.client.waitForExist(selectors.SIDECAR_HIDDEN, timeout).then(() => app)
+    await new Promise(resolve => setTimeout(resolve, 600)) // wait for the transition effect
+  },
 
   // fully closed, not just minimized
   expectFullyClosed: app => app.client.waitForExist(selectors.SIDECAR_FULLY_HIDDEN, timeout).then(() => app),
