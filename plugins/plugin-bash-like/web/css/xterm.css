@@ -68,6 +68,10 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
   color: var(--color-text-02);
 }
 
+.xterm-container .xterm-bold {
+  font-weight: bold;
+}
+
 .xterm-container .xterm-rows .xterm-cursor.xterm-cursor-block {
   background-color: transparent !important;
   outline-color: transparent !important;
