@@ -36,7 +36,6 @@ import { encodeComponent, qexec, semicolonInvoke } from '@kui-shell/core/core/re
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
-import { fillInTheBlanks } from '../util/discovery/kubeconfig'
 import pickHelmClient from '../util/discovery/helm-client'
 import createdOn from '../util/created-on'
 
@@ -377,8 +376,6 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     const { spawn } = await import('child_process')
     delete env.DEBUG // don't pass this through to kubectl or helm; helm in particular emits crazy output
-
-    await fillInTheBlanks(env || {})
 
     // debug('kubeconfig', env.KUBECONFIG)
 
