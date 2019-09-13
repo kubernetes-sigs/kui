@@ -158,7 +158,7 @@ export class TabState {
   /** attach a job to this tab */
   captureJob(job: WatchableJob) {
     if (!this._jobs) {
-      const maxJobs = theme.maxWatchersPerTab || 2
+      const maxJobs = theme.maxWatchersPerTab || 6
       this._jobs = new Array<WatchableJob>(maxJobs)
       this._age = new Array<number>(maxJobs)
     }

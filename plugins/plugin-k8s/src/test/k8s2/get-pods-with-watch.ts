@@ -173,11 +173,23 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     // create a new watchable job and expect 2 jobs in the tab
     checkJob(2, true)
 
-    // ensure that we still have only 2 watchable jobs, since that is the default maximum watchers per tab
-    checkJob(2, true)
-    checkJob(2, true)
-    checkJob(2, true)
-    checkJob(2, true)
+    // create a new watchable job and expect 3 jobs in the tab
+    checkJob(3, true)
+
+    // create a new watchable job and expect 4 jobs in the tab
+    checkJob(4, true)
+
+    // create a new watchable job and expect 5 jobs in the tab
+    checkJob(5, true)
+
+    // create a new watchable job and expect 6 jobs in the tab
+    checkJob(6, true)
+
+    // ensure that we still have only 6 watchable jobs, since that is the default maximum watchers per tab
+    checkJob(6, true)
+    checkJob(6, true)
+    checkJob(6, true)
+    checkJob(6, true)
 
     it('should add new tab via command', () =>
       cli
@@ -192,8 +204,8 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     it(`should switch back to first tab via command`, () =>
       cli.do('tab switch 1', this.app).catch(common.oops(this, true)))
 
-    // the original tab should still have 2 jobs running
-    checkJob(2, false)
+    // the original tab should still have 6 jobs running
+    checkJob(6, false)
 
     it('should close tab via "tab close" command', () =>
       cli
