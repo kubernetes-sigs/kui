@@ -105,7 +105,7 @@ jobs:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
       deploy:
           - provider: script
-            script: npm install && git clean -d -x -f && find packages/app/web/css/ -type l -exec rm -f {} \; && npx lerna publish preminor --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npm install && git clean -d -x -f && rm -f packages/app/web/css/top-tab-stripe-alt.css && npx lerna publish preminor --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
@@ -113,7 +113,7 @@ jobs:
               repo: IBM/kui
               condition: $TRAVIS_EVENT_TYPE = push
           - provider: script
-            script: npm install && git clean -d -x -f && find packages/app/web/css/ -type l -exec rm -f {} \; && npx lerna publish preminor --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
+            script: npm install && git clean -d -x -f && rm -f packages/app/web/css/top-tab-stripe-alt.css  && npx lerna publish preminor --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
