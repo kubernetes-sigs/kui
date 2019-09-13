@@ -18,6 +18,7 @@ if (process.cwd() === '/') {
   // ugh, on macos, dock- and finder-launched apps have a cwd of /
   try {
     process.chdir(require('@kui-shell/core/util/home').default('~'))
+    process.env.PWD = process.cwd()
   } catch (err) {
     console.error(err)
   }
