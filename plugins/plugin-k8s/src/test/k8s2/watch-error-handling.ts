@@ -15,8 +15,8 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli } from '@kui-shell/core/tests/lib/ui'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
   before(common.before(this))
@@ -63,15 +63,50 @@ describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function
 
   testWrongCommand(`k -w get pod`, 500)
 
-  // here comes the tests should be successful
-  const ns = createNS()
-  it('should watch pods in non-existent namespace but see empty table', () => {
-    return cli
-      .do(`k get pods -n ${ns} -w`, this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this))
-  })
+  // here comes the tests should start watching successfully
+  it(`should watch pods, starting from an non-existant namespace`, async () => {
+    try {
+      const ns = createNS()
 
-  allocateNS(this, ns)
-  deleteNS(this, ns)
+      // start to watch pods in a non-existant namespace
+      const watchResult = await cli.do(`k get pods -w -n ${ns}`, this.app).then(async result => {
+        await cli.expectOK(result)
+        return result
+      })
+
+      // create the namespace
+      await cli
+        .do(`k create ns ${ns}`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
+        .then(status => waitForGreen(this.app, status))
+
+      // create a pod
+      await cli
+        .do(`k create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        .then(status => waitForGreen(this.app, status))
+
+      // the watch table should have the new pods with online status
+      const watchStatus = `${selectors.OUTPUT_N(watchResult.count)} ${selectors.BY_NAME('nginx')}`
+      await this.app.client.waitForExist(watchStatus)
+      await waitForGreen(this.app, watchStatus)
+
+      // delete the pod
+      await cli
+        .do(`k delete pods nginx -n ${ns}`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        .then(status => waitForRed(this.app, status))
+
+      // the watch table should have the new pods with offline status
+      await waitForRed(this.app, watchStatus)
+
+      // delete the namespace
+      await cli
+        .do(`k delete ns ${ns}`, this.app)
+        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
+        .then(nsStatus => waitForRed(this.app, nsStatus))
+    } catch (err) {
+      await common.oops(this, true)(err)
+    }
+  })
 })

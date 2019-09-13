@@ -100,7 +100,7 @@ const hasReachedFinalState = (response: Table | MultiTable): boolean => {
   let reachedFinalState = false
 
   if (isTable(response)) {
-    if (!response.body.some(row => !row.done)) {
+    if (response.body.length !== 0 && response.body.every(row => row.done)) {
       reachedFinalState = true // stop watching if all resources have reached to the finial state
     }
 

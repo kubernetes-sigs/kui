@@ -41,6 +41,7 @@ import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOp
 import * as historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
 import { Table, isTable, MultiTable, isMultiTable } from './models/table'
+import { isWatchable } from './models/basicModels'
 
 import { element, removeAllDomChildren } from './util/dom'
 import { prettyPrintTime } from './util/time'
@@ -1149,7 +1150,7 @@ export const printResults = (
   let promise: Promise<boolean>
 
   // print ok if it's an empty table
-  if (isTable(response) && response.body.length === 0) {
+  if (!isWatchable(response) && isTable(response) && response.body.length === 0) {
     response = true
   }
 
