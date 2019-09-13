@@ -16,8 +16,6 @@
 
 import * as Debug from 'debug'
 
-import { readFile } from 'fs'
-import { promisify } from 'util'
 import { safeLoadAll } from 'js-yaml'
 
 import expandHomeDir from '@kui-shell/core/util/home'
@@ -28,9 +26,6 @@ import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
 
 import { Task } from '../model/resource'
 const debug = Debug('plugins/tekton/lib/read')
-
-/** promisey readFile */
-const _read = promisify(readFile)
 
 const knownKinds = /PipelineResource|Pipeline|Task/
 
@@ -47,7 +42,9 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<KubeReso
  *
  */
 export const read = async (filepath: string): Promise<string> => {
-  return (await _read(findFile(expandHomeDir(filepath)))).toString()
+  const stats: { data: string } = await qexec(`fstat ${encodeComponent(filepath)} --with-data`)
+
+  return stats.data
 }
 
 /**

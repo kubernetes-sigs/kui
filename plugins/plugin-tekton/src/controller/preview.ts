@@ -49,6 +49,6 @@ export default (commandTree: CommandRegistrar) => {
       const runs = undefined
       return flowView(tab, jsons, runs, raw, filepath)
     },
-    { usage, noAuthOk: true }
+    { usage, noAuthOk: true, inBrowserOk: true }
   )
 }
