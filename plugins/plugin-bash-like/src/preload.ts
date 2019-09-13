@@ -40,7 +40,7 @@ export default async (commandTree: CommandRegistrar) => {
     import('./lib/tab-completion/git').then(_ => _.default())
   }
 
-  if (isHeadless()) {
+  if (!inBrowser()) {
     try {
       await prefetchShellState()
       debug('done with state prefetch')
