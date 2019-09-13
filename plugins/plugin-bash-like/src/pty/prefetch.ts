@@ -21,7 +21,7 @@ debug('loading')
 import { exec, execFile } from 'child_process'
 import * as propertiesParser from 'properties-parser'
 
-import { getLoginShell, setShellAliases } from './server'
+import { getLoginShell } from './server'
 
 /**
  * Preprocess bash/zsh environment variables
@@ -30,7 +30,7 @@ import { getLoginShell, setShellAliases } from './server'
 function prefetchEnv() {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
-    if (process.env.HOME) {
+    if (process.env.TERM || process.platform === 'win32') {
       debug('skipping prefetchEnv')
       return resolve()
     }
@@ -107,57 +107,11 @@ function unquote(val: string): string {
 }
 
 /**
- * Preprocess bash/zsh aliases
- *
- */
-function prefetchAliases() {
-  // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async resolve => {
-    if (process.platform !== 'darwin') {
-      debug('skipping prefetchAliases')
-      return resolve()
-    }
-
-    execFile(await getLoginShell(), ['-l', '-i', '-c', 'alias'], (err, stdout, stderr) => {
-      try {
-        if (stderr) {
-          debug(stderr)
-        }
-        if (err) {
-          debug('Error retrieving shell aliases', err)
-        } else {
-          const aliases = stdout
-            .toString()
-            .trim()
-            .split(/[\n\r]/)
-            .filter(_ => _)
-            .map(_ => _.match(/^(alias )?(.*)=(.*)/))
-            .reduce((M, match) => {
-              const key = match[2]
-              const value = match[3]
-              M[key] = unquote(value)
-              return M
-            }, {})
-          debug('got aliases', aliases)
-          setShellAliases(aliases)
-        }
-      } catch (err) {
-        debug('Error parsing aliases', stdout.length)
-        debug(err)
-        resolve()
-      } finally {
-        resolve()
-      }
-    })
-  })
-}
-
-/**
  * Parent routine for all prefetching
  *
  */
 export default () =>
-  Promise.all([prefetchEnv(), prefetchAliases(), prefetchHome()])
+  Promise.all([prefetchEnv(), prefetchHome()])
     .then(() => {
       if (process.env._HOME && !process.env.HOME) {
         process.env.HOME = process.env._HOME
