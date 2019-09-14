@@ -77,7 +77,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   pit('should give 404 for unknown outer command', () =>
     cli
-      .do(`ibmcloudo target`, this.app)
+      .do(`fdsafjdsoaifjsaofjsoifjsdiofjsda fjdisjfoidsafjiodsafjodisa`, this.app)
       .then(cli.expectError(404))
       .catch(common.oops(this, true))
   )
@@ -107,57 +107,12 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(common.oops(this, true))
   )
 
-  // these two are useful as a pair; git usage responds with exit code
-  // 1, whereas ibmcloud responds with exit code 0
   pit('should give usage for git', () =>
     cli
       .do(`git`, this.app)
       .then(cli.expectError(1))
       .catch(common.oops(this, true))
   )
-
-  // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
-  it.skip('should give usage for ibmcloud', () =>
-    cli
-      .do(`ibmcloud`, this.app)
-      .then(cli.expectError(500, header('ibmcloud')))
-      .catch(common.oops(this, true)))
-
-  if (!process.env.LOCAL_OPENWHISK) {
-    pit('should give ok for known outer command: ibmcloud target', () =>
-      cli
-        .do(`ibmcloud target`, this.app)
-        .then(cli.expectOK)
-        .catch(common.oops(this, true))
-    )
-  }
-
-  if (hasExe('ibmcloud')) {
-    // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
-    it.skip('should give usage for ibmcloud config', () =>
-      cli
-        .do(`ibmcloud config`, this.app)
-        .then(cli.expectError(2, undefined))
-        .catch(common.oops(this, true)))
-
-    // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
-    it.skip('should give usage for ibmcloud app', () =>
-      cli
-        .do(`ibmcloud app`, this.app)
-        .then(cli.expectErrorWithPassthrough(500))
-        .then(N =>
-          Promise.all([
-            this.app.client.waitForExist(`${selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
-            this.app.client.waitForExist(
-              `${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`
-            ),
-            this.app.client.waitForExist(
-              `${selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`
-            )
-          ])
-        )
-        .catch(common.oops(this, true)))
-  }
 
   pit('should answer which ls with /bin/ls', () =>
     cli

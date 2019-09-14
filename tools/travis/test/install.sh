@@ -92,13 +92,6 @@ if [ -n "$LAYERS" ]; then
 
     children=()
 
-    # if tests need the `ibmcloud` CLI, install it for them
-    if [ -n "$NEEDS_IBMCLOUD_CLI" ]; then
-        ./tools/travis/installers/ibmcloud.sh &
-        children+=("$!")
-        echo "ibmcloud PID $!"
-    fi
-
     if [ "$NEEDS_KUBERNETES" == "true" ]; then
         # install kubectl: no longer needed, as we are getting it from kubeadm-dind
         # ./tools/travis/installers/kubectl.sh &
