@@ -63,6 +63,11 @@ body[kui-theme="Carbon Gray10"] {
   --color-light-yellow: hsla(46, 99%, 59%, 50%);
 }
 
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td,
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table th {
+  color: var(--color-text-inverted01);
+}
+
 body[kui-theme="Carbon Gray10"] sidecar .sidecar-header {
   border-bottom-color: #4c4c4c;
 }

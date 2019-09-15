@@ -44,6 +44,9 @@ export default async () => {
       import('./lib/view/modes/pods')
         .then(_ => _.podMode)
         .then(registerSidecarMode), // show pods of deployments
+      import('./lib/view/modes/events')
+        .then(_ => _.eventsMode)
+        .then(registerSidecarMode), // show events
       import('./lib/view/modes/containers')
         .then(_ => _.containersMode)
         .then(registerSidecarMode), // show containers of pods

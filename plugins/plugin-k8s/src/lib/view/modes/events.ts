@@ -19,33 +19,39 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
+import { qexec } from '@kui-shell/core/core/repl'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
-import { Resource, KubeResource } from '../../model/resource'
+import { Resource, KubeResource, isKubeResource } from '../../model/resource'
 
 import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
 
-const debug = Debug('k8s/view/modes/last-applied')
+const debug = Debug('k8s/view/modes/events')
 
 /**
- * Extract the last-applied-configuration annotation
+ * Extract the events
  *
  */
-function getLastAppliedRaw(resource: KubeResource): string {
-  // kube stores the last applied configuration (if any) in a raw json string
-  return (
-    resource.metadata.annotations && resource.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']
-  )
+async function getEvents(resource: KubeResource): Promise<string> {
+  try {
+    const cmd = `kubectl get events --field-selector involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace} -n ${resource.metadata.namespace}`
+    debug('getEvents', cmd)
+    const res = await qexec(cmd)
+    return res
+  } catch (err) {
+    return err.message
+  }
 }
 
 /**
- * @return whether the given resource has a last applied configuration annotation
+ * @return whether the given resource has events (and: Events don't
+ * have Events!)
  *
  */
-function hasLastApplied(resource: KubeResource): boolean {
-  return getLastAppliedRaw(resource) !== undefined
+function hasEvents(resource: KubeResource): boolean {
+  return isKubeResource(resource) && !(resource.apiVersion === 'v1' && resource.kind === 'Event')
 }
 
 /**
@@ -53,24 +59,24 @@ function hasLastApplied(resource: KubeResource): boolean {
  * the given resource.
  *
  */
-export const lastAppliedMode: ModeRegistration<KubeResource> = {
-  when: hasLastApplied,
+export const eventsMode: ModeRegistration<KubeResource> = {
+  when: hasEvents,
   mode: (command: string, resource: Resource) => {
-    debug('lastApplied', resource)
+    debug('events', resource)
     try {
       return {
-        mode: 'last applied',
-        label: strings('lastApplied'),
+        mode: 'events',
+        label: strings('events'),
         leaveBottomStripeAlone: true,
         direct: {
           plugin: 'k8s',
-          module: 'lib/view/modes/last-applied',
-          operation: 'renderAndViewLastApplied',
+          module: 'lib/view/modes/events',
+          operation: 'renderAndViewEvents',
           parameters: { command, resource }
         }
       }
     } catch (err) {
-      debug('error rendering last applied', err)
+      debug('error rendering events mode', err)
     }
   }
 }
@@ -83,11 +89,11 @@ interface Parameters {
 /**
  * Respond to REPL
  *
- * @param lastRaw the last applied configuration, unparsed
+ * @param raw the model, unparsed
  */
-function toCustomSpec(lastRaw: string): CustomSpec {
+function toCustomSpec(raw: string): CustomSpec {
   // oof, it comes in as a JSON string, but we want a YAML string
-  const resource: KubeResource = JSON.parse(lastRaw) // we will extract some parameters from this
+  const resource: KubeResource = JSON.parse(raw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
 
   return {
@@ -100,9 +106,19 @@ function toCustomSpec(lastRaw: string): CustomSpec {
   }
 }
 
-export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
+export const renderAndViewEvents = async (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
-  debug('renderAndViewLastApplied', command, resource)
+  debug('renderAndViewEvents', command, resource)
 
-  return toCustomSpec(getLastAppliedRaw(resource.resource))
+  const events = await getEvents(resource.resource)
+
+  if (typeof events === 'string') {
+    const pre = document.createElement('pre')
+    const code = document.createElement('code')
+    pre.appendChild(code)
+    code.innerText = events
+    return pre
+  } else {
+    return events
+  }
 }
