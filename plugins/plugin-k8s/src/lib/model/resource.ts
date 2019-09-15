@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { MetadataBearing } from '@kui-shell/core/models/entity'
+import { Entity, MetadataBearing } from '@kui-shell/core/models/entity'
 
 export interface KubeStatusCondition {
   lastProbeTime?: string
@@ -102,6 +102,10 @@ export interface KubeResource<Status = KubeStatus> extends MetadataBearing {
   status?: Status
   spec?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   data?: object
+}
+export function isKubeResource(entity: Entity): entity is KubeResource {
+  const kube = entity as KubeResource
+  return kube.apiVersion !== undefined && kube.kind !== undefined
 }
 
 /** Role */
