@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eventgen
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+    command:
+      - /bin/sh
+      - "-c"
+      - "sleep 3; exit 1"
