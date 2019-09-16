@@ -46,6 +46,9 @@ if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
 
     echo "compiling plugin registry $CLIENT_HOME"
 
+    # see https://github.com/IBM/kui/issues/2785
+    touch ./node_modules/@kui-shell/prescan.json
+
     mkdir -p ./packages/app/build
     (cd node_modules/@kui-shell && rm -f settings && ln -s ../../packages/app/build settings)
 
