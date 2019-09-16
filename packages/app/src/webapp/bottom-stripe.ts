@@ -413,7 +413,7 @@ const _addModeButton = (
             } else if (isTable(view) || isMultiTable(view)) {
               const dom1 = document.createElement('div')
               const dom2 = document.createElement('div')
-              dom1.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+              dom1.classList.add('scrollable', 'scrollable-auto')
               dom2.classList.add('result-as-table', 'repl-result')
               dom1.appendChild(dom2)
               formatTable(tab, view, dom2, { usePip: true })
