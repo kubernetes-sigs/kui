@@ -2769,17 +2769,26 @@ badge:not(.badge-as-fontawesome):not(.badge-as-image) {
   background-color: var(--color-ui-05);
   border-radius: 50%;
 }
+sidecar .result-table badge.green-background:not(.badge-as-image):before {
+  background-color: var(--color-green-sidecar);
+}
 .result-table badge.green-background:not(.badge-as-image):before {
-  background-color: var(--color-support-02);
+  background-color: var(--color-green);
   color: var(--color-ui-01);
+}
+sidecar badge.yellow-background:not(.badge-as-image):before {
+  background: var(--color-yellow-sidecar);
 }
 .result-table badge.yellow-background:not(.badge-as-image):before,
 button.yellow-background {
-  background: var(--color-support-03-darker);
+  background: var(--color-yellow);
   color: var(--color-ui-01);
 }
+sidecar .result-table badge.red-background:not(.badge-as-image):before {
+  background: var(--color-red-sidecar);
+}
 .result-table badge.red-background:not(.badge-as-image):before {
-  background: var(--color-support-01);
+  background: var(--color-red);
   color: var(--color-ui-01);
 }
 .result-table badge.gray-background:not(.badge-as-image):before {
@@ -2910,11 +2919,8 @@ body:not(.no-tooltips-anywhere)
   color: #e31a1c;
 }
 
-sidecar .header-right-bits {
-}
-
 sidecar .sidecar-header-icon {
-  color: var(--color-name);
+  color: var(--color-name-sidecar);
 }
 
 .package-prefix {
@@ -3042,6 +3048,10 @@ body {
   --color-ui-05: var(--color-base04);
   --color-ui-06: var(--color-base02);
 
+  --color-red-sidecar: var(--color-red);
+  --color-yellow-sidecar: var(--color-yellow);
+  --color-green-sidecar: var(--color-green);
+
   /* e.g. xterm ANSI colors; in case themes want a light yellow for
    badges, and a darker yellow for text */
   --color-yellow-text: var(--color-yellow);
@@ -3112,6 +3122,7 @@ body {
 
   /* entity names and kinds */
   --color-name: var(--color-base0C);
+  --color-name-sidecar: var(--color-name);
 
   /* "is processing" color */
   --color-processing: var(--color-ui-05);

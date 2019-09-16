@@ -25,6 +25,11 @@ body[kui-theme="Carbon Gray10"] {
   --color-text-inverted03: var(--color-base01);
   --color-tab-selected-inverted: var(--color-name);
 
+  --color-name-sidecar: #30b0ff;
+  --color-red-sidecar: #fb4b53;
+  --color-yellow-sidecar: #fdd13a;
+  --color-green-sidecar: #56d679;
+
   --color-brand-01: #0062ff;
   --color-brand-02: #171717;
   --color-brand-03: #0062ff;

@@ -138,6 +138,12 @@
 .header-cell {
   text-align: left; /* th defaults to text-align: center */
 }
+sidecar
+  .repl-result:not(.result-table-with-custom-entity-colors)
+  .entity-name-group:not(.header-cell)
+  .entity-name[data-key="NAME"] {
+  color: var(--color-name-sidecar);
+}
 .repl-result:not(.result-table-with-custom-entity-colors)
   .entity-name-group:not(.header-cell)
   .entity-name[data-key="NAME"],
