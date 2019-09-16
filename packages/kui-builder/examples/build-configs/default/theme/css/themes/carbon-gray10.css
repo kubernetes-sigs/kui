@@ -22,7 +22,7 @@ body[kui-theme="Carbon Gray10"] {
   --color-background-inverted02: var(--color-sidecar-header);
   --color-text-inverted01: #fff;
   --color-text-inverted02: var(--color-text-inverted01);
-  --color-text-inverted03: var(--color-text-01);
+  --color-text-inverted03: var(--color-base01);
   --color-tab-selected-inverted: var(--color-name);
 
   --color-brand-01: #0062ff;
@@ -65,7 +65,10 @@ body[kui-theme="Carbon Gray10"] {
 
 body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td,
 body[kui-theme="Carbon Gray10"] sidecar .bx--data-table th {
-  color: var(--color-text-inverted01);
+  color: var(--color-text-inverted03);
+}
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td .slightly-deemphasize {
+  color: var(--color-base02);
 }
 
 body[kui-theme="Carbon Gray10"] sidecar .sidecar-header {
@@ -145,57 +148,4 @@ body[kui-theme="Carbon Gray10"] .bx--data-table {
 }
 body[kui-theme="Carbon Gray10"] .bx--data-table td {
   background-color: var(--color-base00);
-}
-
-/* mono-blue hightlightjs theme */
-.hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: #eaeef3;
-}
-.hljs {
-  color: #00193a;
-}
-.hljs-keyword,
-.hljs-selector-tag,
-.hljs-title,
-.hljs-section,
-.hljs-doctag,
-.hljs-name,
-.hljs-strong {
-  font-weight: bold;
-}
-.hljs-comment {
-  color: #738191;
-}
-.hljs-string,
-.hljs-title,
-.hljs-section,
-.hljs-built_in,
-.hljs-literal,
-.hljs-params,
-.hljs-type,
-.hljs-addition,
-.hljs-tag,
-.hljs-quote,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class {
-  color: #0048ab;
-}
-.hljs-meta,
-.hljs-subst,
-.hljs-symbol,
-.hljs-regexp,
-.hljs-attribute,
-.hljs-deletion,
-.hljs-variable,
-.hljs-template-variable,
-.hljs-link,
-.hljs-bullet {
-  color: #4c81c9;
-}
-.hljs-emphasis {
-  font-style: italic;
 }
