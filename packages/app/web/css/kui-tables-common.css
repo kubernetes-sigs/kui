@@ -93,6 +93,10 @@ body.sidecar-is-minimized .result-as-table .result-table {
   white-space: pre-wrap;
 }
 
+.result-table-outer-wrapper {
+  overflow-x: auto;
+}
+
 .result-table-outer-wrapper.big-top-pad:not(:first-child) {
   margin-top: 1em;
 }
