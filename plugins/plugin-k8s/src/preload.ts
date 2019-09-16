@@ -50,9 +50,6 @@ export default async () => {
       import('./lib/view/modes/containers')
         .then(_ => _.containersMode)
         .then(registerSidecarMode), // show containers of pods
-      import('./lib/view/modes/conditions')
-        .then(_ => _.conditionsMode)
-        .then(registerSidecarMode), // show conditions of a variety of resource kinds
       import('./lib/view/modes/last-applied')
         .then(_ => _.lastAppliedMode)
         .then(registerSidecarMode), // show a last applied configuration tab

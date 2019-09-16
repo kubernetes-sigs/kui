@@ -256,32 +256,6 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       }
     })
 
-    it(`should click on conditions sidecar tab and show conditions table`, async () => {
-      await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('conditions'))
-
-      const table = `${selectors.SIDECAR} [k8s-table="Conditions"]`
-      await this.app.client.waitForExist(table)
-
-      // the sidecar should still be full screen https://github.com/IBM/kui/issues/1794
-      await this.app.client.waitForExist(selectors.SIDECAR_FULLSCREEN)
-
-      await assertTableTitleMatches(this, table, 'conditions')
-
-      // check the conditions rows
-      await Promise.all([
-        this.app.client.waitForExist(
-          `${table} .entity[data-name="PodScheduled"] [data-key="status"][data-value="True"]`
-        ),
-        this.app.client.waitForExist(
-          `${table} .entity[data-name="Initialized"] [data-key="status"][data-value="True"]`
-        ),
-        this.app.client.waitForExist(`${table} .entity[data-name="Ready"] [data-key="status"][data-value="True"]`),
-        this.app.client.waitForExist(
-          `${table} .entity[data-name="ContainersReady"] [data-key="status"][data-value="True"]`
-        )
-      ])
-    })
-
     it('should click on the sidecar maximize button to restore split screen', async () => {
       try {
         await this.app.client.click(selectors.SIDECAR_MAXIMIZE_BUTTON)
