@@ -1,6 +1,6 @@
 /* carbon overrides */
 
-[kui-theme-style] .result-as-table .result-table:not([kui-table-style="Light"]) {
+[kui-theme-style] .repl .result-as-table .result-table:not([kui-table-style="Light"]) {
   font-family: var(--font-sans-serif);
 }
 
@@ -32,17 +32,17 @@
 [kui-theme-style] .bx--data-table td {
   color: var(--color-text-01);
 }
-[kui-theme-style] .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
+[kui-theme-style] .repl .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
   /* for Light tables, there is no th background color, thus no need for extra space */
   padding-top: 0;
   padding-bottom: 0;
   font-weight: bold;
 }
-[kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) th.header-cell {
+[kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) th.header-cell {
   border-bottom: none;
 }
-[kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) td,
-[kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) th {
+[kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) td,
+[kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) th {
   border-top: none;
 }
 
@@ -68,21 +68,23 @@
   text-transform: uppercase;
 }
 .bx--data-table.result-table[kui-table-style] th.header-cell {
+  font-weight: bold;
   background-color: var(--color-ui-06);
-  letter-spacing: 0.32px;
+  letter-spacing: 0.16px;
 }
 .header-cell svg path {
   fill: var(--color-text-against-dark-bg);
 }
-.result-table:not([kui-table-style="Light"]) .header-cell .cell-inner {
+.result-table:not([kui-table-style="Light"]) .header-cell .cell-inner,
+sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
   padding: 0 0.6875em;
 }
 .header-cell:not(:first-child) .cell-inner {
   border-left: 1px solid var(--color-table-border3);
 }
 .log-lines .header-cell,
-.result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell,
-.result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
+.repl .result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell,
+.repl .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
   border-bottom: 1px solid var(--color-content-divider);
 }
 
@@ -130,8 +132,8 @@
   /* no row-hover effects for kui-tables */
   color: unset;
 }
-.bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > td,
-.bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > th {
+.repl .bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > td,
+.repl .bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > th {
   padding-left: 0.375em;
   padding-right: 0.375em;
 }
@@ -193,7 +195,7 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
   padding-bottom: 0;
 }
 
-.bx--data-table.result-table:not([kui-table-style="Light"]) .entity-attributes > td.not-too-compact {
+.repl .bx--data-table.result-table:not([kui-table-style="Light"]) .entity-attributes > td.not-too-compact {
   padding-top: 0.375em;
   padding-bottom: 0.375em;
 }
@@ -201,20 +203,21 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
 .result-as-table .bx--data-table.result-table[kui-table-style="Medium"] {
   border: none;
 }
-.result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell,
-.result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell {
+.repl .result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell,
+.repl .result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell {
   background: none;
 }
-.result-as-table .bx--data-table.log-lines[kui-table-style="Light"] .log-line .log-line-bar-field,
+.repl .result-as-table .bx--data-table.log-lines[kui-table-style="Light"] .log-line .log-line-bar-field,
 .repl .log-lines[kui-table-style="Light"] .log-line .log-field {
   border: none;
 }
-.bx--data-table.result-table[kui-table-style="Light"] .entity th,
-.bx--data-table.result-table[kui-table-style="Light"] .entity td,
+.repl .bx--data-table.result-table[kui-table-style="Light"] .entity th,
+.repl .bx--data-table.result-table[kui-table-style="Light"] .entity td,
+sidecar .bx--data-table.result-table[kui-table-style="Light"] .entity td,
 .bx--data-table.result-table[kui-table-style="Medium"] .entity td {
   background: none;
 }
-.bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes {
+.repl .bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes {
   height: 1.5em;
 }
 .bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes,
@@ -222,16 +225,17 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
   background: none !important;
 }
 .bx--data-table.result-table .entity tr.entity-attributes,
+sidecar .log-lines[kui-table-style="Light"] .log-line,
 .log-lines[kui-table-style="Medium"] .log-line {
   height: 2em;
 }
-.bx--data-table[kui-table-style="Light"] .entity-attributes > th,
-.bx--data-table[kui-table-style="Light"] .entity-attributes > td,
-.bx--data-table[kui-table-style="Light"] .entity-attributes > th .cell-inner,
-.bx--data-table[kui-table-style="Light"] .entity-attributes > td .cell-inner {
+.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > th,
+.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > td,
+.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > th .cell-inner,
+.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > td .cell-inner {
   border: none;
 }
-.bx--data-table[kui-table-style="Light"] badge {
+.repl .bx--data-table[kui-table-style="Light"] badge {
   height: 1.75em;
   line-height: 1.75em;
 }

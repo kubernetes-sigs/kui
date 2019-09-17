@@ -69,7 +69,7 @@
   "css": ["_test.css", "kui-ui.css", "kui-tables.css", "carbon-overrides.css"],
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
-  "tableStyle": "Medium",
+  "tableStyle": "Light",
   "appIcon": "icons/png/kui.png",
   "largeIcon": "icons/svg/kui.svg",
   "wideIcon": "icons/svg/kui-wide.svg",

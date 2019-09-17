@@ -3076,8 +3076,8 @@ body {
   /* stripes */
   --color-stripe-01: var(--color-base01);
   --color-stripe-02: var(--color-base03);
-  --color-sidecar-toolbar-background: var(--color-base03);
-  --color-sidecar-toolbar-foreground: var(--color-text-01);
+  --color-sidecar-toolbar-background: #bebebe;
+  --color-sidecar-toolbar-foreground: var(--color-base01);
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
