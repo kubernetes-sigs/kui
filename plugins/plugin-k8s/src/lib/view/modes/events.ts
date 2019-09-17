@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
+import { isTable } from '@kui-shell/core/webapp/models/table'
 import { qexec } from '@kui-shell/core/core/repl'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
@@ -36,10 +37,26 @@ const debug = Debug('k8s/view/modes/events')
  */
 async function getEvents(resource: KubeResource): Promise<string> {
   try {
-    const cmd = `kubectl get events --field-selector involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace} -n ${resource.metadata.namespace}`
+    const cmdGetPodEvents = `kubectl get events --field-selector involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace} -n ${resource.metadata.namespace}`
+
+    // mimic the events table shown in the 'kubectl describe' output
+    const customColumns =
+      'custom-columns=TYPE:type,REASON:reason,LAST SEEN:lastTimestamp,COUNT:count,FIRST SEEN:firstTimestamp,FROM:source.component,MESSAGE:message'
+
+    const cmd = `${cmdGetPodEvents} -o "${customColumns}"`
+
     debug('getEvents', cmd)
-    const res = await qexec(cmd)
-    return res
+
+    return qexec(cmd).then(result => {
+      // When using custom-columns, if a pod doesn't have any events,
+      // we can't get the 'No resources found.' error from kubectl,
+      // so we handle this error by checking whether the table has content
+      if (isTable(result) && !result.body[0]) {
+        return strings('No resources found.')
+      }
+
+      return result
+    })
   } catch (err) {
     return err.message
   }
@@ -55,7 +72,7 @@ function hasEvents(resource: KubeResource): boolean {
 }
 
 /**
- * Add a Pods mode button to the given modes model, if called for by
+ * Add a Events mode button to the given modes model, if called for by
  * the given resource.
  *
  */
