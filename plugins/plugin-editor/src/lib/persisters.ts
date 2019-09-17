@@ -19,7 +19,8 @@ import * as Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 import globalEventBus from '@kui-shell/core/core/events'
 
-import strings from '../i18n/strings'
+import strings from './strings'
+
 const debug = Debug('plugins/editor/persisters')
 
 /**
