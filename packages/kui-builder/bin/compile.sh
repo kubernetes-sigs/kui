@@ -48,8 +48,14 @@ if [ $? == 1 ]; then
     echo "it looks like we are not working off a symlink ${TSCONFIG_HOME}"
 else
     TSCONFIG_HOME=$(dirname "$SCRIPTDIR/`dirname $TSCONFIG_HOME`")
-    TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
     echo "following link to find build home ${TSCONFIG_HOME}"
+
+    if [ -f "$TSCONFIG_HOME/../../../tsconfig.json" ]; then
+        echo "using top-level tsconfig"
+        TSCONFIG="$TSCONFIG_HOME"/../../../tsconfig.json
+    else
+        TSCONFIG="$TSCONFIG_HOME"/tsconfig.json
+    fi
 fi
 
 npx --no-install tsc -h >& /dev/null
