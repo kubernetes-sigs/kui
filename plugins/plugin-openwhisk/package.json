@@ -35,7 +35,8 @@
     "parse-duration": "0.1.1",
     "pretty-ms": "5.0.0",
     "promise-retry": "1.1.1",
-    "tmp": "0.1.0"
+    "tmp": "0.1.0",
+    "yargs-parser": "14.0.0"
   },
   "publishConfig": {
     "access": "public"
