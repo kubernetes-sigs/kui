@@ -339,6 +339,32 @@ function formatIcon(fontawesome: string, cell: HTMLElement) {
   }
 }
 
+const formatCellValue = (key: string, value: string) => {
+  const dateKey = { 'FIRST SEEN': true, 'LAST SEEN': true }
+  /**
+   * Compute the differece between the timestamp and the current time
+   * And format the output in: hours minutes, or minutes seconds
+   *
+   */
+  const formatAge = (value: string) => {
+    const timestamp = new Date(value).getTime()
+    if (isNaN(timestamp)) {
+      return value
+    }
+
+    const ms = Date.now() - timestamp
+    const s = 1000 * Math.round(ms / 1000) // round to nearest second
+    const d = new Date(s)
+    const hours = d.getUTCHours() > 0 ? `${d.getUTCHours()}h` : ''
+    const minutes = d.getUTCMinutes() > 0 ? `${d.getUTCMinutes()}m` : ''
+    const seconds = d.getUTCSeconds() > 0 ? `${d.getUTCSeconds()}s` : ''
+
+    return hours ? `${hours}${minutes}` : `${minutes}${seconds}`
+  }
+
+  return dateKey[key] && !dateKey[value] ? formatAge(value) : value
+}
+
 /**
  * Format one row in the table
  *
@@ -563,8 +589,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     } else if (value !== undefined) {
       // value could be an empty string
       Promise.resolve(value).then(value => {
-        inner.title = value
-        inner.appendChild(document.createTextNode(isHeaderCell ? value.toLowerCase() : value || '\u00a0'))
+        const formatedValue = formatCellValue(key, value)
+        inner.title = formatedValue
+        inner.appendChild(
+          document.createTextNode(isHeaderCell ? formatedValue.toLowerCase() : formatedValue || '\u00a0')
+        )
       })
     } else {
       console.error('Invalid cell model, no value field', theCell)

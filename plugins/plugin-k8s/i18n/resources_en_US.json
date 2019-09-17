@@ -20,6 +20,7 @@
   "logs": "logs",
   "containers": "containers",
   "events": "events",
+  "No resources found.": "No resources found.",
   "allContexts": "Resources Across All Contexts",
   "currentContext": "This is your current context",
   "notCurrentContext": "This is not your current context"
