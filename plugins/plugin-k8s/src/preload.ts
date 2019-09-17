@@ -53,7 +53,13 @@ export default async () => {
       import('./lib/view/modes/last-applied')
         .then(_ => _.lastAppliedMode)
         .then(registerSidecarMode), // show a last applied configuration tab
-      import('./lib/tab-completion').then(_ => _.default())
+      import('./lib/tab-completion')
+        .then(_ => _.default())
+        .catch((err: Error) => {
+          // don't utterly fail if we can't install the tab completion
+          // https://github.com/IBM/kui/issues/2793
+          debug('error installing k8s tab-completion extensions', err)
+        })
     ])
   }
 }
