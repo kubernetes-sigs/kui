@@ -36,7 +36,7 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 
 import { Entity as EditorEntity } from './fetchers'
-import strings from '../i18n/strings'
+import strings from './strings'
 import { language } from './file-types'
 
 const debug = Debug('plugins/editor/open')
