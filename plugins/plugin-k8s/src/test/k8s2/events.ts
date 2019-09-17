@@ -75,6 +75,15 @@ describe(`kubectl get events ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
         await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('events'))
         await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('events'))
         await this.app.client.waitForExist(selectors.SIDECAR_MODE_BUTTON_SELECTED('events'))
+
+        // test events table has correct header
+        const header = ['TYPE', 'REASON', 'LAST SEEN', 'FIRST SEEN', 'FROM', 'MESSAGE']
+        header.forEach(async _header => {
+          await this.app.client.waitForExist(
+            `${selectors.SIDECAR_CUSTOM_CONTENT} .result-table .header-row .header-cell .cell-inner[data-key="${_header}"]`
+          )
+        })
+
         await this.app.client.waitForExist(
           `${selectors.SIDECAR_CUSTOM_CONTENT} .result-table badge[data-key="REASON"].yellow-background`
         )
