@@ -56,7 +56,7 @@ selectors.SIDECAR = `${selectors.SIDECAR_BASE}.visible`
 selectors.SIDECAR_WITH_FAILURE = `${selectors.SIDECAR_BASE}.visible.activation-success-false`
 selectors.SIDECAR_HIDDEN = `${selectors.SIDECAR_BASE}:not(.visible)`
 selectors.SIDECAR_FULLY_HIDDEN = `${selectors.SIDECAR_BASE}:not(.visible):not(.minimized)`
-selectors.SIDECAR_ACTIVATION_TITLE = `${selectors.SIDECAR} .sidecar-header-name .activation-id`
+selectors.SIDECAR_ACTIVATION_TITLE = `${selectors.SIDECAR} .sidecar-header-name .entity-name-hash`
 selectors.SIDECAR_TITLE = `${selectors.SIDECAR} .sidecar-header-name-content .entity-name`
 selectors.SIDECAR_PACKAGE_NAME_TITLE = `${selectors.SIDECAR} .sidecar-bottom-stripe .package-prefix`
 selectors.SIDECAR_CONTENT = `${selectors.SIDECAR} .sidecar-content`
@@ -64,7 +64,7 @@ selectors.SIDECAR_WEB_ACTION_URL = `${selectors.SIDECAR} .sidecar-header .entity
 selectors.SIDECAR_ACTION_SOURCE = `${selectors.SIDECAR_CONTENT} .action-content .action-source`
 selectors.SIDECAR_PACKAGE_PARAMETERS = `${selectors.SIDECAR_CONTENT} .package-content .package-source`
 selectors.SIDECAR_ACTIVATION_RESULT = `${selectors.SIDECAR_CONTENT} .activation-result`
-selectors.SIDECAR_ACTIVATION_ID = `${selectors.SIDECAR} .sidecar-header .activation-id`
+selectors.SIDECAR_ACTIVATION_ID = `${selectors.SIDECAR} .sidecar-header .entity-name-hash`
 selectors.SIDECAR_RULE_CANVAS = `${selectors.SIDECAR} .rule-components`
 selectors.SIDECAR_RULE_CANVAS_NODES = `${selectors.SIDECAR_RULE_CANVAS} .sequence-component`
 selectors.SIDECAR_SEQUENCE_CANVAS = `${selectors.SIDECAR} #wskflowSVG`
@@ -470,7 +470,7 @@ exports.sidecar = {
     expectSubstringMatchOnName = false,
     expectedPackageName,
     expectType,
-    waitThisLong = timeout
+    waitThisLong = exports.waitTimeout
   ) => app =>
     app.client
       .waitUntil(

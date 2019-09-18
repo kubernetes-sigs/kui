@@ -85,19 +85,19 @@
   outline: none;
 }
 
-.custom-header-content .editor-status {
+.editor-status {
   display: flex;
 }
-.custom-header-content .editor-status > div {
+.editor-status > div {
   opacity: 0;
   width: 0;
   height: 0;
   pointer-events: none;
 }
-#sidecar.is-modified .custom-header-content .editor-status:not(.is-new) .is-modified,
-#sidecar:not(.is-modified) .custom-header-content .editor-status:not(.is-new) .is-up-to-date,
-#sidecar .custom-header-content .editor-status.is-new:not(.is-read-only) .is-new,
-#sidecar .custom-header-content .editor-status.is-new.is-read-only .is-new-read-only {
+sidecar.is-modified .editor-status:not(.is-new) .is-modified,
+sidecar:not(.is-modified) .editor-status:not(.is-new) .is-up-to-date,
+sidecar .editor-status.is-new:not(.is-read-only) .is-new,
+sidecar .editor-status.is-new.is-read-only .is-new-read-only {
   opacity: 1;
   width: auto;
   height: auto;

@@ -800,6 +800,16 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
 }
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path {
+  fill: var(--color-warning);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path[data-icon-path="inner-path"],
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path[data-icon-path="inner-path"] {
+  fill: var(--color-white);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path {
+  fill: var(--color-error);
+}
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
   display: none !important;
@@ -815,7 +825,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
   opacity: 0.875;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
-  margin-right: 0.5em;
+  margin-right: 0.375em;
   margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
   padding-left: 1em;
 }
@@ -1000,8 +1010,9 @@ sidecar .sidecar-header-name-content {
 sidecar .sidecar-header-name-content .entity-name {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  height: 1.25em; /* prevent vertical cropping on chrome */
+  white-space: normal;
+  word-break: break-all;
+  max-height: 2.35em;
 
   /* these two rules help us to simulate left-ellision */
   /* direction: rtl;
@@ -1020,7 +1031,7 @@ sidecar .sidecar-header-name .package-prefix {
   text-transform: uppercase;
   letter-spacing: 1.6px;
 }
-sidecar.entity-is-activations .sidecar-header-name .activation-id {
+sidecar .sidecar-header-name .entity-name-hash {
   font-family: var(--font-monospace);
   font-size: 75%;
   color: var(--color-text-02);
@@ -3091,6 +3102,7 @@ body {
 
   --color-ok: var(--color-green);
   --color-error: var(--color-red);
+  --color-warning: var(--color-base09);
 
   --color-scrollbar-thumb: var(--color-base04);
   --color-scrollbar-thumb-border: var(--color-base02);

@@ -20,6 +20,7 @@ import * as Debug from 'debug'
 const debug = Debug('webapp/views/sidecar')
 debug('loading')
 
+import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Tab, isPopup, scrollIntoView, oops, getTabFromTarget } from '../cli'
@@ -343,6 +344,19 @@ class DefaultBadgeOptions implements BadgeOptions {
 }
 
 /**
+ * Text to be displayed in the sidecar toolbar
+ *
+ */
+export interface ToolbarText {
+  type: 'info' | 'warning' | 'error'
+  text: string | Element
+}
+function isToolbarText(subtext: Formattable | ToolbarText): subtext is ToolbarText {
+  const spec = subtext as ToolbarText
+  return spec && spec.type !== undefined && spec.text !== undefined
+}
+
+/**
  * Show custom content in the sidecar
  *
  */
@@ -355,11 +369,14 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
   /** noZoom: set to true for custom content to control the zoom event handler */
   noZoom?: boolean
 
+  /** name hash, e.g. the hash part of auto-generated names, or an openwhisk activation id */
+  nameHash?: string
+
   isREPL?: boolean
   presentation?: Presentation
   renderAs?: string
   subtext?: Formattable
-  toolbarText?: { type: 'info' | 'warning' | 'error'; text: string }
+  toolbarText?: ToolbarText
   content: CustomContent
   badges?: BadgeSpec[]
   contentType?: string
@@ -402,10 +419,15 @@ export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause =
     document.body.classList[op]('sidecar-visible')
   }
 
+  const before = tab.classList.contains('sidecar-full-screen')
   tab.classList[op]('sidecar-full-screen')
-  setTimeout(() => eventBus.emit('/sidecar/maximize'), 0)
+  const after = tab.classList.contains('sidecar-full-screen')
 
-  if (tab.classList.contains('sidecar-full-screen')) {
+  if (before !== after) {
+    setTimeout(() => eventBus.emit('/sidecar/maximize'), 0)
+  }
+
+  if (after) {
     // if we entered full screen mode, remember if the user caused it,
     // so that we don't undo it during our normal flow
     tab.setAttribute('maximization-cause', cause)
@@ -617,7 +639,7 @@ export const addNameToSidecarHeader = async (
   packageName = '',
   onclick?,
   viewName?: string,
-  subtext?: Formattable,
+  subtext?: Formattable | ToolbarText,
   entity?: EntitySpec | CustomSpec
 ) => {
   debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
@@ -626,7 +648,7 @@ export const addNameToSidecarHeader = async (
   // mine for identifying characteristics
   const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource : isMetadataBearing(entity) && entity
   if (metadataBearer) {
-    const maybeName = (metadataBearer.spec && metadataBearer.spec.displayName) || metadataBearer.metadata.name
+    const maybeName = name || (metadataBearer.spec && metadataBearer.spec.displayName) || metadataBearer.metadata.name
     if (maybeName) {
       name = maybeName
     }
@@ -635,15 +657,6 @@ export const addNameToSidecarHeader = async (
     }
     if (metadataBearer.kind) {
       viewName = metadataBearer.kind
-    }
-
-    if (!subtext) {
-      // if we weren't given a "subtext", and we find legitimate
-      // "created on" metadata, then show that as the subtext
-      const maybe = createdOn(metadataBearer, isCustomSpec(entity) && entity)
-      if (maybe) {
-        subtext = maybe
-      }
     }
   }
 
@@ -682,23 +695,37 @@ export const addNameToSidecarHeader = async (
 
   addSidecarHeaderIconText(viewName, sidecar)
 
-  if (subtext) {
-    const sub = element('.sidecar-header-secondary-content .custom-header-content', sidecar)
-    removeAllDomChildren(sub)
-
-    const text = await Promise.resolve(call(subtext))
-    if (text instanceof Element) {
-      sub.appendChild(text)
-    } else {
-      sub.innerText = text
+  // if we weren't given a "subtext", and we find legitimate "created
+  // on" metadata, then show that as the subtext
+  if (!subtext && metadataBearer) {
+    const maybe = createdOn(metadataBearer, isCustomSpec(entity) && entity)
+    if (maybe) {
+      subtext = maybe
     }
   }
 
+  // handle ToolbarText
   const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
   const toolbarTextContent = element('.sidecar-toolbar-text-content', toolbarTextContainer)
-  if (isCustomSpec(entity) && entity.toolbarText) {
-    toolbarTextContent.innerText = entity.toolbarText.text
-    toolbarTextContainer.setAttribute('data-type', entity.toolbarText.type)
+  const toolbarTextSpec = isToolbarText(subtext) ? subtext : isCustomSpec(entity) && entity.toolbarText
+  removeAllDomChildren(toolbarTextContent)
+  if (toolbarTextSpec) {
+    if (typeof toolbarTextSpec.text === 'string') {
+      toolbarTextContent.innerText = toolbarTextSpec.text
+    } else {
+      toolbarTextContent.appendChild(toolbarTextSpec.text)
+    }
+    toolbarTextContainer.setAttribute('data-type', toolbarTextSpec.type)
+  } else if (subtext && !isToolbarText(subtext)) {
+    // handle "subtext", which is now treated as a special case of a
+    // ToolbarText where the type is 'info'
+    const text = await Promise.resolve(call(subtext))
+    toolbarTextContainer.setAttribute('data-type', 'info')
+    if (text instanceof Element) {
+      toolbarTextContent.appendChild(text)
+    } else {
+      toolbarTextContent.innerText = text
+    }
   } else {
     toolbarTextContent.innerText = ''
     toolbarTextContainer.removeAttribute('data-type')
@@ -724,9 +751,12 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 
   // tell the current view that they're outta here
   if (sidecar.entity || sidecar.uuid) {
-    eventBus.emit('/sidecar/replace', sidecar.entity || sidecar.uuid)
+    eventBus.emit('/sidecar/replace', sidecar.uuid || sidecar.entity)
   }
-  sidecar.uuid = custom.uuid
+  sidecar.uuid = custom.uuid || uuid()
+
+  const hashDom = element('.sidecar-header-name .entity-name-hash', sidecar)
+  hashDom.innerText = ''
 
   // if the view hints that it wants to occupy the full screen and we
   // are not currenlty in fullscreen, OR if the view does not want to
@@ -830,6 +860,8 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     if (sidecar.entity.viewName) {
       sidecar.entity.type = sidecar.entity.viewName
     }
+
+    hashDom.innerText = entity.nameHash !== undefined ? entity.nameHash : ''
 
     addNameToSidecarHeader(
       sidecar,
@@ -1093,6 +1125,9 @@ export const showGenericEntity = (
 
   // tell the current view that they're outta here
   eventBus.emit('/sidecar/replace', sidecar.entity)
+
+  const hashDom = element('.sidecar-header-name .entity-name-hash', sidecar)
+  hashDom.innerText = ''
 
   // which viewer is currently active?
   sidecar.setAttribute('data-active-view', '.sidecar-content')

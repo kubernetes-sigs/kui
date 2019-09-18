@@ -63,7 +63,7 @@ describe('edit compositions', function(this: common.ISuite) {
   it(`should open the editor to a new composition and expect wskflow`, () =>
     cli
       .do('compose compSimple', this.app)
-      .then(verifyTheBasicStuff('compSimple\n*'))
+      .then(verifyTheBasicStuff('compSimple'))
       .then(verifyNodeExists('A'))
       .then(verifyNodeExists('B'))
       .then(verifyEdgeExists('Entry', 'A'))
@@ -115,7 +115,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .do('compose compParseErr', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('compParseErr\n*'))
+      .then(sidecar.expectShowing('compParseErr'))
       .then(() =>
         setValue(this.app.client, '\nmodule.exports = require("openwhisk-composer").sequence(notfound1, notfound2)')
       )

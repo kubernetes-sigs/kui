@@ -120,6 +120,7 @@ sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
   padding-right: 0;
 }
 .bx--data-table.result-table .entity-attributes > td {
+  border-top: 1px solid var(--color-table-border3);
   border-bottom: 1px solid var(--color-table-border3);
   background: transparent;
 }
