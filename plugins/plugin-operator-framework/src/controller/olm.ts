@@ -71,7 +71,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/olm/catalog',
     async ({ block, parsedOptions, execOptions }) => {
-      await remember(parsedOptions)
+      // await remember(parsedOptions)
 
       const namespace = parsedOptions.n || parsedOptions.namespace
       const getSources = `oc get OperatorSources ${
@@ -91,7 +91,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/olm/installed',
     async ({ block, parsedOptions, execOptions }) => {
-      await remember(parsedOptions)
+      // await remember(parsedOptions)
 
       const namespace = parsedOptions.n || parsedOptions.namespace
       const getSources = `oc get ClusterServiceVersions -n ${namespace || 'default'} ${
