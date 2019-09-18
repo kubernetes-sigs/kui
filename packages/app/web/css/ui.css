@@ -639,7 +639,7 @@ badge.clickable:hover {
 sidecar {
   flex: 0 0 0%;
   min-width: 0;
-  transition-property: flex, background-color, color, border-color;
+  transition-property: background-color, color, border-color;
   transition-duration: calc(var(--transition-duration) * 2); /* twice the normal duration */
   display: flex;
   flex-direction: column;
