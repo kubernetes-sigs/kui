@@ -346,7 +346,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       if (isSidecarVisible(tab)) {
         relayout()
       } else {
-        setTimeout(relayout, 600)
+        setTimeout(relayout, 0)
       }
 
       return Promise.resolve({ getEntity, editor, content, eventBus })
