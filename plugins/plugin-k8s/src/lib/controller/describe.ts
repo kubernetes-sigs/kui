@@ -23,8 +23,8 @@ import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 
+import extractAppAndName from '../util/name'
 import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource } from '../model/resource'
-
 import { deleteResourceButton } from '../view/modes/crud'
 
 import i18n from '@kui-shell/core/util/i18n'
@@ -72,8 +72,13 @@ const renderDescribe = async (
   })
   modes.push(deleteResourceButton())
 
+  // attempt to separate out the app and generated parts of the resource name
+  const { app, name, nameHash } = extractAppAndName(resource)
+
+  // some resources have a notion of version
+  const version = metadata && metadata.labels && metadata.labels.version
+
   const badges: Badge[] = []
-  badges.push(metadata && metadata.labels && metadata.labels.app)
 
   // some resources have a notion of duration
   const startTime = resource && status && status.startTime && new Date(status.startTime)
@@ -83,13 +88,11 @@ const renderDescribe = async (
   const description = {
     type: 'custom',
     isEntity: true,
+    name,
+    nameHash,
     duration,
-    badges: badges.filter(x => x),
-    createdOnString: resource.status && resource.status.startTime ? strings('startedOn') : strings('createdOn'),
-    toolbarText: {
-      type: 'info',
-      text: strings('readonly')
-    },
+    badges,
+    version,
     resource,
     modes,
     contentType: output,

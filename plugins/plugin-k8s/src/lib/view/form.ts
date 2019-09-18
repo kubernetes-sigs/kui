@@ -357,16 +357,6 @@ export const generateForm = (tab: Tab) => (
             }
           )
 
-    console.error(
-      '!!!!!!',
-      element.choices.length === 2 &&
-        isKeyLike.test(element.choices[0].key) &&
-        element.choices[1].key === 'value' &&
-        isLongPattern.test(element.choices[0].value.toString()),
-      shortChoices,
-      longChoices
-    )
-
     shortChoices.forEach(formatChoice())
     longChoices.forEach(formatChoice('bx--form-item-wide'))
 

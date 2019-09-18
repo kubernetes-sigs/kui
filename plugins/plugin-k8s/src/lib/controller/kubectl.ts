@@ -37,10 +37,11 @@ import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
 import pickHelmClient from '../util/discovery/helm-client'
-import createdOn from '../util/created-on'
 
+import extractAppAndName from '../util/name'
 import { KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
+import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { Table, MultiTable, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
@@ -610,11 +611,11 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           return
         }
 
-        const subtext = createdOn(yaml)
+        // attempt to separate out the app and generated parts of the resource name
+        const { app, name, nameHash } = extractAppAndName(yaml)
 
         // sidecar badges
-        const badges = []
-        // badges.push(yaml && yaml.metadata && yaml.metadata.generation && `Generation ${yaml.metadata.generation}`)
+        const badges: Badge[] = []
 
         if (verb === 'describe') {
           const getCmd = opts.command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
@@ -640,17 +641,13 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const record = {
           type: 'custom',
           isEntity: verb === 'logs' || verb === 'describe' || (yaml && yaml.metadata !== undefined),
-          name: entity || verb,
+          name: name || entity,
+          nameHash,
           packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || '',
           namespace: options.namespace || options.n,
           duration,
           version,
           prettyType: (yaml && yaml.kind) || entityTypeForDisplay || command,
-          subtext,
-          toolbarText: {
-            type: 'info',
-            text: strings('readonly')
-          },
           noCost: true, // don't display the cost in the UI
           modes,
           badges: badges.filter(x => x),

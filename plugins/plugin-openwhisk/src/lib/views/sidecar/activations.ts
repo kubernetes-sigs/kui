@@ -100,7 +100,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
     })
 
   // add the activation id to the header
-  const activationDom = element('.sidecar-header-name .activation-id', sidecar)
+  const activationDom = element('.sidecar-header-name .entity-name-hash', sidecar)
   activationDom.innerText = entity.activationId
 
   // view mode

@@ -19,6 +19,8 @@
  *
  */
 
+import { SpectronClient } from 'spectron'
+
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
@@ -52,7 +54,13 @@ describe('create new actions in editor', function(this: common.ISuite) {
   const deploy = (app, action) => () => {
     return app.client
       .click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR} .editor-status.is-new`, 10000, true))
+      .then(() => {
+        console.error('00')
+      })
+      .then(() => app.client.waitForVisible(`${ui.selectors.SIDECAR} .editor-status.is-new`, 10000, true))
+      .then(() => {
+        console.error('11')
+      })
       .catch(err => {
         console.error('Ouch, something bad happened, let us clean up the action before retrying')
         console.error(err)
@@ -63,16 +71,20 @@ describe('create new actions in editor', function(this: common.ISuite) {
   }
 
   /** set the monaco editor text */
-  const setValue = (client, text, codeStatus) => {
-    const status1 = codeStatus
-    const status2 = status1 === 'new' ? '' : '.is-modified'
+  const setValue = async (client: SpectronClient, text: string, status: string) => {
+    // initially: the is-modified indicator should state what we expect to see
+    await this.app.client.waitForVisible(
+      `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-${status}`
+    )
 
-    client.execute(text => {
+    // then: modify the content
+    await client.execute(text => {
       document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
     }, text)
 
-    return this.app.client.waitForExist(
-      `${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-${status1} ${status2}`
+    // finally: the is-modified indicator should not have "is new" or "is up to date"
+    await this.app.client.waitForVisible(
+      `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status:not(.is-new):not(.is-up-to-date)`
     )
   }
 
@@ -81,7 +93,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .do('new foo2', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo2\n*'))
+      .then(sidecar.expectShowing('foo2'))
       .then(() => setValue(this.app.client, 'let main = x => x', 'new')) // edit the action content
       .then(deploy(this.app, 'foo2'))
       .catch(common.oops(this)))
@@ -102,11 +114,17 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
       .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock'))) // go to the edit mode
       .then(() =>
-        this.app.client.waitForExist(
-          `${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`
+        this.app.client.waitForVisible(
+          `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`
         )
       )
       .then(() => setValue(this.app.client, 'let main = y => y', 'up-to-date')) // modify the content
+      .then(() =>
+        this.app.client.waitForVisible(
+          `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status:not(.is-up-to-date)`
+        )
+      )
+      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
       .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock'))) // go to the view mode
       .then(() =>
         this.app.client.waitUntil(async () => {
@@ -134,16 +152,16 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
       .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock'))) // go to the edit mode
       .then(() =>
-        this.app.client.waitForExist(
-          `${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`
+        this.app.client.waitForVisible(
+          `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`
         )
       )
       .then(() => setValue(this.app.client, 'let main = y => y', 'up-to-date')) // modify the content
       .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy')))
       .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))) // deploy
       .then(() =>
-        this.app.client.waitForExist(
-          `${ui.selectors.SIDECAR} .sidecar-header-secondary-content .custom-header-content .editor-status.is-up-to-date .is-up-to-date`
+        this.app.client.waitForVisible(
+          `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`
         )
       )
       .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
@@ -171,7 +189,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
       .do('new foo3 --kind python', this.app)
       .then(cli.expectOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo3\n*'))
+      .then(sidecar.expectShowing('foo3'))
       .then(deploy(this.app, 'foo3'))
       .catch(common.oops(this)))
   /* it('should invoke the new python action, with implicit entity', () => cli.do('wsk action invoke', this.app)

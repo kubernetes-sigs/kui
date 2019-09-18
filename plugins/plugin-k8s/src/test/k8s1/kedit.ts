@@ -15,7 +15,7 @@
  */
 
 import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, expectYAML, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
+import { cli, selectors, sidecar, expectYAML, getValueFromMonaco, waitTimeout } from '@kui-shell/core/tests/lib/ui'
 
 import { Application } from 'spectron'
 
@@ -128,9 +128,9 @@ common.localDescribe('electron kedit', function(this: common.ISuite) {
           this.app.client.waitUntil(async () => {
             const actualText = await getValueFromMonaco(this.app)
             return actualText === 'should not be saved'
-          })
+          }, waitTimeout)
         )
-        .catch(common.oops(this)))
+        .catch(common.oops(this, true)))
   }
 
   const reopenWith = (cmd: string, tmp = tmpFilepath) => ({

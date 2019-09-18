@@ -122,7 +122,8 @@ export const fetchFile: IFetcher = async (
   } else if (createIfAbsent) {
     throw new Error(`'${filepath}' cannot be created because it already exists`)
   } else {
-    const extension = filepath.substring(filepath.lastIndexOf('.') + 1)
+    const dotIdx = filepath.lastIndexOf('.')
+    const extension = dotIdx < 0 ? 'text' : filepath.substring(dotIdx + 1)
     const kind =
       extension === 'js' ? 'javascript' : extension === 'ts' ? 'typescript' : extension === 'py' ? 'python' : extension
 

@@ -30,7 +30,8 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 
 const synonyms = ['kubectl']
 
-describe('electron create hpa HorizontalPodAutoscaler', function(this: common.ISuite) {
+describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TARGET ||
+  ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 

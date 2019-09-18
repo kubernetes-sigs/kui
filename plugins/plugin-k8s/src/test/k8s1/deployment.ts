@@ -33,7 +33,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const ns: string = createNS()
 const inNamespace = `-n ${ns}`
 
-describe('electron deployment', function(this: common.ISuite) {
+describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
   before(common.before(this))
   after(common.after(this))
 
@@ -85,6 +85,7 @@ describe('electron deployment', function(this: common.ISuite) {
           .expectOpen(this.app)
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('myapp', undefined, undefined, ns))
+          .then(() => this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('pods')))
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('pods')))
           .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="pods"]`))
           .then(async () => {
