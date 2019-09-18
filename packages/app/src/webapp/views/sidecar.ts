@@ -125,7 +125,7 @@ export const hide = (tab: Tab, clearSelectionToo = false) => {
     delete sidecar.entity
   }
 
-  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 300)
+  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 0)
   return true
 }
 
@@ -403,7 +403,7 @@ export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause =
   }
 
   tab.classList[op]('sidecar-full-screen')
-  setTimeout(() => eventBus.emit('/sidecar/maximize'), 850)
+  setTimeout(() => eventBus.emit('/sidecar/maximize'), 0)
 
   if (tab.classList.contains('sidecar-full-screen')) {
     // if we entered full screen mode, remember if the user caused it,
@@ -1002,7 +1002,7 @@ const setVisible = (sidecar: Sidecar) => {
 
   scrollIntoView()
 
-  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 600)
+  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 0)
 }
 
 export const show = (tab: Tab, block?: HTMLElement, nextBlock?: HTMLElement) => {
