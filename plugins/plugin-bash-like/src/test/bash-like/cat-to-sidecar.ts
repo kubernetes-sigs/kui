@@ -39,7 +39,7 @@ describe('cat json to sidecar', function(this: common.ISuite) {
       .do(`cat "${input}"`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('Couchbase Operator', undefined, undefined, 'openshift-operators'))
+      .then(sidecar.expectShowing('small.json', undefined, undefined, 'openshift-operators'))
       .catch(common.oops(this))
   )
 
@@ -48,7 +48,7 @@ describe('cat json to sidecar', function(this: common.ISuite) {
       .do(`cat "${input}" | jq`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('Couchbase Operator', undefined, undefined, 'openshift-operators'))
+      .then(sidecar.expectShowing('small.json', undefined, undefined, 'openshift-operators'))
       .catch(common.oops(this))
   )
 })

@@ -85,10 +85,17 @@ interface Parameters {
  *
  * @param lastRaw the last applied configuration, unparsed
  */
-function toCustomSpec(lastRaw: string): CustomSpec {
+function toCustomSpec(lastRaw: string, fullResource: KubeResource): CustomSpec {
   // oof, it comes in as a JSON string, but we want a YAML string
   const resource: KubeResource = JSON.parse(lastRaw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
+
+  // add a startTime (after serializing the content, which is what
+  // will be displayed in the editor body), so that the sidecar
+  // renders with a toolbar text
+  if (!resource.metadata.creationTimestamp) {
+    resource.metadata.creationTimestamp = fullResource.metadata.creationTimestamp
+  }
 
   return {
     type: 'custom',
@@ -104,5 +111,5 @@ export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters)
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 
-  return toCustomSpec(getLastAppliedRaw(resource.resource))
+  return toCustomSpec(getLastAppliedRaw(resource.resource), resource.resource)
 }

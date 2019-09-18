@@ -59,7 +59,7 @@ const owComposerErr = composerErrorInput('openwhisk-composer-throw-err.js')
 
 const verifyPreviewNoticeExist = (checkExist = true) => (app: Application) => {
   return app.client.waitUntil(async () => {
-    const actualText = await app.client.getText('.sidecar-header-secondary-content .custom-header-content')
+    const actualText = await app.client.getText('.sidecar-toolbar-text-content')
     return /^This is a preview of your composition, it is not yet deployed/.test(actualText) || !checkExist
   }, 2000)
 }

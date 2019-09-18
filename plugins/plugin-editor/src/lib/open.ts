@@ -29,6 +29,7 @@ import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/uti
 import {
   currentSelection,
   getSidecar,
+  ToolbarText,
   isVisible as isSidecarVisible,
   addSidecarHeaderIconText,
   addNameToSidecarHeader,
@@ -229,17 +230,13 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       addSidecarHeaderIconText(entity.kind || entity.type, sidecar)
 
       // isModified display
-      const subtext = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
       const status = document.createElement('div')
+      const subtext = status
       const isNew = document.createElement('div')
       const isNewReadOnly = document.createElement('div')
       const upToDate = document.createElement('div')
       const modified = document.createElement('div')
 
-      if (!execOptions.noSidecarHeader) {
-        removeAllDomChildren(subtext)
-        subtext.appendChild(status)
-      }
       status.appendChild(isNew)
       status.appendChild(isNewReadOnly)
       status.appendChild(upToDate)
@@ -267,35 +264,29 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       modified.className = 'is-modified'
 
       /** update isdecar header */
-      const updateHeader = () => {
+      const updateHeader = (isModified: boolean) => {
         if (!execOptions.noSidecarHeader) {
           debug('updateHeader', entity)
 
-          // make a wrapper around the entity name to house the "is
-          // modified" indicator
-          const nameDiv = document.createElement('div')
-          const namePart = document.createElement('span')
-          const isModifiedPart = document.createElement('span')
-          const isModifiedIcon = document.createElement('i')
+          const toolbarText: ToolbarText = {
+            type: isModified ? 'warning' : 'info',
+            text: status
+          }
 
-          nameDiv.appendChild(namePart)
-          nameDiv.appendChild(isModifiedPart)
-          isModifiedPart.appendChild(isModifiedIcon)
-          namePart.innerText = entity.name
-          nameDiv.className = 'is-modified-wrapper'
-          isModifiedPart.className = 'is-modified-indicator'
-          isModifiedIcon.className = 'fas fa-asterisk larger-text'
-          isModifiedIcon.innerText = '*'
-          isModifiedPart.setAttribute('data-balloon', strings.isModifiedIndicator)
-          isModifiedPart.setAttribute('data-balloon-pos', 'left')
+          if (isModified) {
+            status.classList.remove('is-up-to-date')
+            status.classList.remove('is-new')
+          } else {
+            status.classList.add('is-up-to-date')
+          }
 
           addNameToSidecarHeader(
             sidecar,
-            nameDiv,
+            entity.name,
             entity.metadata && entity.metadata.namespace,
             undefined,
             entity.kind || entity.viewName || entity.type,
-            undefined,
+            toolbarText,
             entity
           )
           addVersionBadge(tab, entity, { clear: true })
@@ -308,8 +299,11 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
         sidecar.classList.add('is-modified')
         editor['clearDecorations']() // for now, don't try to be clever; remove decorations on any edit
         eventBus.emit('/editor/change', {})
+
+        // update sidecar header, after the editor becomes "dirty"
+        updateHeader(true)
       }
-      const editsCommitted = entity => {
+      const editsCommitted = (entity: EditorEntity) => {
         debug('editsCommited', entity)
         const lockIcon = sidecar.querySelector('[data-mode="lock"]')
 
@@ -320,13 +314,13 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
         debug('status:is-up-to-date')
 
         // update sidecar header, after save or revert
-        updateHeader()
+        updateHeader(false)
       }
       eventBus.on('/editor/save', editsCommitted)
       editor.getModel().onDidChangeContent(editsInProgress)
 
       // update sidecar header, initial call
-      updateHeader()
+      updateHeader(false)
 
       /** call editor.layout */
       const relayout = (editor['relayout'] = () => {
@@ -343,11 +337,18 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
       globalEventBus.on('/sidecar/maximize', relayout)
       window.addEventListener('resize', relayout)
 
-      if (isSidecarVisible(tab)) {
-        relayout()
-      } else {
-        setTimeout(relayout, 0)
+      // when the sidecar is replaced, remove our event listeners
+      const ourUUID = sidecar.uuid
+      const onReplace = (uuid: string) => {
+        if (ourUUID === uuid) {
+          globalEventBus.off('/sidecar/maximize', relayout)
+          globalEventBus.off('/sidecar/replace', onReplace)
+          window.removeEventListener('resize', relayout)
+        }
       }
+      globalEventBus.on('/sidecar/replace', onReplace)
+
+      setTimeout(relayout, 0)
 
       return Promise.resolve({ getEntity, editor, content, eventBus })
     }
