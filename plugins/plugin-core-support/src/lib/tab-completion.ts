@@ -289,13 +289,7 @@ const isDirectory = (filepath: string): Promise<boolean> =>
 const complete = (
   match: string,
   prompt: HTMLInputElement,
-  {
-    temporaryContainer = undefined,
-    partial = temporaryContainer.partial,
-    dirname = temporaryContainer.dirname,
-    doEscape = false,
-    addSpace = false
-  }: {
+  options: {
     temporaryContainer?: TemporaryContainer
     partial?: string
     dirname?: false | string
@@ -303,6 +297,12 @@ const complete = (
     addSpace?: boolean
   }
 ) => {
+  const temporaryContainer = options.temporaryContainer
+  const partial = options.partial || (temporaryContainer && temporaryContainer.partial)
+  const dirname = options.dirname || (temporaryContainer && temporaryContainer.dirname)
+  const doEscape = options.doEscape || false
+  const addSpace = options.addSpace || false
+
   debug('completion', match, partial, dirname)
 
   // in case match includes partial as a prefix
