@@ -286,23 +286,23 @@ const isDirectory = (filepath: string): Promise<boolean> =>
  * prompt, which is an <input>.
  *
  */
-const complete = (
-  match: string,
-  prompt: HTMLInputElement,
-  {
-    temporaryContainer = undefined,
-    partial = temporaryContainer.partial,
-    dirname = temporaryContainer.dirname,
-    doEscape = false,
-    addSpace = false
-  }: {
-    temporaryContainer?: TemporaryContainer
-    partial?: string
-    dirname?: false | string
-    doEscape?: boolean
-    addSpace?: boolean
-  }
-) => {
+const complete = ({
+  match,
+  prompt,
+  temporaryContainer = undefined,
+  partial = temporaryContainer.partial,
+  dirname = temporaryContainer.dirname,
+  doEscape = false,
+  addSpace = false
+}: {
+  match: string
+  prompt: HTMLInputElement
+  temporaryContainer?: TemporaryContainer
+  partial?: string
+  dirname?: false | string
+  doEscape?: boolean
+  addSpace?: boolean
+}) => {
   debug('completion', match, partial, dirname)
 
   // in case match includes partial as a prefix
@@ -402,7 +402,9 @@ const addSuggestion = (
 
   // onclick, use this match as the completion
   option.addEventListener('click', () => {
-    complete(matchCompletion, prompt, {
+    complete({
+      match: matchCompletion,
+      prompt,
       temporaryContainer,
       dirname,
       doEscape,
@@ -491,7 +493,7 @@ const presentEnumeratorSuggestions = (
 ) => (filteredList: string[]): void => {
   debug('presentEnumeratorSuggestions', filteredList)
   if (filteredList.length === 1) {
-    complete(filteredList[0], prompt, { partial: last, dirname: false })
+    complete({ match: filteredList[0], prompt, partial: last, dirname: false })
   } else if (filteredList.length > 0) {
     const partial = last
     const dirname = undefined
@@ -559,7 +561,9 @@ const suggestLocalFile = (
           // completion will be the bit we have to append to the current prompt.value
           //
           debug('singleton file completion', matches[0])
-          complete(matches[0], prompt, {
+          complete({
+            match: matches[0],
+            prompt,
             temporaryContainer,
             doEscape: true,
             partial,
@@ -643,7 +647,7 @@ const filterAndPresentEntitySuggestions = (
     // then we found just one match; we can complete it now,
     // without bothering with a completion popup
     debug('singleton entity match', filteredList[0])
-    complete(filteredList[0], prompt, { partial: last, dirname: false })
+    complete({ match: filteredList[0], prompt, partial: last, dirname: false })
   } else if (filteredList.length > 0) {
     // then we found multiple matches; we need to render them as
     // a tab completion popup
@@ -696,7 +700,7 @@ const suggestCommandCompletions = (
 
   if (matches.length === 1) {
     debug('singleton command completion', matches[0])
-    complete(matches[0].completion, prompt, { partial, dirname: false })
+    complete({ match: matches[0].completion, prompt, partial, dirname: false })
   } else if (matches.length > 0) {
     debug('suggesting command completions', matches, partial)
 
@@ -771,7 +775,9 @@ export default () => {
           const addSpace = current.hasAttribute('data-add-space')
           const prompt = cli.getCurrentPrompt()
 
-          complete(completion, prompt, {
+          complete({
+            match: completion,
+            prompt,
             temporaryContainer,
             doEscape,
             addSpace
