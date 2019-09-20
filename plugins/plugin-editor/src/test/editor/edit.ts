@@ -89,7 +89,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
   it(`should rm ${nonExistFilePath}`, () =>
     cli
-      .do(`rm ${nonExistFilePath}`, this.app)
+      .do(`rm -f ${nonExistFilePath}`, this.app) // note the -f here; it's ok if the file doesn't exist
       .then(cli.expectJustOK)
       .catch(oops(this, true)))
 
@@ -115,7 +115,7 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   )
   localIt(`should rm ${nonExistFilePath2}`, () =>
     cli
-      .do(`rm ${nonExistFilePath2}`, this.app)
+      .do(`rm ${nonExistFilePath2}`, this.app) // note: no -f here, because we expect the file to be there
       .then(cli.expectJustOK)
       .catch(oops(this, true))
   )

@@ -47,8 +47,8 @@ done
 wait
 
 # npm install those npm packs
-npm install --production --save --no-package-lock "$target"/!(*builder*)
-npm install --production --save-dev --no-package-lock "$target"/*builder*
+npm install --production --save --ignore-scripts --no-package-lock "$target"/!(*builder*)
+npm install --production --save-dev --ignore-scripts --no-package-lock "$target"/*builder*
 
 #
 # make absolute path refs to the npm packs we just created (in the for pkg loop above)
@@ -76,7 +76,7 @@ function uninstall {
     for j in $(cat "$PLUGIN"/package.json | jq -c .kui.exclude.$TARGET | sed -e 's/\[//' -e 's/\]//' -e 's/"//g' -e 's/,/ /g'); do
         if [[ $j != "null" ]]; then
             echo "Uninstalling $j from `basename $PLUGIN`"
-            (cd "$PLUGIN" && node -e "pjson = require('./package.json'); delete pjson.dependencies['$j']; require('fs').writeFileSync('./package.json', JSON.stringify(pjson, undefined, 2))")
+            (cd "$PLUGIN" && node -e "pjson = require('./package.json'); if (!pjson.devDependencies) pjson.devDependencies = {}; if (!pjson.dependencies) pjson.dependencies = {}; pjson.devDependencies['$j'] = pjson.dependencies['$j']; delete pjson.dependencies['$j']; require('fs').writeFileSync('./package.json', JSON.stringify(pjson, undefined, 2))")
         fi
     done
 }

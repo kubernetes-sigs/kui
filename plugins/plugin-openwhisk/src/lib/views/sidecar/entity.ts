@@ -48,7 +48,7 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
 const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
-  const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
+  const { visualize } = await import('@kui-shell/plugin-wskflow')
 
   sidecar.classList.add('custom-content')
   const container = sidecarSelector(tab, '.custom-content')

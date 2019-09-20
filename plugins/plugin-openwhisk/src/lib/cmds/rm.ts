@@ -24,13 +24,14 @@
  *
  */
 
+import * as minimist from 'yargs-parser'
+
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { Table } from '@kui-shell/core/webapp/models/table'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
-import * as minimist from 'yargs-parser'
-
 import * as repl from '@kui-shell/core/core/repl'
+
+import { synonyms } from '../models/synonyms'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isAnonymousLet } = require('./actions/let-core')

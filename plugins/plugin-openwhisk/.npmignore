@@ -1,5 +1,10 @@
 build
-dist
 src
-!test
-flycheck*
+tests/data/*
+tests/data/openwhisk/*
+!tests/data/openwhisk/headless/*
+dist/src/test/*
+dist/src/test/openwhisk1/*
+!dist/src/test/openwhisk1/headless.js
+tsconfig*
+/*.tgz

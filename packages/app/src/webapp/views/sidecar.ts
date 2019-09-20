@@ -35,6 +35,7 @@ import Presentation from './presentation'
 import { MetadataBearing, isMetadataBearing, EntitySpec, Entity } from '../../models/entity'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
+import { tryOpenWithEditor } from './registrar/editors'
 
 debug('finished loading modules')
 
@@ -914,32 +915,11 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
       const tryToUseEditor = true
       if (tryToUseEditor) {
         try {
-          // const { edit, IEditorEntity } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
-          const { edit } = await import('@kui-shell/plugin-editor/lib/cmds/edit')
-          debug('successfully loaded editor', custom)
-
-          const metadataBearer = isMetadataBearingByReference(custom) ? custom.resource : custom
+          const { content, presentation } = await tryOpenWithEditor(tab, custom, options)
           customContent.classList.remove('zoomable')
-
-          const entity /*: IEditorEntity */ = {
-            type: custom.prettyType,
-            name: custom.name,
-            kind: metadataBearer.kind,
-            metadata: metadataBearer.metadata,
-            noZoom: custom.noZoom,
-            persister: () => true,
-            annotations: [],
-            exec: {
-              kind: custom.contentType,
-              code: typeof projection !== 'string' ? JSON.stringify(projection, undefined, 2) : projection
-            }
-          }
-
-          const { content } = await edit(tab, entity, { readOnly: true }, options)
           container.appendChild(content)
-
           presentAs(tab, Presentation.FixedSize)
-          return Presentation.FixedSize
+          return presentation
         } catch (err) {
           console.error('error loading editor', err)
           // intentional fall-through

@@ -1,4 +1,10 @@
 build
-dist
 src
-!test
+tests/data/*
+tests/data/k8s/*
+!tests/data/k8s/headless/*
+dist/src/test/*
+dist/src/test/k8s2/*
+!dist/src/test/k8s2/headless-create-pod.js
+tsconfig*
+/*.tgz

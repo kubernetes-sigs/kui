@@ -19,11 +19,12 @@ import * as Debug from 'debug'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
+import { synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { appGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 import * as parseUtil from '../../utility/parse'
+
 const debug = Debug('plugins/apache-composer/cmd/app-get')
 
 export default async (commandTree: CommandRegistrar) => {

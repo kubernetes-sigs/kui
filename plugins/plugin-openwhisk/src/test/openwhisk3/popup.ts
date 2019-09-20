@@ -17,7 +17,6 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { selectors, sidecar, waitTimeout } from '@kui-shell/core/tests/lib/ui'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 const { localDescribe } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
@@ -35,7 +34,6 @@ const invokeAction = (name: string) => [wsk, action, invoke, name]
 /** resource attributes */
 const foo = 'foo'
 const foojs = join(ROOT, 'data/openwhisk/headless/foo.js')
-const foojsSource = readFileSync(foojs).toString()
 
 /** wait for the creation to finish, then navigate a bit */
 interface CreateSpec {

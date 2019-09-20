@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KubeStatusCondition } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeStatusCondition } from '@kui-shell/plugin-k8s'
 
 /**
  * Determine the success bit of a run element

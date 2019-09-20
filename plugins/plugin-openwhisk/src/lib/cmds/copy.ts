@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017, 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,12 @@
  */
 
 import * as Debug from 'debug'
-import { CommandRegistrar, ParsedOptions } from '@kui-shell/core/models/command'
-import * as repl from '@kui-shell/core/core/repl'
 
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
+import { qexec } from '@kui-shell/core/core/repl'
+import { CommandRegistrar, ParsedOptions } from '@kui-shell/core/models/command'
+
+import { synonyms } from '..//models/synonyms'
+
 const debug = Debug('plugins/openwhisk/cmds/copy')
 
 /** name for the command */
@@ -77,7 +79,7 @@ const copy = (type: string) => (op: string) => ({
       const path = name.split('/')
       const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
       if (packageName) {
-        return repl.qexec(`wsk package update "${packageName}"`).then(() =>
+        return qexec(`wsk package update "${packageName}"`).then(() =>
           copy(type)(op)({
             block: false,
             argvNoOptions: argv,
@@ -91,7 +93,7 @@ const copy = (type: string) => (op: string) => ({
     throw err
   }
 
-  return repl.qfexec(`wsk ${type} update --copy "${newName}" "${oldName}"`).catch(packageAutoCreate(newName))
+  return qexec(`wsk ${type} update --copy "${newName}" "${oldName}"`).catch(packageAutoCreate(newName))
 }
 
 /**

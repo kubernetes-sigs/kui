@@ -26,7 +26,7 @@
 import * as minimist from 'yargs-parser'
 
 import * as repl from '@kui-shell/core/core/repl'
-import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
+import { ActivationListTable } from '../../views/cli/activations/list'
 
 const rootSynonyms = ['root', '$$']
 const defaultOptions = {

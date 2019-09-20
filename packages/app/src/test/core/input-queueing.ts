@@ -25,7 +25,7 @@ common.localDescribe('input queueing', function(this: common.ISuite) {
   const queueUp = (textWhileQueued: string, N: number, sleepTime = 2) => {
     return {
       thenType: (textAfterQueued: string, verify = cli.expectOKWithCustom({ expect: common.expectedVersion })) => {
-        it(`should queue ${textWhileQueued} while we sleep, then ${textAfterQueued}`, async () => {
+        xit(`should queue ${textWhileQueued} while we sleep, then ${textAfterQueued}`, async () => {
           try {
             // do something that takes a while
             const outstanding = cli.do(`sleep ${sleepTime}`, this.app)

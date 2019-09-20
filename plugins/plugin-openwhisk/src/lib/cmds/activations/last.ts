@@ -16,7 +16,8 @@
 
 import * as repl from '@kui-shell/core/core/repl'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
-import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
+
+import { ActivationListTable } from '../../views/cli/activations/list'
 
 /**
  * wsk activation last: find and display the (temporally) last activation

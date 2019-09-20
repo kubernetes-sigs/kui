@@ -1,0 +1,17 @@
+{
+  "extends": "../../packages/kui-builder/tsconfig-base.json",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@kui-shell/plugin-k8s/web/*": ["web/*"]
+    }
+  },
+  "references": [
+    {
+      "path": "../plugin-core-support"
+    }
+  ]
+}

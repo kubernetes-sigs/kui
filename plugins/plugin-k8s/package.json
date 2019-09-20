@@ -17,13 +17,8 @@
     "plugin",
     "kubernetes"
   ],
-  "main": "plugin.js",
-  "scripts": {
-    "prepack": "rm -rf dist && mkdir dist && tar -C ../../build/plugins/$(basename `pwd`)/src --exclude node_modules -cf - . | tar -C dist -xf - && find dist -type l -exec rm {} \\; && cp -a dist/* .",
-    "postpack": "for i in dist/*; do if [ -d $i ]; then for j in $i/*; do rm -rf ./`basename $i`/`basename $j`; done; else rm -rf ./`basename $i`; fi; done && rm -rf dist"
-  },
+  "main": "dist/src/index.js",
   "dependencies": {
-    "archiver": "3.1.1",
     "command-exists": "1.2.8",
     "debug": "4.1.1",
     "fs-extra": "8.1.0",

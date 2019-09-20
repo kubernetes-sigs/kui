@@ -21,15 +21,15 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
-if [ -d "$SCRIPTDIR"/../../node_modules/@kui-shell ]; then
+if [ -z "$MONOREPO_MODE" ]; then
     echo "running as external custom client"
     ROOT="$SCRIPTDIR"/../..
     export TEST_SUITE_ROOT="$ROOT"/node_modules/@kui-shell
     export TEST_ROOT="$TEST_SUITE_ROOT"/test
 else
-    echo "running in monorepo"
     ROOT="$SCRIPTDIR"/../../..
-    export TEST_SUITE_ROOT="$ROOT"/build
+    echo "running in monorepo $ROOT"
+    export TEST_SUITE_ROOT="$ROOT"/node_modules/@kui-shell
     export TEST_ROOT="$ROOT"/packages/tests
 fi
 

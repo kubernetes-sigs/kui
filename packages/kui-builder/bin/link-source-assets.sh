@@ -27,20 +27,6 @@ fi
 TOPDIR=.
 BUILDDIR="${TOPDIR}/build"
 
-# special case for kui-builder for now
-if [ -d packages/kui-builder ]; then
-    pluginPath=packages/kui-builder
-    plugin=`basename "$pluginPath"`
-    target="$BUILDDIR"/$pluginPath/src
-    mkdir -p "$target"
-    (cd "$pluginPath/$subdir" && npm run tsconfig:prepack)
-    (cd "$target" && rm -f tsconfig.json && cp "../../../../$pluginPath/tsconfig.json" .)
-    (cd "$pluginPath/$subdir" && npm run tsconfig:postpack)
-    for subdir in i18n bin lib examples dist package.json; do
-        (cd "$target" && rm -rf "$subdir" && ln -sf "../../../../$pluginPath/$subdir")
-    done
-fi
-
 for pluginPath in plugins/* packages/app; do
     plugin=`basename "$pluginPath"`
     for subdir in i18n bin plugin tests samples templates vendor web package.json; do

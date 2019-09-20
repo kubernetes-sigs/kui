@@ -1,4 +1,8 @@
 build
-dist
 src
-!test
+tests/data
+dist/src/test/*
+dist/src/test/composer2/*
+!dist/src/test/composer2/composer-headless.js
+tsconfig*
+/*.tgz

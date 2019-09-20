@@ -21,16 +21,16 @@ set -o pipefail
 
 #
 # @param $1 staging directory
-# @param $2 platform (optional) defaulting to all platforms
+# @param $2 platform (optional) defaulting to all platforms (you may also set this via PLATFORM env)
 #
 STAGING="${1-`pwd`}"
-PLATFORM=${2-all}
+PLATFORM=${2-${PLATFORM-all}}
 
 STAGING="$(cd $STAGING && pwd)/kui-electron-tmp"
 echo "staging directory: $STAGING"
 
 CLIENT_HOME="$(pwd)"
-APPDIR="$STAGING"/packages/app
+APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
@@ -39,7 +39,7 @@ export BUILDDIR="$CLIENT_HOME"/dist/electron
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(lerna.json)|(node_modules/@kui-plugin)'
+IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(monaco-editor/dev)|(monaco-editor/min-maps)|(lerna.json)'
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
@@ -49,9 +49,6 @@ VERSION=$(cat "$CLIENT_HOME"/package.json | jq --raw-output .version)
 if [ $? != 0 ]; then VERSION=0.0.1; fi
 set -e
 echo "Using VERSION=$VERSION"
-
-# we will manage devDep pruning ourselves
-#NO_PRUNE=--no-prune
 
 function tarCopy {
   if [[ `uname` == Darwin ]]; then
@@ -70,7 +67,6 @@ function tarCopy {
            --exclude "./bin" \
            --exclude "./dist" \
            --exclude "./tools" \
-           --exclude "./dist" \
            --exclude "./builds" \
            --exclude "./tests" \
            --exclude "./docs/dev" \
@@ -78,6 +74,7 @@ function tarCopy {
            --exclude "lerna-debug.log" \
            --exclude ".git*" \
            --exclude ".travis*" \
+           --exclude "node_modules/@kui-shell/build" \
            --exclude "./build/*/node_modules/*" \
            --exclude "./packages/*/node_modules/*" \
            --exclude "./plugins/*/node_modules/*" \
@@ -88,7 +85,10 @@ function tarCopy {
            --exclude "**/.bak" \
            --exclude "**/yarn.lock" \
            --exclude "**/*.debug.js" \
+	   --exclude "monaco-editor/dev" \
 	   --exclude "monaco-editor/esm" \
+	   --exclude "monaco-editor/min-maps" \
+           --exclude "node_modules/@types" \
            --exclude "node_modules/*.bak/*" \
            --exclude "node_modules/**/*.md" \
            --exclude "node_modules/**/*.DOCS" \
@@ -106,14 +106,13 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they are identical
 function configure {
-    UGLIFY=true npx --no-install kui-prescan
-    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
+    # so that electron's prune doesn't eliminate @kui-shell/settings
+    mkdir "$STAGING"/settings
+    echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/settings/package.json
+    npm install --save --no-package-lock --ignore-scripts "$STAGING"/settings
 
-    # we need to get @kui-shell/settings into the package
-    # dependencies, so that electron's prune code (which seems to be
-    # equivalent, in this regard, to an npm prune --production) does
-    # not remove it; i.e. a self-managed symlink is not sufficient
-    (cd "$STAGING" && npm install --save ./packages/app/build)
+    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
+    UGLIFY=true npx --no-install kui-prescan
 }
 
 function init {
@@ -138,26 +137,26 @@ function assembleHTMLPieces {
     echo "ELECTRON_VERSION=$ELECTRON_VERSION"
 
     # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/build/config.json | jq --raw-output .theme.productName`}"
+    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/settings/config.json | jq --raw-output .theme.productName`}"
     echo "PRODUCT_NAME=$PRODUCT_NAME"
 
     # filesystem icons
     THEME="$CLIENT_HOME"/theme
-    ICON_MAC="$THEME"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.darwin`
-    ICON_WIN32="$THEME"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.win32`
-    ICON_LINUX="$THEME"/`cat $APPDIR/build/config.json | jq --raw-output .theme.filesystemIcons.linux`
+    ICON_MAC="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.darwin`
+    ICON_WIN32="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.win32`
+    ICON_LINUX="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.linux`
 
     if [ -d "$THEME"/css ]; then
         echo "copying in theme css"
-        cp -r "$THEME"/css/ "$STAGING"/packages/app/build/css/
+        cp -r "$THEME"/css/ "$STAGING"/node_modules/@kui-shell/build/css
     fi
     if [ -d "$THEME"/icons ]; then
         echo "copying in theme icons"
-        cp -r "$THEME"/icons "$STAGING"/packages/app/build
+        cp -r "$THEME"/icons "$STAGING"/node_modules/@kui-shell/build
     fi
     if [ -d "$THEME"/images ]; then
         echo "copying in theme images"
-        cp -r "$THEME"/images "$STAGING"/packages/app/build
+        cp -r "$THEME"/images "$STAGING"/node_modules/@kui-shell/build
     fi
 
     # minify the core css
@@ -173,8 +172,6 @@ function assembleHTMLPieces {
         (cd "$BUILDER_HOME/dist/electron" && npx --no-install minify /tmp/"$css")
         cp /tmp/"$css" "$CSS_TARGET"/"$css"
     done
-
-    rm -f "$STAGING"/packages/app/build/build
 }
 
 function cleanup {

@@ -18,7 +18,7 @@ interface Port {
   id: string
 }
 
-export interface Node {
+export interface FlowNode {
   readonly id: string
   readonly type?: string
   label: string
@@ -39,7 +39,7 @@ export interface Node {
   properties?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   ports?: Port[]
   visited?: number[]
-  children?: Node[]
+  children?: FlowNode[]
   edges?: Edge[]
   deployed?: boolean
   readonly onclick?: string

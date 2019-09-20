@@ -28,8 +28,8 @@ const {
 const sessionKey = 'kui_websocket_auth'
 
 const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
-const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/server')
-const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like/pty/stdio-channel')
+const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like')
+const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like')
 
 process.on('uncaughtException', async err => {
   debug('uncaughtException')

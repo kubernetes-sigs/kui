@@ -16,17 +16,7 @@
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
-import {
-  assertTableTitleMatches,
-  waitForGreen,
-  waitForRed,
-  defaultModeForGet,
-  createNS,
-  allocateNS,
-  deleteNS
-} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
-
-import * as assert from 'assert'
+import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -50,7 +40,6 @@ describe(`kubectl get events ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
-    const inNamespace = `-n ${ns}`
     allocateNS(this, ns)
 
     /** error handling starts */

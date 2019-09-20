@@ -18,22 +18,22 @@ import * as Debug from 'debug'
 
 import { encodeComponent } from '@kui-shell/core/core/repl'
 
-import { Node as BaseNode, Edge } from '@kui-shell/plugin-wskflow/lib/graph'
-import ActivationLike from '@kui-shell/plugin-wskflow/lib/activation'
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s'
+import { ActivationLike, FlowNode, Edge } from '@kui-shell/plugin-wskflow'
 
 import success from './success'
 import { PipelineRun, Pipeline, isPipeline, Task, TaskName, TaskRef, Step, Port } from '../model/resource'
+
 const debug = Debug('plugins/tekton/lib/tekton2graph')
 
-interface Node extends BaseNode {
+interface TektonNode extends FlowNode {
   nChildren: number
   nParents: number
 }
 
-interface Graph extends Node {
+interface Graph extends TektonNode {
   readonly edges: Edge[]
-  children: Node[]
+  children: TektonNode[]
   runs: ActivationLike[]
 }
 
@@ -59,13 +59,13 @@ const makeSubGraph = (
     onclick
   }: {
     visited?: number[]
-    children: Node[]
+    children: TektonNode[]
     tooltip?: string
     tooltipColor?: string
     type?: string
     onclick?: string
   } = { children: [] }
-): Node => {
+): TektonNode => {
   return {
     id: label,
     label,
@@ -121,7 +121,12 @@ const getPipeline = (jsons: KubeResource[]): Pipeline => {
  * Add an edge between parent and child nodes
  *
  */
-function addEdge(graph: Node, parent: Node, child: Node, { singletonSource, singletonTarget, hasRuns }: EdgeOptions) {
+function addEdge(
+  graph: TektonNode,
+  parent: TektonNode,
+  child: TektonNode,
+  { singletonSource, singletonTarget, hasRuns }: EdgeOptions
+) {
   debug('addEdge', parent.id, child.id)
 
   if (!parent.ports) {
@@ -270,7 +275,7 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
     }
   }
 
-  const start: Node = {
+  const start: TektonNode = {
     id: 'Entry',
     label: 'start',
     type: 'Entry',
@@ -284,7 +289,7 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
       fontSize: '4.5px'
     }
   }
-  const end: Node = {
+  const end: TektonNode = {
     id: 'Exit',
     label: 'end',
     type: 'Exit',
@@ -299,101 +304,104 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
     }
   }
 
-  const symbolTable: SymbolTable<Node> = pipeline.spec.tasks.reduce((symtab: SymbolTable<Node>, taskRef: TaskRef) => {
-    const task: Task = taskName2Task[taskRef.taskRef.name]
-    debug('TaskRef', taskRef.name, task)
+  const symbolTable: SymbolTable<TektonNode> = pipeline.spec.tasks.reduce(
+    (symtab: SymbolTable<TektonNode>, taskRef: TaskRef) => {
+      const task: Task = taskName2Task[taskRef.taskRef.name]
+      debug('TaskRef', taskRef.name, task)
 
-    // -f file argument for drilldowns, if we have one
-    const filearg = filepath ? `-f ${encodeComponent(filepath)}` : ''
+      // -f file argument for drilldowns, if we have one
+      const filearg = filepath ? `-f ${encodeComponent(filepath)}` : ''
 
-    let node: Node
-    if (task && task.spec.steps && task.spec.steps.length > 0) {
-      //
-      // in this case, we do have a full Task definition, which
-      // includes Steps; we will make a subgraph for the steps
-      //
-      const resources = (task.spec.inputs && task.spec.inputs.resources) || []
-      const resourceList = `${resources.map(_ => `<span class='color-base0A'>${_.type}</span>:${_.name}`).join(', ')}`
+      let node: TektonNode
+      if (task && task.spec.steps && task.spec.steps.length > 0) {
+        //
+        // in this case, we do have a full Task definition, which
+        // includes Steps; we will make a subgraph for the steps
+        //
+        const resources = (task.spec.inputs && task.spec.inputs.resources) || []
+        const resourceList = `${resources.map(_ => `<span class='color-base0A'>${_.type}</span>:${_.name}`).join(', ')}`
 
-      const params = (task.spec.inputs && task.spec.inputs.params) || []
-      const paramList = `(${params.map(_ => _.name).join(', ')})`
+        const params = (task.spec.inputs && task.spec.inputs.params) || []
+        const paramList = `(${params.map(_ => _.name).join(', ')})`
 
-      const subgraph = makeSubGraph(taskRef.name, {
-        type: 'Tekton Task',
-        tooltip: `<table><tr><td><strong>Resources</strong></td><td>${resourceList}</td></tr><tr><td><strong>Params</strong></td><td>${paramList}</td></tr></table>`,
-        tooltipColor: '0C',
-        onclick: `tekton get task ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(
-          task.metadata.name
-        )} ${filearg}`,
-        visited: task.visitedIdx !== undefined ? [task.visitedIdx] : undefined,
-        children: task.spec.steps.map(step => {
-          const stepNode: Node = {
-            id: stepId(taskRef, step),
-            label: step.name,
-            width: step.name.length * defaultCharWidth,
-            height: defaultHeight,
-            nChildren: 0,
-            nParents: 0,
-            deployed: false,
-            visited: step.visitedIdx !== undefined ? [step.visitedIdx] : undefined,
-            type: 'Tekton Step',
-            tooltip: `<strong>Image</strong>: ${step.image}`,
-            tooltipColor: '0E',
-            onclick: `tekton get step ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(
-              task.metadata.name
-            )} ${encodeComponent(step.name)} ${filearg}`
-          }
+        const subgraph = makeSubGraph(taskRef.name, {
+          type: 'Tekton Task',
+          tooltip: `<table><tr><td><strong>Resources</strong></td><td>${resourceList}</td></tr><tr><td><strong>Params</strong></td><td>${paramList}</td></tr></table>`,
+          tooltipColor: '0C',
+          onclick: `tekton get task ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(
+            task.metadata.name
+          )} ${filearg}`,
+          visited: task.visitedIdx !== undefined ? [task.visitedIdx] : undefined,
+          children: task.spec.steps.map(step => {
+            const stepNode: TektonNode = {
+              id: stepId(taskRef, step),
+              label: step.name,
+              width: step.name.length * defaultCharWidth,
+              height: defaultHeight,
+              nChildren: 0,
+              nParents: 0,
+              deployed: false,
+              visited: step.visitedIdx !== undefined ? [step.visitedIdx] : undefined,
+              type: 'Tekton Step',
+              tooltip: `<strong>Image</strong>: ${step.image}`,
+              tooltipColor: '0E',
+              onclick: `tekton get step ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(
+                task.metadata.name
+              )} ${encodeComponent(step.name)} ${filearg}`
+            }
 
-          symtab[stepNode.id] = stepNode
-          return stepNode
+            symtab[stepNode.id] = stepNode
+            return stepNode
+          })
         })
-      })
 
-      subgraph.children.slice(1).reduce((cur: Node, next: Node) => {
-        addEdge(subgraph, cur, next, { hasRuns: runs !== undefined })
-        return next
-      }, subgraph.children[0])
+        subgraph.children.slice(1).reduce((cur: TektonNode, next: TektonNode) => {
+          addEdge(subgraph, cur, next, { hasRuns: runs !== undefined })
+          return next
+        }, subgraph.children[0])
 
-      node = subgraph
-    } else {
-      //
-      // we don't have a full Task definition for this pipeline
-      // task, or the Task definition for some reason does not
-      // specify Steps
-      //
-      node = {
-        id: taskRef.name,
-        label: taskRef.name,
-        width: taskRef.name.length * defaultCharWidth,
-        height: defaultHeight,
-        nChildren: 0,
-        nParents: 0,
-        type: 'Tekton Task',
-        tooltip: 'test'
+        node = subgraph
+      } else {
+        //
+        // we don't have a full Task definition for this pipeline
+        // task, or the Task definition for some reason does not
+        // specify Steps
+        //
+        node = {
+          id: taskRef.name,
+          label: taskRef.name,
+          width: taskRef.name.length * defaultCharWidth,
+          height: defaultHeight,
+          nChildren: 0,
+          nParents: 0,
+          type: 'Tekton Task',
+          tooltip: 'test'
+        }
       }
-    }
 
-    symtab[taskRef.name] = node
-    graph.children.push(node)
+      symtab[taskRef.name] = node
+      graph.children.push(node)
 
-    return symtab
-  }, {})
+      return symtab
+    },
+    {}
+  )
 
-  const lastStepOf = (node: Node): Node => {
+  const lastStepOf = (node: TektonNode): TektonNode => {
     const taskRef = taskRefName2TaskRef[node.id]
     const task = taskRefName2Task[node.id]
 
     return task && symbolTable[stepId(taskRef, task.spec.steps[task.spec.steps.length - 1])]
   }
 
-  const firstStepOf = (node: Node): Node => {
+  const firstStepOf = (node: TektonNode): TektonNode => {
     const taskRef = taskRefName2TaskRef[node.id]
     const task = taskRefName2Task[node.id]
 
     return task && symbolTable[stepId(taskRef, task.spec.steps[0])]
   }
 
-  const _addEdge = (parent: Node, child: Node, opts: EdgeOptions = { hasRuns: runs !== undefined }) => {
+  const _addEdge = (parent: TektonNode, child: TektonNode, opts: EdgeOptions = { hasRuns: runs !== undefined }) => {
     const lastStepOfParentTask = lastStepOf(parent)
     const firstStepOfChildTask = firstStepOf(child)
 

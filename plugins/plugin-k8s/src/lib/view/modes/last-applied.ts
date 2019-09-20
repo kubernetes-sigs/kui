@@ -21,6 +21,7 @@ import { safeDump } from 'js-yaml'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -55,7 +56,7 @@ function hasLastApplied(resource: KubeResource): boolean {
  */
 export const lastAppliedMode: ModeRegistration<KubeResource> = {
   when: hasLastApplied,
-  mode: (command: string, resource: Resource) => {
+  mode: (command: string, resource: Resource): SidecarMode => {
     debug('lastApplied', resource)
     try {
       return {
@@ -63,8 +64,7 @@ export const lastAppliedMode: ModeRegistration<KubeResource> = {
         label: strings('lastApplied'),
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'k8s',
-          module: 'lib/view/modes/last-applied',
+          plugin: 'k8s/dist/src/index',
           operation: 'renderAndViewLastApplied',
           parameters: { command, resource }
         }
