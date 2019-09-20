@@ -16,10 +16,7 @@
     "kui-build-electron": "./dist/electron/build.sh",
     "kui-init": "./build/kui-dist-init.js",
     "kui-compile": "./bin/compile.sh",
-    "kui-prescan": "./bin/prescan.sh",
-    "kui-link-artifacts.sh": "./bin/kui-link-artifacts.sh",
-    "link-source-assets.sh": "./bin/link-source-assets.sh",
-    "link-build-assets.sh": "./bin/link-build-assets.sh"
+    "kui-prescan": "./bin/prescan.sh"
   },
   "scripts": {
     "preinstall": "if [ ! -d build ]; then mkdir build; fi && touch ./build/kui-dist-init.js",

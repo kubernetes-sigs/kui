@@ -2,7 +2,7 @@
   "extends": "./packages/kui-builder/tsconfig-base.json",
   "references": [
     {
-      "path": "packages/app"
+      "path": "packages/core"
     },
     {
       "path": "packages/kui-builder"

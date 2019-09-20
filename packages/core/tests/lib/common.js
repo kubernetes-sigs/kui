@@ -128,7 +128,7 @@ const prepareElectron = (fuzz, popup = false) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
     console.log(`Testing Webpack against chromium`)
     opts.path = electron // this means spectron will use electron located in node_modules
-    opts.args = ['../app/tests/lib/main.js'] // relative to the tests/ directory
+    opts.args = ['../core/tests/lib/main.js'] // relative to the tests/ directory
   } else if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
     opts.path = process.env.TEST_FROM_BUILD

@@ -30,11 +30,6 @@ npx --no-install kui-compile
 
 KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
 
-# we need to get @kui-shell/settings into the package
-# dependencies, so that npm prune --production does not remove it;
-# i.e. a self-managed symlink is not sufficient
-#npm install --save "$CLIENT_HOME"/packages/app/build
-
 pushd "$CLIENT_HOME"
   rm -rf dist/webpack
   mkdir -p dist/webpack/css
