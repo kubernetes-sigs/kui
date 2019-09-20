@@ -16,13 +16,11 @@
 
 import * as Debug from 'debug'
 
-import { safeDump } from 'js-yaml'
-
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { isTable } from '@kui-shell/core/webapp/models/table'
 import { qexec } from '@kui-shell/core/core/repl'
-import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource, isKubeResource } from '../../model/resource'
 
@@ -78,7 +76,7 @@ function hasEvents(resource: KubeResource): boolean {
  */
 export const eventsMode: ModeRegistration<KubeResource> = {
   when: hasEvents,
-  mode: (command: string, resource: Resource) => {
+  mode: (command: string, resource: Resource): SidecarMode => {
     debug('events', resource)
     try {
       return {
@@ -86,8 +84,7 @@ export const eventsMode: ModeRegistration<KubeResource> = {
         label: strings('events'),
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'k8s',
-          module: 'lib/view/modes/events',
+          plugin: 'k8s/dist/src/index',
           operation: 'renderAndViewEvents',
           parameters: { command, resource }
         }

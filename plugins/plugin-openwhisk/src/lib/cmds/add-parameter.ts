@@ -16,11 +16,11 @@
 
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { qexec } from '@kui-shell/core/core/repl'
 
 import { update } from './openwhisk-core'
+import { synonyms } from '../models/synonyms'
 import { currentSelection } from '../models/openwhisk-entity'
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
-import * as repl from '@kui-shell/core/core/repl'
 
 /**
  * This plugin introduces
@@ -200,7 +200,7 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
   tab
 }: EvaluatorArgs) => {
   /** fetch the given entity with the given type */
-  const fetchEntityWithType = (name, type) => repl.qexec(`wsk ${type} get ${name}`)
+  const fetchEntityWithType = (name, type) => qexec(`wsk ${type} get ${name}`)
 
   /** try to find the given entity name, across the types */
   const fetchEntityWithFallbacks = name =>

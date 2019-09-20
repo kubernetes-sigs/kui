@@ -22,7 +22,8 @@ import { CommandRegistrar } from '@kui-shell/core/models/command'
 import { appList } from '../../utility/usage'
 import * as astUtil from '../../utility/ast'
 
-import withHeader from '@kui-shell/plugin-openwhisk/lib/models/withHeader'
+import { withHeader } from '@kui-shell/plugin-openwhisk'
+
 const debug = Debug('plugins/apache-composer/cmd/app-list')
 
 /** for the table model */

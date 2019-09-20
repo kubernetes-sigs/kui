@@ -1,0 +1,13 @@
+{
+  "extends": "../../packages/kui-builder/tsconfig-base.json",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist"
+  },
+  "references": [
+    {
+      "path": "../plugin-k8s"
+    }
+  ]
+}

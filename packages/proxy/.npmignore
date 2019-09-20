@@ -1,4 +1,6 @@
 build
-dist
 src
 tests/data.keys
+dist/src/test
+tsconfig*
+/*.tgz

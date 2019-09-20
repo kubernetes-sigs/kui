@@ -21,7 +21,7 @@ debug('loading')
 import UsageError from '@kui-shell/core/core/usage-error'
 import { CodedError } from '@kui-shell/core/models/errors'
 import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
-import * as repl from '@kui-shell/core/core/repl'
+import { qexec, encodeComponent } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import i18n from '@kui-shell/core/util/i18n'
@@ -38,10 +38,10 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
   if (rest.length > 0) {
     // then the user asked e.g. "help foo"; interpret this as "foo help"
     debug('reversal')
-    return repl.qexec(
+    return qexec(
       rest
         .concat('help')
-        .map(val => repl.encodeComponent(val))
+        .map(val => encodeComponent(val))
         .join(' ')
     )
 

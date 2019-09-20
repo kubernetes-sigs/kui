@@ -24,13 +24,11 @@ import { editor as MonacoEditor } from 'monaco-editor'
 import { Tab } from '@kui-shell/core/webapp/cli'
 import globalEventBus from '@kui-shell/core/core/events'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { injectCSS, uninjectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
+import { injectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import {
   currentSelection,
   getSidecar,
   ToolbarText,
-  isVisible as isSidecarVisible,
   addSidecarHeaderIconText,
   addNameToSidecarHeader,
   addVersionBadge
@@ -231,7 +229,6 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
 
       // isModified display
       const status = document.createElement('div')
-      const subtext = status
       const isNew = document.createElement('div')
       const isNewReadOnly = document.createElement('div')
       const upToDate = document.createElement('div')

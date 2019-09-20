@@ -17,7 +17,7 @@
 import { BadgeSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { BadgeRegistration } from '@kui-shell/core/webapp/views/registrar/badges'
 
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 /**
  * e.g. ClusterServiceVersion

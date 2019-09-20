@@ -18,7 +18,7 @@
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../../.."
-STAGING="${TOPDIR}"/packages/app/build
+STAGING="${TOPDIR}"/node_modules/@kui-shell/build
 
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/app/web/css)
 

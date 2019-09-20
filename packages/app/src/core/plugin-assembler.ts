@@ -251,10 +251,12 @@ export default async (
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts
-    return path
-      .relative(pluginRoot, filepath)
-      .replace(/\/src/, '') // client-hosted plugins
-      .replace(/^(.*\/)(plugin-.*)$/, '$2') // client-required plugins
+    return (
+      path
+        .relative(pluginRoot, filepath)
+        // .replace(/\/src/, '') // client-hosted plugins
+        .replace(/^(.*\/)(plugin-.*)$/, '$2')
+    ) // client-required plugins
   }
   const fixupPaths = (pluginList: plugins.PrescanCommandDefinitions) =>
     pluginList.map(plugin =>

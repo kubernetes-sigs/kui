@@ -26,7 +26,7 @@ import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 import * as AST from './ast'
-import { Node, NodeOptions, Edge } from './graph'
+import { FlowNode, NodeOptions, Edge } from './graph'
 const debug = Debug('plugins/wskflow/fsm2graph')
 
 const maxWidth = 100
@@ -49,7 +49,7 @@ function id2log(id: string): string {
 }
 
 class RenderState {
-  readonly graphData: Node
+  readonly graphData: FlowNode
 
   dummyCount = 0
 
@@ -105,9 +105,9 @@ class RenderState {
     return dummyId
   }
 
-  drawNodeNew(id: string, label: string, type?: string, properties?, options?: NodeOptions): Node {
+  drawNodeNew(id: string, label: string, type?: string, properties?, options?: NodeOptions): FlowNode {
     // console.log(id)
-    const o: Node = {
+    const o: FlowNode = {
       id,
       label,
       type,
@@ -396,7 +396,7 @@ class RenderState {
     }
   }
 
-  ir2graph(ir: AST.Node, gm: Node, id: string, prevId: string[], options = {}): string[] {
+  ir2graph(ir: AST.ASTNode, gm: FlowNode, id: string, prevId: string[], options = {}): string[] {
     // ir and graph model
     if (ir.type === 'sequence' || ir.type === 'seq' || Array.isArray(ir)) {
       // for an array of things, prevId is the previous element
@@ -733,7 +733,7 @@ const isSimpleComposition = ir => {
 
 export default async function fsm2graph(
   tab: Tab,
-  ir: AST.Node,
+  ir: AST.ASTNode,
   containerElement?: HTMLElement,
   acts?: ActivationLike[],
   options?,
@@ -825,8 +825,8 @@ export default async function fsm2graph(
       .then(result => {
         const notDeployed = []
 
-        const graphChildrenStatus = (childrens: Node[], id: string, deployed: boolean) => {
-          return childrens.forEach((children: Node) => {
+        const graphChildrenStatus = (childrens: FlowNode[], id: string, deployed: boolean) => {
+          return childrens.forEach((children: FlowNode) => {
             if (children.id === id) children.deployed = deployed
             else if (children.children) return graphChildrenStatus(children.children, id, deployed)
           })

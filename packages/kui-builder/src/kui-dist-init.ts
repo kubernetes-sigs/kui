@@ -31,6 +31,11 @@ const notCreating = (what: string): void => {
   console.log(colors.dim('-') + ' not creating ' + what)
 }
 
+const tsconfig = {
+  extends: './node_modules/@kui-shell/builder/tsconfig-base.json',
+  references: [{ path: 'plugins/plugin-sample' }]
+}
+
 /**
  * Copy a directory
  *
@@ -82,12 +87,19 @@ export const main = async (argv: string[]) => {
     notCreating('packages/app/src directory')
   }
 
+  if (!(await exists('tsconfig.json'))) {
+    await writeFile('tsconfig.json', JSON.stringify(tsconfig, undefined, 2))
+    creating('tsconfig.json')
+  } else {
+    notCreating('tsconfig.json')
+  }
+
   copyDirectory('@kui-shell/builder/examples/plugin-sample/package.json', 'plugins/plugin-sample', force)
   copyDirectory('@kui-shell/builder/examples/build-configs/default/theme/theme.json', 'theme', force)
 
   creating('reconfiguring package.json')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const pjson = require(join(__dirname, '../../../package.json'))
+  const pjson = require(join(__dirname, '../../../../package.json'))
   pjson.main = 'node_modules/@kui-shell/core/main/main.js'
   if (!pjson.devDependencies) {
     pjson.devDependencies = {}
@@ -95,9 +107,26 @@ export const main = async (argv: string[]) => {
   pjson.devDependencies.mocha = '6.1.4'
   pjson.devDependencies['@types/mocha'] = '5.2.7'
   pjson.devDependencies['@types/node'] = '12.0.10'
-  pjson.devDependencies.electron = '5.0.6'
-  pjson.devDependencies.spectron = '7.0.0'
-  pjson.devDependencies.typescript = '3.5.2'
+  pjson.devDependencies.electron = '6.0.8'
+  pjson.devDependencies.spectron = '8.0.0'
+  pjson.devDependencies.typescript = '3.6.3'
+  if (!pjson.dependencies) {
+    pjson.dependencies = {}
+  }
+  pjson.dependencies['@kui-shell/plugin-sample'] = 'file:./plugins/plugin-sample'
+  if (!pjson.scripts) {
+    pjson.scripts = {}
+  }
+  pjson.scripts.init = 'if [ ! -e node_modules/@kui-shell/prescan.json ]; then kui-compile; fi'
+  pjson.scripts.compile = 'kui-compile'
+  pjson.scripts.watch = 'tsc --build . --watch'
+  pjson.scripts['watch:webpack'] = 'kui-watch-webpack'
+  pjson.scripts['pty:rebuild'] = 'cd node_modules/node-pty-prebuilt-multiarch && npm run install'
+  pjson.scripts['pty:electron'] =
+    'if [ ! -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then cp node_modules/@kui-shell/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild; fi'
+  pjson.scripts['pty:nodejs'] =
+    'if [ -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild; fi'
+  pjson.scripts.start = 'npm run -s init && npm run -s pty:electron && electron . shell'
   await writeFile('package.json', JSON.stringify(pjson, undefined, 2))
 
   creating('npm install', 'running')

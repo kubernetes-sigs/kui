@@ -15,12 +15,10 @@
  */
 
 import * as Debug from 'debug'
-
-import { isHeadless } from '@kui-shell/core/core/capabilities'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-debug('done loading prereqs')
+import { isHeadless } from '@kui-shell/core/core/capabilities'
 
 /**
  * Here, we prefetch the editor, which is especially important if
@@ -28,14 +26,14 @@ debug('done loading prereqs')
  *
  */
 export default async () => {
-  debug('initializing')
-
   if (!isHeadless()) {
     // NOTE how there is no await; this is because our goal is only to
     // prefetch it
     setTimeout(() => {
       import('./lib/open').then(_ => _.preload())
     }, 500)
+
+    return import('./lib/editor-provider').then(_ => _.default())
   }
 }
 

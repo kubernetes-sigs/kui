@@ -15,16 +15,14 @@
  */
 
 import * as Debug from 'debug'
-
 import { safeLoadAll } from 'js-yaml'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
 import { qexec, rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
 
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import { Task } from '../model/resource'
+
 const debug = Debug('plugins/tekton/lib/read')
 
 const knownKinds = /PipelineResource|Pipeline|Task/

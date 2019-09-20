@@ -46,7 +46,7 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
 BUILDDIR="$CLIENT_HOME"/dist/webpack
 
-APPDIR="$STAGING"/packages/app
+APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 
 echo "build-webpack CLIENT_HOME=$CLIENT_HOME"
@@ -80,13 +80,19 @@ function tarCopy {
     "$TAR" -C "$CLIENT_HOME" -cf - \
            --exclude "./npm-packs" \
            --exclude "./theme" \
+           --exclude "./dist" \
            --exclude "./kui" \
            --exclude "./kui-*-tmp" \
            --exclude '.git*' \
            --exclude '*flycheck_*.js' \
            --exclude '*.icns' \
            --exclude '*~' \
+           --exclude '*.d.ts' \
            --exclude package-lock.json \
+           --exclude "./node_modules/husky" \
+           --exclude "node_modules/@types" \
+	   --exclude "monaco-editor/dev" \
+	   --exclude "monaco-editor/min-maps" \
            --exclude '*/tests/*' \
            --exclude './packages/proxy/*.js' \
            --exclude "./build/*/node_modules/*" \
@@ -100,7 +106,10 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they should eventually be identical
 function configure {
-    UGLIFY=true npx --no-install kui-prescan
+    # so that electron's prune doesn't eliminate @kui-shell/settings
+    mkdir "$STAGING"/settings
+    echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/settings/package.json
+    npm install --save --no-package-lock --ignore-scripts ./settings
 
     # note that we will do this again in webpack.config.js; we need to
     # wait until we have the webpack build hash but, for now, we need
@@ -108,12 +117,15 @@ function configure {
     # --save) works
     CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js webpack
 
-    # we need to get @kui-shell/settings into the package
-    # dependencies, so that npm prune --production does not remove it;
-    # i.e. a self-managed symlink is not sufficient
-    npm install --save ./packages/app/build
+    # generate prescan.json
+    UGLIFY=true npx --no-install kui-prescan
 
+    mv node_modules/@kui-shell/prescan.json .            # /// prune will remove prescan.json
+
+    # remove any dev dependencies
     npm prune --production
+
+    mv prescan.json node_modules/@kui-shell/prescan.json # \\\ restore it after the prune
 }
 
 # check for prerequisites

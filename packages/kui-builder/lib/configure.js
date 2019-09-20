@@ -286,7 +286,8 @@ const loadOverrides = (programmaticOverrides = {}) => {
     process.env.KUI_STAGE &&
     (!programmaticOverrides || !programmaticOverrides.build || !programmaticOverrides.build.buildDir)
   ) {
-    overrides.build.buildDir = overrides.build.configDir = path.join(process.env.KUI_STAGE, 'packages/app/build')
+    overrides.build.buildDir = path.join(process.env.KUI_STAGE, 'node_modules/@kui-shell/build')
+    overrides.build.configDir = path.join(process.env.KUI_STAGE, 'node_modules/@kui-shell/settings')
   }
 
   debug('overrides', overrides)

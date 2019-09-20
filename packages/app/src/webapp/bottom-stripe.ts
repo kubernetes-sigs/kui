@@ -53,7 +53,6 @@ function isDirectViewEntity(direct: DirectViewController): direct is DirectViewE
 
 interface DirectViewControllerSpec {
   plugin: string
-  module: string
   operation: string
   parameters: object
 }
@@ -78,8 +77,25 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
     const combined = Object.assign({}, entity, makeView)
     return combined
   } else {
-    const provider = await import(`@kui-shell/plugin-${makeView.plugin}/${makeView.module}`)
-    return provider[makeView.operation](tab, makeView.parameters, entity)
+    //
+    // what we want: a dynamic import of the plugin's "main"
+    //
+    // what we can't have: webpack does not support this; this seems
+    // reasonable, as support this use case would require webpack to
+    // scan for matches while it is building
+    //
+    // what we do instead: rely users of this API to provide the full
+    // path to their main
+    //
+    // what we could also do in the future: enforce a policy on
+    // plugins as to path to their main, e.g. /dist/src/index.js
+    //
+    const provider = await import('@kui-shell/plugin-' + makeView.plugin)
+    try {
+      return provider[makeView.operation](tab, makeView.parameters, entity)
+    } catch (err) {
+      console.error('could not render mode', makeView.operation, err)
+    }
   }
 }
 

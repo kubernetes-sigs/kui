@@ -1,5 +1,5 @@
-# see https://github.com/IBM/kui/issues/209
-/package-lock.json
+# warning for future reference: see https://github.com/IBM/kui/issues/209
+# /package-lock.json
 
 # in case we have some leftover temporary build output
 /kui
@@ -46,3 +46,9 @@ keys
 .npmrc
 
 nohup.out
+
+# tsc composite build files
+tsconfig.tsbuildinfo
+
+# any temporary npm packs
+kui-shell-*.tgz

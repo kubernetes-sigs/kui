@@ -1,0 +1,56 @@
+{
+  "extends": "./packages/kui-builder/tsconfig-base.json",
+  "references": [
+    {
+      "path": "packages/app"
+    },
+    {
+      "path": "packages/kui-builder"
+    },
+    {
+      "path": "plugins/plugin-apache-composer"
+    },
+    {
+      "path": "plugins/plugin-bash-like"
+    },
+    {
+      "path": "plugins/plugin-core-support"
+    },
+    {
+      "path": "plugins/plugin-editor"
+    },
+    {
+      "path": "plugins/plugin-grid"
+    },
+    {
+      "path": "plugins/plugin-k8s"
+    },
+    {
+      "path": "plugins/plugin-manager"
+    },
+    {
+      "path": "plugins/plugin-openwhisk"
+    },
+    {
+      "path": "plugins/plugin-openwhisk-editor-extensions"
+    },
+    {
+      "path": "plugins/plugin-operator-framework"
+    },
+    {
+      "path": "plugins/plugin-proxy-support"
+    },
+    {
+      "path": "plugins/plugin-tekton"
+    },
+    {
+      "path": "plugins/plugin-tutorials"
+    },
+    {
+      "path": "plugins/plugin-wrk"
+    },
+    {
+      "path": "plugins/plugin-wskflow"
+    }
+  ]
+}

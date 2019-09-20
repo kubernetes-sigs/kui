@@ -15,8 +15,7 @@
  */
 
 import { qexec as $ } from '@kui-shell/core/core/repl'
-import { getPreference, setPreference } from '@kui-shell/core/core/userdata'
-import { CommandRegistrar, ParsedOptions } from '@kui-shell/core/models/command'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 // const getSources = `oc get opsrc -o json --all-namespaces ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
 
@@ -51,28 +50,9 @@ export default async (commandTree: CommandRegistrar) => {
     }
   })
 
-  // experiment: remember the last used --config, to avoid having to retype it
-  const configKey = '/kui/plugin-operator-framework/olm/config'
-  let rememberedConfig: string
-  async function remember(parsedOptions: ParsedOptions) {
-    if (parsedOptions.config) {
-      rememberedConfig = parsedOptions.config
-      setPreference(configKey, rememberedConfig)
-    } else {
-      if (!rememberedConfig) {
-        rememberedConfig = await getPreference(configKey)
-      }
-      if (rememberedConfig) {
-        parsedOptions.config = rememberedConfig
-      }
-    }
-  }
-
   commandTree.listen(
     '/olm/catalog',
     async ({ block, parsedOptions, execOptions }) => {
-      // await remember(parsedOptions)
-
       const namespace = parsedOptions.n || parsedOptions.namespace
       const getSources = `oc get OperatorSources ${
         namespace ? `-n ${namespace}` : '--all-namespaces'
@@ -91,8 +71,6 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     '/olm/installed',
     async ({ block, parsedOptions, execOptions }) => {
-      // await remember(parsedOptions)
-
       const namespace = parsedOptions.n || parsedOptions.namespace
       const getSources = `oc get ClusterServiceVersions -n ${namespace || 'default'} ${
         parsedOptions.config ? `--config ${parsedOptions.config}` : ''

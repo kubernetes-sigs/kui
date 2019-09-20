@@ -27,7 +27,7 @@ import UsageError from '@kui-shell/core/core/usage-error'
 import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
 
-import { currentSelection } from '@kui-shell/plugin-openwhisk/lib/models/openwhisk-entity'
+import { currentSelection } from '@kui-shell/plugin-openwhisk'
 
 import { isValidAst } from './ast'
 import { create } from './usage'

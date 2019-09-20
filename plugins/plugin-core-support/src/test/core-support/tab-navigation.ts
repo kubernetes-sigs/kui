@@ -18,7 +18,7 @@ import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
 const { cli, selectors, keys } = ui
 
-import { tabButtonSelector } from '@kui-shell/plugin-core-support/lib/new-tab'
+import { tabButtonSelector } from '../../lib/new-tab'
 
 describe('tab navigation', function(this: common.ISuite) {
   before(common.before(this))

@@ -21,6 +21,9 @@ debug('loading')
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 
+import { lockIcon, edit, registerFetcher } from '@kui-shell/plugin-editor'
+import { addActionMode } from '@kui-shell/plugin-openwhisk'
+
 debug('done loading prereqs')
 
 /**
@@ -31,7 +34,6 @@ export default async () => {
   debug('initializing')
 
   if (!isHeadless()) {
-    const { lockIcon, edit } = await import('@kui-shell/plugin-editor/lib/readonly')
     const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
 
     const { persisters } = await import('./lib/cmds/new')
@@ -43,9 +45,6 @@ export default async () => {
       return entity
     }
 
-    const { registerFetcher } = await import('@kui-shell/plugin-editor/lib/fetchers')
-
-    const { addActionMode } = await import('@kui-shell/plugin-openwhisk/lib/models/modes')
     const { gotoReadonlyView, fetchAction } = await import('./lib/cmds/new')
 
     registerFetcher(fetchAction())

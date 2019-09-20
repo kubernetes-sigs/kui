@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Tab } from '@kui-shell/core/webapp/cli'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import flowView from '../../view/flow'
 import { getPipelineFromRef, getTasks } from '../fetch'

@@ -18,10 +18,10 @@ import * as Debug from 'debug'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { registerListView } from '@kui-shell/core/webapp/cli'
-import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
 import { activations as usage } from '../openwhisk-usage'
-import { renderActivationListView } from '../../views/cli/activations/list'
+import { ActivationListTable, renderActivationListView } from '../../views/cli/activations/list'
+
 const debug = Debug('plugins/openwhisk/activations/list')
 
 interface Options {

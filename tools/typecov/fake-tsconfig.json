@@ -1,0 +1,5 @@
+{
+  "extends": "../../packages/kui-builder/tsconfig.json",
+  "include": ["../../packages/*/src", "../../plugins/*/src"],
+  "exclude": ["**/flycheck*.ts"]
+}

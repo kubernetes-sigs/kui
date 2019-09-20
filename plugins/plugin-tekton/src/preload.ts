@@ -22,9 +22,9 @@ import { dirname, join } from 'path'
 
 import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { addPath } from '@kui-shell/core/core/find-file'
-import { registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
+import { ModeRegistration, registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
 
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import { isPipeline, isPipelineRun, isTask } from './model/resource'
 
@@ -47,7 +47,7 @@ async function registerModes() {
   ])
 
   /** sidecar mode for tekton Flow view */
-  const flowSpec = {
+  const flowSpec: ModeRegistration<KubeResource> = {
     mode: flowMode.default,
     when: either(isPipeline, isPipelineRun, isTask)
   }

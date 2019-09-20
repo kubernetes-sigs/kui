@@ -18,7 +18,8 @@ import * as Debug from 'debug'
 
 import { rexec as $ } from '@kui-shell/core/core/repl'
 import { CommandLine } from '@kui-shell/core/models/command'
-import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
+
+import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
 const debug = Debug('plugins/bash-like/tab-completion/git')
 
@@ -52,5 +53,5 @@ async function completeGitBranches(commandLine: CommandLine, spec: TabCompletion
  *
  */
 export default () => {
-  registerEnumerator(completeGitBranches)
+  registerTabCompletionEnumerator(completeGitBranches)
 }

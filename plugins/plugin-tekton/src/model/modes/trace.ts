@@ -23,8 +23,8 @@ import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
-import { ActivationLikeFull as ActivationLike } from '@kui-shell/plugin-wskflow/lib/activation'
+import { KubeResource } from '@kui-shell/plugin-k8s'
+import { ActivationLikeFull as ActivationLike } from '@kui-shell/plugin-wskflow'
 
 import success from '../../lib/success'
 import { ResponseObject } from './flow'

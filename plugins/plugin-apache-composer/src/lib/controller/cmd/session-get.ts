@@ -16,9 +16,8 @@
 
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
+import { ActivationListTable, synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { sessionGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'

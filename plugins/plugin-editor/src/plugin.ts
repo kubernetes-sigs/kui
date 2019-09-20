@@ -17,7 +17,7 @@
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { toplevelUsage as usage } from './usage'
-import edit from './lib/cmds/edit'
+import editCmd from './lib/cmds/edit'
 
 /**
  * This is the module
@@ -28,5 +28,5 @@ export default (commandTree: CommandRegistrar) => {
   commandTree.subtree('/editor', { usage })
 
   // register editing commands
-  return edit(commandTree)
+  return editCmd(commandTree)
 }

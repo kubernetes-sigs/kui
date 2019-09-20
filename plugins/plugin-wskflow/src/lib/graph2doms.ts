@@ -16,17 +16,14 @@
 
 import * as Debug from 'debug'
 
-import * as d3 from 'd3'
-import * as $ from 'jquery'
-import * as ELK from 'elkjs/lib/elk.bundled.js'
-
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
-import { Node } from './graph'
+import { FlowNode } from './graph'
+
 const debug = Debug('plugins/wskflow/graph2doms')
 
 const defaultMaxLabelLength = 10
@@ -43,9 +40,9 @@ const wfColorAct = {
 
 const containerId = 'wskflowDiv'
 
-export default function graph2doms(
+export default async function graph2doms(
   tab: Tab,
-  JSONgraph: Node,
+  JSONgraph: FlowNode,
   ifReuseContainer?: Element,
   activations?: ActivationLike[],
   {
@@ -58,6 +55,8 @@ export default function graph2doms(
     }
   } = {}
 ) {
+  const [d3, $, ELK] = [require('d3'), require('jquery'), require('elkjs/lib/elk.bundled.js')]
+
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
 

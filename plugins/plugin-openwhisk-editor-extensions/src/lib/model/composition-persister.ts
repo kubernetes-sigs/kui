@@ -19,7 +19,8 @@ import * as Debug from 'debug'
 import { basename } from 'path'
 
 import { pexec } from '@kui-shell/core/core/repl'
-import { extension } from '@kui-shell/plugin-editor/lib/file-types'
+import { extension } from '@kui-shell/plugin-editor'
+
 const debug = Debug('plugins/openwhisk-editor-extensions/model/composition-persister')
 
 /**

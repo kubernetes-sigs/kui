@@ -27,6 +27,10 @@ import appGet from './lib/controller/cmd/app-get'
 import appList from './lib/controller/cmd/app-list'
 import appConfig from './lib/controller/cmd/app-config'
 import * as usage from './usage'
+
+import preview from './lib/controller/cmd/preview'
+import flowCommand from './lib/controller/cmd/flowCommand'
+
 const debug = Debug('plugin/apache-composer/init')
 
 export default async (commandTree: CommandRegistrar) => {
@@ -39,6 +43,9 @@ export default async (commandTree: CommandRegistrar) => {
 
   const session = commandTree.subtree('/wsk/session', { usage: usage.session })
   commandTree.subtreeSynonym('/composer/session', session)
+
+  await flowCommand(commandTree)
+  await preview(commandTree)
 
   // CRUD commands
   await sessionList(commandTree)

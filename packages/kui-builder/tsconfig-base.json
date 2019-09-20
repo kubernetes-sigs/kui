@@ -1,0 +1,14 @@
+{
+  "include": [],
+  "exclude": ["**/flycheck*.ts"],
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2016",
+    "sourceMap": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "lib": ["dom", "esnext", "es6", "dom.iterable", "scripthost"]
+  }
+}

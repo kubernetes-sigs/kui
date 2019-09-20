@@ -30,7 +30,7 @@ import preloader from './preloader'
 
 debug('modules loaded')
 
-export const pluginRoot = '../../../../plugins'
+export const pluginRoot = '../../../plugins'
 
 const commandToPlugin = {} // map from command to plugin that defines it
 const isSubtreeSynonym = {}
@@ -68,6 +68,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     const preloads = {}
 
     const doScan = ({ modules, moduleDir }: { modules: string[]; moduleDir: string }) => {
+      debug('doScan', modules)
       modules.forEach(module => {
         const modulePath = path.join(moduleDir, module)
 
@@ -93,7 +94,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
             }
             destMap[module] = pluginPath
           } else {
-            const backupPluginPath = path.join(modulePath, 'src', filename)
+            const backupPluginPath = path.join(modulePath, 'dist/src', filename)
             debug('lookFor2', filename, backupPluginPath)
 
             if (fs.existsSync(backupPluginPath)) {
@@ -153,7 +154,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
 
     // scan the app/plugins/modules directory
     const moduleDir = dir // path.join(dir, 'modules')
-    debug('moduleDir', moduleDir)
+    debug('moduleDir', moduleDir, fs.readdirSync(moduleDir))
     doScan({ modules: fs.readdirSync(moduleDir).filter(filter), moduleDir })
 
     // scan any modules in package.json
@@ -327,6 +328,7 @@ const topologicalSortForScan = async (
       // gives us the topological sort without having to bother
       // computing the topological sort!
       //
+      console.error('retry on', err)
       lastError = err
       nUnresolved++
       unresolved.push(route)
@@ -388,7 +390,7 @@ const resolveFromLocalFilesystem = async (opts: LocalOptions = {}) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const loadPrescan = async (userDataDir: string): Promise<PrescanModel> => {
   try {
-    prescanned = (await import('@kui-shell/prescan')) as PrescanModel
+    prescanned = (await import('@kui-shell/prescan.json')) as PrescanModel
     return prescanned
   } catch (err) {
     debug('prescanned does not exist or is not valid JSON', err)
@@ -408,7 +410,7 @@ const prequire = async (route: string, options?: object) => {
         if (module) {
           try {
             // NOTE ON @kui-shell relativization: this is important so that
-            // webpack can be isntructed to pull in the plugins into the build
+            // webpack can be instructed to pull in the plugins into the build
             // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
             const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
             const registration: PluginRegistration = registrationRef.default || registrationRef

@@ -1,2 +1,8 @@
 build
 dist
+/core/
+/main/
+/models/
+/test/
+/util/
+/webapp/

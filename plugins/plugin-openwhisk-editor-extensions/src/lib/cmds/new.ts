@@ -19,15 +19,19 @@ import * as Debug from 'debug'
 import * as repl from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { openEditor } from '@kui-shell/plugin-editor/lib/open'
-import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
-import { language } from '@kui-shell/plugin-editor/lib/file-types'
-import { Entity, fetchFile } from '@kui-shell/plugin-editor/lib/fetchers'
-import { lockIcon } from '@kui-shell/plugin-editor/lib/readonly'
+import {
+  EditorEntity as Entity,
+  fetchFile,
+  language,
+  lockIcon,
+  openEditor,
+  respondToRepl
+} from '@kui-shell/plugin-editor'
 
 import strings from '../i18n/strings'
 import * as placeholders from '../placeholders'
 import { persister as compositionPersister } from '../model/composition-persister'
+
 const debug = Debug('plugins/openwhisk-editor-extensions/cmds/new')
 
 /**

@@ -16,6 +16,11 @@
 # limitations under the License.
 #
 
+# errors otherwise: nvm is not compatible with the "npm_config_prefix" environment var
+npm config delete prefix
+rm -f ~/.bashrc ~/.bash_profile
+rm -f .nvmrc
+
 set -e
 set -o pipefail
 
@@ -106,8 +111,10 @@ if [ -n "$LAYERS" ]; then
                     export MOCHA_RUN_TARGET
                     export PORT_OFFSET_BASE
 
+                    ls node_modules/.bin/mocha
+
                     echo "running these non-headless layers with $MOCHA_RUN_TARGET and wait: $WAIT_LAYERS"
-                    (cd packages/tests && ./bin/runMochaLayers.sh $WAIT_LAYERS)
+                    MONOREPO_MODE=true npm run test $WAIT_LAYERS
                 fi
             done
             echo "done with wait layers"
@@ -153,7 +160,7 @@ if [ -n "$LAYERS" ]; then
             export PORT_OFFSET_BASE
 
             echo "running these non-headless layers with $MOCHA_RUN_TARGET: $NON_HEADLESS_LAYERS"
-            (cd packages/tests && ./bin/runMochaLayers.sh $NON_HEADLESS_LAYERS) &
+            (MONOREPO_MODE=true npm run test $NON_HEADLESS_LAYERS) &
             children+=("$!")
             childrenNames+=("mocha layers")
             childrenStartTimes+=("$(date +%s)")

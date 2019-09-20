@@ -189,7 +189,7 @@ const list = async () => {
  *
  */
 const getCssFilepathForGivenTheme = (addon: string): string => {
-  const prefix = inBrowser() ? '' : dirname(require.resolve('@kui-shell/settings/package.json'))
+  const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
   return join(prefix, env.cssHome, addon)
 }
 

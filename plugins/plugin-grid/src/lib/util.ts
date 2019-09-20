@@ -30,13 +30,14 @@ import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { ActivationListTable } from '@kui-shell/plugin-openwhisk/lib/views/cli/activations/list'
 import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import * as namespace from '@kui-shell/plugin-openwhisk/lib/models/namespace'
+import { ActivationListTable, currentNamespace } from '@kui-shell/plugin-openwhisk'
+
 import { range as rangeParser } from './time'
 import * as usage from '../usage'
 import defaults from '../defaults'
+
 const debug = Debug('plugins/grid/utils')
 debug('loading')
 
@@ -78,7 +79,7 @@ const makeFilter = (includePattern, excludePattern) => {
  *
  */
 const amendWithNamespace = async name => {
-  const ns = await namespace.current()
+  const ns = await currentNamespace()
   if (name.indexOf(ns) >= 0) {
     if (name.charAt(0) === '/') return name.substring(1)
     else return name
@@ -104,9 +105,9 @@ const filterOutNonActionActivations = filter => activations => {
  *
  */
 const extractTasks = async app => {
-  const composer = await import('@kui-shell/plugin-apache-composer/lib/utility/ast')
+  const { extractActionsFromAst } = await import('@kui-shell/plugin-apache-composer')
   const { namespace, name, ast } = app
-  return [`/${namespace}/${name}`].concat(!ast ? [] : composer.extractActionsFromAst(ast))
+  return [`/${namespace}/${name}`].concat(!ast ? [] : extractActionsFromAst(ast))
 }
 
 /**
