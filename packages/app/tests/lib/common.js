@@ -101,7 +101,7 @@ exports.restart = async ctx => {
 const prepareElectron = (fuzz, popup = false) => {
   const Application = require('spectron').Application
   const electron = require('electron') // relative to __dirname
-  const appMain = process.env.APP_MAIN || '../../build/packages/app/src/main/main.js' // relative to the tests/ directory
+  const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/main/main.js' // relative to the tests/ directory
 
   const env = {}
   if (fuzz) {

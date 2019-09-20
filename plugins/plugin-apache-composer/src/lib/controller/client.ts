@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import * as Client from 'openwhisk-composer/client'
 
-import { agent } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-core'
+import { agent } from '@kui-shell/plugin-openwhisk'
 
 const debug = Debug('plugins/apache-composer/client')
 const options = {

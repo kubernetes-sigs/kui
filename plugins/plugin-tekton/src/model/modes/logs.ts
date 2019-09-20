@@ -24,7 +24,7 @@ import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 import { ResponseObject } from './flow'
 import { PipelineRun, TaskRun } from '../resource'
 
-import { Pod } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { Pod } from '@kui-shell/plugin-k8s'
 
 /**
  * The sidecar mode for the tekton logs of a PipelineRun

@@ -39,11 +39,11 @@ type NodeType =
   | 'function'
   | 'action'
 
-export interface Node {
+export interface ASTNode {
   type: NodeType
 }
 
-export interface ValueBearing extends Node {
+export interface ValueBearing extends ASTNode {
   value: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
@@ -51,37 +51,37 @@ export interface Literal extends ValueBearing {
   type: 'literal' | 'value'
 }
 
-export function isLiteral(ast: Node): ast is Literal {
+export function isLiteral(ast: ASTNode): ast is Literal {
   return ast.type === 'literal' || ast.type === 'value'
 }
 
-export interface ComponentBearing extends Node {
-  components: Node
+export interface ComponentBearing extends ASTNode {
+  components: ASTNode
 }
 
-export interface Conditional extends Node {
-  test: Node
-  consequent: Node
-  alternate: Node
+export interface Conditional extends ASTNode {
+  test: ASTNode
+  consequent: ASTNode
+  alternate: ASTNode
 }
 
-export function isConditional(ast: Node): ast is Conditional {
+export function isConditional(ast: ASTNode): ast is Conditional {
   return ast.type === 'if'
 }
 
-export interface BodyBearing extends Node {
-  body: Node
+export interface BodyBearing extends ASTNode {
+  body: ASTNode
 }
 
 export interface TestBearing extends BodyBearing {
-  test: Node
+  test: ASTNode
 }
 
 export interface While extends TestBearing {
   type: 'while' | 'while_nosave'
 }
 
-export function isWhile(ast: Node): ast is While {
+export function isWhile(ast: ASTNode): ast is While {
   return ast.type === 'while' || ast.type === 'while_nosave'
 }
 
@@ -89,30 +89,30 @@ export interface DoWhile extends TestBearing {
   type: 'dowhile' | 'dowhile_nosave'
 }
 
-export function isDoWhile(ast: Node): ast is DoWhile {
+export function isDoWhile(ast: ASTNode): ast is DoWhile {
   return ast.type === 'dowhile' || ast.type === 'dowhile_nosave'
 }
 
 export interface Try extends BodyBearing {
   type: 'try'
-  handler: Node
+  handler: ASTNode
 }
 
-export function isTry(ast: Node): ast is Try {
+export function isTry(ast: ASTNode): ast is Try {
   return ast.type === 'try'
 }
 
-export interface Action extends Node {
+export interface Action extends ASTNode {
   type: 'action'
   name: string
   displayLabel?: string
 }
 
-export function isAction(ast: Node): ast is Action {
+export function isAction(ast: ASTNode): ast is Action {
   return ast.type === 'action'
 }
 
-export interface Function extends Node {
+export interface Function extends ASTNode {
   function: {
     exec: {
       code: string
@@ -121,16 +121,16 @@ export interface Function extends Node {
   }
 }
 
-export function isFunction(ast: Node): ast is Function {
+export function isFunction(ast: ASTNode): ast is Function {
   return ast.type === 'function'
 }
 
 export interface Finally extends BodyBearing {
   type: 'finally'
-  finalizer: Node
+  finalizer: ASTNode
 }
 
-export function isFinally(ast: Node): ast is Finally {
+export function isFinally(ast: ASTNode): ast is Finally {
   return ast.type === 'finally'
 }
 
@@ -139,7 +139,7 @@ export interface On extends ComponentBearing {
   trigger: string
 }
 
-export function isOn(ast: Node): ast is On {
+export function isOn(ast: ASTNode): ast is On {
   return ast.type === 'on'
 }
 
@@ -148,7 +148,7 @@ export interface RetryOrRepeat extends ComponentBearing {
   count: string
 }
 
-export function isRetryOrRepeat(ast: Node): ast is RetryOrRepeat {
+export function isRetryOrRepeat(ast: ASTNode): ast is RetryOrRepeat {
   return ast.type === 'retry' || ast.type === 'repeat'
 }
 
@@ -157,42 +157,42 @@ export interface Let extends ComponentBearing {
   declarations: string
 }
 
-export function isLet(ast: Node): ast is Let {
+export function isLet(ast: ASTNode): ast is Let {
   return ast.type === 'let'
 }
 
-export function isSequence(ast: Node): ast is ComponentBearing {
+export function isSequence(ast: ASTNode): ast is ComponentBearing {
   return ast.type === 'sequence' || ast.type === 'seq'
 }
 
-export function isRetain(ast: Node): ast is ComponentBearing {
+export function isRetain(ast: ASTNode): ast is ComponentBearing {
   return ast.type === 'retain'
 }
 
-export function isComponentBearing(ast: Node): ast is ComponentBearing {
+export function isComponentBearing(ast: ASTNode): ast is ComponentBearing {
   const cb = ast as ComponentBearing
   return typeof cb.components === 'object'
 }
 
-export interface ComponentArrayBearing extends Node {
-  components: Node[]
+export interface ComponentArrayBearing extends ASTNode {
+  components: ASTNode[]
 }
 
 export interface ParallelLike extends ComponentArrayBearing {
   type: 'parallel' | 'par' | 'map' | 'forall'
-  set?: Node
+  set?: ASTNode
 }
 
-export function isParallelLike(ast: Node): ast is ParallelLike {
+export function isParallelLike(ast: ASTNode): ast is ParallelLike {
   return ast.type === 'parallel' || ast.type === 'par' || ast.type === 'map' || ast.type === 'forall'
 }
 
-export interface MapLike extends Node {
+export interface MapLike extends ASTNode {
   type: 'map' | 'forall'
-  components?: Node
-  body?: Node
+  components?: ASTNode
+  body?: ASTNode
 }
 
-export function isMapLike(ast: Node): ast is MapLike {
+export function isMapLike(ast: ASTNode): ast is MapLike {
   return ast.type === 'map' || ast.type === 'forall'
 }

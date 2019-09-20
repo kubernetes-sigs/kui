@@ -612,7 +612,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
 
         // attempt to separate out the app and generated parts of the resource name
-        const { app, name, nameHash } = extractAppAndName(yaml)
+        const { name, nameHash } = extractAppAndName(yaml)
 
         // sidecar badges
         const badges: Badge[] = []

@@ -18,10 +18,11 @@ import * as Debug from 'debug'
 
 import { Tab } from '@kui-shell/core/webapp/cli'
 import { Table } from '@kui-shell/core/webapp/models/table'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import { Resource, KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
 
 const debug = Debug('plugin/operator-framework/view/modes/crds')
 
@@ -70,15 +71,14 @@ function isCRDBearer(resource: KubeResource): resource is CRDBearer {
  */
 export const crdsMode: ModeRegistration<KubeResource> = {
   when: isCRDBearer,
-  mode: (command: string, resource: Resource) => {
+  mode: (command: string, resource: Resource): SidecarMode => {
     try {
       return {
         mode: 'CRDs',
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'operator-framework',
-          module: 'view/modes/crds',
-          operation: 'renderAndView',
+          plugin: 'operator-framework/dist/src/index',
+          operation: 'renderAndViewCrds',
           parameters: { command, resource }
         }
       }

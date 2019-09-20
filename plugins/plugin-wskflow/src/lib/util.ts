@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
+import { qexec } from '@kui-shell/core/core/repl'
 import { Tab } from '@kui-shell/core/webapp/cli'
-import { optionsToString } from '@kui-shell/core/core/utility'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
-import * as astUtil from '@kui-shell/plugin-apache-composer/lib/utility/ast'
-import * as badges from '@kui-shell/plugin-apache-composer/lib/utility/badges'
 const debug = Debug('plugins/wskflow/util')
 
 const strings = {
@@ -50,64 +48,6 @@ export const textualPropertiesOfCode = (code: string): TextualProperties => {
 }
 
 /**
- * Entity view mode if we have javascript source
- *
- */
-export const codeViewMode = (source: string, contentType = 'javascript') => ({
-  mode: 'source',
-  label: 'code',
-  leaveBottomStripeAlone: true,
-  direct: {
-    type: 'custom',
-    isEntity: true,
-    contentType,
-    contentTypeProjection: 'source',
-    content: {
-      source
-    }
-  }
-  /*  direct: entity => {
-    entity.type = 'actions'
-    return sidecar.showEntity(entity, { show: 'source' })
-  } */
-})
-
-/**
- * Entity view modes
- *
- */
-export const vizAndfsmViewModes = (
-  visualize,
-  commandPrefix: string,
-  defaultMode = 'visualization',
-  input: string,
-  ast: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-  options
-) => {
-  const modes = [
-    {
-      mode: 'visualization',
-      defaultMode: defaultMode === 'visualization',
-      direct: `${commandPrefix} "${input}" ${optionsToString(options)}`
-    },
-    {
-      mode: 'ast',
-      label: 'JSON',
-      defaultMode: defaultMode === 'ast',
-      leaveBottomStripeAlone: true,
-      direct: {
-        type: 'custom',
-        isEntity: true,
-        contentType: 'json',
-        content: ast
-      }
-    }
-  ]
-
-  return modes
-}
-
-/**
  * Render the wskflow visualization for the given fsm.
  *
  * `container` is optional; wskflow will render in the default way in
@@ -118,8 +58,7 @@ export const vizAndfsmViewModes = (
 export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
-  const isPartOfRule = await repl
-    .qexec('wsk rule list')
+  const isPartOfRule = await qexec('wsk rule list')
     .then(rules =>
       rules.find(({ action: ruleAction }) => {
         return ruleAction.name === name && ruleAction.path === namespace
@@ -182,56 +121,5 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
   } else {
     // probably some error initializing wskflow; try to safeguard against that
     return []
-  }
-}
-
-/**
- * Amend the result of an `action get`, to make the entity appear more
- * like an app
- *
- */
-export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
-  debug('decorateAsApp', options)
-  action.prettyType = badges.app
-
-  if (astUtil.hasAst(action)) {
-    action.ast = astUtil.astAnnotation(action).value
-  }
-
-  if (action.exec) {
-    action.exec.prettyKind = 'composition'
-  }
-
-  if (doVisualize) {
-    // pass through cli options for the wskflow renderer
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const viewOptions: { [propName: string]: any } = {}
-    if (options.functions) {
-      // note we must be careful not to pass false; only undefined
-      viewOptions.renderFunctionsInView = options.functions // render all inline functions directly in the view?
-    }
-    if (options.noHeader) {
-      viewOptions.noHeader = true
-    }
-
-    const visualize = require('./visualize').default
-    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
-
-    const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
-    if (sourceAnnotation) {
-      action.source = sourceAnnotation.value
-    }
-
-    action.modes = (action.modes || [])
-      .filter(_ => _.mode !== 'code')
-      .concat(
-        vizAndfsmViewModes(visualize, commandPrefix, undefined, input, action.ast, options.originalOptions || options)
-      )
-      .concat(sourceAnnotation ? [codeViewMode(action.source)] : [])
-      .concat(zoomToFitButtons(controller))
-    debug('action', action)
-    return view || action
-  } else {
-    return action
   }
 }

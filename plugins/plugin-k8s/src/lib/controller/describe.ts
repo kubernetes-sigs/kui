@@ -73,7 +73,7 @@ const renderDescribe = async (
   modes.push(deleteResourceButton())
 
   // attempt to separate out the app and generated parts of the resource name
-  const { app, name, nameHash } = extractAppAndName(resource)
+  const { name, nameHash } = extractAppAndName(resource)
 
   // some resources have a notion of version
   const version = metadata && metadata.labels && metadata.labels.version

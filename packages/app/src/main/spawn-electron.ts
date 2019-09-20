@@ -194,16 +194,16 @@ export function createWindow(
       // BrowserWindow opts doesn't stick; and... this has to be on
       // did-finish-load, for some reason... at least these are true
       // statements for electron 1.6.x
-      const isDarkMode = Electron.systemPreferences.isDarkMode()
+      /* const isDarkMode = Electron.systemPreferences.isDarkMode()
 
       if (mainWindow) {
         try {
-          const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support/lib/cmds/theme')
+          const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support')
           await switchToPersistedThemeChoice(mainWindow.webContents, isDarkMode)
         } catch (err) {
           console.error('error initializing themes')
         }
-      }
+      } */
     })
 
     /** jump in and manage the way popups create new windows */
@@ -248,7 +248,7 @@ export function createWindow(
 
     // and load the index.html of the app.
     const urlSpec = {
-      pathname: join(root, 'index.html'),
+      pathname: join(root, '../build/index.html'),
       protocol: 'file:',
       search: commandContext ? `?${commandContext}` : '',
       slashes: true
@@ -499,23 +499,17 @@ export async function initElectron(
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { _location, name } = require('../../package.json')
-
-      if (!_location || name !== 'kui-shell') {
-        // then this is probably an unrelated package.json file
-        // _location will only be present for npm install'd assets
-        // and the name is there to match our top-level package.json
-        await maybeSpawnGraphics()
-      } else {
-        console.log('Graphical components are not installed.')
-        process.exit(126)
-      }
+      // then this is probably an unrelated package.json file
+      // _location will only be present for npm install'd assets
+      // and the name is there to match our top-level package.json
+      await maybeSpawnGraphics()
     } catch (err) {
       // we couldn't find ../package.json; we're probably using a
       // headless.zip installation
       debug(err)
 
-      await maybeSpawnGraphics()
+      console.log('Graphical components are not installed.')
+      process.exit(126)
     }
   }
 

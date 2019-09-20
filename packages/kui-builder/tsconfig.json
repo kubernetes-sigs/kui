@@ -1,40 +1,9 @@
 {
+  "extends": "../../packages/kui-builder/tsconfig-base.json",
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "ES2016",
-    "outDir": "../../build",
-    "sourceMap": true,
-    "declaration": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "baseUrl": "../..",
-    "lib": ["dom", "esnext", "es6", "dom.iterable", "scripthost"],
-    "paths": {
-      "@kui-shell/core/tests/*": ["packages/app/tests/*"],
-      "@kui-shell/settings/*": ["packages/app/build/*"],
-      "@kui-shell/prescan": ["build/.pre-scanned.json"],
-      "@kui-shell/plugin-apache-composer/tests/*": ["plugins/plugin-apache-composer/tests/*"],
-      "@kui-shell/plugin-apache-composer/*": ["plugins/plugin-apache-composer/src/*"],
-      "@kui-shell/plugin-bash-like/*": ["plugins/plugin-base-like/src/*"],
-      "@kui-shell/plugin-core-support/tests/*": ["plugins/plugin-core-support/tests/*"],
-      "@kui-shell/plugin-core-support/i18n/*": ["plugins/plugin-core-support/i18n/*"],
-      "@kui-shell/plugin-core-support/*": ["plugins/plugin-core-support/src/*"],
-      "@kui-shell/plugin-editor/*": ["plugins/plugin-editor/src/*"],
-      "@kui-shell/plugin-grid/*": ["plugins/plugin-grid/src/*"],
-      "@kui-shell/plugin-k8s/tests/*": ["plugins/plugin-k8s/tests/*"],
-      "@kui-shell/plugin-k8s/*": ["plugins/plugin-k8s/src/*"],
-      "@kui-shell/plugin-manager/*": ["plugins/plugin-manager/src/*"],
-      "@kui-shell/plugin-openwhisk/tests/*": ["plugins/plugin-openwhisk/tests/*"],
-      "@kui-shell/plugin-openwhisk/*": ["plugins/plugin-openwhisk/src/*"],
-      "@kui-shell/plugin-proxy-support/*": ["plugins/plugin-proxy-support/src/*"],
-      "@kui-shell/plugin-tutorials/*": ["plugins/plugin-tutorials/src/*"],
-      "@kui-shell/plugin-wskflow/*": ["plugins/plugin-wskflow/src/*"],
-      "@kui-shell/core/*": ["packages/app/src/*"],
-      "@kui-shell/proxy/*": ["packages/proxy/src/*"],
-      "@kui-shell/*": ["packages/*"]
-    }
-  },
-  "include": ["../../packages/*/src", "../../plugins/*/src"],
-  "exclude": ["**/flycheck*.ts"]
+    "composite": true,
+    "outDir": "build",
+    "rootDir": "src"
+  }
 }

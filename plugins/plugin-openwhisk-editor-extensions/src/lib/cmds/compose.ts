@@ -21,13 +21,12 @@ import { findFile } from '@kui-shell/core/core/find-file'
 import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
-import { extension, language } from '@kui-shell/plugin-editor/lib/file-types'
-import { respondToRepl } from '@kui-shell/plugin-editor/lib/util'
-import { openEditor } from '@kui-shell/plugin-editor/lib/open'
-import { loadComposition } from '@kui-shell/plugin-apache-composer/lib/utility/compile'
+import { loadComposition } from '@kui-shell/plugin-apache-composer'
+import { extension, language, openEditor, respondToRepl } from '@kui-shell/plugin-editor'
 
 import { handleParseError, persister } from '../model/composition-persister'
+import { addVariantSuffix, betterNotExist, defaults, optional, prepareEditorWithAction } from './new'
+
 const debug = Debug('plugins/openwhisk-editor-extensions/cmds/compose')
 
 export const composeUsage = {
@@ -126,7 +125,7 @@ const addWskflow = (tab: Tab) => opts => {
       debug('wskflow updateView', action, ast)
 
       if (ast) {
-        const visualize = (await import('@kui-shell/plugin-wskflow/lib/visualize')).default
+        const { visualize } = await import('@kui-shell/plugin-wskflow')
 
         wskflowContainer.classList.add('visible')
         editorDom.classList.add('half-height')

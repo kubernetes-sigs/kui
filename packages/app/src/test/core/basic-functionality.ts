@@ -32,7 +32,7 @@ import {
   localDescribe
 } from '@kui-shell/core/tests/lib/common'
 
-const APP_TITLE = process.env.APP_TITLE || 'Kui Shell'
+const APP_TITLE = process.env.APP_TITLE || 'Kui'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
 
 const selectors = {

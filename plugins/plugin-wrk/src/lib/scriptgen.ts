@@ -121,12 +121,12 @@ export const generateScriptForURL = ({ method = 'GET' }) => () =>
  *
  */
 export const script = async ({ argvNoOptions: argv, parsedOptions: options }: EvaluatorArgs) => {
-  const namespace = await import('@kui-shell/plugin-openwhisk/lib/models/namespace')
+  const { currentNamespace } = await import('@kui-shell/plugin-openwhisk')
 
   const rootDir = path.join(__dirname, '..')
   const nameFull = argv[argv.indexOf('script') + 1]
   const nameSplit = nameFull.split(/\//)
-  const ns = nameSplit.length > 2 ? nameSplit[1] : namespace.current()
+  const ns = nameSplit.length > 2 ? nameSplit[1] : currentNamespace()
   const name = nameSplit[nameSplit.length - 1]
   const action = { namespace: ns, name }
 

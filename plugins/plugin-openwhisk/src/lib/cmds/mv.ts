@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,11 @@
  *
  */
 
+import { qexec } from '@kui-shell/core/core/repl'
 import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
-import { synonyms } from '@kui-shell/plugin-openwhisk/lib/models/synonyms'
-
+import { synonyms } from '../models/synonyms'
 import { CMD as copy } from './copy'
-import * as repl from '@kui-shell/core/core/repl'
 
 /** name for the command */
 export const CMD = 'rename'
@@ -57,9 +56,9 @@ const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: Evaluator
   const oldName = argv[idx]
   const newName = argv[idx + 1]
 
-  return repl
-    .qfexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`)
-    .then(resp => repl.qexec(`wsk ${type} delete "${oldName}"`).then(() => resp))
+  return qexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`).then(resp =>
+    qexec(`wsk ${type} delete "${oldName}"`).then(() => resp)
+  )
 }
 
 /**

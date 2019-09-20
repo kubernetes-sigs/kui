@@ -24,12 +24,13 @@ import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
-import { KubeResource } from '@kui-shell/plugin-k8s/lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import runMode from '../model/modes/run'
 import flowMode from '../model/modes/flow'
 import { PipelineRun } from '../model/resource'
 import tekton2graph from '../lib/tekton2graph'
+
 const debug = Debug('plugins/tekton/view/flow')
 
 /**
@@ -43,21 +44,21 @@ export default async (
   raw: string = safeDump(jsons),
   filepath?: string
 ) => {
-  const [graph, graph2doms, injectCSS] = await Promise.all([
-    tekton2graph(jsons, filepath, run), // generate the graph model
-    import('@kui-shell/plugin-wskflow/lib/graph2doms'), // overlap that work with importing the graph renderer
-    import('@kui-shell/plugin-wskflow/lib/inject') // and also with injecting the graph css
+  const [graph] = await Promise.all([
+    tekton2graph(jsons, filepath, run) // generate the graph model
   ])
   debug('graph', graph)
 
-  injectCSS.default()
+  const { graph2doms, injectCSS, zoomToFitButtons } = await import('@kui-shell/plugin-wskflow')
+
+  injectCSS()
 
   const content = document.createElement('div')
   content.classList.add('padding-content')
   content.style.flex = '1'
   content.style.display = 'flex'
 
-  const { controller } = await graph2doms.default(tab, graph, content, graph.runs, {
+  const { controller } = await graph2doms(tab, graph, content, graph.runs, {
     layoutOptions: {
       'elk.separateConnectedComponents': false,
       'elk.spacing.nodeNode': 10,
@@ -100,8 +101,6 @@ export default async (
   const startTime = run && run.status && run.status.startTime && new Date(run.status.startTime)
   const endTime = run && run.status && run.status.completionTime && new Date(run.status.completionTime)
   const duration = startTime && endTime && endTime.getTime() - startTime.getTime()
-
-  const { zoomToFitButtons } = await import('@kui-shell/plugin-wskflow/lib/util')
 
   return {
     type: 'custom',

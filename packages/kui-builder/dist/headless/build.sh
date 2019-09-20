@@ -27,7 +27,7 @@ echo "staging directory $STAGING"
 PRESCAN_OVERRIDE="$2"
 
 CLIENT_HOME="$(pwd)"
-APPDIR="$STAGING"/kui/packages/app
+APPDIR="$STAGING"/kui/node_modules/@kui-shell
 BUILDER_HOME="$STAGING"/kui/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME/dist/headless"
 
@@ -118,6 +118,7 @@ function tarCopy {
                 --exclude "**/*.ico" \
                 --exclude "./theme" \
                 --exclude "**/tests/node_modules/*" \
+                --exclude "node_modules/@types" \
                 --exclude "node_modules/*.bak/*" \
                 --exclude "node_modules/**/*.md" \
                 --exclude "node_modules/**/*.DOCS" \
@@ -156,14 +157,27 @@ function tarCopy {
 }
 
 function configure {
+    # so that npm prune --production doesn't eliminate @kui-shell/settings
+    mkdir "$STAGING"/kui/settings
+    echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/kui/settings/package.json
+    (cd "$STAGING"/kui && npm install --save --no-package-lock --ignore-scripts ./settings)
+    echo '{}' > "$STAGING"/kui/settings/config.json
+
     UGLIFY=true npx --no-install kui-prescan
     CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING"/kui node "$BUILDER_HOME"/lib/configure.js
     echo "nothing to do"
 }
 
+function pty {
+    if [ -d node_modules/node-pty-prebuilt-multiarch ]; then
+        (cd node_modules/node-pty-prebuilt-multiarch && npm install --ignore-scripts && npx prebuild-install)
+    fi
+}
+
 function build {
     tarCopy
     configure
+    pty
 
     # override prescan
     if [ -n "$PRESCAN_OVERRIDE" ]; then
@@ -172,7 +186,7 @@ function build {
     fi
 
     # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/build/config.json | jq --raw-output .theme.productName`}"
+    export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/settings/config.json | jq --raw-output .theme.productName`}"
     if [ -z "$PRODUCT_NAME" ] || [ "$PRODUCT_NAME" == "null" ]; then
         # choose some default product name
         PRODUCT_NAME="Kui"
@@ -195,7 +209,7 @@ function build {
     pushd "$STAGING" > /dev/null
 
     # hack in an `npm run test`
-    PJSON=$(node -e 'const pjson = require("./kui/package.json"); pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); cd node_modules/@kui-shell/test && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true TEST_ROOT=\"$SCRIPTDIR\"/node_modules/@kui-shell/test KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx mocha -c --exit --bail --recursive -t 60000 ../*/test --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
+    PJSON=$(node -e 'const pjson = require("./kui/package.json"); pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); npm install --no-save --no-package-lock --ignore-scripts mocha && cd node_modules/@kui-shell/test && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true MOCHA_RUN_TARGET=headless TEST_ROOT=\"$SCRIPTDIR\"/node_modules/@kui-shell/test KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx --no-install mocha -c --exit --bail --recursive -t 60000 ../*/dist/src/test --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
     echo "$PJSON" > ./kui/package.json
 
     #(cd kui && cp package.json bak.json)
@@ -207,11 +221,14 @@ function build {
     cp "$BUILDER_HOME"/dist/bin/kui.cmd kui/bin/kui.cmd
     cp kui/node_modules/@kui-shell/core/bin/* kui/bin
 
+    # save prescan, as prune --production will wipe it out
+    cp kui/node_modules/@kui-shell/prescan.json kui/prescan.json
+
     (cd kui && npm prune --production)
     (cd kui && trimDeps)
 
-    # must be *after* prune, as prune removes this link
-    (cd kui/node_modules/@kui-shell && ln -s ../../packages/app/build settings)
+    # restore prescan
+    mv kui/prescan.json kui/node_modules/@kui-shell/prescan.json
 
     # for now, we do this to get the `npm run test` test bits in place
     "$TAR" -jhcf "$BUILDDIR/$DEST_TGZ" kui

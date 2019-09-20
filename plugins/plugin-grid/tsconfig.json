@@ -1,0 +1,20 @@
+{
+  "extends": "../../packages/kui-builder/tsconfig-base.json",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@kui-shell/plugin-grid/web/*": ["web/*"]
+    }
+  },
+  "references": [
+    {
+      "path": "../plugin-apache-composer"
+    },
+    {
+      "path": "../plugin-openwhisk"
+    }
+  ]
+}

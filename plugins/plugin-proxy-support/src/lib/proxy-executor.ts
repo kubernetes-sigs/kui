@@ -66,7 +66,7 @@ type ProxyServerConfig = DisabledProxyServerConfig | ActualProxyServerConfig
  * TODO: allow for non-default configs
  *
  */
-import defaultProxyServerConfig = require('@kui-shell/proxy/lib/defaultProxyServerConfig.json')
+import defaultProxyServerConfig from './defaultProxyServerConfig'
 const proxyServerConfig: ProxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 

@@ -16,16 +16,16 @@
 
 /* eslint @typescript-eslint/camelcase: ["error", { allow: ["session_get", "session_result"] }] */
 
-import { actions, activations, skipAndLimit } from '@kui-shell/plugin-openwhisk/lib/cmds/openwhisk-usage'
+import { Usage } from '@kui-shell/plugin-openwhisk'
 import { sampleInputs } from './sample-inputs'
 
 const activationsUsage = {
-  get: activations('').available.find(({ command }) => command === 'get')
+  get: Usage.activations('').available.find(({ command }) => command === 'get')
 }
 const actionsUsage = {
-  create: actions.available.find(({ command }) => command === 'create'),
-  update: actions.available.find(({ command }) => command === 'update'),
-  invoke: actions.available.find(({ command }) => command === 'invoke')
+  create: Usage.actions.available.find(({ command }) => command === 'create'),
+  update: Usage.actions.available.find(({ command }) => command === 'update'),
+  invoke: Usage.actions.available.find(({ command }) => command === 'invoke')
 }
 
 const strings = {
@@ -151,7 +151,7 @@ export const appList = command => ({
       entity: 'package',
       docs: 'list all actions in a given /namespace or package'
     }
-  ].concat(skipAndLimit),
+  ].concat(Usage.skipAndLimit),
   parents: ['composer', { command: 'composer app' }],
   related: ['app create', 'app get', 'app invoke']
 })

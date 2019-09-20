@@ -19,72 +19,31 @@
 set -e
 set -o pipefail
 
-if [ ! -d packages/app/src ] || [ ! -d plugins ]; then
+# for compile.js below; give it an absolute path
+export CLIENT_HOME=${CLIENT_HOME-`pwd`}
+export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
+
+if [ ! -d packages/app/src ] || [ ! -d plugins ] || [ ! -f tsconfig.json ]; then
     echo "Error: perhaps you forgot to run "npx kui-init""
     exit 1
 fi
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR=.
-BUILDDIR="${TOPDIR}/build"
+# make typescript happy, until we have the real prescan model ready
+# (produced by kui-builder/lib/configure.js, but which cannot be run
+# until after we've compiled the source)
+mkdir -p ./node_modules/@kui-shell
+touch ./node_modules/@kui-shell/prescan.json
 
-if [ ! -d "$BUILDDIR" ]; then
-    mkdir "$BUILDDIR"
-    if [ $? != 0 ]; then exit $?; fi
-fi
+# compile the source
+npx tsc -b .
 
-# the import of @kui-shell/prescan fails in tsc if this file does not exist
-# we will generate the real deal below, in "compiling plugin registry"
-touch "$BUILDDIR"/.pre-scanned.json
+# initialize the html bits
+CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$CLIENT_HOME" node node_modules/@kui-shell/builder/lib/configure.js
 
-# link lib and web files
-"$SCRIPTDIR"/link-source-assets.sh
+# link in the theme bits
+(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -s $i; done && for i in ../../../../theme/css/*; do ln -s $i; done)
 
-set +e
-TSCONFIG_HOME=`readlink $0`
-if [ $? == 1 ]; then
-    TSCONFIG_HOME="$SCRIPTDIR/.."
-    TSCONFIG="$TSCONFIG_HOME/tsconfig.json"
-    echo "it looks like we are not working off a symlink ${TSCONFIG_HOME}"
-else
-    TSCONFIG_HOME=$(dirname "$SCRIPTDIR/`dirname $TSCONFIG_HOME`")
-    echo "following link to find build home ${TSCONFIG_HOME}"
-
-    if [ -f "$TSCONFIG_HOME/../../../tsconfig.json" ]; then
-        echo "using top-level tsconfig"
-        TSCONFIG="$TSCONFIG_HOME"/../../../tsconfig.json
-    else
-        TSCONFIG="$TSCONFIG_HOME"/tsconfig.json
-    fi
-fi
-
-npx --no-install tsc -h >& /dev/null
-if [ $? == 0 ]; then
-    TSC="npx tsc"
-    FOUND_TSC=true
-else
-    TSC="$TSCONFIG_HOME/node_modules/.bin/tsc"
-    if [ ! -x "$TSC" ]; then
-        echo "Looking for alternate TSC location"
-        TSC="$CLIENT_HOME/../node_modules/.bin/tsc"
-    fi
-
-    if [ -x "$TSC" ]; then
-        FOUND_TSC=true
-        echo "Using TSC=$TSC"
-    else
-        echo "Warning: unable to find tsc; client plugins may not be available in the client builds"
-    fi
-fi
-set -e
-
-# compile source
-echo ""
-if [ -n "$FOUND_TSC" ]; then
-    echo "compiling source $TSCONFIG_HOME"
-    $TSC --build "$TSCONFIG"
-fi
-
+# generate the plugin registry
 if [ -z "$NO_PRESCAN" ]; then
-    "$TSCONFIG_HOME"/bin/prescan.sh
+    npx --no-install kui-prescan
 fi

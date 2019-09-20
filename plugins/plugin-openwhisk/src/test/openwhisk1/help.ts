@@ -22,7 +22,7 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
-import { doHelp, header, header2 } from '@kui-shell/plugin-core-support/test/core-support/help'
+import { doHelp, header, header2 } from '@kui-shell/plugin-core-support/tests/lib/core-support/help-util'
 
 /* the header for action help */
 const actionHelpHeader = header2('OpenWhisk', 'Action Operations')

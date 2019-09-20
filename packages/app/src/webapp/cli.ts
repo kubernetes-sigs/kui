@@ -1061,15 +1061,15 @@ export const printResults = (
         }
       } else if (isCustomSpec(response)) {
         if (echo || (execOptions && execOptions.replSilence)) {
-          const presentation = await showCustom(tab, response, execOptions, customContainer)
+          await showCustom(tab, response, execOptions, customContainer)
 
           if (!isPopup()) {
             ok(resultDom.parentElement)
           }
 
-          if (presentation !== undefined) {
+          /* if (typeof presentation !== undefined) {
             response.presentation = presentation
-          }
+          } */
 
           return !customContainer || customContainer.children.length === 0
         }

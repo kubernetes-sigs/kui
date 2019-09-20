@@ -15,20 +15,13 @@
  */
 
 import * as Debug from 'debug'
-
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
-import flowCommand from './lib/flowCommand'
-import preview from './lib/preview'
-import visualize from './lib/visualize'
 const debug = Debug('plugins/wskflow/init')
 debug('loading')
 
-export default async (commandTree: CommandRegistrar) => {
-  debug('initializing')
+import visualize from './lib/visualize'
 
-  await flowCommand(commandTree)
-  await preview(commandTree)
+export default async () => {
+  debug('initializing')
 
   try {
     // the require of lib/visualize may fail in headless mode; that's ok!

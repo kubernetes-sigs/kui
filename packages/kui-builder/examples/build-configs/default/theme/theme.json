@@ -1,8 +1,8 @@
 {
   "productName": "Kui",
-  "productTitle": "Kui Shell",
-  "ogSiteName": "Kui Shell",
-  "ogTitle": "Kui Shell: The Hybrid CLI Cloud Shell",
+  "productTitle": "Kui",
+  "ogSiteName": "Kui",
+  "ogTitle": "Kui: The CLI with a GUI twist",
   "ogUrl": "http://kui.tools",
   "byline": "The CLI with a GUI twist",
   "ogDescription": "Kui is a platform for enhancing the terminal experience with visualizations. It provides users a modern alternative to ASCII terminals and web-based consoles. It provides tool developers an opportunity to unify these experiences.",

@@ -21,6 +21,7 @@ import { Row } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
 import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
+import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -42,15 +43,14 @@ const viewName = 'Containers'
  * for the given resource
  *
  */
-export const containersButton = (command: string, resource: Resource, overrides?) =>
+export const containersButton = (command: string, resource: Resource, overrides?): SidecarMode =>
   Object.assign(
     {},
     {
       mode: 'containers',
       label: strings('containers'),
       direct: {
-        plugin: 'k8s',
-        module: 'lib/view/modes/containers',
+        plugin: 'k8s/dist/src/index',
         operation: 'renderAndViewContainers',
         parameters: { command, resource }
       }
@@ -67,7 +67,7 @@ export const containersMode: ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     return resource.spec && resource.spec.containers
   },
-  mode: (command: string, resource: Resource) => {
+  mode: (command: string, resource: Resource): SidecarMode => {
     try {
       return containersButton(command, resource)
     } catch (err) {

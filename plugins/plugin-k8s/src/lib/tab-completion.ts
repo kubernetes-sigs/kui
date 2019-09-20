@@ -17,7 +17,7 @@
 import { rexec as $$ } from '@kui-shell/core/core/repl'
 import { CommandLine } from '@kui-shell/core/models/command'
 
-import { registerEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/lib/tab-completion'
+import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
 /**
  * Invoke an enumeration command and return the filtered list of matching strings
@@ -82,5 +82,5 @@ async function completeResourceNames(commandLine: CommandLine, spec: TabCompleti
  *
  */
 export default () => {
-  registerEnumerator(completeResourceNames)
+  registerTabCompletionEnumerator(completeResourceNames)
 }
