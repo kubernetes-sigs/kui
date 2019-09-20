@@ -187,7 +187,7 @@ module.exports = {
     'module',
     'net',
     'webworker-threads', // wskflow
-    'xml2js', // used by ./app/plugins/modules/composer/@demos/combinators/http.js
+    'xml2js', // used by plugins/plugin-apache-composer/@demos/combinators/http.js
     'redis',
     'redis-commands', // openwhisk-composer
     'nyc',

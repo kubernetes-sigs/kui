@@ -34,7 +34,7 @@ mkdir -p clients/$CLIENT/dist/webpack/css
      ln -sf ../../theme/icons && \
      ln -sf ../../theme/images && \
      cd css && \
-     for i in ../../../../../packages/app/web/css/*; do ln -sf $i; done && \
+     for i in ../../../../../packages/core/web/css/*; do ln -sf $i; done && \
      for i in ../../../theme/css/*; do ln -sf $i; done \
     )
 
