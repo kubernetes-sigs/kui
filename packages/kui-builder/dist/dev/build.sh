@@ -20,7 +20,7 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../../.."
 STAGING="${TOPDIR}"/node_modules/@kui-shell/build
 
-(cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/app/web/css)
+(cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/core/web/css)
 
 THEME=$(cd "$CLIENT_HOME"/theme && pwd)
 if [ ! -d "$THEME" ]; then
@@ -29,7 +29,7 @@ if [ ! -d "$THEME" ]; then
 fi
 
 # remove and relink any client css symlinks
-find packages/app/web/css -maxdepth 1 -type l -exec rm {} \;
+find packages/core/web/css -maxdepth 1 -type l -exec rm {} \;
 for i in "$THEME"/css/*.css; do
     echo "linking in client css file `basename $i`"
     (cd "$STAGING"/css && ln -s $i)

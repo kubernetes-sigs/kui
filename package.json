@@ -1,6 +1,6 @@
 {
   "name": "kui-shell",
-  "version": "4.4.0",
+  "version": "5.0.0",
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
   "main": "node_modules/@kui-shell/core/dist/src/main/main.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "format": "prettier --write '**/*.{css,html,js,json,md,ts}'",
     "test": "cd packages/tests && MONOREPO_MODE=true npm run test",
     "watch:webpack": "./bin/watch-webpack.sh",
+    "proxy": "cd packages/proxy/app && PORT=8081 KUI_USE_HTTP=true ../../../tools/travis/test/target.d/proxy.sh ..",
     "watch": "tsc --build . --watch",
     "compile:source": "touch node_modules/@kui-shell/prescan.json && tsc --build .",
     "compile:prescan": "CLIENT=${CLIENT-default}; MONOREPO_MODE=true CLIENT_HOME=./clients/$CLIENT node ./packages/kui-builder/dist/bin/compile.js",
@@ -28,7 +29,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@kui-shell/core": "file:packages/app",
+    "@kui-shell/core": "file:packages/core",
     "@kui-shell/plugin-apache-composer": "file:plugins/plugin-apache-composer",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
     "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",

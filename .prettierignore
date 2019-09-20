@@ -1,6 +1,6 @@
 build/
 clients/**/*/dist/
-packages/app/dist/
+packages/core/dist/
 node_modules/
 *.d.ts
 *.min.css
@@ -9,5 +9,5 @@ plugins/plugin-apache-composer/tests/data/composer/composer-source-expect-errors
 
 # Ignore themes because we can't ignore just the highlightjs themes
 # https://github.com/prettier/prettier/issues/5287
-packages/app/web/css/themes/*.css
+packages/core/web/css/themes/*.css
 packages/kui-builder/examples/build-configs/default/theme/css/themes/*.css

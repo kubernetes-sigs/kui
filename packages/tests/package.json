@@ -6,12 +6,6 @@
   "author": "Nick Mitchell",
   "main": "index.js",
   "scripts": {
-    "nope__instrument": "if [ -d ../app.orig ]; then rm -rf ../app.orig; fi; cp -a ../app ../app.orig && nyc instrument ../app ../app && rm -rf ../app/plugins/modules/composer/\\@demos && cp -r ../app.orig/plugins/modules/composer/\\@demos ../app/plugins/modules/composer/\\@demos && rm -rf ../app/plugins/modules/composer/tests && cp -r ../app.orig/plugins/modules/composer/tests ../app/plugins/modules/composer/tests",
-    "nope_instrument": "git diff-index HEAD | grep 'app/' && echo 'uncommitted changes, aborting' || npm run _instrument",
-    "nope_deinstrument": "if [ -d ../app.orig ]; then rm -rf ../app.inst && mv ../app ../app.inst && mv ../app.orig ../app; fi",
-    "_instrument": "echo disabled",
-    "instrument": "echo disabled",
-    "deinstrument": "echo disabled",
     "test": "./bin/runMochaLayers.sh"
   },
   "bin": {

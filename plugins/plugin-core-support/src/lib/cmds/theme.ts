@@ -254,7 +254,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
 
         if (webContents) {
           //
-          // see packages/app/src/main/spawn-electron, where we use the
+          // see packages/core/src/main/spawn-electron, where we use the
           // electron API to set inject the theme into the main webview
           // before the window opens
           //
@@ -283,7 +283,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
   // set the theme attributes on document.body
   if (webContents) {
     //
-    // see packages/app/src/main/spawn-electron, where we use the
+    // see packages/core/src/main/spawn-electron, where we use the
     // electron API to set inject the theme into the main webview
     // before the window opens
     //

@@ -23,7 +23,7 @@ set -o pipefail
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
 
-if [ ! -d packages/app/src ] || [ ! -d plugins ] || [ ! -f tsconfig.json ]; then
+if [ ! -d plugins ] || [ ! -f tsconfig.json ]; then
     echo "Error: perhaps you forgot to run "npx kui-init""
     exit 1
 fi

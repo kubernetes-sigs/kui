@@ -7,7 +7,6 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
-      "@kui-shell/core/tests/*": ["tests/*"],
       "@kui-shell/core/*": ["src/*"]
     }
   }

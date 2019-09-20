@@ -27,7 +27,7 @@ BRANCH=${BRANCH-`git rev-parse --abbrev-ref HEAD`}
 echo "Building and deploying to this release stream: $BRANCH"
 
 # current base version
-BASE_VERSION=`cat "$TOPDIR/packages/app/package.json" | jq --raw-output .version`
+BASE_VERSION=`cat "$TOPDIR/packages/core/package.json" | jq --raw-output .version`
 echo "Version before publish: $BASE_VERSION"
 
 # if this is a prerelease/feature branch build, then mess with the version
@@ -36,8 +36,8 @@ if [ "$BRANCH" != "master" ]; then
     # then this is a prerelease distribution; fancy up the version stamp
     DATE=`date '+%Y%m%d%H%M%S'`                   # this is the current date
     VERSION="${BASE_VERSION}-${BRANCH}.${DATE}"   # add the branch and date to the base version stamp
-    (cd "$TOPDIR/packages/app" && npm version $VERSION)   # smash this into packages/app/package.json
-    (cd "$TOPDIR/packages/app/build" && npm version $VERSION)   # smash this into packages/app/build/package.json
+    (cd "$TOPDIR/packages/core" && npm version $VERSION)   # smash this into packages/core/package.json
+    (cd "$TOPDIR/packages/core/build" && npm version $VERSION)   # smash this into packages/core/build/package.json
     (cd "$TOPDIR/clients/default" && npm version $VERSION)   # smash this into clients/default/package.json
 
     COS_BUCKET=$BRANCH                            # stash the builds in a bucket named by the branch
@@ -45,11 +45,11 @@ if [ "$BRANCH" != "master" ]; then
 else
     # then this is a mainline distribution; do a plain npm verison bump
     # note that the first argument lets the caller choose the type of version bump
-    (cd "$TOPDIR"/packages/app && npm version ${1-patch})
-    (cd "$TOPDIR"/packages/app/build && npm version ${1-patch})
+    (cd "$TOPDIR"/packages/core && npm version ${1-patch})
+    (cd "$TOPDIR"/packages/core/build && npm version ${1-patch})
 
     # for mainline releases, also tag the repo
-    VERSION=`cat "$TOPDIR/packages/app/package.json" | jq --raw-output .version`
+    VERSION=`cat "$TOPDIR/packages/core/package.json" | jq --raw-output .version`
     git tag $VERSION
 
     # stash the builds in a bucket named by the version
@@ -109,7 +109,7 @@ fi
 
 # revert version
 if [ "$BRANCH" != "master" ]; then
-    (cd "$TOPDIR"/packages/app && npm version $BASE_VERSION)
-    (cd "$TOPDIR"/packages/app/build && npm version $BASE_VERSION)
+    (cd "$TOPDIR"/packages/core && npm version $BASE_VERSION)
+    (cd "$TOPDIR"/packages/core/build && npm version $BASE_VERSION)
     (cd "$TOPDIR/clients/default" && npm version $BASE_VERSION)
 fi

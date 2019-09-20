@@ -152,8 +152,8 @@ describe('Tab completion core', function(this: ISuite) {
   localIt('should tab complete the data/core/empty.js file', () =>
     tabby(this.app, `lls ${ROOT}/data/core/empty.js`, `lls ${ROOT}/data/core/empty.json`)
   )
-  localIt('should tab complete the ../../packages/app directory', () =>
-    tabby(this.app, `lls ${ROOT}/../../../packages/ap`, `lls ${ROOT}/../../../packages/app/`)
+  localIt('should tab complete the ../../packages/core directory', () =>
+    tabby(this.app, `lls ${ROOT}/../../../packages/co`, `lls ${ROOT}/../../../packages/core/`)
   )
 
   // same, but this time tab to cycle through the options
