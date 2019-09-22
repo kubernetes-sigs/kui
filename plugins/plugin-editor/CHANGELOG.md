@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- remove sidecar secondary content ([71ab198](https://github.com/IBM/kui/commit/71ab198))
+- **plugins/plugin-editor:** don't use "i18n" as the name of a top-level directory ([04bd5f1](https://github.com/IBM/kui/commit/04bd5f1)), closes [#2795](https://github.com/IBM/kui/issues/2795)
+- **plugins/plugin-editor:** editor font size does not respect current font size ([608b539](https://github.com/IBM/kui/commit/608b539)), closes [#1565](https://github.com/IBM/kui/issues/1565)
+- **plugins/plugin-editor:** update the Monaco editor layout since we got rid of the transition effect of sidecar resizing ([a355a80](https://github.com/IBM/kui/commit/a355a80)), closes [#2807](https://github.com/IBM/kui/issues/2807)
+
 # 0.23.0 (2019-06-17)
 
 ### Bug Fixes

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- remove sidecar secondary content ([71ab198](https://github.com/IBM/kui/commit/71ab198))
+- **packages/app:** on mac electron builds, cwd and PWD mismatch ([97f94f5](https://github.com/IBM/kui/commit/97f94f5)), closes [#2752](https://github.com/IBM/kui/issues/2752)
+- **packages/app:** set icon on linux ([ce76708](https://github.com/IBM/kui/commit/ce76708)), closes [#1248](https://github.com/IBM/kui/issues/1248)
+- **packages/app:** Sidecar not showing content when it's opened in the full-screen mode ([e94dde7](https://github.com/IBM/kui/commit/e94dde7)), closes [#2788](https://github.com/IBM/kui/issues/2788)
+- default to Light tables ([72ad63a](https://github.com/IBM/kui/commit/72ad63a)), closes [#2798](https://github.com/IBM/kui/issues/2798)
+- **packages/app:** top-tab-stripe-alt rules are too sticky ([1a03390](https://github.com/IBM/kui/commit/1a03390)), closes [#2791](https://github.com/IBM/kui/issues/2791)
+- no horizontal scrolling for wide table ([e9e9564](https://github.com/IBM/kui/commit/e9e9564)), closes [#2778](https://github.com/IBM/kui/issues/2778)
+- sidecar color fixes to accommodate sidecar dark/repl light themes ([208da06](https://github.com/IBM/kui/commit/208da06)), closes [#2783](https://github.com/IBM/kui/issues/2783)
+- **packages/app:** font zooming in clients/alternate does not affect tables ([66476b9](https://github.com/IBM/kui/commit/66476b9)), closes [#2726](https://github.com/IBM/kui/issues/2726)
+- **packages/app:** remove top-tab-stripe-alt.css link ([39a1886](https://github.com/IBM/kui/commit/39a1886)), closes [#2735](https://github.com/IBM/kui/issues/2735) [#2750](https://github.com/IBM/kui/issues/2750)
+- **plugins/plugin-bash-like:** decrease usage of ascii-to-table in pty ([9836ab8](https://github.com/IBM/kui/commit/9836ab8)), closes [#2745](https://github.com/IBM/kui/issues/2745)
+- **plugins/plugin-core-support:** theme set on reload fails to use custom css ([e60683b](https://github.com/IBM/kui/commit/e60683b)), closes [#2742](https://github.com/IBM/kui/issues/2742)
+- **plugins/plugin-k8s:** commands resulting in an empty watch table fail to watch for updates ([c40546f](https://github.com/IBM/kui/commit/c40546f)), closes [#2737](https://github.com/IBM/kui/issues/2737)
+
+### Features
+
+- **plugins/plugin-k8s:** improve sidecar events table ([a310f6b](https://github.com/IBM/kui/commit/a310f6b)), closes [#2800](https://github.com/IBM/kui/issues/2800)
+
 # 2.34.0 (2019-06-17)
 
 ### Bug Fixes

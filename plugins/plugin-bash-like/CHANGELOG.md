@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- remove sidecar secondary content ([71ab198](https://github.com/IBM/kui/commit/71ab198))
+- **plugins/plugin-bash-like:** decrease usage of ascii-to-table in pty ([9836ab8](https://github.com/IBM/kui/commit/9836ab8)), closes [#2745](https://github.com/IBM/kui/issues/2745)
+- **plugins/plugin-bash-like:** expand env prefetching to support macos dock launches ([f9c85bf](https://github.com/IBM/kui/commit/f9c85bf)), closes [#2762](https://github.com/IBM/kui/issues/2762)
+- **plugins/plugin-bash-like:** pty bold font-weight is lost on exit ([4899d55](https://github.com/IBM/kui/commit/4899d55)), closes [#2746](https://github.com/IBM/kui/issues/2746)
+
 # 0.23.0 (2019-06-17)
 
 ### Bug Fixes
