@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- make yargs-parser dependences explicit ([d080f16](https://github.com/IBM/kui/commit/d080f16)), closes [#2789](https://github.com/IBM/kui/issues/2789)
+- remove sidecar secondary content ([71ab198](https://github.com/IBM/kui/commit/71ab198))
+
 # 0.34.0 (2019-06-17)
 
 ### Bug Fixes

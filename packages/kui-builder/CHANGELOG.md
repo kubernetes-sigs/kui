@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- **packages/kui-builder:** allow custom clients to provide tsconfig overrides ([2d75764](https://github.com/IBM/kui/commit/2d75764)), closes [#2801](https://github.com/IBM/kui/issues/2801)
+- default to Light tables ([72ad63a](https://github.com/IBM/kui/commit/72ad63a)), closes [#2798](https://github.com/IBM/kui/issues/2798)
+- **packages/kui-builder:** external clients versus nodejs 12 ([f9b74ac](https://github.com/IBM/kui/commit/f9b74ac)), closes [#2785](https://github.com/IBM/kui/issues/2785)
+- sidecar color fixes to accommodate sidecar dark/repl light themes ([208da06](https://github.com/IBM/kui/commit/208da06)), closes [#2783](https://github.com/IBM/kui/issues/2783)
+- **packages/kui-builder:** carbon gray 90 versus highlightjs ([fda3530](https://github.com/IBM/kui/commit/fda3530)), closes [#2774](https://github.com/IBM/kui/issues/2774)
+- **packages/kui-builder:** sidecar table text bugs in carbon-gray10 ([139ff9a](https://github.com/IBM/kui/commit/139ff9a)), closes [#2772](https://github.com/IBM/kui/issues/2772)
+
+### Features
+
+- **plugins/plugin-k8s:** add Events tab for kube resources ([8387575](https://github.com/IBM/kui/commit/8387575)), closes [#2438](https://github.com/IBM/kui/issues/2438)
+
 # 0.34.0 (2019-06-17)
 
 ### Bug Fixes

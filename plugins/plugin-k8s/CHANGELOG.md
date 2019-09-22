@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- remove sidecar secondary content ([71ab198](https://github.com/IBM/kui/commit/71ab198))
+- **plugins/plugin-core-support:** increase default maxWatchersPerTab from 2 to 6 ([e05b6cf](https://github.com/IBM/kui/commit/e05b6cf)), closes [#2754](https://github.com/IBM/kui/issues/2754)
+- **plugins/plugin-k8s:** `k get resource -w` doesn't error out for `resource not found` ([a9e5c67](https://github.com/IBM/kui/commit/a9e5c67)), closes [#2731](https://github.com/IBM/kui/issues/2731)
+- **plugins/plugin-k8s:** `kubectl get pods -w -w` hangs, `k -w get pods` does not fail ([43374a5](https://github.com/IBM/kui/commit/43374a5)), closes [#2721](https://github.com/IBM/kui/issues/2721) [#2718](https://github.com/IBM/kui/issues/2718)
+- **plugins/plugin-k8s:** commands resulting in an empty watch table fail to watch for updates ([c40546f](https://github.com/IBM/kui/commit/c40546f)), closes [#2737](https://github.com/IBM/kui/issues/2737)
+- **plugins/plugin-k8s:** don't fail if plugin-core-support unavailable ([080a95d](https://github.com/IBM/kui/commit/080a95d)), closes [#2793](https://github.com/IBM/kui/issues/2793)
+- **plugins/plugin-k8s:** remove k8s conditions tab ([46e26e1](https://github.com/IBM/kui/commit/46e26e1)), closes [#2776](https://github.com/IBM/kui/issues/2776)
+- **plugins/plugin-k8s:** remove use of old KUBECONFIG inference logic ([74d6c56](https://github.com/IBM/kui/commit/74d6c56)), closes [#2761](https://github.com/IBM/kui/issues/2761)
+- improve zh_CN translation content in plugin-core-support and plugin-k8s ([ebdb3f9](https://github.com/IBM/kui/commit/ebdb3f9)), closes [#2700](https://github.com/IBM/kui/issues/2700)
+
+### Features
+
+- **plugins/plugin-k8s:** add Events tab for kube resources ([8387575](https://github.com/IBM/kui/commit/8387575)), closes [#2438](https://github.com/IBM/kui/issues/2438)
+- **plugins/plugin-k8s:** improve sidecar events table ([a310f6b](https://github.com/IBM/kui/commit/a310f6b)), closes [#2800](https://github.com/IBM/kui/issues/2800)
+
 # 0.34.0 (2019-06-17)
 
 ### Bug Fixes

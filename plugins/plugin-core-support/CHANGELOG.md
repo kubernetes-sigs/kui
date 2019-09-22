@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/IBM/kui/compare/v4.4.0...v4.5.0) (2019-09-22)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** code issues with microsoft edge ([316da30](https://github.com/IBM/kui/commit/316da30)), closes [#2811](https://github.com/IBM/kui/issues/2811)
+- make yargs-parser dependences explicit ([d080f16](https://github.com/IBM/kui/commit/d080f16)), closes [#2789](https://github.com/IBM/kui/issues/2789)
+- **plugins-plugin-core-support:** theme bootstrapping assumes document is defined ([15484e7](https://github.com/IBM/kui/commit/15484e7)), closes [#2740](https://github.com/IBM/kui/issues/2740)
+- **plugins/plugin-core-support:** error initializing themes ([d84d7d7](https://github.com/IBM/kui/commit/d84d7d7)), closes [#2766](https://github.com/IBM/kui/issues/2766)
+- **plugins/plugin-core-support:** increase default maxWatchersPerTab from 2 to 6 ([e05b6cf](https://github.com/IBM/kui/commit/e05b6cf)), closes [#2754](https://github.com/IBM/kui/issues/2754)
+- **plugins/plugin-core-support:** theme set on reload fails to use custom css ([e60683b](https://github.com/IBM/kui/commit/e60683b)), closes [#2742](https://github.com/IBM/kui/issues/2742)
+- improve zh_CN translation content in plugin-core-support and plugin-k8s ([ebdb3f9](https://github.com/IBM/kui/commit/ebdb3f9)), closes [#2700](https://github.com/IBM/kui/issues/2700)
+
 # 0.34.0 (2019-06-17)
 
 ### Bug Fixes
