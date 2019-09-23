@@ -11,7 +11,7 @@
     "proxy": "cd packages/proxy/app && PORT=8081 KUI_USE_HTTP=true ../../../tools/travis/test/target.d/proxy.sh ..",
     "watch": "tsc --build . --watch",
     "compile:source": "touch node_modules/@kui-shell/prescan.json && tsc --build .",
-    "compile:prescan": "CLIENT=${CLIENT-default}; MONOREPO_MODE=true CLIENT_HOME=./clients/$CLIENT node ./packages/kui-builder/dist/bin/compile.js",
+    "compile:prescan": "CLIENT=${CLIENT-default}; MONOREPO_MODE=true CLIENT_HOME=./clients/$CLIENT node ./packages/builder/dist/bin/compile.js",
     "compile:clean": "tsc --build . --clean",
     "compile": "npm run compile:source && npm run compile:prescan",
     "rebuild": "npm run compile:clean; npm run compile",
@@ -19,9 +19,9 @@
     "purge": "npm run clean; rm -f package-lock.json",
     "pack": "./bin/pack.sh",
     "pty:rebuild": "cd node_modules/node-pty-prebuilt-multiarch && npm run install",
-    "pty:electron": "rm -f .npmrc; cp packages/kui-builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild",
+    "pty:electron": "rm -f .npmrc; cp packages/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild",
     "pty:nodejs": "rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild",
-    "build:html": "CLIENT=${CLIENT-default}; rm -f node_modules/@kui-shell/settings/config-dev.json; npm run pty:electron && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" node packages/kui-builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/kui-builder/bin/seticon.js",
+    "build:html": "CLIENT=${CLIENT-default}; rm -f node_modules/@kui-shell/settings/config-dev.json; npm run pty:electron && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" node packages/builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/builder/bin/seticon.js",
     "postinstall": "npm run build:html && npm run compile",
     "start": "node bin/kui shell"
   },
@@ -47,7 +47,7 @@
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
   },
   "devDependencies": {
-    "@kui-shell/builder": "file:packages/kui-builder",
+    "@kui-shell/builder": "file:packages/builder",
     "spectron": "8.0.0",
     "electron": "6.0.8",
     "colors": "1.3.3",

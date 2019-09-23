@@ -1,5 +1,5 @@
 build/
-packages/kui-builder
+packages/builder
 clients/**/*/dist/
 plugins/**/*/dist/
 plugins/*/lib/**/*.js
