@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('kui-builder/configure')
+const debug = require('debug')('builder/configure')
 const path = require('path')
 const fs = require('fs-extra')
 const colors = require('colors/safe')

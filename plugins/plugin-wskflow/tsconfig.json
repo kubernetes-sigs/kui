@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/kui-builder/tsconfig-base.json",
+  "extends": "../../packages/builder/tsconfig-base.json",
   "include": ["src/**/*"],
   "compilerOptions": {
     "composite": true,
