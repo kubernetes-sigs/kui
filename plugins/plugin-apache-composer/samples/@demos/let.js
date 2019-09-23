@@ -1,4 +1,4 @@
-const { sequence: Seq, let: Let } = require('openwhisk-composer')
+const composer = require('openwhisk-composer')
 
 const state = { secret: 42 }
 
@@ -8,6 +8,6 @@ const state = { secret: 42 }
  * escaped beyond the scope of the Let.
  *
  */
-module.exports = Seq(Let(state, () => ({ ok: secret === 42 })), () => ({
+module.exports = composer.sequence(composer.let(state, () => ({ ok: secret === 42 })), () => ({
   ok: typeof secret === 'undefined'
 }))
