@@ -19,20 +19,31 @@
 set -e
 set -o pipefail
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-
 # for compile.js below; give it an absolute path
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
 
+if [ ! -d plugins ] || [ ! -f tsconfig.json ]; then
+    echo "Error: perhaps you forgot to run "npx kui-init""
+    exit 1
+fi
+
 # make typescript happy, until we have the real prescan model ready
-# (produced by kui-builder/lib/configure.js, but which cannot be run
+# (produced by builder/lib/configure.js, but which cannot be run
 # until after we've compiled the source)
 mkdir -p ./node_modules/@kui-shell
 touch ./node_modules/@kui-shell/prescan.json
 
-# pre-compile plugin registry
-if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
-    echo "compiling plugin registry $CLIENT_HOME"
-    node ./node_modules/@kui-shell/builder/dist/bin/compile.js
+# compile the source
+npx tsc -b .
+
+# initialize the html bits
+CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$CLIENT_HOME" node node_modules/@kui-shell/builder/lib/configure.js
+
+# link in the theme bits
+(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -s $i; done && for i in ../../../../theme/css/*; do ln -s $i; done)
+
+# generate the plugin registry
+if [ -z "$NO_PRESCAN" ]; then
+    npx --no-install kui-prescan
 fi

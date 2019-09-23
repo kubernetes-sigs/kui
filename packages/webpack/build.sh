@@ -98,7 +98,7 @@ function tarCopy {
            --exclude "./build/*/node_modules/*" \
            --exclude "./packages/*/node_modules/*" \
            --exclude "./plugins/*/node_modules/*" \
-           --exclude './packages/kui-builder' \
+           --exclude './packages/builder' \
            --exclude './tests' . | "$TAR" -C "$STAGING" -xf -
 
     echo "tar copy done"

@@ -1,11 +1,11 @@
 {
-  "extends": "./packages/kui-builder/tsconfig-base.json",
+  "extends": "./packages/builder/tsconfig-base.json",
   "references": [
     {
       "path": "packages/core"
     },
     {
-      "path": "packages/kui-builder"
+      "path": "packages/builder"
     },
     {
       "path": "plugins/plugin-apache-composer"

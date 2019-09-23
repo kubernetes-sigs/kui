@@ -63,7 +63,7 @@ console.log('buildDir', buildDir)
 const builderHome =
   process.env.KUI_BUILDER_HOME ||
   (process.env.KUI_MONO_HOME
-    ? path.join(process.env.KUI_MONO_HOME, 'packages/kui-builder')
+    ? path.join(process.env.KUI_MONO_HOME, 'packages/builder')
     : path.join(stageDir, 'node_modules/@kui-shell/builder'))
 console.log('builderHome', builderHome)
 

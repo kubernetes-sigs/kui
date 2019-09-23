@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('kui-builder/parse-options')
+const debug = require('debug')('builder/parse-options')
 const path = require('path')
 
 const { moduleExists } = require('./module-exists')

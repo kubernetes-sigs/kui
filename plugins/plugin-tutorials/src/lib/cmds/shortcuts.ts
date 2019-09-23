@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-// DO NOT USE IMPORT
-// as it conflicts with the kui-builder kui-link-source-assets.sh
-// the typescript compiler moves the json files into the builddir, if we use import
+// re: require: the typescript compiler moves the json files into the
+// builddir, if we use import, which we want to avoid
 import { CommandRegistrar } from '@kui-shell/core/models/command'
 const {
   name: kubernetesBasicsDocs
