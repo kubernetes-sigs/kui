@@ -67,7 +67,7 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .then(cli.expectOKWith('README.md'))
       .catch(common.oops(this)))
 
-  const Cs = ['CHANGELOG.md', 'CONTRIBUTING.md']
+  const Cs = ['CONTRIBUTING.md']
   Cs.forEach(expect => {
     it(`should use ls ../../C* and expect ${expect}`, () =>
       cli
