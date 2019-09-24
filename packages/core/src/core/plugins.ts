@@ -94,7 +94,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
             }
             destMap[module] = pluginPath
           } else {
-            const backupPluginPath = path.join(modulePath, 'dist/src', filename)
+            const backupPluginPath = path.join(modulePath, 'dist', filename)
             debug('lookFor2', filename, backupPluginPath)
 
             if (fs.existsSync(backupPluginPath)) {

@@ -64,7 +64,7 @@ export const lastAppliedMode: ModeRegistration<KubeResource> = {
         label: strings('lastApplied'),
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'k8s/dist/src/index',
+          plugin: 'k8s/dist/index',
           operation: 'renderAndViewLastApplied',
           parameters: { command, resource }
         }

@@ -50,7 +50,7 @@ export const containersButton = (command: string, resource: Resource, overrides?
       mode: 'containers',
       label: strings('containers'),
       direct: {
-        plugin: 'k8s/dist/src/index',
+        plugin: 'k8s/dist/index',
         operation: 'renderAndViewContainers',
         parameters: { command, resource }
       }

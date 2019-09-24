@@ -22,7 +22,7 @@
     "Kerry Chang",
     "Zoë Barnswell"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "jquery": "3.4.1",
     "marked": "0.7.0"

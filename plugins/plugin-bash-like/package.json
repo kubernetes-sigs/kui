@@ -19,7 +19,7 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "ansi-to-html": "0.6.11",
     "cookie": "0.4.0",

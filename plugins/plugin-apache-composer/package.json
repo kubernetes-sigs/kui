@@ -19,7 +19,7 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "app-module-path": "2.2.0",
     "debug": "4.1.1",

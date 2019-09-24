@@ -4,6 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "dist",
+    "rootDir": "src",
     "baseUrl": ".",
     "paths": {
       "@kui-shell/plugin-apache-composer/tests/*": ["plugins/plugin-apache-composer/tests/*"],

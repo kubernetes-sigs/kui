@@ -45,7 +45,7 @@ const podsButton = (command: string, resource: Resource, overrides?): SidecarMod
     {
       mode: 'pods',
       direct: {
-        plugin: 'k8s/dist/src/index',
+        plugin: 'k8s/dist/index',
         operation: 'renderAndViewPods',
         parameters: { command, resource }
       }

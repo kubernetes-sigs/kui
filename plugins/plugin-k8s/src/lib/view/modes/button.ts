@@ -53,7 +53,7 @@ const makeButton = (overrides: BaseInfo, fn?: Renderer) =>
     {},
     {
       direct: {
-        plugin: 'k8s/dist/src/index',
+        plugin: 'k8s/dist/index',
         operation: 'renderButton',
         parameters: { overrides, fn }
       },

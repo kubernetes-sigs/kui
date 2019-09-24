@@ -16,7 +16,7 @@
     "kui",
     "plugin"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "kui": {
     "webpack": "KUI_USE_PROXY",
     "headless": false,

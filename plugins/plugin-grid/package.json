@@ -16,7 +16,7 @@
     "kui",
     "plugin"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "pretty-ms": "5.0.0",
     "uuid": "3.3.3"
