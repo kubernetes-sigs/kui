@@ -33,7 +33,6 @@ if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" ==
 
     echo "pushing builds"
     unset TEST_FROM_BUILD
-    (cd $TOPDIR/tests && npm run deinstrument)
 
     # NOTE: For now, we cross-build linux and windows electron distribuitions on tarvis linux, and macOS electron distribution on travis macOS
     if [ "$TRAVIS_OS_NAME" == linux ]; then
