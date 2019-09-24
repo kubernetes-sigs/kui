@@ -16,9 +16,10 @@
 
 import * as Debug from 'debug'
 
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { setAuth } from '../model/auth'
+
 const debug = Debug('k8s/controller/auth')
 
 const usage = {
@@ -30,7 +31,7 @@ const usage = {
   }
 }
 
-const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
+const add = async ({ block, nextBlock, tab }: Commands.EvaluatorArgs) => {
   const { prompt } = await import('@kui-shell/core/webapp/cli')
   return prompt(
     'kubectl auth add',
@@ -85,12 +86,12 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
                     setAuth(kubeconfigString, ca, cafile)
                     return true
 
-                    /* const repl = await import('@kui-shell/core/core/repl')
+                    /* const { REPL } = await import('@kui-shell/core')
                   const { PACKAGE } = await import('../../actionProxy/deploy')
                   const { deploy: deployKubectl } = await import('../../actionProxy/kubectl')
                   return deployKubectl()
-                    .then(() => repl.qexec(`package get "${PACKAGE}"`))
-                    .then(({ parameters }) => repl.qexec(`package update "${PACKAGE}"`, undefined, undefined, {
+                    .then(() => REPL.qexec(`package get "${PACKAGE}"`))
+                    .then(({ parameters }) => REPL.qexec(`package update "${PACKAGE}"`, undefined, undefined, {
                       parameters: Object.assign({}, parameters, {
                         kubeconfig: Buffer.from(kubeconfigString).toString('base64'),
                         ca: Buffer.from(ca).toString('base64'),
@@ -115,7 +116,7 @@ const add = async ({ block, nextBlock, tab }: EvaluatorArgs) => {
  * Register the commands
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/k8s/auth/add', add, {
     usage: usage.add,
     noAuthOk: ['openwhisk'],

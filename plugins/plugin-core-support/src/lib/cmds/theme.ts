@@ -15,20 +15,14 @@
  */
 
 import * as Debug from 'debug'
-
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
-import { Row } from '@kui-shell/core/webapp/models/table'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import eventBus from '@kui-shell/core/core/events'
+
+import { Capabilities, Commands, eventBus, i18n, Settings, Tables } from '@kui-shell/core'
 import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
-import { theme as settings, env } from '@kui-shell/core/core/settings'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-core-support')
-
 const debug = Debug('plugins/core-support/theme')
 
 interface Theme {
@@ -91,7 +85,7 @@ const usage = {
  *
  */
 function findThemeByName(name: string): Theme {
-  return (settings.themes || []).find(_ => _.name === name)
+  return (Settings.theme.themes || []).find(_ => _.name === name)
 }
 
 /**
@@ -99,7 +93,7 @@ function findThemeByName(name: string): Theme {
  *
  */
 const getDefaultTheme = (isDarkMode = false) => {
-  let defaultTheme = settings.defaultTheme
+  let defaultTheme = Settings.theme.defaultTheme
 
   if (isDarkMode) {
     const darkTheme = findThemeByName('Dark')
@@ -110,7 +104,7 @@ const getDefaultTheme = (isDarkMode = false) => {
 
   if (!defaultTheme) {
     console.error('theme bug: the theme does not set a default theme')
-    defaultTheme = settings.themes[0] && settings.themes[0].name
+    defaultTheme = Settings.theme.themes[0] && Settings.theme.themes[0].name
     if (!defaultTheme) {
       throw new Error('SEVERE theme bug: no theme found')
     }
@@ -125,9 +119,7 @@ const getDefaultTheme = (isDarkMode = false) => {
  *
  */
 const list = async () => {
-  const { Table } = await import('@kui-shell/core/webapp/models/table')
-
-  const header: Row = {
+  const header: Tables.Row = {
     type: 'theme',
     name: '',
     outerCSS: 'not-a-name',
@@ -140,10 +132,10 @@ const list = async () => {
   const chosenTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
   const currentTheme = findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
   debug('currentTheme', currentTheme)
-  debug('theme list', settings.themes)
+  debug('theme list', Settings.theme.themes)
 
-  const body: Row[] = (settings.themes || []).map(
-    (theme: Theme): Row => {
+  const body: Tables.Row[] = (Settings.theme.themes || []).map(
+    (theme: Theme): Tables.Row => {
       const row = {
         type: 'theme',
         name: theme.name,
@@ -164,7 +156,9 @@ const list = async () => {
       }
 
       const onclick = async () => {
-        const { encodeComponent, qexec } = await import('@kui-shell/core/core/repl')
+        const {
+          REPL: { encodeComponent, qexec }
+        } = await import('@kui-shell/core')
         await qexec(`theme set ${encodeComponent(theme.name)}`)
         row.setSelected()
       }
@@ -176,7 +170,7 @@ const list = async () => {
     }
   )
 
-  return new Table({
+  return new Tables.Table({
     type: 'theme',
     noSort: true,
     header,
@@ -189,8 +183,10 @@ const list = async () => {
  *
  */
 const getCssFilepathForGivenTheme = (addon: string): string => {
-  const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
-  return join(prefix, env.cssHome, addon)
+  const prefix = Capabilities.inBrowser()
+    ? ''
+    : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
+  return join(prefix, Settings.env.cssHome, addon)
 }
 
 /**
@@ -208,7 +204,7 @@ function id(theme: string) {
 const switchTo = async (theme: string, webContents?: WebContents): Promise<void> => {
   const themeModel = findThemeByName(theme)
   if (!themeModel) {
-    debug('could not find theme', theme, settings)
+    debug('could not find theme', theme, Settings.theme)
     const error = new Error(strings('theme.unknown'))
     error['code'] = 404
     throw error
@@ -337,7 +333,7 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
  * REPL command to switch themes
  *
  */
-const set = async ({ argvNoOptions }: EvaluatorArgs) => {
+const set = async ({ argvNoOptions }: Commands.EvaluatorArgs) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
   await switchTo(theme)
@@ -360,7 +356,7 @@ const resetToDefault = async () => {
  * The command handlers
  *
  */
-export const plugin = (commandTree: CommandRegistrar) => {
+export const plugin = (commandTree: Commands.Registrar) => {
   debug('plugin')
 
   commandTree.listen('/theme/list', list, {
@@ -404,8 +400,8 @@ export const plugin = (commandTree: CommandRegistrar) => {
  *
  */
 export const preload = () => {
-  if (!isHeadless()) {
-    if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
+  if (!Capabilities.isHeadless()) {
+    if (Capabilities.inBrowser() || !document.body.hasAttribute('kui-theme')) {
       debug('loading theme')
       return switchToPersistedThemeChoice()
     }

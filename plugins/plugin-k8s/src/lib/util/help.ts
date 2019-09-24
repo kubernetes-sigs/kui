@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import UsageError from '@kui-shell/core/core/usage-error'
+import { Errors } from '@kui-shell/core'
 
 const debug = require('debug')('k8s/util/help')
 
@@ -169,7 +169,7 @@ export const renderHelp = (out: string, command: string, verb: string, exitCode:
       .filter(x => x)
   )
 
-  return new UsageError({
+  return new Errors.UsageError({
     exitCode,
     usage: {
       commandPrefix: command, // for onclick handlers, e.g. when clicking on "get", we want to exec "kubectl get"

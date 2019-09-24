@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 
 /**
  * Here, we prefetch the editor, which is especially important if
@@ -26,7 +26,7 @@ import { isHeadless } from '@kui-shell/core/core/capabilities'
  *
  */
 export default async () => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     // NOTE how there is no await; this is because our goal is only to
     // prefetch it
     setTimeout(() => {

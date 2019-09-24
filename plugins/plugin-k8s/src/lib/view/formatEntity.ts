@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import eventBus from '@kui-shell/core/core/events'
-import { ParsedOptions } from '@kui-shell/core/models/execOptions'
+import { eventBus } from '@kui-shell/core'
 
 import { toOpenWhiskFQN } from '../util/util'
 import { FinalState, watchStatus, rendering as stateRendering } from '../model/states'
@@ -42,7 +41,8 @@ export const formatContextAttr = (context: string, extraCSS?: string) => {
  * Return a repl attribute for the given readiness
  *
  */
-export const formatEntity = (parsedOptions: ParsedOptions, context?: string) => async kubeEntity => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const formatEntity = (parsedOptions: Record<string, any>, context?: string) => async kubeEntity => {
   // debug('formatEntity', kubeEntity)
 
   if (!kubeEntity.metadata) {

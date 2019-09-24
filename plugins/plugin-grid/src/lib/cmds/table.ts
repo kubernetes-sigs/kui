@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import * as events from 'events'
+import * as prettyPrintDuration from 'pretty-ms'
+
+import { Commands, Tab } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
-import * as prettyPrintDuration from 'pretty-ms'
-import * as events from 'events'
 
 import { drilldownWith } from '../drilldown'
 import { sort, versionSorter, statDataSorter } from '../sorting'
@@ -704,7 +703,7 @@ const drawTable = (tab: Tab, options, header: Header, uuid: string) => activatio
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   const tableIt = cmd =>
     visualize(
       cmd,

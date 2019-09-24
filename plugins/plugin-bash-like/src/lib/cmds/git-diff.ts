@@ -16,17 +16,17 @@
 
 import * as Debug from 'debug'
 
-import { split } from '@kui-shell/core/core/repl'
+import { Commands, REPL } from '@kui-shell/core'
 import { isPopup } from '@kui-shell/core/webapp/cli'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
+
 const debug = Debug('plugins/bash-like/cmds/git-diff')
 
-const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
+const doDiff = async ({ command, execOptions }: Commands.EvaluatorArgs) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     injectCSS()
@@ -65,7 +65,7 @@ const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
         const showFiles = diffMatch && diffMatch.length >= 2
         debug('diffMatch', diffMatch)
 
-        const argv = split(command)
+        const argv = REPL.split(command)
         const commandPart = argv[1]
         const filePart = argv.slice(2).join(' ') || 'All changes'
 
@@ -103,7 +103,7 @@ const doDiff = async ({ command, execOptions }: EvaluatorArgs) =>
  * Register command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/git/diff', doDiff, {
     needsUI: true,
     requiresLocal: true,

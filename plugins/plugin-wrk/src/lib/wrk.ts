@@ -16,20 +16,20 @@
 
 import * as Debug from 'debug'
 
-import eventBus from '@kui-shell/core/core/events'
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, eventBus } from '@kui-shell/core'
 
 import { lt as loadTest } from './lt'
 import { addRow } from './table'
 import { initUI, response } from './graphics'
 import * as history from './history'
+
 const debug = Debug('wrk/wrk')
 
 /**
  * Start a load test, hooked up to graphics
  *
  */
-export const start = ({ tab, argvNoOptions: args, parsedOptions: options }: EvaluatorArgs) => {
+export const start = ({ tab, argvNoOptions: args, parsedOptions: options }: Commands.EvaluatorArgs) => {
   const url = args[args.indexOf('wrk') + 1] || options.url
   debug('url', url)
 

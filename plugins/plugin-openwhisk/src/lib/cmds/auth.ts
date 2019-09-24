@@ -22,17 +22,12 @@
 
 import * as Debug from 'debug'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities, Commands, Errors, eventBus, REPL, Tab, Tables } from '@kui-shell/core'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
-import eventBus from '@kui-shell/core/core/events'
-import { partial, Tab } from '@kui-shell/core/webapp/cli'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
+import { partial } from '@kui-shell/core/webapp/cli'
 import expandHomeDir from '@kui-shell/core/util/home'
-import UsageError from '@kui-shell/core/core/usage-error'
-import * as repl from '@kui-shell/core/core/repl'
-import * as namespace from '../models/namespace'
 
+import * as namespace from '../models/namespace'
 import { getClient, owOpts } from './openwhisk-core'
 import { apiHost, auth as authModel } from '../models/auth'
 
@@ -242,7 +237,7 @@ const writeToLocalWskProps = (wskprops): Promise<string> =>
  *
  */
 const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> => {
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     return readFromLocalWskProps(auth, subject).then(writeToLocalWskProps)
   } else {
     return Promise.resolve(auth)
@@ -253,7 +248,7 @@ const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> =
  * List registered namespaces
  *
  */
-const list = async (): Promise<Table> => {
+const list = async (): Promise<Tables.Table> => {
   debug('list')
 
   const list = await namespace.list()
@@ -262,18 +257,18 @@ const list = async (): Promise<Table> => {
   }
 
   const type = 'namespaces'
-  const current = await repl.qexec('wsk namespace current')
+  const current = await REPL.qexec('wsk namespace current')
 
-  const headerRow: Row = {
+  const headerRow: Tables.Row = {
     type,
     name: 'CURRENT',
     outerCSS: 'header-cell very-narrow',
     attributes: [{ value: 'NAMESPACE', outerCSS: 'header-cell' }]
   }
 
-  const body: Row[] = list.map(
-    (ns): Row => {
-      const row: Row = {
+  const body: Tables.Row[] = list.map(
+    (ns): Tables.Row => {
+      const row: Tables.Row = {
         type,
         name: ns.namespace,
         fontawesome: 'fas fa-check',
@@ -285,7 +280,7 @@ const list = async (): Promise<Table> => {
       }
 
       const onclick = async () => {
-        await repl.qexec(`auth switch ${repl.encodeComponent(ns.namespace)}`)
+        await REPL.qexec(`auth switch ${REPL.encodeComponent(ns.namespace)}`)
         row.setSelected()
       }
 
@@ -311,7 +306,7 @@ interface UseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorArgs) =>
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: Commands.EvaluatorArgs) =>
   namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
     if (auth) {
       /**
@@ -374,10 +369,10 @@ const addFn = (tab: Tab, key: string, subject: string) => {
         // otherwise, guide the user towards possibly helpful commands
         const dom = document.createElement('div')
         dom.appendChild(document.createTextNode('Please select a namespace, using '))
-        clicky(dom, 'wsk auth list', repl.pexec)
+        clicky(dom, 'wsk auth list', REPL.pexec)
         dom.appendChild(document.createTextNode(' or '))
         clicky(dom, 'wsk auth add', partial)
-        throw new UsageError(dom)
+        throw new Errors.UsageError(dom)
       }
     })
 }
@@ -386,7 +381,7 @@ const addFn = (tab: Tab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: Commands.EvaluatorArgs) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
@@ -438,7 +433,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
     hostConfig.ignoreCerts = true
     hostConfig.isLocal = true
   } else if (hostConfig.host === 'local' || hostConfig.host === 'localhost') {
-    hostConfig = await repl.qexec('wsk host pinglocal', undefined, undefined, execOptions)
+    hostConfig = await REPL.qexec('wsk host pinglocal', undefined, undefined, execOptions)
   }
 
   const { host, ignoreCerts, isLocal } = await Promise.resolve(hostConfig)
@@ -464,7 +459,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
         if (specifiedKey) {
           // use `wsk auth add` to register the key for this host
           debug('using specified key')
-          return repl.qfexec(`wsk auth add ${specifiedKey}`)
+          return REPL.qexec(`wsk auth add ${specifiedKey}`)
         } else if (auths.length === 0) {
           if (isLocal && !process.env.LOCAL_OPENWHISK) {
             // fixed key for local openwhisk
@@ -473,7 +468,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
             debug('using fixed localhost key')
             const key =
               '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
-            return repl.qfexec(`wsk auth add ${key}`)
+            return REPL.qexec(`wsk auth add ${key}`)
           }
 
           // no keys, yet. enter a special mode requesting further assistance
@@ -495,7 +490,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
         } else if (auths.length === 1) {
           // if there's just one namespace, then select it
           debug('found exactly one auth')
-          return repl.qfexec(`wsk auth switch ${auths[0].namespace}`)
+          return REPL.qexec(`wsk auth switch ${auths[0].namespace}`)
         } else {
           // otherwise, offer a list of them to the user
           debug('found multiple auths')
@@ -586,13 +581,13 @@ const pingLocal = async () => {
  * Register command handlers
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   debug('init')
 
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions, tab }: EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: Commands.EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
   commandTree.listen('/wsk/auth/switch', use('switch'), {
     usage: usage.auth.switch,

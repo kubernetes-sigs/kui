@@ -15,15 +15,13 @@
  */
 
 import * as Debug from 'debug'
-
 import { basename, dirname } from 'path'
 
-import { encodeComponent, qexec, rexec } from '@kui-shell/core/core/repl'
+import { Commands, REPL } from '@kui-shell/core'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
-import { ParsedOptionsFull } from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { persisters } from './persisters'
+
 const debug = Debug('plugins/editor/fetchers')
 
 interface ExecSpec {
@@ -56,8 +54,8 @@ export interface Entity extends MetadataBearing {
 
 export type IFetcher = (
   entityName: string,
-  parsedOptions?: ParsedOptionsFull,
-  execOptions?: ExecOptions,
+  parsedOptions?: Commands.ParsedOptionsFull,
+  execOptions?: Commands.ExecOptions,
   createIfAbsent?: boolean
 ) => Promise<Entity>
 
@@ -75,21 +73,21 @@ export const registerFetcher = (fetcher: IFetcher): void => {
  * Touch a local filepath
  *
  */
-function createFile(filepath: string, execOptions: ExecOptions) {
-  return rexec(`touch ${encodeComponent(filepath)}`, Object.assign({}, execOptions, { forceProxy: true }))
+function createFile(filepath: string, execOptions: Commands.ExecOptions) {
+  return REPL.rexec(`touch ${REPL.encodeComponent(filepath)}`, Object.assign({}, execOptions, { forceProxy: true }))
 }
 
 /**
  * Creates parent directories if needed, then creates a file then edits it
  *
  */
-async function createFilepath(filepath: string, execOptions: ExecOptions) {
+async function createFilepath(filepath: string, execOptions: Commands.ExecOptions) {
   const dir = dirname(filepath)
   const base = basename(filepath)
 
   if (base !== filepath) {
     debug('making parent directories', dir)
-    await rexec(`mkdir -p ${encodeComponent(dir)}`, Object.assign({}, execOptions, { forceProxy: true }))
+    await REPL.rexec(`mkdir -p ${REPL.encodeComponent(dir)}`, Object.assign({}, execOptions, { forceProxy: true }))
   }
 
   return createFile(filepath, execOptions)
@@ -101,13 +99,13 @@ async function createFilepath(filepath: string, execOptions: ExecOptions) {
  */
 export const fetchFile: IFetcher = async (
   filepath: string,
-  parsedOptions: ParsedOptionsFull,
-  execOptions: ExecOptions,
+  parsedOptions: Commands.ParsedOptionsFull,
+  execOptions: Commands.ExecOptions,
   createIfAbsent: boolean
 ): Promise<Entity> => {
   let stats: { isDirectory: boolean; filepath: string; data: string }
   try {
-    stats = await qexec(`fstat ${encodeComponent(filepath)} --with-data`)
+    stats = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)} --with-data`)
   } catch (err) {
     debug('error code', err.code)
     if (err.code === 404 && createIfAbsent) {
@@ -148,8 +146,8 @@ export const fetchFile: IFetcher = async (
  */
 export const fetchEntity = async (
   entityName: string,
-  parsedOptions: ParsedOptionsFull,
-  execOptions: ExecOptions
+  parsedOptions: Commands.ParsedOptionsFull,
+  execOptions: Commands.ExecOptions
 ): Promise<Entity> => {
   if (!parsedOptions.create) {
     // The --create option means don't try any of the other fetchers;

@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { qexec } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { REPL, Tab } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 const debug = Debug('plugins/wskflow/util')
@@ -58,7 +57,7 @@ export const textualPropertiesOfCode = (code: string): TextualProperties => {
 export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
-  const isPartOfRule = await qexec('wsk rule list')
+  const isPartOfRule = await REPL.qexec('wsk rule list')
     .then(rules =>
       rules.find(({ action: ruleAction }) => {
         return ruleAction.name === name && ruleAction.path === namespace

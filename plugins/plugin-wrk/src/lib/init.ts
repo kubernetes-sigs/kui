@@ -20,7 +20,7 @@ import { join } from 'path'
 import { spawn } from 'child_process'
 import { exists, move, remove } from 'fs-extra'
 
-import { pexec as $, encodeComponent } from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 import { userDataDir } from '@kui-shell/core/core/userdata'
 const debug = Debug('wrk/init')
 
@@ -171,7 +171,7 @@ const checkWrk = async ({ parsedOptions }) => {
     const clicky = document.createElement('span')
     clicky.className = 'clickable clickable-blatant'
     clicky.innerText = wrkExec()
-    clicky.onclick = () => $(`ls ${encodeComponent(wrkExec())}`)
+    clicky.onclick = () => REPL.pexec(`ls ${REPL.encodeComponent(wrkExec())}`)
     msg.appendChild(clicky)
 
     return msg
@@ -184,7 +184,7 @@ const checkWrk = async ({ parsedOptions }) => {
     const clicky = document.createElement('span')
     clicky.className = 'clickable clickable-blatant'
     clicky.innerText = 'wrk init'
-    clicky.onclick = () => $('wrk init')
+    clicky.onclick = () => REPL.pexec('wrk init')
     msg.appendChild(clicky)
 
     return msg

@@ -25,7 +25,7 @@
 
 import * as parse from 'parse-duration'
 
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 const MILLIS_PER_SECOND = 1000
 
@@ -47,12 +47,12 @@ const doEvery = async ({ argv }) => {
   const safeTimeSpec = timeSpecString.replace(/"/, '').replace(/'/, '') // no quotes
 
   try {
-    await repl.qexec(`wsk trigger get ${triggerName}`, null, null, {
+    await REPL.qexec(`wsk trigger get ${triggerName}`, null, null, {
       noRetry: true
     })
   } catch (err) {
     if (err.statusCode === 404) {
-      await repl.qexec(
+      await REPL.qexec(
         `wsk trigger create ${triggerName} --feed /whisk.system/alarms/alarm -a pretty "every ${safeTimeSpec}" -p cron "${cron}"`
       )
     } else {
@@ -60,7 +60,7 @@ const doEvery = async ({ argv }) => {
     }
   }
 
-  return repl.qfexec(`wsk rule update ${ruleName} ${triggerName} ${actionName}`)
+  return REPL.qexec(`wsk rule update ${ruleName} ${triggerName} ${actionName}`)
 }
 
 /**

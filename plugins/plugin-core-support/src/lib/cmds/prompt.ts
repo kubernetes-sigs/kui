@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 import { prompt } from '@kui-shell/core/webapp/cli'
 
 const debug = Debug('plugins/core-support/prompt')
@@ -36,7 +36,7 @@ const usage = {
  * The command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/prompt',
     ({ argvNoOptions, block, nextBlock, tab }) => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UsageModel } from '@kui-shell/core/core/usage-error'
+import { Errors } from '@kui-shell/core'
 
 /** list of related commands */
 const all = ['compose', 'new', 'edit']
@@ -24,7 +24,7 @@ const allExcept = (cmd: string): string[] => all.filter(_ => _ !== cmd)
  * Usage model for the editor plugin
  *
  */
-export const toplevelUsage: UsageModel = {
+export const toplevelUsage: Errors.UsageModel = {
   title: 'Editing operations',
   header: 'These commands will help you edit existing or create new assets',
   example: 'editor <command>',
@@ -32,7 +32,7 @@ export const toplevelUsage: UsageModel = {
   available: [{ command: 'edit', docs: 'Edit an existing file or entity' }]
 }
 
-export const editUsage = (command: string): UsageModel => ({
+export const editUsage = (command: string): Errors.UsageModel => ({
   command,
   strict: command,
   title: 'Editor',

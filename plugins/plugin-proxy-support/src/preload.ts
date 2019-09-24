@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { inBrowser, assertHasProxy, assertLocalAccess } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import { isDisabled } from './lib/proxy-executor'
@@ -28,15 +28,17 @@ const debug = Debug('plugins/proxy-support/preload')
  *
  */
 export const registerCapability: CapabilityRegistration = async () => {
-  if (inBrowser()) {
-    const { config } = await import('@kui-shell/core/core/settings')
+  if (Capabilities.inBrowser()) {
+    const {
+      Settings: { config }
+    } = await import('@kui-shell/core')
     debug('config', config)
 
     if (!isDisabled(config['proxyServer'])) {
       // notify the Capabilities manager that we have extended the
       // capabilities of Kui
-      assertHasProxy()
-      assertLocalAccess()
+      Capabilities.assertHasProxy()
+      Capabilities.assertLocalAccess()
     }
   }
 }
@@ -46,16 +48,18 @@ export const registerCapability: CapabilityRegistration = async () => {
  *
  */
 export default async () => {
-  if (inBrowser()) {
-    const { config } = await import('@kui-shell/core/core/settings')
+  if (Capabilities.inBrowser()) {
+    const {
+      Settings: { config }
+    } = await import('@kui-shell/core')
     debug('config', config)
 
     if (!isDisabled(config['proxyServer'])) {
       const ProxyEvaluator = (await import('./lib/proxy-executor')).default
-      const { setEvaluatorImpl } = await import('@kui-shell/core/core/repl')
+      const { REPL } = await import('@kui-shell/core')
 
       debug('attempting to establish our proxy executor')
-      setEvaluatorImpl(new ProxyEvaluator())
+      REPL.setEvaluatorImpl(new ProxyEvaluator())
     }
   }
 }

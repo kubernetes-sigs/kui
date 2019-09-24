@@ -22,9 +22,10 @@
 
 import * as Debug from 'debug'
 
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { parseOptions, getClient, owOpts } from './openwhisk-core'
+
 const debug = Debug('plugins/openwhisk/cmds/load-test')
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -179,7 +180,7 @@ const loadtest = (verb: string) => ({
   argvNoOptions: argv,
   parsedOptions,
   execOptions
-}: EvaluatorArgs) => {
+}: Commands.EvaluatorArgs) => {
   const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
@@ -283,7 +284,7 @@ const loadtest = (verb: string) => ({
 }
 
 /** this is the auth body */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   const loadtestCmd = commandTree.listen('/wsk/testing/lt', loadtest('lt'), {
     usage: {
       command: 'lt',

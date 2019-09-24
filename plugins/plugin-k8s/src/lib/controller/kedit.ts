@@ -17,29 +17,22 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import * as Debug from 'debug'
-
 import { basename, dirname, join } from 'path'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+
+import { Capabilities, Commands, i18n, REPL, Tab, Tables } from '@kui-shell/core'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { Table } from '@kui-shell/core/webapp/models/table'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 import { get as relevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
-import { encodeComponent, pexec, qexec } from '@kui-shell/core/core/repl'
 
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
-
 import { statusButton } from '../view/modes/status'
 import { formatEntity } from '../view/formatEntity'
 import generateForm from '../view/form'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('k8s/controller/kedit')
 
 const usage = {
@@ -66,7 +59,7 @@ const usage = {
 const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   debug('showing one resource', yaml)
 
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-k8s/web/css/main.css').toString(),
       key: 'kedit'
@@ -147,7 +140,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   const openInEditor = () => {
     debug('openInEditor', yaml.metadata.name)
 
-    return qexec(
+    return REPL.qexec(
       `edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
       undefined,
       undefined,
@@ -176,21 +169,23 @@ const showAsTable = async (
   yamls: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
   filepathAsGiven: string,
   parsedOptions
-): Promise<Table> => {
+): Promise<Tables.Table> => {
   debug('showing as table', yamls)
 
   const ourOptions = {
     'no-status': true,
-    onclickFn: kubeEntity => {
+    onclickFn: (kubeEntity: KubeResource) => {
       return evt => {
         evt.stopPropagation() // row versus name click handling; we don't want both
-        return pexec(`kedit ${encodeComponent(filepathAsGiven)} ${encodeComponent(kubeEntity.metadata.name)}`)
+        return REPL.pexec(
+          `kedit ${REPL.encodeComponent(filepathAsGiven)} ${REPL.encodeComponent(kubeEntity.metadata.name)}`
+        )
       }
     }
   }
 
   return Promise.all(yamls.map(formatEntity(Object.assign({}, parsedOptions, ourOptions)))).then(formattedEntities => {
-    return new Table({ body: formattedEntities })
+    return new Tables.Table({ body: formattedEntities })
   })
 }
 
@@ -198,7 +193,7 @@ const showAsTable = async (
  * kedit command handler
  *
  */
-const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
+const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
@@ -216,7 +211,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
       throw new Error('The specified file is empty')
     } else if (yamls.filter(({ apiVersion, kind }) => apiVersion && kind).length === 0) {
       debug('The specified file does not contain any Kubernetes resource definitions')
-      return qexec(`edit "${filepathAsGiven}"`)
+      return REPL.qexec(`edit "${filepathAsGiven}"`)
     } else if (yamls.length > 1 && !resource) {
       return showAsTable(yamls, filepathAsGiven, parsedOptions)
     } else {
@@ -229,7 +224,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
     }
   } catch (err) {
     console.error('error parsing yaml')
-    return qexec(`edit "${filepathAsGiven}"`)
+    return REPL.qexec(`edit "${filepathAsGiven}"`)
   }
 }
 
@@ -237,7 +232,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: EvaluatorArgs) => {
  * Register the commands
  *
  */
-const registration = (commandTree: CommandRegistrar) => {
+const registration = (commandTree: Commands.Registrar) => {
   commandTree.listen('/k8s/kedit', kedit, {
     usage: usage.kedit,
     noAuthOk: ['openwhisk']

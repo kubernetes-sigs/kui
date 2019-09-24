@@ -15,14 +15,10 @@
  */
 
 import * as Debug from 'debug'
-
-import eventBus from '@kui-shell/core/core/events'
-import UsageError from '@kui-shell/core/core/usage-error'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-
 import * as path from 'path'
+
+import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { Capabilities, Commands, Errors, eventBus } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/zoom')
 
@@ -79,7 +75,7 @@ const _set = newZoom => {
     main.setAttribute('data-zoom', newZoom)
     // maybe? repl.scrollIntoView()
   } else {
-    throw new UsageError({
+    throw new Errors.UsageError({
       message: 'Unsupported zoom level',
       usage: usage.set
     })
@@ -100,7 +96,7 @@ const _set = newZoom => {
 
   return true
 }
-const set = ({ argvNoOptions }: EvaluatorArgs) => {
+const set = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }
@@ -153,7 +149,7 @@ const get = () => {
  * Plugin registration
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/zoom/get', get, { usage: usage.get })
   commandTree.listen('/zoom/set', set, { usage: usage.set })
   commandTree.listen('/zoom/reset', reset, { usage: usage.reset })
@@ -168,7 +164,7 @@ export default (commandTree: CommandRegistrar) => {
   //
   // inject our CSS
   //
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
       key: 'zoom.css'

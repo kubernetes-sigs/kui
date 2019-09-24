@@ -21,7 +21,7 @@ import { dirname, resolve as pathResolve } from 'path'
 import { Parser } from 'htmlparser2/lib/Parser'
 
 import expandHomeDir from '@kui-shell/core/util/home'
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 /**
  * Deploy a linked asset
@@ -33,7 +33,7 @@ const link = (dir, file) =>
     lstat(filepath, (err, stats) => {
       if (stats) {
         const mime = file.endsWith('.js') ? '.webjs' : ''
-        repl.qexec(`let ${file}${mime} = ${filepath}`).then(resolve, reject)
+        REPL.qexec(`let ${file}${mime} = ${filepath}`).then(resolve, reject)
       }
       if (err) {
         resolve()

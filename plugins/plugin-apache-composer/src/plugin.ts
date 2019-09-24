@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import sessionList from './lib/controller/cmd/session-list'
 import sessionGet from './lib/controller/cmd/session-get'
@@ -33,7 +33,7 @@ import flowCommand from './lib/controller/cmd/flowCommand'
 
 const debug = Debug('plugin/apache-composer/init')
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   debug('initializing')
 
   commandTree.subtree('/composer', { usage: usage.composer })

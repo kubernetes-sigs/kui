@@ -15,13 +15,12 @@
  */
 
 import * as Debug from 'debug'
-
 import * as path from 'path'
 import { remove } from 'fs-extra'
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import compile from '@kui-shell/core/core/plugin-assembler'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { success } from '../util'
 import { remove as usage } from '../../usage'
@@ -30,7 +29,7 @@ debug('loading')
 
 debug('finished module imports')
 
-const doRemove = ({ argvNoOptions }: EvaluatorArgs) => {
+const doRemove = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)
@@ -48,7 +47,7 @@ const doRemove = ({ argvNoOptions }: EvaluatorArgs) => {
     .then(removedCommands => success('removed', 'will no be longer available, after reload', removedCommands))
 }
 
-module.exports = (commandTree: CommandRegistrar) => {
+module.exports = (commandTree: Commands.Registrar) => {
   const cmd = commandTree.listen('/plugin/remove', doRemove, {
     usage: usage('remove')
   })

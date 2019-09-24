@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/k8s/preload')
 debug('loading')
 
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 /**
@@ -26,7 +26,7 @@ import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
  *
  */
 export const registerCapability: CapabilityRegistration = async () => {
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     debug('register capabilities for browser')
     const { restoreAuth } = await import('./lib/model/auth')
     restoreAuth()
@@ -38,7 +38,7 @@ export const registerCapability: CapabilityRegistration = async () => {
  *
  */
 export default async () => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     const registerSidecarMode = (await import('@kui-shell/core/webapp/views/registrar/modes')).default
     Promise.all([
       import('./lib/view/modes/pods')

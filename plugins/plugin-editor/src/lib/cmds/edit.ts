@@ -25,10 +25,8 @@ import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { CommandRegistrar, ParsedOptionsFull } from '@kui-shell/core/models/command'
+import { Commands, Tab } from '@kui-shell/core'
 
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
 const debug = Debug('plugins/editor/cmds/edit')
 
 // so that users of the exported `edit` command have access to our
@@ -47,8 +45,8 @@ const editCmd = async ({
 }: {
   tab: Tab
   argvNoOptions: string[]
-  parsedOptions: ParsedOptionsFull
-  execOptions: ExecOptions
+  parsedOptions: Commands.ParsedOptionsFull
+  execOptions: Commands.ExecOptions
 }) => {
   debug('edit command execution started', execOptions)
 
@@ -96,7 +94,12 @@ const editCmd = async ({
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (tab: Tab, entity: EditorEntity, options: ParsedOptionsFull, execOptions: ExecOptions) =>
+export const edit = (
+  tab: Tab,
+  entity: EditorEntity,
+  options: Commands.ParsedOptionsFull,
+  execOptions: Commands.ExecOptions
+) =>
   editCmd({
     tab,
     argvNoOptions: [],
@@ -108,7 +111,7 @@ export const edit = (tab: Tab, entity: EditorEntity, options: ParsedOptionsFull,
     })
   })
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // command registration: edit an existing entity
   commandTree.listen('/editor/edit', editCmd, {
     usage: usage.editUsage('edit'),

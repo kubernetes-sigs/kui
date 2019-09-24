@@ -27,8 +27,7 @@
 
 import * as Debug from 'debug'
 
-import { CommandHandler, CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
-import * as repl from '@kui-shell/core/core/repl'
+import { Commands, REPL } from '@kui-shell/core'
 
 import { actions } from '../openwhisk-usage'
 import { synonyms } from '../../models/synonyms'
@@ -49,7 +48,7 @@ const docs = () => ({
  * record. One thing these partial records lack is logs.
  *
  */
-const fetchActivation = partialActivation => repl.qfexec(`wsk activations await ${partialActivation.activationId}`)
+const fetchActivation = partialActivation => REPL.qexec(`wsk activations await ${partialActivation.activationId}`)
 const fetchFromError = error => {
   if (error['statusCode'] === 502) {
     // then this is a action error, display it as an activation failure
@@ -65,7 +64,7 @@ const fetchFromError = error => {
  *
  *
  */
-const respond = (options: ParsedOptions) => response => {
+const respond = (options: Commands.ParsedOptions) => response => {
   debug('responding to caller', response)
 
   if (options.quiet) {
@@ -85,7 +84,7 @@ const respond = (options: ParsedOptions) => response => {
  * impl to perform a blocking invocation.
  *
  */
-const doInvoke = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
+const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.EvaluatorArgs) => {
   if (!opts.argv.find(opt => opt === '-b' || opt === '-r' || opt === '--blocking' || opt === '--result')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
@@ -115,7 +114,7 @@ const doInvoke = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
  * `invoke.
  *
  */
-const doAsync = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
+const doAsync = (rawInvoke: Commands.CommandHandler) => (opts: Commands.EvaluatorArgs) => {
   const idx = opts.argv.findIndex(arg => arg === 'async')
   opts.argv[idx] = 'invoke'
   opts.command = opts.command.slice(0).replace(/^async/, 'invoke') // clone it, via slice, to avoid contaminating command history
@@ -129,7 +128,7 @@ const doAsync = (rawInvoke: CommandHandler) => (opts: EvaluatorArgs) => {
  * delegate, i.e. the underlying invoke impl.
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   const rawInvoke = await commandTree.find('/wsk/action/invoke') // this is the command impl we're overriding, we'll delegate to it
   const rawHandler = rawInvoke.$
   const syncInvoke = doInvoke(rawHandler) // the command handler for sync invokes

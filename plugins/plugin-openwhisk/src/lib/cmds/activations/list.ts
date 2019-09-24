@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import { registerListView } from '@kui-shell/core/webapp/cli'
 
 import { activations as usage } from '../openwhisk-usage'
@@ -84,7 +84,7 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
 }
 
 export default (commandTree, wsk) => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     registerListView('activations', renderActivationListView)
 
     // for now, until we have updated the composer plugin

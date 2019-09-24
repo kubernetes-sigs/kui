@@ -15,13 +15,12 @@
  */
 
 import * as Debug from 'debug'
-
 import * as colors from 'colors/safe'
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import * as cli from '@kui-shell/core/webapp/cli'
+
 const debug = Debug('plugins/plugin-manager/util')
-debug('loading')
 
 /**
  * Return a message for the REPL, asking the user to reload
@@ -34,8 +33,8 @@ export const success = (operation, availableMessage, updatedCommands) => {
   if (operation !== false) {
     const installed = operation ? `The plugin has been ${operation}.` : ''
 
-    msg.appendChild(document.createTextNode(isHeadless() ? colors.blue(installed) : installed))
-    if (!isHeadless()) {
+    msg.appendChild(document.createTextNode(Capabilities.isHeadless() ? colors.blue(installed) : installed))
+    if (!Capabilities.isHeadless()) {
       msg.appendChild(document.createTextNode(' Please '))
       msg.appendChild(clicky)
       msg.appendChild(document.createTextNode(' to complete the installation.'))

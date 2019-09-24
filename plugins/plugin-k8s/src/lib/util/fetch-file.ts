@@ -18,13 +18,12 @@ import * as Debug from 'debug'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
-import { CodedError } from '@kui-shell/core/models/errors'
+import { Capabilities, Errors } from '@kui-shell/core'
 
 const debug = Debug('k8s/util/fetch-file')
 
 async function needle(method: 'get', url: string): Promise<{ statusCode: number; body: string }> {
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     debug('fetch via xhr')
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
@@ -41,7 +40,7 @@ async function needle(method: 'get', url: string): Promise<{ statusCode: number;
       })
       xhr.send()
     })
-  } else if (isHeadless()) {
+  } else if (Capabilities.isHeadless()) {
     debug('fetch via needle')
     const needle = await import('needle')
     return needle(method, url, { follow_max: 10 }).then(_ => ({ statusCode: _.statusCode, body: _.body }))
@@ -70,7 +69,7 @@ async function needle(method: 'get', url: string): Promise<{ statusCode: number;
           if (response.statusCode < 300) {
             resolve({ statusCode, body })
           } else {
-            const error: CodedError = new Error(body)
+            const error: Errors.CodedError = new Error(body)
             error.statusCode = statusCode
             reject(error)
           }

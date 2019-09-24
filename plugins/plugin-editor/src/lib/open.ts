@@ -15,15 +15,11 @@
  */
 
 import * as Debug from 'debug'
-
 import * as path from 'path'
 import * as events from 'events'
-
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import globalEventBus from '@kui-shell/core/core/events'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities, eventBus as globalEventBus, Tab } from '@kui-shell/core'
 import { injectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
 import {
   currentSelection,
@@ -150,7 +146,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
   }
 
   if (!pre2) {
-    if (!inBrowser()) {
+    if (!Capabilities.inBrowser()) {
       const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
       injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
     }
@@ -351,7 +347,9 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
     }
   } /* end of updater */
 
-  const initEditor = inBrowser() ? (await import('./init/esm')).default : (await import('./init/amd')).default
+  const initEditor = Capabilities.inBrowser()
+    ? (await import('./init/esm')).default
+    : (await import('./init/amd')).default
 
   // once the editor is ready, return a function that can populate it
   return initEditor(editorWrapper, options).then(updater)

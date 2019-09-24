@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { i18n } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import makeButton from './button'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
 
 export const createResourceButton = (fn?): SidecarMode =>

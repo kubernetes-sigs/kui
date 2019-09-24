@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { Streamable } from '@kui-shell/core/webapp/cli'
 import { MixedResponse } from '@kui-shell/core/models/entity'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { Commands } from '@kui-shell/core'
 
 import { preprocessTable, formatTable } from './formatTable'
 
@@ -46,7 +46,7 @@ export const format = async (
   options,
   response: string,
   stdout: (msg: Streamable) => void,
-  execOptions: ExecOptions
+  execOptions: Commands.ExecOptions
 ) => {
   debug('nested?', execOptions.nested)
   debug('command', command)

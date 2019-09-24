@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/preload')
 debug('loading')
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities, Tab } from '@kui-shell/core'
 
 import { lockIcon, edit, registerFetcher } from '@kui-shell/plugin-editor'
 import { addActionMode } from '@kui-shell/plugin-openwhisk'
@@ -33,7 +32,7 @@ debug('done loading prereqs')
 export default async () => {
   debug('initializing')
 
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
 
     const { persisters } = await import('./lib/cmds/new')

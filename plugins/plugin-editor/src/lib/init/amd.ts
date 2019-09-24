@@ -16,7 +16,7 @@
 
 import * as path from 'path'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
@@ -65,7 +65,7 @@ export default (editorWrapper: HTMLElement, options) => {
             amdRequire = global['require']
             global['require'] = nodeRequire
 
-            if (!inBrowser()) {
+            if (!Capabilities.inBrowser()) {
               const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
 
               amdRequire.config({

@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as path from 'path'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+
 import * as Debug from 'debug'
+import * as path from 'path'
+
+import { Capabilities } from '@kui-shell/core'
+
 const debug = Debug('plugins/apache-composer/initRequirePath')
 
 // help compositions find our openwhisk-composer module
 export default async () => {
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     debug('adding node_modules to the require module path')
     const appModulePath = await import('app-module-path')
 

@@ -15,24 +15,18 @@
  */
 
 import * as Debug from 'debug'
-
 import * as fs from 'fs'
 import * as path from 'path'
 
-import * as usage from './preview-usage'
-
-import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Capabilities, Commands, REPL, Tab } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
+import * as usage from './preview-usage'
 import { codeViewMode, vizAndfsmViewModes } from '../../utility/decorate'
 import { ast as astBadge } from '../../utility/badges'
 import { invalidFSM, unknownInput } from '../../utility/messages'
@@ -60,13 +54,13 @@ interface CompositionWithCode {
  * handlers.
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   const readFile = (input: string): Promise<string> =>
     // eslint-disable-next-line no-async-promise-executor
     new Promise(async (resolve, reject) => {
       const filepath = findFile(expandHomeDir(input))
 
-      if (!inBrowser()) {
+      if (!Capabilities.inBrowser()) {
         debug('readFile in headless mode or for electron')
         fs.readFile(filepath, (err, data) => {
           if (err) {
@@ -101,7 +95,13 @@ export default (commandTree: CommandRegistrar) => {
       }
     })
 
-  const render = (tab: Tab, input: string, options: ParsedOptions, execOptions: ExecOptions, mode: string) =>
+  const render = (
+    tab: Tab,
+    input: string,
+    options: Commands.ParsedOptions,
+    execOptions: Commands.ExecOptions,
+    mode: string
+  ) =>
     new Promise((resolve, reject) => {
       debug('options', options)
 
@@ -266,7 +266,7 @@ export default (commandTree: CommandRegistrar) => {
     execOptions,
     argvNoOptions,
     parsedOptions: options
-  }: EvaluatorArgs) =>
+  }: Commands.EvaluatorArgs) =>
     new Promise((resolve, reject) => {
       const idx = argvNoOptions.indexOf(cmd)
       const inputFile = argvNoOptions[idx + 1]
@@ -277,7 +277,7 @@ export default (commandTree: CommandRegistrar) => {
       if (options.c) {
         // then the user wants to see the code and preview side-by-side
         debug('delegating to editor')
-        return resolve(repl.qexec(`compose ${path.basename(inputFile)} --simple --readOnly --template "${inputFile}"`))
+        return resolve(REPL.qexec(`compose ${path.basename(inputFile)} --simple --readOnly --template "${inputFile}"`))
       }
 
       const input = findFile(expandHomeDir(inputFile))
@@ -295,7 +295,7 @@ export default (commandTree: CommandRegistrar) => {
             return error
           }
 
-          if (!inBrowser()) {
+          if (!Capabilities.inBrowser()) {
             fs.stat(input, err => {
               if (err) {
                 reject(ENOENT())
@@ -347,12 +347,12 @@ export default (commandTree: CommandRegistrar) => {
 
           // and set up a file watcher to re-render upon change of the file
           if (!execOptions || !execOptions.alreadyWatching) {
-            if (!inBrowser()) {
+            if (!Capabilities.inBrowser()) {
               const chokidar = await import('chokidar')
               chokidar.watch(input).on('change', path => {
                 debug('change observed to file', path)
 
-                repl.pexec(`${cmd} ${path} ${optionsToString(options)}`, {
+                REPL.pexec(`${cmd} ${path} ${optionsToString(options)}`, {
                   echo: false,
                   alreadyWatching: true,
                   noHistory: true

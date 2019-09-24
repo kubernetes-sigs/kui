@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import { dirname, join } from 'path'
 
 export default () => {
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(),
       key: 'wskflow'

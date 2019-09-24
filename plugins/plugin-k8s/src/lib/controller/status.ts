@@ -15,29 +15,20 @@
  */
 
 import * as Debug from 'debug'
-
 import { basename, join } from 'path'
 import { safeLoadAll as parseYAML } from 'js-yaml'
 
 import { findFile } from '@kui-shell/core/core/find-file'
 import { flatten } from '@kui-shell/core/core/utility'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { ExecOptions, ParsedOptions } from '@kui-shell/core/models/execOptions'
-import { Row, Table, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
-import { CodedError } from '@kui-shell/core/models/errors'
-import { qexec } from '@kui-shell/core/core/repl'
+import { Errors, Commands, i18n, REPL, Tables } from '@kui-shell/core'
 
 import { withRetryOn404 } from '../util/retry'
 import { isDirectory } from '../util/util'
-
 import { CRDResource, KubeResource } from '../model/resource'
 import { States, FinalState } from '../model/states'
-
 import { formatContextAttr, formatEntity } from '../view/formatEntity'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('k8s/controller/status')
 
 /** administartive core controllers that we want to ignore */
@@ -87,7 +78,7 @@ interface HeaderRow {
   tableCSS?: string
 }
 
-const headerRow = (opts: HeaderRow, kind?: string): Row => {
+const headerRow = (opts: HeaderRow, kind?: string): Tables.Row => {
   debug('headerRow', kind)
 
   const kindAttr = [{ value: 'KIND', outerCSS: 'header-cell not-too-wide entity-kind' }]
@@ -124,7 +115,7 @@ const headerRow = (opts: HeaderRow, kind?: string): Row => {
 }
 
 /** fairly generic error handler */
-function handleError(err: CodedError): CodedError {
+function handleError(err: Errors.CodedError): Errors.CodedError {
   if (err.code === 404) {
     // e.g. no crds in this cluster
   } else {
@@ -134,7 +125,7 @@ function handleError(err: CodedError): CodedError {
 }
 
 /** fairly generic error handler */
-function handleErrorWithSquash<T>(err: CodedError): T[] {
+function handleErrorWithSquash<T>(err: Errors.CodedError): T[] {
   if (err.code === 404) {
     // e.g. no crds in this cluster
     return []
@@ -153,8 +144,8 @@ interface Context {
  * Return an [IContext] model for all known contexts
  * @param {Boolean} fetchAllNS If set to true, fetch all the namespaces of a cluster
  */
-const allContexts = async (execOptions: ExecOptions, { fetchAllNS = false } = {}): Promise<Context[]> => {
-  const table: Table = await qexec(`k8s contexts`, undefined, undefined, execOptions)
+const allContexts = async (execOptions: Commands.ExecOptions, { fetchAllNS = false } = {}): Promise<Context[]> => {
+  const table: Tables.Table = await REPL.qexec(`k8s contexts`, undefined, undefined, execOptions)
 
   if (!fetchAllNS) {
     return table.body.map(({ attributes }) => ({
@@ -166,8 +157,13 @@ const allContexts = async (execOptions: ExecOptions, { fetchAllNS = false } = {}
   return flatten(
     await Promise.all(
       table.body.map(cluster => {
-        const ns: Promise<Context[]> = qexec(`k get ns --context ${cluster.name}`, undefined, undefined, execOptions)
-          .then((nsTable: Table) =>
+        const ns: Promise<Context[]> = REPL.qexec(
+          `k get ns --context ${cluster.name}`,
+          undefined,
+          undefined,
+          execOptions
+        )
+          .then((nsTable: Tables.Table) =>
             nsTable.body.map(({ name }) => ({
               name: cluster.name,
               namespace: name
@@ -196,12 +192,12 @@ const removeDuplicateResources = (L: KubeResource[]) =>
  * Fetch the status for a given list of contexts
  *
  */
-const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: ParsedOptions) => async (
+const getStatusForKnownContexts = (execOptions: Commands.ExecOptions, parsedOptions: Commands.ParsedOptions) => async (
   contexts: Context[] = []
 ) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
-  const currentContext: Promise<string> = qexec(`kubectl config current-context`, undefined, undefined, raw)
+  const currentContext: Promise<string> = REPL.qexec(`kubectl config current-context`, undefined, undefined, raw)
 
   if (contexts.length === 0) {
     const ccName = await currentContext
@@ -218,20 +214,20 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
   debug('getStatusForKnownContexts', contexts)
 
   // format the tables
-  const tables: Promise<Row[][]> = Promise.all(
+  const tables: Promise<Tables.Row[][]> = Promise.all(
     contexts.map(async ({ name, namespace }) => {
       try {
         const inNamespace = namespace ? `-n "${namespace}"` : ''
 
         debug('fetching kubectl get all', name, namespace)
-        const coreResources: Promise<KubeResource[]> = qexec(
+        const coreResources: Promise<KubeResource[]> = REPL.qexec(
           `kubectl get --context "${name}" ${inNamespace} all ${adminCoreFilter} -o json`,
           undefined,
           undefined,
           raw
         ).catch(handleError)
         debug('fetching crds', name, namespace)
-        const crds: CRDResource[] = await qexec(
+        const crds: CRDResource[] = await REPL.qexec(
           `kubectl get --context "${name}" ${inNamespace} crds ${adminCRDFilter} -o json`,
           undefined,
           undefined,
@@ -246,7 +242,7 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
           await Promise.all(
             filteredCRDs.map(crd => {
               const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
-              const resource: Promise<KubeResource[]> = qexec(
+              const resource: Promise<KubeResource[]> = REPL.qexec(
                 `kubectl get --context "${name}" ${inNamespace} ${adminCoreFilter} "${kind}" -o json`,
                 undefined,
                 undefined,
@@ -314,7 +310,9 @@ const getStatusForKnownContexts = (execOptions: ExecOptions, parsedOptions: Pars
  * In case of an error fetching the status of an entity, return something...
  *
  */
-const errorEntity = (execOptions: ExecOptions, base: KubeResource, backupNamespace?: string) => (err: CodedError) => {
+const errorEntity = (execOptions: Commands.ExecOptions, base: KubeResource, backupNamespace?: string) => (
+  err: Errors.CodedError
+) => {
   debug('creating error entity', err.code, base, backupNamespace, err)
 
   if (!base) {
@@ -360,14 +358,14 @@ const errorEntity = (execOptions: ExecOptions, base: KubeResource, backupNamespa
  *   5. in a given file (local or remote)
  *
  */
-interface FinalStateOptions extends ParsedOptions {
+interface FinalStateOptions extends Commands.ParsedOptionsFull {
   'final-state': FinalState
 }
 const getDirectReferences = (command: string) => async ({
   execOptions,
   argvNoOptions,
   parsedOptions
-}: EvaluatorArgs) => {
+}: Commands.EvaluatorArgs) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
   const idx = argvNoOptions.indexOf(command) + 1
@@ -410,7 +408,7 @@ const getDirectReferences = (command: string) => async ({
     debug('status by programmatic parameter', resources)
     const entities = await Promise.all(
       resources.map(_ => {
-        return qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`, undefined, undefined, raw)
+        return REPL.qexec(`kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`, undefined, undefined, raw)
       })
     )
     if (execOptions.raw) {
@@ -432,7 +430,7 @@ const getDirectReferences = (command: string) => async ({
     // note: don't retry the getter on 404 if we're expecting the
     // element (eventually) not to exist
     const getter = () => {
-      return qexec(command, undefined, undefined, raw)
+      return REPL.qexec(command, undefined, undefined, raw)
     }
 
     const kubeEntity = !finalState || finalState === FinalState.OfflineLike ? getter() : withRetryOn404(getter, command)
@@ -478,14 +476,14 @@ const getDirectReferences = (command: string) => async ({
       // each yaml file in the given directory
       return Promise.all(
         yamlsWithMainFirst.map(filepath =>
-          qexec(`k status "${filepath}" --final-state ${finalState}`, undefined, undefined, execOptions)
+          REPL.qexec(`k status "${filepath}" --final-state ${finalState}`, undefined, undefined, execOptions)
         )
       )
     } else if (isDir === undefined) {
       // then the file does not exist; maybe the user specified a resource kind, e.g. k status pods
       debug('status by resource kind', file, name)
 
-      const kubeEntities = qexec(
+      const kubeEntities = REPL.qexec(
         `kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
         undefined,
         undefined,
@@ -523,7 +521,7 @@ const getDirectReferences = (command: string) => async ({
 
       const kubeEntities = Promise.all(
         specs.map(spec => {
-          return qexec(
+          return REPL.qexec(
             `kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`,
             undefined,
             undefined,
@@ -551,9 +549,9 @@ const getDirectReferences = (command: string) => async ({
  *
  */
 const findControlledResources = async (
-  args: EvaluatorArgs,
+  args: Commands.EvaluatorArgs,
   kubeEntities: KubeResource[]
-): Promise<Row[] | KubeResource[]> => {
+): Promise<Tables.Row[] | KubeResource[]> => {
   // debug('findControlledResources', kubeEntities)
 
   const raw = Object.assign({}, args.execOptions, { raw: true })
@@ -563,7 +561,7 @@ const findControlledResources = async (
         kubeEntities
           .map(({ kind, metadata: { labels, namespace } }) => {
             if (labels && labels.app && kind !== 'Pod') {
-              const pods: Promise<KubeResource[]> = qexec(
+              const pods: Promise<KubeResource[]> = REPL.qexec(
                 `kubectl get pods -n "${namespace || 'default'}" -l "app=${labels.app}" -o json`,
                 undefined,
                 undefined,
@@ -596,13 +594,13 @@ const statusTable = entities => {
   if (Array.isArray(entities) && entities.length > 1) {
     const headerRow = entities[0]
     const entitiesRows = entities.slice(1)
-    const header: Row = {
+    const header: Tables.Row = {
       name: headerRow.name,
       attributes: headerRow.attributes,
       outerCSS: headerRow.outerCSS
     }
 
-    return new Table({
+    return new Tables.Table({
       title: headerRow.title,
       noSort: headerRow.noSort,
       tableCSS: headerRow.tableCSS,
@@ -620,7 +618,7 @@ const statusTable = entities => {
  *
  */
 export const status = (command: string) => async (
-  args: EvaluatorArgs
+  args: Commands.EvaluatorArgs
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   // debug('constructing status', args)
@@ -638,8 +636,8 @@ export const status = (command: string) => async (
         ? { tables: direct.map(d => statusTable(d)) }
         : statusTable(direct)
 
-    return doWatch && (isTable(statusResult) || isMultiTable(statusResult))
-      ? formatWatchableTable(statusResult, {
+    return doWatch && (Tables.isTable(statusResult) || Tables.isMultiTable(statusResult))
+      ? Tables.formatWatchableTable(statusResult, {
           refreshCommand,
           watchByDefault: true
         })
@@ -662,8 +660,8 @@ export const status = (command: string) => async (
         // debug('formatted entities', formattedEntities)
         if (direct.headerRow) {
           const statusResult = statusTable([direct.headerRow].concat(...formattedEntities))
-          return doWatch && isTable(statusResult)
-            ? formatWatchableTable(statusResult, {
+          return doWatch && Tables.isTable(statusResult)
+            ? Tables.formatWatchableTable(statusResult, {
                 refreshCommand,
                 watchByDefault: true
               })
@@ -682,8 +680,8 @@ export const status = (command: string) => async (
           const directTable = statusTable([direct.headerRow].concat(formattedEntities))
           const controlledTable = statusTable(controlled)
           const statusResult = { tables: [directTable, controlledTable] }
-          return doWatch && (isTable(statusResult) || isMultiTable(statusResult))
-            ? formatWatchableTable(statusResult, {
+          return doWatch && (Tables.isTable(statusResult) || Tables.isMultiTable(statusResult))
+            ? Tables.formatWatchableTable(statusResult, {
                 refreshCommand,
                 watchByDefault: true
               })
@@ -701,7 +699,7 @@ export const status = (command: string) => async (
  * Register the commands
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   const cmd = commandTree.listen('/k8s/status', status('status'), {
     usage: usage('status'),
     inBrowserOk: true,

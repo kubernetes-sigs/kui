@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { invoke, async } from '../../utility/usage'
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
+import { invoke, async } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   /* command handler for app invoke */
   commandTree.listen(
     `/wsk/app/invoke`,
     ({ command, parsedOptions: options }) => {
-      return repl.qfexec(command.replace('app', 'action')).then(result => view.formatCompositionResult(result, options))
+      return REPL.qexec(command.replace('app', 'action')).then(result => view.formatCompositionResult(result, options))
     },
     { usage: invoke }
   )
@@ -34,7 +33,7 @@ export default async (commandTree: CommandRegistrar) => {
   commandTree.listen(
     `/wsk/app/async`,
     ({ command }) => {
-      return repl.qfexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
+      return REPL.qexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
     },
     { usage: async }
   )

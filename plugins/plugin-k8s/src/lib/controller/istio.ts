@@ -15,12 +15,11 @@
  */
 
 import * as Debug from 'debug'
-
 import { join } from 'path'
 import { exec } from 'child_process'
 
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
+import { Commands, REPL } from '@kui-shell/core'
+
 const debug = Debug('k8s/controller/istio')
 
 /**
@@ -36,7 +35,7 @@ const squash = (err: Error) => {
  * Install istio
  *
  */
-const installIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
+const installIstio106 = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
   const tmp = '/tmp' // FIXME
   const platform = process.platform === 'darwin' ? 'osx' : process.platform === 'win32' ? 'win' : 'linux'
   const version = parsedOptions.version || '1.0.6'
@@ -65,7 +64,7 @@ const installIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
   /* debug('installing crds')
   try {
     const crds = join(installDir, 'install/kubernetes/helm/istio/templates/crds.yaml')
-    await $(`kubectl apply -f ${crds}`)
+    await REPL.rexec(`kubectl apply -f ${crds}`)
   } catch (err) {
     debug('error installing istio CRDs', err.code, err)
     if (err.code === 409) {
@@ -82,7 +81,7 @@ const installIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
 
   debug('installing charts')
   const chart = join(installDir, 'install/kubernetes/helm/istio')
-  return $$(
+  return REPL.qexec(
     `helm install ${chart} --name istio --namespace istio-system --set grafana.enabled=true --set tracing.enabled=true`
   )
 }
@@ -91,14 +90,14 @@ const installIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
  * Uninstall istio
  *
  */
-const uninstallIstio106 = async ({ parsedOptions }: EvaluatorArgs) => {
+const uninstallIstio106 = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
   const version = parsedOptions.version || '1.0.6'
 
   await Promise.all([
-    $(
+    REPL.rexec(
       `kubectl delete -f https://raw.githubusercontent.com/istio/istio/${version}/install/kubernetes/helm/istio/templates/crds.yaml`
     ).catch(squash),
-    $('helm delete --purge istio').catch(squash)
+    REPL.rexec('helm delete --purge istio').catch(squash)
   ])
 
   return true
@@ -113,8 +112,8 @@ const bookinfoYamls =
  *
  */
 const installBookinfo = async () => {
-  await $('kubectl label namespace default istio-injection=enabled --overwrite')
-  return $$(`kubectl apply -f ${bookinfoYamls}`)
+  await REPL.rexec('kubectl label namespace default istio-injection=enabled --overwrite')
+  return REPL.qexec(`kubectl apply -f ${bookinfoYamls}`)
 }
 
 /**
@@ -122,18 +121,24 @@ const installBookinfo = async () => {
  *
  */
 const uninstallBookinfo = async () => {
-  return $$(`kubectl delete -f ${bookinfoYamls}`)
+  return REPL.qexec(`kubectl delete -f ${bookinfoYamls}`)
 }
 
 /**
  * Return the istio ingress URL
  *
  */
-const ingress = async ({ argvNoOptions: args }: EvaluatorArgs) => {
+const ingress = async ({ argvNoOptions: args }: Commands.EvaluatorArgs) => {
   const [ingressHost, ingressPort] = await Promise.all([
-    $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`),
-    $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'`),
-    $(`kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}'`)
+    REPL.rexec(
+      `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+    ),
+    REPL.rexec(
+      `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'`
+    ),
+    REPL.rexec(
+      `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}'`
+    )
   ])
 
   const baseUrl = `http://${ingressHost}:${ingressPort}`
@@ -151,19 +156,19 @@ const ingress = async ({ argvNoOptions: args }: EvaluatorArgs) => {
  *
  */
 const statusBookinfo = async () => {
-  return $$(`k status ${bookinfoYamls}`)
+  return REPL.qexec(`k status ${bookinfoYamls}`)
 }
 
 /**
  * Register the commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.listen('/istio/install', installIstio106, { noAuthOk: true })
   commandTree.listen('/istio/uninstall', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/delete', uninstallIstio106, { noAuthOk: true })
   commandTree.listen('/istio/ingress', ingress, { noAuthOk: true })
-  commandTree.listen('/istio/status', () => $$('k status svc -n istio-system'), { noAuthOk: true })
+  commandTree.listen('/istio/status', () => REPL.qexec('k status svc -n istio-system'), { noAuthOk: true })
 
   commandTree.listen('/bookinfo/install', installBookinfo, { noAuthOk: true })
   commandTree.listen('/bookinfo/create', installBookinfo, { noAuthOk: true })

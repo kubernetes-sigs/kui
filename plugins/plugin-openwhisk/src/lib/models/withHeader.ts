@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultExecOptions, ExecOptions } from '@kui-shell/core/models/execOptions'
-import { Table, Row } from '@kui-shell/core/webapp/models/table'
+import { Commands, Tables } from '@kui-shell/core'
 
 /**
  * Maybe add a header row for tables. If this is a nested call,
@@ -24,7 +23,10 @@ import { Table, Row } from '@kui-shell/core/webapp/models/table'
  * actually wants us to add the header (showHeader).
  *
  */
-export default (rows: Row[], execOptions: ExecOptions = new DefaultExecOptions()): Table => {
+export default (
+  rows: Tables.Row[],
+  execOptions: Commands.ExecOptions = new Commands.DefaultExecOptions()
+): Tables.Table => {
   if (rows.length === 0 || (!execOptions.showHeader && (execOptions.nested || rows[0].type === 'activations'))) {
     return { body: rows }
   } else {
@@ -37,7 +39,7 @@ export default (rows: Row[], execOptions: ExecOptions = new DefaultExecOptions()
     const version =
       type === 'rules' ? cell('rule', 'hide-with-sidecar') : maybeCell('version', 'version', 'hide-with-sidecar')
 
-    const header: Row = {
+    const header: Tables.Row = {
       type,
       name: 'name',
       onclick: false,

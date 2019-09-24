@@ -16,15 +16,12 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { isTable } from '@kui-shell/core/webapp/models/table'
-import { qexec } from '@kui-shell/core/core/repl'
+import { i18n, REPL, Tab, Tables } from '@kui-shell/core'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource, isKubeResource } from '../../model/resource'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
 
 const debug = Debug('k8s/view/modes/events')
@@ -45,11 +42,11 @@ async function getEvents(resource: KubeResource): Promise<string> {
 
     debug('getEvents', cmd)
 
-    return qexec(cmd).then(result => {
+    return REPL.qexec(cmd).then(result => {
       // When using custom-columns, if a pod doesn't have any events,
       // we can't get the 'No resources found.' error from kubectl,
       // so we handle this error by checking whether the table has content
-      if (isTable(result) && !result.body[0]) {
+      if (Tables.isTable(result) && !result.body[0]) {
         return strings('No resources found.')
       }
 

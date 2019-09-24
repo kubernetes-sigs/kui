@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { CodedError } from '@kui-shell/core/models/errors'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, Errors } from '@kui-shell/core'
 
 import { fetchTask } from '../../lib/read'
 
@@ -33,14 +32,14 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
+const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 
   const task = await fetchTask(pipelineName, taskName, parsedOptions.f)
 
   if (!task) {
-    const err: CodedError = new Error('task not found')
+    const err: Errors.CodedError = new Error('task not found')
     err.code = 404
     throw err
   } else if (!taskName) {
@@ -58,7 +57,7 @@ const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Evalua
   }
 }
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/tekton/get/task', getTask('task'), {
     usage: usage('task'),
     noAuthOk: true

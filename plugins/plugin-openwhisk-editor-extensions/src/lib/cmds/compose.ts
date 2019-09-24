@@ -16,10 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Capabilities, Commands, Tab } from '@kui-shell/core'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { loadComposition } from '@kui-shell/plugin-apache-composer'
 import { extension, language, openEditor, respondToRepl } from '@kui-shell/plugin-editor'
@@ -103,7 +101,7 @@ const generateAST = (source, localCodePath) => {
 const addWskflow = (tab: Tab) => opts => {
   debug('addWskflow', opts)
 
-  if (isHeadless()) return opts
+  if (Capabilities.isHeadless()) return opts
 
   const { getEntity, editor, content, eventBus } = opts
   const wskflowContainer = document.createElement('div')
@@ -264,7 +262,7 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
 
       try {
         debug('attempting to read template', template)
-        if (inBrowser()) {
+        if (Capabilities.inBrowser()) {
           if (template.indexOf('@') >= 0) {
             readViaImport()
           } else {
@@ -309,7 +307,7 @@ export const newAction = ({
   _kind = defaults.kind,
   placeholder = undefined,
   placeholderFn = undefined
-}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -325,7 +323,7 @@ export const newAction = ({
   // generate AST, if we were given a template
   const compile = () =>
     type === 'compositions' && options.template
-      ? inBrowser()
+      ? Capabilities.inBrowser()
         ? import(
             '@kui-shell/plugin-apache-composer/samples' +
               findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
@@ -359,7 +357,7 @@ export const newAction = ({
     .then(respondToRepl(undefined, ['is-modified']))
 }
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // command registration: create new app/composition
   commandTree.listen('/editor/compose', newAction(compositionOptions({ cmd: 'compose' })), {
     usage: composeUsage,

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { REPL, Tab, Tables } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { rexec as $ } from '@kui-shell/core/core/repl'
 import { flatten } from '@kui-shell/core/core/utility'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { ResponseObject } from './flow'
@@ -36,11 +34,11 @@ const mode: SidecarMode = {
     const run = _.resource as PipelineRun
 
     const [taskRuns, pods]: [TaskRun[], Pod[]] = await Promise.all([
-      $(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
-      $(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
+      REPL.rexec(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
+      REPL.rexec(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
     ])
 
-    const containers: Row[] = flatten(
+    const containers: Tables.Row[] = flatten(
       pods.map(pod => {
         const taskName = pod.metadata.labels['tekton.dev/task']
         const taskRun = taskRuns.find(_ => _.metadata.labels['tekton.dev/task'] === taskName)
@@ -77,7 +75,7 @@ const mode: SidecarMode = {
       })
     )
 
-    const table: Table = {
+    const table: Tables.Table = {
       title: 'Container Logs',
       body: containers,
       header: {

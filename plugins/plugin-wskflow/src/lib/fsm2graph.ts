@@ -18,8 +18,7 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { REPL, Tab } from '@kui-shell/core'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
@@ -819,7 +818,7 @@ export default async function fsm2graph(
     const array = []
     const names = Object.keys(renderState.actions)
     names.forEach(name => {
-      array.push(repl.qexec(`wsk action get "${name}"`))
+      array.push(REPL.qexec(`wsk action get "${name}"`))
     })
     await Promise.all(array.map(p => p.catch(e => e)))
       .then(result => {

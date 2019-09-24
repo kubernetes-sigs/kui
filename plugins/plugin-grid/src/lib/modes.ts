@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 import { optionsToString } from './util'
 
 /**
@@ -28,7 +28,7 @@ import { optionsToString } from './util'
 const mode = mode => options => ({
   mode,
   direct: entity =>
-    repl.qexec(
+    REPL.qexec(
       `${mode} ${optionsToString(options)}${
         entity && entity.name ? ' ' + entity.name : options.name ? ' ' + options.name : ''
       }`

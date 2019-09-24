@@ -16,11 +16,12 @@
 
 import * as Debug from 'debug'
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { resetCount } from '@kui-shell/core/webapp/cli'
+
 import { TabState } from '../new-tab'
+
 const debug = Debug('plugins/core-support/clear')
 
 const usage = {
@@ -31,8 +32,8 @@ const usage = {
   optional: [{ name: '--keep-current-active', alias: '-k', boolean: true, hidden: true }]
 }
 
-const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
-  if (!isHeadless()) {
+const clear = ({ parsedOptions, tab }: Commands.EvaluatorArgs) => {
+  if (!Capabilities.isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt
       debug('clearing everything, the repl loop will set up the next prompt for us')
@@ -68,7 +69,7 @@ const clear = ({ parsedOptions, tab }: EvaluatorArgs) => {
  * This plugin introduces the /clear command, which clear the consoles
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/clear', clear, {
     usage,
     noAuthOk: true,

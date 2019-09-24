@@ -15,22 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
 import { basename, dirname } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Capabilities, Commands, i18n, REPL, Tab } from '@kui-shell/core'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-bash-like')
-
 const debug = Debug('plugins/bash-like/cmds/open')
 
 /**
@@ -53,10 +47,10 @@ const open = async (tab: Tab, filepath: string) => {
     suffix === 'json'
   ) {
     // open json and javascript files in the editor
-    return qexec(`edit "${filepath}"`)
+    return REPL.qexec(`edit "${filepath}"`)
   } else if (suffix === 'yaml' || suffix === 'yml') {
     // use the k8s plugin to edit yamls
-    return qexec(`kedit "${filepath}"`)
+    return REPL.qexec(`kedit "${filepath}"`)
   } else if (
     suffix === 'png' ||
     suffix === 'jpg' ||
@@ -80,13 +74,13 @@ const open = async (tab: Tab, filepath: string) => {
   } else if (suffix === 'pkl' || suffix === 'sab') {
     throw new Error('Opening of binary files not supported')
   } else {
-    const stats: { isDirectory: boolean; filepath: string; data: string } = await qexec(
-      `fstat ${encodeComponent(filepath)} --with-data`
+    const stats: { isDirectory: boolean; filepath: string; data: string } = await REPL.qexec(
+      `fstat ${REPL.encodeComponent(filepath)} --with-data`
     )
 
     if (stats.isDirectory) {
       debug('trying to open a directory; delegating to ls')
-      return qexec(`ls ${encodeComponent(filepath)}`)
+      return REPL.qexec(`ls ${REPL.encodeComponent(filepath)}`)
     } else {
       const enclosingDirectory = dirname(filepath)
 
@@ -94,7 +88,7 @@ const open = async (tab: Tab, filepath: string) => {
       let name = basename(filepath)
       let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
-      if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
+      if ((suffix === 'adoc' || suffix === 'md') && !Capabilities.isHeadless()) {
         const { title, body } = await markdownify(tab, suffix, data, fullpath)
 
         data = body
@@ -135,7 +129,7 @@ const usage = {
  * Register command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/open',
     ({ tab, argvNoOptions: argv }) => {

@@ -16,16 +16,16 @@
 
 import * as Debug from 'debug'
 
-import UsageError from '@kui-shell/core/core/usage-error'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, Errors } from '@kui-shell/core'
 
 import { create } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 import * as compileUtil from '../../utility/compile'
 import * as client from '../client'
+
 const debug = Debug('plugins/apache-composer/cmd/app-create')
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   /* command handler for app create */
   commandTree.listen(
     `/wsk/app/create`,
@@ -40,7 +40,7 @@ export default async (commandTree: CommandRegistrar) => {
 
         if (!name || !inputFile) {
           debug('insufficient inputs')
-          throw new UsageError({
+          throw new Errors.UsageError({
             message: 'Insufficient inputs',
             usage: create('create'),
             code: 497
@@ -74,7 +74,7 @@ export default async (commandTree: CommandRegistrar) => {
 
         if (!name || !inputFile) {
           debug('insufficient inputs')
-          throw new UsageError({
+          throw new Errors.UsageError({
             message: 'Insufficient inputs',
             usage: create('update'),
             code: 497

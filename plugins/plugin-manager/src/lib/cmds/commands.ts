@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { commands as usage } from '../../usage'
-const debug = Debug('plugins/plugin-manager/cmd/commands')
-debug('loading')
 
-debug('finished loading modules')
-
-const doList = ({ argvNoOptions }: EvaluatorArgs) => {
+const doList = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
   const prescanned = path.join(userDataDir(), 'plugins', '.pre-scanned')
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
@@ -67,7 +60,7 @@ const doList = ({ argvNoOptions }: EvaluatorArgs) => {
         .map(name => ({
           type: 'command',
           name,
-          onclick: () => repl.pexec(name)
+          onclick: name
         }))
     )
     .catch(err => {
@@ -82,6 +75,6 @@ const doList = ({ argvNoOptions }: EvaluatorArgs) => {
   // success(false, `offered by the ${plugin} plugin`, commands))
 }
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/plugin/commands', doList, { usage })
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import * as chart from './chart'

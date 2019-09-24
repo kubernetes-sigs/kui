@@ -254,5 +254,5 @@ export interface CommandRegistrar {
   listen: CommandListener
   synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) => void
   subtree: (route: string, options: CommandOptions) => Command
-  subtreeSynonym: (route: string, masterTree: Command) => void
+  subtreeSynonym: (route: string, masterTree: Command, options?: CommandOptions) => void
 }

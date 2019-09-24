@@ -15,10 +15,9 @@
  */
 
 import * as Debug from 'debug'
-
 import { basename } from 'path'
 
-import { pexec } from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 import { extension } from '@kui-shell/plugin-editor'
 
 const debug = Debug('plugins/openwhisk-editor-extensions/model/composition-persister')
@@ -120,7 +119,11 @@ export const persister = {
             if (err) {
               reject(err)
             } else {
-              return pexec(`wsk app update ${app.name} ${filepath} --kind ${app.exec.kind}`)
+              return REPL.pexec(
+                `wsk app update ${REPL.encodeComponent(app.name)} ${REPL.encodeComponent(filepath)} --kind ${
+                  app.exec.kind
+                }`
+              )
                 .then(app => {
                   cleanup()
                   resolve(app)

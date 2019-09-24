@@ -15,22 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
 import { dirname, join } from 'path'
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import eventBus from '@kui-shell/core/core/events'
-import UsageError from '@kui-shell/core/core/usage-error'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { flatten } from '@kui-shell/core/core/utility'
-import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Capabilities, Commands, Errors, eventBus, REPL, Tab } from '@kui-shell/core'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import { ActivationListTable, currentNamespace } from '@kui-shell/plugin-openwhisk'
 
@@ -178,8 +172,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   const uptoArg = upto ? ` --upto ${upto}` : '' // this is part of the openwhisk API; upto a millis since epoch
   const sinceArg = since ? ` --since ${since}` : '' // ibid; after a millis since epoch
   const fetch = extraSkip =>
-    repl
-      .qexec(`wsk activation list ${nameFilter} --skip ${skip + extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`)
+    REPL.qexec(`wsk activation list ${nameFilter} --skip ${skip + extraSkip} --limit ${batchSize}${uptoArg}${sinceArg}`)
       .then((activations: ActivationListTable) => activations.body)
       .catch(err => {
         // log but swallow errors, so that we can show the user something... hopefully, at least one of the fetches succeeds
@@ -219,8 +212,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
 
   if (name && !nocrawl) {
     // then the user asked to filter; first see if this is an app
-    return repl
-      .qexec(`wsk app get "${name}"`)
+    return REPL.qexec(`wsk app get "${name}"`)
       .then(extractTasks)
       .then(tasks => (all ? tasks.concat([name]) : tasks)) // if options.all, then add the app to the list of actions
       .then(tasks =>
@@ -262,7 +254,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
 /* const fetchActivationDatas = (wsk, _1, _2, rest, fixedTimeRange) => {
     // --raw means return the raw collection, not a repl result
     // --fixedTimeRange will help us in keeping a fixed window of time across redraws
-    return repl.qexec(`mirror query ${rest.join(' ')} --raw --fixedTimeRange ${fixedTimeRange||false}`)
+    return REPL.qexec(`mirror query ${rest.join(' ')} --raw --fixedTimeRange ${fixedTimeRange||false}`)
 } */
 
 /**
@@ -270,7 +262,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
  *
  */
 export const injectContent = () => {
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-grid/web/css/table.css'),
       key: 'grid-visualization.table.css'
@@ -366,14 +358,14 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
   tab,
   argvNoOptions,
   parsedOptions: options
-}: EvaluatorArgs) => {
+}: Commands.EvaluatorArgs) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
   const idx = argvNoOptions.indexOf(cmd)
 
   if (options.help || argvNoOptions[idx + 1] === 'help') {
-    throw new UsageError(usage[cmd])
+    throw new Errors.UsageError(usage[cmd])
   }
 
   if (idx < 0) {

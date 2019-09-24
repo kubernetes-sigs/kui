@@ -19,23 +19,19 @@ import { existsSync, readFileSync } from 'fs'
 import { type as osType } from 'os'
 
 import expandHomeDir from '@kui-shell/core/util/home'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { UsageError, UsageModel } from '@kui-shell/core/core/usage-error'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { flatten } from '@kui-shell/core/core/utility'
-import eventBus from '@kui-shell/core/core/events'
-import { theme as settings } from '@kui-shell/core/core/settings'
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { Capabilities, Commands, Errors, eventBus, Settings, REPL } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import withHeader from '../models/withHeader'
+import { isCRUDable, crudableTypes } from '../models/crudable'
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig, initOW } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
-import * as repl from '@kui-shell/core/core/repl'
+
 import * as historyModel from '@kui-shell/core/models/history'
 import * as namespace from '../models/namespace'
 
@@ -52,7 +48,7 @@ const isLinux = osType() === 'Linux'
 
 debug('modules loaded')
 
-export const getClient = (execOptions: ExecOptions) => {
+export const getClient = (execOptions: Commands.ExecOptions) => {
   if (execOptions && execOptions.credentials && execOptions.credentials.openwhisk) {
     return initOWFromConfig(execOptions.credentials.openwhisk)
   } else {
@@ -64,16 +60,6 @@ export const getClient = (execOptions: ExecOptions) => {
 const noImplicitName = {
   list: true
 }
-
-/** is a given entity type CRUDable? i.e. does it have get and update operations, and parameters and annotations properties? */
-const isCRUDable = {
-  actions: true,
-  packages: true,
-  rules: true,
-  triggers: true
-}
-const crudableTypes = [] // array form of isCRUDable
-for (const type in isCRUDable) crudableTypes.push(type)
 
 // some verbs not directly exposed by the openwhisk npm (hidden in super-prototypes)
 const alreadyHaveGet = { namespaces: true, activations: true }
@@ -469,13 +455,13 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
     //
     if (!entity.onclick) {
       // a postprocess handler might have already added an onclick handler
-      entity.onclick = `wsk ${entity.type} get ${repl.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
+      entity.onclick = `wsk ${entity.type} get ${REPL.encodeComponent(`/${entity.namespace}/${entity.name}`)}`
     }
 
     if (entity.type === 'actions' && entity.prettyType === 'sequence') {
       // add a fun a->b->c rendering of the sequence
-      const action = repl.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
-      const ns = repl.qexec('wsk namespace current')
+      const action = REPL.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
+      const ns = REPL.qexec('wsk namespace current')
 
       entity.prettyVersion = await action.then(async action => {
         if (action.exec && action.exec.components) {
@@ -488,7 +474,7 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
       })
     } else if (entity.type === 'rules') {
       // rule-specific cells
-      const rule = repl.qexec(`wsk rule get "/${entity.namespace}/${entity.name}"`)
+      const rule = REPL.qexec(`wsk rule get "/${entity.namespace}/${entity.name}"`)
 
       entity.status = rule.then(rule => rule.status)
       entity.prettyVersion = await rule.then(rule => `${rule.trigger.name} \u27fc ${rule.action.name}`)
@@ -549,7 +535,7 @@ const standardViewModes = (defaultMode, fn?) => {
       options: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
       argv: string[],
       verb: string,
-      execOptions: ExecOptions
+      execOptions: Commands.ExecOptions
     ) =>
       Object.assign(fn(options, argv, verb, execOptions) || {}, {
         modes: () => makeModes()
@@ -578,13 +564,13 @@ export const owOpts = (options = {}): WskOpts => {
     options['agent'] = agent
   }
 
-  if (settings.userAgent && !process.env.TEST_SPACE && !process.env.TRAVIS) {
+  if (Settings.theme.userAgent && !process.env.TEST_SPACE && !process.env.TRAVIS) {
     // install a User-Agent header, except when running tests
-    debug('setting User-Agent', settings.userAgent)
-    options['User-Agent'] = settings.userAgent
+    debug('setting User-Agent', Settings.theme.userAgent)
+    options['User-Agent'] = Settings.theme.userAgent
   }
 
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     options['noUserAgent'] = true
   }
 
@@ -618,7 +604,7 @@ specials.api = {
 
         // our "something reasonable" is the action impl, but
         // decorated with the name of the API and the verb
-        return repl.qexec(`wsk action get "/${namespace}/${name}"`).then(action =>
+        return REPL.qexec(`wsk action get "/${namespace}/${name}"`).then(action =>
           Object.assign(action, {
             name,
             namespace,
@@ -682,7 +668,7 @@ specials.api = {
         const { action: name, namespace } = api[verb]['x-openwhisk']
 
         // manufacture an entity-like object
-        return repl.qexec(`wsk action get "/${namespace}/${name}"`).then(action =>
+        return REPL.qexec(`wsk action get "/${namespace}/${name}"`).then(action =>
           Object.assign(action, {
             name,
             namespace,
@@ -721,14 +707,14 @@ specials.api = {
                     name,
                     namespace,
                     onclick: () => {
-                      return repl.pexec(`wsk api get ${repl.encodeComponent(name)} ${verb}`)
+                      return REPL.pexec(`wsk api get ${REPL.encodeComponent(name)} ${verb}`)
                     },
                     attributes: [
                       { key: 'verb', value: verb },
                       {
                         key: 'action',
                         value: action,
-                        onclick: () => repl.pexec(`wsk action get ${repl.encodeComponent(actionFqn)}`)
+                        onclick: () => REPL.pexec(`wsk action get ${REPL.encodeComponent(actionFqn)}`)
                       },
                       {
                         key: 'url',
@@ -1079,11 +1065,11 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
+const executor = (commandTree: Commands.Registrar, _entity, _verb, verbSynonym?) => async ({
   argv: argvFull,
   execOptions,
   tab
-}: EvaluatorArgs) => {
+}: Commands.EvaluatorArgs) => {
   let entity = _entity
   let verb = _verb
 
@@ -1183,7 +1169,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
 
   if (entity === 'activations' && verb === 'get' && options.last) {
     // special case for wsk activation get --last
-    return repl.qfexec(`wsk activation last ${typeof options.last === 'string' ? options.last : ''}`)
+    return REPL.qexec(`wsk activation last ${typeof options.last === 'string' ? options.last : ''}`)
   }
 
   if (specials[entity] && specials[entity][verb]) {
@@ -1306,7 +1292,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
             const code = err.statusCode || err.code
             const __usageModel = typeof usage[entity] === 'function' ? usage[entity](entity) : usage[entity]
             const _usageModel = __usageModel.available && __usageModel.available.find(({ command }) => command === verb)
-            const usageModel: UsageModel =
+            const usageModel: Errors.UsageModel =
               _usageModel && typeof _usageModel.fn === 'function' ? _usageModel.fn(verb, entity) : _usageModel
 
             console.error(err)
@@ -1314,7 +1300,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
               debug('no usage model', usage[entity])
               throw err
             } else {
-              throw new UsageError({ message, usage: usageModel, code })
+              throw new Errors.UsageError({ message, usage: usageModel, code })
             }
           }
         })
@@ -1324,7 +1310,7 @@ const executor = (commandTree, _entity, _verb, verbSynonym?) => async ({
 
 /** these are the module's exported functions */
 let self = {}
-let initSelf
+let initSelf: (isReinit: boolean) => Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * Update an entity
@@ -1368,11 +1354,11 @@ export const fillInActionDetails = (Package, type = 'actions') => actionSummary 
     packageName: Package.name,
     namespace: `${Package.namespace}/${Package.name}`,
     kind,
-    onclick: `wsk action get ${repl.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
+    onclick: `wsk action get ${REPL.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
   })
 }
 
-const makeInit = commandTree => async (isReinit = false) => {
+const makeInit = (commandTree: Commands.Registrar) => async (isReinit = false) => {
   debug('init')
 
   // exported API
@@ -1501,7 +1487,7 @@ const makeInit = commandTree => async (isReinit = false) => {
           // "wsk action", which will print out usage (this
           // comes as part of commandTree.subtree
           // registrations)
-          // commandTree.listen(`/wsk/${eee.nickname || eee}/help`, () => repl.qexec(`wsk ${eee.nickname || eee}`), { noArgs: true })
+          // commandTree.listen(`/wsk/${eee.nickname || eee}/help`, () => REPL.qexec(`wsk ${eee.nickname || eee}`), { noArgs: true })
 
           verbs.forEach(vvv => {
             const handler = executor(commandTree, eee.name || api, vvv.name || verb, vvv.nickname || vvv)
@@ -1666,21 +1652,25 @@ const makeInit = commandTree => async (isReinit = false) => {
   // count APIs
   for (const entityType in synonymsTable.entities) {
     synonymsTable.entities[entityType].forEach(syn => {
-      commandTree.listen(`/wsk/${syn}/count`, ({ argvNoOptions, parsedOptions: options, execOptions }) => {
-        const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
-        const overrides = { count: true }
-        delete options._
-        delete options.limit
-        delete options.skip
-        if (name) {
-          overrides['name'] = name
-        }
+      commandTree.listen(
+        `/wsk/${syn}/count`,
+        ({ argvNoOptions, parsedOptions: options, execOptions }) => {
+          const name = argvNoOptions[argvNoOptions.indexOf('count') + 1]
+          const overrides = { count: true }
+          delete options._
+          delete options.limit
+          delete options.skip
+          if (name) {
+            overrides['name'] = name
+          }
 
-        const opts = owOpts(Object.assign({}, options, overrides))
-        const ow = getClient(execOptions)
+          const opts = owOpts(Object.assign({}, options, overrides))
+          const ow = getClient(execOptions)
 
-        return ow[entityType].list(opts).then(res => res[entityType])
-      })
+          return ow[entityType].list(opts).then(res => res[entityType])
+        },
+        {}
+      )
     })
   }
 
@@ -1688,7 +1678,7 @@ const makeInit = commandTree => async (isReinit = false) => {
   return self
 }
 
-export default function(commandTree) {
+export default function(commandTree: Commands.Registrar) {
   initSelf = makeInit(commandTree)
   return initSelf(false)
 }

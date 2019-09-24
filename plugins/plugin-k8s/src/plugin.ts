@@ -25,10 +25,9 @@ import status from './lib/controller/status'
 import istio from './lib/controller/istio'
 import kiali from './lib/controller/kiali'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   return Promise.all([
     auth(commandTree),
     contexts(commandTree),
@@ -36,6 +35,6 @@ export default async (commandTree: CommandRegistrar) => {
     kubectl(commandTree),
     istio(commandTree),
     kiali(commandTree),
-    inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree)
+    Capabilities.inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree)
   ])
 }

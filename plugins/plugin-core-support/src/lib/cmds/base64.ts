@@ -16,7 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
+
 const debug = Debug('plugins/core-support/base64')
 
 /**
@@ -65,7 +66,7 @@ const breakout = (str: string, options) => {
  * The command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   debug('init')
 
   commandTree.listen(

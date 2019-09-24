@@ -37,6 +37,8 @@ app.inst
 *_REMOTE*
 keys
 *flycheck*.ts
+*flycheck*.js
+*flycheck*.js.map
 /build
 
 # these seem to come from node-pty or xterm.js

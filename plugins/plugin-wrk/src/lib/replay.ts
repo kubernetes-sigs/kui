@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import eventBus from '@kui-shell/core/core/events'
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, eventBus, Tab } from '@kui-shell/core'
 
 import * as history from './history'
 import { initUI, response } from './graphics'
@@ -73,7 +71,7 @@ export const replay = (
  * Visualize the most recent data set
  *
  */
-export const last = ({ tab }: EvaluatorArgs) => {
+export const last = ({ tab }: Commands.EvaluatorArgs) => {
   const last = history.last()
   if (!last) {
     throw new Error('You have no load test runs available for viewing')
@@ -86,7 +84,7 @@ export const last = ({ tab }: EvaluatorArgs) => {
  * Visualize the idx-th most recent data set
  *
  */
-export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: EvaluatorArgs) => {
+export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: Commands.EvaluatorArgs) => {
   const idx = args[args.indexOf('show') + 1]
   if (idx === undefined || options.help) {
     console.error(idx, args)

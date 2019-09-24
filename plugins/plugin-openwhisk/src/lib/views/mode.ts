@@ -19,12 +19,12 @@
  *
  */
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Capabilities, Commands, REPL } from '@kui-shell/core'
 import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
+import { synonyms } from '../models/synonyms'
+import { crudableTypes as crudable } from '../models/crudable'
 import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
-import { qexec } from '@kui-shell/core/core/repl'
 
 /**
  * These options help guide the help system; this command needs a
@@ -60,11 +60,11 @@ const idMatch = (entity, entityId) => {
   }
 }
 
-export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => {
+export default async (commandTree: Commands.Registrar) => {
   const switchSidecarMode = (entityType: string, mode: string) => async ({
     argvNoOptions: args,
     tab
-  }: EvaluatorArgs) => {
+  }: Commands.EvaluatorArgs) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection(tab)
 
@@ -91,8 +91,8 @@ export default async (commandTree: CommandRegistrar, { crudable, synonyms }) => 
       }
     } else if (args.length === 3 || args.length === 4) {
       // activation logs xxx or wsk activation logs xxx
-      const activation = await qexec(`wsk ${entityType} get ${entityId}`)
-      if (isHeadless()) {
+      const activation = await REPL.qexec(`wsk ${entityType} get ${entityId}`)
+      if (Capabilities.isHeadless()) {
         return activation[mode]
       } else {
         showEntity(tab, activation, { show: mode })

@@ -15,24 +15,19 @@
  */
 
 import * as Debug from 'debug'
-import { Tab } from '@kui-shell/core/webapp/cli'
+
+import { i18n, REPL, Tab, Tables } from '@kui-shell/core'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
-import { Row } from '@kui-shell/core/webapp/models/table'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
-import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource } from '../../model/resource'
-
 import { TrafficLight } from '../../model/states'
-
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('k8s/view/modes/containers')
 
 /** for drilldown back button */
@@ -82,9 +77,9 @@ export const containersMode: ModeRegistration<KubeResource> = {
  *
  */
 const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
-  const podName = encodeComponent(pod.metadata.name)
-  const containerName = encodeComponent(container.name)
-  const ns = encodeComponent(pod.metadata.namespace)
+  const podName = REPL.encodeComponent(pod.metadata.name)
+  const containerName = REPL.encodeComponent(container.name)
+  const ns = REPL.encodeComponent(pod.metadata.namespace)
 
   // a bit convoluted, so we can delay the call to getActiveView
   return (evt: Event) => {
@@ -103,7 +98,7 @@ const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec
  * Render the table header model
  *
  */
-const headerModel = (resource: Resource): Row => {
+const headerModel = (resource: Resource): Tables.Row => {
   const statuses = resource.resource.status && resource.resource.status.containerStatuses
 
   const specAttrs = [{ value: 'PORTS', outerCSS: 'header-cell pretty-narrow' }]
@@ -129,11 +124,11 @@ const headerModel = (resource: Resource): Row => {
  * Render the table body model
  *
  */
-const bodyModel = (tab: Tab, resource: Resource): Row[] => {
+const bodyModel = (tab: Tab, resource: Resource): Tables.Row[] => {
   const pod = resource.resource
   const statuses = pod.status && pod.status.containerStatuses
 
-  const bodyModel: Row[] = pod.spec.containers
+  const bodyModel: Tables.Row[] = pod.spec.containers
     .map(container => {
       const status = statuses && statuses.find(_ => _.name === container.name)
 
@@ -210,13 +205,13 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
 export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
   debug('renderContainers', command, resource)
 
-  const fetchPod = `kubectl get pod ${encodeComponent(resource.resource.metadata.name)} -n "${
+  const fetchPod = `kubectl get pod ${REPL.encodeComponent(resource.resource.metadata.name)} -n "${
     resource.resource.metadata.namespace
   }" -o json`
   debug('issuing command', fetchPod)
 
   try {
-    const podResource = await qexec(fetchPod)
+    const podResource = await REPL.qexec(fetchPod)
     debug('renderContainers.response', podResource)
 
     return formatTable(tab, {

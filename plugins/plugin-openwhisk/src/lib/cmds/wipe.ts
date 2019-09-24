@@ -16,13 +16,11 @@
 
 import * as Debug from 'debug'
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities, Commands, REPL, Tables } from '@kui-shell/core'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { Table } from '@kui-shell/core/webapp/models/table'
-const debug = Debug('plugins/openwhisk/cmds/wipe')
 import * as cli from '@kui-shell/core/webapp/cli'
-import * as repl from '@kui-shell/core/core/repl'
+
+const debug = Debug('plugins/openwhisk/cmds/wipe')
 
 /**
  * This plugin introduces /wsk/wipe, which helps with removing all
@@ -47,7 +45,7 @@ const logThen = f => (msg: string) => {
 const deleteAllOnce = entities =>
   Promise.all(
     entities.map(entity => {
-      const tryDelete = () => repl.qexec(`wsk ${entity.type} delete "/${entity.namespace}/${entity.name}"`)
+      const tryDelete = () => REPL.qexec(`wsk ${entity.type} delete "/${entity.namespace}/${entity.name}"`)
 
       // with retries...
       return tryDelete()
@@ -74,7 +72,7 @@ const deleteAllOnce = entities =>
  * List the entities of a given entity type (e.g. actions)
  *
  */
-const list = type => repl.qexec(`wsk ${type} list --limit 200`).then((response: Table) => response.body)
+const list = type => REPL.qexec(`wsk ${type} list --limit 200`).then((response: Tables.Table) => response.body)
 
 /**
  * Because we can only list at most 200 entities at a time, we'll need to loop...
@@ -98,7 +96,7 @@ const deleteAllUntilDone = (type: string) => entities => {
  */
 const clean = (type: string, quiet?: boolean) => {
   if (!quiet) {
-    if (isHeadless()) {
+    if (Capabilities.isHeadless()) {
       process.stdout.write('.'['random'])
     } else {
       debug(`Cleaning ${type}`)
@@ -133,13 +131,13 @@ const doWipe = () =>
   doWipe1()
     .then(() => doWipe2())
     .then(() => {
-      if (isHeadless()) {
+      if (Capabilities.isHeadless()) {
         // we did process.stdout.write above, so clear a newline
         console.log('.'['random'])
       }
     })
 
-const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) => {
+const doWipeWithConfirmation = async ({ tab, block, nextBlock }: Commands.EvaluatorArgs) => {
   //
   // first, hide the sidecar
   //
@@ -183,7 +181,7 @@ const doWipeWithConfirmation = async ({ tab, block, nextBlock }: EvaluatorArgs) 
  * This is the exported module
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/wsk/wipe', doWipeWithConfirmation, {
     docs: 'Remove all of your OpenWhisk assets from the current namespace'
   })

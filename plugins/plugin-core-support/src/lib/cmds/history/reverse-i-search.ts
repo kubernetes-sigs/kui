@@ -18,10 +18,8 @@
 
 import * as Debug from 'debug'
 
-import eventBus from '@kui-shell/core/core/events'
 import * as historyModel from '@kui-shell/core/models/history'
 import {
-  Tab,
   getTabFromTarget,
   getBlockOfPrompt,
   getCurrentPrompt,
@@ -30,8 +28,7 @@ import {
   getCurrentPromptLeft
 } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { inBottomInputMode } from '@kui-shell/core/core/settings'
+import { Capabilities, eventBus, Settings, Tab } from '@kui-shell/core'
 
 const debug = Debug('core-support/history/reverse-i-search')
 
@@ -125,7 +122,7 @@ class ActiveISearch {
     if (this.isSearchActive) {
       this.isSearchActive = false
 
-      if (!isCtrlC || inBottomInputMode) {
+      if (!isCtrlC || Settings.inBottomInputMode) {
         unsetUsingCustomPrompt(getBlockOfPrompt(this.prompt))
         if (this.placeholder.parentNode) {
           this.placeholder.parentNode.removeChild(this.placeholder)
@@ -226,7 +223,7 @@ function registerListener() {
     return
   }
 
-  if (inBottomInputMode) {
+  if (Settings.inBottomInputMode) {
     eventBus.on('/core/cli/install-block', (tab: Tab) => {
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']
       if (activeSearch) {
@@ -255,7 +252,7 @@ function registerListener() {
       evt.ctrlKey &&
       (process.platform === 'darwin' ||
         /Macintosh/.test(navigator.userAgent) ||
-        ((!inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
+        ((!Capabilities.inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
     ) {
       const tab = getTabFromTarget(evt.srcElement)
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']

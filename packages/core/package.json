@@ -23,7 +23,7 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "main": "main/main.js",
+  "main": "index.js",
   "bin": {
     "kui": "bin/kui",
     "kubectl-kui": "bin/kubectl-kui"

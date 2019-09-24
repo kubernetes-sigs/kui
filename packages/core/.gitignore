@@ -1,8 +1,10 @@
 build
 dist
+/api/
 /core/
 /main/
 /models/
 /test/
 /util/
 /webapp/
+/index.*

@@ -15,11 +15,10 @@
  */
 
 import * as Debug from 'debug'
-
 import { safeDump } from 'js-yaml'
 import { exec } from 'child_process'
 
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 import { MetadataBearingByReference } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -62,7 +61,7 @@ function getBasicInfo(releaseName: string): Promise<MetadataBearing> {
   })
 }
 
-export default async function helmGet(args: EvaluatorArgs) {
+export default async function helmGet(args: Commands.EvaluatorArgs) {
   const idx = args.argvNoOptions.indexOf('get')
 
   const maybeVerb = args.argvNoOptions[idx + 1]

@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { ExecOptions, withLanguage } from '@kui-shell/core/models/execOptions'
+import { Commands } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 const debug = Debug('k8s/util/log-parser')
@@ -217,7 +217,7 @@ const parseZapr = (raw: string): ZaprEntry[] => {
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const parseCloudLens = (raw: string, execOptions: ExecOptions, options: Options): any[] => {
+const parseCloudLens = (raw: string, execOptions: Commands.ExecOptions, options: Options): any[] => {
   const pattern = /^(?=[IEF][0-9]+)/m
   const linesByCloudLens = raw.split(pattern)
 
@@ -233,7 +233,7 @@ const parseCloudLens = (raw: string, execOptions: ExecOptions, options: Options)
  * Parser for istio logs
  *
  */
-const parseIstio = (raw: string, execOptions: ExecOptions): ZaprEntry[] => {
+const parseIstio = (raw: string, execOptions: Commands.ExecOptions): ZaprEntry[] => {
   let prevTimestamp: string
 
   return raw
@@ -247,7 +247,7 @@ const parseIstio = (raw: string, execOptions: ExecOptions): ZaprEntry[] => {
 
         const zapr: ZaprEntry = {
           timestamp: timestamp
-            ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp, withLanguage(execOptions))
+            ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp, Commands.withLanguage(execOptions))
             : '',
           rawTimestamp: timestamp,
           logType,
@@ -302,7 +302,8 @@ const parseIstio = (raw: string, execOptions: ExecOptions): ZaprEntry[] => {
         const rest = (match && match[restIndex]) || line
 
         const zapr: ZaprEntry = {
-          timestamp: timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp, withLanguage(execOptions)),
+          timestamp:
+            timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp, Commands.withLanguage(execOptions)),
           rawTimestamp: timestamp,
           logType,
           provider,
@@ -347,7 +348,7 @@ const notEmpty = (_: ZaprEntry) => _.timestamp || _.rest || _.origin || _.provid
  * Format the kubectl access logs
  *
  */
-export const formatLogs = (raw: string, execOptions: ExecOptions, options: Options = { asHTML: true }) => {
+export const formatLogs = (raw: string, execOptions: Commands.ExecOptions, options: Options = { asHTML: true }) => {
   const logEntries: ZaprEntry[] =
     parseZapr(raw) || parseIstio(raw, execOptions) || parseCloudLens(raw, execOptions, options)
   debug('logEntries', logEntries)

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import eventBus from '@kui-shell/core/core/events'
-import UsageError from '@kui-shell/core/core/usage-error'
+import { Errors, eventBus } from '@kui-shell/core'
 
 const lsKeys = {
   history: 'kui.wrk.history',
@@ -55,7 +54,7 @@ export const del = ({ argvNoOptions: args, parsedOptions: options }) => {
   const which = args.slice(idx + 1)
 
   if (which.length === 0 || options.help) {
-    throw new UsageError(args.slice(0, idx).join(' ') + ' <idx1> [<idx2> <idx3> ...]')
+    throw new Errors.UsageError(args.slice(0, idx).join(' ') + ' <idx1> [<idx2> <idx3> ...]')
   }
 
   let list = all()

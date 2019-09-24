@@ -17,7 +17,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
-
 import * as path from 'path'
 import { v4 as uuid } from 'uuid'
 import * as xterm from 'xterm'
@@ -25,8 +24,7 @@ import stripClean from 'strip-ansi'
 import { safeLoad } from 'js-yaml'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
-import eventBus from '@kui-shell/core/core/events'
-import { qexec as $ } from '@kui-shell/core/core/repl'
+import { Capabilities, Commands, Errors, eventBus, REPL, Tab, Tables } from '@kui-shell/core'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { MixedResponse } from '@kui-shell/core/models/entity'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
@@ -37,17 +35,11 @@ import {
   clearTextSelection,
   disableInputQueueing,
   pasteQueuedInput,
-  sameTab,
-  Tab
+  sameTab
 } from '@kui-shell/core/webapp/cli'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { flatten } from '@kui-shell/core/core/utility'
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
-import { isTable } from '@kui-shell/core/webapp/models/table'
-import { ExecType, ParsedOptions } from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
-import { CodedError } from '@kui-shell/core/models/errors'
 import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 
 import * as ui from './ui'
@@ -120,7 +112,7 @@ class Resizer {
   private readonly tab: Tab
 
   /** execOptions */
-  private readonly execOptions: ExecOptions
+  private readonly execOptions: Commands.ExecOptions
 
   /** exit alt buffer mode async */
   private exitAlt?: NodeJS.Timeout
@@ -146,7 +138,7 @@ class Resizer {
   private readonly resizeNow: () => void
   private readonly clearXtermSelectionNow: () => void
 
-  constructor(terminal: xterm.Terminal, tab: Tab, execOptions: ExecOptions) {
+  constructor(terminal: xterm.Terminal, tab: Tab, execOptions: Commands.ExecOptions) {
     this.tab = tab
     this.execOptions = execOptions
     this.terminal = terminal as HTerminal
@@ -459,7 +451,7 @@ type ChannelFactory = () => Promise<Channel>
  */
 const remoteChannelFactory: ChannelFactory = async () => {
   try {
-    const { url, uid, gid }: { url: string; uid: number; gid: number } = await $(
+    const { url, uid, gid }: { url: string; uid: number; gid: number } = await REPL.qexec(
       'bash websocket open',
       undefined,
       undefined,
@@ -471,7 +463,7 @@ const remoteChannelFactory: ChannelFactory = async () => {
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
   } catch (err) {
-    const error = err as CodedError
+    const error = err as Errors.CodedError
     if (error.statusCode !== 503) {
       // don't bother complaining too much about connection refused
       console.error('error opening websocket', err)
@@ -517,10 +509,10 @@ const getOrCreateChannel = async (
   cmdline: string,
   uuid: string,
   tab: Tab,
-  execOptions: ExecOptions,
+  execOptions: Commands.ExecOptions,
   terminal: KuiTerminal
 ): Promise<Channel> => {
-  const channelFactory = inBrowser()
+  const channelFactory = Capabilities.inBrowser()
     ? window['webview-proxy'] !== undefined
       ? webviewChannelFactory
       : remoteChannelFactory
@@ -536,7 +528,7 @@ const getOrCreateChannel = async (
       uuid,
       rows: terminal.rows,
       cols: terminal.cols,
-      cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
+      cwd: process.env.PWD || (!Capabilities.inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
       env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
     }
     debug('exec after open', msg)
@@ -654,7 +646,7 @@ function squash(elt: HTMLElement) {
 let alreadyInjectedCSS: boolean
 function injectXtermCSS() {
   if (!alreadyInjectedCSS) {
-    if (inBrowser()) {
+    if (Capabilities.inBrowser()) {
       injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
       injectCSS({
         css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
@@ -689,8 +681,8 @@ export const doExec = (
   block: HTMLElement,
   cmdline: string,
   argvNoOptions: string[],
-  parsedOptions: ParsedOptions,
-  execOptions: ExecOptions
+  parsedOptions: Commands.ParsedOptions,
+  execOptions: Commands.ExecOptions
 ) =>
   new Promise((resolve, reject) => {
     const contentType =
@@ -773,7 +765,7 @@ export const doExec = (
           cleanupEventHandlers()
           resizer.destroy()
 
-          if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
+          if (execOptions.type === Commands.ExecType.Nested && execOptions.quiet !== false) {
             xtermContainer.remove()
           } else {
             xtermContainer.classList.add('xterm-terminated')
@@ -785,7 +777,7 @@ export const doExec = (
         //
         const ourUUID = uuid()
         const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, execOptions, terminal).catch(
-          (err: CodedError) => {
+          (err: Errors.CodedError) => {
             if (err.code !== 503) {
               // don't bother complaining too much about connection refused
               console.error('error creating channel', err)
@@ -1025,7 +1017,7 @@ export const doExec = (
                 definitelyNotTable = true
               }
 
-              if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+              if (execOptions.type !== Commands.ExecType.Nested || execOptions.quiet === false) {
                 pendingWrites++
                 definitelyNotUsage = true
                 bytesWereWritten = true
@@ -1045,8 +1037,8 @@ export const doExec = (
             }
           } else if (msg.type === 'exit') {
             // server told us that it is done with msg.exitCode
-            if (pendingTable && !pendingTable.some(_ => isTable(_) && _.body.length > 0)) {
-              if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+            if (pendingTable && !pendingTable.some(_ => Tables.isTable(_) && _.body.length > 0)) {
+              if (execOptions.type !== Commands.ExecType.Nested || execOptions.quiet === false) {
                 bytesWereWritten = true
                 sawCode = /File exists/i.test(raw)
                   ? 409
@@ -1203,7 +1195,7 @@ export const doExec = (
 
         ws.on('message', onMessage)
       } catch (error) {
-        const err = error as CodedError
+        const err = error as Errors.CodedError
         if (err.code === 127 || err.code === 404) {
           err.code = 127
           reject(err)

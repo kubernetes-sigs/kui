@@ -16,9 +16,9 @@
 
 import * as Debug from 'debug'
 
-import { ok, Tab } from '@kui-shell/core/webapp/cli'
+import { ok } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
-import { pexec } from '@kui-shell/core/core/repl'
+import { REPL, Tab } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
@@ -56,7 +56,7 @@ export default async (
     clickable.innerText = response.activationId
     clickable.onclick = () => {
       const fetch = async (iter: number) => {
-        return pexec(`await ${response.activationId}`).catch(err => {
+        return REPL.pexec(`await ${response.activationId}`).catch(err => {
           if (iter < 10) {
             setTimeout(() => fetch(iter + 1), 500)
           } else {

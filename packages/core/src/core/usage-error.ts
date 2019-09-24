@@ -920,4 +920,8 @@ export class UsageError extends Error implements CodedError {
   }
 }
 
+export function isUsageError(error: Entity): error is UsageError {
+  return UsageError.isUsageError(error)
+}
+
 export default UsageError

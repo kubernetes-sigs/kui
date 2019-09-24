@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { theme as settings } from '@kui-shell/core/core/settings'
+import { Settings } from '@kui-shell/core'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import * as monaco from 'monaco-editor'
@@ -37,7 +37,7 @@ self['MonacoEnvironment'] = {
     const hash: string = window['_kuiWebpackHash']
 
     const root: string =
-      settings.resourceRoot ||
+      Settings.theme.resourceRoot ||
       (window['_kuiWebpackResourceRoot'] !== '${resourceRoot}' ? window['_kuiWebpackResourceRoot'] : '.') // eslint-disable-line no-template-curly-in-string
     debug('monaco resource root', root)
 

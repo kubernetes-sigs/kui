@@ -18,19 +18,17 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/preload')
 debug('loading')
 
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
-
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 import { PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree: CommandRegistrar) => {
+const registration: PreloadRegistration = async (commandTree: Commands.Registrar) => {
   const asyncs = []
 
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.default(commandTree)))
     asyncs.push(
       import('./lib/cmds/theme')
@@ -43,7 +41,7 @@ const registration: PreloadRegistration = async (commandTree: CommandRegistrar) 
     asyncs.push(import('./lib/tab-completion').then(_ => _.default()))
   }
 
-  if (!isHeadless() && !inBrowser()) {
+  if (!Capabilities.isHeadless() && !Capabilities.inBrowser()) {
     // in webpack, use the default text-search bar of browser
     asyncs.push(import('./lib/text-search').then(_ => _.default()))
   }

@@ -16,20 +16,16 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
+import { Commands, i18n, i18nFromMap, REPL, Settings } from '@kui-shell/core'
 import { renderResult } from '@kui-shell/core/webapp/cli'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
 
 import usage from './usage'
-import * as i18n from '@kui-shell/core/util/i18n'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
-import { theme as settings, config as extras } from '@kui-shell/core/core/settings'
 
-const strings = i18n.default('plugin-core-support')
-
+const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/about')
 
 /**
@@ -59,13 +55,13 @@ async function renderAbout() {
 
   const badges = []
 
-  const openHome = () => shell.openExternal(settings.ogUrl || homepage)
+  const openHome = () => shell.openExternal(Settings.theme.ogUrl || homepage)
 
   if (license) {
     badges.push(license)
   }
 
-  // const subtext = settings.byline || description
+  // const subtext = Settings.theme.byline || description
   /* subtext.appendChild(document.createTextNode('Distributed under an '))
   const licenseDom = document.createElement('strong')
   licenseDom.innerText = license
@@ -76,7 +72,7 @@ async function renderAbout() {
   topContent.appendChild(logo)
   logo.classList.add('logo')
 
-  const aboutImage = settings.wideIcon || settings.largeIcon
+  const aboutImage = Settings.theme.wideIcon || Settings.theme.largeIcon
   if (aboutImage) {
     const iconP = document.createElement('div')
     const icon = document.createElement('img')
@@ -85,13 +81,13 @@ async function renderAbout() {
     iconP.appendChild(icon)
     logo.appendChild(iconP)
     icon.src = aboutImage
-    icon.alt = settings.productName
-    if (settings.wideIcon) {
+    icon.alt = Settings.theme.productName
+    if (Settings.theme.wideIcon) {
       icon.classList.add('kui--wide-icon')
     }
   }
 
-  const description = settings.description || settings.ogDescription
+  const description = Settings.theme.description || Settings.theme.ogDescription
   if (description) {
     const marked = await markdown()
     const longDescription = document.createElement('div')
@@ -106,7 +102,7 @@ async function renderAbout() {
         longDescription.innerText = description
       }
     } else {
-      longDescription.innerHTML = marked(i18n.fromMap(description))
+      longDescription.innerHTML = marked(i18nFromMap(description))
     }
   }
 
@@ -126,7 +122,7 @@ function renderVersion(name: string) {
 
   const versionModel = process.versions
   versionModel[name] = version
-  versionModel['build'] = extras['build-info']
+  versionModel['build'] = Settings.config['build-info']
 
   const thead = document.createElement('thead')
   thead.classList.add('entity')
@@ -191,14 +187,14 @@ function renderVersion(name: string) {
 }
 
 async function renderGettingStarted() {
-  if (settings.gettingStarted && typeof settings.gettingStarted !== 'string') {
+  if (Settings.theme.gettingStarted && typeof Settings.theme.gettingStarted !== 'string') {
     const marked = await markdown()
     const wrapper = document.createElement('div')
     wrapper.classList.add('page-content')
-    wrapper.innerHTML = marked(i18n.fromMap(settings.gettingStarted))
+    wrapper.innerHTML = marked(i18nFromMap(Settings.theme.gettingStarted))
     return wrapper
-  } else if (typeof settings.gettingStarted === 'string' && settings.gettingStarted !== 'getting started') {
-    return repl.qexec(settings.gettingStarted)
+  } else if (typeof Settings.theme.gettingStarted === 'string' && Settings.theme.gettingStarted !== 'getting started') {
+    return REPL.qexec(Settings.theme.gettingStarted)
   } else {
     console.error('no getting started content defined by client')
     const empty = document.createElement('div')
@@ -212,7 +208,7 @@ async function renderGettingStarted() {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) => {
+const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.EvaluatorArgs) => {
   /* bringYourOwnWindow impl */
   debug('aboutWindow')
 
@@ -227,7 +223,7 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) =
     injectCSS(join(ourRootDir, 'web/css/about.css'))
   }
 
-  const name = settings.productName || (await import('electron')).app.getName()
+  const name = Settings.theme.productName || (await import('electron')).app.getName()
 
   // this is the main container for the dom
   const content = document.createElement('div')
@@ -237,7 +233,7 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) =
   debug('defaultMode', defaultMode)
 
   if (parsedOptions.content) {
-    const response = await repl.qexec(parsedOptions.content)
+    const response = await REPL.qexec(parsedOptions.content)
     debug('rendering content', parsedOptions.content, response)
 
     const container = document.createElement('div')
@@ -268,7 +264,7 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) =
     { mode: 'configure', label: strings('Configure'), direct: 'about --mode configure --content themes' },
     { mode: 'version', label: strings('Version'), direct: 'about --mode version' }
   ]
-  const modes: SidecarMode[] = standardModes.concat(settings.about || [])
+  const modes: SidecarMode[] = standardModes.concat(Settings.theme.about || [])
 
   modes.find(_ => _.mode === defaultMode).defaultMode = true
 
@@ -305,8 +301,8 @@ const reportVersion = () => {
   const version = getVersion()
 
   // we were asked only to report the installed version
-  if (extras['build-info']) {
-    return `${version} (build ${extras['build-info']})`
+  if (Settings.config['build-info']) {
+    return `${version} (build ${Settings.config['build-info']})`
   }
   return version
 }
@@ -315,12 +311,12 @@ const reportVersion = () => {
  * Here we install the command handlers for /version and /about
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   debug('init')
 
   // for menu
   if (!commandTree) {
-    return aboutWindow({} as EvaluatorArgs)
+    return aboutWindow({} as Commands.EvaluatorArgs)
   }
 
   // these commands don't require any auth
@@ -348,7 +344,7 @@ export default (commandTree: CommandRegistrar) => {
   })
 
   // getting started shortcut
-  commandTree.listen('/getting/started', () => repl.qexec('about --mode gettingStarted'), {
+  commandTree.listen('/getting/started', () => REPL.qexec('about --mode gettingStarted'), {
     noAuthOk,
     needsUI: true,
     inBrowserOk: true
@@ -357,5 +353,5 @@ export default (commandTree: CommandRegistrar) => {
 
 export const preload = () => {
   // install click handlers
-  ;(document.querySelector('#help-button') as HTMLElement).onclick = () => repl.pexec('about')
+  ;(document.querySelector('#help-button') as HTMLElement).onclick = () => REPL.pexec('about')
 }

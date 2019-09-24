@@ -17,10 +17,9 @@
 import * as Debug from 'debug'
 
 import * as cli from '@kui-shell/core/webapp/cli'
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL, Tables } from '@kui-shell/core'
 
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { formatTable } from '@kui-shell/core/webapp/views/table'
 import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
@@ -157,7 +156,7 @@ export const showEntity = async (
             linkToOriginal.className = 'clickable'
             linkToOriginal.innerText = 'View original action'
             linkToOriginal.onclick = async () => {
-              repl.pexec(`wsk action get "${annotation.original}"`)
+              REPL.pexec(`wsk action get "${annotation.original}"`)
             }
             thirdPartyBodyContent.appendChild(linkToOriginal)
           }
@@ -242,8 +241,7 @@ export const showEntity = async (
         // const key = idx => `action_${idx}`
         Promise.all(
           entity.exec.components.map(actionName =>
-            repl
-              .qexec(`wsk action get "${actionName}"`)
+            REPL.qexec(`wsk action get "${actionName}"`)
               .then(action => {
                 debug('got sequence component', action)
                 const anonymousCode = isAnonymousLet(action)
@@ -393,13 +391,13 @@ export const showEntity = async (
         const list = document.createElement('div')
         list.className = 'package-action-list'
         packageContent.appendChild(list)
-        formatTable(tab, withHeader(entity.actions.map(fillInActionDetails(entity))), list)
+        Tables.format(tab, withHeader(entity.actions.map(fillInActionDetails(entity))), list)
       }
       if (entity.feeds) {
         const list = document.createElement('div')
         list.className = 'package-feed-list'
         packageContent.appendChild(list)
-        formatTable(tab, withHeader(entity.feeds.map(fillInActionDetails(entity, 'feeds'))), list)
+        Tables.format(tab, withHeader(entity.feeds.map(fillInActionDetails(entity, 'feeds'))), list)
       }
     }
   } else if (entity.type === 'activations') {

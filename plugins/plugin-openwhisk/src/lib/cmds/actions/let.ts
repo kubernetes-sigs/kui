@@ -32,30 +32,25 @@
  */
 
 import * as Debug from 'debug'
-
-import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
+import * as minimist from 'yargs-parser'
+import * as needle from 'needle'
+import * as withRetry from 'promise-retry'
 import { basename, join } from 'path'
+import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
 
 import expandHomeDir from '@kui-shell/core/util/home'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { current as currentNamespace } from '../../models/namespace'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { Capabilities, Commands, REPL } from '@kui-shell/core'
 
-import { deployHTMLViaOpenWhisk } from './_html'
-import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'
 import { synonyms } from '../../models/synonyms'
+import { deployHTMLViaOpenWhisk } from './_html'
+import { current as currentNamespace } from '../../models/namespace'
 import { addPrettyType, getClient, owOpts as wskOpts, parseOptions } from '../openwhisk-core'
+import { ANON_KEY, ANON_KEY_FQN, ANON_CODE, isAnonymousLet, isAnonymousLetFor } from './let-core'
 
 const debug = Debug('plugin/openwhisk/cmds/actions/let')
 
 const baseName = process.env.BASE_NAME || 'anon'
-
-import * as minimist from 'yargs-parser'
-import * as needle from 'needle'
-import * as withRetry from 'promise-retry'
-import * as repl from '@kui-shell/core/core/repl'
 
 interface StatusCodeError extends Error {
   statusCode: number
@@ -225,7 +220,7 @@ const isWebAsset = (action: Options) => action.annotations && action.annotations
  * Create a zip action, given the location of a zip file
  *
  */
-const makeZipActionFromZipFile = (name: string, location: string, options, execOptions: ExecOptions) =>
+const makeZipActionFromZipFile = (name: string, location: string, options, execOptions: Commands.ExecOptions) =>
   new Promise((resolve, reject) => {
     try {
       debug('makeZipActionFromZipFile', name, location, options)
@@ -319,7 +314,7 @@ const doNpmInstall = (dir: string) =>
  * the directory
  *
  */
-const makeZipAction = (name: string, location: string, options, execOptions: ExecOptions) =>
+const makeZipAction = (name: string, location: string, options, execOptions: Commands.ExecOptions) =>
   new Promise((resolve, reject) => {
     try {
       debug('makeZipAction', location)
@@ -420,7 +415,7 @@ const makeWebAsset = (
   location: string,
   text: string,
   options,
-  execOptions: ExecOptions
+  execOptions: Commands.ExecOptions
 ) => {
   const extensionWithoutDot = extension.substring(1)
   const action = Object.assign({}, options.action, {
@@ -456,7 +451,7 @@ const makeWebAsset = (
 }
 
 /** here is the module */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   /**
    * Create an OpenWhisk action from a given file
    *
@@ -469,7 +464,7 @@ export default async (commandTree: CommandRegistrar) => {
     location: string,
     letType: string,
     options,
-    execOptions: ExecOptions
+    execOptions: Commands.ExecOptions
   ) => {
     const extension = location.substring(location.lastIndexOf('.'))
     const kind = options.kind || extensionToKind[extension]
@@ -483,8 +478,7 @@ export default async (commandTree: CommandRegistrar) => {
       // then this is a built-in type
       //
       // const annotationArgs = (options.annotations || []).map(kv => `-a ${kv.key} ${kv.value}`).join(' ')
-      return repl
-        .qexec(`wsk action update "${name}" "${location}" --kind "${kind}"`)
+      return REPL.qexec(`wsk action update "${name}" "${location}" --kind "${kind}"`)
         .then(action => {
           ;(annotators[letType] || []).forEach(annotator => annotator(action))
           if (mimeType) (annotators[mimeType] || []).forEach(annotator => annotator(action))
@@ -516,7 +510,7 @@ export default async (commandTree: CommandRegistrar) => {
   const createWithRetryOnName = (
     code: string,
     parentActionName: string,
-    execOptions: ExecOptions,
+    execOptions: Commands.ExecOptions,
     idx: number,
     iter: number,
     desiredName?: string
@@ -555,7 +549,7 @@ export default async (commandTree: CommandRegistrar) => {
         }
       })
 
-  const doCreate = (args: EvaluatorArgs) => {
+  const doCreate = (args: Commands.EvaluatorArgs) => {
     const { block: retryOK, argv: fullArgv, command: fullCommand, execOptions } = args
     const update = execOptions.createOnly ? 'create' : 'update'
 
@@ -569,9 +563,9 @@ export default async (commandTree: CommandRegistrar) => {
         const path = name.split('/')
         const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
         if (packageName) {
-          return repl
-            .qexec(`wsk package update "${packageName}"`)
-            .then(() => doCreate(Object.assign({}, args, { block: false })))
+          return REPL.qexec(`wsk package update "${packageName}"`).then(() =>
+            doCreate(Object.assign({}, args, { block: false }))
+          )
         }
       }
 
@@ -585,7 +579,7 @@ export default async (commandTree: CommandRegistrar) => {
       location: string,
       letType = 'let',
       options = {},
-      execOptions: ExecOptions = {}
+      execOptions: Commands.ExecOptions = {}
     ) => {
       return fetchRemote(location, mimeType).then(location => {
         return createFromFile(name, mimeType, location.location, letType, options, execOptions)
@@ -633,8 +627,8 @@ export default async (commandTree: CommandRegistrar) => {
         if (intentionMatch) {
           debug('sequence component is intention', intentionMatch[1])
           const intention = intentionMatch[1] // e.g. |save to cloudant|
-          return repl.iexec(intention) // this will return the name of the action that services the intent
-        } else if (!inBrowser() && existsSync(expandHomeDir(component))) {
+          return REPL.iexec(intention) // this will return the name of the action that services the intent
+        } else if (!Capabilities.inBrowser() && existsSync(expandHomeDir(component))) {
           debug('sequence component is local file', component)
           // then we assume that the component identifies a local file
           //    note: the first step reserves a name
@@ -686,8 +680,7 @@ export default async (commandTree: CommandRegistrar) => {
       const name = figureName(intentionMatch[2], mimeType)
       const intention = intentionMatch[4] // e.g. |save to cloudant|
 
-      return repl
-        .iexec(`${intention} --name ${name}`) // this will return the name of the action that services the intent
+      return REPL.iexec(`${intention} --name ${name}`) // this will return the name of the action that services the intent
         .then(action => {
           ;(annotators[letType] || []).forEach(annotator => annotator(action))
           if (mimeType) (annotators[mimeType] || []).forEach(annotator => annotator(action))
@@ -738,11 +731,9 @@ export default async (commandTree: CommandRegistrar) => {
       if (annotators[extension]) annotators[extension].forEach(annotator => annotator(action))
 
       debug('inline-function::create', name)
-      return repl
-        .qexec(`wsk action update "${name}"`, undefined, undefined, {
-          entity: { action }
-        })
-        .catch(packageAutoCreate(name))
+      return REPL.qexec(`wsk action update "${name}"`, undefined, undefined, {
+        entity: { action }
+      }).catch(packageAutoCreate(name))
     } else {
       // maybe a sequence?
       debug('sequenceMatch', sequenceMatch, components)
@@ -790,9 +781,8 @@ export default async (commandTree: CommandRegistrar) => {
               }
 
               debug('creating sequence', extraArgs, name, components)
-              return repl
-                .qexec(`wsk action update --sequence ${extraArgs} "${name}" ${components.join(',')}`)
-                .then(action => {
+              return REPL.qexec(`wsk action update --sequence ${extraArgs} "${name}" ${components.join(',')}`).then(
+                action => {
                   ;(annotators[letType] || []).forEach(annotator => annotator(action))
                   if (mimeType) {
                     ;(annotators[mimeType] || []).forEach(annotator => annotator(action))
@@ -829,7 +819,8 @@ export default async (commandTree: CommandRegistrar) => {
                   return getClient(execOptions)
                     .actions[update](owOpts)
                     .then(addPrettyType('actions', 'update', action.name))
-                })
+                }
+              )
             })
             .catch(packageAutoCreate(name))
         } else {
@@ -880,56 +871,52 @@ export default async (commandTree: CommandRegistrar) => {
 
     // resolve the given expression to an action
     //   e.g. is "a" the name of an action, or the name of a file
-    resolve: (expr: string, parentActionName: string, execOptions: ExecOptions, idx: number) =>
-      repl
-        .qexec(`wsk actions get ${expr}`, undefined, undefined, {
-          noRetry: true
-        })
-        .catch((err: StatusCodeError) => {
-          if (err.statusCode === 404 || err.statusCode === 400) {
-            // then this isn't an action (yet)
+    resolve: (expr: string, parentActionName: string, execOptions: Commands.ExecOptions, idx: number) =>
+      REPL.qexec(`wsk actions get ${expr}`, undefined, undefined, {
+        noRetry: true
+      }).catch((err: StatusCodeError) => {
+        if (err.statusCode === 404 || err.statusCode === 400) {
+          // then this isn't an action (yet)
 
-            const commandFn = (iter: number, baseName = parentActionName) =>
-              `let ${baseName}-anon${iter === 0 ? '' : '-' + iter} = ${expr}`
-            const command = commandFn(0)
-            const actionMatch = command.match(patterns.action.expr.full)
-            const intentionMatch = command.match(patterns.intention.full)
-            const sequenceMatch = command.match(patterns.sequence.expr)
-            const components = sequenceMatch && sequenceMatch[4].split(patterns.sequence.components)
-            const isSequenceMatch = sequenceMatch && components.length > 1
+          const commandFn = (iter: number, baseName = parentActionName) =>
+            `let ${baseName}-anon${iter === 0 ? '' : '-' + iter} = ${expr}`
+          const command = commandFn(0)
+          const actionMatch = command.match(patterns.action.expr.full)
+          const intentionMatch = command.match(patterns.intention.full)
+          const sequenceMatch = command.match(patterns.sequence.expr)
+          const components = sequenceMatch && sequenceMatch[4].split(patterns.sequence.components)
+          const isSequenceMatch = sequenceMatch && components.length > 1
 
-            if (!intentionMatch && !isSequenceMatch && actionMatch) {
-              // then this is an inline anonymous function
-              debug('resolve::inline')
-              return createWithRetryOnName(`let main = ${expr}`, parentActionName, execOptions, idx, 0)
-            } else if (intentionMatch) {
-              const baseName = intentionMatch[4].substring(1, intentionMatch[4].indexOf(' '))
-              return repl.iexec(`${intentionMatch[4]} --name ${baseName}-anon-${idx}`)
-            } else {
-              const actionFromFileMatch = command.match(patterns.action.expr.fromFile)
-              let baseName: string
-
-              if (actionFromFileMatch) {
-                // try to pull an action name from the file name
-                baseName = basename(actionFromFileMatch[4])
-              }
-
-              const once = (iter: number) =>
-                repl
-                  .qexec(commandFn(iter, baseName), undefined, undefined, {
-                    createOnly: true
-                  })
-                  .catch((err: StatusCodeError) => {
-                    if (err.statusCode === 409) {
-                      return once(iter + 1)
-                    }
-                  })
-              debug('resolve::via let', baseName, parentActionName)
-              return once(0)
-            }
+          if (!intentionMatch && !isSequenceMatch && actionMatch) {
+            // then this is an inline anonymous function
+            debug('resolve::inline')
+            return createWithRetryOnName(`let main = ${expr}`, parentActionName, execOptions, idx, 0)
+          } else if (intentionMatch) {
+            const baseName = intentionMatch[4].substring(1, intentionMatch[4].indexOf(' '))
+            return REPL.iexec(`${intentionMatch[4]} --name ${baseName}-anon-${idx}`)
           } else {
-            throw err
+            const actionFromFileMatch = command.match(patterns.action.expr.fromFile)
+            let baseName: string
+
+            if (actionFromFileMatch) {
+              // try to pull an action name from the file name
+              baseName = basename(actionFromFileMatch[4])
+            }
+
+            const once = (iter: number) =>
+              REPL.qexec(commandFn(iter, baseName), undefined, undefined, {
+                createOnly: true
+              }).catch((err: StatusCodeError) => {
+                if (err.statusCode === 409) {
+                  return once(iter + 1)
+                }
+              })
+            debug('resolve::via let', baseName, parentActionName)
+            return once(0)
           }
-        })
+        } else {
+          throw err
+        }
+      })
   }
 }

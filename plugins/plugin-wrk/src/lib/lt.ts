@@ -15,15 +15,14 @@
  */
 
 import * as Debug from 'debug'
-
-import eventBus from '@kui-shell/core/core/events'
-import { qexec as $$ } from '@kui-shell/core/core/repl'
-
 import * as wrk from 'wrk'
 import * as parseDuration from 'parse-duration'
 
+import { eventBus, REPL } from '@kui-shell/core'
+
 import { wrkPath, wrkExeName } from './init'
 import { generateScriptForAction, generateScriptForURL } from './scriptgen'
+
 const debug = Debug('wrk/lt')
 
 const findReverse = arr => {
@@ -124,7 +123,7 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
     debug('url', url || altURL)
 
     // confirm that wrk is compiled and ready
-    await $$('wrk check')
+    await REPL.qexec('wrk check')
 
     // request for early termination
     let terminateNow = false
@@ -268,7 +267,7 @@ const _lt = ({ url: altURL, results = [], options }) => ({ url, script }) =>
  *
  */
 export const lt = options =>
-  $$(`wsk action get "${options.url}"`)
+  REPL.qexec(`wsk action get "${options.url}"`)
     .then(generateScriptForAction(options))
     .catch(generateScriptForURL(options))
     .then(_lt(options))

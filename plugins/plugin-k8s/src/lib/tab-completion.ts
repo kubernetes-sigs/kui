@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { rexec as $$ } from '@kui-shell/core/core/repl'
-import { CommandLine } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
@@ -24,7 +23,7 @@ import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/p
  *
  */
 async function getMatchingStrings(cmd: string, spec: TabCompletionSpec): Promise<string[]> {
-  const completions: string = await $$(cmd)
+  const completions: string = await REPL.rexec(cmd)
   const list: string[] = completions.split(/[\n\r]/).map(_ => _.replace(/^\w+\//, ''))
 
   return list.filter(name => name.startsWith(spec.toBeCompleted))
@@ -34,7 +33,7 @@ async function getMatchingStrings(cmd: string, spec: TabCompletionSpec): Promise
  * Strip off the ParsedOptions in a way that lets us make an enumeration query safely
  *
  */
-function optionals(commandLine: CommandLine, filter: (key: string) => boolean = () => true) {
+function optionals(commandLine: Commands.CommandLine, filter: (key: string) => boolean = () => true) {
   const options = commandLine.parsedOptions
 
   return Object.keys(options)
@@ -48,7 +47,7 @@ function optionals(commandLine: CommandLine, filter: (key: string) => boolean = 
  * Tab completion of kube resource names
  *
  */
-async function completeResourceNames(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+async function completeResourceNames(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const { argvNoOptions, argv, parsedOptions } = commandLine
 
   // index of the arg just before the one to be completed

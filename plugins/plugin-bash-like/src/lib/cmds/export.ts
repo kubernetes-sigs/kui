@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 import SymbolTable from '@kui-shell/core/core/symbol-table'
 
 /**
  * export command
  *
  */
-const exportCommand = ({ tab, parsedOptions }: EvaluatorArgs) => {
+const exportCommand = ({ tab, parsedOptions }: Commands.EvaluatorArgs) => {
   const curDic = SymbolTable.read(tab)
 
   const toBeParsed = parsedOptions._[1]
@@ -43,6 +43,6 @@ const usage = {
  * Register command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/export', exportCommand, { usage, noAuthOk: true, inBrowserOk: true })
 }

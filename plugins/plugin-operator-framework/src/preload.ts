@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/operator-framework/preload')
 debug('loading')
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 
 import registerSidecarMode from '@kui-shell/core/webapp/views/registrar/modes'
 import registerSidecarBadge from '@kui-shell/core/webapp/views/registrar/badges'
@@ -28,7 +28,7 @@ import registerSidecarBadge from '@kui-shell/core/webapp/views/registrar/badges'
  *
  */
 export default async () => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     return Promise.all([
       import('./view/modes/crds')
         .then(_ => _.crdsMode)

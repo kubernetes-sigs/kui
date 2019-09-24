@@ -20,7 +20,7 @@ debug('loading')
 
 import { dirname, join } from 'path'
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import { addPath } from '@kui-shell/core/core/find-file'
 import { ModeRegistration, registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
 
@@ -80,7 +80,7 @@ export default () => {
   const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
   addPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
 
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     return registerModes()
   }
 }

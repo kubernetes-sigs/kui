@@ -16,9 +16,7 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { CodedError } from '@kui-shell/core/models/errors'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, Errors, REPL } from '@kui-shell/core'
 
 import { astAnnotation } from '../../utility/ast'
 
@@ -40,10 +38,9 @@ const debug = Debug('plugins/apache-composer/session-flow')
 const get = (activationId: string) =>
   new Promise((resolve, reject) => {
     const once = (retryCount: number) =>
-      repl
-        .qexec(`wsk activation get ${activationId}`)
+      REPL.qexec(`wsk activation get ${activationId}`)
         .then(resolve)
-        .catch((err: CodedError) => {
+        .catch((err: Errors.CodedError) => {
           if (err && err.statusCode === 404 && retryCount < 10) {
             setTimeout(() => once(retryCount + 1), 100)
           } else {
@@ -60,7 +57,7 @@ const get = (activationId: string) =>
 const fetchTheAction = session => {
   const path = session.annotations.find(({ key }) => key === 'path').value
 
-  return repl.qexec(`wsk action get "/${path}"`).catch(err => {
+  return REPL.qexec(`wsk action get "/${path}"`).catch(err => {
     console.error('action get call incomplete due to error', path, err.message)
     return { wskflowErr: err }
   })
@@ -93,7 +90,7 @@ const fetchTrace = activation =>
     pool.start().then(() => resolve(data))
   })
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   // register the "session flow" command
   commandTree.listen(
     '/wsk/session/flow',
@@ -102,8 +99,7 @@ export default (commandTree: CommandRegistrar) => {
       debug('session flow', sessionId)
 
       // fetch the session, then fetch the trace (so we can show the flow) and action (to get the AST)
-      return repl
-        .qexec(`wsk session get ${sessionId}`)
+      return REPL.qexec(`wsk session get ${sessionId}`)
         .then(session => Promise.all([session, fetchTrace(session), fetchTheAction(session)]))
         .then(async ([session, activations, action]) => {
           let ast

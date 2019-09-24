@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import * as prettyPrintDuration from 'pretty-ms'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'

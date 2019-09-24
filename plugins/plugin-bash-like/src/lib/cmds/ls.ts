@@ -15,24 +15,18 @@
  */
 
 import * as Debug from 'debug'
-
 import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
 import expandHomeDir from '@kui-shell/core/util/home'
 import { flatten } from '@kui-shell/core/core/utility'
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
-import { Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
+import { Commands, Errors, i18n, REPL, Tables } from '@kui-shell/core'
 import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
-import { CodedError } from '@kui-shell/core/models/errors'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-bash-like')
-
 const debug = Debug('plugins/bash-like/cmds/ls')
 
 /**
@@ -107,17 +101,17 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
  * If the given filepath is a directory, then ls it, otherwise cat it
  *
  */
-const lsOrOpen = async ({ argvNoOptions }: EvaluatorArgs) => {
+const lsOrOpen = async ({ argvNoOptions }: Commands.EvaluatorArgs) => {
   const filepath = argvNoOptions[argvNoOptions.indexOf('lsOrOpen') + 1]
 
-  const stats: { isDirectory: boolean; viewer: string } = await repl.qexec(`fstat ${repl.encodeComponent(filepath)}`)
+  const stats: { isDirectory: boolean; viewer: string } = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)}`)
 
-  const filepathForRepl = repl.encodeComponent(filepath)
+  const filepathForRepl = REPL.encodeComponent(filepath)
 
   if (stats.isDirectory) {
-    return repl.pexec(`ls ${filepathForRepl}`)
+    return REPL.pexec(`ls ${filepathForRepl}`)
   } else {
-    return repl.pexec(`${stats.viewer} ${filepathForRepl}`)
+    return REPL.pexec(`${stats.viewer} ${filepathForRepl}`)
   }
 }
 
@@ -125,7 +119,7 @@ const lsOrOpen = async ({ argvNoOptions }: EvaluatorArgs) => {
  * Kui command for fs.stat
  *
  */
-const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
+const fstat = ({ argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
   return new Promise((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
@@ -136,7 +130,7 @@ const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
     stat(fullpath, (err, stats) => {
       if (err) {
         if (err.code === 'ENOENT') {
-          const error: CodedError = new Error(err.message)
+          const error: Errors.CodedError = new Error(err.message)
           error.stack = err.stack
           error.code = 404
           reject(error)
@@ -171,9 +165,9 @@ const fstat = ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
  * Turn ls output into a REPL table
  *
  */
-const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', parentAsGiven = '') => async (
+const tabularize = (cmd: string, parsedOptions: Commands.ParsedOptions, parent = '', parentAsGiven = '') => async (
   output: string
-): Promise<true | Table> => {
+): Promise<true | Tables.Table> => {
   if (output.length === 0) {
     debug('tabularize empty')
     return true
@@ -300,7 +294,7 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
 
   const headerAttributes = permissionAttrs.concat(ownerAttrs).concat(normalAttrs)
 
-  const headerRow: Row = {
+  const headerRow: Tables.Row = {
     name: 'NAME',
     type: 'file',
     onclick: false,
@@ -308,8 +302,8 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
     attributes: headerAttributes
   }
 
-  const body: Row[] = rows.map(
-    (columns): Row => {
+  const body: Tables.Row[] = rows.map(
+    (columns): Tables.Row => {
       const stats = columns[0]
       const isDirectory = stats.charAt(0) === 'd'
       const isLink = stats.charAt(0) === 'l'
@@ -370,20 +364,20 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
         })
         .filter(x => x)
 
-      return new Row({
+      return new Tables.Row({
         type: cmd,
         name: nameForDisplay,
         onclickExec: 'qexec',
-        onclick: `lsOrOpen ${repl.encodeComponent(isAbsolute(name) ? name : join(parentAsGiven, name))}`, // note: ls -l file results in an absolute path
+        onclick: `lsOrOpen ${REPL.encodeComponent(isAbsolute(name) ? name : join(parentAsGiven, name))}`, // note: ls -l file results in an absolute path
         css,
         attributes: permissionAttrs.concat(normalAttributes)
       })
     }
   )
 
-  return new Table({
+  return new Tables.Table({
     type: cmd,
-    style: TableStyle.Light,
+    style: Tables.TableStyle.Light,
     noEntityColors: true,
     noSort: true,
     header: headerRow,
@@ -395,8 +389,8 @@ const tabularize = (cmd: string, parsedOptions: ParsedOptions, parent = '', pare
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: EvaluatorArgs) => {
-  const semi = await repl.semicolonInvoke(opts)
+const doLs = (cmd: string) => async (opts: Commands.EvaluatorArgs) => {
+  const semi = await REPL.semicolonInvoke(opts)
   if (semi) {
     debug('ls with semi', semi)
     return semi
@@ -462,7 +456,7 @@ const usage = (command: string) => ({
  * Register command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/fstat', fstat, {
     hidden: true,
     noAuthOk: true,

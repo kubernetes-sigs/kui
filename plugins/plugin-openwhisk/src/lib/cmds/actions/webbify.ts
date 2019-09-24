@@ -21,8 +21,7 @@
  *
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, Tab } from '@kui-shell/core'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 import { addPrettyType, getClient, owOpts } from '../openwhisk-core'
@@ -103,7 +102,7 @@ const addAnnotations = (annotations, mimeType) => {
  * required annotations, then updates the backend.
  *
  */
-const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
+const doWebbify = ({ command, execOptions, tab }: Commands.EvaluatorArgs) => {
   return Promise.all(
     matchers.map(matcher => ({
       matcher: matcher,
@@ -150,7 +149,7 @@ const doWebbify = ({ command, execOptions, tab }: EvaluatorArgs) => {
  * /wsk/action/webbify commands.
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   synonyms('actions').forEach(syn => {
     commandTree.listen(`/wsk/${syn}/webbify`, doWebbify, theDocs('Export an action to the web'))
   })

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
-import { encodeComponent } from '@kui-shell/core/core/repl'
+import { REPL, Tables } from '@kui-shell/core'
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length, maxColumns) => {
@@ -200,7 +199,7 @@ export const formatTable = (
   entityTypeFromCommandLine: string,
   options,
   preTable: Pair[][]
-): Table => {
+): Tables.Table => {
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -220,7 +219,7 @@ export const formatTable = (
   const drilldownFormat = drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const drilldownNamespace =
-    options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
+    options.n || options.namespace ? `-n ${REPL.encodeComponent(options.n || options.namespace)}` : ''
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
   const drilldownKind = (nameSplit: string[], row: Pair[]) => {
@@ -245,7 +244,7 @@ export const formatTable = (
   let entityTypeFromRows: string
 
   const rows = preTable.map(
-    (rows, idx): Row => {
+    (rows, idx): Tables.Row => {
       const name = nameColumnIdx >= 0 ? rows[nameColumnIdx].value : ''
       const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
       const nameForDisplay = nameSplit[1] || rows[0].value
@@ -273,7 +272,9 @@ export const formatTable = (
       // if there isn't a global namespace specifier, maybe there is a row namespace specifier
       // we use the row specifier in preference to a global specifier -- is that right?
       const ns =
-        (namespaceColumnIdx >= 0 && command !== 'helm' && `-n ${encodeComponent(rows[namespaceColumnIdx].value)}`) ||
+        (namespaceColumnIdx >= 0 &&
+          command !== 'helm' &&
+          `-n ${REPL.encodeComponent(rows[namespaceColumnIdx].value)}`) ||
         drilldownNamespace ||
         ''
 
@@ -282,7 +283,7 @@ export const formatTable = (
         idx === 0
           ? false
           : drilldownVerb
-          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${encodeComponent(
+          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${REPL.encodeComponent(
               nameForDrilldown
             )} ${drilldownFormat} ${ns}`
           : false

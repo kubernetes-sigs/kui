@@ -16,9 +16,7 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
-import UsageError from '@kui-shell/core/core/usage-error'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, Errors, REPL } from '@kui-shell/core'
 import { ActivationListTable } from '@kui-shell/plugin-openwhisk'
 
 import { sessionList } from '../../utility/usage'
@@ -33,7 +31,7 @@ interface ListOptions {
   'scan-limit'?: number
 }
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   const sessionSyns = ['sessions', 'sess', 'ses', 'session']
 
   /* command handler for session list */
@@ -56,15 +54,14 @@ export default async (commandTree: CommandRegistrar) => {
 
         if (nameOption && nameSpecify && nameOption !== nameSpecify) {
           debug('inconsistent name:', nameSpecify, nameSpecify)
-          throw new UsageError('You provided two different session names')
+          throw new Errors.UsageError('You provided two different session names')
         }
 
         const name = nameOption || nameSpecify || ''
 
         // find sessions in activation list
         const findSessions = async (skip = 0, name = '', limit = 20) => {
-          return repl
-            .qfexec(`wsk activation list "${name}" --skip ${skip} --limit ${limit}`)
+          return REPL.qexec(`wsk activation list "${name}" --skip ${skip} --limit ${limit}`)
             .then((activations: ActivationListTable) => {
               // filter activations to find session
               debug('finding sessions in activation list', activations)
@@ -84,7 +81,7 @@ export default async (commandTree: CommandRegistrar) => {
         }
 
         if (scanLimit) {
-          const max: number = await repl.qexec('wsk activation count') // get the number of total activations
+          const max: number = await REPL.qexec('wsk activation count') // get the number of total activations
           let foundSessions = []
           for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
             const sessions = await findSessions(scanned, name, 200)

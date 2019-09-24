@@ -16,8 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { inBrowser, isHeadless, hasProxy } from '@kui-shell/core/core/capabilities'
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
+
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
 /**
@@ -32,7 +32,7 @@ export const dispatchToShell = async ({
   execOptions,
   parsedOptions,
   createOutputStream
-}: EvaluatorArgs) => {
+}: Commands.EvaluatorArgs) => {
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
   const cleanUpError = err => {
     if (err.message && typeof err.message === 'string') {
@@ -46,7 +46,7 @@ export const dispatchToShell = async ({
       ? execOptions
       : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
-  if (isHeadless() || (!inBrowser() && execOptions.raw)) {
+  if (Capabilities.isHeadless() || (!Capabilities.inBrowser() && execOptions.raw)) {
     const { doExec } = await import('./bash-like')
     const response = await doExec(command.replace(/^! /, ''), eOptions).catch(cleanUpError)
     if (execOptions.raw && typeof response === 'string') {
@@ -75,7 +75,7 @@ export const dispatchToShell = async ({
  *
  */
 export const preload = commandTree => {
-  if (inBrowser() && !hasProxy()) {
+  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
     debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
   }

@@ -15,17 +15,17 @@
  */
 
 import * as Debug from 'debug'
-
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { partial, Tab } from '@kui-shell/core/webapp/cli'
+import { partial } from '@kui-shell/core/webapp/cli'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, Tab } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
 import { onbranch, injectCSS } from '../util/git-support'
+
 const debug = Debug('plugins/bash-like/cmds/git-status')
 
 /**
@@ -195,7 +195,7 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
  * git status command handler
  *
  */
-const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) =>
+const doStatus = async ({ command, execOptions, tab }: Commands.EvaluatorArgs) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const stats = numstat()
@@ -236,7 +236,7 @@ const doStatus = async ({ command, execOptions, tab }: EvaluatorArgs) =>
  * Register command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/git/status', doStatus, {
     needsUI: true,
     requiresLocal: true,

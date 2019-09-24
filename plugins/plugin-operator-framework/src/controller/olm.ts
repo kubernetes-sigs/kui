@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { qexec as $ } from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 // const getSources = `oc get opsrc -o json --all-namespaces ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
 
@@ -41,7 +40,7 @@ const installed = {
   optional: config
 }
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.subtree('/olm', {
     usage: {
       command: 'olm',
@@ -60,7 +59,7 @@ export default async (commandTree: CommandRegistrar) => {
         parsedOptions.config ? `--config ${parsedOptions.config}` : ''
       }`
 
-      return $(getSources, block, undefined, execOptions)
+      return REPL.qexec(getSources, block, undefined, execOptions)
     },
     {
       noAuthOk: true,
@@ -76,7 +75,7 @@ export default async (commandTree: CommandRegistrar) => {
         parsedOptions.config ? `--config ${parsedOptions.config}` : ''
       } -o=custom-columns=NAME:.metadata.name,DISPLAY:.spec.displayName,VERSION:.spec.version,STATUS:.status.phase`
 
-      return $(getSources, block, undefined, execOptions)
+      return REPL.qexec(getSources, block, undefined, execOptions)
     },
     {
       noAuthOk: true,

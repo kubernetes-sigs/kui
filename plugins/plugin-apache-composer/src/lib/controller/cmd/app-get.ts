@@ -16,9 +16,7 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
+import { Commands, REPL } from '@kui-shell/core'
 import { synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { appGet } from '../../utility/usage'
@@ -27,12 +25,12 @@ import * as parseUtil from '../../utility/parse'
 
 const debug = Debug('plugins/apache-composer/cmd/app-get')
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   /* command handler for app get */
   commandTree.listen(
     `/wsk/app/get`,
     ({ argvNoOptions, execOptions, parsedOptions }) =>
-      repl.qexec(
+      REPL.qexec(
         `wsk action get "${parseUtil.parseName(argvNoOptions, 'get')}"`,
         undefined,
         undefined,

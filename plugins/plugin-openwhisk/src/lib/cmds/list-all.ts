@@ -20,9 +20,10 @@
  */
 
 import * as Debug from 'debug'
+
+import { REPL, Tables } from '@kui-shell/core'
+
 import { wsk } from './openwhisk-usage'
-import * as repl from '@kui-shell/core/core/repl'
-import { isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
 
 const debug = Debug('plugins/openwhisk/cmds/list-all')
 
@@ -42,14 +43,15 @@ const docs = cmd => ({ usage: usage(cmd) })
 const types = ['actions', 'packages', 'triggers', 'rules']
 
 /** list the entities of a given type */
-const list = type => repl.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
+const list = type => REPL.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
 
 /** the command handler */
 const doList = () => async () => {
   const response = await Promise.all(types.map(list)).then(result => {
     return result.filter(
       res =>
-        (isTable(res) && res.body.length > 0) || (isMultiTable(res) && res.tables.every(table => table.body.length > 0))
+        (Tables.isTable(res) && res.body.length > 0) ||
+        (Tables.isMultiTable(res) && res.tables.every(table => table.body.length > 0))
     )
   })
 

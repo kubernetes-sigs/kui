@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 

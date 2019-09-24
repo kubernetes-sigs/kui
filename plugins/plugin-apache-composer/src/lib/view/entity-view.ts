@@ -16,9 +16,7 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities, REPL, Tab } from '@kui-shell/core'
 
 import { hasAst } from '../utility/ast'
 import { decorateAsApp } from '../utility/decorate'
@@ -37,7 +35,7 @@ export const formatSessionResponse = activation => {
   const path = activation.annotations.find(({ key }) => key === 'path').value
 
   // entity onclick handler
-  activation.onclick = () => repl.pexec(`wsk app get "/${path}"`)
+  activation.onclick = () => REPL.pexec(`wsk app get "/${path}"`)
 
   // add our visualization view mode
   if (!activation.modes) activation.modes = []
@@ -54,12 +52,15 @@ export const formatSessionResponse = activation => {
 }
 
 export const formatCompositionEntity = execOptions => response => {
-  return isHeadless() ? response : repl.qfexec(`wsk app get "${response.name}"`, undefined, undefined, execOptions)
+  return Capabilities.isHeadless()
+    ? response
+    : REPL.qexec(`wsk app get "${response.name}"`, undefined, undefined, execOptions)
 }
 
 export const formatCompositionResult = (result, options) => {
   if (options.result || options.r) return result
-  else return isHeadless() ? result.response.result : repl.qfexec(`wsk activation get ${result.activationId}`)
+  else
+    return Capabilities.isHeadless() ? result.response.result : REPL.qexec(`wsk activation get ${result.activationId}`)
 }
 
 export const formatDeleteResult = response => {
@@ -86,7 +87,7 @@ export const visualizeComposition = async (tab: Tab, response, execOptions) => {
 
   debug('execOptions', execOptions)
 
-  if (hasAst(action) && !isHeadless()) {
+  if (hasAst(action) && !Capabilities.isHeadless()) {
     const doVisualize = execOptions.override || !execOptions.nested
     const options = execOptions.originalOptions || {}
     // use require rather than import here to prevent from prequiring wskflow module in headless mode

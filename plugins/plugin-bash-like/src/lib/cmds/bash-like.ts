@@ -21,27 +21,21 @@
  */
 
 import * as Debug from 'debug'
-
 import { exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs, ExecType, ParsedOptions } from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
+import { Capabilities, Commands, i18n, REPL } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
 import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-bash-like')
-
 const debug = Debug('plugins/bash-like/cmds/general')
 
 export const doExec = (
   cmdLine: string,
-  execOptions: ExecOptions
+  execOptions: Commands.ExecOptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<string | boolean | Record<string, any>> =>
   // eslint-disable-next-line no-async-promise-executor
@@ -127,10 +121,10 @@ export const doExec = (
     })
   })
 
-export const doShell = (argv: string[], options: ParsedOptions, execOptions?: ExecOptions) =>
+export const doShell = (argv: string[], options: Commands.ParsedOptions, execOptions?: Commands.ExecOptions) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    if (inBrowser()) {
+    if (Capabilities.inBrowser()) {
       reject(new Error('Local file access not supported when running in a browser'))
     }
 
@@ -146,7 +140,7 @@ export const doShell = (argv: string[], options: ParsedOptions, execOptions?: Ex
     debug('cmd', cmd)
 
     // shell.echo prints the the outer console, which we don't want
-    if (shell[cmd] && (inBrowser() || (cmd !== 'mkdir' && cmd !== 'echo'))) {
+    if (shell[cmd] && (Capabilities.inBrowser() || (cmd !== 'mkdir' && cmd !== 'echo'))) {
       const args = argv.slice(2)
 
       // remember OLDPWD, so that `cd -` works (shell issue #78)
@@ -203,7 +197,7 @@ export const doShell = (argv: string[], options: ParsedOptions, execOptions?: Ex
     // command
     //
     const rest = argv.slice(1) // skip over '!'
-    const cmdLine = rest.map(_ => repl.encodeComponent(_)).join(' ')
+    const cmdLine = rest.map(_ => REPL.encodeComponent(_)).join(' ')
     debug('cmdline', cmdLine, rest)
 
     doExec(cmdLine, execOptions).then(resolve, reject)
@@ -223,8 +217,8 @@ const usage = {
  * cd command
  *
  */
-const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
-  const dir = repl.split(command, true, true)[1] || ''
+const cd = ({ command, parsedOptions, execOptions }: Commands.EvaluatorArgs) => {
+  const dir = REPL.split(command, true, true)[1] || ''
   debug('cd dir', dir)
   return doShell(['!', 'cd', dir], parsedOptions, execOptions).catch(err => {
     err['code'] = 500
@@ -232,15 +226,15 @@ const cd = ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
   })
 }
 
-const bcd = async ({ command, execOptions }: EvaluatorArgs) => {
-  const pwd: string = await repl.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
+const bcd = async ({ command, execOptions }: Commands.EvaluatorArgs) => {
+  const pwd: string = await REPL.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
   debug('pwd', pwd)
   process.env.PWD = pwd
   return pwd
 }
 
-const specialHandler = (args: EvaluatorArgs) => {
-  if (args.execOptions.type === ExecType.TopLevel) {
+const specialHandler = (args: Commands.EvaluatorArgs) => {
+  if (args.execOptions.type === Commands.ExecType.TopLevel) {
     throw new Error('this command is intended for internal consumption only')
   }
   args.execOptions.quiet = false
@@ -251,7 +245,7 @@ const specialHandler = (args: EvaluatorArgs) => {
  * Register command handlers
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/!', dispatchToShell, {
     docs: 'Execute a UNIX shell command',
     noAuthOk: true,
@@ -269,7 +263,7 @@ export default (commandTree: CommandRegistrar) => {
     noAuthOk: true
   })
 
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     commandTree.listen('/cd', cd, {
       usage: usage.cd,
       noAuthOk: true

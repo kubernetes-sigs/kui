@@ -16,7 +16,7 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 
 import { renderCell } from './cell'
 import { enDash, latencyBuckets } from './util'

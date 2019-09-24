@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { rexec as $ } from '@kui-shell/core/core/repl'
-import { CommandLine } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
@@ -27,13 +26,13 @@ const debug = Debug('plugins/bash-like/tab-completion/git')
  * Tab completion handler for git branch names
  *
  */
-async function completeGitBranches(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+async function completeGitBranches(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const args = commandLine.argvNoOptions
   const { toBeCompleted } = spec
 
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
     try {
-      const completions: string = await $(
+      const completions: string = await REPL.rexec(
         `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`
       )
 
