@@ -15,13 +15,12 @@
  */
 
 import * as Debug from 'debug'
+import * as openwhisk from 'openwhisk'
 
-import { inBrowser, getAuthValue, setHasAuth, inElectron } from '@kui-shell/core/core/capabilities'
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
-import { config } from '@kui-shell/core/core/settings'
+import { Capabilities, Settings } from '@kui-shell/core'
 import store from '@kui-shell/core/models/store'
 import expandHomeDir from '@kui-shell/core/util/home'
-import * as openwhisk from 'openwhisk'
 
 const debug = Debug('plugins/openwhisk/models/auth')
 
@@ -29,7 +28,7 @@ let wskprops: Record<string, string>
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const propertiesParser = require('properties-parser')
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
   } else {
     // then we're running in a browser; we'll initialize this
@@ -59,8 +58,8 @@ const localStorageKey = {
 }
 
 function getDefaultApiHost() {
-  if (inElectron() && config && config['electron-host']) {
-    return config['electron-host']
+  if (Capabilities.inElectron() && Settings.config && Settings.config['electron-host']) {
+    return Settings.config['electron-host']
   }
   return window.location ? window.location.host : ''
 }
@@ -73,14 +72,14 @@ export let apihost: string =
   process.env.__OW_API_HOST ||
   wskprops.APIHOST ||
   store().getItem(localStorageKey.host) ||
-  getAuthValue('openwhisk', 'apihost') ||
+  Capabilities.getAuthValue('openwhisk', 'apihost') ||
   getDefaultApiHost()
 
 let authKey: string =
   process.env.__OW_API_KEY ||
   wskprops.AUTH ||
   store().getItem(localStorageKey.auth) ||
-  getAuthValue('openwhisk', 'api_key')
+  Capabilities.getAuthValue('openwhisk', 'api_key')
 
 const apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
 
@@ -102,7 +101,7 @@ export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Cli
   debug('initOWFromConfig', owConfig)
 
   if (owConfig.api_key !== 'unknown') {
-    setHasAuth('openwhisk', owConfig)
+    Capabilities.setHasAuth('openwhisk', owConfig)
   }
 
   debug('initOW', owConfig)

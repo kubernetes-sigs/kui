@@ -17,12 +17,11 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
-
 import * as needle from 'needle'
 import * as parseDuration from 'parse-duration'
 
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { rexec as $ } from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 const debug = Debug('k8s/clients/kiali')
 
 export interface KialiOptions {
@@ -101,8 +100,8 @@ const apihost = async (options: KialiOptions = new DefaultOptions()) => {
   const { kialiNamespace } = options
 
   const [svc, ingress] = await Promise.all([
-    $(`kubectl get svc kiali -n "${kialiNamespace}" -o json`),
-    $(`kubectl get ingress kiali -n "${kialiNamespace}" -o json`)
+    REPL.rexec(`kubectl get svc kiali -n "${kialiNamespace}" -o json`),
+    REPL.rexec(`kubectl get ingress kiali -n "${kialiNamespace}" -o json`)
   ])
   debug('svc', svc)
   debug('ingress', ingress)

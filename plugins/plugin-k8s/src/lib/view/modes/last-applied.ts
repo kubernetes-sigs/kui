@@ -15,19 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
 import { safeDump } from 'js-yaml'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { i18n, Tab } from '@kui-shell/core'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource } from '../../model/resource'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('k8s/view/modes/last-applied')
 
 /**

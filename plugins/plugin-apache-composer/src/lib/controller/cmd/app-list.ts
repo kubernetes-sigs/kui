@@ -16,13 +16,11 @@
 
 import * as Debug from 'debug'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
+import { withHeader } from '@kui-shell/plugin-openwhisk'
 
 import { appList } from '../../utility/usage'
 import * as astUtil from '../../utility/ast'
-
-import { withHeader } from '@kui-shell/plugin-openwhisk'
 
 const debug = Debug('plugins/apache-composer/cmd/app-list')
 
@@ -42,7 +40,7 @@ interface ListOptions {
  * Command handler for app list
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     `/wsk/app/list`,
     ({ argvNoOptions, parsedOptions: options, execOptions }) => {
@@ -54,7 +52,7 @@ export default async (commandTree: CommandRegistrar) => {
         return { body: [] }
       }
 
-      return repl.qexec(argvNoOptions.join(' ').replace('app', 'action')).then(actions => {
+      return REPL.qexec(argvNoOptions.join(' ').replace('app', 'action')).then(actions => {
         debug('filtering action list to find compositions', actions)
         if (actions.body) {
           const apps = actions.body.filter(astUtil.isAnApp).map(app =>

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { Tab, ViewHandler, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
+import { Capabilities, Tab } from '@kui-shell/core'
+import { ViewHandler, registerEntityView as registerCLIEntityView } from '@kui-shell/core/webapp/cli'
 import { registerEntityView as registerSidecarEntityView } from '@kui-shell/core/webapp/views/sidecar'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
 import { Entity } from '@kui-shell/core/models/entity'
 
 export default () => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     registerCLIEntityView('activations', async (
       tab: Tab,
       response: Entity,

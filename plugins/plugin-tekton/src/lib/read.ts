@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import { safeLoadAll } from 'js-yaml'
 
-import { qexec, rexec as $, encodeComponent } from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
@@ -40,7 +40,7 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<KubeReso
  *
  */
 export const read = async (filepath: string): Promise<string> => {
-  const stats: { data: string } = await qexec(`fstat ${encodeComponent(filepath)} --with-data`)
+  const stats: { data: string } = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)} --with-data`)
 
   return stats.data
 }
@@ -57,7 +57,7 @@ export const fetchTask = async (pipelineName: string, taskName: string, filepath
       : model.filter(_ => _.kind === 'Task')
     return task as Task
   } else if (!taskName) {
-    const pipeline = await $(`kubectl get Pipeline ${encodeComponent(pipelineName)}`).catch(err => {
+    const pipeline = await REPL.pexec(`kubectl get Pipeline ${REPL.encodeComponent(pipelineName)}`).catch(err => {
       // want Pipeline.tekton.dev but that is much slower
       debug('got error fetching pipeline', err)
       return { spec: { tasks: [] } }
@@ -68,11 +68,11 @@ export const fetchTask = async (pipelineName: string, taskName: string, filepath
     }, {})
     debug('referencedTasks', referencedTasks)
 
-    return qexec(`kubectl get Task`, undefined, undefined, {
+    return REPL.qexec(`kubectl get Task`, undefined, undefined, {
       // want Task.tekton.dev but that is much sloewr
       filter: listOfTasks => listOfTasks.filter(_ => referencedTasks[_.name])
     })
   } else {
-    return $(`kubectl get Task ${encodeComponent(taskName)}`) // want Task.tekton.dev but that is much slower
+    return REPL.pexec(`kubectl get Task ${REPL.encodeComponent(taskName)}`) // want Task.tekton.dev but that is much slower
   }
 }

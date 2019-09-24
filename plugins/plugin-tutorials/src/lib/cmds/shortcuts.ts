@@ -16,7 +16,6 @@
 
 // re: require: the typescript compiler moves the json files into the
 // builddir, if we use import, which we want to avoid
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 const {
   name: kubernetesBasicsDocs
 } = require('@kui-shell/plugin-tutorials/samples/@tutorials/kubernetes-basics/package.json')
@@ -24,18 +23,18 @@ const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-import { qexec } from '@kui-shell/core/core/repl'
+import { Commands, REPL } from '@kui-shell/core'
 
 /**
  * Here we register as a listener for "shortcut" commands, that make
  * it a bit easier to launch of some of the entry-level tutorials.
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // kubernetes coding basics shortcut
   commandTree.listen(
     '/tutorial/kubernetes/starter',
-    () => qexec('tutorial play @tutorials/kubernetes-basics --top-level'),
+    () => REPL.qexec('tutorial play @tutorials/kubernetes-basics --top-level'),
     {
       usage: { command: 'basics', docs: kubernetesBasicsDocs },
       needsUI: true,
@@ -45,15 +44,19 @@ export default async (commandTree: CommandRegistrar) => {
   )
 
   // coding basics shortcut
-  commandTree.listen('/tutorial/composer/basics', () => qexec('tutorial play @tutorials/coding-basics --top-level'), {
-    usage: { command: 'basics', docs: codingBasicsDocs },
-    needsUI: true,
-    inBrowserOk: true,
-    noAuthOk: true
-  })
+  commandTree.listen(
+    '/tutorial/composer/basics',
+    () => REPL.qexec('tutorial play @tutorials/coding-basics --top-level'),
+    {
+      usage: { command: 'basics', docs: codingBasicsDocs },
+      needsUI: true,
+      inBrowserOk: true,
+      noAuthOk: true
+    }
+  )
 
   // combinators shortcut
-  commandTree.listen('/tutorial/combinators', () => qexec('tutorial play @tutorials/combinators --top-level'), {
+  commandTree.listen('/tutorial/combinators', () => REPL.qexec('tutorial play @tutorials/combinators --top-level'), {
     usage: { command: 'started', docs: combinatorsDocs },
     needsUI: true,
     inBrowserOk: true,

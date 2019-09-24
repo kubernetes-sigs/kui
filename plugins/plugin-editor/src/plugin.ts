@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { toplevelUsage as usage } from './usage'
 import editCmd from './lib/cmds/edit'
@@ -23,7 +23,7 @@ import editCmd from './lib/cmds/edit'
  * This is the module
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   // register usage handler
   commandTree.subtree('/editor', { usage })
 

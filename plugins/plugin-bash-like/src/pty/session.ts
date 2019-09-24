@@ -16,26 +16,19 @@
 
 import * as Debug from 'debug'
 
-import { Channel } from './channel'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 import {
   getCurrentPrompt,
   getPrompt,
   getCurrentBlock,
   getCurrentProcessingBlock,
-  setStatus,
-  Tab
+  setStatus
 } from '@kui-shell/core/webapp/cli'
-import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { theme as settings, config } from '@kui-shell/core/core/settings'
-import { CodedError } from '@kui-shell/core/models/errors'
+import { Capabilities, Commands, Errors, i18n, REPL, Settings, Tab } from '@kui-shell/core'
 
+import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-bash-like')
-
 const debug = Debug('plugins/bash-like/pty/session')
 
 /**
@@ -71,7 +64,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
         setStatus(block, 'processing')
       }
 
-      return qexec('echo initializing session', block, undefined, {
+      return REPL.qexec('echo initializing session', block, undefined, {
         tab,
         quiet: true,
         noHistory: true,
@@ -86,7 +79,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
             if (placeholderChanged) {
               const prompt = getPrompt(block)
               prompt.readOnly = false
-              prompt.placeholder = settings.placeholder || ''
+              prompt.placeholder = Settings.theme.placeholder || ''
               setStatus(block, 'repl-active')
 
               if (previousText) {
@@ -101,7 +94,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
           resolve(getChannelForTab(tab))
         })
         .catch(error => {
-          const err = error as CodedError
+          const err = error as Errors.CodedError
           if (err.code !== 503) {
             // don't bother complaining too much about connection refused
             console.error('error establishing session', err.code, err.statusCode, err)
@@ -140,7 +133,7 @@ function newSessionForTab(tab: Tab) {
         prompt.placeholder = strings('Please wait while we connect to your cloud')
         setStatus(block, 'processing')
         placeholderChanged = true
-      }, settings.millisBeforeProxyConnectionWarning || 250)
+      }, Settings.theme.millisBeforeProxyConnectionWarning || 250)
 
       await sessionInitialization
 
@@ -148,8 +141,8 @@ function newSessionForTab(tab: Tab) {
       prompt.readOnly = false
       if (placeholderChanged) {
         setStatus(block, 'repl-active')
-        prompt.placeholder = settings.placeholder || ''
-        await pexec('ready', { tab })
+        prompt.placeholder = Settings.theme.placeholder || ''
+        await REPL.pexec('ready', { tab })
       }
 
       tab.classList.add('kui--session-init-done')
@@ -161,7 +154,7 @@ function newSessionForTab(tab: Tab) {
   })
 }
 
-export function registerCommands(commandTree: CommandRegistrar) {
+export function registerCommands(commandTree: Commands.Registrar) {
   // this is the default "session is ready" command handler
   commandTree.listen(
     '/ready',
@@ -174,7 +167,7 @@ export function registerCommands(commandTree: CommandRegistrar) {
       const clicky = document.createElement('span')
       clicky.className = 'clickable clickable-blatant'
       clicky.innerText = 'getting started'
-      clicky.onclick = () => pexec('getting started')
+      clicky.onclick = () => REPL.pexec('getting started')
       message.appendChild(clicky)
 
       return message
@@ -188,10 +181,14 @@ export function registerCommands(commandTree: CommandRegistrar) {
  *
  */
 export async function init() {
-  if (inBrowser() && config['proxyServer'] && config['proxyServer']['enabled'] !== false) {
+  if (
+    Capabilities.inBrowser() &&
+    Settings.config['proxyServer'] &&
+    Settings.config['proxyServer']['enabled'] !== false
+  ) {
     debug('initializing pty sessions')
 
-    const eventBus = (await import('@kui-shell/core/core/events')).default
+    const { eventBus } = await import('@kui-shell/core')
 
     // listen for new tabs
     eventBus.on('/tab/new', (tab: Tab) => {

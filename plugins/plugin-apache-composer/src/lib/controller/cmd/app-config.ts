@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { properties } from '../../utility/usage'
 import { version } from 'openwhisk-composer/package.json'
@@ -23,7 +23,7 @@ import { version } from 'openwhisk-composer/package.json'
  * Command handler for the properties command
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // the package.json might be in `app/plugins`, or in
   // `app/plugins/modules/composer`, depending, respectively, on whether
   // we are installing composer from npm, versus from git e.g. when

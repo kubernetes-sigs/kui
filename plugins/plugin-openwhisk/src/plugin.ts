@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import cp from './lib/cmds/copy'
 import mv from './lib/cmds/mv'
@@ -41,7 +41,7 @@ import activationList from './lib/cmds/activations/list'
 
 import registerViews from './views'
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   const wsk = await core(commandTree)
 
   // commands
@@ -64,7 +64,7 @@ export default async (commandTree: CommandRegistrar) => {
   // activation extensions
   await activationList(commandTree, wsk)
   await awaitCommand(commandTree, wsk)
-  await last(commandTree, wsk)
+  await last(commandTree)
   await roots(commandTree, wsk)
 
   // rule extension
@@ -72,7 +72,7 @@ export default async (commandTree: CommandRegistrar) => {
   await every(commandTree)
 
   // views
-  await modes(commandTree, wsk)
+  await modes(commandTree)
   await registerViews()
 
   return wsk

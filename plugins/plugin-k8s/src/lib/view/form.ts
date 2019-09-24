@@ -15,18 +15,15 @@
  */
 
 import * as Debug from 'debug'
-
 import { safeDump } from 'js-yaml'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { i18n, Tab } from '@kui-shell/core'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as Resources from '../model/resource'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('plugin-k8s/view/form')
 
 interface FormElement {

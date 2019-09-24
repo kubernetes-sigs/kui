@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Tab, Tables } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
@@ -77,7 +76,7 @@ interface Parameters {
   resource: Resource<PackageBearer>
 }
 
-function toTable(resource: PackageBearer): Table {
+function toTable(resource: PackageBearer): Tables.Table {
   return {
     title: 'Packages',
     header: {
@@ -93,7 +92,7 @@ function toTable(resource: PackageBearer): Table {
   }
 }
 
-export const renderAndView = (tab: Tab, parameters: Parameters): Table => {
+export const renderAndView = (tab: Tab, parameters: Parameters): Tables.Table => {
   const { command, resource } = parameters
   debug('renderAndView', command, resource)
 

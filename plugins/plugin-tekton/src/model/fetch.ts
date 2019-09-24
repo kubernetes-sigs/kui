@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { rexec as $ } from '@kui-shell/core/core/repl'
-import { CodedError } from '@kui-shell/core/models/errors'
+import { Errors, REPL } from '@kui-shell/core'
 
 import { PipelineRun, Pipeline, Task } from './resource'
 
@@ -24,8 +23,8 @@ import { PipelineRun, Pipeline, Task } from './resource'
  *
  */
 export function getPipelineFromRef(run: PipelineRun): Promise<Pipeline> {
-  return $(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
-    .catch((err: CodedError) => {
+  return REPL.rexec(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
+    .catch((err: Errors.CodedError) => {
       if (err.code === 404) {
         return undefined
       } else {
@@ -39,5 +38,5 @@ export function getPipelineFromRef(run: PipelineRun): Promise<Pipeline> {
  *
  */
 export function getTasks(): Promise<Task[]> {
-  return $('kubectl get Task') // want Task.tekton.dev, but that is much slower
+  return REPL.rexec('kubectl get Task') // want Task.tekton.dev, but that is much slower
 }

@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 import { optionsToString } from '@kui-shell/core/core/utility'
 
 import { hasAst, astAnnotation } from './ast'

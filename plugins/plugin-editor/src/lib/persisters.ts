@@ -15,9 +15,9 @@
  */
 
 import * as Debug from 'debug'
-
 import { readFile, writeFile } from 'fs'
-import globalEventBus from '@kui-shell/core/core/events'
+
+import { eventBus as globalEventBus } from '@kui-shell/core'
 
 import strings from './strings'
 

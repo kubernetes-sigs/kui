@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 
 import { update } from './openwhisk-core'
 import { synonyms } from '../models/synonyms'
@@ -28,12 +27,12 @@ declare let hljs
  * A just for fun plugin: beautify the source code of the selected action
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   synonyms('actions').forEach(syn =>
     commandTree.listen(
       `/wsk/${syn}/beautify`,
       ({ execOptions, tab }) => {
-        if (isHeadless()) {
+        if (Capabilities.isHeadless()) {
           throw new Error('beautify not supported in headless mode')
         }
 

@@ -19,18 +19,11 @@
 import * as Debug from 'debug'
 import { v4 as uuidgen } from 'uuid'
 
-import UsageError from '@kui-shell/core/core/usage-error'
-import { ReplEval, DirectReplEval } from '@kui-shell/core/core/repl'
-import { getValidCredentials } from '@kui-shell/core/core/capabilities'
-import { ExecOptions, withLanguage } from '@kui-shell/core/models/execOptions'
-import { config } from '@kui-shell/core/core/settings'
-import { isCommandHandlerWithEvents, Evaluator, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Capabilities, Commands, Errors, REPL, Settings, Tab } from '@kui-shell/core'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
-import { CodedError } from '@kui-shell/core/models/errors'
 
 // import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
 // copied for now, until we can figure out typescript compiler issues
-import { Tab } from '@kui-shell/core/webapp/cli'
 interface Channel {
   send: (msg: string) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,11 +60,11 @@ type ProxyServerConfig = DisabledProxyServerConfig | ActualProxyServerConfig
  *
  */
 import defaultProxyServerConfig from './defaultProxyServerConfig'
-const proxyServerConfig: ProxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
+const proxyServerConfig: ProxyServerConfig = Settings.config['proxyServer'] || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
-const directEvaluator = new DirectReplEval()
+const directEvaluator = new REPL.DirectReplEval()
 
 function renderDom(content: ElementMimic): HTMLElement {
   const dom = document.createElement(content.nodeType || 'span')
@@ -101,16 +94,21 @@ function renderDom(content: ElementMimic): HTMLElement {
  * A repl.exec implementation that proxies to the packages/proxy container
  *
  */
-class ProxyEvaluator implements ReplEval {
+class ProxyEvaluator implements REPL.ReplEval {
   name = 'ProxyEvaluator'
 
-  async apply(command: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
+  async apply(
+    command: string,
+    execOptions: Commands.ExecOptions,
+    evaluator: Commands.Evaluator,
+    args: Commands.EvaluatorArgs
+  ) {
     debug('apply', evaluator)
     debug('execOptions', execOptions)
 
     if (
       isDisabled(proxyServerConfig) ||
-      (isCommandHandlerWithEvents(evaluator) &&
+      (Commands.isCommandHandlerWithEvents(evaluator) &&
         evaluator.options &&
         !execOptions.forceProxy &&
         (evaluator.options.inBrowserOk || evaluator.options.needsUI))
@@ -118,12 +116,12 @@ class ProxyEvaluator implements ReplEval {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
-      const execOptionsForInvoke = withLanguage(
+      const execOptionsForInvoke = Commands.withLanguage(
         Object.assign({}, execOptions, {
           isProxied: true,
           cwd: process.env.PWD,
           env: process.env,
-          credentials: getValidCredentials(),
+          credentials: Capabilities.getValidCredentials(),
           tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
           rawResponse: true // we will post-process the response
         })
@@ -174,14 +172,14 @@ class ProxyEvaluator implements ReplEval {
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
-                        if (UsageError.isUsageError(response.response)) {
+                        if (Errors.isUsageError(response.response)) {
                           // e.g. k get -h
                           debug('rejecting as usage error', response)
                           reject(response.response)
                         } else {
                           // e.g. k get pod nonExistantName
                           debug('rejecting as other error', response)
-                          const err: CodedError = new Error(response.response.message)
+                          const err: Errors.CodedError = new Error(response.response.message)
                           err.stack = response.response.stack
                           err.code = err.statusCode = code
                           err.body = response.response
@@ -263,7 +261,7 @@ class ProxyEvaluator implements ReplEval {
         if (response.statusCode !== 200) {
           debug('rethrowing non-200 response', response)
           // to trigger the catch just below
-          const err: CodedError = new Error(response.body as string)
+          const err: Errors.CodedError = new Error(response.body as string)
           err.code = err.statusCode = response.statusCode
           err.body = response.body
           throw err
@@ -296,16 +294,16 @@ class ProxyEvaluator implements ReplEval {
           err
         )
 
-        if (err.body && UsageError.isUsageError(err.body)) {
+        if (err.body && Errors.isUsageError(err.body)) {
           debug('the error is a usage error, rethrowing as such')
-          throw new UsageError({
+          throw new Errors.UsageError({
             message: err.body.raw.message,
             usage: err.body.raw.usage,
             code: err.body.code,
             extra: err.body.extra
           })
         } else {
-          const error: CodedError = new Error(
+          const error: Errors.CodedError = new Error(
             (err.body && err.body.message) ||
               (typeof err.body === 'string' ? err.body : err.message || 'Internal error')
           )

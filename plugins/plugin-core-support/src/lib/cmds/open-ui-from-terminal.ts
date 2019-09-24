@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 
 const usage = {
   command: 'shell',
@@ -38,10 +37,10 @@ const docs = {
  * This plugin allows opening the graphical shell from the terminal
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   /** command handler */
   const doIt = () => ({ execOptions }) => {
-    if (!isHeadless() && (!execOptions || !execOptions.causedByHeadless)) {
+    if (!Capabilities.isHeadless() && (!execOptions || !execOptions.causedByHeadless)) {
       throw new Error(`Usage: This command is intended for use from the CLI, to launch this graphical Shell.
 You are already here. Welcome!`)
     }

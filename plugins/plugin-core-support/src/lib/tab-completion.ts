@@ -19,17 +19,13 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as minimist from 'yargs-parser'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
 import { keys } from '@kui-shell/core/webapp/keys'
 import * as cli from '@kui-shell/core/webapp/cli'
-import { split, _split, Split, qexec } from '@kui-shell/core/core/repl'
+import { Capabilities, Commands, Errors, REPL, Tables } from '@kui-shell/core'
 import { flatten } from '@kui-shell/core/core/utility'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { Table } from '@kui-shell/core/webapp/models/table'
 import expandHomeDir from '@kui-shell/core/util/home'
-import { CommandLine } from '@kui-shell/core/models/command'
-import { UsageError } from '@kui-shell/core/core/usage-error'
 
 const debug = Debug('plugins/core-support/tab completion')
 
@@ -50,7 +46,7 @@ export interface TabCompletionSpec {
    */
   toBeCompletedIdx: number
 }
-type Enumerator = (commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
+type Enumerator = (commandLine: Commands.CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
 
 const enumerators: Enumerator[] = []
 
@@ -58,7 +54,7 @@ export function registerEnumerator(enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
 
-async function applyEnumerator(commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+async function applyEnumerator(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
   return flatten(lists.map(x => x)).filter(x => x)
 }
@@ -191,7 +187,7 @@ const makeCompletionContainer = (
       return temporaryContainer.cleanup()
     }
 
-    const args = split(prompt.value)
+    const args = REPL.split(prompt.value)
     const currentText = args[temporaryContainer.lastIdx]
     const prevMatches = temporaryContainer.currentMatches
     const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
@@ -728,8 +724,8 @@ const suggest = (
   } else if (param.entity) {
     // then the expected parameter is an existing entity; so we
     // can enumerate the entities of the specified type
-    return qexec(`${param.entity} list --limit 200`)
-      .then((response: Table) => response.body)
+    return REPL.qexec(`${param.entity} list --limit 200`)
+      .then((response: Tables.Table) => response.body)
       .then(filterAndPresentEntitySuggestions(path.basename(last), block, prompt, temporaryContainer, lastIdx))
   }
 }
@@ -741,7 +737,7 @@ const suggest = (
 export default () => {
   if (typeof document === 'undefined') return
 
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
       key: 'tab-completion.css'
@@ -818,7 +814,7 @@ export default () => {
             return
           }
 
-          const handleUsage = usageError => {
+          const handleUsage = (usageError /* Errors.UsageError */) => {
             const usage = usageError.raw ? usageError.raw.usage || usageError.raw : usageError.usage || usageError
             debug('usage', usage, usageError)
 
@@ -848,7 +844,7 @@ export default () => {
 
               debug('positionals', positionals)
               if (positionals.length > 0) {
-                const args = split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
+                const args = REPL.split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
                 const commandIdx = args.indexOf(usage.command) // the terminal command of the prompt
                 const nActuals = args.length - commandIdx - 1
                 const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
@@ -875,8 +871,8 @@ export default () => {
                   }
                 }
               }
-            } else if (!inBrowser()) {
-              const { A: args, endIndices } = _split(prompt.value, true, true) as Split
+            } else if (!Capabilities.inBrowser()) {
+              const { A: args, endIndices } = REPL._split(prompt.value, true, true) as REPL.Split
               const lastIdx = prompt.selectionStart
               debug('falling back on local file completion', args, lastIdx)
 
@@ -892,7 +888,7 @@ export default () => {
           }
 
           const lastIdx = prompt.selectionStart
-          const { A: argv, endIndices } = _split(prompt.value, true, true) as Split
+          const { A: argv, endIndices } = REPL._split(prompt.value, true, true) as REPL.Split
           const options = minimist(argv)
           const toBeCompletedIdx = endIndices.findIndex(idx => idx >= lastIdx) // e.g. git branch f<tab>
           const completingTrailingEmpty = lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
@@ -965,7 +961,7 @@ export default () => {
 
           try {
             debug('fetching usage', value)
-            const usage: Promise<UsageError> = qexec(`${value} --help`, undefined, undefined, {
+            const usage: Promise<Errors.UsageError> = REPL.qexec(`${value} --help`, undefined, undefined, {
               failWithUsage: true
             })
             if (usage.then) {

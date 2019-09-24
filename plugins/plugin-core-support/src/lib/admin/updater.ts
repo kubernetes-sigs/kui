@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 const messages = {
   error: 'Error checking for updates'
@@ -143,7 +143,7 @@ const notifyOfAvailableUpdatesVisually = changes => {
       notificationArea.appendChild(notificationWidget)
 
       // click handler for notification widget
-      notificationWidget.onclick = () => repl.pexec('updater check')
+      notificationWidget.onclick = () => REPL.pexec('updater check')
     }
   }
 

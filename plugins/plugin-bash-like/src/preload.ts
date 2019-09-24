@@ -18,15 +18,14 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import prefetchShellState from './pty/prefetch'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 export const registerCapability: CapabilityRegistration = async () => {
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     import('./pty/session').then(({ init }) => init())
   }
 }
@@ -35,12 +34,12 @@ export const registerCapability: CapabilityRegistration = async () => {
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar) => {
-  if (!isHeadless()) {
+export default async (commandTree: Commands.Registrar) => {
+  if (!Capabilities.isHeadless()) {
     import('./lib/tab-completion/git').then(_ => _.default())
   }
 
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     try {
       await prefetchShellState()
       debug('done with state prefetch')

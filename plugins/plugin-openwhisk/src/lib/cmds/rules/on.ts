@@ -22,7 +22,7 @@
  *
  */
 
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 /**
  * on <trigger> do <action>
@@ -35,18 +35,17 @@ const on = ({ argvNoOptions: argv, parsedOptions }) => {
   const action = argv[idx + 2]
   const rule = parsedOptions.name || `on_${trigger}_do_${action.replace(/\//g, '_')}`
 
-  return repl
-    .qexec(`wsk trigger get ${trigger}`, null, null, { noRetry: true })
+  return REPL.qexec(`wsk trigger get ${trigger}`, null, null, { noRetry: true })
     .catch(err => {
       if (err.statusCode === 404) {
-        return repl.qexec(`wsk trigger update ${trigger}`)
+        return REPL.qexec(`wsk trigger update ${trigger}`)
       } else {
         throw err
       }
     })
-    .then(() => repl.qexec(`wsk rule update ${rule} ${trigger} ${action}`))
-    .then(() => repl.qexec(`wsk rule enable ${rule}`))
-    .then(() => repl.qfexec(`wsk rule get ${rule}`))
+    .then(() => REPL.qexec(`wsk rule update ${rule} ${trigger} ${action}`))
+    .then(() => REPL.qexec(`wsk rule enable ${rule}`))
+    .then(() => REPL.qexec(`wsk rule get ${rule}`))
 }
 
 /**

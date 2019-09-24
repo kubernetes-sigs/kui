@@ -16,11 +16,10 @@
 
 import * as Debug from 'debug'
 
+import { Tab, Tables } from '@kui-shell/core'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { getActiveView as getActiveSidecarView } from '@kui-shell/core/webapp/views/sidecar'
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { formatTable as format } from '@kui-shell/core/webapp/views/table'
-import { Table, MultiTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
+
 const debug = Debug('k8s/view/formatMultiTable')
 
 /** this will help us with finding our own view instances */
@@ -34,7 +33,7 @@ export const getActiveView = (tab: Tab) => {
  * Update table for picture-in-picture style drilldowns
  *
  */
-const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (table: Table) => {
+const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (table: Tables.Table) => {
   debug('pip update for table', table)
 
   table.body.forEach(row => {
@@ -65,23 +64,23 @@ const updateTableForPip = (tab: Tab, viewName: string, execOptions) => (table: T
  */
 export const formatTable = (
   tab: Tab,
-  model: Table | MultiTable,
+  model: Tables.Table | Tables.MultiTable,
   { usePip = false, viewName = 'previous view', execOptions = {} } = {}
 ): HTMLElement => {
   debug('formatTable model', model)
 
   const resultDomOuter = document.createElement('div')
 
-  if (isTable(model) || isMultiTable(model)) {
+  if (Tables.isTable(model) || Tables.isMultiTable(model)) {
     const resultDom = document.createElement('div')
 
     // e.g. establish an attribute [k8s-table="Containers"]
-    resultDomOuter.setAttribute(attr, isTable(model) ? model.title : model.tables.map(m => m.title).join(' '))
+    resultDomOuter.setAttribute(attr, Tables.isTable(model) ? model.title : model.tables.map(m => m.title).join(' '))
 
     // modify onclick links to use the "picture in picture" drilldown module
     if (usePip) {
       debug('pip update')
-      if (isTable(model)) {
+      if (Tables.isTable(model)) {
         updateTableForPip(tab, viewName, execOptions)(model)
       } else {
         model.tables.forEach(updateTableForPip(tab, viewName, execOptions))
@@ -98,11 +97,11 @@ export const formatTable = (
     resultDom.classList.add('repl-result')
     resultDom.classList.add('monospace')
 
-    if (isTable(model)) {
-      format(tab, model, resultDom)
+    if (Tables.isTable(model)) {
+      Tables.format(tab, model, resultDom)
     } else {
       resultDom.classList.add('result-as-multi-table')
-      model.tables.forEach(m => format(tab, m, resultDom))
+      model.tables.forEach(m => Tables.format(tab, m, resultDom))
     }
   }
 

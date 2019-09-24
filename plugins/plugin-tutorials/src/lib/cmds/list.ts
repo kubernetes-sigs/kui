@@ -16,8 +16,7 @@
 
 import { readdir } from 'fs'
 
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, Tables } from '@kui-shell/core'
 
 import { contentDir } from './util'
 
@@ -39,7 +38,7 @@ const sort = list => {
  * The tutorials list command handler
  *
  */
-const doList = (): Promise<Table> =>
+const doList = (): Promise<Tables.Table> =>
   new Promise((resolve, reject) => {
     readdir(contentDir, async (err, files) => {
       if (err) {
@@ -48,7 +47,7 @@ const doList = (): Promise<Table> =>
         const pane = document.querySelector('#tutorialPane')
         const nowPlaying = pane && pane.getAttribute('now-playing')
 
-        const tutorials: Row[] = (await Promise.all(
+        const tutorials: Tables.Row[] = (await Promise.all(
           files.map(async name => {
             const { disabled, description, level } = await import(
               '@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json'
@@ -89,7 +88,7 @@ const doList = (): Promise<Table> =>
             })
 
             // here is the entity model for list elements
-            const row: Row = {
+            const row: Tables.Row = {
               type: 'tutorials',
               name: name.replace(/-/g, ' '),
               nameCss: ['capitalize', 'semi-bold'],
@@ -103,7 +102,7 @@ const doList = (): Promise<Table> =>
           })
         )).filter(x => x) // filter out any nils due to disabled tutorials
 
-        const table: Table = {
+        const table: Tables.Table = {
           noSort: true,
           body: sort(tutorials)
         }
@@ -130,7 +129,7 @@ const usage = {
  * Here we register as a listener for commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   const opts = { usage, noAuthOk: true }
 
   commandTree.listen(`/tutorial/list`, doList, opts)

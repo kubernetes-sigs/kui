@@ -18,7 +18,7 @@ import * as fs from 'fs'
 import * as propertiesParser from 'properties-parser'
 
 import expandHomeDir from '@kui-shell/core/util/home'
-import { qexec as $ } from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 /**
  * Get the apiHost and auth key
@@ -51,7 +51,7 @@ export const getCreds = async options => {
     throw new Error('Please specify both --apiHost and --auth')
   } else {
     // use the global settings
-    const [apiHost, auth] = await Promise.all([$('wsk host get'), $('wsk auth get')])
+    const [apiHost, auth] = await Promise.all([REPL.qexec('wsk host get'), REPL.qexec('wsk auth get')])
     return { apiHost, auth }
   }
 }

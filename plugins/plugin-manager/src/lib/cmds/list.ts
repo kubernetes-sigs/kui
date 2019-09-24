@@ -15,19 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import * as repl from '@kui-shell/core/core/repl'
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import { flatten } from '@kui-shell/core/core/utility'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { list as usage } from '../../usage'
-const debug = Debug('plugins/plugin-manager/cmd/list')
 
-debug('finished module imports')
+const debug = Debug('plugins/plugin-manager/cmd/list')
 
 /**
  * Pull out the sub-directories in the given directory, if it is an @-style npm group
@@ -81,7 +78,7 @@ const doList = () => {
           type,
           name: `${plugin}`,
           attributes: [{ key: 'version', value: version }],
-          onclick: () => repl.pexec(`plugin commands ${plugin}`)
+          onclick: `plugin commands ${plugin}`
         }))
       } else {
         return 'No user-installed plugins found'
@@ -101,7 +98,7 @@ const doList = () => {
     })
 }
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/plugin/list', doList, { usage })
 }
 

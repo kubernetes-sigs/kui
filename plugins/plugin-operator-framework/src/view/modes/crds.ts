@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Tab, Tables } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
@@ -94,7 +93,7 @@ interface Parameters {
   resource: Resource<CRDBearer>
 }
 
-function toTable(resource: CRDBearer): Table {
+function toTable(resource: CRDBearer): Tables.Table {
   return {
     title: 'CRDs',
     header: {

@@ -18,30 +18,25 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import UsageError from '@kui-shell/core/core/usage-error'
-import { CodedError } from '@kui-shell/core/models/errors'
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
-import { qexec, encodeComponent } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Capabilities, Commands, Errors, i18n, REPL } from '@kui-shell/core'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-core-support')
 
 /**
  * Respond with a top-level usage document
  *
  */
-const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
+const help = usage => ({ argvNoOptions: args }: Commands.EvaluatorArgs) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 
   if (rest.length > 0) {
     // then the user asked e.g. "help foo"; interpret this as "foo help"
     debug('reversal')
-    return qexec(
+    return REPL.qexec(
       rest
         .concat('help')
-        .map(val => encodeComponent(val))
+        .map(val => REPL.encodeComponent(val))
         .join(' ')
     )
 
@@ -63,8 +58,8 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
       if (
         model &&
         !model.synonymFor &&
-        (isHeadless() || !model.headlessOnly) &&
-        (!inBrowser() || !model.requiresLocal)
+        (Capabilities.isHeadless() || !model.headlessOnly) &&
+        (!Capabilities.inBrowser() || !model.requiresLocal)
       ) {
         topLevelUsage.available.push({
           label: route.substring(1),
@@ -78,11 +73,11 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
     }
 
     debug('generated top-level usage model')
-    throw new UsageError({ usage: topLevelUsage })
+    throw new Errors.UsageError({ usage: topLevelUsage })
   } else {
     debug('no usage model')
 
-    const error: CodedError = new Error('No documentation found')
+    const error: Errors.CodedError = new Error('No documentation found')
     error.code = 404
     throw error
   }
@@ -92,7 +87,7 @@ const help = usage => ({ argvNoOptions: args }: EvaluatorArgs) => {
  * The module. Here, we register as a listener for commands.
  *
  */
-export default async (commandTree: CommandRegistrar, { usage }) => {
+export default async (commandTree: Commands.Registrar, { usage }) => {
   commandTree.listen('/help', help(usage), {
     noAuthOk: true,
     inBrowserOk: true

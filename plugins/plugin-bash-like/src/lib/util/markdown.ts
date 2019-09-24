@@ -17,8 +17,7 @@
 import * as url from 'url'
 import * as path from 'path'
 
-import { pexec } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { REPL, Tab } from '@kui-shell/core'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
 declare let hljs
@@ -96,7 +95,7 @@ const wrap = (tab: Tab, htmlString: string, fullpath: string): Markdown => {
       // will all, at some point, and we can restore that commented
       // out part
       exec.onclick = () =>
-        pexec(
+        REPL.pexec(
           url
             .substring(1) /* .replace(new RegExp('(?<!\\)\/', 'g'), ' ') */
             .replace(/\\\//, '/')

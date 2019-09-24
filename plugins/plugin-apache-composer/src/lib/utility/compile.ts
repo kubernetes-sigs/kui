@@ -15,16 +15,13 @@
  */
 
 import * as Debug from 'debug'
-
 import * as fs from 'fs'
 import * as path from 'path'
-import expandHomeDir from '@kui-shell/core/util/home'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import UsageError from '@kui-shell/core/core/usage-error'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities, Errors, Tab } from '@kui-shell/core'
+import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 
 import { currentSelection } from '@kui-shell/plugin-openwhisk'
@@ -32,12 +29,13 @@ import { currentSelection } from '@kui-shell/plugin-openwhisk'
 import { isValidAst } from './ast'
 import { create } from './usage'
 import * as messages from './messages'
+
 const debug = Debug('plugins/apache-composer/utility/compile')
 
 const loadSourceCode = (inputFile: string, localCodePath: string): Promise<string> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    if (!inBrowser()) {
+    if (!Capabilities.inBrowser()) {
       debug('readFile in headless mode or for electron')
       fs.readFile(localCodePath, (err, data) => {
         if (err) {
@@ -184,7 +182,7 @@ export const implicitInputFile = (tab: Tab, inputFile?: string, name?: string) =
 }
 
 export const loadComposition = (inputFile: string, originalCode?: string, localCodePath?: string) => {
-  if (inBrowser() && originalCode) {
+  if (Capabilities.inBrowser() && originalCode) {
     debug('loadComposition for webpack', originalCode)
     return originalCode
   }
@@ -270,7 +268,7 @@ export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: strin
       debug('input is composer library client', extension)
     } else {
       return reject(
-        new UsageError({
+        new Errors.UsageError({
           message: messages.unknownInput,
           usage: create('create'),
           code: 497

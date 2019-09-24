@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import eventBus from '@kui-shell/core/core/events'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, eventBus } from '@kui-shell/core'
 
 import { all } from './history'
 import { prettyUrl } from './util'
@@ -26,7 +25,7 @@ import { insertRow, addCell, i18n } from './table'
 
 const viewName = 'Load Test History'
 
-export const list = ({ tab }: EvaluatorArgs) => {
+export const list = ({ tab }: Commands.EvaluatorArgs) => {
   const graphics = initUI({ noChart: true })
   const resp = response(tab, graphics, {
     url: undefined,

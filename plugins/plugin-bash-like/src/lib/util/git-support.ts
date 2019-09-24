@@ -17,7 +17,7 @@
 import { dirname, join } from 'path'
 import { exec } from 'child_process'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
 
 /**
@@ -25,7 +25,7 @@ import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
  *
  */
 export const injectCSS = async () => {
-  if (inBrowser()) {
+  if (Capabilities.inBrowser()) {
     await Promise.all([
       inject({
         css: require('diff2html/dist/diff2html.min.css'),

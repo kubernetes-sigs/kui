@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Commands } from '@kui-shell/core'
+
 import getStep from './controller/get/step'
 import getTask from './controller/get/task'
 import preview from './controller/preview'
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   return Promise.all([getStep(commandTree), getTask(commandTree), preview(commandTree)])
 }

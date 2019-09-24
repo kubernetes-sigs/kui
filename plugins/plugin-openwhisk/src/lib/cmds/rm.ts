@@ -26,10 +26,8 @@
 
 import * as minimist from 'yargs-parser'
 
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { Commands, REPL, Tables } from '@kui-shell/core'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
-import * as repl from '@kui-shell/core/core/repl'
 
 import { synonyms } from '../models/synonyms'
 
@@ -50,7 +48,7 @@ const errorThen = val => err => {
 }
 
 /** here is the module */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   /**
    * Given a package name and an entity within that package, return the fully qualified name of the entity
    *
@@ -69,7 +67,7 @@ export default async (commandTree: CommandRegistrar) => {
     } else {
       return Promise.all(
         entities.map(_ =>
-          repl.qexec(`wsk ${type} rimraf -r -q ${repl.encodeComponent(_)}`, undefined, undefined, { raw: true })
+          REPL.qexec(`wsk ${type} rimraf -r -q ${REPL.encodeComponent(_)}`, undefined, undefined, { raw: true })
         )
       )
     }
@@ -83,8 +81,7 @@ export default async (commandTree: CommandRegistrar) => {
    */
   const deletePackageAndContents = pckage =>
     new Promise((resolve, reject) => {
-      repl
-        .qexec(`wsk package get "${pckage}"`)
+      REPL.qexec(`wsk package get "${pckage}"`)
         .then(pckage => Promise.all([rmActions(reify(pckage, 'actions')), rmTriggers(reify(pckage, 'feeds'))]))
         .then(flatten)
         .then(removedSoFar => {
@@ -92,7 +89,7 @@ export default async (commandTree: CommandRegistrar) => {
           // while openwhisk may return from deleting packaged actions,
           // but deleting the package can still fail with a 409; retry!
           //
-          const tryDelete = () => repl.qexec(`wsk package delete "${pckage}"`).then(() => removedSoFar.concat([pckage]))
+          const tryDelete = () => REPL.qexec(`wsk package delete "${pckage}"`).then(() => removedSoFar.concat([pckage]))
 
           const tryDeleteWithRetry = waitTime => {
             tryDelete()
@@ -127,9 +124,8 @@ export default async (commandTree: CommandRegistrar) => {
    */
   const BATCH = 200 // keep this at 200, but you can temporarily set it to lower values for debugging
   const fetch = (type, skip = 0, soFar = []) => {
-    return repl
-      .qexec(`wsk ${type} list --limit ${BATCH} --skip ${skip}`)
-      .then((response: Table) => response.body)
+    return REPL.qexec(`wsk ${type} list --limit ${BATCH} --skip ${skip}`)
+      .then((response: Tables.Table) => response.body)
       .then(items => {
         if (items.length === BATCH) {
           // then there may be more
@@ -165,7 +161,7 @@ export default async (commandTree: CommandRegistrar) => {
    * This is the core logic
    *
    */
-  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: EvaluatorArgs) => {
+  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: Commands.EvaluatorArgs) => {
     const options = minimist(fullArgv, {
       alias: { q: 'quiet', f: 'force', r: 'recursive' },
       boolean: ['quiet', 'force', 'recursive'],
@@ -204,17 +200,15 @@ export default async (commandTree: CommandRegistrar) => {
               //                         |
               //                         ^^^^^^ delete this, too
               //
-              return repl.qexec(`wsk action get "${arg}"`, block).then(action => {
+              return REPL.qexec(`wsk action get "${arg}"`, block).then(action => {
                 if (action.annotations && action.annotations.find(kv => kv.key === 'exec' && kv.value === 'sequence')) {
                   return Promise.all(
                     action.exec.components.map(component =>
-                      repl
-                        .qexec(`wsk action get "${component}"`, block)
+                      REPL.qexec(`wsk action get "${component}"`, block)
                         .then(component => {
                           if (isAnonymousLet(component, arg)) {
                             // arg is the parent sequence
-                            return repl
-                              .qexec(`wsk action delete "${component.name}"`, block)
+                            return REPL.qexec(`wsk action delete "${component.name}"`, block)
                               .then(() => [component.name]) // deleted one
                               .catch(errorThen([])) // deleted zero
                           } else {
@@ -226,21 +220,25 @@ export default async (commandTree: CommandRegistrar) => {
                   ) // get failed, sequence component already deleted, so deleted zero here!
                     .then(flatten)
                     .then(counts =>
-                      repl
-                        .qfexec(`wsk ${type} delete "${arg}"`, block as HTMLElement, nextBlock) // now we can delete the sequence
+                      REPL.qexec(`wsk ${type} delete "${arg}"`, block as HTMLElement, undefined, undefined, nextBlock) // now we can delete the sequence
                         .then(() => counts.concat(arg))
                     ) // total deleted count
                 } else {
                   // not a sequence, plain old delete
-                  return repl.qfexec(`wsk ${type} delete "${arg}"`, block as HTMLElement, nextBlock).then(() => [arg]) // deleted one
+                  return REPL.qexec(
+                    `wsk ${type} delete "${arg}"`,
+                    block as HTMLElement,
+                    undefined,
+                    undefined,
+                    nextBlock
+                  ).then(() => [arg]) // deleted one
                 }
               })
             } else if (options.recursive && type === 'packages') {
               return deletePackageAndContents(arg)
             } else {
               // no special handling for other entity types
-              return repl
-                .qfexec(`wsk ${type} delete "${arg}"`, block as HTMLElement, nextBlock)
+              return REPL.qexec(`wsk ${type} delete "${arg}"`, block as HTMLElement, undefined, undefined, nextBlock)
                 .then(() => [arg]) // deleted one
                 .catch(err => {
                   if (err.statusCode === 404 && !isExact) {

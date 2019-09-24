@@ -16,16 +16,13 @@
 
 import { dirname, join } from 'path'
 
-import UsageError from '@kui-shell/core/core/usage-error'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { getCurrentPrompt, Tab } from '@kui-shell/core/webapp/cli'
+import { getCurrentPrompt } from '@kui-shell/core/webapp/cli'
 import { keys } from '@kui-shell/core/webapp/keys'
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands, Errors, i18n, Tab } from '@kui-shell/core'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-core-support')
 
 /** number of seconds before the screenshot-captured UI disappears automatically */
@@ -35,7 +32,7 @@ const SECONDS_TILL_AUTO_CLOSE = 10
  * Usage message
  *
  */
-const usage = {
+const usage: Errors.UsageModel = {
   strict: 'screenshot',
   command: 'screenshot',
   title: strings('screenshotUsageTitle'),
@@ -180,13 +177,13 @@ interface SnapDom extends HTMLElement {
 }
 
 /** this is the handler body */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/screenshot',
     ({ tab, argvNoOptions, parsedOptions }) =>
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
-        if (inBrowser()) {
+        if (Capabilities.inBrowser()) {
           const error = new Error(strings('notSupportedInBrowser'))
           error['code'] = 500
           reject(error)
@@ -217,7 +214,7 @@ export default async (commandTree: CommandRegistrar) => {
             return reject(new Error(strings('screenshotREPLError')))
           } else if (!selector) {
             // either we couldn't find the area to
-            return reject(new UsageError({ usage }))
+            return reject(new Errors.UsageError({ usage }))
           } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
             // sanity check the sidecar option
             return reject(new Error(strings('screenshotSidecarNotOpen')))

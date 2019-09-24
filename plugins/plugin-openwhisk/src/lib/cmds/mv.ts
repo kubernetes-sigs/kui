@@ -19,8 +19,7 @@
  *
  */
 
-import { qexec } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import { synonyms } from '../models/synonyms'
 import { CMD as copy } from './copy'
@@ -51,13 +50,13 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: EvaluatorArgs) => {
+const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: Commands.EvaluatorArgs) => {
   const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
   const newName = argv[idx + 1]
 
-  return qexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`).then(resp =>
-    qexec(`wsk ${type} delete "${oldName}"`).then(() => resp)
+  return REPL.qexec(`wsk ${type} ${copy} "${oldName}" "${newName}"`).then(resp =>
+    REPL.qexec(`wsk ${type} delete "${oldName}"`).then(() => resp)
   )
 }
 
@@ -65,7 +64,7 @@ const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: Evaluator
  * Register commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // Install the routes. for now, no renaming of packages or triggers or rules
   ;['actions'].forEach(type => {
     const handler = mv(type)

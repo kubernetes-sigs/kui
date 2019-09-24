@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { encodeComponent } from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 import { ActivationLike, FlowNode, Edge } from '@kui-shell/plugin-wskflow'
@@ -310,7 +310,7 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
       debug('TaskRef', taskRef.name, task)
 
       // -f file argument for drilldowns, if we have one
-      const filearg = filepath ? `-f ${encodeComponent(filepath)}` : ''
+      const filearg = filepath ? `-f ${REPL.encodeComponent(filepath)}` : ''
 
       let node: TektonNode
       if (task && task.spec.steps && task.spec.steps.length > 0) {
@@ -328,7 +328,7 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
           type: 'Tekton Task',
           tooltip: `<table><tr><td><strong>Resources</strong></td><td>${resourceList}</td></tr><tr><td><strong>Params</strong></td><td>${paramList}</td></tr></table>`,
           tooltipColor: '0C',
-          onclick: `tekton get task ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(
+          onclick: `tekton get task ${REPL.encodeComponent(pipeline.metadata.name)} ${REPL.encodeComponent(
             task.metadata.name
           )} ${filearg}`,
           visited: task.visitedIdx !== undefined ? [task.visitedIdx] : undefined,
@@ -345,9 +345,9 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
               type: 'Tekton Step',
               tooltip: `<strong>Image</strong>: ${step.image}`,
               tooltipColor: '0E',
-              onclick: `tekton get step ${encodeComponent(pipeline.metadata.name)} ${encodeComponent(
+              onclick: `tekton get step ${REPL.encodeComponent(pipeline.metadata.name)} ${REPL.encodeComponent(
                 task.metadata.name
-              )} ${encodeComponent(step.name)} ${filearg}`
+              )} ${REPL.encodeComponent(step.name)} ${filearg}`
             }
 
             symtab[stepNode.id] = stepNode
