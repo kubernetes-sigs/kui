@@ -23,7 +23,7 @@
     "@kui-shell/plugins/editor/webpack/pre": "bin/prune-for-browser.sh",
     "@kui-shell/plugins/editor/webpack/post": "bin/restore-after-prune.sh"
   },
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "debug": "4.1.1",
     "monaco-editor": "0.14.3",

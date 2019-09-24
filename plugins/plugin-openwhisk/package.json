@@ -20,7 +20,7 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "adm-zip": "0.4.13",
     "archiver": "3.1.1",

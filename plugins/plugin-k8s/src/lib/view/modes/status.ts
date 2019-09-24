@@ -44,7 +44,7 @@ export const statusButton = (command: string, resource: Resource, finalState: Fi
       mode: 'status',
       label: strings('status'),
       direct: {
-        plugin: 'k8s/dist/src/index',
+        plugin: 'k8s/dist/index',
         operation: 'renderAndViewStatus',
         parameters: { command, resource, finalState }
       }

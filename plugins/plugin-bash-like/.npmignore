@@ -1,6 +1,6 @@
 build
 src
 tests
-dist/src/test
+dist/test
 tsconfig*
 /*.tgz

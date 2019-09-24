@@ -58,15 +58,15 @@ if [ -n "$LAYER" ]; then
     fi
 
     if [ -z $EXCLUDE_OW_TEST ]; then
-      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/src/test/$LAYER" -o -path '*/core/test' -maxdepth 4)
+      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test/$LAYER" -o -path '*/core/test' -maxdepth 4)
     else
-      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/src/test/$LAYER" -o -path '*/core/test' ! -path "*/dist/src/test/openwhisk*" ! -path "*/dist/src/test/composer*" ! -path "*/dist/src/test/grid" -maxdepth 4)
+      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test/$LAYER" -o -path '*/core/test' ! -path "*/dist/test/openwhisk*" ! -path "*/dist/test/composer*" ! -path "*/dist/test/grid" -maxdepth 4)
     fi
 else
     if [ -z $EXCLUDE_OW_TEST ]; then
-      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/src/test/" -o -path '*/core/test' -maxdepth 4)
+      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test/" -o -path '*/core/test' -maxdepth 4)
     else
-      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/src/test" ! -path "*/dist/src/test/openwhisk*" ! -path "*/dist/src/test/composer*" ! -path "*/dist/src/test/grid"  -maxdepth 4)
+      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test" ! -path "*/dist/test/openwhisk*" ! -path "*/dist/test/composer*" ! -path "*/dist/test/grid"  -maxdepth 4)
     fi
 fi
 

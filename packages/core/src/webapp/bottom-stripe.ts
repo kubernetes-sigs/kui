@@ -88,7 +88,7 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
     // path to their main
     //
     // what we could also do in the future: enforce a policy on
-    // plugins as to path to their main, e.g. /dist/src/index.js
+    // plugins as to path to their main, e.g. /dist/index.js
     //
     const provider = await import('@kui-shell/plugin-' + makeView.plugin)
     try {
