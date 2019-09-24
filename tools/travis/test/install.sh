@@ -117,9 +117,11 @@ if [ -n "$LAYERS" ]; then
         echo "openwhisk PID $!"
     fi
 
-    # npm install
+    # start the installation; here, we use `npm ci` as 1) it's a bit
+    # faster than `npm install`; and 2) we want to avoid any
+    # contamination of e.g. package-lock.json
     echo "starting kui npm install"
-    npm install
+    npm ci
 
     # create a dist build to test against
     if [ -n "$NEEDS_HEADLESS" ]; then
@@ -155,6 +157,7 @@ if [ -z "$LAYERS" ] && [ -n "$SCRIPTS" ]; then
     # we were asked to run one or more test.d/ scripts and NOT asked
     # to run any mocha layers; in this case, all we need to do is a
     # plain npm install to set things up for the SCRIPTS
+    # (re: npm ci versus npm install, see the comment above)
     #
-    npm install
+    npm ci
 fi

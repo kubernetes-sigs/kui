@@ -95,10 +95,9 @@ jobs:
   include:
     # Notes:
     #
-    # re: on the npm install -g below: if we use `npx lerna`, npx will
-    # modify package-lock.json, at which point `lerna publish` gives up
-    # because of uncommitted changes; so: we install lerna globally to
-    # avoid this conflict.
+    # re: on the `npm ci` and `npm install -g` below: here, we are
+    # trying to avoid contamination of package-lock.json, because
+    # lerna will refuse to publish if it finds uncommitted changes
     #
     - stage: npm release
       env: ""
@@ -112,7 +111,7 @@ jobs:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
       deploy:
           - provider: script
-            script: npm install && npm install -g lerna && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npm ci && npm install -g lerna && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
@@ -120,7 +119,7 @@ jobs:
               repo: IBM/kui
               condition: $TRAVIS_EVENT_TYPE = push
           - provider: script
-            script: npm install && npm install -g lerna && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
+            script: npm ci && npm install -g lerna && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
