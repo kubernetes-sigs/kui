@@ -139,7 +139,6 @@ if [ -n "$LAYERS" ]; then
             export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
             . ${WSK_CONFIG_FILE}
         fi
-        #(cd packages/tests && ./bin/allocateOpenWhiskAuth.sh "$TEST_SPACE")
         (cd /tmp/kui && MOCHA_RUN_TARGET=headless npm run test) & # see ./install.sh for the /tmp/kui target
         children+=("$!")
         childrenNames+=("headless layer")

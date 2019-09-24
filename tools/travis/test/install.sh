@@ -158,6 +158,3 @@ if [ -z "$LAYERS" ] && [ -n "$SCRIPTS" ]; then
     #
     npm install
 fi
-
-# we will return to code coverage later:
-# if [ -z "$SCRIPTS" ]; then (cd tests && npm run _instrument); fi

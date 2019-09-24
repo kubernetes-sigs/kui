@@ -30,7 +30,7 @@ else
     ROOT="$SCRIPTDIR"/../../..
     echo "running in monorepo $ROOT"
     export TEST_SUITE_ROOT="$ROOT"/node_modules/@kui-shell
-    export TEST_ROOT="$ROOT"/packages/tests
+    export TEST_ROOT="$ROOT"/packages/test
 fi
 
 if [ -z "$API_HOST" ]; then
@@ -52,15 +52,13 @@ export PATH=./node_modules/.bin:$PATH
 # which tests to run; the default is every test
 if [ $# -ne 0 ]; then
     # one or more layers, specified on command line
-    for i in $@; do
-        WHICH=" $WHICH tests/passes/$i"
-    done
+    WHICH=$@
 elif [ -n "$LAYERS" ]; then
     # one or more layers, specified by env var
-    WHICH=tests/passes/$LAYERS
+    WHICH=$LAYERS
 else
     # all layers
-    WHICH=tests/passes/*
+    WHICH="*"
 fi
 
 echo "Running these layers: $# $WHICH"

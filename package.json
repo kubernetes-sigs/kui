@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint '**/*.{js,ts}'",
     "format": "prettier --write '**/*.{css,html,js,json,md,ts}'",
-    "test": "cd packages/tests && MONOREPO_MODE=true npm run test",
+    "test": "cd packages/test && MONOREPO_MODE=true npm run test",
     "watch:webpack": "./bin/watch-webpack.sh",
     "proxy": "cd packages/proxy/app && PORT=8081 KUI_USE_HTTP=true ../../../tools/travis/test/target.d/proxy.sh ..",
     "watch": "tsc --build . --watch",

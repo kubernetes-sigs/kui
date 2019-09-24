@@ -67,7 +67,7 @@ common.pDescribe('core new tab from pty active tab via click', function(this: co
   common.proxyIt('should cd to the test dir', () =>
     cli
       .do(`cd ${process.env.TEST_ROOT}`, this.app)
-      .then(cli.expectOKWithString('packages/tests'))
+      .then(cli.expectOKWithString('packages/test'))
       .catch(common.oops(this, true))
   )
 

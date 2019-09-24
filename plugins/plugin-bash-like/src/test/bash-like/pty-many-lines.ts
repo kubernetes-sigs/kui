@@ -36,7 +36,7 @@ describe('pty output with many lines', function(this: common.ISuite) {
   proxyIt('should cd to the test dir', () =>
     cli
       .do(`cd ${process.env.TEST_ROOT}`, this.app)
-      .then(cli.expectOKWithString('packages/tests'))
+      .then(cli.expectOKWithString('packages/test'))
       .catch(common.oops(this, true))
   )
 
