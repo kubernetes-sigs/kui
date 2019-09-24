@@ -16,7 +16,7 @@
 
 import * as Convert from 'ansi-to-html'
 
-import { flatten } from '@kui-shell/core/core/utility'
+import { flatten } from '../../core/utility'
 
 /**
  * A preallocated converter instance. Note that we are using CSS

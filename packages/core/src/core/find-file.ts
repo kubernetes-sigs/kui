@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { basename, dirname, join, resolve } from 'path'
 
-import expandHomeDir from '@kui-shell/core/util/home'
+import expandHomeDir from '../util/home'
 import { inBrowser } from './capabilities'
 const debug = Debug('core/find-file')
 debug('loading')

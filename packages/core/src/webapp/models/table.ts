@@ -18,7 +18,7 @@
 
 import { Watchable } from './basicModels'
 import { sortBody } from '../views/table'
-import { Entity } from '@kui-shell/core/models/entity'
+import { Entity } from '../../models/entity'
 
 export class Row {
   attributes?: Cell[]

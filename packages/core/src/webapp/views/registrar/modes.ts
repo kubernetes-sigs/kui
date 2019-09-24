@@ -16,8 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { MetadataBearing } from '@kui-shell/core/models/entity'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { MetadataBearing } from '../../../models/entity'
+import { SidecarMode } from '../../bottom-stripe'
 
 const debug = Debug('webapp/views/registrar/modes')
 

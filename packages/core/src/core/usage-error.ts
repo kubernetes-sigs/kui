@@ -24,7 +24,7 @@ import { isHeadless } from './capabilities'
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
 import { isHTML } from '../util/types'
-import { pexec, qexec } from '@kui-shell/core/core/repl'
+import { pexec, qexec } from '../core/repl'
 
 interface UsageOptions {
   noHide?: boolean
@@ -604,7 +604,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
                 return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
                 if (drilldownWithPip) {
-                  const { drilldown } = await import('@kui-shell/core/webapp/picture-in-picture')
+                  const { drilldown } = await import('../webapp/picture-in-picture')
                   return drilldown(
                     cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
                     commandForExec(command, name !== command ? name : undefined),

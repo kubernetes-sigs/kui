@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '../webapp/cli'
 
 const debug = Debug('webapp/views/jobs')
 

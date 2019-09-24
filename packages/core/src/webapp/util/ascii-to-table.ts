@@ -16,13 +16,13 @@
 
 import stripClean from 'strip-ansi'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { ParsedOptions } from '@kui-shell/core/models/command'
-import { Cell, Row, Table, TableStyle } from '@kui-shell/core/webapp/models/table'
+import * as repl from '../../core/repl'
+import { ParsedOptions } from '../../models/command'
+import { Cell, Row, Table, TableStyle } from '../models/table'
 
 import formatAsPty from './pretty-print'
 
-import i18n from '@kui-shell/core/util/i18n'
+import i18n from '../../util/i18n'
 const strings = i18n('core')
 
 // eslint-disable-next-line no-control-regex
