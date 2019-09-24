@@ -20,7 +20,7 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "columnify": "1.5.4",
     "parse-duration": "0.1.1",

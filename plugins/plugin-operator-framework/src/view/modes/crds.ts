@@ -77,7 +77,7 @@ export const crdsMode: ModeRegistration<KubeResource> = {
         mode: 'CRDs',
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'operator-framework/dist/src/index',
+          plugin: 'operator-framework/dist/index',
           operation: 'renderAndViewCrds',
           parameters: { command, resource }
         }

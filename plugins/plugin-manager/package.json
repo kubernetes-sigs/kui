@@ -19,7 +19,7 @@
   "contributors": [
     "Lionel Villard"
   ],
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "fs-extra": "8.1.0",
     "tmp": "0.1.0",

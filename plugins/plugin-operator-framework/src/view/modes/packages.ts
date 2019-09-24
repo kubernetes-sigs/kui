@@ -60,7 +60,7 @@ export const packagesMode: ModeRegistration<KubeResource> = {
         mode: 'Packages',
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'operator-framework/dist/src/index',
+          plugin: 'operator-framework/dist/index',
           operation: 'renderAndViewPackages',
           parameters: { command, resource }
         }

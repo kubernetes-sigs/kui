@@ -209,7 +209,7 @@ function build {
     pushd "$STAGING" > /dev/null
 
     # hack in an `npm run test`
-    PJSON=$(node -e 'const pjson = require("./kui/package.json"); pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); npm install --no-save --no-package-lock --ignore-scripts mocha && cd node_modules/@kui-shell/test && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true MOCHA_RUN_TARGET=headless TEST_ROOT=\"$SCRIPTDIR\"/node_modules/@kui-shell/test KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx --no-install mocha -c --exit --bail --recursive -t 60000 ../*/dist/src/test --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
+    PJSON=$(node -e 'const pjson = require("./kui/package.json"); pjson.scripts.test = `SCRIPTDIR=$(cd $(dirname \"$0\") && pwd); npm install --no-save --no-package-lock --ignore-scripts mocha && cd node_modules/@kui-shell/test && npm install --no-package-lock && APP=../.. RUNNING_SHELL_TEST=true MOCHA_RUN_TARGET=headless TEST_ROOT=\"$SCRIPTDIR\"/node_modules/@kui-shell/test KUI=$\{KUI-$SCRIPTDIR/bin/kui\} npx --no-install mocha -c --exit --bail --recursive -t 60000 ../*/dist/test --grep "\$\{TEST_FILTER:-.*\}"`; console.log(JSON.stringify(pjson, undefined, 2))')
     echo "$PJSON" > ./kui/package.json
 
     #(cd kui && cp package.json bak.json)

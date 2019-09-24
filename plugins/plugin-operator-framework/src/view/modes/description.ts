@@ -52,7 +52,7 @@ export const descriptionMode: ModeRegistration<KubeResource> = {
         mode: 'Description',
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'operator-framework/dist/src/index',
+          plugin: 'operator-framework/dist/index',
           operation: 'renderAndViewDescription',
           parameters: { command, resource }
         }

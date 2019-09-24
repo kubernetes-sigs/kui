@@ -30,7 +30,7 @@
     "@kui-shell/plugin/wskflow/webpack/pre": "bin/prune-for-browser.sh",
     "@kui-shell/plugin/wskflow/webpack/post": "bin/restore-after-prune.sh"
   },
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "chokidar": "2.1.5",
     "d3": "3.5.17",

@@ -84,7 +84,7 @@ export const eventsMode: ModeRegistration<KubeResource> = {
         label: strings('events'),
         leaveBottomStripeAlone: true,
         direct: {
-          plugin: 'k8s/dist/src/index',
+          plugin: 'k8s/dist/index',
           operation: 'renderAndViewEvents',
           parameters: { command, resource }
         }
