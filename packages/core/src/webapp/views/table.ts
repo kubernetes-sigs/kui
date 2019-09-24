@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 import * as minimist from 'yargs-parser'
 
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
-import { pexec, qexec } from '../../core/repl'
+import { pexec, qexec, _split as split, Split } from '../../core/repl'
 import {
   Table,
   MultiTable,
@@ -33,10 +33,10 @@ import {
 } from '../models/table'
 import { isWatchable } from '../models/basicModels'
 import { applyDiffTable } from '../views/diffTable'
-import { theme } from '@kui-shell/core/core/settings'
-import { _split as split, Split } from '@kui-shell/core/core/repl'
-import { WatchableJob } from '@kui-shell/core/core/job'
-import { isHTML } from '@kui-shell/core/util/types'
+import { theme } from '../../core/settings'
+
+import { WatchableJob } from '../../core/job'
+import { isHTML } from '../../util/types'
 
 const debug = Debug('webapp/views/table')
 

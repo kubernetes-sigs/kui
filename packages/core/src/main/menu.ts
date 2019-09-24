@@ -16,7 +16,7 @@
 
 // require('electron-is-dev');
 
-import { theme } from '@kui-shell/core/core/settings'
+import { theme } from '../core/settings'
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
 const isDev = false

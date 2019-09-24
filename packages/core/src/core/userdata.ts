@@ -18,9 +18,9 @@ import * as Debug from 'debug'
 
 import { join } from 'path'
 
-import store from '@kui-shell/core/models/store'
-import expandHomeDir from '@kui-shell/core/util/home'
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import store from '../models/store'
+import expandHomeDir from '../util/home'
+import { inBrowser } from '../core/capabilities'
 const debug = Debug('core/userdata')
 
 interface Preferences {

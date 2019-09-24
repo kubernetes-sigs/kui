@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '../cli'
 
 /**
  * Select a given element in the currently visible sidecar

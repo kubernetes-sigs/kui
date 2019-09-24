@@ -16,10 +16,10 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { MetadataBearing } from '@kui-shell/core/models/entity'
-import { addBadge, BadgeSpec, BadgeOptions } from '@kui-shell/core/webapp/views/sidecar'
-import { SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
+import { Tab } from '../../cli'
+import { MetadataBearing } from '../../../models/entity'
+import { addBadge, BadgeSpec, BadgeOptions } from '../sidecar'
+import { SidecarModeFilter } from './modes'
 
 const debug = Debug('webapp/views/registrar/badges')
 

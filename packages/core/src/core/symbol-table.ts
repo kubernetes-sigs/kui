@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Tab, getTabId } from '@kui-shell/core/webapp/cli'
-import sessionStore from '@kui-shell/core/models/sessionStore'
+import { Tab, getTabId } from '../webapp/cli'
+import sessionStore from '../models/sessionStore'
 
 /**
  * the key in localStorage to get the symbol table

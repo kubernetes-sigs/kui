@@ -23,7 +23,7 @@ import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
-import { apply as addRelevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
+import { apply as addRelevantModes } from './views/registrar/modes'
 import { pexec, qexec } from '../core/repl'
 
 const debug = Debug('webapp/picture-in-picture')

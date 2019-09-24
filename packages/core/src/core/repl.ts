@@ -28,7 +28,7 @@ debug('loading')
 import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'
 
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
-import eventBus from '@kui-shell/core/core/events'
+import eventBus from './events'
 import { add as addToHistory } from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'

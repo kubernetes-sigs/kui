@@ -21,7 +21,7 @@ debug('loading')
 import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
-import { isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
+import { isTable, isMultiTable } from '../webapp/models/table'
 
 const log = console.log
 const error = console.error
