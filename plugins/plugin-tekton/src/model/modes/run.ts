@@ -17,7 +17,7 @@
 import { safeDump } from 'js-yaml'
 
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 
 import { ResponseObject } from './flow'
 

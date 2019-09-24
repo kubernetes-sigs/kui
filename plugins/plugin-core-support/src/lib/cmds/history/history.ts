@@ -23,9 +23,7 @@
 import * as Debug from 'debug' // the default number of history elements to show with /history
 
 import * as historyModel from '@kui-shell/core/models/history'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-import { Row, Table } from '@kui-shell/core/webapp/models/table'
-import * as repl from '@kui-shell/core/core/repl'
+import { Commands, REPL, Tables } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/history')
 
@@ -85,7 +83,7 @@ const again = (N: number, historyEntry) => {
     historyModel.update(historyEntry, entry => {
       entry.raw = historyModel.lines[N].raw
     })
-    return repl.qfexec(historyModel.lines[N].raw)
+    return REPL.qexec(historyModel.lines[N].raw)
   }
 }
 
@@ -127,7 +125,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   debug('filterStr', filterStr)
   debug('got', recent.length, startIdx, endIdx)
 
-  const body: Row[] = recent
+  const body: Tables.Row[] = recent
     .map((line, idx) => {
       if (!filter(line)) return
 
@@ -142,7 +140,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
         rest.innerText = shortForm.substring(whitespace)
       }
 
-      return new Row({
+      return new Tables.Row({
         beforeAttributes: [
           {
             key: 'N',
@@ -153,19 +151,19 @@ const showHistory = ({ argv, parsedOptions: options }) => {
         fullName: line.raw,
         name: line.raw,
         type: 'history',
-        onclick: () => repl.pexec(line.raw)
+        onclick: line.raw
       })
     })
     .filter(x => x)
 
-  return new Table({
+  return new Tables.Table({
     type: 'history',
     noSort: true,
     body
   })
 }
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   debug('init')
 
   commandTree.listen('/history', showHistory, {

@@ -15,7 +15,7 @@
  */
 
 import store from '@kui-shell/core/models/store'
-import { setHasAuth } from '@kui-shell/core/core/capabilities'
+import { Capabilities } from '@kui-shell/core'
 
 const localStorageKey = {
   auth: 'kui.k8s.auth'
@@ -32,7 +32,7 @@ export const setAuth = (kubeconfigString: string, ca: string, cafile: string): v
     cafile
   }
 
-  setHasAuth('k8s', auth)
+  Capabilities.setHasAuth('k8s', auth)
   store().setItem(localStorageKey.auth, JSON.stringify(auth))
 }
 
@@ -44,7 +44,7 @@ export const restoreAuth = (): void => {
   const maybe = store().getItem(localStorageKey.auth)
   if (maybe) {
     try {
-      setHasAuth('k8s', JSON.parse(maybe))
+      Capabilities.setHasAuth('k8s', JSON.parse(maybe))
     } catch (err) {
       console.error('error parsing k8s auth from localStorage', err)
     }

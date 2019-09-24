@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 import { addBadge } from '@kui-shell/core/webapp/views/sidecar'
 
 /**

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
+import { REPL, Tab } from '@kui-shell/core'
 
 import { KubeResource } from '../../model/resource'
 
@@ -41,10 +40,15 @@ export const renderButton = async (tab: Tab, { overrides, fn }: Parameters, args
   const commandToExec = `kubectl ${overrides.mode} ${kind} ${resourceName || name || (metadata && metadata.name)} ${
     namespace ? '-n ' + namespace : ''
   }`
-  const response: KubeResource = await qexec(`confirm ${encodeComponent(commandToExec)}`, undefined, undefined, {
-    noStatus: !!fn,
-    tab
-  })
+  const response: KubeResource = await REPL.qexec(
+    `confirm ${REPL.encodeComponent(commandToExec)}`,
+    undefined,
+    undefined,
+    {
+      noStatus: !!fn,
+      tab
+    }
+  )
   return fn ? fn(response) : response
 }
 

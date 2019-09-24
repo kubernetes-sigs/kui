@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import flowView from '../view/flow'
 import { parse, read } from '../lib/read'
@@ -37,7 +37,7 @@ const usage = {
  * from a given file.
  *
  */
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/tekton/flow',
     async ({ argvNoOptions, tab }) => {

@@ -15,6 +15,7 @@
  */
 
 const debug = require('debug')('proxy/exec')
+const { dirname, join } = require('path')
 const { exec, spawn } = require('child_process')
 const express = require('express')
 const { v4: uuid } = require('uuid')
@@ -27,7 +28,7 @@ const {
 
 const sessionKey = 'kui_websocket_auth'
 
-const mainPath = require.resolve('../../kui/node_modules/@kui-shell/core')
+const mainPath = join(dirname(require.resolve('../../kui/node_modules/@kui-shell/core')), 'main/main.js')
 const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like')
 const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like')
 

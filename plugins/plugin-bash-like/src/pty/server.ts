@@ -15,8 +15,6 @@
  */
 
 import * as Debug from 'debug'
-const debug = Debug('plugins/bash-like/pty/server')
-
 import * as fs from 'fs'
 import { promisify } from 'util'
 import { join } from 'path'
@@ -31,9 +29,9 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { CodedError } from '@kui-shell/core/models/errors'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, Errors } from '@kui-shell/core'
+
+const debug = Debug('plugins/bash-like/pty/server')
 
 let portRange = 8083
 const servers = []
@@ -231,7 +229,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         cols?: number
 
         uuid?: string // for request-response
-        execOptions?: ExecOptions
+        execOptions?: Commands.ExecOptions
       } = JSON.parse(data)
 
       switch (msg.type) {
@@ -239,7 +237,9 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           return exitNow(msg.exitCode)
 
         case 'request': {
-          const { exec } = await import('@kui-shell/core/core/repl')
+          const {
+            REPL: { exec }
+          } = await import('@kui-shell/core')
           if (msg.env) {
             process.env = msg.env
           }
@@ -261,7 +261,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             )
           } catch (error) {
             debug('got error', error.message)
-            const err: CodedError = error
+            const err: Errors.CodedError = error
             terminate(
               JSON.stringify({
                 type: 'object',
@@ -443,7 +443,7 @@ export const main = async (N: string, server?: Server, preexistingPort?: number,
  */
 let count = 0
 // const children = []
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/bash/websocket/stdio',
     () =>

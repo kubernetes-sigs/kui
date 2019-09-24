@@ -19,10 +19,9 @@
  *
  */
 
-import { qexec as $$ } from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
-const doQuit = () => $$('tab close')
+const doQuit = () => REPL.qexec('tab close')
 
 const usage = (command: string) => ({
   command,
@@ -30,7 +29,7 @@ const usage = (command: string) => ({
   docs: 'Quit the program'
 })
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   const quitCmd = commandTree.listen('/quit', doQuit, {
     usage: usage('quit'),
     inBrowserOk: true,

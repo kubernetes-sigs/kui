@@ -23,16 +23,13 @@ import { projectHome as projectHomeDir, readProject } from './util'
 import { join } from 'path' // markdown to
 
 import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import * as Debug from 'debug'
 const debug = Debug('tutorial get')
 debug('loading')
 
 import * as marked from 'marked'
-import * as repl from '@kui-shell/core/core/repl'
-
-debug('finished loading modules')
 
 // Include start button for modules with accompanying tutorials
 const startButton = args => {
@@ -50,7 +47,7 @@ const startButton = args => {
   const projectHome = projectHomeDir(projectName)
 
   // Set button action
-  start.onclick = () => repl.pexec(`tutorial use '${projectHome}/package.json'`)
+  start.onclick = () => REPL.pexec(`tutorial use '${projectHome}/package.json'`)
 
   return start
 }
@@ -148,8 +145,8 @@ const renderDeps = deps => {
 const fetchProjectData = () => info => {
   // const projectName = info.config.projectName
 
-  // return Promise.all([ repl.qexec(`tutorial deps "${projectName}"`),
-  //                   repl.qexec(`tutorial imports "${projectName}"`) ])
+  // return Promise.all([ REPL.qexec(`tutorial deps "${projectName}"`),
+  //                   REPL.qexec(`tutorial imports "${projectName}"`) ])
   // .then(([deps, imports]) => ({ info, deps, imports }));
   return { info, deps: [], imports: [] }
 }
@@ -252,7 +249,7 @@ const doGet = async ({ argvNoOptions }) => {
         content.appendChild(wskflowContainer)
 
         // asynchronously render wskflow
-        repl.qexec(`preview "${projectHome}/composition.js"`, undefined, undefined, { container: wskflowContainer })
+        REPL.qexec(`preview "${projectHome}/composition.js"`, undefined, undefined, { container: wskflowContainer })
 
         return {
           type: 'custom',
@@ -269,6 +266,6 @@ const doGet = async ({ argvNoOptions }) => {
     )
 }
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(`/tutorial/get`, doGet, { usage: usage.get })
 }

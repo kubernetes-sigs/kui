@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import { appDelete } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   /* command handler for app delete */
   commandTree.listen(
     `/wsk/app/delete`,
     ({ command }) => {
-      return repl.qfexec(command.replace('app', 'action')).then(result => view.formatDeleteResult(result))
+      return REPL.qexec(command.replace('app', 'action')).then(result => view.formatDeleteResult(result))
     },
     { usage: appDelete }
   )

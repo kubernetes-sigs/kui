@@ -15,9 +15,7 @@
  */
 
 import * as Debug from 'debug'
-
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import {
   EditorEntity as Entity,
@@ -148,7 +146,7 @@ export const gotoReadonlyView = ({ getEntity }) => async () => {
   const { namespace, name } = await getEntity()
   const fqn = `/${namespace}/${name}`
   debug('readonly', fqn)
-  return repl.pexec(`wsk action get ${repl.encodeComponent(fqn)}`)
+  return REPL.pexec(`wsk action get ${REPL.encodeComponent(fqn)}`)
 }
 
 /**
@@ -178,8 +176,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
       })
     }
   }
-  return repl
-    .qexec(`wsk action get "${name}"`)
+  return REPL.qexec(`wsk action get "${name}"`)
     .then(check)
     .then(entity =>
       Object.assign({}, entity, {
@@ -230,8 +227,7 @@ export const persisters = {
       debug('revert', entity)
       const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
 
-      return repl
-        .qexec(`wsk action get "${namespacePart}${entity.name}"`)
+      return REPL.qexec(`wsk action get "${namespacePart}${entity.name}"`)
         .then(persisters.actions.getCode)
         .then(entity => {
           entity.persister = persisters.actions
@@ -247,7 +243,7 @@ export const persisters = {
       // https://github.com/apache/incubator-openwhisk/issues/3237
       delete action.version
 
-      return repl.qexec(`wsk action update "${namespacePart}${action.name}"`, undefined, undefined, {
+      return REPL.qexec(`wsk action update "${namespacePart}${action.name}"`, undefined, undefined, {
         entity: { action }
       })
     }
@@ -265,7 +261,7 @@ export const newAction = ({
   placeholder = undefined,
   placeholderFn = undefined,
   persister = persisters.actions
-} = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+} = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.EvaluatorArgs) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -305,7 +301,7 @@ export const newAction = ({
     .then(respondToRepl(undefined, ['is-modified']))
 }
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // command registration: create new action
   commandTree.listen('/editor/new', newAction(), {
     usage: newUsage,

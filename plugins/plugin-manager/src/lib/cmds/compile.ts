@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-
 import { userDataDir } from '@kui-shell/core/core/userdata'
 import compile from '@kui-shell/core/core/plugin-assembler'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 
 import { success } from '../util'
-const debug = Debug('plugins/plugin-manager/cmd/compile')
-debug('loading')
 
-debug('finished loading modules')
-
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/plugin/compile',
     () => {

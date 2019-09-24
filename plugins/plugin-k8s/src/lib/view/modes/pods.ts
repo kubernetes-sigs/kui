@@ -16,16 +16,12 @@
 
 import * as Debug from 'debug'
 
-import { qexec as $$ } from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { Table } from '@kui-shell/core/webapp/models/table'
+import { REPL, Tab, Tables } from '@kui-shell/core'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { selectorToString } from '../../util/selectors'
-
 import { Resource, KubeResource } from '../../model/resource'
-
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
@@ -94,7 +90,7 @@ export const renderAndViewPods = async (tab: Tab, parameters: Parameters) => {
     : `kubectl get pods ${resource.resource.status.podName} -n "${resource.resource.metadata.namespace}"`
   debug('getPods', getPods)
 
-  const tableModel: Table = await $$(getPods)
+  const tableModel: Tables.Table = await REPL.qexec(getPods)
 
   const tableView = formatTable(tab, tableModel, {
     usePip: false,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import i18n from '@kui-shell/core/util/i18n'
+import { i18n } from '@kui-shell/core'
 const strings = i18n('plugin-bash-like')
 
 /**

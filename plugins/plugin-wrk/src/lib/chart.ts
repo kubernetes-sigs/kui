@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import * as parseDuration from 'parse-duration'
 
-import eventBus from '@kui-shell/core/core/events'
+import { eventBus } from '@kui-shell/core'
 import { injectScript } from '@kui-shell/core/webapp/util/inject'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 

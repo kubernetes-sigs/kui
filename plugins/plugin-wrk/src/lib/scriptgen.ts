@@ -15,16 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
-import { EvaluatorArgs } from '@kui-shell/core/models/command'
-
-import { getCreds } from './openwhisk'
-const debug = Debug('wrk/scriptgen')
-
 import * as fs from 'fs'
 import * as tmp from 'tmp'
 import * as url from 'url'
 import * as path from 'path'
+
+import { Commands } from '@kui-shell/core'
+
+import { getCreds } from './openwhisk'
+
+const debug = Debug('wrk/scriptgen')
 
 /**
  * User has requested to test an openwhisk action
@@ -120,7 +120,7 @@ export const generateScriptForURL = ({ method = 'GET' }) => () =>
  * Command handler to generate a lua script to run load against a given action
  *
  */
-export const script = async ({ argvNoOptions: argv, parsedOptions: options }: EvaluatorArgs) => {
+export const script = async ({ argvNoOptions: argv, parsedOptions: options }: Commands.EvaluatorArgs) => {
   const { currentNamespace } = await import('@kui-shell/plugin-openwhisk')
 
   const rootDir = path.join(__dirname, '..')

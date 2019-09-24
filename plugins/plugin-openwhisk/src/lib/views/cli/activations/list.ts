@@ -17,13 +17,10 @@
 import * as Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Commands, REPL, Tab, Tables } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
-import { Table, Row } from '@kui-shell/core/webapp/models/table'
-import { ParsedOptions } from '@kui-shell/core/models/command'
-import { encodeComponent, qexec, pexec } from '@kui-shell/core/core/repl'
 
 import { Activation } from '../../../models/activation'
 
@@ -33,7 +30,7 @@ const debug = Debug('plugins/openwhisk/views/cli/activations/list')
 
 const viewName = 'Trace View'
 
-export interface ActivationListRow extends Row {
+export interface ActivationListRow extends Tables.Row {
   namespace?: string
 
   annotations?: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -45,7 +42,7 @@ export interface ActivationListRow extends Row {
   statusCode?: number
 }
 
-export interface ActivationListTable extends Table {
+export interface ActivationListTable extends Tables.Table {
   body: ActivationListRow[]
 }
 
@@ -60,7 +57,7 @@ const mapToOptions = (baseMap: Record<string, any>, overrides = {}) => {
     if (key === '_' || typeof map[key] === 'object') {
       return opts
     } else {
-      return `${opts} --${key} ${encodeComponent(map[key])}`
+      return `${opts} --${key} ${REPL.encodeComponent(map[key])}`
     }
   }, '')
 }
@@ -81,7 +78,7 @@ const fetch = async (activationIds: Activation[] | string[]): Promise<Activation
   } else {
     const activations: Activation[] = await Promise.all(
       activationIds.map(_ => {
-        return qexec(`wsk activation get ${_}`).catch(err => {
+        return REPL.qexec(`wsk activation get ${_}`).catch(err => {
           console.error(err)
         })
       })
@@ -136,7 +133,7 @@ interface Args {
   showTimeline?: boolean
   skip?: number
   limit?: number
-  parsedOptions?: ParsedOptions
+  parsedOptions?: Commands.ParsedOptions
 }
 
 const _render = (args: Args) => {
@@ -207,14 +204,15 @@ const _render = (args: Args) => {
   // picture in picture
   const pip = (cmd: string) =>
     noPip
-      ? () => pexec(cmd)
+      ? () => REPL.pexec(cmd)
       : pictureInPicture(tab, cmd, undefined, logTable, viewName, {
           parent: container
         })
 
   return Promise.all([
     fetch(activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
-    parsedOptions && (qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`) as Promise<number>)
+    parsedOptions &&
+      (REPL.qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`) as Promise<number>)
   ]).then(([activations, count]) => {
     // duration of the activation. this will be helpful for
     // normalizing the bar dimensions
@@ -321,10 +319,10 @@ const _render = (args: Args) => {
       // command to be executed when clicking on the entity name cell
       const path = activation.annotations && activation.annotations.find(({ key }) => key === 'path')
       const gridCommand = activation.sessionId
-        ? `grid ${encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
+        ? `grid ${REPL.encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
         : !path
-        ? `grid ${encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
-        : `grid ${encodeComponent(`/${path.value}`)}`
+        ? `grid ${REPL.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
+        : `grid ${REPL.encodeComponent(`/${path.value}`)}`
 
       nameClick.onclick = pip(gridCommand)
 
@@ -538,7 +536,7 @@ const _render = (args: Args) => {
           button.classList.add('clickable')
 
           buttonContainer.setAttribute('data-button-command', command)
-          buttonContainer.onclick = () => pexec(command)
+          buttonContainer.onclick = () => REPL.pexec(command)
         })
 
         // description of current page
@@ -579,7 +577,7 @@ const _render = (args: Args) => {
         const listCommand = activations.every(activation => activation.sessionId !== undefined)
           ? 'session list'
           : 'wsk activation list'
-        return qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
+        return REPL.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
           .then((activations: ActivationListTable) => activations.body)
           .then(activationIds => {
             if (activationIds.length === 0) {
@@ -654,9 +652,9 @@ export const render = (opts: Args) => {
  */
 export const renderActivationListView = (
   tab: Tab,
-  activationsTable: Table,
+  activationsTable: Tables.Table,
   container: Element,
-  parsedOptions: ParsedOptions
+  parsedOptions: Commands.ParsedOptions
 ) => {
   const activations = activationsTable.body as Activation[]
   debug('rendering activation list view', activations)

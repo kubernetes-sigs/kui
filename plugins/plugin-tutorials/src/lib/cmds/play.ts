@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-
 import { dirname, join } from 'path'
 
 import { readProject, TutorialDefinition, TutorialTable } from './util'
@@ -31,7 +30,7 @@ import {
   show as showSidecar,
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar, EvaluatorArgs, ExecType } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -48,7 +47,6 @@ renderer.link = (href: string, title: string, text: string) => {
 }
 const marked = _ => Marked(_, { renderer })
 import * as cli from '@kui-shell/core/webapp/cli'
-import { hasAuth, pexec } from '@kui-shell/core/core/repl'
 
 // TODO eliminate this jquery dependence
 let $
@@ -68,10 +66,10 @@ interface TutorialPane extends HTMLDivElement {
  */
 const rowFilters = {
   auth: () => {
-    return hasAuth()
+    return true
   },
   'no-auth': () => {
-    return !hasAuth()
+    return true
   }
 }
 
@@ -219,7 +217,7 @@ const setHighlightPosition = ({ selector }) => {
  */
 const commandFromFullscreen = (pane: TutorialPane, command: string, display = command, nested = false) => () => {
   const go = () => {
-    pexec(command)
+    REPL.pexec(command)
 
     if (command.startsWith('preview')) {
       // start a cycle of hover effects
@@ -666,7 +664,7 @@ const transitionSteps = (
   // Execute a command
   if (execute) {
     debug('execute', execute)
-    pexec(execute)
+    REPL.pexec(execute)
   }
 
   // Preview a composition
@@ -675,7 +673,7 @@ const transitionSteps = (
 
     if (file) {
       debug('preview', file)
-      pexec(`preview ${file}`)
+      REPL.pexec(`preview ${file}`)
     }
   }
 }
@@ -861,7 +859,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
  * Command handler for tutorial play
  *
  */
-const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: EvaluatorArgs) => {
+const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: Commands.EvaluatorArgs) => {
   injectOurCSS()
 
   // inject the HTML if needed
@@ -871,7 +869,7 @@ const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOpt
 
   const [{ config, tutorial }] = await Promise.all([readProject(findFile(filepath)), ready])
 
-  if (execOptions.type === ExecType.Nested && !parsedOptions['top-level']) {
+  if (execOptions.type === Commands.ExecType.Nested && !parsedOptions['top-level']) {
     // initiate just the first step
     const pane = document.createElement('div') as TutorialPane
     pane.classList.add('tutorialPane')
@@ -931,7 +929,7 @@ const usage = (cmd: string) => ({
  * Here we register as a listener for commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // synonyms for playing a tutorial
   const cmd = commandTree.listen('/tutorial/play', use('play'), {
     usage: usage('play'),

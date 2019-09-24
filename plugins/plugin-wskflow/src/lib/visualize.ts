@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core/webapp/cli'
-import { isHeadless } from '@kui-shell/core/core/capabilities'
+import { Capabilities, Tab } from '@kui-shell/core'
 
 import injectCSS from './inject'
 
@@ -42,7 +41,7 @@ export default async (
   rule?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-  if (isHeadless()) {
+  if (Capabilities.isHeadless()) {
     return
   }
 

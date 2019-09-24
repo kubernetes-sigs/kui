@@ -27,17 +27,11 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { isPopup, listen, getCurrentPrompt, getCurrentTab, getTabId, Tab, setStatus } from '@kui-shell/core/webapp/cli'
-import eventBus from '@kui-shell/core/core/events'
-import { pexec, qexec } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, Event, ExecType, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { theme, config, inBottomInputMode } from '@kui-shell/core/core/settings'
-import { inElectron, inBrowser } from '@kui-shell/core/core/capabilities'
+import { isPopup, listen, getCurrentPrompt, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
+import { Capabilities, Commands, eventBus, i18n, REPL, Settings, Tab } from '@kui-shell/core'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-core-support')
-
 const debug = Debug('plugins/core-support/new-tab')
 
 export const tabButtonSelector = '#new-tab-button'
@@ -45,7 +39,7 @@ export const tabButtonSelector = '#new-tab-button'
 interface TabConfig {
   topTabs?: { names: 'fixed' | 'command' }
 }
-const { topTabs = { names: 'command' } } = config as TabConfig
+const { topTabs = { names: 'command' } } = Settings.config as TabConfig
 
 const usage = {
   strict: 'switch',
@@ -113,9 +107,9 @@ export class TabState {
 
   capture() {
     this._env = Object.assign({}, process.env)
-    this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
+    this._cwd = Capabilities.inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
-    if (inBottomInputMode) {
+    if (Settings.inBottomInputMode) {
       this._currentBottomInputValue = getCurrentPrompt().value
     }
 
@@ -158,7 +152,7 @@ export class TabState {
   /** attach a job to this tab */
   captureJob(job: WatchableJob) {
     if (!this._jobs) {
-      const maxJobs = theme.maxWatchersPerTab || 6
+      const maxJobs = Settings.theme.maxWatchersPerTab || 6
       this._jobs = new Array<WatchableJob>(maxJobs)
       this._age = new Array<number>(maxJobs)
     }
@@ -206,7 +200,7 @@ export class TabState {
   restore() {
     process.env = this._env
 
-    if (inBrowser()) {
+    if (Capabilities.inBrowser()) {
       debug('changing cwd', process.env.PWD, this._cwd)
       process.env.PWD = this._cwd
     } else {
@@ -214,7 +208,7 @@ export class TabState {
       process.chdir(this._cwd)
     }
 
-    if (inBottomInputMode) {
+    if (Settings.inBottomInputMode) {
       getCurrentPrompt().value = this.currentBottomInputValue
     }
   }
@@ -282,8 +276,8 @@ const addKeyboardListeners = (): void => {
  *
  */
 const addCommandEvaluationListeners = (): void => {
-  eventBus.on('/command/complete', (event: Event) => {
-    if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
+  eventBus.on('/command/complete', (event: Commands.Event) => {
+    if (event.execType !== undefined && event.execType !== Commands.ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       // debug('got event', event)
       const button = getTabButton(event.tab)
@@ -294,8 +288,8 @@ const addCommandEvaluationListeners = (): void => {
     }
   })
 
-  eventBus.on('/command/start', (event: Event) => {
-    if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
+  eventBus.on('/command/start', (event: Commands.Event) => {
+    if (event.execType !== undefined && event.execType !== Commands.ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       // debug('got event', event)
 
@@ -313,7 +307,7 @@ const addCommandEvaluationListeners = (): void => {
           // command
           if (!isSidecarVisible(tab)) {
             if (isUsingCommandName()) {
-              getTabButtonLabel(tab).innerText = theme['productName']
+              getTabButtonLabel(tab).innerText = Settings.theme.productName
             }
           }
         } else {
@@ -336,9 +330,9 @@ const closeTab = (tab = getCurrentTab()) => {
 
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
   if (nTabs <= 1) {
-    if (inElectron()) {
+    if (Capabilities.inElectron()) {
       debug('closing window on close of last tab')
-      qexec('window close')
+      REPL.qexec('window close')
     }
     return true
   }
@@ -469,7 +463,7 @@ const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
   // screenshot button
   sidecarSelector(tab, '.sidecar-screenshot-button').onclick = () => {
     debug('sidecar screenshot')
-    pexec('screenshot sidecar')
+    REPL.pexec('screenshot sidecar')
   }
 }
 
@@ -506,7 +500,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
     temps[idx].remove()
   }
 
-  const currentlyProcessingBlock: true | HTMLElement = await qexec(
+  const currentlyProcessingBlock: true | HTMLElement = await REPL.qexec(
     'clear --keep-current-active',
     undefined,
     undefined,
@@ -521,7 +515,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
     setStatus(currentlyProcessingBlock, 'repl-active')
   }
 
-  // this must occur after the qexec('clear'), otherwise we may select
+  // this must occur after the REPL.qexec('clear'), otherwise we may select
   // the wrong repl-result
   removeAllDomChildren(newTab.querySelector('.repl-result'))
 
@@ -561,7 +555,7 @@ const oneTimeInit = (): void => {
   // initialize the first tab
   perTabInit(initialTab, initialTabButton, false)
 
-  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : theme['productName']
+  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : Settings.theme.productName
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
@@ -573,7 +567,7 @@ const oneTimeInit = (): void => {
  * Same as newTab, but done asynchronously
  *
  */
-const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
+const newTabAsync = ({ execOptions }: Commands.EvaluatorArgs) => {
   if (execOptions.nested) {
     newTab()
     return true
@@ -586,7 +580,7 @@ const newTabAsync = ({ execOptions }: EvaluatorArgs) => {
   }
 }
 
-const registerCommandHandlers = (commandTree: CommandRegistrar) => {
+const registerCommandHandlers = (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/tab/switch',
     ({ argvNoOptions }) => switchTab(getTabId(getTabFromIndex(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)))),
@@ -602,7 +596,7 @@ const registerCommandHandlers = (commandTree: CommandRegistrar) => {
   })
 }
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   if (typeof document !== 'undefined') {
     oneTimeInit()
 

@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 import { exec } from 'child_process'
 import * as parseDuration from 'parse-duration'
 
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
-import { pexec, qexec as $$, encodeComponent } from '@kui-shell/core/core/repl'
+import { Commands, REPL } from '@kui-shell/core'
 
 import * as client from '../clients/kiali'
 import { States, TrafficLight } from '../model/states'
@@ -56,7 +55,7 @@ const installKiali = async () => {
  *
  */
 const uninstallKiali = async () => {
-  return $$(
+  return REPL.qexec(
     'kubectl delete all,secrets,sa,configmaps,deployments,ingresses,clusterroles,clusterrolebindings,virtualservices,destinationrules,customresourcedefinitions --selector=app=kiali -n istio-system'
   )
 }
@@ -80,14 +79,14 @@ const errorRatioToTextCss = (errorRatio: number): string => {
  *
  */
 const ingressFor = (appName: string): Promise<string> => {
-  return $$(`istio ingress "${appName}"`)
+  return REPL.qexec(`istio ingress "${appName}"`)
 }
 
 /**
  * `kiali get apps` command handler
  *
  */
-const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
+const getApps = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
   const pollingInterval = parsedOptions.watch ? parseDuration(parsedOptions.watch) : 10000
   const list = await client.appList(parsedOptions.namespace && new client.Namespace(parsedOptions.namespace))
 
@@ -123,7 +122,7 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
     list.applications.map(app => ({
       type: 'application',
       name: app.name,
-      onclick: `kubectl get svc ${encodeComponent(app.name)} -o yaml`,
+      onclick: `kubectl get svc ${REPL.encodeComponent(app.name)} -o yaml`,
       attributes: [
         {
           value: app.istioSidecar,
@@ -191,7 +190,7 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
               balloon: 'Load test',
               balloonLength: 'small',
               balloonPos: 'left',
-              onclick: async () => pexec(`wrk -d 20 ${await ingressFor(app.name)}`)
+              onclick: async () => REPL.pexec(`wrk -d 20 ${await ingressFor(app.name)}`)
             }
           ]
         }
@@ -204,7 +203,7 @@ const getApps = async ({ parsedOptions }: EvaluatorArgs) => {
  * Register the commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.listen('/kiali/install', installKiali, { noAuthOk: true })
 
   const deleteCmd = commandTree.listen('/kiali/delete', uninstallKiali, {

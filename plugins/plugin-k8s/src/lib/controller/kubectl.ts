@@ -18,20 +18,11 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import { isHeadless, inBrowser } from '@kui-shell/core/core/capabilities'
+import { Capabilities, Commands, Errors, i18n, REPL, Tables } from '@kui-shell/core'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { UsageModel } from '@kui-shell/core/core/usage-error'
-import {
-  CommandRegistrar,
-  CommandHandler,
-  ExecType,
-  EvaluatorArgs,
-  ParsedOptions
-} from '@kui-shell/core/models/command'
-import { ExecOptions } from '@kui-shell/core/models/execOptions'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { CodedError } from '@kui-shell/core/models/errors'
-import { encodeComponent, qexec, semicolonInvoke } from '@kui-shell/core/core/repl'
+import { Badge } from '@kui-shell/core/webapp/views/sidecar'
+import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -41,20 +32,16 @@ import pickHelmClient from '../util/discovery/helm-client'
 import extractAppAndName from '../util/name'
 import { KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
-import { Badge } from '@kui-shell/core/webapp/views/sidecar'
-import { Table, MultiTable, formatWatchableTable, isTable, isMultiTable } from '@kui-shell/core/webapp/models/table'
-import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
 import { status as statusImpl } from './status'
 import helmGet from './helm/get'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface KubeExecOptions extends ExecOptions {
+interface KubeExecOptions extends Commands.ExecOptions {
   /*  credentials?: {
     k8s: {
       kubeconfig: string
@@ -129,7 +116,7 @@ const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.Pro
  * @param output the optional output type, e.g. kubectl get pods -o <json>
  *
  */
-const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options: ParsedOptions) => {
+const shouldWeDisplayAsTable = (verb: string, entityType: string, output: string, options: Commands.ParsedOptions) => {
   const hasTableVerb =
     verb === 'ls' ||
     verb === 'history' ||
@@ -171,9 +158,9 @@ const table = (
   verb: string,
   entityType: string,
   entity: string,
-  options: ParsedOptions,
+  options: Commands.ParsedOptions,
   execOptions: KubeExecOptions
-): Table | MultiTable | HTMLElement | Delete => {
+): Tables.Table | Tables.MultiTable | HTMLElement | Delete => {
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
@@ -213,7 +200,7 @@ const table = (
   }
 }
 
-const usage = (command: string): UsageModel => ({
+const usage = (command: string): Errors.UsageModel => ({
   title: command,
   command,
   configuration: {
@@ -245,7 +232,7 @@ const stripThese = {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
-const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
+const executeLocally = (command: string) => (opts: Commands.EvaluatorArgs) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
@@ -270,13 +257,13 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
     if (
       !execOptions.raw &&
-      (!isHeadless() || execOptions.isProxied) &&
+      (!Capabilities.isHeadless() || execOptions.isProxied) &&
       !execOptions.noDelegation &&
       isKube &&
       ((verb === 'summary' || (verb === 'get' && (output === 'yaml' || output === 'json'))) &&
-        (execOptions.type !== ExecType.Nested || execOptions.delegationOk))
+        (execOptions.type !== Commands.ExecType.Nested || execOptions.delegationOk))
     ) {
-      debug('delegating to summary provider', execOptions.delegationOk, ExecType[execOptions.type].toString())
+      debug('delegating to summary provider', execOptions.delegationOk, Commands.ExecType[execOptions.type].toString())
       const describeImpl = (await import('./describe')).default
       opts.argvNoOptions[0] = 'kubectl'
       opts.argv[0] = 'kubectl'
@@ -421,10 +408,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
           const finalState = `--final-state ${expectedState.toString()}`
           const resourceNamespace =
-            options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
+            options.n || options.namespace ? `-n ${REPL.encodeComponent(options.n || options.namespace)}` : ''
 
           debug('about to get status', file, entityType, entity, resourceNamespace)
-          return qexec(
+          return REPL.qexec(
             `${statusCommand} status ${file || entityType} ${entity || ''} ${finalState} ${resourceNamespace} --watch`,
             undefined,
             undefined,
@@ -443,7 +430,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           return Promise.resolve(true)
         }
       } else if (code && code !== 0) {
-        const error: CodedError = new Error(stderr || `${command} exited with an error`)
+        const error: Errors.CodedError = new Error(stderr || `${command} exited with an error`)
         error.code = code
         return Promise.reject(error)
       } else {
@@ -496,7 +483,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           if (execOptions.failWithUsage) {
             reject(new Error(undefined))
           } else {
-            const error: CodedError = new Error(message)
+            const error: Errors.CodedError = new Error(message)
             error.code = codeForREPL
             reject(error)
           }
@@ -509,7 +496,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
             // so we return an empty result and watch for changes
             debug('return an empty watch table')
             return cleanupAndResolve(
-              formatWatchableTable(new Table({ body: [] }), {
+              Tables.formatWatchableTable(new Tables.Table({ body: [] }), {
                 refreshCommand: rawCommand.replace(
                   /--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g,
                   ''
@@ -519,7 +506,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
             )
           }
           // already exists or file not found?
-          const error: CodedError = new Error(err)
+          const error: Errors.CodedError = new Error(err)
           error.code = codeForREPL
           debug('rejecting without usage', codeForREPL, error)
           reject(error)
@@ -533,7 +520,10 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         }
       } else if (
         execOptions.raw ||
-        (isHeadless() && !output && execOptions.type === ExecType.TopLevel && !execOptions.isProxied)
+        (Capabilities.isHeadless() &&
+          !output &&
+          execOptions.type === Commands.ExecType.TopLevel &&
+          !execOptions.isProxied)
       ) {
         //
         // caller asked for the raw output
@@ -568,8 +558,8 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 
         // debug('structured output', result)
 
-        if (isHeadless() && execOptions.type === ExecType.TopLevel && !execOptions.isProxied) {
-          debug('directing resolving', isHeadless())
+        if (Capabilities.isHeadless() && execOptions.type === Commands.ExecType.TopLevel && !execOptions.isProxied) {
+          debug('directing resolving', Capabilities.isHeadless())
           return cleanupAndResolve(result)
         }
 
@@ -663,7 +653,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
         const entity = argv[2]
         const namespace = options.namespace || options.n || 'default'
         debug('status after kubectl run', entity, namespace)
-        qexec(`k status deploy "${entity}" -n "${namespace}" --final-state ${FinalState.OnlineLike.toString()} --watch`)
+        REPL.qexec(
+          `k status deploy "${entity}" -n "${namespace}" --final-state ${FinalState.OnlineLike.toString()} --watch`
+        )
           .then(cleanupAndResolve)
           .catch(reject)
       } else if ((hasFileArg || (isKube && entity)) && (verb === 'create' || verb === 'apply' || verb === 'delete')) {
@@ -702,9 +694,9 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
           execOptions
         )
 
-        if ((options.watch || options.w) && (isTable(tableModel) || isMultiTable(tableModel))) {
+        if ((options.watch || options.w) && (Tables.isTable(tableModel) || Tables.isMultiTable(tableModel))) {
           cleanupAndResolve(
-            formatWatchableTable(tableModel, {
+            Tables.formatWatchableTable(tableModel, {
               refreshCommand: rawCommand.replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, ''),
               watchByDefault: true
             })
@@ -729,7 +721,7 @@ const executeLocally = (command: string) => (opts: EvaluatorArgs) =>
 const _kubectl = executeLocally('kubectl')
 export const _helm = executeLocally('helm')
 
-function helm(opts: EvaluatorArgs) {
+function helm(opts: Commands.EvaluatorArgs) {
   const idx = opts.argvNoOptions.indexOf('helm')
   if (opts.argvNoOptions[idx + 1] === 'get') {
     return helmGet(opts)
@@ -738,39 +730,39 @@ function helm(opts: EvaluatorArgs) {
   }
 }
 
-const shouldSendToPTY = (opts: EvaluatorArgs): boolean =>
+const shouldSendToPTY = (opts: Commands.EvaluatorArgs): boolean =>
   (opts.argvNoOptions.length > 1 && (opts.argvNoOptions[1] === 'exec' || opts.argvNoOptions[1] === 'edit')) ||
   (opts.argvNoOptions[1] === 'logs' &&
     (opts.parsedOptions.f !== undefined || (opts.parsedOptions.follow && opts.parsedOptions.follow !== 'false'))) ||
   opts.argvNoOptions.includes('|')
 
-async function kubectl(opts: EvaluatorArgs) {
-  const semi = await semicolonInvoke(opts)
+async function kubectl(opts: Commands.EvaluatorArgs) {
+  const semi = await REPL.semicolonInvoke(opts)
   if (semi) {
     return semi
   }
 
-  if (!isHeadless() && shouldSendToPTY(opts)) {
-    // execOptions.exec = 'qexec'
+  if (!Capabilities.isHeadless() && shouldSendToPTY(opts)) {
+    // execOptions.exec = 'REPL.qexec'
     debug('redirect exec command to PTY')
     const commandToPTY = opts.command.replace(/^k(\s)/, 'kubectl$1')
-    return qexec(
+    return REPL.qexec(
       `sendtopty ${commandToPTY}`,
       opts.block,
       undefined,
       Object.assign({}, opts.execOptions, { rawResponse: true })
     )
-  } else if (!inBrowser() || opts.argvNoOptions[1] === 'summary') {
+  } else if (!Capabilities.inBrowser() || opts.argvNoOptions[1] === 'summary') {
     // debug('invoking _kubectl directly')
     return _kubectl(opts)
   } else {
-    // debug('invoking _kubectl via qexec')
+    // debug('invoking _kubectl via REPL.qexec')
     const command = opts.command.replace(/^kubectl(\s)?/, '_kubectl$1').replace(/^k(\s)?/, '_kubectl$1')
-    return qexec(command, opts.block, undefined, {
+    return REPL.qexec(command, opts.block, undefined, {
       tab: opts.tab,
       raw: opts.execOptions.raw,
       noDelegation: opts.execOptions.noDelegation,
-      delegationOk: opts.execOptions.type !== ExecType.Nested
+      delegationOk: opts.execOptions.type !== Commands.ExecType.Nested
     })
   }
 }
@@ -779,7 +771,7 @@ async function kubectl(opts: EvaluatorArgs) {
  * Delegate 'k8s <verb>' to 'kubectl verb'
  *
  */
-const dispatchViaDelegationTo = (delegate: CommandHandler) => (opts: EvaluatorArgs) => {
+const dispatchViaDelegationTo = (delegate: Commands.CommandHandler) => (opts: Commands.EvaluatorArgs) => {
   if (opts.argv[0] === 'k8s') {
     opts.argv[0] = 'kubectl'
     opts.argvNoOptions[0] = 'kubectl'
@@ -818,7 +810,7 @@ const flags = {
  * Register the commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   await commandTree.listen('/k8s/_kubectl', _kubectl, {
     usage: usage('kubectl'),
     flags,

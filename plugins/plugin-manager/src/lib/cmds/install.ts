@@ -15,7 +15,6 @@
  */
 
 import * as Debug from 'debug'
-
 import * as tmp from 'tmp'
 import * as fs from 'fs-extra'
 import * as path from 'path'
@@ -23,7 +22,7 @@ import { exec, spawn } from 'child_process'
 import * as which from 'which'
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands } from '@kui-shell/core'
 import compile from '@kui-shell/core/core/plugin-assembler'
 
 import { success } from '../util'
@@ -60,7 +59,7 @@ const locateNpm = (): Promise<string> =>
     })
   })
 
-const doInstall = ({ argvNoOptions }: EvaluatorArgs) => {
+const doInstall = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)
@@ -163,7 +162,7 @@ const doInstall = ({ argvNoOptions }: EvaluatorArgs) => {
   })
 }
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/plugin/install', doInstall, { usage })
 }
 

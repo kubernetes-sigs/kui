@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { CodedError } from '@kui-shell/core/models/errors'
-import { CommandRegistrar, EvaluatorArgs } from '@kui-shell/core/models/command'
+import { Commands, Errors } from '@kui-shell/core'
 
 import { fetchTask } from '../../lib/read'
 
@@ -30,7 +29,7 @@ const usage = {
   optional: [{ name: '--file', alias: '-f', docs: 'Path to resource specification' }]
 }
 
-const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
+const getStep = async ({ argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf('step') + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf('step') + 2]
   const stepName = argvNoOptions[argvNoOptions.indexOf('step') + 3]
@@ -39,13 +38,13 @@ const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
   const task = await fetchTask(pipelineName, taskName, parsedOptions.f)
 
   if (!task) {
-    const err: CodedError = new Error('task not found')
+    const err: Errors.CodedError = new Error('task not found')
     err.code = 404
     throw err
   } else {
     const step = task.spec.steps && task.spec.steps.find(_ => _.name === stepName)
     if (!step) {
-      const err: CodedError = new Error('step not found')
+      const err: Errors.CodedError = new Error('step not found')
       err.code = 404
       throw err
     } else {
@@ -62,6 +61,6 @@ const getStep = async ({ argvNoOptions, parsedOptions }: EvaluatorArgs) => {
   }
 }
 
-export default (commandTree: CommandRegistrar) => {
+export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/tekton/get/step', getStep, { usage, noAuthOk: true })
 }

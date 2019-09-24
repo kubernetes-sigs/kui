@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import * as repl from '@kui-shell/core/core/repl'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
+import { Commands, REPL } from '@kui-shell/core'
 import { ActivationListTable, synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { sessionGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'
 
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     `/wsk/session/result`,
     ({ command }) => {
-      return repl.qfexec(command.replace('session result', 'activation get')).then(result => result.response.result)
+      return REPL.qexec(command.replace('session result', 'activation get')).then(result => result.response.result)
     },
     { usage: sessionGet('result') }
   )
@@ -36,8 +34,7 @@ export default async (commandTree: CommandRegistrar) => {
     `/wsk/session/get`,
     ({ command, parsedOptions }) => {
       if (parsedOptions.last || parsedOptions['last-failed']) {
-        return repl
-          .qfexec('wsk activation list --limit 200')
+        return REPL.qexec('wsk activation list --limit 200')
           .then((activations: ActivationListTable) => activations.body)
           .then(activations => {
             return activations.find(activation => {
@@ -68,11 +65,11 @@ export default async (commandTree: CommandRegistrar) => {
             })
           })
           .then(activation => {
-            return repl.qfexec(`wsk session get ${activation.activationId}`)
+            return REPL.qexec(`wsk session get ${activation.activationId}`)
           })
           .catch(err => err)
       } else {
-        return repl.qfexec(command.replace('session', 'activation'))
+        return REPL.qexec(command.replace('session', 'activation'))
       }
     },
     { usage: sessionGet('get') }
@@ -90,14 +87,13 @@ export default async (commandTree: CommandRegistrar) => {
         const last = opts.parsedOptions.last
 
         if (last) {
-          return repl
-            .qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
+          return REPL.qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
             .then((activations: ActivationListTable) => activations.body)
             .then(activations => {
               if (activations.length === 0) {
                 throw new Error('No such activation found')
               } else {
-                return repl.qexec(`wsk activation get ${activations[0].activationId}`)
+                return REPL.qexec(`wsk activation get ${activations[0].activationId}`)
               }
             })
         }

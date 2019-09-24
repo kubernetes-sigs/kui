@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
+import { Capabilities, Commands } from '@kui-shell/core'
 
 import { start, end } from './lib/wrk'
 import init from './lib/init'
@@ -30,8 +29,8 @@ const opts = { noAuthOk: true }
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar) => {
-  if (!inBrowser()) {
+export default async (commandTree: Commands.Registrar) => {
+  if (!Capabilities.inBrowser()) {
     await Promise.all([
       commandTree.listen('/wrk', start, opts), // start a new load run
       init(commandTree),

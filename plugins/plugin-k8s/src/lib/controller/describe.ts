@@ -17,19 +17,15 @@
 import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
-import { rexec as $, qexec as $$ } from '@kui-shell/core/core/repl'
+import { Commands, i18n, REPL, Tables } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
-import { Table } from '@kui-shell/core/webapp/models/table'
-import { EvaluatorArgs, ParsedOptions } from '@kui-shell/core/models/command'
 
 import extractAppAndName from '../util/name'
-import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource } from '../model/resource'
 import { deleteResourceButton } from '../view/modes/crud'
+import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource } from '../model/resource'
 
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('k8s/controller/summary')
 
 /**
@@ -42,7 +38,7 @@ const renderDescribe = async (
   summaryCmd: string,
   resource: KubeResource,
   summary: Record<string, string>,
-  parsedOptions: ParsedOptions
+  parsedOptions: Commands.ParsedOptions
 ) => {
   debug('renderDescribe', command, resource, summary)
 
@@ -107,7 +103,7 @@ const renderDescribe = async (
  * Turn a one-row Table into a Map
  *
  */
-function toMap(table: Table): Record<string, string> {
+function toMap(table: Tables.Table): Record<string, string> {
   return table.body.reduce(
     (map, row) => {
       map[row.key] = row.name
@@ -126,7 +122,7 @@ function toMap(table: Table): Record<string, string> {
  * kubectl describe
  *
  */
-const describe = async ({ command, parsedOptions, execOptions }: EvaluatorArgs) => {
+const describe = async ({ command, parsedOptions, execOptions }: Commands.EvaluatorArgs) => {
   const noDelegationPlease = Object.assign({}, execOptions, { noDelegation: true })
   delete noDelegationPlease.delegationOk
 
@@ -136,8 +132,8 @@ const describe = async ({ command, parsedOptions, execOptions }: EvaluatorArgs) 
   debug('getCmd', getCmd)
 
   const [resource, summary] = await Promise.all([
-    $(getCmd, noDelegationPlease) as Promise<KubeResource>,
-    $$(`${getCmd} -o wide`, undefined, undefined, noDelegationPlease).then(toMap)
+    REPL.rexec(getCmd, noDelegationPlease) as Promise<KubeResource>,
+    REPL.qexec(`${getCmd} -o wide`, undefined, undefined, noDelegationPlease).then(toMap)
   ])
   debug('resource', resource)
   debug('summary', summary)

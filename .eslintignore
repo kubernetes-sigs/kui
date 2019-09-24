@@ -5,6 +5,8 @@ plugins/**/*/dist/
 plugins/*/lib/**/*.js
 plugins/*/i18n/**/*.js
 plugins/*/*.js
+packages/core/index.js
+packages/core/api/
 packages/core/dist/
 packages/core/core/
 packages/core/main/

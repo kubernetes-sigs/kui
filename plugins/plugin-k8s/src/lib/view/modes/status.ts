@@ -15,21 +15,15 @@
  */
 
 import * as Debug from 'debug'
-import { Tab } from '@kui-shell/core/webapp/cli'
+
+import { Errors, i18n, REPL, Tab, Tables } from '@kui-shell/core'
 
 import { FinalState } from '../../model/states'
 import Resource from '../../model/resource'
-
 import insertView from '../insert-view'
 import { formatTable } from '../formatMultiTable'
 
-import { encodeComponent, qexec } from '@kui-shell/core/core/repl'
-import { CodedError } from '@kui-shell/core/models/errors'
-import { Table, MultiTable } from '@kui-shell/core/webapp/models/table'
-
-import i18n from '@kui-shell/core/util/i18n'
 const strings = i18n('plugin-k8s')
-
 const debug = Debug('k8s/view/modes/status')
 
 /**
@@ -74,18 +68,18 @@ export const renderStatus = async (tab: Tab, command: string, resource: Resource
   // kubectl status => k8s status
   const commandForRepl = command === 'kubectl' ? 'k8s' : command
 
-  const fetchModels = `${commandForRepl} status ${encodeComponent(
+  const fetchModels = `${commandForRepl} status ${REPL.encodeComponent(
     resource.filepathForDrilldown || resource.kind || resource.resource.kind
-  )} ${encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
+  )} ${REPL.encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
   debug('issuing command', fetchModels)
 
   try {
-    const model: Table | MultiTable = await qexec(fetchModels)
+    const model: Tables.Table | Tables.MultiTable = await REPL.qexec(fetchModels)
     debug('renderStatus.models', model)
 
     return formatTable(tab, model)
   } catch (error) {
-    const err: CodedError = error
+    const err: Errors.CodedError = error
     if (err.code === 404) {
       return formatTable(tab, { body: [] })
     } else {

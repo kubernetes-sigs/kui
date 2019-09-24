@@ -17,7 +17,7 @@
 import * as prettyPrintDuration from 'pretty-ms'
 import { drilldownWith } from './drilldown'
 import { newline, latencyBucket } from './util'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Tab } from '@kui-shell/core'
 
 /**
  * Draw the given activation in the given cell (a dom)

@@ -17,18 +17,14 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import * as Debug from 'debug'
-
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import * as repl from '@kui-shell/core/core/repl'
-import { Tab } from '@kui-shell/core/webapp/cli'
+import { Commands, REPL, Tab, Tables } from '@kui-shell/core'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
-import { Row } from '@kui-shell/core/webapp/models/table'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { getSidecar, addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
 
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
 import { drilldownWith } from '../drilldown'
@@ -145,7 +141,7 @@ class Occupancy {
           }
 
           if (cell.id && cell['isFailure'] && !cell['failureMessage']) {
-            repl.qexec(`wsk activation get ${cell.id}`).then(({ response }) => {
+            REPL.qexec(`wsk activation get ${cell.id}`).then(({ response }) => {
               if (response.result.error) {
                 cell['failureMessage'] =
                   response.result.error.error || response.result.error.message || response.result.error
@@ -521,7 +517,9 @@ interface Options {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redraw = false) => (activations: Row[]) => {
+const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redraw = false) => (
+  activations: Tables.Row[]
+) => {
   debug('drawGrid', redraw)
 
   const existingContent = sidecarSelector(tab, `.custom-content .${css.content}`) as HTMLElement
@@ -603,7 +601,7 @@ const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redr
     balloon: 'Display as timeline',
     flush: 'right',
     actAsButton: true,
-    direct: () => repl.pexec(`grid ${optionsToString(options)} -t`)
+    direct: () => REPL.pexec(`grid ${optionsToString(options)} -t`)
   }
   const asGrid = {
     mode: 'as-grid',
@@ -611,7 +609,7 @@ const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redr
     balloon: 'Display as grid',
     flush: 'right',
     actAsButton: true,
-    direct: () => repl.pexec(`grid ${optionsToString(options, ['timeline', 't'])}`)
+    direct: () => REPL.pexec(`grid ${optionsToString(options, ['timeline', 't'])}`)
   }
 
   const switcher = options.timeline ? asGrid : asTimeline // switch between timeline and grid mode
@@ -632,7 +630,7 @@ const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redr
  * This is the module
  *
  */
-export default async (commandTree: CommandRegistrar, options?) => {
+export default async (commandTree: Commands.Registrar, options?) => {
   debug('init')
 
   if (options && options.activations) {
@@ -652,7 +650,7 @@ export default async (commandTree: CommandRegistrar, options?) => {
     '/loading/activity/grid/...',
     function() {
       return (
-        /* repl.qexec('mirror poll') */ Promise.resolve(true)
+        /* REPL.qexec('mirror poll') */ Promise.resolve(true)
           // eslint-disable-next-line prefer-rest-params, prefer-spread
           .then(() => pollingGrid.apply(undefined, arguments))
       )

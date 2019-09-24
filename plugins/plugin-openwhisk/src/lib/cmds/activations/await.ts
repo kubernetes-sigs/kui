@@ -26,7 +26,7 @@ const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10) || 1000
 import * as Debug from 'debug'
 const debug = Debug('openwhisk.await')
 
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 import * as historyModel from '@kui-shell/core/models/history'
 
 /** was the given activation handled by the conductor */
@@ -52,7 +52,7 @@ const handleComposer = options => activation => {
       // since we have ready access to the name and path of the wrapper,
       //       pass it through, to avoid fetching it again in await-app
       //
-      return repl.qfexec(`await-app ${activation.activationId}`)
+      return REPL.qexec(`await-app ${activation.activationId}`)
     }
   } else {
     // otherwise, this is a normal activation, so return it to the user
@@ -72,8 +72,8 @@ const fetch = activationId =>
   new Promise((resolve, reject) => {
     const fetchPoll = () =>
       (isConductorActivation(activationId)
-        ? repl.qexec(`wsk session get ${activationId}`)
-        : repl.qexec(`wsk activation get ${activationId}`)
+        ? REPL.qexec(`wsk session get ${activationId}`)
+        : REPL.qexec(`wsk activation get ${activationId}`)
       )
         .then(resolve)
         .catch(err => {
@@ -120,8 +120,7 @@ const findActivationId = (options, activationId?: string) =>
     } else {
       if (options && options.remote) {
         // the user has requested that we ignore local history; so fetch the last activation from openwhisk
-        return repl
-          .qexec(`wsk activation last`)
+        return REPL.qexec(`wsk activation last`)
           .then(poll)
           .catch(reject)
       } else {

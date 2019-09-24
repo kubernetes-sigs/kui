@@ -25,7 +25,7 @@
 
 import * as minimist from 'yargs-parser'
 
-import * as repl from '@kui-shell/core/core/repl'
+import { REPL } from '@kui-shell/core'
 import { ActivationListTable } from '../../views/cli/activations/list'
 
 const rootSynonyms = ['root', '$$']
@@ -75,7 +75,7 @@ const acceptAll = x => x
 
 /** a filter function that accepts only activations with a failure response */
 const hasErrorResult = activations =>
-  Promise.all(activations.map(activation => repl.qexec(`wsk activation get ${activation.activationId}`))).then(
+  Promise.all(activations.map(activation => REPL.qexec(`wsk activation get ${activation.activationId}`))).then(
     activations => activations.filter(activation => !activation['response'].success)
   )
 
@@ -105,8 +105,7 @@ export default (commandTree, wsk) => {
     const argv = options._
     delete options._
 
-    return repl
-      .qexec(`wsk activations list ${serialize(options)}`, block)
+    return REPL.qexec(`wsk activations list ${serialize(options)}`, block)
       .then((response: ActivationListTable) => response.body)
       .then(excludeIfCausedBySequence)
       .then(isFromIncludedPackage(argv[0]))

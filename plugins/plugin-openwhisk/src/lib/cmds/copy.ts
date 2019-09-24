@@ -21,8 +21,7 @@
 
 import * as Debug from 'debug'
 
-import { qexec } from '@kui-shell/core/core/repl'
-import { CommandRegistrar, ParsedOptions } from '@kui-shell/core/models/command'
+import { Commands, REPL } from '@kui-shell/core'
 
 import { synonyms } from '..//models/synonyms'
 
@@ -61,7 +60,7 @@ const copy = (type: string) => (op: string) => ({
 }: {
   block: boolean | Element
   argvNoOptions: string[]
-  parsedOptions: ParsedOptions
+  parsedOptions: Commands.ParsedOptions
 }) => {
   debug(`${type} ${op}`)
 
@@ -79,7 +78,7 @@ const copy = (type: string) => (op: string) => ({
       const path = name.split('/')
       const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
       if (packageName) {
-        return qexec(`wsk package update "${packageName}"`).then(() =>
+        return REPL.qexec(`wsk package update "${packageName}"`).then(() =>
           copy(type)(op)({
             block: false,
             argvNoOptions: argv,
@@ -93,14 +92,14 @@ const copy = (type: string) => (op: string) => ({
     throw err
   }
 
-  return qexec(`wsk ${type} update --copy "${newName}" "${oldName}"`).catch(packageAutoCreate(newName))
+  return REPL.qexec(`wsk ${type} update --copy "${newName}" "${oldName}"`).catch(packageAutoCreate(newName))
 }
 
 /**
  * Register commands
  *
  */
-export default async (commandTree: CommandRegistrar) => {
+export default async (commandTree: Commands.Registrar) => {
   // Install the routes. for now, no copying of packages or triggers or rules
   ;['actions'].forEach(type => {
     const handler = copy(type)
