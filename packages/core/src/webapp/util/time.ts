@@ -16,7 +16,7 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { DefaultExecOptions, LanguageBearing } from '@kui-shell/core/models/execOptions'
+import { DefaultExecOptions, LanguageBearing } from '../../models/execOptions'
 
 function isDate(object: Date | string | number): object is Date {
   return object && typeof object !== 'string' && typeof object !== 'number' && 'getMonth' in object

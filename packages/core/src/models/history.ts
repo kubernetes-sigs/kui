@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import store from '@kui-shell/core/models/store'
+import store from './store'
 
 // localStorage key; note: the value here holds no meaning, it is a
 // historical artifact, at this point

@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'
-import { flatten } from '@kui-shell/core/core/utility'
+import { flatten } from '../../core/utility'
 const debug = Debug('core/webapp/util/ascii-to-usage')
 
 const sectionHeader = /^([^#%][A-Za-z ]+):\s*$/

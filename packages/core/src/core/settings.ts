@@ -16,8 +16,8 @@
 
 import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
-import { TableStyle } from '@kui-shell/core/webapp/models/table'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { TableStyle } from '../webapp/models/table'
+import { SidecarMode } from '../webapp/bottom-stripe'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let devOverrides: Record<string, any>
