@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Commands } from '@kui-shell/core'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { Capabilities, Commands, UI } from '@kui-shell/core'
 import { resetCount } from '@kui-shell/core/webapp/cli'
 
 import { TabState } from '../new-tab'
@@ -37,7 +36,7 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
     if (!parsedOptions.k) {
       // don't keep the current active prompt
       debug('clearing everything, the repl loop will set up the next prompt for us')
-      removeAllDomChildren(tab.querySelector('.repl-inner'))
+      UI.empty(tab.querySelector('.repl-inner'))
 
       // abort the jobs for the current tab
       const tabState: TabState = tab['state']

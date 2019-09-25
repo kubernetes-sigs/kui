@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-export { Capabilities } from './api/capabilities'
-export { Commands } from './api/commands'
-export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
-export { Errors } from './api/errors'
-export { default as eventBus } from './core/events'
-export { REPL } from './api/repl'
-export { Settings } from './api/settings'
-export { Tables } from './api/tables'
-export { UI } from './api/ui'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-namespace */
+
+/**
+ * API: UI
+ *
+ */
+
+import * as CLI from '../webapp/cli'
+import * as Inject from '../webapp/util/inject'
+import * as Dom from '@kui-shell/core/webapp/util/dom'
+
+export namespace UI {
+  export import Tab = CLI.Tab
+
+  export import injectCSS = Inject.injectCSS
+  export import uninjectCSS = Inject.uninjectCSS
+  export import injectScript = Inject.injectScript
+  export import loadHTML = Inject.loadHTML
+
+  export import empty = Dom.removeAllDomChildren
+}

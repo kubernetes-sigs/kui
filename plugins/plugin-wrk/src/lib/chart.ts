@@ -17,9 +17,7 @@
 import * as Debug from 'debug'
 import * as parseDuration from 'parse-duration'
 
-import { eventBus } from '@kui-shell/core'
-import { injectScript } from '@kui-shell/core/webapp/util/inject'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { eventBus, UI } from '@kui-shell/core'
 
 import theme from './theme'
 // import { transparent } from './util'
@@ -43,7 +41,7 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   }
 
   if (typeof Chart === 'undefined') {
-    injectScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js')
+    UI.injectScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js')
 
     return setTimeout(() => init(graphics, options), 100)
   }
@@ -270,7 +268,7 @@ export const init = (graphics, options: Options = new DefaultOptions()) => {
   const label = document.createElement('div')
   const max = document.createElement('div')
 
-  removeAllDomChildren(right)
+  UI.empty(right)
 
   right.appendChild(label)
   right.appendChild(max)

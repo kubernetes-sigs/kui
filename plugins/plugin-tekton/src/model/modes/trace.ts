@@ -15,11 +15,10 @@
  */
 
 import * as Debug from 'debug'
-
 import * as prettyPrintDuration from 'pretty-ms'
-import { Tab } from '@kui-shell/core'
+
+import { UI } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -44,7 +43,7 @@ interface RenderOpts {
  * Render a trace view in the given container
  *
  */
-export const render = (tab: Tab, activations: ActivationLike[], container: Element, opts: RenderOpts = {}): void => {
+export const render = (tab: UI.Tab, activations: ActivationLike[], container: Element, opts: RenderOpts = {}): void => {
   const { noCrop = false, showStart = false, showTimeline = true } = opts
 
   debug('trace', activations)
@@ -159,7 +158,7 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
     // column 4: success cell
     /* const success = nextCell()
        success.className = 'smaller-text lighter-text log-field success-field very-narrow'
-       removeAllDomChildren(success)
+       UI.empty(success)
        const successBadge = document.createElement('badge')
        successBadge.classList.add(isSuccess ? 'green-background' : 'red-background')
        successBadge.innerText = isSuccess ? 'OK' : 'Failed'
@@ -172,7 +171,7 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
     // column 5|6|7: bar chart cell
     if (showTimeline) {
       const timeline = nextCell()
-      removeAllDomChildren(timeline)
+      UI.empty(timeline)
 
       const isRootBar = idx === 0
 
@@ -274,7 +273,7 @@ export const render = (tab: Tab, activations: ActivationLike[], container: Eleme
       if (typeof time === 'string') {
         startInner.innerText = time
       } else {
-        removeAllDomChildren(startInner)
+        UI.empty(startInner)
         startInner.appendChild(time)
       }
     }
@@ -382,7 +381,7 @@ function makeTaskRunsActivationLike(run: PipelineRun, pipeline: Pipeline, jsons:
   return activations
 }
 
-export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
+export const traceView = (tab: UI.Tab, run: PipelineRun, pipeline: Pipeline, jsons: KubeResource[]) => {
   const content = document.createElement('div')
   content.classList.add('padding-content', 'repl-result')
   content.style.flex = '1'
@@ -413,7 +412,7 @@ export const traceView = (tab: Tab, run: PipelineRun, pipeline: Pipeline, jsons:
  */
 const traceMode: SidecarMode = {
   mode: 'trace',
-  direct: async (tab: Tab, _: ResponseObject) => {
+  direct: async (tab: UI.Tab, _: ResponseObject) => {
     const resource = _.resource as PipelineRun
     const [pipeline, tasks] = await Promise.all([getPipelineFromRef(resource), getTasks()])
     return traceView(tab, resource, pipeline, tasks)

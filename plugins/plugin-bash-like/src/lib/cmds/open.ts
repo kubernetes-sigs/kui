@@ -17,8 +17,8 @@
 import * as Debug from 'debug'
 import { basename, dirname } from 'path'
 
+import { Capabilities, Commands, i18n, REPL, UI } from '@kui-shell/core'
 import expandHomeDir from '@kui-shell/core/util/home'
-import { Capabilities, Commands, i18n, REPL, Tab } from '@kui-shell/core'
 import { findFile } from '@kui-shell/core/core/find-file'
 
 import markdownify from '../util/markdown'
@@ -31,7 +31,7 @@ const debug = Debug('plugins/bash-like/cmds/open')
  * Decide how to display a given filepath
  *
  */
-const open = async (tab: Tab, filepath: string) => {
+const open = async (tab: UI.Tab, filepath: string) => {
   debug('open', filepath)
 
   const fullpath = findFile(expandHomeDir(filepath))

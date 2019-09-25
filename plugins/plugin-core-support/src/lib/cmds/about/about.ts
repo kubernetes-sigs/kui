@@ -16,9 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { Commands, i18n, i18nFromMap, REPL, Settings } from '@kui-shell/core'
+import { Commands, i18n, i18nFromMap, REPL, Settings, UI } from '@kui-shell/core'
 import { renderResult } from '@kui-shell/core/webapp/cli'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
@@ -213,14 +212,14 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Argumen
   debug('aboutWindow')
 
   try {
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/about.css'),
       key: 'about-window-css'
     })
   } catch (err) {
     const { dirname, join } = await import('path')
     const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(join(ourRootDir, 'web/css/about.css'))
+    UI.injectCSS(join(ourRootDir, 'web/css/about.css'))
   }
 
   const name = Settings.theme.productName || (await import('electron')).app.getName()

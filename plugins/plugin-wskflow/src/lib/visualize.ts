@@ -16,13 +16,12 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Tab } from '@kui-shell/core'
+import { Capabilities, UI } from '@kui-shell/core'
 
 import injectCSS from './inject'
-
 import fsm2graph from './fsm2graph'
+
 const debug = Debug('plugins/wskflow/visualize')
-debug('loading')
 
 type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
 
@@ -31,7 +30,7 @@ type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void
  *
  */
 export default async (
-  tab: Tab,
+  tab: UI.Tab,
   passedFsm: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   container?: HTMLElement,
   w?: number,

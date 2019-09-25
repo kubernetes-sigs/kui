@@ -18,6 +18,7 @@
 
 import * as Debug from 'debug'
 
+import { Capabilities, eventBus, Settings, UI } from '@kui-shell/core'
 import * as historyModel from '@kui-shell/core/models/history'
 import {
   getTabFromTarget,
@@ -28,7 +29,6 @@ import {
   getCurrentPromptLeft
 } from '@kui-shell/core/webapp/cli'
 import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
-import { Capabilities, eventBus, Settings, Tab } from '@kui-shell/core'
 
 const debug = Debug('core-support/history/reverse-i-search')
 
@@ -45,7 +45,7 @@ const strings = {
 class ActiveISearch {
   private isSearchActive = true
 
-  private readonly tab: Tab
+  private readonly tab: UI.Tab
 
   private readonly currentOnKeypress: (evt: KeyboardEvent) => void
 
@@ -69,7 +69,7 @@ class ActiveISearch {
 
   private readonly promptLeft: Element
 
-  constructor(tab: Tab) {
+  constructor(tab: UI.Tab) {
     this.tab = tab
     this.prompt = getCurrentPrompt(tab)
     this.promptLeft = getCurrentPromptLeft(tab)
@@ -224,7 +224,7 @@ function registerListener() {
   }
 
   if (Settings.inBottomInputMode) {
-    eventBus.on('/core/cli/install-block', (tab: Tab) => {
+    eventBus.on('/core/cli/install-block', (tab: UI.Tab) => {
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']
       if (activeSearch) {
         activeSearch.cancelISearch()

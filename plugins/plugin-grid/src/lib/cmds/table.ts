@@ -17,10 +17,9 @@
 import * as events from 'events'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Commands, Tab } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import { drilldownWith } from '../drilldown'
@@ -76,7 +75,7 @@ const choicesArray: any[] = choices.map((choice, idx) => {
     balloon: `Show the ${text || bottom + 'th to the ' + top + 'th percentile of'} latency`,
     actAsButton: true,
     selected: idx === 0,
-    direct: (tab: Tab, state: State) => {
+    direct: (tab: UI.Tab, state: State) => {
       state.eventBus.emit('/summary/range/change', choice)
     }
   }
@@ -92,7 +91,7 @@ const tableModes = choicesArray.concat([
     actAsButton: true,
     radioButton: true,
     selected: false,
-    direct: (tab: Tab, state: State) => {
+    direct: (tab: UI.Tab, state: State) => {
       const showOutliers = !state.showOutliers
       state.showOutliers = showOutliers
       state.eventBus.emit(`/summary/range/outliers/toggle`, { showOutliers })
@@ -110,7 +109,7 @@ const percent = fraction => `${100 * fraction}%`
  * Drill down to the grid for for a given list of activations
  *
  */
-const showGridForActivationList = (tab: Tab, activations) =>
+const showGridForActivationList = (tab: UI.Tab, activations) =>
   drilldownWith(tab, viewName, () => {
     require('./grid')(undefined, undefined, { activations, tab })
     return Promise.resolve('ok')
@@ -122,7 +121,7 @@ const showGridForActivationList = (tab: Tab, activations) =>
  *
  */
 const _drawTable = (
-  tab: Tab,
+  tab: UI.Tab,
   options,
   header: Header,
   content: Element,
@@ -139,7 +138,7 @@ const _drawTable = (
   const { ticks: numTicks = 4 } = options // number of ticks on the x axis of the bar chart
 
   // clean the container
-  removeAllDomChildren(content)
+  UI.empty(content)
 
   // x axis
   const headerRow = tableHeader.insertRow(-1)
@@ -670,7 +669,7 @@ const _drawTable = (
  * Visualize the activation data
  *
  */
-const drawTable = (tab: Tab, options, header: Header, uuid: string) => activations => {
+const drawTable = (tab: UI.Tab, options, header: Header, uuid: string) => activations => {
   const eventBus = new events.EventEmitter()
   const content = document.createElement('div')
   content.className = 'activation-viz-plugin'

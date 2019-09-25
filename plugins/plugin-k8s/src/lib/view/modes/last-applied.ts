@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
-import { i18n, Tab } from '@kui-shell/core'
+import { i18n, UI } from '@kui-shell/core'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
@@ -104,7 +104,7 @@ function toCustomSpec(lastRaw: string, fullResource: KubeResource): CustomSpec {
   }
 }
 
-export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
+export const renderAndViewLastApplied = async (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 

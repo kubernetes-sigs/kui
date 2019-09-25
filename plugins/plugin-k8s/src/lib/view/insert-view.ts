@@ -16,10 +16,10 @@
 
 import * as Debug from 'debug'
 
+import { UI } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { Tab } from '@kui-shell/core'
 import { getActiveView, presentAs } from '@kui-shell/core/webapp/views/sidecar'
+
 const debug = Debug('k8s/view/insert-view')
 
 /**
@@ -27,13 +27,13 @@ const debug = Debug('k8s/view/insert-view')
  * mode switching.
  *
  */
-export default (tab: Tab) => (view: HTMLElement) => {
+export default (tab: UI.Tab) => (view: HTMLElement) => {
   debug('insertView', view)
 
   const container = getActiveView(tab)
   debug('insertView.container', container)
 
-  removeAllDomChildren(container)
+  UI.empty(container)
   container.appendChild(view)
 
   presentAs(tab, Presentation.Default)

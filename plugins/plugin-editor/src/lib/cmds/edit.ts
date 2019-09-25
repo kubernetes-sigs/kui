@@ -18,14 +18,14 @@
 
 import * as Debug from 'debug'
 
+import { Commands, UI } from '@kui-shell/core'
+
 import { respondToRepl } from '../util'
 import { Entity as EditorEntity, fetchEntity } from '../fetchers'
 import * as usage from '../../usage'
 import { applyOverrides } from '../overrides'
 import { openEditor } from '../open'
 import { persisters } from '../persisters'
-
-import { Commands, Tab } from '@kui-shell/core'
 
 const debug = Debug('plugins/editor/cmds/edit')
 
@@ -43,7 +43,7 @@ const editCmd = async ({
   parsedOptions = {},
   execOptions
 }: {
-  tab: Tab
+  tab: UI.Tab
   argvNoOptions: string[]
   parsedOptions: Commands.ParsedOptionsFull
   execOptions: Commands.ExecOptions
@@ -95,7 +95,7 @@ const editCmd = async ({
  *
  */
 export const edit = (
-  tab: Tab,
+  tab: UI.Tab,
   entity: EditorEntity,
   options: Commands.ParsedOptionsFull,
   execOptions: Commands.ExecOptions

@@ -16,12 +16,11 @@
 
 import { dirname, join } from 'path'
 
+import { Capabilities, Commands, Errors, i18n, UI } from '@kui-shell/core'
 import { getCurrentPrompt } from '@kui-shell/core/webapp/cli'
 import { keys } from '@kui-shell/core/webapp/keys'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
-import { Capabilities, Commands, Errors, i18n, Tab } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -78,11 +77,11 @@ const round = Math.round
 const selectors = {
   full: 'body', // everything
   default: 'body > .page', // everything but header
-  sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
-  repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
-  nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
-  'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
-  last: (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
+  sidecar: (tab: UI.Tab) => sidecarSelector(tab), // entire sidecar region
+  repl: (tab: UI.Tab) => tab.querySelector('.repl'), // entire REPL region
+  nth: (tab: UI.Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
+  'last-full': (tab: UI.Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
+  last: (tab: UI.Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
 }
 
 /**
@@ -108,7 +107,7 @@ const squishers = {
   full: hideCurrentReplBlock,
   repl: hideCurrentReplBlock
 }
-const _squish = (tab: Tab, which: string, selector: string, op) => {
+const _squish = (tab: UI.Tab, which: string, selector: string, op) => {
   let squisher = squishers[which]
 
   if (typeof squisher === 'function') {
@@ -142,7 +141,7 @@ const _squish = (tab: Tab, which: string, selector: string, op) => {
     return doNotSquish
   }
 }
-const squish = (tab: Tab, which: string, selector: string) =>
+const squish = (tab: UI.Tab, which: string, selector: string) =>
   _squish(tab, which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
     if (dryRun) {
       const scrollers = element.querySelectorAll('.overflow-auto')
@@ -157,7 +156,7 @@ const squish = (tab: Tab, which: string, selector: string) =>
       if (property) element.style[property] = value
     }
   })
-const unsquish = (tab: Tab, which: string, selector: string) =>
+const unsquish = (tab: UI.Tab, which: string, selector: string) =>
   _squish(tab, which, selector, (_, element: HTMLElement, property: string, value: string, css: string) => {
     if (css) element.classList.remove(css)
     if (property) element.style[property] = null
@@ -193,7 +192,7 @@ export default async (commandTree: Commands.Registrar) => {
 
         try {
           const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-          injectCSS(join(root, 'web/css/screenshot.css'))
+          UI.injectCSS(join(root, 'web/css/screenshot.css'))
 
           const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
           const { app } = remote
