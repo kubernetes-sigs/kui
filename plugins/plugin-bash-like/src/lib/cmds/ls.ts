@@ -101,7 +101,7 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
  * If the given filepath is a directory, then ls it, otherwise cat it
  *
  */
-const lsOrOpen = async ({ argvNoOptions }: Commands.EvaluatorArgs) => {
+const lsOrOpen = async ({ argvNoOptions }: Commands.Arguments) => {
   const filepath = argvNoOptions[argvNoOptions.indexOf('lsOrOpen') + 1]
 
   const stats: { isDirectory: boolean; viewer: string } = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)}`)
@@ -119,7 +119,7 @@ const lsOrOpen = async ({ argvNoOptions }: Commands.EvaluatorArgs) => {
  * Kui command for fs.stat
  *
  */
-const fstat = ({ argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
+const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
   return new Promise((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
@@ -389,7 +389,7 @@ const tabularize = (cmd: string, parsedOptions: Commands.ParsedOptions, parent =
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: Commands.EvaluatorArgs) => {
+const doLs = (cmd: string) => async (opts: Commands.Arguments) => {
   const semi = await REPL.semicolonInvoke(opts)
   if (semi) {
     debug('ls with semi', semi)

@@ -102,7 +102,7 @@ const addAnnotations = (annotations, mimeType) => {
  * required annotations, then updates the backend.
  *
  */
-const doWebbify = ({ command, execOptions, tab }: Commands.EvaluatorArgs) => {
+const doWebbify = ({ command, execOptions, tab }: Commands.Arguments) => {
   return Promise.all(
     matchers.map(matcher => ({
       matcher: matcher,

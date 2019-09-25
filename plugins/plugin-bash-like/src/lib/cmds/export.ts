@@ -21,7 +21,7 @@ import SymbolTable from '@kui-shell/core/core/symbol-table'
  * export command
  *
  */
-const exportCommand = ({ tab, parsedOptions }: Commands.EvaluatorArgs) => {
+const exportCommand = ({ tab, parsedOptions }: Commands.Arguments) => {
   const curDic = SymbolTable.read(tab)
 
   const toBeParsed = parsedOptions._[1]

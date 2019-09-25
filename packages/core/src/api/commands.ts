@@ -32,7 +32,7 @@ export namespace Commands {
 
   export import ExecType = _Commands.ExecType
   export import Registrar = _Commands.CommandRegistrar
-  export import EvaluatorArgs = _Commands.EvaluatorArgs
+  export import Arguments = _Commands.EvaluatorArgs
   export import ParsedOptions = _Commands.ParsedOptions
   export import ParsedOptionsFull = _Commands.ParsedOptionsFull
   export import CommandHandler = _Commands.CommandHandler

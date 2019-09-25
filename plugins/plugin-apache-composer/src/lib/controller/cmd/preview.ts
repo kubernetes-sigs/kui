@@ -266,7 +266,7 @@ export default (commandTree: Commands.Registrar) => {
     execOptions,
     argvNoOptions,
     parsedOptions: options
-  }: Commands.EvaluatorArgs) =>
+  }: Commands.Arguments) =>
     new Promise((resolve, reject) => {
       const idx = argvNoOptions.indexOf(cmd)
       const inputFile = argvNoOptions[idx + 1]

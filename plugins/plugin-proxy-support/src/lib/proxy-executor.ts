@@ -101,7 +101,7 @@ class ProxyEvaluator implements REPL.ReplEval {
     command: string,
     execOptions: Commands.ExecOptions,
     evaluator: Commands.Evaluator,
-    args: Commands.EvaluatorArgs
+    args: Commands.Arguments
   ) {
     debug('apply', evaluator)
     debug('execOptions', execOptions)

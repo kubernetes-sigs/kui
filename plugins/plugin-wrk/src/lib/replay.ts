@@ -71,7 +71,7 @@ export const replay = (
  * Visualize the most recent data set
  *
  */
-export const last = ({ tab }: Commands.EvaluatorArgs) => {
+export const last = ({ tab }: Commands.Arguments) => {
   const last = history.last()
   if (!last) {
     throw new Error('You have no load test runs available for viewing')
@@ -84,7 +84,7 @@ export const last = ({ tab }: Commands.EvaluatorArgs) => {
  * Visualize the idx-th most recent data set
  *
  */
-export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: Commands.EvaluatorArgs) => {
+export const show = ({ tab, argvNoOptions: args, parsedOptions: options }: Commands.Arguments) => {
   const idx = args[args.indexOf('show') + 1]
   if (idx === undefined || options.help) {
     console.error(idx, args)
