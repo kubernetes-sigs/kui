@@ -18,9 +18,7 @@ import * as Debug from 'debug'
 import { basename, join } from 'path'
 import { safeLoadAll as parseYAML } from 'js-yaml'
 
-import { findFile } from '@kui-shell/core/core/find-file'
-import { flatten } from '@kui-shell/core/core/utility'
-import { Errors, Commands, i18n, REPL, Tables } from '@kui-shell/core'
+import { Errors, Commands, i18n, REPL, Tables, Util } from '@kui-shell/core'
 
 import { withRetryOn404 } from '../util/retry'
 import { isDirectory } from '../util/util'
@@ -154,7 +152,7 @@ const allContexts = async (execOptions: Commands.ExecOptions, { fetchAllNS = fal
     }))
   }
 
-  return flatten(
+  return Util.flatten(
     await Promise.all(
       table.body.map(cluster => {
         const ns: Promise<Context[]> = REPL.qexec(
@@ -238,7 +236,7 @@ const getStatusForKnownContexts = (execOptions: Commands.ExecOptions, parsedOpti
         // TODO: hack for now; we need app=seed, or something like that
         const filteredCRDs = crds.filter(_ => !_.metadata.name.match(/knative/))
 
-        const crdResources = flatten(
+        const crdResources = Util.flatten(
           await Promise.all(
             filteredCRDs.map(crd => {
               const kind = (crd.spec.names.shortnames && crd.spec.names.shortnames[0]) || crd.spec.names.kind
@@ -289,7 +287,7 @@ const getStatusForKnownContexts = (execOptions: Commands.ExecOptions, parsedOpti
   )
 
   if (!parsedOptions.multi) {
-    const resources = flatten(await tables).filter(x => x)
+    const resources = Util.flatten(await tables).filter(x => x)
     if (resources.length === 0) {
       return []
     } else {
@@ -445,7 +443,7 @@ const getDirectReferences = (command: string) => async ({
       }
     }
   } else {
-    const filepath = findFile(file)
+    const filepath = Util.findFile(file)
     const isURL = file.match(/^http[s]?:\/\//)
     const isDir = isURL ? false : await isDirectory(filepath)
 
@@ -515,7 +513,7 @@ const getDirectReferences = (command: string) => async ({
       const { fetchFileString } = await import('../util/fetch-file')
       const specs: KubeResource[] = (passedAsParameter
         ? parseYAML(execOptions.parameters[passedAsParameter[1].slice(1)]) // yaml given programatically
-        : flatten((await fetchFileString(file)).map(_ => parseYAML(_)))
+        : Util.flatten((await fetchFileString(file)).map(_ => parseYAML(_)))
       ).filter(_ => _) // in case there are empty paragraphs;
       // debug('specs', specs)
 
@@ -556,7 +554,7 @@ const findControlledResources = async (
 
   const raw = Object.assign({}, args.execOptions, { raw: true })
   const pods = removeDuplicateResources(
-    flatten(
+    Util.flatten(
       await Promise.all(
         kubeEntities
           .map(({ kind, metadata: { labels, namespace } }) => {
@@ -579,7 +577,7 @@ const findControlledResources = async (
     return pods
   } else if (pods.length > 0) {
     return Promise.all(pods.map(formatEntity(args.parsedOptions))).then(formattedEntities => {
-      return [headerRow({ title: 'pods' })].concat(flatten(formattedEntities))
+      return [headerRow({ title: 'pods' })].concat(Util.flatten(formattedEntities))
     })
   } else {
     return []

@@ -20,7 +20,7 @@ import { safeDump, safeLoad as parseYAML } from 'js-yaml'
 import * as path from 'path'
 import * as assert from 'assert'
 
-import expandHomeDir from '@kui-shell/core/util/home'
+import { Util } from '@kui-shell/core'
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
@@ -93,7 +93,7 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
       })
     }
 
-    const defaultFilepath = expandHomeDir('~/.kube/config')
+    const defaultFilepath = Util.expandHomeDir('~/.kube/config')
     const getKUBECONFIGFilepath = (): string => {
       if (process.env.KUBECONFIG) {
         const kconfigEnv = process.env.KUBECONFIG.slice(0)

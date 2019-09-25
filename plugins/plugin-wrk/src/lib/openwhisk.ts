@@ -17,8 +17,7 @@
 import * as fs from 'fs'
 import * as propertiesParser from 'properties-parser'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { REPL } from '@kui-shell/core'
+import { REPL, Util } from '@kui-shell/core'
 
 /**
  * Get the apiHost and auth key
@@ -28,7 +27,7 @@ export const getCreds = async options => {
   if (options.wskprops) {
     // read from a wskprops file
     return new Promise((resolve, reject) =>
-      fs.readFile(expandHomeDir(options.wskprops), (err, data) => {
+      fs.readFile(Util.expandHomeDir(options.wskprops), (err, data) => {
         if (err) {
           reject(err)
         } else {

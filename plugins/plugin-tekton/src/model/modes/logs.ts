@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { REPL, Tables, UI } from '@kui-shell/core'
+import { REPL, Tables, UI, Util } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { flatten } from '@kui-shell/core/core/utility'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { ResponseObject } from './flow'
@@ -38,7 +37,7 @@ const mode: SidecarMode = {
       REPL.rexec(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
     ])
 
-    const containers: Tables.Row[] = flatten(
+    const containers: Tables.Row[] = Util.flatten(
       pods.map(pod => {
         const taskName = pod.metadata.labels['tekton.dev/task']
         const taskRun = taskRuns.find(_ => _.metadata.labels['tekton.dev/task'] === taskName)

@@ -20,8 +20,7 @@ debug('loading')
 
 import { dirname, join } from 'path'
 
-import { Capabilities } from '@kui-shell/core'
-import { addPath } from '@kui-shell/core/core/find-file'
+import { Capabilities, Util } from '@kui-shell/core'
 import { ModeRegistration, registerSidecarMode, SidecarModeFilter } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
@@ -78,7 +77,7 @@ async function registerModes() {
 export default () => {
   // register a "special path" that resolves
   const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
-  addPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
+  Util.augmentModuleLoadPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
 
   if (!Capabilities.isHeadless()) {
     return registerModes()

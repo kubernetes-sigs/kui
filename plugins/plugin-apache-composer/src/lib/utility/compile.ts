@@ -20,10 +20,7 @@ import * as path from 'path'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 
-import { Capabilities, Errors, UI } from '@kui-shell/core'
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
-
+import { Capabilities, Errors, UI, Util } from '@kui-shell/core'
 import { currentSelection } from '@kui-shell/plugin-openwhisk'
 
 import { isValidAst } from './ast'
@@ -187,7 +184,7 @@ export const loadComposition = (inputFile: string, originalCode?: string, localC
     return originalCode
   }
 
-  const localSourcePath = localCodePath || findFile(expandHomeDir(inputFile))
+  const localSourcePath = localCodePath || Util.findFile(Util.expandHomeDir(inputFile))
 
   debug('load source code from', localSourcePath)
 
@@ -276,7 +273,7 @@ export const sourceToComposition = ({ inputFile, name = '' }: { inputFile: strin
       )
     }
 
-    const localCodePath = findFile(expandHomeDir(inputFile))
+    const localCodePath = Util.findFile(Util.expandHomeDir(inputFile))
 
     return loadSourceCode(inputFile, localCodePath) // check inputfile extension and existence and then return the source code
       .then(sourceCode => loadComposition(inputFile, sourceCode)) // check before parse by composer and give users more freedom on source input

@@ -18,9 +18,7 @@ import * as Debug from 'debug'
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { Capabilities, Commands, REPL, UI } from '@kui-shell/core'
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
+import { Capabilities, Commands, REPL, UI, Util } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
@@ -58,7 +56,7 @@ export default (commandTree: Commands.Registrar) => {
   const readFile = (input: string): Promise<string> =>
     // eslint-disable-next-line no-async-promise-executor
     new Promise(async (resolve, reject) => {
-      const filepath = findFile(expandHomeDir(input))
+      const filepath = Util.findFile(Util.expandHomeDir(input))
 
       if (!Capabilities.inBrowser()) {
         debug('readFile in headless mode or for electron')
@@ -280,7 +278,7 @@ export default (commandTree: Commands.Registrar) => {
         return resolve(REPL.qexec(`compose ${path.basename(inputFile)} --simple --readOnly --template "${inputFile}"`))
       }
 
-      const input = findFile(expandHomeDir(inputFile))
+      const input = Util.findFile(Util.expandHomeDir(inputFile))
 
       /* if (currentSelection() && currentSelection().input === input) {
              debug('already showing', input)
