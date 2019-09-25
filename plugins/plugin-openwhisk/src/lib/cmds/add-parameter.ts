@@ -197,7 +197,7 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
   command: rawCommand,
   execOptions,
   tab
-}: Commands.EvaluatorArgs) => {
+}: Commands.Arguments) => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => REPL.qexec(`wsk ${type} get ${name}`)
 

@@ -137,7 +137,7 @@ const doWipe = () =>
       }
     })
 
-const doWipeWithConfirmation = async ({ tab, block, nextBlock }: Commands.EvaluatorArgs) => {
+const doWipeWithConfirmation = async ({ tab, block, nextBlock }: Commands.Arguments) => {
   //
   // first, hide the sidecar
   //

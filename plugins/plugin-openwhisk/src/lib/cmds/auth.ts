@@ -306,7 +306,7 @@ interface UseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: Commands.EvaluatorArgs) =>
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: Commands.Arguments) =>
   namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
     if (auth) {
       /**
@@ -381,7 +381,7 @@ const addFn = (tab: Tab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: Commands.EvaluatorArgs) => {
+const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: Commands.Arguments) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
@@ -587,7 +587,7 @@ export default async (commandTree: Commands.Registrar) => {
   commandTree.subtree('/wsk/host', { usage: usage.host.toplevel })
   commandTree.subtree('/wsk/auth', { usage: usage.auth.toplevel })
 
-  const add = ({ argvNoOptions, tab }: Commands.EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
+  const add = ({ argvNoOptions, tab }: Commands.Arguments) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
   commandTree.listen('/wsk/auth/switch', use('switch'), {
     usage: usage.auth.switch,

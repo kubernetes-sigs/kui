@@ -32,7 +32,7 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
+const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 

@@ -208,7 +208,7 @@ async function renderGettingStarted() {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.EvaluatorArgs) => {
+const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Arguments) => {
   /* bringYourOwnWindow impl */
   debug('aboutWindow')
 
@@ -316,7 +316,7 @@ export default (commandTree: Commands.Registrar) => {
 
   // for menu
   if (!commandTree) {
-    return aboutWindow({} as Commands.EvaluatorArgs)
+    return aboutWindow({} as Commands.Arguments)
   }
 
   // these commands don't require any auth

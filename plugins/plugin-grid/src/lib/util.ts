@@ -358,7 +358,7 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
   tab,
   argvNoOptions,
   parsedOptions: options
-}: Commands.EvaluatorArgs) => {
+}: Commands.Arguments) => {
   debug('visualize')
 
   // number of batches (of 200) to fetch

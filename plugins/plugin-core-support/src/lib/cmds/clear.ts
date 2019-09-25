@@ -32,7 +32,7 @@ const usage = {
   optional: [{ name: '--keep-current-active', alias: '-k', boolean: true, hidden: true }]
 }
 
-const clear = ({ parsedOptions, tab }: Commands.EvaluatorArgs) => {
+const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
   if (!Capabilities.isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt

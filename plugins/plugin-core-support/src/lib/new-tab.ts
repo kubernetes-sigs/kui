@@ -567,7 +567,7 @@ const oneTimeInit = (): void => {
  * Same as newTab, but done asynchronously
  *
  */
-const newTabAsync = ({ execOptions }: Commands.EvaluatorArgs) => {
+const newTabAsync = ({ execOptions }: Commands.Arguments) => {
   if (execOptions.nested) {
     newTab()
     return true

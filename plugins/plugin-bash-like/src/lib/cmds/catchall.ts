@@ -32,7 +32,7 @@ export const dispatchToShell = async ({
   execOptions,
   parsedOptions,
   createOutputStream
-}: Commands.EvaluatorArgs) => {
+}: Commands.Arguments) => {
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
   const cleanUpError = err => {
     if (err.message && typeof err.message === 'string') {

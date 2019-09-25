@@ -29,7 +29,7 @@ const usage = {
   optional: [{ name: '--file', alias: '-f', docs: 'Path to resource specification' }]
 }
 
-const getStep = async ({ argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
+const getStep = async ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf('step') + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf('step') + 2]
   const stepName = argvNoOptions[argvNoOptions.indexOf('step') + 3]

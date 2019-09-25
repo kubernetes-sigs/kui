@@ -122,7 +122,7 @@ function toMap(table: Tables.Table): Record<string, string> {
  * kubectl describe
  *
  */
-const describe = async ({ command, parsedOptions, execOptions }: Commands.EvaluatorArgs) => {
+const describe = async ({ command, parsedOptions, execOptions }: Commands.Arguments) => {
   const noDelegationPlease = Object.assign({}, execOptions, { noDelegation: true })
   delete noDelegationPlease.delegationOk
 

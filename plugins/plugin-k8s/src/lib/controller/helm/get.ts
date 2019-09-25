@@ -61,7 +61,7 @@ function getBasicInfo(releaseName: string): Promise<MetadataBearing> {
   })
 }
 
-export default async function helmGet(args: Commands.EvaluatorArgs) {
+export default async function helmGet(args: Commands.Arguments) {
   const idx = args.argvNoOptions.indexOf('get')
 
   const maybeVerb = args.argvNoOptions[idx + 1]

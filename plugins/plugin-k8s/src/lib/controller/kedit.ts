@@ -193,7 +193,7 @@ const showAsTable = async (
  * kedit command handler
  *
  */
-const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.EvaluatorArgs) => {
+const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments) => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]

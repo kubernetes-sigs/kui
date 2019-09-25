@@ -232,7 +232,7 @@ const stripThese = {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
-const executeLocally = (command: string) => (opts: Commands.EvaluatorArgs) =>
+const executeLocally = (command: string) => (opts: Commands.Arguments) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
@@ -721,7 +721,7 @@ const executeLocally = (command: string) => (opts: Commands.EvaluatorArgs) =>
 const _kubectl = executeLocally('kubectl')
 export const _helm = executeLocally('helm')
 
-function helm(opts: Commands.EvaluatorArgs) {
+function helm(opts: Commands.Arguments) {
   const idx = opts.argvNoOptions.indexOf('helm')
   if (opts.argvNoOptions[idx + 1] === 'get') {
     return helmGet(opts)
@@ -730,13 +730,13 @@ function helm(opts: Commands.EvaluatorArgs) {
   }
 }
 
-const shouldSendToPTY = (opts: Commands.EvaluatorArgs): boolean =>
+const shouldSendToPTY = (opts: Commands.Arguments): boolean =>
   (opts.argvNoOptions.length > 1 && (opts.argvNoOptions[1] === 'exec' || opts.argvNoOptions[1] === 'edit')) ||
   (opts.argvNoOptions[1] === 'logs' &&
     (opts.parsedOptions.f !== undefined || (opts.parsedOptions.follow && opts.parsedOptions.follow !== 'false'))) ||
   opts.argvNoOptions.includes('|')
 
-async function kubectl(opts: Commands.EvaluatorArgs) {
+async function kubectl(opts: Commands.Arguments) {
   const semi = await REPL.semicolonInvoke(opts)
   if (semi) {
     return semi
@@ -771,7 +771,7 @@ async function kubectl(opts: Commands.EvaluatorArgs) {
  * Delegate 'k8s <verb>' to 'kubectl verb'
  *
  */
-const dispatchViaDelegationTo = (delegate: Commands.CommandHandler) => (opts: Commands.EvaluatorArgs) => {
+const dispatchViaDelegationTo = (delegate: Commands.CommandHandler) => (opts: Commands.Arguments) => {
   if (opts.argv[0] === 'k8s') {
     opts.argv[0] = 'kubectl'
     opts.argvNoOptions[0] = 'kubectl'

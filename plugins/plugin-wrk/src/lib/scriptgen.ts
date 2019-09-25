@@ -120,7 +120,7 @@ export const generateScriptForURL = ({ method = 'GET' }) => () =>
  * Command handler to generate a lua script to run load against a given action
  *
  */
-export const script = async ({ argvNoOptions: argv, parsedOptions: options }: Commands.EvaluatorArgs) => {
+export const script = async ({ argvNoOptions: argv, parsedOptions: options }: Commands.Arguments) => {
   const { currentNamespace } = await import('@kui-shell/plugin-openwhisk')
 
   const rootDir = path.join(__dirname, '..')

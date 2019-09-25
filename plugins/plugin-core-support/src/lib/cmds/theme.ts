@@ -333,7 +333,7 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
  * REPL command to switch themes
  *
  */
-const set = async ({ argvNoOptions }: Commands.EvaluatorArgs) => {
+const set = async ({ argvNoOptions }: Commands.Arguments) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
   await switchTo(theme)

@@ -365,7 +365,7 @@ const getDirectReferences = (command: string) => async ({
   execOptions,
   argvNoOptions,
   parsedOptions
-}: Commands.EvaluatorArgs) => {
+}: Commands.Arguments) => {
   const raw = Object.assign({}, execOptions, { raw: true })
 
   const idx = argvNoOptions.indexOf(command) + 1
@@ -549,7 +549,7 @@ const getDirectReferences = (command: string) => async ({
  *
  */
 const findControlledResources = async (
-  args: Commands.EvaluatorArgs,
+  args: Commands.Arguments,
   kubeEntities: KubeResource[]
 ): Promise<Tables.Row[] | KubeResource[]> => {
   // debug('findControlledResources', kubeEntities)
@@ -618,7 +618,7 @@ const statusTable = entities => {
  *
  */
 export const status = (command: string) => async (
-  args: Commands.EvaluatorArgs
+  args: Commands.Arguments
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   // debug('constructing status', args)

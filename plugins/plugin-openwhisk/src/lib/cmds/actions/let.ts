@@ -549,7 +549,7 @@ export default async (commandTree: Commands.Registrar) => {
         }
       })
 
-  const doCreate = (args: Commands.EvaluatorArgs) => {
+  const doCreate = (args: Commands.Arguments) => {
     const { block: retryOK, argv: fullArgv, command: fullCommand, execOptions } = args
     const update = execOptions.createOnly ? 'create' : 'update'
 

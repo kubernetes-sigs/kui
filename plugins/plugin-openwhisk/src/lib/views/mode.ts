@@ -64,7 +64,7 @@ export default async (commandTree: Commands.Registrar) => {
   const switchSidecarMode = (entityType: string, mode: string) => async ({
     argvNoOptions: args,
     tab
-  }: Commands.EvaluatorArgs) => {
+  }: Commands.Arguments) => {
     const entityId = args[args.indexOf(mode) + 1]
     const selection = currentSelection(tab)
 

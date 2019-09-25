@@ -84,7 +84,7 @@ const respond = (options: Commands.ParsedOptions) => response => {
  * impl to perform a blocking invocation.
  *
  */
-const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.EvaluatorArgs) => {
+const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Arguments) => {
   if (!opts.argv.find(opt => opt === '-b' || opt === '-r' || opt === '--blocking' || opt === '--result')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
@@ -114,7 +114,7 @@ const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Evaluat
  * `invoke.
  *
  */
-const doAsync = (rawInvoke: Commands.CommandHandler) => (opts: Commands.EvaluatorArgs) => {
+const doAsync = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Arguments) => {
   const idx = opts.argv.findIndex(arg => arg === 'async')
   opts.argv[idx] = 'invoke'
   opts.command = opts.command.slice(0).replace(/^async/, 'invoke') // clone it, via slice, to avoid contaminating command history

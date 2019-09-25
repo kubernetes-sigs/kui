@@ -23,7 +23,7 @@ import { ActivationListTable } from '../../views/cli/activations/list'
  * wsk activation last: find and display the (temporally) last activation
  *
  */
-const last = ({ argv: fullArgv }: Commands.EvaluatorArgs) => {
+const last = ({ argv: fullArgv }: Commands.Arguments) => {
   const argv = fullArgv.slice(fullArgv.indexOf('last'))
 
   const limit = argv.length === 1 ? 1 : 200 // if no options, then we're showing just the last activation

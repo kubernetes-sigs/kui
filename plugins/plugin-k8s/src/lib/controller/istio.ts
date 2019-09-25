@@ -35,7 +35,7 @@ const squash = (err: Error) => {
  * Install istio
  *
  */
-const installIstio106 = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
+const installIstio106 = async ({ parsedOptions }: Commands.Arguments) => {
   const tmp = '/tmp' // FIXME
   const platform = process.platform === 'darwin' ? 'osx' : process.platform === 'win32' ? 'win' : 'linux'
   const version = parsedOptions.version || '1.0.6'
@@ -90,7 +90,7 @@ const installIstio106 = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
  * Uninstall istio
  *
  */
-const uninstallIstio106 = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
+const uninstallIstio106 = async ({ parsedOptions }: Commands.Arguments) => {
   const version = parsedOptions.version || '1.0.6'
 
   await Promise.all([
@@ -128,7 +128,7 @@ const uninstallBookinfo = async () => {
  * Return the istio ingress URL
  *
  */
-const ingress = async ({ argvNoOptions: args }: Commands.EvaluatorArgs) => {
+const ingress = async ({ argvNoOptions: args }: Commands.Arguments) => {
   const [ingressHost, ingressPort] = await Promise.all([
     REPL.rexec(
       `kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`

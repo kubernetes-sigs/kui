@@ -26,7 +26,7 @@ const strings = i18n('plugin-core-support')
  * Respond with a top-level usage document
  *
  */
-const help = usage => ({ argvNoOptions: args }: Commands.EvaluatorArgs) => {
+const help = usage => ({ argvNoOptions: args }: Commands.Arguments) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 

@@ -96,7 +96,7 @@ const _set = newZoom => {
 
   return true
 }
-const set = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
+const set = ({ argvNoOptions }: Commands.Arguments) => {
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }

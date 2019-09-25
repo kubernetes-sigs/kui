@@ -859,7 +859,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
  * Command handler for tutorial play
  *
  */
-const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: Commands.EvaluatorArgs) => {
+const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: Commands.Arguments) => {
   injectOurCSS()
 
   // inject the HTML if needed

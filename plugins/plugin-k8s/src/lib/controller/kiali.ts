@@ -86,7 +86,7 @@ const ingressFor = (appName: string): Promise<string> => {
  * `kiali get apps` command handler
  *
  */
-const getApps = async ({ parsedOptions }: Commands.EvaluatorArgs) => {
+const getApps = async ({ parsedOptions }: Commands.Arguments) => {
   const pollingInterval = parsedOptions.watch ? parseDuration(parsedOptions.watch) : 10000
   const list = await client.appList(parsedOptions.namespace && new client.Namespace(parsedOptions.namespace))
 

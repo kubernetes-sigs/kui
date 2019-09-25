@@ -59,7 +59,7 @@ const locateNpm = (): Promise<string> =>
     })
   })
 
-const doInstall = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
+const doInstall = ({ argvNoOptions }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)
