@@ -15,12 +15,12 @@
  */
 
 import * as Debug from 'debug'
+import * as path from 'path'
 
+import { UI } from '@kui-shell/core'
 import * as cli from '@kui-shell/core/webapp/cli'
 import { keys } from '@kui-shell/core/webapp/keys'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
-import * as path from 'path'
 const debug = Debug('plugins/core-support/text-search')
 
 /**
@@ -31,7 +31,7 @@ async function registerListener() {
   if (typeof document === 'undefined') return // return if no document
 
   const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-  injectCSS(path.join(root, 'web/css/text-search.css'))
+  UI.injectCSS(path.join(root, 'web/css/text-search.css'))
 
   const app = await import('electron')
 

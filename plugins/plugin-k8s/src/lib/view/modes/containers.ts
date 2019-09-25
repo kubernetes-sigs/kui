@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { i18n, REPL, Tab, Tables } from '@kui-shell/core'
+import { i18n, REPL, Tables, UI } from '@kui-shell/core'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
@@ -76,7 +76,7 @@ export const containersMode: ModeRegistration<KubeResource> = {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = (tab: Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
+const showLogs = (tab: UI.Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
   const podName = REPL.encodeComponent(pod.metadata.name)
   const containerName = REPL.encodeComponent(container.name)
   const ns = REPL.encodeComponent(pod.metadata.namespace)
@@ -124,7 +124,7 @@ const headerModel = (resource: Resource): Tables.Row => {
  * Render the table body model
  *
  */
-const bodyModel = (tab: Tab, resource: Resource): Tables.Row[] => {
+const bodyModel = (tab: UI.Tab, resource: Resource): Tables.Row[] => {
   const pod = resource.resource
   const statuses = pod.status && pod.status.containerStatuses
 
@@ -202,7 +202,7 @@ const bodyModel = (tab: Tab, resource: Resource): Tables.Row[] => {
  * Render the tabular containers view
  *
  */
-export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
+export const renderContainers = async (tab: UI.Tab, command: string, resource: Resource) => {
   debug('renderContainers', command, resource)
 
   const fetchPod = `kubectl get pod ${REPL.encodeComponent(resource.resource.metadata.name)} -n "${
@@ -237,6 +237,6 @@ interface Parameters {
   command: string
   resource: Resource
 }
-export const renderAndViewContainers = (tab: Tab, parameters: Parameters) => {
+export const renderAndViewContainers = (tab: UI.Tab, parameters: Parameters) => {
   renderContainers(tab, parameters.command, parameters.resource).then(insertView(tab))
 }

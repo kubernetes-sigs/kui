@@ -21,7 +21,7 @@
  *
  */
 
-import { Commands, Tab } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 import { addPrettyType, getClient, owOpts } from '../openwhisk-core'
@@ -38,7 +38,7 @@ const fixedOf = val => () => val // the match is always a fixed value
 const matchers = [
   {
     pattern: /^\s*webbify\s+as\s+(.+)\s*$/,
-    action: (_, tab: Tab) => currentSelection(tab),
+    action: (_, tab: UI.Tab) => currentSelection(tab),
     mimeType: matchOf(1)
   },
   {
@@ -53,7 +53,7 @@ const matchers = [
   },
   {
     pattern: /^\s*webbify\s*$/,
-    action: (_, tab: Tab) => currentSelection(tab),
+    action: (_, tab: UI.Tab) => currentSelection(tab),
     mimeType: fixedOf('json')
   }
 ]

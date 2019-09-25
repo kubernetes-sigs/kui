@@ -20,11 +20,9 @@ import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { flatten } from '@kui-shell/core/core/utility'
-import { Capabilities, Commands, Errors, eventBus, REPL, Tab } from '@kui-shell/core'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { Capabilities, Commands, Errors, eventBus, REPL, UI } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 
 import { ActivationListTable, currentNamespace } from '@kui-shell/plugin-openwhisk'
 
@@ -263,16 +261,16 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
  */
 export const injectContent = () => {
   if (Capabilities.inBrowser()) {
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-grid/web/css/table.css'),
       key: 'grid-visualization.table.css'
     })
   } else {
     const root = dirname(require.resolve('@kui-shell/plugin-grid/package.json'))
-    injectCSS(join(root, 'web/css/table.css'))
+    UI.injectCSS(join(root, 'web/css/table.css'))
   }
 
-  injectCSS('https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css') // tooltips
+  UI.injectCSS('https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css') // tooltips
 }
 
 export const injectHTML = (container, file, css = '') => {
@@ -297,7 +295,7 @@ const strong = (container, N) => {
   }
 }
 export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) => {
-  removeAllDomChildren(container)
+  UI.empty(container)
 
   if (totalCount === 0) {
     container.innerText = 'No activations to display'
@@ -330,14 +328,14 @@ export interface Header {
   leftHeader: Element
   rightHeader: Element
 }
-export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
+export const prepareHeader = (tab: UI.Tab, isRedraw = false): Header => {
   const sidecar = getSidecar(tab)
   const leftHeader = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
   const rightHeader = sidecar.querySelector('.header-right-bits .custom-header-content')
 
   if (!isRedraw) {
-    removeAllDomChildren(leftHeader)
-    removeAllDomChildren(rightHeader)
+    UI.empty(leftHeader)
+    UI.empty(rightHeader)
   }
 
   return { leftHeader, rightHeader }
@@ -348,7 +346,7 @@ export const prepareHeader = (tab: Tab, isRedraw = false): Header => {
  *
  */
 export type Renderer = (
-  tab: Tab,
+  tab: UI.Tab,
   options: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   header: Header,
   uuid: string,

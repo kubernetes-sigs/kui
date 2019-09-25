@@ -19,7 +19,7 @@
 import * as Debug from 'debug'
 import { v4 as uuidgen } from 'uuid'
 
-import { Capabilities, Commands, Errors, REPL, Settings, Tab } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, REPL, Settings, UI } from '@kui-shell/core'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
 // import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
@@ -31,7 +31,7 @@ interface Channel {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener: (eventType: string, handler: any) => void
 }
-function getSessionForTab(tab: Tab): Promise<Channel> {
+function getSessionForTab(tab: UI.Tab): Promise<Channel> {
   return tab['_kui_session'] as Promise<Channel>
 }
 

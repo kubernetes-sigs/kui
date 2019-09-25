@@ -19,13 +19,12 @@ const debug = Debug('plugins/k8s/preload')
 debug('loading')
 
 import { Capabilities } from '@kui-shell/core'
-import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 /**
  * This is the capabilities registraion
  *
  */
-export const registerCapability: CapabilityRegistration = async () => {
+export const registerCapability: Capabilities.Registration = async () => {
   if (Capabilities.inBrowser()) {
     debug('register capabilities for browser')
     const { restoreAuth } = await import('./lib/model/auth')

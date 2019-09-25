@@ -16,13 +16,14 @@
 
 import * as Debug from 'debug'
 
+import { REPL, UI } from '@kui-shell/core'
 import { ok } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
-import { REPL, Tab } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
 import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
+
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 
 /**
@@ -30,7 +31,7 @@ const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
  *
  */
 export default async (
-  tab: Tab,
+  tab: UI.Tab,
   response: Activation | EntitySpec,
   resultDom: Element,
   parsedOptions: Object, // eslint-disable-line @typescript-eslint/ban-types

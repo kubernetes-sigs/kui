@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/preload')
 debug('loading')
 
-import { Capabilities, Tab } from '@kui-shell/core'
+import { Capabilities, UI } from '@kui-shell/core'
 
 import { lockIcon, edit, registerFetcher } from '@kui-shell/plugin-editor'
 import { addActionMode } from '@kui-shell/plugin-openwhisk'
@@ -37,7 +37,7 @@ export default async () => {
 
     const { persisters } = await import('./lib/cmds/new')
 
-    const getEntity = (tab: Tab) => {
+    const getEntity = (tab: UI.Tab) => {
       const entity = currentSelection(tab)
       entity['persister'] = persisters.actions
       debug('getEntity', entity)

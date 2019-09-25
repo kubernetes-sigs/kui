@@ -20,9 +20,7 @@ import { dirname, join } from 'path'
 import { readProject, TutorialDefinition, TutorialTable } from './util'
 import { wskflowCycle } from './wskflow'
 
-import { injectCSS, loadHTML } from '@kui-shell/core/webapp/util/inject'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import {
   clearSelection,
   isFullscreen as isSidecarFullscreen,
@@ -30,7 +28,7 @@ import {
   show as showSidecar,
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands, REPL, UI } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -80,19 +78,19 @@ const rowFilters = {
 const injectOurCSS = () => {
   try {
     // webpack style
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(),
       key: 'tutorial.main'
     })
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css'),
       key: 'tutorial.tutorials'
     })
   } catch {
     // local file style
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
-    injectCSS(join(ourRoot, 'web/css/main.css'))
-    injectCSS(join(ourRoot, 'web/css/tutorials.css'))
+    UI.injectCSS(join(ourRoot, 'web/css/main.css'))
+    UI.injectCSS(join(ourRoot, 'web/css/tutorials.css'))
   }
 }
 
@@ -108,7 +106,7 @@ const injectHTML = () => {
     debug('webpack html inject')
   } catch {
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
-    loader = loadHTML(join(ourRoot, 'web/html/index.html'))
+    loader = UI.loadHTML(join(ourRoot, 'web/html/index.html'))
     debug('local file html inject')
   }
 
@@ -294,7 +292,7 @@ const renderOneTable = (parent: Element, pane: TutorialPane, nested = false) => 
   // column headers
   if (table.columns) {
     const headerRow = tableDom.querySelector('.bx--structured-list-row.bx--structured-list-row--header-row')
-    // removeAllDomChildren(headerRow);
+    // UI.empty(headerRow);
     table.columns.forEach(column => {
       const headerDom = document.createElement('th')
       headerDom.classList.add('bx--structured-list-th')
@@ -387,7 +385,7 @@ const transitionSteps = (
 
   const fontGraphics = pane.querySelector('.tutorial-font-graphics')
   if (fontGraphics) {
-    removeAllDomChildren(fontGraphics)
+    UI.empty(fontGraphics)
     if (fontawesome) {
       // add a font graphic
       debug('fontawesome', fontawesome)
@@ -420,10 +418,10 @@ const transitionSteps = (
 
   /* const previousExtras = extrasPart.querySelectorAll('.tutorial-content-extras-body');
     for (let idx = 0; idx < previousExtras.length; idx++) {
-    removeAllDomChildren(previousExtras[idx]);
+    UI.empty(previousExtras[idx]);
     } */
 
-  // removeAllDomChildren(extrasPart);
+  // UI.empty(extrasPart);
   const learnMore = pane.querySelector('.tutorial-learn-more')
   if (learnMore) {
     learnMore.classList.remove('has-learn-more')
@@ -498,7 +496,7 @@ const transitionSteps = (
 
       if (extras.showcase) {
         const container = pane.querySelector('.tutorial-bottom')
-        removeAllDomChildren(container)
+        UI.empty(container)
 
         pane.setAttribute('tutorial-has-showcase', 'tutorial-has-showcase')
 
@@ -800,7 +798,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
     // skills badges
     const headerExtrasContainer = pane.querySelector('.tutorial-header-extras') as HTMLElement
     const skillsContainer = headerExtrasContainer.querySelector('.tutorial-skills')
-    removeAllDomChildren(skillsContainer)
+    UI.empty(skillsContainer)
     if (obj.skills) {
       obj.skills.forEach(skill => {
         const skillBadge = document.createElement('badge')
@@ -812,7 +810,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
 
     // blocks to represent steps
     const stepBlocksContainer = pane.querySelector('.tutorial-header-blocks') as HTMLElement
-    removeAllDomChildren(stepBlocksContainer)
+    UI.empty(stepBlocksContainer)
 
     // if we want a square aspect ratio:
     // const dim = closestSquare(obj.steps.length);

@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
-import { Capabilities, Commands, eventBus, i18n, Settings, Tables } from '@kui-shell/core'
-import { injectCSS, uninjectCSS } from '@kui-shell/core/webapp/util/inject'
+import { Capabilities, Commands, eventBus, i18n, Settings, Tables, UI } from '@kui-shell/core'
 import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
 
 const strings = i18n('plugin-core-support')
@@ -232,7 +231,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
       const previousNumAddons = typeof previousThemeModel.css === 'string' ? 1 : previousThemeModel.css.length
       for (let idx = 0; idx < previousNumAddons; idx++) {
         const addonKey = `${previousKey}-${idx}`
-        await uninjectCSS({ key: addonKey })
+        await UI.uninjectCSS({ key: addonKey })
       }
 
       if (previousThemeModel.attrs) {
@@ -266,7 +265,7 @@ const switchTo = async (theme: string, webContents?: WebContents): Promise<void>
 
           // inject the new css
           debug('injecting CSS', css)
-          return injectCSS(css)
+          return UI.injectCSS(css)
         }
       })
     )

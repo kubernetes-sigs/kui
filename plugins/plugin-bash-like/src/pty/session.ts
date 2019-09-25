@@ -23,7 +23,7 @@ import {
   getCurrentProcessingBlock,
   setStatus
 } from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, Errors, i18n, REPL, Settings, Tab } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, i18n, REPL, Settings, UI } from '@kui-shell/core'
 
 import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -35,7 +35,7 @@ const debug = Debug('plugins/bash-like/pty/session')
  * Return the cached websocket for the given tab
  *
  */
-export function getChannelForTab(tab: Tab): Channel {
+export function getChannelForTab(tab: UI.Tab): Channel {
   return tab['ws'] as Channel
 }
 
@@ -43,7 +43,7 @@ export function getChannelForTab(tab: Tab): Channel {
  * Keep trying until we can establish a session
  *
  */
-export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
+export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
   const sessionInitialization = new Promise(resolve => {
     let placeholderChanged = false
     let previousText: string
@@ -117,7 +117,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
  * given tab
  *
  */
-function newSessionForTab(tab: Tab) {
+function newSessionForTab(tab: UI.Tab) {
   // eslint-disable-next-line no-async-promise-executor
   tab['_kui_session'] = new Promise(async (resolve, reject) => {
     try {
@@ -191,12 +191,12 @@ export async function init() {
     const { eventBus } = await import('@kui-shell/core')
 
     // listen for new tabs
-    eventBus.on('/tab/new', (tab: Tab) => {
+    eventBus.on('/tab/new', (tab: UI.Tab) => {
       newSessionForTab(tab)
     })
 
     // listen for closed tabs
-    eventBus.on('/tab/close', async (tab: Tab) => {
+    eventBus.on('/tab/close', async (tab: UI.Tab) => {
       try {
         debug('closing session for tab')
         getChannelForTab(tab).close()

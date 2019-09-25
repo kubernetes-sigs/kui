@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, eventBus, Tab } from '@kui-shell/core'
+import { Commands, eventBus, UI } from '@kui-shell/core'
 
 import * as history from './history'
 import { initUI, response } from './graphics'
@@ -37,7 +37,7 @@ class DefaultOptions implements Options {
  *
  */
 export const replay = (
-  tab: Tab,
+  tab: UI.Tab,
   { url, dataset, testName },
   graphics = initUI(),
   options: Options = new DefaultOptions()

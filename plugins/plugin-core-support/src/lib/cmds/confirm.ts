@@ -16,10 +16,9 @@
 
 import { dirname, join } from 'path'
 
+import { Capabilities, Commands, Errors, eventBus, i18n, REPL, UI } from '@kui-shell/core'
 import { keys } from '@kui-shell/core/webapp/keys'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import { getCurrentPrompt } from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, Errors, eventBus, i18n, REPL, Tab } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -56,13 +55,13 @@ export default async (commandTree: Commands.Registrar) => {
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
 
         if (Capabilities.inBrowser()) {
-          injectCSS({
+          UI.injectCSS({
             css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
             key: 'plugin-core-support/confirm.css'
           })
         } else {
           const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-          injectCSS(join(root, 'web/css/confirm.css'))
+          UI.injectCSS(join(root, 'web/css/confirm.css'))
         }
 
         const confirm = () => {
@@ -131,7 +130,7 @@ export default async (commandTree: Commands.Registrar) => {
           initMouseEvents()
 
           const executeCommandForReal = () => REPL.pexec(command, { tab })
-          const executeCommand = (thatTab: Tab) => {
+          const executeCommand = (thatTab: UI.Tab) => {
             if (thatTab === tab) {
               executeCommandForReal()
               eventBus.off('/core/cli/install-block', executeCommand)

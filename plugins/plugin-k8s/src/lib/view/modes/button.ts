@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { REPL, Tab } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
 
 import { KubeResource } from '../../model/resource'
 
@@ -32,7 +32,7 @@ interface Parameters {
   overrides: BaseInfo
   fn: Renderer
 }
-export const renderButton = async (tab: Tab, { overrides, fn }: Parameters, args): Promise<KubeResource> => {
+export const renderButton = async (tab: UI.Tab, { overrides, fn }: Parameters, args): Promise<KubeResource> => {
   const resource = args.resource || args
   const { prettyType, kind = prettyType || '-f', metadata, name, resourceName, namespace: ns } = resource
 

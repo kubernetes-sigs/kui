@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Commands, Tab } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { EditorProvider, registerEditor } from '@kui-shell/core/webapp/views/registrar/editors'
 
 class MonacoEditorProvider implements EditorProvider {
-  public async tryOpen(tab: Tab, custom: CustomSpec, options: Commands.ExecOptions) {
+  public async tryOpen(tab: UI.Tab, custom: CustomSpec, options: Commands.ExecOptions) {
     const [{ isMetadataBearingByReference }, { edit }] = await Promise.all([
       import('@kui-shell/core/webapp/views/sidecar'),
       import('./cmds/edit')

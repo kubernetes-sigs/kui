@@ -18,9 +18,9 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import { spawn } from 'child_process'
 
+import { Commands, UI } from '@kui-shell/core'
 import { partial } from '@kui-shell/core/webapp/cli'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
-import { Commands, Tab } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -89,7 +89,7 @@ const noCurrentTextSelection = () =>
  * Look for modified: and turn them into git diff links
  *
  */
-export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
+export const status2Html = (tab: UI.Tab, rawOut: string, stats: Promise<Stats> = numstat()): HTMLElement => {
   injectCSS()
 
   const mods = rawOut

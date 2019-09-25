@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import { showCustom } from '@kui-shell/core/webapp/views/sidecar'
-import { REPL, Tab } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
 
 const debug = Debug('plugins/editor/readonly')
 
@@ -25,7 +25,7 @@ const debug = Debug('plugins/editor/readonly')
  * Enter read-only mode
  *
  */
-export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: Tab) => {
+export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: UI.Tab) => {
   const entity = await getEntity(tab)
   debug('readonly', entity.name, entity)
   return REPL.pexec(`open ${REPL.encodeComponent(entity.filepath)}`)
@@ -35,7 +35,7 @@ export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: Tab) => {
  * Enter edit mode
  *
  */
-export const edit = ({ getEntity, lock = undefined }) => async (tab: Tab) => {
+export const edit = ({ getEntity, lock = undefined }) => async (tab: UI.Tab) => {
   const { namespace, name } = await getEntity(tab)
 
   return REPL.qexec(`edit "/${namespace}/${name}"`, undefined, undefined, {

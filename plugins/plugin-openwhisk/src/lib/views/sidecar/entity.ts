@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 
 import * as cli from '@kui-shell/core/webapp/cli'
-import { REPL, Tables } from '@kui-shell/core'
+import { REPL, Tables, UI } from '@kui-shell/core'
 
-import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { element } from '@kui-shell/core/webapp/util/dom'
 import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
@@ -51,7 +51,7 @@ const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
 
   sidecar.classList.add('custom-content')
   const container = sidecarSelector(tab, '.custom-content')
-  removeAllDomChildren(container)
+  UI.empty(container)
 
   const { view } = await visualize(tab, ast, undefined, undefined, undefined, undefined, undefined, rule)
   container.appendChild(view)
@@ -90,7 +90,7 @@ export const showEntity = async (
 
   const thirdPartyBodyContent = sidecar.querySelector('.sidecar-content .hook-for-third-party-content')
   thirdPartyBodyContent.className = 'hook-for-third-party-content no-content'
-  // removeAllDomChildren(thirdPartyBodyContent)
+  // UI.empty(thirdPartyBodyContent)
 
   // TODO move this piece into the redactor plugin, once we figure out how to support third party view mods
   const renderThirdParty = entity => {
@@ -105,7 +105,7 @@ export const showEntity = async (
           // then this is a combinator over some original action
           //
           const addThirdPartyMessage = (text, where = 'innerText') => {
-            removeAllDomChildren(thirdPartyBodyContent)
+            UI.empty(thirdPartyBodyContent)
             thirdPartyBodyContent.className = 'hook-for-third-party-content'
             const message = document.createElement('span')
             thirdPartyBodyContent.appendChild(message)
@@ -142,7 +142,7 @@ export const showEntity = async (
             frame.style.border = 'none'
             sidecar.setAttribute('data-active-view', '.custom-content > div')
             sidecar.classList.add('custom-content')
-            removeAllDomChildren(container)
+            UI.empty(container)
             container.appendChild(frame)
             frame.setAttribute('src', formatWebActionURL(entity))
           } else {
@@ -212,7 +212,7 @@ export const showEntity = async (
        } */
 
     const sequence = sidecar.querySelector('.sequence-components')
-    removeAllDomChildren(sequence)
+    UI.empty(sequence)
 
     // remove any previous detail elements that might not be relevant to this entity
     element('.action-content .action-source', sidecar).innerText = ''
@@ -374,7 +374,7 @@ export const showEntity = async (
     element('.package-content-count', feedCountDom).innerText = feedCount
 
     const packageContent = element('.sidecar-content .package-content', sidecar)
-    removeAllDomChildren(packageContent)
+    UI.empty(packageContent)
 
     if (options && options.show !== 'content' && options.show !== 'default') {
       //
