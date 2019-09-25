@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { optionsToString } from '@kui-shell/core/core/utility'
 
 import { hasAst, astAnnotation } from './ast'
@@ -87,7 +87,10 @@ export const vizAndfsmViewModes = (
  * like an app
  *
  */
-export const decorateAsApp = async (tab: Tab, { action, input, commandPrefix = 'app get', doVisualize, options }) => {
+export const decorateAsApp = async (
+  tab: UI.Tab,
+  { action, input, commandPrefix = 'app get', doVisualize, options }
+) => {
   debug('decorateAsApp', options)
   action.prettyType = appBadge
 

@@ -20,7 +20,7 @@ import * as path from 'path'
 import * as fqn from 'openwhisk-composer/fqn'
 import * as Composer from 'openwhisk-composer'
 
-import { Capabilities, Errors, Tab } from '@kui-shell/core'
+import { Capabilities, Errors, UI } from '@kui-shell/core'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 
@@ -157,7 +157,7 @@ const sourceErrHandler = (error, originalCode: string, filename: string) => {
   }
 }
 
-export const implicitInputFile = (tab: Tab, inputFile?: string, name?: string) => {
+export const implicitInputFile = (tab: UI.Tab, inputFile?: string, name?: string) => {
   if (!inputFile) {
     // the user didn't provide an input file, maybe we can infer one from the current selection
     const selection = currentSelection(tab)

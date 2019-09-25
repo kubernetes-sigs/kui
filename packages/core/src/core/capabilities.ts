@@ -20,6 +20,8 @@ import * as Debug from 'debug'
 const debug = Debug('core/capabilities')
 debug('loading')
 
+export { CapabilityRegistration as Registration } from '../models/plugin'
+
 /**
  * Are we running headless, in electron, or in a browser?
  *

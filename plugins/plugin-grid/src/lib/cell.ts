@@ -15,16 +15,18 @@
  */
 
 import * as prettyPrintDuration from 'pretty-ms'
+
+import { UI } from '@kui-shell/core'
+
 import { drilldownWith } from './drilldown'
 import { newline, latencyBucket } from './util'
-import { Tab } from '@kui-shell/core'
 
 /**
  * Draw the given activation in the given cell (a dom)
  *
  */
 export const renderCell = (
-  tab: Tab,
+  tab: UI.Tab,
   returnTo: string,
   cell: HTMLElement,
   activation: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any

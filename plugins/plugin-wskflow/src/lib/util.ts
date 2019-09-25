@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { REPL, Tab } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 const debug = Debug('plugins/wskflow/util')
@@ -54,7 +54,7 @@ export const textualPropertiesOfCode = (code: string): TextualProperties => {
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (tab: Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
+export const wskflow = async (tab: UI.Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = await REPL.qexec('wsk rule list')

@@ -22,7 +22,7 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Commands, Errors, eventBus, REPL, Tab, Tables } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI } from '@kui-shell/core'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import { partial } from '@kui-shell/core/webapp/cli'
 import expandHomeDir from '@kui-shell/core/util/home'
@@ -147,7 +147,7 @@ usage.host.toplevel.available = [usage.host.get, usage.host.set]
  * The message we will use to inform the user of a auth switch event
  *
  */
-const informUserOfChange = (tab: Tab, subject?: string) => () => {
+const informUserOfChange = (tab: UI.Tab, subject?: string) => () => {
   setTimeout(
     async () =>
       eventBus.emit('/auth/change', {
@@ -348,7 +348,7 @@ const clicky = (parent: HTMLElement, cmd: string, exec) => {
  * Command impl for auth add
  *
  */
-const addFn = (tab: Tab, key: string, subject: string) => {
+const addFn = (tab: UI.Tab, key: string, subject: string) => {
   debug('add', key, subject)
 
   const previousAuth = authModel.get()

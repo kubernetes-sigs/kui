@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import * as marked from 'marked'
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 
@@ -69,7 +69,7 @@ interface Parameters {
   resource: Resource<DescriptionBearer>
 }
 
-export const renderAndView = (tab: Tab, parameters: Parameters) => {
+export const renderAndView = (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndView', command, resource)
 

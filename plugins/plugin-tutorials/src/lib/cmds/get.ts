@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
+import * as Debug from 'debug'
+import { join } from 'path'
+
+import { Commands, REPL, UI } from '@kui-shell/core'
+
 import { entities, usage } from '../usage'
 import { modes } from './modes'
 import { projectHome as projectHomeDir, readProject } from './util'
-// import { renderStatusBadge } from './ui';
-// import { kindStrings } from './kinds';
 
-import { join } from 'path' // markdown to
-
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-import { Commands, REPL } from '@kui-shell/core'
-
-import * as Debug from 'debug'
 const debug = Debug('tutorial get')
 debug('loading')
 
@@ -67,7 +64,7 @@ const setup = (args: string[]) => {
   const projectName = args[args.indexOf('get') + 1]
   const projectHome = projectHomeDir(projectName)
 
-  injectCSS(join(__dirname, '../../../web/css/main.css'))
+  UI.injectCSS(join(__dirname, '../../../web/css/main.css'))
 
   //    return checkIfAlreadyImported(projectHome, { failIf: 'not-exists' })
   return readProject(projectHome)

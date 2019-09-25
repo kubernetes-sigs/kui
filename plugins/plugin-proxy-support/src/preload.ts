@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { Capabilities } from '@kui-shell/core'
-import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import { isDisabled } from './lib/proxy-executor'
 
@@ -27,7 +26,7 @@ const debug = Debug('plugins/proxy-support/preload')
  * This is the capabilities registraion
  *
  */
-export const registerCapability: CapabilityRegistration = async () => {
+export const registerCapability: Capabilities.Registration = async () => {
   if (Capabilities.inBrowser()) {
     const {
       Settings: { config }

@@ -15,14 +15,13 @@
  */
 
 import * as Debug from 'debug'
-
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { element } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
-import { REPL, Tab } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
@@ -30,7 +29,7 @@ import { render as renderActivationTable } from '../cli/activations/list'
 declare let hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
-export default (tab: Tab, entity, options: ShowOptions) => {
+export default (tab: UI.Tab, entity, options: ShowOptions) => {
   debug('showing activation')
 
   const sidecar = getSidecar(tab)
@@ -52,7 +51,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
 
   // start time
   const startDom = sidecar.querySelector('.activation-start')
-  removeAllDomChildren(startDom)
+  UI.empty(startDom)
   if (!entity.start) {
     sidecar.classList.add('no-activation-timing-data')
   } else {
@@ -110,7 +109,7 @@ export default (tab: Tab, entity, options: ShowOptions) => {
   if (show === 'result' || show.mode === 'result') {
     debug('showing result')
     const activationResult = element('.activation-result', sidecar)
-    removeAllDomChildren(activationResult)
+    UI.empty(activationResult)
 
     try {
       activationResult['scrollIntoViewIfNeeded']()

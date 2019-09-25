@@ -18,9 +18,8 @@
 
 import * as Debug from 'debug'
 
-import { REPL, Tab } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
@@ -731,7 +730,7 @@ const isSimpleComposition = ir => {
 }
 
 export default async function fsm2graph(
-  tab: Tab,
+  tab: UI.Tab,
   ir: AST.ASTNode,
   containerElement?: HTMLElement,
   acts?: ActivationLike[],
@@ -852,7 +851,7 @@ export default async function fsm2graph(
         if (notDeployed.length > 0 && !renderState.activations) {
           const container = sidecarSelector(tab, '.sidecar-header-secondary-content .custom-header-content')
           if (container && (!options || !options.noHeader)) {
-            removeAllDomChildren(container)
+            UI.empty(container)
             const css = {
               message: 'wskflow-undeployed-action-warning',
               text: 'wskflow-undeployed-action-warning-text',

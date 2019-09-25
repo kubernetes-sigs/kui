@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
@@ -35,7 +35,7 @@ export interface ResponseObject {
  */
 const flowMode: SidecarMode = {
   mode: 'flow',
-  direct: async (tab: Tab, _: ResponseObject) => {
+  direct: async (tab: UI.Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
       return _

@@ -16,8 +16,8 @@
 
 import { safeDump } from 'js-yaml'
 
+import { UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { Tab } from '@kui-shell/core'
 
 import { ResponseObject } from './flow'
 
@@ -27,7 +27,7 @@ import { ResponseObject } from './flow'
  */
 const mode: SidecarMode = {
   mode: 'Run Config',
-  direct: async (tab: Tab, _: ResponseObject) => {
+  direct: async (tab: UI.Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
       const models = _.model.filter(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')

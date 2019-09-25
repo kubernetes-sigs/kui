@@ -19,7 +19,7 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
@@ -38,7 +38,7 @@ const debug = Debug('plugins/tekton/view/flow')
  *
  */
 export default async (
-  tab: Tab,
+  tab: UI.Tab,
   jsons: KubeResource[],
   run?: PipelineRun,
   raw: string = safeDump(jsons),

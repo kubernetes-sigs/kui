@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { REPL, Tab, Tables } from '@kui-shell/core'
+import { REPL, Tables, UI } from '@kui-shell/core'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
@@ -79,7 +79,7 @@ interface Parameters {
   resource: Resource
 }
 
-export const renderAndViewPods = async (tab: Tab, parameters: Parameters) => {
+export const renderAndViewPods = async (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
 

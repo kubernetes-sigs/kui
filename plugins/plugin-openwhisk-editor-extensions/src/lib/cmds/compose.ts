@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Commands, Tab } from '@kui-shell/core'
+import { Capabilities, Commands, UI } from '@kui-shell/core'
 import { findFile } from '@kui-shell/core/core/find-file'
 
 import { loadComposition } from '@kui-shell/plugin-apache-composer'
@@ -98,7 +98,7 @@ const generateAST = (source, localCodePath) => {
  * Add the wskflow visualization component to the given content
  *
  */
-const addWskflow = (tab: Tab) => opts => {
+const addWskflow = (tab: UI.Tab) => opts => {
   debug('addWskflow', opts)
 
   if (Capabilities.isHeadless()) return opts

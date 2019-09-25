@@ -19,13 +19,12 @@ const debug = Debug('plugins/core-support/preload')
 debug('loading')
 
 import { Capabilities, Commands } from '@kui-shell/core'
-import { PreloadRegistration } from '@kui-shell/core/models/plugin'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree: Commands.Registrar) => {
+const registration: Commands.PreloadRegistration = async (commandTree: Commands.Registrar) => {
   const asyncs = []
 
   if (!Capabilities.isHeadless()) {

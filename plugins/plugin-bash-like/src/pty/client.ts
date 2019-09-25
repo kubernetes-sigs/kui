@@ -24,8 +24,7 @@ import stripClean from 'strip-ansi'
 import { safeLoad } from 'js-yaml'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
-import { Capabilities, Commands, Errors, eventBus, REPL, Tab, Tables } from '@kui-shell/core'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI } from '@kui-shell/core'
 import { MixedResponse } from '@kui-shell/core/models/entity'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import {
@@ -68,7 +67,7 @@ if (window) {
     resizeGeneration++
   })
 }
-function getCachedSize(tab: Tab): Size {
+function getCachedSize(tab: UI.Tab): Size {
   const cachedSize: Size = tab['_kui_pty_cachedSize']
   if (
     cachedSize &&
@@ -78,7 +77,7 @@ function getCachedSize(tab: Tab): Size {
     return cachedSize
   }
 }
-function setCachedSize(tab: Tab, { rows, cols }: { rows: number; cols: number }) {
+function setCachedSize(tab: UI.Tab, { rows, cols }: { rows: number; cols: number }) {
   tab['_kui_pty_cachedSize'] = {
     rows,
     cols,
@@ -109,7 +108,7 @@ interface HTerminal extends xterm.Terminal {
 
 class Resizer {
   /** our tab */
-  private readonly tab: Tab
+  private readonly tab: UI.Tab
 
   /** execOptions */
   private readonly execOptions: Commands.ExecOptions
@@ -138,7 +137,7 @@ class Resizer {
   private readonly resizeNow: () => void
   private readonly clearXtermSelectionNow: () => void
 
-  constructor(terminal: xterm.Terminal, tab: Tab, execOptions: Commands.ExecOptions) {
+  constructor(terminal: xterm.Terminal, tab: UI.Tab, execOptions: Commands.ExecOptions) {
     this.tab = tab
     this.execOptions = execOptions
     this.terminal = terminal as HTerminal
@@ -156,7 +155,7 @@ class Resizer {
     document.addEventListener('select', this.clearXtermSelectionNow)
 
     const ourTab = tab
-    eventBus.on('/sidecar/toggle', ({ tab }: { tab: Tab }) => {
+    eventBus.on('/sidecar/toggle', ({ tab }: { tab: UI.Tab }) => {
       // sidecar resize
       if (sameTab(tab, ourTab)) {
         this.resizeNow()
@@ -508,7 +507,7 @@ const focus = (terminal: KuiTerminal) => {
 const getOrCreateChannel = async (
   cmdline: string,
   uuid: string,
-  tab: Tab,
+  tab: UI.Tab,
   execOptions: Commands.ExecOptions,
   terminal: KuiTerminal
 ): Promise<Channel> => {
@@ -647,17 +646,17 @@ let alreadyInjectedCSS: boolean
 function injectXtermCSS() {
   if (!alreadyInjectedCSS) {
     if (Capabilities.inBrowser()) {
-      injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
-      injectCSS({
+      UI.injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
+      UI.injectCSS({
         css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
         key: 'kui-xtermjs'
       })
     } else {
-      injectCSS({
+      UI.injectCSS({
         path: path.join(path.dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
         key: 'xtermjs'
       })
-      injectCSS({
+      UI.injectCSS({
         path: path.join(path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'),
         key: 'kui-xtermjs'
       })
@@ -677,7 +676,7 @@ function injectXtermCSS() {
  *
  */
 export const doExec = (
-  tab: Tab,
+  tab: UI.Tab,
   block: HTMLElement,
   cmdline: string,
   argvNoOptions: string[],

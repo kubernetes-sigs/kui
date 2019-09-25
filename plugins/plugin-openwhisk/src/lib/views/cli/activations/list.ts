@@ -17,9 +17,8 @@
 import * as Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Commands, REPL, Tab, Tables } from '@kui-shell/core'
+import { Commands, REPL, Tables, UI } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import { Activation } from '../../../models/activation'
@@ -122,7 +121,7 @@ const findItemInAnnotations = (name: string, activation?: Activation): number =>
 }
 
 interface Args {
-  tab: Tab
+  tab: UI.Tab
   entity?: Activation
   activationIds: Activation[] | string[]
   container: Element
@@ -150,7 +149,7 @@ const _render = (args: Args) => {
     limit,
     parsedOptions
   } = args
-  const tab: Tab = args.tab
+  const tab: UI.Tab = args.tab
 
   const currentRows: NodeListOf<HTMLTableRowElement> = container.querySelectorAll('tr.log-line')
 
@@ -195,7 +194,7 @@ const _render = (args: Args) => {
 
     if (entity) {
       // for the sidecar only, clean things out
-      removeAllDomChildren(container)
+      UI.empty(container)
     }
 
     container.appendChild(logTable)
@@ -340,7 +339,7 @@ const _render = (args: Args) => {
       // column 4: success cell
       /* const success = nextCell()
         success.className = 'smaller-text lighter-text log-field success-field very-narrow'
-        removeAllDomChildren(success)
+        UI.empty(success)
         const successBadge = document.createElement('badge')
         successBadge.classList.add(isSuccess ? 'green-background' : 'red-background')
         successBadge.innerText = isSuccess ? 'OK' : 'Failed'
@@ -362,7 +361,7 @@ const _render = (args: Args) => {
       // column 5|6|7: bar chart cell
       if (showTimeline) {
         const timeline = nextCell()
-        removeAllDomChildren(timeline)
+        UI.empty(timeline)
 
         const isRootBar = entity && idx === 0 // for sequence traces, show the sequence bar a bit differently
 
@@ -471,7 +470,7 @@ const _render = (args: Args) => {
         if (typeof time === 'string') {
           startInner.innerText = time
         } else {
-          removeAllDomChildren(startInner)
+          UI.empty(startInner)
           startInner.appendChild(time)
         }
       }
@@ -621,7 +620,7 @@ const _render = (args: Args) => {
 
     // try $ list; $ list; then paginate. this avoids chrome
     // scrolling up a bit after the pagination completes. we
-    // did a removeAllDomChildren, so perhaps chrome thinks
+    // did a UI.empty, so perhaps chrome thinks
     // that it needs to scorll a bit. this seems like a chrome
     // bug to me, but the following seems to work around
     // it. NMM 20180106
@@ -651,7 +650,7 @@ export const render = (opts: Args) => {
  *
  */
 export const renderActivationListView = (
-  tab: Tab,
+  tab: UI.Tab,
   activationsTable: Tables.Table,
   container: Element,
   parsedOptions: Commands.ParsedOptions

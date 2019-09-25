@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 import { currentSelection as baseSelection } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -28,7 +28,7 @@ export interface OpenWhiskEntity extends EntitySpec {
   }
 }
 
-export function currentSelection(tab: Tab) {
+export function currentSelection(tab: UI.Tab) {
   return baseSelection(tab) as OpenWhiskEntity
 }
 

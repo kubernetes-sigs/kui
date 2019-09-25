@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { i18n, REPL, Tab, Tables } from '@kui-shell/core'
+import { i18n, REPL, Tables, UI } from '@kui-shell/core'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
@@ -97,7 +97,7 @@ interface Parameters {
   resource: Resource
 }
 
-export const renderAndViewEvents = async (tab: Tab, parameters: Parameters) => {
+export const renderAndViewEvents = async (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewEvents', command, resource)
 

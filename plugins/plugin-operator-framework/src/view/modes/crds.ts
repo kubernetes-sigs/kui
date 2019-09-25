@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab, Tables } from '@kui-shell/core'
+import { Tables, UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
@@ -120,7 +120,7 @@ function toTable(resource: CRDBearer): Tables.Table {
   }
 }
 
-export const renderAndView = (tab: Tab, parameters: Parameters) => {
+export const renderAndView = (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndView', command, resource)
 

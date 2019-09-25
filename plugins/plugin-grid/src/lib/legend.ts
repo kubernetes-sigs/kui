@@ -16,7 +16,7 @@
 
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 
 import { renderCell } from './cell'
 import { enDash, latencyBuckets } from './util'
@@ -33,7 +33,7 @@ import { enDash, latencyBuckets } from './util'
  *
  */
 export const drawLegend = (
-  tab: Tab,
+  tab: UI.Tab,
   viewName: string,
   rightHeader: HTMLElement,
   { statData, nFailures },

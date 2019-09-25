@@ -19,12 +19,11 @@ const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
 import { Capabilities, Commands } from '@kui-shell/core'
-import { CapabilityRegistration } from '@kui-shell/core/models/plugin'
 
 import prefetchShellState from './pty/prefetch'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
-export const registerCapability: CapabilityRegistration = async () => {
+export const registerCapability: Capabilities.Registration = async () => {
   if (Capabilities.inBrowser()) {
     import('./pty/session').then(({ init }) => init())
   }

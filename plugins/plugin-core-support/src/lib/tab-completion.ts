@@ -21,10 +21,9 @@ import * as minimist from 'yargs-parser'
 
 import { keys } from '@kui-shell/core/webapp/keys'
 import * as cli from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, Errors, REPL, Tables } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, REPL, Tables, UI } from '@kui-shell/core'
 import { flatten } from '@kui-shell/core/core/utility'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
 import expandHomeDir from '@kui-shell/core/util/home'
 
 const debug = Debug('plugins/core-support/tab completion')
@@ -738,13 +737,13 @@ export default () => {
   if (typeof document === 'undefined') return
 
   if (Capabilities.inBrowser()) {
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
       key: 'tab-completion.css'
     })
   } else {
     const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(path.join(root, 'web/css/tab-completion.css'))
+    UI.injectCSS(path.join(root, 'web/css/tab-completion.css'))
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work

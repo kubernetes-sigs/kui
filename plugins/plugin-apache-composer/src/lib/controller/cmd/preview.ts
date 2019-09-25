@@ -18,9 +18,9 @@ import * as Debug from 'debug'
 import * as fs from 'fs'
 import * as path from 'path'
 
+import { Capabilities, Commands, REPL, UI } from '@kui-shell/core'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
-import { Capabilities, Commands, REPL, Tab } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
@@ -96,7 +96,7 @@ export default (commandTree: Commands.Registrar) => {
     })
 
   const render = (
-    tab: Tab,
+    tab: UI.Tab,
     input: string,
     options: Commands.ParsedOptions,
     execOptions: Commands.ExecOptions,

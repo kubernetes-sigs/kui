@@ -24,6 +24,7 @@
 
 import * as _ExecOptions from '../models/execOptions'
 import * as _Commands from '../models/command'
+import * as _Plugins from '../models/plugin'
 
 export namespace Commands {
   export import DefaultExecOptions = _ExecOptions.DefaultExecOptions
@@ -40,4 +41,7 @@ export namespace Commands {
   export import isCommandHandlerWithEvents = _Commands.isCommandHandlerWithEvents
   export import Event = _Commands.Event
   export import CommandLine = _Commands.CommandLine
+
+  export import PluginRegistration = _Plugins.PluginRegistration
+  export import PreloadRegistration = _Plugins.PreloadRegistration
 }

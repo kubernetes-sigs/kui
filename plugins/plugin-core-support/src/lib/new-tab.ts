@@ -19,6 +19,7 @@
 import Debug from 'debug'
 import { v4 as uuid } from 'uuid'
 
+import { Capabilities, Commands, eventBus, i18n, REPL, Settings, UI } from '@kui-shell/core'
 import {
   isVisible as isSidecarVisible,
   toggle,
@@ -26,9 +27,8 @@ import {
   clearSelection
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { element, removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
+import { element } from '@kui-shell/core/webapp/util/dom'
 import { isPopup, listen, getCurrentPrompt, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, eventBus, i18n, REPL, Settings, Tab } from '@kui-shell/core'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
 const strings = i18n('plugin-core-support')
@@ -55,20 +55,20 @@ function isUsingCommandName() {
  * Given a tab index, return the tab id
  *
  */
-function getTabFromIndex(idx: number): Tab {
-  return element(`.main tab:nth-child(${idx})`) as Tab
+function getTabFromIndex(idx: number): UI.Tab {
+  return element(`.main tab:nth-child(${idx})`) as UI.Tab
 }
 
 /**
  * Helper methods to crawl the DOM
  *
  */
-const getTabButton = (tab: Tab) =>
+const getTabButton = (tab: UI.Tab) =>
   element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-id="${getTabId(tab)}"]`)
 const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: Tab) =>
+const getTabButtonLabel = (tab: UI.Tab) =>
   getTabButton(tab).querySelector('.left-tab-stripe-button-label .kui-tab--label-text') as HTMLElement
-const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
+const getTabCloser = (tab: UI.Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
 
 /**
  * Otherwise global state that we want to keep per tab
@@ -218,7 +218,7 @@ const switchTab = (tabId: string, activateOnly = false) => {
   debug('switchTab', tabId)
 
   const currentTab = getCurrentTab()
-  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-id="${tabId}"]`) as Tab
+  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-id="${tabId}"]`) as UI.Tab
   const nextTabButton = document.querySelector(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-id="${tabId}"]`)
   // debug('nextTab', nextTab)
   // debug('nextTabButton', nextTabButton)
@@ -339,7 +339,7 @@ const closeTab = (tab = getCurrentTab()) => {
 
   if (tab === getCurrentTab()) {
     // note: true means we only want to activate the given tab.
-    const makeThisTabActive = (tab.nextElementSibling as Tab) || (tab.previousElementSibling as Tab)
+    const makeThisTabActive = (tab.nextElementSibling as UI.Tab) || (tab.previousElementSibling as UI.Tab)
     debug('makeThisTabActive', makeThisTabActive, tab.nextSibling)
     switchTab(getTabId(makeThisTabActive), true)
   }
@@ -388,7 +388,7 @@ function isInViewport(el: Element) {
  * Initialize events for a new tab
  *
  */
-const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
+const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   tab['state'] = new TabState()
 
   const newTabId = uuid()
@@ -517,7 +517,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   // this must occur after the REPL.qexec('clear'), otherwise we may select
   // the wrong repl-result
-  removeAllDomChildren(newTab.querySelector('.repl-result'))
+  UI.empty(newTab.querySelector('.repl-result'))
 
   clearSelection(newTab)
   perTabInit(newTab, newTabButton)

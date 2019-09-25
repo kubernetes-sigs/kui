@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
-import { i18n, Tab } from '@kui-shell/core'
+import { i18n, UI } from '@kui-shell/core'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
@@ -70,7 +70,7 @@ type ChoiceTextArea = HTMLTextAreaElement & FormAmendments
  *
  */
 const doSave = (
-  tab: Tab,
+  tab: UI.Tab,
   form: HTMLFormElement,
   yaml: Resources.KubeResource,
   filepath: string,
@@ -226,7 +226,7 @@ const formGroups = (yaml: Resources.KubeResource): FormGroup[] => {
  * Present a form view over a resource
  *
  */
-export const generateForm = (tab: Tab) => (
+export const generateForm = (tab: UI.Tab) => (
   yaml: Resources.KubeResource,
   filepath: string,
   name: string,

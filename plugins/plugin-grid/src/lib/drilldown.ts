@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 export const drilldownWith = (
-  tab: Tab,
+  tab: UI.Tab,
   returnTo: string,
   command: string | (() => Promise<string>),
   highlightThis?: HTMLElement,

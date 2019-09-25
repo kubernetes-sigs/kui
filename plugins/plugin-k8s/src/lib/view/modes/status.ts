@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Errors, i18n, REPL, Tab, Tables } from '@kui-shell/core'
+import { Errors, i18n, REPL, Tables, UI } from '@kui-shell/core'
 
 import { FinalState } from '../../model/states'
 import Resource from '../../model/resource'
@@ -51,7 +51,7 @@ export const statusButton = (command: string, resource: Resource, finalState: Fi
  * around the formatMultiListResult() output.
  *
  */
-export const renderStatus = async (tab: Tab, command: string, resource: Resource, finalState: FinalState) => {
+export const renderStatus = async (tab: UI.Tab, command: string, resource: Resource, finalState: FinalState) => {
   debug(
     'renderStatus',
     command,
@@ -97,7 +97,7 @@ interface Parameters {
   resource: Resource
   finalState: FinalState
 }
-export const renderAndViewStatus = (tab: Tab, parameters: Parameters) => {
+export const renderAndViewStatus = (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource, finalState } = parameters
   renderStatus(tab, command, resource, finalState).then(insertView(tab))
 }

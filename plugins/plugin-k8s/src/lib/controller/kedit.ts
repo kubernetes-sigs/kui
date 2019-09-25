@@ -19,8 +19,7 @@
 import * as Debug from 'debug'
 import { basename, dirname, join } from 'path'
 
-import { Capabilities, Commands, i18n, REPL, Tab, Tables } from '@kui-shell/core'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
+import { Capabilities, Commands, i18n, REPL, Tables, UI } from '@kui-shell/core'
 import expandHomeDir from '@kui-shell/core/util/home'
 import { findFile } from '@kui-shell/core/core/find-file'
 import { EntitySpec } from '@kui-shell/core/models/entity'
@@ -56,17 +55,17 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
+const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) => {
   debug('showing one resource', yaml)
 
   if (Capabilities.inBrowser()) {
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-k8s/web/css/main.css').toString(),
       key: 'kedit'
     })
   } else {
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-k8s/package.json'))
-    injectCSS(join(ourRoot, 'web/css/main.css'))
+    UI.injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 
   // override the type shown in the sidecar header to show the

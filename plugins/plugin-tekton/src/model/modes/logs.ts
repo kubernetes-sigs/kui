@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { REPL, Tab, Tables } from '@kui-shell/core'
+import { REPL, Tables, UI } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { flatten } from '@kui-shell/core/core/utility'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
@@ -30,7 +30,7 @@ import { Pod } from '@kui-shell/plugin-k8s'
  */
 const mode: SidecarMode = {
   mode: 'Logs',
-  direct: async (tab: Tab, _: ResponseObject) => {
+  direct: async (tab: UI.Tab, _: ResponseObject) => {
     const run = _.resource as PipelineRun
 
     const [taskRuns, pods]: [TaskRun[], Pod[]] = await Promise.all([

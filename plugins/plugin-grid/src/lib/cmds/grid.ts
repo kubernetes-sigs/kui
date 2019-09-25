@@ -20,7 +20,7 @@ import * as Debug from 'debug'
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Commands, REPL, Tab, Tables } from '@kui-shell/core'
+import { Commands, REPL, Tables, UI } from '@kui-shell/core'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
@@ -208,7 +208,7 @@ const minTimestamp = activations => {
  *
  */
 const drawAsTimeline = (
-  tab: Tab,
+  tab: UI.Tab,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   timelineData: { activations: Record<string, any>; nBuckets: number },
   content: HTMLElement,
@@ -322,7 +322,7 @@ const drawAsTimeline = (
  *
  */
 const _drawGrid = (
-  tab: Tab,
+  tab: UI.Tab,
   options,
   { leftHeader, rightHeader },
   content,
@@ -517,7 +517,7 @@ interface Options {
   timeline?: boolean
   zoom?: number
 }
-const drawGrid = (tab: Tab, options: Options, header: Header, uuid: string, redraw = false) => (
+const drawGrid = (tab: UI.Tab, options: Options, header: Header, uuid: string, redraw = false) => (
   activations: Tables.Row[]
 ) => {
   debug('drawGrid', redraw)

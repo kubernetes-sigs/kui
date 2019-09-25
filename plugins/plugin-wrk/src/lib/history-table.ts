@@ -15,8 +15,7 @@
  */
 
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
-import { removeAllDomChildren } from '@kui-shell/core/webapp/util/dom'
-import { Commands, eventBus } from '@kui-shell/core'
+import { Commands, eventBus, UI } from '@kui-shell/core'
 
 import { all } from './history'
 import { prettyUrl } from './util'
@@ -35,7 +34,7 @@ export const list = ({ tab }: Commands.Arguments) => {
 
   // for each historic run...
   const showAll = () => {
-    removeAllDomChildren(resp.graphics.table)
+    UI.empty(resp.graphics.table)
 
     // table header row
     const header = addCell(insertRow(resp.graphics.table))

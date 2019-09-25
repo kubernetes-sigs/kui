@@ -17,8 +17,7 @@
 import { dirname, join } from 'path'
 import { exec } from 'child_process'
 
-import { Capabilities } from '@kui-shell/core'
-import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
+import { Capabilities, UI } from '@kui-shell/core'
 
 /**
  * Load the CSS for diff2html
@@ -27,11 +26,11 @@ import { injectCSS as inject } from '@kui-shell/core/webapp/util/inject'
 export const injectCSS = async () => {
   if (Capabilities.inBrowser()) {
     await Promise.all([
-      inject({
+      UI.injectCSS({
         css: require('diff2html/dist/diff2html.min.css'),
         key: 'diff2html.css'
       }),
-      inject({
+      UI.injectCSS({
         css: require('@kui-shell/plugin-bash-like/web/css/my-diff2html.css'),
         key: 'mydiff2html.css'
       })
@@ -39,7 +38,10 @@ export const injectCSS = async () => {
   } else {
     const root = dirname(require.resolve('diff2html/package.json'))
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
-    await Promise.all([inject(join(root, 'dist/diff2html.min.css')), inject(join(ourRoot, 'web/css/my-diff2html.css'))])
+    await Promise.all([
+      UI.injectCSS(join(root, 'dist/diff2html.min.css')),
+      UI.injectCSS(join(ourRoot, 'web/css/my-diff2html.css'))
+    ])
   }
 }
 

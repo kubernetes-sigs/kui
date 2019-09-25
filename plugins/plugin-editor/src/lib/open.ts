@@ -19,8 +19,7 @@ import * as path from 'path'
 import * as events from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Capabilities, eventBus as globalEventBus, Tab } from '@kui-shell/core'
-import { injectCSS, injectScript } from '@kui-shell/core/webapp/util/inject'
+import { Capabilities, eventBus as globalEventBus, UI } from '@kui-shell/core'
 import {
   currentSelection,
   getSidecar,
@@ -97,14 +96,14 @@ const injectTheme = () => {
   // CSS content
   try {
     // try webpack style
-    injectCSS({
+    UI.injectCSS({
       css: require('@kui-shell/plugin-editor/web/css/theme-alignment.css').toString(),
       key
     })
   } catch (err) {
     // oh well, try filesystem style
     const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    injectCSS({ key, path: path.join(ourRoot, 'web/css/theme-alignment.css') })
+    UI.injectCSS({ key, path: path.join(ourRoot, 'web/css/theme-alignment.css') })
   }
 }
 
@@ -125,7 +124,7 @@ export const preload = () => {
  *     - content: a dom that contains the instance; this must be attached somewhere!
  *
  */
-export const openEditor = async (tab: Tab, name: string, options, execOptions) => {
+export const openEditor = async (tab: UI.Tab, name: string, options, execOptions) => {
   debug('openEditor')
 
   const sidecar = getSidecar(tab)
@@ -148,17 +147,17 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions) =
   if (!pre2) {
     if (!Capabilities.inBrowser()) {
       const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
-      injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
+      UI.injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
     }
 
     try {
-      injectCSS({
+      UI.injectCSS({
         css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(),
         key: 'editor.editor'
       })
     } catch (err) {
       const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-      injectCSS(path.join(ourRoot, 'web/css/editor.css'))
+      UI.injectCSS(path.join(ourRoot, 'web/css/editor.css'))
     }
     pre2 = true
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import * as chart from './chart'
@@ -63,7 +63,7 @@ export const initUI = ({
  * Form the response to the REPL
  *
  */
-export const response = (tab: Tab, graphics, { url, testName, defaultMode = 'last', label = 'Last Run' }) => {
+export const response = (tab: UI.Tab, graphics, { url, testName, defaultMode = 'last', label = 'Last Run' }) => {
   setTimeout(() => chart.init(graphics), 650)
 
   addNameToSidecarHeader(getSidecar(tab), viewName, `${testName} on ${prettyUrl(url)}`)

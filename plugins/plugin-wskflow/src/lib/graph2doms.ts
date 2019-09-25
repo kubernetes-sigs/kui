@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Tab } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
@@ -41,7 +41,7 @@ const wfColorAct = {
 const containerId = 'wskflowDiv'
 
 export default async function graph2doms(
-  tab: Tab,
+  tab: UI.Tab,
   JSONgraph: FlowNode,
   ifReuseContainer?: Element,
   activations?: ActivationLike[],

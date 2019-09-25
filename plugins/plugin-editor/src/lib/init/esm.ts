@@ -15,11 +15,9 @@
  */
 
 import * as Debug from 'debug'
-
-import { Settings } from '@kui-shell/core'
-import { injectCSS } from '@kui-shell/core/webapp/util/inject'
-
 import * as monaco from 'monaco-editor'
+
+import { Settings, UI } from '@kui-shell/core'
 
 import languages from '../language-scan'
 import defaultMonacoOptions from './defaults'
@@ -67,7 +65,7 @@ export default (editorWrapper: HTMLElement, options) => {
   let editor
   const ready = () =>
     new Promise(resolve => {
-      injectCSS({
+      UI.injectCSS({
         css: require('monaco-editor/min/vs/editor/editor.main.css').toString(),
         key: 'editor.monaco.core'
       })
