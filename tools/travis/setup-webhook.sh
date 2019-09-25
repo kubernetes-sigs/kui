@@ -25,7 +25,7 @@ cd "$SCRIPTDIR"
 ../../bin/kui let travis-for-kui/cleanBucket = ./cleanBucket.js --kind nodejs:8 -p secrets @"$ROOTDIR/packages/builder/dist/publishers/s3/secrets-cos.json"
 
 # composition
-../../bin/kui app update travis-for-kui/done ./done.js
+../../bin/kui wsk app update travis-for-kui/done ./done.js
 
 # make a web action out of the composition
 ../../bin/kui webbify travis-for-kui/done
