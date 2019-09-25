@@ -19,7 +19,7 @@ import { homedir as home } from 'os'
 
 const homedir = home()
 
-export default function(path: string): string {
+export const expandHomeDir = function(path: string): string {
   if (!path) {
     return path
   } else if (path === '~') {
@@ -30,3 +30,5 @@ export default function(path: string): string {
     return join(homedir, path.slice(2))
   }
 }
+
+export default expandHomeDir

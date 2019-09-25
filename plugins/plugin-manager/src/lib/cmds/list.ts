@@ -19,8 +19,8 @@ import * as fs from 'fs-extra'
 import * as path from 'path'
 
 import { userDataDir } from '@kui-shell/core/core/userdata'
-import { flatten } from '@kui-shell/core/core/utility'
-import { Commands } from '@kui-shell/core'
+import { Util , Commands } from '@kui-shell/core'
+
 
 import { list as usage } from '../../usage'
 
@@ -66,7 +66,7 @@ const doList = () => {
     .pathExists(moduleDir)
     .then(() => fs.readdir(moduleDir)) // read the top-level directory contents
     .then(dirs => Promise.all(dirs.map(extractNested(moduleDir)))) // extract any @foo/bar nested plugins
-    .then(flatten) // if there are nested plugins, we need to flatten the arrays
+    .then(Util.flatten) // if there are nested plugins, we need to flatten the arrays
     .then(getVersions(moduleDir))
     .then(installedPlugins => {
       if (installedPlugins.length > 0) {

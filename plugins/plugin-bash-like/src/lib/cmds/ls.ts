@@ -18,10 +18,7 @@ import * as Debug from 'debug'
 import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { flatten } from '@kui-shell/core/core/utility'
-import { Commands, Errors, i18n, REPL, Tables } from '@kui-shell/core'
-import { findFile, findFileWithViewer, isSpecialDirectory } from '@kui-shell/core/core/find-file'
+import { Commands, Errors, i18n, REPL, Tables, Util } from '@kui-shell/core'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -123,8 +120,8 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
   return new Promise((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
-    const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
-    debug('fullpath', fullpath, filepath, expandHomeDir(filepath))
+    const { resolved: fullpath, viewer = 'open' } = Util.findFileWithViewer(Util.expandHomeDir(filepath))
+    debug('fullpath', fullpath, filepath, Util.expandHomeDir(filepath))
 
     // note: stat not lstat, because we want to follow the link
     stat(fullpath, (err, stats) => {
@@ -258,7 +255,7 @@ const tabularize = (cmd: string, parsedOptions: Commands.ParsedOptions, parent =
           }
         })
     )
-    .map(flatten)
+    .map(Util.flatten)
     .map(row => row.filter(x => x))
     .filter(x => x.length > 0)
     .filter(row => !row[row.length - 1].match(/~$/)) // hack for now: remove emacs ~ temporary files
@@ -399,12 +396,12 @@ const doLs = (cmd: string) => async (opts: Commands.Arguments) => {
   const { command, execOptions, argvNoOptions: argv, parsedOptions: options } = opts
 
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
-  const filepath = findFile(expandHomeDir(filepathAsGiven), {
+  const filepath = Util.findFile(Util.expandHomeDir(filepathAsGiven), {
     safe: true,
     keepRelative: true
   })
 
-  if (filepath.match(/app.asar/) && isSpecialDirectory(filepathAsGiven)) {
+  if (filepath.match(/app.asar/) && Util.isSpecialDirectory(filepathAsGiven)) {
     // for now, we don't support ls of @ directories
     throw new Error('File not found')
   }

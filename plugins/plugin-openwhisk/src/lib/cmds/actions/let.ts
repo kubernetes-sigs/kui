@@ -38,9 +38,7 @@ import * as withRetry from 'promise-retry'
 import { basename, join } from 'path'
 import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
-import { Capabilities, Commands, REPL } from '@kui-shell/core'
+import { Capabilities, Commands, REPL, Util } from '@kui-shell/core'
 
 import { synonyms } from '../../models/synonyms'
 import { deployHTMLViaOpenWhisk } from './_html'
@@ -152,7 +150,7 @@ const fetchRemote = (location: string, mimeType: string): Promise<Remote> =>
         })
       })
     } else {
-      lstat(findFile(expandHomeDir(locationWithoutQuotes)), (err, stats) => {
+      lstat(Util.findFile(Util.expandHomeDir(locationWithoutQuotes)), (err, stats) => {
         if (stats) {
           // nothing to fetch, it's local!
           resolve({ location: locationWithoutQuotes, removeWhenDone: false })
@@ -258,7 +256,7 @@ const makeZipActionFromZipFile = (name: string, location: string, options, execO
               // location on local filesystem
               owOpts.action.annotations.push({
                 key: 'file',
-                value: expandHomeDir(location)
+                value: Util.expandHomeDir(location)
               })
 
               // add an annotation to indicate that this is a managed action
@@ -400,7 +398,7 @@ const webAssetTransformer = (location, text, extension) => {
     'const getHostRelativeRoot = () => `/api/v1/web${stripSlash(stripSlash(process.env.__OW_ACTION_NAME))}`\n' + // eslint-disable-line no-template-curly-in-string
     'const getReferer = hostRelativeRoot => `${process.env.__OW_API_HOST}${hostRelativeRoot}`\n' + // eslint-disable-line no-template-curly-in-string
     `function main(params) { const hostRelativeRoot = getHostRelativeRoot(); const referer = getReferer(hostRelativeRoot); const getParams = () => { delete params.__ow_headers; delete params.__ow_path; delete params.__ow_method; return params; }; return { ${headers} ${contentType}: \`` +
-    xform(text || readFileSync(expandHomeDir(location))) +
+    xform(text || readFileSync(Util.expandHomeDir(location))) +
     '`} }'
   )
 }
@@ -427,7 +425,7 @@ const makeWebAsset = (
     action.annotations = []
   }
   ;(annotators[extension] || []).forEach(annotator => annotator(action))
-  action.annotations.push({ key: 'file', value: expandHomeDir(location) })
+  action.annotations.push({ key: 'file', value: Util.expandHomeDir(location) })
 
   // add an annotation to indicate that this is a managed action
   action.annotations.push({
@@ -628,7 +626,7 @@ export default async (commandTree: Commands.Registrar) => {
           debug('sequence component is intention', intentionMatch[1])
           const intention = intentionMatch[1] // e.g. |save to cloudant|
           return REPL.iexec(intention) // this will return the name of the action that services the intent
-        } else if (!Capabilities.inBrowser() && existsSync(expandHomeDir(component))) {
+        } else if (!Capabilities.inBrowser() && existsSync(Util.expandHomeDir(component))) {
           debug('sequence component is local file', component)
           // then we assume that the component identifies a local file
           //    note: the first step reserves a name

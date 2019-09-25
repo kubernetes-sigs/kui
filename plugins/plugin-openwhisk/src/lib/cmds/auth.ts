@@ -22,10 +22,9 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI, Util } from '@kui-shell/core'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import { partial } from '@kui-shell/core/webapp/cli'
-import expandHomeDir from '@kui-shell/core/util/home'
 
 import * as namespace from '../models/namespace'
 import { getClient, owOpts } from './openwhisk-core'
@@ -38,7 +37,7 @@ const debug = Debug('plugins/openwhisk/cmds/auth')
  *
  */
 const wskpropsFile = (): string => {
-  return expandHomeDir(process.env.WSK_CONFIG_FILE || '~/.wskprops')
+  return Util.expandHomeDir(process.env.WSK_CONFIG_FILE || '~/.wskprops')
 }
 
 /**

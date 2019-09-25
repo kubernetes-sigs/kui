@@ -19,9 +19,7 @@
 import * as Debug from 'debug'
 import { basename, dirname, join } from 'path'
 
-import { Capabilities, Commands, i18n, REPL, Tables, UI } from '@kui-shell/core'
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
+import { Capabilities, Commands, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 import { get as relevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
 
@@ -196,7 +194,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments) 
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
-  const filepath = findFile(expandHomeDir(filepathAsGiven))
+  const filepath = Util.findFile(Util.expandHomeDir(filepathAsGiven))
   debug('filepath', filepath)
 
   const { safeLoadAll: parseYAML } = await import('js-yaml')

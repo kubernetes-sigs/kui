@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import { Capabilities, Commands, Errors, i18n, REPL, Tables } from '@kui-shell/core'
-import { findFile } from '@kui-shell/core/core/find-file'
+import { Capabilities, Commands, Errors, i18n, REPL, Tables, Util } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
@@ -332,7 +331,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments) =>
             return copyOut(_)
           } else if (_.match(/^(@.*$)/)) {
             // then this is a cloudshell-hosted file
-            const filepath = findFile(_)
+            const filepath = Util.findFile(_)
             if (filepath.match(/\.asar\//)) {
               // then this is an in-asar filepath. kubectl won't
               // know what to do with this, so copy it out
