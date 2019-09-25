@@ -22,7 +22,7 @@ import { Commands } from '@kui-shell/core'
 
 import { commands as usage } from '../../usage'
 
-const doList = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
+const doList = ({ argvNoOptions }: Commands.Arguments) => {
   const prescanned = path.join(userDataDir(), 'plugins', '.pre-scanned')
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]

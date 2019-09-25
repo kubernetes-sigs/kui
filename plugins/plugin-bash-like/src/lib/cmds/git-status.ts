@@ -195,7 +195,7 @@ export const status2Html = (tab: Tab, rawOut: string, stats: Promise<Stats> = nu
  * git status command handler
  *
  */
-const doStatus = async ({ command, execOptions, tab }: Commands.EvaluatorArgs) =>
+const doStatus = async ({ command, execOptions, tab }: Commands.Arguments) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const stats = numstat()

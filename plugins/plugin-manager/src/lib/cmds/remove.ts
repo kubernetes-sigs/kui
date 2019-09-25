@@ -29,7 +29,7 @@ debug('loading')
 
 debug('finished module imports')
 
-const doRemove = ({ argvNoOptions }: Commands.EvaluatorArgs) => {
+const doRemove = ({ argvNoOptions }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)

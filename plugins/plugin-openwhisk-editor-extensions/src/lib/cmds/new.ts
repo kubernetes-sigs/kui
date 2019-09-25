@@ -261,7 +261,7 @@ export const newAction = ({
   placeholder = undefined,
   placeholderFn = undefined,
   persister = persisters.actions
-} = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.EvaluatorArgs) => {
+} = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.Arguments) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)

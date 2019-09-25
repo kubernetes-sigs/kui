@@ -1069,7 +1069,7 @@ const executor = (commandTree: Commands.Registrar, _entity, _verb, verbSynonym?)
   argv: argvFull,
   execOptions,
   tab
-}: Commands.EvaluatorArgs) => {
+}: Commands.Arguments) => {
   let entity = _entity
   let verb = _verb
 

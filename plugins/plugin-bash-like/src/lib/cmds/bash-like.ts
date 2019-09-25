@@ -217,7 +217,7 @@ const usage = {
  * cd command
  *
  */
-const cd = ({ command, parsedOptions, execOptions }: Commands.EvaluatorArgs) => {
+const cd = ({ command, parsedOptions, execOptions }: Commands.Arguments) => {
   const dir = REPL.split(command, true, true)[1] || ''
   debug('cd dir', dir)
   return doShell(['!', 'cd', dir], parsedOptions, execOptions).catch(err => {
@@ -226,14 +226,14 @@ const cd = ({ command, parsedOptions, execOptions }: Commands.EvaluatorArgs) => 
   })
 }
 
-const bcd = async ({ command, execOptions }: Commands.EvaluatorArgs) => {
+const bcd = async ({ command, execOptions }: Commands.Arguments) => {
   const pwd: string = await REPL.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
   debug('pwd', pwd)
   process.env.PWD = pwd
   return pwd
 }
 
-const specialHandler = (args: Commands.EvaluatorArgs) => {
+const specialHandler = (args: Commands.Arguments) => {
   if (args.execOptions.type === Commands.ExecType.TopLevel) {
     throw new Error('this command is intended for internal consumption only')
   }

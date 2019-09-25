@@ -161,7 +161,7 @@ export default async (commandTree: Commands.Registrar) => {
    * This is the core logic
    *
    */
-  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: Commands.EvaluatorArgs) => {
+  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: Commands.Arguments) => {
     const options = minimist(fullArgv, {
       alias: { q: 'quiet', f: 'force', r: 'recursive' },
       boolean: ['quiet', 'force', 'recursive'],

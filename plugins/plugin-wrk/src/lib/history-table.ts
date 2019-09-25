@@ -25,7 +25,7 @@ import { insertRow, addCell, i18n } from './table'
 
 const viewName = 'Load Test History'
 
-export const list = ({ tab }: Commands.EvaluatorArgs) => {
+export const list = ({ tab }: Commands.Arguments) => {
   const graphics = initUI({ noChart: true })
   const resp = response(tab, graphics, {
     url: undefined,

@@ -180,7 +180,7 @@ const loadtest = (verb: string) => ({
   argvNoOptions: argv,
   parsedOptions,
   execOptions
-}: Commands.EvaluatorArgs) => {
+}: Commands.Arguments) => {
   const pair = parseOptions(argvWithOptions.slice(argvWithOptions.indexOf(verb) + 1), 'action')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const options: Record<string, any> = Object.assign({}, parsedOptions, pair.kvOptions)
