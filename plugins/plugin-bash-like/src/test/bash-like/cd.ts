@@ -18,8 +18,8 @@ import { v4 as uuid } from 'uuid'
 import { dirname, join, normalize } from 'path'
 
 import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import { Util } from '@kui-shell/core/'
 import * as ui from '@kui-shell/core/tests/lib/ui'
-import expandHomeDir from '@kui-shell/core/util/home'
 
 const { cli, selectors } = ui
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
@@ -151,7 +151,7 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: IS
   pit(`should execute cd without arguments`, () =>
     cli
       .do('cd', this.app)
-      .then(cli.expectOKWithString(expandHomeDir('~')))
+      .then(cli.expectOKWithString(Util.expandHomeDir('~')))
       .catch(oops(this, true))
   )
 

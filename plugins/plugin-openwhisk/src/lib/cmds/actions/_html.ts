@@ -20,8 +20,7 @@ import { lstat, readFile } from 'fs'
 import { dirname, resolve as pathResolve } from 'path'
 import { Parser } from 'htmlparser2/lib/Parser'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { REPL } from '@kui-shell/core'
+import { REPL, Util } from '@kui-shell/core'
 
 /**
  * Deploy a linked asset
@@ -73,7 +72,7 @@ const webbify = uri => {
 export const deployHTMLViaOpenWhisk = location =>
   new Promise((resolve, reject) => {
     try {
-      const filepath = expandHomeDir(location)
+      const filepath = Util.expandHomeDir(location)
       const dir = dirname(filepath)
 
       readFile(filepath, (err, data) => {

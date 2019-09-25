@@ -21,10 +21,7 @@ import * as minimist from 'yargs-parser'
 
 import { keys } from '@kui-shell/core/webapp/keys'
 import * as cli from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, Errors, REPL, Tables, UI } from '@kui-shell/core'
-import { flatten } from '@kui-shell/core/core/utility'
-import { findFile } from '@kui-shell/core/core/find-file'
-import expandHomeDir from '@kui-shell/core/util/home'
+import { Capabilities, Commands, Errors, REPL, Tables, UI, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/tab completion')
 
@@ -55,7 +52,7 @@ export function registerEnumerator(enumerator: Enumerator) {
 
 async function applyEnumerator(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
-  return flatten(lists.map(x => x)).filter(x => x)
+  return Util.flatten(lists.map(x => x)).filter(x => x)
 }
 
 /**
@@ -321,7 +318,7 @@ const complete = (
 
   if (dirname) {
     // see if we need to add a trailing slash
-    const filepath = expandHomeDir(path.join(dirname, match))
+    const filepath = Util.expandHomeDir(path.join(dirname, match))
     isDirectory(filepath)
       .then(isDir => {
         if (isDir) {
@@ -536,7 +533,7 @@ const suggestLocalFile = (
 
   if (dirname) {
     // then dirname exists! now scan the directory so we can find matches
-    fs.readdir(expandHomeDir(dirname), (err, files) => {
+    fs.readdir(Util.expandHomeDir(dirname), (err, files) => {
       if (err) {
         debug('fs.readdir error', err)
       } else {
@@ -859,7 +856,7 @@ export default () => {
                     // we found a required positional parameter, now suggest values for this parameter
                     suggest(
                       param,
-                      findFile(args[commandIdx + lastIdx + 1], { safe: true }),
+                      Util.findFile(args[commandIdx + lastIdx + 1], { safe: true }),
                       block,
                       prompt,
                       temporaryContainer,

@@ -17,9 +17,7 @@
 import * as Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { Capabilities, Commands, i18n, REPL, UI } from '@kui-shell/core'
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
+import { Capabilities, Commands, i18n, REPL, UI, Util } from '@kui-shell/core'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
@@ -34,7 +32,7 @@ const debug = Debug('plugins/bash-like/cmds/open')
 const open = async (tab: UI.Tab, filepath: string) => {
   debug('open', filepath)
 
-  const fullpath = findFile(expandHomeDir(filepath))
+  const fullpath = Util.findFile(Util.expandHomeDir(filepath))
   const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
 
   if (

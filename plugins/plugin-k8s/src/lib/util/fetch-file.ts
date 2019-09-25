@@ -16,9 +16,7 @@
 
 import * as Debug from 'debug'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
-import { Capabilities, Errors } from '@kui-shell/core'
+import { Capabilities, Errors, Util } from '@kui-shell/core'
 
 const debug = Debug('k8s/util/fetch-file')
 
@@ -122,7 +120,7 @@ export const fetchFile = (url: string): Promise<Buffer[]> => {
         // why the dynamic import? being browser friendly here
         const { readFile } = await import('fs-extra')
 
-        return readFile(findFile(expandHomeDir(url)))
+        return readFile(Util.findFile(Util.expandHomeDir(url)))
       }
     })
   )

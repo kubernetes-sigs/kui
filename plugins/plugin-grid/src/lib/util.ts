@@ -19,8 +19,7 @@ import { dirname, join } from 'path'
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { flatten } from '@kui-shell/core/core/utility'
-import { Capabilities, Commands, Errors, eventBus, REPL, UI } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, REPL, UI, Util } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -185,7 +184,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   /** fetch activations without an app/composer filter */
   const fetchNonApp = async () =>
     Promise.all(new Array(N).fill(0).map((_, idx) => fetch(idx * batchSize)))
-      .then(flatten)
+      .then(Util.flatten)
       .then(filterByLatencyBucket(options))
       .then(filterBySuccess(options))
       .then(
@@ -230,7 +229,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
           )
         )
       )
-      .then(flatten)
+      .then(Util.flatten)
       .then(filterByLatencyBucket(options))
       .then(filterBySuccess(options))
       .catch(err => {

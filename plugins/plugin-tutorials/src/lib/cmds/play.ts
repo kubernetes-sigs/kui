@@ -20,7 +20,6 @@ import { dirname, join } from 'path'
 import { readProject, TutorialDefinition, TutorialTable } from './util'
 import { wskflowCycle } from './wskflow'
 
-import { findFile } from '@kui-shell/core/core/find-file'
 import {
   clearSelection,
   isFullscreen as isSidecarFullscreen,
@@ -28,7 +27,7 @@ import {
   show as showSidecar,
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
-import { Commands, REPL, UI } from '@kui-shell/core'
+import { Commands, REPL, UI, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -865,7 +864,7 @@ const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOpt
 
   const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
 
-  const [{ config, tutorial }] = await Promise.all([readProject(findFile(filepath)), ready])
+  const [{ config, tutorial }] = await Promise.all([readProject(Util.findFile(filepath)), ready])
 
   if (execOptions.type === Commands.ExecType.Nested && !parsedOptions['top-level']) {
     // initiate just the first step

@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Commands, UI } from '@kui-shell/core'
-import { findFile } from '@kui-shell/core/core/find-file'
+import { Capabilities, Commands, UI, Util } from '@kui-shell/core'
 
 import { loadComposition } from '@kui-shell/plugin-apache-composer'
 import { extension, language, openEditor, respondToRepl } from '@kui-shell/plugin-editor'
@@ -240,18 +239,18 @@ const defaultPlaceholderFn = ({ kind = 'nodejs:default', template }) => {
       const readViaImport = () => {
         debug(
           'readViaImport',
-          findFile(template),
-          findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
+          Util.findFile(template),
+          Util.findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
         )
         resolve(
           require('raw-loader!@kui-shell/plugin-apache-composer/samples' +
-            findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')).default
+            Util.findFile(template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')).default
         )
       }
 
       const readViaFilesystem = () => {
         debug('readViaFilesystem')
-        require('fs').readFile(findFile(template), (err, data) => {
+        require('fs').readFile(Util.findFile(template), (err, data) => {
           if (err) {
             reject(err)
           } else {
@@ -326,7 +325,7 @@ export const newAction = ({
       ? Capabilities.inBrowser()
         ? import(
             '@kui-shell/plugin-apache-composer/samples' +
-              findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
+              Util.findFile(options.template).replace(/^.*plugin-apache-composer\/samples(.*)$/, '$1')
           )
         : generateAST(code, options.template)
       : Promise.resolve()

@@ -19,7 +19,7 @@ const debug = Debug('plugins/apache-composer/preload')
 debug('loading')
 
 import { dirname } from 'path'
-import { addPath } from '@kui-shell/core/core/find-file'
+import { Util } from '@kui-shell/core'
 import initRequirePath from './initRequirePath'
 
 /**
@@ -31,7 +31,9 @@ export default async () => {
   await initRequirePath()
 
   // give visibility to our @demos directory on the module path
-  addPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/samples/@demos/hello.js')), { command: 'preview' })
+  Util.augmentModuleLoadPath(dirname(require.resolve('@kui-shell/plugin-apache-composer/samples/@demos/hello.js')), {
+    command: 'preview'
+  })
 }
 
 debug('finished loading')

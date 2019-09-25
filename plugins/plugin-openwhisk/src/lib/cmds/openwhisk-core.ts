@@ -18,11 +18,8 @@ import * as Debug from 'debug'
 import { existsSync, readFileSync } from 'fs'
 import { type as osType } from 'os'
 
-import expandHomeDir from '@kui-shell/core/util/home'
-import { findFile } from '@kui-shell/core/core/find-file'
 import { oopsMessage } from '@kui-shell/core/core/oops'
-import { flatten } from '@kui-shell/core/core/utility'
-import { Capabilities, Commands, Errors, eventBus, Settings, REPL } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, Settings, REPL, Util } from '@kui-shell/core'
 import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import withHeader from '../models/withHeader'
@@ -123,7 +120,7 @@ const paramFile = (M: ParameterMap, idx: number, argv: string[], type: string) =
   }
 
   const file = argv[++idx]
-  const params = JSON.parse(readFileSync(expandHomeDir(file)).toString())
+  const params = JSON.parse(readFileSync(Util.expandHomeDir(file)).toString())
   M[type].parameters = M[type].parameters.concat(toArray(params))
 
   return idx + 1
@@ -205,7 +202,7 @@ const handleKeyValuePairAsArray = (key: string) => (M, idx: number, argv: string
       paramValue = `@${process.env[paramValue.substring(2)]}`
     }
 
-    const location = expandHomeDir(paramValue.substring(1))
+    const location = Util.expandHomeDir(paramValue.substring(1))
     if (!existsSync(location)) {
       throw new Error(`Requested parameter @file does not exist: ${location}`)
     } else {
@@ -685,13 +682,13 @@ specials.api = {
         debug('raw output of api list', res)
 
         // main list for each api
-        return flatten(
+        return Util.flatten(
           (res.apis || []).map(({ value }) => {
             // one sublist for each path
             const basePath = value.apidoc.basePath
             const baseUrl = value.gwApiUrl
 
-            return flatten(
+            return Util.flatten(
               Object.keys(value.apidoc.paths).map(path => {
                 const api = value.apidoc.paths[path]
 
@@ -817,7 +814,7 @@ specials.actions = {
 
       if (argv[0]) {
         // find the file named by argv[0]
-        const filepath = findFile(expandHomeDir(argv[0]))
+        const filepath = Util.findFile(Util.expandHomeDir(argv[0]))
         const isZip = argv[0].endsWith('.zip')
         const isJar = argv[0].endsWith('.jar')
         const isBinary = isZip || isJar
@@ -1374,7 +1371,7 @@ const makeInit = (commandTree: Commands.Registrar) => async (isReinit = false) =
     synonyms,
 
     /** main terms (not including synonyms) for all crudable types */
-    // [].concat(...crudableTypes.map(synonymsFn)), // flatten the result
+    // [].concat(...crudableTypes.map(synonymsFn)), // Util.flatten the result
     crudable: crudableTypes,
 
     /** export the raw interface */

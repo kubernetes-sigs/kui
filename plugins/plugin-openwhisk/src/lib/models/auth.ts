@@ -18,9 +18,8 @@ import * as Debug from 'debug'
 import * as openwhisk from 'openwhisk'
 
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
-import { Capabilities, Settings } from '@kui-shell/core'
+import { Capabilities, Settings, Util } from '@kui-shell/core'
 import store from '@kui-shell/core/models/store'
-import expandHomeDir from '@kui-shell/core/util/home'
 
 const debug = Debug('plugins/openwhisk/models/auth')
 
@@ -29,7 +28,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const propertiesParser = require('properties-parser')
   if (!Capabilities.inBrowser()) {
-    wskprops = propertiesParser.read(expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
+    wskprops = propertiesParser.read(Util.expandHomeDir(process.env['WSK_CONFIG_FILE'] || '~/.wskprops'))
   } else {
     // then we're running in a browser; we'll initialize this
     // later. clearly there is no local filesystem from which to pull
