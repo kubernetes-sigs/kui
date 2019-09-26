@@ -87,7 +87,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
           .then(sidecar.expectShowing('myapp', undefined, undefined, ns))
           .then(() => this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('pods')))
           .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('pods')))
-          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} [k8s-table="pods"]`))
+          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} .bx--data-table`))
           .then(async () => {
             if (singletonTablesHaveTitle) {
               const actualTitle = await this.app.client.getText(

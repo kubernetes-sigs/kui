@@ -18,12 +18,9 @@ import * as Debug from 'debug'
 
 import { i18n, REPL, Tables, UI } from '@kui-shell/core'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
-import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
 
 import { Resource, KubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
-import insertView from '../insert-view'
-import { formatTable } from '../formatMultiTable'
 
 const strings = i18n('plugin-k8s')
 const debug = Debug('k8s/view/modes/containers')
@@ -74,21 +71,14 @@ export const containersMode: UI.ModeRegistration<KubeResource> = {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = (tab: UI.Tab, { pod, container }, exec: 'pexec' | 'qexec' = 'pexec') => {
+const showLogs = (tab: UI.Tab, { pod, container }) => {
   const podName = REPL.encodeComponent(pod.metadata.name)
   const containerName = REPL.encodeComponent(container.name)
   const ns = REPL.encodeComponent(pod.metadata.namespace)
 
-  // a bit convoluted, so we can delay the call to getActiveView
+  // a bit convoluted, so we can delay the call to drilldown
   return (evt: Event) => {
-    return drilldown(
-      tab,
-      `kubectl logs ${podName} ${containerName} -n ${ns}`,
-      undefined,
-      getActiveView(tab),
-      viewName,
-      { exec }
-    )(evt)
+    return drilldown(tab, `kubectl logs ${podName} ${containerName} -n ${ns}`, undefined, undefined, viewName)(evt)
   }
 }
 
@@ -212,15 +202,15 @@ export const renderContainers = async (tab: UI.Tab, command: string, resource: R
     const podResource = await REPL.qexec(fetchPod)
     debug('renderContainers.response', podResource)
 
-    return formatTable(tab, {
+    return {
       header: headerModel(podResource),
       body: bodyModel(tab, podResource),
       noSort: true,
       title: 'Containers'
-    })
+    }
   } catch (err) {
     if (err.code === 404) {
-      return formatTable(tab, { body: [] })
+      return { body: [] }
     } else {
       throw err
     }
@@ -236,5 +226,5 @@ interface Parameters {
   resource: Resource
 }
 export const renderAndViewContainers = (tab: UI.Tab, parameters: Parameters) => {
-  renderContainers(tab, parameters.command, parameters.resource).then(insertView(tab))
+  return renderContainers(tab, parameters.command, parameters.resource)
 }

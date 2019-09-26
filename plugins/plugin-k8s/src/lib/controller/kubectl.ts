@@ -648,17 +648,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments) =>
           .catch(reject)
       } else if (formatters[command] && formatters[command][verb]) {
         debug('using custom formatter')
-        cleanupAndResolve(
-          formatters[command][verb].format(
-            command,
-            verb,
-            entityType,
-            options,
-            out,
-            opts.createOutputStream(),
-            execOptions
-          )
-        )
+        cleanupAndResolve(formatters[command][verb].format(command, verb, entityType, options, out, execOptions))
       } else if (shouldWeDisplayAsTable(verb, entityType, output, options)) {
         //
         // tabular output

@@ -17,7 +17,6 @@
 import * as common from '@kui-shell/core/tests/lib/common'
 import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
 import {
-  assertTableTitleMatches,
   waitForGreen,
   waitForRed,
   defaultModeForGet,
@@ -39,17 +38,13 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
      * Interact with the Containers tab
      *
      */
-    const testContainersTab = async (fast = false, click = true) => {
+    const testContainersTab = async (click = true) => {
       if (click) {
         await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('containers'))
       }
 
-      const table = `${selectors.SIDECAR} [k8s-table="Containers"]`
+      const table = `${selectors.SIDECAR} .bx--data-table`
       await this.app.client.waitForExist(table)
-
-      if (!fast) {
-        await assertTableTitleMatches(this, table, 'containers')
-      }
 
       // check the conditions rows
       await this.app.client.waitForExist(`${table} .entity[data-name="nginx"] [data-key="ready"][data-value="true"]`)
@@ -65,7 +60,7 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     }
 
     const testLogTabs = async () => {
-      const container = `${selectors.SIDECAR} [k8s-table="Containers"] .entity[data-name="nginx"] .entity-name`
+      const container = `${selectors.SIDECAR} .bx--data-table .entity[data-name="nginx"] .entity-name`
       await this.app.client.click(container)
       await sidecar.expectOpen(this.app)
 
@@ -158,7 +153,7 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
             .then(sidecar.expectMode(defaultModeForGet))
             .then(sidecar.expectShowing('nginx'))
 
-          await testContainersTab(true)
+          await testContainersTab()
         } catch (err) {
           return common.oops(this)(err)
         }
@@ -195,11 +190,11 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
           .then(sidecar.expectMode(defaultModeForGet))
           .then(sidecar.expectShowing('nginx'))
 
-        await testContainersTab(true)
+        await testContainersTab()
         await testLogTabs()
-        await testContainersTab(true, false) // testing back button, don't click the container tab
+        await testContainersTab(false) // testing back button, don't click the container tab
         await testLogTabs()
-        await testContainersTab(true, false) // testing back button, don't click the container tab
+        await testContainersTab(false) // testing back button, don't click the container tab
       } catch (err) {
         return common.oops(this)(err)
       }
@@ -269,11 +264,11 @@ describe(`kubectl get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
     it('should drill down to log when container is clicked', testLogTabs)
 
-    it('should transition back from log and see containers table', testContainersTab.bind(this, false, false)) // testing back button, do not click the Container tab
+    it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
 
     it('should drill down to log when container is clicked', testLogTabs)
 
-    it('should transition back from log and see containers table', testContainersTab.bind(this, false, false)) // testing back button, do not click the Container tab
+    it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
 
     it(`should be able to show table with grep`, async () => {
       try {

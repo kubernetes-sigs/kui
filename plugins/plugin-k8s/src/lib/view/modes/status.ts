@@ -20,8 +20,6 @@ import { Errors, i18n, REPL, Tables, UI } from '@kui-shell/core'
 
 import { FinalState } from '../../model/states'
 import Resource from '../../model/resource'
-import insertView from '../insert-view'
-import { formatTable } from '../formatMultiTable'
 
 const strings = i18n('plugin-k8s')
 const debug = Debug('k8s/view/modes/status')
@@ -47,11 +45,15 @@ export const statusButton = (command: string, resource: Resource, finalState: Fi
   )
 
 /**
- * Render the multi-table status view. This just wraps some doms
- * around the formatMultiListResult() output.
+ * Fetch the status view data
  *
  */
-export const renderStatus = async (tab: UI.Tab, command: string, resource: Resource, finalState: FinalState) => {
+export const renderStatus = async (
+  tab: UI.Tab,
+  command: string,
+  resource: Resource,
+  finalState: FinalState
+): Promise<Tables.Table | Tables.MultiTable> => {
   debug(
     'renderStatus',
     command,
@@ -77,11 +79,11 @@ export const renderStatus = async (tab: UI.Tab, command: string, resource: Resou
     const model: Tables.Table | Tables.MultiTable = await REPL.qexec(fetchModels)
     debug('renderStatus.models', model)
 
-    return formatTable(tab, model)
+    return model
   } catch (error) {
     const err: Errors.CodedError = error
     if (err.code === 404) {
-      return formatTable(tab, { body: [] })
+      return { body: [] }
     } else {
       throw err
     }
@@ -99,5 +101,5 @@ interface Parameters {
 }
 export const renderAndViewStatus = (tab: UI.Tab, parameters: Parameters) => {
   const { command, resource, finalState } = parameters
-  renderStatus(tab, command, resource, finalState).then(insertView(tab))
+  return renderStatus(tab, command, resource, finalState)
 }
