@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, MetadataBearing } from '@kui-shell/core/models/entity'
+import { Commands, Models } from '@kui-shell/core'
 
 export interface KubeStatusCondition {
   lastProbeTime?: string
@@ -93,7 +93,7 @@ interface RoleRef {
   name: string
 }
 
-export interface KubeResource<Status = KubeStatus> extends MetadataBearing {
+export interface KubeResource<Status = KubeStatus> extends Models.ResourceWithMetadata {
   apiVersion: string
   kind: string
   metadata?: KubeMetadata
@@ -101,7 +101,7 @@ export interface KubeResource<Status = KubeStatus> extends MetadataBearing {
   spec?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   data?: object
 }
-export function isKubeResource(entity: Entity): entity is KubeResource {
+export function isKubeResource(entity: Commands.Response): entity is KubeResource {
   const kube = entity as KubeResource
   return kube.apiVersion !== undefined && kube.kind !== undefined
 }

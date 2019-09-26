@@ -83,6 +83,18 @@ export function isMetadataBearing(spec: EntitySpec): spec is MetadataBearing {
 }
 
 /**
+ * Entity with a "resource" field that is MetadataBearing
+ *
+ */
+export interface MetadataBearingByReference extends CustomSpec {
+  resource: MetadataBearing
+}
+export function isMetadataBearingByReference(spec: Entity): spec is MetadataBearingByReference {
+  const ref = spec as MetadataBearingByReference
+  return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
+}
+
+/**
  * A mostly scalar entity
  *
  */

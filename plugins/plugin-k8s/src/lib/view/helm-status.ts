@@ -16,9 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { Streamable } from '@kui-shell/core/webapp/cli'
-import { MixedResponse } from '@kui-shell/core/models/entity'
 import { Commands } from '@kui-shell/core'
+import { Streamable } from '@kui-shell/core/webapp/cli'
 
 import { preprocessTable, formatTable } from './formatTable'
 
@@ -121,7 +120,7 @@ export const format = async (
     debug('returning tables for nested call', tables)
     return tables
   } else {
-    const result: MixedResponse = []
+    const result: Commands.MixedResponse = []
 
     // helm status sometimes emits some text before the tables
     if (headerString) {
