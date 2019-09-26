@@ -15,17 +15,16 @@
  */
 
 import * as Debug from 'debug'
-
 import { join } from 'path'
 import { spawn } from 'child_process'
 import { exists, move, remove } from 'fs-extra'
 
-import { REPL } from '@kui-shell/core'
-import { userDataDir } from '@kui-shell/core/core/userdata'
+import { REPL, Settings } from '@kui-shell/core'
+
 const debug = Debug('wrk/init')
 
 /** location of /_pathTo_/wrk, i.e. the parent directory */
-export const wrkPath = (): string => userDataDir()
+export const wrkPath = (): string => Settings.userDataDir()
 
 /** name of wrk executable file */
 export const wrkExeName = (): string => 'wrk'

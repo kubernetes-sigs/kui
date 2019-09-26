@@ -18,9 +18,7 @@ import * as Debug from 'debug'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { userDataDir } from '@kui-shell/core/core/userdata'
-import { Util , Commands } from '@kui-shell/core'
-
+import { Commands, Settings, Util } from '@kui-shell/core'
 
 import { list as usage } from '../../usage'
 
@@ -56,7 +54,7 @@ const getVersions = moduleDir => installedPlugins => Promise.all(installedPlugin
 const doList = () => {
   debug('command execution started')
 
-  const rootDir = userDataDir()
+  const rootDir = Settings.userDataDir()
   const moduleDir = path.join(rootDir, 'plugins', 'modules')
 
   // help the REPL render our records

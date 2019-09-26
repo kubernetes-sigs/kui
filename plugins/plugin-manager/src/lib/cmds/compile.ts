@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { userDataDir } from '@kui-shell/core/core/userdata'
+import { Commands, Settings } from '@kui-shell/core'
 import compile from '@kui-shell/core/core/plugin-assembler'
-import { Commands } from '@kui-shell/core'
 
 import { success } from '../util'
 
@@ -24,7 +23,7 @@ export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/plugin/compile',
     () => {
-      const rootDir = userDataDir()
+      const rootDir = Settings.userDataDir()
       return compile(rootDir, true).then(([newCommands]) =>
         success('installed', 'will be available, after reload', newCommands)
       )
