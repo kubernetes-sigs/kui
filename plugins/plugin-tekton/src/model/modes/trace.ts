@@ -19,7 +19,6 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import { UI } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 import { ActivationLikeFull as ActivationLike } from '@kui-shell/plugin-wskflow'
@@ -391,7 +390,7 @@ export const traceView = (tab: UI.Tab, run: PipelineRun, pipeline: Pipeline, jso
   const runActivation = makeRunActivationLike(run)
   render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
 
-  const badges: Badge[] = ['Tekton']
+  const badges: UI.Badge[] = ['Tekton']
 
   return {
     type: 'custom',

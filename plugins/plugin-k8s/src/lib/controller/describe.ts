@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
 import { Commands, i18n, REPL, Tables, UI } from '@kui-shell/core'
-import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
 import extractAppAndName from '../util/name'
 import { deleteResourceButton } from '../view/modes/crud'
@@ -73,7 +72,7 @@ const renderDescribe = async (
   // some resources have a notion of version
   const version = metadata && metadata.labels && metadata.labels.version
 
-  const badges: Badge[] = []
+  const badges: UI.Badge[] = []
 
   // some resources have a notion of duration
   const startTime = resource && status && status.startTime && new Date(status.startTime)

@@ -28,6 +28,7 @@ import * as Dom from '../webapp/util/dom'
 import * as Sidecar from '../webapp/views/sidecar'
 import * as ModeManager from '../webapp/bottom-stripe'
 import * as ModeRegistrar from '../webapp/views/registrar/modes'
+import * as BadgeRegistrar from '../webapp/views/registrar/badges'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -45,4 +46,9 @@ export namespace UI {
   export import ModeRegistration = ModeRegistrar.ModeRegistration
   export import ModeFilter = ModeRegistrar.SidecarModeFilter
   export import registerMode = ModeRegistrar.registerSidecarMode
+
+  export import Badge = Sidecar.Badge
+  export import BadgeSpec = Sidecar.BadgeSpec
+  export import BadgeRegistration = BadgeRegistrar.BadgeRegistration
+  export import registerBadge = BadgeRegistrar.registerSidecarBadge
 }

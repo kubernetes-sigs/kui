@@ -20,7 +20,6 @@ import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
 import { UI } from '@kui-shell/core'
-import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
@@ -82,7 +81,7 @@ export default async (
     }
   ]
 
-  const badges: Badge[] = ['Tekton']
+  const badges: UI.Badge[] = ['Tekton']
   if (!run) {
     if (jsons.find(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')) {
       badges.push({
