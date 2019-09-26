@@ -21,6 +21,7 @@ import * as Debug from 'debug'
 import { Commands, UI } from '@kui-shell/core'
 
 import { respondToRepl } from '../util'
+import { CommandResponse } from '../response'
 import { Entity as EditorEntity, fetchEntity } from '../fetchers'
 import * as usage from '../../usage'
 import { applyOverrides } from '../overrides'
@@ -47,7 +48,7 @@ const editCmd = async ({
   argvNoOptions: string[]
   parsedOptions: Commands.ParsedOptionsFull
   execOptions: Commands.ExecOptions
-}) => {
+}): Promise<CommandResponse> => {
   debug('edit command execution started', execOptions)
 
   // maybe the caller is passing us the name and entity programmatically?

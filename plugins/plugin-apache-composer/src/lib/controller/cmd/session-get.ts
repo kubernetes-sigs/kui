@@ -98,7 +98,7 @@ export default async (commandTree: Commands.Registrar) => {
             })
         }
 
-        return activationGet(opts)
+        return Promise.resolve(activationGet(opts))
           .then(response => view.formatSessionGet(response))
           .catch(err => {
             throw err

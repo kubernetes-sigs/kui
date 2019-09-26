@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from './entity'
 import { CodedError } from './errors'
 import { ExecOptions } from './execOptions'
 import { UsageModel } from '../core/usage-error'
@@ -159,10 +160,10 @@ export interface EvaluatorArgs extends CommandLine {
 }
 
 // TODO
-export type CommandResponse = any // eslint-disable-line @typescript-eslint/no-explicit-any
+export type Response = Entity
 
 /** base command handler */
-export type CommandHandler = (args: EvaluatorArgs) => CommandResponse | Promise<CommandResponse>
+export type CommandHandler = (args: EvaluatorArgs) => Response | Promise<Response>
 
 /**
  * Evaluator

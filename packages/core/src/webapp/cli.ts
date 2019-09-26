@@ -53,7 +53,7 @@ import { formatTable } from './views/table'
 import {
   Formattable,
   getSidecar,
-  BadgeSpec,
+  Badge,
   presentAs,
   showEntity,
   showCustom,
@@ -616,7 +616,7 @@ export const createPopupContentContainer = (css: string[] = [], presentation?: P
 interface PopupEntity {
   prettyType?: string
   modes?: SidecarMode[]
-  badges?: BadgeSpec[]
+  badges?: Badge[]
   controlHeaders?: boolean | string[]
   presentation?: Presentation
   subtext?: Formattable
@@ -1544,7 +1544,7 @@ export const prompt = (
     }
   }
 
-  return { mode: 'prompt' }
+  return { mode: 'prompt' as const } // `as const` prevents 'prompt' from being widened to string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

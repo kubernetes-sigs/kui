@@ -29,7 +29,7 @@ const debug = Debug('k8s/controller/kiali')
  * Install Kiali
  *
  */
-const installKiali = async () => {
+const installKiali = () => {
   const tmp = '/tmp' // FIXME
 
   // const ns = 'default' // FIXME
@@ -37,14 +37,14 @@ const installKiali = async () => {
   // const passphrase = 'kiali' // FIXME
   // await $(`kubectl create secret generic kiali -n "${ns}" --from-literal=username="${username}" --from-literal=passphrase="${passphrase}"`)
 
-  await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     exec('bash <(curl -L http://git.io/getLatestKialiKubernetes)', { cwd: tmp, shell: 'bash' }, (err, stdout) => {
       if (err) {
         console.error(err)
         reject(err)
       } else {
         debug(stdout)
-        resolve()
+        resolve(true)
       }
     })
   })

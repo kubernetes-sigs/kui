@@ -19,6 +19,8 @@ import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { EditorProvider, registerEditor } from '@kui-shell/core/webapp/views/registrar/editors'
 
+import { EditorEntity } from './response'
+
 class MonacoEditorProvider implements EditorProvider {
   public async tryOpen(tab: UI.Tab, custom: CustomSpec, options: Commands.ExecOptions) {
     const [{ isMetadataBearingByReference }, { edit }] = await Promise.all([
@@ -26,18 +28,20 @@ class MonacoEditorProvider implements EditorProvider {
       import('./cmds/edit')
     ])
 
-    const projection = custom.contentTypeProjection ? custom.content[custom.contentTypeProjection] : custom.content
+    const projection: string = custom.contentTypeProjection
+      ? custom.content[custom.contentTypeProjection]
+      : custom.content
 
     const metadataBearer = isMetadataBearingByReference(custom) ? custom.resource : custom
 
-    const entity = {
+    const entity: EditorEntity = {
       // EditorEntity
       type: custom.prettyType,
       name: custom.name,
       kind: metadataBearer.kind,
       metadata: metadataBearer.metadata,
       noZoom: custom.noZoom,
-      persister: () => true,
+      //      persister: () => true,
       annotations: [],
       exec: {
         kind: custom.contentType,
