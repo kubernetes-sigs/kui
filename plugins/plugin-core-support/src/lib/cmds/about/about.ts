@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 
 import { Commands, i18n, i18nFromMap, REPL, Settings, UI } from '@kui-shell/core'
 import { renderResult } from '@kui-shell/core/webapp/cli'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import usage from './usage'
@@ -253,7 +252,7 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Argumen
     content.appendChild(await renderAbout())
   }
 
-  const standardModes: SidecarMode[] = [
+  const standardModes: UI.Mode[] = [
     { mode: 'about', label: strings('About'), direct: 'about' },
     {
       mode: 'gettingStarted',
@@ -263,7 +262,7 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Argumen
     { mode: 'configure', label: strings('Configure'), direct: 'about --mode configure --content themes' },
     { mode: 'version', label: strings('Version'), direct: 'about --mode version' }
   ]
-  const modes: SidecarMode[] = standardModes.concat(Settings.theme.about || [])
+  const modes: UI.Mode[] = standardModes.concat(Settings.theme.about || [])
 
   modes.find(_ => _.mode === defaultMode).defaultMode = true
 

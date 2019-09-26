@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { REPL, UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 const debug = Debug('plugins/wskflow/util')
 
@@ -75,7 +74,7 @@ export const wskflow = async (tab: UI.Tab, visualize, { ast, name, namespace, vi
  * @param visibleWhenShowing only show the zoom buttons when the given mode is active
  *
  */
-export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): SidecarMode[] => {
+export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): UI.Mode[] => {
   if (controller && controller.register) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require('events')

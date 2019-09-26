@@ -20,7 +20,6 @@ import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
 import { UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 
@@ -68,7 +67,7 @@ export default async (
   })
   debug('content', content)
 
-  const tektonModes: SidecarMode[] = [
+  const tektonModes: UI.Mode[] = [
     flowMode,
     runMode,
     {

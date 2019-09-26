@@ -38,20 +38,22 @@ export const registerCapability: Capabilities.Registration = async () => {
  */
 export default async () => {
   if (!Capabilities.isHeadless()) {
-    const registerSidecarMode = (await import('@kui-shell/core/webapp/views/registrar/modes')).default
+    const {
+      UI: { registerMode }
+    } = await import('@kui-shell/core')
     Promise.all([
       import('./lib/view/modes/pods')
         .then(_ => _.podMode)
-        .then(registerSidecarMode), // show pods of deployments
+        .then(registerMode), // show pods of deployments
       import('./lib/view/modes/events')
         .then(_ => _.eventsMode)
-        .then(registerSidecarMode), // show events
+        .then(registerMode), // show events
       import('./lib/view/modes/containers')
         .then(_ => _.containersMode)
-        .then(registerSidecarMode), // show containers of pods
+        .then(registerMode), // show containers of pods
       import('./lib/view/modes/last-applied')
         .then(_ => _.lastAppliedMode)
-        .then(registerSidecarMode), // show a last applied configuration tab
+        .then(registerMode), // show a last applied configuration tab
       import('./lib/tab-completion')
         .then(_ => _.default())
         .catch((err: Error) => {

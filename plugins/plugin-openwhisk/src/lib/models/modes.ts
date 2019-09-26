@@ -17,9 +17,9 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/openwhisk/models/modes')
 
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { UI } from '@kui-shell/core'
 
-export const actionSpecificModes: SidecarMode[] = [{ mode: 'code', defaultMode: true }, { mode: 'limits' }]
+export const actionSpecificModes: UI.Mode[] = [{ mode: 'code', defaultMode: true }, { mode: 'limits' }]
 
 /**
  * Add action modes; where=push|unshift

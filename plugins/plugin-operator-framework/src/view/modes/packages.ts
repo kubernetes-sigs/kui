@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 
 import { Tables, UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
@@ -51,9 +49,9 @@ function isPackageBearer(
  * Show status.packages as a Table
  *
  */
-export const packagesMode: ModeRegistration<KubeResource> = {
+export const packagesMode: UI.ModeRegistration<KubeResource> = {
   when: isPackageBearer,
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     try {
       return {
         mode: 'Packages',

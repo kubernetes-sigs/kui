@@ -17,7 +17,6 @@
 import { safeDump } from 'js-yaml'
 
 import { UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { ResponseObject } from './flow'
 
@@ -25,7 +24,7 @@ import { ResponseObject } from './flow'
  * The sidecar mode for the tekton flow visualization
  *
  */
-const mode: SidecarMode = {
+const mode: UI.Mode = {
   mode: 'Run Config',
   direct: async (tab: UI.Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {

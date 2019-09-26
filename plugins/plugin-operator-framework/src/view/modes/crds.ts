@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 
 import { Tables, UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
@@ -68,9 +66,9 @@ function isCRDBearer(resource: KubeResource): resource is CRDBearer {
  * Show spec.customresourcedefinitions
  *
  */
-export const crdsMode: ModeRegistration<KubeResource> = {
+export const crdsMode: UI.ModeRegistration<KubeResource> = {
   when: isCRDBearer,
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     try {
       return {
         mode: 'CRDs',

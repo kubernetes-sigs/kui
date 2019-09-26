@@ -22,7 +22,6 @@ import { Capabilities, Commands, REPL, UI, Util } from '@kui-shell/core'
 import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as usage from './preview-usage'
 import { codeViewMode, vizAndfsmViewModes } from '../../utility/decorate'
@@ -167,7 +166,7 @@ export default (commandTree: Commands.Registrar) => {
           namespace: undefined
         })
 
-        const modes: SidecarMode[] = vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
+        const modes: UI.Mode[] = vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
         modes.splice(modes.length, 0, ...coreModes)
         const extraModes = zoomToFitButtons(controller)
 

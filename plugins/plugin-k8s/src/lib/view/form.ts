@@ -19,7 +19,6 @@ import { safeDump } from 'js-yaml'
 
 import { i18n, UI } from '@kui-shell/core'
 import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import * as Resources from '../model/resource'
 
@@ -362,7 +361,7 @@ export const generateForm = (tab: UI.Tab) => (
     }
   })
 
-  const modes: SidecarMode[] = [
+  const modes: UI.Mode[] = [
     {
       mode: 'save',
       label: strings('save'),

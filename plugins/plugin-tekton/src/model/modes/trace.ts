@@ -19,7 +19,6 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import { UI } from '@kui-shell/core'
 import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
@@ -410,7 +409,7 @@ export const traceView = (tab: UI.Tab, run: PipelineRun, pipeline: Pipeline, jso
  * Sidecar mode for a pipeline run trace view
  *
  */
-const traceMode: SidecarMode = {
+const traceMode: UI.Mode = {
   mode: 'trace',
   direct: async (tab: UI.Tab, _: ResponseObject) => {
     const resource = _.resource as PipelineRun

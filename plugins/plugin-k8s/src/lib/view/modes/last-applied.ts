@@ -19,8 +19,6 @@ import { safeDump } from 'js-yaml'
 
 import { i18n, UI } from '@kui-shell/core'
 import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -51,9 +49,9 @@ function hasLastApplied(resource: KubeResource): boolean {
  * the given resource.
  *
  */
-export const lastAppliedMode: ModeRegistration<KubeResource> = {
+export const lastAppliedMode: UI.ModeRegistration<KubeResource> = {
   when: hasLastApplied,
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     debug('lastApplied', resource)
     try {
       return {

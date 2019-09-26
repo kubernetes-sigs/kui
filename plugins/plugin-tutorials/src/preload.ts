@@ -16,7 +16,7 @@
 
 import { dirname } from 'path'
 
-import { Util } from '@kui-shell/core/'
+import { Util } from '@kui-shell/core'
 
 export default async () => {
   // give visibility to our @demos directory on the module path

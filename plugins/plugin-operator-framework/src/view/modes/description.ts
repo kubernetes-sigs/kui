@@ -18,9 +18,6 @@ import * as Debug from 'debug'
 import * as marked from 'marked'
 
 import { UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-
 import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
 
 const debug = Debug('plugin/operator-framework/view/modes/description')
@@ -44,9 +41,9 @@ function isDescriptionBearer(resource: KubeResource): resource is DescriptionBea
  * Show spec.customresourcedefinitions
  *
  */
-export const descriptionMode: ModeRegistration<KubeResource> = {
+export const descriptionMode: UI.ModeRegistration<KubeResource> = {
   when: isDescriptionBearer,
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     try {
       return {
         mode: 'Description',

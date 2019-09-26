@@ -24,9 +24,13 @@
 
 import * as CLI from '../webapp/cli'
 import * as Inject from '../webapp/util/inject'
-import * as Dom from '@kui-shell/core/webapp/util/dom'
+import * as Dom from '../webapp/util/dom'
+import * as Sidecar from '../webapp/views/sidecar'
+import * as ModeManager from '../webapp/bottom-stripe'
+import * as ModeRegistrar from '../webapp/views/registrar/modes'
 
 export namespace UI {
+  /** interface defining the top-level UI tabs */
   export import Tab = CLI.Tab
 
   export import injectCSS = Inject.injectCSS
@@ -34,5 +38,11 @@ export namespace UI {
   export import injectScript = Inject.injectScript
   export import loadHTML = Inject.loadHTML
 
+  /** Remove all DOM children from a given DOM Node */
   export import empty = Dom.removeAllDomChildren
+
+  export import Mode = ModeManager.SidecarMode
+  export import ModeRegistration = ModeRegistrar.ModeRegistration
+  export import ModeFilter = ModeRegistrar.SidecarModeFilter
+  export import registerMode = ModeRegistrar.registerSidecarMode
 }
