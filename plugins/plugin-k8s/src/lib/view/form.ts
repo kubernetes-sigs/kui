@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
 import { i18n, UI } from '@kui-shell/core'
-import { updateSidecarHeader } from '@kui-shell/core/webapp/views/sidecar'
 
 import * as Resources from '../model/resource'
 
@@ -89,10 +88,11 @@ const doSave = (
       const parent = input.__kuiParent
       update(parent, path, input.value)
 
+      /* no longer supported:
       const label = input.getAttribute('data-form-label')
       if (label === 'name') {
         updateSidecarHeader(tab, { name: input.value })
-      }
+      } */
     }
 
     debug('doSave done extracting values', yaml)

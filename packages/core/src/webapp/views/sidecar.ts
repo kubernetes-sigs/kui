@@ -971,27 +971,6 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 } /* showCustom */
 
 /**
- * Update sidecar header
- *
- */
-interface HeaderUpdate {
-  name?: string
-  packageName?: string
-}
-export const updateSidecarHeader = (tab: Tab, update: HeaderUpdate, sidecar = getSidecar(tab)) => {
-  const nameDom = sidecar.querySelector('.sidecar-header-name-content')
-
-  if (update.name) {
-    const nameContainer = element('.entity-name', nameDom)
-    nameContainer.innerText = update.name
-  }
-
-  if (update.packageName) {
-    element('.package-prefix', nameDom).innerText = update.packageName
-  }
-}
-
-/**
  * @return the enclosing tab for the given sidecar
  *
  */
