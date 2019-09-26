@@ -16,7 +16,6 @@
 
 import * as Debug from 'debug'
 
-import * as cli from '@kui-shell/core/webapp/cli'
 import { REPL, Tables, UI } from '@kui-shell/core'
 
 import { element } from '@kui-shell/core/webapp/util/dom'
@@ -44,7 +43,7 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
+const wskflow = async (tab: UI.Tab, ast: Record<string, any>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
   const { visualize } = await import('@kui-shell/plugin-wskflow')
@@ -63,7 +62,7 @@ const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
  *
  */
 export const showEntity = async (
-  tab: cli.Tab,
+  tab: UI.Tab,
   entity,
   sidecar: Element,
   options: ShowOptions = new DefaultShowOptions()
@@ -419,7 +418,7 @@ export const showEntity = async (
     }
   }
 
-  cli.scrollIntoView()
+  UI.LowLevel.scrollIntoView()
 
   //
   return Promise.resolve(responseToRepl)

@@ -43,7 +43,6 @@ renderer.link = (href: string, title: string, text: string) => {
   return `<a class='bx--link' href='${href}'` + (title ? ' title="' + title + '"' : '') + `}>${text}</a>`
 }
 const marked = _ => Marked(_, { renderer })
-import * as cli from '@kui-shell/core/webapp/cli'
 
 // TODO eliminate this jquery dependence
 let $
@@ -130,12 +129,12 @@ const cancelAsyncs = obj => {
 
 /** Sidecar management. TODO extract this */
 const sidecarManager = {
-  enterFullscreen: (tab: cli.Tab) => {
+  enterFullscreen: (tab: UI.Tab) => {
     showSidecar(tab)
     toggleMaximization(tab)
   },
 
-  exitFullscreen: (tab: cli.Tab) => {
+  exitFullscreen: (tab: UI.Tab) => {
     clearSelection(tab)
     toggleMaximization(tab)
   }
@@ -157,7 +156,7 @@ const clearHighlights = () => {
  * Close the current tutorial
  *
  */
-const close = (tab: cli.Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
+const close = (tab: UI.Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
   new Promise<boolean>(resolve => {
     debug('close')
 
@@ -189,7 +188,7 @@ const close = (tab: cli.Tab, pane: TutorialPane, obj: TutorialDefinition, delay 
     }
 
     // make sure the repl has focus when we're done
-    cli.getCurrentPrompt().focus()
+    UI.getCurrentPrompt().focus()
   })
 
 /**
@@ -343,13 +342,7 @@ const renderOneTable = (parent: Element, pane: TutorialPane, nested = false) => 
  * Handle transitions between steps
  *
  */
-const transitionSteps = (
-  tab: cli.Tab,
-  stepNum: number,
-  obj: TutorialDefinition,
-  pane: TutorialPane,
-  nested = false
-) => {
+const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, pane: TutorialPane, nested = false) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks
@@ -654,7 +647,7 @@ const transitionSteps = (
       $(selector).val(value)
     } else {
       debug('autocomplete', value)
-      cli.partial(value)
+      UI.LowLevel.partialInput(value)
     }
   }
 
@@ -700,7 +693,7 @@ const focusOnBiggestScrollable = () => {
  * Launches the specified tutorial
  *
  */
-const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinition) => {
+const showTutorial = (tab: UI.Tab, tutorialName: string, obj: TutorialDefinition) => {
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open
@@ -842,7 +835,7 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
     transitionSteps(tab, 0, obj, pane)
 
     // we'll be bumping up from the bottom; make sure the active repl prompt is visible
-    cli.scrollIntoView({ when: 800 })
+    UI.LowLevel.scrollIntoView({ when: 800 })
 
     // so that the user can immediately arrow and pageup/pagedown in the biggest scrollable
     setTimeout(focusOnBiggestScrollable, 800)

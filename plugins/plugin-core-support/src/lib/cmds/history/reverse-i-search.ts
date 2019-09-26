@@ -23,12 +23,10 @@ import * as historyModel from '@kui-shell/core/models/history'
 import {
   getTabFromTarget,
   getBlockOfPrompt,
-  getCurrentPrompt,
   setUsingCustomPrompt,
   unsetUsingCustomPrompt,
   getCurrentPromptLeft
 } from '@kui-shell/core/webapp/cli'
-import { keys, isCursorMovement } from '@kui-shell/core/webapp/keys'
 
 const debug = Debug('core-support/history/reverse-i-search')
 
@@ -71,7 +69,7 @@ class ActiveISearch {
 
   constructor(tab: UI.Tab) {
     this.tab = tab
-    this.prompt = getCurrentPrompt(tab)
+    this.prompt = UI.getCurrentPrompt(tab)
     this.promptLeft = getCurrentPromptLeft(tab)
 
     this.placeholder = document.createElement('span')
@@ -116,7 +114,7 @@ class ActiveISearch {
    *
    */
   cancelISearch(evt?: KeyboardEvent) {
-    const isCtrlC = evt && evt.keyCode === keys.C && evt.ctrlKey
+    const isCtrlC = evt && evt.keyCode === UI.Keys.Codes.C && evt.ctrlKey
     this.tab['_kui_active_i_search'] = undefined
 
     if (this.isSearchActive) {
@@ -205,7 +203,7 @@ class ActiveISearch {
    */
   maybeComplete(evt: KeyboardEvent) {
     if (this.isSearchActive) {
-      if (evt.keyCode === keys.ENTER) {
+      if (evt.keyCode === UI.Keys.Codes.ENTER) {
         this.completeSearch()
         this.prompt.dispatchEvent(new KeyboardEvent(evt.type, evt))
       }
@@ -257,7 +255,7 @@ function registerListener() {
       const tab = getTabFromTarget(evt.srcElement)
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']
 
-      if (evt.keyCode === keys.R) {
+      if (evt.keyCode === UI.Keys.Codes.R) {
         debug('got ctrl+r')
         if (activeSearch) {
           debug('continuation of existing reverse-i-search')
@@ -266,7 +264,7 @@ function registerListener() {
           debug('new reverse-i-search')
           tab['_kui_active_i_search'] = new ActiveISearch(tab)
         }
-      } else if (activeSearch && isCursorMovement(evt)) {
+      } else if (activeSearch && UI.Keys.isCursorMovement(evt)) {
         activeSearch.completeSearch()
       } else if (activeSearch) {
         // with ctrl key down, let any other keycode result in cancelling the outstanding i-search

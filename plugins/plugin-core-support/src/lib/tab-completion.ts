@@ -19,8 +19,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as minimist from 'yargs-parser'
 
-import { keys } from '@kui-shell/core/webapp/keys'
-import * as cli from '@kui-shell/core/webapp/cli'
 import { Capabilities, Commands, Errors, REPL, Tables, UI, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/tab completion')
@@ -63,7 +61,7 @@ async function applyEnumerator(commandLine: Commands.CommandLine, spec: TabCompl
  */
 const listenForUpDown = (prompt: HTMLInputElement) => {
   const moveTo = (nextOp: string, evt: Event) => {
-    const block = cli.getCurrentBlock()
+    const block = UI.getCurrentBlock()
     const temporaryContainer = block && block.querySelector('.tab-completion-temporary')
 
     if (temporaryContainer) {
@@ -86,13 +84,13 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
     // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
     const char = evt.keyCode
 
-    if (char === keys.DOWN) {
+    if (char === UI.Keys.Codes.DOWN) {
       moveTo('nextSibling', evt)
-    } else if (char === keys.UP) {
+    } else if (char === UI.Keys.Codes.UP) {
       moveTo('previousSibling', evt)
-    } else if (char === keys.C && evt.ctrlKey) {
+    } else if (char === UI.Keys.Codes.C && evt.ctrlKey) {
       // Ctrl+C, cancel
-      cli.doCancel()
+      UI.LowLevel.doCancel()
     }
   }
 
@@ -115,8 +113,8 @@ const listenForEscape = () => {
   }
 
   document.onkeyup = evt => {
-    if (evt.keyCode === keys.ESCAPE) {
-      const block = cli.getCurrentBlock()
+    if (evt.keyCode === UI.Keys.Codes.ESCAPE) {
+      const block = UI.getCurrentBlock()
       const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
       if (temporaryContainer) {
@@ -746,10 +744,10 @@ export default () => {
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   let currentEnumeratorAsync: number
   document.addEventListener('keydown', async (evt: KeyboardEvent) => {
-    const block = cli.getCurrentBlock()
+    const block = UI.getCurrentBlock()
     const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
-    if (evt.keyCode === keys.ENTER) {
+    if (evt.keyCode === UI.Keys.Codes.ENTER) {
       if (temporaryContainer) {
         //
         // user hit enter, and we have a temporary container open; remove it
@@ -761,7 +759,7 @@ export default () => {
           const completion = current.getAttribute('data-completion')
           const doEscape = current.hasAttribute('data-do-escape')
           const addSpace = current.hasAttribute('data-add-space')
-          const prompt = cli.getCurrentPrompt()
+          const prompt = UI.getCurrentPrompt()
 
           complete(completion, prompt, {
             temporaryContainer,
@@ -780,11 +778,11 @@ export default () => {
           // it may have already been removed elsewhere
         }
       }
-    } else if (evt.keyCode === keys.TAB) {
-      const prompt = cli.getCurrentPrompt()
+    } else if (evt.keyCode === UI.Keys.Codes.TAB) {
+      const prompt = UI.getCurrentPrompt()
 
       if (prompt) {
-        if (cli.isUsingCustomPrompt(prompt)) {
+        if (UI.LowLevel.isUsingCustomPrompt(prompt)) {
           // there is a custom prompt, we want to swallow the tab, to
           // maintain focus on the prompt
           evt.preventDefault()

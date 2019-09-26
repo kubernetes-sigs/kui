@@ -17,11 +17,10 @@
 import * as Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
+import { REPL, UI } from '@kui-shell/core'
 import { element } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
-import { REPL, UI } from '@kui-shell/core'
 
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
@@ -55,7 +54,7 @@ export default (tab: UI.Tab, entity, options: ShowOptions) => {
   if (!entity.start) {
     sidecar.classList.add('no-activation-timing-data')
   } else {
-    startDom.appendChild(prettyPrintTime(entity.start))
+    startDom.appendChild(UI.PrettyPrinters.time(entity.start))
   }
 
   // duration
