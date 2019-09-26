@@ -19,7 +19,8 @@ const debug = Debug('webapp/pip')
 debug('loading')
 
 import { removeAllDomChildren } from './util/dom'
-import { getSidecar, showEntity } from './views/sidecar'
+import { getSidecar, showEntity, getActiveView } from './views/sidecar'
+
 import Presentation from './views/presentation'
 import { popupListen, Tab } from './cli'
 import { ExecOptions } from '../models/execOptions'
@@ -222,12 +223,13 @@ const capture = (tab: Tab, selector: string, redraw?: Function): CapturedHeader 
   }
 }
 
+type StringProducing = () => Promise<string>
+
 /**
  * Drill down to a more detailed view, using the given command to
  * populate the new view.
  *
  */
-type StringProducing = () => Promise<string>
 export const drilldown = (
   tab: Tab,
   command: string | EntitySpec | StringProducing,
@@ -239,7 +241,8 @@ export const drilldown = (
   if (event) event.stopPropagation()
 
   // maybe ccontainer is a query selector
-  const container = typeof ccontainer === 'string' ? document.querySelector(ccontainer) : ccontainer
+  const container =
+    typeof ccontainer === 'string' ? document.querySelector(ccontainer) : ccontainer || getActiveView(tab)
 
   debug('drilldown', command, container, returnTo)
 

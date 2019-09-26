@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { Commands } from '@kui-shell/core'
-import { Streamable } from '@kui-shell/core/webapp/cli'
 
 import { preprocessTable, formatTable } from './formatTable'
 
@@ -44,7 +43,6 @@ export const format = async (
   entityType: string,
   options,
   response: string,
-  stdout: (msg: Streamable) => void,
   execOptions: Commands.ExecOptions
 ) => {
   debug('nested?', execOptions.nested)

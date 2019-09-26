@@ -20,13 +20,8 @@ import { REPL, Tables, UI } from '@kui-shell/core'
 
 import { selectorToString } from '../../util/selectors'
 import { Resource, KubeResource } from '../../model/resource'
-import insertView from '../insert-view'
-import { formatTable } from '../formatMultiTable'
 
 const debug = Debug('k8s/view/modes/pods')
-
-/** for drilldown back button */
-const viewName = 'Pods'
 
 /**
  * Return a sidecar mode button model that shows a pods table for the
@@ -77,7 +72,7 @@ interface Parameters {
   resource: Resource
 }
 
-export const renderAndViewPods = async (tab: UI.Tab, parameters: Parameters) => {
+export const renderAndViewPods = async (tab: UI.Tab, parameters: Parameters): Promise<Tables.Table> => {
   const { command, resource } = parameters
   debug('renderAndViewPods', command, resource)
 
@@ -89,11 +84,5 @@ export const renderAndViewPods = async (tab: UI.Tab, parameters: Parameters) => 
   debug('getPods', getPods)
 
   const tableModel: Tables.Table = await REPL.qexec(getPods)
-
-  const tableView = formatTable(tab, tableModel, {
-    usePip: false,
-    viewName,
-    execOptions: { delegationOk: true }
-  })
-  return insertView(tab)(tableView)
+  return tableModel
 }
