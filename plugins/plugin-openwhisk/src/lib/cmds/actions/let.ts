@@ -40,6 +40,7 @@ import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unl
 
 import { Capabilities, Commands, REPL, Util } from '@kui-shell/core'
 
+import { OpenWhiskEntity } from '../../models/openwhisk-entity'
 import { synonyms } from '../../models/synonyms'
 import { deployHTMLViaOpenWhisk } from './_html'
 import { current as currentNamespace } from '../../models/namespace'
@@ -718,7 +719,7 @@ export default async (commandTree: Commands.Registrar) => {
          throw new Error('Please use a name with an extension of .js, .py')
          } */
 
-      const action = options.action || {}
+      const action: OpenWhiskEntity = options.action || {}
       action.exec = {
         kind: kind,
         code: code

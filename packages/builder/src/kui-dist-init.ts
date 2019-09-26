@@ -19,7 +19,7 @@
 import { join, dirname } from 'path'
 import * as colors from 'colors/safe'
 import { exec } from 'child_process'
-import { copy, exists, mkdir, mkdirp, writeFile } from 'fs-extra'
+import { copy, pathExists, mkdir, mkdirp, writeFile } from 'fs-extra'
 
 /** simple message notifying the user that we are creating an asset */
 const creating = (what: string, how = 'creating'): void => {
@@ -45,7 +45,7 @@ const tsconfig = {
  *
  */
 const copyDirectory = async (breadcrumb: string, target: string, force: boolean) => {
-  const targetExists = await exists(target)
+  const targetExists = await pathExists(target)
   if (!targetExists || force) {
     // note fs-extra's copy of directories copies the *contents*
     if (!targetExists) {
@@ -66,28 +66,28 @@ const copyDirectory = async (breadcrumb: string, target: string, force: boolean)
 export const main = async (argv: string[]) => {
   const force = !!argv.find(_ => _ === '-f' || _ === '--force')
 
-  if (!(await exists('plugins'))) {
+  if (!(await pathExists('plugins'))) {
     await mkdir('plugins')
     creating('plugins directory')
   } else {
     notCreating('plugins directory')
   }
 
-  if (!(await exists('packages/app/src'))) {
+  if (!(await pathExists('packages/app/src'))) {
     await mkdirp('packages/app/src')
     creating('packages/app/src directory')
   } else {
     notCreating('packages/app/src directory')
   }
 
-  if (!(await exists('packages/app/src/main.ts'))) {
+  if (!(await pathExists('packages/app/src/main.ts'))) {
     await writeFile('packages/app/src/main.ts', '// intentionally blank')
     creating('packages/app/src directory')
   } else {
     notCreating('packages/app/src directory')
   }
 
-  if (!(await exists('tsconfig.json'))) {
+  if (!(await pathExists('tsconfig.json'))) {
     await writeFile('tsconfig.json', JSON.stringify(tsconfig, undefined, 2))
     creating('tsconfig.json')
   } else {

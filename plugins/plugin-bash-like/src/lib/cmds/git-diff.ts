@@ -16,9 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Commands, REPL } from '@kui-shell/core'
-import { isPopup } from '@kui-shell/core/webapp/cli'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
+import { Commands, REPL, UI } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -82,7 +80,7 @@ const doDiff = async ({ command, execOptions }: Commands.Arguments) =>
               // outputFormat: 'side-by-side',
             }),
             {
-              presentation: isPopup() ? Presentation.FixedSize : Presentation.Default
+              presentation: UI.isPopup() ? UI.Presentation.FixedSize : UI.Presentation.Default
             },
             undefined,
             commandPart,

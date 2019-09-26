@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-
 import { Entity, MetadataBearing } from '@kui-shell/core/models/entity'
 
 export interface KubeStatusCondition {
@@ -60,7 +58,7 @@ export interface KubeStatus {
   conditions?: KubeStatusCondition[]
 }
 export class DefaultKubeStatus implements KubeStatus {
-  message = undefined
+  public message = undefined
 }
 
 interface OwnerReferences {
@@ -78,9 +76,9 @@ export interface KubeMetadata {
   ownerReferences?: OwnerReferences[]
 }
 export class DefaultKubeMetadata implements KubeMetadata {
-  kind = undefined
+  public kind = undefined
 
-  name = undefined
+  public name = undefined
 }
 
 interface RoleRule {

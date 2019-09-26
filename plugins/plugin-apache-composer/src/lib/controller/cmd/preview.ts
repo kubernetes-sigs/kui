@@ -19,7 +19,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import { Capabilities, Commands, REPL, UI, Util } from '@kui-shell/core'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { optionsToString, handleError } from '@kui-shell/core/core/utility'
 
@@ -184,7 +183,7 @@ export default (commandTree: Commands.Registrar) => {
           exec: {
             kind: 'source'
           },
-          presentation: Presentation.FixedSize,
+          presentation: UI.Presentation.FixedSize,
           modes: modes.concat(extraModes),
           annotations: [
             {

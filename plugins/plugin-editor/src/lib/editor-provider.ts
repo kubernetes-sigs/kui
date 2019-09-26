@@ -15,14 +15,12 @@
  */
 
 import { Commands, UI } from '@kui-shell/core'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
 import { EditorProvider, registerEditor } from '@kui-shell/core/webapp/views/registrar/editors'
 
 import { EditorEntity } from './response'
 
 class MonacoEditorProvider implements EditorProvider {
-  public async tryOpen(tab: UI.Tab, custom: CustomSpec, options: Commands.ExecOptions) {
+  public async tryOpen(tab: UI.Tab, custom: Commands.CustomResponse, options: Commands.ExecOptions) {
     const [{ isMetadataBearingByReference }, { edit }] = await Promise.all([
       import('@kui-shell/core/webapp/views/sidecar'),
       import('./cmds/edit')
@@ -53,7 +51,7 @@ class MonacoEditorProvider implements EditorProvider {
 
     return {
       content,
-      presentation: Presentation.FixedSize
+      presentation: UI.Presentation.FixedSize
     }
   }
 }

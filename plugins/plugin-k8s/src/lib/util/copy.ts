@@ -25,7 +25,7 @@
 import * as Debug from 'debug'
 
 import * as fs from 'fs'
-import { exists, lstat, ensureDir, remove, writeFile } from 'fs-extra'
+import { pathExists, lstat, ensureDir, remove, writeFile } from 'fs-extra'
 import { basename, join } from 'path'
 import { dir as tmpDir, file as tmpFile } from 'tmp'
 
@@ -47,7 +47,7 @@ const copyFile = (src, target) =>
     let targetFile = target
 
     // if target is a directory a new file with the same name will be created
-    if (await exists(target)) {
+    if (await pathExists(target)) {
       if ((await lstat(target)).isDirectory()) {
         targetFile = join(target, basename(src))
       }

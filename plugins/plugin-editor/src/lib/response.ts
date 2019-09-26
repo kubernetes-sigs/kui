@@ -17,10 +17,9 @@
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
+import { Commands } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './fetchers'
-
 export { EditorEntity }
 
 export interface Editor extends MonacoEditor.ICodeEditor {
@@ -37,7 +36,7 @@ export interface EditorResponse extends EditorState {
   content: HTMLElement
 }
 
-export interface CommandResponse extends CustomSpec {
+export interface CommandResponse extends Commands.CustomResponse {
   content: HTMLElement
 }
 

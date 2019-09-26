@@ -17,17 +17,18 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { Commands, Settings } from '@kui-shell/core'
+import { Commands, Settings, Tables } from '@kui-shell/core'
 
 import { commands as usage } from '../../usage'
 
-const doList = ({ argvNoOptions }: Commands.Arguments) => {
+const doList = ({ argvNoOptions }: Commands.Arguments): Promise<Tables.Table> => {
   const prescanned = path.join(Settings.userDataDir(), 'plugins', '.pre-scanned')
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
 
   return fs
     .readFile(prescanned)
+    .then(_ => _.toString())
     .then(JSON.parse)
     .then(({ commandToPlugin, flat }) => {
       const commands = []
@@ -53,15 +54,15 @@ const doList = ({ argvNoOptions }: Commands.Arguments) => {
         (command, idx) => !commands.find((other, otherIdx) => idx !== otherIdx && command.endsWith(other))
       )
     )
-    .then(commands =>
-      commands
+    .then(commands => ({
+      body: commands
         .map(command => command.replace(/^\//, '').replace(/\//g, ' '))
         .map(name => ({
           type: 'command',
           name,
           onclick: name
         }))
-    )
+    }))
     .catch(err => {
       if (err['code'] === 'ENOENT') {
         const error = new Error('This plugin is not installed')

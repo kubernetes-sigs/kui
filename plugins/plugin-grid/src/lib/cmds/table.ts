@@ -18,7 +18,6 @@ import * as events from 'events'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Commands, UI } from '@kui-shell/core'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
 import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -647,7 +646,7 @@ const _drawTable = (
     content,
     controlHeaders: true,
     eventBus,
-    presentation: Presentation.SidecarFullscreenForPopups,
+    presentation: UI.Presentation.SidecarFullscreenForPopups,
     modes: modes(viewName.toLowerCase(), options).concat(tableModes)
   }
 

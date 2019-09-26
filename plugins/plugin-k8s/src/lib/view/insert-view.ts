@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { UI } from '@kui-shell/core'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
 import { getActiveView, presentAs } from '@kui-shell/core/webapp/views/sidecar'
 
 const debug = Debug('k8s/view/insert-view')
@@ -36,5 +35,5 @@ export default (tab: UI.Tab) => (view: HTMLElement) => {
   UI.empty(container)
   container.appendChild(view)
 
-  presentAs(tab, Presentation.Default)
+  presentAs(tab, UI.Presentation.Default)
 }

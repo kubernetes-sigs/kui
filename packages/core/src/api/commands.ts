@@ -24,11 +24,13 @@
 
 import * as _ExecOptions from '../models/execOptions'
 import * as _Commands from '../models/command'
-import * as _Plugins from '../models/plugin'
+import * as Plugins from '../models/plugin'
+import * as Sidecar from '../webapp/views/sidecar'
 
 export namespace Commands {
   export import Arguments = _Commands.EvaluatorArgs
   export import Response = _Commands.Response
+  export import CustomResponse = Sidecar.CustomSpec
 
   export import DefaultExecOptions = _ExecOptions.DefaultExecOptions
   export import ExecOptions = _ExecOptions.ExecOptions
@@ -44,6 +46,6 @@ export namespace Commands {
   export import Event = _Commands.Event
   export import CommandLine = _Commands.CommandLine
 
-  export import PluginRegistration = _Plugins.PluginRegistration
-  export import PreloadRegistration = _Plugins.PreloadRegistration
+  export import PluginRegistration = Plugins.PluginRegistration
+  export import PreloadRegistration = Plugins.PreloadRegistration
 }

@@ -58,7 +58,7 @@ elif [ -n "$LAYERS" ]; then
     WHICH=$LAYERS
 else
     # all layers
-    WHICH="*"
+    WHICH=""
 fi
 
 echo "Running these layers: $# $WHICH"
@@ -77,14 +77,18 @@ function kill_them_all() {
 trap kill_them_all INT
 
 idx=${PORT_OFFSET_BASE-1}
-for i in $WHICH; do
-    LAYER=`basename $i`
-    echo "spawning mocha layer $LAYER PORT_OFFSET=$idx"
-    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1) &
-    children+=("$!")
-    childrenNames+=("$LAYER")
-    idx=$((idx+1))
-done
+if [ -z "$WHICH" ]; then
+    (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1)
+else
+    for i in $WHICH; do
+        LAYER=`basename $i`
+        echo "spawning mocha layer $LAYER PORT_OFFSET=$idx"
+        (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1) &
+        children+=("$!")
+        childrenNames+=("$LAYER")
+        idx=$((idx+1))
+    done
+fi
 
 function wait_and_get_exit_codes() {
     children=("$@")

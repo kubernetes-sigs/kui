@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 import * as Debug from 'debug'
 
-import { REPL, UI } from '@kui-shell/core'
+import { Commands, REPL, UI } from '@kui-shell/core'
 import { ok } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
-import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { current as currentNamespace } from '../../../models/namespace'
 import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
@@ -32,10 +31,10 @@ const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
  */
 export default async (
   tab: UI.Tab,
-  response: Activation | EntitySpec,
+  response: Activation,
   resultDom: Element,
-  parsedOptions: Object, // eslint-disable-line @typescript-eslint/ban-types
-  execOptions: Object // eslint-disable-line @typescript-eslint/ban-types
+  parsedOptions: Commands.ParsedOptions,
+  execOptions: Commands.ExecOptions
 ): Promise<boolean> => {
   if (isAsyncActivationSpec(response)) {
     // probably non-blocking invoke

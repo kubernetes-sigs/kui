@@ -27,7 +27,7 @@ const debug = Debug('k8s/discovery/helm-client-version')
  */
 export default async (env): Promise<string> => {
   if (process.env.KUI_HELM_CLIENTS_DIR) {
-    const { exists } = await import('fs-extra')
+    const { pathExists } = await import('fs-extra')
 
     debug('attempting to infer a matching helm client', env.KUBECONFIG, env.PATH)
     const { exec } = await import('child_process')
@@ -60,7 +60,7 @@ export default async (env): Promise<string> => {
         const helmClientPath = join(process.env.KUI_HELM_CLIENTS_DIR, helmClient)
         debug('helmClientPat', helmClientPath)
 
-        if (exists(helmClientPath)) {
+        if (pathExists(helmClientPath)) {
           return helmClientPath
         }
       }

@@ -20,7 +20,6 @@ import * as Debug from 'debug'
 import { basename, dirname, join } from 'path'
 
 import { Capabilities, Commands, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
-import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
@@ -76,15 +75,15 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) =
     filepathForDrilldown: filepath,
     resource: yaml
   }
-  const addModeButtons = (defaultMode: string) => (response: EntitySpec) => {
-    response['modes'] = (response['modes'] || []).concat([
+  const addModeButtons = (defaultMode: string) => (response: Commands.CustomResponse) => {
+    response.modes = (response.modes || []).concat([
       { mode: 'edit', direct: openAsForm },
       statusButton('kubectl', resource, FinalState.NotPendingLike),
       { mode: 'raw', label: 'YAML', direct: openInEditor }
     ])
 
     // adjust selected mode
-    response['modes'].forEach(spec => {
+    response.modes.forEach(spec => {
       if (spec.mode === defaultMode) {
         spec.defaultMode = true
       } else {
@@ -160,11 +159,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) =
  * Render the resources as a REPL table
  *
  */
-const showAsTable = async (
-  yamls: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
-  filepathAsGiven: string,
-  parsedOptions
-): Promise<Tables.Table> => {
+const showAsTable = async (yamls: KubeResource[], filepathAsGiven: string, parsedOptions): Promise<Tables.Table> => {
   debug('showing as table', yamls)
 
   const ourOptions = {
@@ -188,7 +183,7 @@ const showAsTable = async (
  * kedit command handler
  *
  */
-const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments) => {
+const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments): Promise<Commands.Response> => {
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
@@ -199,7 +194,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments) 
   const { readFile } = await import('fs-extra') // 22ms or so to load fs-extra, so defer it
 
   try {
-    const yamls = parseYAML(await readFile(filepath)).filter(x => x)
+    const yamls = parseYAML((await readFile(filepath)).toString()).filter(x => x)
     debug('yamls', yamls)
 
     if (yamls.length === 0) {

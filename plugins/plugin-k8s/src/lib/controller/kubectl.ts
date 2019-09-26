@@ -19,7 +19,6 @@ const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
 import { Capabilities, Commands, Errors, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
-import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
@@ -34,17 +33,6 @@ import { status as statusImpl } from './status'
 import helmGet from './helm/get'
 
 const strings = i18n('plugin-k8s')
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface KubeExecOptions extends Commands.ExecOptions {
-  /*  credentials?: {
-    k8s: {
-      kubeconfig: string
-      ca: string
-      cafile: string
-    }
-  } */
-}
 
 /**
  * Several commands seem to be cropping up that give a facade over
@@ -69,15 +57,18 @@ const parseYAML = async (str: string): Promise<KubeResource | KubeResource[]> =>
  *
  */
 type CleanupFunction = () => void
-const possiblyExportCredentials = (execOptions: KubeExecOptions, env: NodeJS.ProcessEnv): Promise<CleanupFunction> =>
+const possiblyExportCredentials = (
+  execOptions: Commands.ExecOptions,
+  env: NodeJS.ProcessEnv
+): Promise<CleanupFunction> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     // debug('possiblyExportCredentials', process.env.KUBECONFIG, execOptions && execOptions.credentials)
 
     if (!process.env.KUBECONFIG && execOptions && execOptions.credentials && execOptions.credentials.k8s) {
       debug('exporting kubernetes credentials')
-      const { dir: tmpDir } = await import('tmp')
-      tmpDir(async (err, path) => {
+      const { dir } = await import('tmp')
+      dir(async (err, path) => {
         if (err) {
           reject(err)
         } else {
@@ -154,8 +145,8 @@ const table = (
   entityType: string,
   entity: string,
   options: Commands.ParsedOptions,
-  execOptions: KubeExecOptions
-): Tables.Table | Tables.MultiTable | HTMLElement | Delete => {
+  execOptions: Commands.ExecOptions
+): Tables.Table | Tables.MultiTable | HTMLElement => {
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
@@ -182,12 +173,6 @@ const table = (
           return T
         })
       }
-    }
-  } else if (verb === 'delete') {
-    debug('returning delete entity for repl')
-    return {
-      verb,
-      name: entity
     }
   } else {
     // otherwise, display the raw output
@@ -351,7 +336,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments) =>
     // debug('argvWithFileReplacements', argvWithFileReplacements)
 
     const env = Object.assign({}, process.env)
-    const cleanupCallback = await possiblyExportCredentials(execOptions as KubeExecOptions, env)
+    const cleanupCallback = await possiblyExportCredentials(execOptions, env)
     const cleanupAndResolve = async val => {
       await cleanupCallback()
       resolve(val)

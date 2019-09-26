@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 
 import { Commands, i18n, i18nFromMap, REPL, Settings, UI } from '@kui-shell/core'
 import { renderResult } from '@kui-shell/core/webapp/cli'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
 
 import usage from './usage'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
@@ -271,7 +270,8 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Argumen
     isEntity: true,
     prettyType: 'about',
     presentation:
-      (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
+      (document.body.classList.contains('subwindow') && UI.Presentation.SidecarFullscreen) ||
+      UI.Presentation.SidecarThin,
     modes,
     name,
     // badges,
