@@ -20,8 +20,6 @@ import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
 import { UI } from '@kui-shell/core'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
-
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import runMode from '../model/modes/run'
@@ -109,7 +107,7 @@ export default async (
     prettyType: run ? 'PipelineRun' : 'Pipeline',
     duration,
     badges,
-    presentation: Presentation.FixedSize,
+    presentation: UI.Presentation.FixedSize,
     content,
     model: jsons,
     modes: tektonModes.concat(zoomToFitButtons(controller, { visibleWhenShowing: flowMode.mode }))

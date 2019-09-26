@@ -64,7 +64,7 @@ if [ -n "$LAYER" ]; then
     fi
 else
     if [ -z $EXCLUDE_OW_TEST ]; then
-      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test/" -o -path '*/core/test' -maxdepth 4)
+      TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test" -o -path '*/core/test' -maxdepth 4)
     else
       TEST_SUITES=$(find -H "$TEST_SUITE_ROOT"/{plugin-*,core} -path "*/dist/test" ! -path "*/dist/test/openwhisk*" ! -path "*/dist/test/composer*" ! -path "*/dist/test/grid"  -maxdepth 4)
     fi

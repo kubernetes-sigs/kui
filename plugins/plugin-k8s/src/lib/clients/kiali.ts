@@ -20,8 +20,8 @@ import * as Debug from 'debug'
 import * as needle from 'needle'
 import * as parseDuration from 'parse-duration'
 
-import Presentation from '@kui-shell/core/webapp/views/presentation'
-import { REPL } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
+
 const debug = Debug('k8s/clients/kiali')
 
 export interface KialiOptions {
@@ -197,7 +197,7 @@ hr { border-top-color: #809980 !important; }
     prettyType: 'kiali',
     name: 'Graph View',
     packageName: options.namespace,
-    presentation: Presentation.FixedSize,
+    presentation: UI.Presentation.FixedSize,
     modes: modes('graph'),
     content
   }

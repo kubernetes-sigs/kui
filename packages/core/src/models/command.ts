@@ -213,8 +213,7 @@ export type OnSuccess = (args: {
   type: ExecType
   command: string
   isDrilldown: boolean
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parsedOptions: { [key: string]: any }
+  parsedOptions: { [key: string]: string | boolean | number }
 }) => void
 
 export type OnError = (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError

@@ -17,8 +17,7 @@
 import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
-import { i18n, UI } from '@kui-shell/core'
-import { CustomSpec } from '@kui-shell/core/webapp/views/sidecar'
+import { Commands, i18n, UI } from '@kui-shell/core'
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -80,7 +79,7 @@ interface Parameters {
  *
  * @param lastRaw the last applied configuration, unparsed
  */
-function toCustomSpec(lastRaw: string, fullResource: KubeResource): CustomSpec {
+function respondWith(lastRaw: string, fullResource: KubeResource): Commands.CustomResponse {
   // oof, it comes in as a JSON string, but we want a YAML string
   const resource: KubeResource = JSON.parse(lastRaw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
@@ -106,5 +105,5 @@ export const renderAndViewLastApplied = async (tab: UI.Tab, parameters: Paramete
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 
-  return toCustomSpec(getLastAppliedRaw(resource.resource), resource.resource)
+  return respondWith(getLastAppliedRaw(resource.resource), resource.resource)
 }

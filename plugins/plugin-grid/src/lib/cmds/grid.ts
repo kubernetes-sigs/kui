@@ -22,7 +22,6 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import { Commands, REPL, Tables, UI } from '@kui-shell/core'
 import windowDefaults from '@kui-shell/core/webapp/defaults'
-import Presentation from '@kui-shell/core/webapp/views/presentation'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { getSidecar, addNameToSidecarHeader, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -619,7 +618,7 @@ const drawGrid = (tab: UI.Tab, options: Options, header: Header, uuid: string, r
     uuid,
     content,
     controlHeaders: true,
-    presentation: Presentation.SidecarFullscreenForPopups,
+    presentation: UI.Presentation.SidecarFullscreenForPopups,
 
     // add zoom buttons to the mode button model
     modes: modes('grid', options).concat([switcher, zoomIn, zoomOut])

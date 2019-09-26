@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { Commands, Settings, Util } from '@kui-shell/core'
+import { Commands, Settings, Tables, Util } from '@kui-shell/core'
 
 import { list as usage } from '../../usage'
 
@@ -40,6 +40,7 @@ const extractNested = root => dir =>
 const getVersion = moduleDir => plugin =>
   fs
     .readFile(path.join(moduleDir, plugin, 'package.json'))
+    .then(_ => _.toString())
     .then(JSON.parse) // parse the package.json
     .then(_ => _.version) // project out the version field
     .then(version => ({ plugin, version })) // return a pair of the plugin name and its version
@@ -51,7 +52,7 @@ const getVersion = moduleDir => plugin =>
  */
 const getVersions = moduleDir => installedPlugins => Promise.all(installedPlugins.map(getVersion(moduleDir)))
 
-const doList = () => {
+const doList = (): Promise<Tables.Table> => {
   debug('command execution started')
 
   const rootDir = Settings.userDataDir()
@@ -72,21 +73,23 @@ const doList = () => {
         // make a list of records that includes more than just
         // the plugin name, so that the REPL can format them
         //
-        return installedPlugins.map(({ plugin, version }) => ({
-          type,
-          name: `${plugin}`,
-          attributes: [{ key: 'version', value: version }],
-          onclick: `plugin commands ${plugin}`
-        }))
+        return {
+          body: installedPlugins.map(({ plugin, version }) => ({
+            type,
+            name: `${plugin}`,
+            attributes: [{ key: 'version', value: version }],
+            onclick: `plugin commands ${plugin}`
+          }))
+        }
       } else {
-        return 'No user-installed plugins found'
+        throw new Error('No user-installed plugins found')
       }
     })
     .catch(err => {
       if (err.code === 'ENOENT') {
         // this error is OK; it just means that moduleDir
         // doesn't exist, so there are no plugins to list!
-        return 'No user-installed plugins found'
+        throw new Error('No user-installed plugins found')
       } else {
         // some unpredicted error occurred :(
         console.error(err.code)
