@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
 import { Capabilities, Commands, eventBus, i18n, Settings, Tables, UI } from '@kui-shell/core'
-import { getPreference, setPreference, clearPreference } from '@kui-shell/core/core/userdata'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/theme')
@@ -43,7 +42,7 @@ const persistedThemePreferenceKey = 'kui.theme.current'
  *
  */
 const getPersistedThemeChoice = (): Promise<string> => {
-  return getPreference(persistedThemePreferenceKey)
+  return Settings.getPreference(persistedThemePreferenceKey)
 }
 
 /**
@@ -336,7 +335,7 @@ const set = async ({ argvNoOptions }: Commands.Arguments) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
   await switchTo(theme)
-  await setPreference(persistedThemePreferenceKey, theme)
+  await Settings.setPreference(persistedThemePreferenceKey, theme)
   return true
 }
 
@@ -346,7 +345,7 @@ const set = async ({ argvNoOptions }: Commands.Arguments) => {
  */
 const resetToDefault = async () => {
   debug('reset')
-  await clearPreference(persistedThemePreferenceKey)
+  await Settings.clearPreference(persistedThemePreferenceKey)
   await switchTo(getDefaultTheme())
   return true
 }

@@ -21,8 +21,7 @@ import * as path from 'path'
 import { exec, spawn } from 'child_process'
 import * as which from 'which'
 
-import { userDataDir } from '@kui-shell/core/core/userdata'
-import { Commands } from '@kui-shell/core'
+import { Commands, Settings } from '@kui-shell/core'
 import compile from '@kui-shell/core/core/plugin-assembler'
 
 import { success } from '../util'
@@ -66,7 +65,7 @@ const doInstall = ({ argvNoOptions }: Commands.Arguments) => {
 
   const name = argvNoOptions.shift()
 
-  const rootDir = userDataDir()
+  const rootDir = Settings.userDataDir()
   const moduleDir = path.join(rootDir, 'plugins', 'modules')
   const targetDir = path.join(moduleDir, name) // final location of the plugin
 

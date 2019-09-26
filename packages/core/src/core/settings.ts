@@ -19,6 +19,8 @@ import { theme as t, env as e, config as c } from '@kui-shell/settings/config.js
 import { TableStyle } from '../webapp/models/table'
 import { SidecarMode } from '../webapp/bottom-stripe'
 
+export { clearPreference, getPreference, setPreference, userDataDir } from './userdata'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let devOverrides: Record<string, any>
 try {
