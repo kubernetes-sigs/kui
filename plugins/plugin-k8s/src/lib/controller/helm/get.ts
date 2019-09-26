@@ -18,9 +18,7 @@ import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 import { exec } from 'child_process'
 
-import { Commands } from '@kui-shell/core'
-import { MetadataBearing } from '@kui-shell/core/models/entity'
-import { MetadataBearingByReference } from '@kui-shell/core/webapp/views/sidecar'
+import { Commands, Models } from '@kui-shell/core'
 
 import { _helm } from '../kubectl'
 import pickHelmClient from '../../util/discovery/helm-client'
@@ -29,7 +27,7 @@ const basic = /REVISION:\s+(\S+)[\n\r]+RELEASED:\s+([^\n\r]+)[\n\r]+CHART:\s+(\S
 
 const debug = Debug('k8s/controller/helm/get')
 
-function getBasicInfo(releaseName: string): Promise<MetadataBearing> {
+function getBasicInfo(releaseName: string): Promise<Models.ResourceWithMetadata> {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     const helm = await pickHelmClient(process.env)
@@ -61,7 +59,7 @@ function getBasicInfo(releaseName: string): Promise<MetadataBearing> {
   })
 }
 
-export default async function helmGet(args: Commands.Arguments) {
+export default async function helmGet(args: Commands.Arguments): Promise<Commands.Response> {
   const idx = args.argvNoOptions.indexOf('get')
 
   const maybeVerb = args.argvNoOptions[idx + 1]
@@ -80,7 +78,7 @@ export default async function helmGet(args: Commands.Arguments) {
   debug('releaseName', releaseName)
   const basicInfo = await getBasicInfo(releaseName)
 
-  const response: MetadataBearingByReference = {
+  const response = {
     type: 'custom',
     isEntity: true,
     kind: 'helm',

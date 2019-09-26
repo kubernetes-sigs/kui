@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-export { Capabilities } from './api/capabilities'
-export { Commands } from './api/commands'
-export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
-export { Errors } from './api/errors'
-export { default as eventBus } from './core/events'
-export { Models } from './api/models'
-export { REPL } from './api/repl'
-export { Settings } from './api/settings'
-export { Tables } from './api/tables'
-export { UI } from './api/ui'
-export { Util } from './api/util'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-namespace */
+
+/**
+ * API: arguments to command handlers
+ *
+ */
+
+import * as _Entity from '../models/entity'
+
+export namespace Models {
+  export import ResourceWithMetadata = _Entity.MetadataBearing
+  export import isResourceByReference = _Entity.isMetadataBearingByReference
+}

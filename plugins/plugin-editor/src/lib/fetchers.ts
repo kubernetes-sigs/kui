@@ -17,8 +17,7 @@
 import * as Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { Commands, REPL } from '@kui-shell/core'
-import { MetadataBearing } from '@kui-shell/core/models/entity'
+import { Commands, Models, REPL } from '@kui-shell/core'
 
 import { persisters, Persister } from './persisters'
 
@@ -38,7 +37,7 @@ interface Getter {
   getEntity: () => object
 }
 
-export interface Entity extends MetadataBearing {
+export interface Entity extends Models.ResourceWithMetadata {
   type: string
   name: string
   noZoom?: boolean
