@@ -25,7 +25,6 @@ import { safeLoad } from 'js-yaml'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
 import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI, Util } from '@kui-shell/core'
-import { MixedResponse } from '@kui-shell/core/models/entity'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import {
   setCustomCaret,
@@ -882,7 +881,7 @@ export const doExec = (
         let bytesWereWritten = false
         let sawCode: number
         let pendingUsage = false
-        let pendingTable: MixedResponse
+        let pendingTable: Commands.MixedResponse
         let raw = ''
         let nLinesRaw = 0
 

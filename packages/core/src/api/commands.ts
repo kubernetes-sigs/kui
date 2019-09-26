@@ -25,12 +25,14 @@
 import * as _ExecOptions from '../models/execOptions'
 import * as _Commands from '../models/command'
 import * as Plugins from '../models/plugin'
+import * as Entity from '../models/entity'
 import * as Sidecar from '../webapp/views/sidecar'
 
 export namespace Commands {
   export import Arguments = _Commands.EvaluatorArgs
   export import Response = _Commands.Response
   export import CustomResponse = Sidecar.CustomSpec
+  export import MixedResponse = Entity.MixedResponse
 
   export import DefaultExecOptions = _ExecOptions.DefaultExecOptions
   export import ExecOptions = _ExecOptions.ExecOptions

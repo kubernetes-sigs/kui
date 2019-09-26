@@ -32,10 +32,21 @@ import { keys } from '../keys'
 import { ShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
 import Presentation from './presentation'
-import { MetadataBearing, isMetadataBearing, EntitySpec, Entity } from '../../models/entity'
+import {
+  MetadataBearing,
+  isMetadataBearing,
+  MetadataBearingByReference,
+  isMetadataBearingByReference,
+  EntitySpec,
+  Entity
+} from '../../models/entity'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 import { tryOpenWithEditor } from './registrar/editors'
+
+/** @deprecated */
+export { MetadataBearingByReference }
+export { isMetadataBearingByReference }
 
 debug('finished loading modules')
 
@@ -384,18 +395,6 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
   contentTypeProjection?: string
   resource?: MetadataBearing
   createdOnString?: string
-}
-
-/**
- * Entity with a "resource" field that is MetadataBearing
- *
- */
-export interface MetadataBearingByReference extends CustomSpec {
-  resource: MetadataBearing
-}
-export function isMetadataBearingByReference(spec: Entity): spec is MetadataBearingByReference {
-  const ref = spec as MetadataBearingByReference
-  return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
 }
 
 export function isCustomSpec(entity: Entity): entity is CustomSpec {

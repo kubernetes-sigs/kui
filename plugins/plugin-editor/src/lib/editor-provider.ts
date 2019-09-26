@@ -21,16 +21,13 @@ import { EditorEntity } from './response'
 
 class MonacoEditorProvider implements EditorProvider {
   public async tryOpen(tab: UI.Tab, custom: Commands.CustomResponse, options: Commands.ExecOptions) {
-    const [{ isMetadataBearingByReference }, { edit }] = await Promise.all([
-      import('@kui-shell/core/webapp/views/sidecar'),
-      import('./cmds/edit')
-    ])
+    const [{ Models }, { edit }] = await Promise.all([import('@kui-shell/core'), import('./cmds/edit')])
 
     const projection: string = custom.contentTypeProjection
       ? custom.content[custom.contentTypeProjection]
       : custom.content
 
-    const metadataBearer = isMetadataBearingByReference(custom) ? custom.resource : custom
+    const metadataBearer = Models.isResourceByReference(custom) ? custom.resource : custom
 
     const entity: EditorEntity = {
       // EditorEntity
