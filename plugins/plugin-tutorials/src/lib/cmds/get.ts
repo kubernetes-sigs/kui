@@ -152,7 +152,7 @@ const fetchProjectData = () => info => {
  * module get command
  *
  */
-const doGet = async ({ argvNoOptions }) => {
+const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<Commands.Response> => {
   debug(`tutorial get impl`)
 
   const args: string[] = argvNoOptions

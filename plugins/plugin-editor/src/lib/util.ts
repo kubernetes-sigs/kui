@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,38 @@
  * limitations under the License.
  */
 
+import { UI } from '@kui-shell/core'
+
 import { language } from './file-types'
 import { save, revert } from './persisters'
+import { EditorResponse, EditorState, CommandResponse } from './response'
+
+type ModeFunction = (state: EditorState) => UI.Mode
 
 /**
  * Prepare a response for the REPL. Consumes the output of
  * updateEditor
  *
  */
-export const respondToRepl = (extraModes = [], displayOptions = []) => ({ getEntity, editor, content, eventBus }) => ({
-  type: 'custom',
+export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = []) => ({
+  getEntity,
+  editor,
   content,
-  controlHeaders: ['.header-right-bits'],
-  displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(displayOptions),
-  badges: [{ title: language(getEntity().exec.kind), css: 'is-kind-like' }],
-  noZoom: true,
-  modes: [save({ getEntity, editor, eventBus }), revert({ getEntity, editor, eventBus })].concat(
+  eventBus
+}: EditorResponse): CommandResponse => {
+  const badges: UI.Badge[] = [{ title: language(getEntity().exec.kind), css: 'is-kind-like' }]
+
+  const modes: UI.Mode[] = [save({ getEntity, editor, eventBus }), revert({ getEntity, editor, eventBus })].concat(
     extraModes.map(modeFn => modeFn({ getEntity, editor, eventBus }))
   )
-})
+
+  return {
+    type: 'custom',
+    content,
+    controlHeaders: ['.header-right-bits'],
+    displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(displayOptions),
+    noZoom: true,
+    badges,
+    modes
+  }
+}

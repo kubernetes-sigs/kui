@@ -30,6 +30,7 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 
 import { Entity as EditorEntity } from './fetchers'
+import { Editor } from './response'
 import strings from './strings'
 import { language } from './file-types'
 
@@ -190,8 +191,8 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
    * that instance to show a given entity.
    *
    */
-  const updater = (editor: MonacoEditor.ICodeEditor) => {
-    editor['updateText'] = entity => {
+  const updater = (editor: Editor) => {
+    editor.updateText = (entity: EditorEntity) => {
       // monaco let's us replace the full range of text, so we don't need
       // an explicit delete of the current text
       return setText(editor, options)(entity.exec)

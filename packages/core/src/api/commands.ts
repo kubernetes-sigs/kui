@@ -27,13 +27,15 @@ import * as _Commands from '../models/command'
 import * as _Plugins from '../models/plugin'
 
 export namespace Commands {
+  export import Arguments = _Commands.EvaluatorArgs
+  export import Response = _Commands.Response
+
   export import DefaultExecOptions = _ExecOptions.DefaultExecOptions
   export import ExecOptions = _ExecOptions.ExecOptions
   export import withLanguage = _ExecOptions.withLanguage
 
   export import ExecType = _Commands.ExecType
   export import Registrar = _Commands.CommandRegistrar
-  export import Arguments = _Commands.EvaluatorArgs
   export import ParsedOptions = _Commands.ParsedOptions
   export import ParsedOptionsFull = _Commands.ParsedOptionsFull
   export import CommandHandler = _Commands.CommandHandler

@@ -20,7 +20,7 @@ import { basename, dirname } from 'path'
 import { Commands, REPL } from '@kui-shell/core'
 import { MetadataBearing } from '@kui-shell/core/models/entity'
 
-import { persisters } from './persisters'
+import { persisters, Persister } from './persisters'
 
 const debug = Debug('plugins/editor/fetchers')
 
@@ -41,13 +41,15 @@ interface Getter {
 export interface Entity extends MetadataBearing {
   type: string
   name: string
+  noZoom?: boolean
   viewName?: string
+  extract?: (raw: string, entity: Entity) => Entity
   extractName?: (raw: string) => string // re-extract name from raw source, e.g. after a save or revert
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   lock?: any // set to false if you don't want a lock icon
   filepath?: string
   exec: ExecSpec
-  persister: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  persister?: Persister
   gotoReadonlyView?: (Getter) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   annotations: KeyValuePair[]
 }

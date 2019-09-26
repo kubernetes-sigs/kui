@@ -56,7 +56,7 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
 
       // return the current processing block, if there is one
       const processing = '.repl-inner .repl-block.processing'
-      return tab.querySelector(processing) || true
+      return (tab.querySelector(processing) as HTMLElement) || true
     }
   }
 
