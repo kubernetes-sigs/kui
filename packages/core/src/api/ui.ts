@@ -29,6 +29,7 @@ import * as Sidecar from '../webapp/views/sidecar'
 import * as ModeManager from '../webapp/bottom-stripe'
 import * as ModeRegistrar from '../webapp/views/registrar/modes'
 import * as BadgeRegistrar from '../webapp/views/registrar/badges'
+import _Presentation from '../webapp/views/presentation'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -51,4 +52,7 @@ export namespace UI {
   export import BadgeSpec = Sidecar.BadgeSpec
   export import BadgeRegistration = BadgeRegistrar.BadgeRegistration
   export import registerBadge = BadgeRegistrar.registerSidecarBadge
+
+  export import Presentation = _Presentation
+  export import isPopup = CLI.isPopup
 }

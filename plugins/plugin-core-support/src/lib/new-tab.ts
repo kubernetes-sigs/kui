@@ -28,7 +28,7 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element } from '@kui-shell/core/webapp/util/dom'
-import { isPopup, listen, getCurrentPrompt, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
+import { listen, getCurrentPrompt, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
 const strings = i18n('plugin-core-support')
@@ -448,7 +448,7 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   // quit button
   sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
     try {
-      if (isPopup()) {
+      if (UI.isPopup()) {
         debug('quit button click')
         window.close()
       } else {

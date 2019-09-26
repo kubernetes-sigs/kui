@@ -88,7 +88,7 @@ async function needle(method: 'get', url: string): Promise<{ statusCode: number;
  * Either fetch a remote file or read a local one
  *
  */
-export const fetchFile = (url: string): Promise<Buffer[]> => {
+export const fetchFile = (url: string): Promise<(string | Buffer)[]> => {
   debug('fetchFile', url)
 
   const urls = url.split(/,/)

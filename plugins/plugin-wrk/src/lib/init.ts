@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 import { join } from 'path'
 import { spawn } from 'child_process'
-import { exists, move, remove } from 'fs-extra'
+import { pathExists, move, remove } from 'fs-extra'
 
 import { REPL, Settings } from '@kui-shell/core'
 
@@ -134,7 +134,7 @@ export const compileWrk = ({ createOutputStream }) =>
             if (exitCode !== 0) {
               console.error(err)
               reject(new Error('Failed in compile'))
-            } else if (!(await exists(wrkTmpExec))) {
+            } else if (!(await pathExists(wrkTmpExec))) {
               reject(new Error('Cannot find wrk executable'))
             } else {
               debug('compilation successful')
@@ -142,7 +142,7 @@ export const compileWrk = ({ createOutputStream }) =>
 
               await move(wrkTmpExec, wrkExec())
 
-              if (!(await exists(wrkExec()))) {
+              if (!(await pathExists(wrkExec()))) {
                 debug('strange, the move did not succeed')
                 reject(new Error('Cannot find wrk executable'))
               } else {
@@ -174,7 +174,7 @@ const checkWrk = async ({ parsedOptions }) => {
     msg.appendChild(clicky)
 
     return msg
-  } else if (await exists(wrkExec())) {
+  } else if (await pathExists(wrkExec())) {
     return 'wrk compiled and ready'
   } else {
     const msg = document.createElement('div')
