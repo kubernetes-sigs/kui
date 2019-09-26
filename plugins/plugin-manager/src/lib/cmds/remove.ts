@@ -18,9 +18,8 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import { remove } from 'fs-extra'
 
-import { userDataDir } from '@kui-shell/core/core/userdata'
+import { Commands, Settings } from '@kui-shell/core'
 import compile from '@kui-shell/core/core/plugin-assembler'
-import { Commands } from '@kui-shell/core'
 
 import { success } from '../util'
 import { remove as usage } from '../../usage'
@@ -36,7 +35,7 @@ const doRemove = ({ argvNoOptions }: Commands.Arguments) => {
 
   const name = argvNoOptions.shift()
 
-  const rootDir = userDataDir()
+  const rootDir = Settings.userDataDir()
   const moduleDir = path.join(rootDir, 'plugins', 'modules')
   const pluginHome = path.join(moduleDir, name)
 

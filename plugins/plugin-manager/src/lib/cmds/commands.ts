@@ -17,13 +17,12 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { userDataDir } from '@kui-shell/core/core/userdata'
-import { Commands } from '@kui-shell/core'
+import { Commands, Settings } from '@kui-shell/core'
 
 import { commands as usage } from '../../usage'
 
 const doList = ({ argvNoOptions }: Commands.Arguments) => {
-  const prescanned = path.join(userDataDir(), 'plugins', '.pre-scanned')
+  const prescanned = path.join(Settings.userDataDir(), 'plugins', '.pre-scanned')
 
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
 
