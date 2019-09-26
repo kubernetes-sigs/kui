@@ -32,8 +32,8 @@ const usage = {
 }
 
 const add = async ({ block, nextBlock, tab }: Commands.Arguments) => {
-  const { prompt } = await import('@kui-shell/core/webapp/cli')
-  return prompt(
+  const { UI } = await import('@kui-shell/core')
+  return UI.LowLevel.prompt(
     'kubectl auth add',
     block as HTMLElement,
     nextBlock,

@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { UI } from '@kui-shell/core'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 import { ActivationLikeFull as ActivationLike } from '@kui-shell/plugin-wskflow'
@@ -264,7 +263,7 @@ export const render = (tab: UI.Tab, activations: ActivationLike[], container: El
       const previous = activations[idx - 1]
       const previousWaitTime = 0
       const previousStart = previous && previous.start - previousWaitTime
-      const time = prettyPrintTime(activation.start - waitTime, 'short', previousStart)
+      const time = UI.PrettyPrinters.time(activation.start - waitTime, 'short', previousStart)
       start.className =
         'somewhat-smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
       start.appendChild(startInner)

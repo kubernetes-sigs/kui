@@ -19,7 +19,6 @@ import * as path from 'path'
 import { spawn } from 'child_process'
 
 import { Commands, UI } from '@kui-shell/core'
-import { partial } from '@kui-shell/core/webapp/cli'
 import pip from '@kui-shell/core/webapp/picture-in-picture'
 
 import { handleNonZeroExitCode } from '../util/exec'
@@ -169,7 +168,7 @@ export const status2Html = (tab: UI.Tab, rawOut: string, stats: Promise<Stats> =
     const relpath = path.relative(process.cwd(), file)
 
     if (isPartial) {
-      exec.onclick = () => partial(`${command} ${relpath}`)
+      exec.onclick = () => UI.LowLevel.partialInput(`${command} ${relpath}`)
     } else {
       exec.onclick = (event: MouseEvent) => {
         // Notes: to distinguish between a click and a text

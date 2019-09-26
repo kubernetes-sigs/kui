@@ -17,8 +17,7 @@
 import * as Debug from 'debug'
 import * as colors from 'colors/safe'
 
-import { Capabilities } from '@kui-shell/core'
-import * as cli from '@kui-shell/core/webapp/cli'
+import { Capabilities, UI } from '@kui-shell/core'
 
 const debug = Debug('plugins/plugin-manager/util')
 
@@ -72,7 +71,7 @@ export const success = (operation, availableMessage, updatedCommands) => {
 
       cmdDom.innerText = `${sep}${cmd}`
       cmdDom.className = 'clickable clickable-blatant'
-      cmdDom.onclick = () => cli.partial(cmd)
+      cmdDom.onclick = () => UI.LowLevel.partialInput(cmd)
 
       list.appendChild(cmdDom)
     })
