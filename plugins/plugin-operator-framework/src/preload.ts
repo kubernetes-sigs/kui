@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-const debug = Debug('plugins/operator-framework/preload')
-debug('loading')
-
 import { Capabilities, UI } from '@kui-shell/core'
-
-import registerSidecarBadge from '@kui-shell/core/webapp/views/registrar/badges'
 
 /**
  * This is the module
@@ -40,9 +34,7 @@ export default async () => {
         .then(UI.registerMode), // show description
       import('./view/modes/icon')
         .then(_ => _.iconBadge)
-        .then(registerSidecarBadge) // olm icon
+        .then(UI.registerBadge) // olm icon
     ])
   }
 }
-
-debug('finished loading')

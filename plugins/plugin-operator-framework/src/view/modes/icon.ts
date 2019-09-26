@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { BadgeSpec } from '@kui-shell/core/webapp/views/sidecar'
-import { BadgeRegistration } from '@kui-shell/core/webapp/views/registrar/badges'
+import { UI } from '@kui-shell/core'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
@@ -53,9 +52,9 @@ function isIconBearer(resource: KubeResource): resource is IconBearer {
  * Show spec.customresourcedefinitions
  *
  */
-export const iconBadge: BadgeRegistration<IconBearer> = {
+export const iconBadge: UI.BadgeRegistration<IconBearer> = {
   when: isIconBearer,
-  badge: (resource: IconBearer): BadgeSpec => {
+  badge: (resource: IconBearer): UI.BadgeSpec => {
     const { mediatype, base64data } = resource.spec.icon[0]
 
     const image = document.createElement('img')

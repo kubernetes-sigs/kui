@@ -19,18 +19,15 @@ const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
 import { Capabilities, Commands, Errors, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
-import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
 import pickHelmClient from '../util/discovery/helm-client'
-
 import extractAppAndName from '../util/name'
 import { KubeResource } from '../model/resource'
 import { FinalState } from '../model/states'
-
 import { registry as formatters } from '../view/registry'
 import { preprocessTable, formatTable } from '../view/formatTable'
 import { status as statusImpl } from './status'
@@ -603,7 +600,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments) =>
         const { name, nameHash } = extractAppAndName(yaml)
 
         // sidecar badges
-        const badges: Badge[] = []
+        const badges: UI.Badge[] = []
 
         if (verb === 'describe') {
           const getCmd = opts.command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
