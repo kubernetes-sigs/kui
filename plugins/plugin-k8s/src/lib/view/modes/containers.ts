@@ -18,9 +18,7 @@ import * as Debug from 'debug'
 
 import { i18n, REPL, Tables, UI } from '@kui-shell/core'
 import drilldown from '@kui-shell/core/webapp/picture-in-picture'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
 import { getActiveView } from '@kui-shell/core/webapp/views/sidecar'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
@@ -38,7 +36,7 @@ const viewName = 'Containers'
  * for the given resource
  *
  */
-export const containersButton = (command: string, resource: Resource, overrides?): SidecarMode =>
+export const containersButton = (command: string, resource: Resource, overrides?): UI.Mode =>
   Object.assign(
     {},
     {
@@ -58,11 +56,11 @@ export const containersButton = (command: string, resource: Resource, overrides?
  * for by the given resource.
  *
  */
-export const containersMode: ModeRegistration<KubeResource> = {
+export const containersMode: UI.ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     return resource.spec && resource.spec.containers
   },
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     try {
       return containersButton(command, resource)
     } catch (err) {

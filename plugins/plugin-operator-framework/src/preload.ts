@@ -18,9 +18,8 @@ import * as Debug from 'debug'
 const debug = Debug('plugins/operator-framework/preload')
 debug('loading')
 
-import { Capabilities } from '@kui-shell/core'
+import { Capabilities, UI } from '@kui-shell/core'
 
-import registerSidecarMode from '@kui-shell/core/webapp/views/registrar/modes'
 import registerSidecarBadge from '@kui-shell/core/webapp/views/registrar/badges'
 
 /**
@@ -32,13 +31,13 @@ export default async () => {
     return Promise.all([
       import('./view/modes/crds')
         .then(_ => _.crdsMode)
-        .then(registerSidecarMode), // show any owned crds
+        .then(UI.registerMode), // show any owned crds
       import('./view/modes/packages')
         .then(_ => _.packagesMode)
-        .then(registerSidecarMode), // show packages of OperatorSource
+        .then(UI.registerMode), // show packages of OperatorSource
       import('./view/modes/description')
         .then(_ => _.descriptionMode)
-        .then(registerSidecarMode), // show description
+        .then(UI.registerMode), // show description
       import('./view/modes/icon')
         .then(_ => _.iconBadge)
         .then(registerSidecarBadge) // olm icon

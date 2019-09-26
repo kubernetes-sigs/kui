@@ -19,8 +19,7 @@ import { existsSync, readFileSync } from 'fs'
 import { type as osType } from 'os'
 
 import { oopsMessage } from '@kui-shell/core/core/oops'
-import { Capabilities, Commands, Errors, eventBus, Settings, REPL, Util } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Capabilities, Commands, Errors, eventBus, Settings, REPL, UI, Util } from '@kui-shell/core'
 
 import withHeader from '../models/withHeader'
 import { isCRUDable, crudableTypes } from '../models/crudable'
@@ -501,8 +500,8 @@ const fqn = (name: string): string => {
 
 /** for parametrizable entity types, e.g. actions, packages, the standard view modes */
 const standardViewModes = (defaultMode, fn?) => {
-  const makeModes = (): SidecarMode[] => {
-    let modes: SidecarMode[] = [
+  const makeModes = (): UI.Mode[] => {
+    let modes: UI.Mode[] = [
       { mode: 'parameters', label: 'params', direct: 'wsk action parameters' },
       { mode: 'annotations', direct: 'wsk action annotations' },
       { mode: 'raw', direct: 'wsk action raw' }

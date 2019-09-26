@@ -15,7 +15,6 @@
  */
 
 import { UI } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
@@ -33,7 +32,7 @@ export interface ResponseObject {
  * The sidecar mode for the tekton flow visualization
  *
  */
-const flowMode: SidecarMode = {
+const flowMode: UI.Mode = {
   mode: 'flow',
   direct: async (tab: UI.Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
