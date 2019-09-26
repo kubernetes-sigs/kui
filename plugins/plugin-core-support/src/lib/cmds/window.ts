@@ -47,6 +47,7 @@ export default (commandTree: Commands.Registrar) => {
         const remote = require('electron').remote
         const w = remote.getCurrentWindow()
         w.close()
+        return true
       }
     },
     { noAuthOk: true }

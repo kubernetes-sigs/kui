@@ -106,7 +106,24 @@ export function isMixedResponse(response: Entity): response is MixedResponse {
 }
 
 /**
+ * We will do away with this at some point; but, for now, the
+ * cli.prompt takes over the REPL temporarily.
+ *
+ */
+export interface LowLevelLoop {
+  mode: 'prompt'
+}
+
+/**
  * A potentially more complex entity with a "spec"
  *
  */
-export type Entity = SimpleEntity | EntitySpec | CustomSpec | MixedResponse | boolean | Table | MultiTable
+export type Entity =
+  | SimpleEntity
+  | EntitySpec
+  | CustomSpec
+  | MixedResponse
+  | boolean
+  | Table
+  | MultiTable
+  | LowLevelLoop

@@ -379,7 +379,7 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
   subtext?: Formattable
   toolbarText?: ToolbarText
   content: CustomContent
-  badges?: BadgeSpec[]
+  badges?: Badge[]
   contentType?: string
   contentTypeProjection?: string
   resource?: MetadataBearing

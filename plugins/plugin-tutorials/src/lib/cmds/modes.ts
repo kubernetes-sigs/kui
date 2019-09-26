@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { UI } from '@kui-shell/core'
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { modCmd } = require('./util')
 
-interface Mode {
+/* interface Mode {
   mode: string
   label?: string
   command: Function
@@ -28,10 +30,10 @@ interface Mode {
   balloonLength?: string
   echo?: boolean
   noHistory?: boolean
-}
+} */
 
 /** view modes */
-const _modes: Mode[] = [
+const _modes: UI.Mode[] = [
   { mode: 'get', label: 'About' },
   { mode: 'api', label: 'API' },
   { mode: 'config', label: 'Configure' }
@@ -43,7 +45,7 @@ const _modes: Mode[] = [
 )
 
 /** flush-right buttons for the bottom stripe */
-const buttons: Mode[] = [
+const buttons: UI.Mode[] = [
   /* { mode: 'deploy', label: 'Deploy', //fontawesome: 'fas fa-cloud-upload-alt',
       balloon: 'Deploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} deploy "${name}"` },
@@ -72,9 +74,9 @@ const buttons: Mode[] = [
 ]
 
 /** Combined mode model (for the bottom stripe) */
-export const modes = (defaultMode: string, api, choices): Mode[] => {
-  // add the defaultMode attribute to the matching IMode
-  const modes: Mode[] = _modes
+export const modes = (defaultMode: string, api, choices): UI.Mode[] => {
+  // add the defaultMode attribute to the matching UI.Mode
+  const modes: UI.Mode[] = _modes
     .filter(({ mode }) => mode === 'get' || (mode === 'api' && api) || (mode === 'config' && choices))
     .map(_ => (_.mode === defaultMode ? Object.assign({}, _, { defaultMode: true }) : _))
 

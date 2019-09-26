@@ -101,7 +101,7 @@ const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Argumen
   opts.argv = opts.argv.filter(_ => _ !== '-r' && _ !== '--result' && _ !== '-br' && _ !== '-rb')
   // do the invocation, then fetch the full activation record
   // (blocking invokes return incomplete records; no logs)
-  return rawInvoke(opts)
+  return Promise.resolve(rawInvoke(opts))
     .then(fetchActivation, fetchFromError)
     .then(respond(options))
     .catch(error => Promise.reject(error))
@@ -118,7 +118,7 @@ const doAsync = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Argument
   const idx = opts.argv.findIndex(arg => arg === 'async')
   opts.argv[idx] = 'invoke'
   opts.command = opts.command.slice(0).replace(/^async/, 'invoke') // clone it, via slice, to avoid contaminating command history
-  return rawInvoke(opts)
+  return Promise.resolve(rawInvoke(opts))
     .then(_ => Object.assign(_, { verb: 'async' }))
     .catch((error: Error) => Promise.reject(error))
 }

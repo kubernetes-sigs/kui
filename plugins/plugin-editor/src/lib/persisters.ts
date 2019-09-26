@@ -17,11 +17,54 @@
 import * as Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 
-import { eventBus as globalEventBus } from '@kui-shell/core'
+import { eventBus as globalEventBus, UI } from '@kui-shell/core'
 
 import strings from './strings'
+import { EditorEntity, EditorState, Editor } from './response'
 
 const debug = Debug('plugins/editor/persisters')
+
+export interface Persister {
+  getCode: (entity: EditorEntity) => EditorEntity
+  saveString: string
+  save: (entity: EditorEntity, editor: Editor) => Promise<EditorEntity>
+  revert: (entity: EditorEntity, state: EditorState) => Promise<EditorEntity>
+}
+
+const FilePersister: Persister = {
+  getCode: (entity: EditorEntity) => entity,
+  saveString: strings.saveLocalFile,
+  save: (entity: EditorEntity, editor: Editor): Promise<EditorEntity> =>
+    new Promise((resolve, reject) => {
+      const rawText = editor.getValue()
+
+      writeFile(entity.filepath, rawText, err => {
+        if (err) {
+          reject(err)
+        } else {
+          if (entity.extract) {
+            // let's see if we can re-extract the updated entity name
+            // from the raw source
+            const newEntity = entity.extract(rawText, entity)
+            Object.assign(entity, newEntity)
+          }
+
+          resolve(entity as EditorEntity)
+        }
+      })
+    }),
+  revert: (entity: EditorEntity): Promise<EditorEntity> =>
+    new Promise((resolve, reject) => {
+      readFile(entity.filepath, (err, data) => {
+        if (err) {
+          reject(err)
+        } else {
+          entity.exec.code = data.toString()
+          resolve(entity)
+        }
+      })
+    })
+}
 
 /**
  * Logic for saving and reverting
@@ -29,49 +72,16 @@ const debug = Debug('plugins/editor/persisters')
  */
 export const persisters = {
   // persisters for local files
-  files: {
-    getCode: entity => entity,
-    saveString: strings.saveLocalFile,
-    save: (entity, editor) =>
-      new Promise((resolve, reject) => {
-        const rawText = editor.getValue()
-
-        writeFile(entity.filepath, rawText, err => {
-          if (err) {
-            reject(err)
-          } else {
-            if (entity.extract) {
-              // let's see if we can re-extract the updated entity name
-              // from the raw source
-              const newEntity = entity.extract(rawText, entity)
-              Object.assign(entity, newEntity)
-            }
-
-            resolve(entity)
-          }
-        })
-      }),
-    revert: entity =>
-      new Promise((resolve, reject) => {
-        readFile(entity.filepath, (err, data) => {
-          if (err) {
-            reject(err)
-          } else {
-            entity.exec.code = data.toString()
-            resolve(entity)
-          }
-        })
-      })
-  }
+  files: FilePersister
 }
 
 /**
  * Save the given entity
  *
  */
-export const save = ({ getEntity, editor, eventBus }) => {
+export const save = ({ getEntity, editor, eventBus }: EditorState): UI.Mode => {
   const entityRightNow = getEntity()
-  const mode = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
+  const mode: string = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
 
   return {
     mode,
@@ -101,7 +111,7 @@ export const save = ({ getEntity, editor, eventBus }) => {
  * Revert to the currently deployed version
  *
  */
-export const revert = ({ getEntity, editor, eventBus }) => ({
+export const revert = ({ getEntity, editor, eventBus }: EditorState): UI.Mode => ({
   mode: strings.revert,
   actAsButton: true,
   flush: 'right',
@@ -113,7 +123,7 @@ export const revert = ({ getEntity, editor, eventBus }) => ({
 
     if (persister.revert) {
       return persister
-        .revert(entity, { editor, eventBus })
+        .revert(entity, { getEntity, editor, eventBus })
         .then(entity => {
           entity.persister = persister
           editor.updateText(entity)
