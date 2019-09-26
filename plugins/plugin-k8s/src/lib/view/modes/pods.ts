@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 
 import { REPL, Tables, UI } from '@kui-shell/core'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { selectorToString } from '../../util/selectors'
 import { Resource, KubeResource } from '../../model/resource'
@@ -35,7 +33,7 @@ const viewName = 'Pods'
  * given resource
  *
  */
-const podsButton = (command: string, resource: Resource, overrides?): SidecarMode =>
+const podsButton = (command: string, resource: Resource, overrides?): UI.Mode =>
   Object.assign(
     {},
     {
@@ -54,12 +52,12 @@ const podsButton = (command: string, resource: Resource, overrides?): SidecarMod
  * the given resource.
  *
  */
-export const podMode: ModeRegistration<KubeResource> = {
+export const podMode: UI.ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     // let's see if the resource refers to a pod in some fashion
     return resource.kind === 'Deployment' || (resource.status !== undefined && resource.status.podName !== undefined) // e.g. tekton TaskRun or PipelineRun
   },
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     debug('addPods', resource)
     try {
       return podsButton(command, resource)

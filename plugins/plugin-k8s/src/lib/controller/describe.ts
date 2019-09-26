@@ -17,8 +17,7 @@
 import * as Debug from 'debug'
 import { safeDump } from 'js-yaml'
 
-import { Commands, i18n, REPL, Tables } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Commands, i18n, REPL, Tables, UI } from '@kui-shell/core'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 
 import extractAppAndName from '../util/name'
@@ -47,7 +46,7 @@ const renderDescribe = async (
 
   const output = parsedOptions.o || parsedOptions.output || 'yaml'
 
-  const modes: SidecarMode[] = [
+  const modes: UI.Mode[] = [
     {
       mode: 'summary',
       label: strings('summary'),

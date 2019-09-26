@@ -21,7 +21,6 @@ import { basename, dirname, join } from 'path'
 
 import { Capabilities, Commands, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
-import { get as relevantModes } from '@kui-shell/core/webapp/views/registrar/modes'
 
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
@@ -80,7 +79,6 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) =
   const addModeButtons = (defaultMode: string) => (response: EntitySpec) => {
     response['modes'] = (response['modes'] || []).concat([
       { mode: 'edit', direct: openAsForm },
-      ...relevantModes('kubectl', { resource: yaml }),
       statusButton('kubectl', resource, FinalState.NotPendingLike),
       { mode: 'raw', label: 'YAML', direct: openInEditor }
     ])

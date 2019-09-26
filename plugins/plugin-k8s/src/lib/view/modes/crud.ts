@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { i18n } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { i18n, UI } from '@kui-shell/core'
 
 import makeButton from './button'
 
 const strings = i18n('plugin-k8s')
 
-export const createResourceButton = (fn?): SidecarMode =>
+export const createResourceButton = (fn?): UI.Mode =>
   makeButton(
     {
       mode: 'create',
@@ -30,7 +29,7 @@ export const createResourceButton = (fn?): SidecarMode =>
     fn
   )
 
-export const deleteResourceButton = (fn?): SidecarMode =>
+export const deleteResourceButton = (fn?): UI.Mode =>
   makeButton(
     {
       mode: 'delete',

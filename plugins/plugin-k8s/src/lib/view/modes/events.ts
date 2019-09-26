@@ -17,8 +17,6 @@
 import * as Debug from 'debug'
 
 import { i18n, REPL, Tables, UI } from '@kui-shell/core'
-import { ModeRegistration } from '@kui-shell/core/webapp/views/registrar/modes'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 
 import { Resource, KubeResource, isKubeResource } from '../../model/resource'
 
@@ -71,9 +69,9 @@ function hasEvents(resource: KubeResource): boolean {
  * the given resource.
  *
  */
-export const eventsMode: ModeRegistration<KubeResource> = {
+export const eventsMode: UI.ModeRegistration<KubeResource> = {
   when: hasEvents,
-  mode: (command: string, resource: Resource): SidecarMode => {
+  mode: (command: string, resource: Resource): UI.Mode => {
     debug('events', resource)
     try {
       return {

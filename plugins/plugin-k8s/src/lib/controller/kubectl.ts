@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import { Capabilities, Commands, Errors, i18n, REPL, Tables, Util } from '@kui-shell/core'
-import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
+import { Capabilities, Commands, Errors, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
 import { Badge } from '@kui-shell/core/webapp/views/sidecar'
 import { Delete } from '@kui-shell/core/webapp/models/basicModels'
 
@@ -562,7 +561,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments) =>
           return cleanupAndResolve(result)
         }
 
-        const modes: SidecarMode[] = [
+        const modes: UI.Mode[] = [
           {
             mode: 'result',
             direct: rawCommand,
