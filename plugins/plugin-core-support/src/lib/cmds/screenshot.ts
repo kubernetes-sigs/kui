@@ -17,8 +17,6 @@
 import { dirname, join } from 'path'
 
 import { Capabilities, Commands, Errors, i18n, UI } from '@kui-shell/core'
-import { getCurrentPrompt } from '@kui-shell/core/webapp/cli'
-import { keys } from '@kui-shell/core/webapp/keys'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -294,8 +292,8 @@ export default async (commandTree: Commands.Registrar) => {
 
                 setTimeout(() => {
                   page.removeChild(snapDom)
-                  getCurrentPrompt(tab).readOnly = false
-                  getCurrentPrompt(tab).focus()
+                  UI.getCurrentPrompt(tab).readOnly = false
+                  UI.getCurrentPrompt(tab).focus()
                 }, 1000) // match go-away-able transition-duration; see ui.css
               }
 
@@ -410,7 +408,7 @@ export default async (commandTree: Commands.Registrar) => {
               hiddenInput.addEventListener(
                 'keyup',
                 (evt: KeyboardEvent) => {
-                  if (evt.keyCode === keys.ESCAPE) {
+                  if (evt.keyCode === UI.Keys.Codes.ESCAPE) {
                     evt.preventDefault()
                     finish()
                   }

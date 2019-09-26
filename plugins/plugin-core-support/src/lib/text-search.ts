@@ -18,8 +18,6 @@ import * as Debug from 'debug'
 import * as path from 'path'
 
 import { UI } from '@kui-shell/core'
-import * as cli from '@kui-shell/core/webapp/cli'
-import { keys } from '@kui-shell/core/webapp/keys'
 
 const debug = Debug('plugins/core-support/text-search')
 
@@ -65,7 +63,7 @@ async function registerListener() {
     app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
     if (clear) {
       setTimeout(() => {
-        cli.getCurrentPrompt().focus()
+        UI.getCurrentPrompt().focus()
       }, 300)
     } // focus repl text input
   }
@@ -129,7 +127,11 @@ async function registerListener() {
   })
 
   document.body.addEventListener('keydown', function(e: KeyboardEvent) {
-    if (!e.defaultPrevented && e.keyCode === keys.F && ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)) {
+    if (
+      !e.defaultPrevented &&
+      e.keyCode === UI.Keys.Codes.F &&
+      ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)
+    ) {
       // ctrl/cmd-f opens search, unless some interior region prevented default
       searchBar.classList.add('visible')
       addVisibilityStatusToDocument()

@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Commands } from '@kui-shell/core'
-import { prompt } from '@kui-shell/core/webapp/cli'
+import { Commands, UI } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/prompt')
 
@@ -43,7 +42,7 @@ export default (commandTree: Commands.Registrar) => {
       const placeholder = argvNoOptions[1] || 'Test prompt'
       debug('placeholder', placeholder, argvNoOptions)
 
-      return prompt(
+      return UI.LowLevel.prompt(
         'Prompt',
         block as HTMLElement,
         nextBlock,

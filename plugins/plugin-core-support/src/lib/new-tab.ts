@@ -28,7 +28,7 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { element } from '@kui-shell/core/webapp/util/dom'
-import { listen, getCurrentPrompt, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
+import { listen, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
 const strings = i18n('plugin-core-support')
@@ -110,7 +110,7 @@ export class TabState {
     this._cwd = Capabilities.inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
     if (Settings.inBottomInputMode) {
-      this._currentBottomInputValue = getCurrentPrompt().value
+      this._currentBottomInputValue = UI.getCurrentPrompt().value
     }
 
     debug('captured tab state', this.cwd)
@@ -209,7 +209,7 @@ export class TabState {
     }
 
     if (Settings.inBottomInputMode) {
-      getCurrentPrompt().value = this.currentBottomInputValue
+      UI.getCurrentPrompt().value = this.currentBottomInputValue
     }
   }
 }
@@ -247,7 +247,7 @@ const switchTab = (tabId: string, activateOnly = false) => {
     ;(nextTab['state'] as TabState).restore()
   }
 
-  const promptToFocus = getCurrentPrompt(nextTab)
+  const promptToFocus = UI.getCurrentPrompt(nextTab)
   if (promptToFocus) {
     promptToFocus.focus()
   }
@@ -399,7 +399,7 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   eventBus.emit('/tab/new', tab)
 
   if (doListen) {
-    listen(getCurrentPrompt(tab))
+    listen(UI.getCurrentPrompt(tab))
   }
 
   // keep repl prompt focused, if possible
@@ -407,7 +407,7 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
     const target = evt.target
     if (isElement(target)) {
       setTimeout(() => {
-        const prompt = getCurrentPrompt(tab)
+        const prompt = UI.getCurrentPrompt(tab)
         if (
           prompt &&
           getSelectionText().length === 0 &&
@@ -527,7 +527,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   // make the new tab visible at the very end of the above init work!
   currentVisibleTab.classList.remove('visible')
   currentVisibleTab.parentNode.appendChild(newTab)
-  getCurrentPrompt(newTab).focus()
+  UI.getCurrentPrompt(newTab).focus()
 
   getTabButtonLabel(newTab).innerText = !isUsingCommandName() ? strings('Tab') : strings('New Tab')
 
@@ -559,7 +559,7 @@ const oneTimeInit = (): void => {
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
-    getCurrentPrompt().focus()
+    UI.getCurrentPrompt().focus()
   }
 }
 

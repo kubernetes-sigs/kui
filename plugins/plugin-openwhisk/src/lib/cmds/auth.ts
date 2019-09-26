@@ -24,7 +24,6 @@ import * as Debug from 'debug'
 
 import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI, Util } from '@kui-shell/core'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
-import { partial } from '@kui-shell/core/webapp/cli'
 
 import * as namespace from '../models/namespace'
 import { getClient, owOpts } from './openwhisk-core'
@@ -370,7 +369,7 @@ const addFn = (tab: UI.Tab, key: string, subject: string) => {
         dom.appendChild(document.createTextNode('Please select a namespace, using '))
         clicky(dom, 'wsk auth list', REPL.pexec)
         dom.appendChild(document.createTextNode(' or '))
-        clicky(dom, 'wsk auth add', partial)
+        clicky(dom, 'wsk auth add', UI.LowLevel.partialInput)
         throw new Errors.UsageError(dom)
       }
     })
@@ -479,7 +478,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: C
 
           clicky.className = 'clickable clickable-blatant'
           clicky.innerText = cmd
-          clicky.onclick = () => partial(cmd)
+          clicky.onclick = () => UI.LowLevel.partialInput(cmd)
 
           dom.appendChild(
             document.createTextNode('Before you can proceed, please provide an OpenWhisk auth key, using ')

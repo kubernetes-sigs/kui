@@ -17,8 +17,6 @@
 import { dirname, join } from 'path'
 
 import { Capabilities, Commands, Errors, eventBus, i18n, REPL, UI } from '@kui-shell/core'
-import { keys } from '@kui-shell/core/webapp/keys'
-import { getCurrentPrompt } from '@kui-shell/core/webapp/cli'
 
 const strings = i18n('plugin-core-support')
 
@@ -77,7 +75,7 @@ export default async (commandTree: Commands.Registrar) => {
 
             setTimeout(() => {
               document.body.removeChild(modal)
-              const prompt = getCurrentPrompt(tab)
+              const prompt = UI.getCurrentPrompt(tab)
               if (prompt) {
                 prompt.readOnly = false
                 prompt.focus()
@@ -201,8 +199,8 @@ export default async (commandTree: Commands.Registrar) => {
           continueButton.onclick = exec
 
           // temporarily disable the repl
-          if (getCurrentPrompt(tab)) {
-            getCurrentPrompt(tab).readOnly = true
+          if (UI.getCurrentPrompt(tab)) {
+            UI.getCurrentPrompt(tab).readOnly = true
           }
 
           // to capture the Escape key event
@@ -215,7 +213,7 @@ export default async (commandTree: Commands.Registrar) => {
           modal.addEventListener(
             'keyup',
             (evt: KeyboardEvent) => {
-              if (evt.keyCode === keys.ESCAPE) {
+              if (evt.keyCode === UI.Keys.Codes.ESCAPE) {
                 evt.preventDefault()
                 cancel()
               }

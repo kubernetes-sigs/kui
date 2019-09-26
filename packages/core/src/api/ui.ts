@@ -30,6 +30,8 @@ import * as ModeManager from '../webapp/bottom-stripe'
 import * as ModeRegistrar from '../webapp/views/registrar/modes'
 import * as BadgeRegistrar from '../webapp/views/registrar/badges'
 import _Presentation from '../webapp/views/presentation'
+import * as keys from '../webapp/keys'
+import * as Time from '../webapp/util/time'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -55,4 +57,24 @@ export namespace UI {
 
   export import Presentation = _Presentation
   export import isPopup = CLI.isPopup
+
+  export import getCurrentPrompt = CLI.getCurrentPrompt
+  export import getCurrentBlock = CLI.getCurrentBlock
+
+  export namespace PrettyPrinters {
+    export import time = Time.prettyPrintTime
+  }
+
+  export namespace Keys {
+    export import Codes = keys.keys
+    export import isCursorMovement = keys.isCursorMovement
+  }
+
+  export namespace LowLevel {
+    export import prompt = CLI.prompt
+    export import partialInput = CLI.partial
+    export import scrollIntoView = CLI.scrollIntoView
+    export import doCancel = CLI.doCancel
+    export import isUsingCustomPrompt = CLI.isUsingCustomPrompt
+  }
 }

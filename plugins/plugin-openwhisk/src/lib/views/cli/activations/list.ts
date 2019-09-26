@@ -18,7 +18,6 @@ import * as Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Commands, REPL, Tables, UI } from '@kui-shell/core'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import { Activation } from '../../../models/activation'
@@ -459,7 +458,7 @@ const _render = (args: Args) => {
         const startInner = newLine ? document.createElement('span') : start.querySelector('span')
         const previous = activations[idx - 1]
         const previousStart = previous && previous.start - findItemInAnnotations('waitTime', previous)
-        const time = prettyPrintTime(
+        const time = UI.PrettyPrinters.time(
           activation.start - findItemInAnnotations('waitTime', activation),
           'short',
           previousStart

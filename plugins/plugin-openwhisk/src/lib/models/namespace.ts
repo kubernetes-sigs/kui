@@ -16,11 +16,11 @@
 
 import * as Debug from 'debug'
 
-import * as cli from '@kui-shell/core/webapp/cli'
-import { Capabilities, REPL } from '@kui-shell/core'
+import { Capabilities, REPL, UI } from '@kui-shell/core'
 import store from '@kui-shell/core/models/store'
 
 import { apiHost, auth as authModel } from './auth'
+
 const debug = Debug('plugins/openwhisk/models/namespace')
 
 /** localStorage key */
@@ -105,7 +105,7 @@ export const setNoNamespace = (provideHelp = true) => {
   const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'no auth key!'
-  namespaceDom.onclick = () => cli.partial('wsk auth add <your_auth_key>')
+  namespaceDom.onclick = () => UI.LowLevel.partialInput('wsk auth add <your_auth_key>')
   namespaceDom.removeAttribute('data-value')
   document.body.classList.add('no-auth')
 
@@ -231,7 +231,7 @@ const setNamespace = (namespace: string) => {
 
   const hostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
   hostDom.className = 'clickable'
-  hostDom.onclick = () => cli.partial('host set <your_api_host>')
+  hostDom.onclick = () => UI.LowLevel.partialInput('host set <your_api_host>')
 
   // cache
   currentNS = namespace

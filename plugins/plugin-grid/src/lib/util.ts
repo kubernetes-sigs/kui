@@ -20,7 +20,6 @@ import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Capabilities, Commands, Errors, eventBus, REPL, UI, Util } from '@kui-shell/core'
-import { prettyPrintTime } from '@kui-shell/core/webapp/util/time'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import { ActivationListTable, currentNamespace } from '@kui-shell/plugin-openwhisk'
@@ -309,10 +308,10 @@ export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) =>
     strong(container, 1).innerText = totalCount
 
     if (fresh) container.appendChild(document.createTextNode(' activations | '))
-    strong(container, 2).appendChild(prettyPrintTime(minTime, 'short'))
+    strong(container, 2).appendChild(UI.PrettyPrinters.time(minTime, 'short'))
 
     if (fresh) container.appendChild(document.createTextNode(' | '))
-    // strong(container, 3).innerText = prettyPrintTime(maxTime, 'short')
+    // strong(container, 3).innerText = UI.PrettyPrinters.time(maxTime, 'short')
     strong(container, 3).innerText = prettyPrintDuration(maxTime - minTime, {
       compact: true
     })

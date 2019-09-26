@@ -16,13 +16,7 @@
 
 import * as Debug from 'debug'
 
-import {
-  getCurrentPrompt,
-  getPrompt,
-  getCurrentBlock,
-  getCurrentProcessingBlock,
-  setStatus
-} from '@kui-shell/core/webapp/cli'
+import { getPrompt, getCurrentProcessingBlock, setStatus } from '@kui-shell/core/webapp/cli'
 import { Capabilities, Commands, Errors, i18n, REPL, Settings, UI } from '@kui-shell/core'
 
 import { Channel } from './channel'
@@ -52,7 +46,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
       debug('trying to establish session', tab)
 
       if (!block) {
-        block = getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
+        block = UI.getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
         const prompt = getPrompt(block)
         prompt.readOnly = true
         prompt.placeholder = strings('Please wait while we connect to your cloud')
@@ -121,8 +115,8 @@ function newSessionForTab(tab: UI.Tab) {
   // eslint-disable-next-line no-async-promise-executor
   tab['_kui_session'] = new Promise(async (resolve, reject) => {
     try {
-      const block = getCurrentBlock(tab)
-      const prompt = getCurrentPrompt(tab)
+      const block = UI.getCurrentBlock(tab)
+      const prompt = UI.getCurrentPrompt(tab)
       prompt.readOnly = true
       let placeholderChanged = false
 

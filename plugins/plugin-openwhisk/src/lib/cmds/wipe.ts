@@ -16,9 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, Commands, REPL, Tables } from '@kui-shell/core'
+import { Capabilities, Commands, REPL, Tables, UI } from '@kui-shell/core'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import * as cli from '@kui-shell/core/webapp/cli'
 
 const debug = Debug('plugins/openwhisk/cmds/wipe')
 
@@ -146,7 +145,7 @@ const doWipeWithConfirmation = async ({ tab, block, nextBlock }: Commands.Argume
   //
   // then ask the user to confirm the dangerous operation
   //
-  return cli.prompt(
+  return UI.LowLevel.prompt(
     'DANGER!',
     block as HTMLElement,
     nextBlock,
