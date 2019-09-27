@@ -14,46 +14,41 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli } = ui
 
 const actionName = 'foo'
 
-describe('Load tester', function(this: common.ISuite) {
+describe('Load tester', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('create an action', () =>
-    cli
-      .do(`let ${actionName} = x=>x`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName} = x=>x`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this)))
 
   const key = 'y'
   const value = 1
   it('load test it with wsk testing loadtest', () =>
-    cli
-      .do(
-        `wsk testing loadtest ${actionName} --numIters 20 --numThreads 1 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===20 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
-        this.app
-      )
-      .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
-      .catch(common.oops(this)))
+    CLI.command(
+      `wsk testing loadtest ${actionName} --numIters 20 --numThreads 1 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===20 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
+      this.app
+    )
+      .then(ReplExpect.okWithCustom({ expect: 'Run was valid' }))
+      .catch(Common.oops(this)))
 
   it('load test it with lt', () =>
-    cli
-      .do(
-        `lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===40 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
-        this.app
-      )
-      .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
-      .catch(common.oops(this)))
+    CLI.command(
+      `lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===40 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
+      this.app
+    )
+      .then(ReplExpect.okWithCustom({ expect: 'Run was valid' }))
+      .catch(Common.oops(this)))
 
   it('load test it with lt with no params', () =>
-    cli
-      .do(`lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`, this.app)
-      .then(cli.expectOKWithCustom({ expect: 'Run was valid' }))
-      .catch(common.oops(this)))
+    CLI.command(`lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`, this.app)
+      .then(ReplExpect.okWithCustom({ expect: 'Run was valid' }))
+      .catch(Common.oops(this)))
 })

@@ -15,6 +15,7 @@ packages/core/test/
 packages/core/util/
 packages/core/webapp/
 packages/proxy/kui
+packages/test/dist/
 plugins/*/dist/
 **/*/node_modules/
 **/*.d.ts

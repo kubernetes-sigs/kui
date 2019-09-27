@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
-describe('timeline visualization', function(this: common.ISuite) {
+describe('timeline visualization', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // disabled for now shell issue #794
-  /* const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
-    it('should open timeline', () => cli.do('timeline', this.app)
+  /* const icon = `${Selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
+    it('should open timeline', () => CLI.command('timeline', this.app)
        .then(() => this.app.client.waitForText(icon, 'timeline'))
-       .catch(common.oops(this))) */
+       .catch(Common.oops(this))) */
 })

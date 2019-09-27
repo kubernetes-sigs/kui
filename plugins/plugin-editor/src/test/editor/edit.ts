@@ -15,24 +15,15 @@
  */
 
 import { Application } from 'spectron'
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  refresh,
-  pDescribe,
-  localIt
-} from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
 import { dirname, join } from 'path'
-const { cli, sidecar } = ui
+
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
 /** grab focus for the editor */
 const grabFocus = async (app: Application) => {
-  const selector = `${ui.selectors.SIDECAR} .monaco-editor-wrapper .view-lines`
+  const selector = `${Selectors.SIDECAR} .monaco-editor-wrapper .view-lines`
   await app.client.click(selector).then(() => app.client.waitForEnabled(selector))
 }
 
@@ -47,8 +38,8 @@ const setValue = async (app: Application, text: string): Promise<void> => {
 
 /** click the save buttom */
 const save = (app: Application) => async (): Promise<void> => {
-  await app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Save'))
-  await app.client.waitForExist(`${ui.selectors.SIDECAR} .editor-status.is-up-to-date`)
+  await app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
+  await app.client.waitForExist(`${Selectors.SIDECAR} .editor-status.is-up-to-date`)
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
@@ -61,9 +52,9 @@ const verifyTextExist = (selector: string, expectedText: string) => async (app: 
   return app
 }
 
-pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const TMP = '/tmp' // FIXME
 
@@ -72,52 +63,46 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   const nonExistFilePath = join(TMP, nonExistFileName)
   const nonExistFilePath2 = join(TMP, nonExistFileName2)
   it('should create a new file when editing a non-existing file', () =>
-    cli
-      .do(`edit ${nonExistFilePath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(nonExistFileName))
-      .catch(oops(this, true)))
+    CLI.command(`edit ${nonExistFilePath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(nonExistFileName))
+      .catch(Common.oops(this, true)))
 
   it(`should open ${nonExistFilePath}`, () =>
-    cli
-      .do(`open ${nonExistFilePath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(nonExistFileName))
-      .catch(oops(this, true)))
+    CLI.command(`open ${nonExistFilePath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(nonExistFileName))
+      .catch(Common.oops(this, true)))
 
   it(`should rm ${nonExistFilePath}`, () =>
-    cli
-      .do(`rm -f ${nonExistFilePath}`, this.app) // note the -f here; it's ok if the file doesn't exist
-      .then(cli.expectJustOK)
-      .catch(oops(this, true)))
+    CLI.command(`rm -f ${nonExistFilePath}`, this.app) // note the -f here; it's ok if the file doesn't exist
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
 
   // editor save not yet supported in proxy mode
-  localIt('should edit and save the content of a non-existing file', () =>
-    cli
-      .do(`edit --create ${nonExistFilePath2}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(nonExistFileName2))
+  Common.localIt('should edit and save the content of a non-existing file', () =>
+    CLI.command(`edit --create ${nonExistFilePath2}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(nonExistFileName2))
       .then(() => setValue(this.app, 'testing edit non-existing file'))
       .then(save(this.app))
-      .catch(oops(this, true))
+      .catch(Common.oops(this, true))
   )
-  localIt(`should open ${nonExistFilePath2} and see changed content`, () =>
-    cli
-      .do(`open ${nonExistFilePath2}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(nonExistFileName2))
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, 'testing edit non-existing file'))
-      .catch(oops(this, true))
+  Common.localIt(`should open ${nonExistFilePath2} and see changed content`, () =>
+    CLI.command(`open ${nonExistFilePath2}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(nonExistFileName2))
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, 'testing edit non-existing file'))
+      .catch(Common.oops(this, true))
   )
-  localIt(`should rm ${nonExistFilePath2}`, () =>
-    cli
-      .do(`rm ${nonExistFilePath2}`, this.app) // note: no -f here, because we expect the file to be there
-      .then(cli.expectJustOK)
-      .catch(oops(this, true))
+  Common.localIt(`should rm ${nonExistFilePath2}`, () =>
+    CLI.command(`rm ${nonExistFilePath2}`, this.app) // note: no -f here, because we expect the file to be there
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true))
   )
 
   const initialFile = 'edit-file.txt'
@@ -128,90 +113,82 @@ pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   const updatedText = `testing edit ${new Date().getTime()}`
 
   it('should copy the edit input', () =>
-    cli
-      .do(`cp ${initialFilepath} ${tmpFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .catch(oops(this, true)))
+    CLI.command(`cp ${initialFilepath} ${tmpFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
 
   it('should edit but not save the content of an existing file', () =>
-    cli
-      .do(`edit ${tmpFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
+    CLI.command(`edit ${tmpFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
       .then(() => setValue(this.app, 'should not be saved'))
-      .catch(oops(this, true)))
+      .catch(Common.oops(this, true)))
 
   it('should re-open the file and see the unchanged content', () =>
-    cli
-      .do(`open ${tmpFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-      .catch(oops(this, true)))
+    CLI.command(`open ${tmpFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
+      .catch(Common.oops(this, true)))
 
   // editor save not yet supported in proxy mode
-  localIt('should edit and save the content', () =>
-    cli
-      .do('edit /tmp/edit-file.txt', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
+  Common.localIt('should edit and save the content', () =>
+    CLI.command('edit /tmp/edit-file.txt', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
       .then(() => setValue(this.app, updatedText))
       .then(save(this.app))
-      .catch(oops(this, true))
+      .catch(Common.oops(this, true))
   )
-  localIt('should re-open the initial file and see the unchanged content', () =>
-    cli
-      .do(`open ${initialFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
-      .catch(oops(this, true))
+  Common.localIt('should re-open the initial file and see the unchanged content', () =>
+    CLI.command(`open ${initialFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, initialContent))
+      .catch(Common.oops(this, true))
   )
-  localIt('should re-open the edited file and see the updated content', () =>
-    cli
-      .do(`open ${tmpFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
-      .catch(oops(this, true))
+  Common.localIt('should re-open the edited file and see the updated content', () =>
+    CLI.command(`open ${tmpFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
+      .catch(Common.oops(this, true))
   )
 
   /** reload the app, and wait for a repl prompt */
-  const reload = () => localIt('should reload the app', () => refresh(this))
-  // note on localIt   ^^^^^^^ <-- because the following are all localIt tests
+  const reload = () => Common.localIt('should reload the app', () => Common.refresh(this))
+  // note on Common.localIt   ^^^^^^^ <-- because the following are all Common.localIt tests
 
   // make sure pasting text in the editor doesn't result in the editor losing focus
   const textToPaste = 'hello world'
   const textToTypeAfterPaste = ' and sun and moon'
   const finalTextAfterPasteTest = `${textToPaste}${textToTypeAfterPaste}`
   reload()
-  localIt('should edit, then paste, and still have focus', () =>
-    cli
-      .do(`edit ${tmpFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
+  Common.localIt('should edit, then paste, and still have focus', () =>
+    CLI.command(`edit ${tmpFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, updatedText))
       .then(() => setValue(this.app, ''))
       .then(() => this.app.electron.clipboard.writeText(textToPaste))
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
       .then(() => this.app)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, textToPaste))
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, textToPaste))
       .then(async () => {
         await this.app.client.keys(textToTypeAfterPaste)
         return Promise.resolve(this.app)
-          .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
+          .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
           .then(save(this.app))
       })
   )
   reload()
-  localIt('should have that pasted text after refresh', () =>
-    cli
-      .do(`edit ${tmpFilepath}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(verifyTextExist(`${ui.selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
-      .catch(oops(this, true))
+  Common.localIt('should have that pasted text after refresh', () =>
+    CLI.command(`edit ${tmpFilepath}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(verifyTextExist(`${Selectors.SIDECAR} .monaco-editor .view-lines`, finalTextAfterPasteTest))
+      .catch(Common.oops(this, true))
   )
 })

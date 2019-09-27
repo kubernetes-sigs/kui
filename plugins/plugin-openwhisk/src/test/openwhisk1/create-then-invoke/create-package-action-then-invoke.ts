@@ -19,67 +19,62 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create a packaged action then invoke with implicit entity', function(this: common.ISuite) {
+localDescribe('Create a packaged action then invoke with implicit entity', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create a packaged action', () =>
-    cli
-      .do(`let ppp/foo = ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo', undefined, undefined, 'ppp'))
-      .catch(common.oops(this)))
+    CLI.command(`let ppp/foo = ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo', undefined, undefined, 'ppp'))
+      .catch(Common.oops(this)))
 
   // invoke it asynchronously with no params
   it('should async that action', () =>
-    cli
-      .do(`wsk action async`, this.app)
-      .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
+    CLI.command(`wsk action async`, this.app)
+      .then(ReplExpect.okWithCustom(CLI.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
+        return SidecarExpect.open(this.app).then(SidecarExpect.showing('foo', activationId))
       })
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it('should get/open the package', () =>
-    cli
-      .do(`wsk package get ppp`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('ppp'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk package get ppp`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('ppp'))
+      .catch(Common.oops(this)))
 
   // re-open the packaged action and invoke it, for good measure
   it('should create re-open the packaged action', () =>
-    cli
-      .do(`wsk action get ppp/foo`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo', undefined, undefined, 'ppp'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action get ppp/foo`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo', undefined, undefined, 'ppp'))
+      .catch(Common.oops(this)))
 
   // invoke it asynchronously with no params
   it('should async that action', () =>
-    cli
-      .do(`wsk action async`, this.app)
-      .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
+    CLI.command(`wsk action async`, this.app)
+      .then(ReplExpect.okWithCustom(CLI.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
+        return SidecarExpect.open(this.app).then(SidecarExpect.showing('foo', activationId))
       })
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

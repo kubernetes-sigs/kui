@@ -21,8 +21,7 @@ import * as path from 'path'
 import * as assert from 'assert'
 
 import { Util } from '@kui-shell/core'
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -32,10 +31,10 @@ const initialContext = execSync('kubectl config current-context')
   .trim()
 
 // TODO: enable this once proxy can find $HOME on travis
-common.localDescribe('electron context switching', function(this: common.ISuite) {
-  before(common.before(this))
+Common.localDescribe('electron context switching', function(this: Common.ISuite) {
+  before(Common.before(this))
   after(
-    common.after(this, () => {
+    Common.after(this, () => {
       console.log(`switching back to initial context ${initialContext}`)
       execSync(`kubectl config use-context ${initialContext}`)
       console.log(`switched to ${execSync('kubectl config current-context')}`)
@@ -46,14 +45,13 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
     /** delete the given namespace */
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} delete namespace ${name}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name), errOk }))
+        return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name), errOk })) // FIXME
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
             if (!errOk) {
-              return common.oops(this)(err)
+              return Common.oops(this)(err)
             }
           })
       })
@@ -62,34 +60,31 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
     /** create the given namespace */
     const createIt = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} create namespace ${name}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} create namespace ${name}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
     /** create a pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return cli
-          .do(
-            `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-            this.app
-          )
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(
+          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+          this.app
+        )
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
 
       it(`should show the sample pod in namespace ${ns} in sidecar via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} get pod nginx -n ${ns} -o yaml`, this.app)
-          .then(cli.expectJustOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
-          .catch(common.oops(this))
+        return CLI.command(`${kubectl} get pod nginx -n ${ns} -o yaml`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+          .catch(Common.oops(this))
       })
     }
 
@@ -129,7 +124,7 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
             newOnesFilepath
           )
         } catch (err) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
     }
@@ -138,15 +133,13 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
     const listContextsAndExpectDefault = () => {
       it('should list contexts and show the default context', async () => {
         try {
-          const currentContext = await cli
-            .do(`context`, this.app)
-            .then(cli.expectOKWithCustom({ selector: ' ' }))
+          const currentContext = await CLI.command(`context`, this.app)
+            .then(ReplExpect.okWithCustom({ selector: ' ' }))
             .then(selector => this.app.client.getText(selector))
 
-          const currentContextAsIndicatedByContextsTable = await cli
-            .do(`contexts`, this.app)
+          const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts`, this.app)
             .then(
-              cli.expectOKWithCustom({
+              ReplExpect.okWithCustom({
                 selector: `.selected-row .entity-name[data-key="NAME"]`
               })
             )
@@ -154,7 +147,7 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
 
           assert.strictEqual(currentContextAsIndicatedByContextsTable, currentContext)
         } catch (err) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
     }
@@ -163,9 +156,8 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
     const listContextsAndExpectGiven = (contextName: string) => {
       it(`should list contexts and show the context ${contextName}`, async () => {
         try {
-          const allContextNames = await cli
-            .do(`contexts`, this.app)
-            .then(cli.expectOKWithCustom({ selector: ' ' }))
+          const allContextNames = await CLI.command(`contexts`, this.app)
+            .then(ReplExpect.okWithCustom({ selector: ' ' }))
             .then(selector => this.app.client.elements(`${selector} .entity-name[data-key="NAME"]`))
             .then(elements => elements.value.map(_ => _.ELEMENT))
             .then(elements => Promise.all(elements.map(element => this.app.client.elementIdText(element))))
@@ -173,7 +165,7 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
 
           assert.ok(allContextNames.find(_ => _ === contextName))
         } catch (err) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
     }
@@ -181,18 +173,17 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
     /** list pods and expect an empty list */
     const listPodsAndExpectNone = (ns: string) => {
       it('should list pods and show nothing', () => {
-        return cli.do(`${kubectl} get pods -n ${ns}`, this.app).then(cli.expectError(404))
+        return CLI.command(`${kubectl} get pods -n ${ns}`, this.app).then(ReplExpect.error(404))
       })
     }
 
     /** list pods and expect one entry */
     const listPodsAndExpectOne = (name: string, ns?: string) => {
       it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'}`, () => {
-        return cli
-          .do(`${kubectl} get pods ${ns ? '-n ' + ns : ''}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} get pods ${ns ? '-n ' + ns : ''}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
@@ -200,9 +191,9 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
     const switchToContext = (contextName: string) => {
       it(`should switch to the context ${contextName}`, async () => {
         try {
-          const selector = await cli.do(`contexts`, this.app).then(
-            cli.expectOKWithCustom({
-              selector: selectors.BY_NAME(contextName)
+          const selector = await CLI.command(`contexts`, this.app).then(
+            ReplExpect.okWithCustom({
+              selector: Selectors.BY_NAME(contextName)
             })
           )
 
@@ -212,14 +203,14 @@ common.localDescribe('electron context switching', function(this: common.ISuite)
           await this.app.client.waitForExist(`${selector} .selected-row`)
 
           // and if we request a new contexts table, it'd better be selected there, too
-          const selector2 = await cli.do(`contexts`, this.app).then(
-            cli.expectOKWithCustom({
-              selector: selectors.BY_NAME(contextName)
+          const selector2 = await CLI.command(`contexts`, this.app).then(
+            ReplExpect.okWithCustom({
+              selector: Selectors.BY_NAME(contextName)
             })
           )
           await this.app.client.waitForExist(`${selector2} .selected-row`)
         } catch (err) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
     }

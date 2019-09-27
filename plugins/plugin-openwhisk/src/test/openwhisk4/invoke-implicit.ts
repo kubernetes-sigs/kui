@@ -14,75 +14,69 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 import paramsJson = require('@kui-shell/plugin-openwhisk/tests/data/openwhisk/params.json')
 
 const actionName = 'foo'
 
-describe('wsk action invoke with implicit entity', function(this: common.ISuite) {
+describe('wsk action invoke with implicit entity', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an action', () =>
-    cli
-      .do(`let ${actionName} = x=>x -p x 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName} = x=>x -p x 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   for (let idx = 0; idx < 5; idx++) {
     it(`should invoke ${actionName} with implicit entity idx=${idx}`, () =>
-      cli
-        .do(`wsk action invoke -p name grumble`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName))
-        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-        .then(ui.expectStruct({ x: 3, name: 'grumble' }))
-        .catch(common.oops(this)))
+      CLI.command(`wsk action invoke -p name grumble`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(actionName))
+        .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+        .then(Util.expectStruct({ x: 3, name: 'grumble' }))
+        .catch(Common.oops(this)))
   }
 
   it(`should invoke ${actionName} with implicit entity and --param-file`, () =>
-    cli
-      .do(`wsk action invoke --param-file ${ROOT}/data/openwhisk/params.json`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct(Object.assign({ x: 3 }, paramsJson)))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke --param-file ${ROOT}/data/openwhisk/params.json`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct(Object.assign({ x: 3 }, paramsJson)))
+      .catch(Common.oops(this)))
 
   it(`should invoke ${actionName} with implicit entity and -P`, () =>
-    cli
-      .do(`wsk action invoke -P ${ROOT}/data/openwhisk/params.json`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct(Object.assign({ x: 3 }, paramsJson)))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke -P ${ROOT}/data/openwhisk/params.json`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct(Object.assign({ x: 3 }, paramsJson)))
+      .catch(Common.oops(this)))
 
   it(`should invoke ${actionName} with explicit entity and -P`, () =>
-    cli
-      .do(`wsk action invoke ${actionName} -P ${ROOT}/data/openwhisk/params.json`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct(Object.assign({ x: 3 }, paramsJson)))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke ${actionName} -P ${ROOT}/data/openwhisk/params.json`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct(Object.assign({ x: 3 }, paramsJson)))
+      .catch(Common.oops(this)))
 
   it(`should fail when requesting parameters of an activation`, () =>
-    cli
-      .do('wsk action params', this.app)
-      .then(cli.expectError(0, 'The current entity does not support viewing parameters'))
-      .catch(common.oops(this)))
+    CLI.command('wsk action params', this.app)
+      .then(ReplExpect.error(0, 'The current entity does not support viewing parameters'))
+      .catch(Common.oops(this)))
 })

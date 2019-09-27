@@ -15,11 +15,11 @@
  */
 
 /**
- * read-only tests against the cli's help APIs
+ * read-only tests against the CLI's help APIs
  *
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { doHelp, header, header2 } from '@kui-shell/plugin-core-support/tests/lib/core-support/help-util'
@@ -27,9 +27,9 @@ import { doHelp, header, header2 } from '@kui-shell/plugin-core-support/tests/li
 /* the header for action help */
 const actionHelpHeader = header2('OpenWhisk', 'Action Operations')
 
-describe('Help command', function(this: common.ISuite) {
+describe('Help command', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   //
   // and now here come the tests...

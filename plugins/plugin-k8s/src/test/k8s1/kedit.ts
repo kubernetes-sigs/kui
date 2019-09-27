@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, expectYAML, getValueFromMonaco, waitTimeout } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 
 import { Application } from 'spectron'
-
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { safeLoad, safeDump } from 'js-yaml'
@@ -70,34 +68,33 @@ const setValue = async (app: Application, text: string): Promise<void> => {
 }
 /** click the save buttom */
 const save = (app: Application) => async (): Promise<void> => {
-  await app.client.click(selectors.SIDECAR_MODE_BUTTON('Save'))
-  await app.client.waitForExist(`${selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`)
+  await app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
+  await app.client.waitForExist(`${Selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`)
 }
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
 const verifyYAML = (expected: object) => async (app: Application): Promise<void> => {
   await app.client.waitUntil(async () => {
-    const ok: boolean = await getValue(app).then(expectYAML(expected, false, false)) // false: not a subset; false: do not throw, instead return boolean
+    const ok: boolean = await getValue(app).then(Util.expectYAML(expected, false, false)) // false: not a subset; false: do not throw, instead return boolean
 
     return ok
   })
 }
 // done with clone
 
-common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+Common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const makeACopy = (filepath = initialFilepath, tmp = tmpFilepath) => {
     it('should copy the edit input', () =>
-      cli
-        .do(`cp "${filepath}" "${tmp}"`, this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command(`cp "${filepath}" "${tmp}"`, this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
   }
 
   /** switch to a given tab */
   const switchTo = (mode: string) => async () => {
-    await this.app.client.click(selectors.SIDECAR_MODE_BUTTON(mode))
+    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(mode))
     return this.app
   }
 
@@ -107,58 +104,55 @@ common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       await switchTo('raw')()
     }
 
-    await this.app.client.waitForEnabled(`${selectors.SIDECAR} .monaco-editor`)
+    await this.app.client.waitForEnabled(`${Selectors.SIDECAR} .monaco-editor`)
 
     return this.app
   }
 
   const editWithoutSaving = (filepath = tmpFilepath, expectedResource = initialContent) => {
     it('should kedit but not save the content of an existing file', () =>
-      cli
-        .do(`kedit "${filepath}"`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(initialResourceName))
+      CLI.command(`kedit "${filepath}"`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(initialResourceName))
         .then(switchToRaw('kedit'))
         .then(verifyYAML(expectedResource))
         .then(() => setValue(this.app, 'should not be saved'))
         .then(() => this.app)
-        .then(sidecar.expectShowing(initialResourceName))
+        .then(SidecarExpect.showing(initialResourceName))
         .then(() =>
           this.app.client.waitUntil(async () => {
-            const actualText = await getValueFromMonaco(this.app)
+            const actualText = await Util.getValueFromMonaco(this.app)
             return actualText === 'should not be saved'
-          }, waitTimeout)
+          }, CLI.waitTimeout)
         )
-        .catch(common.oops(this, true)))
+        .catch(Common.oops(this, true)))
   }
 
   const reopenWith = (cmd: string, tmp = tmpFilepath) => ({
     andExpect: (expected: Resource, displayedName = expected.metadata.name) => {
       it(`should re-open the file and see resource named ${expected.metadata.name} using "${cmd}"`, () =>
-        cli
-          .do(`${cmd} "${tmp}"`, this.app)
-          .then(cli.expectJustOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing(displayedName))
+        CLI.command(`${cmd} "${tmp}"`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(displayedName))
           .then(switchToRaw(cmd))
           .then(verifyYAML(expected))
-          .catch(common.oops(this)))
+          .catch(Common.oops(this)))
     }
   })
 
   const updateWith = (cmd: string, tmp = tmpFilepath) => {
     it(`should edit and save the content using "${cmd}"`, () =>
-      cli
-        .do(`${cmd} "${tmp}"`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(() => cmd === 'kedit' && sidecar.expectShowing(initialResourceName)(this.app))
+      CLI.command(`${cmd} "${tmp}"`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(() => cmd === 'kedit' && SidecarExpect.showing(initialResourceName)(this.app))
         .then(switchToRaw(cmd))
         .then(() => setValue(this.app, safeDump(updatedContent)))
         .then(save(this.app))
-        // .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
-        .catch(common.oops(this)))
+        // .then(() => cmd === 'kedit' && SidecarExpect.showing(updatedResourceName)(this.app))
+        .catch(Common.oops(this)))
   }
 
   const updateViaForm = (tmp = tmpFilepath) => {
@@ -166,25 +160,24 @@ common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     const intermediateResourceName = 'funny-money'
 
     it(`should edit and save the content via form`, () =>
-      cli
-        .do(`${cmd} "${tmp}"`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(initialResourceName))
-        .then(() => `${selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
+      CLI.command(`${cmd} "${tmp}"`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(initialResourceName))
+        .then(() => `${Selectors.SIDECAR} .project-config-container .bx--text-input[data-form-label="name"]`)
         .then(async selector => {
           await this.app.client.waitForVisible(selector)
           return this.app.client.setValue(selector, intermediateResourceName)
         })
-        .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('save')))
+        .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('save')))
         .then(() => this.app)
-        //        .then(sidecar.expectShowing(intermediateResourceName))
+        //        .then(SidecarExpect.showing(intermediateResourceName))
         .then(switchToRaw(cmd))
-        //        .then(sidecar.expectShowing(intermediateResourceName))
+        //        .then(SidecarExpect.showing(intermediateResourceName))
         .then(() => setValue(this.app, safeDump(updatedContent)))
         .then(save(this.app))
-        //        .then(() => sidecar.expectShowing(updatedResourceName)(this.app))
-        .catch(common.oops(this)))
+        //        .then(() => SidecarExpect.showing(updatedResourceName)(this.app))
+        .catch(Common.oops(this)))
   }
 
   //
@@ -193,26 +186,23 @@ common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
   // single-paragraph yaml
   it('should kedit a single-paragraph yaml', () =>
-    cli
-      .do(`kedit "${singleParagraphFilepath}"`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('reviews'))
-      .catch(common.oops(this)))
+    CLI.command(`kedit "${singleParagraphFilepath}"`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('reviews'))
+      .catch(Common.oops(this)))
 
   // trailing empty paragraph
   it('should kedit a multi-paragraph yaml with trailing empty paragraph', () =>
-    cli
-      .do(`kedit "${trailingEmptyFilepath}"`, this.app)
-      .then(cli.expectOKWith('details-v1'))
-      .catch(common.oops(this)))
+    CLI.command(`kedit "${trailingEmptyFilepath}"`, this.app)
+      .then(ReplExpect.okWith('details-v1'))
+      .catch(Common.oops(this)))
 
   // multi-paragraph yaml where one paragraph has no metadata
   it('should kedit a multi-paragraph yaml with no metadata', () =>
-    cli
-      .do(`kedit "${noMetadataFilepath}"`, this.app)
-      .then(cli.expectOKWith('test-release-mysql-test'))
-      .catch(common.oops(this)))
+    CLI.command(`kedit "${noMetadataFilepath}"`, this.app)
+      .then(ReplExpect.okWith('test-release-mysql-test'))
+      .catch(Common.oops(this)))
 
   // make sure editing without saving works
   makeACopy()

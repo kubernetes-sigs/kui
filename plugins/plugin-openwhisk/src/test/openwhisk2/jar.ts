@@ -16,37 +16,35 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo1'
 
-describe('Create jar actions', function(this: common.ISuite) {
+describe('Create jar actions', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create a jar action', () =>
-    cli
-      .do(`wsk action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .then(sidecar.expectBadge('jar'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .hook-for-third-party-content`))
+    CLI.command(`wsk action create ${actionName1} ${ROOT}/data/openwhisk/jar/echo.jar --main echo`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .then(SidecarExpect.badge('jar'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .hook-for-third-party-content`))
       .then(code => assert.strictEqual(code, 'This is machine-generated code, wrapping around your original code.'))
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it('should invoke the jar action', () =>
-    cli
-      .do(`wsk action invoke -p x 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .then(sidecar.expectResult({ x: 3 }))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke -p x 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .then(SidecarExpect.result({ x: 3 }))
+      .catch(Common.oops(this)))
 })

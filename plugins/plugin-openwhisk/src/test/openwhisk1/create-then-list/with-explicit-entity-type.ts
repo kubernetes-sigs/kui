@@ -19,13 +19,12 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const args = {
@@ -36,23 +35,22 @@ const args = {
 }
 
 // TODO: webpack test
-localDescribe('Create with explicit entity type, then list', function(this: common.ISuite) {
+localDescribe('Create with explicit entity type, then list', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   openwhisk.entities.forEach(entity => {
     const name = `foo-${entity}`
 
     // create, using the implicit entity type
     it(`should create ${entity}`, () =>
-      cli
-        .do(`wsk ${entity} create ${name} ${args[entity]}`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(name)))
+      CLI.command(`wsk ${entity} create ${name} ${args[entity]}`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(name)))
 
     // list tests
     it(`should find the new ${entity} with "${entity} list"`, () =>
-      cli.do(`wsk ${entity} list`, this.app).then(cli.expectOKWithOnly(name)))
+      CLI.command(`wsk ${entity} list`, this.app).then(ReplExpect.okWithOnly(name)))
   })
 })

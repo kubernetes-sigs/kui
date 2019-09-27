@@ -19,13 +19,13 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
@@ -33,58 +33,52 @@ const actionName2 = 'foo2'
 const actionName3 = 'foo3'
 
 // TODO: webpack test
-localDescribe('Copy actions using the wsk syntax', function(this: common.ISuite) {
+localDescribe('Copy actions using the wsk syntax', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 
   it('should switch to parameters mode', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 5, y: 10 })))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 5, y: 10 })))
 
   it('should copy an action', () =>
-    cli
-      .do(`wsk action create --copy ${actionName2} ${actionName} -p x 8`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2)))
+    CLI.command(`wsk action create --copy ${actionName2} ${actionName} -p x 8`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2)))
 
   // note that we expect the value of x to be overridden, and that of y to be copied from foo
   it('should switch to parameters mode', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 8, y: 10 })))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 8, y: 10 })))
 
   it('should copy an action with --copy in an alternate spot', () =>
-    cli
-      .do(`wsk action create ${actionName3} --copy  ${actionName} -p x 8 -p y 1`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3)))
+    CLI.command(`wsk action create ${actionName3} --copy  ${actionName} -p x 8 -p y 1`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName3)))
 
   // note that we expect the values of x and y both to be overridden
   it('should switch to parameters mode', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 8, y: 1 })))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName3))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 8, y: 1 })))
 })

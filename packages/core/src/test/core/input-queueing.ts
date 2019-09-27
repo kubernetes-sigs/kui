@@ -13,37 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, keys, selectors } = ui
-
-common.localDescribe('input queueing', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+Common.localDescribe('input queueing', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const queueUp = (textWhileQueued: string, N: number, sleepTime = 2) => {
     return {
-      thenType: (textAfterQueued: string, verify = cli.expectOKWithCustom({ expect: common.expectedVersion })) => {
+      thenType: (textAfterQueued: string, verify = ReplExpect.okWithCustom({ expect: Common.expectedVersion })) => {
         xit(`should queue ${textWhileQueued} while we sleep, then ${textAfterQueued}`, async () => {
           try {
             // do something that takes a while
-            const outstanding = cli.do(`sleep ${sleepTime}`, this.app)
+            const outstanding = CLI.command(`sleep ${sleepTime}`, this.app)
 
             // first, wait until the sleep 5 has started
-            await this.app.client.waitForExist(selectors.PROCESSING_N(N))
+            await this.app.client.waitForExist(Selectors.PROCESSING_N(N))
 
             // meanwhile, send keyboard input while queued
             this.app.client.keys(textWhileQueued)
 
             // now await completion of the first command; sleep should
             // result in blank output, i.e. no "ok"
-            await outstanding.then(cli.expectBlankWithOpts({ nonBlankPromptOk: true }))
+            await outstanding.then(ReplExpect.blankWithOpts({ nonBlankPromptOk: true }))
 
             if (textAfterQueued !== undefined) {
               // finally, type the trailing text and verify the output (use
               // an await, for the enclosing try/catch)
-              return await cli.do(textAfterQueued, this.app).then(verify)
+              return await CLI.command(textAfterQueued, this.app).then(verify)
             } else {
               // otherwise, the ENTER was typed while queued
               return await Promise.resolve({
@@ -52,7 +49,7 @@ common.localDescribe('input queueing', function(this: common.ISuite) {
               }).then(verify)
             }
           } catch (err) {
-            return common.oops(this, true)(err)
+            return Common.oops(this, true)(err)
           }
         })
       }
@@ -61,18 +58,18 @@ common.localDescribe('input queueing', function(this: common.ISuite) {
 
   // type "version" while queued, then "\n" after queued
   let nPromptBlocksSoFar = 0
-  queueUp('version', nPromptBlocksSoFar).thenType('') // '' because cli.do will add a newline for us
+  queueUp('version', nPromptBlocksSoFar).thenType('') // '' because CLI.command will add a newline for us
   nPromptBlocksSoFar += 2
 
   // type "version\n" while queued, then "" after queued
-  queueUp(`version${keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
+  queueUp(`version${Keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
   nPromptBlocksSoFar += 2
 
   // double newlines while queued up
-  queueUp(`version${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
+  queueUp(`version${Keys.ENTER}${Keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
   nPromptBlocksSoFar += 3
 
   // triple newlines while queued up
-  queueUp(`version${keys.ENTER}${keys.ENTER}${keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
+  queueUp(`version${Keys.ENTER}${Keys.ENTER}${Keys.ENTER}`, nPromptBlocksSoFar).thenType(undefined)
   nPromptBlocksSoFar += 4
 })

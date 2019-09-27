@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl', 'k']
 
-describe('electron kubectl run', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('electron kubectl run', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   // repeat the tests for kubectl, k, etc. i.e. any built-in
   // synonyms/aliases we have for "kubectl"
@@ -31,18 +30,16 @@ describe('electron kubectl run', function(this: common.ISuite) {
     allocateNS(this, ns)
 
     it(`should create deployment from ${kubectl} run`, () => {
-      return cli
-        .do(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+      return CLI.command(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     })
 
     it(`should delete the deployment by name via ${kubectl}`, () => {
-      return cli
-        .do(`${kubectl} delete deployment nginx -n ${ns}`, this.app)
-        .then(cli.expectOKWithAny)
-        .catch(common.oops(this))
+      return CLI.command(`${kubectl} delete deployment nginx -n ${ns}`, this.app)
+        .then(ReplExpect.okWithAny)
+        .catch(Common.oops(this))
     })
 
     deleteNS(this, ns)

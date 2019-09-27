@@ -19,59 +19,55 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
 localDescribe('Create an action with implicit entity type, then invoke it, then list activations', function(
-  this: common.ISuite
+  this: Common.ISuite
 ) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this)))
 
   // invoke it asynchronously with no params
   it('should async that action', () =>
-    cli
-      .do(`wsk action async foo`, this.app)
-      .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
+    CLI.command(`wsk action async foo`, this.app)
+      .then(ReplExpect.okWithCustom(CLI.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
+        return SidecarExpect.open(this.app).then(SidecarExpect.showing('foo', activationId))
       })
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   // list tests
-  ui.aliases.list.forEach(cmd => {
+  openwhisk.aliases.list.forEach(cmd => {
     it(`should find the new action with "$ ${cmd}"`, () =>
       this.app.client.waitUntil(() => {
-        return cli
-          .do(`wsk $ ${cmd}`, this.app)
-          .then(cli.expectOKWith('foo'))
+        return CLI.command(`wsk $ ${cmd}`, this.app)
+          .then(ReplExpect.okWith('foo'))
           .then(() => true)
           .catch(() => false)
       }))
 
     it(`should find the new action with "activation ${cmd}"`, () =>
       this.app.client.waitUntil(() => {
-        return cli
-          .do(`wsk activation ${cmd}`, this.app)
-          .then(cli.expectOKWith('foo'))
+        return CLI.command(`wsk activation ${cmd}`, this.app)
+          .then(ReplExpect.okWith('foo'))
           .then(() => true)
           .catch(() => false)
       }))

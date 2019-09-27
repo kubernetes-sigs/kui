@@ -14,46 +14,45 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const delay = 3000
 const actionName = 'foo'
 
-describe('Cancel via Ctrl+C', function(this: common.ISuite) {
+describe('Cancel via Ctrl+C', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // note that this action resolves with its input parameter; we'll check this in the await step below
   it('should create an action that completes with some delay', () =>
-    cli
-      .do(`let ${actionName} = x=> new Promise((resolve, reject) => setTimeout(() => resolve(x), ${delay}))`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(
+      `let ${actionName} = x=> new Promise((resolve, reject) => setTimeout(() => resolve(x), ${delay}))`,
+      this.app
+    )
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 
   it('should invoke the long-running action, then cancel', () =>
-    cli
-      .do(`wsk action invoke -p name openwhisk`, this.app)
+    CLI.command(`wsk action invoke -p name openwhisk`, this.app)
       .then(res => new Promise(resolve => setTimeout(() => resolve(res), delay / 3)))
-      .then(appAndCount => this.app.client.keys(ui.ctrlC).then(() => appAndCount))
-      .then(cli.expectBlank)
-      .catch(common.oops(this)))
+      .then(appAndCount => this.app.client.keys(Keys.ctrlC).then(() => appAndCount))
+      .then(ReplExpect.blank)
+      .catch(Common.oops(this)))
 
   // checking the resolve(x)
   it('should await the long-running action', () =>
-    cli
-      .do(`await`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
+    CLI.command(`await`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           name: 'openwhisk'
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

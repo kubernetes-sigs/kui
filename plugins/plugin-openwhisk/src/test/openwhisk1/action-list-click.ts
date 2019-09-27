@@ -14,53 +14,49 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
-describe('create action list it then click to show it again', function(this: common.ISuite) {
+describe('create action list it then click to show it again', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an action', () =>
-    cli
-      .do(`let ${actionName} = x=>x -p x 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName} = x=>x -p x 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   it('should create another action', () =>
-    cli
-      .do(`let ${actionName2} = x=>x -p x 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName2} = x=>x -p x 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .catch(Common.oops(this)))
 
   const expectedSrc = 'let main = x=>x'
 
   it(`should list ${actionName}, click it, show it`, () =>
-    cli
-      .do(`wsk action list`, this.app)
-      .then(cli.expectOKWithCustom({ selector: '', passthrough: true }))
+    CLI.command(`wsk action list`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: '', passthrough: true }))
 
       // click on the row entity, and expect sidecar to show it
       .then(N =>
-        this.app.client.click(`${ui.selectors.OUTPUT_N(N)} .entity[data-name="${actionName}"] .entity-name.clickable`)
+        this.app.client.click(`${Selectors.OUTPUT_N(N)} .entity[data-name="${actionName}"] .entity-name.clickable`)
       )
       .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
 
       // also confirm that source matches
       .then(() =>
         this.app.client.waitUntil(async () => {
-          const actualSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+          const actualSrc = await this.app.client.getText(Selectors.SIDECAR_ACTION_SOURCE)
           return actualSrc.trim() === expectedSrc
         })
       )
@@ -69,10 +65,10 @@ describe('create action list it then click to show it again', function(this: com
       .then(() => new Promise(resolve => setTimeout(resolve, 3000)))
       .then(() =>
         this.app.client.waitUntil(async () => {
-          const actualSrc = await this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE)
+          const actualSrc = await this.app.client.getText(Selectors.SIDECAR_ACTION_SOURCE)
           return actualSrc.trim() === expectedSrc
         })
       )
 
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

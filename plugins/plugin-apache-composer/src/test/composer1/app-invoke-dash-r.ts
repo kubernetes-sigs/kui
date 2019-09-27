@@ -14,47 +14,41 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import { dirname } from 'path'
-const cli = ui.cli
-const sidecar = ui.sidecar
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const seqName1 = 'seq1'
 
-describe('app invoke -r', function(this: common.ISuite) {
+describe('app invoke -r', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   for (let idx = 1; idx <= 3; idx++) {
     const name = `foo${idx}`
     it(`should create an action ${name} via let`, () =>
-      cli
-        .do(`let ${name} = x=>x`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(name))
-        .catch(common.oops(this)))
+      CLI.command(`let ${name} = x=>x`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(name))
+        .catch(Common.oops(this)))
   }
 
   it('should create a composer sequence', () =>
-    cli
-      .do(`wsk app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName1))
-      .catch(common.oops(this)))
+    CLI.command(`wsk app create ${seqName1} ${ROOT}/data/composer/fsm.json`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName1))
+      .catch(Common.oops(this)))
 
   for (let idx = 0; idx < 5; idx++) {
     it(`should invoke ${seqName1} with implicit entity idx=${idx}`, () =>
-      cli
-        .do(`wsk app invoke -r -p name grumble${idx}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: '.json' }))
+      CLI.command(`wsk app invoke -r -p name grumble${idx}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: '.json' }))
         .then(selector => this.app.client.getText(selector))
-        .then(ui.expectStruct({ name: `grumble${idx}` }))
-        .catch(common.oops(this)))
+        .then(Util.expectStruct({ name: `grumble${idx}` }))
+        .catch(Common.oops(this)))
   }
 })

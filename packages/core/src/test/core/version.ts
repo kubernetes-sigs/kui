@@ -18,24 +18,14 @@
  * Test the version command
  *
  */
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  expectedVersion
-} from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
-
-describe(`Version command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe(`Version command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('should report proper version', () =>
-    cli
-      .do('version', this.app)
-      .then(cli.expectOKWithCustom({ expect: expectedVersion }))
-      .catch(oops(this)))
+    CLI.command('version', this.app)
+      .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
+      .catch(Common.oops(this)))
 })
