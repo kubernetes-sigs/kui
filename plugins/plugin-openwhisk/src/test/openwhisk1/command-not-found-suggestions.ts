@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { expectSuggestionsFor } from '@kui-shell/core/test/core/command-not-found-suggestions'
 
-describe('Suggestions for command not found', function(this: common.ISuite) {
+describe('Suggestions for command not found', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should present suggestions for "ws" -> wsk', () => {
     const opts = {

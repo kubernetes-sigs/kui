@@ -19,80 +19,75 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
-describe('Click on action part of activation sidecar', function(this: common.ISuite) {
+describe('Click on action part of activation sidecar', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this)))
 
   // packaged action
   it('should create a package', () =>
-    cli
-      .do(`wsk package create ppp`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('ppp'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk package create ppp`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('ppp'))
+      .catch(Common.oops(this)))
   it('should create a package action', () =>
-    cli
-      .do(`wsk action create ppp/foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo', undefined, false, 'ppp'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ppp/foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo', undefined, false, 'ppp'))
+      .catch(Common.oops(this)))
 
   // invoke it asynchronously with no params
   it('should async that action', () =>
-    cli
-      .do(`wsk action async foo`, this.app)
-      .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
+    CLI.command(`wsk action async foo`, this.app)
+      .then(ReplExpect.okWithCustom(CLI.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
+        return SidecarExpect.open(this.app).then(SidecarExpect.showing('foo', activationId))
       })
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it('should click on name part of activation', () =>
     this.app.client
-      .click(ui.selectors.SIDECAR_TITLE)
+      .click(Selectors.SIDECAR_TITLE)
       .then(() => this.app)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this)))
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this)))
 
   // invoke it asynchronously with no params
   it('should async the packaged action', () =>
-    cli
-      .do(`wsk action async ppp/foo`, this.app)
-      .then(cli.expectOKWithCustom(cli.makeCustom('.activationId', '')))
+    CLI.command(`wsk action async ppp/foo`, this.app)
+      .then(ReplExpect.okWithCustom(CLI.makeCustom('.activationId', '')))
       .then(async selector => {
         const activationId = await this.app.client.getText(selector)
         await this.app.client.click(selector)
-        return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo', activationId))
+        return SidecarExpect.open(this.app).then(SidecarExpect.showing('foo', activationId))
       })
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   // a bit of a race here
 
   it('should click on name part of activation', () =>
     this.app.client
-      .click(ui.selectors.SIDECAR_TITLE)
+      .click(Selectors.SIDECAR_TITLE)
       .then(() => this.app)
-      .then(sidecar.expectShowing('foo', undefined, false, 'ppp'))
-      .catch(common.oops(this)))
+      .then(SidecarExpect.showing('foo', undefined, false, 'ppp'))
+      .catch(Common.oops(this)))
 })

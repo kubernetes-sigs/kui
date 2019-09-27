@@ -16,9 +16,7 @@
 
 import * as assert from 'assert'
 
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, sidecar } = ui
+import { Common, ReplExpect, CLI, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 
 /**
  *
@@ -31,7 +29,7 @@ const { cli, sidecar } = ui
  *
  */
 export function expectSuggestionsFor(
-  this: ISuite,
+  this: Common.ISuite,
   cmd: string,
   expectedAvailable: string[],
   {
@@ -41,16 +39,15 @@ export function expectSuggestionsFor(
     expectedString = undefined
   }: { click?: number; expectedBreadcrumb?: string; sidecar?: string; expectedString?: string } = {}
 ) {
-  return cli
-    .do(cmd, this.app)
-    .then(cli.expectErrorWithPassthrough(404, 'Command not found'))
+  return CLI.command(cmd, this.app)
+    .then(ReplExpect.errorWithPassthrough(404, 'Command not found'))
     .then(N => {
-      const base = `${ui.selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
+      const base = `${Selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
       const availableItems = `${base} .clickable`
 
       return this.app.client
         .getText(availableItems)
-        .then(ui.expectArray(expectedAvailable))
+        .then(Util.expectArray(expectedAvailable))
         .then(() => {
           if (click !== undefined) {
             // then click on the given index; note that nth-child is 1-indexed, hence the + 1 part
@@ -61,7 +58,7 @@ export function expectSuggestionsFor(
                 //
                 // then expect the next command to have the given terminal breadcrumb
                 //
-                const breadcrumb = `${ui.selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
+                const breadcrumb = `${Selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
                 return this.app.client
                   .getText(breadcrumb)
                   .then(actualBreadcrumb => assert.strictEqual(actualBreadcrumb, expectedBreadcrumb))
@@ -69,9 +66,8 @@ export function expectSuggestionsFor(
                 //
                 // then wait for the sidecar to be open and showing the expected sidecar icon text
                 //
-                const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
-                return sidecar
-                  .expectOpen(this.app)
+                const icon = `${Selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
+                return SidecarExpect.open(this.app)
                   .then(() => this.app.client.getText(icon))
                   .then(actualIcon => actualIcon.toLowerCase())
                   .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))
@@ -80,7 +76,7 @@ export function expectSuggestionsFor(
                 // then wait for the given command output
                 //
                 return this.app.client.waitUntil(async () => {
-                  const text = await this.app.client.getText(ui.selectors.OUTPUT_N(N + 1))
+                  const text = await this.app.client.getText(Selectors.OUTPUT_N(N + 1))
                   return text === expectedString
                 })
               }
@@ -88,12 +84,12 @@ export function expectSuggestionsFor(
           }
         })
     })
-    .catch(oops(this))
+    .catch(Common.oops(this))
 }
 
-describe('Suggestions for command not found', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe('Suggestions for command not found', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('should present suggestions for "ne" -> new', () => {
     return expectSuggestionsFor.call(

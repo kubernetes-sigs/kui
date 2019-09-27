@@ -5,3 +5,4 @@ my-auth*
 data
 lib
 tests
+dist

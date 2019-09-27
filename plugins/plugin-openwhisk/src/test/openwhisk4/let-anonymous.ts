@@ -14,77 +14,68 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const actionName1 = 'foo1'
 const actionName2 = 'foo2'
 const seqName1 = 's1'
 const seqName2 = 's2'
 
-describe('Create anonymous actions via let', function(this: common.ISuite) {
+describe('Create anonymous actions via let', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an anonymous function with () param', () =>
-    cli
-      .do(`let ${actionName1} = () => ({x:3})`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1)))
+    CLI.command(`let ${actionName1} = () => ({x:3})`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1)))
   it('should do an invoke of the action, using implicit context', () =>
-    cli
-      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ x: 3 })))
+    CLI.command(`wsk action invoke -p y 8fdsfdas`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ x: 3 })))
 
   it('should create an anonymous function with _ param', () =>
-    cli
-      .do(`let ${actionName2} = _ => ({xx:33})`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2)))
+    CLI.command(`let ${actionName2} = _ => ({xx:33})`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2)))
   it('should do an invoke of the action, using implicit context', () =>
-    cli
-      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ xx: 33 })))
+    CLI.command(`wsk action invoke -p y 8fdsfdas`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ xx: 33 })))
 
   it('should create an anonymous packaged function with () param', () =>
-    cli
-      .do(`let ${seqName1} = ()=>({z:4}) -> x=>x`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName1)))
+    CLI.command(`let ${seqName1} = ()=>({z:4}) -> x=>x`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName1)))
   it('should do an invoke of the action, using implicit context', () =>
-    cli
-      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName1))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ z: 4 })))
+    CLI.command(`wsk action invoke -p y 8fdsfdas`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName1))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ z: 4 })))
 
   it('should create an anonymous packaged function with _ param', () =>
-    cli
-      .do(`let ${seqName2} = _=>({zz:44}) -> x=>x`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName2)))
+    CLI.command(`let ${seqName2} = _=>({zz:44}) -> x=>x`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName2)))
   it('should do an invoke of the action, using implicit context', () =>
-    cli
-      .do(`wsk action invoke -p y 8fdsfdas`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName2))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ zz: 44 })))
+    CLI.command(`wsk action invoke -p y 8fdsfdas`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName2))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ zz: 44 })))
 })

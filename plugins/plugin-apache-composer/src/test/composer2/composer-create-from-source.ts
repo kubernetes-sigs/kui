@@ -15,20 +15,18 @@
  */
 
 import { readdirSync } from 'fs'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import { dirname, join } from 'path'
-const cli = ui.cli
-const sidecar = ui.sidecar
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 const srcDir = `${ROOT}/data/composer/composer-source` // inputs for create-from-source
 
-describe('composer create from source', function(this: common.ISuite) {
+describe('composer create from source', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create from source
   readdirSync(srcDir).forEach((file, idx) => {
@@ -37,13 +35,12 @@ describe('composer create from source', function(this: common.ISuite) {
     // echo.js is used by require-relative.js, it isn't a composition on its own
     if (file.endsWith('.js') && file !== 'echo.js') {
       it(`should create a composer sequence from source ${file}`, () =>
-        cli
-          .do(`wsk app create ${name} ${join(srcDir, file)}`, this.app)
-          .then(cli.expectOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing(name))
+        CLI.command(`wsk app create ${name} ${join(srcDir, file)}`, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(name))
           // .then(sidecar.expectBadge(badges.composerLib))
-          .catch(common.oops(this)))
+          .catch(Common.oops(this)))
     }
   })
 })

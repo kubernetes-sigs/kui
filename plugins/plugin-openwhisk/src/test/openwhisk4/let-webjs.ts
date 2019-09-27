@@ -16,27 +16,27 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const HTML_WITH_JS_INPUT = `${ROOT}/data/openwhisk/hello-with-script.html`
 
 const actionName = 'foo'
 
-describe('Create a javascript web action via let', function(this: common.ISuite) {
+describe('Create a javascript web action via let', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   //
   // javascript web action: NO LONGER NEEDED, the html let should create the javascript action for us
   //
-  /* it('should create an JS web action via let', () => cli.do(`let ${JS_INPUT}.webjs = ${JS_INPUT_FILE}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
+  /* it('should create an JS web action via let', () => CLI.command(`let ${JS_INPUT}.webjs = ${JS_INPUT_FILE}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
        .then(selector => this.app.client.getText(selector))
        .then(href => rp({ url: href, rejectUnauthorized: false }))
        .then(content => fs.readFile(JS_INPUT_FILE, (err, data) => {
@@ -44,19 +44,18 @@ describe('Create a javascript web action via let', function(this: common.ISuite)
            else assert.equal(content, data.toString())
        }))
        .then(() => this.app)
-       .then(sidecar.expectOpen)
-       .then(sidecar.expectShowing(JS_INPUT))
-       .then(sidecar.expectBadge('web'))
-       .catch(common.oops(this))) */
+       .then(SidecarExpect.open)
+       .then(SidecarExpect.showing(JS_INPUT))
+       .then(SidecarExpect.badge('web'))
+       .catch(Common.oops(this))) */
 
   it('should create an HTML web action that uses a JS web action, via let', () =>
-    cli
-      .do(`let ${actionName} = ${HTML_WITH_JS_INPUT}`, this.app)
-      .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
+    CLI.command(`let ${actionName} = ${HTML_WITH_JS_INPUT}`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => this.app.client.url(href))
       .then(() => this.app.client.getText('#hello'))
       .then(content => assert.strictEqual(content, 'hello'))
-      .then(() => common.restart(this)) // to unsmash the .url call
-      .catch(common.oops(this)))
+      .then(() => Common.restart(this)) // to unsmash the .url call
+      .catch(Common.oops(this)))
 })

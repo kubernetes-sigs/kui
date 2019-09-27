@@ -16,11 +16,7 @@
 
 import { dirname, join } from 'path'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
-const { cli, sidecar } = ui
-const { pit } = common
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
 
 /**
  * Notes: there seems to be a bug in node-pty right now on Linux
@@ -30,25 +26,23 @@ const { pit } = common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
 const input = join(ROOT, 'tests/data/small.json')
 
-describe('cat json to sidecar', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('cat json to sidecar', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
-  pit('cat a json file and expect it to appear in the sidecar', () =>
-    cli
-      .do(`cat "${input}"`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('small.json', undefined, undefined, 'openshift-operators'))
-      .catch(common.oops(this))
+  Common.pit('cat a json file and expect it to appear in the sidecar', () =>
+    CLI.command(`cat "${input}"`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('small.json', undefined, undefined, 'openshift-operators'))
+      .catch(Common.oops(this))
   )
 
-  pit('cat a json file, pipe it to jq, and expect it to appear in the sidecar', () =>
-    cli
-      .do(`cat "${input}" | jq`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('small.json', undefined, undefined, 'openshift-operators'))
-      .catch(common.oops(this))
+  Common.pit('cat a json file, pipe it to jq, and expect it to appear in the sidecar', () =>
+    CLI.command(`cat "${input}" | jq`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('small.json', undefined, undefined, 'openshift-operators'))
+      .catch(Common.oops(this))
   )
 })

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors, getTextContent } from '@kui-shell/core/tests/lib/ui'
-import {
-  waitForGreen,
-  createNS,
-  allocateNS,
-  deleteNS,
-  typeSlowly} from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
+import { waitForGreen, createNS, allocateNS, deleteNS, typeSlowly } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 
-describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
@@ -35,17 +29,15 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
   const createIt = (name: string) => {
     it(`should create sample pod ${name} from URL via ${kubectl}`, async () => {
       try {
-        const selector = await cli
-          .do(
-            `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
-          )
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        const selector = await CLI.command(
+          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+          this.app
+        ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
       } catch (err) {
-        await common.oops(this, true)(err)
+        await Common.oops(this, true)(err)
       }
     })
   }
@@ -53,9 +45,9 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
   const editIt = (name: string, quit: string) => {
     it(`should edit it via ${kubectl} edit, and using ${quit} to quit`, async () => {
       try {
-        const res = await cli.do(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
+        const res = await CLI.command(`${kubectl} edit pod ${name} ${inNamespace}`, this.app)
 
-        const rows = selectors.xtermRows(res.count)
+        const rows = Selectors.xtermRows(res.count)
 
         // wait for vi to come up
         await this.app.client.waitForExist(rows)
@@ -66,7 +58,7 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
         // wait for apiVersion: v<something> to show up in the pty
         await this.app.client.waitUntil(async () => {
           try {
-            const txt = await getTextContent(this.app, rows)
+            const txt = await CLI.getTextContent(this.app, rows)
             return /apiVersion: v/.test(txt)
           } catch (err) {
             console.error(err)
@@ -76,18 +68,18 @@ describe(`kubectl edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
 
         await this.app.client.waitUntil(async () => {
           // quit without saving
-          await this.app.client.keys(keys.ESCAPE)
-          await typeSlowly(this.app, `${quit}${keys.ENTER}`)
+          await this.app.client.keys(Keys.ESCAPE)
+          await typeSlowly(this.app, `${quit}${Keys.ENTER}`)
 
           // first false: not exact
           // second false: don't assert, so that we can waitUntil
           return Promise.resolve(res)
-            .then(cli.expectOKWithTextContent('cancelled', false, false))
+            .then(ReplExpect.okWithTextContent('cancelled', false, false))
             .then(() => true)
             .catch(() => false)
         })
       } catch (err) {
-        await common.oops(this, true)(err)
+        await Common.oops(this, true)(err)
       }
     })
   }

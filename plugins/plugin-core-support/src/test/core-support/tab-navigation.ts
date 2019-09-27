@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, keys } = ui
-
+import { Common, CLI, Keys, Selectors } from '@kui-shell/test'
 import { tabButtonSelector } from '../../lib/new-tab'
 
-describe('tab navigation', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('tab navigation', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const testPromptIsSelected = (hitTab = false, waitForSessionInit = false) => {
     it('should focus on repl input since we just hit Enter', async () => {
       try {
         if (waitForSessionInit) {
-          await common.waitForSession(this)
+          await CLI.waitForSession(this)
         }
         if (hitTab) {
-          await this.app.client.keys(keys.TAB)
+          await this.app.client.keys(Keys.TAB)
         }
-        await this.app.client.waitForEnabled(selectors.CURRENT_PROMPT_BLOCK)
+        await this.app.client.waitForEnabled(Selectors.CURRENT_PROMPT_BLOCK)
       } catch (err) {
-        await common.oops(this)(err)
+        await Common.oops(this)(err)
       }
     })
   }
@@ -53,42 +50,42 @@ describe('tab navigation', function(this: common.ISuite) {
   const testSelector = (selector: string, hitEnter = false, selectedSelector?: string) => {
     it(`should tab to the ${selector} hitEnter=${hitEnter}`, async () => {
       try {
-        await this.app.client.keys(keys.TAB)
+        await this.app.client.keys(Keys.TAB)
         await waitForFocus(selector)
 
         if (hitEnter) {
-          await this.app.client.keys(keys.ENTER)
+          await this.app.client.keys(Keys.ENTER)
           await this.app.client.waitForEnabled(selectedSelector)
         }
       } catch (err) {
-        await common.oops(this)(err)
+        await Common.oops(this)(err)
       }
     })
   }
 
   const testAboutMode = (mode: string, hitEnter = false) => {
     testSelector(
-      `${selectors.SIDECAR_MODE_BUTTON(mode)} .kui--tab-navigatable`,
+      `${Selectors.SIDECAR_MODE_BUTTON(mode)} .kui--tab-navigatable`,
       hitEnter,
-      selectors.SIDECAR_MODE_BUTTON_SELECTED(mode)
+      Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode)
     )
   }
 
   const testNoTabNavigation = () => {
     it('should still focus on repl input if we hit tab while the input has content', async () => {
       try {
-        const { count } = await cli.do(' ', this.app, true, false, true)
-        await this.app.client.keys(keys.TAB)
-        await this.app.client.waitForEnabled(selectors.PROMPT_N(count))
+        const { count } = await CLI.command(' ', this.app, true, false, true)
+        await this.app.client.keys(Keys.TAB)
+        await this.app.client.waitForEnabled(Selectors.PROMPT_N(count))
       } catch (err) {
-        await common.oops(this)(err)
+        await Common.oops(this)(err)
       }
     })
   }
 
   const hitBackspace = () => {
     it('should hit the backspace key once, to clear the repl input', () => {
-      return this.app.client.keys(keys.BACKSPACE)
+      return this.app.client.keys(Keys.BACKSPACE)
     })
   }
 
@@ -110,7 +107,7 @@ describe('tab navigation', function(this: common.ISuite) {
 
   // tab to new tab button and hit enter
   testSelector(TAB_BUTTON_N(1))
-  testSelector(tabButtonSelector, true, selectors.TAB_SELECTED_N(2))
+  testSelector(tabButtonSelector, true, Selectors.TAB_SELECTED_N(2))
   testPromptIsSelected(false, true)
 
   // test a full tab cycle
@@ -122,7 +119,7 @@ describe('tab navigation', function(this: common.ISuite) {
   testSelector(TAB_BUTTON_N(1))
   testSelector(TAB_BUTTON_N(2))
   testSelector(tabButtonSelector)
-  testSelector('#help-button', true, selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
+  testSelector('#help-button', true, Selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
   testPromptIsSelected()
 
   // now the sidecar is open, so cycle through the sidecar tabs

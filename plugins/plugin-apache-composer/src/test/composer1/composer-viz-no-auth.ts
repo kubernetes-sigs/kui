@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+
 import {
   composerInput,
   verifyNodeExists,
   verifyEdgeExists,
   verifyTheBasicStuff
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
-const cli = ui.cli
 
 // fuzz testing: eliminate auth
 //    NOTE: since we have no wskprops, the expected API_HOST is going to be
@@ -39,9 +38,9 @@ const fuzz = {
  * Here starts the test
  *
  */
-describe('show the composer visualization with no wskauth', function(this: common.ISuite) {
+describe('show the composer visualization with no wskauth', function(this: Common.ISuite) {
   before(openwhisk.before(this, fuzz)) // fuzz testing: eliminate authentication bits
-  after(common.after(this))
+  after(Common.after(this))
 
   const cmd = 'wsk app preview'
   const hello = { file: 'hello.js', path: '@demos/hello.js' }
@@ -50,16 +49,14 @@ describe('show the composer visualization with no wskauth', function(this: commo
 
   /** test: load @demos/hello */
   it(`show visualization via ${cmd} from file ${hello.path}`, () =>
-    cli
-      .do(`${cmd} ${hello.path}`, this.app)
+    CLI.command(`${cmd} ${hello.path}`, this.app)
       .then(verifyTheBasicStuff(hello.file))
       .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   /** test: load an if.js */
   it(`show visualization via ${cmd} from FSM file ${If.file}`, () =>
-    cli
-      .do(`${cmd} ${If.path}`, this.app)
+    CLI.command(`${cmd} ${If.path}`, this.app)
       .then(verifyTheBasicStuff(If.file))
       .then(verifyNodeExists('seq1'))
       .then(verifyNodeExists('seq2'))
@@ -74,12 +71,11 @@ describe('show the composer visualization with no wskauth', function(this: commo
       .then(verifyEdgeExists('seq5', 'dummy_0'))
       .then(verifyEdgeExists('dummy_0', 'Exit'))
       .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   /** test: while with nested sequence, from js file */
   it(`show visualization from javascript source ${whileSeq.path}`, () =>
-    cli
-      .do(`wsk app viz ${whileSeq.path}`, this.app)
+    CLI.command(`wsk app viz ${whileSeq.path}`, this.app)
       .then(verifyTheBasicStuff(whileSeq.file))
       .then(verifyNodeExists('seq1'))
       .then(verifyNodeExists('seq2'))
@@ -95,5 +91,5 @@ describe('show the composer visualization with no wskauth', function(this: commo
       .then(verifyEdgeExists('action4', 'cond3'))
       .then(verifyEdgeExists('cond3', 'Exit'))
       .then(() => this.app.client.element('body.no-auth')) // make sure we have this indicator
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

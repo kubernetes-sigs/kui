@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar, getValueFromMonaco, expectYAMLSubset } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
   waitForRed,
   waitForGreen,
@@ -28,9 +27,9 @@ import {
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 
-describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
@@ -44,13 +43,12 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       it(`should create sample pod from URL via "${kubectl} apply ${dashF}" for test: ${this.title}`, async () => {
         try {
           console.log(`kubectl apply pod 1 ${this.title}`)
-          const selector = await cli
-            .do(
-              `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-              this.app
-            )
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
-            .catch(common.oops(this))
+          const selector = await CLI.command(
+            `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            this.app
+          )
+            .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+            .catch(Common.oops(this))
 
           // wait for the badge to become green
           console.log(`kubectl apply pod 2 ${this.title}`)
@@ -59,12 +57,11 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           // now click on the table row
           console.log(`kubectl apply pod 3 ${this.title}`)
           await this.app.client.click(`${selector} .clickable`)
-          await sidecar
-            .expectOpen(this.app)
-            .then(sidecar.expectMode(defaultModeForGet))
-            .then(sidecar.expectShowing('nginx'))
+          await SidecarExpect.open(this.app)
+            .then(SidecarExpect.mode(defaultModeForGet))
+            .then(SidecarExpect.showing('nginx'))
         } catch (err) {
-          return common.oops(this, true)(err)
+          return Common.oops(this, true)(err)
         }
       })
 
@@ -72,20 +69,20 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         try {
           // make sure we have a last applied tab
           console.log(`kubectl apply pod 4 ${this.title}`)
-          await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('last applied'))
-          await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('last applied'))
-          await this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON_SELECTED('last applied'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('last applied'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('last applied'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('last applied'))
 
           let idx = 0
           console.log(`kubectl apply pod 5 ${this.title}`)
           await this.app.client.waitUntil(async () => {
-            const text = await getValueFromMonaco(this.app)
+            const text = await Util.getValueFromMonaco(this.app)
             if (++idx > 5) {
               console.error(`still waiting for yaml in ${this.title}`, text)
             }
 
             return Promise.resolve(text).then(
-              expectYAMLSubset(
+              Util.expectYAMLSubset(
                 {
                   apiVersion: 'v1',
                   kind: 'Pod',
@@ -100,19 +97,18 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
           console.log(`kubectl apply pod 6 ${this.title}`)
         } catch (err) {
-          return common.oops(this, true)(err)
+          return Common.oops(this, true)(err)
         }
       })
 
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
-        return cli
-          .do(
-            `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
-          )
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(
+          `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+          this.app
+        )
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
-          .catch(common.oops(this, true))
+          .catch(Common.oops(this, true))
       })
     })
   })

@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-const { cli } = require('@kui-shell/core/tests/lib/ui')
-const { oops } = require('@kui-shell/core/tests/lib/common')
+const { Common, CLI, ReplExpect } = require('@kui-shell/test')
 
 /** expect the given folder within the help tree */
 // NOTE: Mengting Yan: webdriverio getText in linux chromium seems to return all texts of a heading element in a single line, fix me if it's not true
@@ -28,8 +26,7 @@ ${folder2}`
 /** helper method, used in the tests below: ask for help */
 exports.doHelp = function(cmd, { code = 500, expect = undefined } = {}) {
   return it(`should show help via ${cmd}`, () =>
-    cli
-      .do(cmd, this.app)
-      .then(cli.expectError(code, expect))
-      .catch(oops(this)))
+    CLI.command(cmd, this.app)
+      .then(ReplExpect.error(code, expect))
+      .catch(Common.oops(this)))
 }

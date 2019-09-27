@@ -14,81 +14,69 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, pit } from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
-  pit('should echo nothing variant 1', () =>
-    cli
-      .do('echo', this.app)
-      .then(cli.expectJustOK)
-      .catch(oops(this))
+  Common.pit('should echo nothing variant 1', () =>
+    CLI.command('echo', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this))
   )
 
-  pit('should echo nothing variant 2', () =>
-    cli
-      .do('echo ', this.app)
-      .then(cli.expectJustOK)
-      .catch(oops(this))
+  Common.pit('should echo nothing variant 2', () =>
+    CLI.command('echo ', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this))
   )
 
-  pit('should echo nothing variant 3', () =>
-    cli
-      .do('echo                  ', this.app)
-      .then(cli.expectJustOK)
-      .catch(oops(this))
+  Common.pit('should echo nothing variant 3', () =>
+    CLI.command('echo                  ', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this))
   )
 
-  pit('should echo hi', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .catch(oops(this))
+  Common.pit('should echo hi', () =>
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .catch(Common.oops(this))
   )
 
-  pit('should echo hi with surrounding whitespace', () =>
-    cli
-      .do('echo   hi               ', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .catch(oops(this))
+  Common.pit('should echo hi with surrounding whitespace', () =>
+    CLI.command('echo   hi               ', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .catch(Common.oops(this))
   )
 
-  pit('should echo hi hi with surrounding whitespace', () =>
-    cli
-      .do('echo   hi hi               ', this.app)
-      .then(cli.expectOKWithString('hi hi'))
-      .catch(oops(this))
+  Common.pit('should echo hi hi with surrounding whitespace', () =>
+    CLI.command('echo   hi hi               ', this.app)
+      .then(ReplExpect.okWithString('hi hi'))
+      .catch(Common.oops(this))
   )
 
-  pit('should echo hi hi with intra-whitespaces', () =>
-    cli
-      .do('echo   hi  hi               ', this.app)
-      .then(cli.expectOKWithString('hi hi'))
-      .catch(oops(this))
+  Common.pit('should echo hi hi with intra-whitespaces', () =>
+    CLI.command('echo   hi  hi               ', this.app)
+      .then(ReplExpect.okWithString('hi hi'))
+      .catch(Common.oops(this))
   )
 
-  pit('should echo "hi  hi"', () =>
-    cli
-      .do('echo "hi  hi"', this.app)
-      .then(cli.expectOKWithString('hi  hi'))
-      .catch(oops(this))
+  Common.pit('should echo "hi  hi"', () =>
+    CLI.command('echo "hi  hi"', this.app)
+      .then(ReplExpect.okWithString('hi  hi'))
+      .catch(Common.oops(this))
   )
 
-  pit('should echo "hi  hi" with surrounding whitespace', () =>
-    cli
-      .do('echo   "hi  hi"               ', this.app)
-      .then(cli.expectOKWithString('hi  hi'))
-      .catch(oops(this))
+  Common.pit('should echo "hi  hi" with surrounding whitespace', () =>
+    CLI.command('echo   "hi  hi"               ', this.app)
+      .then(ReplExpect.okWithString('hi  hi'))
+      .catch(Common.oops(this))
   )
 
-  pit('should echo multi', () =>
-    cli
-      .do('echo   "hi  hi" hi        "hi   hi"               ', this.app)
-      .then(cli.expectOKWithString('hi  hi hi hi   hi'))
-      .catch(oops(this))
+  Common.pit('should echo multi', () =>
+    CLI.command('echo   "hi  hi" hi        "hi   hi"               ', this.app)
+      .then(ReplExpect.okWithString('hi  hi hi hi   hi'))
+      .catch(Common.oops(this))
   )
 })

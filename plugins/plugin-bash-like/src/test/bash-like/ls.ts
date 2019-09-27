@@ -14,83 +14,71 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 const echoString = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
-describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
-  common.proxyIt('should cd to the test dir', () =>
-    cli
-      .do(`cd ${process.env.TEST_ROOT}`, this.app)
-      .then(cli.expectOKWithString('packages/test'))
-      .catch(common.oops(this, true))
+  Common.proxyIt('should cd to the test dir', () =>
+    CLI.command(`cd ${process.env.TEST_ROOT}`, this.app)
+      .then(ReplExpect.okWithString('packages/test'))
+      .catch(Common.oops(this, true))
   )
 
   it('should use ls ../../', () =>
-    cli
-      .do(`ls ../../`, this.app)
-      .then(cli.expectOKWith('package.json'))
-      .catch(common.oops(this)))
+    CLI.command(`ls ../../`, this.app)
+      .then(ReplExpect.okWith('package.json'))
+      .catch(Common.oops(this)))
 
   it('should ls with semicolons 1', () =>
-    cli
-      .do(`ls ../../ ; echo ${echoString}`, this.app)
-      .then(cli.expectOKWith('package.json'))
-      .catch(common.oops(this)))
+    CLI.command(`ls ../../ ; echo ${echoString}`, this.app)
+      .then(ReplExpect.okWith('package.json'))
+      .catch(Common.oops(this)))
 
   it('should ls with semicolons 2', () =>
-    cli
-      .do(`ls ../../ ; echo ${echoString}`, this.app)
-      .then(cli.expectOKWithString(echoString))
-      .catch(common.oops(this)))
+    CLI.command(`ls ../../ ; echo ${echoString}`, this.app)
+      .then(ReplExpect.okWithString(echoString))
+      .catch(Common.oops(this)))
 
   it('should ls with semicolons 3', () =>
-    cli
-      .do(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
-      .then(cli.expectOKWith('package.json'))
-      .catch(common.oops(this)))
+    CLI.command(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
+      .then(ReplExpect.okWith('package.json'))
+      .catch(Common.oops(this)))
 
   it('should ls with semicolons 4', () =>
-    cli
-      .do(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
-      .then(cli.expectOKWithString(echoString))
-      .catch(common.oops(this)))
+    CLI.command(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
+      .then(ReplExpect.okWithString(echoString))
+      .catch(Common.oops(this)))
 
   it('should use ls ../../README.md', () =>
-    cli
-      .do(`ls ../../README.md`, this.app)
-      .then(cli.expectOKWith('README.md'))
-      .catch(common.oops(this)))
+    CLI.command(`ls ../../README.md`, this.app)
+      .then(ReplExpect.okWith('README.md'))
+      .catch(Common.oops(this)))
 
   const Cs = ['CONTRIBUTING.md']
   Cs.forEach(expect => {
     it(`should use ls ../../C* and expect ${expect}`, () =>
-      cli
-        .do(`ls ../../C*`, this.app)
-        .then(cli.expectOKWith(expect))
-        .catch(common.oops(this)))
+      CLI.command(`ls ../../C*`, this.app)
+        .then(ReplExpect.okWith(expect))
+        .catch(Common.oops(this)))
   })
 
   const CsandP = Cs.concat(['package.json'])
   CsandP.forEach(expect => {
     it('should use ls ../../C* ../package.json', () =>
-      cli
-        .do(`ls ../../C* ../../package.json`, this.app)
-        .then(cli.expectOKWith(expect))
-        .catch(common.oops(this)))
+      CLI.command(`ls ../../C* ../../package.json`, this.app)
+        .then(ReplExpect.okWith(expect))
+        .catch(Common.oops(this)))
   })
 
   const CsandT = Cs.concat(['tools'])
   CsandT.forEach(expect => {
     it('should use ls -d ../../C* ../tool*', () =>
-      cli
-        .do(`ls -d ../../C* ../../tool*`, this.app)
-        .then(cli.expectOKWith(expect))
-        .catch(common.oops(this)))
+      CLI.command(`ls -d ../../C* ../../tool*`, this.app)
+        .then(ReplExpect.okWith(expect))
+        .catch(Common.oops(this)))
   })
 })

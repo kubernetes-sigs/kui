@@ -14,119 +14,108 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { localIt } = common
-const { cli, sidecar } = ui
+const { localIt } = Common
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 
-describe('wsk action update without input file', function(this: common.ISuite) {
+describe('wsk action update without input file', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an action', () =>
-    cli
-      .do(`let ${actionName} = x=>x -p x 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName} = x=>x -p x 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   it('should switch to parameters mode', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 3 }))
-      .catch(common.oops(this)))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 3 }))
+      .catch(Common.oops(this)))
 
   it('should update the action with no code via kuwsk action update', () =>
-    cli
-      .do(`wsk action update ${actionName} -p y 5`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName} -p y 5`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
   it('should switch to parameters mode and verify updated params', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ y: 5 })) // note that the original parameter binding is expected to be overwritten
-      .catch(common.oops(this)))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ y: 5 })) // note that the original parameter binding is expected to be overwritten
+      .catch(Common.oops(this)))
 
   it('should update the action with no code via wsk action update', () =>
-    cli
-      .do(`wsk action update ${actionName} -p y 6`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName} -p y 6`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
   it('should switch to parameters mode and verify updated params', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ y: 6 })) // note that the original parameter binding is expected to be overwritten
-      .catch(common.oops(this)))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ y: 6 })) // note that the original parameter binding is expected to be overwritten
+      .catch(Common.oops(this)))
 
   it('should update the action with no code', () =>
-    cli
-      .do(`wsk action update ${actionName} -p y 4`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName} -p y 4`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   it('should switch to parameters mode and verify updated params', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ y: 4 })) // note that the original parameter binding is expected to be overwritten
-      .catch(common.oops(this)))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ y: 4 })) // note that the original parameter binding is expected to be overwritten
+      .catch(Common.oops(this)))
 
   localIt('should update the action, this time with a file', () =>
-    cli
-      .do(`wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this))
+    CLI.command(`wsk action update ${actionName} -p name updater ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this))
   )
 
   localIt('should switch to parameters mode and verify updated params', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ name: 'updater' })) // note that the original parameter binding is expected to be overwritten
-      .catch(common.oops(this))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ name: 'updater' })) // note that the original parameter binding is expected to be overwritten
+      .catch(Common.oops(this))
   )
 
   localIt('should invoke the new code', () =>
-    cli
-      .do(`wsk action invoke ${actionName}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ name: 'Step1 updater' }))
-      .catch(common.oops(this))
+    CLI.command(`wsk action invoke ${actionName}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ name: 'Step1 updater' }))
+      .catch(Common.oops(this))
   )
 })

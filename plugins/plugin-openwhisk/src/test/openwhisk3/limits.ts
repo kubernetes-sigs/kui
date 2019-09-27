@@ -19,13 +19,13 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo1'
@@ -39,104 +39,93 @@ const actionName8 = 'foo8'
 const actionName9 = 'foo9'
 
 // TODO: webpack test
-localDescribe('Create an action with limits', function(this: common.ISuite) {
+localDescribe('Create an action with limits', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an action with -m 129', () =>
-    cli
-      .do(`wsk action update ${actionName1} ${ROOT}/data/openwhisk/foo.js -m 129`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .then(sidecar.expectLimit('memory', 129))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName1} ${ROOT}/data/openwhisk/foo.js -m 129`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .then(SidecarExpect.limit('memory', 129))
+      .catch(Common.oops(this)))
 
   it('should create an action with --memory 131', () =>
-    cli
-      .do(`wsk action update ${actionName2} ${ROOT}/data/openwhisk/foo.js --memory 131`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .then(sidecar.expectLimit('memory', 131))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName2} ${ROOT}/data/openwhisk/foo.js --memory 131`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .then(SidecarExpect.limit('memory', 131))
+      .catch(Common.oops(this)))
 
   it('should create an action with -t 1000', () =>
-    cli
-      .do(`wsk action update ${actionName3} ${ROOT}/data/openwhisk/foo.js -t 1000`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3))
-      .then(sidecar.expectLimit('timeout', 1000))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName3} ${ROOT}/data/openwhisk/foo.js -t 1000`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName3))
+      .then(SidecarExpect.limit('timeout', 1000))
+      .catch(Common.oops(this)))
 
   it('should create an action with --timeout 2000', () =>
-    cli
-      .do(`wsk action update ${actionName4} ${ROOT}/data/openwhisk/foo.js --timeout 2000`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName4))
-      .then(sidecar.expectLimit('timeout', 2000))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName4} ${ROOT}/data/openwhisk/foo.js --timeout 2000`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName4))
+      .then(SidecarExpect.limit('timeout', 2000))
+      .catch(Common.oops(this)))
 
   it('should create an action with --timeout 3s', () =>
-    cli
-      .do(`wsk action update ${actionName5} ${ROOT}/data/openwhisk/foo.js --timeout 3s`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName5))
-      .then(sidecar.expectLimit('timeout', 3000))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName5} ${ROOT}/data/openwhisk/foo.js --timeout 3s`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName5))
+      .then(SidecarExpect.limit('timeout', 3000))
+      .catch(Common.oops(this)))
 
   it('should create an action with --timeout 5m', () =>
-    cli
-      .do(`wsk action update ${actionName6} ${ROOT}/data/openwhisk/foo.js --timeout 5m`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName6))
-      .then(sidecar.expectLimit('timeout', 300000))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName6} ${ROOT}/data/openwhisk/foo.js --timeout 5m`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName6))
+      .then(SidecarExpect.limit('timeout', 300000))
+      .catch(Common.oops(this)))
 
   it('should create an action with -l 1', () =>
-    cli
-      .do(`wsk action update ${actionName7} ${ROOT}/data/openwhisk/foo.js -l 1`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName7))
-      .then(sidecar.expectLimit('logs', 1))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName7} ${ROOT}/data/openwhisk/foo.js -l 1`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName7))
+      .then(SidecarExpect.limit('logs', 1))
+      .catch(Common.oops(this)))
 
   it('should fail to create an action with --logs 2', () =>
-    cli
-      .do(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logs 2`, this.app)
-      .then(cli.expectError(499)) // unsupported optional parameter
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logs 2`, this.app)
+      .then(ReplExpect.error(499)) // unsupported optional parameter
+      .catch(Common.oops(this)))
 
   it('should create an action with --logsize 2', () =>
-    cli
-      .do(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 2`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName8))
-      .then(sidecar.expectLimit('logs', 2))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 2`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName8))
+      .then(SidecarExpect.limit('logs', 2))
+      .catch(Common.oops(this)))
 
   // updating the action8 this time
   it('should create an action with --logsize 3', () =>
-    cli
-      .do(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName8))
-      .then(sidecar.expectLimit('logs', 3))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName8} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName8))
+      .then(SidecarExpect.limit('logs', 3))
+      .catch(Common.oops(this)))
 
   it('should create an action with --logsize 3', () =>
-    cli
-      .do(`wsk action update ${actionName9} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName9))
-      .then(sidecar.expectLimit('logs', 3))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action update ${actionName9} ${ROOT}/data/openwhisk/foo.js --logsize 3`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName9))
+      .then(SidecarExpect.limit('logs', 3))
+      .catch(Common.oops(this)))
 })

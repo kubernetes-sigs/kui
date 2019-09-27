@@ -21,101 +21,92 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create actions, switch to parameters view, then add parameters', function(this: common.ISuite) {
+localDescribe('Create actions, switch to parameters view, then add parameters', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this, true)))
+    CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this, true)))
 
   it('should switch to parameters mode', () =>
-    cli
-      .do('wsk action parameters', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action parameters', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(text => assert.strictEqual(text, 'This entity has no parameters')))
 
   it('should add a parameter with explicit action name', () =>
-    cli
-      .do('wsk action set x=1 in foo', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 1 })))
+    CLI.command('wsk action set x=1 in foo', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 1 })))
 
   it('should add a parameter with implicit action name', () =>
-    cli
-      .do('wsk action set y=1', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 1, y: 1 })))
+    CLI.command('wsk action set y=1', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 1, y: 1 })))
 
   it('should update a parameter value with implicit action name', () =>
-    cli
-      .do('wsk action set x=2', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 2, y: 1 })))
+    CLI.command('wsk action set x=2', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 2, y: 1 })))
 
   it('should update an inner structure parameter with implicit action name', () =>
-    cli
-      .do('wsk action set z={}', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 2, y: 1, z: {} })))
+    CLI.command('wsk action set z={}', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 2, y: 1, z: {} })))
 
   it('should update an inner-inner structure parameter with implicit action name', () =>
-    cli
-      .do('wsk action set z.z=true', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: 2, y: 1, z: { z: true } })))
+    CLI.command('wsk action set z.z=true', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: 2, y: 1, z: { z: true } })))
 
   it('should update a parameter to false, with implicit action name', () =>
-    cli
-      .do('wsk action set x=false', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: false, y: 1, z: { z: true } })))
+    CLI.command('wsk action set x=false', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: false, y: 1, z: { z: true } })))
 
   it('should update a parameter with spaces', () =>
-    cli
-      .do('wsk action set humble pie="rumble tummy"', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action set humble pie="rumble tummy"', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           'humble pie': 'rumble tummy',
           x: false,
           y: 1,
@@ -124,14 +115,13 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should update an nested parameter with spaces', () =>
-    cli
-      .do('wsk action set z.humble pie="rumble tummy"', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action set z.humble pie="rumble tummy"', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           'humble pie': 'rumble tummy',
           x: false,
           y: 1,
@@ -140,14 +130,13 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should remove a nested parameter with spaces', () =>
-    cli
-      .do('wsk action unset z.humble pie', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action unset z.humble pie', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           'humble pie': 'rumble tummy',
           x: false,
           y: 1,
@@ -156,23 +145,21 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should remove a top-level parameter with spaces', () =>
-    cli
-      .do('wsk action unset humble pie', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: false, y: 1, z: { z: true } })))
+    CLI.command('wsk action unset humble pie', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: false, y: 1, z: { z: true } })))
 
   it('should add a structure', () =>
-    cli
-      .do('wsk action set sss={"phone home": 345}', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action set sss={"phone home": 345}', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           sss: { 'phone home': 345 },
           x: false,
           y: 1,
@@ -181,23 +168,21 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should remove that structure', () =>
-    cli
-      .do('wsk action unset sss', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ x: false, y: 1, z: { z: true } })))
+    CLI.command('wsk action unset sss', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ x: false, y: 1, z: { z: true } })))
 
   it('should add with a pathy key', () =>
-    cli
-      .do('wsk action set m.n={"phone home": 345}', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action set m.n={"phone home": 345}', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           m: { n: { 'phone home': 345 } },
           x: false,
           y: 1,
@@ -206,41 +191,37 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should remove with a pathy key', () =>
-    cli
-      .do('wsk action unset m.n', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ m: {}, x: false, y: 1, z: { z: true } })))
+    CLI.command('wsk action unset m.n', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ m: {}, x: false, y: 1, z: { z: true } })))
 
   it('should push to a new array', () =>
-    cli
-      .do('wsk action push 3 to a', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ a: [3], m: {}, x: false, y: 1, z: { z: true } })))
+    CLI.command('wsk action push 3 to a', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ a: [3], m: {}, x: false, y: 1, z: { z: true } })))
 
   it('should push to an existing array', () =>
-    cli
-      .do('wsk action push 4 to a', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ a: [3, 4], m: {}, x: false, y: 1, z: { z: true } })))
+    CLI.command('wsk action push 4 to a', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ a: [3, 4], m: {}, x: false, y: 1, z: { z: true } })))
 
   it('should push to a new pathy array', () =>
-    cli
-      .do('wsk action push 5 to m.n', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action push 5 to m.n', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           a: [3, 4],
           m: { n: [5] },
           x: false,
@@ -250,14 +231,13 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should push to an existing pathy array', () =>
-    cli
-      .do('wsk action push 6 to m.n', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action push 6 to m.n', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           a: [3, 4],
           m: { n: [5, 6] },
           x: false,
@@ -267,14 +247,13 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should push to a struct to an existing pathy array', () =>
-    cli
-      .do('wsk action push {"y": 7 } to m.n', this.app) // <-- some spaces in the value, for good measure
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action push {"y": 7 } to m.n', this.app) // <-- some spaces in the value, for good measure
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           a: [3, 4],
           m: { n: [5, 6, { y: 7 }] },
           x: false,
@@ -284,12 +263,11 @@ localDescribe('Create actions, switch to parameters view, then add parameters', 
       ))
 
   it('should switch back to code mode', () =>
-    cli
-      .do('wsk action code', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+    CLI.command('wsk action code', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
       .then(text =>
         assert.strictEqual(
           text.replace(/\s+/g, ''),

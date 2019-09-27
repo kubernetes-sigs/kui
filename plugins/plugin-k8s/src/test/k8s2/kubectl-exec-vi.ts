@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, keys, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS, typeSlowly } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -27,34 +26,32 @@ const inputEncoded = inputBuffer.toString('base64')
 /** we have a custom vimrc, to make sure INSERT shows up */
 // const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
 
-describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
   allocateNS(this, ns)
 
   const podName = 'vim'
   it(`should create sample pod from URL`, () => {
-    return cli
-      .do(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-      .then(cli.expectOKWithString(podName))
-      .catch(common.oops(this))
+    return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
+      .then(ReplExpect.okWithString(podName))
+      .catch(Common.oops(this))
   })
 
   it(`should wait for the pod to come up`, () => {
-    return cli
-      .do(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) }))
+    return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
       .then(selector => waitForGreen(this.app, selector))
-      .catch(common.oops(this))
+      .catch(Common.oops(this))
   })
 
   /* it(`should copy the vimrc to the current container`, () => {
-    return cli
-      .do(`kubectl cp ${vimrc} -n ${ns} ${ns}/${podName}:/root/.vimrc`, this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this))
+    return CLI
+      .command(`kubectl cp ${vimrc} -n ${ns} ${ns}/${podName}:/root/.vimrc`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this))
   }) */
 
   const filename = '/tmp/foo.txt'
@@ -62,9 +59,9 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it(`should use kubectl exec vi through pty`, async () => {
     try {
-      const res = await cli.do(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app)
+      const res = await CLI.command(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app)
 
-      const rows = selectors.xtermRows(res.count)
+      const rows = Selectors.xtermRows(res.count)
       const lastRowSelector = `${rows} > div:last-child`
 
       const lastRow = async (): Promise<string> => {
@@ -93,7 +90,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
       // exit vi input mode
       iter = 0
-      await this.app.client.keys(keys.ESCAPE)
+      await this.app.client.keys(Keys.ESCAPE)
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow()
         if (++iter > 5) {
@@ -105,11 +102,11 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       // wait for vi to exit and the next prompt block to appear
       iter = 0
       await this.app.client.waitUntil(async () => {
-        await this.app.client.keys(keys.ESCAPE)
-        await typeSlowly(this.app, `:wq${keys.ENTER}`)
+        await this.app.client.keys(Keys.ESCAPE)
+        await typeSlowly(this.app, `:wq${Keys.ENTER}`)
 
         try {
-          await this.app.client.waitForVisible(selectors.PROMPT_N(res.count + 1), 5000)
+          await this.app.client.waitForVisible(Selectors.PROMPT_N(res.count + 1), 5000)
           return true
         } catch (err) {
           console.error(`hmm, prompt block not yet visible at iter ${iter++}`)
@@ -117,15 +114,14 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         }
       })
     } catch (err) {
-      await common.oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 
   it('should use kubectl exec to cat the file we just edited', async () => {
-    return cli
-      .do(`kubectl exec ${podName} -n ${ns} -- cat ${filename}`, this.app)
-      .then(cli.expectOKWithString(typeThisText))
-      .catch(common.oops(this, true))
+    return CLI.command(`kubectl exec ${podName} -n ${ns} -- cat ${filename}`, this.app)
+      .then(ReplExpect.okWithString(typeThisText))
+      .catch(Common.oops(this, true))
   })
 
   deleteNS(this, ns)

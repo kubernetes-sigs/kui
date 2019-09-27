@@ -17,10 +17,7 @@
 import { dirname, join } from 'path'
 import { readFileSync } from 'fs'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli } from '@kui-shell/core/tests/lib/ui'
-
-const { pit, proxyIt } = common
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
@@ -28,45 +25,40 @@ const readmeLines = readFileSync(join(process.env.TEST_ROOT, '../../README.md'))
   .toString()
   .split(/\n/)
 
-describe('pty output with many lines', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('pty output with many lines', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   // only do this for proxy+webpack clients
-  proxyIt('should cd to the test dir', () =>
-    cli
-      .do(`cd ${process.env.TEST_ROOT}`, this.app)
-      .then(cli.expectOKWithString('packages/test'))
-      .catch(common.oops(this, true))
+  Common.proxyIt('should cd to the test dir', () =>
+    CLI.command(`cd ${process.env.TEST_ROOT}`, this.app)
+      .then(ReplExpect.okWithString('packages/test'))
+      .catch(Common.oops(this, true))
   )
 
   // do the rest for electron or webpack+proxy clients (but not for
   // webpack-only clients)
-  pit('should cat a long file and show the first line', () =>
-    cli
-      .do('cat ../../README.md', this.app)
-      .then(cli.expectOKWithStringEventually(readmeLines[0]))
-      .catch(common.oops(this, true))
+  Common.pit('should cat a long file and show the first line', () =>
+    CLI.command('cat ../../README.md', this.app)
+      .then(ReplExpect.okWithStringEventually(readmeLines[0]))
+      .catch(Common.oops(this, true))
   )
 
-  pit('should cat a long file and show the last line', () =>
-    cli
-      .do('cat ../../README.md', this.app)
-      .then(cli.expectOKWithStringEventually(readmeLines[readmeLines.length - 1]))
-      .catch(common.oops(this, true))
+  Common.pit('should cat a long file and show the last line', () =>
+    CLI.command('cat ../../README.md', this.app)
+      .then(ReplExpect.okWithStringEventually(readmeLines[readmeLines.length - 1]))
+      .catch(Common.oops(this, true))
   )
 
-  pit('should execute a recursive grep that emits many lines', () =>
-    cli
-      .do(`grep -r describe\\( "${ROOT}/../../../plugins"`, this.app)
-      .then(cli.expectOKWithStringEventually('describe'))
-      .catch(common.oops(this))
+  Common.pit('should execute a recursive grep that emits many lines', () =>
+    CLI.command(`grep -r describe\\( "${ROOT}/../../../plugins"`, this.app)
+      .then(ReplExpect.okWithStringEventually('describe'))
+      .catch(Common.oops(this))
   )
 
-  pit('should still have a prompt that works', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .catch(common.oops(this))
+  Common.pit('should still have a prompt that works', () =>
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .catch(Common.oops(this))
   )
 })

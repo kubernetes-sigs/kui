@@ -17,9 +17,8 @@
 //
 // test the edit actionName command for compositions
 //
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
 
 import {
   verifyTheBasicStuff,
@@ -29,8 +28,7 @@ import {
 } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
 
 import { dirname } from 'path'
-const cli = ui.cli
-const sidecar = ui.sidecar
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
 /** set the monaco editor text */
@@ -40,20 +38,20 @@ const setValue = (client, text) => {
   }, text)
 }
 
-describe('edit compositions', function(this: common.ISuite) {
+describe('edit compositions', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   /** deploy the changes */
   const deploy = (app, action) => () => {
     return app.client
-      .click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      .then(() => app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new)`))
+      .click(Selectors.SIDECAR_MODE_BUTTON('Deploy'))
+      .then(() => app.client.waitForExist(`${Selectors.SIDECAR}:not(.is-modified):not(.is-new)`))
       .then(() => app)
       .catch(err => {
         console.error('Ouch, something bad happened, let us clean up the action before retrying')
         console.error(err)
-        return cli.do(`rm ${action}`, app).then(() => {
+        return CLI.command(`rm ${action}`, app).then(() => {
           throw err
         })
       })
@@ -61,8 +59,7 @@ describe('edit compositions', function(this: common.ISuite) {
 
   // test wskflow and wskflow undeloyed actions warning
   it(`should open the editor to a new composition and expect wskflow`, () =>
-    cli
-      .do('compose compSimple', this.app)
+    CLI.command('compose compSimple', this.app)
       .then(verifyTheBasicStuff('compSimple'))
       .then(verifyNodeExists('A'))
       .then(verifyNodeExists('B'))
@@ -89,105 +86,96 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(verifyEdgeExists('A', 'B'))
       .then(verifyEdgeExists('B', 'Exit'))
       // .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   // deploy composition with undeployed actions
   it('should compose and successfully deploy the composition with undeloyed actions by clicking the deploy button', () =>
-    cli
-      .do('compose compSimple', this.app)
-      .then(cli.expectOK)
+    CLI.command('compose compSimple', this.app)
+      .then(ReplExpect.ok)
       .then(deploy(this.app, 'compSimple'))
       // .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
       .then(() =>
         this.app.client.waitUntil(() =>
-          cli
-            .do('wsk app invoke compSimple', this.app)
-            .then(cli.expectOK)
+          CLI.command('wsk app invoke compSimple', this.app)
+            .then(ReplExpect.ok)
             .then(() => true)
             .catch(() => false)
         )
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   // test parse error decoration
   it(`should open the editor to a new composition and expect error handling`, () =>
-    cli
-      .do('compose compParseErr', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('compParseErr'))
+    CLI.command('compose compParseErr', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('compParseErr'))
       .then(() =>
         setValue(this.app.client, '\nmodule.exports = require("openwhisk-composer").sequence(notfound1, notfound2)')
       )
       .then(() => this.app.client.waitForExist('.editor.parse-error-decoration'))
       .then(() => setValue(this.app.client, 'module.exports = require("openwhisk-composer").sequence(x=>x, y=>y)'))
       .then(() => this.app.client.waitForExist('.editor.parse-error-decoration', 2000, true))
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
-  /* it('should initialize composer', () => cli.do(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
-       .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
-       .catch(common.oops(this))) */
+  /* it('should initialize composer', () => CLI.command(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
+       .then(ReplExpect.okWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
+       .catch(Common.oops(this))) */
 
   it('should create an app from FSM', () =>
-    cli
-      .do(`wsk app create compFromFSM ${ROOT}/data/composer/fsm.json`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('compFromFSM'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk app create compFromFSM ${ROOT}/data/composer/fsm.json`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('compFromFSM'))
+      .catch(Common.oops(this)))
 
   it('should fail to edit the fsm-based app', () =>
-    cli
-      .do('edit compFromFSM', this.app)
-      .then(cli.expectError(406))
-      .catch(common.oops(this)))
+    CLI.command('edit compFromFSM', this.app)
+      .then(ReplExpect.error(406))
+      .catch(Common.oops(this)))
 
   it('should create an app from source', () =>
-    cli
-      .do(`wsk app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('compFromSrc'))
+    CLI.command(`wsk app create compFromSrc ${ROOT}/data/composer/composer-source/seq.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('compFromSrc'))
       // .then(sidecar.expectBadge(badges.composerLib))
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   // do this in a loop, to make sure we don't have any event listener leaks
   // Disable the test for now since we don't have soure annotation in composition
   // if (false) {
-  //   it(`should edit the app with source`, () => cli.do('edit comp2', this.app)
-  //     .then(cli.expectOK)
-  //     .then(sidecar.expectOpen)
-  //     .then(sidecar.expectShowing('comp2'))
+  //   it(`should edit the app with source`, () => CLI.command('edit comp2', this.app)
+  //     .then(ReplExpect.ok)
+  //     .then(SidecarExpect.open)
+  //     .then(SidecarExpect.showing('comp2'))
   //     .then(sidecar.expectBadge('v0.0.1'))
   //     .then(deploy(this.app, 'comp2'))
   //     .then(sidecar.expectBadge('v0.0.2'))
-  //     .catch(common.oops(this)))
+  //     .catch(Common.oops(this)))
   // }
 
   it(`should fail to open the editor for compose against existing composition`, () =>
-    cli
-      .do('compose compFromSrc', this.app)
-      .then(cli.expectError(409))
-      .catch(common.oops(this)))
+    CLI.command('compose compFromSrc', this.app)
+      .then(ReplExpect.error(409))
+      .catch(Common.oops(this)))
 
   it(`should open the editor to a new composition from a template file`, () =>
-    cli
-      .do('compose compFromTpl -t @demos/hello.js', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
+    CLI.command('compose compFromTpl -t @demos/hello.js', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
       .then(deploy(this.app, 'compFromTpl'))
       .then(() => this.app.client.waitForVisible('#wskflowSVG')) // the wskflow had better show up after we click Deploy
       .then(() =>
         this.app.client.waitUntil(() =>
-          cli
-            .do('wsk app invoke compFromTpl -p name compose', this.app)
-            .then(cli.expectOK)
-            .then(sidecar.expectOpen)
-            .then(sidecar.expectShowing('compFromTpl'))
-            .then(sidecar.expectResult({ msg: 'hello compose!' }, false))
+          CLI.command('wsk app invoke compFromTpl -p name compose', this.app)
+            .then(ReplExpect.ok)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.showing('compFromTpl'))
+            .then(SidecarExpect.result({ msg: 'hello compose!' }, false))
             .then(() => true)
             .catch(() => false)
         )
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

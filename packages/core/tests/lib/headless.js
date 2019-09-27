@@ -26,8 +26,8 @@ const { dirname, join } = require('path')
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../../bin/kui')
 const bindir = process.env.KUI ? dirname(process.env.KUI) : join(ROOT, '../../bin') // should contain kubectl-kui
-const { expectStruct, expectSubset } = require('./ui')
-
+const { Util } = require('@kui-shell/test')
+const { expectStruct, expectSubset } = Util
 /**
  * For tee to file mode, the core obliges us, and writes any electron
  * output to a file we provide; we can also request that it write an
@@ -112,7 +112,7 @@ class CLI {
    * Execute a command
    *
    */
-  do(cmd, env = {}, { errOk = undefined } = {}) {
+  command(cmd, env = {}, { errOk = undefined } = {}) {
     return new Promise(resolve => {
       const command = `${this.exe} ${cmd} --no-color`
       debug('executing command', command)

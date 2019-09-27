@@ -16,9 +16,8 @@
 
 const assert = require('assert')
 const path = require('path')
-const ui = require('@kui-shell/core/tests/lib/ui')
-const cli = ui.cli
-const sidecar = ui.sidecar
+
+const { ReplExpect, SidecarExpect } = require('@kui-shell/test')
 
 const ROOT = path.dirname(require.resolve('@kui-shell/plugin-apache-composer/tests/package.json'))
 
@@ -146,10 +145,10 @@ const verifyNodeLabelsAreSane = app =>
  */
 const verifyTheBasicStuff = file => _ =>
   Promise.resolve(_)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(file))
-    // .then(sidecar.expectBadge(badges[badge]))
+    .then(ReplExpect.ok)
+    .then(SidecarExpect.open)
+    .then(SidecarExpect.showing(file))
+    // .then(SidecarExpect.badge(badges[badge]))
     .then(verifyNodeExistsById('Entry'))
     .then(verifyNodeExistsById('Exit'))
     .then(verifyNodeLabelsAreSane)

@@ -19,66 +19,58 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('no .wskprops tests', function(this: common.ISuite) {
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+describe('no .wskprops tests', function(this: Common.ISuite) {
   if (!process.env.WSK_CONFIG_FILE) {
     before(openwhisk.before(this))
-    after(common.after(this))
+    after(Common.after(this))
 
     it('shoule see empty action list', () =>
-      cli
-        .do('wsk action list', this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command('wsk action list', this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
 
     it('should copy ~/.wskprops to ~/.tmp_wskprops', () =>
-      cli
-        .do(`cp ~/.wskprops ~/.tmp_wskprops`, this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command(`cp ~/.wskprops ~/.tmp_wskprops`, this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
 
     it('should remove ~/.wskprops', () =>
-      cli
-        .do(`rm ~/.wskprops`, this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command(`rm ~/.wskprops`, this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
 
-    it('should restart', () => common.refresh(this)) // TODO: investigate
+    it('should restart', () => Common.refresh(this)) // TODO: investigate
 
     it('shoule see error when action list', () =>
-      cli
-        .do('wsk action list', this.app)
-        .then(cli.expectError(403, 'Command requires authentication'))
-        .catch(common.oops(this)))
+      CLI.command('wsk action list', this.app)
+        .then(ReplExpect.error(403, 'Command requires authentication'))
+        .catch(Common.oops(this)))
 
     // shoud add process.env.WSK_CONFIG_FILE
     it('should add process.env.WSK_CONFIG_FILE', () => {
       process.env.WSK_CONFIG_FILE = '~/.tmp_wskprops'
     })
 
-    it('should restart', () => common.refresh(this))
+    it('should restart', () => Common.refresh(this))
 
     it('shoule see action list', () =>
-      cli
-        .do('wsk action list', this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command('wsk action list', this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
 
     it('should restore  ~/.wskprops', () =>
-      cli
-        .do(`cp ~/.tmp_wskprops ~/.wskprops`, this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command(`cp ~/.tmp_wskprops ~/.wskprops`, this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
 
     it('should delete ~/.tmp_wskprops', () =>
-      cli
-        .do(`rm ~/.tmp_wskprops`, this.app)
-        .then(cli.expectJustOK)
-        .catch(common.oops(this)))
+      CLI.command(`rm ~/.tmp_wskprops`, this.app)
+        .then(ReplExpect.justOK)
+        .catch(Common.oops(this)))
 
     it('should delete process.env.WSK_CONFIG_FILE', () => {
       delete process.env.WSK_CONFIG_FILE

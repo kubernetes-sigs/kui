@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { ISuite } from '@kui-shell/core/tests/lib/common'
+import { Common, CLI as ui } from '@kui-shell/test'
 import { Application } from 'spectron'
 import { CLI as headless } from '@kui-shell/core/tests/lib/headless'
-import { CLI as ui } from '@kui-shell/core/tests/lib/ui'
 
 /**
  * Which sidecar mode should be visible upon loading a kubernetes entity
@@ -43,25 +42,25 @@ declare function createNS (prefix?: string): string
  * Install a mocha test to allocate the given namespace `ns`
  *
  */
-declare function allocateNS (ctx: ISuite, ns: string, theCli?: headless | ui): string
+declare function allocateNS (ctx: Common.ISuite, ns: string, theCli?: headless): string
 
 /**
  * Install a mocha test to delete the given namespace `ns`
  *
  */
-declare function deleteNS (ctx: ISuite, ns: string, theCli?: headless | ui): void
+declare function deleteNS (ctx: Common.ISuite, ns: string, theCli?: headless): void
 
 /**
  * Keep poking the given kind till no more such entities exist
  *
  */
-declare function waitTillNone (kind: string, theCli?: headless | ui, name?: string, okToSurvive?: string, inNamespace?: string): (app: Application) => Promise<void>
+declare function waitTillNone (kind: string, theCli?: headless, name?: string, okToSurvive?: string, inNamespace?: string): (app: Application) => Promise<void>
 
 /**
  * Wait till the given resource is Terminating
  *
  */
-declare function waitTillTerminating (kind: string, theCli: headless | ui, name: string, inNamespace?: string): (app: Application) => Promise<void>
+declare function waitTillTerminating (kind: string, theCli: headless, name: string, inNamespace?: string): (app: Application) => Promise<void>
 
 /**
  * Wait for a green badge
@@ -79,7 +78,7 @@ declare function waitForRed (app: Application, selector: string): Promise<string
  * Confirm that the table title matches
  *
  */
-declare function assertTableTitleMatches(self: ISuite, tableSelector: string, expectedTitle: string): Promise<never>
+declare function assertTableTitleMatches(self: Common.ISuite, tableSelector: string, expectedTitle: string): Promise<never>
 
 /**
  * Type slowly, this helps with some odd webpack+proxy issues

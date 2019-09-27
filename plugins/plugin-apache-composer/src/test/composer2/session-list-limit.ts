@@ -16,17 +16,16 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+
 import Debug from 'debug'
-const cli = ui.cli
-const sidecar = ui.sidecar
+
 const debug = Debug('tests/apache-composer/session-list-limit')
 
-describe('session list --limit --skip', function(this: common.ISuite) {
+describe('session list --limit --skip', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const getUniqueName = () => {
     const nums = new Date().getTime().toString()
@@ -38,12 +37,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
 
   const invokeApp = appName => {
     it(`should invoke ${appName}`, () =>
-      cli
-        .do(`wsk app invoke ${appName}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName))
-        .catch(common.oops(this)))
+      CLI.command(`wsk app invoke ${appName}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName))
+        .catch(Common.oops(this)))
   }
 
   const createSessionArray = (name, count) => {
@@ -56,9 +54,9 @@ describe('session list --limit --skip', function(this: common.ISuite) {
 
   const verifySessionList = async ({ commandIndex, expectedLength = 0, expectedSessions = [] }) => {
     return this.app.client
-      .waitForText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
+      .waitForText(`${Selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
       .then(() =>
-        this.app.client.getText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`)
+        this.app.client.getText(`${Selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`)
       )
       .then(sessions => (!Array.isArray(sessions) ? [sessions] : sessions)) // make sure we have an array
       .then(actualSessions => {
@@ -77,25 +75,22 @@ describe('session list --limit --skip', function(this: common.ISuite) {
   }
 
   it(`should create app ${appName}`, () =>
-    cli
-      .do(`wsk app create ${appName} @demos/hello.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(appName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk app create ${appName} @demos/hello.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(appName))
+      .catch(Common.oops(this)))
 
   invokeApp(appName)
 
   it(`should show just ok in session list --limit 0`, () =>
-    cli
-      .do(`wsk session list --limit 0`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    CLI.command(`wsk session list --limit 0`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this)))
 
   it(`should show session ${appName} in session list --limit 1`, () =>
-    cli
-      .do(`wsk session list --limit 1`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list --limit 1`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -103,12 +98,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show session ${appName} in session list ${appName} --limit 1`, () =>
-    cli
-      .do(`wsk session list ${appName} --limit 1`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName} --limit 1`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -116,12 +110,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show session ${appName} in session list ${appName} --limit 2`, () =>
-    cli
-      .do(`wsk session list ${appName} --limit 2`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName} --limit 2`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -129,16 +122,15 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   for (let round = 0; round < 5; round++) {
     invokeApp(appName)
   }
 
   it(`should show 5 ${appName} in session list ${appName} --limit 5`, () =>
-    cli
-      .do(`wsk session list ${appName} --limit 5`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName} --limit 5`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -146,12 +138,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: createSessionArray(appName, 5)
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show 5 ${appName} in session list ${appName} --limit 5`, () =>
-    cli
-      .do(`wsk session list ${appName} --skip 1 --limit 5`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName} --skip 1 --limit 5`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -159,12 +150,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: createSessionArray(appName, 5)
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show 6 ${appName} in session list ${appName} --limit 20`, () =>
-    cli
-      .do(`wsk session list ${appName} --limit 20`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName} --limit 20`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -172,12 +162,11 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: createSessionArray(appName, 6)
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show 1 ${appName} in session list ${appName} --skip 5 --limit 20`, () =>
-    cli
-      .do(`wsk session list ${appName} --skip 5 --limit 20`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName} --skip 5 --limit 20`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -185,11 +174,10 @@ describe('session list --limit --skip', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show 1 in session list ${appName} --skip 5 --limit 20 --count`, () =>
-    cli
-      .do(`wsk session list ${appName} --skip 5 --limit 20 --count`, this.app)
-      .then(cli.expectOKWithString('1'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk session list ${appName} --skip 5 --limit 20 --count`, this.app)
+      .then(ReplExpect.okWithString('1'))
+      .catch(Common.oops(this)))
 })

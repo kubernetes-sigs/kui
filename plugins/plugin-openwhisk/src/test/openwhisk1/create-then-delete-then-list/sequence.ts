@@ -19,63 +19,58 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create a sequence, list it, delete it', function(this: common.ISuite) {
+localDescribe('Create a sequence, list it, delete it', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
-  const rm = ui.aliases.remove[0]
+  const rm = openwhisk.aliases.remove[0]
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo')))
+    CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo')))
   it('should create a second action', () =>
-    cli
-      .do(`wsk action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo2')))
+    CLI.command(`wsk action create foo2 ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo2')))
 
   it('should create a sequence', () =>
-    cli
-      .do(`wsk action create --sequence sss foo,foo2`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('sss')))
+    CLI.command(`wsk action create --sequence sss foo,foo2`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('sss')))
 
   // list it
   it(`should find the new sequence with "list"`, () =>
-    cli.do('wsk action list', this.app).then(cli.expectOKWith('sss')))
+    CLI.command('wsk action list', this.app).then(ReplExpect.okWith('sss')))
 
   // delete the actions, keeping the sequence around
   it(`should delete the newly created action using "${rm}"`, () =>
-    cli
-      .do(`wsk action ${rm} foo`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
+    CLI.command(`wsk action ${rm} foo`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)) // sidecar should stay open, since we deleted an action, not the sequence
   it(`should delete the other newly created action using "${rm}"`, () =>
-    cli
-      .do(`wsk action ${rm} foo2`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)) // sidecar should stay open, since we deleted an action, not the sequence
+    CLI.command(`wsk action ${rm} foo2`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)) // sidecar should stay open, since we deleted an action, not the sequence
 
   // now try clicking on one of the sequence component bubbles
   it('should show action after clicking on bubble', async () => {
-    await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-    return sidecar.expectOpen(this.app).then(sidecar.expectShowing('sss')) // since the action was deleted
+    await this.app.client.click(Selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+    return SidecarExpect.open(this.app).then(SidecarExpect.showing('sss')) // since the action was deleted
   })
   // TODO check for error message "action not found"
 })

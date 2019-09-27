@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('base64 command', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe('base64 command', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('should base64 decode variant 1', () =>
-    cli
-      .do('base64 --decode ZGVHZkZBdFM0dA==', this.app)
-      .then(cli.expectOKWithString('deGfFAtS4t'))
-      .catch(oops(this)))
+    CLI.command('base64 --decode ZGVHZkZBdFM0dA==', this.app)
+      .then(ReplExpect.okWithString('deGfFAtS4t'))
+      .catch(Common.oops(this)))
 
   it('should base64 decode variant 2', () =>
-    cli
-      .do('base64 -d ZGVHZkZBdFM0dA==', this.app)
-      .then(cli.expectOKWithString('deGfFAtS4t'))
-      .catch(oops(this)))
+    CLI.command('base64 -d ZGVHZkZBdFM0dA==', this.app)
+      .then(ReplExpect.okWithString('deGfFAtS4t'))
+      .catch(Common.oops(this)))
 
   it('should base64 decode with break 1', () =>
-    cli
-      .do('base64 -d ZGVHZkZBdFM0dA== --break 1', this.app)
+    CLI.command('base64 -d ZGVHZkZBdFM0dA== --break 1', this.app)
       .then(
-        cli.expectOKWithString(`d
+        ReplExpect.okWithString(`d
 e
 G
 f
@@ -49,44 +44,40 @@ S
 4
 t`)
       )
-      .catch(oops(this)))
+      .catch(Common.oops(this)))
 
   it('should base64 decode with break 2', () =>
-    cli
-      .do('base64 -d ZGVHZkZBdFM0dA== -b 2', this.app)
+    CLI.command('base64 -d ZGVHZkZBdFM0dA== -b 2', this.app)
       .then(
-        cli.expectOKWithString(`de
+        ReplExpect.okWithString(`de
 Gf
 FA
 tS
 4t`)
       )
-      .catch(oops(this)))
+      .catch(Common.oops(this)))
 
   it('should base64 decode with break 3', () =>
-    cli
-      .do('base64 -d ZGVHZkZBdFM0dA== -b 3', this.app)
+    CLI.command('base64 -d ZGVHZkZBdFM0dA== -b 3', this.app)
       .then(
-        cli.expectOKWithString(`deG
+        ReplExpect.okWithString(`deG
 fFA
 tS4
 t`)
       )
-      .catch(oops(this)))
+      .catch(Common.oops(this)))
 
   it('should base64 decode with break 4', () =>
-    cli
-      .do('base64 -d ZGVHZkZBdFM0dA== -b 4', this.app)
+    CLI.command('base64 -d ZGVHZkZBdFM0dA== -b 4', this.app)
       .then(
-        cli.expectOKWithString(`deGf
+        ReplExpect.okWithString(`deGf
 FAtS
 4t`)
       )
-      .catch(oops(this)))
+      .catch(Common.oops(this)))
 
   it('should base64 decode with break 40', () =>
-    cli
-      .do('base64 -d ZGVHZkZBdFM0dA== --break 40', this.app)
-      .then(cli.expectOKWithString('deGfFAtS4t'))
-      .catch(oops(this)))
+    CLI.command('base64 -d ZGVHZkZBdFM0dA== --break 40', this.app)
+      .then(ReplExpect.okWithString('deGfFAtS4t'))
+      .catch(Common.oops(this)))
 })

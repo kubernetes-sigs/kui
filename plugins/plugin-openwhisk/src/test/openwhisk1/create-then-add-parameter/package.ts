@@ -14,55 +14,51 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 const packageName = 'ppp'
 
 // TODO: webpack test
-localDescribe('Add parameters to packages', function(this: common.ISuite) {
+localDescribe('Add parameters to packages', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create a packaged action', () =>
-    cli
-      .do(`let ${packageName}/${actionName} = ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName, undefined, undefined, packageName)))
+    CLI.command(`let ${packageName}/${actionName} = ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName, undefined, undefined, packageName)))
 
   it('should add a parameter with explicit package name', () =>
-    cli
-      .do(`wsk package set x=1 in ${packageName}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(packageName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .package-source`))
-      .then(ui.expectStruct({ x: 1 })))
+    CLI.command(`wsk package set x=1 in ${packageName}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(packageName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .package-source`))
+      .then(Util.expectStruct({ x: 1 })))
 
   it('should add a parameter with implicit package name', () =>
-    cli
-      .do('wsk package set y=1', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(packageName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .package-source`))
-      .then(ui.expectStruct({ x: 1, y: 1 })))
+    CLI.command('wsk package set y=1', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(packageName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .package-source`))
+      .then(Util.expectStruct({ x: 1, y: 1 })))
 
   it('should update a parameter value with implicit package name', () =>
-    cli
-      .do('wsk package set x=2', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(packageName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .package-source`))
-      .then(ui.expectStruct({ x: 2, y: 1 })))
+    CLI.command('wsk package set x=2', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(packageName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .package-source`))
+      .then(Util.expectStruct({ x: 2, y: 1 })))
 })

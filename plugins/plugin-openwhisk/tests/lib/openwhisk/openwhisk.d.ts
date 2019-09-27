@@ -15,14 +15,15 @@
  */
 
 import { HookFunction, Suite } from 'mocha'
+import { Application } from 'spectron'
 
-import { IBeforeOptions } from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 
-interface IOpenWhiskBeforeOptions extends IBeforeOptions {
+interface OpenWhiskBeforeOptions extends Common.BeforeOptions {
   fuzz?: Record<string, any>
 }
 
-declare function before (ctx: Suite, opts?: IOpenWhiskBeforeOptions): HookFunction
+declare function before (ctx: Suite, opts?: OpenWhiskBeforeOptions): HookFunction
 declare function after (ctx: Suite, f?: () => void): HookFunction
 
 declare var entities: string[]
@@ -31,3 +32,30 @@ declare var apihost: string
 declare var apihostIsLocal: boolean
 
 declare function cleanAll (noDefault?: boolean | string, api_key?: string): Promise<void>
+
+declare var aliases: Record<string, string[]>
+
+declare const expectValidActivationId: () => (activationId: string) => RegExpMatchArray;
+
+export declare const waitForActivation: (app: Application, activationId: string, { name }?: {
+    name?: string;
+}) => any;
+export declare const waitForSession: (app: Application, activationId: string, { name }?: {
+    name?: string;
+}) => any;
+
+/**
+ * @return the expected namespace string for this test
+ *
+ */
+export declare const expectedNamespace: (space?: string, org?: string) => string;
+
+/**
+ * Normalize data for conformance testing of an HTML file
+ *
+ */
+declare function normalizeHTML (str: string | Buffer): string
+
+declare function validateNamespace (observedNamespace: string): void
+
+declare function rp (opts: Object): any

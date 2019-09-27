@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -24,41 +23,37 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-exec.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
-describe(`kubectl exec basic stuff ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl exec basic stuff ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
   allocateNS(this, ns)
 
   const podName = 'vim'
   it('should create sample pod from URL', () => {
-    return cli
-      .do(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-      .then(cli.expectOKWithString(podName))
-      .catch(common.oops(this, true))
+    return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
+      .then(ReplExpect.okWithString(podName))
+      .catch(Common.oops(this, true))
   })
 
   it('should wait for the pod to come up', () => {
-    return cli
-      .do(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) }))
+    return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
       .then(selector => waitForGreen(this.app, selector))
-      .catch(common.oops(this, true))
+      .catch(Common.oops(this, true))
   })
 
   it('should exec ls through pty', () => {
-    return cli
-      .do(`kubectl exec ${podName} -n ${ns} -- ls`, this.app)
-      .then(cli.expectOKWithString('bin'))
-      .catch(common.oops(this, true))
+    return CLI.command(`kubectl exec ${podName} -n ${ns} -- ls`, this.app)
+      .then(ReplExpect.okWithString('bin'))
+      .catch(Common.oops(this, true))
   })
 
   it('should exec pwd through pty', () => {
-    return cli
-      .do(`kubectl exec ${podName} -n ${ns} -- pwd`, this.app)
-      .then(cli.expectOKWithString('/'))
-      .catch(common.oops(this, true))
+    return CLI.command(`kubectl exec ${podName} -n ${ns} -- pwd`, this.app)
+      .then(ReplExpect.okWithString('/'))
+      .catch(Common.oops(this, true))
   })
 
   deleteNS(this, ns)

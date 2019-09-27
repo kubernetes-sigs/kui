@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -24,9 +23,9 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-exec.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
-describe(`kubectl logs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl logs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
 
@@ -45,31 +44,28 @@ describe(`kubectl logs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: co
 
   const createPod = (podName: string, cmdline: string) => {
     it(`should create ${podName} pod`, () => {
-      return cli
-        .do(cmdline, this.app)
-        .then(cli.expectOKWithString(podName))
-        .catch(common.oops(this, true))
+      return CLI.command(cmdline, this.app)
+        .then(ReplExpect.okWithString(podName))
+        .catch(Common.oops(this, true))
     })
   }
 
   const waitForPod = (podName: string) => {
     it(`should wait for the pod ${podName} to come up`, () => {
-      return cli
-        .do(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) }))
+      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
         .then(selector => waitForGreen(this.app, selector))
-        .catch(common.oops(this, true))
+        .catch(Common.oops(this, true))
     })
   }
 
   const showLogs = (podName: string, containerName: string) => {
     it(`should show logs for pod ${podName} container ${containerName}`, () => {
-      return cli
-        .do(`kubectl logs ${podName} ${containerName} -n ${ns}`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(containerName))
-        .catch(common.oops(this, true))
+      return CLI.command(`kubectl logs ${podName} ${containerName} -n ${ns}`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(containerName))
+        .catch(Common.oops(this, true))
     })
   }
 

@@ -10,5 +10,10 @@
     "paths": {
       "@kui-shell/core/*": ["src/*"]
     }
-  }
+  },
+  "references": [
+    {
+      "path": "../../packages/test"
+    }
+  ]
 }

@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
 import * as assert from 'assert'
 import { readFileSync, unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
 
-const { cli, keys, selectors, waitTimeout } = ui
-const { refresh } = common
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** helpful selectors */
-const rows = (N: number) => selectors.xtermRows(N)
+const rows = (N: number) => Selectors.xtermRows(N)
 const firstRow = (N: number) => `${rows(N)} > div:first-child`
 const lastRow = (N: number) => `${rows(N)} > div:last-child`
 
-describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const emittedText = 'roadhouse'
 
   it(`should echo ${emittedText}`, async () => {
     try {
-      const res = await cli.do(`echo ${emittedText}`, this.app)
+      const res = await CLI.command(`echo ${emittedText}`, this.app)
 
       // wait for the output to appear
       await this.app.client.waitForExist(rows(res.count))
@@ -50,27 +45,27 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
           console.error('still waiting for emitted text', actualText, res.count)
         }
         return actualText === emittedText
-      }, waitTimeout)
+      }, CLI.waitTimeout)
 
       console.log('now should copy from xterm output and paste outside of xterm')
 
       await this.app.client.doubleClick(firstRow(res.count))
       await this.app.client.execute(() => document.execCommand('copy'))
 
-      await this.app.client.waitForExist(selectors.CURRENT_PROMPT_BLOCK)
-      await this.app.client.click(selectors.CURRENT_PROMPT_BLOCK)
+      await this.app.client.waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
+      await this.app.client.click(Selectors.CURRENT_PROMPT_BLOCK)
       await this.app.client.execute(() => document.execCommand('paste'))
 
       await this.app.client.waitUntil(async () => {
         const [actualValue, expectedValue] = await Promise.all([
-          this.app.client.getValue(selectors.CURRENT_PROMPT),
+          this.app.client.getValue(Selectors.CURRENT_PROMPT),
           this.app.client.getText(rows(res.count))
         ])
 
         return expectedValue === actualValue
-      }, waitTimeout)
+      }, CLI.waitTimeout)
     } catch (err) {
-      return common.oops(this, true)(err)
+      return Common.oops(this, true)(err)
     }
   })
 
@@ -81,7 +76,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
     try {
       // clear things out
       console.error('CP1')
-      await refresh(this)
+      await Common.refresh(this)
 
       // emit some characters to the current prompt
       console.error('CP2')
@@ -90,24 +85,24 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       // wait for those characters to appear in the prompt
       console.error('CP3')
       await this.app.client.waitUntil(async () => {
-        const actualText = await this.app.client.getValue(selectors.CURRENT_PROMPT)
+        const actualText = await this.app.client.getValue(Selectors.CURRENT_PROMPT)
         return actualText === text
-      }, waitTimeout)
+      }, CLI.waitTimeout)
 
       // copy the content of the current prompt
       console.error('CP4')
-      await this.app.client.doubleClick(selectors.CURRENT_PROMPT)
+      await this.app.client.doubleClick(Selectors.CURRENT_PROMPT)
       console.error('CP5')
       await this.app.client.execute(() => document.execCommand('copy'))
 
       // cancel out the current prompt so we can execute vi
       console.error('CP6')
-      await this.app.client.keys(ui.ctrlC)
+      await this.app.client.keys(Keys.ctrlC)
 
       // open vi, so we have an xterm to receive a paste event
       // the last true means don't try to use the copy-paste optimization
       console.error('CP7')
-      const res = await cli.do(`vim -i NONE ${file.name}`, this.app, false, true)
+      const res = await CLI.command(`vim -i NONE ${file.name}`, this.app, false, true)
 
       // wait for vi to come up in alt buffer mode
       console.error('CP8')
@@ -120,7 +115,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.waitUntil(async () => {
         const txt = await this.app.client.getText(lastRow(res.count))
         return /INSERT/i.test(txt)
-      }, waitTimeout)
+      }, CLI.waitTimeout)
 
       // now paste into the xterm vi
       console.error('CP11')
@@ -128,29 +123,29 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       // escape then :wq
       console.error('CP12')
-      await this.app.client.keys(keys.ESCAPE)
+      await this.app.client.keys(Keys.ESCAPE)
       console.error('CP13')
       await this.app.client.waitUntil(async () => {
         const txt = await this.app.client.getText(lastRow(res.count))
         return txt.length === 0
-      }, waitTimeout)
+      }, CLI.waitTimeout)
 
       console.error('CP14')
       await this.app.client.keys(':wq')
       console.error('CP15')
-      await this.app.client.keys(keys.ENTER)
+      await this.app.client.keys(Keys.ENTER)
 
       console.error('CP16')
-      await cli.expectBlank(res)
+      await ReplExpect.blank(res)
 
       console.error('CP17')
-      await cli.do(`cat ${file.name}`, this.app).then(cli.expectOKWithStringEventually(text))
+      await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithStringEventually(text))
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), text)
       console.error('CP18')
     } catch (err) {
-      return common.oops(this, true)(err)
+      return Common.oops(this, true)(err)
     } finally {
       // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
       promisify(unlink)(file.name)

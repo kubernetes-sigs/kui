@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const cli = ui.cli
+
 const expectedError = `Usage: This command is intended for use from the CLI, to launch this graphical Shell.
 You are already here. Welcome!`
 
-describe('try using "shell" to open the graphical shell, when already in the graphical shell', function(this: common.ISuite) {
+describe('try using "shell" to open the graphical shell, when already in the graphical shell', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should fail when executing "shell"', () =>
-    cli
-      .do('shell', this.app)
-      .then(cli.expectError(0, expectedError))
-      .catch(common.oops(this)))
+    CLI.command('shell', this.app)
+      .then(ReplExpect.error(0, expectedError))
+      .catch(Common.oops(this)))
 })

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 // sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 
@@ -22,30 +22,30 @@ import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/open
  * Here starts the test
  *
  */
-describe('app init --reset', function(this: common.ISuite) {
+describe('app init --reset', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   /** app config; v1 validates the redis URL; v2 validates the type (private versus shared) */
-  // const assertConfig = (v1, v2) => it(`should show valid app configuration`, () => cli.do('wsk app config', this.app)
-  //   .then(cli.expectOKWithCustom({ selector: 'code' })) // extract the JSON bit
+  // const assertConfig = (v1, v2) => it(`should show valid app configuration`, () => CLI.command('wsk app config', this.app)
+  //   .then(ReplExpect.okWithCustom({ selector: 'code' })) // extract the JSON bit
   //   .then(selector => this.app.client.getText(selector))
   //   .then(ui.expectSubset({ redis: v1, type: v2 })) // validate redis and type fields, using the provided validators
-  //   .catch(common.oops(this)))
+  //   .catch(Common.oops(this)))
 
   /* {
         const cmd = `app init --reset --url ${sharedURL}`
-        it(`should ${cmd}`, () => cli.do(cmd, this.app)
-            .then(cli.expectOKWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
-           .catch(common.oops(this)))
+        it(`should ${cmd}`, () => CLI.command(cmd, this.app)
+            .then(ReplExpect.okWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
+           .catch(Common.oops(this)))
     }
     assertConfig(is(sharedURL), is('url')) */
 
   /* {
         const cmd = 'app init --reset --auto'
-        it(`should ${cmd}`, () => cli.do(cmd, this.app)
-            .then(cli.expectOKWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
-           .catch(common.oops(this)))
+        it(`should ${cmd}`, () => CLI.command(cmd, this.app)
+            .then(ReplExpect.okWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
+           .catch(Common.oops(this)))
 
     }
 

@@ -16,82 +16,75 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
-describe('blackbox actions', function(this: common.ISuite) {
+describe('blackbox actions', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create a blackbox action variant 1', () =>
-    cli
-      .do(`wsk action create bb1 --docker openwhisk/example`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('bb1'))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTION_SOURCE))
+    CLI.command(`wsk action create bb1 --docker openwhisk/example`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('bb1'))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTION_SOURCE))
       .then(txt => assert.strictEqual(txt, 'dockerhub image: openwhisk/example'))
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it('should create a blackbox action variant 2', () =>
-    cli
-      .do(`wsk action create --docker openwhisk/example bb2`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('bb2'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create --docker openwhisk/example bb2`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('bb2'))
+      .catch(Common.oops(this)))
 
   it('should create a blackbox action variant 3', () =>
-    cli
-      .do(`wsk action create --docker openwhisk/example bb3 ${ROOT}/data/openwhisk/echo.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('bb3'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create --docker openwhisk/example bb3 ${ROOT}/data/openwhisk/echo.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('bb3'))
+      .catch(Common.oops(this)))
 
   it('should create a blackbox action variant 4', () =>
-    cli
-      .do(`wsk action create bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('bb4'))
-      .then(sidecar.expectSource('// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('bb4'))
+      .then(SidecarExpect.source('// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'))
+      .catch(Common.oops(this)))
 
   it('should create a package', () =>
-    cli
-      .do(`wsk package create ppp`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('ppp'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk package create ppp`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('ppp'))
+      .catch(Common.oops(this)))
 
   it('should create a blackbox action variant 5', () =>
-    cli
-      .do(`wsk action create ppp/bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('bb4', undefined, undefined, 'ppp'))
-      .then(sidecar.expectSource('// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ppp/bb4 ${ROOT}/data/openwhisk/echo.js --docker openwhisk/example`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('bb4', undefined, undefined, 'ppp'))
+      .then(SidecarExpect.source('// eslint-disable-next-line @typescript-eslint/no-unused-vars\nconst main = x => x'))
+      .catch(Common.oops(this)))
 
   it(`should invoke bb2`, () =>
-    cli
-      .do(`wsk action invoke bb2`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('bb2'))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
+    CLI.command(`wsk action invoke bb2`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('bb2'))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
       .then(
-        ui.expectStruct({
+        Util.expectStruct({
           args: {},
           msg: 'Hello from arbitrary C program!'
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = `paginator-test-${new Date().getTime()}`
@@ -34,17 +34,16 @@ const NN = 4
  * activationId to show up in the activation list results
  *
  */
-const invokeABunch = (ctx, actionName) => {
+const invokeABunch = (ctx: Common.ISuite, actionName: string) => {
   for (let idx = 0; idx < NN; idx++) {
     it(`should invoke it idx=${idx}`, () =>
-      cli
-        .do(`wsk action invoke ${actionName}`, ctx.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName))
-        .then(() => ctx.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID)) // get the activationId
-        .then(activationId => ui.waitForActivation(ctx.app, activationId, { name: actionName })) // wait till activation list shows it
-        .catch(common.oops(ctx)))
+      CLI.command(`wsk action invoke ${actionName}`, ctx.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(actionName))
+        .then(() => ctx.app.client.getText(Selectors.SIDECAR_ACTIVATION_ID)) // get the activationId
+        .then(activationId => openwhisk.waitForActivation(ctx.app, activationId, { name: actionName })) // wait till activation list shows it
+        .catch(Common.oops(ctx)))
   }
 }
 
@@ -53,7 +52,7 @@ const invokeABunch = (ctx, actionName) => {
  * the given action
  *
  */
-const testPagination = (ctx: common.ISuite, actionName?: string) => {
+const testPagination = (ctx: Common.ISuite, actionName?: string) => {
   const { app } = ctx
 
   const limit = NN / 2
@@ -68,9 +67,8 @@ const testPagination = (ctx: common.ISuite, actionName?: string) => {
   const nextButton = `${lastBlock} .list-paginator-button-next`
 
   return (
-    cli
-      .do(`wsk $ list --limit ${limit} ${extraArgs}`, app)
-      .then(cli.expectOKWithAny)
+    CLI.command(`wsk $ list --limit ${limit} ${extraArgs}`, app)
+      .then(ReplExpect.okWithAny)
       .then(() =>
         app.client.waitUntil(() => {
           return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)]).then(
@@ -111,27 +109,25 @@ const testPagination = (ctx: common.ISuite, actionName?: string) => {
         })
       )
 
-      .catch(common.oops(ctx))
+      .catch(Common.oops(ctx))
   )
 }
 
-describe('Activation list paginator', function(this: common.ISuite) {
+describe('Activation list paginator', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it(`should create an action ${actionName}`, () =>
-    cli
-      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 
   it(`should create an action ${actionName2}`, () =>
-    cli
-      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2)))
+    CLI.command(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2)))
 
   invokeABunch(this, actionName)
   it('paginate activations without filter', () => testPagination(this))

@@ -17,9 +17,7 @@
 const uuid = require('uuid/v4')
 const assert = require('assert')
 
-const common = require('@kui-shell/core/tests/lib/common')
-const ui = require('@kui-shell/core/tests/lib/ui')
-const { cli, selectors } = ui
+const { Common, CLI, ReplExpect, Selectors } = require('@kui-shell/test')
 
 /** the default tab we expect to see on "get" */
 exports.defaultModeForGet = 'summary'
@@ -91,25 +89,25 @@ exports.waitForRed = async (app, selector) => {
 
 exports.createNS = (prefix = '') => `${prefix}${uuid()}-kui`
 
-exports.allocateNS = (ctx, ns, theCli = cli) => {
+exports.allocateNS = (ctx, ns, theCli = CLI) => {
   it(`should create a namespace ${ns} for test: ${ctx.title}`, () => {
     return theCli
-      .do(`kubectl create namespace ${ns}`, ctx.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
+      .command(`kubectl create namespace ${ns}`, ctx.app)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) }))
       .then(selector => exports.waitForGreen(ctx.app, selector))
-      .catch(common.oops(ctx, true))
+      .catch(Common.oops(ctx, true))
   })
 }
 
-exports.deleteNS = (ctx, ns, theCli = cli) => {
+exports.deleteNS = (ctx, ns, theCli = CLI) => {
   if (!process.env.TRAVIS_JOB_ID) {
     // to save travis test time
     it(`should delete the namespace ${ns}`, () => {
-      return theCli
-        .do(`kubectl delete namespace ${ns}`, ctx.app)
-        .then(cli.expectOKWithCustom({ selector: ui.selectors.BY_NAME(ns) }))
+      theCli
+        .command(`kubectl delete namespace ${ns}`, ctx.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) }))
         .then(selector => exports.waitForRed(ctx.app, selector))
-        .catch(common.oops(ctx, true))
+        .catch(Common.oops(ctx, true))
     })
   }
 }
@@ -118,17 +116,16 @@ exports.deleteNS = (ctx, ns, theCli = cli) => {
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace = '') => app =>
+exports.waitTillNone = (kind, theCli = CLI, name = '', okToSurvive, inNamespace = '') => app =>
   new Promise(resolve => {
     // fetch the entities
     const fetch = () =>
-      theCli.do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
+      theCli.command(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
         errOk: theCli.exitCode(404)
       })
-
     // verify the entities
     const verify = okToSurvive
-      ? theCli === cli
+      ? theCli === ReplExpect
         ? theCli.expectOKWith(okToSurvive)
         : theCli.expectOK(okToSurvive)
       : theCli.expectError(theCli.exitCode(404))
@@ -147,7 +144,7 @@ exports.waitTillNone = (kind, theCli = cli, name = '', okToSurvive, inNamespace 
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillTerminating = (kind, theCli = cli, name, inNamespace) => app =>
+exports.waitTillTerminating = (kind, theCli = CLI, name, inNamespace) => app =>
   new Promise(resolve => {
     // fetch the entities
     const fetch = () =>

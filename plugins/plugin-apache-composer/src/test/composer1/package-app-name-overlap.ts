@@ -14,54 +14,47 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
-const cli = ui.cli
-const sidecar = ui.sidecar
 
-describe('app create where app name is also a package name', function(this: common.ISuite) {
+// sharedURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+
+describe('app create where app name is also a package name', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create a package named foo', () =>
-    cli
-      .do('wsk package create foo', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('wsk package create foo', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should create an app named foo in package foo', () =>
-    cli
-      .do('wsk app create foo/foo @demos/hello.js', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('wsk app create foo/foo @demos/hello.js', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should app get mo expecting 409', () =>
-    cli
-      .do('wsk app get foo', this.app)
-      .then(cli.expectError(409))
-      .catch(common.oops(this)))
+    CLI.command('wsk app get foo', this.app)
+      .then(ReplExpect.error(409))
+      .catch(Common.oops(this)))
 
   it('should app get /_/mo expecting 409', () =>
-    cli
-      .do('wsk app get /_/foo', this.app)
-      .then(cli.expectError(409))
-      .catch(common.oops(this)))
+    CLI.command('wsk app get /_/foo', this.app)
+      .then(ReplExpect.error(409))
+      .catch(Common.oops(this)))
 
   it('should app list then click on foo/foo', () =>
-    cli
-      .do('wsk app list', this.app)
+    CLI.command('wsk app list', this.app)
       .then(
-        cli.expectOKWithCustom({
+        ReplExpect.okWithCustom({
           selector: '.entity[data-name="foo"][data-package-name="foo"] .entity-name.clickable',
           passthrough: true
         })
       )
-      .then(ui.selectors.OUTPUT_N)
+      .then(Selectors.OUTPUT_N)
       .then(selector => this.app.client.click(selector))
       .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo', undefined, undefined, 'foo'))
-      .catch(common.oops(this)))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo', undefined, undefined, 'foo'))
+      .catch(Common.oops(this)))
 })

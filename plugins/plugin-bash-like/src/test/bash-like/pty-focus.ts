@@ -14,48 +14,43 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
 import { v4 as uuid } from 'uuid'
 
-const { cli, keys, selectors } = ui
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** helpful selectors */
-const rows = (N: number) => selectors.xtermRows(N)
+const rows = (N: number) => Selectors.xtermRows(N)
 
-describe('xterm focus', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('xterm focus', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const tmpFile = `/tmp/kui-${uuid()}`
 
   it(`should touch ${tmpFile}`, () =>
-    cli
-      .do(`touch ${tmpFile}`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this, true)))
+    CLI.command(`touch ${tmpFile}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
 
   it(`should rm -i ${tmpFile}`, async () => {
     try {
-      const res = await cli.do(`rm -i ${tmpFile}`, this.app)
+      const res = await CLI.command(`rm -i ${tmpFile}`, this.app)
 
       // wait for the output to appear
       await this.app.client.waitForExist(rows(res.count))
 
       // type "y" to confirm the rm
-      await this.app.client.keys(`y${keys.ENTER}`)
+      await this.app.client.keys(`y${Keys.ENTER}`)
 
       // wait for the command to finish with blank output
-      await cli.expectBlank(res)
+      await ReplExpect.blank(res)
     } catch (err) {
-      return common.oops(this, true)(err)
+      return Common.oops(this, true)(err)
     }
   })
 
   it('should now give an 404 error on the removed file', () =>
-    cli
-      .do(`cat ${tmpFile}`, this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this, true)))
+    CLI.command(`cat ${tmpFile}`, this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this, true)))
 })

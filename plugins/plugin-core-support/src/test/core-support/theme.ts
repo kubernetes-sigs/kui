@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  localIt,
-  refresh
-} from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
-const resetTheme = (ctx: ISuite) => {
+const resetTheme = (ctx: Common.ISuite) => {
   it('should reset theme preference', () =>
-    cli
-      .do('theme reset', ctx.app)
-      .then(cli.expectJustOK)
-      .catch(oops(ctx)))
+    CLI.command('theme reset', ctx.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(ctx)))
 
   it('should show that we are using the default (dark) theme', () =>
-    cli
-      .do('theme current', ctx.app)
-      .then(cli.expectOKWithString('Dark'))
+    CLI.command('theme current', ctx.app)
+      .then(ReplExpect.okWithString('Dark'))
       .then(() => ctx.app.client.waitForExist('body[kui-theme="Dark"]')) // Dark being the default
-      .catch(oops(ctx)))
+      .catch(Common.oops(ctx)))
 }
 
 interface Theme {
@@ -48,19 +38,17 @@ interface Theme {
  * Switch to the given theme and verify
  *
  */
-const go = (theme: Theme) => (ctx: ISuite) => {
+const go = (theme: Theme) => (ctx: Common.ISuite) => {
   it(`should switch to ${theme.name} theme via command`, () =>
-    cli
-      .do(`theme set "${theme.name}"`, ctx.app)
-      .then(cli.expectJustOK)
+    CLI.command(`theme set "${theme.name}"`, ctx.app)
+      .then(ReplExpect.justOK)
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(oops(ctx)))
+      .catch(Common.oops(ctx)))
 
   it(`should show that we are using the ${theme.name} theme`, () =>
-    cli
-      .do('theme current', ctx.app)
-      .then(cli.expectOKWithString(theme.name))
-      .catch(oops(ctx)))
+    CLI.command('theme current', ctx.app)
+      .then(ReplExpect.okWithString(theme.name))
+      .catch(Common.oops(ctx)))
 }
 
 /**
@@ -68,12 +56,12 @@ const go = (theme: Theme) => (ctx: ISuite) => {
  * be set
  *
  */
-const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
-  // refresh electron's current page rather than restart the app to prevent clearing browser's local storage
-  localIt(`should still be using ${theme.name} theme after a browser restart`, () =>
-    refresh(ctx)
+const restartAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
+  // Common.refresh electron's current page rather than restart the app to prevent clearing browser's local storage
+  Common.localIt(`should still be using ${theme.name} theme after a browser restart`, () =>
+    Common.refresh(ctx)
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(oops(ctx))
+      .catch(Common.oops(ctx))
   )
 }
 
@@ -82,11 +70,11 @@ const restartAndThen = (theme: Theme) => (ctx: ISuite) => {
  * the given theme to be set
  *
  */
-const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
-  localIt(`should still be using ${theme.name} theme after a reload`, () =>
-    refresh(ctx)
+const reloadAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
+  Common.localIt(`should still be using ${theme.name} theme after a reload`, () =>
+    Common.refresh(ctx)
       .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(oops(ctx))
+      .catch(Common.oops(ctx))
   )
 }
 
@@ -94,21 +82,21 @@ const reloadAndThen = (theme: Theme) => (ctx: ISuite) => {
  * Click on the theme button and expect the theme list
  *
  */
-const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nClicks = 1) => {
+const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISuite, nClicks = 1) => {
   it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
       await ctx.app.client.waitForVisible('#help-button')
       await ctx.app.client.click('#help-button')
-      await ctx.app.client.waitForVisible(selectors.SIDECAR)
-      await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('configure'))
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR)
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('configure'))
       console.error('1')
-      await ctx.app.client.click(selectors.SIDECAR_MODE_BUTTON('configure'))
-      console.error('2', selectors.SIDECAR_MODE_BUTTON('configure'))
-      await ctx.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON_SELECTED('configure'))
+      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON('configure'))
+      console.error('2', Selectors.SIDECAR_MODE_BUTTON('configure'))
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('configure'))
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      const checkMarkCell = `${selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
-      const nameCell = `${selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] > tr > .clickable`
+      const checkMarkCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
+      const nameCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] > tr > .clickable`
 
       console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
@@ -131,7 +119,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: ISuite, nCl
         }
       }
     } catch (err) {
-      await oops(ctx, true)(err)
+      await Common.oops(ctx, true)(err)
     }
   })
 
@@ -150,9 +138,9 @@ const reloadAndThenDark = reloadAndThen(Dark)
 const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
 const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
-describe('theme switching', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe('theme switching', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   resetTheme(this)
   clickOnThemeButtonThenClickOnLight(this)
@@ -161,24 +149,22 @@ describe('theme switching', function(this: ISuite) {
   clickOnThemeButtonThenClickOnDark(this, 4) // click on Dark 4 times in a row
 
   it('should list built-in Light theme', () =>
-    cli
-      .do('theme list', this.app)
+    CLI.command('theme list', this.app)
       .then(
-        cli.expectOKWithCustom({
+        ReplExpect.okWithCustom({
           selector: `.entity-name[data-value="${Light.name}"]`
         })
       )
-      .catch(oops(this)))
+      .catch(Common.oops(this)))
 
   it('should list built-in Dark theme', () =>
-    cli
-      .do('theme list', this.app)
+    CLI.command('theme list', this.app)
       .then(
-        cli.expectOKWithCustom({
+        ReplExpect.okWithCustom({
           selector: `.entity-name[data-value="${Dark.name}"]`
         })
       )
-      .catch(oops(this)))
+      .catch(Common.oops(this)))
 
   resetTheme(this)
   reloadAndThenDark(this) // because Dark is default

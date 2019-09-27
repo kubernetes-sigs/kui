@@ -47,9 +47,6 @@
     "tmp": "0.1.0",
     "yargs-parser": "14.0.0"
   },
-  "devDependencies": {
-    "request-promise": "4.2.4"
-  },
   "publishConfig": {
     "access": "public"
   },

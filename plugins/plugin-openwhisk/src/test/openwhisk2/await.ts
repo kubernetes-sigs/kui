@@ -19,45 +19,42 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'long'
 
-describe('Invoke asynchronously and await', function(this: common.ISuite) {
+describe('Invoke asynchronously and await', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/long.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`wsk action create ${actionName} ${ROOT}/data/openwhisk/long.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 
   // create the second action
   it('should do an async of the action, using implicit context', () =>
-    cli.do(`wsk action async`, this.app).then(cli.expectOKWithString(actionName))) // e.g. "invoked `actionName` with id:"
+    CLI.command(`wsk action async`, this.app).then(ReplExpect.okWithString(actionName))) // e.g. "invoked `actionName` with id:"
 
   // call await
   it('should await completion of the activation', () =>
-    cli
-      .do(`wsk $ await`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`wsk $ await`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 
   // make sure we can do in-context activation commands
   it('should show activation logs', () =>
-    cli
-      .do(`wsk activation logs`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`wsk activation logs`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 })

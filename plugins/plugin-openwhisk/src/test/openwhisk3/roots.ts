@@ -17,7 +17,7 @@
 /* const common = require('../../../lib/common')
 const ui = require('../../../lib/ui')
 const assert = require('assert')
-const cli = ui.cli
+const CLI = ui.CLI
 const sidecar = ui.sidecar
 const seqName = 'roots-test-B98D0BB4-137D-4E35-B4AC-E22E1E8A2630'
 // MAKE SURE THESE ARE UNIQUE TO THIS TEST!!!
@@ -39,76 +39,76 @@ describe('List root-most activations with $$', function() {
   // disabled until the bluewhisk views finish updating 20170927
   /*
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create the component actions
   actionNames.forEach(actionName => {
-    it('should create an action via let', () => cli.do(`let ${actionName}.js = x=>x`, this.app)
-    .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    it('should create an action via let', () => CLI.command(`let ${actionName}.js = x=>x`, this.app)
+    .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
   })
 
   // create the sequence with white spaces
-  it(`should create a sequence ${seqName} with let`, () => cli.do(`let ${seqName} = ${actionNames.join(' -> ')}`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName))
-    .catch(common.oops(this)))
+  it(`should create a sequence ${seqName} with let`, () => CLI.command(`let ${seqName} = ${actionNames.join(' -> ')}`, this.app)
+    .then(ReplExpect.justOK)
+    .then(SidecarExpect.open)
+    .then(SidecarExpect.showing(seqName))
+    .catch(Common.oops(this)))
 
   // invoke the sequence
-  it(`should do an async of the sequence ${seqName}, using implicit context`, () => cli.do(`wsk action async -p y 3`, this.app)
-    .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+  it(`should do an async of the sequence ${seqName}, using implicit context`, () => CLI.command(`wsk action async -p y 3`, this.app)
+    .then(ReplExpect.justOK)
+    .catch(Common.oops(this)))
 
   // call await
-  it('should await successful completion of the activation', () => cli.do(`wsk $ await`, this.app)
-    .then(cli.expectJustOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(seqName))
-    .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-    .then(ui.expectStruct({'y': 3}))
-    .catch(common.oops(this)))
+  it('should await successful completion of the activation', () => CLI.command(`wsk $ await`, this.app)
+    .then(ReplExpect.justOK)
+    .then(SidecarExpect.open)
+    .then(SidecarExpect.showing(seqName))
+    .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+    .then(Util.expectStruct({'y': 3}))
+    .catch(Common.oops(this)))
 
   // call $ roots
-  it('should call $ roots successfully', () => cli.do(`wsk $ roots`, this.app)
-    .then(cli.expectJustOK)
-    .catch(common.oops(this)))
+  it('should call $ roots successfully', () => CLI.command(`wsk $ roots`, this.app)
+    .then(ReplExpect.justOK)
+    .catch(Common.oops(this)))
 
-  it('should list only the sequence activation', () => cli.do(`wsk $ roots --limit 200`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true}))
-    .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
+  it('should list only the sequence activation', () => CLI.command(`wsk $ roots --limit 200`, this.app)
+    .then(ReplExpect.okWithCustom({ passthrough: true}))
+    .then(N => this.app.client.elements(Selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => filter(namesInList, name => actionNames.indexOf(name) >= 0)) // any of the actionNames? there better not be!
     .then(expectToBeEmpty => assert.equal(expectToBeEmpty.length, 0))
-    .catch(common.oops(this)))
+    .catch(Common.oops(this)))
 
   // call $$
-  it('should call $$ successfully', () => cli.do(`wsk $$`, this.app)
-    .then(cli.expectJustOK)
-    .catch(common.oops(this)))
-  it('should list only the sequence activation with $$', () => cli.do(`wsk $$ --limit 200`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true}))
-    .then(N => this.app.client.getText(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
+  it('should call $$ successfully', () => CLI.command(`wsk $$`, this.app)
+    .then(ReplExpect.justOK)
+    .catch(Common.oops(this)))
+  it('should list only the sequence activation with $$', () => CLI.command(`wsk $$ --limit 200`, this.app)
+    .then(ReplExpect.okWithCustom({ passthrough: true}))
+    .then(N => this.app.client.getText(Selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => namesInList.filter(name => actionNames.indexOf(name) >= 0)) // any of the actionNames? there better not be!
     .then(expectToBeEmpty => assert.equal(expectToBeEmpty.length, 0))
-    .catch(common.oops(this)))
-  it('should list nothing with $$ xxx', () => cli.do(`wsk $$ xxxyyyzzzyfdsfdasfjasfdas --limit 200`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true}))
-    .then(N => this.app.client.elements(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
+    .catch(Common.oops(this)))
+  it('should list nothing with $$ xxx', () => CLI.command(`wsk $$ xxxyyyzzzyfdsfdasfjasfdas --limit 200`, this.app)
+    .then(ReplExpect.okWithCustom({ passthrough: true}))
+    .then(N => this.app.client.elements(Selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => assert.equal(namesInList.value.length, 0)) // with a junk "xxx" filter, the seq better not appear
-    .catch(common.oops(this)))
-  it(`should list the sequence activation with $$ ${seqName}`, () => cli.do(`wsk $$ ${seqName} --limit 200`, this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true}))
-    .then(N => this.app.client.getText(ui.selectors.LIST_RESULTS_BY_NAME_N(N)))
+    .catch(Common.oops(this)))
+  it(`should list the sequence activation with $$ ${seqName}`, () => CLI.command(`wsk $$ ${seqName} --limit 200`, this.app)
+    .then(ReplExpect.okWithCustom({ passthrough: true}))
+    .then(N => this.app.client.getText(Selectors.LIST_RESULTS_BY_NAME_N(N)))
     .then(namesInList => namesInList === seqName ? [namesInList] : namesInList.filter(name => seqName === name))
     .then(expectToBeNonEmpty => { console.log(expectToBeNonEmpty); assert.ok(expectToBeNonEmpty.length > 0) })
-    .catch(common.oops(this)))
+    .catch(Common.oops(this)))
 
   // double check that $ list shows a, b, and c
   actionNames.forEach(actionName => {
-    it('should list all of the activations', () => cli.do(`wsk $ list --limit 100 --name ${actionName}`, this.app)
-      .then(cli.expectOKWith(actionName))
-      .catch(common.oops(this)))
+    it('should list all of the activations', () => CLI.command(`wsk $ list --limit 100 --name ${actionName}`, this.app)
+      .then(ReplExpect.okWith(actionName))
+      .catch(Common.oops(this)))
   }) */
 })

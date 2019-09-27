@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { selectors, sidecar, expectSubset, getValueFromMonaco } from '@kui-shell/core/tests/lib/ui'
+import { Common, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { verifyNodeExists, verifyEdgeExists } from '@kui-shell/plugin-apache-composer/tests/lib/composer-viz-util'
-const { localDescribe } = common
 
 /** shorthands for commands */
 const preview = (file: string) => ['preview', file]
 
 /** wait for the creation to finish, then navigate a bit */
-const waitForPreview = function(this: common.ISuite, name: string) {
+const waitForPreview = function(this: Common.ISuite, name: string) {
   it(`should wait for wskflow visualization for ${name}`, async () => {
     const waitForIcon = () => {
       return this.app.client.waitUntil(async () => {
-        const iconText = await this.app.client.getText(`${selectors.SIDECAR} .sidecar-header-icon`)
+        const iconText = await this.app.client.getText(`${Selectors.SIDECAR} .sidecar-header-icon`)
         return /preview/i.test(iconText)
       })
     }
@@ -37,19 +35,19 @@ const waitForPreview = function(this: common.ISuite, name: string) {
     await waitForIcon()
 
     await Promise.resolve(this.app)
-      .then(sidecar.expectOpen)
+      .then(SidecarExpect.open)
       .then(verifyEdgeExists('Entry', 'authenticate'))
       .then(verifyNodeExists('authenticate'))
 
-    await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('ast'))
+    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('ast'))
     await this.app.client.waitUntil(() => {
-      return getValueFromMonaco(this.app).then(expectSubset({ type: 'if' }, false)) // false: don't assert, return false instead
+      return Util.getValueFromMonaco(this.app).then(Util.expectSubset({ type: 'if' }, false)) // false: don't assert, return false instead
     })
 
-    await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('source'))
+    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('source'))
     await this.app.client.waitUntil(async () => {
       // source tab should contain something like require('openwhisk...)
-      const source = await getValueFromMonaco(this.app)
+      const source = await Util.getValueFromMonaco(this.app)
       return /require/.test(source)
     })
   })
@@ -59,9 +57,9 @@ const waitForPreview = function(this: common.ISuite, name: string) {
 // from here on are the tests...
 //
 
-localDescribe('popup preview', function(this: common.ISuite) {
+Common.localDescribe('popup preview', function(this: Common.ISuite) {
   before(openwhisk.before(this, { popup: preview('@demos/if.js') }))
-  after(common.after(this))
+  after(Common.after(this))
 
   waitForPreview.bind(this)({ name: 'if.js' })
 })

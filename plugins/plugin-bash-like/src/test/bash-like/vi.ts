@@ -18,27 +18,23 @@ import { unlink } from 'fs'
 import { fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-
-const { cli, keys, selectors } = ui
-const { pit } = common
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** helpful selectors */
-const rows = (N: number) => selectors.xtermRows(N)
+const rows = (N: number) => Selectors.xtermRows(N)
 const lastRow = (N: number) => `${rows(N)} > div:last-child`
 
-describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const typeThisText = 'hello there'
 
   const file = tmpFile()
 
-  pit('use vi to create a new file', async () => {
+  Common.pit('use vi to create a new file', async () => {
     try {
-      const res = await cli.do(`vim -i NONE ${file.name}`, this.app)
+      const res = await CLI.command(`vim -i NONE ${file.name}`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows(res.count))
@@ -62,7 +58,7 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: comm
 
       // exit from insert mode
       iter = 0
-      await this.app.client.keys(keys.ESCAPE)
+      await this.app.client.keys(Keys.ESCAPE)
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow(res.count)
         if (++iter > 5) {
@@ -72,36 +68,35 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: comm
       })
 
       await this.app.client.keys(':wq')
-      await this.app.client.keys(keys.ENTER)
+      await this.app.client.keys(Keys.ENTER)
 
-      await cli.expectBlank(res)
+      await ReplExpect.blank(res)
 
-      await cli.do(`cat ${file.name}`, this.app).then(cli.expectOKWithString('hello there'))
+      await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithString('hello there'))
     } catch (err) {
-      return common.oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 
-  pit('should cat the file contents', () =>
-    cli
-      .do(`cat "${file.name}"`, this.app)
-      .then(cli.expectOKWithString('hello there'))
-      .catch(common.oops(this))
+  Common.pit('should cat the file contents', () =>
+    CLI.command(`cat "${file.name}"`, this.app)
+      .then(ReplExpect.okWithString('hello there'))
+      .catch(Common.oops(this))
   )
 
-  pit('should remove the temp file', async () => {
+  Common.pit('should remove the temp file', async () => {
     // DO NOT return a promise here; see https://github.com/mochajs/mocha/issues/3555
     await promisify(unlink)(file.name)
   })
 })
 
-describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
-  pit('open vi :wq then :q, and expect no error', async () => {
+  Common.pit('open vi :wq then :q, and expect no error', async () => {
     try {
-      const res = await cli.do(`vim -i NONE`, this.app)
+      const res = await CLI.command(`vim -i NONE`, this.app)
 
       // wait for vi to come up
       await this.app.client.waitForExist(rows(res.count))
@@ -111,16 +106,16 @@ describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: comm
 
       // :wq
       await this.app.client.keys(':wq')
-      await this.app.client.keys(keys.ENTER)
+      await this.app.client.keys(Keys.ENTER)
 
       // :q
       await this.app.client.keys(':q')
-      await this.app.client.keys(keys.ENTER)
+      await this.app.client.keys(Keys.ENTER)
 
       // expect a clean exit, i.e. no error output on the console
-      await cli.expectBlank(res)
+      await ReplExpect.blank(res)
     } catch (err) {
-      return common.oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 })

@@ -19,54 +19,52 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { dirname } from 'path'
-const { cli, keys, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create action with implicit entity type, then list it', function(this: common.ISuite) {
+localDescribe('Create action with implicit entity type, then list it', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this, true)))
+    CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this, true)))
 
   // toggle sidebar closed
   it('should toggle the sidebar closed with escape', async () => {
-    await this.app.client.keys(keys.ESCAPE)
-    return sidecar.expectClosed(this.app)
+    await this.app.client.keys(Keys.ESCAPE)
+    return SidecarExpect.closed(this.app)
   })
 
   // toggle sidebar back open
   it('should toggle the sidebar back open with escape', async () => {
-    await this.app.client.keys(keys.ESCAPE)
-    return sidecar.expectOpen(this.app).then(sidecar.expectShowing('foo'))
+    await this.app.client.keys(Keys.ESCAPE)
+    return SidecarExpect.open(this.app).then(SidecarExpect.showing('foo'))
   })
 
   // list tests
-  ui.aliases.list.forEach(cmd => {
+  openwhisk.aliases.list.forEach(cmd => {
     it(`should find the new action with "wsk action ${cmd}"`, () =>
-      cli.do(`wsk action ${cmd}`, this.app).then(cli.expectOKWithOnly('foo')))
+      CLI.command(`wsk action ${cmd}`, this.app).then(ReplExpect.okWithOnly('foo')))
   })
 
   // toggle sidebar closed by clicking on the Close button
   it('should toggle the sidebar closed with close button click', async () => {
     try {
-      await this.app.client.waitForVisible(ui.selectors.SIDECAR_CLOSE_BUTTON)
-      await this.app.client.click(ui.selectors.SIDECAR_CLOSE_BUTTON)
-      await sidecar.expectClosed(this.app)
+      await this.app.client.waitForVisible(Selectors.SIDECAR_CLOSE_BUTTON)
+      await this.app.client.click(Selectors.SIDECAR_CLOSE_BUTTON)
+      await SidecarExpect.closed(this.app)
     } catch (err) {
-      await common.oops(this, true)
+      await Common.oops(this, true)
     }
   })
 })

@@ -16,12 +16,19 @@
 
 import { Application } from 'spectron'
 
-import { AppVerifier, AppAndCountVerifier } from '@kui-shell/core/tests/lib/ui'
-
 interface IInput {
   file: string
   path: string
 }
+
+interface AppAndCount {
+  app: Application
+  count: number
+}
+
+type AppVerifier = (app: Application) => Promise<Application>
+
+type AppAndCountVerifier = (res: AppAndCount) => Promise<Application>
 
 declare function input (file: string, subdir?: string): IInput
 declare function composerInput (file: string): IInput

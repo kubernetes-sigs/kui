@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   waitForRed,
@@ -31,9 +30,9 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const synonyms = ['kubectl', 'k']
 const dashFs = ['-f', '--filename']
 
-describe(`kubectl create pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl create pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   // repeat the tests for kubectl, k, etc. i.e. any built-in
   // synonyms/aliases we have for "kubectl"
@@ -46,52 +45,46 @@ describe(`kubectl create pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
       it(`should create sample pod from URL via ${kubectl}`, async () => {
         try {
-          const selector = await cli
-            .do(
-              `${kubectl} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-              this.app
-            )
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+          const selector = await CLI.command(
+            `${kubectl} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            this.app
+          ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // now click on the table row
           await this.app.client.click(`${selector} .clickable`)
-          await sidecar
-            .expectOpen(this.app)
-            .then(sidecar.expectMode(defaultModeForGet))
-            .then(sidecar.expectShowing('nginx'))
+          await SidecarExpect.open(this.app)
+            .then(SidecarExpect.mode(defaultModeForGet))
+            .then(SidecarExpect.showing('nginx'))
         } catch (err) {
-          await common.oops(this, true)(err)
+          await Common.oops(this, true)(err)
         }
       })
 
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
-        return cli
-          .do(
-            `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
-          )
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(
+          `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+          this.app
+        )
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
 
       it(`should create sample pod from local file via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(`${kubectl} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
 
       it(`should delete the sample pod by name via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} delete pod nginx ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(`${kubectl} delete pod nginx ${inNamespace}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
 
       deleteNS(this, ns)

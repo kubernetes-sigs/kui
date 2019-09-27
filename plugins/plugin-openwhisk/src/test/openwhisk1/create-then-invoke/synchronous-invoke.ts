@@ -19,13 +19,11 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
@@ -33,59 +31,54 @@ const actionName2 = 'foo2'
 const packageName = 'ppp'
 
 // TODO: webpack test
-localDescribe('Test synchronous action invocation', function(this: common.ISuite) {
+localDescribe('Test synchronous action invocation', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an action', () =>
-    cli
-      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   it('should invoke that action with implicit entity', () =>
-    cli
-      .do(`wsk action invoke -p name openwhisk`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
-      .then(ui.expectValidActivationId)
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ name: 'Step1 openwhisk' }))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke -p name openwhisk`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_ID))
+      .then(openwhisk.expectValidActivationId)
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ name: 'Step1 openwhisk' }))
+      .catch(Common.oops(this)))
 
   it('should create a packaged action', () =>
-    cli
-      .do(`let ${packageName}/${actionName2} = ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName))
-      .catch(common.oops(this)))
+    CLI.command(`let ${packageName}/${actionName2} = ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2, undefined, undefined, packageName))
+      .catch(Common.oops(this)))
 
   it('should invoke that action with implicit entity', () =>
-    cli
-      .do(`wsk action invoke -p name openwhisker`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
-      .then(ui.expectValidActivationId)
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ name: 'Step1 openwhisker' }))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke -p name openwhisker`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_ID))
+      .then(openwhisk.expectValidActivationId)
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ name: 'Step1 openwhisker' }))
+      .catch(Common.oops(this)))
 
   it('should invoke the first action with explicit entity', () =>
-    cli
-      .do(`wsk action invoke ${actionName} -p name openwhiskers`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID))
-      .then(ui.expectValidActivationId)
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ name: 'Step1 openwhiskers' }))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action invoke ${actionName} -p name openwhiskers`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_ID))
+      .then(openwhisk.expectValidActivationId)
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+      .then(Util.expectStruct({ name: 'Step1 openwhiskers' }))
+      .catch(Common.oops(this)))
 })

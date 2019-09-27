@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -29,50 +28,46 @@ const actionName7 = 'foo7'
 const actionName8 = 'foo8'
 
 // electron 5 seems to require localDescribe on linux
-common.localDescribe('Execute commands via paste', function(this: common.ISuite) {
+Common.localDescribe('Execute commands via paste', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should paste a single line and enter the newline manually', () =>
     Promise.resolve(this.app.electron.clipboard.writeText(`let ${actionName} = x=>x`))
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
-      .then(() => cli.do(ui.keys.ENTER, this.app))
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+      .then(() => CLI.command(Keys.ENTER, this.app))
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   it('should paste a single line with terminating newline', () =>
-    cli
-      .paste(`let ${actionName2} = x=>x\n`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .catch(common.oops(this)))
+    CLI.paste(`let ${actionName2} = x=>x\n`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .catch(Common.oops(this)))
 
   it('should paste a single line with multiple terminating newlines', () =>
-    cli
-      .paste(`let ${actionName3} = x=>x\n \n \n \n`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3))
-      .catch(common.oops(this)))
+    CLI.paste(`let ${actionName3} = x=>x\n \n \n \n`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName3))
+      .catch(Common.oops(this)))
 
   it('should paste two lines', () =>
-    cli
-      .paste(`let ${actionName4} = x=>x\nlet ${actionName5} = x=>x\n`, this.app, 2)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName5))
-      .catch(common.oops(this)))
+    CLI.paste(`let ${actionName4} = x=>x\nlet ${actionName5} = x=>x\n`, this.app, 2)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName5))
+      .catch(Common.oops(this)))
 
   it('should get the action created by the first line', () =>
-    cli
-      .do(`wsk action get ${actionName4}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName4))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action get ${actionName4}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName4))
+      .catch(Common.oops(this)))
 
   it('should paste three lines without trailing newline', () =>
     Promise.resolve(
@@ -81,24 +76,22 @@ common.localDescribe('Execute commands via paste', function(this: common.ISuite)
       )
     )
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
-      .then(() => cli.do(ui.keys.ENTER, this.app))
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName8))
-      .catch(common.oops(this)))
+      .then(() => CLI.command(Keys.ENTER, this.app))
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName8))
+      .catch(Common.oops(this)))
 
   it('should get the action created by the first line', () =>
-    cli
-      .do(`wsk action get ${actionName6}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName6))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action get ${actionName6}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName6))
+      .catch(Common.oops(this)))
   it('should get the action created by the second line', () =>
-    cli
-      .do(`wsk action get ${actionName7}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName7))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action get ${actionName7}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName7))
+      .catch(Common.oops(this)))
 })

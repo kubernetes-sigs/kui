@@ -17,13 +17,13 @@
 import { readFile } from 'fs'
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, normalizeHTML, sidecar } = ui
-const { rp } = common
+
+const { rp } = openwhisk
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const REMOTE1 = {
@@ -45,14 +45,13 @@ const packageName2 = 'ppp2'
 const packageName3 = 'ppp3'
 
 // disable, see https://github.com/IBM/kui/issues/2732
-xdescribe('Create an action via let from a remote resource', function(this: common.ISuite) {
+xdescribe('Create an action via let from a remote resource', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const doCreate = remote => (actionName, extension = '', packageName?) => () => {
-    return cli
-      .do(`let ${packageName ? packageName + '/' : ''}${actionName}${extension} = ${remote.url}`, this.app)
-      .then(cli.expectOKWithCustom({ selector: '.entity-web-export-url' }))
+    return CLI.command(`let ${packageName ? packageName + '/' : ''}${actionName}${extension} = ${remote.url}`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: href, rejectUnauthorized: false }))
       .then(content =>
@@ -61,15 +60,15 @@ xdescribe('Create an action via let from a remote resource', function(this: comm
             throw err
           } else {
             assert.strictEqual(
-              normalizeHTML(content),
-              normalizeHTML(data).replace('nickm_wskng_test', ui.expectedNamespace())
+              openwhisk.normalizeHTML(content),
+              openwhisk.normalizeHTML(data).replace('nickm_wskng_test', openwhisk.expectedNamespace())
             )
           }
         })
       )
       .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName, undefined, undefined, packageName))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName, undefined, undefined, packageName))
   }
 
   const doCreate1 = doCreate(REMOTE1)

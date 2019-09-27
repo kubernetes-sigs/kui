@@ -19,26 +19,20 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, keys, sidecar } = ui
 
-describe('List activations, then drill down to summary views', function(this: common.ISuite) {
+describe('List activations, then drill down to summary views', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const drilldownWith = command => {
     return it(`should list activations and click on ${command}`, () =>
-      cli
-        .do(`wsk $ list`, this.app)
-        .then(cli.expectOKWithCustom({ passthrough: true }))
+      CLI.command(`wsk $ list`, this.app)
+        .then(ReplExpect.okWithCustom({ passthrough: true }))
         .then(N =>
-          sidecar
-            .expectClosed(this.app)
-            .then(
-              () => `${ui.selectors.OUTPUT_N(N)} .list-paginator-left-buttons span[data-button-command="${command}"]`
-            )
+          SidecarExpect.closed(this.app)
+            .then(() => `${Selectors.OUTPUT_N(N)} .list-paginator-left-buttons span[data-button-command="${command}"]`)
             .then(sel => {
               console.error(`Looking for ${sel}`)
               return sel
@@ -49,23 +43,23 @@ describe('List activations, then drill down to summary views', function(this: co
             })
             .then(sel => this.app.client.click(sel))
             .catch(async err => {
-              const txt = await this.app.client.getText(ui.selectors.OUTPUT_N(N))
+              const txt = await this.app.client.getText(Selectors.OUTPUT_N(N))
               console.log(`huh, got this ${txt}`)
               throw err
             })
         )
         .then(() => this.app)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing('Recent Activity'))
-        .catch(common.oops(this)))
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing('Recent Activity'))
+        .catch(Common.oops(this)))
   }
 
   const closeSidecar = () => {
     return it('should toggle the sidebar closed with escape', () =>
       this.app.client
-        .keys(keys.ESCAPE)
-        .then(() => sidecar.expectClosed(this.app))
-        .catch(common.oops(this)))
+        .keys(Keys.ESCAPE)
+        .then(() => SidecarExpect.closed(this.app))
+        .catch(Common.oops(this)))
   }
 
   drilldownWith('summary')

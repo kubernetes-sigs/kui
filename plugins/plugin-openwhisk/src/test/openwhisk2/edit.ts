@@ -19,120 +19,108 @@
  *
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
+
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
-describe('edit actions', function(this: common.ISuite) {
+describe('edit actions', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should open a file with spaces', () =>
-    cli
-      .do(`open "${ROOT}/data/openwhisk/file with spaces.yaml"`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('file with spaces.yaml'))
-      .catch(common.oops(this)))
+    CLI.command(`open "${ROOT}/data/openwhisk/file with spaces.yaml"`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('file with spaces.yaml'))
+      .catch(Common.oops(this)))
 
   it('should report 499 for edit --kind', () =>
-    cli
-      .do('edit nope --kind foo', this.app)
-      .then(cli.expectError(499)) // unsupported optional parameter
-      .catch(common.oops(this)))
+    CLI.command('edit nope --kind foo', this.app)
+      .then(ReplExpect.error(499)) // unsupported optional parameter
+      .catch(Common.oops(this)))
 
   it('should create an action', () =>
-    cli
-      .do('let foo = x=>x', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this)))
+    CLI.command('let foo = x=>x', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this)))
 
   it('should report 499 for edit --kind on existing action', () =>
-    cli
-      .do('edit foo --kind foo', this.app)
-      .then(cli.expectError(499)) // unsupported optional parameter
-      .catch(common.oops(this)))
+    CLI.command('edit foo --kind foo', this.app)
+      .then(ReplExpect.error(499)) // unsupported optional parameter
+      .catch(Common.oops(this)))
 
   it('should edit with implicit entity and shows correct sidecar mode buttons', () =>
-    cli
-      .do('edit', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
+    CLI.command('edit', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
       // now we click on the lock/unlock buttons a few times to make
       // sure we can toggle back and forth between read-only and edit
       // mode
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('code')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('limits')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('parameters')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('annotations')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('raw')))
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('unlock')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('lock')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Deploy')))
-      .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Revert')))
-      .catch(common.oops(this)))
+      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('lock')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('unlock')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('code')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('limits')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('parameters')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('annotations')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('raw')))
+      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('unlock')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('lock')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('Deploy')))
+      .then(() => this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('Revert')))
+      .catch(Common.oops(this)))
 
   it('should create a second action', () =>
-    cli
-      .do('let foo2 = x=>x', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo2'))
-      .catch(common.oops(this)))
+    CLI.command('let foo2 = x=>x', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo2'))
+      .catch(Common.oops(this)))
 
   // do this in a loop, to make sure we don't have any event listener leaks
   for (let idx = 0; idx < 20; idx++) {
     it(`should edit the first action iter=${idx}`, () =>
-      cli
-        .do('edit foo', this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing('foo'))
-        .then(sidecar.expectBadge('v0.0.1'))
-        .catch(common.oops(this)))
+      CLI.command('edit foo', this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing('foo'))
+        .then(SidecarExpect.badge('v0.0.1'))
+        .catch(Common.oops(this)))
   }
 
   it('should edit the second action', () =>
-    cli
-      .do('edit foo2', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo2'))
-      .then(sidecar.expectBadge('v0.0.1'))
-      .catch(common.oops(this)))
+    CLI.command('edit foo2', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo2'))
+      .then(SidecarExpect.badge('v0.0.1'))
+      .catch(Common.oops(this)))
 
   it('should create a sequence', () =>
-    cli
-      .do('let seq = x=>x -> x=>x', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('seq'))
-      .catch(common.oops(this)))
+    CLI.command('let seq = x=>x -> x=>x', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('seq'))
+      .catch(Common.oops(this)))
   it('should report 406 for edit of sequence', () =>
-    cli
-      .do('edit seq', this.app)
-      .then(cli.expectError(406))
-      .catch(common.oops(this)))
+    CLI.command('edit seq', this.app)
+      .then(ReplExpect.error(406))
+      .catch(Common.oops(this)))
 
   it('should create a zip action', () =>
-    cli
-      .do(`let zippy.zip = ${ROOT}/data/openwhisk/zip`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('zippy'))
-      .catch(common.oops(this)))
+    CLI.command(`let zippy.zip = ${ROOT}/data/openwhisk/zip`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('zippy'))
+      .catch(Common.oops(this)))
   it('should report 406 for edit of zip', () =>
-    cli
-      .do('edit zippy', this.app)
-      .then(cli.expectError(406))
-      .catch(common.oops(this)))
+    CLI.command('edit zippy', this.app)
+      .then(ReplExpect.error(406))
+      .catch(Common.oops(this)))
 })

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, AppAndCount } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 import * as assert from 'assert'
 
@@ -30,10 +29,10 @@ enum Status {
   Online = 'green-background'
 }
 
-/** after a cli.do (res), wait for a table row with the given status */
-const waitForStatus = async function(this: common.ISuite, status: Status, res) {
-  const selector = await cli.expectOKWithCustom({
-    selector: selectors.BY_NAME(podName)
+/** after a CLI.do (res), wait for a table row with the given status */
+const waitForStatus = async function(this: Common.ISuite, status: Status, res) {
+  const selector = await ReplExpect.okWithCustom({
+    selector: Selectors.BY_NAME(podName)
   })(res)
 
   if (status === Status.Offline) {
@@ -44,48 +43,48 @@ const waitForStatus = async function(this: common.ISuite, status: Status, res) {
 }
 
 /** create, then delete; the create table status had better not change */
-const createAndDeletePod = function(this: common.ISuite, kubectl: string, ns: string) {
+const createAndDeletePod = function(this: Common.ISuite, kubectl: string, ns: string) {
   it(`should create then delete sample pod from URL via ${kubectl}`, async () => {
     try {
-      const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+      const waitForOnline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
 
-      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
+      const waitForOffline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
-      const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
-      const selector2 = await waitForOffline(await cli.do(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
+      const selector1 = await waitForOnline(await CLI.command(`${kubectl} create -f ${url} -n ${ns}`, this.app))
+      const selector2 = await waitForOffline(await CLI.command(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
 
       // the first badge.Online selector had better still exist after the delete
       await this.app.client.waitForExist(selector1)
 
-      const selector3 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
+      const selector3 = await waitForOnline(await CLI.command(`${kubectl} create -f ${url} -n ${ns}`, this.app))
 
       // that second badge.Offline selector had better still exist after the (second) create
       await this.app.client.waitForExist(selector2)
 
       // one last delete...
-      await waitForOffline(await cli.do(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
+      await waitForOffline(await CLI.command(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
 
       // the previous badges had all better still exist after that second delete
       await this.app.client.waitForExist(selector1)
       await this.app.client.waitForExist(selector2)
       await this.app.client.waitForExist(selector3)
     } catch (err) {
-      await common.oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 }
 
 /** k get pods -w */
-const watchPods = function(this: common.ISuite, kubectl: string, ns: string) {
+const watchPods = function(this: Common.ISuite, kubectl: string, ns: string) {
   it(`should watch pods via ${kubectl} get pods -w`, async () => {
     try {
-      const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
-      const waitForOffline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
+      const waitForOnline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+      const waitForOffline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Offline)
 
-      const selector1 = await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
-      const selector2 = await waitForOnline(await cli.do(`${kubectl} get pods -w -n ${ns}`, this.app))
+      const selector1 = await waitForOnline(await CLI.command(`${kubectl} create -f ${url} -n ${ns}`, this.app))
+      const selector2 = await waitForOnline(await CLI.command(`${kubectl} get pods -w -n ${ns}`, this.app))
       const selector2ButOffline = selector2.replace(Status.Online, Status.Offline)
-      const selector3 = await waitForOffline(await cli.do(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
+      const selector3 = await waitForOffline(await CLI.command(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
 
       // the create and delete badges had better still exist
       await this.app.client.waitForExist(selector1)
@@ -99,7 +98,7 @@ const watchPods = function(this: common.ISuite, kubectl: string, ns: string) {
       await this.app.client.waitForExist(selector2ButOffline)
 
       // create again
-      await waitForOnline(await cli.do(`${kubectl} create -f ${url} -n ${ns}`, this.app))
+      await waitForOnline(await CLI.command(`${kubectl} create -f ${url} -n ${ns}`, this.app))
 
       // the "online" badge from the watch had better now exist again after the create
       // (i.e. we had better actually be watching!)
@@ -108,13 +107,13 @@ const watchPods = function(this: common.ISuite, kubectl: string, ns: string) {
       // and, conversely, that watch had better NOT show Offline
       await this.app.client.waitForExist(selector2ButOffline, 20000, true)
     } catch (err) {
-      await common.oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 }
 
 const checkWatchableJobs = function(
-  this: common.ISuite,
+  this: Common.ISuite,
   kubectl: string,
   ns: string,
   jobCount = 0,
@@ -123,10 +122,10 @@ const checkWatchableJobs = function(
   if (createResource) {
     it(`should create a watchable job via ${kubectl} get pods -w`, async () => {
       try {
-        const waitForOnline: (res: AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
-        await waitForOnline(await cli.do(`${kubectl} get pods -w -n ${ns}`, this.app))
+        const waitForOnline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
+        await waitForOnline(await CLI.command(`${kubectl} get pods -w -n ${ns}`, this.app))
       } catch (err) {
-        await common.oops(this, true)(err)
+        await Common.oops(this, true)(err)
       }
     })
   }
@@ -139,16 +138,16 @@ const checkWatchableJobs = function(
       const actualJobCount = watchableJobsRaw.value
       assert.strictEqual(actualJobCount, jobCount)
     } catch (err) {
-      await common.oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 }
 
 const synonyms = ['k']
 
-describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
@@ -192,28 +191,26 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     checkJob(6, true)
 
     it('should add new tab via command', () =>
-      cli
-        .do('tab new', this.app)
-        .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-        .then(() => common.waitForSession(this)) // should have an active repl
-        .catch(common.oops(this, true)))
+      CLI.command('tab new', this.app)
+        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+        .then(() => CLI.waitForSession(this)) // should have an active repl
+        .catch(Common.oops(this, true)))
 
     // undefined means that the new tab shouldn't have jobs even initialized
     checkJob(undefined, false)
 
     it(`should switch back to first tab via command`, () =>
-      cli.do('tab switch 1', this.app).catch(common.oops(this, true)))
+      CLI.command('tab switch 1', this.app).catch(Common.oops(this, true)))
 
     // the original tab should still have 6 jobs running
     checkJob(6, false)
 
     it('should close tab via "tab close" command', () =>
-      cli
-        .do('tab close', this.app)
-        .then(() => this.app.client.waitForExist(selectors.TAB_N(2), 20000, true))
-        .then(() => this.app.client.waitForExist(selectors.TAB_SELECTED_N(1)))
-        .then(() => cli.waitForRepl(this.app)) // should have an active repl
-        .catch(common.oops(this, true)))
+      CLI.command('tab close', this.app)
+        .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 20000, true))
+        .then(() => this.app.client.waitForExist(Selectors.TAB_SELECTED_N(1)))
+        .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+        .catch(Common.oops(this, true)))
 
     // undefined means that the current tab shouldn't have jobs even initialized
     checkJob(undefined, false)
@@ -222,10 +219,9 @@ describe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET}`, function(this: com
     checkJob(1, true)
 
     it('should clear the console', () =>
-      cli
-        .do('clear', this.app)
-        .then(() => cli.expectConsoleToBeClear(this.app))
-        .catch(common.oops(this, true)))
+      CLI.command('clear', this.app)
+        .then(() => ReplExpect.consoleToBeClear(this.app))
+        .catch(Common.oops(this, true)))
 
     // after `clear`, the current tab should have jobs = []
     checkJob(0, false)

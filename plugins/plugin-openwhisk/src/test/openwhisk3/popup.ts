@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { selectors, sidecar, waitTimeout } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { dirname, join } from 'path'
-const { localDescribe } = common
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 /** shorthands for commands */
@@ -40,23 +40,23 @@ interface CreateSpec {
   name: string
   kind: string
 }
-const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
+const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
   const { name, kind } = spec
 
   it(`should wait for creation of resource named ${name}`, async () => {
     const waitForIcon = () => {
       return this.app.client.waitUntil(async () => {
-        const iconText = await this.app.client.getText(`${selectors.SIDECAR} .sidecar-header-icon`)
+        const iconText = await this.app.client.getText(`${Selectors.SIDECAR} .sidecar-header-icon`)
         return new RegExp(kind, 'i').test(iconText)
-      }, waitTimeout)
+      }, CLI.waitTimeout)
     }
 
     try {
       await waitForIcon()
 
-      await sidecar.expectOpen(this.app).then(sidecar.expectShowing(name))
+      await SidecarExpect.open(this.app).then(SidecarExpect.showing(name))
     } catch (err) {
-      return common.oops(this, true)(err)
+      return Common.oops(this, true)(err)
     }
   })
 }
@@ -65,16 +65,16 @@ const waitForCreate = function(this: common.ISuite, spec: CreateSpec) {
 interface DeleteSpec {
   name: string
 }
-const waitForDelete = function(this: common.ISuite, spec: DeleteSpec) {
+const waitForDelete = function(this: Common.ISuite, spec: DeleteSpec) {
   const { name } = spec
 
   it(`should wait for deletion of resource named ${name}`, () => {
     return this.app.client
       .waitUntil(async () => {
-        const okText = await this.app.client.getText(`${selectors.SIDECAR} .ok-line`)
+        const okText = await this.app.client.getText(`${Selectors.SIDECAR} .ok-line`)
         return okText === `ok: deleted action ${name}`
-      }, waitTimeout)
-      .catch(common.oops(this, true))
+      }, CLI.waitTimeout)
+      .catch(Common.oops(this, true))
   })
 }
 
@@ -83,15 +83,15 @@ interface InvokeSpec {
   name: string
   result: object
 }
-const waitForInvoke = function(this: common.ISuite, spec: InvokeSpec) {
+const waitForInvoke = function(this: Common.ISuite, spec: InvokeSpec) {
   const { name } = spec
 
   it(`should wait for invocation of resource named ${name}`, () => {
     return this.app.client
       .waitUntil(async () => {
-        return !!sidecar.expectResult(spec.result, false)
-      }, waitTimeout)
-      .catch(common.oops(this, true))
+        return !!SidecarExpect.result(spec.result, false)
+      }, CLI.waitTimeout)
+      .catch(Common.oops(this, true))
   })
 }
 
@@ -99,7 +99,7 @@ const waitForInvoke = function(this: common.ISuite, spec: InvokeSpec) {
 interface ErrorSpec {
   code: number | string
 }
-const expectError = function(this: common.ISuite, spec: ErrorSpec) {
+const expectError = function(this: Common.ISuite, spec: ErrorSpec) {
   it(`should present an error with code ${spec.code}`, () => {
     return this.app.client
       .waitUntil(async () => {
@@ -110,8 +110,8 @@ const expectError = function(this: common.ISuite, spec: ErrorSpec) {
         } else {
           return true
         }
-      }, waitTimeout)
-      .catch(common.oops(this, true))
+      }, CLI.waitTimeout)
+      .catch(Common.oops(this, true))
   })
 }
 
@@ -119,55 +119,55 @@ const expectError = function(this: common.ISuite, spec: ErrorSpec) {
 // from here on are the tests...
 //
 
-localDescribe('popup openwhisk create action', function(this: common.ISuite) {
+localDescribe('popup openwhisk create action', function(this: Common.ISuite) {
   before(openwhisk.before(this, { popup: createAction(foo, foojs) }))
-  after(common.after(this))
+  after(Common.after(this))
 
   waitForCreate.bind(this)({ name: foo, kind: 'action' })
 })
 
-localDescribe('popup openwhisk create action expecting conflict', function(this: common.ISuite) {
-  before(common.before(this, { popup: createAction(foo, foojs) }))
-  after(common.after(this))
+localDescribe('popup openwhisk create action expecting conflict', function(this: Common.ISuite) {
+  before(Common.before(this, { popup: createAction(foo, foojs) }))
+  after(Common.after(this))
 
   expectError.bind(this)({ code: 409 })
 })
 
-localDescribe('popup openwhisk invoke non-existent action expecting error', function(this: common.ISuite) {
-  before(common.before(this, { popup: invokeAction('nope') }))
-  after(common.after(this))
+localDescribe('popup openwhisk invoke non-existent action expecting error', function(this: Common.ISuite) {
+  before(Common.before(this, { popup: invokeAction('nope') }))
+  after(Common.after(this))
 
   expectError.bind(this)({ code: 404 })
 })
 
-localDescribe('popup openwhisk invoke action no parameters', function(this: common.ISuite) {
-  before(common.before(this, { popup: invokeAction(foo) }))
-  after(common.after(this))
+localDescribe('popup openwhisk invoke action no parameters', function(this: Common.ISuite) {
+  before(Common.before(this, { popup: invokeAction(foo) }))
+  after(Common.after(this))
 
   waitForInvoke.bind(this)({ name: 'Step1 undefined' })
 })
 
-localDescribe('popup openwhisk invoke action with parameters', function(this: common.ISuite) {
+localDescribe('popup openwhisk invoke action with parameters', function(this: Common.ISuite) {
   before(
-    common.before(this, {
+    Common.before(this, {
       popup: invokeAction(foo).concat(['-p', 'name', '314159'])
     })
   )
-  after(common.after(this))
+  after(Common.after(this))
 
   waitForInvoke.bind(this)({ name: 'Step1 314159' })
 })
 
-localDescribe('popup openwhisk delete action', function(this: common.ISuite) {
-  before(common.before(this, { popup: deleteAction(foo) }))
-  after(common.after(this))
+localDescribe('popup openwhisk delete action', function(this: Common.ISuite) {
+  before(Common.before(this, { popup: deleteAction(foo) }))
+  after(Common.after(this))
 
   waitForDelete.bind(this)({ name: foo })
 })
 
-localDescribe('popup openwhisk delete non-existent action', function(this: common.ISuite) {
-  before(common.before(this, { popup: deleteAction(foo) }))
-  after(common.after(this))
+localDescribe('popup openwhisk delete non-existent action', function(this: Common.ISuite) {
+  before(Common.before(this, { popup: deleteAction(foo) }))
+  after(Common.after(this))
 
   expectError.bind(this)({ code: 404 })
 })

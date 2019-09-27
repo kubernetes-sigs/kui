@@ -14,43 +14,41 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname, normalize } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
-localDescribe('Change shell directory via cd', function(this: common.ISuite) {
+localDescribe('Change shell directory via cd', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
-  it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app).then(cli.expectOKWithString('data')))
+  it('should execute cd data', () => CLI.command(`cd ${ROOT}/data`, this.app).then(ReplExpect.okWithString('data')))
 
   it('should create an action in the data directory', () =>
-    cli
-      .do(`wsk action create long openwhisk/long.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('long'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create long openwhisk/long.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('long'))
+      .catch(Common.oops(this)))
 
   it('should execute cd - to change to previous dir', () =>
-    cli.do(`cd -`, this.app).then(cli.expectOKWithString(normalize(process.env.TEST_ROOT))))
+    CLI.command(`cd -`, this.app).then(ReplExpect.okWithString(normalize(process.env.TEST_ROOT))))
 
   // now we should be able to change back to data and re-do the action create
-  it('should execute cd data', () => cli.do(`cd ${ROOT}/data`, this.app).then(cli.expectOKWithString('data')))
+  it('should execute cd data', () => CLI.command(`cd ${ROOT}/data`, this.app).then(ReplExpect.okWithString('data')))
 
   it('should create an action in the data directory', () =>
-    cli
-      .do(`wsk action create long2 openwhisk/long.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('long2'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create long2 openwhisk/long.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('long2'))
+      .catch(Common.oops(this)))
 
   it('should execute cd without arguments', () =>
-    cli.do(`cd`, this.app).then(cli.expectOKWithString(normalize(process.env.HOME))))
+    CLI.command(`cd`, this.app).then(ReplExpect.okWithString(normalize(process.env.HOME))))
 })

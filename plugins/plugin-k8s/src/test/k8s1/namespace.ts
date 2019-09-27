@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()
 const synonyms = ['kubectl']
 
-describe('electron namespace', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('electron namespace', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   synonyms.forEach(kubectl => {
     /** return the editor text */
@@ -47,14 +46,13 @@ describe('electron namespace', function(this: common.ISuite) {
     /** delete the given namespace */
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} delete namespace ${name}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
             if (!errOk) {
-              return common.oops(this)(err)
+              return Common.oops(this)(err)
             }
           })
       })
@@ -63,60 +61,55 @@ describe('electron namespace', function(this: common.ISuite) {
     /** create the given namespace */
     const createIt = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} create namespace ${name}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} create namespace ${name}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
     /** kubectl descsribe namespace <name> */
     const describeIt = (name: string) => {
       it(`should describe that namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} describe namespace ${name}`, this.app)
-          .then(cli.expectJustOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing(name))
-          .then(sidecar.expectMode('result'))
+        return CLI.command(`${kubectl} describe namespace ${name}`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(name))
+          .then(SidecarExpect.mode('result'))
           .then(expectDescribeText(name))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
     /** create a pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return cli
-          .do(
-            `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-            this.app
-          )
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(
+          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+          this.app
+        )
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
 
       it(`should show the sample pod in namespace ${ns} in sidecar via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} get pod nginx -n ${ns} -o yaml`, this.app)
-          .then(cli.expectJustOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
-          .catch(common.oops(this))
+        return CLI.command(`${kubectl} get pod nginx -n ${ns} -o yaml`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+          .catch(Common.oops(this))
       })
     }
 
     const deleteViaButton = (ns: string) => {
       it('should delete the namespace via clicking deletion button in the sidecar', () => {
-        return cli
-          .do(`${kubectl} get ns ${ns} -o yaml`, this.app)
+        return CLI.command(`${kubectl} get ns ${ns} -o yaml`, this.app)
           .then(async res => {
-            await cli.expectJustOK(res)
-            await sidecar.expectOpen(this.app)
+            await ReplExpect.justOK(res)
+            await SidecarExpect.open(this.app)
 
-            const deletionButton = selectors.SIDECAR_MODE_BUTTON('delete')
+            const deletionButton = Selectors.SIDECAR_MODE_BUTTON('delete')
             await this.app.client.waitForExist(deletionButton)
             await this.app.client.click(deletionButton)
 
@@ -124,13 +117,13 @@ describe('electron namespace', function(this: common.ISuite) {
             await this.app.client.click('#confirm-dialog .bx--btn--danger')
 
             // exepct a deletion table
-            const deletionEntitySelector = await cli.expectOKWithCustom({
-              selector: selectors.BY_NAME(ns)
+            const deletionEntitySelector = await ReplExpect.okWithCustom({
+              selector: Selectors.BY_NAME(ns)
             })({ app: this.app, count: res.count + 1 })
 
             return waitForRed(this.app, deletionEntitySelector)
           })
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
