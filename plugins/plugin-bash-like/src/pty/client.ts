@@ -38,7 +38,6 @@ import {
 
 import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
 import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
-import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 
 import * as ui from './ui'
 import * as session from './session'
@@ -978,7 +977,7 @@ export const doExec = (
 
                     const trailingStrings = tables.map(_ => _.trailingString).filter(x => x)
                     if (trailingStrings && trailingStrings.length > 0) {
-                      const trailers = formatAsPty(trailingStrings)
+                      const trailers = UI.PrettyPrinters.ansi(trailingStrings)
                       if (!trailers) {
                         // nothing worth formatting
                         pendingTable = [tableModel]

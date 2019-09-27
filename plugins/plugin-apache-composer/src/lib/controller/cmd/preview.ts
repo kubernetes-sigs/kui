@@ -19,7 +19,6 @@ import { readFile as fsReadFile, stat } from 'fs'
 import { basename } from 'path'
 
 import { Capabilities, Commands, REPL, UI, Util } from '@kui-shell/core'
-import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import * as usage from './preview-usage'
 import { codeViewMode, vizAndfsmViewModes } from '../../utility/decorate'
@@ -112,7 +111,7 @@ export default (commandTree: Commands.Registrar) => {
     options: Commands.ParsedOptions,
     execOptions: Commands.ExecOptions,
     mode: string
-  ) =>
+  ): Promise<Commands.Response> =>
     new Promise((resolve, reject) => {
       debug('options', options)
 
@@ -180,7 +179,7 @@ export default (commandTree: Commands.Registrar) => {
           namespace: undefined
         })
 
-        const modes: UI.Mode[] = vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
+        const modes = vizAndfsmViewModes(visualize, viewName, mode, input, ast, options)
         modes.splice(modes.length, 0, ...coreModes)
         const extraModes = zoomToFitButtons(controller)
 
@@ -226,19 +225,7 @@ export default (commandTree: Commands.Registrar) => {
           entity.type = 'actions'
         }
 
-        if (execOptions.alreadyWatching) {
-          // in filewatch mode (alreadyWatching), command echo is set to false
-          // calling showCustom as the main repl does not do anything for custom type entity when echo is false
-          if (entity.show !== 'visualization') {
-            showEntity(tab, entity, { show: entity.show })
-          } else if (entity.type === 'custom') {
-            showCustom(tab, entity, {})
-          } else {
-            showEntity(tab, entity, { show: 'ast' })
-          }
-        } else {
-          resolve(entity)
-        }
+        resolve(entity)
       } /* formatForUser */
 
       fsmPromise.then(formatForUser(mode)).catch(err => {
@@ -362,12 +349,7 @@ export default (commandTree: Commands.Registrar) => {
               const chokidar = await import('chokidar')
               chokidar.watch(input).on('change', path => {
                 debug('change observed to file', path)
-
-                REPL.pexec(`${cmd} ${path} ${Commands.unparse(options)}`, {
-                  echo: false,
-                  alreadyWatching: true,
-                  noHistory: true
-                })
+                REPL.update(tab, `${cmd} ${path} ${Commands.unparse(options)}`)
               })
             }
           }

@@ -1002,6 +1002,39 @@ export const pexec = (command: string, execOptions?: ExecOptions) => {
 }
 
 /**
+ * Execute a command in response to an in-view click
+ *
+ */
+export const click = async (command: string | (() => Promise<string>), evt: MouseEvent) => {
+  const { drilldown } = await import('../webapp/picture-in-picture')
+  const tab = cli.getTabFromTarget(evt.currentTarget)
+  return drilldown(tab, command)(evt)
+}
+
+/**
+ *
+ *
+ */
+export async function update(tab: cli.Tab, command: string, execOptions?: ExecOptions) {
+  const [resource, { showEntity }] = await Promise.all([
+    pexec(
+      command,
+      Object.assign(
+        {
+          echo: false,
+          alreadyWatching: true,
+          noHistory: true
+        },
+        execOptions
+      )
+    ),
+    import('../webapp/views/sidecar')
+  ])
+
+  await showEntity(tab, resource)
+}
+
+/**
  * Update the executor impl
  *
  */

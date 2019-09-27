@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
-import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
+import { REPL } from '@kui-shell/core'
 
-export const drilldownWith = (
-  tab: UI.Tab,
-  returnTo: string,
-  command: string | (() => Promise<string>),
-  highlightThis?: HTMLElement,
-  callThese = []
-) => event => {
+export const drilldownWith = (command: string | (() => Promise<string>), callThese: (() => void)[] = []) => (
+  event: MouseEvent
+) => {
   // invoke any precursor functions
   callThese.forEach(_ => _())
 
-  const container = sidecarSelector(tab, '.custom-content .activation-viz-plugin')
-  return pictureInPicture(tab, command, highlightThis, container, returnTo)(event)
+  return REPL.click(command, event)
 }

@@ -363,10 +363,10 @@ const _drawGrid = (
     name = group.name
     packageName = pathComponents.length === 4 ? pathComponents[2] : ''
 
-    // const onclick = drilldownWith(tab, viewName, `action get "${group.path}"`)
+    // const onclick = drilldownWith(`action get "${group.path}"`)
     legend = formatLegend(tab, viewName, group, gridGrid)
   } else {
-    // const onclick = options.appName ? drilldownWith(tab, viewName, `app get "${options.appName}"`) : undefined
+    // const onclick = options.appName ? drilldownWith(`app get "${options.appName}"`) : undefined
     const pathComponents = (options.appName || '').toString().split('/')
 
     packageName =
@@ -431,7 +431,7 @@ const _drawGrid = (
       labelInner.appendChild(labelAction)
       labelAction.innerText = actionName
       labelAction.className = 'clickable grid-label-part'
-      labelAction.onclick = drilldownWith(tab, viewName, `grid "${group.path}" ${optionsToString(options)}`)
+      labelAction.onclick = drilldownWith(`grid "${group.path}" ${optionsToString(options)}`)
     }
 
     // render the grid
@@ -630,7 +630,6 @@ const drawGrid = (tab: UI.Tab, options: Options, uuid: string) => (activations: 
     badges: legend && [legend],
     uuid,
     content,
-    controlHeaders: true,
     presentation: UI.Presentation.SidecarFullscreenForPopups,
 
     // add zoom buttons to the mode button model

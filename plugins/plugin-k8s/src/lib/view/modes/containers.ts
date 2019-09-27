@@ -17,16 +17,12 @@
 import * as Debug from 'debug'
 
 import { i18n, REPL, Tables, UI } from '@kui-shell/core'
-import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
 import { Resource, KubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
 
 const strings = i18n('plugin-k8s')
 const debug = Debug('k8s/view/modes/containers')
-
-/** for drilldown back button */
-const viewName = 'Containers'
 
 /**
  * Return a sidecar mode button model that shows a containers table
@@ -76,10 +72,7 @@ const showLogs = (tab: UI.Tab, { pod, container }) => {
   const containerName = REPL.encodeComponent(container.name)
   const ns = REPL.encodeComponent(pod.metadata.namespace)
 
-  // a bit convoluted, so we can delay the call to drilldown
-  return (evt: Event) => {
-    return drilldown(tab, `kubectl logs ${podName} ${containerName} -n ${ns}`, undefined, undefined, viewName)(evt)
-  }
+  return `kubectl logs ${podName} ${containerName} -n ${ns}`
 }
 
 /**
@@ -177,6 +170,7 @@ const bodyModel = (tab: UI.Tab, resource: Resource): Tables.Row[] => {
         type: 'container',
         name: container.name,
         onclick: showLogs(tab, { pod, container }),
+        usePip: true,
         attributes: specAttrs.concat(statusAttrs)
       }
     })

@@ -26,7 +26,7 @@ function rightButtonContainer() {
  * Is the current button designation present in the UI?
  *
  */
-export function tabStripeButtonExists(designation: string) {
+export function buttonExists(designation: string) {
   return rightButtonContainer().querySelector(`.${designation}`) !== null
 }
 
@@ -34,7 +34,7 @@ export function tabStripeButtonExists(designation: string) {
  * Remove the designated button
  *
  */
-export function removeTabStripeIcon(designation: string) {
+export function removeIcon(designation: string) {
   const button = rightButtonContainer().querySelector(`.${designation}`)
   if (button) {
     rightButtonContainer().removeChild(button)
@@ -46,7 +46,7 @@ export function removeTabStripeIcon(designation: string) {
  * tab stripe
  *
  */
-export function addTabStripeIcon(
+export function addIcon(
   image: SVGElement | HTMLImageElement,
   designation: string,
   position: 'prepend' | 'append' = 'prepend'

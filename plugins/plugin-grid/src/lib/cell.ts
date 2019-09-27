@@ -85,7 +85,7 @@ export const renderCell = (
   }
 
   if (activation) {
-    cell.onclick = drilldownWith(tab, returnTo, `wsk activation get ${activation.activationId}`, cell)
+    cell.onclick = drilldownWith(`wsk activation get ${activation.activationId}`)
 
     // tooltip
     const result = activation.response && activation.response.result && activation.response.result

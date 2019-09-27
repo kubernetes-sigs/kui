@@ -23,7 +23,6 @@ import { Capabilities, eventBus as globalEventBus, UI } from '@kui-shell/core'
 import {
   currentSelection,
   getSidecar,
-  ToolbarText,
   addSidecarHeaderIconText,
   addNameToSidecarHeader,
   addVersionBadge
@@ -261,7 +260,7 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
         if (!execOptions.noSidecarHeader) {
           debug('updateHeader', entity)
 
-          const toolbarText: ToolbarText = {
+          const toolbarText: UI.ToolbarText = {
             type: isModified ? 'warning' : 'info',
             text: status
           }

@@ -32,7 +32,9 @@ import * as BadgeRegistrar from '../webapp/views/registrar/badges'
 import _Presentation from '../webapp/views/presentation'
 import * as keys from '../webapp/keys'
 import * as Time from '../webapp/util/time'
+import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 import * as _Editor from '../webapp/views/registrar/editors'
+import * as _TopTabs from '../webapp/views/top-tabs'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -58,6 +60,8 @@ export namespace UI {
 
   export import ToolbarText = Sidecar.ToolbarText
 
+  export import TopTabs = _TopTabs
+
   export namespace Editor {
     export import Provider = _Editor.EditorProvider
     export import registerProvider = _Editor.registerEditor
@@ -71,6 +75,7 @@ export namespace UI {
 
   export namespace PrettyPrinters {
     export import time = Time.prettyPrintTime
+    export const ansi = formatAsPty
   }
 
   export namespace Keys {
