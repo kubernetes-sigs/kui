@@ -232,9 +232,9 @@ type StringProducing = () => Promise<string>
  */
 export const drilldown = (
   tab: Tab,
-  command: string | EntitySpec | StringProducing,
-  highlightThis: Element | Element[],
-  ccontainer: string | Element,
+  command?: string | EntitySpec | StringProducing,
+  highlightThis?: Element | Element[],
+  ccontainer?: string | Element,
   returnTo?: string,
   options?: PipOptions
 ) => (event?: Event) => {

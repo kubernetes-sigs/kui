@@ -57,8 +57,8 @@ export const vizAndfsmViewModes = (
   input: string,
   ast: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   options
-) => {
-  const modes = [
+): UI.Mode[] => {
+  const modes: UI.Mode[] = [
     {
       mode: 'visualization',
       defaultMode: defaultMode === 'visualization',
