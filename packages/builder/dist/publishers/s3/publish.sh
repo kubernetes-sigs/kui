@@ -37,7 +37,7 @@ if [ "$BRANCH" != "master" ]; then
     DATE=`date '+%Y%m%d%H%M%S'`                   # this is the current date
     VERSION="${BASE_VERSION}-${BRANCH}.${DATE}"   # add the branch and date to the base version stamp
     (cd "$TOPDIR/packages/core" && npm version $VERSION)   # smash this into packages/core/package.json
-    (cd "$TOPDIR/packages/core/build" && npm version $VERSION)   # smash this into packages/core/build/package.json
+    (cd "$TOPDIR/node_modules/@kui-shell/settings" && npm version $VERSION)   # smash this into @kui-shell/settings/package.json
     (cd "$TOPDIR/clients/default" && npm version $VERSION)   # smash this into clients/default/package.json
 
     COS_BUCKET=$BRANCH                            # stash the builds in a bucket named by the branch
@@ -46,7 +46,7 @@ else
     # then this is a mainline distribution; do a plain npm verison bump
     # note that the first argument lets the caller choose the type of version bump
     (cd "$TOPDIR"/packages/core && npm version ${1-patch})
-    (cd "$TOPDIR"/packages/core/build && npm version ${1-patch})
+    (cd "$TOPDIR"/node_modules/@kui-shell/settings && npm version ${1-patch})
 
     # for mainline releases, also tag the repo
     VERSION=`cat "$TOPDIR/packages/core/package.json" | jq --raw-output .version`
@@ -110,6 +110,6 @@ fi
 # revert version
 if [ "$BRANCH" != "master" ]; then
     (cd "$TOPDIR"/packages/core && npm version $BASE_VERSION)
-    (cd "$TOPDIR"/packages/core/build && npm version $BASE_VERSION)
+    (cd "$TOPDIR"/node_modules/@kui-shell/settings && npm version $BASE_VERSION)
     (cd "$TOPDIR/clients/default" && npm version $BASE_VERSION)
 fi
