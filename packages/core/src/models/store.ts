@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-interface LocalStorage {
+export interface LocalStorage {
   getItem: (key: string) => string
   setItem: (key: string, value: string) => void
   removeItem: (key: string) => void

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-interface Options {
-  [key: string]: string | boolean | number
-}
+import { ParsedOptionsFull } from '../models/command'
 
 /**
  * Turn an options struct into a cli string
@@ -25,7 +23,7 @@ interface Options {
  * user.
  *
  */
-export const optionsToString = (options: Options) => {
+export const optionsToString = (options: ParsedOptionsFull) => {
   let str = ''
   for (const key in options) {
     // underscore comes from minimist
@@ -54,7 +52,7 @@ export const optionsToString = (options: Options) => {
  * Check for unknown options
  *
  */
-export const hasUnknownOptions = (options: Options, expected: string[]) => {
+export const hasUnknownOptions = (options: ParsedOptionsFull, expected: string[]) => {
   const M = expected.reduce((M, key) => {
     M[key] = true
     return M
@@ -64,22 +62,6 @@ export const hasUnknownOptions = (options: Options, expected: string[]) => {
     if (opt !== '_' && !M[opt]) {
       throw new Error(`Unexpected option ${opt}`)
     }
-  }
-}
-
-/**
- * Error reporting
- *
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const handleError = (err: Error, reject?: (reason: any) => void) => {
-  console.error(err)
-  if (reject) {
-    reject(err)
-  } else if (typeof err === 'string') {
-    throw new Error(err)
-  } else {
-    throw err
   }
 }
 

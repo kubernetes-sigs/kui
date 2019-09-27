@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { REPL } from '@kui-shell/core'
+import { Commands, REPL, UI } from '@kui-shell/core'
 import { optionsToString } from './util'
 
 /**
@@ -25,9 +25,9 @@ import { optionsToString } from './util'
  * user.
  *
  */
-const mode = mode => options => ({
+const mode = (mode: string) => (options: Commands.ParsedOptions): UI.Mode => ({
   mode,
-  direct: entity =>
+  direct: (tab: UI.Tab, entity: { name: string }) =>
     REPL.qexec(
       `${mode} ${optionsToString(options)}${
         entity && entity.name ? ' ' + entity.name : options.name ? ' ' + options.name : ''
@@ -50,7 +50,7 @@ const _modes = [
  * any command line options the user might have passed in.
  *
  */
-export const modes = (defaultMode, options) =>
+export const modes = (defaultMode: string, options) =>
   _modes
     .map(_ => _(options))
     .map(_ => {
