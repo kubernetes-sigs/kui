@@ -29,7 +29,7 @@ import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserF
 
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
 import eventBus from './events'
-import { add as addToHistory } from '../models/history'
+import historyModel from '../models/history'
 import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
 import { UsageError, UsageModel, UsageRow } from './usage-error'
@@ -376,7 +376,7 @@ class InProcessExecutor implements Executor {
       // add a history entry
       if (!execOptions || !execOptions.noHistory) {
         if (!execOptions || !execOptions.quiet) {
-          execOptions.history = addToHistory({
+          execOptions.history = historyModel.add({
             raw: command
           })
         }

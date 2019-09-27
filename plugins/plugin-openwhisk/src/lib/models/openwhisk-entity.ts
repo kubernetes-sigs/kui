@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
+import { Models, UI } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
-import { currentSelection as baseSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 export interface OpenWhiskEntity extends EntitySpec {
   namespace: string
@@ -29,7 +28,7 @@ export interface OpenWhiskEntity extends EntitySpec {
 }
 
 export function currentSelection(tab: UI.Tab) {
-  return baseSelection(tab) as OpenWhiskEntity
+  return Models.Selection.current(tab) as OpenWhiskEntity
 }
 
 export interface ActivationResponse {
@@ -38,17 +37,17 @@ export interface ActivationResponse {
 }
 
 export interface Activation {
-  entity?: EntitySpec
+  entity?: OpenWhiskEntity
   activationId: string
   response: ActivationResponse
 }
 
-export function isActivationSpec(response: Activation | EntitySpec): response is Activation {
+export function isActivationSpec(response: Activation | OpenWhiskEntity): response is Activation {
   const activation = response as Activation
   return activation.response !== undefined && activation.activationId !== undefined
 }
 
-export function isAsyncActivationSpec(response: Activation | EntitySpec): response is Activation {
+export function isAsyncActivationSpec(response: Activation | OpenWhiskEntity): response is Activation {
   const activation = response as Activation
   return activation.response === undefined && activation.activationId !== undefined
 }

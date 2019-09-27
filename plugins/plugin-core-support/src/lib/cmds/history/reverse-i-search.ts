@@ -18,8 +18,7 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, eventBus, Settings, UI } from '@kui-shell/core'
-import * as historyModel from '@kui-shell/core/models/history'
+import { Capabilities, eventBus, Models, Settings, UI } from '@kui-shell/core'
 import {
   getTabFromTarget,
   getBlockOfPrompt,
@@ -152,7 +151,7 @@ class ActiveISearch {
     const userHitCtrlR = evt.ctrlKey && evt.code === 'KeyR'
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
 
-    const newSearchIdx = this.prompt.value && historyModel.findIndex(this.prompt.value, startIdx)
+    const newSearchIdx = this.prompt.value && Models.History.findIndex(this.prompt.value, startIdx)
     debug('search index', this.prompt.value, newSearchIdx)
 
     if (newSearchIdx > 0) {
@@ -162,7 +161,7 @@ class ActiveISearch {
         .replace(/\$1/, '') // ` ${newSearchIdx}`
         .replace(/\$2/, this.prompt.value)
 
-      const newValue = historyModel.lines[this.currentSearchIdx].raw
+      const newValue = Models.History.line(this.currentSearchIdx).raw
       debug('newValue', newValue)
       const caretPosition = newValue.indexOf(this.prompt.value) + 1
       debug('caretPosition', caretPosition)

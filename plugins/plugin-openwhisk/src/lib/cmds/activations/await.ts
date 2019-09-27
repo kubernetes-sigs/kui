@@ -26,8 +26,7 @@ const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10) || 1000
 import * as Debug from 'debug'
 const debug = Debug('openwhisk.await')
 
-import { REPL } from '@kui-shell/core'
-import * as historyModel from '@kui-shell/core/models/history'
+import { Models, REPL } from '@kui-shell/core'
 
 /** was the given activation handled by the conductor */
 const uuidPattern = /^[0-9a-f]{32}$/
@@ -125,7 +124,7 @@ const findActivationId = (options, activationId?: string) =>
           .catch(reject)
       } else {
         // otherwise, use our local history to find the last activation id
-        const lastActivationCommand = historyModel.find(
+        const lastActivationCommand = Models.History.find(
           entry => entry.entityType === 'actions' && (entry.verb === 'invoke' || entry.verb === 'async')
         )
         debug('lastActivationCommand', lastActivationCommand)

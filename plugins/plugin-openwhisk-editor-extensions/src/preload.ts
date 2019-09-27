@@ -33,12 +33,12 @@ export default async () => {
   debug('initializing')
 
   if (!Capabilities.isHeadless()) {
-    const { currentSelection } = await import('@kui-shell/core/webapp/views/sidecar')
+    const { Models } = await import('@kui-shell/core')
 
     const { persisters } = await import('./lib/cmds/new')
 
     const getEntity = (tab: UI.Tab) => {
-      const entity = currentSelection(tab)
+      const entity = Models.Selection.current(tab)
       entity['persister'] = persisters.actions
       debug('getEntity', entity)
       return entity
