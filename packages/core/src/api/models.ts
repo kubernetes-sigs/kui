@@ -23,8 +23,16 @@
  */
 
 import * as _Entity from '../models/entity'
+import { History as _History } from '../models/history'
+import { currentSelection } from '../webapp/views/sidecar'
 
 export namespace Models {
   export import ResourceWithMetadata = _Entity.MetadataBearing
   export import isResourceByReference = _Entity.isMetadataBearingByReference
+
+  export namespace Selection {
+    export const current = currentSelection
+  }
+
+  export const History = _History
 }

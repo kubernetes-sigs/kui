@@ -19,7 +19,7 @@ import { existsSync, readFileSync } from 'fs'
 import { type as osType } from 'os'
 
 import { oopsMessage } from '@kui-shell/core/core/oops'
-import { Capabilities, Commands, Errors, eventBus, Settings, REPL, UI, Util } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, Models, Settings, REPL, UI, Util } from '@kui-shell/core'
 
 import withHeader from '../models/withHeader'
 import { isCRUDable, crudableTypes } from '../models/crudable'
@@ -28,7 +28,6 @@ import { actionSpecificModes, addActionMode, activationModes, addActivationModes
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig, initOW } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
 
-import * as historyModel from '@kui-shell/core/models/history'
 import * as namespace from '../models/namespace'
 
 const debug = Debug('plugins/openwhisk/cmds/core-commands')
@@ -1222,17 +1221,17 @@ const executor = (commandTree: Commands.Registrar, _entity, _verb, verbSynonym?)
 
     // amend the history entry with the details
     if (execOptions && execOptions.history) {
-      historyModel.update(execOptions.history, entry => {
-        entry.entityType = entity
-        entry.verb = verb
-        entry.name = options.name
-        entry.options = Object.assign({}, options)
+      Models.History.update(execOptions.history, entry => {
+        entry['entityType'] = entity
+        entry['verb'] = verb
+        entry['name'] = options.name
+        entry['options'] = Object.assign({}, options)
 
         if (options.action && options.action.exec) {
           // don't store the code in history!
-          entry.options.action = Object.assign({}, options.action)
-          entry.options.action.exec = Object.assign({}, options.action.exec)
-          delete entry.options.action.exec.code
+          entry['options'].action = Object.assign({}, options.action)
+          entry['options'].action.exec = Object.assign({}, options.action.exec)
+          delete entry['options'].action.exec.code
         }
       })
     }
@@ -1252,7 +1251,7 @@ const executor = (commandTree: Commands.Registrar, _entity, _verb, verbSynonym?)
         .then(response => {
           // amend the history entry with a selected subset of the response
           if (execOptions && execOptions.history) {
-            historyModel.update(execOptions.history, entry => {
+            Models.History.update(execOptions.history, entry => {
               entry.response = { activationId: response.activationId }
               return entry.response
             })

@@ -26,8 +26,7 @@
 
 import * as minimist from 'yargs-parser'
 
-import { Commands, REPL, Tables } from '@kui-shell/core'
-import { currentSelection } from '@kui-shell/core/webapp/views/sidecar'
+import { Commands, Models, REPL, Tables } from '@kui-shell/core'
 
 import { synonyms } from '../models/synonyms'
 
@@ -175,7 +174,7 @@ export default async (commandTree: Commands.Registrar) => {
       // if no entity specified on the command line, check to
       // see if there is a selection; if so, use that entity
       //
-      const selection = currentSelection(tab)
+      const selection = Models.Selection.current(tab)
       if (selection && selection.type !== 'activations') {
         toBeDeletedList.push(`/${selection.namespace}/${selection.name}`)
         type = selection.type

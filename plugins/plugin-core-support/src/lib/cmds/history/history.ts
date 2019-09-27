@@ -22,8 +22,7 @@
 
 import * as Debug from 'debug' // the default number of history elements to show with /history
 
-import * as historyModel from '@kui-shell/core/models/history'
-import { Commands, REPL, Tables } from '@kui-shell/core'
+import { Commands, Models, REPL, Tables } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/history')
 
@@ -76,14 +75,14 @@ const usage = {
 const again = (N: number, historyEntry) => {
   debug('again', N, historyEntry)
 
-  if (!historyModel.lines[N]) {
+  if (!Models.History.line(N)) {
     throw new Error('Could not find the command to re-execute')
   } else {
     // console.log('history::again', N, lines[N])
-    historyModel.update(historyEntry, entry => {
-      entry.raw = historyModel.lines[N].raw
+    Models.History.update(historyEntry, entry => {
+      entry.raw = Models.History.line(N).raw
     })
-    return REPL.qexec(historyModel.lines[N].raw)
+    return REPL.qexec(Models.History.line(N).raw)
   }
 }
 
@@ -99,7 +98,7 @@ const again = (N: number, historyEntry) => {
 const showHistory = ({ argv, parsedOptions: options }) => {
   if (options.c) {
     debug('clearing command history')
-    return historyModel.wipe()
+    return Models.History.wipe()
   }
 
   const historyIdx = argv.indexOf('history')
@@ -113,9 +112,9 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const filterStr = filterIdx > 0 && argv[filterIdx]
   const filter = filterStr ? line => line.raw.indexOf(filterStr) >= 0 : () => true
 
-  const startIdx = Math.max(0, historyModel.getCursor() - N - 1)
-  const endIdx = historyModel.getCursor() - 1
-  const recent = historyModel.lines.slice(startIdx, endIdx)
+  const startIdx = Math.max(0, Models.History.cursor - N - 1)
+  const endIdx = Models.History.cursor - 1
+  const recent = Models.History.slice(startIdx, endIdx)
 
   debug('argv', argv)
   debug('Nargs', Nargs)
@@ -173,11 +172,11 @@ export default (commandTree: Commands.Registrar) => {
   })
 
   /** clear view or clear history */
-  // commandTree.listen('/history/purge', historyModel.wipe, { docs: 'Clear your command history' })
+  // commandTree.listen('/history/purge', Models.History.wipe, { docs: 'Clear your command history' })
 
   /** re-execute from history */
   const againCmd = () => ({ argv, execOptions }) => {
-    const N = argv[1] || historyModel.getCursor() - 2 // use the last command, if the user entered only "!!"
+    const N = argv[1] || Models.History.cursor - 2 // use the last command, if the user entered only "!!"
     console.error(execOptions)
     return again(N, execOptions && execOptions.history)
   }

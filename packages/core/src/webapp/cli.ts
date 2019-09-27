@@ -38,7 +38,7 @@ import {
 } from '../models/entity'
 import { CommandHandlerWithEvents } from '../models/command'
 import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
-import * as historyModel from '../models/history'
+import historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
 import { Table, isTable, MultiTable, isMultiTable } from './models/table'
 import { isWatchable } from './models/basicModels'
