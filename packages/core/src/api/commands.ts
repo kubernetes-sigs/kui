@@ -27,6 +27,7 @@ import * as _Commands from '../models/command'
 import * as Plugins from '../models/plugin'
 import * as Entity from '../models/entity'
 import * as Sidecar from '../webapp/views/sidecar'
+import { optionsToString } from '@kui-shell/core/core/utility'
 
 export namespace Commands {
   export import Arguments = _Commands.EvaluatorArgs
@@ -50,4 +51,12 @@ export namespace Commands {
 
   export import PluginRegistration = Plugins.PluginRegistration
   export import PreloadRegistration = Plugins.PreloadRegistration
+
+  /**
+   * Turns a ParsedOptions into a dash-options string.
+   *
+   * @param options a ParsedOptions instance
+   * @returns the corresponding "--optKey optValue ..." string
+   */
+  export const unparse = optionsToString
 }

@@ -18,7 +18,6 @@
 
 export { language, extension } from './lib/file-types'
 export { lockIcon, edit } from './lib/readonly'
-export { edit as editCmd } from './lib/cmds/edit'
 export { Entity as EditorEntity, fetchFile, registerFetcher } from './lib/fetchers'
 export { openEditor } from './lib/open'
 export { respondToRepl } from './lib/util'

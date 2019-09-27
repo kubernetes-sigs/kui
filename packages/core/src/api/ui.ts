@@ -32,6 +32,7 @@ import * as BadgeRegistrar from '../webapp/views/registrar/badges'
 import _Presentation from '../webapp/views/presentation'
 import * as keys from '../webapp/keys'
 import * as Time from '../webapp/util/time'
+import * as _Editor from '../webapp/views/registrar/editors'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -54,6 +55,13 @@ export namespace UI {
   export import BadgeSpec = Sidecar.BadgeSpec
   export import BadgeRegistration = BadgeRegistrar.BadgeRegistration
   export import registerBadge = BadgeRegistrar.registerSidecarBadge
+
+  export import ToolbarText = Sidecar.ToolbarText
+
+  export namespace Editor {
+    export import Provider = _Editor.EditorProvider
+    export import registerProvider = _Editor.registerEditor
+  }
 
   export import Presentation = _Presentation
   export import isPopup = CLI.isPopup

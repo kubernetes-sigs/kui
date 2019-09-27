@@ -16,7 +16,6 @@
 
 import * as Debug from 'debug'
 
-import { showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { REPL, UI } from '@kui-shell/core'
 
 const debug = Debug('plugins/editor/readonly')
@@ -40,7 +39,7 @@ export const edit = ({ getEntity, lock = undefined }) => async (tab: UI.Tab) => 
 
   return REPL.qexec(`edit "/${namespace}/${name}"`, undefined, undefined, {
     custom: { getEntity, lock }
-  }).then(entity => showCustom(tab, entity, {}))
+  })
 }
 
 /**
