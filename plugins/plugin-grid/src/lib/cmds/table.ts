@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017, 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import * as events from 'events'
+import { EventEmitter } from 'events'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Commands, UI } from '@kui-shell/core'
-import windowDefaults from '@kui-shell/core/webapp/defaults'
-import { addNameToSidecarHeader, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { Commands, UI, REPL } from '@kui-shell/core'
 
+import Activation from '../activation'
 import { drilldownWith } from '../drilldown'
 import { sort, versionSorter, statDataSorter } from '../sorting'
-import { groupByAction } from '../grouping'
+import { GroupData, OutlierReason, groupByAction } from '../grouping'
 import { modes } from '../modes'
 import { summary as usage } from '../../usage'
 import {
-  Header,
   leftArrowHead,
   rightArrowHead,
   enDash,
   emDash,
   optionsToString,
   titleWhenNothingSelected,
-  displayTimeRange,
+  formatTimeRange,
   visualize
 } from '../util'
 
@@ -44,15 +42,22 @@ const defaultTop = 75 // default range to show in summary
 const viewName = 'Summary'
 
 interface State {
-  eventBus: events.EventEmitter
+  eventBus: EventEmitter
   showOutliers: boolean
+}
+
+interface Range {
+  bottom: number | string
+  top: number | string
+  label: string
+  text?: string
 }
 
 /**
  * Mode switchers
  *
  */
-const choices = [
+const choices: Range[] = [
   { bottom: 25, top: 75, label: '25-75%' },
   // { bottom: 25, top: 90 },
   { bottom: 25, top: 95, label: '25-95%' },
@@ -64,11 +69,13 @@ const choices = [
     text: 'mininum to maximum'
   }
 ]
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const choicesArray: any[] = choices.map((choice, idx) => {
+
+const choicesArray: UI.Mode[] = choices.map((choice, idx) => {
   const { bottom, top, label, text } = choice
+  const mode = label || `${bottom}-${top}`
   return {
-    label: label || `${bottom}-${top}`,
+    mode,
+    label: mode,
     flush: 'right',
     // labelBelow: true,
     balloon: `Show the ${text || bottom + 'th to the ' + top + 'th percentile of'} latency`,
@@ -79,7 +86,7 @@ const choicesArray: any[] = choices.map((choice, idx) => {
     }
   }
 })
-const tableModes = choicesArray.concat([
+const tableModes: UI.Mode[] = choicesArray.concat([
   // this is the bottom stripe button that toggles whether outliers are shown
   // note how we specify that this is a radio button, i.e. a toggler
   {
@@ -102,17 +109,12 @@ const tableModes = choicesArray.concat([
  * Render the given fractional value as a CSS percent
  *
  */
-const percent = fraction => `${100 * fraction}%`
+const percent = (fraction: number) => `${100 * fraction}%`
 
-/**
- * Drill down to the grid for for a given list of activations
- *
- */
-const showGridForActivationList = (tab: UI.Tab, activations) =>
-  drilldownWith(tab, viewName, () => {
-    require('./grid')(undefined, undefined, { activations, tab })
-    return Promise.resolve('ok')
-  })
+interface Options extends Commands.ParsedOptionsFull {
+  ticks?: number
+  outliers?: boolean
+}
 
 /**
  * Helper method for drawTable. This was split out, to allow for
@@ -121,27 +123,29 @@ const showGridForActivationList = (tab: UI.Tab, activations) =>
  */
 const _drawTable = (
   tab: UI.Tab,
-  options,
-  header: Header,
+  options: Options,
   content: Element,
-  groupData,
-  eventBus,
+  groupData: GroupData,
+  eventBus: EventEmitter,
   uuid: string,
   sorter = statDataSorter(defaultTop),
   sortDir = +1
-) => {
+): Commands.Response => {
   const { groups } = groupData
   const tableHeader = document.createElement('table')
   const tableScrollContainer = document.createElement('div')
   const table = document.createElement('table')
-  const { ticks: numTicks = 4 } = options // number of ticks on the x axis of the bar chart
+
+  // number of ticks on the x axis of the bar chart
+  const { ticks = 4 } = options
+  const numTicks = ticks
 
   // clean the container
   UI.empty(content)
 
   // x axis
   const headerRow = tableHeader.insertRow(-1)
-  const xAxisLabels = []
+  const xAxisLabels: HTMLElement[] = []
   const xAxisLeftPad = headerRow.insertCell(-1)
   tableHeader.classList.add('table-header')
   xAxisLeftPad.className = 'x-axis-left-pad cell-numeric'
@@ -184,11 +188,23 @@ const _drawTable = (
   xAxisFocusLabelRange.style.width = '0'
 
   /** Render a selected range on the x axis */
-  const xAxisResetFocus = barWrapper => () => {
+  const xAxisResetFocus = (barWrapper: HTMLElement) => () => {
     content.classList.remove('x-axis-focus')
     barWrapper.classList.remove('focus')
   }
-  const xAxisToggleFocus = ({ barWrapper, this25, this75, left, right }) => {
+  const xAxisToggleFocus = ({
+    barWrapper,
+    this25,
+    this75,
+    left,
+    right
+  }: {
+    barWrapper: HTMLElement
+    this25: number
+    this75: number
+    left: number
+    right: number
+  }) => {
     const inFocus = content.classList.toggle('x-axis-focus')
     barWrapper.classList.toggle('focus')
 
@@ -255,12 +271,19 @@ const _drawTable = (
 
   // header title
   const onclick = options.name ? drilldownWith(tab, viewName, `app get "${options.name}"`) : undefined
-  addNameToSidecarHeader(getSidecar(tab), options.name || titleWhenNothingSelected, undefined, onclick)
+  const name = options.name || titleWhenNothingSelected
+  // addNameToSidecarHeader(getSidecar(tab), options.name || titleWhenNothingSelected, undefined, onclick)
 
   // cache rows for redraw
-  const rowMap = {}
+  const rowMap: Record<string, HTMLTableRowElement> = {}
 
-  const draw = ({ bottom: stat25, top: stat75, redraw = false, showOutliers = false }) => {
+  interface DrawArgs {
+    bottom: string | number
+    top: string | number
+    redraw?: boolean
+    showOutliers?: boolean
+  }
+  const draw = ({ bottom: stat25, top: stat75, redraw = false, showOutliers = false }: DrawArgs) => {
     const { min25, max75, maxBarRange, max2BarRange, maxRange } = groups.reduce(
       (MM, group) => {
         const thisLeft = group.statData.n[stat25]
@@ -284,7 +307,7 @@ const _drawTable = (
     )
 
     // turn a value into a x axis coordinate
-    const normalize = value => (value - min25) / (max75 - min25)
+    const normalize = (value: number) => (value - min25) / (max75 - min25)
 
     // draw the x axis labels
     const labelMin = min25
@@ -294,8 +317,8 @@ const _drawTable = (
     }
 
     // for each group of activations, render a table row
-    let lastTimeWeRenderedARangeIndicator // render the range indicator every once and a while
-    let lastTimeWeRenderedAMedianIndicator // render the median indicator every once and a while
+    let lastTimeWeRenderedARangeIndicator: number // render the range indicator every once and a while
+    let lastTimeWeRenderedAMedianIndicator: number // render the median indicator every once and a while
 
     groups.forEach((group, idx) => {
       // for redraw, we need to walk through the columns...
@@ -334,7 +357,7 @@ const _drawTable = (
 
         label.className = 'cell-label'
         labelAction.className = 'clickable'
-        label.onclick = drilldownWith(tab, viewName, `action get ${group.path}`)
+        label.onclick = drilldownWith(tab, viewName, `wsk action get ${group.path}`)
 
         if (nameWithoutNamespace.length > 20) {
           label.setAttribute('data-balloon', nameWithoutNamespace) // line break
@@ -352,9 +375,9 @@ const _drawTable = (
       // render bar chart cell
       {
         const cell = redraw ? row.cells[columnIdx++] : row.insertCell(-1)
-        const barWrapper = redraw ? cell.querySelector('.stat-bar-wrapper') : document.createElement('div')
-        const bar = redraw ? cell.querySelector('.stat-bar') : document.createElement('div')
-        const medianDot = redraw ? cell.querySelector('.stat-median-dot') : document.createElement('div')
+        const barWrapper: HTMLElement = redraw ? cell.querySelector('.stat-bar-wrapper') : document.createElement('div')
+        const bar: HTMLElement = redraw ? cell.querySelector('.stat-bar') : document.createElement('div')
+        const medianDot: HTMLElement = redraw ? cell.querySelector('.stat-median-dot') : document.createElement('div')
 
         if (!redraw) {
           cell.appendChild(barWrapper)
@@ -377,8 +400,8 @@ const _drawTable = (
         const medianLeft = normalize(thisMedian)
 
         // 25th versus min
-        const th = stat => `${stat}${typeof stat === 'number' ? 'th' : ''}`
-        const th2 = stat => `${stat}${typeof stat === 'number' ? 'th percentile' : ''}`
+        const th = (stat: number | string) => `${stat}${typeof stat === 'number' ? 'th' : ''}`
+        const th2 = (stat: number | string) => `${stat}${typeof stat === 'number' ? 'th percentile' : ''}`
 
         bar.style.left = percent(left)
         bar.style.width = percent(right - left)
@@ -386,7 +409,7 @@ const _drawTable = (
         // fancy focus, to show the extent of the bar on the x axis!
         const resetFocus = xAxisResetFocus(barWrapper)
         const doFocus = () => xAxisToggleFocus({ barWrapper, this25, this75, left, right })
-        const focus = dom => {
+        const focus = (dom: HTMLElement) => {
           dom.onmouseenter = doFocus
           dom.onmouseleave = doFocus
         }
@@ -396,7 +419,7 @@ const _drawTable = (
         cell.onclick = drilldownWith(
           tab,
           viewName,
-          `grid "${group.path}" ${optionsToString(options)} ${splitOptions}`,
+          `grid ${REPL.encodeComponent(group.path)} ${optionsToString(options)} ${splitOptions}`,
           undefined,
           [resetFocus]
         )
@@ -420,7 +443,7 @@ const _drawTable = (
           const veryFarLeft = left < 0.05
 
           const thFor75 = kindaNarrow ? th : th2 // no space for "percentile"
-          const rightPad = stat => (typeof stat === 'number' && !kindaNarrow ? '10.5em' : '3.5em') // extra room for "th percentile"
+          const rightPad = (stat: number | string) => (typeof stat === 'number' && !kindaNarrow ? '10.5em' : '3.5em') // extra room for "th percentile"
 
           const indicator25 = document.createElement('div')
           const indicator75 = document.createElement('div')
@@ -505,7 +528,7 @@ const _drawTable = (
           if (!redraw) {
             outlier.dom = dot
             dot.className = 'outlier-dot cell-show-only-when-outliers-shown'
-            dot.onclick = drilldownWith(tab, viewName, `activation get ${activation.activationId}`)
+            dot.onclick = drilldownWith(tab, viewName, `wsk activation get ${activation.activationId}`)
             barWrapper.appendChild(dot)
 
             const tooltip = `${prettyPrintDuration(duration)} (versus median ${prettyPrintDuration(thisMedian)})`
@@ -518,8 +541,8 @@ const _drawTable = (
             // try to explain why it's slow
             if (reasons.length > 0) {
               const { why } = reasons[0]
-              const render = reasons => {
-                reasons.sort((a, b) => a - b)
+              const render = (reasons: OutlierReason[]) => {
+                reasons.sort((a, b) => a.cover - b.cover)
                 const { why } = reasons[0]
                 return `due to increased ${why.toLowerCase()}`
               }
@@ -545,7 +568,7 @@ const _drawTable = (
         const cell = row.insertCell(-1)
         const countPart = document.createElement('span')
         cell.className = 'cell-count cell-numeric cell-successes cell-hide-when-outliers-shown'
-        cell.setAttribute('data-successes', group.count)
+        cell.setAttribute('data-successes', group.count.toString())
         if (group.nSuccesses === 0) {
           cell.classList.add('count-is-zero')
           cell.classList.remove('clickable')
@@ -559,7 +582,7 @@ const _drawTable = (
           )
         }
         cell.appendChild(countPart)
-        countPart.innerText = group.nSuccesses
+        countPart.innerText = group.nSuccesses.toString()
         // countPart.setAttribute('data-balloon', `Successful Activations: ${group.nSuccesses}`)
         // countPart.setAttribute('data-balloon-pos', 'left')
       }
@@ -568,7 +591,7 @@ const _drawTable = (
       if (!redraw) {
         const cell = row.insertCell(-1)
         cell.className = 'cell-failures cell-numeric red-text cell-hide-when-outliers-shown'
-        cell.setAttribute('data-failures', group.nFailures)
+        cell.setAttribute('data-failures', group.nFailures.toString())
 
         const errorPart = document.createElement('span')
         // errorPartIcon = document.createElement('span')
@@ -580,7 +603,7 @@ const _drawTable = (
         // errorPartIcon.className = 'count-icon'
         cell.appendChild(errorPart)
         // cell.appendChild(errorPartIcon)
-        errorPart.innerText = group.nFailures || emDash // show emDash when the value is zero
+        errorPart.innerText = group.nFailures ? group.nFailures.toString() : emDash // show emDash when the value is zero
         // errorPartIcon.innerText = '\u26a0'
         errorPart.className = 'cell-errors'
 
@@ -603,16 +626,16 @@ const _drawTable = (
         const countPart = document.createElement('span')
         const nOutliers = outliers.length
         cell.className = 'cell-count cell-numeric cell-successes cell-show-only-when-outliers-shown clickable'
-        cell.setAttribute('data-outliers', nOutliers)
+        cell.setAttribute('data-outliers', nOutliers.toString())
         if (nOutliers === 0) {
           cell.classList.add('count-is-zero')
           cell.classList.remove('clickable')
         }
         cell.appendChild(countPart)
-        countPart.innerText = nOutliers
+        countPart.innerText = nOutliers.toString()
         countPart.setAttribute('data-balloon', `Number of Outliers: ${nOutliers}`)
         countPart.setAttribute('data-balloon-pos', 'left')
-        cell.onclick = showGridForActivationList(tab, outliers.map(_ => _.activation))
+        // cell.onclick = showGridForActivationList(tab, outliers.map(_ => _.activation))
       }
 
       /* addNumericCell('count')
@@ -639,9 +662,17 @@ const _drawTable = (
     content.classList.toggle('show-outliers')
   }
 
+  const toolbarText = formatTimeRange(groupData)
+
   const state = {
-    currentRange: choices[0],
     type: 'custom',
+    kind: viewName,
+    metadata: {
+      name
+    },
+    onclick,
+    toolbarText,
+    currentRange: choices[0],
     uuid,
     content,
     controlHeaders: true,
@@ -650,15 +681,17 @@ const _drawTable = (
     modes: modes(viewName.toLowerCase(), options).concat(tableModes)
   }
 
-  eventBus.on('/summary/range/change', range => {
+  eventBus.on('/summary/range/change', (range: Range) => {
     state.currentRange = range
-    draw(Object.assign({}, range, { redraw: true }))
+    const args: DrawArgs = Object.assign({}, range, { redraw: true })
+    draw(args)
   })
 
   // user requested that we toggle the display of outliers
-  eventBus.on('/summary/range/outliers/toggle', ({ showOutliers }) => {
+  eventBus.on('/summary/range/outliers/toggle', ({ showOutliers }: { showOutliers: boolean }) => {
     content.classList.toggle('show-outliers')
-    draw(Object.assign({}, state.currentRange, { redraw: true, showOutliers }))
+    const args: DrawArgs = Object.assign({}, state.currentRange, { redraw: true, showOutliers })
+    draw(args)
   })
 
   return state
@@ -668,8 +701,8 @@ const _drawTable = (
  * Visualize the activation data
  *
  */
-const drawTable = (tab: UI.Tab, options, header: Header, uuid: string) => activations => {
-  const eventBus = new events.EventEmitter()
+const drawTable = (tab: UI.Tab, options: Options, uuid: string) => (activations: Activation[]): Commands.Response => {
+  const eventBus = new EventEmitter()
   const content = document.createElement('div')
   content.className = 'activation-viz-plugin'
 
@@ -683,12 +716,10 @@ const drawTable = (tab: UI.Tab, options, header: Header, uuid: string) => activa
 
   // add time range to the sidecar header
   const groupData = groupByAction(activations, Object.assign({ groupBySuccess: true }, options))
-  displayTimeRange(groupData, header.leftHeader)
 
   return _drawTable(
     tab,
     options,
-    header,
     content,
     groupData,
     eventBus,
@@ -702,21 +733,13 @@ const drawTable = (tab: UI.Tab, options, header: Header, uuid: string) => activa
  *
  */
 export default async (commandTree: Commands.Registrar) => {
-  const tableIt = cmd =>
-    visualize(
-      cmd,
-      'summary',
-      drawTable,
-      '\t-w|--w     wider action name column\n\t--ww       even wider action name column'
-    )
+  const tableIt = (cmd: string) => visualize(cmd, 'summary', drawTable)
 
   const opts = {
     usage,
     needsUI: true,
     viewName,
-    noAuthOk: true, // the underlying data queries will ensure whatever auth they need
-    width: windowDefaults.width,
-    height: windowDefaults.height
+    noAuthOk: true // the underlying data queries will ensure whatever auth they need
   }
 
   commandTree.listen(`/wsk/table`, tableIt('table'), opts)

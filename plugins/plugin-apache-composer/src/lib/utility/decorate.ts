@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { UI } from '@kui-shell/core'
-import { optionsToString } from '@kui-shell/core/core/utility'
+import { Commands, UI } from '@kui-shell/core'
 
 import { hasAst, astAnnotation } from './ast'
 import { app as appBadge } from './badges'
@@ -63,7 +62,7 @@ export const vizAndfsmViewModes = (
     {
       mode: 'visualization',
       defaultMode: defaultMode === 'visualization',
-      direct: `${commandPrefix} "${input}" ${optionsToString(options)}`
+      direct: `${commandPrefix} "${input}" ${Commands.unparse(options)}`
     },
     {
       mode: 'ast',

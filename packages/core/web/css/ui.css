@@ -2750,6 +2750,9 @@ badge {
   background-color: var(--color-tag-beta-fill);
   color: var(--color-tag-beta-text);
 }
+badge.badge-as-image {
+  background-color: transparent;
+}
 badge.badge-as-image img {
   width: 5em;
   height: auto;

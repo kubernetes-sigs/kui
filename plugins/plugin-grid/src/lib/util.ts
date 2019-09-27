@@ -20,10 +20,10 @@ import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Capabilities, Commands, Errors, eventBus, REPL, UI, Util } from '@kui-shell/core'
-import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import { ActivationListTable, currentNamespace } from '@kui-shell/plugin-openwhisk'
 
+import Activation from './activation'
 import { range as rangeParser } from './time'
 import * as usage from '../usage'
 import defaults from '../defaults'
@@ -47,13 +47,16 @@ export const isUUIDPattern = /.*[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][
 export const titleWhenNothingSelected = 'Recent Activity'
 
 /** return the path attribute of the given activation */
-export const pathOf = activation => `/${activation.annotations.find(({ key }) => key === 'path').value}`
+export const pathOf = (activation: Activation) => `/${activation.annotations.find(({ key }) => key === 'path').value}`
 
 /** make a filter by name */
-const acceptAnything = x => x
-const allBut = excludePattern => (!excludePattern ? acceptAnything : name => name.indexOf(excludePattern) < 0)
-const accept = (includePattern, excluder) => name => name.indexOf(includePattern) >= 0 && excluder(name)
-const makeFilter = (includePattern, excludePattern) => {
+type Filter = (name: string) => boolean
+const acceptAnything = () => true
+const allBut = (excludePattern: string) =>
+  !excludePattern ? acceptAnything : (name: string) => name.indexOf(excludePattern) < 0
+const accept = (includePattern: string, excluder: Filter) => (name: string) =>
+  name.indexOf(includePattern) >= 0 && excluder(name)
+const makeFilter = (includePattern: string, excludePattern: string) => {
   if (!includePattern && !excludePattern) {
     return acceptAnything
   } else if (!includePattern) {
@@ -68,7 +71,7 @@ const makeFilter = (includePattern, excludePattern) => {
  * ns/foo => ns/foo
  *
  */
-const amendWithNamespace = async name => {
+const amendWithNamespace = async (name: string) => {
   const ns = await currentNamespace()
   if (name.indexOf(ns) >= 0) {
     if (name.charAt(0) === '/') return name.substring(1)
@@ -83,7 +86,7 @@ const amendWithNamespace = async name => {
  * attribute. Also, take an optional name filter.
  *
  */
-const filterOutNonActionActivations = filter => activations => {
+const filterOutNonActionActivations = (filter: Filter) => (activations: Activation[]) => {
   return activations.filter(_ => _.end && filter(pathOf(_)))
 }
 
@@ -104,7 +107,7 @@ const extractTasks = async app => {
  * If requested, filter by latency bucket
  *
  */
-const filterByLatencyBucket = options => activations => {
+const filterByLatencyBucket = options => (activations: Activation[]) => {
   const { 'latency-bucket': latencyBucket } = options
   if (latencyBucket === undefined) {
     return activations
@@ -119,14 +122,16 @@ const filterByLatencyBucket = options => activations => {
  * @see https://github.com/apache/incubator-openwhisk/blob/master/common/scala/src/main/scala/whisk/core/entity/ActivationResult.scala#L58
  *
  */
-export const isSuccess = activation => activation.statusCode === 0
-export const isNotSuccess = activation => activation.statusCode !== 0
+export const isSuccess = (activation: Activation) => activation.statusCode === 0
+export const isNotSuccess = (activation: Activation) => activation.statusCode !== 0
 
 /**
  * If requested, filter by success or failure
  *
  */
-const filterBySuccess = ({ success, failure }) => activations => {
+const filterBySuccess = ({ success, failure }: { success?: boolean; failure?: boolean }) => (
+  activations: Activation[]
+) => {
   if (!success && !failure) {
     return activations
   } else if (success) {
@@ -140,7 +145,7 @@ const filterBySuccess = ({ success, failure }) => activations => {
  * Fetch the activation data from the OpenWhisk API
  *
  */
-export const fetchActivationData /* FromBackend */ = (N, options) => {
+export const fetchActivationData /* FromBackend */ = (N, options): Promise<Activation[]> => {
   const { nocrawl = false, path, filter, include, exclude, skip = 0, batchSize = defaults.batchSize, all } = options
   let { name = '' } = options
 
@@ -181,7 +186,7 @@ export const fetchActivationData /* FromBackend */ = (N, options) => {
   debug('since', sinceArg || 'none')
 
   /** fetch activations without an app/composer filter */
-  const fetchNonApp = async () =>
+  const fetchNonApp = async (): Promise<Activation[]> =>
     Promise.all(new Array(N).fill(0).map((_, idx) => fetch(idx * batchSize)))
       .then(Util.flatten)
       .then(filterByLatencyBucket(options))
@@ -282,18 +287,26 @@ export const injectHTML = (container, file, css = '') => {
  * Add time range the total count information to given container
  *
  */
-const strong = (container, N) => {
-  const existing = container.querySelector(`strong:nth-of-type(${N})`)
+const strong = (container: HTMLElement, N: number) => {
+  const existing = container.querySelector(`strong:nth-of-type(${N})`) as HTMLElement
   if (existing) {
     return existing
   } else {
-    const element = document.createElement('strong')
+    const element = document.createElement('strong') as HTMLElement
     container.appendChild(element)
     return element
   }
 }
-export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) => {
-  UI.empty(container)
+export const formatTimeRange = ({
+  minTime,
+  maxTime,
+  totalCount
+}: {
+  minTime: number
+  maxTime: number
+  totalCount: number
+}): UI.ToolbarText => {
+  const container = document.createElement('span')
 
   if (totalCount === 0) {
     container.innerText = 'No activations to display'
@@ -305,7 +318,7 @@ export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) =>
       container.innerText = ''
     }
 
-    strong(container, 1).innerText = totalCount
+    strong(container, 1).innerText = totalCount.toString()
 
     if (fresh) container.appendChild(document.createTextNode(' activations | '))
     strong(container, 2).appendChild(UI.PrettyPrinters.time(minTime, 'short'))
@@ -316,27 +329,11 @@ export const displayTimeRange = ({ minTime, maxTime, totalCount }, container) =>
       compact: true
     })
   }
-}
 
-/**
- * Prepare the sidecar header for the drawing routines to fill in
- *
- */
-export interface Header {
-  leftHeader: Element
-  rightHeader: Element
-}
-export const prepareHeader = (tab: UI.Tab, isRedraw = false): Header => {
-  const sidecar = getSidecar(tab)
-  const leftHeader = sidecar.querySelector('.sidecar-header-secondary-content .custom-header-content')
-  const rightHeader = sidecar.querySelector('.header-right-bits .custom-header-content')
-
-  if (!isRedraw) {
-    UI.empty(leftHeader)
-    UI.empty(rightHeader)
+  return {
+    type: 'info',
+    text: container
   }
-
-  return { leftHeader, rightHeader }
 }
 
 /**
@@ -346,15 +343,14 @@ export const prepareHeader = (tab: UI.Tab, isRedraw = false): Header => {
 export type Renderer = (
   tab: UI.Tab,
   options: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-  header: Header,
   uuid: string,
   isRedraw?: boolean
-) => void
-export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, extraOptions?) => ({
+) => (activations: Activation[]) => Commands.Response
+export const visualize = (cmd: string, viewName: string, draw: Renderer, extraOptions?: { live: boolean }) => ({
   tab,
   argvNoOptions,
   parsedOptions: options
-}: Commands.Arguments) => {
+}: Commands.Arguments): Promise<Commands.Response> => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
@@ -385,7 +381,7 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
   const ourUUID = uuid()
 
   // let timeRange
-  const fetchAndDraw = (isRedraw = false) => {
+  const fetchAndDraw = (isRedraw = false): Promise<Commands.Response> => {
     const N = cliN || defaults.N
     if (N > defaults.maxN) {
       throw new Error(`Please provide a maximum value of ${defaults.maxN}`)
@@ -410,18 +406,12 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
                 }
                 return data
             }) */
-        .then(draw(tab, options, prepareHeader(tab, isRedraw), ourUUID, isRedraw))
+        .then(draw(tab, options, ourUUID, isRedraw))
     )
   }
 
   return fetchAndDraw().then(response => {
-    // alter the sidecar header only once the rendering is done
-    const sidecar = getSidecar(tab)
-
-    const icon = sidecar.querySelector('.sidecar-header-icon') as HTMLElement
-    icon.innerText = viewName
-
-    const invokeListener = ({ name, namespace }) => {
+    const invokeListener = ({ name, namespace }: { name: string; namespace: string }) => {
       if (!appName || appName === name || appName === `/${namespace}/${name}`) {
         debug('invoke match for update')
         fetchAndDraw(true)
@@ -436,7 +426,7 @@ export const visualize = (cmd, viewName: string, draw: Renderer, extraUsage, ext
     eventBus.on('/action/invoke', invokeListener)
     eventBus.on('/trigger/fire', fireListener)
 
-    let poller
+    let poller: NodeJS.Timer
     let disabled = false
     if ((extraOptions && extraOptions.live) || options.live) {
       debug('live mode')
@@ -471,7 +461,7 @@ const n100 = 2
 const n1000 = 2
 const n7000 = 2
 export const latencyBuckets = [50, 100, 500, 1000, 3500, 3500]
-export const latencyBucket = value => {
+export const latencyBucket = (value: number) => {
   const nBuckets = latencyBuckets.length
   // return Math.min(nBuckets - 1, value < 100 ? ~~(value / (100/6)) : value < 1000 ? 6 + ~~(value / (1000/5)) : value < 7000 ? 11 + ~~(value / (6000/5)) : nBuckets - 1)
   return Math.min(
@@ -485,7 +475,7 @@ export const latencyBucket = value => {
       : nBuckets - 1
   )
 }
-const range = (top, buckets, idx, base = 0) =>
+const range = (top: number, buckets: number, idx: number, base = 0) =>
   `${prettyPrintDuration((top / buckets) * idx + 1 + base)}-${prettyPrintDuration((top / buckets) * (idx + 1) + base)}`
 const bucketRanges = []
 for (let idx = 0; idx < n100; idx++) bucketRanges.push(range(100, n100, idx))
@@ -502,7 +492,7 @@ export const latencyBucketRange = bucket => {
  * user.
  *
  */
-export const optionsToString = (options, except?) => {
+export const optionsToString = (options: Commands.ParsedOptionsFull, except?: string[]) => {
   let str = ''
   for (const key in options) {
     // underscore comes from minimist

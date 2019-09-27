@@ -18,6 +18,7 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import { UI } from '@kui-shell/core'
 
+import { SummaryData } from './grouping'
 import { renderCell } from './cell'
 import { enDash, latencyBuckets } from './util'
 
@@ -32,20 +33,17 @@ import { enDash, latencyBuckets } from './util'
  * @param options user options from the CLI
  *
  */
-export const drawLegend = (
+export const formatLegend = (
   tab: UI.Tab,
   viewName: string,
-  rightHeader: HTMLElement,
-  { statData, nFailures },
+  { statData, nFailures }: SummaryData,
   gridContainer: HTMLElement
-) => {
-  const existing = rightHeader.querySelector('.grid-header-key')
-  const wrapper = existing || document.createElement('div')
-  const existing2 = wrapper.querySelector('.cell-container')
-  const wrapper2 = existing2 || document.createElement('div')
+): UI.Badge => {
+  const wrapper = document.createElement('div')
+  const wrapper2 = document.createElement('div')
 
   /** user asked to toggle the latency bucket filter */
-  const toggleFilter = idx => (): boolean | void => {
+  const toggleFilter = (idx: number) => (): boolean | void => {
     // isRemove: user deselected current filter
     const isRemove = parseInt(gridContainer.getAttribute('data-latency-filter'), 10) === idx
     const containers = [wrapper2, gridContainer] // legend and main grid
@@ -56,17 +54,14 @@ export const drawLegend = (
         container.removeAttribute('data-latency-filter')
       } else {
         container.classList.add('has-latency-filter')
-        container.setAttribute('data-latency-filter', idx)
+        container.setAttribute('data-latency-filter', idx.toString())
       }
     })
   }
 
-  if (!existing) {
-    rightHeader.appendChild(wrapper)
-    wrapper.appendChild(wrapper2)
-    wrapper.className = 'activation-viz-plugin grid-header-key'
-    wrapper2.className = 'grid-grid zoom_1 cell-container'
-  }
+  wrapper.appendChild(wrapper2)
+  wrapper.className = 'activation-viz-plugin grid-header-key'
+  wrapper2.className = 'grid-grid zoom_1 cell-container'
   wrapper2.setAttribute('color-by', 'duration')
 
   /**
@@ -197,4 +192,6 @@ export const drawLegend = (
     -1, // true means render as failure
     opts
   )
+
+  return wrapper
 }

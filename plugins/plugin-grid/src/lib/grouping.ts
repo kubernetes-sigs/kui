@@ -16,13 +16,69 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { Tables } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
+import { Activation, WaitTimeAnnotation, InitTimeAnnotation, LimitAnnotation } from './activation'
 import { isSuccess, pathOf, latencyBucket, nLatencyBuckets } from './util'
 
-const durationOf = _ => {
-  const waitAnno = _.annotations.find(({ key }) => key === 'waitTime')
-  const initAnno = _.annotations.find(({ key }) => key === 'initTime')
+export interface TimelineData {
+  activations: Activation[][]
+  nBuckets: number
+}
+
+export interface OutlierReason {
+  why: string
+  cover: number
+  disparity: number
+}
+
+interface RenderedOutlierReason {
+  dom?: HTMLElement
+  activation: Activation
+}
+
+interface StatData {
+  outlierMax: number
+  latBuckets: number[]
+  n: Record<string | number, number>
+  outliers?: RenderedOutlierReason[]
+  explainOutlier: (activation: Activation) => { total: number; start: number; reasons: OutlierReason[] }
+}
+
+export interface SummaryData {
+  nFailures: number
+  statData: StatData
+}
+
+interface Group {
+  version?: string
+  path: string
+  name: string
+  groupKey: string
+  successes?: Activation[]
+  activations: Activation[]
+  x: number
+  y: number
+  width: number
+  height: number
+  count: number
+  statData: StatData
+  nSuccesses: number
+  nFailures: number
+}
+
+export interface GroupData {
+  groups: Group[]
+  minTime: number
+  maxTime: number
+  totalCount: number
+  summary: SummaryData
+  timeline: TimelineData
+}
+
+const durationOf = (_: Activation) => {
+  const waitAnno = _.annotations.find(({ key }) => key === 'waitTime') as WaitTimeAnnotation
+  const initAnno = _.annotations.find(({ key }) => key === 'initTime') as InitTimeAnnotation
   const wait = waitAnno ? waitAnno.value : 0 // this is "Queueing Time" as presented in the UI
   const init = initAnno ? initAnno.value : 0 // and this is "Container Initialization"
   const executionTime = _.end - _.start
@@ -35,11 +91,19 @@ const durationOf = _ => {
   return { duration, executionTime, wait, init }
 }
 
+interface Options extends Commands.ParsedOptionsFull {
+  buckets?: number
+  nBuckets?: number
+  split?: true | string
+  full?: boolean
+  outliers?: true | number
+}
+
 /**
  * Compute statistical properties of a given group of activations
  *
  */
-export const summarizePerformance = (activations, options) => {
+export const summarizePerformance = (activations: Activation[], options: Options) => {
   const latBuckets = Array(nLatencyBuckets).fill(0)
   const summaries = activations.map(_ => {
     const { duration, executionTime, wait, init } = durationOf(_)
@@ -76,10 +140,10 @@ export const summarizePerformance = (activations, options) => {
   const totalAvgForFastest = fastest.reduce((total, { duration }) => total + duration, 0) / nFast
 
   /** why was the given activation so slow? */
-  const explainOutlier = activation => {
-    const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime')
+  const explainOutlier = (activation: Activation) => {
+    const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime') as WaitTimeAnnotation
     const waitTime = (waitAnno && waitAnno.value) || 0
-    const initAnno = activation.annotations.find(({ key }) => key === 'initTime')
+    const initAnno = activation.annotations.find(({ key }) => key === 'initTime') as InitTimeAnnotation
     const initTime = (initAnno && initAnno.value) || 0
     const start = activation.start - waitTime
     const executionTime = activation.end - activation.start
@@ -89,7 +153,7 @@ export const summarizePerformance = (activations, options) => {
     const waitDisparity = Math.max(0, waitTime - waitAvgForFastest)
     const initDisparity = Math.max(0, initTime - initAvgForFastest)
     const disparity = total - totalAvgForFastest
-    const reasons = []
+    const reasons: OutlierReason[] = []
 
     if (durDisparity > 0)
       reasons.push({
@@ -145,24 +209,24 @@ export const summarizePerformance = (activations, options) => {
  * Given a string 'x.y.z', return an array of numbers [x,y,z].
  *
  */
-const semver = version => version.split('.').map(Number)
+const semver = (version: string) => version.split('.').map(Number)
 
 class SemVer {
   version: number[]
 
-  constructor(version) {
+  constructor(version: string) {
     this.version = semver(version)
   }
 
-  compare(v2) {
+  compare(v2: string) {
     return this._compare(semver(v2))
   }
 
-  localeCompare(that) {
+  localeCompare(that: SemVer) {
     return this._compare(that.version)
   }
 
-  _compare(thatVersion) {
+  _compare(thatVersion: number[]) {
     return this.version[0] - thatVersion[0] || this.version[1] - thatVersion[1] || this.version[2] - thatVersion[2]
   }
 
@@ -176,7 +240,7 @@ class SemVer {
  * attributes
  *
  */
-const splitByVersion: SplitterFunction = (activation, path) => ({
+const splitByVersion: SplitterFunction = (activation: Activation, path: string) => ({
   version: new SemVer(activation.version),
   groupKey: `${path} v${activation.version}`
 })
@@ -189,7 +253,7 @@ const splitByVersion: SplitterFunction = (activation, path) => ({
 const splitAroundVersion = (version: string): SplitterFunction => {
   const split = new SemVer(version)
 
-  return (activation, path) => {
+  return (activation: Activation, path: string) => {
     const version = split.compare(activation.version) > 0 ? 'A' : 'B'
     const groupKey = `${path} v${version}`
     return { version, groupKey }
@@ -200,7 +264,7 @@ const splitAroundVersion = (version: string): SplitterFunction => {
  * Compute statData over all activations
  *
  */
-const summarizeWhole = (groups, options) => {
+const summarizeWhole = (groups: Group[], options: Options) => {
   const allActivations = groups.reduce((L, group) => L.concat(group.successes || group.activations), [])
   const nSuccesses = groups.reduce((S, group) => S + group.nSuccesses, 0)
   const nFailures = groups.reduce((S, group) => S + group.nFailures, 0)
@@ -217,7 +281,7 @@ const summarizeWhole = (groups, options) => {
  * Compute statData over all activations
  *
  */
-const summarizeWhole2 = (allActivations, options) => {
+const summarizeWhole2 = (allActivations: Activation[], options: Options) => {
   const { nSuccesses, nFailures } = allActivations.reduce(
     (S, activation) => {
       if (isSuccess(activation)) S.nSuccesses++
@@ -244,8 +308,11 @@ interface Split {
   version?: string | SemVer
   groupKey: string
 }
-type SplitterFunction = (activation, path: string) => Split
-const addToGroup = (options, totals, splitRequested = false, splitter?: SplitterFunction) => (groups, activation) => {
+type SplitterFunction = (activation: Activation, path: string) => Split
+const addToGroup = (options, totals, splitRequested = false, splitter?: SplitterFunction) => (
+  groups,
+  activation: Activation
+) => {
   const _path = pathOf(activation)
   const path =
     options.subgrouping === 'success'
@@ -307,7 +374,13 @@ const addToGroup = (options, totals, splitRequested = false, splitter?: Splitter
  * grouping. the {activations,statData} is a group from grouping.js
  *
  */
-const filterByOutlieriness = options => ({ activations, statData }) => {
+const filterByOutlieriness = options => ({
+  activations,
+  statData
+}: {
+  activations: Activation[]
+  statData: StatData
+}) => {
   if (!options.outliers) {
     return activations
   } else {
@@ -328,7 +401,7 @@ const filterByOutlieriness = options => ({ activations, statData }) => {
     }
 
     return activations.filter(activation => {
-      const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime')
+      const waitAnno = activation.annotations.find(({ key }) => key === 'waitTime') as WaitTimeAnnotation
       const waitTime = (waitAnno && waitAnno.value) || 0
       const executionTime = activation.end - activation.start
       const duration = executionTime + waitTime
@@ -343,7 +416,7 @@ const filterByOutlieriness = options => ({ activations, statData }) => {
  * sorting this array how it sees fit.
  *
  */
-const toArray = (map, options) => {
+const toArray = (map, options: Options) => {
   const groups = []
   const outlierFilter = filterByOutlieriness(options)
 
@@ -373,8 +446,8 @@ const toArray = (map, options) => {
  * Cost function for an activation
  *   TODO factor this out!!!!
  */
-const costOf = activation => {
-  const limitsAnnotation = activation.annotations.find(({ key }) => key === 'limits')
+const costOf = (activation: Activation): number => {
+  const limitsAnnotation = activation.annotations.find(({ key }) => key === 'limits') as LimitAnnotation
   const duration = activation.end - activation.start
   const cost = !limitsAnnotation
     ? 0
@@ -387,9 +460,9 @@ const costOf = activation => {
  * Construct a success versus failure timeline model
  *
  */
-const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
+const successFailureTimeline = (activations: Activation[], { nBuckets = 10000 }): TimelineData => {
   if (activations.length === 0) {
-    return []
+    return { nBuckets: 0, activations: [] }
   }
 
   // some parameters of the model
@@ -398,7 +471,7 @@ const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
   const interval = ~~((last - first) / nBuckets)
   const bucketize = timestamp => Math.min(nBuckets - 1, ~~((timestamp - first) / interval))
 
-  const mkActivations = () => {
+  const mkActivations = (): Activation[][] => {
     const buckets = Array(nBuckets)
     for (let idx = 0; idx < nBuckets; idx++) {
       buckets[idx] = [] // array of activations
@@ -420,10 +493,10 @@ const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
       return buckets
     },
     {
-      success: Array(nBuckets).fill(0),
+      success: Array(nBuckets).fill(0) as number[],
       activations: mkActivations(),
-      failure: Array(nBuckets).fill(0),
-      cost: Array(nBuckets).fill(0),
+      failure: Array(nBuckets).fill(0) as number[],
+      cost: Array(nBuckets).fill(0) as number[],
       interval,
       first,
       last,
@@ -440,8 +513,8 @@ const successFailureTimeline = (activations, { nBuckets = 10000 }) => {
  * failure.
  *
  */
-export const groupByAction = (activations: Tables.Row[], options) => {
-  const splitRequested = options.split
+export const groupByAction = (activations: Activation[], options: Options): GroupData => {
+  const splitRequested = options.split !== undefined
   const splitter = splitRequested && (options.split === true ? splitByVersion : splitAroundVersion(options.split))
 
   const totals = { minTime: undefined, maxTime: undefined, totalCount: 0 }
@@ -460,7 +533,7 @@ export const groupByAction = (activations: Tables.Row[], options) => {
  * Group the given activations by time
  *
  */
-export const groupByTimeBucket = (activations, options) => {
+export const groupByTimeBucket = (activations: Activation[], options: Options) => {
   // commenting out the bizarre filter. see shell issue #120
   /* if (!options.all) {
      activations = activations.filter(activation => {

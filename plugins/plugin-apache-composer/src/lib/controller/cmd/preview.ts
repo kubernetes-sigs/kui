@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-import * as fs from 'fs'
-import * as path from 'path'
+import Debug from 'debug'
+import { readFile as fsReadFile, stat } from 'fs'
+import { basename } from 'path'
 
 import { Capabilities, Commands, REPL, UI, Util } from '@kui-shell/core'
 import { showCustom, showEntity } from '@kui-shell/core/webapp/views/sidecar'
-import { optionsToString, handleError } from '@kui-shell/core/core/utility'
 
 import * as usage from './preview-usage'
 import { codeViewMode, vizAndfsmViewModes } from '../../utility/decorate'
@@ -46,6 +45,22 @@ interface CompositionWithCode {
 }
 
 /**
+ * Error reporting
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleError = (err: Error, reject?: (reason: any) => void) => {
+  console.error(err)
+  if (reject) {
+    reject(err)
+  } else if (typeof err === 'string') {
+    throw new Error(err)
+  } else {
+    throw err
+  }
+}
+
+/**
  * Here is the app kill entry point. Here we register command
  * handlers.
  *
@@ -58,7 +73,7 @@ export default (commandTree: Commands.Registrar) => {
 
       if (!Capabilities.inBrowser()) {
         debug('readFile in headless mode or for electron')
-        fs.readFile(filepath, (err, data) => {
+        fsReadFile(filepath, (err, data) => {
           if (err) {
             reject(err)
           } else {
@@ -112,7 +127,7 @@ export default (commandTree: Commands.Registrar) => {
         try {
           fsmPromise = sourceToComposition({
             inputFile: input,
-            name: path.basename(input)
+            name: basename(input)
           })
           type = astBadge
         } catch (err) {
@@ -123,7 +138,7 @@ export default (commandTree: Commands.Registrar) => {
         try {
           fsmPromise = sourceToComposition({
             inputFile: input,
-            name: path.basename(input)
+            name: basename(input)
           })
           debug('composition parsed from input', fsmPromise)
         } catch (err) {
@@ -133,7 +148,7 @@ export default (commandTree: Commands.Registrar) => {
         reject(unknownInput)
       }
 
-      const name = path.basename(input)
+      const name = basename(input)
 
       // create a fake action/entity record
       const formatForUser = (mode: string) => async (composition: CompositionWithCode) => {
@@ -273,7 +288,7 @@ export default (commandTree: Commands.Registrar) => {
       if (options.c) {
         // then the user wants to see the code and preview side-by-side
         debug('delegating to editor')
-        return resolve(REPL.qexec(`compose ${path.basename(inputFile)} --simple --readOnly --template "${inputFile}"`))
+        return resolve(REPL.qexec(`compose ${basename(inputFile)} --simple --readOnly --template "${inputFile}"`))
       }
 
       const input = Util.findFile(Util.expandHomeDir(inputFile))
@@ -292,7 +307,7 @@ export default (commandTree: Commands.Registrar) => {
           }
 
           if (!Capabilities.inBrowser()) {
-            fs.stat(input, err => {
+            stat(input, err => {
               if (err) {
                 reject(ENOENT())
               } else {
@@ -348,7 +363,7 @@ export default (commandTree: Commands.Registrar) => {
               chokidar.watch(input).on('change', path => {
                 debug('change observed to file', path)
 
-                REPL.pexec(`${cmd} ${path} ${optionsToString(options)}`, {
+                REPL.pexec(`${cmd} ${path} ${Commands.unparse(options)}`, {
                   echo: false,
                   alreadyWatching: true,
                   noHistory: true

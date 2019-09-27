@@ -480,6 +480,7 @@ export const addBadge = (
     badge.innerText = badgeText as string
   } else if (badgeText instanceof Element) {
     badge.appendChild(badgeText as Element)
+    badge.classList.add('badge-as-image')
   } else {
     // otherwise, badge is an IBadgeSpec
     if (badgeText.image) {
@@ -536,7 +537,9 @@ export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, b
 
   if (isMetadataBearing(entity)) {
     const version = (entity as MetadataBearing).metadata.generation
-    addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
+    if (version) {
+      addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
+    }
   }
 
   const version = entity.version || (isMetadataBearingByReference(entity) && entity.resource.metadata.generation)
@@ -854,7 +857,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     removeAllDomChildren(badgesDom)
   }
 
-  if (custom && custom.isEntity) {
+  if (custom && (custom.isEntity || isMetadataBearing(custom) || isMetadataBearingByReference(custom))) {
     const entity = custom
     sidecar.entity = entity
     if (sidecar.entity.viewName) {

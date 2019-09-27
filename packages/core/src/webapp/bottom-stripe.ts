@@ -424,7 +424,6 @@ const _addModeButton = (
               dom.appendChild(view)
               insertView(tab)(dom)
             } else if (isCustomSpec(view)) {
-              // Promise.resolve(view as Promise<ICustomSpec>).then(custom => showCustom(tab, custom, { leaveBottomStripeAlone }))
               showCustom(tab, view, { leaveBottomStripeAlone })
             } else if (isTable(view) || isMultiTable(view)) {
               const dom1 = document.createElement('div')
@@ -435,6 +434,8 @@ const _addModeButton = (
               formatTable(tab, view, dom2, { usePip: true })
               insertView(tab)(dom1)
             }
+          } else if (isCustomSpec(view)) {
+            showCustom(tab, view, { leaveBottomStripeAlone })
           } else if (actAsButton && view && view.toggle) {
             view.toggle.forEach(({ mode, disabled }) => {
               const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)

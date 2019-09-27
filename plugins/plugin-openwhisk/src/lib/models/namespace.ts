@@ -16,8 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { Capabilities, REPL, UI } from '@kui-shell/core'
-import store from '@kui-shell/core/models/store'
+import { Capabilities, Models, REPL, UI } from '@kui-shell/core'
 
 import { apiHost, auth as authModel } from './auth'
 
@@ -36,7 +35,7 @@ const read = () =>
     let model = cached
     if (!model) {
       debug('read:not cached')
-      const raw = store().getItem(key)
+      const raw = Models.Store().getItem(key)
       try {
         model = raw ? JSON.parse(raw) : {}
       } catch (e) {
@@ -62,7 +61,7 @@ const read = () =>
 
 const write = model => {
   cached = model._full
-  store().setItem(key, JSON.stringify(model._full))
+  Models.Store().setItem(key, JSON.stringify(model._full))
 }
 
 /**
@@ -70,9 +69,9 @@ const write = model => {
  *
  */
 const writeSelectedNS = selectedNS => {
-  if (store().getItem('selectedNS') !== selectedNS) {
-    store().setItem('selectedNS', selectedNS)
-    debug('stored selected namespace to local storage', store().getItem('selectedNS'))
+  if (Models.Store().getItem('selectedNS') !== selectedNS) {
+    Models.Store().setItem('selectedNS', selectedNS)
+    debug('stored selected namespace to local storage', Models.Store().getItem('selectedNS'))
   }
 }
 
@@ -168,7 +167,7 @@ export const setNeedsNamespace = async (err?: Error) => {
   }
 
   debug('setNeedsNamespace')
-  const localSelectedNS = store().getItem('selectedNS')
+  const localSelectedNS = Models.Store().getItem('selectedNS')
   if (localSelectedNS) {
     debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
     try {

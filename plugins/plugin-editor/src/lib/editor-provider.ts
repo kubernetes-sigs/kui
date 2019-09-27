@@ -15,11 +15,10 @@
  */
 
 import { Commands, UI } from '@kui-shell/core'
-import { EditorProvider, registerEditor } from '@kui-shell/core/webapp/views/registrar/editors'
 
 import { EditorEntity } from './response'
 
-class MonacoEditorProvider implements EditorProvider {
+class MonacoEditorProvider implements UI.Editor.Provider {
   public async tryOpen(tab: UI.Tab, custom: Commands.CustomResponse, options: Commands.ExecOptions) {
     const [{ Models }, { edit }] = await Promise.all([import('@kui-shell/core'), import('./cmds/edit')])
 
@@ -54,5 +53,5 @@ class MonacoEditorProvider implements EditorProvider {
 }
 
 export default function register() {
-  registerEditor(new MonacoEditorProvider())
+  UI.Editor.registerProvider(new MonacoEditorProvider())
 }

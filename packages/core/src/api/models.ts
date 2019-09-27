@@ -25,6 +25,7 @@
 import * as _Entity from '../models/entity'
 import { History as _History } from '../models/history'
 import { currentSelection } from '../webapp/views/sidecar'
+import _Store from '@kui-shell/core/models/store'
 
 export namespace Models {
   export import ResourceWithMetadata = _Entity.MetadataBearing
@@ -35,4 +36,6 @@ export namespace Models {
   }
 
   export const History = _History
+
+  export const Store = _Store
 }

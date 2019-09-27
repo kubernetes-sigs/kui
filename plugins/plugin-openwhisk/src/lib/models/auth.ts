@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 import * as openwhisk from 'openwhisk'
 
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
-import { Capabilities, Settings, Util } from '@kui-shell/core'
-import store from '@kui-shell/core/models/store'
+import { Capabilities, Models, Settings, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/openwhisk/models/auth')
 
@@ -70,14 +69,14 @@ function getDefaultApiHost() {
 export let apihost: string =
   process.env.__OW_API_HOST ||
   wskprops.APIHOST ||
-  store().getItem(localStorageKey.host) ||
+  Models.Store().getItem(localStorageKey.host) ||
   Capabilities.getAuthValue('openwhisk', 'apihost') ||
   getDefaultApiHost()
 
 let authKey: string =
   process.env.__OW_API_KEY ||
   wskprops.AUTH ||
-  store().getItem(localStorageKey.auth) ||
+  Models.Store().getItem(localStorageKey.auth) ||
   Capabilities.getAuthValue('openwhisk', 'api_key')
 
 const apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS_TOKEN || 'localhostNeedsSomething'
@@ -85,7 +84,7 @@ const apigwToken: string = process.env.__OW_APIGW_TOKEN || wskprops.APIGW_ACCESS
 const apigwSpaceGuid: string = process.env.__OW_APIGW_SPACE_GUID || wskprops.APIGW_SPACE_GUID
 export let ow /* : openwhisk.Client */
 
-let userRequestedIgnoreCerts = store().getItem(localStorageKey.ignoreCerts) !== undefined
+let userRequestedIgnoreCerts = Models.Store().getItem(localStorageKey.ignoreCerts) !== undefined
 const ignoreCerts = (apiHost: string): boolean =>
   !!(
     userRequestedIgnoreCerts ||
@@ -109,8 +108,8 @@ export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Cli
   delete ow.routes
   debug('initOW done')
 
-  if (owConfig.api_key !== 'unknown' && window && store() && store().setItem) {
-    store().setItem(localStorageKey.auth, owConfig.api_key) // remember the choice in localStorage
+  if (owConfig.api_key !== 'unknown' && window && Models.Store() && Models.Store().setItem) {
+    Models.Store().setItem(localStorageKey.auth, owConfig.api_key) // remember the choice in localStorage
   }
 
   return ow
@@ -150,8 +149,8 @@ export const apiHost = {
     }
     apihost = newHost // global variable
     userRequestedIgnoreCerts = ignoreCerts
-    store().setItem(localStorageKey.host, newHost) // remember the choice in localStorage
-    store().setItem(localStorageKey.ignoreCerts, userRequestedIgnoreCerts.toString())
+    Models.Store().setItem(localStorageKey.host, newHost) // remember the choice in localStorage
+    Models.Store().setItem(localStorageKey.ignoreCerts, userRequestedIgnoreCerts.toString())
     authKey = undefined
     initOW() // re-initialize the openwhisk npm
     debug('apiHost::set', apihost)
