@@ -3,25 +3,7 @@
 This page will help you to install and configure Kui. You have a few
 installation options; pick the one that best suits your environment.
 
-## Option 1: Lightweight Download
-
-Kui offers a lightweight download option. The download is small (2-4
-megabytes) and can be used in headless environments. Headless Kui will
-automatically download the graphical components, so this option
-provides a seamless transition to graphics, and a lightweight,
-platform-neutral initial download.
-
-**Prerequisites** the headless clients require that you have Node.js
-8.15.0 or greater already installed on your system. To install on your machine,
-consult the official [NodeJS documentation](https://nodejs.org) .
-
-[Kui-headless.tar.bz2](https://tarball.kui-shell.org) **|** [Kui-headless.zip](https://zip.kui-shell.org)
-
-##### Example Download for MacOS headless
-
-> curl -sL https://tarball.kui-shell.org | tar jxf -
-
-## Option 2: Double-clickable app Download
+## Double-clickable app Download
 
 You may opt to download an double-clickable platform binary. With this
 option, you avoid having to worry about Node.js dependencies.
@@ -45,27 +27,6 @@ signed. Therefore, you will likely see a security warning the first
 time you launch these Kui builds. If this is a show-stopper for you,
 we understand! You may always choose to [git clone and
 build](./dev/README.md) Kui yourself.
-
-## Verifying your installation
-
-The following terminal commands help to verify that Kui is
-working.
-
-```bash
-export PATH=$PWD/kui/bin:$PATH
-kui version
-kui shell # <-- this should launch the graphical shell
-```
-
-The `shell` command should open the graphical shell. The first time
-you open a graphical window, you should see a message indicating that
-the graphical bits are being downloaded. This is a one-time download
-of the Electron components. (_warning_: there is currently a
-superficial bug in the downloader; you may see the "downloading"
-message repeated twice)
-
-If you have downloaded the double-clickable application, you can try
-`version` from Kui's command line.
 
 ## Using Kui as a kubectl plugin
 
