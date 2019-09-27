@@ -19,39 +19,37 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
 localDescribe('Create an action, list it, delete it, then list nothing (implicit entity type)', function(
-  this: common.ISuite
+  this: Common.ISuite
 ) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
-  ui.aliases.remove.forEach(cmd => {
+  openwhisk.aliases.remove.forEach(cmd => {
     // create an action, using the implicit entity type
     it('should create an action', () =>
-      cli
-        .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing('foo')))
+      CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing('foo')))
 
     // list it
     it(`should find the new action with "ls"`, () =>
-      cli.do('wsk action list', this.app).then(cli.expectOKWithOnly('foo')))
+      CLI.command('wsk action list', this.app).then(ReplExpect.okWithOnly('foo')))
 
     // delete the action
     it(`should delete the newly created action using "${cmd}"`, () =>
-      cli
-        .do(`wsk action ${cmd} foo`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectClosed))
+      CLI.command(`wsk action ${cmd} foo`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.closed))
   })
 })

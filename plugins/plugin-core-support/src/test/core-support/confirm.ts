@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as common from '@kui-shell/core/tests/lib/common'
-const { cli, selectors } = ui
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
-describe('Confirm dialog', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('Confirm dialog', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
-  it('should fail to exec if the command is missing', () => cli.do(`confirm`, this.app).then(cli.expectError(497)))
+  it('should fail to exec if the command is missing', () =>
+    CLI.command(`confirm`, this.app).then(ReplExpect.error(497)))
 
   it('should not do anything if user cancels', () => {
-    return cli
-      .do(`confirm "echo hello"`, this.app)
+    return CLI.command(`confirm "echo hello"`, this.app)
       .then(() => this.app.client.waitForExist('#confirm-dialog'))
       .then(() => this.app.client.click('#confirm-dialog .close-button'))
       .then(() =>
-        cli.expectOKWithCustom({
+        ReplExpect.okWithCustom({
           expect: 'Confirmation modal pop up'
         })
       )
   })
 
   it('should execute if user confirms', () => {
-    return cli
-      .do(`confirm "echo hello"`, this.app)
+    return CLI.command(`confirm "echo hello"`, this.app)
       .then(() => this.app.client.waitForExist('#confirm-dialog'))
       .then(() => this.app.client.click('#confirm-dialog .bx--btn--danger'))
-      .then(() => this.app.client.waitForExist(`${selectors.OUTPUT_LAST}`))
-      .then(() => cli.expectOKWithCustom({ selector: selectors.BY_NAME('hello') }))
-      .catch(common.oops(this))
+      .then(() => this.app.client.waitForExist(`${Selectors.OUTPUT_LAST}`))
+      .then(() => ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('hello') }))
+      .catch(Common.oops(this))
   })
 })

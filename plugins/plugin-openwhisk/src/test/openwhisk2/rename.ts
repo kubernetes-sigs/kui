@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const actionName1 = 'foo1'
 const actionName1b = 'foo1b'
@@ -29,9 +28,9 @@ const packageName3 = 'ppp3'
 const key1 = 'foo'
 const value1 = 'bar'
 
-describe('Rename actions', function(this: common.ISuite) {
+describe('Rename actions', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const mv = (task, a, b, aPackage?, bPackage?) => {
     // pass this key-value pair to the invocation
@@ -50,71 +49,64 @@ describe('Rename actions', function(this: common.ISuite) {
     it(`***** ${task}`, () => true)
 
     it(`should rename ${aFull} to ${bFull}`, () =>
-      cli
-        .do(`wsk action rename ${aFull} ${bFull}`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
-        .catch(common.oops(this)))
+      CLI.command(`wsk action rename ${aFull} ${bFull}`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(b, undefined, undefined, bPackage))
+        .catch(Common.oops(this)))
 
     // verify that annotations survived the rename
     it('should switch to annotations mode', () =>
-      cli
-        .do('wsk action annotations', this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(b, undefined, undefined, bPackage))
-        .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-        .then(ui.expectSubset(expectAnnotations)))
+      CLI.command('wsk action annotations', this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(b, undefined, undefined, bPackage))
+        .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+        .then(Util.expectSubset(expectAnnotations)))
 
     // invoke the renamed action
     it(`should invoke the copied action ${bFull}`, () =>
-      cli
-        .do(`wsk action invoke -p "${key}" "${value}"`, this.app)
-        .then(cli.expectJustOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(b))
-        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-        .then(ui.expectStruct(expect)))
+      CLI.command(`wsk action invoke -p "${key}" "${value}"`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(b))
+        .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+        .then(Util.expectStruct(expect)))
 
     // verify that the original does not exist
     it(`${aFull} should NOT exist`, () =>
-      cli
-        .do(`wsk action get ${aFull}`, this.app)
-        .then(cli.expectError(404, 'The requested resource does not exist.'))
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(b))
-        .catch(common.oops(this)))
+      CLI.command(`wsk action get ${aFull}`, this.app)
+        .then(ReplExpect.error(404, 'The requested resource does not exist.'))
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(b))
+        .catch(Common.oops(this)))
   }
 
   // RENAME ACTION
   it('should create an action via let', () =>
-    cli
-      .do(`let ${actionName1} = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName1} = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .catch(Common.oops(this)))
   mv('non-package to non-package', actionName1, actionName1b)
 
   // RENAME PACKAGED ACTION TO NON-PACKAGED ACTION
   it('should create a packaged action via let', () =>
-    cli
-      .do(`let ${packageName1}/${actionName2}.js = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName1))
-      .catch(common.oops(this)))
+    CLI.command(`let ${packageName1}/${actionName2}.js = x=>x -p ${key1} ${value1} -a ${key1} ${value1}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2, undefined, undefined, packageName1))
+      .catch(Common.oops(this)))
   mv('package to non-package', actionName2, actionName2b, packageName1)
 
   // RENAME non-packaged ACTION TO PACKAGED ACTION, existing package
   it('should create a package', () =>
-    cli
-      .do(`wsk package update ${packageName2}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(packageName2))
-      .catch(common.oops(this)))
+    CLI.command(`wsk package update ${packageName2}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(packageName2))
+      .catch(Common.oops(this)))
   mv('non-package to existing package', actionName1b, actionName2b, undefined, packageName2)
 
   // RENAME PACKAGED ACTION TO PACKAGED ACTION, new package

@@ -21,15 +21,15 @@
 
 import * as assert from 'assert'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 // so we can compare the content of code mode
 import { readFileSync } from 'fs'
 import * as path from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
@@ -38,73 +38,67 @@ const fooSrc = readFileSync(path.join(ROOT, 'data/openwhisk/foo.js')).toString()
 const foo2Src = readFileSync(path.join(ROOT, 'data/openwhisk/foo2.js')).toString()
 
 // TODO: webpack test
-localDescribe('Sidecar bottom stripe interactions for actions', function(this: common.ISuite) {
+localDescribe('Sidecar bottom stripe interactions for actions', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   /** verify the mode buttons work */
   const verify = (name, expectedParams, expectedAnnotations, expectedSrc) => {
     // click on parameters mode button
     it(`should show parameters for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('parameters'))
-      return sidecar
-        .expectOpen(this.app)
-        .then(sidecar.expectShowing(name))
-        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-        .then(ui.expectStruct(expectedParams))
-        .catch(common.oops(this))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('parameters'))
+      return SidecarExpect.open(this.app)
+        .then(SidecarExpect.showing(name))
+        .then(() => this.app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+        .then(Util.expectStruct(expectedParams))
+        .catch(Common.oops(this))
     })
 
     // click on annotations mode button
     it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations'))
-      return sidecar
-        .expectOpen(this.app)
-        .then(sidecar.expectShowing(name))
-        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-        .then(ui.expectSubset(expectedAnnotations))
-        .catch(common.oops(this))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('annotations'))
+      return SidecarExpect.open(this.app)
+        .then(SidecarExpect.showing(name))
+        .then(() => this.app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+        .then(Util.expectSubset(expectedAnnotations))
+        .catch(Common.oops(this))
     })
 
     // click on code mode button
     it(`should show annotations for ${actionName} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('code'))
-      return sidecar
-        .expectOpen(this.app)
-        .then(sidecar.expectShowing(name))
-        .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('code'))
+      return SidecarExpect.open(this.app)
+        .then(SidecarExpect.showing(name))
+        .then(() => this.app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
         .then(code => assert.strictEqual(code.replace(/\s+/g, ''), expectedSrc.replace(/\s+/g, '')))
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     })
   }
 
   // create an action, using the implicit entity type
   it(`should create an action ${actionName}`, () =>
-    cli
-      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10 -a aaa 888`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   // create an action, using the implicit entity type
   it(`should create an action ${actionName2}`, () =>
-    cli
-      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js -p x 6 -p y 11 -a aaa 999`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .catch(Common.oops(this)))
 
   verify(actionName2, { x: 6, y: 11 }, { aaa: 999 }, foo2Src)
 
   it(`should get ${actionName}`, () =>
-    cli
-      .do(`wsk action get ${actionName}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action get ${actionName}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   verify(actionName, { x: 5, y: 10 }, { aaa: 888 }, fooSrc)
 })

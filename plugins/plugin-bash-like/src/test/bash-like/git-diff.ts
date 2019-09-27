@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
 import { copyFile, unlink, writeFile } from 'fs'
 
-const { cli, sidecar } = ui
-const { localDescribe } = common
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
 
 /** modify the top-level README.md, so that we can exhibit a git diff */
 const modifyTopLevelReadme = () =>
@@ -68,31 +64,29 @@ const restoreTopLevelReadme = () =>
     })
   })
 
-localDescribe('git diff', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+Common.localDescribe('git diff', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('should show no diffs', () =>
-    cli
-      .do('git diff package.json', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectClosed)
-      .catch(common.oops(this)))
+    CLI.command('git diff package.json', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.closed)
+      .catch(Common.oops(this)))
 
   it('should show a diff', async () => {
     try {
       await modifyTopLevelReadme()
 
-      await cli
-        .do('git diff', this.app)
+      await CLI.command('git diff', this.app)
         .then(res => res.app)
-        .then(sidecar.expectOpen)
+        .then(SidecarExpect.open)
       // .then(sidecar.expectFullscreen)
 
       await restoreTopLevelReadme()
     } catch (err) {
       await restoreTopLevelReadme()
-      return common.oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 })

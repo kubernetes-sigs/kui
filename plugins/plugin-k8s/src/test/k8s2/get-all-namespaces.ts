@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   waitForRed,
@@ -26,33 +25,31 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   synonyms.forEach(kubectl => {
     /** create the given namespace */
     const createNs = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} create namespace ${name}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} create namespace ${name}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
     /** create pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return cli
-          .do(
-            `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-            this.app
-          )
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(
+          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+          this.app
+        )
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
@@ -60,9 +57,9 @@ describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fu
     const listAndClickOn = (ns: string) => {
       it(`should list pods --all-namespaces expecting ns ${ns} via ${kubectl} then click`, async () => {
         try {
-          const selector = await cli
-            .do(`${kubectl} get pods --all-namespaces`, this.app)
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
+          const selector = await CLI.command(`${kubectl} get pods --all-namespaces`, this.app).then(
+            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) })
+          )
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
@@ -72,12 +69,11 @@ describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fu
 
           // now click on that cell
           await this.app.client.click(`${selector} .clickable`)
-          await sidecar
-            .expectOpen(this.app)
-            .then(sidecar.expectMode(defaultModeForGet))
-            .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
+          await SidecarExpect.open(this.app)
+            .then(SidecarExpect.mode(defaultModeForGet))
+            .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
         } catch (err) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
     }
@@ -85,23 +81,21 @@ describe(`electron get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fu
     /** delete the given namespace */
     const deleteNs = (name: string) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} delete namespace ${name}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
     /** delete the pod in the given namespace `ns` */
     const deletePod = (ns: string) => {
       it(`should delete the pod in ns ${ns} by name via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} delete pod nginx -n ${ns}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+        return CLI.command(`${kubectl} delete pod nginx -n ${ns}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 

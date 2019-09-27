@@ -16,10 +16,9 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const actionName = `activation-grid-${uuid()}` // some unique name
 // const actionName2 = `activation-grid-${uuid()}` // some unique name
@@ -27,9 +26,9 @@ const actionName = `activation-grid-${uuid()}` // some unique name
 const N = 1 // number of activation batches to fetch
 const randomGarbage = `activation-grid-garbage-${uuid()}` // some unique name
 
-describe('grid visualization', function(this: common.ISuite) {
+describe('grid visualization', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const invoke = (inputValue, name = actionName, packageName?) => {
     // action bombs with negative numbers
@@ -37,14 +36,13 @@ describe('grid visualization', function(this: common.ISuite) {
     const fullName = packageName ? `${packageName}/${name}` : name
 
     it(`should invoke ${fullName} with -p x ${inputValue}`, () =>
-      cli
-        .do(`wsk action invoke ${fullName} -p x ${inputValue}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(name))
-        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-        .then(ui.expectStruct(expectedStruct))
-        .catch(common.oops(this)))
+      CLI.command(`wsk action invoke ${fullName} -p x ${inputValue}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(name))
+        .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+        .then(Util.expectStruct(expectedStruct))
+        .catch(Common.oops(this)))
   }
   const notbomb = (name?, packageName?) => invoke(+1, name, packageName)
   // const bomb = (name, packageName) => invoke(-1, name, packageName)
@@ -55,14 +53,14 @@ describe('grid visualization', function(this: common.ISuite) {
         // expected number of success cells?
         if (expectedTotalCount === undefined || expectedTotalCount !== 0) {
           // if we're waiting for cells, wait for at least one cell to appear before we do the validation checks on the counts
-          const selector = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid .grid-cell`
+          const selector = `${Selectors.SIDECAR_CUSTOM_CONTENT} .grid .grid-cell`
           console.error(`Waiting for ${selector}`)
           return app.client.waitForExist(selector, 5000)
         }
       })
       .then(() =>
         app.client.elements(
-          `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid[data-action-name="${name}"] .grid-cell.is-failure-false`
+          `${Selectors.SIDECAR_CUSTOM_CONTENT} .grid[data-action-name="${name}"] .grid-cell.is-failure-false`
         )
       )
       .then(elements => assert.strictEqual(elements.value.length, expectedCount)) // .elements() returns a WebElements structure, with a .value[] field
@@ -70,7 +68,7 @@ describe('grid visualization', function(this: common.ISuite) {
       // expected number of failure cells?
       .then(() =>
         app.client.elements(
-          `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid[data-action-name="${name}"] .grid-cell.is-failure-true`
+          `${Selectors.SIDECAR_CUSTOM_CONTENT} .grid[data-action-name="${name}"] .grid-cell.is-failure-true`
         )
       )
       .then(elements => assert.strictEqual(elements.value.length, expectedErrorCount))
@@ -79,22 +77,19 @@ describe('grid visualization', function(this: common.ISuite) {
       .then(() => {
         if (expectedTotalCount) {
           return app.client
-            .elements(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid .grid-cell.grid-cell-occupied`)
+            .elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} .grid .grid-cell.grid-cell-occupied`)
             .then(elements => assert.strictEqual(elements.value.length, expectedTotalCount))
         }
       })
 
   const openGridExpectCountOf = (expectedCount, expectedErrorCount, cmd, name = actionName, expectedTotalCount?) => {
     const once = (iter, resolve, reject) =>
-      cli.do(cmd, this.app).then(_ => {
+      CLI.command(cmd, this.app).then(_ => {
         if (expectedCount === 0 && expectedErrorCount === 0) {
-          return cli
-            .expectError(404)(_)
-            .then(resolve, reject)
+          return ReplExpect.error(404)(_).then(resolve, reject)
         } else {
-          return cli
-            .expectOK(_)
-            .then(sidecar.expectOpen)
+          return ReplExpect.ok(_)
+            .then(SidecarExpect.open)
             .then(verifyGrid(expectedCount, expectedErrorCount, name, expectedTotalCount))
             .then(resolve)
             .catch(err => {
@@ -102,7 +97,7 @@ describe('grid visualization', function(this: common.ISuite) {
                 console.error('retry!')
                 setTimeout(() => once(iter + 1, resolve, reject), 1000)
               } else {
-                return common.oops(this)(err)
+                return Common.oops(this)(err)
               }
             })
         }
@@ -114,12 +109,11 @@ describe('grid visualization', function(this: common.ISuite) {
   }
 
   it(`should create an action ${actionName} that bombs if the input value is negative`, () =>
-    cli
-      .do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   // invoke with positive number, expect count of 1 in the table
   notbomb()
@@ -129,18 +123,16 @@ describe('grid visualization', function(this: common.ISuite) {
   openGridExpectCountOf(0, 0, `grid --batches ${N} ${randomGarbage}`, randomGarbage, 0) // either way, there should be nothing
 
   it('should fail with a bad this query', () =>
-    cli
-      .do('grid --this', this.app)
-      .then(cli.expectError(498))
-      .catch(common.oops(this)))
+    CLI.command('grid --this', this.app)
+      .then(ReplExpect.error(498))
+      .catch(Common.oops(this)))
 
   it('should fail with a bad last query', () =>
-    cli
-      .do('grid --last', this.app)
-      .then(cli.expectError(498))
-      .catch(common.oops(this)))
+    CLI.command('grid --last', this.app)
+      .then(ReplExpect.error(498))
+      .catch(Common.oops(this)))
 
-  const icon = `${ui.selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
+  const icon = `${Selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
 
   //
   // time range queries
@@ -150,28 +142,26 @@ describe('grid visualization', function(this: common.ISuite) {
   const days = ['today', 'yesterday']
   days.forEach(day => {
     it(`should show ${day}`, () =>
-      cli
-        .do(`grid --${day}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
+      CLI.command(`grid --${day}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
         .then(() => this.app.client.waitForText(icon))
-        .catch(common.oops(this)))
+        .catch(Common.oops(this)))
   })
   whens.forEach(when => {
     intervals.forEach(interval => {
       it(`should show ${interval} ${when}`, () =>
-        cli
-          .do(`grid --${interval} ${when}`, this.app)
-          .then(cli.expectOK)
-          .then(sidecar.expectOpen)
+        CLI.command(`grid --${interval} ${when}`, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
           .then(() => this.app.client.waitForText(icon))
-          .catch(common.oops(this)))
+          .catch(Common.oops(this)))
     })
   })
 
   /** switch between tabs */
   const switchTo = (tab: string) => {
-    const button = ui.selectors.SIDECAR_MODE_BUTTON(tab)
+    const button = Selectors.SIDECAR_MODE_BUTTON(tab)
 
     it(`should switch to ${tab}`, () =>
       this.app.client
@@ -190,8 +180,8 @@ describe('grid visualization', function(this: common.ISuite) {
                 }
               })
 
-              const b1 = ui.selectors.SIDECAR_MODE_BUTTON('zoom-in')
-              const b2 = ui.selectors.SIDECAR_MODE_BUTTON('outliers')
+              const b1 = Selectors.SIDECAR_MODE_BUTTON('zoom-in')
+              const b2 = Selectors.SIDECAR_MODE_BUTTON('outliers')
 
               if (tab === 'grid') {
                 await Promise.all([this.app.client.waitForVisible(b1), this.app.client.waitForVisible(b2, 10000, true)])
@@ -205,7 +195,7 @@ describe('grid visualization', function(this: common.ISuite) {
             }
           })
         )
-        .catch(common.oops(this)))
+        .catch(Common.oops(this)))
   }
   const switcheroo = () => {
     switchTo('summary')
@@ -219,10 +209,10 @@ describe('grid visualization', function(this: common.ISuite) {
 
   // activation list, click on activationId and action name; the latter should open the grid
   // !!! DISABLED TEST: horrible bug in electron 4.0.5, spectron 4.1.0... the elements to be clicked spazz to the left
-  /* it(`should find an activation of ${actionName} in activation list`, () => cli.do('$ list', this.app)
-    .then(cli.expectOKWithCustom({ passthrough: true }))
+  /* it(`should find an activation of ${actionName} in activation list`, () => CLI.command('$ list', this.app)
+    .then(ReplExpect.okWithCustom({ passthrough: true }))
     .then(async N => {
-      const row = `${ui.selectors.OUTPUT_N(N)} .log-line[data-name="${actionName}"]`
+      const row = `${Selectors.OUTPUT_N(N)} .log-line[data-name="${actionName}"]`
       const activationIdSelector = `${row} .activationId .clickable`
       const actionNameSelector = `${row} .entity-name .clickable`
 
@@ -235,18 +225,18 @@ describe('grid visualization', function(this: common.ISuite) {
           .then(() => this.app.client.click(activationIdSelector))
           .then(() => new Promise(resolve => setTimeout(resolve, 20000000)))
           .then(() => this.app)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing(actionName, activationId)))
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(actionName, activationId)))
       // now click on the action name, and expect grid
         .then(() => this.app.client.waitForVisible(actionNameSelector))
         .then(() => this.app.client.waitForEnabled(actionNameSelector))
         .then(() => this.app.client.click(actionNameSelector))
         .then(() => this.app)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName))
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(actionName))
         .then(() => this.app.client.waitForText(icon))
     })
-     .catch(common.oops(this))) */
+     .catch(Common.oops(this))) */
 
   // invoke again with positive, and then look for a count of 2
   notbomb()
@@ -274,23 +264,23 @@ describe('grid visualization', function(this: common.ISuite) {
 
   // click on grid cell
   openGridExpectCountOf(4, 2, `grid --batches ${N} ${actionName}`)
-  it('should drill down to activation when grid cell is clicked', () => this.app.client.getAttribute(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child`, 'data-action-name')
-    .then(actionName => this.app.client.click(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} .grid-cell:first-child`)
+  it('should drill down to activation when grid cell is clicked', () => this.app.client.getAttribute(`${Selectors.SIDECAR_CUSTOM_CONTENT} .grid:first-child`, 'data-action-name')
+    .then(actionName => this.app.client.click(`${Selectors.SIDECAR_CUSTOM_CONTENT} .grid-cell:first-child`)
       .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(() => this.app.client.click(ui.selectors.SIDECAR_BACK_BUTTON))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(() => this.app.client.click(Selectors.SIDECAR_BACK_BUTTON))
       .then(() => this.app)
-      .then(sidecar.expectOpen)
+      .then(SidecarExpect.open)
       .then(verifyGrid(4, 2)))
-    .catch(common.oops(this)))
+    .catch(Common.oops(this)))
 */
-  /* const tableTest = (iter, resolve, reject) => cli.do(`table ${actionName}`, this.app)
-        .then(cli.expectOK)
-          .then(sidecar.expectOpen)
-          .then(() => this.app.client.click(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-label.clickable`))
+  /* const tableTest = (iter, resolve, reject) => CLI.command(`table ${actionName}`, this.app)
+        .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(() => this.app.client.click(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-label.clickable`))
           .then(() => this.app)
-          .then(sidecar.expectOpen)
+          .then(SidecarExpect.open)
           .then(verifyGrid(4, 2))
           .then(resolve)
           .catch(err => {
@@ -298,16 +288,16 @@ describe('grid visualization', function(this: common.ISuite) {
                   console.error('retry in tableTest')
                   setTimeout(() => tableTest(iter + 1, resolve, reject), 1000)
               } else {
-                  return common.oops(this)(err)
+                  return Common.oops(this)(err)
               }
           });
     it(`should open table view, click on table row, and observe switch to grid view actionName=${actionName}`, () => new Promise((resolve, reject) => tableTest(0, resolve, reject))) */
   /*
-  it(`should create a second action ${actionName2} that bombs if the input value is negative`, () => cli.do(`let ${actionName2} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2))
-    .catch(common.oops(this)))
+  it(`should create a second action ${actionName2} that bombs if the input value is negative`, () => CLI.command(`let ${actionName2} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
+    .then(ReplExpect.ok)
+    .then(SidecarExpect.open)
+    .then(SidecarExpect.showing(actionName2))
+    .catch(Common.oops(this)))
 
   notbomb(actionName2)
   openGridExpectCountOf(1, 0, `grid --batches ${N}`, actionName2)
@@ -323,11 +313,11 @@ describe('grid visualization', function(this: common.ISuite) {
   switcheroo()
 
   // purposefully reuse actionName2, but within a package
-  it(`should create a packaged action ${packageName}/${actionName2} that bombs if the input value is negative`, () => cli.do(`let ${packageName}/${actionName2} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName2, undefined, undefined, packageName))
-    .catch(common.oops(this)))
+  it(`should create a packaged action ${packageName}/${actionName2} that bombs if the input value is negative`, () => CLI.command(`let ${packageName}/${actionName2} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
+    .then(ReplExpect.ok)
+    .then(SidecarExpect.open)
+    .then(SidecarExpect.showing(actionName2, undefined, undefined, packageName))
+    .catch(Common.oops(this)))
 
   // invoke not-packed actionName2 again, and packaged
   // actionName2. open grid filtering just to packaged actionName2,
@@ -339,20 +329,20 @@ describe('grid visualization', function(this: common.ISuite) {
   notbomb(actionName2, packageName)
   openGridExpectCountOf(2, 0, `grid --batches 2 ${packageName}/${actionName2}`, actionName2) // we've done two notbombs against the packaged actionName2, hence 2,0
 
-  it('should open grid as timeline with grid --timeline', () => cli.do('grid --timeline', this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should open grid as timeline with grid --timeline', () => CLI.command('grid --timeline', this.app)
+    .then(ReplExpect.ok)
+    .catch(Common.oops(this)))
 
-  it('should open grid as timeline with grid -t', () => cli.do('grid -t', this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it('should open grid as timeline with grid -t', () => CLI.command('grid -t', this.app)
+    .then(ReplExpect.ok)
+    .catch(Common.oops(this)))
 
-  it('should open grid as timeline with grid -t, then switch to summary', () => cli.do('grid -t', this.app)
-    .then(cli.expectOK)
-    .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('summary')))
+  it('should open grid as timeline with grid -t, then switch to summary', () => CLI.command('grid -t', this.app)
+    .then(ReplExpect.ok)
+    .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary')))
     .then(() => this.app.client.waitUntil(() => {
       return this.app.client.getText('.sidecar-header-icon')
         .then(txt => txt.toLowerCase() === 'summary')
     }))
-    .catch(common.oops(this))) */
+    .catch(Common.oops(this))) */
 })

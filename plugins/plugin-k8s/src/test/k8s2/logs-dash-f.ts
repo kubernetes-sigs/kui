@@ -17,8 +17,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, ctrlC, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -41,9 +40,9 @@ function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
-describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
   allocateNS(this, ns)
@@ -51,25 +50,23 @@ describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   const podName = 'vim'
   const containerName = 'alpine'
   it(`should create sample pod from URL`, () => {
-    return cli
-      .do(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-      .then(cli.expectOKWithString(podName))
-      .catch(common.oops(this, true))
+    return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
+      .then(ReplExpect.okWithString(podName))
+      .catch(Common.oops(this, true))
   })
 
   it(`should wait for the pod to come up`, () => {
-    return cli
-      .do(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(podName) }))
+    return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
       .then(selector => waitForGreen(this.app, selector))
-      .catch(common.oops(this, true))
+      .catch(Common.oops(this, true))
   })
 
   it(`should follow the logs`, async () => {
     try {
-      const res = await cli.do(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app)
+      const res = await CLI.command(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app)
 
-      const rows = selectors.xtermRows(res.count)
+      const rows = Selectors.xtermRows(res.count)
 
       await sleep(sleepTime)
       const text1 = await getTextContent(this.app, rows)
@@ -89,7 +86,7 @@ describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       assert.ok(nRows3 > nRows2, `${nRows3} is not > ${nRows2}`)
 
       await this.app.client.click(rows)
-      await this.app.client.keys(ctrlC)
+      await this.app.client.keys(Keys.ctrlC)
 
       await sleep(sleepTime)
       const text4 = await getTextContent(this.app, rows)
@@ -102,7 +99,7 @@ describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       console.log('nRows5', nRows5)
       assert.strictEqual(nRows5, nRows4)
     } catch (err) {
-      await common.oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 

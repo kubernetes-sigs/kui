@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,51 +14,19 @@
  * limitations under the License.
  */
 
-const ui = require('./ui')
-require('colors')
+import * as colors from 'colors'
+import { Func, Suite, HookFunction } from 'mocha'
+import { Application } from 'spectron'
 
-/** non-headless targets in travis use the clients/default version */
-exports.expectedVersion =
-  process.env.TRAVIS_JOB_ID &&
-  (process.env.MOCHA_RUN_TARGET === 'electron' || process.env.MOCHA_RUN_TARGET === 'webpack')
-    ? '0.0.1'
-    : require('@kui-shell/settings/package.json').version
+import * as CLI from './cli'
+import * as Selectors from './selectors'
 
-/**
- * Mimic the request-promise functionality, but with retry
- *
- */
-exports.rp = opts => {
-  const rp = require('request-promise')
-  const withRetry = require('promise-retry')
+colors.enable()
 
-  return withRetry((retry, iter) => {
-    return rp(Object.assign({ timeout: 20000 }, typeof opts === 'string' ? { url: opts } : opts)).catch(err => {
-      const isNormalError = err && (err.statusCode === 400 || err.statusCode === 404 || err.statusCode === 409)
-      if (!isNormalError && iter < 10) {
-        console.error(err)
-        retry()
-      } else {
-        console.error(`Error in rp with opts=${JSON.stringify(opts)}`)
-        throw err
-      }
-    })
-  })
-}
-
-/**
- * Wait, if needed, for a proxy session
- *
- */
-exports.waitForSession = (ctx, noProxySessionWait = false) => {
-  if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
-    // wait for the proxy session to be established
-    try {
-      return ctx.app.client.waitForExist(`${ui.selectors.CURRENT_TAB}.kui--session-init-done`)
-    } catch (err) {
-      throw new Error('error waiting for proxy session init')
-    }
-  }
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface ISuite extends Suite {
+  app: Application
+  _kuiDestroyAfter?: boolean
 }
 
 /**
@@ -66,30 +34,7 @@ exports.waitForSession = (ctx, noProxySessionWait = false) => {
  * and done, quit that singleton electron
  *
  */
-let app
-after(async () => {
-  if (app && app.isRunning()) {
-    await app.stop()
-  }
-})
-
-/** reload the app */
-exports.refresh = async (ctx, wait = true, clean = false) => {
-  await ctx.app.client.refresh()
-  if (clean) {
-    await ctx.app.client.localStorage('DELETE') // clean out local storage
-  }
-  if (wait) {
-    await exports.waitForSession(ctx)
-    await ui.cli.waitForRepl(ctx.app)
-  }
-}
-
-/** restart the app */
-exports.restart = async ctx => {
-  await ctx.app.restart()
-  return exports.waitForSession(ctx)
-}
+let app: Application
 
 /**
  * Get the electron parts set up, and return an Application
@@ -98,74 +43,101 @@ exports.restart = async ctx => {
  * value of this function.
  *
  */
-const prepareElectron = (fuzz, popup = false) => {
+
+interface SpectronOptions {
+  env: Record<string, string>
+  chromeDriverArgs: string[]
+  startTimeout: number
+  waitTimeout: number
+  port?: number
+  path?: typeof Electron | string
+  args?: string[]
+}
+
+const prepareElectron = (popup: string[]) => {
   const Application = require('spectron').Application
   const electron = require('electron') // relative to __dirname
   const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/main/main.js' // relative to the tests/ directory
 
-  const env = {}
-  if (fuzz) {
-    env.___IBM_FSH_FUZZ = JSON.stringify(fuzz)
-  }
-
-  const opts = {
-    env,
+  const opts: SpectronOptions = {
+    env: {},
     chromeDriverArgs: ['--no-sandbox'],
-    startTimeout: process.env.TIMEOUT || 60000, // see https://github.com/IBM/kui/issues/2227
-    waitTimeout: process.env.TIMEOUT || 60000
+    startTimeout: parseInt(process.env.TIMEOUT) || 60000, // see https://github.com/IBM/kui/issues/2227
+    waitTimeout: parseInt(process.env.TIMEOUT) || 60000
   }
 
   if (process.env.PORT_OFFSET) {
-    opts.port = 9515 + parseInt(process.env.PORT_OFFSET, 10)
+    opts['port'] = 9515 + parseInt(process.env.PORT_OFFSET, 10)
 
     const userDataDir = `/tmp/kui-profile-${process.env.PORT_OFFSET}`
     opts.chromeDriverArgs.push(`--user-data-dir=${userDataDir}`)
 
-    console.log(`Using chromedriver port ${opts.port}`)
+    console.log(`Using chromedriver port ${opts['port']}`)
     console.log(`Using chromedriver user-data-dir ${userDataDir}`)
   }
 
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
     console.log(`Testing Webpack against chromium`)
-    opts.path = electron // this means spectron will use electron located in node_modules
-    opts.args = ['../core/tests/lib/main.js'] // relative to the tests/ directory
+    opts['path'] = electron // this means spectron will use electron located in node_modules
+    opts['args'] = ['../core/tests/lib/main.js'] // relative to the tests/ directory
   } else if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
-    opts.path = process.env.TEST_FROM_BUILD
+    opts['path'] = process.env.TEST_FROM_BUILD
   } else {
     console.log('Using filesystem-based assets')
-    opts.path = electron // this means spectron will use electron located in node_modules
-    opts.args = [appMain] // in this mode, we need to specify the main.js to use
+    opts['path'] = electron // this means spectron will use electron located in node_modules
+    opts['args'] = [appMain] // in this mode, we need to specify the main.js to use
   }
 
   if (process.env.CHROMEDRIVER_PORT) {
-    opts.port = process.env.CHROMEDRIVER_PORT
+    opts['port'] = parseInt(process.env.CHROMEDRIVER_PORT)
   }
   if (process.env.WSKNG_NODE_DEBUG) {
     // pass WSKNG_DEBUG on to NODE_DEBUG for the application
-    opts.env.NODE_DEBUG = process.env.WSKNG_NODE_DEBUG
+    opts.env['NODE_DEBUG'] = process.env.WSKNG_NODE_DEBUG
   }
   if (process.env.DEBUG) {
-    opts.env.DEBUG = process.env.DEBUG
+    opts.env['DEBUG'] = process.env.DEBUG
   }
 
   if (popup) {
-    opts.env.KUI_POPUP = JSON.stringify(popup)
+    opts.env['KUI_POPUP'] = JSON.stringify(popup)
   }
 
   return new Application(opts)
 }
 
-exports.prepareElectron = prepareElectron
+/** reload the app */
+export const refresh = async (ctx: ISuite, wait = true, clean = false) => {
+  await ctx.app.client.refresh()
+  if (clean) {
+    await ctx.app.client.localStorage('DELETE') // clean out local storage
+  }
+  if (wait) {
+    await CLI.waitForSession(ctx)
+    await CLI.waitForRepl(ctx.app)
+  }
+}
+
+export interface BeforeOptions {
+  noApp?: boolean
+  popup?: string[]
+  noProxySessionWait?: boolean
+  afterStart?: () => Promise<void>
+  beforeStart?: () => Promise<void>
+}
 
 /**
  * This is the method that will be called before a test begins
  *
- * @param fuzz lets you blank out certain portions of the world
- * @param noApp do not spawn the electron parts
- *
  */
-exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, noProxySessionWait = false } = {}) => {
+export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
+  const noApp = (options && options.noApp) || false
+  const popup = options && options.popup
+  const beforeStart = options && options.beforeStart
+  const afterStart = options && options.afterStart
+  const noProxySessionWait = options && options.noProxySessionWait
+
   if (process.env.TRAVIS_JOB_ID) {
     ctx.retries(1) // don't retry the mocha.it in local testing
   }
@@ -173,14 +145,14 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
   return async function() {
     // by default, we expect not to have to destroy the app when this
     // describe is done
-    ctx._kuiDestroyAfter = false
+    ctx['_kuiDestroyAfter'] = false
 
     if (!noApp) {
       if (app && !popup) {
         if (!beforeStart && !afterStart) {
           ctx.app = app
           try {
-            await exports.refresh(ctx, !noProxySessionWait, true)
+            await refresh(ctx, !noProxySessionWait, true)
             return
           } catch (err) {
             console.error('error refreshing in before for reuse start', err)
@@ -188,10 +160,10 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
           }
         }
       }
-      ctx.app = prepareElectron(fuzz, popup)
+      ctx.app = prepareElectron(popup)
       if (popup) {
         // for popups, we want to destroy the app when the describe is done
-        ctx._kuiDestroyAfter = true
+        ctx['_kuiDestroyAfter'] = true
       } else {
         app = ctx.app
       }
@@ -210,10 +182,10 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
               ctx.app
                 .start() // this will launch electron
                 // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
-                // .then(() => ctx.title && ctx.app.browserWindow.setTitle(ctx.title)) // set the window title to the current test
-                .then(() => exports.waitForSession(ctx, noProxySessionWait))
+                // .then(() => ctx.title && ctx['app].browserWindow.setTitle(ctx.title)) // set the window title to the current test
+                .then(() => CLI.waitForSession(ctx, noProxySessionWait))
                 .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
-                .then(() => !noProxySessionWait && ui.cli.waitForRepl(ctx.app))
+                .then(() => !noProxySessionWait && CLI.waitForRepl(ctx.app))
             ) // should have an active repl
           }
 
@@ -234,21 +206,21 @@ exports.before = (ctx, { fuzz, noApp = false, popup, afterStart, beforeStart, no
  * This is the method that will be called when a test completes
  *
  */
-exports.after = (ctx, f) => async () => {
+export const after = (ctx: ISuite, f?: () => void): HookFunction => async () => {
   if (f) await f()
 
   //
   // write out test coverage data from the renderer process
   //
   /* const nyc = new (require('nyc'))(),
-          tempDirectory = require('path').resolve(nyc._tempDirectory)
-    nyc.createTempDirectory()
-    const C = ctx.app.client.execute(tempDirectory => {
-        const config = { tempDirectory },             // the nyc config
-              nyc = new (require('nyc'))(config)      // create the nyc instance
-        nyc.createTempDirectory()                     // in case we are the first to the line
-        nyc.writeCoverageFile()                       // write out the coverage data for the renderer code
-    }, tempDirectory) */
+           tempDirectory = require('path').resolve(nyc._tempDirectory)
+     nyc.createTempDirectory()
+     const C = ctx.app.client.execute(tempDirectory => {
+         const config = { tempDirectory },             // the nyc config
+               nyc = new (require('nyc'))(config)      // create the nyc instance
+         nyc.createTempDirectory()                     // in case we are the first to the line
+         nyc.writeCoverageFile()                       // write out the coverage data for the renderer code
+     }, tempDirectory) */
 
   // when we're done with a test suite, look for any important
   // SEVERE errors in the chrome console logs. try to ignore
@@ -275,18 +247,18 @@ exports.after = (ctx, f) => async () => {
             log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
           ) {
             const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-            console.log(`${log.source} ${log.level}`.bold.red, logMessage)
+            console.log(`${log.level}`.red.bold, logMessage)
           }
         })
     )
   }
 
-  if (ctx.app && ctx.app.isRunning() && ctx._kuiDestroyAfter) {
+  if (ctx.app && ctx.app.isRunning() && ctx['_kuiDestroyAfter']) {
     return ctx.app.stop()
   }
 }
 
-exports.oops = (ctx, wait = false) => async err => {
+export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
   try {
     if (process.env.MOCHA_RUN_TARGET) {
       console.log(`Error: mochaTarget=${process.env.MOCHA_RUN_TARGET} testTitle=${ctx.title}`)
@@ -298,13 +270,13 @@ exports.oops = (ctx, wait = false) => async err => {
     if (ctx.app) {
       try {
         promises.push(
-          ctx.app.client.getHTML(ui.selectors.OUTPUT_LAST).then(html => {
+          await ctx.app.client.getHTML(Selectors.OUTPUT_LAST).then(html => {
             console.log('here is the output of the prior output:')
             console.log(html.replace(/<style>.*<\/style>/, ''))
           })
         )
         promises.push(
-          ctx.app.client.getHTML(ui.selectors.PROMPT_BLOCK_FINAL).then(html => {
+          await ctx.app.client.getHTML(Selectors.PROMPT_BLOCK_FINAL).then(html => {
             console.log('here is the content of the last block:')
             console.log(html.replace(/<style>.*<\/style>/, ''))
           })
@@ -318,7 +290,7 @@ exports.oops = (ctx, wait = false) => async err => {
           logs.forEach(log => {
             if (log.indexOf('INFO:CONSOLE') < 0) {
               // don't log console messages, as these will show up in getRenderProcessLogs
-              console.log('MAIN'.bold.cyan, log)
+              console.log('MAIN'.cyan.bold, log)
             }
           })
         )
@@ -331,22 +303,22 @@ exports.oops = (ctx, wait = false) => async err => {
             .filter(log => !/fonts.gstatic/.test(log.message))
             .forEach(log => {
               if (log.message.indexOf('%c') === -1) {
-                console.log('RENDER'.bold.yellow, log.message.red)
+                console.log('RENDER'.yellow.bold, log.message.red)
               } else {
                 // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
                 const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-                console.log('RENDER'.bold.yellow, logMessage)
+                console.log('RENDER'.yellow.bold, logMessage)
               }
             })
         )
       )
 
       promises.push(
-        ctx.app.client
-          .getText(ui.selectors.OOPS)
+        await ctx.app.client
+          .getText(Selectors.OOPS)
           .then(anyErrors => {
             if (anyErrors) {
-              console.log('Error from the UI'.bold.magenta, anyErrors)
+              console.log('Error from the UI'.magenta.bold, anyErrors)
             }
           })
           .catch(() => {
@@ -368,40 +340,53 @@ exports.oops = (ctx, wait = false) => async err => {
   throw err
 }
 
+/** restart the app */
+export const restart = async (ctx: ISuite) => {
+  await ctx.app.restart()
+  return CLI.waitForSession(ctx)
+}
+
 /** only execute the test in local */
-exports.localIt = (msg, func) => {
+export const localIt = (msg: string, func: Func) => {
   if (process.env.MOCHA_RUN_TARGET !== 'webpack') return it(msg, func)
 }
 
 /** only execute the test suite in local */
-exports.localDescribe = (msg, func) => {
-  if (process.env.MOCHA_RUN_TARGET !== 'webpack') return describe(msg, func)
+export const localDescribe = (msg: string, suite: (this: Suite) => void) => {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack') return describe(msg, suite)
 }
 
 /** only execute the test suite in an environment that has docker */
-exports.dockerDescribe = (msg, func) => {
+export const dockerDescribe = (msg: string, suite: (this: Suite) => void) => {
   if (process.env.MOCHA_RUN_TARGET !== 'webpack' && (!process.env.TRAVIS_JOB_ID || process.platform === 'linux')) {
     // currently only linux supports docker when running in travis
-    return describe(msg, func)
+    return describe(msg, suite)
   }
 }
 
 /** only execute the test in non-proxy browser */
-exports.remoteIt = (msg, func) => {
+export const remoteIt = (msg: string, func: Func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') return it(msg, func)
 }
 
 /** only execute the test suite in electron or proxy+browser clients */
-exports.pDescribe = (msg, func) => {
-  if (process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true') return describe(msg, func)
+export const pDescribe = (msg: string, suite: (this: Suite) => void) => {
+  if (process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true') return describe(msg, suite)
 }
 
 /** only execute the test in proxy+browser client */
-exports.proxyIt = (msg, func) => {
+export const proxyIt = (msg: string, func: Func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') return it(msg, func)
 }
 
 /** only execute the test in electron or proxy+browser client */
-exports.pit = (msg, func) => {
+export const pit = (msg: string, func: Func) => {
   if (process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true') return it(msg, func)
 }
+
+/** non-headless targets in travis use the clients/default version */
+export const expectedVersion =
+  process.env.TRAVIS_JOB_ID &&
+  (process.env.MOCHA_RUN_TARGET === 'electron' || process.env.MOCHA_RUN_TARGET === 'webpack')
+    ? '0.0.1'
+    : require('@kui-shell/settings/package.json').version

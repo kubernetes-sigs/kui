@@ -19,24 +19,22 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('openwhisk host tests', function(this: common.ISuite) {
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+describe('openwhisk host tests', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should command not found on hosts set', () =>
-    cli
-      .do('wsk hosts set', this.app)
-      .then(cli.expectError(404, 'Command not found'))
-      .catch(common.oops(this)))
+    CLI.command('wsk hosts set', this.app)
+      .then(ReplExpect.error(404, 'Command not found'))
+      .catch(Common.oops(this)))
 
   it('bogus host from default context', () =>
-    cli.do(`wsk host set xxx`, this.app).then(
-      cli.expectOKWithCustom({
+    CLI.command(`wsk host set xxx`, this.app).then(
+      ReplExpect.okWithCustom({
         selector: '',
         expect: `Before you can proceed, please provide an OpenWhisk auth key, using wsk auth add <AUTH_KEY>`
       })
@@ -46,13 +44,12 @@ describe('openwhisk host tests', function(this: common.ISuite) {
   // if the user hits return, we want the operation to be cancelled
   // see shell issue #192
   it('should auto-cancel when using prefilled content', () =>
-    cli.do(`wsk host set <your_api_host>`, this.app).then(cli.expectError(0, 'Operation cancelled')))
+    CLI.command(`wsk host set <your_api_host>`, this.app).then(ReplExpect.error(0, 'Operation cancelled')))
 
   it(`should restore host to original setting: ${openwhisk.apihost}`, () =>
-    cli
-      .do(`wsk host set ${openwhisk.apihost}`, this.app)
-      .then(cli.expectOK)
-      .then(() => cli.do('wsk host get', this.app))
-      .then(cli.expectOKWithCustom({ expect: openwhisk.apihost }))
-      .catch(common.oops(this)))
+    CLI.command(`wsk host set ${openwhisk.apihost}`, this.app)
+      .then(ReplExpect.ok)
+      .then(() => CLI.command('wsk host get', this.app))
+      .then(ReplExpect.okWithCustom({ expect: openwhisk.apihost }))
+      .catch(Common.oops(this)))
 })

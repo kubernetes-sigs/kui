@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
-describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const testResourceNotFound = (watchCmd: string, resourceType: string, resourceName: string) => {
     const errorMessage = `Error from server (NotFound): ${resourceType} "${resourceName}" not found`
 
     it(`should error out when watching a non-existent ${resourceType}`, () => {
-      return cli
-        .do(watchCmd, this.app)
-        .then(cli.expectError(404, errorMessage))
-        .catch(common.oops(this))
+      return CLI.command(watchCmd, this.app)
+        .then(ReplExpect.error(404, errorMessage))
+        .catch(Common.oops(this))
     })
   }
 
   const testWrongCommand = (watchCmd: string, code: number, errMessage?: string) => {
     it(`should error out with wrong command ${watchCmd}`, () => {
-      return cli
-        .do(watchCmd, this.app)
-        .then(errMessage ? cli.expectError(code, errMessage) : cli.expectError(code))
-        .catch(common.oops(this))
+      return CLI.command(watchCmd, this.app)
+        .then(errMessage ? ReplExpect.error(code, errMessage) : ReplExpect.error(code))
+        .catch(Common.oops(this))
     })
   }
 
@@ -69,44 +66,43 @@ describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET}`, function
       const ns = createNS()
 
       // start to watch pods in a non-existant namespace
-      const watchResult = await cli.do(`k get pods -w -n ${ns}`, this.app).then(async result => {
-        await cli.expectOK(result)
+      const watchResult = await CLI.command(`k get pods -w -n ${ns}`, this.app).then(async result => {
+        await ReplExpect.ok(result)
         return result
       })
 
       // create the namespace
-      await cli
-        .do(`k create ns ${ns}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
+      await CLI.command(`k create ns ${ns}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) }))
         .then(status => waitForGreen(this.app, status))
 
       // create a pod
-      await cli
-        .do(`k create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+      await CLI.command(
+        `k create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+        this.app
+      )
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then(status => waitForGreen(this.app, status))
 
       // the watch table should have the new pods with online status
-      const watchStatus = `${selectors.OUTPUT_N(watchResult.count)} ${selectors.BY_NAME('nginx')}`
+      const watchStatus = `${Selectors.OUTPUT_N(watchResult.count)} ${Selectors.BY_NAME('nginx')}`
       await this.app.client.waitForExist(watchStatus)
       await waitForGreen(this.app, watchStatus)
 
       // delete the pod
-      await cli
-        .do(`k delete pods nginx -n ${ns}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+      await CLI.command(`k delete pods nginx -n ${ns}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then(status => waitForRed(this.app, status))
 
       // the watch table should have the new pods with offline status
       await waitForRed(this.app, watchStatus)
 
       // delete the namespace
-      await cli
-        .do(`k delete ns ${ns}`, this.app)
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(ns) }))
+      await CLI.command(`k delete ns ${ns}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) }))
         .then(nsStatus => waitForRed(this.app, nsStatus))
     } catch (err) {
-      await common.oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 })

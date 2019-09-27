@@ -16,10 +16,9 @@
 
 import * as assert from 'assert'
 import { v4 as uuid } from 'uuid'
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const actionName = `activation-table-${uuid()}` // some unique name
 
@@ -34,19 +33,18 @@ const actionName = `activation-table-${uuid()}` // some unique name
 /* const isInteger = str => typeof str === 'number' || parsesAsInteger(str) */
 
 const _openTableExpectCountOf = function(ctx, expectedCount, expectedErrorRate, cmd) {
-  const view = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} .activation-viz-plugin`
+  const view = `${Selectors.SIDECAR_CUSTOM_CONTENT} .activation-viz-plugin`
   const row = `${view} tr[data-action-name="${actionName}"]`
   const successCell = `${row} .cell-successes.cell-hide-when-outliers-shown`
   const failureCell = `${row} .cell-failures.cell-hide-when-outliers-shown`
   const medianDot = `${row} .stat-median-dot`
   const focusLabel = `${view} .table-header .x-axis-focus-label`
-  const outliersButton = ui.selectors.SIDECAR_MODE_BUTTON('outliers')
+  const outliersButton = Selectors.SIDECAR_MODE_BUTTON('outliers')
   const outlierDots = `${view} .outlier-dot`
 
   const once = (iter, resolve, reject) =>
-    cli
-      .do(cmd, ctx.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(cmd, ctx.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(N => {
         // we'll return this N at the end; this is the data-input-count of the prompt that executed our cmd
         return (
@@ -69,7 +67,7 @@ const _openTableExpectCountOf = function(ctx, expectedCount, expectedErrorRate, 
               }
             })
 
-            /* .then(() => ctx.app.client.getAttribute(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-stat`, 'data-value'))
+            /* .then(() => ctx.app.client.getAttribute(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-stat`, 'data-value'))
                   .then(stats => assert.equal(stats.length, 5) && stats.reduce((okSoFar,stat) => ok && isInteger(stat), true)) */
 
             // return the repl prompt count
@@ -83,7 +81,7 @@ const _openTableExpectCountOf = function(ctx, expectedCount, expectedErrorRate, 
           }
           setTimeout(() => once(iter + 1, resolve, reject), 2000)
         } else {
-          return common.oops(ctx)(err)
+          return Common.oops(ctx)(err)
         }
       })
 
@@ -93,23 +91,22 @@ export const openTableExpectCountOf = function(ctx, expectedCount, expectedError
   it(`open activation table, with ${cmd}`, () => _openTableExpectCountOf(ctx, expectedCount, expectedErrorRate, cmd))
 }
 
-describe('summary visualization', function(this: common.ISuite) {
+describe('summary visualization', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const invoke = (inputValue = 1) => {
     // action bombs with negative numbers
     const expectedStruct = inputValue < 0 ? { error: 'bomb!' } : { x: inputValue }
 
     it('should invoke the action with explicit action name', () =>
-      cli
-        .do(`wsk action invoke ${actionName} -p x ${inputValue}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName))
-        .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-        .then(ui.expectStruct(expectedStruct))
-        .catch(common.oops(this)))
+      CLI.command(`wsk action invoke ${actionName} -p x ${inputValue}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(actionName))
+        .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_RESULT))
+        .then(Util.expectStruct(expectedStruct))
+        .catch(Common.oops(this)))
   }
   const notbomb = () => invoke(+1)
   const bomb = () => invoke(-1)
@@ -117,29 +114,28 @@ describe('summary visualization', function(this: common.ISuite) {
   /* const openSplitTableExpectCountsOf = (expectedCountA, expectedErrorRateA,
                                           expectedCountB, expectedErrorRateB,
                                           cmd) => {
-        it(`open activation table, with ${cmd}`, () => cli.do(cmd, this.app)
-            .then(cli.expectOK)
-           .then(sidecar.expectOpen)
+        it(`open activation table, with ${cmd}`, () => CLI.command(cmd, this.app)
+            .then(ReplExpect.ok)
+           .then(SidecarExpect.open)
 
-           .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.1"] .cell-count`))
+           .then(() => this.app.client.getText(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.1"] .cell-count`))
            .then(actualCountA => assert.equal(actualCountA, expectedCountA))
-           .then(() => this.app.client.getAttribute(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.1"] .cell-errorRate`, 'data-value'))
+           .then(() => this.app.client.getAttribute(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.1"] .cell-errorRate`, 'data-value'))
            .then(actualErrorRateA => assert.equal(actualErrorRateA, expectedErrorRateA))
 
-           .then(() => this.app.client.getText(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.2"] .cell-count`))
+           .then(() => this.app.client.getText(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.2"] .cell-count`))
            .then(actualCountB => assert.equal(actualCountB, expectedCountB))
-           .then(() => this.app.client.getAttribute(`${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.2"] .cell-errorRate`, 'data-value'))
+           .then(() => this.app.client.getAttribute(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName} v0.0.2"] .cell-errorRate`, 'data-value'))
            .then(actualErrorRateB => assert.equal(actualErrorRateB, expectedErrorRateB))
-           .catch(common.oops(this)))
+           .catch(Common.oops(this)))
     } */
 
   it(`should create the action that bombs if the input value is negative ${actionName}`, () =>
-    cli
-      .do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .catch(common.oops(this)))
+    CLI.command(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .catch(Common.oops(this)))
 
   // invoke with positive number, expect count of 1 in the table
   notbomb()
@@ -164,20 +160,20 @@ describe('summary visualization', function(this: common.ISuite) {
   // this test is too flakey against IBM CLoud Functions, as activation records may only become visible way in the future
   /*
   it('should open table, click on a failure cell, and show grid', () => _openTableExpectCountOf(this, 3, 1, 'summary --batches 10')
-    .then(() => `${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-errors`) // the failure cell for the action's row
+    .then(() => `${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-errors`) // the failure cell for the action's row
     .then(selector => this.app.client.scroll(selector)
       .then(this.app.client.click(selector)))
     .then(() => this.app)
-    .then(sidecar.expectOpen)
+    .then(SidecarExpect.open)
     .then(sidecar.expectMode('grid'))
-    .catch(common.oops(this)))
+    .catch(Common.oops(this)))
 
   // force a version update
-  it('should create the action that bombs if the input value is negative', () => cli.do(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
-    .then(cli.expectOK)
-    .then(sidecar.expectOpen)
-    .then(sidecar.expectShowing(actionName))
-    .catch(common.oops(this)))
+  it('should create the action that bombs if the input value is negative', () => CLI.command(`let ${actionName} = ({x}) => x<0 ? {error:'bomb!'} : {x: x}`, this.app)
+    .then(ReplExpect.ok)
+    .then(SidecarExpect.open)
+    .then(SidecarExpect.showing(actionName))
+    .catch(Common.oops(this)))
 
   notbomb()
   notbomb()
@@ -191,29 +187,29 @@ describe('summary visualization', function(this: common.ISuite) {
                                  6, 0.5,  // we've made 6 invocations against the new version, 3 of which failed
                                  `summary -a --split --name ${actionName}`) */
   /*
-  it(`should load test ${actionName}`, () => cli.do(`lt ${actionName}`, this.app)
-    .catch(common.oops(this)))
+  it(`should load test ${actionName}`, () => CLI.command(`lt ${actionName}`, this.app)
+    .catch(Common.oops(this)))
 
   openTableExpectCountOf(this, 46, 4, `summary ${actionName}`) // 46 successful activations, 4 of which failed
 
   // finally, test error handling: delete action, open summary,
   // click on the action name, except the summary to still be there
-  it(`should delete ${actionName}`, () => cli.do(`wsk action delete ${actionName}`, this.app)
-    .then(cli.expectOK)
-    .catch(common.oops(this)))
+  it(`should delete ${actionName}`, () => CLI.command(`wsk action delete ${actionName}`, this.app)
+    .then(ReplExpect.ok)
+    .catch(Common.oops(this)))
 
   it('should open table, click on the deleted action, and still show table view', () => _openTableExpectCountOf(this, 46, 4, `summary ${actionName}`)
     .then(N => {
       // N is the data-input-count of the block that executed the command
-      const selector = `${ui.selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-label .clickable` // the name cell for the deleted action
+      const selector = `${Selectors.SIDECAR_CUSTOM_CONTENT} tr[data-action-name="${actionName}"] .cell-label .clickable` // the name cell for the deleted action
       return this.app.client.scroll(selector)
         .then(this.app.client.click(selector)) // click on it
         .then(count => ({ app: this.app, count: N + 1 })) // the command+1 had better have a 404
-        .then(cli.expectError(404)) // the repl should report the action not found error
+        .then(ReplExpect.error(404)) // the repl should report the action not found error
     })
     .then(() => this.app.client.waitUntil(() => {
-      return sidecar.expectOpen(this.app)
+      return SidecarExpect.open(this.app)
         .then(sidecar.expectMode('summary')) // and the summary had better still be open
     }))
-    .catch(common.oops(this))) */
+    .catch(Common.oops(this))) */
 })

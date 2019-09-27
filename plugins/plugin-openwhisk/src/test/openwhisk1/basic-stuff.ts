@@ -19,11 +19,9 @@
  *
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli } = ui
-const { validateNamespace, expectedNamespace } = ui
 
 const API_HOST = process.env.API_HOST
 // const APP_TITLE = process.env.APP_TITLE || 'Kui Shell'
@@ -34,15 +32,14 @@ const selectors = {
   NAMESPACE: '#openwhisk-namespace'
 }
 
-describe('openwhisk namespace display', function(this: common.ISuite) {
+describe('openwhisk namespace display', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('execute wsk namespace current', () => {
-    return cli
-      .do('wsk namespace current', this.app)
-      .then(cli.expectOKWithString(expectedNamespace()))
-      .catch(common.oops(this))
+    return CLI.command('wsk namespace current', this.app)
+      .then(ReplExpect.okWithString(openwhisk.expectedNamespace()))
+      .catch(Common.oops(this))
   })
 
   it('has a well-formed apihost', () => {
@@ -53,7 +50,7 @@ describe('openwhisk namespace display', function(this: common.ISuite) {
           apihost.toLowerCase().replace(/^http[s]?:\/\//, '') === API_HOST.toLowerCase().replace(/^http[s]?:\/\//, '')
         )
       })
-      .catch(common.oops(this))
+      .catch(Common.oops(this))
   })
 
   it('has a well-formed namespace', () => {
@@ -61,12 +58,12 @@ describe('openwhisk namespace display', function(this: common.ISuite) {
       .waitUntil(async () => {
         const namespace = await this.app.client.getHTML(selectors.NAMESPACE, false)
         try {
-          validateNamespace(namespace)
+          openwhisk.validateNamespace(namespace)
           return true
         } catch (err) {
           return false
         }
       })
-      .catch(common.oops(this))
+      .catch(Common.oops(this))
   })
 })

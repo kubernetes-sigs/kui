@@ -19,12 +19,11 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const paramsFileContent = require('@kui-shell/plugin-openwhisk/tests/data/openwhisk/params.json')
@@ -35,77 +34,69 @@ const actionName2 = 'foo2'
 const actionName3 = 'foo3'
 const seqName = 'sss'
 
-describe('@file params and annotations', function(this: common.ISuite) {
+describe('@file params and annotations', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // action via wsk action create
   it('should create an action with --param-file', () =>
-    cli
-      .do(
-        `wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js --param-file ${ROOT}/data/openwhisk/params.json`,
-        this.app
-      )
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2)))
+    CLI.command(
+      `wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js --param-file ${ROOT}/data/openwhisk/params.json`,
+      this.app
+    )
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2)))
   it('should switch to parameters mode via "params" and show the @file params', () =>
-    cli
-      .do('wsk action params', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct(paramsFileContent)))
+    CLI.command('wsk action params', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct(paramsFileContent)))
 
   // action via wsk action create -P
   it('should create an action with -P', () =>
-    cli
-      .do(
-        `wsk action create ${actionName3} ${ROOT}/data/openwhisk/foo.js -P ${ROOT}/data/openwhisk/params.json`,
-        this.app
-      )
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3)))
+    CLI.command(
+      `wsk action create ${actionName3} ${ROOT}/data/openwhisk/foo.js -P ${ROOT}/data/openwhisk/params.json`,
+      this.app
+    )
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName3)))
   it('should switch to parameters mode via "params" and show the @file params', () =>
-    cli
-      .do('wsk action params', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName3))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct(paramsFileContent)))
+    CLI.command('wsk action params', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName3))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct(paramsFileContent)))
 
   // action via let
   it('should create an action via let with @file parameters', () =>
-    cli
-      .do(`let ${actionName} = x=>x -p xxx @${ROOT}/data/openwhisk/params.json`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`let ${actionName} = x=>x -p xxx @${ROOT}/data/openwhisk/params.json`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
   it('should switch to parameters mode via "params" and show the @file params', () =>
-    cli
-      .do('wsk action params', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ xxx: paramsFileContent })))
+    CLI.command('wsk action params', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ xxx: paramsFileContent })))
 
   // sequence
   it('should create a sequence via let with @file annotations', () =>
-    cli
-      .do(`let ${seqName} = x=>x -> x=>x -a xxx @${ROOT}/data/openwhisk/params.json`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName)))
+    CLI.command(`let ${seqName} = x=>x -> x=>x -a xxx @${ROOT}/data/openwhisk/params.json`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName)))
   it('should switch to annotations mode via "annotations" and show the @file annotations', () =>
-    cli
-      .do('wsk action annotations', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectSubset({ xxx: paramsFileContent })))
+    CLI.command('wsk action annotations', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(seqName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectSubset({ xxx: paramsFileContent })))
 })

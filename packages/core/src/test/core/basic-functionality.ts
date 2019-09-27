@@ -22,15 +22,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import {
-  ISuite,
-  before as commonBefore,
-  after as commonAfter,
-  oops,
-  localIt,
-  remoteIt,
-  localDescribe
-} from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 
 const APP_TITLE = process.env.APP_TITLE || 'Kui'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
@@ -43,9 +35,9 @@ const selectors = {
 }
 selectors.PROMPT = `${selectors.PROMPT_BLOCK} input`
 
-localDescribe('Basic Functionality', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+Common.localDescribe('Basic Functionality', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const openWindow = (app: Application) =>
     app.client
@@ -56,7 +48,7 @@ localDescribe('Basic Functionality', function(this: ISuite) {
       .then(() => app.client.getTitle()) // Get the window's title
       .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title
 
-  it('shows an initial window', () => openWindow(this.app).catch(oops(this)))
+  it('shows an initial window', () => openWindow(this.app).catch(Common.oops(this)))
 
   it('has an initial focus on the CLI prompt', () => assert.ok(this.app.client.hasFocus(selectors.PROMPT)))
 
@@ -71,23 +63,23 @@ localDescribe('Basic Functionality', function(this: ISuite) {
   }) */
 })
 
-describe('bodyCss', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe('bodyCss', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
-  localIt('should have kui.in-electron in bodyCss', async () => {
+  Common.localIt('should have kui.in-electron in bodyCss', async () => {
     try {
       await this.app.client.waitForExist('body.kui.in-electron')
     } catch (err) {
-      return oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 
-  remoteIt('should have kui.not-electron in bodyCss', async () => {
+  Common.remoteIt('should have kui.not-electron in bodyCss', async () => {
     try {
       await this.app.client.waitForExist('body.kui.not-electron')
     } catch (err) {
-      return oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 })

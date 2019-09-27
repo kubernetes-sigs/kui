@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   defaultModeForGet,
@@ -33,18 +32,19 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const ns: string = createNS()
 const inNamespace = `-n ${ns}`
 
-describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const createIt = () => {
     it('should create deployment from local file', async () => {
       try {
-        const selector = await cli
-          .do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
+        const selector = await CLI.command(
+          `kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`,
+          this.app
+        ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('myapp') }))
 
-        /* const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
+        /* const selectorPrefix = selector.replace(Selectors.BY_NAME('myapp'), '')
 
         await this.app.client
           .getText(`${selectorPrefix} .result-table-title`)
@@ -54,12 +54,11 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
 
-        await sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectMode(defaultModeForGet))
-          .then(sidecar.expectShowing('myapp', undefined, undefined, ns))
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.showing('myapp', undefined, undefined, ns))
       } catch (err) {
-        return common.oops(this)(err)
+        return Common.oops(this)(err)
       }
     })
   }
@@ -67,13 +66,13 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   const listIt = () => {
     it('should list deployments', async () => {
       try {
-        const selector = await cli
-          .do(`kubectl get deployment ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
+        const selector = await CLI.command(`kubectl get deployment ${inNamespace}`, this.app).then(
+          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('myapp') })
+        )
 
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
 
-        const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
+        const selectorPrefix = selector.replace(Selectors.BY_NAME('myapp'), '')
 
         if (singletonTablesHaveTitle) {
           await this.app.client
@@ -81,46 +80,44 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
             .then((title: string) => assert.ok(title === 'DEPLOYMENT'))
         }
 
-        await sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectMode(defaultModeForGet))
-          .then(sidecar.expectShowing('myapp', undefined, undefined, ns))
-          .then(() => this.app.client.waitForVisible(selectors.SIDECAR_MODE_BUTTON('pods')))
-          .then(() => this.app.client.click(selectors.SIDECAR_MODE_BUTTON('pods')))
-          .then(() => this.app.client.waitForExist(`${selectors.SIDECAR_CUSTOM_CONTENT} .bx--data-table`))
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.showing('myapp', undefined, undefined, ns))
+          .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('pods')))
+          .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('pods')))
+          .then(() => this.app.client.waitForExist(`${Selectors.SIDECAR_CUSTOM_CONTENT} .bx--data-table`))
           .then(async () => {
             if (singletonTablesHaveTitle) {
               const actualTitle = await this.app.client.getText(
-                `${selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`
+                `${Selectors.SIDECAR_CUSTOM_CONTENT} .result-table-title`
               )
               assert.strictEqual(actualTitle, 'PODS')
             }
           })
       } catch (err) {
-        return common.oops(this)(err)
+        return Common.oops(this)(err)
       }
     })
   }
 
   const deleteItByName = () => {
     it('should delete the deployment by name', () => {
-      return cli
-        .do(`kubectl delete deployment myapp ${inNamespace}`, this.app)
-        .then(cli.expectOKWithAny)
+      return CLI.command(`kubectl delete deployment myapp ${inNamespace}`, this.app)
+        .then(ReplExpect.okWithAny)
         .then(() => waitTillNone('deployment', undefined, 'myapp', undefined, inNamespace))
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     })
   }
 
   const deleteItByClickingOnButton = () => {
     it('should delete the deployment by clicking on the sidecar delete button', async () => {
       try {
-        await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
         await this.app.client.waitForExist('#confirm-dialog')
         await this.app.client.click('#confirm-dialog .bx--btn--danger')
         await waitTillNone('deployment', undefined, 'myapp', undefined, inNamespace)
       } catch (err) {
-        return common.oops(this)(err)
+        return Common.oops(this)(err)
       }
     })
   }

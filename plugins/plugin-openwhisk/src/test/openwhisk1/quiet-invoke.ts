@@ -19,43 +19,40 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName = 'foo'
 const actionName2 = 'foo2'
 
 // TODO: webpack test
-localDescribe('Invoke -q (quiet invoke)', function(this: common.ISuite) {
+localDescribe('Invoke -q (quiet invoke)', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create an action', () =>
-    cli
-      .do(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName)))
+    CLI.command(`wsk action create ${actionName} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName)))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2)))
+    CLI.command(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo.js -p x 5 -p y 10`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2)))
 
   // quiet invoke shouldn't affect the sidecar
   it('should invoke -q', () =>
-    cli
-      .do(`wsk action invoke ${actionName} -q`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2)))
+    CLI.command(`wsk action invoke ${actionName} -q`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2)))
 })

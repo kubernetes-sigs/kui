@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const cli = ui.cli
-const sidecar = ui.sidecar
+
 /**
  * this test covers app create error handling, and app create --dry-run
  *
  */
-describe('app create error handling', function(this: common.ISuite) {
+describe('app create error handling', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create a composition with undeloyed actions', () =>
-    cli
-      .do('wsk app create if @demos/if.js', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('if'))
+    CLI.command('wsk app create if @demos/if.js', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('if'))
       .then(app =>
         app.client.waitUntil(async () => {
           const ok: boolean = await app.client
@@ -41,101 +38,90 @@ describe('app create error handling', function(this: common.ISuite) {
           return ok
         }, 2000)
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it('should fail to invoke composition with undeployed actions', () =>
-    cli
-      .do('wsk app invoke if', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('if'))
+    CLI.command('wsk app invoke if', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('if'))
       .then(app =>
         app.client.waitUntil(async () => {
           const ok: boolean = await app.client
-            .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
+            .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
             .then(activationResult => activationResult.includes('Failed to resolve action'))
           return ok
         }, 2000)
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it('should deploy action authenticate', () =>
-    cli
-      .do('wsk action create authenticate @demos/authenticate.js', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('wsk action create authenticate @demos/authenticate.js', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should deploy action welcome', () =>
-    cli
-      .do('wsk action create welcome @demos/welcome.js', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('wsk action create welcome @demos/welcome.js', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should deploy action login', () =>
-    cli
-      .do('wsk action create login @demos/login.js', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('wsk action create login @demos/login.js', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should successfully invoke compostiion with deployed actions', () =>
-    cli
-      .do('wsk app invoke if', this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('if'))
+    CLI.command('wsk app invoke if', this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('if'))
       .then(app =>
         app.client.waitUntil(async () => {
-          const ok: boolean = await await app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`).then(
-            ui.expectStruct({
+          const ok: boolean = await await app.client.getText(`${Selectors.SIDECAR_CONTENT} .activation-result`).then(
+            Util.expectStruct({
               html: '<html><body>please say the magic word.</body></html>'
             })
           )
           return ok
         }, 2000)
       )
-      .catch(common.oops(this)))
-  /* it('should initialize composer', () => cli.do(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
-        .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
-       .catch(common.oops(this))) */
+      .catch(Common.oops(this)))
+  /* it('should initialize composer', () => CLI.command(`wsk app init --url ${sharedURL} --cleanse`, this.app) // cleanse important here for counting sessions in `sessions`
+        .then(ReplExpect.okWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
+       .catch(Common.oops(this))) */
 
   it('should 404 session get with all-numeric uuid', () =>
-    cli
-      .do('wsk session get 00000000000000000000000000000000', this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this)))
+    CLI.command('wsk session get 00000000000000000000000000000000', this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this)))
   it('should 404 session get with another all-numeric uuid', () =>
-    cli
-      .do('wsk session get 00000000000000000000000000000001', this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this)))
+    CLI.command('wsk session get 00000000000000000000000000000001', this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this)))
 
   it('should reject unknown option --mojo', () =>
-    cli
-      .do('wsk app create demos/if.js --mojo', this.app)
-      .then(cli.expectError(499)) // 499 means unsupported optional parameter
-      .catch(common.oops(this)))
+    CLI.command('wsk app create demos/if.js --mojo', this.app)
+      .then(ReplExpect.error(499)) // 499 means unsupported optional parameter
+      .catch(Common.oops(this)))
 
   it('should reject unknown option --mojo', () =>
-    cli
-      .do('wsk app create zombie demos/if.js --mojo', this.app)
-      .then(cli.expectError(499)) // 499 means unsupported optional parameter
-      .catch(common.oops(this)))
+    CLI.command('wsk app create zombie demos/if.js --mojo', this.app)
+      .then(ReplExpect.error(499)) // 499 means unsupported optional parameter
+      .catch(Common.oops(this)))
 
   it('should reject unknown option -m', () =>
-    cli
-      .do('wsk app create demos/if.js -m', this.app)
-      .then(cli.expectError(498)) // beginning of usage, because we didn't pass an app name
-      .catch(common.oops(this)))
+    CLI.command('wsk app create demos/if.js -m', this.app)
+      .then(ReplExpect.error(498)) // beginning of usage, because we didn't pass an app name
+      .catch(Common.oops(this)))
 
   it('should reject unknown option -m', () =>
-    cli
-      .do('wsk app create zombie demos/if.js -m', this.app)
-      .then(cli.expectError(498))
-      .catch(common.oops(this)))
+    CLI.command('wsk app create zombie demos/if.js -m', this.app)
+      .then(ReplExpect.error(498))
+      .catch(Common.oops(this)))
 
-  /* it('should fail to initialize composer, due to bogus option', () => cli.do(`wsk app init --nope`, this.app)
-        .then(cli.expectError(0, 'Unexpected option nope'))
-       .catch(common.oops(this))) */
+  /* it('should fail to initialize composer, due to bogus option', () => CLI.command(`wsk app init --nope`, this.app)
+        .then(ReplExpect.error(0, 'Unexpected option nope'))
+       .catch(Common.oops(this))) */
 
   /* --dry-run options disabled */
 
@@ -150,29 +136,28 @@ describe('app create error handling', function(this: common.ISuite) {
   //
   // SyntaxError: Unexpected token ,` }]
 
-  /* it(`should dry-run check ${dryRunOk} with -n`, () => cli.do(`wsk app create ${dryRunOk} -n`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Your code compiles without error' }))
-    .catch(common.oops(this)))
-  it(`should dry-run check ${dryRunOk} with --dry-run`, () => cli.do(`wsk app create ${dryRunOk} --dry-run`, this.app)
-    .then(cli.expectOKWithCustom({ expect: 'Your code compiles without error' }))
-    .catch(common.oops(this)))
+  /* it(`should dry-run check ${dryRunOk} with -n`, () => CLI.command(`wsk app create ${dryRunOk} -n`, this.app)
+    .then(ReplExpect.okWithCustom({ expect: 'Your code compiles without error' }))
+    .catch(Common.oops(this)))
+  it(`should dry-run check ${dryRunOk} with --dry-run`, () => CLI.command(`wsk app create ${dryRunOk} --dry-run`, this.app)
+    .then(ReplExpect.okWithCustom({ expect: 'Your code compiles without error' }))
+    .catch(Common.oops(this)))
   dryRunBad.forEach(({ input, err }) => {
-    it(`should dry-run check with expected error ${input} --dry-run`, () => cli.do(`wsk app create ${input} --dry-run`, this.app)
-      .then(cli.expectError('ENOPARSE', err))
-      .catch(common.oops(this)))
+    it(`should dry-run check with expected error ${input} --dry-run`, () => CLI.command(`wsk app create ${input} --dry-run`, this.app)
+      .then(ReplExpect.error('ENOPARSE', err))
+      .catch(Common.oops(this)))
   })
 
    // check file not found error handling
-  it(`should fail properly with ENOENT`, () => cli.do(`wsk app create goober.js -n`, this.app)
-    .then(cli.expectError('ENOENT'))
-    .catch(common.oops(this)))
-  it(`should fail properly with ENOENT`, () => cli.do(`wsk app create goober.js --dry-run`, this.app)
-  .then(cli.expectError('ENOENT'))
-  .catch(common.oops(this))) */
+  it(`should fail properly with ENOENT`, () => CLI.command(`wsk app create goober.js -n`, this.app)
+    .then(ReplExpect.error('ENOENT'))
+    .catch(Common.oops(this)))
+  it(`should fail properly with ENOENT`, () => CLI.command(`wsk app create goober.js --dry-run`, this.app)
+  .then(ReplExpect.error('ENOENT'))
+  .catch(Common.oops(this))) */
 
   it(`should fail properly with ENOENT`, () =>
-    cli
-      .do(`wsk app create goober goober.js`, this.app)
-      .then(cli.expectError('ENOENT'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk app create goober goober.js`, this.app)
+      .then(ReplExpect.error('ENOENT'))
+      .catch(Common.oops(this)))
 })

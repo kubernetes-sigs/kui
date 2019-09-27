@@ -14,48 +14,43 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
 
 const triggerName = 'ppp'
 
-describe('Add parameters to triggers', function(this: common.ISuite) {
+describe('Add parameters to triggers', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should create a trigger', () =>
-    cli
-      .do(`wsk trigger update ${triggerName}`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(triggerName)))
+    CLI.command(`wsk trigger update ${triggerName}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(triggerName)))
 
   it('should add a parameter with explicit trigger name', () =>
-    cli
-      .do(`wsk trigger set x=1 in ${triggerName}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(triggerName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
-      .then(ui.expectStruct({ x: 1 })))
+    CLI.command(`wsk trigger set x=1 in ${triggerName}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(triggerName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .trigger-source`))
+      .then(Util.expectStruct({ x: 1 })))
 
   it('should add a parameter with implicit trigger name', () =>
-    cli
-      .do('wsk trigger set y=1', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(triggerName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
-      .then(ui.expectStruct({ x: 1, y: 1 })))
+    CLI.command('wsk trigger set y=1', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(triggerName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .trigger-source`))
+      .then(Util.expectStruct({ x: 1, y: 1 })))
 
   it('should update a parameter value with implicit trigger name', () =>
-    cli
-      .do('wsk trigger set x=2', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(triggerName))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .trigger-source`))
-      .then(ui.expectStruct({ x: 2, y: 1 })))
+    CLI.command('wsk trigger set x=2', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(triggerName))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .trigger-source`))
+      .then(Util.expectStruct({ x: 2, y: 1 })))
 })
