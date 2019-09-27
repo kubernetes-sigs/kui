@@ -19,17 +19,13 @@ import { remove } from 'fs-extra'
 import { exec } from 'child_process'
 import { dir as createTemporaryDirectory } from 'tmp'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
-
-const { cli } = ui
 
 const testRepo = 'test-repo.git'
 const testClone = 'test-clone'
 
-/** skip the tests if we aren't doing a webpack+proxy test run */
-const runTheTests = process.env.MOCHA_RUN_TARGET === 'electron' || process.env.KUI_USE_PROXY === 'true'
+const runTheTests = process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true'
 const pit = runTheTests ? it : xit
 
 function gitInit(tmpdir: string) {
@@ -86,9 +82,9 @@ function makeBranch(branchName: string, tmpdir: string) {
 }
 
 const suiteName = `Tab completion for git branches ${process.env.MOCHA_RUN_TARGET || ''}`
-describe(suiteName, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(suiteName, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   // we will make two branches in a temporary directory, to test tab
   // completion of branch names
@@ -122,10 +118,9 @@ describe(suiteName, function(this: common.ISuite) {
   pit('should checkout master', () => checkout('master', tmpdir))
 
   pit('should cd to the clone directory', () =>
-    cli
-      .do(`cd ${join(tmpdir, testClone)}`, this.app)
-      .then(cli.expectOKWithString(tmpdir))
-      .catch(common.oops(this))
+    CLI.command(`cd ${join(tmpdir, testClone)}`, this.app)
+      .then(ReplExpect.okWithString(tmpdir))
+      .catch(Common.oops(this))
   )
 
   pit(`should tab complete ${branch3} without any options`, () => {
@@ -143,7 +138,7 @@ describe(suiteName, function(this: common.ISuite) {
         click: 0,
         expectedPromptAfterTab: `git checkout ${commonBranchNamePrefix}` // e.g. git checkout b[ranch]
       }
-    ).catch(common.oops(this, true))
+    ).catch(Common.oops(this, true))
   })
 
   pit('should clean up temporary directory', () => remove(tmpdir))

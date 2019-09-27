@@ -16,10 +16,9 @@
 
 import { Application } from 'spectron'
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, Keys, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, keys, sidecar } = ui
 
 /** execute the given async task n times */
 const doTimes = (n: number, task: () => Promise<void>) => {
@@ -38,33 +37,33 @@ const waitForValue = (app: Application, selector: string, expected: string) => {
   })
 }
 
-describe('Tab completion openwhisk', function(this: common.ISuite) {
+describe('Tab completion openwhisk', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const tabby = (app: Application, partial: string, full: string, expectOK = true) =>
     app.client
-      .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-      .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+      .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
+      .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))
       .then(count =>
         app.client
-          .setValue(ui.selectors.CURRENT_PROMPT, partial)
-          .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), partial))
-          .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
-          .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), full))
+          .setValue(Selectors.CURRENT_PROMPT, partial)
+          .then(() => waitForValue(app, Selectors.PROMPT_N(count), partial))
+          .then(() => app.client.setValue(Selectors.CURRENT_PROMPT, `${partial}${Keys.TAB}`))
+          .then(() => waitForValue(app, Selectors.PROMPT_N(count), full))
       )
       .then(() => new Promise(resolve => setTimeout(resolve, 500)))
-      .then(() => cli.do('', app)) // "enter" to complete the repl
+      .then(() => CLI.command('', app)) // "enter" to complete the repl
       .then(async data => {
         if (expectOK) {
           const res = await data
-          return cli.expectOKWithAny(res)
+          return ReplExpect.okWithAny(res)
         } else {
           return Promise.resolve(app)
         }
       })
-      .catch(common.oops(this))
+      .catch(Common.oops(this))
 
   const tabbyWithOptions = (
     app: Application,
@@ -74,17 +73,17 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
     { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}
   ) => {
     return app.client
-      .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-      .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+      .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
+      .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))
       .then(count =>
         app.client
-          .setValue(ui.selectors.CURRENT_PROMPT, partial)
-          .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), partial))
-          .then(() => app.client.setValue(ui.selectors.CURRENT_PROMPT, `${partial}${keys.TAB}`))
+          .setValue(Selectors.CURRENT_PROMPT, partial)
+          .then(() => waitForValue(app, Selectors.PROMPT_N(count), partial))
+          .then(() => app.client.setValue(Selectors.CURRENT_PROMPT, `${partial}${Keys.TAB}`))
           .then(() => {
             if (expectedPromptAfterTab) {
-              return waitForValue(app, ui.selectors.PROMPT_N(count), expectedPromptAfterTab)
+              return waitForValue(app, Selectors.PROMPT_N(count), expectedPromptAfterTab)
             }
           })
           .then(() => {
@@ -92,11 +91,7 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
               // then we expect non-visibility of the tab-completion popup
               // console.error('Expecting non-existence of popup')
               return app.client
-                .waitForVisible(
-                  `${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`,
-                  10000,
-                  true
-                )
+                .waitForVisible(`${Selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`, 10000, true)
                 .then(() => {
                   // great, the tab completion popup does not exist; early exit
                   const err = new Error()
@@ -104,18 +99,18 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
                   throw err
                 })
             } else {
-              const selector = `${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`
+              const selector = `${Selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`
               // console.error('Expecting existence of popup', selector)
               return app.client.waitForVisible(selector, 10000)
             }
           })
-          .then(() => app.client.getText(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
-          .then(ui.expectArray(expected))
+          .then(() => app.client.getText(`${Selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
+          .then(Util.expectArray(expected))
           // .then(() => { console.error('Got expected options') })
           .then(() => {
             if (click !== undefined) {
               // click on a row
-              const selector = `${ui.selectors.PROMPT_BLOCK_N(
+              const selector = `${Selectors.PROMPT_BLOCK_N(
                 count
               )} .tab-completion-temporary .tab-completion-option[data-value="${expected[click]}"] .clickable`
               // console.error('clicking', click, selector)
@@ -129,50 +124,46 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
             }
           })
           .then(() =>
-            app.client.waitForVisible(`${ui.selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 8000, true)
+            app.client.waitForVisible(`${Selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary`, 8000, true)
           ) // wait for non-existence of the temporary
-          .then(() => waitForValue(app, ui.selectors.PROMPT_N(count), full))
+          .then(() => waitForValue(app, Selectors.PROMPT_N(count), full))
       )
-      .then(() => cli.do('', app))
+      .then(() => CLI.command('', app))
       .then(async data => {
         if (expectOK) {
           const res = await data
-          return cli.expectOKWithAny(res)
+          return ReplExpect.okWithAny(res)
         } else {
           return app
         }
       })
       .catch(async err => {
-        await this.app.client.keys(ui.ctrlC) // clear the line
+        await this.app.client.keys(Keys.ctrlC) // clear the line
         if (!err['failedAsExpected']) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
   }
 
   it('should create an action foo', () =>
-    cli
-      .do('let foo = x=>x', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('let foo = x=>x', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should create an action foo2', () =>
-    cli
-      .do('let foo2 = x=>x', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('let foo2 = x=>x', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should create an action bar', () =>
-    cli
-      .do('let bar = x=>x', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('let bar = x=>x', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should create an action foofoo/yum', () =>
-    cli
-      .do('let foofoo/yum = x=>x', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('let foofoo/yum = x=>x', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   // expect b to autocomplete with only tab, since we only have one action starting with b
   it('should tab complete action get bar', () => tabby(this.app, 'wsk action get b', 'wsk action get bar'))
@@ -187,9 +178,9 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
     })
 
     return Promise.resolve(this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo2'))
-      .catch(common.oops(this))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo2'))
+      .catch(Common.oops(this))
   })
 
   it('should tab complete action foo with options (no prefix)', async () => {
@@ -198,9 +189,9 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
     })
 
     return Promise.resolve(this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this))
   })
 
   it('should not tab complete action without trailing whitespace', async () => {
@@ -210,16 +201,15 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
       if (!err.failedAsExpected) {
         throw err
       } else {
-        return this.app.client.keys(ui.ctrlC) // clear the line
+        return this.app.client.keys(Keys.ctrlC) // clear the line
       }
     }
   })
 
   it('should create a trigger', () =>
-    cli
-      .do('wsk trigger create ttt', this.app)
-      .then(cli.expectOK)
-      .catch(common.oops(this)))
+    CLI.command('wsk trigger create ttt', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this)))
 
   it('should fire trigger with autocomplete', () => tabby(this.app, 'wsk trigger fire t', 'wsk trigger fire ttt'))
 
@@ -227,9 +217,9 @@ describe('Tab completion openwhisk', function(this: common.ISuite) {
     await tabby(this.app, 'wsk package get f', 'wsk package get foofoo')
 
     return Promise.resolve(this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foofoo'))
-      .catch(common.oops(this))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foofoo'))
+      .catch(Common.oops(this))
   })
 
   it('should auto complete wsk command', () => tabby(this.app, 'ws', 'wsk', false))

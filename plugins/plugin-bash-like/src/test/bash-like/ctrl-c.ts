@@ -17,51 +17,49 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { ISuite, before as commonBefore, after as commonAfter, oops, localIt } from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors } = ui
+import { Common, CLI, Keys, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
-describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const cancel = (app: Application, cmd = '') =>
     app.client
-      .waitForExist(ui.selectors.CURRENT_PROMPT_BLOCK)
-      .then(() => app.client.getAttribute(ui.selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+      .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
+      .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
       .then(count => parseInt(count, 10))
       .then(count =>
         app.client
           .keys(cmd)
-          .then(() => app.client.keys(ui.ctrlC))
+          .then(() => app.client.keys(Keys.ctrlC))
           .then(() => ({ app: app, count: count }))
-          .then(cli.expectBlank)
-          .then(() => app.client.getValue(ui.selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
+          .then(ReplExpect.blank)
+          .then(() => app.client.getValue(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
           .then(input => assert.strictEqual(input, cmd))
       )
-      .catch(oops(this))
+      .catch(Common.oops(this))
 
   it('should hit ctrl+c', () => cancel(this.app))
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
 
   const echoThisString = 'hi'
-  localIt('should initiate a command that completes with some delay', async () => {
+  Common.localIt('should initiate a command that completes with some delay', async () => {
     try {
-      const res = await cli.do(`/bin/sleep 10 && echo ${echoThisString}`, this.app)
+      const res = await CLI.command(`/bin/sleep 10 && echo ${echoThisString}`, this.app)
 
       // we want the ctrlC to go to the xterm input; we need to wait for it to be visible
       // TODO this belongs elsewhere
-      await ui.waitForXtermInput(this.app, res.count)
+      await Util.waitForXtermInput(this.app, res.count)
 
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      await this.app.client.keys(ui.ctrlC)
+      await this.app.client.keys(Keys.ctrlC)
       return this.app.client.waitUntil(async () => {
-        const actualText = await this.app.client.getText(selectors.OUTPUT_N(res.count))
+        const actualText = await this.app.client.getText(Selectors.OUTPUT_N(res.count))
         return /\^C/.test(actualText)
       })
     } catch (err) {
-      oops(this)(err)
+      Common.oops(this)(err)
     }
   })
 })

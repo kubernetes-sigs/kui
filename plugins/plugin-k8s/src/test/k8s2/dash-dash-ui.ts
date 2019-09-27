@@ -14,53 +14,53 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 import { cli as kui, kubectlElectron, kuiElectron, CLI } from '@kui-shell/core/tests/lib/headless'
 import { createNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 
-const doTests = (ctx: common.ISuite, impl: CLI) => {
-  before(common.before(ctx, { noApp: true }))
-  after(common.after(ctx))
+const doTests = (ctx: Common.ISuite, impl: CLI) => {
+  before(Common.before(ctx, { noApp: true }))
+  after(Common.after(ctx))
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
 
   xit(`should create a namespace ${ns} `, () => {
     return kui
-      .do(`kubectl create namespace ${ns}`, ctx.app)
+      .command(`kubectl create namespace ${ns}`, ctx.app)
       .then(kui.expectOK(`namespace/${ns} created`))
-      .catch(common.oops(ctx, true))
+      .catch(Common.oops(ctx, true))
   })
 
   xit('should create sample pod from local file', () => {
     return kui
-      .do(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
+      .command(`kubectl create -f ${ROOT}/data/k8s/headless/pod.yaml ${inNamespace}`, ctx.app)
       .then(kui.expectOK('nginx'))
-      .catch(common.oops(ctx, true))
+      .catch(Common.oops(ctx, true))
   })
 
   xit('should list the new pod in electron', () => {
     return impl
-      .do(`kubectl get pods ${inNamespace} --ui`, ctx.app)
+      .command(`kubectl get pods ${inNamespace} --ui`, ctx.app)
       .then(impl.expectOK('nginx'))
-      .catch(common.oops(ctx, true))
+      .catch(Common.oops(ctx, true))
   })
 
   xit(`should delete the namespace ${ns} `, () => {
     return kui
-      .do(`kubectl delete namespace ${ns}`, ctx.app)
+      .command(`kubectl delete namespace ${ns}`, ctx.app)
       .then(kui.expectOK(`namespace "${ns}" deleted`)) // TODO: weird: why create and delte has different output
-      .catch(common.oops(ctx, true))
+      .catch(Common.oops(ctx, true))
   })
 }
 
-common.localDescribe('k8s with electron via bin/kui', function(this: common.ISuite) {
+Common.localDescribe('k8s with electron via bin/kui', function(this: Common.ISuite) {
   doTests(this, kuiElectron)
 })
 
-common.localDescribe('k8s with electron via kubectl kui', function(this: common.ISuite) {
+Common.localDescribe('k8s with electron via kubectl kui', function(this: Common.ISuite) {
   doTests(this, kubectlElectron)
 })

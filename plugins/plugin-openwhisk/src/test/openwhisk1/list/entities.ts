@@ -15,29 +15,28 @@
  */
 
 /**
- * read-only tests against the cli's list APIs
+ * read-only tests against the CLI's list APIs
  *
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('List entities with a clean slate', function(this: common.ISuite) {
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+describe('List entities with a clean slate', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // implicit entity type
-  it(`should list actions with "list"`, () => cli.do(`wsk action list`, this.app).then(cli.expectJustOK))
+  it(`should list actions with "list"`, () => CLI.command(`wsk action list`, this.app).then(ReplExpect.justOK))
 
   // explicit entity type
   openwhisk.entities.forEach(entity => {
-    it(`should list ${entity} with "list"`, () => cli.do(`wsk ${entity} list`, this.app).then(cli.expectJustOK))
+    it(`should list ${entity} with "list"`, () => CLI.command(`wsk ${entity} list`, this.app).then(ReplExpect.justOK))
   })
 
   // activations
-  it(`should list actions with "$ list"`, () => cli.do(`wsk $ list`, this.app).then(cli.expectOKWithAny))
+  it(`should list actions with "$ list"`, () => CLI.command(`wsk $ list`, this.app).then(ReplExpect.okWithAny))
   it(`should list actions with "activation list"`, () =>
-    cli.do(`wsk activation list`, this.app).then(cli.expectOKWithAny))
+    CLI.command(`wsk activation list`, this.app).then(ReplExpect.okWithAny))
 })

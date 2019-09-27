@@ -19,35 +19,33 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 // TODO: webpack test
-localDescribe('Create actions, add parameters with quotes', function(this: common.ISuite) {
+localDescribe('Create actions, add parameters with quotes', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .catch(common.oops(this, true)))
+    CLI.command(`wsk action create foo ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .catch(Common.oops(this, true)))
 
   it('should add a parameter with double quotes around value', () =>
-    cli
-      .do('wsk action set z="bbb"', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('foo'))
-      .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectStruct({ z: 'bbb' })))
+    CLI.command('wsk action set z="bbb"', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('foo'))
+      .then(app => app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
+      .then(Util.expectStruct({ z: 'bbb' })))
 })

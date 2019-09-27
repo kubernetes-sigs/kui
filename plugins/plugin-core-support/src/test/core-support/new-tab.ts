@@ -14,295 +14,262 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli, selectors, sidecar } = ui
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 
 import { tabButtonSelector } from '../../lib/new-tab'
 
-describe('core new tab switch tabs', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('core new tab switch tabs', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('new tab via command', () =>
-    cli
-      .do('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => common.waitForSession(this)) // should have an active repl
-      .catch(common.oops(this)))
+    CLI.command('tab new', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it(`switch back to first tab via command`, () =>
-    cli
-      .do('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .catch(common.oops(this)))
+    CLI.command('tab switch 1', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this)))
 
   it(`switch back to second tab via command`, () =>
-    cli
-      .do('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('tab switch 2', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 
   it('should close tab via "tab close" command', () =>
-    cli
-      .do('tab close', this.app)
-      .then(() => this.app.client.waitForExist(selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)))
+    CLI.command('tab close', this.app)
+      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .catch(Common.oops(this)))
 })
 
 // test that new tab does not copy any output over from the cloned tab
-common.pDescribe('core new tab from pty active tab via click', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+Common.pDescribe('core new tab from pty active tab via click', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('should open sidecar with about', () =>
-    cli
-      .do('about', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .catch(common.oops(this)))
+    CLI.command('about', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .catch(Common.oops(this)))
 
-  common.proxyIt('should cd to the test dir', () =>
-    cli
-      .do(`cd ${process.env.TEST_ROOT}`, this.app)
-      .then(cli.expectOKWithString('packages/test'))
-      .catch(common.oops(this, true))
+  Common.proxyIt('should cd to the test dir', () =>
+    CLI.command(`cd ${process.env.TEST_ROOT}`, this.app)
+      .then(ReplExpect.okWithString('packages/test'))
+      .catch(Common.oops(this, true))
   )
 
   it('should less README.md', async () => {
     try {
-      const res = await cli.do('less ../../README.md', this.app)
+      const res = await CLI.command('less ../../README.md', this.app)
 
-      const selector = `${selectors.OUTPUT_N(res.count)} .xterm`
+      const selector = `${Selectors.OUTPUT_N(res.count)} .xterm`
       await this.app.client.waitForExist(selector)
     } catch (err) {
-      return common.oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 
   it('click new tab button', () =>
     this.app.client
       .click(tabButtonSelector)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .catch(Common.oops(this)))
 
   // no xterm copied over!
   it('should have a clean tab', () =>
-    this.app.client.waitForVisible(`${selectors.CURRENT_TAB} .xterm`, 5000, true).catch(common.oops(this)))
+    this.app.client.waitForVisible(`${Selectors.CURRENT_TAB} .xterm`, 5000, true).catch(Common.oops(this)))
 })
 
-describe('core new tab from quiescent tab via command', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('core new tab from quiescent tab via command', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const CWD1 = process.cwd()
   const CWD2 = '/tmp'
 
   it(`cd to ${CWD1} in tab1`, () =>
-    cli
-      .do(`cd ${CWD1}`, this.app)
-      .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)))
+    CLI.command(`cd ${CWD1}`, this.app)
+      .then(ReplExpect.okWithString(CWD1))
+      .catch(Common.oops(this)))
 
   it('new tab via command', () =>
-    cli
-      .do('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)))
+    CLI.command('tab new', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it('should execute echo in new tab', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} in tab2`, () =>
-    cli
-      .do(`pwd`, this.app)
-      .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)))
+    CLI.command(`pwd`, this.app)
+      .then(ReplExpect.okWithString(CWD1))
+      .catch(Common.oops(this)))
 
   it(`cd to ${CWD2} in tab2`, () =>
-    cli
-      .do(`cd ${CWD2}`, this.app)
-      .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)))
+    CLI.command(`cd ${CWD2}`, this.app)
+      .then(ReplExpect.okWithString(CWD2))
+      .catch(Common.oops(this)))
 
   it(`pwd should show CWD2 ${CWD2} in tab2`, () =>
-    cli
-      .do(`pwd`, this.app)
-      .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)))
+    CLI.command(`pwd`, this.app)
+      .then(ReplExpect.okWithString(CWD2))
+      .catch(Common.oops(this)))
 
   it('should close tab via "exit" command', () =>
-    cli
-      .do('exit', this.app)
-      .then(() => this.app.client.waitForExist(selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)))
+    CLI.command('exit', this.app)
+      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
-    cli
-      .do(`pwd`, this.app)
-      .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)))
+    CLI.command(`pwd`, this.app)
+      .then(ReplExpect.okWithString(CWD1))
+      .catch(Common.oops(this)))
 
   it('new tab via command', () =>
-    cli
-      .do('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => common.waitForSession(this)) // should have an active repl
-      .catch(common.oops(this)))
+    CLI.command('tab new', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it(`cd to ${CWD2} in tab2`, () =>
-    cli
-      .do(`cd ${CWD2}`, this.app)
-      .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)))
+    CLI.command(`cd ${CWD2}`, this.app)
+      .then(ReplExpect.okWithString(CWD2))
+      .catch(Common.oops(this)))
 
   it(`switch back to first tab via command`, () =>
-    cli
-      .do('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .catch(common.oops(this)))
+    CLI.command('tab switch 1', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
-    cli
-      .do('pwd', this.app)
-      .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)))
+    CLI.command('pwd', this.app)
+      .then(ReplExpect.okWithString(CWD1))
+      .catch(Common.oops(this)))
 
   it(`switch back to second tab via command`, () =>
-    cli
-      .do('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('tab switch 2', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 
   it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
-    cli
-      .do('pwd', this.app)
-      .then(cli.expectOKWithString(CWD2))
-      .catch(common.oops(this)))
+    CLI.command('pwd', this.app)
+      .then(ReplExpect.okWithString(CWD2))
+      .catch(Common.oops(this)))
 
   it(`switch back to first tab via command`, () =>
-    cli
-      .do('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .catch(common.oops(this)))
+    CLI.command('tab switch 1', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
-    cli
-      .do('pwd', this.app)
-      .then(cli.expectOKWithString(CWD1))
-      .catch(common.oops(this)))
+    CLI.command('pwd', this.app)
+      .then(ReplExpect.okWithString(CWD1))
+      .catch(Common.oops(this)))
 })
 
-describe('core new tab from quiescent tab via button click', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('core new tab from quiescent tab via button click', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('new tab via button click', () =>
     this.app.client
       .click(tabButtonSelector)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => common.waitForSession(this)) // should have an active repl
-      .catch(common.oops(this)))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it('should execute echo in new tab', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 
   it('should close tab via "tab close" command', () =>
-    cli
-      .do('tab close', this.app)
-      .then(() => this.app.client.waitForExist(selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .catch(common.oops(this)))
+    CLI.command('tab close', this.app)
+      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it('should execute echo in first tab', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
-      .catch(common.oops(this)))
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this)))
 })
 
-describe('core new tab from active tab via button click', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('core new tab from active tab via button click', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('start a sleep, then new tab via button click', () =>
-    cli
-      .do('sleep 10000', this.app)
+    CLI.command('sleep 10000', this.app)
       .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => common.waitForSession(this)) // should have an active repl
-      .catch(common.oops(this)))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it('should execute echo in new tab', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 })
 
-describe('core new tab from pty active tab via button click', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('core new tab from pty active tab via button click', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('start vi, then new tab via button click', () =>
-    cli
-      .do('vi', this.app)
+    CLI.command('vi', this.app)
       .then(() => this.app.client.waitForExist('tab.visible.xterm-alt-buffer-mode'))
       .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => common.waitForSession(this)) // should have an active repl
-      .catch(common.oops(this)))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this)))
 
   it('should execute echo in new tab', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 })
 
-describe('core new tab from active tab that is emitting output via button click', function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe('core new tab from active tab that is emitting output via button click', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('start an echo loop, then new tab via button click', () =>
-    cli
-      .do('while true; do echo hi; sleep 1; done', this.app)
+    CLI.command('while true; do echo hi; sleep 1; done', this.app)
       .then(() => new Promise(resolve => setTimeout(resolve, 4000)))
       .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .then(() => cli.waitForRepl(this.app)) // should have an active repl
-      .then(() => this.app.client.waitForExist(`${selectors.CURRENT_TAB} .xterm`, 5000, true)) // no xterm DOM in the new tab
-      .catch(common.oops(this)))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .then(() => this.app.client.waitForExist(`${Selectors.CURRENT_TAB} .xterm`, 5000, true)) // no xterm DOM in the new tab
+      .catch(Common.oops(this)))
 
   it('should execute echo in new tab', () =>
-    cli
-      .do('echo hi', this.app)
-      .then(cli.expectOKWithString('hi'))
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(2)))
-      .catch(common.oops(this)))
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
 
   it('should close by clicking on the tab closer button', async () => {
     await this.app.client.click('.left-tab-stripe-button-selected .left-tab-stripe-button-closer')
     await this.app.client
-      .waitForExist(selectors.TAB_N(2), 5000, true)
-      .then(() => this.app.client.waitForVisible(selectors.TAB_SELECTED_N(1)))
+      .waitForExist(Selectors.TAB_N(2), 5000, true)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
   })
 })

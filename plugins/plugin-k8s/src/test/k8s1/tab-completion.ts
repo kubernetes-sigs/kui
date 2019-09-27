@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
-import { cli, selectors } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 import { dirname } from 'path'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
@@ -23,9 +22,9 @@ import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-
 const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json'))
 const synonyms = ['kubectl']
 
-describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   synonyms.forEach(kubectl => {
     // use a common prefix, so that we can test tab completion of
@@ -53,38 +52,35 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
-      return cli
-        .do(
-          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-          this.app
-        )
-        .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+      return CLI.command(
+        `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+        this.app
+      )
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
-        .catch(oops(this, true))
+        .catch(Common.oops(this, true))
     })
 
     it(`should create tab-completion pod via ${kubectl}`, async () => {
-      return cli
-        .do(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion.yaml -n ${ns}`, this.app)
+      return CLI.command(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion.yaml -n ${ns}`, this.app)
         .then(
-          cli.expectOKWithCustom({
-            selector: selectors.BY_NAME('tab-completion-1')
+          ReplExpect.okWithCustom({
+            selector: Selectors.BY_NAME('tab-completion-1')
           })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(oops(this, true))
+        .catch(Common.oops(this, true))
     })
 
     it(`should create tab-completion2 pod via ${kubectl}`, async () => {
-      return cli
-        .do(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion-2.yaml -n ${ns}`, this.app)
+      return CLI.command(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion-2.yaml -n ${ns}`, this.app)
         .then(
-          cli.expectOKWithCustom({
-            selector: selectors.BY_NAME('tab-completion-2')
+          ReplExpect.okWithCustom({
+            selector: Selectors.BY_NAME('tab-completion-2')
           })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(oops(this, true))
+        .catch(Common.oops(this, true))
     })
 
     it(`should tab complete pods`, () => {

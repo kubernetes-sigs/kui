@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 
-describe('parameter parsing with quotes', function(this: common.ISuite) {
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+describe('parameter parsing with quotes', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const createWith = params => {
     return it(`should create package with -p creds ${params}`, () =>
-      cli
-        .do(`wsk package update ppp -p creds ${params}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing('ppp'))
-        .catch(common.oops(this)))
+      CLI.command(`wsk package update ppp -p creds ${params}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing('ppp'))
+        .catch(Common.oops(this)))
   }
 
   const expectParams = params => {
     return it('should show parameters', () =>
-      cli
-        .do('wsk action params', this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing('ppp'))
-        .then(app => app.client.getText(`${ui.selectors.SIDECAR_PACKAGE_PARAMETERS}`))
-        .then(ui.expectStruct(params))
-        .catch(common.oops(this)))
+      CLI.command('wsk action params', this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing('ppp'))
+        .then(app => app.client.getText(`${Selectors.SIDECAR_PACKAGE_PARAMETERS}`))
+        .then(Util.expectStruct(params))
+        .catch(Common.oops(this)))
   }
 
   createWith(`'"foo" "bar"'`)

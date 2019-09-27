@@ -22,12 +22,9 @@ import * as fs from 'fs'
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
 
-const cli = ui.cli
-const sidecar = ui.sidecar
 const inputs = [
   {
     appName: 'hello', // name of our first composition
@@ -230,14 +227,13 @@ const composer = {
     nDone: number,
     { cmd = 'wsk session list', expect = [] }: { cmd?: string; expect: string[] }
   ) => {
-    return cli
-      .do(cmd, app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    return CLI.command(cmd, app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async N => {
         if (nDone > 0) {
           await app.client.waitUntil(async () => {
             const done = await app.client
-              .getText(`${ui.selectors.OUTPUT_N(N)} .entity.session .entity-name .clickable`)
+              .getText(`${Selectors.OUTPUT_N(N)} .entity.session .entity-name .clickable`)
               .then(done => (!Array.isArray(done) ? [done] : done)) // make sure we have an array
 
             // validate `expect`, which is a subset of the expected done list
@@ -253,7 +249,7 @@ const composer = {
             // validate `nDone`, which is the expected minimum number of completed sessions
             if (done.length < nDone) {
               const activationIds = await app.client.getText(
-                `${ui.selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`
+                `${Selectors.OUTPUT_N(N)} .entity.session .activationId .clickable`
               )
               console.error(`still waiting for ${nDone}, here is what we have so far: ${activationIds.length}`)
               console.error(activationIds)
@@ -272,24 +268,24 @@ const composer = {
   }
 }
 
-describe('Intro demo scenario', function(this: common.ISuite) {
+describe.skip('Intro demo scenario', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // app init
   /* {
         const cmd = `wsk app init --url ${sharedURL}`
-        it(cmd, () => cli.do(cmd, this.app)
-            .then(cli.expectOKWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
-           .catch(common.oops(this)))
+        it(cmd, () => CLI.command(cmd, this.app)
+            .then(ReplExpect.okWithCustom({expect: 'Successfully initialized the required services. You may now create compositions.'}))
+           .catch(Common.oops(this)))
     }
 
     // app init --cleanse
     const cleanseRedis = () => {
         const cmd = `wsk app init --cleanse --url ${sharedURL}`
-        it(cmd, () => cli.do(cmd, this.app)
-            .then(cli.expectOKWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
-           .catch(common.oops(this)))
+        it(cmd, () => CLI.command(cmd, this.app)
+            .then(ReplExpect.okWithCustom({expect: 'Successfully initialized and reset the required services. You may now create compositions.'}))
+           .catch(Common.oops(this)))
     } */
 
   // session list, expect empty
@@ -300,7 +296,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
               nDone = 0
         it(`should list sessions via ${cmd} nLive=${nLive} nDone=${nDone}`, () => {
             return composer.getSessions(this.app, nLive, nDone, { cmd })
-                .catch(common.oops(this))
+                .catch(Common.oops(this))
         })
     } */
 
@@ -312,30 +308,29 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName1 } = inputs[0]
     const cmd = `wsk app create ${appName1} @demos/${appName1}.js -a turkey shoot`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName1))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName1))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 1, total: 3 }))
 
         // switch to ast tab
-        .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('ast')))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName1]))
+        .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('ast')))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName1]))
 
         // switch to annotations tab
-        .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('annotations')))
+        .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('annotations')))
         .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
         // .then(ui.expectSubset({"turkey": "shoot"}))
 
         // switch to parameters tab; in v2 this isn't relevant
-        /* .then(() => this.app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('parameters')))
+        /* .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('parameters')))
            .then(() => this.app.client.getText('#sidecar .sidecar-content .action-content code'))
            .then(ui.expectSubset({"_actions": v => util.isArray(v) && v.length>0})) // expect some list value */
 
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -343,30 +338,28 @@ describe('Intro demo scenario', function(this: common.ISuite) {
   const { appName: appName1 } = inputs[0]
   const cmd = `wsk app create ${appName1} @demos/${appName1}.js`
   it(`${cmd} expect conflict`, () =>
-    cli
-      .do(cmd, this.app)
-      .then(cli.expectError(409))
-      .catch(common.oops(this)))
+    CLI.command(cmd, this.app)
+      .then(ReplExpect.error(409))
+      .catch(Common.oops(this)))
 
   // app invoke hello -p name composer
   const invokeHello = (): Promise<string> => {
     const { appName: appName1, expectedStructa: expectedStruct1 } = inputs[0]
     const cmd = `wsk app invoke ${appName1} -p name composer`
-    return cli
-      .do(cmd, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(appName1))
+    return CLI.command(cmd, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(appName1))
       .then(app =>
         app.client.waitUntil(async () => {
           const ok: boolean = await app.client
-            .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-            .then(ui.expectStruct(expectedStruct1))
+            .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+            .then(Util.expectStruct(expectedStruct1))
           return ok
         })
       )
-      .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_ID)) // return the activationId
-      .catch(common.oops(this))
+      .then(() => this.app.client.getText(Selectors.SIDECAR_ACTIVATION_ID)) // return the activationId
+      .catch(Common.oops(this))
   }
 
   // cleanse redis after the invoke, and double-check we have no sessions
@@ -380,8 +373,8 @@ describe('Intro demo scenario', function(this: common.ISuite) {
 
     it('should invoke hello and show one more session than before', () =>
       invokeHello()
-        .then(activationId => ui.waitForSession(this.app, activationId, { name: appName1 }))
-        .catch(common.oops(this)))
+        .then(activationId => openwhisk.waitForSession(this.app, activationId, { name: appName1 }))
+        .catch(Common.oops(this)))
   }
 
   // session result
@@ -391,14 +384,14 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     it(`should display result in repl with session result`, () =>
       invokeHello()
         .then(activationId =>
-          ui
+          openwhisk
             .waitForSession(this.app, activationId, { name: appName1 })
-            .then(() => cli.do(`wsk session result ${activationId}`, this.app))
+            .then(() => CLI.command(`wsk session result ${activationId}`, this.app))
         )
-        .then(cli.expectOKWithCustom({ selector: 'code' }))
+        .then(ReplExpect.okWithCustom({ selector: 'code' }))
         .then(selector => this.app.client.getText(selector))
-        .then(ui.expectStruct(expectedStruct1))
-        .catch(common.oops(this)))
+        .then(Util.expectStruct(expectedStruct1))
+        .catch(Common.oops(this)))
   }
 
   // app preview hello.js
@@ -406,25 +399,24 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName1 } = inputs[0]
     const cmd = `wsk app preview @demos/${appName1}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(`${appName1}.js`))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(`${appName1}.js`))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 1, total: 3 }))
 
         // visit ast tab
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast.hello))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast.hello))
 
         // visit code tab
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
+        .then(() => Util.getValueFromMonaco(this.app))
         .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName1).replace(/\s+/g, '')))
 
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -435,22 +427,22 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     it(`should display result in sidecar with session get`, () =>
       invokeHello()
         .then(activationId =>
-          ui
+          openwhisk
             .waitForSession(this.app, activationId, { name: appName1 })
-            .then(() => cli.do(`wsk session get ${activationId}`, this.app))
+            .then(() => CLI.command(`wsk session get ${activationId}`, this.app))
         )
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName1))
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName1))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct1))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct1))
             return ok
           })
         )
-        .catch(common.oops(this)))
+        .catch(Common.oops(this)))
   }
 
   // app preview if.js
@@ -458,25 +450,24 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName2 } = inputs[1]
     const cmd = `wsk app preview @demos/${appName2}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(`${appName2}.js`))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(`${appName2}.js`))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 3, total: 6, deployed: 0 }))
 
         // visit ast tab
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName2]))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName2]))
 
         // visit code tab
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
+        .then(() => Util.getValueFromMonaco(this.app))
         .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName2).replace(/\s+/g, '')))
 
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -486,12 +477,11 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     actionsFor2.forEach(action => {
       const cmd = `let ${action} = @demos/${action}.js`
       it(cmd, () =>
-        cli
-          .do(cmd, this.app)
-          .then(cli.expectOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing(action))
-          .catch(common.oops(this))
+        CLI.command(cmd, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(action))
+          .catch(Common.oops(this))
       )
     })
   }
@@ -501,17 +491,16 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName2 } = inputs[1]
     const cmd = `wsk app create ${appName2} @demos/${appName2}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName2))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName2))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 3, total: 6, deployed: 3 })) // <---- deployed had better be 3 now
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName2]))
-        .catch(common.oops(this))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName2]))
+        .catch(Common.oops(this))
     )
   }
 
@@ -520,20 +509,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName2, expectedStructa: expectedStruct2a } = inputs[1]
     const cmd = `wsk app invoke ${appName2}`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName2))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName2))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct2a))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct2a))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -542,20 +530,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName2, expectedStructb: expectedStruct2b } = inputs[1]
     const cmd = `wsk app invoke ${appName2} -p token secret -p name if-combinator`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName2))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName2))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct2b))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct2b))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -567,7 +554,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const expected = [appName1, appName2] // appName1 and appName2 had both better be in the list
     const nDone = 3
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(common.oops(this))
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(Common.oops(this))
     })
   }
 
@@ -579,7 +566,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const expected = [appName1] // appName1 had better be in the list
     const nDone = 1
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(common.oops(this))
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(Common.oops(this))
     })
   }
 
@@ -591,7 +578,7 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const expected = [appName2] // appName2 had better be in the list
     const nDone = 2
     it(`should list sessions via ${cmd} nDone=${nDone}`, () => {
-      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(common.oops(this))
+      return composer.getSessions(this.app, nDone, { cmd, expect: expected }).catch(Common.oops(this))
     })
   }
 
@@ -600,25 +587,24 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName3 } = inputs[2]
     const cmd = `wsk app preview @demos/${appName3}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(`${appName3}.js`))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(`${appName3}.js`))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 2, total: 4, deployed: 0 }))
 
         // visit ast tab
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName3]))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName3]))
 
         // visit code tab
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="source"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
+        .then(() => Util.getValueFromMonaco(this.app))
         .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src(appName3).replace(/\s+/g, '')))
 
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -628,12 +614,11 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     actionsFor3.forEach(action => {
       const cmd = `let ${action} = @demos/${action}.js`
       it(cmd, () =>
-        cli
-          .do(cmd, this.app)
-          .then(cli.expectOK)
-          .then(sidecar.expectOpen)
-          .then(sidecar.expectShowing(action))
-          .catch(common.oops(this))
+        CLI.command(cmd, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(action))
+          .catch(Common.oops(this))
       )
     })
   }
@@ -643,17 +628,16 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName3 } = inputs[2]
     const cmd = `wsk app create ${appName3} @demos/${appName3}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName3))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName3))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 2, total: 4, deployed: 1 })) // <---- deployed had better be 1 now
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName3]))
-        .catch(common.oops(this))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName3]))
+        .catch(Common.oops(this))
     )
   }
 
@@ -662,20 +646,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName3, expectedStructa: expectedStruct3a } = inputs[2]
     const cmd = `wsk app invoke ${appName3} -p str aGVsbG8gdHJ5IQ==`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName3))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName3))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct3a))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct3a))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -684,20 +667,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]
     const cmd = `wsk app invoke ${appName3} -p str bogus`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName3))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName3))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct3b))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct3b))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -707,23 +689,22 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName3, expectedStructb: expectedStruct3b } = inputs[2]
     const cmd = 'wsk session get --last try'
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName3))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName3))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct3b, false, true))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct3b, false, true))
             return ok
           })
         )
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="visualization"]'))
         .then(() => this.app)
         .then(graph.hasNodes({ tasks: 2, total: 4 })) /*, deployed: 2 */
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -732,17 +713,16 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName4 } = inputs[3]
     const cmd = `wsk app create ${appName4} @demos/${appName4}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName4))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName4))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 3, total: 7, deployed: 1 })) // <---- deployed had better be 1
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName4]))
-        .catch(common.oops(this))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName4]))
+        .catch(Common.oops(this))
     )
   }
 
@@ -751,20 +731,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName4, expectedStructa: expectedStruct4a } = inputs[3]
     const cmd = `wsk app invoke ${appName4} -p str aGVsbG8gdHJ5IQ==`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName4))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName4))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct4a))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct4a))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -773,20 +752,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName4, expectedStructb: expectedStruct4b } = inputs[3]
     const cmd = `wsk app invoke ${appName4} -p str bogus`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName4))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName4))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct4b))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct4b))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -795,17 +773,16 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName5 } = inputs[4]
     const cmd = `wsk app create ${appName5} @demos/${appName5}.js`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName5))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName5))
         // .then(sidecar.expectBadge(badges.composerLib))
         .then(graph.hasNodes({ tasks: 2, total: 5, deployed: 0, values: 1 }))
         .then(() => this.app.client.click('#sidecar .sidecar-bottom-stripe-button[data-mode="ast"]'))
-        .then(() => ui.getValueFromMonaco(this.app))
-        .then(ui.expectStruct(ast[appName5]))
-        .catch(common.oops(this))
+        .then(() => Util.getValueFromMonaco(this.app))
+        .then(Util.expectStruct(ast[appName5]))
+        .catch(Common.oops(this))
     )
   }
 
@@ -814,20 +791,19 @@ describe('Intro demo scenario', function(this: common.ISuite) {
     const { appName: appName5, expectedStructa: expectedStruct5a } = inputs[4]
     const cmd = `wsk app invoke ${appName5}`
     it(cmd, () =>
-      cli
-        .do(cmd, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName5))
+      CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName5))
         .then(app =>
           app.client.waitUntil(async () => {
             const ok: boolean = await app.client
-              .getText(`${ui.selectors.SIDECAR_CONTENT} .activation-result`)
-              .then(ui.expectStruct(expectedStruct5a))
+              .getText(`${Selectors.SIDECAR_CONTENT} .activation-result`)
+              .then(Util.expectStruct(expectedStruct5a))
             return ok
           })
         )
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     )
   }
 
@@ -836,26 +812,26 @@ describe('Intro demo scenario', function(this: common.ISuite) {
         inputs.forEach( ({appName,actions=[]}) => {
             const cmd = `grid ${appName}`,
                   cmd2 = `grid ${appName} -a`,
-                  gridForAction = action => `${ui.selectors.SIDECAR} .custom-content .grid[data-action-name="${action}"]`
+                  gridForAction = action => `${Selectors.SIDECAR} .custom-content .grid[data-action-name="${action}"]`
 
             // if this app has actions/tasks, then `grid appName` should show them
             if (actions.length > 0) {
-                it(cmd, () => cli.do(cmd, this.app)
-                  .then(cli.expectOK)
-                   .then(sidecar.expectOpen)
-                   .then(sidecar.expectShowing(appName))
+                it(cmd, () => CLI.command(cmd, this.app)
+                  .then(ReplExpect.ok)
+                   .then(SidecarExpect.open)
+                   .then(SidecarExpect.showing(appName))
                    .then(() => Promise.all(actions.map(_ => this.app.client.waitForExist(gridForAction(_)))))
-                   .catch(common.oops(this)))
+                   .catch(Common.oops(this)))
             }
 
             // grid -a should also include the app itself
-            it(cmd2, () => cli.do(cmd2, this.app)
-              .then(cli.expectOK)
-               .then(sidecar.expectOpen)
-               .then(sidecar.expectShowing(appName))
+            it(cmd2, () => CLI.command(cmd2, this.app)
+              .then(ReplExpect.ok)
+               .then(SidecarExpect.open)
+               .then(SidecarExpect.showing(appName))
                .then(() => Promise.all(actions.map(_ => this.app.client.waitForExist(gridForAction(_)))))
                .then(() => this.app.client.waitForExist(gridForAction(appName)))
-               .catch(common.oops(this)))
+               .catch(Common.oops(this)))
         })
     } */
 })

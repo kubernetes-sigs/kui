@@ -15,17 +15,16 @@
  */
 
 import * as assert from 'assert'
-import * as common from '@kui-shell/core/tests/lib/common'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+
 import Debug from 'debug'
-const cli = ui.cli
-const sidecar = ui.sidecar
+
 const debug = Debug('tests/apache-composer/session-list')
 
-describe('session list and name filter', function(this: common.ISuite) {
+describe('session list and name filter', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   const getUniqueName = () => {
     // create a unique app name for based on the date and time
@@ -38,19 +37,18 @@ describe('session list and name filter', function(this: common.ISuite) {
 
   const invokeApp = appName => {
     it(`should invoke ${appName}`, () =>
-      cli
-        .do(`wsk app invoke ${appName}`, this.app)
-        .then(cli.expectOK)
-        .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(appName))
-        .catch(common.oops(this)))
+      CLI.command(`wsk app invoke ${appName}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(appName))
+        .catch(Common.oops(this)))
   }
 
   const verifySessionList = async ({ commandIndex, expectedLength = 0, expectedSessions = [] }) => {
     return this.app.client
-      .waitForText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
+      .waitForText(`${Selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`, 5000)
       .then(() =>
-        this.app.client.getText(`${ui.selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`)
+        this.app.client.getText(`${Selectors.OUTPUT_N(commandIndex)} .entity.session .entity-name .clickable`)
       )
       .then(sessions => (!Array.isArray(sessions) ? [sessions] : sessions)) // make sure we have an array
       .then(actualSessions => {
@@ -69,32 +67,28 @@ describe('session list and name filter', function(this: common.ISuite) {
   }
 
   it(`should create app ${appName}`, () =>
-    cli
-      .do(`wsk app create ${appName} @demos/hello.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(appName))
-      .catch(common.oops(this)))
+    CLI.command(`wsk app create ${appName} @demos/hello.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(appName))
+      .catch(Common.oops(this)))
 
   it(`should show just ok in session list ${appName}`, () =>
-    cli
-      .do(`wsk session list ${appName}`, this.app)
-      .then(cli.expectJustOK)
-      .catch(common.oops(this)))
+    CLI.command(`wsk session list ${appName}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this)))
 
   invokeApp(appName)
 
   it(`should show ${appName} in session list`, () =>
-    cli
-      .do(`wsk session list`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex => verifySessionList({ commandIndex, expectedSessions: [appName] }))
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show ${appName} in session list ${appName}`, () =>
-    cli
-      .do(`wsk session list ${appName}`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName}`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -102,12 +96,11 @@ describe('session list and name filter', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show ${appName} in session list --name ${appName}`, () =>
-    cli
-      .do(`wsk session list --name ${appName}`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list --name ${appName}`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -115,26 +108,24 @@ describe('session list and name filter', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   invokeApp(appName)
 
   it(`should show ${appName} in session list`, () =>
-    cli
-      .do(`wsk session list`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
           expectedSessions: [appName, appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show ${appName} in session list ${appName}`, () =>
-    cli
-      .do(`wsk session list ${appName}`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list ${appName}`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -142,12 +133,11 @@ describe('session list and name filter', function(this: common.ISuite) {
           expectedSessions: [appName, appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show ${appName} in session list --name ${appName}`, () =>
-    cli
-      .do(`wsk session list --name ${appName}`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list --name ${appName}`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -155,12 +145,11 @@ describe('session list and name filter', function(this: common.ISuite) {
           expectedSessions: [appName, appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show ${appName} in session list --name ${appName} --skip 1`, () =>
-    cli
-      .do(`wsk session list --name ${appName} --skip 1`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list --name ${appName} --skip 1`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
@@ -168,35 +157,32 @@ describe('session list and name filter', function(this: common.ISuite) {
           expectedSessions: [appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 
   it(`should show 1 in session list --name ${appName} --skip 1 --count`, () =>
-    cli
-      .do(`wsk session list --name ${appName} --skip 1 --count`, this.app)
-      .then(cli.expectOKWithString('1'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk session list --name ${appName} --skip 1 --count`, this.app)
+      .then(ReplExpect.okWithString('1'))
+      .catch(Common.oops(this)))
 
   it(`should create if`, () =>
-    cli
-      .do(`wsk app create if @demos/if.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('if'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk app create if @demos/if.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('if'))
+      .catch(Common.oops(this)))
 
   for (let round = 0; round < 3; round++) {
     invokeApp('if')
   }
 
   it(`should show 3 if and 2 ${appName} in session list`, () =>
-    cli
-      .do(`wsk session list`, this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
+    CLI.command(`wsk session list`, this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(async commandIndex =>
         verifySessionList({
           commandIndex,
           expectedSessions: ['if', 'if', 'if', appName, appName]
         })
       )
-      .catch(common.oops(this)))
+      .catch(Common.oops(this)))
 })

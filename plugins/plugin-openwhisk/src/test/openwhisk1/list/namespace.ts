@@ -15,22 +15,21 @@
  */
 
 /**
- * read-only tests against the cli's list APIs
+ * read-only tests against the CLI's list APIs
  *
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli } = ui
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('Namespaces list', function(this: common.ISuite) {
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+describe('Namespaces list', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // implicit entity type
-  ui.aliases.list.forEach(cmd => {
+  openwhisk.aliases.list.forEach(cmd => {
     it(`should list namespaces with "namespaces ${cmd}"`, () =>
-      cli.do(`wsk namespaces ${cmd}`, this.app).then(cli.expectOKWithOnly(ui.expectedNamespace())))
+      CLI.command(`wsk namespaces ${cmd}`, this.app).then(ReplExpect.okWithOnly(openwhisk.expectedNamespace())))
   })
 })

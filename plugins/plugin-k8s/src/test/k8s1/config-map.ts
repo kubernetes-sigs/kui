@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { expectYAMLSubset, cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import {
   waitForGreen,
   defaultModeForGet,
@@ -27,9 +26,9 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`electron configmap ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`electron configmap ${process.env.MOCHA_RUN_TARGET}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
@@ -46,7 +45,7 @@ describe(`electron configmap ${process.env.MOCHA_RUN_TARGET}`, function(this: co
     /** wait until the sidecar displays a superset of the given content */
     const expectContent = (content: object) => {
       return this.app.client.waitUntil(async () => {
-        const ok: boolean = await getText().then(expectYAMLSubset(content, false))
+        const ok: boolean = await getText().then(Util.expectYAMLSubset(content, false))
 
         return ok
       })
@@ -60,26 +59,25 @@ describe(`electron configmap ${process.env.MOCHA_RUN_TARGET}`, function(this: co
     const listAndClick = (name: string, content?: object) => {
       it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
         try {
-          const selector = await cli
-            .do(`${kubectl} get cm ${inNamespace}`, this.app)
-            .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+          const selector = await CLI.command(`${kubectl} get cm ${inNamespace}`, this.app).then(
+            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })
+          )
 
           // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
           // await waitForGreen(this.app, selector)
 
           // now click on the table row
           await this.app.client.click(`${selector} .clickable`)
-          await sidecar
-            .expectOpen(this.app)
-            .then(sidecar.expectMode(defaultModeForGet))
-            .then(sidecar.expectShowing(name))
+          await SidecarExpect.open(this.app)
+            .then(SidecarExpect.mode(defaultModeForGet))
+            .then(SidecarExpect.showing(name))
 
           if (content) {
-            await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('raw'))
+            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
             await expectContent(content)
           }
         } catch (err) {
-          return common.oops(this)(err)
+          return Common.oops(this)(err)
         }
       })
     }
@@ -87,24 +85,22 @@ describe(`electron configmap ${process.env.MOCHA_RUN_TARGET}`, function(this: co
     /** delete the given configmap */
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the configmap ${name} via ${kubectl} `, () => {
-        const expectResult = errOk ? cli.expectOKWithAny : cli.expectOKWithString('deleted')
+        const expectResult = errOk ? ReplExpect.okWithAny : ReplExpect.okWithString('deleted')
 
-        return cli
-          .do(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
+        return CLI.command(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
           .then(expectResult)
           .then(() => waitTillNone('configmap', undefined, name, undefined, inNamespace))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 
     /** create the given configmap with optional literal parameters */
     const createIt = (name: string, literals = '') => {
       it(`should create a configmap ${name} via ${kubectl}`, () => {
-        return cli
-          .do(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
-          .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME(name) }))
+        return CLI.command(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
+          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(common.oops(this))
+          .catch(Common.oops(this))
       })
     }
 

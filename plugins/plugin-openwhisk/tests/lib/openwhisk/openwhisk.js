@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const ui = require('@kui-shell/core/tests/lib/ui')
-const common = require('@kui-shell/core/tests/lib/common')
+const assert = require('assert')
+const { Common, CLI, ReplExpect, Selectors } = require('@kui-shell/test')
 const expandHomeDir = require('@kui-shell/core/util/home').default
 
 // read and cache local ~/.wskprops
@@ -177,30 +177,26 @@ exports.before = (ctx, opts) => {
   }
 
   return function() {
-    const { cli } = ui
-
     const setApiHost =
       process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz)
         ? x => x
         : () =>
-            cli
-              .do(`wsk host set ${apihost}`, ctx.app)
-              .then(cli.expectOK)
+            CLI.command(`wsk host set ${apihost}`, ctx.app)
+              .then(ReplExpect.ok)
               .catch(err => {
                 console.log(`Failed at command: wsk host set ${apihost}`)
-                return common.oops(ctx)(err)
+                return Common.oops(ctx)(err)
               })
 
     const addWskAuth =
       process.env.MOCHA_RUN_TARGET !== 'webpack' || (opts && opts.fuzz)
         ? x => x
         : () =>
-            cli
-              .do(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
-              .then(cli.expectOK)
+            CLI.command(`wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`, ctx.app)
+              .then(ReplExpect.ok)
               .catch(err => {
                 console.log(`Failed at command: wsk auth add ${process.env.__OW_API_KEY || process.env.AUTH}`)
-                return common.oops(ctx)(err)
+                return Common.oops(ctx)(err)
               })
 
     // clean openwhisk assets from previous runs, then start the app
@@ -208,8 +204,89 @@ exports.before = (ctx, opts) => {
       cleanAll(false, process.env.__OW_API_KEY || process.env.AUTH),
       cleanAll(true, process.env.AUTH2)
     ])
-      .then(common.before(ctx, opts))
+      .then(Common.before(ctx, opts))
       .then(setApiHost)
       .then(addWskAuth)
   }
+}
+
+exports.aliases = {
+  activation: ['activation', '$'],
+  list: ['list'],
+  remove: ['delete']
+}
+
+/** validate an activationId */
+const activationIdPattern = /^\w{12}$/
+exports.expectValidActivationId = () => activationId => activationId.match(activationIdPattern)
+
+/**
+ * Wait till activation list shows the given activationId. Optionally,
+ * use an action name filter
+ *
+ */
+const waitForActivationOrSession = entityType => (app, activationId, { name = '' } = {}) => {
+  return app.client.waitUntil(() => {
+    return CLI.command(`wsk ${entityType} list ${name}`, app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
+      .then(
+        N => !!app.client.getText(`${Selectors.LIST_RESULTS_N(N)} .activationId[data-activation-id="${activationId}"]`)
+      )
+  })
+}
+
+exports.waitForActivation = waitForActivationOrSession('activation')
+exports.waitForSession = waitForActivationOrSession('session')
+
+/**
+ * @return the expected namespace string for this test
+ *
+ */
+exports.expectedNamespace = (space = process.env.TEST_SPACE, org = process.env.TEST_ORG) => {
+  if (!org || org.length === 0) {
+    return space
+  } else {
+    return `${org}_${space}`
+  }
+}
+
+/**
+ * Valdiate that the observed namespace matches the expected namespace
+ * for this test
+ *
+ */
+exports.validateNamespace = observedNamespace => {
+  assert.strictEqual(observedNamespace.toLowerCase(), exports.expectedNamespace().toLowerCase())
+}
+
+/**
+ * Normalize data for conformance testing of an HTML file
+ *
+ */
+exports.normalizeHTML = s => {
+  const result = s
+    .toString()
+    .replace(/http(s?):\/\/[^/]+/g, '') // strip out any hostnames that may vary
+    .replace(/>\s+</g, '><') // remove white-space between tags
+    .replace(/"/g, "'") // convert to single quotes
+    .replace(/href=(['"])([^'"]+).css(['"])/, 'href=$1$2.http$3')
+  return result
+}
+
+exports.rp = opts => {
+  const rp = require('request-promise')
+  const withRetry = require('promise-retry')
+
+  return withRetry((retry, iter) => {
+    return rp(Object.assign({ timeout: 20000 }, typeof opts === 'string' ? { url: opts } : opts)).catch(err => {
+      const isNormalError = err && (err.statusCode === 400 || err.statusCode === 404 || err.statusCode === 409)
+      if (!isNormalError && iter < 10) {
+        console.error(err)
+        retry()
+      } else {
+        console.error(`Error in rp with opts=${JSON.stringify(opts)}`)
+        throw err
+      }
+    })
+  })
 }

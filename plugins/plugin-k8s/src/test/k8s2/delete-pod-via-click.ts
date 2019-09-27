@@ -14,50 +14,47 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-k8s/tests/lib/k8s/utils'
 
 const kubectl = 'k'
 
-describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
   allocateNS(this, ns)
 
   it(`should create sample pod from URL via ${kubectl}`, () => {
-    return cli
-      .do(
-        `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
-      .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('nginx') }))
+    return CLI.command(
+      `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+      this.app
+    )
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
       .then(selector => waitForGreen(this.app, selector))
-      .catch(common.oops(this))
+      .catch(Common.oops(this))
   })
 
   it(`should get sample pod via ${kubectl}`, () => {
-    return cli
-      .do(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('nginx', undefined, undefined, ns))
-      .catch(common.oops(this))
+    return CLI.command(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+      .catch(Common.oops(this))
   })
 
   it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
     try {
-      await this.app.client.click(selectors.SIDECAR_MODE_BUTTON('delete'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
       await this.app.client.waitForExist('#confirm-dialog')
       await this.app.client.click('#confirm-dialog .bx--btn--danger')
-      const selector = `${selectors.OUTPUT_LAST} ${selectors.BY_NAME('nginx')}`
+      const selector = `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`
 
       return waitForRed(this.app, selector)
     } catch (err) {
-      return common.oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 

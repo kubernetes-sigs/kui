@@ -19,12 +19,12 @@
  *    this test also covers toggling the sidecar
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { dirname } from 'path'
-const { cli, sidecar } = ui
-const { localDescribe } = common
+
+const { localDescribe } = Common
 const ROOT = dirname(require.resolve('@kui-shell/plugin-openwhisk/tests/package.json'))
 
 const actionName1 = 'foo bar'
@@ -32,55 +32,51 @@ const actionName2 = 'bam'
 const sequenceName1 = 'sss'
 
 // TODO: webpack test
-localDescribe('Create a sequence with whitespacey names', function(this: common.ISuite) {
+localDescribe('Create a sequence with whitespacey names', function(this: Common.ISuite) {
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   // create an action, using the implicit entity type
   it('should create an action', () =>
-    cli
-      .do(`wsk action create "${actionName1}" ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create "${actionName1}" ${ROOT}/data/openwhisk/foo.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .catch(Common.oops(this)))
 
   // create the second action
   it('should create an action', () =>
-    cli
-      .do(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName2))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ${actionName2} ${ROOT}/data/openwhisk/foo2.js`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName2))
+      .catch(Common.oops(this)))
 
   it(`should show ${actionName1} by clicking on the result of "ls"`, () =>
-    cli
-      .do('wsk action list', this.app)
-      .then(cli.expectOKWithCustom({ passthrough: true }))
-      .then(N => this.app.client.click(ui.selectors.LIST_RESULT_BY_N_AND_NAME(N, actionName1)))
+    CLI.command('wsk action list', this.app)
+      .then(ReplExpect.okWithCustom({ passthrough: true }))
+      .then(N => this.app.client.click(Selectors.LIST_RESULT_BY_N_AND_NAME(N, actionName1)))
       .then(() => this.app)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName1))
-      .catch(common.oops(this)))
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(actionName1))
+      .catch(Common.oops(this)))
 
   // create a sequence
   it('should create a sequence', () =>
-    cli
-      .do(`wsk action create ${sequenceName1} --sequence "${actionName1},${actionName2}"`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(sequenceName1))
-      .catch(common.oops(this)))
+    CLI.command(`wsk action create ${sequenceName1} --sequence "${actionName1},${actionName2}"`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(sequenceName1))
+      .catch(Common.oops(this)))
 
   // click on a sequence component bubble
   it('should show action after clicking on bubble', async () => {
     try {
-      await this.app.client.waitForExist(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-      await this.app.client.click(ui.selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
-      return sidecar.expectOpen(this.app).then(sidecar.expectShowing(actionName1))
+      await this.app.client.waitForExist(Selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+      await this.app.client.click(Selectors.SIDECAR_SEQUENCE_CANVAS_NODE_N(0))
+      return SidecarExpect.open(this.app).then(SidecarExpect.showing(actionName1))
     } catch (err) {
-      return common.oops(this)(err)
+      return Common.oops(this)(err)
     }
   })
 })

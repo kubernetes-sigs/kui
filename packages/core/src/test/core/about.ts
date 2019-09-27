@@ -13,60 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ISuite, before as commonBefore, after as commonAfter, oops, refresh } from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { theme as settings } from '../../core/settings'
 
-const { cli, sidecar } = ui
-
-describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('should open the about window via command execution', () =>
-    cli
-      .do('about', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(settings.productName))
-      .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
-      .catch(oops(this, true)))
+    CLI.command('about', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(settings.productName))
+      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .catch(Common.oops(this, true)))
 
   it('should open the about window via command execution with comment', () =>
-    cli
-      .do('about #About Kui', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(settings.productName))
-      .then(() => this.app.client.waitForVisible(`${ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
-      .catch(oops(this, true)))
+    CLI.command('about #About Kui', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(settings.productName))
+      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .catch(Common.oops(this, true)))
 
   it('should open the about via button click', async () => {
     try {
-      await refresh(this)
+      await Common.refresh(this)
       await this.app.client.waitForVisible('#help-button')
 
-      await cli.do('sleep 1', this.app).then(cli.expectBlank)
+      await CLI.command('sleep 1', this.app).then(ReplExpect.blank)
 
       await this.app.client.click('#help-button')
 
-      await this.app.client.waitForVisible(ui.selectors.SIDECAR)
-      await this.app.client.waitForVisible(ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR)
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
     } catch (err) {
-      await oops(this, true)(err)
+      await Common.oops(this, true)(err)
     }
   })
 
   it('should open the getting started via command execution', async () => {
-    await refresh(this)
+    await Common.refresh(this)
 
-    return cli
-      .do('getting started', this.app)
-      .then(cli.expectJustOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(settings.productName))
-      .then(() => this.app.client.waitForVisible(ui.selectors.SIDECAR_MODE_BUTTON_SELECTED('gettingStarted')))
-      .catch(oops(this, true))
+    return CLI.command('getting started', this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(settings.productName))
+      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('gettingStarted')))
+      .catch(Common.oops(this, true))
   })
 })

@@ -14,73 +14,67 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import * as ui from '@kui-shell/core/tests/lib/ui'
-import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
-const { cli, sidecar } = ui
-const { rp } = common
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 
-describe('Create api gateway', function(this: common.ISuite) {
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
+
+const { rp } = openwhisk
+
+describe('Create api gateway', function(this: Common.ISuite) {
   if (process.env.NO_OPENWHISK_API_MGMT) {
     console.log('Skipping OpenWhisk API management tests')
     return
   }
 
   before(openwhisk.before(this))
-  after(common.after(this))
+  after(Common.after(this))
 
   it('should fail to create the api for a non-existent action', () =>
-    cli
-      .do(`wsk api create /hello /world get echo`, this.app)
-      .then(cli.expectError(404))
-      .catch(common.oops(this)))
+    CLI.command(`wsk api create /hello /world get echo`, this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this)))
 
   it('should create an echo action', () =>
-    cli
-      .do(`let echo = x=>x`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('echo'))
-      .catch(common.oops(this)))
+    CLI.command(`let echo = x=>x`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('echo'))
+      .catch(Common.oops(this)))
 
   it('should fail to create the api for a non-web-action', () =>
-    cli
-      .do(`wsk api create /hello /world get echo`, this.app)
-      .then(cli.expectError(412))
-      .catch(common.oops(this)))
+    CLI.command(`wsk api create /hello /world get echo`, this.app)
+      .then(ReplExpect.error(412))
+      .catch(Common.oops(this)))
 
   it('should webbify the action', () =>
-    cli
-      .do(`webbify`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('echo'))
-      .catch(common.oops(this)))
+    CLI.command(`webbify`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('echo'))
+      .catch(Common.oops(this)))
 
   it('should create the api', () =>
-    cli
-      .do(`wsk api create /hello /world get echo`, this.app)
-      .then(cli.expectOK)
-      .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing('echo'))
-      .catch(common.oops(this)))
+    CLI.command(`wsk api create /hello /world get echo`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('echo'))
+      .catch(Common.oops(this)))
 
   it('should list and invoke the api', () =>
-    cli
-      .do(`wsk api list`, this.app)
+    CLI.command(`wsk api list`, this.app)
       .then(res =>
-        cli
-          .expectOKWithOnly('/hello/world')(res)
+        ReplExpect.okWithOnly('/hello/world')(res)
           .then(() => res.count)
-          .then(N => this.app.client.getAttribute(`${ui.selectors.LIST_RESULTS_N(N)} [data-key="url"]`, 'data-value'))
+          .then(N => this.app.client.getAttribute(`${Selectors.LIST_RESULTS_N(N)} [data-key="url"]`, 'data-value'))
       )
 
       .then(_href => {
         if (_href === null) {
           throw new Error('href attribute not found')
         } else {
+          const apiHost = process.env.API_HOST
           const x = _href as string // typescript weirdness https://github.com/Microsoft/TypeScript/issues/14889
-          const href = x.replace(/(http:\/\/)?172\.17\.0\.1/, ui.apiHost.replace(/http(s)?:\/\//, ''))
+          const href = x.replace(/(http:\/\/)?172\.17\.0\.1/, apiHost.replace(/http(s)?:\/\//, ''))
           if (!href.startsWith('http')) {
             return `http://${href}`
           } else {
@@ -94,6 +88,6 @@ describe('Create api gateway', function(this: common.ISuite) {
       })
 
       .then(href => rp({ url: `${href}?foo=bar`, rejectUnauthorized: false }))
-      .then(ui.expectSubset({ foo: 'bar' }))
-      .catch(common.oops(this)))
+      .then(Util.expectSubset({ foo: 'bar' }))
+      .catch(Common.oops(this)))
 })

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as common from '@kui-shell/core/tests/lib/common'
-import { cli, selectors, sidecar } from '@kui-shell/core/tests/lib/ui'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   waitForRed,
@@ -31,9 +30,9 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-k8s/tests/package.json')
 const synonyms = ['kubectl']
 
 describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: common.ISuite) {
-  before(common.before(this))
-  after(common.after(this))
+  ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   // repeat the tests for kubectl, k, etc. i.e. any built-in
   // synonyms/aliases we have for "kubectl"
@@ -45,38 +44,37 @@ describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TAR
 
     it(`should create a HorizontalPodAutoscaler hpa via ${kubectl}`, async () => {
       try {
-        const selector: string = await cli
-          .do(`${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
-          .then(
-            cli.expectOKWithCustom({
-              selector: selectors.BY_NAME('travelapp-hpa')
-            })
-          )
+        const selector: string = await CLI.command(
+          `${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`,
+          this.app
+        ).then(
+          ReplExpect.okWithCustom({
+            selector: Selectors.BY_NAME('travelapp-hpa')
+          })
+        )
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
 
         // now click on the table row
         await this.app.client.click(`${selector} .clickable`)
-        await sidecar
-          .expectOpen(this.app)
-          .then(sidecar.expectMode(defaultModeForGet))
-          .then(sidecar.expectShowing('travelapp-hpa'))
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.showing('travelapp-hpa'))
       } catch (err) {
-        return common.oops(this)(err)
+        return Common.oops(this)(err)
       }
     })
 
     it(`should delete the HorizontalPodAutoscaler hpa from URL via ${kubectl}`, () => {
-      return cli
-        .do(`${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
+      return CLI.command(`${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
         .then(
-          cli.expectOKWithCustom({
-            selector: selectors.BY_NAME('travelapp-hpa')
+          ReplExpect.okWithCustom({
+            selector: Selectors.BY_NAME('travelapp-hpa')
           })
         )
         .then(selector => waitForRed(this.app, selector))
-        .catch(common.oops(this))
+        .catch(Common.oops(this))
     })
 
     deleteNS(this, ns)

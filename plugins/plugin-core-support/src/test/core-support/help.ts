@@ -15,17 +15,17 @@
  */
 
 /**
- * read-only tests against the cli's help APIs
+ * read-only tests against the CLI's help APIs
  *
  */
 
-import { ISuite, before as commonBefore, after as commonAfter } from '@kui-shell/core/tests/lib/common'
+import { Common } from '@kui-shell/test'
 
 import { doHelp, header } from '@kui-shell/plugin-core-support/tests/lib/core-support/help-util'
 
-describe('Help command', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe('Help command', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   //
   // and now here come the tests...

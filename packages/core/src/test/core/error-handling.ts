@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import { ISuite, before as commonBefore, after as commonAfter, oops } from '@kui-shell/core/tests/lib/common'
+import { Common, ReplExpect, CLI } from '@kui-shell/test'
 
-import * as ui from '@kui-shell/core/tests/lib/ui'
-const { cli } = ui
-
-describe('Error handling', function(this: ISuite) {
-  before(commonBefore(this))
-  after(commonAfter(this))
+describe('Error handling', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
 
   it('bind with no args', () =>
-    cli
-      .do('bind', this.app)
-      .then(cli.expectError(497))
-      .catch(oops(this)))
+    CLI.command('bind', this.app)
+      .then(ReplExpect.error(497))
+      .catch(Common.oops(this)))
 })
