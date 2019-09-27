@@ -15,7 +15,7 @@
  */
 
 /** our filename filter */
-const CORE = /packages\/app\//
+const CORE = /packages\/core\//
 
 /** parse the typecov model */
 const typecov = require(process.argv[2])
