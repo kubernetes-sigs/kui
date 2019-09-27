@@ -480,7 +480,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     if (isPopup() || options.usePip) {
       entityNameClickable.onclick = async (evt: MouseEvent) => {
         const { drilldown } = await import('../picture-in-picture')
-        return drilldown(tab, entity.onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
+        return drilldown(tab, entity.onclick, undefined, undefined, 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
       entityNameClickable.onclick = () => {

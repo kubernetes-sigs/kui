@@ -270,7 +270,7 @@ const _drawTable = (
   tableScrollContainer.className = 'data-table-scroll-container'
 
   // header title
-  const onclick = options.name ? drilldownWith(tab, viewName, `app get "${options.name}"`) : undefined
+  const onclick = options.name ? drilldownWith(`app get "${options.name}"`) : undefined
   const name = options.name || titleWhenNothingSelected
   // addNameToSidecarHeader(getSidecar(tab), options.name || titleWhenNothingSelected, undefined, onclick)
 
@@ -357,7 +357,7 @@ const _drawTable = (
 
         label.className = 'cell-label'
         labelAction.className = 'clickable'
-        label.onclick = drilldownWith(tab, viewName, `wsk action get ${group.path}`)
+        label.onclick = drilldownWith(`wsk action get ${group.path}`)
 
         if (nameWithoutNamespace.length > 20) {
           label.setAttribute('data-balloon', nameWithoutNamespace) // line break
@@ -417,10 +417,7 @@ const _drawTable = (
         // drill down to grid view; note how we pass through a name filter
         // query, to filter based on the clicked-upon row
         cell.onclick = drilldownWith(
-          tab,
-          viewName,
           `grid ${REPL.encodeComponent(group.path)} ${optionsToString(options)} ${splitOptions}`,
-          undefined,
           [resetFocus]
         )
 
@@ -528,7 +525,7 @@ const _drawTable = (
           if (!redraw) {
             outlier.dom = dot
             dot.className = 'outlier-dot cell-show-only-when-outliers-shown'
-            dot.onclick = drilldownWith(tab, viewName, `wsk activation get ${activation.activationId}`)
+            dot.onclick = drilldownWith(`wsk activation get ${activation.activationId}`)
             barWrapper.appendChild(dot)
 
             const tooltip = `${prettyPrintDuration(duration)} (versus median ${prettyPrintDuration(thisMedian)})`
@@ -575,11 +572,7 @@ const _drawTable = (
         } else {
           // drill down to grid, showing just successes
           cell.classList.add('clickable')
-          cell.onclick = drilldownWith(
-            tab,
-            viewName,
-            `grid "${group.path}" ${optionsToString(options)} --success ${splitOptions}`
-          )
+          cell.onclick = drilldownWith(`grid "${group.path}" ${optionsToString(options)} --success ${splitOptions}`)
         }
         cell.appendChild(countPart)
         countPart.innerText = group.nSuccesses.toString()
@@ -609,11 +602,7 @@ const _drawTable = (
 
         // drill down to grid, showing just failures
         cell.classList.add('clickable')
-        cell.onclick = drilldownWith(
-          tab,
-          viewName,
-          `grid "${group.path}" ${optionsToString(options)} --failure ${splitOptions}`
-        )
+        cell.onclick = drilldownWith(`grid "${group.path}" ${optionsToString(options)} --failure ${splitOptions}`)
         if (group.nFailures === 0) {
           cell.classList.add('count-is-zero')
           cell.classList.remove('clickable')
@@ -675,7 +664,6 @@ const _drawTable = (
     currentRange: choices[0],
     uuid,
     content,
-    controlHeaders: true,
     eventBus,
     presentation: UI.Presentation.SidecarFullscreenForPopups,
     modes: modes(viewName.toLowerCase(), options).concat(tableModes)
