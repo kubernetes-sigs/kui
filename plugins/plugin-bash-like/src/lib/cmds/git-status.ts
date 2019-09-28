@@ -18,8 +18,7 @@ import * as Debug from 'debug'
 import * as path from 'path'
 import { spawn } from 'child_process'
 
-import { Commands, UI } from '@kui-shell/core'
-import pip from '@kui-shell/core/webapp/picture-in-picture'
+import { Commands, REPL, UI } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { asSidecarEntity } from '../util/sidecar-support'
@@ -178,9 +177,7 @@ export const status2Html = (tab: UI.Tab, rawOut: string, stats: Promise<Stats> =
         // no-text-selected.
         setTimeout(() => {
           if (noCurrentTextSelection()) {
-            return pip(tab, `${command} ${relpath}`, undefined, wrapper.parentNode.parentNode as Element, 'git status')(
-              event
-            )
+            return REPL.click(`${command} ${relpath}`, event)
           }
         }, 0)
       }

@@ -18,7 +18,6 @@ import * as url from 'url'
 import * as path from 'path'
 
 import { REPL, UI } from '@kui-shell/core'
-import drilldown from '@kui-shell/core/webapp/picture-in-picture'
 
 declare let hljs
 
@@ -102,7 +101,7 @@ const wrap = (tab: UI.Tab, htmlString: string, fullpath: string): Markdown => {
             .replace(/\$\{cwd\}/g, path.dirname(fullpath))
         )
     } else {
-      exec.onclick = drilldown(tab, `open ${url}`, undefined, wrapper, path.basename(fullpath))
+      exec.onclick = REPL.pexec(`open ${url}`)
     }
   }
 

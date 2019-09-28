@@ -163,7 +163,7 @@ describe('Bottom bar back button functionality', function(this: common.ISuite) {
     return once(0)
   })
 
-  it(`should open grid, click on ${actionName2}, and come back, then ${actionName1}, and come back`, () => {
+  xit(`should open grid, click on ${actionName2}, and come back, then ${actionName1}, and come back`, () => {
     const once = iter =>
       cli
         .do('grid', this.app)

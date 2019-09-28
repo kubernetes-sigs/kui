@@ -23,7 +23,6 @@ import { Commands, REPL, UI } from '@kui-shell/core'
 
 import Activation from '../activation'
 import { sort, sortActivations, startTimeSorter, countSorter } from '../sorting'
-import { drilldownWith } from '../drilldown'
 import { GroupData, TimelineData, groupByAction } from '../grouping'
 import { formatLegend } from '../legend'
 import { renderCell } from '../cell'
@@ -430,8 +429,8 @@ const _drawGrid = (
 
       labelInner.appendChild(labelAction)
       labelAction.innerText = actionName
-      labelAction.className = 'clickable grid-label-part'
-      labelAction.onclick = drilldownWith(`grid "${group.path}" ${optionsToString(options)}`)
+      labelAction.className = 'grid-label-part' // was also: clickable
+      // labelAction.onclick = drilldownWith(`grid "${group.path}" ${optionsToString(options)}`)
     }
 
     // render the grid

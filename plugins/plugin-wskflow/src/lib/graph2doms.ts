@@ -16,9 +16,8 @@
 
 import * as Debug from 'debug'
 
-import { UI } from '@kui-shell/core'
+import { REPL, UI } from '@kui-shell/core'
 import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
-import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
@@ -577,13 +576,7 @@ export default async function graph2doms(
 
         $('#qtip').removeClass('visible')
         if (d.onclick) {
-          pictureInPicture(
-            tab,
-            d.onclick,
-            d3.event.currentTarget.parentNode, // highlight this node
-            $('#wskflowContainer')[0],
-            d.viewName || 'Flow Visualization'
-          )(d3.event)
+          REPL.click(d.onclick, d3.event)
         } else if (activations) {
           if (d.visited) {
             if ($('#actList').css('display') !== 'block') {
@@ -593,13 +586,13 @@ export default async function graph2doms(
             // if(d.type == "Exit" || d.type == 'Entry'){
             if (d.type === 'Exit') {
               // console.log(fsm.States[d.id].act[0]);
-              pictureInPicture(
+              /* pictureInPicture(
                 tab,
                 activations[d.visited[0]],
                 d3.event.currentTarget.parentNode, // highlight this node
                 $('#wskflowContainer')[0],
                 'App Visualization' // container to pip
-              )(d3.event)
+              )(d3.event) */
               /* pictureInPicture(`wsk activation get ${id}`, {echo: true}),
                                             d3.event.currentTarget.parentNode, // highlight this node
                                             $("#wskflowContainer")[0],
@@ -610,13 +603,14 @@ export default async function graph2doms(
               $('#qtip').removeClass('visible')
 
               if (d.visited.length === 1) {
-                pictureInPicture(
+                /* pictureInPicture(
                   tab,
                   activations[d.visited[0]],
                   d3.event.currentTarget.parentNode, // highlight this node
                   $('#wskflowContainer')[0],
                   'App Visualization' // container to pip
-                )(d3.event) // pass along the raw dom event
+                )(d3.event) */
+                // pass along the raw dom event
               } else {
                 // let act = fsm.States[d.id].act;
                 let actListContent = "<div style='padding-bottom:5px'>Click on an activation here to view details</div>"
@@ -682,18 +676,18 @@ export default async function graph2doms(
                       $(this).css('text-decoration', 'underline')
                     }
                   )
-                  .click(function(e) {
+                  .click(function() {
                     // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
-                    const index = $(this).attr('index')
-
+                    // const index = $(this).attr('index')
                     // pictureInPicture(`wsk activation get ${id}`, {echo: true}),
-                    pictureInPicture(
+                    /* pictureInPicture(
                       tab,
                       activations[index],
                       $(this).parent()[0], // highlight this node
                       $('#wskflowContainer')[0],
                       'App Visualization' // container to pip
-                    )(e) // pass along the raw dom event
+                    )(e) */
+                    // pass along the raw dom event
                   })
 
                 $('#listClose').click(function() {
@@ -712,13 +706,7 @@ export default async function graph2doms(
           if (d.type === 'action' && $('#' + d.id).attr('data-deployed') === 'deployed') {
             if (d.name) {
               // repl.exec(`wsk action get "${d.name}"`, {sidecarPrevious: 'get myApp', echo: true});
-              pictureInPicture(
-                tab,
-                `wsk action get "${d.name}"`,
-                d3.event.currentTarget.parentNode, // highlight this node
-                $('#wskflowContainer')[0], // container to pip
-                'App Visualization'
-              )(d3.event) // pass along the raw dom event
+              REPL.click(`wsk action get "${d.name}"`, d3.event)
             } else {
               debug(`clicking on an inline function: ${d.label}`)
             }
