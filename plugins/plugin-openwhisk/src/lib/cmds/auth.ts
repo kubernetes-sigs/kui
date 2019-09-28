@@ -278,7 +278,7 @@ const list = async (): Promise<Tables.Table> => {
       }
 
       const onclick = async () => {
-        await REPL.qexec(`auth switch ${REPL.encodeComponent(ns.namespace)}`)
+        await REPL.qexec(`wsk auth switch ${REPL.encodeComponent(ns.namespace)}`)
         row.setSelected()
       }
 
