@@ -18,15 +18,12 @@ import * as Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Commands, REPL, Tables, UI } from '@kui-shell/core'
-import pictureInPicture from '@kui-shell/core/webapp/picture-in-picture'
 
 import { Activation } from '../../../models/activation'
 
 declare let hljs
 
 const debug = Debug('plugins/openwhisk/views/cli/activations/list')
-
-const viewName = 'Trace View'
 
 export interface ActivationListRow extends Tables.Row {
   namespace?: string
@@ -200,12 +197,9 @@ const _render = (args: Args) => {
   }
 
   // picture in picture
-  const pip = (cmd: string) =>
-    noPip
-      ? () => REPL.pexec(cmd)
-      : pictureInPicture(tab, cmd, undefined, logTable, viewName, {
-          parent: container
-        })
+  const pip = (cmd: string) => {
+    return () => REPL.pexec(cmd)
+  }
 
   return Promise.all([
     fetch(activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
@@ -316,9 +310,7 @@ const _render = (args: Args) => {
 
       // command to be executed when clicking on the entity name cell
       const path = activation.annotations && activation.annotations.find(({ key }) => key === 'path')
-      const gridCommand = activation.sessionId
-        ? `grid ${REPL.encodeComponent(activation.name)}` // for apps, the activation.name field is the app name
-        : !path
+      const gridCommand = !path
         ? `grid ${REPL.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
         : `grid ${REPL.encodeComponent(`/${path.value}`)}`
 
