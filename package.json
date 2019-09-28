@@ -43,7 +43,6 @@
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-tekton": "file:plugins/plugin-tekton",
     "@kui-shell/plugin-tutorials": "file:plugins/plugin-tutorials",
-    "@kui-shell/plugin-wrk": "file:plugins/plugin-wrk",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
   },
   "devDependencies": {
