@@ -10,7 +10,7 @@ const secrets = process.env.COS_SECRETS
 
 const {
   theme: { productName }
-} = require('../../../../app/build/config.json')
+} = require('../../../../../node_modules/@kui-shell/settings/config.json')
 
 const version = process.argv[2]
 
