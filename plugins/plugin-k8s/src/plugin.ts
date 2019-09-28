@@ -22,8 +22,6 @@ import auth from './lib/controller/auth'
 import contexts from './lib/controller/contexts'
 import kubectl from './lib/controller/kubectl'
 import status from './lib/controller/status'
-import istio from './lib/controller/istio'
-import kiali from './lib/controller/kiali'
 
 import { Capabilities, Commands } from '@kui-shell/core'
 
@@ -33,8 +31,6 @@ export default async (commandTree: Commands.Registrar) => {
     contexts(commandTree),
     status(commandTree),
     kubectl(commandTree),
-    istio(commandTree),
-    kiali(commandTree),
     Capabilities.inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree)
   ])
 }

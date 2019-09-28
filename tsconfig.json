@@ -47,9 +47,6 @@
       "path": "plugins/plugin-tutorials"
     },
     {
-      "path": "plugins/plugin-wrk"
-    },
-    {
       "path": "plugins/plugin-wskflow"
     }
   ]
