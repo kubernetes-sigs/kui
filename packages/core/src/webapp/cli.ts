@@ -161,7 +161,7 @@ export const pasteQueuedInput = (value: string) => {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Tab extends HTMLElement {}
-const tabTagPattern = /tab/i
+const tabTagPattern = /^tab$/i
 export function isTab(node: Element): node is Tab {
   return tabTagPattern.test(node.tagName)
 }
