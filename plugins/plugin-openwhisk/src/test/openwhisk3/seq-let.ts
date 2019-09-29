@@ -32,12 +32,13 @@ describe('Create a sequence via let', function(this: common.ISuite) {
 
   // create the component actions
   actionNames.forEach(actionName => {
-    it('should create an action via let', () =>
+    it(`should create an action ${actionName} via let`, () =>
       cli
         .do(`let ${actionName}.js = x=>x`, this.app)
         .then(cli.expectJustOK)
         .then(sidecar.expectOpen)
-        .then(sidecar.expectShowing(actionName)))
+        .then(sidecar.expectShowing(actionName))
+        .catch(common.oops(this, true)))
   })
 
   // create the sequence with white spaces
@@ -46,7 +47,8 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .do(`let ${seqName} = ${actionNames.join(' -> ')}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName)))
+      .then(sidecar.expectShowing(seqName))
+      .catch(common.oops(this, true)))
 
   // create the sequence without white spaces
   it('should create a sequence without white spaces', () =>
@@ -54,7 +56,8 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .do(`let ${seqName2}=${actionNames.join('->')}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName2)))
+      .then(sidecar.expectShowing(seqName2))
+      .catch(common.oops(this, true)))
 
   // create the sequence with white spaces
   it('should create a sequence with inline function', () =>
@@ -62,7 +65,8 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .do(`let ${seqName4} = a->x=>({y:x.y})->b`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName4)))
+      .then(sidecar.expectShowing(seqName4))
+      .catch(common.oops(this, true)))
 
   // create the sequence with white spaces
   it('should create a sequence with two inline functions', () =>
@@ -70,14 +74,16 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .do(`let ${seqName5} = a->x=>({y:x.y})->x=>({y:x.y})->b`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName5)))
+      .then(sidecar.expectShowing(seqName5))
+      .catch(common.oops(this, true)))
 
   // do a recursive delete
   it(`should delete ${seqName5} and its two inline anonymous functions`, () =>
     cli
       .do(`wsk action rimraf -r ${seqName5}`, this.app)
       .then(cli.expectOKWithCustom({ expect: 'deleted 3 elements', exact: true }))
-      .then(sidecar.expectClosed))
+      .then(sidecar.expectClosed)
+      .catch(common.oops(this, true)))
 
   // create the sequence with a max of white spaces
   it('should create a sequence with a mix of white space', () =>
@@ -85,7 +91,8 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .do(`let ${seqName3}= ${actionNames.join('-> ')}`, this.app)
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(seqName3)))
+      .then(sidecar.expectShowing(seqName3))
+      .catch(common.oops(this, true)))
 
   // invoke one of the sequences
   it('should do an async of the sequence, using implicit context', () =>
@@ -99,5 +106,6 @@ describe('Create a sequence via let', function(this: common.ISuite) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(seqName3))
       .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ y: 3 })))
+      .then(ui.expectStruct({ y: 3 }))
+      .catch(common.oops(this, true)))
 })

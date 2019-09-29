@@ -21,22 +21,22 @@ import sessionStore from '../models/sessionStore'
  * the key in localStorage to get the symbol table
  *
  */
-class SymbolTable {
-  private static readonly symbolTableSessionStorageKey = 'kui.symbol_table'
+export class SymbolTable {
+  private readonly symbolTableSessionStorageKey = 'kui.symbol_table'
 
-  private static getSymbolTable() {
+  private getSymbolTable() {
     return JSON.parse(sessionStore().getItem(this.symbolTableSessionStorageKey)) || {}
   }
 
-  public static read(tab: Tab): Record<string, string> {
+  public read(tab: Tab): Record<string, string> {
     return this.getSymbolTable()[getTabId(tab)] || {}
   }
 
-  public static write(tab: Tab, curDic: Record<string, string>) {
+  public write(tab: Tab, curDic: Record<string, string>) {
     const storage = this.getSymbolTable()
     storage[getTabId(tab)] = curDic
     sessionStore().setItem(this.symbolTableSessionStorageKey, JSON.stringify(storage))
   }
 }
 
-export default SymbolTable
+export default new SymbolTable()

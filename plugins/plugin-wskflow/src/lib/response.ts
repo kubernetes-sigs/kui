@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-// this file defines the external API
-
-export { FlowNode, Edge } from './lib/graph'
-export { default as injectCSS } from './/lib/inject'
-export { default as ActivationLike, ActivationLikeFull } from './lib/activation'
-export { default as visualize } from './lib/visualize'
-export { default as graph2doms } from './lib/graph2doms'
-export { wskflow, zoomToFitButtons } from './lib/util'
-export { Action, ASTNode, ComponentArrayBearing } from './lib/ast'
+export default interface Response {
+  view: HTMLElement
+  subtext?: string | HTMLElement
+  controller: {
+    register: (cb: { applyAutoScale: boolean; customZoom: boolean }) => void
+    zoomToFit: () => void
+    zoom1to1: () => void
+    is1to1: () => boolean
+  }
+}

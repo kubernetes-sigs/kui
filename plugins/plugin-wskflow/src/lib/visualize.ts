@@ -19,7 +19,9 @@ import * as Debug from 'debug'
 import { Capabilities, UI } from '@kui-shell/core'
 
 import injectCSS from './inject'
+import Response from './response'
 import fsm2graph from './fsm2graph'
+import { ASTNode, ComponentBearing } from './ast'
 
 const debug = Debug('plugins/wskflow/visualize')
 
@@ -31,7 +33,7 @@ type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void
  */
 export default async (
   tab: UI.Tab,
-  passedFsm: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  passedFsm: ASTNode | ComponentBearing,
   container?: HTMLElement,
   w?: number,
   h?: number,
@@ -39,7 +41,7 @@ export default async (
   options?,
   rule?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
+): Promise<Response> => {
   if (Capabilities.isHeadless()) {
     return
   }

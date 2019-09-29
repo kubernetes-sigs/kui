@@ -963,6 +963,14 @@ export async function renderResult(
   }
 }
 
+export function replResult() {
+  const resultContainer = document.createElement('div')
+  const resultDom = document.createElement('div')
+  resultDom.classList.add('repl-result')
+  resultContainer.appendChild(resultDom)
+  return resultDom
+}
+
 /**
  * Render the results of a command evaluation in the "console"
  *
@@ -1095,7 +1103,7 @@ export const printResults = (
         (response.verb === 'get' || response.verb === 'create' || response.verb === 'update')
       ) {
         // get response?
-        const forRepl = showEntity(
+        const forRepl = await showEntity(
           tab,
           response,
           Object.assign({}, execOptions || {}, {
@@ -1103,11 +1111,12 @@ export const printResults = (
             show: response.show || 'default'
           })
         )
+
         // forRepl means: the sidecar wants to display something on the repl when it's done
         // it's either a promise or a DOM entry directly
         if (echo) {
-          if (forRepl && forRepl.then) {
-            forRepl.then(response => render(response, { echo, resultDom }))
+          if (forRepl && forRepl !== true) {
+            render(forRepl, { echo, resultDom })
           } else if (forRepl) {
             ok(resultDom.parentElement)
           }
@@ -1182,7 +1191,7 @@ export const printResults = (
     }
   }
 
-  promise.then(async (alreadyRendered: boolean) => {
+  return promise.then(async (alreadyRendered: boolean) => {
     if (
       isPopup() &&
       (Array.isArray(response) ||
@@ -1234,8 +1243,6 @@ export const printResults = (
       }
     }
   })
-
-  return Promise.resolve()
 }
 
 export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBlock: HTMLElement) => async () => {

@@ -88,7 +88,7 @@ export const vizAndfsmViewModes = (
  */
 export const decorateAsApp = async (
   tab: UI.Tab,
-  { action, input, commandPrefix = 'app get', doVisualize, options }
+  { action, input, commandPrefix = 'wsk app get', doVisualize, options }
 ) => {
   debug('decorateAsApp', options)
   action.prettyType = appBadge
@@ -114,7 +114,7 @@ export const decorateAsApp = async (
     }
 
     const { visualize, wskflow, zoomToFitButtons } = await import('@kui-shell/plugin-wskflow')
-    const { view, controller } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
+    const { view, controller, subtext } = await wskflow(tab, visualize, Object.assign({}, action, { viewOptions }))
 
     const sourceAnnotation = action.annotations.find(({ key }) => key === 'source')
     if (sourceAnnotation) {
@@ -129,8 +129,8 @@ export const decorateAsApp = async (
       .concat(sourceAnnotation ? [codeViewMode(action.source)] : [])
       .concat(zoomToFitButtons(controller))
     debug('action', action)
-    return view || action
+    return { content: view || action, subtext }
   } else {
-    return action
+    return { content: action }
   }
 }

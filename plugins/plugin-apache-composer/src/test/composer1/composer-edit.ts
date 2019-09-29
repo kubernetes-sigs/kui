@@ -88,7 +88,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .then(verifyEdgeExists('Entry', 'A'))
       .then(verifyEdgeExists('A', 'B'))
       .then(verifyEdgeExists('B', 'Exit'))
-      .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
+      // .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
       .catch(common.oops(this)))
 
   // deploy composition with undeployed actions
@@ -97,7 +97,7 @@ describe('edit compositions', function(this: common.ISuite) {
       .do('compose compSimple', this.app)
       .then(cli.expectOK)
       .then(deploy(this.app, 'compSimple'))
-      .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
+      // .then(() => this.app.client.waitForExist('.wskflow-undeployed-action-warning'))
       .then(() =>
         this.app.client.waitUntil(() =>
           cli
