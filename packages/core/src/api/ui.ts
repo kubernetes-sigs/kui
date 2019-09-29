@@ -58,7 +58,7 @@ export namespace UI {
   export import BadgeRegistration = BadgeRegistrar.BadgeRegistration
   export import registerBadge = BadgeRegistrar.registerSidecarBadge
 
-  export import ToolbarText = Sidecar.ToolbarText
+  export import ToolbarText = Sidecar.ToolbarTextImpl
 
   export import TopTabs = _TopTabs
 

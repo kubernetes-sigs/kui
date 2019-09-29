@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Commands, UI } from '@kui-shell/core'
 
-import { respondToRepl } from '../util'
+import openEditor from '../open'
+import applyOverrides from '../overrides'
+import respondToRepl from '../util'
 import { CommandResponse } from '../response'
 import { Entity as EditorEntity, fetchEntity } from '../fetchers'
 import * as usage from '../../usage'
-import { applyOverrides } from '../overrides'
-import { openEditor } from '../open'
 import { persisters } from '../persisters'
 
 const debug = Debug('plugins/editor/cmds/edit')
-
-// so that users of the exported `edit` command have access to our
-// IEntity model
-export type EditorEntity = EditorEntity
 
 /**
  * Command handler for `edit <entity>`
@@ -80,7 +74,7 @@ const editCmd = async ({
   ])
 
   // apply any command line overrides of the default behaviors
-  applyOverrides(parsedOptions)([entity])
+  applyOverrides(parsedOptions)(entity)
 
   // now we're ready to inject the entity into the editor view
   const model = await injectEntityIntoView(entity)

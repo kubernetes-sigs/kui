@@ -111,23 +111,24 @@ export const save = ({ getEntity, editor, eventBus }: EditorState): UI.Mode => {
  * Revert to the currently deployed version
  *
  */
-export const revert = ({ getEntity, editor, eventBus }: EditorState): UI.Mode => ({
+export const revert = (state: EditorState): UI.Mode => ({
   mode: strings.revert,
   actAsButton: true,
   flush: 'right',
   // fontawesome: 'fas fa-cloud-download-alt',
   // fontawesome: 'fas fa-sync-alt',
   direct: () => {
-    const entity = getEntity()
+    const entity = state.getEntity()
     const persister = entity.persister
+    debug('revert', entity)
 
     if (persister.revert) {
       return persister
-        .revert(entity, { getEntity, editor, eventBus })
+        .revert(entity, state)
         .then(entity => {
           entity.persister = persister
-          editor.updateText(entity)
-          eventBus.emit('/editor/save', entity, { event: 'revert' })
+          state.editor.updateText(entity)
+          state.eventBus.emit('/editor/save', entity, { event: 'revert' })
         })
         .then(() => true)
     } else {

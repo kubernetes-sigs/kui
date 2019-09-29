@@ -43,7 +43,7 @@
 [kui-theme-style] .monaco-editor .name,
 [kui-theme-style] .monaco-editor .strong {
   font-weight: bold;
-  color: inherit;
+  color: var(--color-base0D);
 }
 
 [kui-theme-style] .monaco-editor .mtk22,
