@@ -17,7 +17,7 @@
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Commands } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './fetchers'
 export { EditorEntity }
@@ -30,6 +30,7 @@ export interface EditorState {
   getEntity: () => EditorEntity
   editor: Editor
   eventBus: EventEmitter
+  toolbarText: UI.ToolbarText
 }
 
 export interface EditorResponse extends EditorState {

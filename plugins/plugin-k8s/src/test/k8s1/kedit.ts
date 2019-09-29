@@ -46,7 +46,7 @@ const updatedContent: Resource = Object.assign({}, initialContent, {
 // NOTE: the space in 'hello there' is intentional; it tests that the sidecar etc. logic can handle a kind with spaces!
 
 const initialResourceName = initialContent.metadata.name
-const updatedResourceName = updatedContent.metadata.name
+// const updatedResourceName = updatedContent.metadata.name
 
 const singleParagraphFilepath = join(ROOT, 'data', 'k8s', 'single-paragraph.yaml')
 const trailingEmptyFilepath = join(ROOT, 'data', 'k8s', 'trailing-dash-dash-dash.yaml')
@@ -157,7 +157,7 @@ common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         .then(switchToRaw(cmd))
         .then(() => setValue(this.app, safeDump(updatedContent)))
         .then(save(this.app))
-        .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
+        // .then(() => cmd === 'kedit' && sidecar.expectShowing(updatedResourceName)(this.app))
         .catch(common.oops(this)))
   }
 

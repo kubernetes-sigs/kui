@@ -81,7 +81,7 @@ describe('edit actions', function(this: common.ISuite) {
       .then(() => this.app.client.waitForExist(ui.selectors.SIDECAR_MODE_BUTTON('Revert')))
       .catch(common.oops(this)))
 
-  it('should create an second action', () =>
+  it('should create a second action', () =>
     cli
       .do('let foo2 = x=>x', this.app)
       .then(cli.expectOK)

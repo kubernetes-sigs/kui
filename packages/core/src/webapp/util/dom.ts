@@ -19,8 +19,10 @@
  *
  */
 export const removeAllDomChildren = (node: Node) => {
-  while (node.firstChild) {
-    node.removeChild(node.firstChild)
+  if (node) {
+    while (node.firstChild) {
+      node.removeChild(node.firstChild)
+    }
   }
 }
 

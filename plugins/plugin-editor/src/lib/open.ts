@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
-import * as path from 'path'
-import * as events from 'events'
+import Debug from 'debug'
+import { dirname, join } from 'path'
+import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Capabilities, eventBus as globalEventBus, UI } from '@kui-shell/core'
-import {
-  currentSelection,
-  getSidecar,
-  addSidecarHeaderIconText,
-  addNameToSidecarHeader,
-  addVersionBadge
-} from '@kui-shell/core/webapp/views/sidecar'
+import { Capabilities, Commands, Models, UI } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './fetchers'
-import { Editor } from './response'
+import { Editor, EditorResponse } from './response'
 import strings from './strings'
 import { language } from './file-types'
 
@@ -75,7 +68,11 @@ const setText = (editor: MonacoEditor.ICodeEditor, options, execOptions?) => ({
   return code
 }
 
+/** optimization: injectTheme asynchronously on preload */
 let pre = false
+
+/** optimization: avoid calling injectTheme more than once for each
+ * `edit` command execution */
 let pre2 = false
 
 /**
@@ -102,11 +99,16 @@ const injectTheme = () => {
     })
   } catch (err) {
     // oh well, try filesystem style
-    const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    UI.injectCSS({ key, path: path.join(ourRoot, 'web/css/theme-alignment.css') })
+    const ourRoot = dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
+    UI.injectCSS({ key, path: join(ourRoot, 'web/css/theme-alignment.css') })
   }
 }
 
+/**
+ * Attempt to mask any latencies of injectTheme by doing so
+ * asynchronously on startup
+ *
+ */
 export const preload = () => {
   setTimeout(() => {
     injectTheme()
@@ -124,21 +126,19 @@ export const preload = () => {
  *     - content: a dom that contains the instance; this must be attached somewhere!
  *
  */
-export const openEditor = async (tab: UI.Tab, name: string, options, execOptions) => {
+export const openEditor = async (tab: UI.Tab, name: string, options, execOptions: Commands.ExecOptions) => {
   debug('openEditor')
-
-  const sidecar = getSidecar(tab)
-  const outerContent = sidecar.querySelector('.custom-content')
 
   /** returns the current entity */
   const custom = execOptions.custom
 
-  const getEntityFn = (custom && custom.getEntity) || currentSelection
-  const getEntity = () => getEntityFn(tab)
+  const getEntityFn = (custom && custom.getEntity) || Models.Selection.current
+  let currentEntity = getEntityFn(tab)
+  const getEntity = () => currentEntity
 
   // for certain content types, always show folding controls, rather
   // than on mouse over (which is the default behavior for monaco)
-  const entityRightNow = getEntity()
+  const entityRightNow = currentEntity
   const kind = entityRightNow && ((entityRightNow.exec && entityRightNow.exec.kind) || entityRightNow.contentType)
   if (kind === 'yaml' || kind === 'json') {
     options.showFoldingControls = 'always'
@@ -146,8 +146,8 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
 
   if (!pre2) {
     if (!Capabilities.inBrowser()) {
-      const monacoRoot = path.dirname(require.resolve('monaco-editor/package.json'))
-      UI.injectScript(path.join(monacoRoot, 'min/vs/loader.js'))
+      const monacoRoot = dirname(require.resolve('monaco-editor/package.json'))
+      UI.injectScript(join(monacoRoot, 'min/vs/loader.js'))
     }
 
     try {
@@ -156,8 +156,8 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
         key: 'editor.editor'
       })
     } catch (err) {
-      const ourRoot = path.dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-      UI.injectCSS(path.join(ourRoot, 'web/css/editor.css'))
+      const ourRoot = dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
+      UI.injectCSS(join(ourRoot, 'web/css/editor.css'))
     }
     pre2 = true
   }
@@ -190,7 +190,7 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
    * that instance to show a given entity.
    *
    */
-  const updater = (editor: Editor) => {
+  const makeUpdater = (editor: Editor) => {
     editor.updateText = (entity: EditorEntity) => {
       // monaco let's us replace the full range of text, so we don't need
       // an explicit delete of the current text
@@ -205,12 +205,10 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
 
     editorWrapper['editor'] = editor
 
-    return (entity: EditorEntity) => {
+    // return a function that takes an entity and formulates a response
+    return (entity: EditorEntity): Promise<EditorResponse> => {
       debug('updater', entity)
-      const eventBus = new events.EventEmitter()
-
-      const kind = sidecar.querySelector('.action-content .kind') as HTMLElement
-      kind.innerText = ''
+      const eventBus = new EventEmitter()
 
       // update the editor text
       setText(editor, options, execOptions)(entity['exec'])
@@ -218,9 +216,7 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
       content.classList.add('code-highlighting')
 
       // stash this so that the implicit entity model works
-      sidecar.entity = entity
-
-      addSidecarHeaderIconText(entity.kind || entity.type, sidecar)
+      currentEntity = entity
 
       // isModified display
       const status = document.createElement('div')
@@ -255,94 +251,61 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
       upToDate.className = 'is-up-to-date'
       modified.className = 'is-modified'
 
+      const toolbarText = new UI.ToolbarText('info', status)
+
       /** update isdecar header */
       const updateHeader = (isModified: boolean) => {
         if (!execOptions.noSidecarHeader) {
-          debug('updateHeader', entity)
+          debug('updateHeader', isModified, currentEntity)
 
-          const toolbarText: UI.ToolbarText = {
-            type: isModified ? 'warning' : 'info',
-            text: status
-          }
+          toolbarText.type = isModified ? 'warning' : 'info'
 
-          if (isModified) {
-            status.classList.remove('is-up-to-date')
-            status.classList.remove('is-new')
+          status.classList.remove('is-modified')
+          status.classList.remove('is-up-to-date')
+          status.classList.remove('is-new')
+
+          if (currentEntity.isNew) {
+            status.classList.add('is-new')
+          } else if (isModified) {
+            status.classList.add('is-modified')
           } else {
             status.classList.add('is-up-to-date')
           }
 
-          addNameToSidecarHeader(
-            sidecar,
-            entity.name,
-            entity.metadata && entity.metadata.namespace,
-            undefined,
-            entity.kind || entity.viewName || entity.type,
-            toolbarText,
-            entity
-          )
-          addVersionBadge(tab, entity, { clear: true })
+          toolbarText.refresh()
         }
       }
 
       /** even handlers for saved and content-changed */
       const editsInProgress = () => {
-        // debug('editsInProgress')
-        sidecar.classList.add('is-modified')
+        debug('editsInProgress')
         editor['clearDecorations']() // for now, don't try to be clever; remove decorations on any edit
         eventBus.emit('/editor/change', {})
 
-        // update sidecar header, after the editor becomes "dirty"
+        // update view header, after the editor becomes "dirty"
         updateHeader(true)
       }
-      const editsCommitted = (entity: EditorEntity) => {
-        debug('editsCommited', entity)
-        const lockIcon = sidecar.querySelector('[data-mode="lock"]')
-
-        sidecar.classList.remove('is-modified')
+      const editsCommitted = (entity: EditorEntity, opts: { event: 'save' | 'revert' }) => {
+        debug('editsCommited', opts, entity)
         status.classList.remove('is-new')
-        if (lockIcon) lockIcon.classList.remove('is-new')
-        sidecar.entity = entity
+        entity.persister = currentEntity.persister
+        currentEntity = entity
         debug('status:is-up-to-date')
 
-        // update sidecar header, after save or revert
+        // update view header, after save or revert
         updateHeader(false)
+
+        if (opts.event === 'revert') {
+          editor.getModel().onDidChangeContent(editsInProgress)
+        }
       }
       eventBus.on('/editor/save', editsCommitted)
       editor.getModel().onDidChangeContent(editsInProgress)
 
-      // update sidecar header, initial call
+      // update view header, initial call
       updateHeader(false)
 
-      /** call editor.layout */
-      const relayout = (editor['relayout'] = () => {
-        const go = () => {
-          const { width, height } = outerContent.getBoundingClientRect()
-          debug('relayout', width, height)
-          editor.layout({ width, height })
-        }
-
-        editor.updateOptions({ automaticLayout: false })
-        go()
-      })
-
-      globalEventBus.on('/sidecar/maximize', relayout)
-      window.addEventListener('resize', relayout)
-
-      // when the sidecar is replaced, remove our event listeners
-      const ourUUID = sidecar.uuid
-      const onReplace = (uuid: string) => {
-        if (ourUUID === uuid) {
-          globalEventBus.off('/sidecar/maximize', relayout)
-          globalEventBus.off('/sidecar/replace', onReplace)
-          window.removeEventListener('resize', relayout)
-        }
-      }
-      globalEventBus.on('/sidecar/replace', onReplace)
-
-      setTimeout(relayout, 0)
-
-      return Promise.resolve({ getEntity, editor, content, eventBus })
+      return Promise.resolve({ getEntity, editor, content, eventBus, toolbarText })
     }
   } /* end of updater */
 
@@ -351,5 +314,7 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
     : (await import('./init/amd')).default
 
   // once the editor is ready, return a function that can populate it
-  return initEditor(editorWrapper, options).then(updater)
-} /* end of openEditor */
+  return initEditor(editorWrapper, options).then(makeUpdater)
+}
+
+export default openEditor

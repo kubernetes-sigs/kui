@@ -54,13 +54,7 @@ describe('create new actions in editor', function(this: common.ISuite) {
   const deploy = (app, action) => () => {
     return app.client
       .click(ui.selectors.SIDECAR_MODE_BUTTON('Deploy'))
-      .then(() => {
-        console.error('00')
-      })
       .then(() => app.client.waitForVisible(`${ui.selectors.SIDECAR} .editor-status.is-new`, 10000, true))
-      .then(() => {
-        console.error('11')
-      })
       .catch(err => {
         console.error('Ouch, something bad happened, let us clean up the action before retrying')
         console.error(err)
@@ -83,9 +77,11 @@ describe('create new actions in editor', function(this: common.ISuite) {
     }, text)
 
     // finally: the is-modified indicator should not have "is new" or "is up to date"
-    await this.app.client.waitForVisible(
-      `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status:not(.is-new):not(.is-up-to-date)`
-    )
+    if (status !== 'new') {
+      await this.app.client.waitForVisible(
+        `${ui.selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status:not(.is-new):not(.is-up-to-date)`
+      )
+    }
   }
 
   it('should successfully open editor for unused name, edit the action content and deploy', () =>

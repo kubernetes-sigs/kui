@@ -19,15 +19,9 @@
 import Debug from 'debug'
 import { v4 as uuid } from 'uuid'
 
-import { Capabilities, Commands, eventBus, i18n, REPL, Settings, UI } from '@kui-shell/core'
-import {
-  isVisible as isSidecarVisible,
-  toggle,
-  toggleMaximization,
-  clearSelection
-} from '@kui-shell/core/webapp/views/sidecar'
+import { Capabilities, Commands, eventBus, i18n, Models, REPL, Settings, UI } from '@kui-shell/core'
+import { isVisible as isSidecarVisible, toggle, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { element } from '@kui-shell/core/webapp/util/dom'
 import { listen, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
 import { WatchableJob } from '@kui-shell/core/core/job'
 
@@ -45,6 +39,14 @@ const usage = {
   strict: 'switch',
   command: 'switch',
   required: [{ name: 'tabIndex', numeric: true, docs: 'Switch to the given tab index' }]
+}
+
+/**
+ * Look up an HTML element
+ *   note: ParentNode is a common parent of Element and Document
+ */
+function element(id: string, parent: ParentNode = document): HTMLElement {
+  return parent.querySelector(id) as HTMLElement
 }
 
 function isUsingCommandName() {
@@ -453,7 +455,7 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
         window.close()
       } else {
         debug('close sidecar button click')
-        clearSelection(tab)
+        Models.Selection.clear(tab)
       }
     } catch (err) {
       console.error('error handling quit button click', err)
@@ -519,7 +521,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   // the wrong repl-result
   UI.empty(newTab.querySelector('.repl-result'))
 
-  clearSelection(newTab)
+  Models.Selection.clear(newTab)
   perTabInit(newTab, newTabButton)
 
   newTabButton.scrollIntoView()

@@ -24,7 +24,7 @@
 
 import * as _Entity from '../models/entity'
 import { History as _History } from '../models/history'
-import { currentSelection } from '../webapp/views/sidecar'
+import { clearSelection, currentSelection } from '../webapp/views/sidecar'
 import _Store from '@kui-shell/core/models/store'
 
 export namespace Models {
@@ -33,6 +33,7 @@ export namespace Models {
 
   export namespace Selection {
     export const current = currentSelection
+    export const clear = clearSelection
   }
 
   export const History = _History

@@ -326,6 +326,25 @@ export const renderField = async (
  * Sidecar badges
  *
  */
+
+/**
+ * Return the DOM elements housing the sidecar badges
+ *
+ */
+function getBadgesDomContainer(sidecar: Sidecar) {
+  const badgesDomContainer = sidecar.querySelector('.header-right-bits .custom-header-content')
+  let badgesDom = badgesDomContainer.querySelector('.badges') as HTMLElement
+  if (!badgesDom) {
+    badgesDom = document.createElement('span')
+    badgesDom.classList.add('badges')
+    badgesDomContainer.appendChild(badgesDom)
+  } else {
+    removeAllDomChildren(badgesDom)
+  }
+
+  return { badgesDomContainer, badgesDom }
+}
+
 /**
  * This is the most complete form of a badge specification, allowing
  * the caller to provide a title, an onclick handler, and an optional
@@ -351,7 +370,8 @@ class DefaultBadgeOptions implements BadgeOptions {
   readonly badgesDom: HTMLElement
 
   constructor(tab: Tab) {
-    this.badgesDom = getSidecar(tab).querySelector('.sidecar-header .badges')
+    const { badgesDom } = getBadgesDomContainer(getSidecar(tab))
+    this.badgesDom = badgesDom
   }
 }
 
@@ -359,13 +379,47 @@ class DefaultBadgeOptions implements BadgeOptions {
  * Text to be displayed in the sidecar toolbar
  *
  */
+type ToolbarTextType = 'info' | 'warning' | 'error'
+type ToolbarTextValue = string | Element
 export interface ToolbarText {
-  type: 'info' | 'warning' | 'error'
-  text: string | Element
+  type: ToolbarTextType
+  text: ToolbarTextValue
+}
+export interface RefreshableToolbarText extends ToolbarText {
+  attach: (owner: Element) => RefreshableToolbarText
+  refresh: () => void
+}
+export class ToolbarTextImpl implements RefreshableToolbarText {
+  private _container: Element
+
+  // eslint doesn't recognize the typescript constructor-settor syntax
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(public type: ToolbarTextType, public text: string | Element) {}
+
+  public attach(owner: Element) {
+    this._container = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', owner)
+    return this
+  }
+
+  public refresh() {
+    if (this._container) {
+      const content = element('.sidecar-toolbar-text-content', this._container)
+      if (typeof this.text === 'string') {
+        content.innerText = this.text
+      } else {
+        content.appendChild(this.text)
+      }
+      this._container.setAttribute('data-type', this.type)
+    }
+  }
 }
 function isToolbarText(subtext: Formattable | ToolbarText): subtext is ToolbarText {
   const spec = subtext as ToolbarText
   return spec && spec.type !== undefined && spec.text !== undefined
+}
+function isRefreshableToolbarText(ttext: ToolbarText): ttext is RefreshableToolbarText {
+  const refreshable = ttext as RefreshableToolbarText
+  return refreshable.attach !== undefined && refreshable.refresh !== undefined
 }
 
 /**
@@ -539,6 +593,7 @@ export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, b
     const version = (entity as MetadataBearing).metadata.generation
     if (version) {
       addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
+      return
     }
   }
 
@@ -708,17 +763,16 @@ export const addNameToSidecarHeader = async (
   }
 
   // handle ToolbarText
+  const toolbarTextSpec = isToolbarText(subtext) ? subtext : isCustomSpec(entity) && entity.toolbarText
   const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
   const toolbarTextContent = element('.sidecar-toolbar-text-content', toolbarTextContainer)
-  const toolbarTextSpec = isToolbarText(subtext) ? subtext : isCustomSpec(entity) && entity.toolbarText
   removeAllDomChildren(toolbarTextContent)
   if (toolbarTextSpec) {
-    if (typeof toolbarTextSpec.text === 'string') {
-      toolbarTextContent.innerText = toolbarTextSpec.text
+    if (isRefreshableToolbarText(toolbarTextSpec)) {
+      toolbarTextSpec.attach(sidecar).refresh()
     } else {
-      toolbarTextContent.appendChild(toolbarTextSpec.text)
+      new ToolbarTextImpl(toolbarTextSpec.type, toolbarTextSpec.text).attach(sidecar).refresh()
     }
-    toolbarTextContainer.setAttribute('data-type', toolbarTextSpec.type)
   } else if (subtext && !isToolbarText(subtext)) {
     // handle "subtext", which is now treated as a special case of a
     // ToolbarText where the type is 'info'
@@ -847,15 +901,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     })
   }
 
-  const badgesDomContainer = sidecar.querySelector('.header-right-bits .custom-header-content')
-  let badgesDom = badgesDomContainer.querySelector('.badges')
-  if (!badgesDom) {
-    badgesDom = document.createElement('span')
-    badgesDom.classList.add('badges')
-    badgesDomContainer.appendChild(badgesDom)
-  } else {
-    removeAllDomChildren(badgesDom)
-  }
+  const { badgesDomContainer, badgesDom } = getBadgesDomContainer(sidecar)
 
   if (custom && (custom.isEntity || isMetadataBearing(custom) || isMetadataBearingByReference(custom))) {
     const entity = custom

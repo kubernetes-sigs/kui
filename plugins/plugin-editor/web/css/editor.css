@@ -1,27 +1,3 @@
-/* is modified indicator */
-#sidecar .is-modified-wrapper {
-  display: flex;
-  align-items: center;
-  direction: initial;
-}
-#sidecar .is-modified-indicator {
-  transition: all 300ms ease-in-out;
-  opacity: 0;
-  font-size: 0.5em;
-  margin-left: 0.25em;
-}
-#sidecar.is-modified .is-modified-indicator {
-  opacity: 1;
-  color: var(--color-support-01);
-}
-#sidecar .is-modified-wrapper > span:first-child {
-  /* make sure the name part doesn't overflow */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  height: 1.25em; /* prevent vertical cropping on chrome */
-}
-
 .monaco-editor-wrapper {
   flex: 1;
 
@@ -94,8 +70,8 @@
   height: 0;
   pointer-events: none;
 }
-sidecar.is-modified .editor-status:not(.is-new) .is-modified,
-sidecar:not(.is-modified) .editor-status:not(.is-new) .is-up-to-date,
+sidecar .editor-status:not(.is-new).is-modified .is-modified,
+sidecar .editor-status:not(.is-new):not(.is-modified) .is-up-to-date,
 sidecar .editor-status.is-new:not(.is-read-only) .is-new,
 sidecar .editor-status.is-new.is-read-only .is-new-read-only {
   opacity: 1;

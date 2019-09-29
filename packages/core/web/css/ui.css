@@ -875,7 +875,6 @@ sidecar.no-sidecar-header .sidecar-header,
 sidecar.custom-content .sidecar-content,
 sidecar:not(.custom-content) .custom-content,
 sidecar.custom-content .sidecar-header-secondary-content .limits,
-sidecar:not(.custom-content) .custom-header-content,
 sidecar.custom-content .sidecar-header-secondary-content .action-content {
   /* custom content rules */
   display: none;

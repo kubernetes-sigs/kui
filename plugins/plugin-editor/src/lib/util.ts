@@ -27,25 +27,33 @@ type ModeFunction = (state: EditorState) => UI.Mode
  * updateEditor
  *
  */
-export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = []) => ({
-  getEntity,
-  editor,
-  content,
-  eventBus
-}: EditorResponse): CommandResponse => {
-  const badges: UI.Badge[] = [{ title: language(getEntity().exec.kind), css: 'is-kind-like' }]
+export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = []) => (
+  response: EditorResponse
+): CommandResponse => {
+  const entity = response.getEntity()
 
-  const modes: UI.Mode[] = [save({ getEntity, editor, eventBus }), revert({ getEntity, editor, eventBus })].concat(
-    extraModes.map(modeFn => modeFn({ getEntity, editor, eventBus }))
-  )
+  const badges: UI.Badge[] = [{ title: language(entity.exec.kind), css: 'is-kind-like' }]
+
+  const modes: UI.Mode[] = [save(response), revert(response)].concat(extraModes.map(modeFn => modeFn(response)))
 
   return {
     type: 'custom',
-    content,
+    isEntity: true,
+    kind: entity.kind,
+    version: entity.version,
+    metadata: {
+      name: entity.name,
+      generation: entity.version || (entity.metadata && entity.metadata.generation),
+      namespace: entity.namespace || (entity.metadata && entity.metadata.namespace)
+    },
+    content: response.content,
+    toolbarText: response.toolbarText,
     controlHeaders: ['.header-right-bits'],
-    displayOptions: [`entity-is-${getEntity().type}`, 'edit-mode'].concat(displayOptions),
+    displayOptions: [`entity-is-${entity.type}`, 'edit-mode'].concat(displayOptions),
     noZoom: true,
     badges,
     modes
   }
 }
+
+export default respondToRepl

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { Commands, REPL } from '@kui-shell/core'
 
 import {
@@ -44,7 +44,7 @@ export const defaults = {
  * Optional arguments for new and compose commands
  *
  */
-export const optional = allowed => [
+export const optional = (allowed: string[]) => [
   {
     name: '--kind',
     alias: '-k',
@@ -85,7 +85,7 @@ export const newUsage = {
  * If the user specified a kind of 'nodejs', then add ':default'
  *
  */
-export const addVariantSuffix = kind => {
+export const addVariantSuffix = (kind: string) => {
   if (kind.indexOf(':') < 0) {
     return `${kind}:default`
   } else {
@@ -143,10 +143,41 @@ const failIfNot404 = err => {
  *
  */
 export const gotoReadonlyView = ({ getEntity }) => async () => {
-  const { namespace, name } = await getEntity()
+  const { name, namespace } = await getEntity()
   const fqn = `/${namespace}/${name}`
   debug('readonly', fqn)
   return REPL.pexec(`wsk action get ${REPL.encodeComponent(fqn)}`)
+}
+
+export const persisters = {
+  // persisters for regular actions
+  actions: {
+    getCode: entity => entity,
+    revert: (entity: Entity, { editor }) => {
+      debug('revert', entity)
+      const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
+
+      return REPL.qexec(`wsk action get "${namespacePart}${entity.name}"`)
+        .then(persisters.actions.getCode)
+        .then(entity => {
+          entity.persister = persisters.actions
+          editor.updateText(entity)
+          return entity
+        })
+    },
+    save: action => {
+      debug('save', action)
+      const namespacePart = action.namespace ? `/${action.namespace}/` : ''
+
+      // odd: if we don't delete this, the backend will not perform its default version tagging behavior
+      // https://github.com/apache/incubator-openwhisk/issues/3237
+      delete action.version
+
+      return REPL.qexec(`wsk action update "${namespacePart}${action.name}"`, undefined, undefined, {
+        entity: { action }
+      })
+    }
+  }
 }
 
 /**
@@ -156,8 +187,8 @@ export const gotoReadonlyView = ({ getEntity }) => async () => {
  */
 export const fetchAction = (check = checkForConformance, tryLocal = true) => (
   name: string,
-  parsedOptions?,
-  execOptions?
+  parsedOptions?: Commands.ParsedOptions,
+  execOptions?: Commands.ExecOptions
 ): Promise<Entity> => {
   if (name.charAt(0) === '!') {
     const parameterName = name.substring(1)
@@ -180,6 +211,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
     .then(check)
     .then(entity =>
       Object.assign({}, entity, {
+        persister: persisters.actions,
         gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
       })
     )
@@ -219,37 +251,6 @@ export const prepareEditorWithAction = ([action, updateFn]) => {
   return updateFn(action)
 }
 
-export const persisters = {
-  // persisters for regular actions
-  actions: {
-    getCode: entity => entity,
-    revert: (entity, { editor }) => {
-      debug('revert', entity)
-      const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
-
-      return REPL.qexec(`wsk action get "${namespacePart}${entity.name}"`)
-        .then(persisters.actions.getCode)
-        .then(entity => {
-          entity.persister = persisters.actions
-          editor.updateText(entity)
-        })
-        .then(() => true)
-    },
-    save: action => {
-      debug('save', action)
-      const namespacePart = action.namespace ? `/${action.namespace}/` : ''
-
-      // odd: if we don't delete this, the backend will not perform its default version tagging behavior
-      // https://github.com/apache/incubator-openwhisk/issues/3237
-      delete action.version
-
-      return REPL.qexec(`wsk action update "${namespacePart}${action.name}"`, undefined, undefined, {
-        entity: { action }
-      })
-    }
-  }
-}
-
 /**
  * Command handler to create a new action or app
  *
@@ -261,7 +262,12 @@ export const newAction = ({
   placeholder = undefined,
   placeholderFn = undefined,
   persister = persisters.actions
-} = {}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.Arguments) => {
+} = {}) => async ({
+  tab,
+  argvNoOptions,
+  parsedOptions: options,
+  execOptions
+}: Commands.Arguments): Promise<Commands.Response> => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)
@@ -282,6 +288,7 @@ export const newAction = ({
       debug('makeAction', ast)
       return {
         name,
+        kind,
         type,
         exec: { kind, prettyKind, code },
         isNew: true,

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-export const applyOverrides = parsedOptions => params => {
-  const [entity] = params
+import { Commands } from '@kui-shell/core'
 
+import EditorEntity from './fetchers'
+
+export default (parsedOptions: Commands.ParsedOptionsFull) => (entity: EditorEntity) => {
   if (parsedOptions.name) {
-    entity.name = parsedOptions.name
+    entity.name = parsedOptions.name.toString()
   }
 
   if (parsedOptions.type) {
-    entity.type = parsedOptions.type
+    entity.type = parsedOptions.type.toString()
   }
-
-  return params
 }

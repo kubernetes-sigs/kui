@@ -40,6 +40,9 @@ interface Getter {
 export interface Entity extends Models.ResourceWithMetadata {
   type: string
   name: string
+  version?: string
+  isNew?: boolean
+  namespace?: string
   noZoom?: boolean
   viewName?: string
   extract?: (raw: string, entity: Entity) => Entity
@@ -52,6 +55,8 @@ export interface Entity extends Models.ResourceWithMetadata {
   gotoReadonlyView?: (Getter) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   annotations: KeyValuePair[]
 }
+
+export default Entity
 
 export type IFetcher = (
   entityName: string,
@@ -104,7 +109,7 @@ export const fetchFile: IFetcher = async (
   execOptions: Commands.ExecOptions,
   createIfAbsent: boolean
 ): Promise<Entity> => {
-  let stats: { isDirectory: boolean; filepath: string; data: string }
+  let stats: { isDirectory: boolean; filepath: string; fullpath: string; data: string }
   try {
     stats = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)} --with-data`)
   } catch (err) {
@@ -121,6 +126,8 @@ export const fetchFile: IFetcher = async (
   } else if (createIfAbsent) {
     throw new Error(`'${filepath}' cannot be created because it already exists`)
   } else {
+    const name = basename(filepath)
+
     const dotIdx = filepath.lastIndexOf('.')
     const extension = dotIdx < 0 ? 'text' : filepath.substring(dotIdx + 1)
     const kind =
@@ -128,8 +135,13 @@ export const fetchFile: IFetcher = async (
 
     return {
       type: 'file',
-      name: basename(filepath),
+      name,
+      kind,
       filepath: stats.filepath,
+      metadata: {
+        name,
+        namespace: dirname(stats.fullpath)
+      },
       exec: {
         kind,
         code: stats.data
