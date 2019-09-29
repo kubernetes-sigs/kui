@@ -26,6 +26,9 @@ export interface ExecOptions {
   /** environment variable map */
   env?: Record<string, string>
 
+  /** true, if you wish a qexec to return rendered HTML; default is false, meaning you get the model back on qexec */
+  render?: boolean
+
   isProxied?: boolean
   forceProxy?: boolean
   noDelegation?: boolean

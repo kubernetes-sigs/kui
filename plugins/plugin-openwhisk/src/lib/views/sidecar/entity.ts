@@ -23,6 +23,8 @@ import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/web
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
+import { Action, ComponentArrayBearing } from '@kui-shell/plugin-wskflow'
+
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
@@ -42,8 +44,7 @@ const uiNameForKind = kind => uiNameForKindMap[kind] || kind
  * A small shim on top of the wskflow renderer
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const wskflow = async (tab: UI.Tab, ast: Record<string, any>, rule?) => {
+const wskflow = async (tab: UI.Tab, ast: ComponentArrayBearing<Action>, rule?) => {
   debug('wskflow', ast, rule)
   const sidecar = getSidecar(tab)
   const { visualize } = await import('@kui-shell/plugin-wskflow')
@@ -238,35 +239,38 @@ export const showEntity = async (
         // form a fake AST, so we can use the wskflow visualization
         // wskflw now use the IR, so we have to fake a IR instead of a AST
         // const key = idx => `action_${idx}`
-        Promise.all(
-          entity.exec.components.map(actionName =>
-            REPL.qexec(`wsk action get "${actionName}"`)
-              .then(action => {
-                debug('got sequence component', action)
-                const anonymousCode = isAnonymousLet(action)
-                if (anonymousCode) {
-                  return anonymousCode.replace(/\s/g, '')
-                } else {
-                  return action.name
-                }
-                // on 404:
-              })
-              .catch(() => {
-                debug('did not get sequence component', actionName)
-                return actionName
-              })
-              .then(name => {
-                debug('processing sequence component', name)
-                return {
-                  type: 'action',
-                  name: actionName.indexOf('/') === -1 ? `/_/${actionName}` : actionName,
-                  displayLabel: name
-                }
-              })
+        const actions: Action[] = await Promise.all(
+          entity.exec.components.map(
+            (actionName: string): Promise<Action> =>
+              REPL.qexec(`wsk action get "${actionName}"`)
+                .then(action => {
+                  debug('got sequence component', action)
+                  const anonymousCode = isAnonymousLet(action)
+                  if (anonymousCode) {
+                    return anonymousCode.replace(/\s/g, '')
+                  } else {
+                    return action.name
+                  }
+                  // on 404:
+                })
+                .catch(() => {
+                  debug('did not get sequence component', actionName)
+                  return actionName
+                })
+                .then(name => {
+                  debug('processing sequence component', name)
+                  const node: Action = {
+                    type: 'action',
+                    name: actionName.indexOf('/') === -1 ? `/_/${actionName}` : actionName,
+                    displayLabel: name
+                  }
+                  return node
+                })
           )
         )
-          .then(actions => ({ type: 'sequence', components: actions }))
-          .then(ast => wskflow(tab, ast))
+
+        const ast: ComponentArrayBearing<Action> = { type: 'sequence', components: actions }
+        await wskflow(tab, ast)
       }
     } else {
       //
@@ -349,18 +353,19 @@ export const showEntity = async (
     // form a fake AST, so we can use the wskflow visualization
     // wskflw now use the IR, so we have to fake a IR instead of a AST
     // const key = idx => `action_${idx}`
-    const ast = {
+    const components: Action[] = [
+      {
+        type: 'action' as const,
+        name: `/${entity.action.path}/${entity.action.name}`,
+        displayLabel: entity.action.name as string
+      }
+    ]
+    const ast: ComponentArrayBearing<Action> = {
       type: 'sequence',
-      components: [
-        {
-          type: 'action',
-          name: `/${entity.action.path}/${entity.action.name}`,
-          displayLabel: entity.action.name
-        }
-      ]
+      components
     }
     const rule = entity
-    wskflow(tab, ast, rule)
+    await wskflow(tab, ast, rule)
   } else if (entity.type === 'packages') {
     const actionCountDom = sidecar.querySelector('.package-action-count')
     const actionCount = (entity.actions && entity.actions.length) || 0
@@ -420,6 +425,5 @@ export const showEntity = async (
 
   UI.LowLevel.scrollIntoView()
 
-  //
-  return Promise.resolve(responseToRepl)
+  return responseToRepl
 } /* showEntity */

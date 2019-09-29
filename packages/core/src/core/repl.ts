@@ -786,26 +786,39 @@ class InProcessExecutor implements Executor {
               parsedOptions
             })
 
+            const render = execOptions && !!execOptions.render
+
             // response=true means we are in charge of 'ok'
             if (
-              (execOptions && execOptions.replSilence) ||
-              nested ||
-              response.mode === 'prompt' ||
-              (block && block['_isFakeDom'])
+              !render &&
+              ((execOptions && execOptions.replSilence) ||
+                nested ||
+                response.mode === 'prompt' ||
+                (block && block['_isFakeDom']))
             ) {
               // the parent exec will deal with the repl
               debug('passing control back to prompt processor or headless')
               return Promise.resolve(response)
             } else {
               // we're the top-most exec, so deal with the repl!
-              const resultDom = block.querySelector('.repl-result') as HTMLElement
+              const resultDom = render ? cli.replResult() : (block.querySelector('.repl-result') as HTMLElement)
               return new Promise(resolve => {
                 cli
-                  .printResults(block, nextBlock, tab, resultDom, echo, execOptions, parsedOptions, command, evaluator)(
-                    response
-                  ) // <--- the Print part of REPL
+                  .printResults(
+                    block,
+                    nextBlock,
+                    tab,
+                    resultDom,
+                    echo && !render,
+                    execOptions,
+                    parsedOptions,
+                    command,
+                    evaluator
+                  )(response) // <--- the Print part of REPL
                   .then(() => {
-                    if (echo) {
+                    if (render) {
+                      resolve(resultDom.parentElement)
+                    } else if (echo) {
                       // <-- create a new input, for the next iter of the Loop
                       setTimeout(() => {
                         cli.installBlock(blockParent, block, nextBlock)()

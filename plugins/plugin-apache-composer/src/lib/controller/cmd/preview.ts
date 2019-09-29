@@ -171,7 +171,7 @@ export default (commandTree: Commands.Registrar) => {
         }
 
         const { visualize, wskflow, zoomToFitButtons } = await import('@kui-shell/plugin-wskflow')
-        const { view, controller } = await wskflow(tab, visualize, {
+        const { view, controller, subtext } = await wskflow(tab, visualize, {
           ast,
           name,
           viewOptions,
@@ -213,7 +213,11 @@ export default (commandTree: Commands.Registrar) => {
         if (!viewOptions.noHeader) {
           entity = Object.assign(entity, {
             controlHeaders: ['sidecar-header-secondary-content'],
-            subtext: 'This is a preview of your composition, it is not yet deployed'
+            subtext,
+            toolbarText: {
+              type: 'info',
+              text: 'This is a preview of your composition, it is not yet deployed'
+            }
           })
         }
 

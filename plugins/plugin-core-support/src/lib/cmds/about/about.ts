@@ -17,7 +17,6 @@
 import * as Debug from 'debug'
 
 import { Commands, i18n, i18nFromMap, REPL, Settings, UI } from '@kui-shell/core'
-import { renderResult } from '@kui-shell/core/webapp/cli'
 
 import usage from './usage'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
@@ -205,8 +204,7 @@ async function renderGettingStarted() {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Arguments) => {
-  /* bringYourOwnWindow impl */
+const aboutWindow = async ({ parsedOptions }: Commands.Arguments): Promise<Commands.Response> => {
   debug('aboutWindow')
 
   try {
@@ -230,7 +228,7 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Argumen
   debug('defaultMode', defaultMode)
 
   if (parsedOptions.content) {
-    const response = await REPL.qexec(parsedOptions.content)
+    const response: HTMLElement = await REPL.qexec(parsedOptions.content, undefined, undefined, { render: true })
     debug('rendering content', parsedOptions.content, response)
 
     const container = document.createElement('div')
@@ -238,11 +236,10 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: Commands.Argumen
     container.classList.add('about-window-bottom-content')
     innerContainer.style.display = 'flex'
     innerContainer.style.flex = '1'
+    response.style.flex = '1'
     container.appendChild(innerContainer)
-
-    if (await renderResult(response, tab, execOptions, parsedOptions, innerContainer, false, true)) {
-      content.appendChild(container)
-    }
+    innerContainer.appendChild(response)
+    content.appendChild(container)
   } else if (defaultMode === 'gettingStarted') {
     content.appendChild(await renderGettingStarted())
   } else if (defaultMode === 'version') {

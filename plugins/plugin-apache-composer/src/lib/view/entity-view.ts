@@ -92,7 +92,7 @@ export const visualizeComposition = async (tab: UI.Tab, response, execOptions) =
     const options = execOptions.originalOptions || {}
     // use require rather than import here to prevent from prequiring wskflow module in headless mode
     const input = `/${response.namespace}/${response.name}`
-    const content = await decorateAsApp(tab, {
+    const { content, subtext } = await decorateAsApp(tab, {
       action,
       input,
       doVisualize,
@@ -108,6 +108,7 @@ export const visualizeComposition = async (tab: UI.Tab, response, execOptions) =
         content,
         input,
         isEntity: true,
+        subtext,
         controlHeaders: ['sidecar-header-secondary-content']
       })
     } else {

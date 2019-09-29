@@ -17,11 +17,11 @@
 import * as Debug from 'debug'
 
 import { REPL, UI } from '@kui-shell/core'
-import { getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 import { FlowNode } from './graph'
+import Response from './response'
 
 const debug = Debug('plugins/wskflow/graph2doms')
 
@@ -53,7 +53,7 @@ export default async function graph2doms(
       label: { fontSize: string; offset: { x: number; y: number } }
     }
   } = {}
-) {
+): Promise<Response> {
   const [d3, $, ELK] = [require('d3'), require('jquery'), require('elkjs/lib/elk.bundled.js')]
 
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
@@ -1110,8 +1110,7 @@ export default async function graph2doms(
       // with tiny nodes on initial load; this check
       // introduces a heuristic to avoid tiny nodes on
       // initial display. This solves #582.
-      const sidecar = getSidecar(tab)
-      if ($(sidecar).height() > 400 && elkData.height * 2 > $(sidecar).height()) {
+      if (elkData.height > 800) {
         resizeToCover()
       } else {
         resizeToContain()

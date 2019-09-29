@@ -608,34 +608,7 @@ export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, b
  * Call a formatter
  *
  */
-export type Formattable = Formatter | string | Promise<string> | HTMLElement
-export interface Formatter {
-  plugin: string
-  module: string
-  operation: string
-  parameters: object
-}
-function isFormatter(spec: Formattable): spec is Formatter {
-  return (
-    typeof spec !== 'string' &&
-    !isHTML(spec) &&
-    !(spec instanceof Promise) &&
-    spec.plugin !== undefined &&
-    spec.module !== undefined &&
-    spec.operation !== undefined &&
-    spec.parameters !== undefined
-  )
-}
-const call = async (spec: Formattable): Promise<string | HTMLElement> => {
-  if (isPromise(spec)) {
-    return spec
-  } else if (!isFormatter(spec)) {
-    return Promise.resolve(spec)
-  } else {
-    const provider = await import(`@kui-shell/plugin-${spec.plugin}/${spec.module}`)
-    return provider[spec.operation](spec.parameters)
-  }
-}
+export type Formattable = string | Promise<string> | HTMLElement | Promise<HTMLElement>
 
 /**
  * Add view name to the sidecar header "icon text"
@@ -762,6 +735,20 @@ export const addNameToSidecarHeader = async (
     }
   }
 
+  if (subtext && !isToolbarText(subtext) && isCustomSpec(entity) && entity.toolbarText) {
+    // both subtext and toolbarText?
+    const subtextContainer = sidecar.querySelector(
+      '.sidecar-header-secondary-content .custom-header-content'
+    ) as HTMLElement
+    Promise.resolve(subtext).then(subtext => {
+      if (typeof subtext === 'string') {
+        subtextContainer.innerText = subtext
+      } else {
+        subtextContainer.appendChild(subtext)
+      }
+    })
+  }
+
   // handle ToolbarText
   const toolbarTextSpec = isToolbarText(subtext) ? subtext : isCustomSpec(entity) && entity.toolbarText
   const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
@@ -776,7 +763,7 @@ export const addNameToSidecarHeader = async (
   } else if (subtext && !isToolbarText(subtext)) {
     // handle "subtext", which is now treated as a special case of a
     // ToolbarText where the type is 'info'
-    const text = await Promise.resolve(call(subtext))
+    const text = await Promise.resolve(subtext)
     toolbarTextContainer.setAttribute('data-type', 'info')
     if (text instanceof Element) {
       toolbarTextContent.appendChild(text)
