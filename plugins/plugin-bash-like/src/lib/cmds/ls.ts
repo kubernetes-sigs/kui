@@ -123,6 +123,8 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
     const { resolved: fullpath, viewer = 'open' } = Util.findFileWithViewer(Util.expandHomeDir(filepath))
     debug('fullpath', fullpath, filepath, Util.expandHomeDir(filepath))
 
+    const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
+
     // note: stat not lstat, because we want to follow the link
     stat(fullpath, (err, stats) => {
       if (err) {
@@ -138,6 +140,7 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
         resolve({
           viewer,
           filepath,
+          fullpath: prettyFullPath,
           isDirectory: stats.isDirectory()
         })
       } else {
@@ -148,6 +151,7 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
             resolve({
               viewer,
               filepath,
+              fullpath: prettyFullPath,
               data: data.toString(),
               isDirectory: false
             })

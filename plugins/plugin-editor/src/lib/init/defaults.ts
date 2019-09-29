@@ -20,7 +20,7 @@ interface Options {
 }
 
 export default (options: Options) => ({
-  automaticLayout: false, // respond to window layout changes?
+  automaticLayout: true, // respond to window layout changes?
   minimap: {
     enabled: false
   },

@@ -48,7 +48,7 @@ const setValue = async (app: Application, text: string): Promise<void> => {
 /** click the save buttom */
 const save = (app: Application) => async (): Promise<void> => {
   await app.client.click(ui.selectors.SIDECAR_MODE_BUTTON('Save'))
-  await app.client.waitForExist(`${ui.selectors.SIDECAR}:not(.is-modified):not(.is-new) .is-up-to-date`)
+  await app.client.waitForExist(`${ui.selectors.SIDECAR} .editor-status.is-up-to-date`)
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */

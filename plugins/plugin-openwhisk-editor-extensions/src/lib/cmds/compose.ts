@@ -150,9 +150,6 @@ const addWskflow = (tab: UI.Tab) => opts => {
       }
     } finally {
       lock = false
-
-      editor.relayout()
-      setTimeout(editor.relayout, 800)
     }
   }
 
@@ -336,6 +333,7 @@ export const newAction = ({
       debug('makeAction', ast)
       return {
         name,
+        kind,
         type,
         exec: { kind, prettyKind, code },
         isNew: true,

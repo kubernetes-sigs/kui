@@ -330,10 +330,7 @@ export const formatTimeRange = ({
     })
   }
 
-  return {
-    type: 'info',
-    text: container
-  }
+  return new UI.ToolbarText('info', container)
 }
 
 /**
