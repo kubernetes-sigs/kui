@@ -55,8 +55,8 @@ export function isLiteral(ast: ASTNode): ast is Literal {
   return ast.type === 'literal' || ast.type === 'value'
 }
 
-export interface ComponentBearing extends ASTNode {
-  components: ASTNode
+export interface ComponentBearing<ComponentType = ASTNode> extends ASTNode {
+  components: ComponentType
 }
 
 export interface Conditional extends ASTNode {
@@ -174,8 +174,8 @@ export function isComponentBearing(ast: ASTNode): ast is ComponentBearing {
   return typeof cb.components === 'object'
 }
 
-export interface ComponentArrayBearing extends ASTNode {
-  components: ASTNode[]
+export interface ComponentArrayBearing<ComponentType = ASTNode> extends ASTNode {
+  components: ComponentType[]
 }
 
 export interface ParallelLike extends ComponentArrayBearing {

@@ -16,15 +16,17 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
-import { REPL, UI } from '@kui-shell/core'
-import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
+import { UI } from '@kui-shell/core'
 
+import Response from './response'
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
 import * as AST from './ast'
 import { FlowNode, NodeOptions, Edge } from './graph'
+import renderSubtext from './subtext'
+
 const debug = Debug('plugins/wskflow/fsm2graph')
 
 const maxWidth = 100
@@ -737,7 +739,7 @@ export default async function fsm2graph(
   options?,
   rule?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> {
+): Promise<Response> {
   // console.log(ir, containerElement, acts);
 
   const renderState = new RenderState(acts)
@@ -812,102 +814,12 @@ export default async function fsm2graph(
   ) // link the end of the graph to Exit
 
   debug('graphData', renderState.graphData)
-  if (renderState.actions) {
-    debug('actions', renderState.actions)
-    const array = []
-    const names = Object.keys(renderState.actions)
-    names.forEach(name => {
-      array.push(REPL.qexec(`wsk action get "${name}"`))
-    })
-    await Promise.all(array.map(p => p.catch(e => e)))
-      .then(result => {
-        const notDeployed = []
-
-        const graphChildrenStatus = (childrens: FlowNode[], id: string, deployed: boolean) => {
-          return childrens.forEach((children: FlowNode) => {
-            if (children.id === id) children.deployed = deployed
-            else if (children.children) return graphChildrenStatus(children.children, id, deployed)
-          })
-        }
-
-        result.forEach((r, index) => {
-          if (r.type === 'actions' && r.name) {
-            debug(`action ${r.name} is deployed`)
-            renderState.actions[names[index]].forEach(id => {
-              graphChildrenStatus(renderState.graphData.children, id, true)
-            })
-          } else {
-            debug(`action ${names[index]} is not deployed`, r, names)
-            if (renderState.actions[names[index]]) {
-              notDeployed.push(names[index])
-              renderState.actions[names[index]].forEach(id => {
-                graphChildrenStatus(renderState.graphData.children, id, false)
-              })
-            }
-          }
-        })
-
-        // warn user about not-deployed actions (but only if !activations, i.e. not for session flow)
-        if (notDeployed.length > 0 && !renderState.activations) {
-          const container = sidecarSelector(tab, '.sidecar-header-secondary-content .custom-header-content')
-          if (container && (!options || !options.noHeader)) {
-            UI.empty(container)
-            const css = {
-              message: 'wskflow-undeployed-action-warning',
-              text: 'wskflow-undeployed-action-warning-text',
-              examples: 'wskflow-undeployed-action-warning-examples',
-              examplesExtra: ['deemphasize', 'deemphasize-partial', 'left-pad']
-            }
-            const message = container.querySelector(`.${css.message}`)
-            let text
-            let examples
-
-            const makeExampleDoms = () => {
-              const message = document.createElement('div')
-              const warning = document.createElement('strong')
-
-              text = document.createElement('span')
-              examples = document.createElement('span')
-
-              message.className = css.message
-              text.className = css.text
-              warning.className = 'red-text'
-              examples.className = css.examples
-              css.examplesExtra.forEach(_ => examples.classList.add(_))
-
-              message.appendChild(warning)
-              message.appendChild(text)
-              message.appendChild(examples)
-              container.appendChild(message)
-
-              warning.innerText = 'Warning: '
-            }
-
-            if (!message) {
-              makeExampleDoms()
-            } else {
-              text = message.querySelector(`.${css.text}`)
-              examples = message.querySelector(`.${css.examples}`)
-            }
-
-            const actionStr = notDeployed.length === 1 ? 'component' : 'components'
-            text.innerText = `depends on ${notDeployed.length} undeployed ${actionStr}`
-
-            /* const pre = notDeployed.length > 2 ? 'e.g. ' : ''
-            const examplesOfNotDeployed = notDeployed.slice(0, 2).map(_ => _.substring(_.lastIndexOf('/') + 1)).join(', ')
-            const post = notDeployed.length > 2 ? ', \u2026' : '' // horizontal ellipsis
-
-            examples.innerText = `(${pre}${examplesOfNotDeployed}${post})` */
-          }
-        }
-      })
-      .catch(e => {
-        debug('action get fetching error: ', e)
-      })
-  }
+  const subtext = await renderSubtext(renderState.actions, renderState.activations, renderState.graphData, options)
+  debug('subtext', subtext)
 
   debug('inserting DOM, calling graph2doms')
 
   const graph2doms = (await import('./graph2doms')).default
-  return graph2doms(tab, renderState.graphData, containerElement, renderState.activations)
+  const response = await graph2doms(tab, renderState.graphData, containerElement, renderState.activations)
+  return Object.assign(response, { subtext })
 }

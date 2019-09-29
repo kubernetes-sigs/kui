@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
-import SymbolTable from '@kui-shell/core/core/symbol-table'
+import { Commands, Models } from '@kui-shell/core'
 
 /**
  * export command
  *
  */
 const exportCommand = ({ tab, parsedOptions }: Commands.Arguments) => {
-  const curDic = SymbolTable.read(tab)
+  const curDic = Models.SymbolTable.read(tab)
 
   const toBeParsed = parsedOptions._[1]
   const arr = toBeParsed.split('=')
 
   curDic[arr[0]] = arr[1]
 
-  SymbolTable.write(tab, curDic)
+  Models.SymbolTable.write(tab, curDic)
 
   return true
 }
