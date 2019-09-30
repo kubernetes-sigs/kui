@@ -40,7 +40,7 @@ export interface KubeLoadBalancer {
 }
 
 export interface KubeStatus {
-  message: string
+  message?: string
   state?: string
   startTime?: string
   completionTime?: string

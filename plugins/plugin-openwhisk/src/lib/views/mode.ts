@@ -24,7 +24,8 @@ import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/si
 
 import { synonyms } from '../models/synonyms'
 import { crudableTypes as crudable } from '../models/crudable'
-import { currentSelection, isActivationSpec } from '../models/openwhisk-entity'
+import { currentSelection } from '../models/openwhisk-entity'
+import { Activation, isActivationSpec } from '../models/activation'
 
 /**
  * These options help guide the help system; this command needs a
@@ -91,7 +92,7 @@ export default async (commandTree: Commands.Registrar) => {
       }
     } else if (args.length === 3 || args.length === 4) {
       // activation logs xxx or wsk activation logs xxx
-      const activation = await REPL.qexec(`wsk ${entityType} get ${entityId}`)
+      const activation = await REPL.qexec<Activation>(`wsk ${entityType} get ${entityId}`)
       if (Capabilities.isHeadless()) {
         return activation[mode]
       } else {

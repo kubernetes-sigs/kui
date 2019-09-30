@@ -212,7 +212,7 @@ const registerWatcher = (
     let processedMultiTableRow: Row[][] = []
 
     try {
-      const response: Table | MultiTable = await qexec(command)
+      const response = await qexec<Table | MultiTable>(command)
 
       const processedResponse = processRefreshResponse(response)
 

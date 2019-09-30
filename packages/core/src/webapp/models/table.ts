@@ -181,7 +181,7 @@ export function isMultiTable(model: Entity): model is MultiTable {
 
 export type WatchableMultiTable = MultiTable & Watchable
 
-export function formatWatchableTable(model: Table | MultiTable, watch: Watchable) {
+export function formatWatchableTable<T extends Table | MultiTable>(model: T, watch: Watchable): T & Watchable {
   if (isTable(model) || isMultiTable(model)) {
     return Object.assign(model, watch)
   } else {

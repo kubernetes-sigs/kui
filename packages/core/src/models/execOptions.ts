@@ -17,7 +17,8 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { ExecType } from './command'
-import { Tab, Streamable } from '../webapp/cli'
+import { Tab } from '../webapp/cli'
+import { Streamable, StreamableFactory } from './streamable'
 
 export interface ExecOptions {
   // force execution in a given tab?
@@ -50,8 +51,8 @@ export interface ExecOptions {
   quiet?: boolean
   intentional?: boolean
   noHistory?: boolean
-  pip?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  history?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  pip?: { container: string; returnTo: string }
+  history?: number
   echo?: boolean
   nested?: boolean
   failWithUsage?: boolean
@@ -72,7 +73,7 @@ export interface ExecOptions {
   showHeader?: boolean
   alreadyWatching?: boolean
 
-  createOutputStream?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  createOutputStream?: StreamableFactory
   stdout?: (str: Streamable) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
 

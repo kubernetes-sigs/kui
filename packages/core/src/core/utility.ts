@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ParsedOptionsFull } from '../models/command'
+import { ParsedOptions } from '../models/command'
 
 /**
  * Turn an options struct into a cli string
@@ -23,7 +23,7 @@ import { ParsedOptionsFull } from '../models/command'
  * user.
  *
  */
-export const optionsToString = (options: ParsedOptionsFull) => {
+export const optionsToString = (options: ParsedOptions) => {
   let str = ''
   for (const key in options) {
     // underscore comes from minimist
@@ -52,7 +52,7 @@ export const optionsToString = (options: ParsedOptionsFull) => {
  * Check for unknown options
  *
  */
-export const hasUnknownOptions = (options: ParsedOptionsFull, expected: string[]) => {
+export const hasUnknownOptions = (options: ParsedOptions, expected: string[]) => {
   const M = expected.reduce((M, key) => {
     M[key] = true
     return M

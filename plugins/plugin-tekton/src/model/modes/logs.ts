@@ -31,9 +31,9 @@ const mode: UI.Mode = {
   direct: async (tab: UI.Tab, _: ResponseObject) => {
     const run = _.resource as PipelineRun
 
-    const [taskRuns, pods]: [TaskRun[], Pod[]] = await Promise.all([
-      REPL.rexec(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
-      REPL.rexec(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
+    const [taskRuns, pods] = await Promise.all([
+      REPL.rexec<TaskRun[]>(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
+      REPL.rexec<Pod[]>(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
     ])
 
     const containers: Tables.Row[] = Util.flatten(

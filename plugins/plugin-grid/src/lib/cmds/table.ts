@@ -111,7 +111,7 @@ const tableModes: UI.Mode[] = choicesArray.concat([
  */
 const percent = (fraction: number) => `${100 * fraction}%`
 
-interface Options extends Commands.ParsedOptionsFull {
+interface Options extends Commands.ParsedOptions {
   ticks?: number
   outliers?: boolean
 }

@@ -42,7 +42,6 @@ export namespace Commands {
   export import ExecType = _Commands.ExecType
   export import Registrar = _Commands.CommandRegistrar
   export import ParsedOptions = _Commands.ParsedOptions
-  export import ParsedOptionsFull = _Commands.ParsedOptionsFull
   export import CommandHandler = _Commands.CommandHandler
   export import Evaluator = _Commands.Evaluator
   export import isCommandHandlerWithEvents = _Commands.isCommandHandlerWithEvents

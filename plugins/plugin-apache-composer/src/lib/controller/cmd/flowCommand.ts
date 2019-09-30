@@ -17,6 +17,7 @@
 import * as Debug from 'debug'
 
 import { Commands, Errors, REPL } from '@kui-shell/core'
+import { Action, Activation } from '@kui-shell/plugin-openwhisk'
 
 import { astAnnotation } from '../../utility/ast'
 
@@ -30,6 +31,16 @@ const usage = {
 }
 
 const debug = Debug('plugins/apache-composer/session-flow')
+
+interface WskflowError {
+  wskflowErr: Error
+}
+
+type MaybeAction = Action | WskflowError
+
+function isWskflowError(maybe: MaybeAction): maybe is WskflowError {
+  return (maybe as WskflowError).wskflowErr !== undefined
+}
 
 /**
  * Get an activation
@@ -54,10 +65,10 @@ const get = (activationId: string) =>
  * Fetch the action itself, so we have the AST
  *
  */
-const fetchTheAction = session => {
+const fetchTheAction = (session: Activation): Promise<MaybeAction> => {
   const path = session.annotations.find(({ key }) => key === 'path').value
 
-  return REPL.qexec(`wsk action get "/${path}"`).catch(err => {
+  return REPL.qexec<Action>(`wsk action get "/${path}"`).catch(err => {
     console.error('action get call incomplete due to error', path, err.message)
     return { wskflowErr: err }
   })
@@ -67,7 +78,7 @@ const fetchTheAction = session => {
  * Fetch the rest of the activations in the trace; fetch at most 2 at a time
  *
  */
-const generatePromises = activation =>
+const generatePromises = (activation: Activation) =>
   function*() {
     // generator function
     for (let idx = 0; idx < activation.logs.length; idx++) {
@@ -76,7 +87,7 @@ const generatePromises = activation =>
   }
 // by default, PromisePool does not return any arguments in then, causing activations to always be undefined
 // use event listeners here to access return data as described in the docs
-const fetchTrace = activation =>
+const fetchTrace = (activation: Activation) =>
   new Promise(resolve => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const PromisePool = require('es6-promise-pool')
@@ -99,11 +110,11 @@ export default (commandTree: Commands.Registrar) => {
       debug('session flow', sessionId)
 
       // fetch the session, then fetch the trace (so we can show the flow) and action (to get the AST)
-      return REPL.qexec(`wsk session get ${sessionId}`)
+      return REPL.qexec<Activation>(`wsk session get ${sessionId}`)
         .then(session => Promise.all([session, fetchTrace(session), fetchTheAction(session)]))
         .then(async ([session, activations, action]) => {
           let ast
-          if (action.wskflowErr) {
+          if (isWskflowError(action)) {
             // 1) if an app was deleted, the last promise item returns an error
             const error = new Error(`Sorry, this view is not available, as the composition was deleted`)
             error['code'] = 404

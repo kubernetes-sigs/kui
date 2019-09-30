@@ -173,11 +173,15 @@ interface SnapDom extends HTMLElement {
   kuiSnapshotTimer?: NodeJS.Timer
 }
 
+interface Options extends Commands.ParsedOptions {
+  offset: string
+}
+
 /** this is the handler body */
 export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/screenshot',
-    ({ tab, argvNoOptions, parsedOptions }) =>
+    ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments<Options>) =>
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         if (Capabilities.inBrowser()) {

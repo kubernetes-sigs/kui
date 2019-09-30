@@ -293,6 +293,11 @@ const compositionOptions = baseOptions => {
   )
 }
 
+interface Options extends Commands.ParsedOptions {
+  kind?: string
+  template?: string
+}
+
 /**
  * Command handler to create a new action or app
  *
@@ -303,7 +308,7 @@ export const newAction = ({
   _kind = defaults.kind,
   placeholder = undefined,
   placeholderFn = undefined
-}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.Arguments) => {
+}) => async ({ tab, argvNoOptions, parsedOptions: options, execOptions }: Commands.Arguments<Options>) => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)

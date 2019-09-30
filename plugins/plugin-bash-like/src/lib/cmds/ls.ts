@@ -390,7 +390,9 @@ const tabularize = (cmd: string, parsedOptions: Commands.ParsedOptions, parent =
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: Commands.Arguments) => {
+const doLs = (cmd: string) => async (
+  opts: Commands.Arguments
+): Promise<Commands.MixedResponse | Tables.Table | true> => {
   const semi = await REPL.semicolonInvoke(opts)
   if (semi) {
     debug('ls with semi', semi)
