@@ -35,6 +35,7 @@ import {
   titleWhenNothingSelected,
   latencyBucket,
   formatTimeRange,
+  Options,
   visualize
 } from '../util'
 const debug = Debug('plugins/grid/cmds/grid')
@@ -47,9 +48,12 @@ const css = {
   gridGrid: 'grid-grid'
 }
 
-interface Options extends Commands.ParsedOptionsFull {
-  timeline?: boolean | 'latency' | 'time'
+interface GridOptions extends Options {
+  full?: boolean
   zoom?: number
+  fixedHeader?: boolean
+  appName?: string
+  timeline?: boolean | 'latency' | 'time'
 }
 
 const closestSquare = (n: number) => {
@@ -216,7 +220,7 @@ const drawAsTimeline = (
   content: HTMLElement,
   gridGrid: HTMLElement,
   zoomLevelForDisplay: number,
-  options: Options
+  options: GridOptions
 ) => {
   debug('drawAsTimeline', zoomLevelForDisplay)
 
@@ -325,7 +329,7 @@ const drawAsTimeline = (
  */
 const _drawGrid = (
   tab: UI.Tab,
-  options: Commands.ParsedOptionsFull,
+  options: GridOptions,
   content: HTMLElement,
   groupData: GroupData,
   sorter = countSorter,
@@ -519,7 +523,9 @@ const _drawGrid = (
  * Visualize the activation data
  *
  */
-const drawGrid = (tab: UI.Tab, options: Options, uuid: string) => (activations: Activation[]): Commands.Response => {
+const drawGrid = (tab: UI.Tab, options: GridOptions, uuid: string) => (
+  activations: Activation[]
+): Commands.Response => {
   const content = document.createElement('div')
 
   content.classList.add(css.content)
@@ -643,7 +649,8 @@ const drawGrid = (tab: UI.Tab, options: Options, uuid: string) => (activations: 
 export default async (commandTree: Commands.Registrar) => {
   debug('init')
 
-  const mkCmd = (cmd: string, extraOptions?: { live: boolean }) => visualize(cmd, viewName, drawGrid, extraOptions)
+  const mkCmd = (cmd: string, extraOptions?: { live: boolean }) =>
+    visualize<GridOptions>(cmd, viewName, drawGrid, extraOptions)
   const fixedGrid = mkCmd('grid')
   const pollingGrid = mkCmd('...', { live: true })
 

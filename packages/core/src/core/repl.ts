@@ -25,9 +25,19 @@ import * as Debug from 'debug'
 const debug = Debug('core/repl')
 debug('loading')
 
-import { CommandTreeResolution, ExecType, Evaluator, EvaluatorArgs, YargsParserFlags } from '../models/command'
+import {
+  CommandTreeResolution,
+  ExecType,
+  Evaluator,
+  EvaluatorArgs,
+  ParsedOptions,
+  YargsParserFlags,
+  Response
+} from '../models/command'
 
-import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab, ParsedOptions } from '../models/execOptions'
+import { ElementMimic } from '../util/mimic-dom'
+import { isEntitySpec, EntitySpec, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
+import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventBus from './events'
 import historyModel from '../models/history'
 import { CodedError } from '../models/errors'
@@ -62,7 +72,12 @@ export interface Executor {
  */
 export interface ReplEval {
   name: string
-  apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs)
+  apply(
+    commandUntrimmed: string,
+    execOptions: ExecOptions,
+    evaluator: Evaluator,
+    args: EvaluatorArgs
+  ): Response | Promise<Response>
 }
 
 /**
@@ -570,7 +585,7 @@ class InProcessExecutor implements Executor {
                   _ =>
                     _ === parsedOptions[optionalArg] ||
                     _ === '...' ||
-                    (match.allowedIsPrefixMatch && parsedOptions[optionalArg].indexOf(_) === 0)
+                    (match.allowedIsPrefixMatch && parsedOptions[optionalArg].toString().indexOf(_.toString()) === 0)
                 ))
             ) {
               //
@@ -652,7 +667,7 @@ class InProcessExecutor implements Executor {
               } else {
                 debug('repl selection', selection)
                 // for activation, the proper entity path is an annotation
-                const activationPath =
+                const activationPath: { key: string; value: string } =
                   selection.type === 'activations' &&
                   selection.annotations &&
                   selection.annotations.find(_ => _.key === 'path')
@@ -738,18 +753,11 @@ class InProcessExecutor implements Executor {
               argvNoOptions,
               parsedOptions,
               createOutputStream:
-                execOptions.createOutputStream || (() => (isHeadless() ? headlessStreamTo() : cli.streamTo(tab, block)))
+                execOptions.createOutputStream ||
+                (() => (isHeadless() ? headlessStreamTo() : Promise.resolve(cli.streamTo(tab, block))))
             })
           })
-          .then(response => {
-            if (!execOptions.rawResponse && response && response.context && nextBlock) {
-              // cli.setContextUI(response, nextBlock)
-              return response.message
-            } else {
-              return response
-            }
-          })
-          .then(async response => {
+          .then(async (response: Response) => {
             if (execOptions.rawResponse) {
               return response
             }
@@ -766,7 +774,7 @@ class InProcessExecutor implements Executor {
               return
             }
 
-            if (response.verb === 'delete') {
+            if (isEntitySpec(response) && response.verb === 'delete') {
               const { maybeHideEntity } = await import('../webapp/views/sidecar') // FIXME
               if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
@@ -793,8 +801,8 @@ class InProcessExecutor implements Executor {
               !render &&
               ((execOptions && execOptions.replSilence) ||
                 nested ||
-                response.mode === 'prompt' ||
-                (block && block['_isFakeDom']))
+                isLowLevelLoop(response) ||
+                ElementMimic.isFakeDom(block))
             ) {
               // the parent exec will deal with the repl
               debug('passing control back to prompt processor or headless')
@@ -874,9 +882,9 @@ class InProcessExecutor implements Executor {
           })
       }
     } catch (err) {
-      const e = err as Error
+      const e = err as CodedError
 
-      if (isHeadless() && err.code !== 404) {
+      if (isHeadless() && e.code !== 404) {
         try {
           debug('attempting to run the command graphically', e)
           const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
@@ -953,14 +961,13 @@ export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(b
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qexec = (
+export const qexec = <T = Response>(
   command: string,
   block?: HTMLElement | boolean,
   contextChangeOK?: boolean,
   execOptions?: ExecOptions,
   nextBlock?: HTMLElement
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
+): Promise<T> => {
   return exec(
     command,
     Object.assign(
@@ -1002,7 +1009,7 @@ export const iexec = (
  * "raw" exec, where we want the data model back directly
  *
  */
-export const rexec = (command: string, execOptions = emptyExecOptions()) => {
+export const rexec = <T = Response>(command: string, execOptions = emptyExecOptions()): Promise<T> => {
   return qexec(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
 }
 
@@ -1010,7 +1017,7 @@ export const rexec = (command: string, execOptions = emptyExecOptions()) => {
  * Programmatic exec, as opposed to human typing and hitting enter
  *
  */
-export const pexec = (command: string, execOptions?: ExecOptions) => {
+export const pexec = <T = Response>(command: string, execOptions?: ExecOptions): Promise<T> => {
   return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
 }
 
@@ -1030,7 +1037,7 @@ export const click = async (command: string | (() => Promise<string>), evt: Mous
  */
 export async function update(tab: cli.Tab, command: string, execOptions?: ExecOptions) {
   const [resource, { showEntity }] = await Promise.all([
-    pexec(
+    pexec<EntitySpec>(
       command,
       Object.assign(
         {
@@ -1059,7 +1066,7 @@ export const setExecutorImpl = (impl: Executor): void => {
  * Add quotes if the argument needs it; compare to encodeURIComponent
  *
  */
-export const encodeComponent = (component: string, quote = '"') => {
+export const encodeComponent = (component: string | number | boolean, quote = '"') => {
   if (component === undefined) {
     return ''
   } else if (
@@ -1079,12 +1086,12 @@ export const encodeComponent = (component: string, quote = '"') => {
  * split separately
  *
  */
-export async function semicolonInvoke(opts: EvaluatorArgs) {
+export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedResponse> {
   const commands = opts.command.split(/\s*;\s*/)
   if (commands.length > 1) {
     debug('semicolonInvoke', commands)
 
-    const result = await promiseEach(commands.filter(_ => _), async command => {
+    const result: MixedResponse = await promiseEach(commands.filter(_ => _), async command => {
       const block = cli.subblock()
 
       // note: xterm.js 3.14 requires that this subblock be attached
@@ -1094,7 +1101,12 @@ export async function semicolonInvoke(opts: EvaluatorArgs) {
         opts.block.querySelector('.repl-result').appendChild(block)
       }
 
-      const entity = await qexec(command, block, undefined, Object.assign({}, opts.execOptions, { quiet: false }))
+      const entity = await qexec<MixedResponsePart | true>(
+        command,
+        block,
+        undefined,
+        Object.assign({}, opts.execOptions, { quiet: false })
+      )
       if (entity === true) {
         // pty output
         return block

@@ -17,13 +17,33 @@
 import { Models, UI } from '@kui-shell/core'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
+export type Annotation = { key: string; value: string | number | boolean }
+export type Annotations = Annotation[]
+
 export interface OpenWhiskEntity extends EntitySpec {
+  name: string
   namespace: string
-  annotations: { key: string; value: string | number | boolean }[]
+  annotations: Annotations
   exec?: {
     kind: string
     code?: string
     binary?: boolean
+  }
+}
+
+type PrimitiveValue = string | number | boolean
+export type Value = PrimitiveValue | Record<string, PrimitiveValue> // want Value, coming in 3.7.0 https://github.com/microsoft/TypeScript/pull/33050
+export type Parameter = { key: string; value: Value }
+export type Parameters = Parameter[]
+
+export interface Action extends OpenWhiskEntity {
+  parameters: Parameters
+  limits: { key: 'concurrency' | 'logs' | 'memory' | 'timeout'; value: number }
+  exec: {
+    kind: string
+    code?: string
+    binary?: boolean
+    components?: string[]
   }
 }
 
@@ -36,18 +56,13 @@ export interface ActivationResponse {
   result: Object // eslint-disable-line @typescript-eslint/ban-types
 }
 
-export interface Activation {
-  entity?: OpenWhiskEntity
-  activationId: string
-  response: ActivationResponse
+export interface Rule extends OpenWhiskEntity {
+  status: boolean
+  trigger: { name: string; path: string }
+  action: { name: string; path: string }
 }
 
-export function isActivationSpec(response: Activation | OpenWhiskEntity): response is Activation {
-  const activation = response as Activation
-  return activation.response !== undefined && activation.activationId !== undefined
-}
-
-export function isAsyncActivationSpec(response: Activation | OpenWhiskEntity): response is Activation {
-  const activation = response as Activation
-  return activation.response === undefined && activation.activationId !== undefined
+export interface Package extends OpenWhiskEntity {
+  actions: { name: string }[]
+  feeds: { name: string }[]
 }

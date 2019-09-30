@@ -15,7 +15,7 @@
  */
 
 import { Commands, REPL } from '@kui-shell/core'
-import { ActivationListTable, synonyms } from '@kui-shell/plugin-openwhisk'
+import { Activation, ActivationListTable, synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { sessionGet } from '../../utility/usage'
 import * as view from '../../view/entity-view'
@@ -24,7 +24,9 @@ export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     `/wsk/session/result`,
     ({ command }) => {
-      return REPL.qexec(command.replace('session result', 'activation get')).then(result => result.response.result)
+      return REPL.qexec<Activation>(command.replace('session result', 'activation get')).then(
+        result => result.response.result
+      )
     },
     { usage: sessionGet('result') }
   )

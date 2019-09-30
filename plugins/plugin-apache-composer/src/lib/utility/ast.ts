@@ -17,11 +17,13 @@
 import * as Debug from 'debug'
 const debug = Debug('plugins/apache-composer/utility/ast')
 
+import { Action } from '@kui-shell/plugin-openwhisk'
+
 /* Does the given action represent a composer app? */
-export const isAnApp = action => {
+export const isAnApp = (action: Action) => {
   debug('filtering action', action)
   const anno = action && action.annotations && action.annotations.find(({ key }) => key === 'conductor')
-  return anno && anno.value
+  return anno && !!anno.value
 }
 
 /**

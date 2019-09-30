@@ -41,7 +41,7 @@ const doHeadless = (ctx: common.ISuite, impl: CLI) => {
 
   const kubeAlternatives = ['kubectl', 'k']
   const verbAlternatives = ['status', 'list']
-  const entityAlternatives = [`pods -n ${ns}`, '--all']
+  const entityAlternatives = [`pods -n ${ns}`]
 
   kubeAlternatives.forEach(kubectl => {
     verbAlternatives.forEach(verb => {

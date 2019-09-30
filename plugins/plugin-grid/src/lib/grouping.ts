@@ -16,10 +16,8 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { Commands } from '@kui-shell/core'
-
 import { Activation, WaitTimeAnnotation, InitTimeAnnotation, LimitAnnotation } from './activation'
-import { isSuccess, pathOf, latencyBucket, nLatencyBuckets } from './util'
+import { isSuccess, pathOf, latencyBucket, nLatencyBuckets, Options as CommonOptions } from './util'
 
 export interface TimelineData {
   activations: Activation[][]
@@ -91,7 +89,8 @@ const durationOf = (_: Activation) => {
   return { duration, executionTime, wait, init }
 }
 
-interface Options extends Commands.ParsedOptionsFull {
+interface Options extends CommonOptions {
+  groupBySuccess?: boolean
   buckets?: number
   nBuckets?: number
   split?: true | string

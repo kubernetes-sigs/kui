@@ -20,7 +20,7 @@ import { Commands, REPL } from '@kui-shell/core'
 
 const debug = Debug('k8s/util/retry')
 
-export const withRetryOnCode = (code: number) => (fn, cmd: string) =>
+export const withRetryOnCode = (code: number) => <T>(fn: () => Promise<T>, cmd: string): Promise<T> =>
   new Promise((resolve, reject) => {
     const iter = async () => {
       try {

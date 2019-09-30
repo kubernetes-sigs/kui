@@ -82,7 +82,7 @@ export class HistoryModel {
   }
 
   /** add a line of repl history */
-  public add(line: HistoryLine) {
+  public add(line: HistoryLine): number {
     if (this._lines.length === 0 || JSON.stringify(this._lines[this._lines.length - 1]) !== JSON.stringify(line)) {
       // don't add sequential duplicates
       this._lines.push(line)

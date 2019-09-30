@@ -28,6 +28,10 @@ import { persisters } from '../persisters'
 
 const debug = Debug('plugins/editor/cmds/edit')
 
+interface Options extends Commands.ParsedOptions {
+  language?: string
+}
+
 /**
  * Command handler for `edit <entity>`
  *
@@ -40,7 +44,7 @@ const editCmd = async ({
 }: {
   tab: UI.Tab
   argvNoOptions: string[]
-  parsedOptions: Commands.ParsedOptionsFull
+  parsedOptions: Options
   execOptions: Commands.ExecOptions
 }): Promise<CommandResponse> => {
   debug('edit command execution started', execOptions)
@@ -57,7 +61,7 @@ const editCmd = async ({
       programmaticArgs.persister = persisters.files
     }
     programmaticArgs.exec = {
-      kind: parsedOptions['language'],
+      kind: parsedOptions.language,
       code: programmaticArgs[positionalName.slice(1)]
     }
   }
@@ -89,12 +93,7 @@ const editCmd = async ({
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (
-  tab: UI.Tab,
-  entity: EditorEntity,
-  options: Commands.ParsedOptionsFull,
-  execOptions: Commands.ExecOptions
-) =>
+export const edit = (tab: UI.Tab, entity: EditorEntity, options: Options, execOptions: Commands.ExecOptions) =>
   editCmd({
     tab,
     argvNoOptions: [],

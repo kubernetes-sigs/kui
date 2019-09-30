@@ -31,6 +31,7 @@ import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'
 import { fillInActionDetails } from '../../cmds/openwhisk-core'
 import withHeader from '../../models/withHeader'
+import { Action as OpenWhiskAction } from '../../models/openwhisk-entity'
 
 declare let hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/entity')
@@ -243,7 +244,7 @@ export const showEntity = async (
         const actions: Action[] = await Promise.all(
           entity.exec.components.map(
             (actionName: string): Promise<Action> =>
-              REPL.qexec(`wsk action get "${actionName}"`)
+              REPL.qexec<OpenWhiskAction>(`wsk action get "${actionName}"`)
                 .then(action => {
                   debug('got sequence component', action)
                   const anonymousCode = isAnonymousLet(action)

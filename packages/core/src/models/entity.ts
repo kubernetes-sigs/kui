@@ -125,6 +125,10 @@ export function isMixedResponse(response: Entity): response is MixedResponse {
 export interface LowLevelLoop {
   mode: 'prompt'
 }
+export function isLowLevelLoop(entity: Entity): entity is LowLevelLoop {
+  const looper = entity as LowLevelLoop
+  return looper.mode === 'prompt'
+}
 
 /**
  * A potentially more complex entity with a "spec"

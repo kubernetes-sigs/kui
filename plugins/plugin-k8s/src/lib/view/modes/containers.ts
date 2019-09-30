@@ -193,7 +193,7 @@ export const renderContainers = async (tab: UI.Tab, command: string, resource: R
   debug('issuing command', fetchPod)
 
   try {
-    const podResource = await REPL.qexec(fetchPod)
+    const podResource = await REPL.qexec<Resource>(fetchPod)
     debug('renderContainers.response', podResource)
 
     return {

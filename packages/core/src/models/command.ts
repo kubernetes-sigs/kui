@@ -19,6 +19,7 @@ import { CodedError } from './errors'
 import { ExecOptions } from './execOptions'
 import { UsageModel } from '../core/usage-error'
 import { Tab } from '../webapp/cli'
+import { StreamableFactory } from './streamable'
 
 /**
  * "top-level", meaning the user hit enter in the CLI,
@@ -88,10 +89,8 @@ export interface Event {
 }
 
 export interface ParsedOptions {
-  [key: string]: string
-}
-export interface ParsedOptionsFull {
-  [key: string]: string | boolean | number
+  _?: string[]
+  [key: string]: string | boolean | number | string[]
 }
 
 /**
@@ -99,7 +98,7 @@ export interface ParsedOptionsFull {
  * various useful ways.
  *
  */
-export interface CommandLine {
+export interface CommandLine<Options = ParsedOptions> {
   /**
    * the raw command string, as given by the user
    */
@@ -119,14 +118,14 @@ export interface CommandLine {
    * the dash options parsed out in a way that pays attention to n-ary
    * options such as `--option key value`
    */
-  parsedOptions: ParsedOptions
+  parsedOptions: Options
 }
 
 /**
  * The full set of data passed to a command handler
  *
  */
-export interface EvaluatorArgs extends CommandLine {
+export interface EvaluatorArgs<Options = ParsedOptions> extends CommandLine<Options> {
   /**
    * The tab context in which the command was initiated
    */
@@ -143,7 +142,7 @@ export interface EvaluatorArgs extends CommandLine {
    * using the normal request-response interaction between the REPL
    * and the command.
    */
-  createOutputStream: () => WritableStream
+  createOutputStream: StreamableFactory
 
   /**
    * EXPERT MODE: The REPL block in which this command was initiated
@@ -213,7 +212,7 @@ export type OnSuccess = (args: {
   type: ExecType
   command: string
   isDrilldown: boolean
-  parsedOptions: { [key: string]: string | boolean | number }
+  parsedOptions: ParsedOptions
 }) => void
 
 export type OnError = (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError

@@ -16,6 +16,7 @@
 
 import { Commands, Errors } from '@kui-shell/core'
 
+import Options from './options'
 import { fetchTask } from '../../lib/read'
 
 const usage = (command: string) => ({
@@ -32,7 +33,7 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
+const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Commands.Arguments<Options>) => {
   const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
 

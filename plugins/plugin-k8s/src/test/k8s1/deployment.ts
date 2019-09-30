@@ -44,11 +44,11 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
           .do(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`, this.app)
           .then(cli.expectOKWithCustom({ selector: selectors.BY_NAME('myapp') }))
 
-        const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
+        /* const selectorPrefix = selector.replace(selectors.BY_NAME('myapp'), '')
 
         await this.app.client
           .getText(`${selectorPrefix} .result-table-title`)
-          .then(titles => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS'))
+          .then(titles => assert.ok(titles.length === 2 && titles[0] === 'DEPLOYMENT' && titles[1] === 'PODS')) */
 
         await waitForGreen(this.app, selector)
 

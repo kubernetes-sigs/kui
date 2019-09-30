@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 
 import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
-import { isTable, isMultiTable, Table, MultiTable } from './models/table'
+import { isTable, isMultiTable } from './models/table'
 import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
@@ -26,7 +26,7 @@ import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
 import { pexec, qexec } from '../core/repl'
 import { isHTML } from '../util/types'
-import { EntitySpec, isMetadataBearingByReference } from '../models/entity'
+import { Entity, EntitySpec, isMetadataBearingByReference } from '../models/entity'
 
 const debug = Debug('webapp/picture-in-picture')
 
@@ -67,7 +67,7 @@ function isToggle(result: DirectResult): result is Toggle {
   return result && Array.isArray((result as Toggle).toggle)
 }
 
-type DirectResult = Toggle | Table | MultiTable | HTMLElement | CustomSpec
+type DirectResult = Toggle | Entity
 
 /**
  * Call a "direct" impl

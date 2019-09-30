@@ -20,6 +20,7 @@ debug('loading')
 
 import { Capabilities, Commands, Errors, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
 
+import Options from './options'
 import abbreviations from './abbreviations'
 import { formatLogs } from '../util/log-parser'
 import { renderHelp } from '../util/help'
@@ -212,7 +213,7 @@ const stripThese = {
 /* ({ command, argv, execOptions, argvNoOptions, parsedOptions }) => {
   return executeLocaly('helm', argv, argvNoOptions, execOptions, parsedOptions, command)
   } */
-const executeLocally = (command: string) => (opts: Commands.Arguments) =>
+const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
@@ -810,7 +811,7 @@ export default async (commandTree: Commands.Registrar) => {
   // for debugging: read in a previously captured raw kubectl output from disk, and then pass it to the visualizations
   await commandTree.listen(
     '/k8s/kdebug',
-    async ({ argvNoOptions, parsedOptions, execOptions }) => {
+    async ({ argvNoOptions, parsedOptions, execOptions }: Commands.Arguments<Options>) => {
       const file = argvNoOptions[argvNoOptions.length - 1]
       const { readFile } = await import('fs-extra')
       const out = (await readFile(file)).toString()

@@ -28,7 +28,7 @@ const debug = Debug('k8s/view/modes/events')
  * Extract the events
  *
  */
-async function getEvents(resource: KubeResource): Promise<string> {
+async function getEvents(resource: KubeResource): Promise<string | Tables.Table> {
   try {
     const cmdGetPodEvents = `kubectl get events --field-selector involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace} -n ${resource.metadata.namespace}`
 
@@ -40,7 +40,7 @@ async function getEvents(resource: KubeResource): Promise<string> {
 
     debug('getEvents', cmd)
 
-    return REPL.qexec(cmd).then(result => {
+    return REPL.qexec<Tables.Table>(cmd).then(result => {
       // When using custom-columns, if a pod doesn't have any events,
       // we can't get the 'No resources found.' error from kubectl,
       // so we handle this error by checking whether the table has content

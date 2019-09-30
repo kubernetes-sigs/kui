@@ -60,7 +60,7 @@ export default Entity
 
 export type IFetcher = (
   entityName: string,
-  parsedOptions?: Commands.ParsedOptionsFull,
+  parsedOptions?: Commands.ParsedOptions,
   execOptions?: Commands.ExecOptions,
   createIfAbsent?: boolean
 ) => Promise<Entity>
@@ -105,7 +105,7 @@ async function createFilepath(filepath: string, execOptions: Commands.ExecOption
  */
 export const fetchFile: IFetcher = async (
   filepath: string,
-  parsedOptions: Commands.ParsedOptionsFull,
+  parsedOptions: Commands.ParsedOptions,
   execOptions: Commands.ExecOptions,
   createIfAbsent: boolean
 ): Promise<Entity> => {
@@ -159,7 +159,7 @@ export const fetchFile: IFetcher = async (
  */
 export const fetchEntity = async (
   entityName: string,
-  parsedOptions: Commands.ParsedOptionsFull,
+  parsedOptions: Commands.ParsedOptions,
   execOptions: Commands.ExecOptions
 ): Promise<Entity> => {
   if (!parsedOptions.create) {

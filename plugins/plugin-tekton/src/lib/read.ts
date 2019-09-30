@@ -57,11 +57,13 @@ export const fetchTask = async (pipelineName: string, taskName: string, filepath
       : model.filter(_ => _.kind === 'Task')
     return task as Task
   } else if (!taskName) {
-    const pipeline = await REPL.pexec(`kubectl get Pipeline ${REPL.encodeComponent(pipelineName)}`).catch(err => {
-      // want Pipeline.tekton.dev but that is much slower
-      debug('got error fetching pipeline', err)
-      return { spec: { tasks: [] } }
-    })
+    const pipeline = await REPL.pexec<KubeResource>(`kubectl get Pipeline ${REPL.encodeComponent(pipelineName)}`).catch(
+      err => {
+        // want Pipeline.tekton.dev but that is much slower
+        debug('got error fetching pipeline', err)
+        return { spec: { tasks: [] } }
+      }
+    )
     const referencedTasks: Record<string, boolean> = pipeline.spec.tasks.reduce((M, _) => {
       M[_.taskRef.name] = true
       return M

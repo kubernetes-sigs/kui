@@ -190,12 +190,17 @@ async function renderGettingStarted() {
     wrapper.innerHTML = marked(i18nFromMap(Settings.theme.gettingStarted))
     return wrapper
   } else if (typeof Settings.theme.gettingStarted === 'string' && Settings.theme.gettingStarted !== 'getting started') {
-    return REPL.qexec(Settings.theme.gettingStarted)
+    return REPL.qexec<HTMLElement>(Settings.theme.gettingStarted)
   } else {
     console.error('no getting started content defined by client')
     const empty = document.createElement('div')
     return empty
   }
+}
+
+interface Options extends Commands.ParsedOptions {
+  mode: string
+  content: string
 }
 
 /**
@@ -204,7 +209,7 @@ async function renderGettingStarted() {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async ({ parsedOptions }: Commands.Arguments): Promise<Commands.Response> => {
+const aboutWindow = async ({ parsedOptions }: Commands.Arguments<Options>): Promise<Commands.Response> => {
   debug('aboutWindow')
 
   try {
@@ -311,7 +316,7 @@ export default (commandTree: Commands.Registrar) => {
 
   // for menu
   if (!commandTree) {
-    return aboutWindow({} as Commands.Arguments)
+    return aboutWindow({} as Commands.Arguments<Options>)
   }
 
   // these commands don't require any auth

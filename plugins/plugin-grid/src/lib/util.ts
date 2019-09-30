@@ -333,21 +333,32 @@ export const formatTimeRange = ({
   return new UI.ToolbarText('info', container)
 }
 
+export interface Options extends Commands.ParsedOptions {
+  help?: string
+  batches?: number
+  live?: boolean
+}
+
 /**
  * The command handler for visualizing as a table
  *
  */
-export type Renderer = (
+export type Renderer<ParsedOptions extends Options> = (
   tab: UI.Tab,
-  options: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  options: Options,
   uuid: string,
   isRedraw?: boolean
 ) => (activations: Activation[]) => Commands.Response
-export const visualize = (cmd: string, viewName: string, draw: Renderer, extraOptions?: { live: boolean }) => ({
+export const visualize = <ParsedOptions extends Options>(
+  cmd: string,
+  viewName: string,
+  draw: Renderer<Options>,
+  extraOptions?: { live: boolean }
+) => ({
   tab,
   argvNoOptions,
   parsedOptions: options
-}: Commands.Arguments): Promise<Commands.Response> => {
+}: Commands.Arguments<ParsedOptions>): Promise<Commands.Response> => {
   debug('visualize')
 
   // number of batches (of 200) to fetch
@@ -363,13 +374,6 @@ export const visualize = (cmd: string, viewName: string, draw: Renderer, extraOp
 
   const appName = argvNoOptions[idx + 1]
   const cliN = options.batches
-  if (cliN) {
-    try {
-      parseInt(cliN, 10)
-    } catch (e) {
-      throw new Error('Please provide an integer value for the --batches argument')
-    }
-  }
 
   // add the CSS to the document
   injectContent()
@@ -489,7 +493,7 @@ export const latencyBucketRange = bucket => {
  * user.
  *
  */
-export const optionsToString = (options: Commands.ParsedOptionsFull, except?: string[]) => {
+export const optionsToString = (options: Commands.ParsedOptions, except?: string[]) => {
   let str = ''
   for (const key in options) {
     // underscore comes from minimist

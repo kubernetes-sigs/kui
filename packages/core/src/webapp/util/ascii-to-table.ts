@@ -371,10 +371,11 @@ export const formatTable = (
   // helm doesn't support --output
   const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
 
-  const drilldownNamespace =
-    options.n || options.namespace ? `-n ${repl.encodeComponent(options.n || options.namespace)}` : ''
+  const namespace = options.n || options.namespace
+  const drilldownNamespace = namespace && !Array.isArray(namespace) ? `-n ${repl.encodeComponent(namespace)}` : ''
 
-  const config = options.config ? `--config ${repl.encodeComponent(options.config)}` : ''
+  const config =
+    options.config && !Array.isArray(options.config) ? `--config ${repl.encodeComponent(options.config)}` : ''
 
   const drilldownKind = (nameSplit: string[]): string => {
     if (drilldownVerb === 'get') {

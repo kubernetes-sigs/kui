@@ -43,6 +43,14 @@ interface CompositionWithCode {
   code?: string
 }
 
+interface Options extends Commands.ParsedOptions {
+  env: string[]
+  e: string[]
+  c: boolean
+  functions: boolean
+  ast: boolean
+}
+
 /**
  * Error reporting
  *
@@ -108,7 +116,7 @@ export default (commandTree: Commands.Registrar) => {
   const render = (
     tab: UI.Tab,
     input: string,
-    options: Commands.ParsedOptions,
+    options: Options,
     execOptions: Commands.ExecOptions,
     mode: string
   ): Promise<Commands.Response> =>
@@ -268,7 +276,7 @@ export default (commandTree: Commands.Registrar) => {
     execOptions,
     argvNoOptions,
     parsedOptions: options
-  }: Commands.Arguments) =>
+  }: Commands.Arguments<Options>) =>
     new Promise((resolve, reject) => {
       const idx = argvNoOptions.indexOf(cmd)
       const inputFile = argvNoOptions[idx + 1]

@@ -180,6 +180,11 @@ export const persisters = {
   }
 }
 
+interface Options extends Commands.ParsedOptions {
+  kind?: string
+  language?: string
+}
+
 /**
  * Simple convenience routine to fetch an action and ensure that it is
  * compatible with the editor
@@ -187,7 +192,7 @@ export const persisters = {
  */
 export const fetchAction = (check = checkForConformance, tryLocal = true) => (
   name: string,
-  parsedOptions?: Commands.ParsedOptions,
+  parsedOptions?: Options,
   execOptions?: Commands.ExecOptions
 ): Promise<Entity> => {
   if (name.charAt(0) === '!') {
@@ -267,7 +272,7 @@ export const newAction = ({
   argvNoOptions,
   parsedOptions: options,
   execOptions
-}: Commands.Arguments): Promise<Commands.Response> => {
+}: Commands.Arguments<Options>): Promise<Commands.Response> => {
   const name = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
   const prettyKind = addVariantSuffix(options.kind || _kind)
   const kind = addVariantSuffix(options.kind || defaults.kind)

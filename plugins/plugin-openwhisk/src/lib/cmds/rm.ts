@@ -29,6 +29,7 @@ import * as minimist from 'yargs-parser'
 import { Commands, Models, REPL, Tables } from '@kui-shell/core'
 
 import { synonyms } from '../models/synonyms'
+import { Action, Package } from '../models/openwhisk-entity'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { isAnonymousLet } = require('./actions/let-core')
@@ -52,7 +53,7 @@ export default async (commandTree: Commands.Registrar) => {
    * Given a package name and an entity within that package, return the fully qualified name of the entity
    *
    */
-  const reify = (pckage, field) => {
+  const reify = (pckage: Package, field: 'actions' | 'feeds') => {
     const entities = pckage[field]
     if (entities) {
       return entities.map(entity => `${pckage.name}/${entity.name}`)
@@ -80,7 +81,7 @@ export default async (commandTree: Commands.Registrar) => {
    */
   const deletePackageAndContents = pckage =>
     new Promise((resolve, reject) => {
-      REPL.qexec(`wsk package get "${pckage}"`)
+      REPL.qexec<Package>(`wsk package get "${pckage}"`)
         .then(pckage => Promise.all([rmActions(reify(pckage, 'actions')), rmTriggers(reify(pckage, 'feeds'))]))
         .then(flatten)
         .then(removedSoFar => {
@@ -199,15 +200,15 @@ export default async (commandTree: Commands.Registrar) => {
               //                         |
               //                         ^^^^^^ delete this, too
               //
-              return REPL.qexec(`wsk action get "${arg}"`, block).then(action => {
+              return REPL.qexec<Action>(`wsk action get "${arg}"`, block).then(action => {
                 if (action.annotations && action.annotations.find(kv => kv.key === 'exec' && kv.value === 'sequence')) {
                   return Promise.all(
                     action.exec.components.map(component =>
-                      REPL.qexec(`wsk action get "${component}"`, block)
+                      REPL.qexec<Action>(`wsk action get "${component}"`, block)
                         .then(component => {
                           if (isAnonymousLet(component, arg)) {
                             // arg is the parent sequence
-                            return REPL.qexec(`wsk action delete "${component.name}"`, block)
+                            return REPL.qexec<Action>(`wsk action delete "${component.name}"`, block)
                               .then(() => [component.name]) // deleted one
                               .catch(errorThen([])) // deleted zero
                           } else {

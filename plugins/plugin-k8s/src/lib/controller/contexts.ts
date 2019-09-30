@@ -90,7 +90,7 @@ export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/k8s/context',
     async ({ execOptions }) => {
-      return (await REPL.qexec(
+      return (await REPL.qexec<string>(
         `kubectl config current-context`,
         undefined,
         undefined,
