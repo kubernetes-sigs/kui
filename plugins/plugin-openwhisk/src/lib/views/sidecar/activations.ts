@@ -19,9 +19,10 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import { REPL, UI } from '@kui-shell/core'
 import { element } from '@kui-shell/core/webapp/util/dom'
-import { linkify, getSidecar, renderField, showCustom } from '@kui-shell/core/webapp/views/sidecar'
+import { linkify, getSidecar, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
+import renderField from '../render-field'
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
 

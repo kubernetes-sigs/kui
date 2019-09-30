@@ -19,12 +19,13 @@ import * as Debug from 'debug'
 import { REPL, Tables, UI } from '@kui-shell/core'
 
 import { element } from '@kui-shell/core/webapp/util/dom'
-import { addBadge, beautify, getSidecar, renderField } from '@kui-shell/core/webapp/views/sidecar'
+import { addBadge, beautify, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
 import { Action, ComponentArrayBearing } from '@kui-shell/plugin-wskflow'
 
+import renderField from '../render-field'
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
 import { isAnonymousLet } from '../../cmds/actions/let-core'

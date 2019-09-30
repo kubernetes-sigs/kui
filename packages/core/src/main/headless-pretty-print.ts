@@ -18,10 +18,14 @@ import * as Debug from 'debug'
 const debug = Debug('main/headless-pretty-print')
 debug('loading')
 
+import { Writable } from 'stream'
 import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
-import { isTable, isMultiTable } from '../webapp/models/table'
+import { isTable, isMultiTable, Row } from '../webapp/models/table'
+import { isEntitySpec, isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
+import { isHTML, isPromise } from '../util/types'
+import { promiseEach } from '../util/async'
 
 const log = console.log
 const error = console.error
@@ -78,9 +82,9 @@ let firstPrettyDom = true // so we can avoid initial newlines for headers
 const prettyDom = (
   dom: ElementMimic,
   logger = log,
-  stream = process.stdout,
+  stream: Writable = process.stdout,
   _color: string,
-  { columnWidths, extraColor: _extraColor }: PrettyOptions = new DefaultPrettyOptions()
+  { columnWidths, extraColor }: PrettyOptions = new DefaultPrettyOptions()
 ) => {
   debug('prettyDom')
 
@@ -96,17 +100,17 @@ const prettyDom = (
     stream.write(' ')
   }
 
-  const extraColor =
+  const extraColorChoice =
     isHeader || dom.hasStyle('fontWeight', 'bold')
       ? 'bold'
       : dom.hasStyle('fontWeight', 500)
       ? 'green'
       : dom.hasStyle('fontSize', '0.875em')
       ? 'gray'
-      : _extraColor || 'reset'
-  const colorCode = (dom.hasStyle('color') as string) || _color
-  const color = colorMap[colorCode] || colorCode
-  // debug('colors', isHeader, colorCode, color, extraColor)
+      : extraColor || 'reset'
+  const colorCode: string = (dom.hasStyle('color') as string) || _color
+  const color: string = colorMap[colorCode] || colorCode
+  // debug('colors', isHeader, colorCode, color, extraColorChoice)
 
   if (isHeader) {
     // an extra newline before headers
@@ -121,8 +125,8 @@ const prettyDom = (
 
   if (dom.innerText) {
     const text = capitalize ? dom.innerText.charAt(0).toUpperCase() + dom.innerText.slice(1) : dom.innerText
-    // debug('text', color, extraColor)
-    stream.write(colors[color][extraColor](text))
+    // debug('text', color, extraColorChoice)
+    stream.write(colors[color][extraColorChoice](text))
   }
 
   const newline = () => {
@@ -141,7 +145,7 @@ const prettyDom = (
   }
 
   // recurse to the children of this fake DOM
-  dom.children.forEach(child => prettyDom(child, logger, stream, _color, { extraColor }))
+  dom.children.forEach(child => prettyDom(child, logger, stream, _color, { extraColor: extraColorChoice }))
 
   // handle table rows and cells:
   if (dom.rows) {
@@ -194,7 +198,8 @@ const prettyDom = (
  * https://github.com/ibm-functions/shell/issues/1075)
  *
  */
-const prettyJSON = (msg, logger = log) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const prettyJSON = async (msg: string | Record<string, any>, logger = log) => {
   const serialized = JSON.stringify(msg, undefined, 2) // Warning: Don't pass the JSON structure 'msg' directly to json-colorizer! json-colorizer doesn't give us a pretty format and only colorizes the JSON structure.
 
   if (rawOutput || noColor) {
@@ -203,7 +208,7 @@ const prettyJSON = (msg, logger = log) => {
   } else {
     debug('prettyJSON using json-colorizer')
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const colorize = require('json-colorizer')
+    const colorize = await import('json-colorizer')
     return logger(colorize(serialized))
   }
 }
@@ -238,43 +243,75 @@ const prettyDate = (millis: number): string => {
  * array of entities
  *
  */
-const pp = _ => colors.dim(_ ? 'public' : 'private') // pretty publish
-const pk = _ => colors.green(_.find(({ key }) => key === 'exec').value) // pretty kind
+const pp = (_: string | boolean) => colors.dim(_ ? 'public' : 'private') // pretty publish
+const pk = (_: { key: string; value: string }[]) => colors.green(_.find(({ key }) => key === 'exec').value) // pretty kind
 
 const rowify = {
-  compositions: ({ name, packageName, prettyKind }) => ({
+  compositions: ({ name, packageName, prettyKind }: { name: string; packageName: string; prettyKind: string }) => ({
     name: pn(name, packageName),
     type: prettyKind
   }),
-  session: ({ sessionId, name, success, status, start }) => ({
+  session: ({
+    sessionId,
+    name,
+    success,
+    status,
+    start
+  }: {
+    sessionId: string
+    name: string
+    success: boolean
+    status: string
+    start: number
+  }) => ({
     sessionId,
     app: pn(name),
     start: colors.dim(prettyDate(start)),
     status: status === 'pending' ? colors.yellow(status) : success ? colors.green(status) : colors.red(status)
   }),
-  activations: ({ activationId, name }) => ({ activationId, name: pn(name) }),
-  actions: ({ name, packageName, publish, annotations, version }) => ({
+  activations: ({ activationId, name }: { activationId: string; name: string }) => ({ activationId, name: pn(name) }),
+  actions: ({
+    name,
+    packageName,
+    publish,
+    annotations,
+    version
+  }: {
+    name: string
+    packageName: string
+    publish: boolean
+    annotations: { key: string; value: string }[]
+    version: string
+  }) => ({
     name: pn(name, packageName),
     'published?': pp(publish),
     kind: pk(annotations),
     version: colors.dim(version)
   }),
-  triggers: ({ name, publish }) => ({
+  triggers: ({ name, publish }: { name: string; publish: string }) => ({
     name: pn(name),
     'published?': pp(publish)
   }),
-  packages: ({ name, publish, binding }) => ({
+  packages: ({ name, publish, binding }: { name: string; publish: boolean; binding: string }) => ({
     name: pn(name),
     'published?': pp(publish),
     binding
   }),
-  plugins: ({ name, attributes }) => {
+  plugins: ({ name, attributes }: { name: string; attributes: { key: string; value: string }[] }) => {
     return {
       name: pn(name),
       version: colors.dim(attributes.find(({ key }) => key === 'version').value)
     }
   },
-  _default: ({ key, name, attributes }) => {
+  _default: ({
+    key,
+    name,
+    attributes
+  }: {
+    key: string
+    name: string
+    attributes: { key: string; value: string; placeholderValue?: string }[]
+  }) => {
     const row = {}
 
     row[key || 'name'] = pn(name)
@@ -298,7 +335,13 @@ rowify['live'] = rowify.session // same formatter...
  * pretty printers (such as prettyDom and prettyjson)
  *
  */
-export const print = (msg, logger = log, stream = process.stdout, color = 'reset', ok = 'ok') => {
+export const print = async (
+  msg: Entity | Promise<Entity>,
+  logger = log,
+  stream: Writable = process.stdout,
+  color = 'reset',
+  ok = 'ok'
+) => {
   debug('printing in this color: %s', color)
 
   if (verbose && typeof msg === 'string') {
@@ -312,96 +355,108 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
         // true is the graphical shell's way of telling the repl to print 'ok'
         debug('printing plain true')
         logger(colors.green(ok))
-      } else if (msg.context) {
-        // a changeDirectory response; print the underlying message
-        return print(msg.message, logger, stream, color)
-      } else if (typeof msg === 'object') {
-        debug('printing some sort of javascript object')
+      } else if (typeof msg === 'string' || typeof msg === 'boolean' || typeof msg === 'number') {
+        // logger(colors.green(`${ok}: `) + msg)
+        logger(msg)
+      } else if (ElementMimic.isFakeDom(msg)) {
+        // msg is a DOM facade
+        debug('printing fake dom')
 
-        if (ElementMimic.isFakeDom(msg)) {
-          // msg is a DOM facade
-          debug('printing fake dom')
+        if (msg.className.indexOf('usage-error-wrapper') >= 0) {
+          // print usage errors to stdout
+          stream = process.stdout
+          logger = log
+          // color = 'reset'
+        }
 
-          if (msg.className.indexOf('usage-error-wrapper') >= 0) {
-            // print usage errors to stdout
-            stream = process.stdout
-            logger = log
-            // color = 'reset'
+        prettyDom(msg, logger, stream, color)
+        logger()
+      } else if (isPromise(msg)) {
+        // msg is a promise; resolve it and try again
+        debug('printing promise')
+        return msg.then(msg => print(msg, logger, stream, color, ok))
+      } else if (isTable(msg) || isMultiTable(msg)) {
+        debug('printing table')
+
+        if (isMultiTable(msg)) {
+          msg.tables.map(_ => print(_, logger, stream, color, ok))
+        } else {
+          // strip off header row, as we'll make our own
+          const type =
+            (msg.header && (msg.header.prettyType || msg.header.type)) ||
+            (msg.body.length > 0 && (msg.body[0].prettyType || msg.body[0].type))
+
+          const print: (row: Row) => string = type ? rowify[type] : rowify._default
+
+          logger(
+            require('columnify')(msg.body.map(print), {
+              headingTransform: (_: string) => colors.dim(_)
+            })
+          )
+        }
+      } else if (isMixedResponse(msg)) {
+        await promiseEach(msg, _ => {
+          return print(_)
+        })
+        return logger(colors.green(ok))
+      } else if (Array.isArray(msg)) {
+        // msg is an array of stuff
+        debug('printing array')
+        if (msg.length > 0) {
+          try {
+            if (typeof msg[0] === 'string') {
+              // then we have a simple array of strings, not entities
+              ;(msg as string[]).forEach(_ => {
+                const logline = _.split(/(stdout|stderr)/)
+                if (logline && logline.length === 3 && !rawOutput) {
+                  // then this is a log line
+                  const color = logline[1] === 'stdout' ? 'reset' : 'red'
+
+                  logger(
+                    colors.dim(new Date(logline[0].trim()).toLocaleString()) + // timestamp
+                      // + ' ' + colors.yellow(logline[1])                    // stream (stdout, stderr)
+                      colors[color](logline[2].replace(/^:/, ''))
+                  ) // log message
+                } else {
+                  // otherwise, we're not sure what this is,
+                  // so do not attempt to render it in a special way
+                  logger(_)
+                }
+              })
+              return logger(colors.green(ok))
+            }
+          } catch (err) {
+            error(err)
           }
-
-          prettyDom(msg, logger, stream, color)
-          logger()
-        } else if (msg.then) {
-          // msg is a promise; resolve it and try again
-          debug('printing promise')
-          return msg.then(msg => print(msg, logger, stream, color, ok))
-        } else if (msg.message && msg.message._isFakeDom) {
+        }
+      } else if (isHTML(msg)) {
+        console.error('cannot format HTML message')
+      } else if (isMessageBearingEntity(msg)) {
+        if (ElementMimic.isFakeDom(msg.message)) {
           // msg.message is a DOM facade
           prettyDom(msg.message, logger, stream, color)
           logger()
-        } else if (isTable(msg) || isMultiTable(msg)) {
-          debug('printing table')
+        } else {
+          logger(msg.message)
+        }
+      } else if (isEntitySpec(msg)) {
+        debug('printing some sort of javascript object')
 
-          if (isMultiTable(msg)) {
-            msg.tables.map(_ => print(_, logger, stream, color, ok))
-          } else {
-            // strip off header row, as we'll make our own
-            const type =
-              (msg.header && (msg.header.prettyType || msg.header.type)) ||
-              (msg.body.length > 0 && (msg.body[0].prettyType || msg.body[0].type))
-
-            const print = type ? rowify[type] : rowify._default
-
-            logger(
-              require('columnify')(msg.body.map(print), {
-                headingTransform: _ => colors.dim(_)
-              })
-            )
-          }
-        } else if (Array.isArray(msg)) {
-          // msg is an array of stuff
-          debug('printing array')
-          if (msg.length > 0) {
-            try {
-              if (typeof msg[0] === 'string') {
-                // then we have a simple array of strings, not entities
-                msg.forEach(_ => {
-                  const logline = _.split(/(stdout|stderr)/)
-                  if (logline && logline.length === 3 && !rawOutput) {
-                    // then this is a log line
-                    const color = logline[1] === 'stdout' ? 'reset' : 'red'
-
-                    logger(
-                      colors.dim(new Date(logline[0].trim()).toLocaleString()) + // timestamp
-                        // + ' ' + colors.yellow(logline[1])                    // stream (stdout, stderr)
-                        colors[color](logline[2].replace(/^:/, ''))
-                    ) // log message
-                  } else {
-                    // otherwise, we're not sure what this is,
-                    // so do not attempt to render it in a special way
-                    logger(_)
-                  }
-                })
-                return logger(colors.green(ok))
-              }
-            } catch (err) {
-              error(err)
-            }
-          }
-        } else if (msg.verb && msg.name && (msg.verb === 'create' || msg.verb === 'update')) {
+        if (msg.verb && msg.name && (msg.verb === 'create' || msg.verb === 'update')) {
           // msg is an entity, that has just been created or updated
           debug('printing create or update')
-          const isWebExported = msg.annotations && msg.annotations.find(({ key }) => key === 'web-export')
+          const isWebExported = msg.annotations && !!msg.annotations.find(({ key }) => key === 'web-export')
           if (isWebExported) {
-            const contentType = (msg.annotations &&
+            const contentType: { value: string } = (msg.annotations &&
               msg.annotations.find(({ key }) => key === 'content-type-extension')) || { value: 'json' }
+            const apiHost: string = msg['apiHost']
             const https =
-              msg.apiHost.startsWith('https://') || msg.apiHost.startsWith('http://')
+              apiHost.startsWith('https://') || apiHost.startsWith('http://')
                 ? ''
-                : msg.apiHost === 'localhost'
+                : apiHost === 'localhost'
                 ? 'http://'
                 : 'https://'
-            const urlText = `${https}${msg.apiHost}/api/v1/web/${msg.namespace}/${!msg.packageName ? 'default/' : ''}${
+            const urlText = `${https}${apiHost}/api/v1/web/${msg.namespace}/${!msg.packageName ? 'default/' : ''}${
               msg.name
             }.${contentType.value}`
             logger(colors.blue(urlText))
@@ -410,48 +465,47 @@ export const print = (msg, logger = log, stream = process.stdout, color = 'reset
         } else if (msg.verb === 'delete') {
           debug('printing delete')
           logger(colors.green(`${ok}:`) + ` deleted ${msg.type.replace(/s$/, '')} ${msg.name}`)
-        } else if (msg.verb === 'async' && msg.activationId /* && msg.response */) {
+        } else if (msg.verb === 'async' && msg['activationId']) {
           // The returned msgs of action and app are different
           msg.type === 'activations'
-            ? logger(colors.green(`${ok}:`) + ` invoked ${msg.entity.name} with id ${msg.activationId}`)
-            : logger(colors.green(`${ok}:`) + ` invoked ${msg.name} with id ${msg.activationId}`)
-        } else if (msg.verb === 'get' && msg.activationId /* && msg.response */) {
+            ? logger(colors.green(`${ok}:`) + ` invoked ${msg['entity']['name']} with id ${msg['activationId']}`)
+            : logger(colors.green(`${ok}:`) + ` invoked ${msg.name} with id ${msg['activationId']}`)
+        } else if (msg.verb === 'get' && msg['activationId']) {
           // msg is an entity representing an invocation
           // commenting out this line diverges us from bx wsk output, but we're ok with that:
           // logger(colors.green(`${ok}:`) + ` got activation ${msg.activationId}`)
           debug('printing get activation')
           delete msg.prettyType
           delete msg.verb
-          delete msg.publish
+          delete msg['publish']
           delete msg.type
-          delete msg.apiHost
+          delete msg['apiHost']
           delete msg.modes
           delete msg.version
-          delete msg.entity
-          if (msg.activatonId && msg.sessionid) delete msg.activationId // don't display both
-          prettyJSON(msg, logger)
+          delete msg['entity']
+          if (msg['activatonId'] && msg['sessionid']) delete msg['activationId'] // don't display both
+          await prettyJSON(msg, logger)
         } else {
           // otherwise, print it as generic JSON
           if (msg.verb === 'get') {
-            delete msg.exec
+            delete msg['exec']
             delete msg.verb
-            delete msg.publish
+            delete msg['publish']
             delete msg.type
-            delete msg.apiHost
+            delete msg['apiHost']
             delete msg.modes
             delete msg.version
           }
-          prettyJSON(msg, logger)
+          await prettyJSON(msg, logger)
         }
-      } else if (typeof msg === 'string') {
-        // logger(colors.green(`${ok}: `) + msg)
-        logger(msg)
+      } else if (typeof msg === 'object') {
+        await prettyJSON(msg, logger)
       } else {
         logger(colors[color](msg))
       }
     } catch (err) {
       debug('got an error', err)
-      logger(colors.red(msg))
+      logger(colors.red(typeof msg === 'object' ? JSON.stringify(msg) : msg.toString()))
     }
   }
 }

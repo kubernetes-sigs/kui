@@ -251,7 +251,7 @@ export const outerCSSForKey = {
  * Return an array with at least maxColumns entries
  *
  */
-const fillTo = (length, maxColumns) => {
+const fillTo = (length: number, maxColumns: number) => {
   if (length >= maxColumns) {
     return []
   } else {

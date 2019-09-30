@@ -16,6 +16,7 @@
 
 import * as fs from 'fs'
 import * as assert from 'assert'
+import { remove as rimraf } from 'fs-extra'
 
 import * as common from '@kui-shell/core/tests/lib/common'
 import * as ui from '@kui-shell/core/tests/lib/ui'
@@ -31,23 +32,6 @@ const actionName16 = 'foo16'
 const actionName16b = 'foo16b'
 const actionName16c = 'foo16c'
 const actionName18 = 'foo18'
-
-const rimraf = filepath => {
-  if (fs.existsSync(filepath)) {
-    fs.readdirSync(filepath).forEach(file => {
-      const curPath = join(filepath, file)
-      if (fs.lstatSync(curPath).isDirectory()) {
-        rimraf(curPath)
-      } else {
-        fs.unlinkSync(curPath)
-      }
-    })
-
-    fs.rmdirSync(filepath)
-  }
-
-  return Promise.resolve()
-}
 
 describe('Create zip actions', function(this: common.ISuite) {
   before(openwhisk.before(this))
@@ -139,13 +123,11 @@ function main(args) {
                 value: true
               },
               {
-                key: 'exec',
-                value: 'nodejs:6'
+                key: 'exec'
               }
             ],
             version: '0.0.1',
             exec: {
-              kind: 'nodejs:6',
               code: '…',
               binary: true
             },
@@ -155,11 +137,10 @@ function main(args) {
               timeout: 60000,
               memory: 256,
               logs: 10
-            },
-            namespace: ui.expectedNamespace()
+            }
           })
         )
-        .catch(common.oops(this))
+        .catch(common.oops(this, true))
     )
   }
 
@@ -181,7 +162,8 @@ function main(args) {
       .then(sidecar.expectShowing(actionName16b))
       .then(sidecar.expectBadge('zip'))
       .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src('openwhisk/zip/index.js').replace(/\s+/g, ''))))
+      .then(code => assert.strictEqual(code.replace(/\s+/g, ''), src('openwhisk/zip/index.js').replace(/\s+/g, '')))
+      .catch(common.oops(this, true)))
   it('should switch to annotations mode', () =>
     cli
       .do('wsk action annotations', this.app)
@@ -189,7 +171,8 @@ function main(args) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16b))
       .then(app => app.client.getText(`${ui.selectors.SIDECAR_CONTENT} .action-source`))
-      .then(ui.expectSubset({ aa: 'yoyo' })))
+      .then(ui.expectSubset({ aa: 'yoyo' }))
+      .catch(common.oops(this, true)))
   // invoke it
   it('should do an invoke of the action, using implicit context', () =>
     cli
@@ -198,7 +181,8 @@ function main(args) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16b))
       .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ yy: 33, data: 'hello world\n' })))
+      .then(ui.expectStruct({ yy: 33, data: 'hello world\n' }))
+      .catch(common.oops(this, true)))
 
   //
   // python zip action
@@ -214,7 +198,7 @@ function main(args) {
       .then(code =>
         assert.strictEqual(code.replace(/\s+/g, ''), src('openwhisk/zip-python/index.py').replace(/\s+/g, ''))
       )
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true)))
 
   //
   // zip action without npm install
@@ -226,13 +210,14 @@ function main(args) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16))
       .then(sidecar.expectSource(fs.readFileSync(join(ROOT, 'data/openwhisk/zip/index.js')).toString())) // sidecar should display the source to index.js
-      .then(sidecar.expectBadge('zip')))
+      .then(sidecar.expectBadge('zip'))
+      .catch(common.oops(this, true)))
   // invoke it
   it('should do an async of the action, using implicit context', () =>
     cli
       .do(`wsk action async -p y 3`, this.app)
       .then(cli.expectOKWithString(actionName16)) // e.g. "invoked `actionName16` with id:"
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true)))
   // call await
   it('should await successful completion of the activation', () =>
     cli
@@ -241,7 +226,8 @@ function main(args) {
       .then(sidecar.expectOpen)
       .then(sidecar.expectShowing(actionName16))
       .then(() => this.app.client.getText(ui.selectors.SIDECAR_ACTIVATION_RESULT))
-      .then(ui.expectStruct({ y: 3, data: 'hello world\n' })))
+      .then(ui.expectStruct({ y: 3, data: 'hello world\n' }))
+      .catch(common.oops(this, true)))
   // doSwitch('/wsk/actions', '/wsk/actions')
 
   //
@@ -249,18 +235,19 @@ function main(args) {
   //     first we delete the node_modules subdirectory using the del npm
   //
   it('should create a zip action with npm install via let', () =>
-    rimraf([`${ROOT}/data/openwhisk/zip-action/src/node_modules/**`])
+    rimraf(`${ROOT}/data/openwhisk/zip-action/src/node_modules`)
       .then(() => assert.ok(!fs.existsSync(`${ROOT}/data/openwhisk/zip-action/src/node_modules`)))
       .then(() => cli.do(`let ${actionName18}.zip = ${ROOT}/data/openwhisk/zip-action/src`, this.app))
       .then(cli.expectJustOK)
       .then(sidecar.expectOpen)
-      .then(sidecar.expectShowing(actionName18)))
+      .then(sidecar.expectShowing(actionName18))
+      .catch(common.oops(this, true)))
   // invoke it
   it('should do an async of the action, using implicit context', () =>
     cli
       .do(`wsk action async --param lines '["and now", "for something completely", "different" ]'`, this.app)
       .then(cli.expectOKWithString(actionName18)) // e.g. "invoked `actionName18` with id:"
-      .catch(common.oops(this)))
+      .catch(common.oops(this, true)))
   // call await
   it('should await successful completion of the activation', () =>
     cli
@@ -273,6 +260,7 @@ function main(args) {
         ui.expectStruct({
           padded: ['.......................and now', '......for something completely', '.....................different']
         })
-      ))
+      )
+      .catch(common.oops(this, true)))
   // doSwitch('/wsk/actions', '/wsk/actions')
 })

@@ -42,7 +42,7 @@ describe('create action list it then click to show it again', function(this: com
       .then(sidecar.expectShowing(actionName2))
       .catch(common.oops(this)))
 
-  const expectedSrc = 'let main = x => x'
+  const expectedSrc = 'let main = x=>x'
 
   it(`should list ${actionName}, click it, show it`, () =>
     cli

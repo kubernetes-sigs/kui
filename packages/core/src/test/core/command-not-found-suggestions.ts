@@ -30,7 +30,8 @@ const { cli, sidecar } = ui
  *                   or: expect the sidecar icon to be "sidecar"
  *
  */
-export const expectSuggestionsFor = function(
+export function expectSuggestionsFor(
+  this: ISuite,
   cmd: string,
   expectedAvailable: string[],
   {
@@ -38,7 +39,7 @@ export const expectSuggestionsFor = function(
     expectedBreadcrumb = undefined,
     sidecar: expectedIcon = undefined,
     expectedString = undefined
-  } = {}
+  }: { click?: number; expectedBreadcrumb?: string; sidecar?: string; expectedString?: string } = {}
 ) {
   return cli
     .do(cmd, this.app)
