@@ -30,7 +30,7 @@ export interface FlowNode {
   tooltipColor?: string
   prettyCode?: string
   fullFunctionCode?: string
-  multiLineLabel?: string
+  multiLineLabel?: string[]
   repeatCount?: string
   retryCount?: string
   width?: number

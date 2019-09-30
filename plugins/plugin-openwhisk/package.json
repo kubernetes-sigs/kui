@@ -26,6 +26,7 @@
     "archiver": "3.1.1",
     "debug": "4.1.1",
     "htmlparser2": "4.0.0",
+    "js-beautify": "1.10.2",
     "needle": "2.4.0",
     "openwhisk": "3.18.0",
     "parse-duration": "0.1.1",

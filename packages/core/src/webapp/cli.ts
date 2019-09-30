@@ -26,6 +26,7 @@ import { inBrowser, inElectron, isHeadless } from '../core/capabilities'
 import { keys } from './keys'
 import { installContext } from './prompt'
 import { promiseEach } from '../util/async'
+import { SidecarMode as Mode, SidecarMode } from './bottom-stripe'
 
 import {
   Entity,
@@ -60,11 +61,8 @@ import {
   isCustomSpec,
   CustomSpec
 } from './views/sidecar'
-import { SidecarMode } from './bottom-stripe'
 
 debug('finished loading modules')
-
-declare let hljs
 
 /**
  * Make sure that the given repl block is visible.
@@ -274,7 +272,8 @@ const doPaste = (text: string, tab = getCurrentTab()) => {
       // then this is a command line with a trailing newline
       const prompt = getCurrentPrompt(tab)
       const repl = await import('../core/repl')
-      return repl.pexec(prompt.value + lines[idx]).then(() => pasteLooper(idx + 1))
+      await repl.pexec(prompt.value + lines[idx])
+      pasteLooper(idx + 1)
     } else {
       // then this is the last line, but without a trailing newline.
       // here, we add this command line to the current prompt, without executing it
@@ -554,7 +553,7 @@ export const streamTo = (tab: Tab, block: Element) => {
       previousLine = undefined
     }
 
-    const formatPart = async (response: Streamable, resultDom) => {
+    const formatPart = async (response: Streamable, resultDom: HTMLElement) => {
       if (UsageError.isUsageError(response)) {
         previousLine = await UsageError.getFormattedMessage(response)
         resultDom.appendChild(previousLine)
@@ -750,7 +749,7 @@ export const clearTextSelection = () => {
  * Allow for plugins to self-manage text selection
  *
  */
-let pendingTextSelection
+let pendingTextSelection: string
 export const clearPendingTextSelection = () => {
   pendingTextSelection = undefined
 }
@@ -769,6 +768,13 @@ export const setPendingTextSelection = (str: string) => {
   }
 }
 
+interface MSIETextRange {
+  collapse: (val: boolean) => void
+  moveEnd: (which: string, pos: number) => void
+  moveStart: (which: string, pos: number) => void
+  select: () => void
+}
+
 /**
  * Update the caret position in an html INPUT field
  *
@@ -778,7 +784,7 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
     ctrl.focus()
     ctrl.setSelectionRange(pos, pos)
   } else if (ctrl['createTextRange']) {
-    const range = ctrl['createTextRange']()
+    const range: MSIETextRange = ctrl['createTextRange']()
     range.collapse(true)
     range.moveEnd('character', pos)
     range.moveStart('character', pos)
@@ -885,16 +891,15 @@ export const listen = (prompt: HTMLInputElement) => {
         const current = getCurrentPrompt().value
         const repl = await import('../core/repl')
         const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
-        repl.pexec('clear').then(() => {
-          if (current) {
-            // restore the prompt value
-            getCurrentPrompt().value = current
+        await repl.pexec('clear')
+        if (current) {
+          // restore the prompt value
+          getCurrentPrompt().value = current
 
-            // restore the prompt cursor position
-            debug('restoring cursor position', currentCursorPosition)
-            getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-          }
-        })
+          // restore the prompt cursor position
+          debug('restoring cursor position', currentCursorPosition)
+          getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
+        }
       }
     } else if (char === keys.HOME) {
       // go to first command in history
@@ -940,7 +945,7 @@ export async function renderResult(
   tab: Tab,
   execOptions: ExecOptions,
   parsedOptions: ParsedOptions,
-  resultDom,
+  resultDom: HTMLElement,
   echo = true,
   attach = echo
 ) {
@@ -1005,36 +1010,7 @@ export const printResults = (
   if (process.env.KUI_TEE_TO_FILE) {
     // we were asked to tee the output to the system console
     debug('teeing output to file', process.env.KUI_TEE_TO_FILE)
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { print } = require('../main/headless-pretty-print')
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { createWriteStream } = require('fs')
-      const stream = createWriteStream(process.env.KUI_TEE_TO_FILE)
-      const logger = (data: string | Buffer) => stream.write(data)
-      try {
-        print(response, logger, stream)
-        if (process.env.KUI_TEE_TO_FILE_END_MARKER) {
-          stream.write(process.env.KUI_TEE_TO_FILE_END_MARKER)
-        }
-      } finally {
-        stream.end()
-
-        if (process.env.KUI_TEE_TO_FILE_EXIT_ON_END_MARKER) {
-          // we were asked to exit after writing an end marker
-          try {
-            const { app } = require('electron').remote
-            debug('attempting to quit', app)
-            app.quit()
-          } catch (err) {
-            console.error('Error exiting', err)
-          }
-        }
-      }
-    } catch (err) {
-      debug('error teeing output to console')
-      console.error(err)
-    }
+    import('../util/tee').then(_ => _.default(response))
   }
 
   if (echo) {
@@ -1147,7 +1123,7 @@ export const printResults = (
         const code = document.createElement('code')
         code.appendChild(document.createTextNode(JSON.stringify(response, undefined, 4)))
         resultDom.appendChild(code)
-        setTimeout(() => hljs.highlightBlock(code), 0)
+        code.classList.add('hljs', 'json') // we have some CSS rules that trigger off these
         ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
         ok(resultDom.parentElement).classList.add('ok-for-list')
       }
@@ -1200,14 +1176,14 @@ export const printResults = (
     ) {
       if (!incognito) {
         // view modes
-        const modes =
+        const modes: Mode[] =
           isEntitySpec(response) &&
           (response.modes ||
             (response[0] && response[0].modes) ||
             (response[0] && response[0][0] && response[0][0].modes))
 
         // entity type
-        const prettyType =
+        const prettyType: string =
           isEntitySpec(response) &&
           (response.kind ||
             response.prettyType ||
@@ -1423,7 +1399,7 @@ function isRequestingReprompt(spec: PromptCompleter): spec is RepromptSpec {
 }
 
 interface PromptCompletionData {
-  field: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  field: string
 }
 
 export type PromptCompletionHandler = (data: PromptCompletionData) => PromptCompleter

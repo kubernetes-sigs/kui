@@ -2,6 +2,7 @@
   "extends": "../../packages/builder/tsconfig-base.json",
   "include": ["src/**/*"],
   "compilerOptions": {
+    "noImplicitThis": false,
     "composite": true,
     "outDir": "dist",
     "rootDir": "src",

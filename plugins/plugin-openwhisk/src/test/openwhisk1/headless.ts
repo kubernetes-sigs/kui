@@ -196,9 +196,9 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
   if (!process.env.LOCAL_OPENWHISK) {
     it('should set host to us-south', () =>
       cli
-        .do('host set us-south')
+        .do('wsk host set us-south')
         .then(cli.expectOK())
-        .then(() => cli.do('host get'))
+        .then(() => cli.do('wsk host get'))
         .then(cli.expectOK('https://us-south.functions.cloud.ibm.com'))
         .catch(common.oops(this)))
 
@@ -206,9 +206,9 @@ odescribe('openwhisk headless mode', function(this: common.ISuite) {
     const apihost = apihostIsLocal ? 'local' : openwhisk.apihost
     it(`should restore host to original setting: ${apihost}`, () =>
       cli
-        .do(`host set ${apihost}`)
+        .do(`wsk host set ${apihost}`)
         .then(cli.expectOK())
-        .then(() => cli.do('host get'))
+        .then(() => cli.do('wsk host get'))
         .then(cli.expectOK(openwhisk.apihost))
         .catch(common.oops(this)))
   }

@@ -18,13 +18,15 @@ import * as Debug from 'debug'
 
 import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
-import { isTable, isMultiTable } from './models/table'
+import { isTable, isMultiTable, Table, MultiTable } from './models/table'
 import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
 import { pexec, qexec } from '../core/repl'
+import { isHTML } from '../util/types'
+import { EntitySpec, isMetadataBearingByReference } from '../models/entity'
 
 const debug = Debug('webapp/picture-in-picture')
 
@@ -57,11 +59,26 @@ interface DirectViewControllerSpec {
   parameters: object
 }
 
+/** clicking on a button can toggle other buttons */
+interface Toggle {
+  toggle: { mode: string; disabled: boolean }[]
+}
+function isToggle(result: DirectResult): result is Toggle {
+  return result && Array.isArray((result as Toggle).toggle)
+}
+
+type DirectResult = Toggle | Table | MultiTable | HTMLElement | CustomSpec
+
 /**
  * Call a "direct" impl
  *
  */
-const callDirect = async (tab: Tab, makeView: DirectViewController, entity, execOptions: ExecOptions) => {
+const callDirect = async (
+  tab: Tab,
+  makeView: DirectViewController,
+  entity: EntitySpec | CustomSpec,
+  execOptions: ExecOptions
+): Promise<DirectResult> => {
   if (typeof makeView === 'string') {
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
@@ -90,7 +107,10 @@ const callDirect = async (tab: Tab, makeView: DirectViewController, entity, exec
     // what we could also do in the future: enforce a policy on
     // plugins as to path to their main, e.g. /dist/index.js
     //
-    const provider = await import('@kui-shell/plugin-' + makeView.plugin)
+    const provider: Record<
+      string,
+      (tab: Tab, parameters: object, entity: EntitySpec | CustomSpec) => DirectResult
+    > = await import('@kui-shell/plugin-' + makeView.plugin)
     try {
       return provider[makeView.operation](tab, makeView.parameters, entity)
     } catch (err) {
@@ -116,8 +136,8 @@ export interface SidecarMode {
   flush?: 'right' | 'weak'
 
   selected?: boolean
-  selectionController?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  visibleWhen?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  selectionController?: { on: (evt: 'change', cb: (selected: boolean) => void) => void }
+  visibleWhen?: string
   leaveBottomStripeAlone?: boolean
 
   // icon label?
@@ -130,9 +150,9 @@ export interface SidecarMode {
   balloon?: string
   balloonLength?: string
 
-  data?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  data?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  command?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  command?: (entity: EntitySpec | CustomSpec) => string
   direct?: DirectViewController
   url?: string
 
@@ -187,7 +207,7 @@ const _addModeButton = (
   modeStripe: Element,
   bottomStripe: Element,
   opts: SidecarMode,
-  entity,
+  entity: EntitySpec | CustomSpec,
   show: string
 ) => {
   const {
@@ -408,7 +428,20 @@ const _addModeButton = (
           }
 
           const view = await callDirect(tab, direct, entity, execOptions)
-          if (view && !actAsButton) {
+          if (actAsButton && isToggle(view)) {
+            view.toggle.forEach(({ mode, disabled }) => {
+              const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
+              if (button) {
+                if (disabled) {
+                  button.classList.add('disabled')
+                } else {
+                  button.classList.remove('disabled')
+                }
+              }
+            })
+
+            changeActiveButton()
+          } else if (view && !actAsButton && !isToggle(view)) {
             if (isTable(view)) {
               changeActiveButton()
             }
@@ -418,7 +451,7 @@ const _addModeButton = (
               dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.innerText = view
               insertView(tab)(dom)
-            } else if (view.nodeName) {
+            } else if (isHTML(view)) {
               const dom = document.createElement('div')
               dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.appendChild(view)
@@ -434,21 +467,8 @@ const _addModeButton = (
               formatTable(tab, view, dom2, { usePip: true })
               insertView(tab)(dom1)
             }
-          } else if (isCustomSpec(view)) {
+          } else if (!isToggle(view) && isCustomSpec(view)) {
             showCustom(tab, view, { leaveBottomStripeAlone })
-          } else if (actAsButton && view && view.toggle) {
-            view.toggle.forEach(({ mode, disabled }) => {
-              const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
-              if (button) {
-                if (disabled) {
-                  button.classList.add('disabled')
-                } else {
-                  button.classList.remove('disabled')
-                }
-              }
-            })
-
-            changeActiveButton()
           } else if (!leaveBottomStripeAlone) {
             changeActiveButton()
           }
@@ -483,11 +503,18 @@ export const addModeButton = (
   return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], entity, options?: BottomStripOptions) => {
+export const addModeButtons = (
+  tab: Tab,
+  modesUnsorted: SidecarMode[] = [],
+  entity: EntitySpec | CustomSpec,
+  options?: BottomStripOptions
+) => {
   // consult the view registrar for registered view modes
   // relevant to this resource
   const command = ''
-  addRelevantModes(modesUnsorted, command, entity)
+  if (isMetadataBearingByReference(entity)) {
+    addRelevantModes(modesUnsorted, command, entity)
+  }
 
   // Place flush:right items at the end. Notes on flush:weak; this
   // means place to the right, unless there are no flush:right|weak
@@ -512,7 +539,7 @@ export const addModeButtons = (tab: Tab, modesUnsorted: SidecarMode[] = [], enti
   })
 
   // for going back
-  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity, show: string) => {
+  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: EntitySpec | CustomSpec, show: string) => {
     const modeStripe = css.modeContainer(tab)
     const bottomStripe = css.bottomContainer(tab)
     removeAllDomChildren(modeStripe)

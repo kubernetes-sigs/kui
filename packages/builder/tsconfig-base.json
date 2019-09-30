@@ -2,6 +2,8 @@
   "include": [],
   "exclude": ["**/flycheck*.ts"],
   "compilerOptions": {
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "ES2016",

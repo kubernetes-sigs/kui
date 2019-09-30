@@ -33,7 +33,7 @@ describe('activation list, activation get, click on header', function(this: comm
       .then(sidecar.expectShowing(actionName))
       .catch(common.oops(this)))
 
-  const expectedSrc = 'let main = x => x'
+  const expectedSrc = 'let main = x=>x'
 
   it('should async that action and click on the activation id', () =>
     cli

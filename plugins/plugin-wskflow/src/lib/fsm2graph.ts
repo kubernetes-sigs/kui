@@ -216,7 +216,7 @@ class RenderState {
       o.taskIndex = this.taskIndex++
     } else if (o.type === 'function') {
       o.fullFunctionCode = label
-      const prettyCode = require('js-beautify')(o.fullFunctionCode)
+      const prettyCode = label
       const { nLines, maxLineLength } = textualPropertiesOfCode(prettyCode)
 
       // uncomment the second clause if you want always to display 1-liner functions inline in the view

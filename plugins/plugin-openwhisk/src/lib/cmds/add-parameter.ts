@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { Commands, REPL } from '@kui-shell/core'
+import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
+import { EntitySpec } from '@kui-shell/core/models/entity'
 
 import { update } from './openwhisk-core'
 import { synonyms } from '../models/synonyms'
@@ -193,11 +194,11 @@ const logThen = f => err => {
  * @param attr will be 'parameters' or 'annotations'
  *
  */
-const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => ({
+const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => async ({
   command: rawCommand,
   execOptions,
   tab
-}: Commands.Arguments) => {
+}: Commands.Arguments): Promise<Commands.Response> => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => REPL.qexec(`wsk ${type} get ${name}`)
 
@@ -276,11 +277,14 @@ const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => 
   console.log(`${op} ${key}=${value} to ${dest} using type ${tryThisType || '(we will try to infer the type)'}`)
 
   // here is where we do the work!
-  return fetchEntity(dest, tryThisType) // grab a copy of the current attributes
+  await fetchEntity(dest, tryThisType) // grab a copy of the current attributes
     .then(updateMapping(opKind, attr, key, value)) // update our copy
     .then(update(execOptions)) // then push the updates to the backend
-    .then(entity => showEntity(tab, entity, { show: attr })) // open the entity, showing the attribute, e.g. parameters or annotations
-    .then(() => true)
+    .then((entity: EntitySpec) => {
+      showEntity(tab, entity, { show: attr })
+    }) // open the entity, showing the attribute, e.g. parameters or annotations
+
+  return true
 }
 
 /**

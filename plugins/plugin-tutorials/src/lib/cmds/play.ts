@@ -31,6 +31,10 @@ import { Commands, REPL, UI, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
 
+interface Unbindable {
+  unbind: (evt: 'click', cb: (this: Unbindable) => void) => void
+}
+
 /** highlight.js global */
 declare const hljs
 
@@ -624,7 +628,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
       $(pane)
         .find('.tBack')
         .css('display', 'inline-block')
-      const handler = function() {
+      const handler = function(this: Unbindable) {
         $(this).unbind('click', handler)
         $(pane).prop('step', stepNum + 1)
         transitionSteps(tab, stepNum + 1, obj, pane)

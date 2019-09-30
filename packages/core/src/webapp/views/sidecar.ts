@@ -43,6 +43,7 @@ import {
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 import { tryOpenWithEditor } from './registrar/editors'
+import { isPromise } from '../../util/types'
 
 /** @deprecated */
 export { MetadataBearingByReference }
@@ -50,37 +51,12 @@ export { isMetadataBearingByReference }
 
 debug('finished loading modules')
 
-declare let hljs
-
-/**
- * e.g. 2017-06-15T14:41:15.60027911Z  stdout:
- *
- */
-const logPatterns = {
-  logLine: /^\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.[\d]+Z)\s+(\w+):\s+(.*)/
-}
-
-/**
- * Beautify the given stringified json, placing it inside the given dom container
- *
- */
-export const prettyJSON = (raw: string, container: HTMLElement) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const beautify = require('js-beautify')
-  container.innerText = beautify(raw, { wrap_line_length: 80, indent_size: 2 })
-  setTimeout(() => hljs.highlightBlock(container), 0)
-}
-
 /**
  * Beautify any kinds we know how to
  *
  */
 export const beautify = (kind: string, code: string) => {
-  if (kind.indexOf('nodejs') >= 0) {
-    return require('js-beautify').js_beautify(code)
-  } else {
-    return code
-  }
+  return code
 }
 
 /**
@@ -172,157 +148,6 @@ export const getActiveView = (tab: Tab) => {
 }
 
 /**
- * Render the given field of the given entity in the given dom container
- *
- */
-export const renderField = async (
-  container: HTMLElement,
-  entity: EntitySpec,
-  field: string,
-  noRetry = false // eslint-disable-line @typescript-eslint/no-unused-vars
-) => {
-  if (field === 'raw') {
-    // special case for displaying the record, raw, in its entirety
-    const value = Object.assign({}, entity)
-    delete value.modes
-    delete value['apiHost']
-    delete value.verb
-    delete value.type
-    delete value.isEntity
-    delete value.prettyType
-    delete value.prettyKind
-    const raw = JSON.stringify(value, undefined, 4)
-
-    if (raw.length < 10 * 1024) {
-      prettyJSON(raw, container)
-    } else {
-      // too big to beautify; try to elide the code bits and
-      // then we'll re-check
-      const raw = JSON.stringify(
-        value,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (key: string, value: any) => {
-          if (key === 'code' && JSON.stringify(value).length > 1024) {
-            // maybe this is why we're too big??
-            return '\u2026'
-          } else {
-            return value
-          }
-        },
-        4
-      )
-
-      // re-checking!
-      if (raw.length > 1 * 1024 * 1024) {
-        // oof, still too big, crop and add a tail ellision
-        container.innerText = raw.substring(0, 1 * 1024 * 1024) + '\u2026'
-      } else {
-        // yay, eliding the code helped
-        prettyJSON(raw, container)
-      }
-    }
-    return
-  }
-
-  let value = entity[field]
-  if (!value || value.length === 0) {
-    container.innerText = `This entity has no ${field}`
-  } else if (typeof value === 'string') {
-    // render the value like a string
-    if (field === 'source') {
-      // hmm, let's not beautify the source code. maybe we will revisit this, later
-      // const beautify = value => require('js-beautify')(value, { wrap_line_length: 80 })
-      container.innerText = value
-      setTimeout(() => hljs.highlightBlock(container), 0)
-    } else {
-      container.innerText = value
-    }
-  } else if (field === 'logs' && Array.isArray(value)) {
-    const logTable = document.createElement('div')
-    logTable.className = 'log-lines'
-    removeAllDomChildren(container)
-    container.appendChild(logTable)
-
-    let previousTimestamp: Date
-    value.forEach((logLine: string) => {
-      const lineDom = document.createElement('div')
-      lineDom.className = 'log-line'
-      logTable.appendChild(lineDom)
-
-      const match = logLine.match(logPatterns.logLine)
-
-      if (match) {
-        const date = document.createElement('div')
-        // const type = document.createElement('div')
-        const mesg = document.createElement('div')
-        lineDom.appendChild(date)
-        // lineDom.appendChild(type)
-        lineDom.appendChild(mesg)
-
-        lineDom.className = `${lineDom.className} logged-to-${match[2]}` // add stderr/stdout to the line's CSS class
-
-        date.className = 'log-field log-date hljs-attribute'
-        // type.className = 'log-field log-type'
-        mesg.className = 'log-field log-message slight-smaller-text'
-
-        try {
-          const timestamp = new Date(match[1])
-          date.appendChild(prettyPrintTime(timestamp, 'short', previousTimestamp))
-          previousTimestamp = timestamp
-        } catch (e) {
-          date.innerText = match[1]
-        }
-        // type.innerText = match[2]
-
-        if (match[3].indexOf('{') >= 0) {
-          // possibly JSON?
-          try {
-            const beautify = require('js-beautify').js_beautify
-            const prettier = beautify(match[3], { indent_size: 2 })
-            mesg.innerHTML = hljs.highlight('javascript', prettier).value
-          } catch (err) {
-            // not json!
-            mesg.innerText = match[3]
-          }
-        } else {
-          // not json!
-          mesg.innerText = match[3]
-        }
-      } else if (typeof logLine === 'string') {
-        // unparseable log line, so splat out the raw text
-        lineDom.innerText = logLine
-      } else if (typeof logLine === 'object') {
-        const code = document.createElement('code')
-        code.appendChild(document.createTextNode(JSON.stringify(logLine, undefined, 2)))
-        lineDom.appendChild(code)
-        setTimeout(() => hljs.highlightBlock(code), 0)
-      } else {
-        // unparseable log line, so splat out the raw text
-        lineDom.appendChild(document.createTextNode(logLine))
-      }
-    })
-  } else {
-    // render the value like a JSON object
-    // for now, we just render it as raw JSON, TODO: some sort of fancier key-value pair visualization?
-    if (field === 'parameters' || field === 'annotations') {
-      // special case here: the parameters field is really a map, but stored as an array of key-value pairs
-      interface KeyValueMap {
-        [key: string]: string
-      }
-      value = value.reduce((M: KeyValueMap, kv) => {
-        M[kv.key] = kv.value
-        return M
-      }, {})
-    }
-    const beautify = require('js-beautify').js_beautify
-    const prettier = beautify(JSON.stringify(value), { indent_size: 2 })
-
-    // apply the syntax highlighter to the JSON
-    container.innerHTML = hljs.highlight('javascript', prettier).value
-  }
-}
-
-/**
  * Sidecar badges
  *
  */
@@ -363,7 +188,7 @@ export type Badge = string | BadgeSpec | Element
 
 export interface BadgeOptions {
   css?: string
-  onclick?
+  onclick?: () => void
   badgesDom: Element
 }
 class DefaultBadgeOptions implements BadgeOptions {
@@ -454,10 +279,6 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
 export function isCustomSpec(entity: Entity): entity is CustomSpec {
   const custom = entity as CustomSpec
   return custom !== undefined && (custom.type === 'custom' || custom.renderAs === 'custom')
-}
-function isPromise<T>(content: CustomContent): content is Promise<T> {
-  const promise = content as Promise<T>
-  return !!promise.then
 }
 function isHTML(content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
@@ -584,7 +405,11 @@ export const clearBadges = (tab: Tab) => {
  * If the entity has a version attribute, then render it
  *
  */
-export const addVersionBadge = (tab: Tab, entity: EntitySpec, { clear = false, badgesDom = undefined } = {}) => {
+export const addVersionBadge = (
+  tab: Tab,
+  entity: EntitySpec,
+  { clear = false, badgesDom = undefined }: { clear?: boolean; badgesDom?: HTMLElement } = {}
+) => {
   if (clear) {
     clearBadges(tab)
   }
@@ -668,7 +493,7 @@ export const addNameToSidecarHeader = async (
   sidecar: Sidecar,
   name: string | Element,
   packageName = '',
-  onclick?,
+  onclick?: () => void,
   viewName?: string,
   subtext?: Formattable | ToolbarText,
   entity?: EntitySpec | CustomSpec
@@ -740,6 +565,7 @@ export const addNameToSidecarHeader = async (
     const subtextContainer = sidecar.querySelector(
       '.sidecar-header-secondary-content .custom-header-content'
     ) as HTMLElement
+    removeAllDomChildren(subtextContainer)
     Promise.resolve(subtext).then(subtext => {
       if (typeof subtext === 'string') {
         subtextContainer.innerText = subtext
@@ -941,9 +767,11 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     container.appendChild(await custom.content)
   } else if (custom.contentType || custom.contentTypeProjection) {
     // we were asked ot project out one specific field
-    const projection = custom.contentTypeProjection ? custom.content[custom.contentTypeProjection] : custom.content
+    const projection: string | HTMLElement = custom.contentTypeProjection
+      ? custom.content[custom.contentTypeProjection]
+      : custom.content
 
-    if (projection.nodeName) {
+    if (isHTML(projection)) {
       // then its already a DOM
       container.appendChild(projection)
     } else {
@@ -972,12 +800,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
       if (typeof projection === 'string') {
         code.innerText = projection
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const beautify = require('js-beautify')
-        code.innerText = beautify(JSON.stringify(projection), {
-          wrap_line_length: 80,
-          indent_size: 2
-        })
+        code.innerText = JSON.stringify(projection, undefined, 2)
       }
 
       scrollWrapper.style.flex = '1'
@@ -992,7 +815,6 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
         code.setAttribute('data-content-type', contentType)
         code.classList.remove('json')
         setTimeout(() => {
-          hljs.highlightBlock(code)
           setTimeout(() => linkify(code), 100)
         }, 0)
       }
@@ -1179,7 +1001,7 @@ export type ISidecarViewHandler = (
   sidecar: Element,
   options: ShowOptions
 ) => void
-const registeredEntityViews = {}
+const registeredEntityViews: Record<string, ISidecarViewHandler> = {}
 export const registerEntityView = (kind: string, handler: ISidecarViewHandler) => {
   registeredEntityViews[kind] = handler
 }
@@ -1208,13 +1030,10 @@ export const showEntity = (
     return renderer(tab, entity, sidecar, options)
   } else {
     try {
-      const serialized = JSON.stringify(entity, undefined, 4)
+      const serialized = JSON.stringify(entity, undefined, 2)
       const container = element('.action-source', sidecar)
       sidecar.classList.add('entity-is-actions')
       container.innerText = serialized
-      setTimeout(() => {
-        hljs.highlightBlock(container)
-      }, 0)
       debug('displaying generic JSON')
     } catch (err) {
       // probably trouble stringifying JSON

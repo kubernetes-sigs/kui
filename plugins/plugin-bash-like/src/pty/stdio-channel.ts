@@ -27,7 +27,7 @@ const debugK = Debug('plugins/bash-like/pty/stdio-channel-kui')
 
 const MARKER = '\n'
 
-function heartbeat() {
+function heartbeat(this: Channel) {
   debugW('heartbeat')
   this.isAlive = true
 }
