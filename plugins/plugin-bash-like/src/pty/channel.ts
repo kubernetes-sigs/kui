@@ -25,6 +25,9 @@ import { onConnection, disableBashSessions } from './server'
 const debug = Debug('plugins/bash-like/pty/channel')
 
 export interface Channel {
+  /** is the channel alive? */
+  isAlive?: boolean
+
   /** Forcibly close the channel */
   close: () => void
 

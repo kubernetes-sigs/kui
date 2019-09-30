@@ -862,7 +862,7 @@ interface MessageWithCode {
   statusCode?: number
 }
 
-interface MessageWithUsageModel extends MessageWithCode {
+export interface MessageWithUsageModel extends MessageWithCode {
   messageDom?: MessageLike
 
   usage?: UsageModel

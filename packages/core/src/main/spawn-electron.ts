@@ -161,7 +161,14 @@ export function createWindow(
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
     const fixedWindows = {}
-    const openFixedWindow = opts => {
+    const openFixedWindow = (opts: {
+      type: string
+      event: Event
+      url: string
+      size?: { width: number; height: number }
+      position?: { x: number; y: number }
+      options?
+    }) => {
       const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
 
       const existing = fixedWindows[type] || {}
@@ -208,7 +215,7 @@ export function createWindow(
 
     /** jump in and manage the way popups create new windows */
     mainWindow.webContents.on('new-window', (
-      event,
+      event: Event,
       url: string,
       frameName: string,
       disposition: string,
