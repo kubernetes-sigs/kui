@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+import { SimpleEntity, MixedResponse } from './entity'
+import { Table, MultiTable } from '../webapp/models/table'
+import { CustomSpec } from '../webapp/views/sidecar'
 
-import EditorEntity from './fetchers'
+export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec | MixedResponse
+export default Streamable
 
-interface Options extends Commands.ParsedOptions {
-  name?: string
-  type?: string
-}
+export type Stream = (response: Streamable, killLine?: boolean) => void
 
-export default (parsedOptions: Options) => (entity: EditorEntity) => {
-  if (parsedOptions.name) {
-    entity.name = parsedOptions.name
-  }
-
-  if (parsedOptions.type) {
-    entity.type = parsedOptions.type
-  }
-}
+export type StreamableFactory = () => Promise<Stream>

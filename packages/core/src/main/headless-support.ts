@@ -18,7 +18,7 @@ import * as Debug from 'debug'
 const debug = Debug('core/main/headless-support')
 debug('loading')
 
-import { Entity } from '../models/entity'
+import { Streamable } from '../models/streamable'
 
 /**
  * This supports commads streaming their output to the console
@@ -31,7 +31,7 @@ export const streamTo = async () => {
   const { print } = await import('./headless-pretty-print')
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (response: Entity | Promise<Entity>) => {
+  return (response: Streamable) => {
     debug('streaming response', response)
     print(response)
     debug('streaming response2')

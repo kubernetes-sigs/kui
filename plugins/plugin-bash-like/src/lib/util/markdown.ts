@@ -101,7 +101,7 @@ const wrap = (tab: UI.Tab, htmlString: string, fullpath: string): Markdown => {
             .replace(/\$\{cwd\}/g, path.dirname(fullpath))
         )
     } else {
-      exec.onclick = REPL.pexec(`open ${url}`)
+      exec.onclick = () => REPL.pexec(`open ${url}`)
     }
   }
 

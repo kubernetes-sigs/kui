@@ -21,7 +21,7 @@ import { ok } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { current as currentNamespace } from '../../../models/namespace'
-import { Activation, isAsyncActivationSpec } from '../../../models/openwhisk-entity'
+import { Activation, isAsyncActivationSpec } from '../../../models/activation'
 
 const debug = Debug('plugins/openwhisk/views/cli/activations/entity')
 

@@ -23,6 +23,7 @@ export const isActivationId = (str: string) => str.match(isActivationIdPattern)
 export interface Activation extends OpenWhiskEntity {
   activationId: string
   originalActivationId?: string
+  entity?: OpenWhiskEntity
   logs: string[]
   sessionId?: string
   start: number
@@ -33,4 +34,14 @@ export interface Activation extends OpenWhiskEntity {
     result: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   }
   statusCode: number
+}
+
+export function isActivationSpec(response: Activation | OpenWhiskEntity): response is Activation {
+  const activation = response as Activation
+  return activation.response !== undefined && activation.activationId !== undefined
+}
+
+export function isAsyncActivationSpec(response: Activation | OpenWhiskEntity): response is Activation {
+  const activation = response as Activation
+  return activation.response === undefined && activation.activationId !== undefined
 }

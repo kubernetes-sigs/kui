@@ -73,13 +73,14 @@ const fetch = async (activationIds: Activation[] | string[]): Promise<Activation
   } else {
     const activations: Activation[] = await Promise.all(
       activationIds.map(_ => {
-        return REPL.qexec(`wsk activation get ${_}`).catch(err => {
+        return REPL.qexec<Activation>(`wsk activation get ${_}`).catch(err => {
           console.error(err)
+          return undefined
         })
       })
     )
 
-    return activations.filter(x => x) // error recovery. remove blanks
+    return activations.filter(x => !!x) // error recovery. remove blanks
   }
 }
 
@@ -636,6 +637,11 @@ export const render = (opts: Args) => {
   }
 }
 
+interface Options extends Commands.ParsedOptions {
+  skip?: string
+  limit?: string
+}
+
 /**
  * A handler intended to be passed to cli.registerListView
  *
@@ -644,7 +650,7 @@ export const renderActivationListView = (
   tab: UI.Tab,
   activationsTable: Tables.Table,
   container: Element,
-  parsedOptions: Commands.ParsedOptions
+  parsedOptions: Options
 ) => {
   const activations = activationsTable.body as Activation[]
   debug('rendering activation list view', activations)

@@ -26,7 +26,7 @@ import { isCRUDable, crudableTypes } from '../models/crudable'
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig, initOW } from '../models/auth'
-import { currentSelection } from '../models/openwhisk-entity'
+import { Action, Rule, Annotations, Parameters, currentSelection } from '../models/openwhisk-entity'
 
 import * as namespace from '../models/namespace'
 
@@ -275,10 +275,10 @@ const extractKeyValuePairs = (
   argv: string[],
   type: string
 ): {
-  action?: Record<string, string>
-  trigger?: Record<string, string>
-  package?: Record<string, string>
-  rule?: Record<string, string>
+  action?: { annotations?: Annotations; parameters?: Parameters }
+  trigger?: { annotations?: Annotations; parameters?: Parameters }
+  package?: { annotations?: Annotations; parameters?: Parameters }
+  rule?: { annotations?: Annotations; parameters?: Parameters }
 } => {
   const options = {}
   for (let idx = 0; idx < argv.length; ) {
@@ -455,8 +455,8 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
 
     if (entity.type === 'actions' && entity.prettyType === 'sequence') {
       // add a fun a->b->c rendering of the sequence
-      const action = REPL.qexec(`wsk action get "/${entity.namespace}/${entity.name}"`)
-      const ns = REPL.qexec('wsk namespace current')
+      const action = REPL.qexec<Action>(`wsk action get "/${entity.namespace}/${entity.name}"`)
+      const ns = REPL.qexec<string>('wsk namespace current')
 
       entity.prettyVersion = await action.then(async action => {
         if (action.exec && action.exec.components) {
@@ -469,7 +469,7 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
       })
     } else if (entity.type === 'rules') {
       // rule-specific cells
-      const rule = REPL.qexec(`wsk rule get "/${entity.namespace}/${entity.name}"`)
+      const rule = REPL.qexec<Rule>(`wsk rule get "/${entity.namespace}/${entity.name}"`)
 
       entity.status = rule.then(rule => rule.status)
       entity.prettyVersion = await rule.then(rule => `${rule.trigger.name} \u27fc ${rule.action.name}`)

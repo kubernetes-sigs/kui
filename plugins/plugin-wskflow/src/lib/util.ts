@@ -56,7 +56,7 @@ export const textualPropertiesOfCode = (code: string): TextualProperties => {
 export const wskflow = async (tab: UI.Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
-  const isPartOfRule = await REPL.qexec('wsk rule list')
+  const isPartOfRule = await REPL.qexec<{ action: { name: string; path: string } }[]>('wsk rule list')
     .then(rules =>
       rules.find(({ action: ruleAction }) => {
         return ruleAction.name === name && ruleAction.path === namespace

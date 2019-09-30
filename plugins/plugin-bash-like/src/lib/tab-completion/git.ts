@@ -32,7 +32,7 @@ async function completeGitBranches(commandLine: Commands.CommandLine, spec: TabC
 
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
     try {
-      const completions: string = await REPL.rexec(
+      const completions = await REPL.rexec<string>(
         `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`
       )
 

@@ -17,7 +17,7 @@
 import * as Debug from 'debug'
 
 import { Commands, REPL } from '@kui-shell/core'
-import { withHeader } from '@kui-shell/plugin-openwhisk'
+import { Action, withHeader } from '@kui-shell/plugin-openwhisk'
 
 import { appList } from '../../utility/usage'
 import * as astUtil from '../../utility/ast'
@@ -29,7 +29,7 @@ const type = 'composition'
 const prettyType = 'compositions'
 const prettyKind = type
 
-interface ListOptions {
+interface ListOptions extends Commands.ParsedOptions {
   name?: string
   count?: number
   limit?: number
@@ -43,16 +43,14 @@ interface ListOptions {
 export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     `/wsk/app/list`,
-    ({ argvNoOptions, parsedOptions: options, execOptions }) => {
-      const parsedOptions = (options as any) as ListOptions // eslint-disable-line @typescript-eslint/no-explicit-any
-
+    ({ argvNoOptions, parsedOptions, execOptions }: Commands.Arguments<ListOptions>) => {
       const limit = parsedOptions.limit || 10 // limit 10 sessions in session list if users didn't specify --limit
 
       if (limit === 0) {
         return { body: [] }
       }
 
-      return REPL.qexec(argvNoOptions.join(' ').replace('app', 'action')).then(actions => {
+      return REPL.qexec<{ body?: Action[] }>(argvNoOptions.join(' ').replace('app', 'action')).then(actions => {
         debug('filtering action list to find compositions', actions)
         if (actions.body) {
           const apps = actions.body.filter(astUtil.isAnApp).map(app =>

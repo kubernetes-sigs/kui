@@ -28,20 +28,13 @@ import { installContext } from './prompt'
 import { promiseEach } from '../util/async'
 import { SidecarMode as Mode, SidecarMode } from './bottom-stripe'
 
-import {
-  Entity,
-  SimpleEntity,
-  isEntitySpec,
-  isMessageBearingEntity,
-  MixedResponsePart,
-  MixedResponse,
-  isMixedResponse
-} from '../models/entity'
+import { Entity, isEntitySpec, isMessageBearingEntity, MixedResponsePart, isMixedResponse } from '../models/entity'
+import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents } from '../models/command'
 import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import historyModel from '../models/history'
 import { CodedError, isCodedError } from '../models/errors'
-import { Table, isTable, MultiTable, isMultiTable } from './models/table'
+import { Table, isTable, isMultiTable } from './models/table'
 import { isWatchable } from './models/basicModels'
 
 import { element, removeAllDomChildren } from './util/dom'
@@ -51,16 +44,7 @@ import { isHTML } from '../util/types'
 import Presentation from './views/presentation'
 import { formatTable } from './views/table'
 
-import {
-  Formattable,
-  getSidecar,
-  Badge,
-  presentAs,
-  showEntity,
-  showCustom,
-  isCustomSpec,
-  CustomSpec
-} from './views/sidecar'
+import { Formattable, getSidecar, Badge, presentAs, showEntity, showCustom, isCustomSpec } from './views/sidecar'
 
 debug('finished loading modules')
 
@@ -536,8 +520,7 @@ const printTable = async (
  * Stream output to the given block
  *
  */
-export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec | MixedResponse
-export const streamTo = (tab: Tab, block: Element) => {
+export const streamTo = (tab: Tab, block: Element): Stream => {
   const resultDom = block.querySelector('.repl-result') as HTMLElement
   // so we can scroll this into view as streaming output arrives
 

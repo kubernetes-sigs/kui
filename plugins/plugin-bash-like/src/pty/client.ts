@@ -669,6 +669,12 @@ function injectXtermCSS() {
   }
 }
 
+interface Options extends Commands.ParsedOptions {
+  o?: string
+  out?: string
+  output?: string
+}
+
 /**
  *
  *
@@ -678,7 +684,7 @@ export const doExec = (
   block: HTMLElement,
   cmdline: string,
   argvNoOptions: string[],
-  parsedOptions: Commands.ParsedOptions,
+  parsedOptions: Options,
   execOptions: Commands.ExecOptions
 ) =>
   new Promise((resolve, reject) => {

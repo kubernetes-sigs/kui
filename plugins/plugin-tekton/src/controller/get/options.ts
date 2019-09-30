@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,8 @@
 
 import { Commands } from '@kui-shell/core'
 
-import EditorEntity from './fetchers'
-
 interface Options extends Commands.ParsedOptions {
-  name?: string
-  type?: string
+  f?: string
 }
 
-export default (parsedOptions: Options) => (entity: EditorEntity) => {
-  if (parsedOptions.name) {
-    entity.name = parsedOptions.name
-  }
-
-  if (parsedOptions.type) {
-    entity.type = parsedOptions.type
-  }
-}
+export default Options

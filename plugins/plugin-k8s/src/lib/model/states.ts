@@ -16,7 +16,7 @@
 
 import * as Debug from 'debug'
 
-import { KubeResource } from './resource'
+import { KubeResource, KubeStatus } from './resource'
 import { maybeAsDate, TryLaterError } from '../util/util'
 
 import { REPL } from '@kui-shell/core'
@@ -111,13 +111,6 @@ const isOfflineLike = (state: State): boolean => stateGroups[FinalState.OfflineL
 
 /** isPendingLike is the remainder of isOnlineLike and isOfflineLike */
 const isPendingLike = (state: State): boolean => !isOnlineLike(state) && !isOfflineLike(state)
-
-export interface Status {
-  state?: State
-  phase?: State
-  message?: string
-  startTime?: string
-}
 
 /**
  * A rollup of State to "traffic light" model
@@ -232,7 +225,7 @@ const getStatusFromConditions = (response: KubeResource) => {
  * Determine whether a kube Deployment is ready
  *
  */
-const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: FinalState): Status => {
+const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: FinalState): KubeStatus => {
   const desireIsOffline = desiredFinalState === FinalState.OfflineLike
 
   if (!kubeEntity) {
@@ -290,16 +283,13 @@ export const getStatus = async (
   name: string,
   namespace?: string,
   context?: string
-): Promise<Status> => {
+): Promise<KubeStatus> => {
   try {
     const cmd = `kubectl get ${contextOption(context)} ${kindForQuery(apiVersion, kind)} ${name} ${ns(
       namespace
     )} -o json`
     // debug('getStatus', cmd);
-    const rawState = await REPL.qexec(cmd, undefined, undefined, { raw: true })
-    // debug('getStatus rawState', apiVersion, rawState)
-
-    const response = rawState.response ? rawState.response.result : rawState // either OW invocation or direct exec
+    const response = await REPL.rexec<KubeResource>(cmd)
 
     if (
       !response.status || // resource does not define a status; consider it Online
@@ -333,16 +323,14 @@ export const getStatus = async (
     } else {
       // the Service controller currently puts the state field
       // at the top level, hence the state.state check
-      const status =
+      const status: KubeStatus =
         getStatusFromConditions(response) ||
         (response.status && (response.status.state || response.status.phase)
           ? response.status
-          : response.state
-          ? response
           : response.apiVersion.match(/istio\.io/)
           ? {
               state: States.Online,
-              message: new Date()
+              message: new Date().toUTCString()
             }
           : undefined)
 
