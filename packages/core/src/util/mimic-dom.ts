@@ -22,19 +22,6 @@ debug('loading')
 
 import Store from '../main/store'
 
-/* export interface ElementMimic {
-  _isFakeDom: boolean
-  cells?: ElementMimic[]
-  children: ElementMimic[]
-  className: string
-  innerText: string
-  hasStyle: (style: string, desiredValue?: number | string) => boolean | string
-  nodeType: string
-  rows?: ElementMimic[]
-  style: { [key: string]: string }
-  recursiveInnerTextLength: () => number
-  } */
-
 class ClassList {
   readonly classList: string[] = []
 
@@ -130,8 +117,8 @@ export class ElementMimic {
     return []
   }
 
-  querySelector(sel: string): ElementMimic {
-    return this[sel] || new ElementMimic()
+  querySelector(): ElementMimic {
+    return new ElementMimic()
   }
 
   addEventListener() {
@@ -152,6 +139,24 @@ export class ElementMimic {
     )
   }
 
+  insertRow(idx: number) {
+    const row = new ElementMimic()
+    row.nodeType = 'tr'
+    row.cells = []
+
+    if (idx === -1) this.rows.push(row)
+    else this.rows.splice(idx, 0, row)
+    return row
+  }
+
+  insertCell(idx: number) {
+    const cell = new ElementMimic()
+    cell.nodeType = 'td'
+    if (idx === -1) this.cells.push(cell)
+    else this.cells.splice(idx, 0, cell)
+    return cell
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static isFakeDom(dom: any): dom is ElementMimic {
     return dom && (dom as ElementMimic)._isFakeDom
@@ -165,50 +170,38 @@ export class ElementMimic {
 export default function() {
   debug('mimicDom')
 
+  global.window = {}
   try {
-    global['localStorage'] = Store()
+    global.localStorage = Store()
     debug('successfully initialized persistent localStorage')
   } catch (err) {
     debug('error initializing persistent localStorage', err)
 
-    const localStorage = {}
-    global['localStorage'] = {
+    const _localStorage: Record<string, string> = {}
+    global.localStorage = {
       setItem: (k: string, v: string) => {
-        localStorage[k] = v
+        _localStorage[k] = v
         return v
       },
-      getItem: (k: string) => localStorage[k] || null
+      getItem: (k: string) => _localStorage[k] || null
     }
   } finally {
-    global['window'] = { localStorage: global['localStorage'] }
+    global.window.localStorage = localStorage
   }
 
-  global['window'].addEventListener = () => true
+  window.addEventListener = () => true
 
   const dom0 = (): ElementMimic => {
     return new ElementMimic()
   }
 
-  const document = {
+  global.document = {
     body: dom0(),
     createElement: (tag: string) => {
       const element = dom0()
       element.nodeType = tag
       if (tag === 'table') {
-        element['rows'] = []
-        element['insertRow'] = (idx: number) => {
-          const row = document.createElement('tr')
-          row['cells'] = []
-          row['insertCell'] = (idx: number) => {
-            const cell = document.createElement('td')
-            if (idx === -1) row['cells'].push(cell)
-            else row['cells'].splice(idx, 0, cell)
-            return cell
-          }
-          if (idx === -1) element['rows'].push(row)
-          else element['rows'].splice(idx, 0, row)
-          return row
-        }
+        element.rows = []
       }
       return element
     },
@@ -223,5 +216,4 @@ export default function() {
       return dom0()
     }
   }
-  global['document'] = document
 }

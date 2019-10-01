@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-
 import Debug from 'debug'
 const debug = Debug('webapp/views/sidecar')
 debug('loading')
@@ -192,9 +190,9 @@ export interface BadgeOptions {
   badgesDom: Element
 }
 class DefaultBadgeOptions implements BadgeOptions {
-  readonly badgesDom: HTMLElement
+  public readonly badgesDom: HTMLElement
 
-  constructor(tab: Tab) {
+  public constructor(tab: Tab) {
     const { badgesDom } = getBadgesDomContainer(getSidecar(tab))
     this.badgesDom = badgesDom
   }
@@ -271,7 +269,6 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
   content: CustomContent
   badges?: Badge[]
   contentType?: string
-  contentTypeProjection?: string
   resource?: MetadataBearing
   createdOnString?: string
 }
@@ -770,11 +767,9 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 
   if (isPromise(custom.content)) {
     container.appendChild(await custom.content)
-  } else if (custom.contentType || custom.contentTypeProjection) {
+  } else if (custom.contentType) {
     // we were asked ot project out one specific field
-    const projection: string | HTMLElement = custom.contentTypeProjection
-      ? custom.content[custom.contentTypeProjection]
-      : custom.content
+    const projection = custom.content
 
     if (isHTML(projection)) {
       // then its already a DOM
@@ -923,8 +918,8 @@ export const toggle = (tab: Tab) => {
   if (!isVisible(tab)) {
     return show(tab)
   } else {
-    const presentation: Presentation =
-      document.body.getAttribute('data-presentation') && Presentation[document.body.getAttribute('data-presentation')]
+    const presentationString = document.body.getAttribute('data-presentation') as keyof typeof Presentation
+    const presentation: Presentation = presentationString && Presentation[presentationString]
     // Key.Escape for Presentation.SidecarThin is interpreted as Close
     return presentation === Presentation.SidecarThin ? clearSelection(tab) : hide(tab)
   }

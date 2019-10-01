@@ -252,8 +252,10 @@ export const drilldown = (
 
   // capture the current header and other DOM state, before the `command` overwrites it
   const alreadyPipped = document.querySelector('body > .picture-in-picture')
-  const presentation: Presentation =
-    document.body.getAttribute('data-presentation') && Presentation[document.body.getAttribute('data-presentation')]
+
+  const presentationString = document.body.getAttribute('data-presentation') as keyof typeof Presentation
+  const presentation: Presentation = presentationString && Presentation[presentationString]
+
   const capturedHeader = capture(tab, '.sidecar-header-text', popupListen)
   const capturedHeader2 = capture(tab, '.header-right-bits .custom-header-content')
   const capturedHeader3 = capture(tab, '.header-right-bits .action-content')

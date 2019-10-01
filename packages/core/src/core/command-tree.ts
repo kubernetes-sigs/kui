@@ -207,9 +207,7 @@ const _listen = (
       if (!leaf.options) leaf.options = {}
 
       if (prevOptions) {
-        for (const key in prevOptions) {
-          leaf.options[key] = prevOptions[key]
-        }
+        Object.assign(leaf.options, prevOptions)
       }
 
       leaf.options.override = leaf.$
@@ -371,7 +369,7 @@ export const suggestPartialMatches = (
 
   // to allow for programmatic use of the partial matches, e.g. for tab completion
   if (anyPartials) {
-    error['partialMatches'] = availablePartials.map(_ => ({
+    error.partialMatches = availablePartials.map(_ => ({
       command: _.route
         .split('/')
         .slice(1)
@@ -379,7 +377,7 @@ export const suggestPartialMatches = (
       usage: _.options && _.options.usage
     }))
   } else {
-    error['hide'] = hide
+    error.hide = hide
   }
 
   if (noThrow) {
@@ -394,11 +392,7 @@ export const suggestPartialMatches = (
  * @return a command handler with success and failure event handlers
  *
  */
-const withEvents = (
-  evaluator: CommandHandler,
-  leaf: CommandBase,
-  partialMatches?: Command[]
-): CommandHandlerWithEvents => {
+const withEvents = (evaluator: CommandHandler, leaf: Command, partialMatches?: Command[]): CommandHandlerWithEvents => {
   // let the world know we have resolved a command, and are about to evaluate it
   const event: Event = {
     // context: currentContext()
@@ -446,7 +440,7 @@ const withEvents = (
 
       if (err.code === 127) {
         // command not found
-        const suggestions = suggestPartialMatches(command, partialMatches, true, err['hide']) // true: don't throw an exception
+        const suggestions = suggestPartialMatches(command, partialMatches, true, err.hide) // true: don't throw an exception
         return suggestions
       }
 
@@ -478,7 +472,7 @@ const _read = async (
   argv: string[],
   contextRetry: string[],
   originalArgv: string[]
-): Promise<boolean | CommandHandlerWithEvents> => {
+): Promise<false | CommandHandlerWithEvents> => {
   let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
 
@@ -566,7 +560,7 @@ export const setDefaultCommandContext = (commandContext: string[]) => {
 }
 
 /** read, with retries based on the current context */
-const internalRead = (model: CommandTree, argv: string[]): Promise<boolean | CommandHandlerWithEvents> => {
+const internalRead = (model: CommandTree, argv: string[]): Promise<false | CommandHandlerWithEvents> => {
   if (argv[0] === 'kui') argv.shift()
   return _read(model, argv, Context.current, argv)
 }
@@ -596,7 +590,7 @@ const areCompatible = (A: string[], B: string[]): boolean => {
  * See if a command resolves unambiguously
  *
  */
-const disambiguate = async (argv: string[], noRetry = false) => {
+const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHandlerWithEvents> => {
   let idx: number
   const resolutions =
     (((idx = 0) || true) && resolver.disambiguate(argv[idx])) ||
@@ -644,7 +638,7 @@ const disambiguate = async (argv: string[], noRetry = false) => {
  * We could not find a registered command handler
  *
  */
-const commandNotFound = async (argv: string[], partialMatches?: Command[], execOptions?: ExecOptions) => {
+const commandNotFound = (argv: string[], partialMatches?: Command[], execOptions?: ExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
@@ -691,28 +685,23 @@ const findPartialMatchesAt = (subtree: Command, partial: string): Command[] => {
   return matches
 }
 
-interface Route {
-  route: string
-}
-
 /** remove duplicates of leaf nodes from a given array */
-const removeDuplicates = async (arr: Route[]): Promise<Route[]> => {
+const removeDuplicates = async <T extends CommandBase>(arr: T[]): Promise<T[]> => {
+  const init: { M: Record<string, boolean>; A: T[] } = { M: {}, A: [] }
+
   return (await Promise.all(arr))
     .filter(x => x)
-    .reduce(
-      (state, item) => {
-        const { M, A } = state
-        // const route = item.route
+    .reduce((state, item) => {
+      const { M, A } = state
+      // const route = item.route
 
-        if (item && !M[item.route]) {
-          M[item.route] = true
-          A.push(item)
-        }
+      if (item && !M[item.route]) {
+        M[item.route] = true
+        A.push(item)
+      }
 
-        return state
-      },
-      { M: {}, A: [] }
-    )['A']
+      return state
+    }, init).A
 }
 
 export function isSuccessfulCommandResolution(
@@ -721,7 +710,10 @@ export function isSuccessfulCommandResolution(
   return (resolution as CommandHandlerWithEvents).eval !== undefined
 }
 /** here, we don't use any implicit context resolutions */
-export const readIntention = async (argv: string[], noRetry = false): Promise<CommandTreeResolution> => {
+export const readIntention = async (
+  argv: string[],
+  noRetry = false
+): Promise<false | CommandHandlerWithEvents | CodedError> => {
   const cmd = _read(intentions, argv, undefined, argv)
 
   if (!cmd) {
@@ -745,7 +737,7 @@ export const read = async (
   noSubtreeRetry = false,
   execOptions: ExecOptions
 ): Promise<CommandTreeResolution> => {
-  let cmd = await disambiguate(argv)
+  let cmd: false | CodedError | CommandHandlerWithEvents = await disambiguate(argv)
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
     await resolver.resolve(cmd.route)
@@ -773,20 +765,22 @@ export const read = async (
   if (!cmd) {
     // command not found, but maybe we can find partial matches
     // that might be helpful?
-    let matches
+    let matches: Command[]
 
     if (argv.length === 1) {
       // disambiguatePartial takes a partial command, and
       // returns an array of matching full commands, which we
       // can turn into leafs via `disambiguate`
-      matches = await removeDuplicates(
-        findPartialMatchesAt(model, argv[0]).concat(
-          resolver
-            .disambiguatePartial(argv[0])
-            .map(_ => [_])
-            .map(_ => disambiguate(_))
-        )
-      )
+      const unambiguous = (await Promise.all(
+        resolver
+          .disambiguatePartial(argv[0])
+          .map(_ => [_])
+          .map(_ => disambiguate(_))
+      ))
+        .filter(x => x)
+        .map(_ => _.subtree)
+
+      matches = await removeDuplicates(findPartialMatchesAt(model, argv[0]).concat(unambiguous))
     } else {
       const allButLast = argv.slice(0, argv.length - 1)
       const last = argv[argv.length - 1]
@@ -854,7 +848,18 @@ export const proxy = (plugin: string) => ({
     handler: CommandHandler,
     prio = 0,
     options: CommandOptions = new DefaultCommandOptions()
-  ) => catchalls.push({ route: '*', offer, eval: handler, prio, plugin, options }),
+  ) =>
+    catchalls.push({
+      route: '*',
+      offer,
+      eval: handler,
+      prio,
+      plugin,
+      options,
+      $: undefined,
+      key: undefined,
+      parent: undefined
+    }),
   listen: (route: string, handler: CommandHandler, options: CommandOptions) =>
     listen(route, handler, Object.assign({}, options, { plugin })),
   intention: (route: string, handler: CommandHandler, options: CommandOptions) =>
