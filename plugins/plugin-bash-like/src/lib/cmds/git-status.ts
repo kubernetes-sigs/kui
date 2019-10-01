@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as path from 'path'
 import { spawn } from 'child_process'
 

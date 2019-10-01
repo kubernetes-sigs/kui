@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('plugins/bash-like/util/json')
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

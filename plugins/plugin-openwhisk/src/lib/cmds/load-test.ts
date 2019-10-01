@@ -20,7 +20,7 @@
  *
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Commands } from '@kui-shell/core'
 

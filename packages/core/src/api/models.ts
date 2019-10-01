@@ -27,6 +27,7 @@ import _History from '../models/history'
 import { clearSelection, currentSelection } from '../webapp/views/sidecar'
 import _Store from '../models/store'
 import _SymbolTable from '../core/symbol-table'
+import TabState from '../models/tab-state'
 
 export namespace Models {
   export import ResourceWithMetadata = _Entity.MetadataBearing
@@ -42,4 +43,8 @@ export namespace Models {
   export const Store = _Store
 
   export const SymbolTable = _SymbolTable
+
+  export const Tab = {
+    State: TabState
+  }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as minimist from 'yargs-parser'
 
 import { Tab, isPopup, getCurrentPrompt } from '../cli'
@@ -340,7 +340,7 @@ function formatIcon(fontawesome: string, cell: HTMLElement) {
 }
 
 const formatCellValue = (key: string, value: string) => {
-  const dateKey = { 'FIRST SEEN': true, 'LAST SEEN': true }
+  const dateKey: Record<string, boolean> = { 'FIRST SEEN': true, 'LAST SEEN': true }
   /**
    * Compute the differece between the timestamp and the current time
    * And format the output in: hours minutes, or minutes seconds

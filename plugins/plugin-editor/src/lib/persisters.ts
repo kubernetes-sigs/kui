@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 
 import { eventBus as globalEventBus, UI } from '@kui-shell/core'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Commands, i18n, i18nFromMap, REPL, Settings, UI } from '@kui-shell/core'
 

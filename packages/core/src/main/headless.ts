@@ -16,7 +16,7 @@
 
 /* eslint-disable prefer-rest-params, prefer-spread */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('main/headless')
 debug('loading')
 
@@ -58,7 +58,7 @@ if (process.env.DEVMODE) {
 }
 
 const commandContextPattern = /--command-context/
-let commandContext
+let commandContext: string
 
 const log = console.log
 const error = console.error

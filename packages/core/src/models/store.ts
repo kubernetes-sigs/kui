@@ -21,9 +21,11 @@ export interface LocalStorage {
   clear: () => void
 }
 
+declare const kuiLocalStorage: LocalStorage
+
 /**
  * This shim allows clients to define a localStorage scheme, if they
  * cannot provide window.localStorage.
  *
  */
-export default (): LocalStorage => window['kuiLocalStorage'] || window.localStorage
+export default (): LocalStorage => (typeof kuiLocalStorage !== 'undefined' ? kuiLocalStorage : window.localStorage)

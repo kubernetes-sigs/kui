@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { isHeadless } from '../../core/capabilities'
 const debug = Debug('webapp/util/inject')
@@ -36,6 +36,8 @@ function isAStylesheetFile(object: StylesheetSpec): object is StylesheetFile {
 }
 
 type StylesheetSpec = StylesheetDirect | StylesheetFile | string
+
+declare const mediaUri: string
 
 /**
  * Inject a stylesheet
@@ -66,10 +68,11 @@ export const injectCSS = (file: StylesheetSpec): void => {
       // debug('injecting stylesheet from file ref')
       link = document.createElement('link')
       link.rel = rel
+      const muri = typeof mediaUri !== 'undefined' ? mediaUri + '/' : ''
       if (isAStylesheetFile(file)) {
-        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file.path}`
+        link.href = `${muri}${file.path}`
       } else {
-        link.href = `${window['mediaUri'] ? window['mediaUri'] + '/' : ''}${file}`
+        link.href = `${muri}${file}`
       }
     }
 
@@ -83,7 +86,7 @@ export const injectCSS = (file: StylesheetSpec): void => {
  * Remove a stylesheet
  *
  */
-export const uninjectCSS = ({ key }): void => {
+export const uninjectCSS = ({ key }: { key: string }): void => {
   if (isHeadless() || typeof document === 'undefined' || !document.getElementById) {
   } else {
     const id = `injected-css-${key}`
@@ -100,22 +103,21 @@ export const uninjectCSS = ({ key }): void => {
  * Inject a script
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const injectScript = (url: any): Promise<any> => {
+export const injectScript = (url: string | { key: string; src: string }): Promise<void> => {
   if (isHeadless() || typeof document === 'undefined' || !document.getElementById) {
     return
   }
 
   return new Promise(resolve => {
     const type = 'script'
-    const id = `injected-${type}-${url.key || url}`
+    const id = `injected-${type}-${typeof url === 'string' ? url : url.key}`
 
     if (!document.getElementById(id)) {
       // we haven't yet injected the script
       const link = document.createElement('script')
       link.id = id
 
-      if (url.src) {
+      if (typeof url !== 'string') {
         // debug('injecting raw script')
         link.appendChild(document.createTextNode(url.src))
       } else {

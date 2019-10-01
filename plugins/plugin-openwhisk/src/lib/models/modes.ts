@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('plugins/openwhisk/models/modes')
 
 import { UI } from '@kui-shell/core'

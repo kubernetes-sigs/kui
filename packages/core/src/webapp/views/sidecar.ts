@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('webapp/views/sidecar')
 debug('loading')
 
@@ -284,18 +284,23 @@ function isHTML(content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
 }
 
+type Op = (elt: Element, cls: string) => void
+const remove: Op = (elt: Element, cls: string) => elt.classList.remove(cls)
+const add: Op = (elt: Element, cls: string) => elt.classList.add(cls)
+const toggleClass: Op = (elt: Element, cls: string) => elt.classList.toggle(cls)
+
 /**
  * Ensure that we are in sidecar maximization mode
  *
  */
-export const setMaximization = (tab: Tab, op = 'add', cause: MaximizationCause = 'default') => {
+export const setMaximization = (tab: Tab, op: Op = add, cause: MaximizationCause = 'default') => {
   if (document.body.classList.contains('subwindow')) {
-    document.body.classList[op]('sidecar-full-screen')
-    document.body.classList[op]('sidecar-visible')
+    op(document.body, 'sidecar-full-screen')
+    op(document.body, 'sidecar-visible')
   }
 
   const before = tab.classList.contains('sidecar-full-screen')
-  tab.classList[op]('sidecar-full-screen')
+  op(tab, 'sidecar-full-screen')
   const after = tab.classList.contains('sidecar-full-screen')
 
   if (before !== after) {
@@ -334,7 +339,7 @@ export const presentAs = (tab: Tab, presentation?: Presentation) => {
   if (presentation || presentation === Presentation.Default) {
     document.body.setAttribute('data-presentation', Presentation[presentation].toString())
     if (!isPopup() && presentation === Presentation.Default && tab.getAttribute('maximization-cause') !== 'user') {
-      setMaximization(tab, 'remove')
+      setMaximization(tab, remove)
     }
   } else {
     document.body.removeAttribute('data-presentation')
@@ -907,7 +912,7 @@ type MaximizationCause = 'default' | 'user'
  *
  */
 export const toggleMaximization = (tab: Tab, cause?: MaximizationCause) => {
-  setMaximization(tab, 'toggle', cause)
+  setMaximization(tab, toggleClass, cause)
 }
 
 /**

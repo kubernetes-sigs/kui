@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import * as EventEmitter from 'events'
 

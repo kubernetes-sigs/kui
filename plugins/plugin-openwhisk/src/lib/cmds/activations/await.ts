@@ -23,7 +23,7 @@
 
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10) || 1000
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('openwhisk.await')
 
 import { Models, REPL } from '@kui-shell/core'

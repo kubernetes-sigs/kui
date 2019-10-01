@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('webapp/pip')
 debug('loading')
 
@@ -27,18 +27,22 @@ import { ExecOptions } from '../models/execOptions'
 import { EntitySpec } from '../models/entity'
 import { pexec, qexec } from '../core/repl'
 import { css, rawCSS } from './bottom-stripe'
+import { isCapturable } from './models/capturable'
 
-const _highlight = (op: string) => (highlightThis?: Element | Element[]) => {
+type Op = (elt: Element, cls: string) => void
+const remove: Op = (elt: Element, cls: string) => elt.classList.remove(cls)
+const add: Op = (elt: Element, cls: string) => elt.classList.add(cls)
+const _highlight = (op: Op) => (highlightThis?: Element | Element[]) => {
   if (highlightThis) {
     if (Array.isArray(highlightThis)) {
-      highlightThis.forEach(_ => _.classList[op]('picture-in-picture-highlight'))
+      highlightThis.forEach(_ => op(_, 'picture-in-picture-highlight'))
     } else {
-      highlightThis.classList[op]('picture-in-picture-highlight')
+      op(highlightThis, 'picture-in-picture-highlight')
     }
   }
 }
-const dehighlight = _highlight('remove')
-const highlight = _highlight('add')
+const dehighlight = _highlight(remove)
+const highlight = _highlight(add)
 
 interface PipOptions {
   parent?: Element
@@ -131,7 +135,7 @@ const pip = (
 
   const sidecar = getSidecar(tab)
   const sidecarClass = sidecar.className
-  const escapeHandler = undefined // we don't want to override the escape key behavior
+  const escapeHandler: (evt: KeyboardEvent) => boolean = undefined // we don't want to override the escape key behavior
   const backContainer = css.backContainer(tab)
   const backButton = css.backButton(tab)
   const restoreFn = restore(
@@ -257,7 +261,8 @@ export const drilldown = (
   const capturedHeader5 = capture(tab, '.sidecar-header-secondary-content')
 
   // for the footer, we need to capture the modeButton renderer, so we can reattach the click events
-  const modeButtons = css.modeContainer(tab)['capture']
+  const modeContainer = css.modeContainer(tab)
+  const modeButtons = isCapturable(modeContainer) && modeContainer.capture
   const capturedFooter = capture(tab, rawCSS.buttons, modeButtons && modeButtons())
 
   const capturedHeaders = [

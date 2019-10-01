@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as minimist from 'yargs-parser'

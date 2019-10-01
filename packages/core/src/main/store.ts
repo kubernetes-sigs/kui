@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('main/localStorage')
 debug('loading')
 
@@ -36,7 +36,7 @@ export default () => {
 
   debug('userData %s', userData)
 
-  let data
+  let data: Record<string, string>
   try {
     const raw = readFileSync(userData).toString()
     try {

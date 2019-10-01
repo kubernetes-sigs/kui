@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { basename, dirname } from 'path'
 
 import { Capabilities, Commands, i18n, REPL, UI, Util } from '@kui-shell/core'

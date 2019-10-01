@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as fs from 'fs'
 import { promisify } from 'util'
 import { join } from 'path'

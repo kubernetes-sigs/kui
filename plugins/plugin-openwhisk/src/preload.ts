@@ -17,5 +17,5 @@
 import { UI } from '@kui-shell/core'
 
 export default async () => {
-  UI.injectScript('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js')
+  await UI.injectScript('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js')
 }

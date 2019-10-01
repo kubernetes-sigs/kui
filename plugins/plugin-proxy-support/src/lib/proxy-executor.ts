@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { v4 as uuidgen } from 'uuid'
 
 import { Capabilities, Commands, Errors, REPL, Settings, UI } from '@kui-shell/core'

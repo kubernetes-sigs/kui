@@ -16,7 +16,7 @@
 
 import { inBrowser } from '../core/capabilities'
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { pexec } from '../core/repl'
 
 const debug = Debug('webapp/query')

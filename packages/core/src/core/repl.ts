@@ -21,7 +21,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('core/repl')
 debug('loading')
 
@@ -116,11 +116,6 @@ export const hasAuth = async () => {
     // this will change
     return hasAuthCapability('openwhisk')
   }
-}
-
-export const init = (prefs = {}) => {
-  debug('init')
-  return cli.init(prefs)
 }
 
 const patterns = {
@@ -322,7 +317,7 @@ class InProcessExecutor implements Executor {
     const prompt = block && cli.getPrompt(block)
 
     // maybe execOptions has been attached to the prompt dom (e.g. see repl.partial)
-    if (!execOptions) execOptions = prompt['execOptions']
+    if (!execOptions) execOptions = prompt.execOptions
     if (execOptions && execOptions.pip) {
       const { container, returnTo } = execOptions.pip
       try {
@@ -419,9 +414,13 @@ class InProcessExecutor implements Executor {
         const builtInOptions: UsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
         if (!usage || !usage.noHelp) {
           // usage might tell us not to add help, or not to add the -h help alias
-          const help = { name: '--help', hidden: true, boolean: true }
+          const help: { name: string; hidden: boolean; boolean: boolean; alias?: string } = {
+            name: '--help',
+            hidden: true,
+            boolean: true
+          }
           if (!usage || !usage.noHelpAlias) {
-            help['alias'] = '-h'
+            help.alias = '-h'
           }
           builtInOptions.push(help)
         }
@@ -695,15 +694,15 @@ class InProcessExecutor implements Executor {
 
         if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
           debug('command requires auth, and we do not have it')
-          const err = new Error('Command requires authentication')
-          err['code'] = 403
+          const err = new Error('Command requires authentication') as CodedError
+          err.code = 403
           return oops(command, block, nextBlock)(err)
         }
 
         if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
           debug('command does not work in a browser')
-          const err = new Error('Command requires local access')
-          err['code'] = 406 // http not acceptable
+          const err = new Error('Command requires local access') as CodedError
+          err.code = 406 // http not acceptable
           return oops(command, block, nextBlock)(err)
         }
 
@@ -768,7 +767,7 @@ class InProcessExecutor implements Executor {
               throw new Error('Internal Error')
             }
 
-            if (block && block['isCancelled']) {
+            if (block && block.isCancelled) {
               // user cancelled the command
               debug('squashing output of cancelled command')
               return
@@ -948,9 +947,9 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
 export const doEval = ({ block = cli.getCurrentBlock(), prompt = cli.getPrompt(block) } = {}) => {
   const command = prompt.value.trim()
 
-  if (block['completion']) {
+  if (block.completion) {
     // then this is a follow-up to prompt
-    block['completion'](prompt.value)
+    block.completion(prompt.value)
   } else {
     // otherwise, this is a plain old eval, resulting from the user hitting Enter
     return exec(command, new DefaultExecOptionsForTab(cli.getTabFromTarget(prompt)))

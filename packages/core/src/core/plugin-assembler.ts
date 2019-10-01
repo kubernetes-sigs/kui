@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
+import { PrescanUsage } from '../models/plugin'
 import * as plugins from './plugins'
 import * as commandTree from './command-tree'
 
@@ -140,7 +141,7 @@ type PrescanDiff = string[]
  * structure based on the "/path/hierarchy"
  *
  */
-const makeTree = (map: plugins.PrescanUsage, docs: plugins.PrescanDocs) => {
+const makeTree = (map: PrescanUsage, docs: plugins.PrescanDocs) => {
   const keys = Object.keys(map)
   if (keys.length === 0) {
     debug('interesting, not a single command registered a usage model')

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { safeLoadAll } from 'js-yaml'
 
 import { REPL } from '@kui-shell/core'

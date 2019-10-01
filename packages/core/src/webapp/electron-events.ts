@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
+const debug = Debug('webapp/electron-events')
+debug('loading')
+
+import { IpcRenderer, Remote } from 'electron'
 
 import { inElectron, Media, setMedia } from '../core/capabilities'
 import { qexec, pexec } from '../core/repl'
-const debug = Debug('webapp/electron-events')
-debug('loading')
 
 /**
  * Listen for the main process telling us to execute a command
  *
  */
-const listenForRemoteEvents = ipcRenderer => {
+const listenForRemoteEvents = (ipcRenderer: IpcRenderer) => {
   debug('listenForRemoteEvents')
 
   if (inElectron() && ipcRenderer) {
@@ -86,7 +88,7 @@ const initializeIPC = async () => {
  * it'd be nice if there were a CSS :fullscreen selector for this :(
  *
  */
-const listenForWindowEvents = (remote?) => {
+const listenForWindowEvents = (remote?: Remote) => {
   if (remote) {
     debug('listenForWindowEvents')
 
@@ -106,14 +108,14 @@ const listenForWindowEvents = (remote?) => {
  * Request to write out coverage data
  *
  */
-const listenForTestEvents = (ipcRenderer?) => {
+const listenForTestEvents = (ipcRenderer?: IpcRenderer) => {
   if (ipcRenderer) {
     debug('listenForTestEvents')
 
-    ipcRenderer.on('/coverage/dump', config => {
+    /* ipcRenderer.on('/coverage/dump', config => {
       const nyc = new (require('nyc'))(config) // create the nyc instance
       nyc.writeCoverageFile() // write out the coverage data for the renderer code
-    })
+    }) */
   }
 }
 
@@ -121,7 +123,10 @@ const listenForTestEvents = (ipcRenderer?) => {
  * Send a synchronous message to the main process
  *
  */
-export const tellMain = (message, channel?) =>
+export const tellMain = (
+  message: string | Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  channel?: 'asynchronous-message' | 'synchronous-message'
+) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     const electron = await import('electron')

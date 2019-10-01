@@ -20,7 +20,7 @@
  *
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
 import { Capabilities, Commands, i18n, REPL } from '@kui-shell/core'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Commands, Errors, REPL } from '@kui-shell/core'
 import { ActivationListTable } from '@kui-shell/plugin-openwhisk'

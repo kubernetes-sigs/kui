@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-interface SessionStorage {
-  getItem: (key: string) => string
-  setItem: (key: string, value: string) => void
-  removeItem: (key: string) => void
-  clear: () => void
+export interface Block extends HTMLElement {
+  restorePrompt?: () => void
+  isCancelled?: boolean
+  completion?: (result: string) => void
 }
-
-declare const kuiSessionStorage: SessionStorage
-
-/**
- * This shim allows clients to define a sessionStorage scheme, if they
- * cannot provide window.sessionStorage.
- *
- */
-export default (): SessionStorage =>
-  typeof kuiSessionStorage !== 'undefined' ? kuiSessionStorage : window.sessionStorage

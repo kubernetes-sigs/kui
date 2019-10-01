@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as monaco from 'monaco-editor'
 
 import { Settings, UI } from '@kui-shell/core'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('core/preloader')
 debug('loading')
 
@@ -27,7 +27,7 @@ import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
  * preloaded at startup, rather than in response to a user command
  *
  */
-export default async (prescan: PrescanModel, options) => {
+export default async (prescan: PrescanModel) => {
   debug('init')
 
   const jobs = Promise.all(
@@ -61,7 +61,7 @@ export default async (prescan: PrescanModel, options) => {
           // ./plugins.ts
           const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
           const registration: PreloadRegistration = registrationRef.default || registrationRef
-          await registration(proxy(module.route), options)
+          await registration(proxy(module.route))
           debug('done preloading %s', module.path)
         } catch (err) {
           debug('error invoking preload', module.path, err)

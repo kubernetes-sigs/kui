@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
@@ -152,11 +152,6 @@ export function createWindow(
       mainWindow.show()
       mainWindow.setVisibleOnAllWorkspaces(false)
     })
-
-    // install tray menu [DISABLED FOR NOW]
-    /* if (noHeadless !== true && !executeThisArgvPlease) {
-        mainWindow.tray = require('./tray')(electron, app, createWindow)
-    } */
 
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...

@@ -14,14 +14,28 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('webapp/bootstrap/init')
 debug('loading')
+
+import { BrowserWindow } from 'electron'
 
 import { inElectron } from '../../core/capabilities'
 import eventBus from '../../core/events'
 import { extractSearchKey } from '../util/search'
 import { setDefaultCommandContext as setDefault } from '../../core/command-tree'
+
+interface KuiWindow extends BrowserWindow {
+  subwindow?: {
+    fullscreen?: boolean
+    viewName?: string
+    title?: string
+    partialExec?: string
+    noEcho?: boolean
+    theme?: string
+  }
+  executeThisArgvPlease?: string[]
+}
 
 /**
  * We don't (at least not for now) want to support drag and drop at the global scope
@@ -59,8 +73,7 @@ const setDefaultCommandContext = () => {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const init = () => {
+export const init = async () => {
   debug('init')
 
   debug('window init')
@@ -82,10 +95,9 @@ export const init = () => {
     eventBus.once('/init/done', async () => {
       debug('got /init/done')
 
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { remote } = require('electron')
-      const electronWindow = remote.getCurrentWindow()
-      const prefs = electronWindow['subwindow']
+      const { remote } = await import('electron')
+      const electronWindow = remote.getCurrentWindow() as KuiWindow
+      const prefs = electronWindow.subwindow
       const argv = electronWindow['executeThisArgvPlease']
       const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
       const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
@@ -122,14 +134,14 @@ export const init = () => {
   debug('init done')
 }
 
-export const preinit = () => {
+export const preinit = async () => {
   debug('preinit')
 
   let prefs = {}
   if (process.env.___IBM_FSH_FUZZ) {
     // for testing, we sometimes want to monkey patch out certain features
     try {
-      prefs = require('../../core/fuzz-testing').default(process.env.___IBM_FSH_FUZZ)
+      prefs = await (await import('../../core/fuzz-testing')).default(process.env.___IBM_FSH_FUZZ)
     } catch (err) {
       debug('fuzz testing raw', process.env.___IBM_FSH_FUZZ)
       console.error('Error parsing fuzz testing prefs', err)
@@ -141,9 +153,9 @@ export const preinit = () => {
   document.body.classList.add(`os-${process.platform}`)
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { remote } = require('electron')
-    const subwindow = remote && remote.getCurrentWindow()['subwindow']
+    const { remote } = await import('electron')
+    const window = remote && (remote.getCurrentWindow() as KuiWindow)
+    const subwindow = window.subwindow
     if (subwindow && subwindow.fullscreen !== false) {
       // sidecarOnly = subwindow.sidecarOnly === undefined ? true : subwindow.sidecarOnly
       document.title = typeof subwindow === 'string' ? subwindow : subwindow.title

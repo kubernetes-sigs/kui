@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Capabilities, Commands, UI } from '@kui-shell/core'
 import { resetCount } from '@kui-shell/core/webapp/cli'
-
-import { TabState } from '../new-tab'
 
 const debug = Debug('plugins/core-support/clear')
 
@@ -39,7 +37,7 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
       UI.empty(tab.querySelector('.repl-inner'))
 
       // abort the jobs for the current tab
-      const tabState: TabState = tab['state']
+      const tabState = tab.state
       tabState.abortAllJobs()
     } else {
       // keep the current active prompt

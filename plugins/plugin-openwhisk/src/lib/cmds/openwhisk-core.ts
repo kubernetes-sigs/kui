@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { existsSync, readFileSync } from 'fs'
 import { type as osType } from 'os'
 

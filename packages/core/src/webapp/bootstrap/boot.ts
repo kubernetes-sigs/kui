@@ -26,10 +26,10 @@ function catastrophe(err: Error) {
 }
 
 // note: the q npm doesn't like functions called "bootstrap"!
-const domReady = prefs => async () => {
+const domReady = () => async () => {
   const initializer = import('./init')
   const plugins = import('../../core/plugins')
-  const repl = import('../../core/repl')
+  const cli = import('../../webapp/cli')
   const sidecar = import('../views/sidecar')
   const electronEvents = import('../electron-events')
   const events = import('../../core/events')
@@ -48,8 +48,8 @@ const domReady = prefs => async () => {
     waitForThese.push(
       electronEvents
         .then(_ => _.init())
-        .then(() => repl)
-        .then(_ => _.init(prefs))
+        .then(() => cli)
+        .then(_ => _.init())
     )
 
     sidecar.then(_ => _.init())
@@ -68,7 +68,7 @@ const domReady = prefs => async () => {
 }
 
 export default async () => {
-  const prefs = import('./init').then(_ => _.preinit())
+  import('./init').then(_ => _.preinit())
 
-  window.addEventListener('load', domReady(prefs), { once: true })
+  window.addEventListener('load', domReady(), { once: true })
 }

@@ -81,7 +81,7 @@ export default function formatAsPty(_strings: string[], wrap = true): HTMLElemen
   const strings = trim(flatten(_strings.map(_ => _.split(/[\n]/))))
   const container = document.createElement('div')
 
-  const formatLine = _ => {
+  const formatLine = (_: string) => {
     const line = document.createElement('div')
     container.appendChild(line)
 

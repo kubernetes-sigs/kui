@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as openwhisk from 'openwhisk'
 
 import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'

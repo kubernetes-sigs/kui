@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { Tab } from '../webapp/cli'
 
 const debug = Debug('webapp/views/jobs')

@@ -211,7 +211,7 @@ const kubelike = /kubectl|oc/
 const isKubeLike = (command: string): boolean => kubelike.test(command)
 
 /** decorate certain columns specially */
-export const outerCSSForKey = {
+export const outerCSSForKey: { [key: string]: string } = {
   NAME: 'entity-name-group',
   READY: 'a-few-numbers-wide',
   KIND: 'max-width-id-like entity-kind',
@@ -259,7 +259,7 @@ const fillTo = (length: number, maxColumns: number) => {
   }
 }
 
-export const cssForKey = {
+export const cssForKey: { [key: string]: string } = {
   // kubectl get events
   NAME: 'entity-name',
   SOURCE: 'lighter-text smaller-text',
@@ -272,16 +272,14 @@ export const cssForKey = {
   UPDATED: 'slightly-deemphasize somewhat-smaller-text'
 }
 
-const tagForKey = {
+const tagForKey: { [key: string]: string } = {
   PHASE: 'badge',
   STATE: 'badge',
   STATUS: 'badge'
 }
 
-const cssForKeyValue = {}
-
 /** decorate certain values specially */
-export const cssForValue = {
+export const cssForValue: { [key: string]: string } = {
   // generic
   NORMAL: 'green-background',
   Normal: 'green-background',
@@ -398,7 +396,7 @@ export const formatTable = (
   // e.g. Name: -> NAME
   const keyForFirstColumn = lines[0][nameColumnIdx].key.replace(/:/g, '').toUpperCase()
 
-  const allRows: Row[] = lines.map((columns, idx) => {
+  const allRows: Row[] = lines.map((columns: Pair[], idx: number) => {
     const name = columns[nameColumnIdx].value
     const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
     const nameForDisplay = columns[0].value
@@ -406,12 +404,9 @@ export const formatTable = (
     const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT' ? '' : 'selected-entity'
 
     const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
-    const rowKey = columns[0].key
-    const rowValue = columns[0].value
-    const rowCSS = [
-      (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
-      rowIsSelected ? 'selected-row' : ''
-    ]
+    // const rowKey = columns[0].key
+    // const rowValue = columns[0].value
+    const rowCSS = [rowIsSelected ? 'selected-row' : '']
 
     // if there isn't a global namespace specifier, maybe there is a row namespace specifier
     // we use the row specifier in preference to a global specifier -- is that right?

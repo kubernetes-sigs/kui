@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as path from 'path'
 import { v4 as uuid } from 'uuid'
 import * as xterm from 'xterm'

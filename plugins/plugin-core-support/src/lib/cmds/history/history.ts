@@ -20,7 +20,7 @@
  *
  */
 
-import * as Debug from 'debug' // the default number of history elements to show with /history
+import Debug from 'debug' // the default number of history elements to show with /history
 
 import { Commands, Models, REPL, Tables } from '@kui-shell/core'
 
