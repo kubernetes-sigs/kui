@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import UsageError from '../core/usage-error'
+import { UsageError, UsageRow } from '../core/usage-error'
 
-export interface CodedError extends Error {
+export interface HideError extends Error {
+  hide?: boolean
+}
+export function isHideError(err: Error): err is HideError {
+  return (err as HideError).hide
+}
+
+export interface CodedError extends HideError {
   code?: number
   statusCode?: number
+  partialMatches?: UsageRow[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body?: string | Record<string, any>
 }

@@ -479,16 +479,6 @@ export async function initElectron(
       if (!forceUI && !app) {
         const { initHeadless } = await import('./headless')
         await initHeadless(process.argv, true)
-      } else {
-        const { fetch, watch } = await import('../webapp/util/fetch-ui')
-        const { userDataDir } = await import('../core/userdata')
-        const stagingArea = userDataDir()
-        debug('initiating UI fetcher', stagingArea)
-
-        fetch(stagingArea)
-        app = {
-          graphics: watch(stagingArea)
-        }
       }
       if (app.graphics) {
         promise = spawnGraphics()

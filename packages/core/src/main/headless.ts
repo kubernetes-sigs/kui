@@ -20,6 +20,7 @@ import Debug from 'debug'
 const debug = Debug('main/headless')
 debug('loading')
 
+import { Entity } from '../models/entity'
 import { installOopsHandler, exec } from '../core/repl'
 import mimicDom from '../util/mimic-dom'
 import { preload, init as pluginsInit } from '../core/plugins'
@@ -78,8 +79,10 @@ let graphicalShellIsOpen = false
  */
 const noAuth = false
 
+type QuitFunction = () => void
+
 /** completion handlers for success and failure */
-const success = quit => async out => {
+const success = (quit: QuitFunction) => async (out: Entity | Promise<Entity>) => {
   debug('success!')
   if (process.env.KUI_REPL_MODE) {
     debug('returning repl mode result')
@@ -98,7 +101,7 @@ const success = quit => async out => {
     debug('graphical shell is open')
   }
 }
-const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => {
+const failure = (quit: QuitFunction, execOptions?: ExecOptions) => async (err: CodedError) => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
   }
@@ -135,7 +138,7 @@ const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => 
         }
       } else {
         const { print } = await import('./headless-pretty-print')
-        completion = print(msg, error, process.stderr, 'red', 'error') || Promise.resolve()
+        completion = print(msg, error, process.stderr, undefined, 'error') || Promise.resolve()
       }
     }
   } else {
@@ -167,11 +170,13 @@ const failure = (quit, execOptions?: ExecOptions) => async (err: CodedError) => 
  */
 const insufficientArgs = (argv: string[]) => argv.length === 0 || (argv.length === 1 && /(-h)|(--help)/.test(argv[0]))
 
+type CreateWindowFunction = (commandLine: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => void
+
 /**
  * Opens the full UI
  *
  */
-let electronCreateWindowFn
+let electronCreateWindowFn: CreateWindowFunction
 export const createWindow = async (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
   try {
     graphicalShellIsOpen = true
@@ -210,7 +215,12 @@ const initCommandContext = async (commandContext: string) => {
  * Initialize headless mode
  *
  */
-export const main = async (app, mainFunctions, rawArgv = process.argv, execOptions?: ExecOptions) => {
+export const main = async (
+  app: { quit: QuitFunction },
+  mainFunctions: { createWindow: CreateWindowFunction },
+  rawArgv = process.argv,
+  execOptions?: ExecOptions
+) => {
   debug('main')
 
   // get this started right away, to amortize the cost of loading the
@@ -251,48 +261,6 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
    *
    */
   const evaluate = (cmd: string) => Promise.resolve(exec(cmd, execOptions)).then(success(quit))
-
-  const trace = console.trace
-  console.trace = () => {
-    const tmp = console.error
-    console.error = error
-    trace()
-    console.error = tmp
-  }
-  console.error = async function() {
-    if (!noAuth && typeof arguments[0] === 'string') {
-      const colors = await import('colors/safe')
-      const args = Object.keys(arguments).map(key => {
-        if (typeof arguments[key] === 'string') {
-          const color = arguments[key].match(/warning:/i) ? 'yellow' : 'red'
-          return colors[color](arguments[key])
-        } else {
-          return arguments[key]
-        }
-      })
-      error(...args)
-    }
-  }
-
-  try {
-    if (
-      !process.env.TRAVIS_JOB_ID &&
-      !process.env.RUNNING_SHELL_TEST &&
-      !process.env.CLOUD_SHELL_GO &&
-      !process.env.KUI_REPL_MODE &&
-      !process.env.KUI_DEV
-    ) {
-      const { fetch, watch } = await import('../webapp/util/fetch-ui')
-      const { userDataDir } = await import('../core/userdata')
-      const stagingArea = userDataDir()
-      debug('initiating UI fetcher', stagingArea)
-
-      fetch(stagingArea)
-      app.graphics = watch(stagingArea)
-    }
-  } catch (err) {
-    debug('error loading graphics', err)
-  }
 
   /** main work starts here */
   debug('bootstrap')
@@ -347,12 +315,7 @@ export const main = async (app, mainFunctions, rawArgv = process.argv, execOptio
  * Bootstrap headless mode
  *
  */
-export async function initHeadless(
-  argv: string[],
-  force = false,
-  isRunningHeadless = false,
-  execOptions?: ExecOptions
-) {
+export function initHeadless(argv: string[], force = false, isRunningHeadless = false, execOptions?: ExecOptions) {
   if (/* noHeadless !== true && */ force || isRunningHeadless) {
     debug('initHeadless')
 

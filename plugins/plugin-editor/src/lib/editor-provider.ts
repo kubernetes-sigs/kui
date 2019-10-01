@@ -22,9 +22,7 @@ class MonacoEditorProvider implements UI.Editor.Provider {
   public async tryOpen(tab: UI.Tab, custom: Commands.CustomResponse, options: Commands.ExecOptions) {
     const [{ Models }, { edit }] = await Promise.all([import('@kui-shell/core'), import('./cmds/edit')])
 
-    const projection: string = custom.contentTypeProjection
-      ? custom.content[custom.contentTypeProjection]
-      : custom.content
+    const projection = custom.content
 
     const metadataBearer = Models.isResourceByReference(custom) ? custom.resource : custom
 

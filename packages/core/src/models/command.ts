@@ -218,7 +218,7 @@ export type OnSuccess = (args: {
 export type OnError = (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
 
 export interface CommandHandlerWithEvents extends Evaluator {
-  subtree: CommandBase
+  subtree: Command
   route: string
   options: CommandOptions
   success: OnSuccess
@@ -239,7 +239,7 @@ export interface YargsParserFlags {
 /** a catch all handler is presented with an offer to handle a given argv */
 export type CatchAllOffer = (argv: string[]) => boolean
 
-export interface CatchAllHandler extends CommandBase {
+export interface CatchAllHandler extends Command {
   prio: number
   plugin: string // registered plugin
   offer: CatchAllOffer // does the handler accept the given command?
