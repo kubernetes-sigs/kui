@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('main/main')
 debug('loading')
 
@@ -50,14 +50,14 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
     const { initHeadless } = await import('./headless')
     const result = await initHeadless(argv, false, isRunningHeadless, execOptions).catch(err => {
       if (env.KUI_REPL_MODE) {
-        const errResponse = {
-          code: err.code,
-          statusCode: err.statusCode,
-          message: err.message
-        }
-        for (const key in err) {
-          errResponse[key] = err[key]
-        }
+        const errResponse = Object.assign(
+          {
+            code: err.code,
+            statusCode: err.statusCode,
+            message: err.message
+          },
+          err
+        )
         return errResponse
       } else {
         throw err

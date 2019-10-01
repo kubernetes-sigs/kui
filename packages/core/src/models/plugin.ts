@@ -16,12 +16,13 @@
 
 import { CommandRegistrar } from './command'
 
-// TODO
+export type KuiPlugin = void | Promise<void>
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type KuiPlugin = any
+export type PrescanUsage = Record<string, any> // TODO
 
-export type PluginRegistration = (commandTree: CommandRegistrar, options?) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+export type PluginRegistration = (commandTree: CommandRegistrar, options?: { usage: PrescanUsage }) => KuiPlugin
 
-export type PreloadRegistration = (commandTree: CommandRegistrar, options?) => Promise<void | void[]>
+export type PreloadRegistration = (commandTree: CommandRegistrar) => Promise<void | void[]>
 
 export type CapabilityRegistration = () => Promise<void>

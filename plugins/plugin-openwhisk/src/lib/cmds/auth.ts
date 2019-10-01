@@ -20,7 +20,7 @@
  *
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI, Util } from '@kui-shell/core'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'

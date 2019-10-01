@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Capabilities, Commands, REPL, Tables, UI } from '@kui-shell/core'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'

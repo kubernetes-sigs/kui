@@ -31,7 +31,7 @@
  *
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as minimist from 'yargs-parser'
 import * as needle from 'needle'
 import * as withRetry from 'promise-retry'

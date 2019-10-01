@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as tmp from 'tmp'
 import * as fs from 'fs-extra'
 import * as path from 'path'
