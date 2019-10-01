@@ -63,7 +63,7 @@ debug('finished loading modules')
  */
 export interface Executor {
   name: string
-  exec(commandUntrimmed: string, execOptions: ExecOptions)
+  exec(commandUntrimmed: string, execOptions: ExecOptions): Promise<Response>
 }
 
 /**
@@ -665,27 +665,12 @@ class InProcessExecutor implements Executor {
                 }
               } else {
                 debug('repl selection', selection)
-                // for activation, the proper entity path is an annotation
-                const activationPath: { key: string; value: string } =
-                  selection.type === 'activations' &&
-                  selection.annotations &&
-                  selection.annotations.find(_ => _.key === 'path')
-                if (activationPath) {
-                  // ooh, then splice in the implicit parameter and entity type. We splice entity type here for later commands to easily distinguish composition/action.
-                  args.splice(
-                    implicitIdx,
-                    cmdArgsStart + 1,
-                    `/${activationPath.value}`,
-                    selection['sessionId'] || selection['ast'] ? 'composition' : 'action'
-                  )
-                } else {
-                  // ooh, then splice in the implicit parameter
-                  args.splice(
-                    implicitIdx,
-                    cmdArgsStart + 1,
-                    selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name
-                  )
-                }
+                // splice in the implicit parameter
+                args.splice(
+                  implicitIdx,
+                  cmdArgsStart + 1,
+                  selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name
+                )
                 debug('spliced in implicit argument', cmdArgsStart, implicitIdx, args)
               }
             }
@@ -981,7 +966,7 @@ export const qexec = <T = Response>(
         type: ExecType.Nested
       }
     )
-  )
+  ) as Promise<T>
 }
 export const qfexec = (
   command: string,
@@ -1017,7 +1002,7 @@ export const rexec = <T = Response>(command: string, execOptions = emptyExecOpti
  *
  */
 export const pexec = <T = Response>(command: string, execOptions?: ExecOptions): Promise<T> => {
-  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions))
+  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions)) as Promise<T>
 }
 
 /**

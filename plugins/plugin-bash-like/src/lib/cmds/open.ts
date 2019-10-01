@@ -106,10 +106,7 @@ const open = async (tab: UI.Tab, filepath: string) => {
         name,
         packageName,
         contentType: suffix === 'sh' ? 'shell' : suffix,
-        contentTypeProjection: 'data',
-        content: {
-          data
-        }
+        content: data
       }
     }
   }

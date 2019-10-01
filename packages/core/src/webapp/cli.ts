@@ -34,7 +34,7 @@ import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents } from '../models/command'
 import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
 import historyModel from '../models/history'
-import { CodedError, isCodedError } from '../models/errors'
+import { HideError, isHideError, CodedError, isCodedError } from '../models/errors'
 import { Table, isTable, isMultiTable } from './models/table'
 import { isWatchable } from './models/basicModels'
 
@@ -55,6 +55,13 @@ export interface Prompt extends HTMLInputElement {
 
 debug('finished loading modules')
 
+interface ScrollIntoViewable extends HTMLElement {
+  scrollIntoViewIfNeeded(center: boolean): void
+}
+function isScrollIntoViewable(element: HTMLElement): element is ScrollIntoViewable {
+  return Object.prototype.hasOwnProperty.call(element, 'scrollIntoViewIfNeeded')
+}
+
 /**
  * Make sure that the given repl block is visible.
  *
@@ -68,7 +75,7 @@ interface ScrollOptions {
   when?: number
   which?: string
   element?: HTMLElement
-  how?: string
+  how?: 'scrollIntoViewIfNeeded' | 'scrollIntoView'
   center?: boolean | ScrollIntoViewOptions
 }
 export const scrollIntoView = (opts?: ScrollOptions) => {
@@ -81,13 +88,12 @@ export const scrollIntoView = (opts?: ScrollOptions) => {
   } = opts || {}
 
   const scroll = () => {
-    try {
-      // false here means "bottom of the element will be aligned to the bottom of the visible area of the scrollable ancestor"
-      //    (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
-      // document.querySelector('tab.visible .repl .repl-active').scrollIntoView(true)
-      element[how](center || { block: 'end', inline: 'end' })
-    } catch (e) {
-      if (element) {
+    if (element) {
+      if (how === 'scrollIntoViewIfNeeded' && isScrollIntoViewable(element)) {
+        // false here means "bottom of the element will be aligned to the bottom of the visible area of the scrollable ancestor"
+        //    (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
+        ;(element as ScrollIntoViewable).scrollIntoViewIfNeeded(!!center)
+      } else {
         element.scrollIntoView(center || { block: 'end', inline: 'end' })
       }
     }
@@ -1018,18 +1024,7 @@ export const printResults = (
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
       if (await renderResult(response, tab, execOptions, parsedOptions, resultDom, echo)) {
-      } else if (
-        isEntitySpec(response) &&
-        response.verb === 'list' &&
-        response[response.type] &&
-        typeof response[response.type] === 'number'
-      ) {
-        // maybe a list API returned a count?
-        const span = document.createElement('span')
-        span.innerText = response[response.type]
-        resultDom.appendChild(span)
-        ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-        ok(resultDom.parentElement).classList.add('ok-for-list')
+        // then renderResult took care of things
       } else if (typeof response === 'number' || typeof response === 'string' || isMessageBearingEntity(response)) {
         // if either the response is a string, or it's a non-entity (no response.type) and has a message field
         //     then treat the response as a simple string response
@@ -1174,21 +1169,11 @@ export const printResults = (
     ) {
       if (!incognito) {
         // view modes
-        const modes: Mode[] =
-          isEntitySpec(response) &&
-          (response.modes ||
-            (response[0] && response[0].modes) ||
-            (response[0] && response[0][0] && response[0][0].modes))
+        const modes: Mode[] = isEntitySpec(response) && response.modes
 
         // entity type
         const prettyType: string =
-          isEntitySpec(response) &&
-          (response.kind ||
-            response.prettyType ||
-            response.prettyKind ||
-            response.type ||
-            (response[0] && response[0].title) ||
-            (response[0] && response[0][0] && response[0][0].title))
+          isEntitySpec(response) && (response.kind || response.prettyType || response.prettyKind || response.type)
 
         // presentation mode
         const presentation =
@@ -1293,12 +1278,20 @@ export const partial = (cmd: string, execOptions: ExecOptions = new DefaultExecO
   }
 }
 
+interface PopupError extends Error {
+  content?: Element
+  modes?: PopupEntity
+}
+function isPopupError(err: Error): err is PopupError {
+  return (err as PopupError).content !== undefined
+}
+
 /**
  * Handle command execution errors
  *
  */
 export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => async (
-  err: Error | CodedError | UsageError
+  err: Error | CodedError | UsageError | HideError | PopupError
 ) => {
   if (!block) return // we're not attached to a prompt right now
 
@@ -1319,8 +1312,9 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   oopsDom.className = 'oops'
   resultDom.appendChild(oopsDom)
 
-  if (err['hide']) {
+  if (isHideError(err)) {
     // we were instructed not to show any message
+    debug('we were instructed to hide this error', err)
   } else if (UsageError.isUsageError(err)) {
     oopsDom.appendChild(await UsageError.getFormattedMessage(err))
     /* } else if (isHTML(err.message)) {
@@ -1365,7 +1359,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   }
 
   if (isPopup()) {
-    renderPopupContent(command, err['content'] || resultDom, {}, err['modes'])
+    renderPopupContent(command, (isPopupError(err) && err.content) || resultDom, {}, isPopupError(err) && err.modes)
     popupListen(undefined, command)
   }
 

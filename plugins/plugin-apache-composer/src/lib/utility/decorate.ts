@@ -35,10 +35,7 @@ export const codeViewMode = (source: string, contentType = 'javascript') => ({
     type: 'custom',
     isEntity: true,
     contentType,
-    contentTypeProjection: 'source',
-    content: {
-      source
-    }
+    content: source
   }
   /*  direct: entity => {
     entity.type = 'actions'

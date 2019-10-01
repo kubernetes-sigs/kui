@@ -37,7 +37,6 @@
     "electron-squirrel-startup": "1.0.0",
     "extract-zip": "1.6.7",
     "fs-extra": "8.1.0",
-    "json-colorizer": "2.2.1",
     "mkdirp": "0.5.1",
     "needle": "2.4.0",
     "open": "6.4.0",
