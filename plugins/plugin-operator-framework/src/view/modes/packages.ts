@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Tables, UI } from '@kui-shell/core'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'

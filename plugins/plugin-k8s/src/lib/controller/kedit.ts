@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { basename, dirname, join } from 'path'
 
 import { Capabilities, Commands, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'

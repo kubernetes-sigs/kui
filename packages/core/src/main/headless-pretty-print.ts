@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('main/headless-pretty-print')
 debug('loading')
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import UsageError from '../../core/usage-error'
 import { split } from '../../core/repl'

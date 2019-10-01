@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { dirname, join } from 'path'
 import { v4 as uuid } from 'uuid'
 import * as prettyPrintDuration from 'pretty-ms'

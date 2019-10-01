@@ -20,7 +20,7 @@
  *
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('core/fuzz-testing')
 debug('loading')
 
@@ -32,18 +32,24 @@ const nope = (filepath: string) => {
   return filepath.toString().indexOf('.wskprops') >= 0 || filepath.toString().indexOf('.cf/config.json') >= 0
 }
 
+type ReadFileOptions = { encoding?: string | null; flag?: string } | string | undefined | null
+type ReadFileSyncOptions = { encoding?: null; flag?: string } | null
+
 /**
  * Some standard fuzz-testing parameters
  *
  */
-const fuzzies = {
-  noAuth: () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+const fuzzies: Record<string, () => Promise<void>> = {
+  noAuth: async () => {
     const fs = require('fs')
     const rf = fs.readFile
     const rfs = fs.readFileSync
 
-    fs.readFile = function(filepath: string, options, cb) {
+    fs.readFile = function(
+      filepath: string,
+      options: ReadFileOptions,
+      cb: (err: NodeJS.ErrnoException | null, data: string | Buffer) => void
+    ) {
       if (nope(filepath)) {
         debug('fs.readFile blocked', filepath)
         rf('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas', options ? cb : options)
@@ -56,7 +62,7 @@ const fuzzies = {
       }
     }
 
-    fs.readFileSync = function(filepath: string, options) {
+    fs.readFileSync = function(filepath: string, options?: ReadFileSyncOptions) {
       if (nope(filepath)) {
         console.error(`fs.readFileSync blocked ${filepath}`)
         return rfs('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas')
@@ -67,19 +73,18 @@ const fuzzies = {
   }
 }
 
-export default fuzz => {
-  if (typeof fuzz === 'string') {
-    fuzz = JSON.parse(fuzz)
-  }
-
+export default async (_fuzz: string) => {
+  const fuzz = JSON.parse(_fuzz) as { rules: string[]; prefs?: Record<string, string | boolean | number> }
   // debug('options', fuzz.rules)
 
-  ;(fuzz.rules || []).forEach(rule => {
-    // intentionally unprotected against failures, because we
-    // want the test to fail
-    debug('rule', rule)
-    fuzzies[rule]()
-  })
+  await Promise.all(
+    (fuzz.rules || []).map(async rule => {
+      // intentionally unprotected against failures, because we
+      // want the test to fail
+      debug('rule', rule)
+      await fuzzies[rule]()
+    })
+  )
 
   return fuzz.prefs
 }

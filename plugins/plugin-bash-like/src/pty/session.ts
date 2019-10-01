@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { getPrompt, getCurrentProcessingBlock, setStatus } from '@kui-shell/core/webapp/cli'
 import { Capabilities, Commands, Errors, i18n, REPL, Settings, UI } from '@kui-shell/core'

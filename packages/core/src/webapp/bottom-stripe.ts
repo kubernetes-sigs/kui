@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable, isMultiTable } from './models/table'
+import { Capturable } from './models/capturable'
 import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
@@ -541,7 +542,7 @@ export const addModeButtons = (
   // for going back
   const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: EntitySpec | CustomSpec, show: string) => {
     const modeStripe = css.modeContainer(tab)
-    const bottomStripe = css.bottomContainer(tab)
+    const bottomStripe = css.bottomContainer(tab) as Capturable
     removeAllDomChildren(modeStripe)
     removeAllDomChildren(bottomStripe)
 
@@ -551,7 +552,7 @@ export const addModeButtons = (
       })
     }
 
-    bottomStripe['capture'] = () => {
+    bottomStripe.capture = () => {
       // capture the current selection
       const currentSelection = modeStripe.querySelector(`.${css.active}`)
       const currentShow = currentSelection && currentSelection.getAttribute('data-mode')

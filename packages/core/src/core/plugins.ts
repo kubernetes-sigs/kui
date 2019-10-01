@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('core/plugins')
 debug('loading')
 
 import * as commandTree from './command-tree'
-import { KuiPlugin, PluginRegistration } from '../models/plugin'
+import { KuiPlugin, PluginRegistration, PrescanUsage } from '../models/plugin'
 import { CommandBase, Disambiguator, CatchAllHandler } from '../models/command'
 
 /**
@@ -32,13 +32,13 @@ debug('modules loaded')
 
 export const pluginRoot = '../../../plugins'
 
-const commandToPlugin = {} // map from command to plugin that defines it
-const isSubtreeSynonym = {}
-const isSynonym = {}
-const topological = {} // topological sort of the plugins (order they resolved)
-const overrides = {} // some plugins override the behavior of others
+const commandToPlugin: Record<string, string> = {} // map from command to plugin *name* that defines it
+const isSubtreeSynonym: Record<string, boolean> = {}
+const isSynonym: Record<string, boolean> = {}
+const topological: Record<string, string[]> = {} // topological sort of the plugins (order they resolved)
+const overrides: Record<string, string> = {} // some plugins override the behavior of others
 const usage = {} // as we scan for plugins, we'll memoize their usage models
-const flat = []
+const flat: { route: string; path: string }[] = []
 const registrar: { [key: string]: KuiPlugin } = {} // this is the registrar for plugins
 
 let prescanned: PrescanModel
@@ -64,8 +64,8 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
   const colors = await import('colors/safe')
 
   try {
-    const plugins = {}
-    const preloads = {}
+    const plugins: Record<string, string> = {}
+    const preloads: Record<string, string> = {}
 
     const doScan = ({ modules, moduleDir }: { modules: string[]; moduleDir: string }) => {
       debug('doScan', modules)
@@ -80,8 +80,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
           })
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        function lookFor(filename: string, destMap: Object, color: string) {
+        function lookFor(filename: string, destMap: Record<string, string>, colorFn: (str: string) => string) {
           const pluginPath = path.join(moduleDir, module, filename)
           debug('lookFor', filename, pluginPath)
 
@@ -89,7 +88,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
             if (!quiet) {
               debug('found')
               console.log(
-                colors.green('  \u2713 ') + colors[color](filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
+                colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
               )
             }
             destMap[module] = pluginPath
@@ -101,10 +100,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
               if (!quiet) {
                 debug('found2')
                 console.log(
-                  colors.green('  \u2713 ') +
-                    colors[color](filename.replace(/\..*$/, '')) +
-                    '\t' +
-                    path.basename(module)
+                  colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
                 )
               }
               destMap[module] = backupPluginPath
@@ -117,10 +113,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
                 if (!quiet) {
                   debug('found3')
                   console.log(
-                    colors.green('  \u2713 ') +
-                      colors[color](filename.replace(/\..*$/, '')) +
-                      '\t' +
-                      path.basename(module)
+                    colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
                   )
                 }
                 destMap[module] = backupPluginPath
@@ -133,10 +126,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
                   if (!quiet) {
                     debug('found4')
                     console.log(
-                      colors.green('  \u2713 ') +
-                        colors[color](filename.replace(/\..*$/, '')) +
-                        '\t' +
-                        path.basename(module)
+                      colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
                     )
                   }
                   destMap[module] = backupPluginPath
@@ -147,8 +137,8 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
           }
         }
 
-        lookFor('plugin.js', plugins, 'bold')
-        lookFor('preload.js', preloads, 'dim')
+        lookFor('plugin.js', plugins, colors.bold)
+        lookFor('preload.js', preloads, colors.dim)
       })
     }
 
@@ -205,7 +195,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
   const deps: { [key: string]: boolean } = {}
 
   // and override commandTree.listen
-  const cmdToPlugin = {}
+  const cmdToPlugin: Record<string, string> = {} // to plugin *name*
   const ctree = commandTree.proxy(route)
   const listen = ctree.listen
   const intention = ctree.intention
@@ -220,12 +210,12 @@ const loadPlugin = async (route: string, pluginPath: string) => {
       return subtreeSynonym(route, master, {})
     }
   }
-  ctree.listen = function(commandRoute) {
+  ctree.listen = function(commandRoute: string) {
     cmdToPlugin[commandRoute] = route
     // eslint-disable-next-line prefer-rest-params, prefer-spread
     return listen.apply(undefined, arguments)
   }
-  ctree.subtree = function(route, options) {
+  ctree.subtree = function(route: string, options) {
     return subtree(route, Object.assign({ listen: ctree.listen }, options))
   }
   ctree.intention = function(commandRoute) {
@@ -245,7 +235,7 @@ const loadPlugin = async (route: string, pluginPath: string) => {
 
   if (typeof pluginLoader === 'function') {
     // invoke the plugin loader
-    registrar[route] = await pluginLoader(ctree, {})
+    registrar[route] = await pluginLoader(ctree, {} as { usage: PrescanUsage })
 
     // turn the deps map, which is a canonicalization map from
     // module=>true (i.e. we use it to remove duplicates), into an
@@ -277,11 +267,11 @@ const loadPlugin = async (route: string, pluginPath: string) => {
  *
  */
 const topologicalSortForScan = async (
-  pluginPaths: string[],
+  pluginPaths: Record<string, string>,
   iter: number,
   lastError?: Error,
   lastErrorAlreadyEmitted?: boolean
-) => {
+): Promise<void> => {
   debug('topologicalSortForScan', iter)
 
   if (iter >= 100) {
@@ -432,14 +422,14 @@ const prequire = async (route: string, options?: object) => {
   return registrar[route]
 }
 export const preload = () => {
-  preloader(prescan, { usage: prescan.usage, docs: prescan.docs })
+  preloader(prescan)
 }
 
 export interface PluginResolver {
   resolve: (route: string, options?: { subtree: boolean }) => void
   disambiguate: (route: string) => CommandBase[]
   disambiguatePartial: (partial: string) => string[]
-  resolveOne: (route: string) => Promise<void>
+  resolveOne: (route: string) => Promise<KuiPlugin>
   isOverridden: (route: string) => boolean
 }
 
@@ -449,7 +439,7 @@ export interface PluginResolver {
  */
 const makeResolver = (prescan: PrescanModel): PluginResolver => {
   /** memoize resolved plugins */
-  const isResolved = {}
+  const isResolved: Record<string, KuiPlugin> = {}
 
   /** resolve one given plugin */
   const resolveOne = async (plugin: string): Promise<KuiPlugin> => {
@@ -605,8 +595,6 @@ export type PrescanCommandDefinitions = PrescanCommandDefinition[]
 export interface PrescanDocs {
   [key: string]: string
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type PrescanUsage = any // FIXME something like: { [key: string]: ICommandOptions }
 export interface PrescanModel {
   docs: PrescanDocs
   preloads: PrescanCommandDefinitions
@@ -634,7 +622,7 @@ export const generatePrescanModel = async (opts: PrescanOptions): Promise<Presca
 
   const preloads = await resolveFromLocalFilesystem(opts)
 
-  const disambiguator = {}
+  const disambiguator: Record<string, string | true> = {}
   for (const route in commandToPlugin) {
     const A = route.split('/')
     for (let idx = 1; idx < A.length; idx++) {

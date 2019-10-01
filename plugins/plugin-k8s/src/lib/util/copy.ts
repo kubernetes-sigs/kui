@@ -22,7 +22,7 @@
  *
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import * as fs from 'fs'
 import { pathExists, lstat, ensureDir, remove, writeFile } from 'fs-extra'

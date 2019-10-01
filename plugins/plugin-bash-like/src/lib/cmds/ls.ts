@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 

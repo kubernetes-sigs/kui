@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-interface SessionStorage {
-  getItem: (key: string) => string
-  setItem: (key: string, value: string) => void
-  removeItem: (key: string) => void
-  clear: () => void
-}
-
-declare const kuiSessionStorage: SessionStorage
-
 /**
- * This shim allows clients to define a sessionStorage scheme, if they
- * cannot provide window.sessionStorage.
+ * For sidecar transitions, allows views to capture state
  *
  */
-export default (): SessionStorage =>
-  typeof kuiSessionStorage !== 'undefined' ? kuiSessionStorage : window.sessionStorage
+export interface Capturable extends HTMLElement {
+  capture: () => () => void
+}
+
+export function isCapturable(elt: HTMLElement): elt is Capturable {
+  return Object.prototype.hasOwnProperty.call(elt as Capturable, 'capture')
+}

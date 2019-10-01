@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('core/usage-error')
 debug('loading')
 
@@ -499,7 +499,8 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       const renderRow = (rowData: UsageRowOrGenerator) => {
         if (isGenerator(rowData)) {
           // then rowData is a generator for aliases
-          return renderRow(rowData.fn(rowData.command))
+          renderRow(rowData.fn(rowData.command))
+          return
         }
 
         const isDir = rowData.available !== undefined || false

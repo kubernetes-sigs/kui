@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Commands, REPL, UI } from '@kui-shell/core'

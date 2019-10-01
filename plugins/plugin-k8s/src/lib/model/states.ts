@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { KubeResource, KubeStatus } from './resource'
 import { maybeAsDate, TryLaterError } from '../util/util'

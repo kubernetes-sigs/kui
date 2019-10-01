@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Capabilities, REPL, UI } from '@kui-shell/core'
 

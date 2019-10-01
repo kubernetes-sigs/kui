@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 
 import { Commands, REPL } from '@kui-shell/core'
 import { Action, withHeader } from '@kui-shell/plugin-openwhisk'

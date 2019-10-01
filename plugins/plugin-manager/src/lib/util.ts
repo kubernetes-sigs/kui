@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import * as colors from 'colors/safe'
 
 import { Capabilities, UI } from '@kui-shell/core'

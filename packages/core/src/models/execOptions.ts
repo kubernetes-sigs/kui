@@ -19,6 +19,7 @@
 import { ExecType } from './command'
 import { Tab } from '../webapp/cli'
 import { Streamable, StreamableFactory } from './streamable'
+import { Block } from '../webapp/models/block'
 
 export interface ExecOptions {
   // force execution in a given tab?
@@ -44,7 +45,7 @@ export interface ExecOptions {
   custom?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   rawResponse?: boolean
   isDrilldown?: boolean
-  block?: HTMLElement
+  block?: Block
   nextBlock?: HTMLElement
   placeholder?: string
   replSilence?: boolean

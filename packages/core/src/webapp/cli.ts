@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 const debug = Debug('webapp/cli')
 debug('loading')
 
@@ -28,6 +28,7 @@ import { installContext } from './prompt'
 import { promiseEach } from '../util/async'
 import { SidecarMode as Mode, SidecarMode } from './bottom-stripe'
 
+import TabState from '../models/tab-state'
 import { Entity, isEntitySpec, isMessageBearingEntity, MixedResponsePart, isMixedResponse } from '../models/entity'
 import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents } from '../models/command'
@@ -44,7 +45,13 @@ import { isHTML } from '../util/types'
 import Presentation from './views/presentation'
 import { formatTable } from './views/table'
 
+import { Block } from './models/block'
+
 import { Formattable, getSidecar, Badge, presentAs, showEntity, showCustom, isCustomSpec } from './views/sidecar'
+
+export interface Prompt extends HTMLInputElement {
+  execOptions?: ExecOptions
+}
 
 debug('finished loading modules')
 
@@ -142,7 +149,9 @@ export const pasteQueuedInput = (value: string) => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Tab extends HTMLElement {}
+export interface Tab extends HTMLElement {
+  state: TabState
+}
 const tabTagPattern = /^tab$/i
 export function isTab(node: Element): node is Tab {
   return tabTagPattern.test(node.tagName)
@@ -182,7 +191,7 @@ export const getCurrentTab = (): Tab => {
 const getInitialBlock = (tab: Tab): HTMLElement => {
   return tab.querySelector('.repl .repl-block.repl-initial')
 }
-export const getCurrentBlock = (tab = getCurrentTab()): HTMLElement => {
+export const getCurrentBlock = (tab = getCurrentTab()): Block => {
   return tab.querySelector('.repl .repl-active')
 }
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
@@ -191,7 +200,7 @@ export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement =>
 export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
   return prompt.parentElement.parentElement
 }
-export const getPrompt = (block: HTMLElement): HTMLInputElement => {
+export const getPrompt = (block: HTMLElement): Prompt => {
   return block && block.querySelector && block.querySelector('input')
 }
 const getBottomPrompt = (): HTMLInputElement => {
@@ -202,7 +211,7 @@ const getInitialPrompt = (tab: Tab): HTMLInputElement => {
 }
 /** are we operating in popup mode? */
 export const isPopup = () => document.body.classList.contains('subwindow')
-export const getCurrentPrompt = (tab = getCurrentTab()): HTMLInputElement => {
+export const getCurrentPrompt = (tab = getCurrentTab()): Prompt => {
   if (isPopup()) {
     return getSidecar(tab).querySelector('input')
   } else if (inBottomInputMode) {
@@ -677,7 +686,7 @@ const renderPopupContent = (
  * Remove any .repl-temporary structures from the given dom
  *
  */
-export const removeAnyTemps = (block: HTMLElement): HTMLElement => {
+export const removeAnyTemps = (block: Block): Block => {
   const temps = block.querySelectorAll('.repl-temporary')
 
   for (let idx = 0; idx < temps.length; idx++) {
@@ -757,6 +766,12 @@ interface MSIETextRange {
   moveStart: (which: string, pos: number) => void
   select: () => void
 }
+interface MSIEControl extends HTMLInputElement {
+  createTextRange: () => MSIETextRange
+}
+function isMSIEControl(ctrl: HTMLInputElement): ctrl is MSIEControl {
+  return Object.prototype.hasOwnProperty.call(ctrl, 'createTextRange')
+}
 
 /**
  * Update the caret position in an html INPUT field
@@ -766,8 +781,8 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
   if (ctrl.setSelectionRange) {
     ctrl.focus()
     ctrl.setSelectionRange(pos, pos)
-  } else if (ctrl['createTextRange']) {
-    const range: MSIETextRange = ctrl['createTextRange']()
+  } else if (isMSIEControl(ctrl)) {
+    const range = (ctrl as MSIEControl).createTextRange()
     range.collapse(true)
     range.moveEnd('character', pos)
     range.moveStart('character', pos)
@@ -1241,9 +1256,9 @@ export const doCancel = () => {
 
   const block = removeAnyTemps(getCurrentProcessingBlock() || getCurrentBlock())
 
-  if (block['restorePrompt']) {
+  if (block.restorePrompt) {
     debug('cancelling in-progress "prompt"')
-    block['restorePrompt']()
+    block.restorePrompt()
   }
 
   // Note: clone after restorePrompt
@@ -1251,7 +1266,7 @@ export const doCancel = () => {
   const nextBlockPrompt = getPrompt(nextBlock)
 
   block.className = `${block.getAttribute('data-base-class')} cancelled`
-  block['isCancelled'] = true
+  block.isCancelled = true
   nextBlockPrompt.value = ''
   nextBlockPrompt.readOnly = false // in case we cancelled a block in-progress - the cloneNode will pick up the readonly attribute, which we need to remove
 
@@ -1268,7 +1283,7 @@ export const partial = (cmd: string, execOptions: ExecOptions = new DefaultExecO
   if (prompt) {
     debug('applying partial', cmd)
     prompt.value = cmd
-    prompt['execOptions'] = execOptions
+    prompt.execOptions = execOptions
     prompt.classList.add('repl-partial')
     prompt.focus()
     setTimeout(() => prompt.classList.remove('repl-partial'), 1000)
@@ -1401,7 +1416,7 @@ interface PromptOptions {
  */
 export const prompt = (
   msg: string,
-  block: HTMLElement,
+  block: Block,
   nextBlock: HTMLElement,
   tab: Tab,
   options: PromptOptions,
@@ -1446,14 +1461,14 @@ export const prompt = (
     textarea.onkeypress = event => {
       const char = event.keyCode
       if (char === keys.ENTER) {
-        block['completion'](textarea.value)
+        block.completion(textarea.value)
       }
     }
 
     textarea.onpaste = event => {
       const text = event.clipboardData.getData('text')
       debug('capturing paste for repl.prompt', text)
-      block['completion'](text)
+      block.completion(text)
       document.body.removeChild(textarea)
       document.body.onpaste = currentGlobalHandler
 
@@ -1484,9 +1499,9 @@ export const prompt = (
       console.error(err)
     }
   }
-  block['restorePrompt'] = restorePrompt
+  block.restorePrompt = restorePrompt
 
-  block['completion'] = (value: string) => {
+  block.completion = (value: string) => {
     block.className = `${block.getAttribute('data-base-class')} processing`
     unlisten(promptDom)
     const completer = completion(Object.assign({}, options, { field: value }))
@@ -1514,7 +1529,7 @@ export const prompt = (
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const init = async (prefs = {}) => {
+export const init = async () => {
   debug('init')
 
   const tab = getCurrentTab()
