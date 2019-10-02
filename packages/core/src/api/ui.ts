@@ -35,7 +35,9 @@ import * as Time from '../webapp/util/time'
 import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 import * as _Editor from '../webapp/views/registrar/editors'
 import * as _TopTabs from '../webapp/views/top-tabs'
+
 import * as MMR from '../models/MultiModalResponse'
+import * as _Themes from '../webapp/themes'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -59,6 +61,8 @@ export namespace UI {
   export import BadgeSpec = Sidecar.BadgeSpec
   export import BadgeRegistration = BadgeRegistrar.BadgeRegistration
   export import registerBadge = BadgeRegistrar.registerSidecarBadge
+
+  export import Themes = _Themes
 
   export import ToolbarText = Sidecar.ToolbarTextImpl
 

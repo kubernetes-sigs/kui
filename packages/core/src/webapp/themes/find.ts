@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+import Settings from '@kui-shell/core/api/settings'
+
+import Theme from './Theme'
+
 /**
- * API: settings
+ * @return the Theme model associated with the given theme name
  *
  */
+export function findByName(name: string): Theme {
+  return (Settings.theme.themes || []).find(_ => _.name === name)
+}
 
-import * as Settings from '../core/settings'
-export { Settings }
-export default Settings
+export default findByName

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * API: settings
- *
- */
-
-import * as Settings from '../core/settings'
-export { Settings }
-export default Settings
+export default interface Theme {
+  name: string
+  description?: string
+  css: string | string[]
+  attrs?: string[]
+  style: string
+}

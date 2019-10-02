@@ -34,7 +34,7 @@ const resetTheme = (ctx: ISuite) => {
   it('should show that we are using the default (dark) theme', () =>
     cli
       .do('theme current', ctx.app)
-      .then(cli.expectOKWithString('default theme'))
+      .then(cli.expectOKWithString('Dark'))
       .then(() => ctx.app.client.waitForExist('body[kui-theme="Dark"]')) // Dark being the default
       .catch(oops(ctx)))
 }

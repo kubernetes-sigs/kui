@@ -1,5 +1,6 @@
 {
   "today": "Today at {0}",
+  "theme.unknown": "Unknown theme",
   "sidecarExpand": "Expand to full width",
   "sidecarMinimize": "Minimize",
   "sidecarClose": "Close",
