@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
+
+import Capabilities from '@kui-shell/core/api/capabilities'
+import { switchToPersistedThemeChoice } from './persistence'
+
+const debug = Debug('core/webapp/themes/init')
+
 /**
- * API: settings
+ * Install the persistence theme choice
  *
  */
-
-import * as Settings from '../core/settings'
-export { Settings }
-export default Settings
+export default () => {
+  if (!Capabilities.isHeadless()) {
+    if (Capabilities.inBrowser() || !document.body.hasAttribute('kui-theme')) {
+      debug('loading theme')
+      return switchToPersistedThemeChoice()
+    }
+  }
+}

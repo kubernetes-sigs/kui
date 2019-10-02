@@ -21,3 +21,4 @@
 
 import * as Capabilities from '../core/capabilities'
 export { Capabilities }
+export default Capabilities

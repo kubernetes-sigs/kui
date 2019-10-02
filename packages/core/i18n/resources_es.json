@@ -1,5 +1,6 @@
 {
   "today": "Hoy a las {0}",
+  "theme.unknown": "Tema desconocido",
   "sidecarExpand": "Expandir a anchura completa",
   "sidecarMinimize": "Minimizar",
   "sidecarClose": "Cerrar",

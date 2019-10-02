@@ -16,5 +16,4 @@
 
 // this file defines the external API
 
-export { switchToPersistedThemeChoice } from './lib/cmds/theme'
 export { registerEnumerator as registerTabCompletionEnumerator, TabCompletionSpec } from './lib/tab-completion'

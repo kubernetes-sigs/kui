@@ -33,3 +33,5 @@ export namespace Errors {
   export import UsageError = Usage.UsageError
   export import isUsageError = Usage.isUsageError
 }
+
+export default Errors
