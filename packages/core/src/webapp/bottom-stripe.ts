@@ -18,7 +18,7 @@ import Debug from 'debug'
 
 import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
-import { isTable, isMultiTable } from './models/table'
+import { isTable, isMultiTable, Table, MultiTable } from './models/table'
 import { Capturable } from './models/capturable'
 import { formatTable } from './views/table'
 import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
@@ -43,18 +43,22 @@ const debug = Debug('webapp/picture-in-picture')
  *
  */
 type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
-type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
+export type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
 
-interface DirectViewEntity extends CustomSpec {
-  isEntity: boolean
-}
+type DirectViewEntity = CustomSpec
 
 function isDirectViewEntity(direct: DirectViewController): direct is DirectViewEntity {
-  const entity = direct as DirectViewEntity
-  return entity.isEntity !== undefined
+  return isCustomSpec(direct as DirectViewEntity)
 }
 
-interface DirectViewControllerSpec {
+// Notes: for reasons I don't understand fully, we need to export
+// this, even though nobody uses it outside of this file (by name). I
+// understand that this is necessary for generation of declrations
+// files, however I am not sure why we didn't have to do this before
+// some seemingly minor changes in other places in this file.
+// Reference material:
+// https://github.com/Microsoft/TypeScript/issues/5711
+export interface DirectViewControllerSpec {
   plugin: string
   operation: string
   parameters: object
@@ -68,7 +72,7 @@ function isToggle(result: DirectResult): result is Toggle {
   return result && Array.isArray((result as Toggle).toggle)
 }
 
-type DirectResult = Toggle | Entity
+export type DirectResult = Toggle | Entity
 
 /**
  * Call a "direct" impl
@@ -124,7 +128,7 @@ const callDirect = async (
  * Bottom stripe button specification
  *
  */
-export interface SidecarMode {
+export interface SidecarMode<Direct = DirectViewController> {
   mode: string
   label?: string
 
@@ -154,7 +158,7 @@ export interface SidecarMode {
   data?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
   command?: (entity: EntitySpec | CustomSpec) => string
-  direct?: DirectViewController
+  direct?: Direct
   url?: string
 
   execOptions?: ExecOptions
@@ -170,6 +174,10 @@ export interface SidecarMode {
   noHistory?: boolean
 
   replSilence?: boolean
+}
+export function isSidecarMode(entity: string | HTMLElement | Table | MultiTable | SidecarMode): entity is SidecarMode {
+  const mode = entity as SidecarMode
+  return mode.mode !== undefined && (mode.direct !== undefined || mode.command !== undefined)
 }
 
 interface BottomStripOptions {

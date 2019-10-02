@@ -29,6 +29,7 @@
     "kubectl-kui": "bin/kubectl-kui"
   },
   "dependencies": {
+    "ansi-to-html": "0.6.11",
     "app-module-path": "2.2.0",
     "colors": "1.3.3",
     "columnify": "1.5.4",

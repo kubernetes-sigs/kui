@@ -17,6 +17,7 @@
 import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { SidecarMode } from '../webapp/bottom-stripe'
+import { MultiModalResponse } from './MultiModalResponse'
 
 export interface EntitySpec {
   type?: string
@@ -75,11 +76,9 @@ export interface MetadataBearing {
     displayName?: string
   }
 }
-export function isMetadataBearing(spec: EntitySpec): spec is MetadataBearing {
+export function isMetadataBearing(spec: Entity): spec is MetadataBearing {
   const meta = spec as MetadataBearing
-  return (
-    meta !== undefined && meta.kind !== undefined && meta.metadata !== undefined && meta.metadata.name !== undefined
-  )
+  return meta !== undefined && meta.metadata !== undefined && meta.metadata.name !== undefined
 }
 
 /**
@@ -139,6 +138,7 @@ export type Entity =
   | EntitySpec
   | CustomSpec
   | MixedResponse
+  | MultiModalResponse
   | boolean
   | Table
   | MultiTable

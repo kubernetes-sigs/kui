@@ -246,7 +246,7 @@ export interface CatchAllHandler extends Command {
   eval: CommandHandler // command evaluator
 }
 
-type CommandListener = (route: string, handler: CommandHandler, options: CommandOptions) => Command
+type CommandListener = (route: string, handler: CommandHandler, options?: CommandOptions) => Command
 
 export interface CommandRegistrar {
   find: (route: string, noOverride?: boolean) => Promise<Command>
