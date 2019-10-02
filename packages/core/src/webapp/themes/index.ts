@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * API: settings
- *
- */
+export { default as Theme } from './Theme'
+export { getDefault } from './default'
+export { findByName } from './find'
 
-import * as Settings from '../core/settings'
-export { Settings }
-export default Settings
+import * as Persistence from './persistence'
+export { Persistence }

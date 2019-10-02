@@ -24,6 +24,7 @@ import { inElectron } from '../../core/capabilities'
 import eventBus from '../../core/events'
 import { extractSearchKey } from '../util/search'
 import { setDefaultCommandContext as setDefault } from '../../core/command-tree'
+import initThemes from '../themes/init'
 
 interface KuiWindow extends BrowserWindow {
   subwindow?: {
@@ -86,6 +87,8 @@ export const init = async () => {
   window.addEventListener('beforeunload', () => {
     eventBus.emit('/window/reload')
   })
+
+  await initThemes()
 
   //
   // see if we were passed an argv to execute on load
