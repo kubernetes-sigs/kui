@@ -30,6 +30,7 @@ import { SidecarMode as Mode, SidecarMode } from './bottom-stripe'
 
 import TabState from '../models/tab-state'
 import { Entity, isEntitySpec, isMessageBearingEntity, MixedResponsePart, isMixedResponse } from '../models/entity'
+import { isMultiModalResponse, show as showMultiModalResponse } from '../models/MultiModalResponse'
 import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents } from '../models/command'
 import { ExecOptions, DefaultExecOptions, ParsedOptions } from '../models/execOptions'
@@ -1093,6 +1094,8 @@ export const printResults = (
 
         // we rendered the content
         return true
+      } else if (isMultiModalResponse(response)) {
+        await showMultiModalResponse(tab, response)
       } else if (isMixedResponse(response)) {
         debug('mixed response')
         const paragraph = (part: MixedResponsePart) => {

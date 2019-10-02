@@ -21,7 +21,6 @@
   ],
   "main": "dist/index.js",
   "dependencies": {
-    "ansi-to-html": "0.6.11",
     "cookie": "0.4.0",
     "debug": "4.1.1",
     "diff2html": "2.11.3",

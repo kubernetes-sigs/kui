@@ -19,6 +19,7 @@
 import { Watchable } from './basicModels'
 import { sortBody } from '../views/table'
 import { Entity } from '../../models/entity'
+import { SidecarMode } from '../bottom-stripe'
 
 export class Row {
   attributes?: Cell[]
@@ -159,7 +160,7 @@ export class Table {
 
 export interface WatchableTable extends Table, Watchable {}
 
-export function isTable(model: Entity): model is Table {
+export function isTable(model: SidecarMode | Entity): model is Table {
   return (
     model !== undefined && (model instanceof Table || ((model as Table).body && Array.isArray((model as Table).body)))
   )
@@ -169,7 +170,7 @@ export interface MultiTable {
   tables: Table[]
 }
 
-export function isMultiTable(model: Entity): model is MultiTable {
+export function isMultiTable(model: SidecarMode | Entity): model is MultiTable {
   return (
     model !== undefined &&
     (model as MultiTable).tables !== undefined &&

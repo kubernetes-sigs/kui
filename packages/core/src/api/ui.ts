@@ -35,6 +35,7 @@ import * as Time from '../webapp/util/time'
 import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 import * as _Editor from '../webapp/views/registrar/editors'
 import * as _TopTabs from '../webapp/views/top-tabs'
+import * as MMR from '../models/MultiModalResponse'
 
 export namespace UI {
   /** interface defining the top-level UI tabs */
@@ -48,6 +49,7 @@ export namespace UI {
   /** Remove all DOM children from a given DOM Node */
   export import empty = Dom.removeAllDomChildren
 
+  export import MultiModalResponse = MMR.MultiModalResponse
   export import Mode = ModeManager.SidecarMode
   export import ModeRegistration = ModeRegistrar.ModeRegistration
   export import ModeFilter = ModeRegistrar.SidecarModeFilter

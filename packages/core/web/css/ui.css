@@ -2632,13 +2632,13 @@ sidecar .usage-error-wrapper .hideable {
 }
 .page-content p {
   font-weight: 400;
-  line-height: 1.5em;
-  margin: 0 1em;
+  line-height: 1.25em;
 }
 .page-content p:not(:last-child) {
   padding-bottom: 0.5em;
 }
 .page-content h1 {
+  margin-bottom: 1rem;
   font-size: 3.375em;
   font-weight: 300;
   letter-spacing: 0;
@@ -2688,8 +2688,9 @@ sidecar .usage-error-wrapper .hideable {
 }
 .page-content li {
   font-weight: 400;
-  padding-left: 0.25em;
   list-style-type: disc;
+  padding-bottom: 0.5em;
+  line-height: 1.25em;
 }
 sidecar .page-content pre > code {
   display: inline-block;
