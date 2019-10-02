@@ -44,7 +44,7 @@ import { CodedError } from '../models/errors'
 import * as commandTree from './command-tree'
 import { UsageError, UsageModel, UsageRow } from './usage-error'
 
-import { isHeadless, hasLocalAccess, hasAuth as hasAuthCapability } from './capabilities'
+import { isHeadless, hasLocalAccess } from './capabilities'
 import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
@@ -97,25 +97,6 @@ let currentEvaluatorImpl: ReplEval = new DirectReplEval()
 export const setEvaluatorImpl = (impl: ReplEval): void => {
   debug('setting evaluator impl', impl.name)
   currentEvaluatorImpl = impl
-}
-
-/**
- * do we have authentication? we don't cache this, to keep things
- * simpler; the check should be (and please should remain) cheap
- *
- */
-let forceNoAuth = false
-export const setNoAuth = () => {
-  forceNoAuth = true
-}
-export const hasAuth = async () => {
-  if (forceNoAuth) {
-    return false
-  } else {
-    // for historical reasons, the default auth scheme is openwhisk;
-    // this will change
-    return hasAuthCapability('openwhisk')
-  }
 }
 
 const patterns = {
@@ -677,12 +658,12 @@ class InProcessExecutor implements Executor {
           }
         } /* strict usage model conformance checking */
 
-        if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
+        /* if (evaluator.options && !(await hasAuth()) && !evaluator.options.noAuthOk) {
           debug('command requires auth, and we do not have it')
           const err = new Error('Command requires authentication') as CodedError
           err.code = 403
           return oops(command, block, nextBlock)(err)
-        }
+        } */
 
         if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
           debug('command does not work in a browser')

@@ -774,6 +774,35 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     if (isHTML(projection)) {
       // then its already a DOM
       container.appendChild(projection)
+    } else if (custom.contentType === 'text/html') {
+      // for html-formatted text, wrap it in a container with padding and scrolling
+      if (typeof projection === 'string') {
+        const padding = document.createElement('div')
+        padding.classList.add('padding-content', 'scrollable', 'page-content')
+        const inner = document.createElement('div')
+        padding.appendChild(inner)
+        inner.innerHTML = projection
+        container.appendChild(padding)
+      } else {
+        debug('WARNING: you said you were giving me html-formatted text, but instead gave me an object')
+        container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
+      }
+    } else if (custom.contentType === 'text/markdown') {
+      if (typeof projection === 'string') {
+        const Marked = await import('marked')
+        const renderer = new Marked.Renderer()
+        const marked = (_: string): string => Marked(_, { renderer })
+        renderer.link = (href: string, title: string, text: string) => {
+          return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
+        }
+        const markdownContainer = document.createElement('div')
+        markdownContainer.classList.add('padding-content', 'scrollable', 'marked-content', 'page-content')
+        markdownContainer.innerHTML = marked(projection)
+        container.appendChild(markdownContainer)
+      } else {
+        debug('WARNING: you said you were giving me markdown-formatted text, but instead gave me an object')
+        container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
+      }
     } else {
       const tryToUseEditor = true
       if (tryToUseEditor) {
@@ -822,7 +851,16 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   } else if (isHTML(custom.content)) {
     container.appendChild(custom.content)
   } else if (typeof custom.content === 'string') {
-    container.appendChild(document.createTextNode(custom.content))
+    // for plain text, wrap it in a `pre` container with padding and scrolling
+    const padding = document.createElement('div')
+    padding.classList.add('padding-content', 'scrollable')
+
+    const pre = document.createElement('pre')
+    pre.classList.add('pre-wrap', 'normal-text', 'sans-serif')
+    pre.appendChild(document.createTextNode(custom.content))
+
+    padding.appendChild(pre)
+    container.appendChild(padding)
   } else {
     console.error('content type not specified for custom content')
   }

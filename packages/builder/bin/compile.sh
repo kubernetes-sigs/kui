@@ -23,9 +23,13 @@ set -o pipefail
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
 
-if [ ! -d plugins ] || [ ! -f tsconfig.json ]; then
-    echo "Error: perhaps you forgot to run "npx kui-init""
+if [ ! -d plugins ] ; then
+    echo "Error: no plugins provided in the plugins/ directory"
     exit 1
+fi
+
+if [ ! -f tsconfig.json ]; then
+    echo "Error: missing tsconfig.json"
 fi
 
 # make typescript happy, until we have the real prescan model ready
@@ -41,7 +45,7 @@ npx tsc -b .
 CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$CLIENT_HOME" node node_modules/@kui-shell/builder/lib/configure.js
 
 # link in the theme bits
-(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -s $i; done && for i in ../../../../theme/css/*; do ln -s $i; done)
+(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -sf $i; done && for i in ../../../../theme/css/*; do ln -sf $i; done)
 
 # generate the plugin registry
 if [ -z "$NO_PRESCAN" ]; then

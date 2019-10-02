@@ -24,6 +24,7 @@ import * as colors from 'colors/safe'
 import { ElementMimic } from '../util/mimic-dom'
 import { isTable, isMultiTable, Row } from '../webapp/models/table'
 import { isEntitySpec, isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
+import { isMultiModalResponse } from '../models/MultiModalResponse'
 import { isHTML, isPromise } from '../util/types'
 
 const log = console.log
@@ -399,6 +400,8 @@ export const print = (
       } else if (isMixedResponse(msg)) {
         msg.forEach(_ => print(_))
         return logger(colors.green(ok))
+      } else if (isMultiModalResponse(msg)) {
+        throw new Error('cannot format this response in headless mode')
       } else if (Array.isArray(msg)) {
         // msg is an array of stuff
         debug('printing array')
