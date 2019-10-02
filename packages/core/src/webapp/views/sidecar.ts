@@ -856,7 +856,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     padding.classList.add('padding-content', 'scrollable')
 
     const pre = document.createElement('pre')
-    pre.classList.add('pre-wrap', 'normal-text', 'sans-serif')
+    pre.classList.add('pre-wrap', 'sans-serif')
     pre.appendChild(document.createTextNode(custom.content))
 
     padding.appendChild(pre)
