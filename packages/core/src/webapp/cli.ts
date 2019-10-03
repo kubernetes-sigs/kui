@@ -48,7 +48,8 @@ import { formatTable } from './views/table'
 
 import { Block } from './models/block'
 
-import { Formattable, getSidecar, Badge, presentAs, showEntity, showCustom, isCustomSpec } from './views/sidecar'
+import { getSidecar, Badge, presentAs, showEntity, showCustom, isCustomSpec } from './views/sidecar'
+import Formattable from './views/formattable'
 
 export interface Prompt extends HTMLInputElement {
   execOptions?: ExecOptions
