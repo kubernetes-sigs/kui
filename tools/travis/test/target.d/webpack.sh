@@ -66,10 +66,10 @@ EOF
     NO_CLEAN=true npm run build:proxy
 
     # pick up the dependencies of proxy server
-    cd ${STAGING_DIR}/app && npm install
+    cd ${STAGING_DIR}/kui/packages/proxy/app && npm ci
 
     # the docker image should be built successfully, but we don't use docker to start proxy for k8s tests
-    "$SCRIPTDIR"/proxy.sh &
+    "$SCRIPTDIR"/proxy.sh "${STAGING_DIR}" &
 else
     # we aren't using the proxy; make sure to set this in the client config
     echo "not using proxy for webpack client"

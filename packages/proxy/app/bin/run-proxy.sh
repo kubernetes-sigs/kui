@@ -17,5 +17,6 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+cd "$SCRIPTDIR"/../@kui-shell/proxy/app
 
-cd "$SCRIPTDIR"/../app && npm ci && PORT=8081 KUI_USE_HTTP=true ./bin/www
+PORT=8081 KUI_USE_HTTP=true ./bin/www
