@@ -54,3 +54,6 @@ tsconfig.tsbuildinfo
 
 # any temporary npm packs
 kui-shell-*.tgz
+
+# mkclient.sh stage
+kui-stage
