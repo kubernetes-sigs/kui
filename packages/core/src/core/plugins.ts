@@ -19,6 +19,7 @@ const debug = Debug('core/plugins')
 debug('loading')
 
 import * as commandTree from './command-tree'
+import { isCodedError } from '../models/errors'
 import { KuiPlugin, PluginRegistration, PrescanUsage } from '../models/plugin'
 import { CommandBase, Disambiguator, CatchAllHandler } from '../models/command'
 
@@ -147,26 +148,9 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     debug('moduleDir', moduleDir, fs.readdirSync(moduleDir))
     doScan({ modules: fs.readdirSync(moduleDir).filter(filter), moduleDir })
 
-    // scan any modules in package.json
-    const packageJsonPath = path.join(dir, 'package.json')
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJsonDeps = require(packageJsonPath)['dependencies']
-      const packageJsonDepsArray = []
-
-      for (const module in packageJsonDeps) {
-        if (module.startsWith('shell-')) {
-          packageJsonDepsArray.push(module)
-        }
-      }
-      doScan({
-        modules: packageJsonDepsArray,
-        moduleDir: path.join(dir, 'node_modules')
-      })
-    }
-
     return { plugins, preloads }
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (isCodedError<string>(err) && err.code !== 'ENOENT') {
       console.error('Error scanning for external plugins', err)
     }
     return {}
@@ -230,8 +214,11 @@ const loadPlugin = async (route: string, pluginPath: string) => {
     return synonym.apply(undefined, arguments)
   }
 
-  const pluginLoaderRef = await import(pluginPath)
-  const pluginLoader: PluginRegistration = pluginLoaderRef.default || pluginLoaderRef
+  const pluginLoaderRef: PluginRegistration | { default: PluginRegistration } = await import(pluginPath)
+  function isDirect(loader: PluginRegistration | { default: PluginRegistration }): loader is PluginRegistration {
+    return typeof loader === 'function'
+  }
+  const pluginLoader: PluginRegistration = isDirect(pluginLoaderRef) ? pluginLoaderRef : pluginLoaderRef.default
 
   if (typeof pluginLoader === 'function') {
     // invoke the plugin loader
@@ -286,7 +273,7 @@ const topologicalSortForScan = async (
   }
 
   let nUnresolved = 0
-  const unresolved = []
+  const unresolved: string[] = []
   for (const route in pluginPaths) {
     debug('resolving %s', route)
     try {
