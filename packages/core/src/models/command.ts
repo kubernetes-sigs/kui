@@ -251,7 +251,7 @@ type CommandListener = (route: string, handler: CommandHandler, options?: Comman
 export interface CommandRegistrar {
   find: (route: string, noOverride?: boolean) => Promise<Command>
   listen: CommandListener
-  synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) => void
+  synonym: (route: string, handler: CommandHandler, master: Command, options?: CommandOptions) => void
   subtree: (route: string, options: CommandOptions) => Command
   subtreeSynonym: (route: string, masterTree: Command, options?: CommandOptions) => void
 }
