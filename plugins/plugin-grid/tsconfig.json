@@ -9,13 +9,5 @@
     "paths": {
       "@kui-shell/plugin-grid/web/*": ["web/*"]
     }
-  },
-  "references": [
-    {
-      "path": "../plugin-apache-composer"
-    },
-    {
-      "path": "../plugin-openwhisk"
-    }
-  ]
+  }
 }
