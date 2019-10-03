@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-bash-like",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "description": "Kui plugin that offers local bash-like shell integrations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -21,6 +21,9 @@
   ],
   "main": "dist/index.js",
   "dependencies": {
+    "@types/cookie": "0.3.3",
+    "@types/marked": "0.6.5",
+    "@types/shelljs": "0.8.5",
     "cookie": "0.4.0",
     "debug": "4.1.1",
     "diff2html": "2.11.3",
@@ -29,10 +32,7 @@
     "shelljs": "0.8.3",
     "strip-ansi": "5.2.0",
     "ws": "7.1.2",
-    "xterm": "3.14.5",
-    "@types/cookie": "0.3.3",
-    "@types/marked": "0.6.5",
-    "@types/shelljs": "0.8.5"
+    "xterm": "3.14.5"
   },
   "kui": {
     "exclude": {
