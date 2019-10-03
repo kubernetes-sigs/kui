@@ -35,6 +35,7 @@ import * as Time from '../webapp/util/time'
 import formatAsPty from '@kui-shell/core/webapp/util/pretty-print'
 import * as _Editor from '../webapp/views/registrar/editors'
 import * as _TopTabs from '../webapp/views/top-tabs'
+import * as _ToolbarText from '../webapp/views/toolbar-text'
 
 import * as MMR from '../models/MultiModalResponse'
 import * as _Themes from '../webapp/themes'
@@ -64,7 +65,7 @@ export namespace UI {
 
   export import Themes = _Themes
 
-  export import ToolbarText = Sidecar.ToolbarTextImpl
+  export import ToolbarText = _ToolbarText.ToolbarTextImpl
 
   export import TopTabs = _TopTabs
 

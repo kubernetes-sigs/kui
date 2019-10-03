@@ -29,6 +29,8 @@ import { css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
 import { keys } from '../keys'
 import { ShowOptions, DefaultShowOptions } from './show-options'
 import sidecarSelector from './sidecar-selector'
+import Formattable from './formattable'
+import { ToolbarText, ToolbarTextImpl, isToolbarText, isRefreshableToolbarText } from './toolbar-text'
 import Presentation from './presentation'
 import {
   MetadataBearing,
@@ -199,67 +201,17 @@ class DefaultBadgeOptions implements BadgeOptions {
 }
 
 /**
- * Text to be displayed in the sidecar toolbar
- *
- */
-type ToolbarTextType = 'info' | 'warning' | 'error'
-type ToolbarTextValue = string | Element
-export interface ToolbarText {
-  type: ToolbarTextType
-  text: ToolbarTextValue
-}
-export interface RefreshableToolbarText extends ToolbarText {
-  attach: (owner: Element) => RefreshableToolbarText
-  refresh: () => void
-}
-export class ToolbarTextImpl implements RefreshableToolbarText {
-  private _container: Element
-
-  // eslint doesn't recognize the typescript constructor-settor syntax
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(public type: ToolbarTextType, public text: string | Element) {}
-
-  public attach(owner: Element) {
-    this._container = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', owner)
-    return this
-  }
-
-  public refresh() {
-    if (this._container) {
-      const content = element('.sidecar-toolbar-text-content', this._container)
-      if (typeof this.text === 'string') {
-        content.innerText = this.text
-      } else {
-        content.appendChild(this.text)
-      }
-      this._container.setAttribute('data-type', this.type)
-    }
-  }
-}
-function isToolbarText(subtext: Formattable | ToolbarText): subtext is ToolbarText {
-  const spec = subtext as ToolbarText
-  return spec && spec.type !== undefined && spec.text !== undefined
-}
-function isRefreshableToolbarText(ttext: ToolbarText): ttext is RefreshableToolbarText {
-  const refreshable = ttext as RefreshableToolbarText
-  return refreshable.attach !== undefined && refreshable.refresh !== undefined
-}
-
-/**
  * Show custom content in the sidecar
  *
  */
-type CustomContent =
+export type CustomContent =
   | string
   | Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   | HTMLElement
   | Promise<HTMLElement>
-export interface CustomSpec extends EntitySpec, MetadataBearing {
+export interface CustomSpec<Content = void> extends EntitySpec, MetadataBearing<CustomContent> {
   /** noZoom: set to true for custom content to control the zoom event handler */
   noZoom?: boolean
-
-  /** name hash, e.g. the hash part of auto-generated names, or an openwhisk activation id */
-  nameHash?: string
 
   isREPL?: boolean
   presentation?: Presentation
@@ -268,14 +220,18 @@ export interface CustomSpec extends EntitySpec, MetadataBearing {
   toolbarText?: ToolbarText
   content: CustomContent
   badges?: Badge[]
-  contentType?: string
-  resource?: MetadataBearing
+  resource?: MetadataBearing<Content>
   createdOnString?: string
 }
 
 export function isCustomSpec(entity: Entity): entity is CustomSpec {
   const custom = entity as CustomSpec
-  return custom !== undefined && (custom.type === 'custom' || custom.renderAs === 'custom')
+  return (
+    custom !== undefined &&
+    (custom.type === 'custom' ||
+      custom.renderAs === 'custom' ||
+      (custom.kind !== undefined && custom.content !== undefined && isMetadataBearing(custom)))
+  )
 }
 function isHTML(content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
@@ -430,12 +386,6 @@ export const addVersionBadge = (
     addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
   }
 }
-
-/**
- * Call a formatter
- *
- */
-export type Formattable = string | Promise<string> | HTMLElement | Promise<HTMLElement>
 
 /**
  * Add view name to the sidecar header "icon text"

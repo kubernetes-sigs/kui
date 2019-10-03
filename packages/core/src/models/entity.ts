@@ -17,6 +17,7 @@
 import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { SidecarMode } from '../webapp/bottom-stripe'
+import { ToolbarText } from '../webapp/views/toolbar-text'
 import { MultiModalResponse } from './MultiModalResponse'
 
 export interface EntitySpec {
@@ -62,7 +63,7 @@ export function isEntitySpec(entity: Entity): entity is EntitySpec {
  * identifies a resource
  *
  */
-export interface MetadataBearing {
+export interface MetadataBearing<Content = void> {
   kind?: string
   metadata?: {
     name: string
@@ -72,6 +73,13 @@ export interface MetadataBearing {
 
     creationTimestamp?: string
   }
+
+  /** name hash, e.g. the hash part of auto-generated names, or an openwhisk activation id */
+  nameHash?: string
+
+  content?: Content
+  contentType?: string
+  toolbarText?: ToolbarText
   spec?: {
     displayName?: string
   }
@@ -85,8 +93,8 @@ export function isMetadataBearing(spec: Entity): spec is MetadataBearing {
  * Entity with a "resource" field that is MetadataBearing
  *
  */
-export interface MetadataBearingByReference extends CustomSpec {
-  resource: MetadataBearing
+export interface MetadataBearingByReference<Content = void> extends CustomSpec<Content> {
+  resource: MetadataBearing<Content>
 }
 export function isMetadataBearingByReference(spec: Entity): spec is MetadataBearingByReference {
   const ref = spec as MetadataBearingByReference

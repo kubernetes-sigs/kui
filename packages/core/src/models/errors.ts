@@ -23,15 +23,15 @@ export function isHideError(err: Error): err is HideError {
   return (err as HideError).hide
 }
 
-export interface CodedError extends HideError {
-  code?: number
+export interface CodedError<Code = number> extends HideError {
+  code?: Code
   statusCode?: number
   partialMatches?: UsageRow[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body?: string | Record<string, any>
 }
 
-export function isCodedError(err: Error): err is CodedError {
-  const error = err as CodedError
+export function isCodedError<Code = number>(err: Error): err is CodedError<Code> {
+  const error = err as CodedError<Code>
   return !!(UsageError.isUsageError(err) || error.code || error.statusCode)
 }
