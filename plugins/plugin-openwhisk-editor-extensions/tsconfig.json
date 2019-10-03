@@ -5,16 +5,5 @@
     "composite": true,
     "outDir": "dist",
     "rootDir": "src"
-  },
-  "references": [
-    {
-      "path": "../plugin-apache-composer"
-    },
-    {
-      "path": "../plugin-openwhisk"
-    },
-    {
-      "path": "../plugin-wskflow"
-    }
-  ]
+  }
 }

@@ -5,10 +5,5 @@
     "composite": true,
     "outDir": "dist",
     "rootDir": "src"
-  },
-  "references": [
-    {
-      "path": "../plugin-k8s"
-    }
-  ]
+  }
 }

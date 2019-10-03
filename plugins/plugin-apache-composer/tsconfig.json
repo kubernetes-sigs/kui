@@ -10,13 +10,5 @@
       "@kui-shell/plugin-apache-composer/tests/*": ["plugins/plugin-apache-composer/tests/*"],
       "@kui-shell/plugin-apache-composer/*": ["plugins/plugin-apache-composer/src/*"]
     }
-  },
-  "references": [
-    {
-      "path": "../plugin-openwhisk"
-    },
-    {
-      "path": "../plugin-wskflow"
-    }
-  ]
+  }
 }

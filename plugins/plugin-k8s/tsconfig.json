@@ -9,10 +9,5 @@
     "paths": {
       "@kui-shell/plugin-k8s/web/*": ["web/*"]
     }
-  },
-  "references": [
-    {
-      "path": "../plugin-core-support"
-    }
-  ]
+  }
 }
