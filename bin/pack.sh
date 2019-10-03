@@ -8,18 +8,18 @@ fi
 
 for i in plugins/*; do
     if [ -d $i ]; then
-        echo "packing $(basename $i)"
+        echo "$(tput setaf 8)packing $(basename $i)$(tput sgr0)"
         (cd $i && npm pack >& /dev/null && mv kui-shell*.tgz /tmp/kui-packs) &
     fi
 done
 
 for i in packages/*; do
     if [ -d $i ]; then
-        echo "packing $(basename $i)"
+        echo "$(tput setaf 8)packing $(basename $i)$(tput sgr0)"
         (cd $i && npm pack >& /dev/null && mv kui-shell*.tgz /tmp/kui-packs) &
     fi
 done
 
 wait
 
-echo "done: packs generated in /tmp/kui-packs"
+echo "$(tput setaf 2)done:$(tput sgr0) packs generated in /tmp/kui-packs"

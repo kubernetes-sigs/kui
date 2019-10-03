@@ -15,6 +15,9 @@
     "kui",
     "plugin"
   ],
+  "scripts": {
+    "start": "bin/www"
+  },
   "bin": {
     "start-proxy": "bin/www"
   },
@@ -23,8 +26,8 @@
     "cookie-parser": "1.4.4",
     "cors": "2.8.5",
     "debug": "4.1.1",
-    "express": "4.16.4",
+    "express": "4.17.1",
     "morgan": "1.9.1",
-    "uuid": "3.3.2"
+    "uuid": "3.3.3"
   }
 }

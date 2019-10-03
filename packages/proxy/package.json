@@ -17,12 +17,12 @@
   ],
   "bin": {
     "kui-build-proxy": "./build.sh",
-    "kui-run-proxy": "./bin/run-proxy.sh"
+    "kui-run-proxy": "./app/bin/run-proxy.sh"
   },
   "scripts": {
     "build": "./build.sh",
-    "build-docker": "docker build . -t kui-proxy",
-    "start": "./bin/start-proxy.sh"
+    "postinstall": "if [ -d app ]; then cd app && npm ci; fi",
+    "start": "./app/bin/run-proxy.sh"
   },
   "kui": {
     "headless": false,

@@ -4,3 +4,6 @@ tests/data.keys
 dist/src/test
 tsconfig*
 /*.tgz
+app/node_modules
+*~
+/doc/

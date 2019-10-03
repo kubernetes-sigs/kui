@@ -41,7 +41,9 @@ function init {
 # install the proxy-specific build bits
 function initProxy {
     pushd "$STAGING_DIR" > /dev/null
-    cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore,app} .
+    cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore} .
+    mkdir -p kui/packages/proxy
+    cp -a "$PROXY_HOME"/app kui/packages/proxy
 
     # mkdir .kube and .bluemix if they don't exist, see issue: https://github.com/IBM/kui/issues/1647
     if [ -z "$NO_DOCKER" ]; then
@@ -90,8 +92,8 @@ function clean {
 # this is the main routine
 function build {
     init
-    initProxy
     headless
+    initProxy
     cert
     docker
     clean

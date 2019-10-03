@@ -21,16 +21,11 @@ const express = require('express')
 const { v4: uuid } = require('uuid')
 const { parse: parseCookie } = require('cookie')
 
-/* const { main } = require('../../kui/node_modules/@kui-shell/core')
-const {
-  setValidCredentials
-} = require('../../kui/node_modules/@kui-shell/core/core/capabilities') */
-
 const sessionKey = 'kui_websocket_auth'
 
-const mainPath = join(dirname(require.resolve('../../kui/node_modules/@kui-shell/core')), 'main/main.js')
-const { main: wssMain } = require('../../kui/node_modules/@kui-shell/plugin-bash-like')
-const { StdioChannelWebsocketSide } = require('../../kui/node_modules/@kui-shell/plugin-bash-like')
+const mainPath = join(dirname(require.resolve('@kui-shell/core')), 'main/main.js')
+const { main: wssMain } = require('@kui-shell/plugin-bash-like')
+const { StdioChannelWebsocketSide } = require('@kui-shell/plugin-bash-like')
 
 process.on('uncaughtException', async err => {
   debug('uncaughtException')

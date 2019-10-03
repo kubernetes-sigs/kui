@@ -39,7 +39,7 @@ start() {
     echo "$PID" > /tmp/kuiproxy.pid
     echo "start proxy $PID"
 
-    cd "$ROOT"/kui && "$ROOT"/app/bin/www &
+    cd "$ROOT"/kui/packages/proxy && ./app/bin/www &
     SUB=$!
     echo $SUB > /tmp/kuiproxy_subprocess.pid
 
