@@ -88,5 +88,8 @@ popd
 # we expect "docker not found" error on travis osx
 # we still want to test the webpack build logic before building docker image
 #
+echo "building external clients"
+./clients/bin/mkclient.sh
+
 echo "starting webpack dev server"
-nohup npm run watch:webpack 2>&1 | tee nohup.out &
+(cd kui-stage && nohup npm run webpack 2>&1 | tee nohup.out &)
