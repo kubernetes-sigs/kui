@@ -9,10 +9,5 @@
     "paths": {
       "@kui-shell/plugin-bash-like/web/*": ["web/*"]
     }
-  },
-  "references": [
-    {
-      "path": "../plugin-core-support"
-    }
-  ]
+  }
 }
