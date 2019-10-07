@@ -15,11 +15,12 @@
  */
 
 import Debug from 'debug'
-const debug = Debug('core/preloader')
+const debug = Debug('core/plugins/preloader')
 debug('loading')
 
-import { proxy } from './command-tree'
 import { PrescanModel } from './prescan'
+
+import { proxy } from '../core/command-tree'
 import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
 
 /**
@@ -57,7 +58,7 @@ export default async (prescan: PrescanModel) => {
           debug('preloading misc %s', module.path)
           // NOTE ON @kui-shell relativization: this is important so that
           // webpack can be isntructed to pull in the plugins into the
-          // build see the corresponding NOTE in ./plugin-assembler.ts and
+          // build see the corresponding NOTE in ./assembler.ts and
           // ./plugins.ts
           const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
           const registration: PreloadRegistration = registrationRef.default || registrationRef

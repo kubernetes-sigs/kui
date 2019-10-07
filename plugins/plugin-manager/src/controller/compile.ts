@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, Errors, i18n, Plugins } from '@kui-shell/core'
+import { Commands, Errors, eventBus, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-manager')
 
@@ -33,10 +33,11 @@ const usage: Errors.UsageModel = {
 export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/plugin/compile',
-    async ({ argvNoOptions }) => {
-      await Plugins.compile(argvNoOptions[argvNoOptions.indexOf('compile') + 1])
-      return true
-    },
+    async ({ argvNoOptions }) =>
+      new Promise(resolve => {
+        eventBus.once('/plugin/compile/done', () => resolve(true))
+        eventBus.emit('/plugin/compile/request', argvNoOptions[argvNoOptions.indexOf('compile') + 1])
+      }),
     { usage }
   )
 }

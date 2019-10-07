@@ -181,13 +181,14 @@ const table = (
   }
 }
 
-const usage = (command: string): Errors.UsageModel => ({
+const usage = (command: string, hide = false): Errors.UsageModel => ({
   title: command,
   command,
   configuration: {
     // kubectl and helm don't have short option combining semantics
     'short-option-groups': false
   },
+  hide,
   noHelp: true // kubectl and helm both provide their own -h output
 })
 
@@ -783,7 +784,7 @@ const flags = {
  */
 export default async (commandTree: Commands.Registrar) => {
   await commandTree.listen('/k8s/_kubectl', _kubectl, {
-    usage: usage('kubectl'),
+    usage: usage('kubectl', true),
     flags,
     requiresLocal: true,
     noAuthOk: ['openwhisk']

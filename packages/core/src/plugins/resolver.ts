@@ -16,12 +16,13 @@
 
 import Debug from 'debug'
 
-import { proxy } from './command-tree'
 import { PrescanModel } from './prescan'
-import { KuiPlugin, PluginRegistration } from '../models/plugin'
-import { CommandBase } from '../models/command'
 
-const debug = Debug('core/plugin-resolver')
+import { proxy } from '../core/command-tree'
+import { CommandBase } from '../models/command'
+import { KuiPlugin, PluginRegistration } from '../models/plugin'
+
+const debug = Debug('core/plugins/resolver')
 
 export interface PluginResolver {
   resolve: (route: string, options?: { subtree: boolean }) => void
@@ -50,7 +51,7 @@ const prequire = async (
           try {
             // NOTE ON @kui-shell relativization: this is important so that
             // webpack can be instructed to pull in the plugins into the build
-            // see the corresponding NOTE in ./plugin-assembler.ts and ./preloader.ts
+            // see the corresponding NOTE in ./assembler.ts and ./preloader.ts
             const registrationRef =
               module.path.charAt(0) === '/'
                 ? await import(module.path)

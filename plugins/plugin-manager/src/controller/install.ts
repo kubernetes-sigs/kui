@@ -57,6 +57,7 @@ const doInstall = async ({ argvNoOptions }: Commands.Arguments) => {
   const rootDir = Settings.userDataDir()
   const pluginHome = join(rootDir, 'plugins')
   const targetDir = join(pluginHome, basename(name)) // final location of the plugin
+  await ensureDir(targetDir)
 
   debug(`installing ${name} into pluginHome=${pluginHome} targetDir=${targetDir}`)
 
@@ -67,11 +68,11 @@ const doInstall = async ({ argvNoOptions }: Commands.Arguments) => {
     throw new Error('npm could not be found. Please install npm and try again')
   }
 
-  const { npm, env } = resolved
+  const { npm } = resolved
 
   // npm init
   await new Promise((resolve, reject) => {
-    execFile(npm, ['init', '-y'], { cwd: pluginHome, env }, (error, stdout, stderr) => {
+    execFile(npm, ['init', '-y'], { cwd: pluginHome }, (error, stdout, stderr) => {
       if (error) {
         return reject(error)
       }
@@ -91,8 +92,7 @@ const doInstall = async ({ argvNoOptions }: Commands.Arguments) => {
     const args = ['install', name, '--prod', '--no-package-lock']
     debug('npm install args', args)
     const sub = spawn(npm, args, {
-      cwd: pluginHome,
-      env
+      cwd: pluginHome
     })
 
     if (!sub) {
@@ -127,13 +127,14 @@ const doInstall = async ({ argvNoOptions }: Commands.Arguments) => {
         //
         // NOTE: fs.move doesn't work on linux; fs-extra seems to do hard links?? hence the use of fs.copy
         //
-        ensureDir(targetDir)
-          //          .then(() => fs.copy(join(pluginHome, 'node_modules', name), targetDir))
-          //          .then(() => fs.copy(join(pluginHome, 'node_modules'), join(targetDir, 'node_modules')))
-          .then(() => REPL.qexec(`plugin compile`))
-          // .then(([newCommands]) => success('installed', 'will be available, after reload', newCommands))
-          .then(() => resolve(true))
-          .catch(reject)
+        //          .then(() => fs.copy(join(pluginHome, 'node_modules', name), targetDir))
+        //          .then(() => fs.copy(join(pluginHome, 'node_modules'), join(targetDir, 'node_modules')))
+        return (
+          REPL.qexec(`plugin compile`)
+            // .then(([newCommands]) => success('installed', 'will be available, after reload', newCommands))
+            .then(() => resolve(true))
+            .catch(reject)
+        )
       }
     })
   })

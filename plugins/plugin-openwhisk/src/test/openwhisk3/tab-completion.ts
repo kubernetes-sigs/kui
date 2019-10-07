@@ -105,7 +105,7 @@ describe('Tab completion openwhisk', function(this: Common.ISuite) {
             }
           })
           .then(() => app.client.getText(`${Selectors.PROMPT_BLOCK_N(count)} .tab-completion-temporary .clickable`))
-          .then(Util.expectArray(expected))
+          .then(Util.expectArray(expected, false, true))
           // .then(() => { console.error('Got expected options') })
           .then(() => {
             if (click !== undefined) {
@@ -222,12 +222,11 @@ describe('Tab completion openwhisk', function(this: Common.ISuite) {
       .catch(Common.oops(this))
   })
 
-  it('should auto complete wsk command', () => tabby(this.app, 'ws', 'wsk', false))
   it('should auto complete wsk rules command', () => tabby(this.app, 'wsk rul', 'wsk rules', false))
   it('should auto complete wsk triggers command', () => tabby(this.app, 'wsk trig', 'wsk triggers', false))
 
   it('should tab complete wsk action', () =>
-    tabbyWithOptions(this.app, 'wsk ac', ['wsk action', 'wsk activations'], 'wsk actions ', {
+    tabbyWithOptions(this.app, 'wsk ac', ['wsk actions', 'wsk activations'], 'wsk actions ', {
       click: 0,
       expectOK: false
     }))
