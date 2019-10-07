@@ -2084,9 +2084,6 @@ body.subwindow sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
 body.subwindow .repl-block {
   background-color: transparent;
 }
-body.subwindow .graphical-icon {
-  width: 2.5vmin;
-}
 body.subwindow sidecar .sidecar-bottom-stripe {
   font-size: 2vmin;
 }
