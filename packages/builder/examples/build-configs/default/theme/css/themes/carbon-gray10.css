@@ -133,6 +133,9 @@ body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .line-numbers {
 body[kui-theme="Carbon Gray10"] .monaco-editor .current-line ~ .line-numbers {
   color: #fa75a6;
 }
+body[kui-theme="Carbon Gray10"] sidecar .repl-input input {
+  color: var(--color-text-inverted01);
+}
 body[kui-theme="Carbon Gray10"] .kui--input-stripe .repl-input {
   background-color: var(--color-base04);
 }
