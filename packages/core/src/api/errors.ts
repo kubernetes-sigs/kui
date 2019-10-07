@@ -30,6 +30,7 @@ export namespace Errors {
   export import isCodedError = _Errors.isCodedError
 
   export import UsageModel = Usage.UsageModel
+  export import UsageRow = Usage.UsageRow
   export import UsageError = Usage.UsageError
   export import isUsageError = Usage.isUsageError
 }

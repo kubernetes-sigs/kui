@@ -20,11 +20,20 @@ import { join } from 'path'
 
 import { Commands, Errors, i18n, Plugins, Tables } from '@kui-shell/core'
 
-import { list as usage } from '../usage'
-
-const strings = i18n('plugin-core-support')
-
+const strings = i18n('plugin-manager')
 const debug = Debug('plugins/plugin-manager/cmd/list')
+
+/**
+ * Format usage message
+ *
+ */
+const usage: Errors.UsageModel = {
+  strict: 'list',
+  command: 'list',
+  breadcrumb: strings('List plugins'),
+  docs: strings('list installed plugins'),
+  example: 'plugin list'
+}
 
 interface Version {
   name: string

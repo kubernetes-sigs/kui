@@ -18,12 +18,26 @@ import Debug from 'debug'
 import { join } from 'path'
 import { execFile } from 'child_process'
 
-import { Commands, REPL, Settings } from '@kui-shell/core'
+import { Commands, Errors, i18n, REPL, Settings } from '@kui-shell/core'
 
 import locateNpm from '../util/locate-npm'
-import { remove as usage } from '../usage'
+import { installedPlugin } from '../util/usage-common'
 
+const strings = i18n('plugin-manager')
 const debug = Debug('plugins/plugin-manager/cmd/remove')
+
+/**
+ * Usage model for plugin remove
+ *
+ */
+const usage = (command: string): Errors.UsageModel => ({
+  strict: command,
+  command,
+  breadcrumb: strings('Remove plugin'),
+  docs: strings('remove an installed plugin'),
+  example: 'plugin remove <plugin>',
+  required: installedPlugin
+})
 
 const doRemove = async ({ argvNoOptions }: Commands.Arguments) => {
   debug('command execution started')

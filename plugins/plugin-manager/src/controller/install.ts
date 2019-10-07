@@ -19,12 +19,29 @@ import { ensureDir } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'
 
-import { Commands, REPL, Settings } from '@kui-shell/core'
+import { Commands, Errors, i18n, REPL, Settings } from '@kui-shell/core'
 
 import locateNpm from '../util/locate-npm'
-import { install as usage } from '../usage'
 
+const strings = i18n('plugin-manager')
 const debug = Debug('plugins/plugin-manager/cmd/install')
+
+/**
+ * Usage model for plugin install
+ *
+ */
+const usage: Errors.UsageModel = {
+  strict: 'install',
+  command: 'install',
+  breadcrumb: strings('Install plugin'),
+  docs: strings('install a plugin'),
+  example: 'plugin install <plugin>',
+  detailedExample: {
+    command: 'plugin install @kui-shell/plugin-sample',
+    docs: strings('a simple example plugin')
+  },
+  required: [{ name: 'plugin', docs: 'an npm module or github link' }]
+}
 
 /**
  * This is the command handler for `plugin install`
