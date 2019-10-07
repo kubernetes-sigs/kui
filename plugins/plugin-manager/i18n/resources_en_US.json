@@ -1,3 +1,14 @@
 {
+  "the home directory for user-installed plugins": "the home directory for user-installed plugins",
+  "list commands offered by an installed shell plugin": "list commands offered by an installed shell plugin",
+  "for advanced use: recompile plugin registry": "for advanced use: recompile plugin registry",
+  "offered commands": "offered commands",
+  "Install plugin": "Install plugin",
+  "install a plugin": "install a plugin",
+  "a simple example plugin": "a simple example plugin",
+  "Remove plugin": "Remove plugin",
+  "remove an installed plugin": "remove an installed plugin",
+  "List plugins": "List plugins",
+  "list installed plugins": "list installed plugins",
   "No user-installed plugins found": "No user-installed plugins found"
 }
