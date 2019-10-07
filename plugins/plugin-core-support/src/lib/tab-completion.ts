@@ -655,7 +655,7 @@ const filterAndPresentEntitySuggestions = (
  *
  */
 const suggestCommandCompletions = (
-  matches,
+  _matches,
   partial: string,
   block: HTMLElement,
   prompt: HTMLInputElement,
@@ -663,7 +663,7 @@ const suggestCommandCompletions = (
 ) => {
   // don't suggest anything without a usage model, and then align to
   // the addSuggestion model
-  matches = matches
+  const matches = _matches
     .filter(({ usage, docs }) => usage || docs)
     .map(
       ({
@@ -677,7 +677,7 @@ const suggestCommandCompletions = (
           header: undefined
         }
       }) => ({
-        label: usage.command || usage.commandPrefix,
+        label: command,
         completion: command,
         addSpace: true,
         docs: usage.title || usage.header || usage.docs // favoring shortest first

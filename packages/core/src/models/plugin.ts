@@ -16,7 +16,7 @@
 
 import { CommandRegistrar } from './command'
 
-import { PrescanUsage } from '../core/prescan'
+import { PrescanUsage } from '../plugins/prescan'
 
 export type KuiPlugin = void | Promise<void>
 

@@ -27,20 +27,22 @@ import {
   CatchAllOffer,
   CatchAllHandler,
   Command,
-  CommandBase,
   CommandHandlerWithEvents,
   CommandOptions,
   Event
 } from '../models/command'
 
 import eventBus from './events'
-import { UsageError } from './usage-error'
+import { UsageError, UsageModel } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Tab } from '../webapp/cli'
-import { PluginResolver } from './plugin-resolver'
 import { theme } from './settings'
+
+import { prescanModel } from '../plugins/plugins'
+import { PrescanUsage } from '../plugins/prescan'
+import { PluginResolver } from '../plugins/resolver'
 
 /**
  * The command tree module
@@ -356,6 +358,8 @@ export const intention = (route: string, handler: CommandHandler, options: Comma
 const commandNotFoundMessage = 'Command not found'
 const commandNotFoundMessageWithPartialMatches = 'The following commands are partial matches for your request.'
 
+type PartialMatch = { route: string; usage?: UsageModel }
+
 /**
  * Help the user with some partial matches for a command not found
  * condition. Here, we reuse the usage-error formatter, to present the
@@ -366,13 +370,13 @@ const commandNotFoundMessageWithPartialMatches = 'The following commands are par
  * command completions to what they typed.
  *
  */
-const formatPartialMatches = (partialMatches: Command[]): UsageError => {
+const formatPartialMatches = (partialMatches: PartialMatch[]): UsageError => {
   return new UsageError(
     {
       message: commandNotFoundMessage,
       usage: {
         header: commandNotFoundMessageWithPartialMatches,
-        available: partialMatches.map(({ options }) => options.usage)
+        available: partialMatches.map(_ => _.usage)
       }
     },
     { noBreadcrumb: true, noHide: true }
@@ -381,13 +385,12 @@ const formatPartialMatches = (partialMatches: Command[]): UsageError => {
 
 export const suggestPartialMatches = (
   command: string,
-  partialMatches?: Command[],
+  partialMatches?: PartialMatch[],
   noThrow = false,
   hide = false
 ): CodedError => {
-  // filter out any partial matches without usage info
-  const availablePartials = (partialMatches || []).filter(({ options }) => options.usage)
-  const anyPartials = availablePartials.length > 0
+  const availablePartials = partialMatches && partialMatches.filter(_ => _.usage)
+  const anyPartials = availablePartials && availablePartials.length > 0
 
   const error: CodedError = anyPartials
     ? formatPartialMatches(availablePartials)
@@ -401,7 +404,7 @@ export const suggestPartialMatches = (
         .split('/')
         .slice(1)
         .join(' '),
-      usage: _.options && _.options.usage
+      usage: _.usage
     }))
   } else {
     error.hide = hide
@@ -419,7 +422,11 @@ export const suggestPartialMatches = (
  * @return a command handler with success and failure event handlers
  *
  */
-const withEvents = (evaluator: CommandHandler, leaf: Command, partialMatches?: Command[]): CommandHandlerWithEvents => {
+const withEvents = (
+  evaluator: CommandHandler,
+  leaf: Command,
+  partialMatches?: PartialMatch[]
+): CommandHandlerWithEvents => {
   // let the world know we have resolved a command, and are about to evaluate it
   const event: Event = {
     // context: currentContext()
@@ -479,6 +486,27 @@ const withEvents = (evaluator: CommandHandler, leaf: Command, partialMatches?: C
 }
 
 /**
+ * Parse a serialized command context
+ *
+ */
+function parseCommandContext(str: string): string[] {
+  if (str) {
+    try {
+      // let's assume str is of the form '["a", "b"]'
+      return JSON.parse(str)
+    } catch (err1) {
+      // ok, that didn't work; let's see if it's of the form '/a/b'
+      try {
+        return str.split('/').filter(_ => _)
+      } catch (err2) {
+        console.error(`Could not parse command context ${str}`, err1, err2)
+      }
+    }
+  }
+  return undefined
+}
+
+/**
  * The default command execution context. For example, if the
  * execution context is /foo/bar, and there is a command /foo/bar/baz,
  * then the issuance of a command "baz" will resolve to /foo/bar/baz.
@@ -487,7 +515,8 @@ const withEvents = (evaluator: CommandHandler, leaf: Command, partialMatches?: C
  * by calling `setDefaultCommandContext`.
  *
  */
-let _defaultContext: string[] = (theme && theme.defaultContext) || []
+let _defaultContext: string[] =
+  (theme && theme.defaultContext) || parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || []
 export const getDefaultCommandContext = () => _defaultContext
 
 /**
@@ -666,7 +695,7 @@ const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHan
  * We could not find a registered command handler
  *
  */
-const commandNotFound = (argv: string[], partialMatches?: Command[], execOptions?: ExecOptions) => {
+const commandNotFound = (argv: string[], partialMatches?: PartialMatch[], execOptions?: ExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
@@ -695,41 +724,24 @@ const commandNotFound = (argv: string[], partialMatches?: Command[], execOptions
  * for some command at this root. Return all such prefix matches.
  *
  */
-const findPartialMatchesAt = (subtree: Command, partial: string): Command[] => {
+const findPartialMatchesAt = (usage: PrescanUsage, partial: string): PartialMatch[] => {
   const matches = []
 
-  if (subtree && subtree.children && partial) {
-    for (const cmd in subtree.children) {
-      if (cmd.indexOf(partial) === 0) {
-        const match = subtree.children[cmd]
-        if (!match.options || (!match.options.synonymFor && !match.options.hide)) {
-          // don't include synonyms or hidden commands
-          matches.push(match)
-        }
-      }
+  function maybeAdd(match: PartialMatch) {
+    if (match.route.indexOf(partial) >= 0 && (!match.usage || (!match.usage.synonymFor && !match.usage.hide))) {
+      matches.push(match)
+    }
+  }
+
+  for (const route in usage) {
+    maybeAdd(usage[route])
+
+    for (const cmd in usage[route].children) {
+      maybeAdd(usage[route].children[cmd])
     }
   }
 
   return matches
-}
-
-/** remove duplicates of leaf nodes from a given array */
-const removeDuplicates = async <T extends CommandBase>(arr: T[]): Promise<T[]> => {
-  const init: { M: Record<string, boolean>; A: T[] } = { M: {}, A: [] }
-
-  return (await Promise.all(arr))
-    .filter(x => x)
-    .reduce((state, item) => {
-      const { M, A } = state
-      // const route = item.route
-
-      if (item && !M[item.route]) {
-        M[item.route] = true
-        A.push(item)
-      }
-
-      return state
-    }, init).A
 }
 
 export function isSuccessfulCommandResolution(
@@ -793,29 +805,29 @@ export const read = async (
   if (!cmd) {
     // command not found, but maybe we can find partial matches
     // that might be helpful?
-    let matches: Command[]
+    let matches: PartialMatch[]
 
     if (argv.length === 1) {
       // disambiguatePartial takes a partial command, and
       // returns an array of matching full commands, which we
       // can turn into leafs via `disambiguate`
-      const unambiguous = (await Promise.all(
+      /* const unambiguous = (await Promise.all(
         resolver
           .disambiguatePartial(argv[0])
           .map(_ => [_])
           .map(_ => disambiguate(_))
       ))
         .filter(x => x)
-        .map(_ => _.subtree)
+        .map(_ => _.subtree) */
 
-      matches = await removeDuplicates(findPartialMatchesAt(model, argv[0]).concat(unambiguous))
+      matches = await findPartialMatchesAt(prescanModel().usage, argv[0])
     } else {
       const allButLast = argv.slice(0, argv.length - 1)
       const last = argv[argv.length - 1]
 
       const parent = (await internalRead(model, allButLast)) || (await disambiguate(allButLast))
       if (parent) {
-        matches = await removeDuplicates(findPartialMatchesAt(parent.subtree, last))
+        matches = await findPartialMatchesAt(prescanModel().usage, last)
       }
     }
 

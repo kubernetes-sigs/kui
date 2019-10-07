@@ -27,7 +27,6 @@
   },
   "kui": {
     "webpack": false,
-    "electron": false,
     "headless": false,
     "proxy": false
   },

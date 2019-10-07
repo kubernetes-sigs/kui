@@ -680,6 +680,7 @@ sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container
   flex: 1;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
   /* back button container in sidecar bottom stripe */
@@ -727,9 +728,11 @@ body:not(.subwindow) tab:not(.sidecar-full-screen) sidecar .sidecar-bottom-strip
 }
 sidecar .sidecar-bottom-stripe .package-prefix {
   /* kubectl namespace and openwhisk package name, etc. */
-  display: flex;
-  align-items: center;
+  display: block;
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 sidecar .sidecar-bottom-stripe .package-prefix:first-letter {
   /* first-letter avoids README.md -> README.Md */
@@ -963,9 +966,11 @@ sidecar .sidecar-header-icon-wrapper + .sidecar-header-icon-wrapper > span:not(:
 sidecar .sidecar-header-icon-wrapper {
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 sidecar .header-left-bits {
   align-items: stretch;
+  overflow: hidden;
 }
 sidecar .sidecar-header-icon {
   font-weight: 600;

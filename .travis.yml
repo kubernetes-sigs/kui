@@ -19,6 +19,7 @@ env:
       NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
 
     - SCRIPTS="build-webpack-client.sh lint.sh typecov.sh"
+      WAIT_LAYERS="manager"
       LAYERS="openwhisk1 openwhisk3 grid"
       MOCHA_TARGETS="webpack electron"
       KUI_USE_PROXY=false
@@ -78,7 +79,7 @@ env:
 matrix:
   exclude:
     - os: osx
-      env: SCRIPTS="build-webpack-client.sh lint.sh typecov.sh" LAYERS="openwhisk1 openwhisk3 grid" MOCHA_TARGETS="webpack electron" KUI_USE_PROXY=false NEEDS_OPENWHISK=true
+      env: SCRIPTS="build-webpack-client.sh lint.sh typecov.sh" WAIT_LAYERS="manager" LAYERS="openwhisk1 openwhisk3 grid" MOCHA_TARGETS="webpack electron" KUI_USE_PROXY=false NEEDS_OPENWHISK=true
     - os: osx
       env: LAYERS="openwhisk2 openwhisk4 composer1 composer2" MOCHA_TARGETS="electron" NEEDS_OPENWHISK=true NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_NODEJS8=true NEEDS_OPENWHISK_JAVA8=true NEEDS_SECOND_OPENWHISK_AUTH=true
     - os: osx

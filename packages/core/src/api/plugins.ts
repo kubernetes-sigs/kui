@@ -32,7 +32,7 @@ export namespace Plugins {
    * mandatory; this will be the *caller's responsibility*.
    */
   export const compile = async (pluginToBeRemoved?: string) => {
-    const { compileUserInstalled } = await import('../core/plugin-assembler')
+    const { compileUserInstalled } = await import('../plugins/assembler')
     compileUserInstalled(pluginToBeRemoved)
   }
 
@@ -41,7 +41,7 @@ export namespace Plugins {
    *
    */
   export const userHome = async () => {
-    const { userInstalledHome } = await import('../core/plugins')
+    const { userInstalledHome } = await import('../plugins/plugins')
     return userInstalledHome()
   }
 
@@ -52,7 +52,7 @@ export namespace Plugins {
    * given plugin
    */
   export const commandsOffered = async (plugin?: string) => {
-    const commandsOffered = await import('../core/plugin-commands')
+    const commandsOffered = await import('../plugins/commands')
     return commandsOffered.default(plugin)
   }
 }

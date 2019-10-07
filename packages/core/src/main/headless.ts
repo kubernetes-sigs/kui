@@ -23,7 +23,7 @@ debug('loading')
 import { Entity } from '../models/entity'
 import { installOopsHandler, exec } from '../core/repl'
 import mimicDom from '../util/mimic-dom'
-import { preload, init as pluginsInit } from '../core/plugins'
+import { preload, init as pluginsInit } from '../plugins/plugins'
 import { CodedError } from '../models/errors'
 import UsageError from '../core/usage-error'
 import { ExecOptions } from '../models/execOptions'
@@ -227,7 +227,7 @@ export const main = async (
   // prescan model; this saves us around 5ms as of 20190709
   const waitForPlugins = pluginsInit()
 
-  const ourCommandContext = rawArgv.find(_ => !!_.match(commandContextPattern))
+  const ourCommandContext = rawArgv.find(_ => commandContextPattern.test(_))
   debug('commandContext', ourCommandContext)
   if (!commandContext && ourCommandContext) {
     commandContext = ourCommandContext
@@ -237,7 +237,7 @@ export const main = async (
     .slice(argStart)
     .filter(
       arg =>
-        !arg.match(commandContextPattern) &&
+        !commandContextPattern.test(arg) &&
         arg !== '--kui-headless' &&
         arg !== '-v' &&
         arg !== '--raw-output' &&

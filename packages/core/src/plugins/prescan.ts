@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { Disambiguator, CatchAllHandler } from '../models/command'
+import { UsageModel } from '../core/usage-error'
+import { Disambiguator, CapabilityRequirements, CatchAllHandler } from '../models/command'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PrescanUsage {}
+export interface PrescanNode extends CapabilityRequirements {
+  route: string
+  usage?: UsageModel
+  docs?: string
+  synonyms?: string[]
+  synonymFor?: string
+  children?: Record<string, PrescanNode>
+}
+
+export type PrescanUsage = Record<string, PrescanNode>
 
 interface PrescanCommandDefinition {
   route: string

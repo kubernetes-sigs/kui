@@ -47,7 +47,7 @@ export function expectSuggestionsFor(
 
       return this.app.client
         .getText(availableItems)
-        .then(Util.expectArray(expectedAvailable))
+        .then(Util.expectArray(expectedAvailable, false, true))
         .then(() => {
           if (click !== undefined) {
             // then click on the given index; note that nth-child is 1-indexed, hence the + 1 part
