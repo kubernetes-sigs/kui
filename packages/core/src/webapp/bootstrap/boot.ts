@@ -28,7 +28,7 @@ function catastrophe(err: Error) {
 // note: the q npm doesn't like functions called "bootstrap"!
 const domReady = () => async () => {
   const initializer = import('./init')
-  const plugins = import('../../core/plugins')
+  const plugins = import('../../plugins/plugins')
   const cli = import('../../webapp/cli')
   const sidecar = import('../views/sidecar')
   const electronEvents = import('../electron-events')

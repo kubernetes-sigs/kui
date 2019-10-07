@@ -23,6 +23,7 @@ debug('loading')
 import { isHeadless } from './capabilities'
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
+import { CapabilityRequirements } from '../models/command'
 import { isHTML } from '../util/types'
 import { pexec, qexec } from '../core/repl'
 
@@ -813,7 +814,7 @@ interface TitledContent {
   content: string
 }
 
-export interface UsageModel {
+export interface UsageModel extends CapabilityRequirements {
   // usage generator
   fn?: (command: string) => UsageModel
 
@@ -828,6 +829,11 @@ export interface UsageModel {
 
   // yargs-parser configuration to override the default settings
   configuration?: Record<'short-option-groups', string | boolean | number>
+
+  hide?: boolean
+  children?: Record<string, { route: string; usage?: UsageModel }>
+  synonymFor?: string
+  synonyms?: string[]
 
   breadcrumb?: string
   title?: string

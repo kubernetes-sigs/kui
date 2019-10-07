@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,123 +15,37 @@
  */
 
 import Debug from 'debug'
+import { join, relative } from 'path'
+import { ensureFile, writeFile } from 'fs-extra'
 
-import { readFile, readdirSync, statSync, writeFile } from 'fs-extra'
-import { basename, join, relative } from 'path'
-
-import { PrescanCommandDefinitions, PrescanDocs, PrescanModel, PrescanUsage } from './prescan'
 import * as plugins from './plugins'
-import { getModel, cullFromDisambiguator } from './command-tree'
+import { assemble } from './scanner'
+import { PrescanCommandDefinitions, PrescanDocs, PrescanNode, PrescanModel, PrescanUsage } from './prescan'
 
-const debug = Debug('core/plugin-assembler')
+import eventBus from '../core/events'
+import { getModel, cullFromDisambiguator } from '../core/command-tree'
+
+const debug = Debug('core/plugins/assembler')
 
 /**
- * Return the location of the pre-scanned cache file
+ * Return the location of the serialized `PrescanModel` that
+ * represents the model that ships with a client (as opposed to the
+ * model that represents user-installed plugins)
  *
  */
 const prescanned = (): string => require.resolve('@kui-shell/prescan')
 
 /**
- * Write the plugin list to the .pre-scanned.json file in app/plugins/.pre-scanned.json
+ * Serialize a `PrescanModel` to disk
  *
  */
 const writePrescanned = async (modules: PrescanModel, destFile = prescanned()): Promise<void> => {
   debug('writePrescanned', process.cwd(), destFile, modules)
 
   const str = JSON.stringify(modules)
+  await ensureFile(destFile)
   await writeFile(destFile, str)
 }
-
-/**
- * Read the current .pre-scanned.json file
- *
- */
-const readPrescanned = async (): Promise<Prescan> => {
-  try {
-    const data = (await readFile(prescanned())).toString()
-
-    if (data.trim().length === 0) {
-      // it was empty
-      return {}
-    } else {
-      return JSON.parse(data)
-    }
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      debug('no file to read %s')
-      return {}
-    } else {
-      console.error(err)
-      throw err
-    }
-  }
-}
-
-/**
- * Find what's new in after versus before, two structures
- *
- */
-const diff = (beforeModel: Prescan, afterModel: Prescan, reverseDiff = false): PrescanDiff => {
-  const { commandToPlugin: before } = beforeModel
-  const { commandToPlugin: after } = afterModel
-
-  const A = (reverseDiff ? after : before) || []
-  const B = (reverseDiff ? before : after) || []
-
-  const changes = []
-  for (const key in B) {
-    if (!(key in A)) {
-      changes.push(key.replace(/^\//, '').replace('/', ' '))
-    }
-  }
-
-  return changes
-}
-
-/**
- * Generic filesystem scanning routine
- *     Note that, when scanning for plugins, we ignore subdirectories named "helpers"
- *
- */
-const readDirRecursively = (dir: string): string[] => {
-  if (
-    basename(dir) !== 'helpers' &&
-    basename(dir) !== 'bin' &&
-    basename(dir) !== 'modules' &&
-    basename(dir) !== 'node_modules' &&
-    statSync(dir).isDirectory()
-  ) {
-    return Array.prototype.concat(...readdirSync(dir).map((f: string) => readDirRecursively(join(dir, f))))
-  } else {
-    return [dir] // was dir
-  }
-}
-
-/**
- * Scan the given directory, recursively, for javascript files
- *
- */
-export const scanForJsFiles = (dir: string) => readDirRecursively(dir).filter(s => s.endsWith('.js'))
-
-interface File {
-  path: string
-  root?: boolean
-}
-
-interface Node {
-  route: string
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  usage?: Object
-  docs?: string
-  children?: { [key: string]: Node }
-}
-
-interface Prescan {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  commandToPlugin?: Object
-}
-
-type PrescanDiff = string[]
 
 /**
  * Make a tree out of a flat map.
@@ -155,11 +69,11 @@ const makeTree = (map: PrescanUsage, docs: PrescanDocs) => {
   keys.sort()
 
   /** create new node */
-  const newLeaf = (route: string): Node => ({ route })
-  const newNode = (route: string): Node => Object.assign(newLeaf(route), { children: {} })
+  const newLeaf = (route: string): PrescanNode => ({ route })
+  const newNode = (route: string): PrescanNode => Object.assign(newLeaf(route), { children: {} })
 
   /** get or create a subtree */
-  const getOrCreate = (tree: Node, pathPrefix: string) => {
+  const getOrCreate = (tree: PrescanNode, pathPrefix: string) => {
     if (!tree.children) {
       tree.children = {}
     }
@@ -184,7 +98,7 @@ const makeTree = (map: PrescanUsage, docs: PrescanDocs) => {
     if (!subtree.children) subtree.children = {}
     const leaf = (subtree.children[route] = newLeaf(route))
     leaf.usage = map[route]
-    leaf.docs = map[route].header || docs[route]
+    leaf.docs = (leaf.usage && leaf.usage.header) || docs[route]
 
     return tree
   }, newNode('/'))
@@ -205,10 +119,11 @@ const amendWithUsageModels = (modules: PrescanModel) => {
 
   getModel().forEachNode(({ route, options, synonyms }) => {
     if (options && options.usage) {
-      modules.usage[route] = options.usage
+      modules.usage[route] = Object.assign({ route }, options.usage)
+
       if (options.needsUI) modules.usage[route].needsUI = true
       if (options.requiresLocal) modules.usage[route].requiresLocal = true
-      if (options.noAuthOk) modules.usage[route].noAuthOk = true
+      // if (options.noAuthOk) modules.usage[route].noAuthOk = true
       if (options.synonymFor) modules.usage[route].synonymFor = options.synonymFor.route
       if (synonyms) modules.usage[route].synonyms = Object.keys(synonyms).map(route => synonyms[route].key)
       if (options.usage.docs) {
@@ -230,23 +145,21 @@ const amendWithUsageModels = (modules: PrescanModel) => {
 }
 
 /**
- * assemble the list of plugins, then minify the plugins, if we can,
- * and write the list to the .pre-scanned.json file
+ * Assemble the plugin `PrescanModel`, and serialize it to disk. This
+ * code is called both for assembling the model that is shipped with a
+ * client, and (via `compileUserInstalled`, below) for assembling, on
+ * the fly, the registry for user-installed plugins.
  *
  */
 export const compile = async (
   pluginRoot = process.env.PLUGIN_ROOT || join(__dirname, plugins.pluginRoot),
-  externalOnly = false,
-  reverseDiff = false
+  externalOnly = false
 ) => {
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 
-  const before = await readPrescanned()
-  debug('before', before)
-
-  // const modules = await plugins.assemble({ pluginRoot, externalOnly })
-  const modules = await plugins.assemble({ externalOnly, pluginRoot })
+  const modules = await assemble(plugins.registrar, { externalOnly, pluginRoot })
+  debug('modules', modules)
 
   /** make the paths relative to the root directory */
   const fixupOnePath = (filepath: string): string => {
@@ -277,11 +190,12 @@ export const compile = async (
     // then this is a live install, we need to smash it into the live model
     plugins._useUpdatedUserPrescan(modelWithUsage)
   }
-
-  // resolve with what is new
-  return diff(before, modelWithUsage, reverseDiff)
 }
 
+/**
+ * The entry point for recompiling the user-installed plugin registry
+ *
+ */
 export async function compileUserInstalled(pluginToBeRemoved?: string) {
   debug('compileUserInstalled', pluginToBeRemoved)
 
@@ -290,7 +204,9 @@ export async function compileUserInstalled(pluginToBeRemoved?: string) {
   }
 
   const home = await plugins.userInstalledHome()
-  await compile(join(home, 'node_modules'), true)
+  const pluginRoot = join(home, 'node_modules')
+  await compile(pluginRoot, true)
+  eventBus.emit('/plugin/compile/done')
 }
 
 export default compile

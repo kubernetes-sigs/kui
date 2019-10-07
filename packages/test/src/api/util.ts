@@ -133,17 +133,17 @@ export const expectYAML = (struct1: object, subset = false, failFast = true) => 
 export const expectYAMLSubset = (struct1: object, failFast = true) => expectYAML(struct1, true, failFast)
 
 /** is the given actual array the same as the given expected array? */
-export const expectArray = (expected: Array<any>, failFast = true) => (actual: string | Array<any>) => {
+export const expectArray = (expected: Array<any>, failFast = true, subset = false) => (actual: string | Array<any>) => {
   if (!Array.isArray(actual)) {
     // webdriver.io's getText will return a singleton if there is only one match
     actual = [actual]
   }
 
-  const ok =
-    actual.length === expected.length &&
-    actual.every(function(u, i) {
-      return u === expected[i]
-    })
+  const matchFn = function(u: string, i: number) {
+    return u === expected[i]
+  }
+
+  const ok = !subset ? actual.length === expected.length && actual.every(matchFn) : actual.some(matchFn)
 
   if (!ok) {
     console.error(`array mismatch; expected=${expected} actual=${actual}`)

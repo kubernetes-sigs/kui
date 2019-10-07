@@ -11,6 +11,7 @@ packages/core/dist/
 packages/core/core/
 packages/core/main/
 packages/core/models/
+packages/core/plugins/
 packages/core/test/
 packages/core/util/
 packages/core/webapp/

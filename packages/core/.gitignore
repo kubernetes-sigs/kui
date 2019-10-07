@@ -4,6 +4,7 @@ dist
 /core/
 /main/
 /models/
+/plugins/
 /test/
 /util/
 /webapp/

@@ -16,6 +16,7 @@
 
 import Debug from 'debug'
 import { join } from 'path'
+import { ensureDir } from 'fs-extra'
 import { execFile } from 'child_process'
 
 import { Commands, Errors, i18n, REPL, Settings } from '@kui-shell/core'
@@ -48,6 +49,7 @@ const doRemove = async ({ argvNoOptions }: Commands.Arguments) => {
 
   const rootDir = Settings.userDataDir()
   const pluginHome = join(rootDir, 'plugins')
+  await ensureDir(pluginHome)
 
   debug(`remove plugin ${name} in ${pluginHome}`)
 
@@ -56,10 +58,9 @@ const doRemove = async ({ argvNoOptions }: Commands.Arguments) => {
     throw new Error('npm could not be found. Please install npm and try again')
   }
 
-  const { npm, env } = resolved
-
   await new Promise((resolve, reject) => {
-    execFile(npm, ['uninstall', name, '--no-package-lock'], { cwd: pluginHome, env }, (err, stdout, stderr) => {
+    const { npm } = resolved
+    execFile(npm, ['uninstall', name, '--no-package-lock'], { cwd: pluginHome }, (err, stdout, stderr) => {
       if (stderr) {
         console.error(stderr)
       }
