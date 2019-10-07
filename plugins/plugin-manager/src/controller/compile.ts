@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
-import { Commands, Plugins } from '@kui-shell/core'
+import { Commands, Errors, i18n, Plugins } from '@kui-shell/core'
+
+const strings = i18n('plugin-manager')
+
+/**
+ * Usage model for plugin remove
+ *
+ */
+const usage: Errors.UsageModel = {
+  strict: 'compile',
+  command: 'compile',
+  docs: strings('for advanced use: recompile plugin registry'),
+  example: 'plugin compile',
+  optional: [{ name: 'pluginToBeRemoved', positional: true }]
+}
 
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen('/plugin/compile', async ({ argvNoOptions }) => {
-    await Plugins.compile(argvNoOptions[argvNoOptions.indexOf('compile') + 1])
-    return true
-  })
+  commandTree.listen(
+    '/plugin/compile',
+    async ({ argvNoOptions }) => {
+      await Plugins.compile(argvNoOptions[argvNoOptions.indexOf('compile') + 1])
+      return true
+    },
+    { usage }
+  )
 }

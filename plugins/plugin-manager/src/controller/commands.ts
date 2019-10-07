@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { Commands, Plugins, Tables } from '@kui-shell/core'
+import { Commands, i18n, Plugins, Tables } from '@kui-shell/core'
+import { installedPlugin } from '../util/usage-common'
 
-import { commands as usage } from '../usage'
+const strings = i18n('plugin-manager')
+
+const usage = {
+  strict: 'commands',
+  command: 'commands',
+  breadcrumb: strings('offered commands'),
+  docs: strings('list commands offered by an installed shell plugin'),
+  example: 'plugin commands <plugin>',
+  required: installedPlugin,
+  related: ['plugin install', 'plugin list']
+}
 
 const doList = ({ argvNoOptions }: Commands.Arguments): Promise<Tables.Table> => {
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]

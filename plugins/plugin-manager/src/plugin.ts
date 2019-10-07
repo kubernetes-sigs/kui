@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
-import { CommandRegistrar } from '@kui-shell/core/models/command'
-
-const usagePerCommand = require('./usage')
+import { Capabilities, Commands } from '@kui-shell/core'
 
 import commands from './controller/commands'
 import compile from './controller/compile'
@@ -26,34 +23,8 @@ import list from './controller/list'
 import home from './controller/home'
 import remove from './controller/remove'
 
-const toUsage = (models, { commandPrefix, title, docs, breadcrumb = title }) => {
-  const usage = {
-    breadcrumb,
-    title,
-    docs,
-    example: `${commandPrefix} <command>`,
-    commandPrefix,
-    available: [],
-    nRowsInViewport: 4 // the default is 3, but we have 4, so just show them all
-  }
-
-  for (const command in models) {
-    usage.available.push(models[command])
-  }
-
-  return usage
-}
-
-export default async (commandTree: CommandRegistrar) => {
-  if (!inBrowser()) {
-    commandTree.subtree('/plugin', {
-      usage: toUsage(usagePerCommand, {
-        commandPrefix: 'plugin',
-        title: 'Plugin management',
-        docs: 'Commands for managing installed plugins'
-      })
-    })
-
+export default async (commandTree: Commands.Registrar) => {
+  if (!Capabilities.inBrowser()) {
     await Promise.all([
       commands(commandTree),
       compile(commandTree),

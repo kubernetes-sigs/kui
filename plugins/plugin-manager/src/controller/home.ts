@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
-import { Capabilities, Commands, Plugins, REPL } from '@kui-shell/core'
+import { Capabilities, Commands, i18n, Errors, Plugins, REPL } from '@kui-shell/core'
+
+const strings = i18n('plugin-manager')
+
+const usage: Errors.UsageModel = {
+  docs: strings('the home directory for user-installed plugins')
+}
 
 export default function(commandTree: Commands.Registrar) {
-  commandTree.listen('/plugin/home', async () => {
-    const home = await Plugins.userHome()
+  commandTree.listen(
+    '/plugin/home',
+    async () => {
+      const home = await Plugins.userHome()
 
-    if (Capabilities.isHeadless()) {
-      return home
-    } else {
-      const link = document.createElement('div')
-      link.classList.add('clickable')
-      link.innerText = home
-      link.onclick = () => REPL.pexec(`ls ${REPL.encodeComponent(home)}`)
-      return link
-    }
-  })
+      if (Capabilities.isHeadless()) {
+        return home
+      } else {
+        const link = document.createElement('div')
+        link.classList.add('clickable')
+        link.innerText = home
+        link.onclick = () => REPL.pexec(`ls ${REPL.encodeComponent(home)}`)
+        return link
+      }
+    },
+    { usage }
+  )
 }
