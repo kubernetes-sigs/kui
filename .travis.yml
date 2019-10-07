@@ -99,6 +99,8 @@ jobs:
     # trying to avoid contamination of package-lock.json, because
     # lerna will refuse to publish if it finds uncommitted changes
     #
+    # re: git fetch --depth=1000 see https://github.com/IBM/kui/issues/2924
+    #
     - stage: npm release
       env: ""
       node_js: "8"
@@ -111,7 +113,7 @@ jobs:
         - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
       deploy:
           - provider: script
-            script: npm ci && npm install -g lerna && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
+            script: npm ci && npm install -g lerna && git fetch --depth=1000 && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
@@ -119,7 +121,7 @@ jobs:
               repo: IBM/kui
               condition: $TRAVIS_EVENT_TYPE = push
           - provider: script
-            script: npm ci && npm install -g lerna && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
+            script: npm ci && npm install -g lerna && git fetch --depth=1000 && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
             skip_cleanup: true
             keep_history: true
             on:
