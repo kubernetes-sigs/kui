@@ -13,10 +13,10 @@
     "readme": "../../README.md"
   },
   "dependencies": {
-    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core-4.5.0.tgz",
-    "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support-4.5.0.tgz"
+    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core-5.0.0.tgz",
+    "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support-5.0.0.tgz"
   },
   "devDependencies": {
-    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder-4.5.0.tgz"
+    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder-5.0.0.tgz"
   }
 }
