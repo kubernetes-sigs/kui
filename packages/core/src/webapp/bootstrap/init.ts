@@ -160,8 +160,10 @@ export const preinit = async () => {
     const window = remote && (remote.getCurrentWindow() as KuiWindow)
     const subwindow = window.subwindow
     if (subwindow && subwindow.fullscreen !== false) {
-      // sidecarOnly = subwindow.sidecarOnly === undefined ? true : subwindow.sidecarOnly
-      document.title = typeof subwindow === 'string' ? subwindow : subwindow.title
+      const titleOverride = typeof subwindow === 'string' ? subwindow : subwindow.title
+      if (titleOverride && typeof titleOverride === 'string') {
+        document.title = titleOverride
+      }
 
       // set the current mode, if we have one, so that back
       // button can inform the user of what they're going back
