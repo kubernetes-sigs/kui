@@ -15,7 +15,7 @@
  */
 
 import * as colors from 'colors'
-import { Func, Suite, HookFunction } from 'mocha'
+import { Func, Suite, HookFunction, after as mochaAfter } from 'mocha'
 import { Application } from 'spectron'
 
 import * as CLI from './cli'
@@ -35,6 +35,11 @@ export interface ISuite extends Suite {
  *
  */
 let app: Application
+mochaAfter(async () => {
+  if (app && app.isRunning()) {
+    await app.stop()
+  }
+})
 
 /**
  * Get the electron parts set up, and return an Application
