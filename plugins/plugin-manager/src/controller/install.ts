@@ -118,28 +118,20 @@ const doInstall = async ({ argvNoOptions }: Commands.Arguments) => {
       debug(data.toString())
     })
 
-    sub.on('close', code => {
+    sub.on('close', async code => {
       debug('npm install done', code)
 
       if (code !== 0) {
         reject(new Error('Internal Error'))
       } else {
-        //
-        // NOTE: fs.move doesn't work on linux; fs-extra seems to do hard links?? hence the use of fs.copy
-        //
-        //          .then(() => fs.copy(join(pluginHome, 'node_modules', name), targetDir))
-        //          .then(() => fs.copy(join(pluginHome, 'node_modules'), join(targetDir, 'node_modules')))
-        return (
-          REPL.qexec(`plugin compile`)
-            // .then(([newCommands]) => success('installed', 'will be available, after reload', newCommands))
-            .then(() => resolve(true))
-            .catch(reject)
-        )
+        resolve()
       }
     })
   })
 
-  return true
+  await REPL.qexec('plugin compile')
+
+  return REPL.qexec(`plugin commands ${name}`)
 }
 
 export default (commandTree: Commands.Registrar) => {
