@@ -1922,6 +1922,20 @@ body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-bottom-stripe-clo
   /* no close button if in subwindow/popup mode */
   display: none;
 }
+body.subwindow .repl-block.processing .repl-prompt-right-elements,
+body.subwindow .repl-block.processing .repl-prompt-right-element-status-icon {
+  margin: 0 auto;
+  padding: 0;
+}
+body.subwindow .repl-block.processing .kui--repl-prompt-buttons {
+  /* screenshot etc. widgets */
+  display: none;
+}
+body.subwindow .repl-block.processing .kui--icon-processing > svg {
+  /* loading icon */
+  width: 10vmin;
+  height: 10vmin;
+}
 body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
   /* in subwindow mode, no maximize or unmaximize buttons */
   display: none;
@@ -1969,7 +1983,7 @@ body.subwindow:not(.sidecar-visible) .main,
 body.subwindow:not(.sidecar-visible) .xxxrepl,
 body.subwindow:not(.sidecar-visible) .tab-container,
 body.subwindow:not(.sidecar-visible) tab {
-  height: auto;
+  xxxheight: auto;
   overflow: auto;
   max-height: unset;
   align-items: center;
