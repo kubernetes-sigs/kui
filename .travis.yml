@@ -18,9 +18,16 @@ env:
       KUI_USE_PROXY=true
       NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
 
+    - LAYERS="core"
+      MOCHA_TARGETS="electron"
+      KUI_USE_CLIENT=base
+      LINUX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-linux-x64/Kui"
+      OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui"
+      TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
+
     - SCRIPTS="build-webpack-client.sh lint.sh typecov.sh"
       WAIT_LAYERS="manager"
-      LAYERS="openwhisk1 openwhisk3 grid"
+      LAYERS="openwhisk1 openwhisk3 openwhisk-editor grid"
       MOCHA_TARGETS="webpack electron"
       KUI_USE_PROXY=false
       NEEDS_OPENWHISK=true
@@ -79,7 +86,7 @@ env:
 matrix:
   exclude:
     - os: osx
-      env: SCRIPTS="build-webpack-client.sh lint.sh typecov.sh" WAIT_LAYERS="manager" LAYERS="openwhisk1 openwhisk3 grid" MOCHA_TARGETS="webpack electron" KUI_USE_PROXY=false NEEDS_OPENWHISK=true
+      env: SCRIPTS="build-webpack-client.sh lint.sh typecov.sh" WAIT_LAYERS="manager" LAYERS="openwhisk1 openwhisk3 openwhisk-editor grid" MOCHA_TARGETS="webpack electron" KUI_USE_PROXY=false NEEDS_OPENWHISK=true
     - os: osx
       env: LAYERS="openwhisk2 openwhisk4 composer1 composer2" MOCHA_TARGETS="electron" NEEDS_OPENWHISK=true NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_NODEJS8=true NEEDS_OPENWHISK_JAVA8=true NEEDS_SECOND_OPENWHISK_AUTH=true
     - os: osx

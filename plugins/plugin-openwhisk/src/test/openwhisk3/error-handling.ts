@@ -15,9 +15,10 @@
  */
 
 import { Common, ReplExpect, CLI } from '@kui-shell/test'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 describe('Error handling', function(this: Common.ISuite) {
-  before(Common.before(this))
+  before(openwhisk.before(this))
   after(Common.after(this))
 
   it('bind with no args', () =>

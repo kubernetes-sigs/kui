@@ -87,15 +87,15 @@ function expectSuggestionsFor(
     .catch(Common.oops(this))
 }
 
-describe('Suggestions for command not found core', function(this: Common.ISuite) {
+describe('Suggestions for command not found editor', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  it('should present suggestions for "versio" -> version', () => {
+  it('should present suggestions for "edi" -> edit', () => {
     return expectSuggestionsFor.call(
       this,
-      'versio', // type this
-      ['version'] // expect these completions
+      'edi', // type this
+      ['edit'] // expect these completions
     )
   })
 })

@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "The base of Kui client definition",
   "scripts": {
-    "preinstall": "if [ ! -d /tmp/kui-packs ]; then (cd ../../ && npm run pack); fi",
-    "build:electron": "npx --no-install kui-build-electron /tmp $1"
+    "preinstall": "rm -rf node_modules; if [ ! -d /tmp/kui-packs ]; then (cd ../../ && npm run pack); fi",
+    "build:electron": "build() { npx --no-install kui-build-electron /tmp $1 Kui-base; }; build"
   },
   "author": "Mengting Yan",
   "license": "Apache-2.0",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core-5.0.0.tgz",
+    "@kui-shell/plugin-tutorials": "file:/tmp/kui-packs/kui-shell-plugin-tutorials-5.0.0.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support-5.0.0.tgz"
   },
   "devDependencies": {
