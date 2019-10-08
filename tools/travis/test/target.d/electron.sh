@@ -23,11 +23,17 @@ set -o pipefail
 # clients/default directory; keep the clients/electron part in sync
 # with .travis.yml: LINUX_BUILD and OSX_BUILD
 # we take some care here to exclude any build artifacts in clients/default
-(cd clients && mkdir electron && tar -C default --exclude dist --exclude node_modules --exclude npm-packs --exclude build -cf - . | tar -C electron -xf -)
+(cd clients && mkdir electron && tar -C ${KUI_USE_CLIENT-default} --exclude dist --exclude node_modules --exclude npm-packs --exclude build -cf - . | tar -C electron -xf -)
 
 # create an electron dist to test against
 PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
-cd clients/electron && NO_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` npm run build:electron -- ${PLATFORM} # we want to test Mac DMG Build
+
+cd clients/electron
+
+# pick up the dependencies of kui-base
+[[ "$KUI_USE_CLIENT" == base ]] && npm install
+
+NO_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` npm run build:electron -- ${PLATFORM} # we want to test Mac DMG Build
 
 # we expect no mac builds on linux, and no linux builds on mac
 # ls exits with code 2 if the file does not exist, which is what we want

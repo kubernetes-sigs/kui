@@ -17,6 +17,7 @@
 import * as assert from 'assert'
 
 import { Common, ReplExpect, CLI, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
 /**
  *
@@ -87,15 +88,15 @@ function expectSuggestionsFor(
     .catch(Common.oops(this))
 }
 
-describe('Suggestions for command not found core', function(this: Common.ISuite) {
-  before(Common.before(this))
+describe('Suggestions for command not found ow-editor', function(this: Common.ISuite) {
+  before(openwhisk.before(this))
   after(Common.after(this))
 
-  it('should present suggestions for "versio" -> version', () => {
+  it('should present suggestions for "ne" -> new', () => {
     return expectSuggestionsFor.call(
       this,
-      'versio', // type this
-      ['version'] // expect these completions
+      'ne', // type this
+      ['new'] // expect these completions
     )
   })
 })
