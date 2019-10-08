@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-set -e
-set -o pipefail
+# set -e
+# set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR"/../../../../../
 DISTDIR="$TOPDIR"/clients/default/dist
+BASE_DISTDIR="$TOPDIR"/clients/base/dist
 
 BRANCH=${BRANCH-`git rev-parse --abbrev-ref HEAD`}
 echo "Building and deploying to this release stream: $BRANCH"
@@ -39,6 +40,7 @@ if [ "$BRANCH" != "master" ]; then
     (cd "$TOPDIR/packages/core" && npm version $VERSION)   # smash this into packages/core/package.json
     (cd "$TOPDIR/node_modules/@kui-shell/settings" && npm version $VERSION)   # smash this into @kui-shell/settings/package.json
     (cd "$TOPDIR/clients/default" && npm version $VERSION)   # smash this into clients/default/package.json
+    (cd "$TOPDIR/clients/base" && npm version $VERSION)   # smash this into clients/base/package.json
 
     COS_BUCKET=$BRANCH                            # stash the builds in a bucket named by the branch
 
@@ -59,7 +61,11 @@ fi
 echo "Version after publish: $VERSION"
 echo "Storing builds in this bucket: $COS_BUCKET"
 
-# 2. build the platform binary bundles
+
+# 2.1 install the dependencies of kui-base
+(cd "$TOPDIR"/clients/base && npm install)
+
+# 2.2 build the platform binary bundles
 if [ -z $PLATFORM ]; then
     if [[ `uname` == Linux ]]; then
         echo "Building Linux, Windows and Headless distributions from Linux host"
@@ -68,9 +74,17 @@ if [ -z $PLATFORM ]; then
         (cd "$TOPDIR"/clients/default && npm run build:headless)
         echo "confirming what we built for headless:"
         ls "$DISTDIR/headless"
+
+        echo "Kui-base: Building Linux, Window distributions from Linux host"
+        (cd "$TOPDIR"/clients/base && npm run build:electron linux)
+        (cd "$TOPDIR"/clients/base && npm run build:electron windows)
+
     elif [[ `uname` == Darwin ]]; then
         echo "Building macOS distributions from macOS host"
         (cd "$TOPDIR"/clients/default && npm run build:electron darwin)
+
+        echo "Kui-base: Building macOS distributions from macOS host"
+        (cd "$TOPDIR"/clients/base && npm run build:electron darwin)
     fi
 else
     echo "Building $PLATFORM distributions"
@@ -78,6 +92,9 @@ else
     (cd "$TOPDIR"/clients/default && npm run build:headless)
     echo "confirming what we built for headless:"
     ls "$DISTDIR/headless"
+
+    echo "Kui-base: Building $PLATFORM distributions"
+    (cd "$TOPDIR"/clients/base && npm run build:electron -- $PLATFORM)
 fi
 
 echo "confirming what we built for electron:"
@@ -88,6 +105,7 @@ ls "$DISTDIR/electron"
 if [ -z "$NO_PUSH" ]; then
     BUILDDIR="$DISTDIR/headless" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
     BUILDDIR="$DISTDIR/electron" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
+    BUILDDIR="$BASE_DISTDIR/electron" NO_CONFIG_UPDATE=true EXIST_OK=true node ./push-cos.js ${COS_BUCKET}
 
     # deploy the local-proxy.html which lets us offer kui:// links in
     # unfriendly environs such as github markdown
@@ -97,13 +115,22 @@ if [ -z "$NO_PUSH" ]; then
 
     if [[ `uname` == Linux ]]; then
       echo "win32: ${KUI_S3}/Kui-win32-x64.zip"
+      echo "win32: ${KUI_S3}/Kui-base-win32-x64.zip"
+
       echo "linux-zip: ${KUI_S3}/Kui-linux-x64.zip"
+      echo "linux-zip: ${KUI_S3}/Kui-base-linux-x64.zip"
+
       echo "linux-deb: ${KUI_S3}/Kui-linux-x64.deb"
+      echo "linux-deb: ${KUI_S3}/Kui-base-linux-x64.deb"
+
       echo "headless: ${KUI_S3}/Kui-headless.zip"
       echo "headless: ${KUI_S3}/Kui-headless.tar.bz2"
     elif [[ `uname` == Darwin ]]; then
       echo "macOS: ${KUI_S3}/Kui.dmg"
+      echo "macOS: ${KUI_S3}/Kui-base.dmg"
+
       echo "macOS-tar: ${KUI_S3}/Kui-darwin-x64.tar.bz2"
+      echo "macOS-tar: ${KUI_S3}/Kui-base-darwin-x64.tar.bz2"
     fi
 fi
 
@@ -112,4 +139,5 @@ if [ "$BRANCH" != "master" ]; then
     (cd "$TOPDIR"/packages/core && npm version $BASE_VERSION)
     (cd "$TOPDIR"/node_modules/@kui-shell/settings && npm version $BASE_VERSION)
     (cd "$TOPDIR/clients/default" && npm version $BASE_VERSION)
+    (cd "$TOPDIR/clients/base" && npm version $BASE_VERSION)
 fi
