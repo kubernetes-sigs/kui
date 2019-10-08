@@ -22,9 +22,11 @@ set -o pipefail
 #
 # @param $1 staging directory
 # @param $2 platform (optional) defaulting to all platforms (you may also set this via PLATFORM env)
+# @param $3 client directory (optional) defaulting to default
 #
 STAGING="${1-`pwd`}"
 PLATFORM=${2-${PLATFORM-all}}
+export CLIENT_NAME=${3}
 
 STAGING="$(cd $STAGING && pwd)/kui-electron-tmp"
 echo "staging directory: $STAGING"
@@ -138,7 +140,9 @@ function assembleHTMLPieces {
 
     # product name
     export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/settings/config.json | jq --raw-output .theme.productName`}"
+    [[ -z ${CLIENT_NAME} ]] && export CLIENT_NAME="${PRODUCT_NAME}"
     echo "PRODUCT_NAME=$PRODUCT_NAME"
+    echo "Using CLIENT_NAME=$CLIENT_NAME"
 
     # filesystem icons
     THEME="$CLIENT_HOME"/theme
@@ -206,12 +210,15 @@ function win32 {
 	    --win32metadata.CompanyName="Apache" \
 	    --win32metadata.ProductName="${PRODUCT_NAME}")
 
+      # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
+      mv "$BUILDDIR/${PRODUCT_NAME}-win32-x64/" "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
+
         #
         # deal with win32 packaging
         #
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for win32"
-            (cd $BUILDDIR && zip -q -r "${PRODUCT_NAME}-win32-x64" "${PRODUCT_NAME}-win32-x64" -x \*~) &
+            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-win32-x64" "${CLIENT_NAME}-win32-x64" -x \*~) &
             WIN_ZIP_PID=$!
 
             # build squirrel and msi installers
@@ -247,6 +254,9 @@ function mac {
         # use a custom icon for mac
         cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
 
+        # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
+        mv "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/" "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
+
         # create the installers
         #if [ -n "$ZIP_INSTALLER" ]; then
         #node ./builders/zip.js
@@ -255,8 +265,8 @@ function mac {
             if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
                 echo "DMG build for darwin"
                 (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
-	            "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app" \
-	            "${PRODUCT_NAME}" \
+	            "$BUILDDIR/${CLIENT_NAME}-darwin-x64/${PRODUCT_NAME}.app" \
+	            "${CLIENT_NAME}" \
 	            --out="$BUILDDIR" \
 	            --icon="$ICON_MAC" \
 	            --icon-size=128 \
@@ -265,9 +275,10 @@ function mac {
             fi
 
             echo "TGZ build for darwin"
-            tar -C "$BUILDDIR" -jcf "$BUILDDIR/${PRODUCT_NAME}-darwin-x64.tar.bz2" "${PRODUCT_NAME}-darwin-x64" &
+            tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-x64.tar.bz2" "${CLIENT_NAME}-darwin-x64" &
             MAC_TAR_PID=$!
         fi
+
     fi
 }
 
@@ -298,9 +309,12 @@ function linux {
             --icon=$ICON_LINUX \
 	    --overwrite)
 
+      # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
+      mv "$BUILDDIR/${PRODUCT_NAME}-linux-x64/" "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
+
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
-            (cd $BUILDDIR && zip -q -r "${PRODUCT_NAME}-linux-x64" "${PRODUCT_NAME}-linux-x64" -x \*~) &
+            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-linux-x64" "${CLIENT_NAME}-linux-x64" -x \*~) &
             LINUX_ZIP_PID=$!
 
             echo "DEB build for linux"

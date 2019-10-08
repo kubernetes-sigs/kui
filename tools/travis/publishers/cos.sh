@@ -24,7 +24,7 @@ TOPDIR="$SCRIPTDIR/../../../"
 # @env PUBLISH_THIS_REPO_SLUG the "org/repo" that you wish to result in a publish to s3
 #
 # TODO: For now we hardcoded travis job number in deployment logic. We should consider using Travis Build Stages once ibm travis adds the support.
-if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [[ "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.1" || "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.6" ]]; then
+if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [[ "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.1" || "$TRAVIS_JOB_NUMBER" == "${TRAVIS_BUILD_NUMBER}.7" ]]; then
 
     if [ "$TRAVIS_OS_NAME" == linux ]; then
         echo "uploading typecov data"
