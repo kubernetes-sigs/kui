@@ -15,6 +15,7 @@
  */
 
 import Tables from '../api/tables'
+import Errors from '../api/errors'
 import { prescanModel } from './plugins'
 
 /**
@@ -24,7 +25,7 @@ import { prescanModel } from './plugins'
  *
  */
 export default async function commandsOffered(plugin?: string): Promise<Tables.Table> {
-  const { commandToPlugin, flat, docs } = prescanModel()
+  const { commandToPlugin, flat, usage, docs } = prescanModel()
 
   const commands: string[] = []
   const pluginIsInstalled = !!flat.find(({ route }) => route === plugin)
@@ -48,13 +49,29 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
     (command, idx) => !commands.find((other, otherIdx) => idx !== otherIdx && command.endsWith(other))
   ) */
 
+  function find(
+    command: string,
+    A = command.split('/'),
+    idx = 2,
+    prefix = `/${A[1]}`,
+    subtree = usage[prefix]
+  ): Errors.UsageModel {
+    if (A.length - idx === 0) {
+      return subtree.usage
+    } else {
+      const prefixPlus = `${prefix}/${A[idx]}`
+      return find(command, A, idx + 1, prefixPlus, subtree.children[prefixPlus])
+    }
+  }
+
   return {
     header: {
       name: 'command',
       attributes: [{ value: 'About' }]
     },
     body: commands
-      .map(command => ({ command, name: command.replace(/^\//, '').replace(/\//g, ' ') }))
+      .map(command => ({ command, usage: find(command), name: command.replace(/^\//, '').replace(/\//g, ' ') }))
+      .filter(_ => !_.usage.synonymFor && !_.usage.children)
       .map(({ command, name }) => ({
         type: 'command',
         name,
