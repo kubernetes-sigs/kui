@@ -12,6 +12,8 @@ const {
   theme: { productName }
 } = require('../../../../../node_modules/@kui-shell/settings/config.json')
 
+const kuiBaseName = 'Kui-base'
+
 const version = process.argv[2]
 
 const Bucket = process.env.S3_BUCKET || `kui-${version}`
@@ -24,6 +26,11 @@ const platformBuilds = [
   `${productName}-win32-x64.zip`,
   `${productName}.dmg`,
   `${productName}-darwin-x64.tar.bz2`,
+  `${kuiBaseName}-linux-x64.deb`,
+  `${kuiBaseName}-linux-x64.zip`,
+  `${kuiBaseName}-win32-x64.zip`,
+  `${kuiBaseName}.dmg`,
+  `${kuiBaseName}-darwin-x64.tar.bz2`,
   `${productName}-headless.zip`,
   `${productName}-headless.tar.bz2`
 ]
