@@ -56,8 +56,12 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
     prefix = `/${A[1]}`,
     subtree = usage[prefix]
   ): Errors.UsageModel {
+    if (!subtree) {
+      return
+    }
     if (A.length - idx === 0) {
       return subtree.usage
+    } else if (!subtree.children) {
     } else {
       const prefixPlus = `${prefix}/${A[idx]}`
       return find(command, A, idx + 1, prefixPlus, subtree.children[prefixPlus])
@@ -71,7 +75,7 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
     },
     body: commands
       .map(command => ({ command, usage: find(command), name: command.replace(/^\//, '').replace(/\//g, ' ') }))
-      .filter(_ => !_.usage.synonymFor && !_.usage.children)
+      .filter(_ => !_.usage || (!_.usage.synonymFor && !_.usage.children))
       .map(({ command, name }) => ({
         type: 'command',
         name,
