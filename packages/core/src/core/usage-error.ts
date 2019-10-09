@@ -211,7 +211,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     return format(message.fn(message.command), undefined, options) */
   } else {
     // these are the fields of the usage message
-    const usage: UsageModel = message.usage
+    const usage: UsageModel = message.usage || {}
 
     const {
       command,
