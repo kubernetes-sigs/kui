@@ -34,7 +34,7 @@ export const dispatchToShell = async ({
   createOutputStream
 }: Commands.Arguments) => {
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
-  const cleanUpError = err => {
+  const cleanUpError = (err: Error) => {
     if (err.message && typeof err.message === 'string') {
       err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
     }
@@ -74,7 +74,7 @@ export const dispatchToShell = async ({
  * On preload, register the catchall handler
  *
  */
-export const preload = commandTree => {
+export const preload = (commandTree: Commands.Registrar) => {
   if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
     debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
