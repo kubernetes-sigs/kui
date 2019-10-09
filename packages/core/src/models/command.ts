@@ -257,4 +257,5 @@ export interface CommandRegistrar {
   synonym: (route: string, handler: CommandHandler, master: Command, options?: CommandOptions) => void
   subtree: (route: string, options: CommandOptions) => Command
   subtreeSynonym: (route: string, masterTree: Command, options?: CommandOptions) => void
+  catchall: (offer: CatchAllOffer, handler: CommandHandler, prio: number, options: CommandOptions) => void
 }
