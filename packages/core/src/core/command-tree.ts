@@ -59,7 +59,6 @@ const newTree = (): CommandTree => ({
   parent: undefined
 })
 const model: CommandTree = newTree() // this is the model of registered listeners, a tree
-const intentions: CommandTree = newTree() // this is the model of registered intentional listeners
 
 const disambiguator: Disambiguator = {} // map from command name to disambiguations
 export const catchalls: CatchAllHandler[] = [] // handlers for command not found
@@ -145,7 +144,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
 }
 
 /**
- * Navigate the given tree model, following the given path as [n1,n2,n3]
+ * Navigate the given tree `model`, following the given `path` as [n1,n2,n3]
  *
  */
 const treeMatch = (
@@ -163,10 +162,12 @@ const treeMatch = (
     cur = parent.children && parent.children[path[idx]]
 
     if (!cur) {
+      // then we've reached the bottom of the tree
       if (readonly) {
+        // we were instructed to give up
         break
       } else {
-        // console.log('create',path[idx])
+        // otherwise, we were instructed to create a new leaf node
         if (!parent.children) {
           parent.children = {}
         }
@@ -344,13 +345,6 @@ export const synonym = (route: string, handler: CommandHandler, master: Command,
 }
 
 /**
- * Register an intentional action
- *
- */
-export const intention = (route: string, handler: CommandHandler, options: CommandOptions) =>
-  _listen(intentions, route, handler, Object.assign({}, options, { isIntention: true }))
-
-/**
  * Oops, we couldn't resolve the given command. But maybe we found
  * some partial matches that might be helpful to the user.
  *
@@ -437,11 +431,6 @@ const withEvents = (
   if (leaf) {
     event.route = leaf.route // e.g. "/git/status" from the bash-like plugin
     event.plugin = leaf.options.plugin || 'builtin' // e.g. "bash-like"
-
-    if (leaf.options.isIntention) {
-      // e.g. leaf represents |save to cloudant|
-      event.isIntention = true
-    }
   }
 
   const handler: CommandHandlerWithEvents = {
@@ -663,8 +652,7 @@ const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHan
     // double-check: if the resolution is a subtree, then it better have a child that matches
     const argvForMatch = resolutions[0].route.split('/').slice(1)
     const cmdMatch = treeMatch(model, argvForMatch)
-    const leaf =
-      cmdMatch && cmdMatch.$ ? areCompatible(argvForMatch, argv) && cmdMatch : treeMatch(intentions, argvForMatch)
+    const leaf = cmdMatch && cmdMatch.$ ? areCompatible(argvForMatch, argv) && cmdMatch : undefined
 
     if (!leaf || !leaf.$) {
       if (!noRetry && resolutions[0].plugin) {
@@ -749,26 +737,6 @@ export function isSuccessfulCommandResolution(
 ): resolution is CommandHandlerWithEvents {
   return (resolution as CommandHandlerWithEvents).eval !== undefined
 }
-/** here, we don't use any implicit context resolutions */
-export const readIntention = async (
-  argv: string[],
-  noRetry = false
-): Promise<false | CommandHandlerWithEvents | CodedError> => {
-  const cmd = _read(intentions, argv, undefined, argv)
-
-  if (!cmd) {
-    if (!noRetry) {
-      await resolver.resolve(`/${argv.join('/')}`)
-      return readIntention(argv, true)
-    }
-  }
-
-  if (!cmd) {
-    return disambiguate(argv) || commandNotFound(argv)
-  } else {
-    return cmd
-  }
-}
 
 /** here, we will use implicit context resolutions */
 export const read = async (
@@ -788,17 +756,6 @@ export const read = async (
     if (!noRetry) {
       await resolver.resolve(`/${argv.join('/')}`)
       cmd = (await disambiguate(argv)) || (await internalRead(model, argv))
-    }
-  }
-
-  if (!cmd) {
-    try {
-      cmd = await readIntention(argv)
-    } catch (err) {
-      if (err.code === 404 && !noSubtreeRetry) {
-        await resolver.resolve(`/${argv.join('/')}`, { subtree: true })
-        return read(argv, false, true, execOptions)
-      }
     }
   }
 
@@ -880,7 +837,7 @@ export const getModel = () => new CommandModel()
  *   mostly helpful for debugging
  *
  */
-// export const debug = () => console.log('Command Tree', model, disambiguator, intentions)
+// export const debug = () => console.log('Command Tree', model, disambiguator)
 
 /**
  * To help with remembering from which plugin calls to listen emanate
@@ -906,8 +863,6 @@ export const proxy = (plugin: string) => ({
     }),
   listen: (route: string, handler: CommandHandler, options: CommandOptions) =>
     listen(route, handler, Object.assign({}, options, { plugin })),
-  intention: (route: string, handler: CommandHandler, options: CommandOptions) =>
-    intention(route, handler, Object.assign({}, options, { plugin })),
   synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) =>
     synonym(route, handler, master, options && Object.assign({}, options, { plugin })),
   subtree,

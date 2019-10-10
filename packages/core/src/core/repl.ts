@@ -375,9 +375,7 @@ class InProcessExecutor implements Executor {
 
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator: CommandTreeResolution = await (execOptions && execOptions.intentional
-        ? commandTree.readIntention(argvNoOptions)
-        : commandTree.read(argvNoOptions, false, false, execOptions))
+      const evaluator: CommandTreeResolution = await commandTree.read(argvNoOptions, false, false, execOptions)
 
       if (commandTree.isSuccessfulCommandResolution(evaluator)) {
         //
@@ -958,16 +956,6 @@ export const qfexec = (
 ): Promise<any> => {
   // context change ok, final exec in a chain of nested execs
   return qexec(command, block, true, execOptions, nextBlock)
-}
-export const iexec = (
-  command: string,
-  block?: HTMLElement,
-  contextChangeOK?: boolean,
-  execOptions?: ExecOptions,
-  nextBlock?: HTMLElement
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
-  return qexec(command, block, contextChangeOK, Object.assign({}, execOptions, { intentional: true }), nextBlock)
 }
 
 /**
