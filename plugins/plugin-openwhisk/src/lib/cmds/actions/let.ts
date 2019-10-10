@@ -98,10 +98,6 @@ const patterns = {
       fromFile: /^.*(const|let)\s+([^=]+)(\.\w+)?\s*=\s*(.*)/
     }
   },
-  intention: {
-    inline: /\s*\|([^|]+)\|\s*/,
-    full: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*\|([^|]+)\|\s*/
-  },
   sequence: {
     expr: /^.*(const|let)\s+([^.=]+)(\.[^=]+)?\s*=\s*(.*)/,
     components: /\s*->\s*/
@@ -613,21 +609,16 @@ export default async (commandTree: Commands.Registrar) => {
       annotations?: KeyValue[]
     }
     const furlSequenceComponent = (parentActionName: string) => (component: string, idx: number): Promise<Entity> => {
-      const intentionMatch = component.match(patterns.intention.inline)
       const match = component.match(patterns.action.expr.inline)
 
-      if (!intentionMatch && match && match.length === 3) {
+      if (match && match.length === 3) {
         // then this component is an inline function
         debug('sequence component is inline function', match[0])
         const body = `let main = ${match[0]}`
         const candidateName = `${parentActionName}-${idx + 1}`
         return createWithRetryOnName(body, parentActionName, execOptions, idx, currentIter, candidateName)
       } else {
-        if (intentionMatch) {
-          debug('sequence component is intention', intentionMatch[1])
-          const intention = intentionMatch[1] // e.g. |save to cloudant|
-          return REPL.iexec(intention) // this will return the name of the action that services the intent
-        } else if (!Capabilities.inBrowser() && existsSync(Util.expandHomeDir(component))) {
+        if (!Capabilities.inBrowser() && existsSync(Util.expandHomeDir(component))) {
           debug('sequence component is local file', component)
           // then we assume that the component identifies a local file
           //    note: the first step reserves a name
@@ -667,39 +658,11 @@ export default async (commandTree: Commands.Registrar) => {
     // debug('args', options, fullCommand)
 
     const actionMatch = fullCommand.match(patterns.action.expr.full)
-    const intentionMatch = fullCommand.match(patterns.intention.full)
     const sequenceMatch = fullCommand.match(patterns.sequence.expr)
     const components = sequenceMatch && sequenceMatch[4].split(patterns.sequence.components)
     const isSequenceMatch = sequenceMatch && components.length > 1
 
-    if (intentionMatch && !isSequenceMatch) {
-      debug('intentionMatch', intentionMatch)
-      const letType = intentionMatch[1]
-      const mimeType = cutTrailingWhitespace(intentionMatch[3])
-      const name = figureName(intentionMatch[2], mimeType)
-      const intention = intentionMatch[4] // e.g. |save to cloudant|
-
-      return REPL.iexec(`${intention} --name ${name}`) // this will return the name of the action that services the intent
-        .then(action => {
-          ;(annotators[letType] || []).forEach(annotator => annotator(action))
-          if (mimeType) (annotators[mimeType] || []).forEach(annotator => annotator(action))
-          if (options.action) {
-            action.annotations = action.annotations.concat(options.action.annotations || [])
-            action.parameters = options.action.parameters
-            action.limits = options.action.limits
-          }
-
-          const owOpts = wskOpts({
-            name: action.name,
-            namespace: action.namespace,
-            action: action
-          })
-          return getClient(execOptions)
-            .actions[update](owOpts)
-            .then(addPrettyType('actions', 'update', action.name))
-        })
-        .catch(packageAutoCreate(name))
-    } else if (actionMatch && !isSequenceMatch) {
+    if (actionMatch && !isSequenceMatch) {
       //
       // then this is an anonymous action-creating let
       //
@@ -881,18 +844,14 @@ export default async (commandTree: Commands.Registrar) => {
             `let ${baseName}-anon${iter === 0 ? '' : '-' + iter} = ${expr}`
           const command = commandFn(0)
           const actionMatch = command.match(patterns.action.expr.full)
-          const intentionMatch = command.match(patterns.intention.full)
           const sequenceMatch = command.match(patterns.sequence.expr)
           const components = sequenceMatch && sequenceMatch[4].split(patterns.sequence.components)
           const isSequenceMatch = sequenceMatch && components.length > 1
 
-          if (!intentionMatch && !isSequenceMatch && actionMatch) {
+          if (!isSequenceMatch && actionMatch) {
             // then this is an inline anonymous function
             debug('resolve::inline')
             return createWithRetryOnName(`let main = ${expr}`, parentActionName, execOptions, idx, 0)
-          } else if (intentionMatch) {
-            const baseName = intentionMatch[4].substring(1, intentionMatch[4].indexOf(' '))
-            return REPL.iexec(`${intentionMatch[4]} --name ${baseName}-anon-${idx}`)
           } else {
             const actionFromFileMatch = command.match(patterns.action.expr.fromFile)
             let baseName: string
