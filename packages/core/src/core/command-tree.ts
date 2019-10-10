@@ -20,12 +20,12 @@ debug('loading')
 
 import {
   CommandHandler,
+  CommandRegistrar,
   CommandTree,
   CommandTreeResolution,
   Disambiguator,
   ExecType,
   CatchAllOffer,
-  CatchAllHandler,
   Command,
   CommandHandlerWithEvents,
   CommandOptions,
@@ -38,45 +38,22 @@ import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Tab } from '../webapp/cli'
-import { theme } from './settings'
 
 import { prescanModel } from '../plugins/plugins'
 import { PrescanUsage } from '../plugins/prescan'
 import { PluginResolver } from '../plugins/resolver'
 
-/**
- * The command tree module
- *
- */
-const root = (): CommandHandler => undefined // this will trigger a re-parse using Context.current as the path prefix
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const interior = (x?: string[], y?: number, z?: number): CommandHandler => undefined // this will trigger a re-parse using Context.current as the path prefix
-const newTree = (): CommandTree => ({
-  $: root(),
-  key: '/',
-  route: '/',
-  children: {},
-  parent: undefined
-})
-const model: CommandTree = newTree() // this is the model of registered listeners, a tree
-
-const disambiguator: Disambiguator = {} // map from command name to disambiguations
-export const catchalls: CatchAllHandler[] = [] // handlers for command not found
+import { getModelInternal } from '../commands/tree'
+import { Context, getCurrentContext } from '../commands/context'
 
 debug('finished loading modules')
 
 // for plugins.js
-/* export const startScan = (): Disambiguator => {
-  const state = disambiguator
-  disambiguator = {}
-  debug('startScan', disambiguator)
-  return state
-} */
 export const endScan = (/* state: Disambiguator */): Disambiguator => {
-  debug('finishing up', disambiguator)
+  debug('finishing up', getModelInternal().disambiguator)
   const map: Disambiguator = {}
-  for (const command in disambiguator) {
-    map[command] = disambiguator[command].map(({ route, options }) => ({
+  for (const command in getModelInternal().disambiguator) {
+    map[command] = getModelInternal().disambiguator[command].map(({ route, options }) => ({
       route,
       plugin: options && options.plugin
     }))
@@ -92,8 +69,8 @@ export const endScan = (/* state: Disambiguator */): Disambiguator => {
  *
  */
 export function cullFromDisambiguator(pluginToBeRemoved: string) {
-  for (const key in disambiguator) {
-    disambiguator[key] = disambiguator[key].filter(({ plugin }) => {
+  for (const key in getModelInternal().disambiguator) {
+    getModelInternal().disambiguator[key] = getModelInternal().disambiguator[key].filter(({ plugin }) => {
       if (plugin !== pluginToBeRemoved) {
         debug('cullFromDisambiguator deleted', key)
         return false
@@ -101,13 +78,13 @@ export function cullFromDisambiguator(pluginToBeRemoved: string) {
         return true
       }
     })
-    const after = disambiguator[key].length
+    const after = getModelInternal().disambiguator[key].length
     if (after === 0) {
-      debug('cullFromDisambiguator purged', key, disambiguator[key])
-      delete disambiguator[key]
+      debug('cullFromDisambiguator purged', key, getModelInternal().disambiguator[key])
+      delete getModelInternal().disambiguator[key]
     }
   }
-  debug('cullFromDisambiguator done', disambiguator)
+  debug('cullFromDisambiguator done', getModelInternal().disambiguator)
 }
 
 /**
@@ -172,7 +149,7 @@ const treeMatch = (
           parent.children = {}
         }
         cur = parent.children[path[idx]] = {
-          $: interior(path, 0, idx),
+          $: undefined,
           parent: parent,
           key: path[idx],
           options: { hide: hide },
@@ -204,7 +181,7 @@ const treeMatch = (
   }
 }
 const match = (path: string[], readonly: boolean): Command => {
-  return treeMatch(model, path, readonly)
+  return treeMatch(getModelInternal().root, path, readonly)
 }
 
 class DefaultCommandOptions implements CommandOptions {}
@@ -220,7 +197,7 @@ const _listen = (
   options: CommandOptions = new DefaultCommandOptions()
 ): Command => {
   const path = route.split('/').splice(1)
-  const leaf = treeMatch(model, path, false, options.hide)
+  const leaf = treeMatch(getModelInternal().root, path, false, options.hide)
 
   if (leaf) {
     const prevOptions = leaf.options
@@ -248,9 +225,9 @@ const _listen = (
       !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)
     ) {
       // tree is NOT a synonym
-      let resolutions = disambiguator[leaf.key]
+      let resolutions = getModelInternal().disambiguator[leaf.key]
       if (!resolutions) {
-        resolutions = disambiguator[leaf.key] = []
+        resolutions = getModelInternal().disambiguator[leaf.key] = []
       }
 
       if (!resolutions.find(resolution => resolution.route === leaf.route)) {
@@ -261,14 +238,15 @@ const _listen = (
     return leaf
   }
 }
-export const listen = (route: string, handler: CommandHandler, options: CommandOptions) =>
-  _listen(model, route, handler, options)
+
+const listen = (route: string, handler: CommandHandler, options: CommandOptions) =>
+  _listen(getModelInternal().root, route, handler, options)
 
 /**
  * Register a subtree in the command tree
  *
  */
-export const subtree = (route: string, options: CommandOptions) => {
+const _subtree = (route: string, options: CommandOptions) => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
   const leaf = match(path, false /*, options */)
@@ -317,10 +295,10 @@ export const subtree = (route: string, options: CommandOptions) => {
  * Register a synonym of a subtree
  *
  */
-export const subtreeSynonym = (route: string, master: Command, options = master.options) => {
+const _subtreeSynonym = (route: string, master: Command, options = master.options) => {
   if (route !== master.route) {
     // <-- don't alias to yourself!
-    const mySubtree = subtree(route, Object.assign({}, options, { synonymFor: master }))
+    const mySubtree = _subtree(route, Object.assign({}, options, { synonymFor: master }))
 
     // reverse mapping from master to synonym
     if (!master.synonyms) master.synonyms = {}
@@ -333,7 +311,7 @@ export const subtreeSynonym = (route: string, master: Command, options = master.
  *    master is the return value of `listen`
  *
  */
-export const synonym = (route: string, handler: CommandHandler, master: Command, options = master.options) => {
+const _synonym = (route: string, handler: CommandHandler, master: Command, options = master.options) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
@@ -377,7 +355,7 @@ const formatPartialMatches = (partialMatches: PartialMatch[]): UsageError => {
   )
 }
 
-export const suggestPartialMatches = (
+const suggestPartialMatches = (
   command: string,
   partialMatches?: PartialMatch[],
   noThrow = false,
@@ -475,40 +453,6 @@ const withEvents = (
 }
 
 /**
- * Parse a serialized command context
- *
- */
-function parseCommandContext(str: string): string[] {
-  if (str) {
-    try {
-      // let's assume str is of the form '["a", "b"]'
-      return JSON.parse(str)
-    } catch (err1) {
-      // ok, that didn't work; let's see if it's of the form '/a/b'
-      try {
-        return str.split('/').filter(_ => _)
-      } catch (err2) {
-        console.error(`Could not parse command context ${str}`, err1, err2)
-      }
-    }
-  }
-  return undefined
-}
-
-/**
- * The default command execution context. For example, if the
- * execution context is /foo/bar, and there is a command /foo/bar/baz,
- * then the issuance of a command "baz" will resolve to /foo/bar/baz.
- *
- * The default can be overridden either by changing the next line, or
- * by calling `setDefaultCommandContext`.
- *
- */
-let _defaultContext: string[] =
-  (theme && theme.defaultContext) || parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || []
-export const getDefaultCommandContext = () => _defaultContext
-
-/**
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
@@ -518,7 +462,7 @@ const _read = async (
   contextRetry: string[],
   originalArgv: string[]
 ): Promise<false | CommandHandlerWithEvents> => {
-  let leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
+  let leaf = treeMatch(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
   let evaluator = leaf && leaf.$
 
   if (!evaluator) {
@@ -528,7 +472,7 @@ const _read = async (
     //
     const route = `/${argv.join('/')}`
     await resolver.resolve(route)
-    leaf = treeMatch(model, argv, true) // true means read-only, don't modify the context model please
+    leaf = treeMatch(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
     evaluator = leaf && leaf.$
   }
 
@@ -536,14 +480,14 @@ const _read = async (
     if (!contextRetry) {
       return false
     } else if (contextRetry.length === 0) {
-      return _read(model, originalArgv, undefined, originalArgv)
+      return _read(getModelInternal().root, originalArgv, undefined, originalArgv)
     } else if (
       contextRetry.length > 0 &&
       contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]
     ) {
       // command not found so far, look further afield.
       const maybeInContextRetry = _read(
-        model,
+        getModelInternal().root,
         contextRetry.concat(originalArgv),
         contextRetry.slice(0, contextRetry.length - 1),
         originalArgv
@@ -554,9 +498,11 @@ const _read = async (
       }
 
       // oof, fallback plan: look in the default context
-      const newContext = _defaultContext.concat(originalArgv).filter((elt, idx, A) => elt !== A[idx - 1])
+      const newContext = getCurrentContext()
+        .concat(originalArgv)
+        .filter((elt, idx, A) => elt !== A[idx - 1])
       const maybeInDefaultContext = _read(
-        model,
+        getModelInternal().root,
         newContext,
         contextRetry.slice(0, contextRetry.length - 1),
         originalArgv
@@ -576,7 +522,7 @@ const _read = async (
         if (argv.length === originalArgv.length && argv.every((elt, idx) => elt === originalArgv[idx])) {
           return false
         } else {
-          return _read(model, originalArgv, undefined, originalArgv)
+          return _read(getModelInternal().root, originalArgv, undefined, originalArgv)
         }
       }
     }
@@ -585,29 +531,10 @@ const _read = async (
   }
 }
 
-/**
- * The command context model, defaulting to the _defaultContext, which
- * can be overridden via `setDefaultCommandContext`.
- *
- */
-const Context = {
-  current: _defaultContext
-}
-
-/**
- * When commands are executed, the command resolver will use a
- * fallback prefix. This routine tries to discover, from the
- * environment, what the default fallback prefix should be.
- *
- */
-export const setDefaultCommandContext = (commandContext: string[]) => {
-  Context.current = _defaultContext = commandContext
-}
-
 /** read, with retries based on the current context */
 const internalRead = (model: CommandTree, argv: string[]): Promise<false | CommandHandlerWithEvents> => {
   if (argv[0] === 'kui') argv.shift()
-  return _read(model, argv, Context.current, argv)
+  return _read(getModelInternal().root, argv, Context.current, argv)
 }
 
 /**
@@ -632,7 +559,8 @@ const areCompatible = (A: string[], B: string[]): boolean => {
 }
 
 /**
- * See if a command resolves unambiguously
+ * See if the given `argv` resolves unambiguously, independent of
+ * command context.
  *
  */
 const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHandlerWithEvents> => {
@@ -651,7 +579,7 @@ const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHan
     // one unambiguous resolution! great, but we need to
     // double-check: if the resolution is a subtree, then it better have a child that matches
     const argvForMatch = resolutions[0].route.split('/').slice(1)
-    const cmdMatch = treeMatch(model, argvForMatch)
+    const cmdMatch = treeMatch(getModelInternal().root, argvForMatch)
     const leaf = cmdMatch && cmdMatch.$ ? areCompatible(argvForMatch, argv) && cmdMatch : undefined
 
     if (!leaf || !leaf.$) {
@@ -680,15 +608,15 @@ const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHan
 }
 
 /**
- * We could not find a registered command handler
+ * We could not find a registered command handler for the given `argv`.
  *
  */
 const commandNotFound = (argv: string[], partialMatches?: PartialMatch[], execOptions?: ExecOptions) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
-    const catchallHandler = catchalls
-      .filter(({ offer }) => offer(argv))
+    const catchallHandler = getModelInternal()
+      .catchalls.filter(({ offer }) => offer(argv))
       .sort(({ prio: prio1 }, { prio: prio2 }) => prio2 - prio1)[0]
     if (catchallHandler) {
       return withEvents(catchallHandler.eval, catchallHandler, partialMatches)
@@ -707,13 +635,15 @@ const commandNotFound = (argv: string[], partialMatches?: PartialMatch[], execOp
 }
 
 /**
- * Command not found: let's find partial matches at head of the given
- * subtree. We hope that the last part of the argv is a partial match
- * for some command at this root. Return all such prefix matches.
+ * Find partial matches at head of the given subtree. We hope that the
+ * last part of the argv (represented here in `partial`) is a partial
+ * match for some command at this root.
+ *
+ * @return all such prefix matches
  *
  */
 const findPartialMatchesAt = (usage: PrescanUsage, partial: string): PartialMatch[] => {
-  const matches = []
+  const matches: PartialMatch[] = []
 
   function maybeAdd(match: PartialMatch) {
     if (match.route.indexOf(partial) >= 0 && (!match.usage || (!match.usage.synonymFor && !match.usage.hide))) {
@@ -732,14 +662,13 @@ const findPartialMatchesAt = (usage: PrescanUsage, partial: string): PartialMatc
   return matches
 }
 
-export function isSuccessfulCommandResolution(
-  resolution: CommandTreeResolution
-): resolution is CommandHandlerWithEvents {
-  return (resolution as CommandHandlerWithEvents).eval !== undefined
-}
-
-/** here, we will use implicit context resolutions */
+/**
+ * Look up a command handler for the given `argv`. This is the main
+ * Read part of a REPL.
+ *
+ */
 export const read = async (
+  root: CommandTree,
   argv: string[],
   noRetry = false,
   noSubtreeRetry = false,
@@ -749,13 +678,13 @@ export const read = async (
 
   if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
     await resolver.resolve(cmd.route)
-    return read(argv, true, noSubtreeRetry, execOptions)
+    return read(root, argv, true, noSubtreeRetry, execOptions)
   }
 
   if (!cmd) {
     if (!noRetry) {
       await resolver.resolve(`/${argv.join('/')}`)
-      cmd = (await disambiguate(argv)) || (await internalRead(model, argv))
+      cmd = (await disambiguate(argv)) || (await internalRead(root, argv))
     }
   }
 
@@ -765,24 +694,12 @@ export const read = async (
     let matches: PartialMatch[]
 
     if (argv.length === 1) {
-      // disambiguatePartial takes a partial command, and
-      // returns an array of matching full commands, which we
-      // can turn into leafs via `disambiguate`
-      /* const unambiguous = (await Promise.all(
-        resolver
-          .disambiguatePartial(argv[0])
-          .map(_ => [_])
-          .map(_ => disambiguate(_))
-      ))
-        .filter(x => x)
-        .map(_ => _.subtree) */
-
       matches = await findPartialMatchesAt(prescanModel().usage, argv[0])
     } else {
       const allButLast = argv.slice(0, argv.length - 1)
       const last = argv[argv.length - 1]
 
-      const parent = (await internalRead(model, allButLast)) || (await disambiguate(allButLast))
+      const parent = (await internalRead(root, allButLast)) || (await disambiguate(allButLast))
       if (parent) {
         matches = await findPartialMatchesAt(prescanModel().usage, last)
       }
@@ -802,73 +719,49 @@ export const read = async (
 }
 
 /**
- * The exported interface around our internal command model
+ * The model we present to plugins, a `CommandRegistrar`
  *
  */
-class CommandModel {
-  /**
-   * Call the given callback function `fn` for each node in the command tree
-   *
-   */
-  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  forEachNode(fn: (command: Command) => void) {
-    const iter = (root: Command) => {
-      if (root) {
-        fn(root)
-        if (root.children) {
-          for (const cmd in root.children) {
-            iter(root.children[cmd])
-          }
-        }
-      }
-    }
-    iter(model)
-  }
-}
+export class ImplForPlugins implements CommandRegistrar {
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(protected readonly plugin: string) {}
 
-/**
- * Returns the command tree model
- *
- */
-export const getModel = () => new CommandModel()
-
-/**
- * Print the command tree to the browser console
- *   mostly helpful for debugging
- *
- */
-// export const debug = () => console.log('Command Tree', model, disambiguator)
-
-/**
- * To help with remembering from which plugin calls to listen emanate
- *
- */
-export const proxy = (plugin: string) => ({
-  catchall: (
+  public catchall(
     offer: CatchAllOffer,
     handler: CommandHandler,
     prio = 0,
     options: CommandOptions = new DefaultCommandOptions()
-  ) =>
-    catchalls.push({
+  ) {
+    return getModelInternal().catchalls.push({
       route: '*',
       offer,
       eval: handler,
       prio,
-      plugin,
+      plugin: this.plugin,
       options,
       $: undefined,
       key: undefined,
       parent: undefined
-    }),
-  listen: (route: string, handler: CommandHandler, options: CommandOptions) =>
-    listen(route, handler, Object.assign({}, options, { plugin })),
-  synonym: (route: string, handler: CommandHandler, master: Command, options: CommandOptions) =>
-    synonym(route, handler, master, options && Object.assign({}, options, { plugin })),
-  subtree,
-  subtreeSynonym,
-  commandNotFoundMessage,
-  find: async (route: string, noOverride = true) => {
+    })
+  }
+
+  public listen(route: string, handler: CommandHandler, options: CommandOptions) {
+    return listen(route, handler, Object.assign({}, options, { plugin: this.plugin }))
+  }
+
+  public synonym(route: string, handler: CommandHandler, master: Command, options: CommandOptions) {
+    return _synonym(route, handler, master, options && Object.assign({}, options, { plugin: this.plugin }))
+  }
+
+  public subtree(route: string, options: CommandOptions) {
+    return _subtree(route, options)
+  }
+
+  public subtreeSynonym(route: string, master: Command, options = master.options) {
+    return _subtreeSynonym(route, master, options)
+  }
+
+  public async find(route: string, noOverride = true) {
     const cmd = match(route.split('/').slice(1), true)
     if (!cmd || cmd.route !== route || (!noOverride && resolver && resolver.isOverridden(cmd.route))) {
       if (resolver) {
@@ -879,4 +772,19 @@ export const proxy = (plugin: string) => ({
       return cmd
     }
   }
-})
+}
+
+/**
+ * Create a `CommandRegistrar` facade, for use by plugins in
+ * registering commands.
+ *
+ * This method is named "proxy" because it mostly delegates to the
+ * underlying implementation, with extra help in:
+ *
+ * - remembering from which plugin calls to listen emanate.
+ * - consolidating the tree model across separately-installed @kui-shell/core
+ *
+ */
+export function proxy(plugin: string): CommandRegistrar {
+  return new ImplForPlugins(plugin)
+}

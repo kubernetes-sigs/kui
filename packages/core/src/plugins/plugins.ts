@@ -80,7 +80,7 @@ export async function userInstalledHome() {
  *
  * @return truthy value if we indeed did the initialization
  */
-export const init = async () => {
+export const init = async (): Promise<boolean> => {
   debug('init')
 
   if (prescan) {

@@ -9,6 +9,7 @@ packages/core/index.js
 packages/core/api/
 packages/core/dist/
 packages/core/core/
+packages/core/commands/
 packages/core/main/
 packages/core/models/
 packages/core/plugins/
@@ -21,3 +22,5 @@ plugins/*/dist/
 **/*/node_modules/
 **/*.d.ts
 plugins/plugin-apache-composer/tests/data/composer/composer-source-expect-errors/if-bad.js
+kui-stage
+*flycheck*.js

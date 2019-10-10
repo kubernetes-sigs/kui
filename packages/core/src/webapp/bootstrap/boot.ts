@@ -25,6 +25,11 @@ function catastrophe(err: Error) {
   document.body.classList.add('oops-total-catastrophe')
 }
 
+async function initCommandRegistrar() {
+  const { init } = await import('../../commands/tree')
+  await init()
+}
+
 // note: the q npm doesn't like functions called "bootstrap"!
 const domReady = () => async () => {
   const initializer = import('./init')
@@ -36,11 +41,14 @@ const domReady = () => async () => {
   // const query = import('../query')
 
   try {
-    const waitForThese = []
+    const waitForThese: Promise<void>[] = []
+
+    const commands = initCommandRegistrar()
 
     waitForThese.push(
       plugins.then(async _ => {
         await _.init()
+        await commands
         await _.preload()
       })
     )

@@ -64,16 +64,8 @@ const doList = async (): Promise<Tables.Table> => {
   debug('command execution started', moduleDir)
 
   const pjson = join(moduleDir, 'package.json')
-  try {
-    await pathExists(moduleDir)
-    await pathExists(pjson)
-  } catch (error) {
-    const err = error as Errors.CodedError<string>
-    if (err.code === 'ENOENT') {
-      // this error is OK; it just means that moduleDir
-      // doesn't exist, so there are no plugins to list!
-      throw new Error(strings('No user-installed plugins found'))
-    }
+  if (!(await pathExists(pjson))) {
+    throw new Error(strings('No user-installed plugins found'))
   }
 
   const { dependencies } = (await readJSON(pjson)) as { dependencies: Record<string, string> }

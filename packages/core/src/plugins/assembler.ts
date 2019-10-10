@@ -23,7 +23,8 @@ import { assemble } from './scanner'
 import { PrescanCommandDefinitions, PrescanDocs, PrescanNode, PrescanModel, PrescanUsage } from './prescan'
 
 import eventBus from '../core/events'
-import { getModel, cullFromDisambiguator } from '../core/command-tree'
+import { cullFromDisambiguator } from '../core/command-tree'
+import { initIfNeeded, getModel } from '../commands/tree'
 
 const debug = Debug('core/plugins/assembler')
 
@@ -158,6 +159,7 @@ export const compile = async (
   debug('pluginRoot is %s', pluginRoot)
   debug('externalOnly is %s', externalOnly)
 
+  initIfNeeded()
   const modules = await assemble(plugins.registrar, { externalOnly, pluginRoot })
   debug('modules', modules)
 

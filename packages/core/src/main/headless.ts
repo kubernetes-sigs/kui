@@ -202,13 +202,18 @@ const initCommandContext = async (commandContext: string) => {
   if (commandContext) {
     try {
       debug('setting command context', commandContext)
-      ;(await import('../core/command-tree')).setDefaultCommandContext(
+      ;(await import('../commands/context')).setDefaultCommandContext(
         JSON.parse(commandContext.substring(commandContext.indexOf('=') + 1))
       )
     } catch (err) {
       debug('Error initializing command context', err)
     }
   }
+}
+
+async function initCommandRegistrar() {
+  const { init } = await import('../commands/tree')
+  await init()
 }
 
 /**
@@ -226,6 +231,7 @@ export const main = async (
   // get this started right away, to amortize the cost of loading the
   // prescan model; this saves us around 5ms as of 20190709
   const waitForPlugins = pluginsInit()
+  const waitForCommands = await initCommandRegistrar()
 
   const ourCommandContext = rawArgv.find(_ => commandContextPattern.test(_))
   debug('commandContext', ourCommandContext)
@@ -264,8 +270,8 @@ export const main = async (
 
   /** main work starts here */
   debug('bootstrap')
-  return waitForPlugins
-    .then(async (initWasPerformed: boolean) => {
+  return Promise.all([waitForPlugins, waitForCommands])
+    .then(async ([initWasPerformed]) => {
       debug('plugins initialized')
 
       if (initWasPerformed) {

@@ -41,7 +41,6 @@ import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../mo
 import eventBus from './events'
 import historyModel from '../models/history'
 import { CodedError } from '../models/errors'
-import * as commandTree from './command-tree'
 import { UsageError, UsageModel, UsageRow } from './usage-error'
 
 import { isHeadless, hasLocalAccess } from './capabilities'
@@ -49,6 +48,9 @@ import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
 import SymbolTable from './symbol-table'
+
+import { getModel } from '../commands/tree'
+import { isSuccessfulCommandResolution } from '../commands/resolution'
 
 import * as cli from '../webapp/cli'
 
@@ -375,9 +377,9 @@ class InProcessExecutor implements Executor {
 
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator: CommandTreeResolution = await commandTree.read(argvNoOptions, false, false, execOptions)
+      const evaluator: CommandTreeResolution = await getModel().read(argvNoOptions, execOptions)
 
-      if (commandTree.isSuccessfulCommandResolution(evaluator)) {
+      if (isSuccessfulCommandResolution(evaluator)) {
         //
         // fetch the usage model for the command
         //
