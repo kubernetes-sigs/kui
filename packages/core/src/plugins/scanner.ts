@@ -203,7 +203,7 @@ const topologicalSortForScan = async (
       // gives us the topological sort without having to bother
       // computing the topological sort!
       //
-      console.error('retry on', err)
+      debug('retry on', err)
       lastError = err
       nUnresolved++
       unresolved.push(route)
