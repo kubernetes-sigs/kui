@@ -22,8 +22,11 @@ import { pluginRoot } from './plugins'
 import { PrescanModel, PrescanUsage } from './prescan'
 
 import * as commandTree from '../core/command-tree'
+import { Command, CommandHandler, CommandOptions } from '../models/command'
 import { isCodedError } from '../models/errors'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
+
+import { getModel } from '../commands/tree'
 
 /**
  * A data structure to facilitate computation of the Prescan model
@@ -55,15 +58,48 @@ class ScanCache {
 }
 
 /**
- * Turn a map {k1:true, k2:true} into an array of the keys
+ * Override the standard ImplForPlugins with some extra state that we
+ * need for scanning.
  *
  */
-function toArray<T>(M: { [key: string]: T }): string[] {
-  const A: string[] = []
-  for (const key in M) {
-    A.push(key)
+class CommandRegistrarForScan extends commandTree.ImplForPlugins {
+  /** map to plugin *name* */
+  public readonly cmdToPlugin: Record<string, string> = {}
+
+  public constructor(plugin: string, private readonly scanCache: ScanCache) {
+    super(plugin)
   }
-  return A
+
+  public subtreeSynonym(route: string, master: Command) {
+    if (route !== master.route) {
+      this.scanCache.isSubtreeSynonym[route] = true
+      this.scanCache.isSubtreeSynonym[master.route] = true
+      return super.subtreeSynonym(route, master, {})
+    }
+  }
+
+  public listen(route: string, handler: CommandHandler, options: CommandOptions) {
+    this.cmdToPlugin[route] = this.plugin
+    return super.listen(route, handler, options)
+  }
+
+  public subtree(route: string, options: CommandOptions) {
+    return super.subtree(
+      route,
+      Object.assign(
+        {
+          listen: this.listen.bind(this)
+        },
+        options
+      )
+    )
+  }
+
+  public synonym(route: string, handler: CommandHandler, master: Command, options: CommandOptions) {
+    this.cmdToPlugin[route] = this.plugin
+    this.scanCache.isSynonym[route] = true
+    return super.synonym(route, handler, master, options)
+  }
 }
 
 /**
@@ -73,37 +109,8 @@ function toArray<T>(M: { [key: string]: T }): string[] {
 const loadPlugin = async (route: string, pluginPath: string, scanCache: ScanCache) => {
   debug('loadPlugin %s', route)
 
-  const deps: { [key: string]: boolean } = {}
-
-  // and override commandTree.listen
-  const cmdToPlugin: Record<string, string> = {} // to plugin *name*
-  const ctree = commandTree.proxy(route)
-  const listen = ctree.listen
-  const synonym = ctree.synonym
-  const subtree = ctree.subtree
-  const subtreeSynonym = ctree.subtreeSynonym
-
-  ctree.subtreeSynonym = function(route, master) {
-    if (route !== master.route) {
-      scanCache.isSubtreeSynonym[route] = true
-      scanCache.isSubtreeSynonym[master.route] = true
-      return subtreeSynonym(route, master, {})
-    }
-  }
-  ctree.listen = function(commandRoute: string) {
-    cmdToPlugin[commandRoute] = route
-    // eslint-disable-next-line prefer-rest-params, prefer-spread
-    return listen.apply(undefined, arguments)
-  }
-  ctree.subtree = function(route: string, options) {
-    return subtree(route, Object.assign({ listen: ctree.listen }, options))
-  }
-  ctree.synonym = function(commandRoute) {
-    cmdToPlugin[commandRoute] = route
-    scanCache.isSynonym[commandRoute] = true
-    // eslint-disable-next-line prefer-rest-params, prefer-spread
-    return synonym.apply(undefined, arguments)
-  }
+  // create a CommandRegistrar instance for this one plugin load
+  const ctree = new CommandRegistrarForScan(route, scanCache)
 
   const pluginLoaderRef: PluginRegistration | { default: PluginRegistration } = await import(pluginPath)
   function isDirect(loader: PluginRegistration | { default: PluginRegistration }): loader is PluginRegistration {
@@ -115,17 +122,10 @@ const loadPlugin = async (route: string, pluginPath: string, scanCache: ScanCach
     // invoke the plugin loader
     scanCache.registrar[route] = await pluginLoader(ctree, {} as { usage: PrescanUsage })
 
-    // turn the deps map, which is a canonicalization map from
-    // module=>true (i.e. we use it to remove duplicates), into an
-    // array of the non-duplicate modules
-    const adeps = toArray(deps)
-    if (adeps.length > 0) {
-      scanCache.topological[route] = adeps
-    }
-
     // generate a mapping from commands (e.g. "/git/status" which is
     // hosted by the bash-like plugin) to plugin (e.g. "bash-like"),
     // which services that command
+    const { cmdToPlugin } = ctree
     for (const k in cmdToPlugin) {
       if (scanCache.commandToPlugin[k]) {
         debug('override', k, cmdToPlugin[k], scanCache.commandToPlugin[k])
@@ -427,7 +427,7 @@ export const generatePrescanModel = async (
     overrides: scanCache.overrides,
     usage: scanCache.usage,
     disambiguator: commandTree.endScan(/* state */),
-    catchalls: commandTree.catchalls,
+    catchalls: getModel().catchalls,
     docs: undefined // assembler.ts will fill this in
   }
 }

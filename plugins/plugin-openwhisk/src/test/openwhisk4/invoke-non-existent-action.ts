@@ -46,8 +46,8 @@ describe('Check error handling for invoking a non-existent action', function(thi
       .then(ReplExpect.error(404))
       .catch(Common.oops(this)))
 
-  it('invoke with a non-existent package, but existing action name, via kui action invoke', () =>
-    CLI.command(`kui action invoke xxxxxx/${actionName}`, this.app)
+  it('invoke with a non-existent package, but existing action name, via fdsfasdjfioajdsfioads action invoke', () =>
+    CLI.command(`fdsfasdjfioajdsfioads action invoke xxxxxx/${actionName}`, this.app)
       .then(ReplExpect.error(404))
       .catch(Common.oops(this)))
 

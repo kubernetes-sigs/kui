@@ -31,8 +31,8 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
   const pluginIsInstalled = !!flat.find(({ route }) => route === plugin)
 
   if (!pluginIsInstalled) {
-    const err = new Error(`Plugin ${plugin} is not installed`)
-    err['code'] = 404
+    const err = new Error(`Plugin ${plugin} is not installed`) as Errors.CodedError
+    err.code = 404
     throw err
   }
 
