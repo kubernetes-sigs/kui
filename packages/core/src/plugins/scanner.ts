@@ -79,7 +79,6 @@ const loadPlugin = async (route: string, pluginPath: string, scanCache: ScanCach
   const cmdToPlugin: Record<string, string> = {} // to plugin *name*
   const ctree = commandTree.proxy(route)
   const listen = ctree.listen
-  const intention = ctree.intention
   const synonym = ctree.synonym
   const subtree = ctree.subtree
   const subtreeSynonym = ctree.subtreeSynonym
@@ -98,11 +97,6 @@ const loadPlugin = async (route: string, pluginPath: string, scanCache: ScanCach
   }
   ctree.subtree = function(route: string, options) {
     return subtree(route, Object.assign({ listen: ctree.listen }, options))
-  }
-  ctree.intention = function(commandRoute) {
-    cmdToPlugin[commandRoute] = route
-    // eslint-disable-next-line prefer-rest-params, prefer-spread
-    return intention.apply(undefined, arguments)
   }
   ctree.synonym = function(commandRoute) {
     cmdToPlugin[commandRoute] = route
