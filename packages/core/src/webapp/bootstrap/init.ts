@@ -20,11 +20,7 @@ debug('loading')
 
 import { BrowserWindow } from 'electron'
 
-import { inElectron } from '../../core/capabilities'
 import eventBus from '../../core/events'
-import { extractSearchKey } from '../util/search'
-import { setDefaultCommandContext as setDefault } from '../../core/command-tree'
-import initThemes from '../themes/init'
 
 interface KuiWindow extends BrowserWindow {
   subwindow?: {
@@ -58,18 +54,21 @@ const disableDragAndDrop = () => {
  * environment, what the default fallback prefix should be.
  *
  */
-const setDefaultCommandContext = () => {
+async function setDefaultCommandContext() {
+  const { extractSearchKey } = await import('../util/search')
+
   const contextString =
-    process.env.KAON_CONTEXT ||
+    process.env.KUI_CONTEXT ||
     (typeof window !== 'undefined' && window.location && window.location.search && extractSearchKey('command-context'))
 
   if (contextString) {
     try {
       const context = JSON.parse(contextString)
+      const { setDefaultCommandContext: setDefault } = await import('../../commands/context')
       setDefault(context)
       return
     } catch (err) {
-      debug('Error parsing KAON_CONTEXT', err)
+      debug('Error parsing KUI_CONTEXT', err)
     }
   }
 }
@@ -77,23 +76,29 @@ const setDefaultCommandContext = () => {
 export const init = async () => {
   debug('init')
 
+  const Capabilities = import('../../core/capabilities')
+
+  const waitForThese: Promise<void>[] = []
+
   debug('window init')
   eventBus.emit('/window/init')
 
   disableDragAndDrop()
 
-  setDefaultCommandContext()
+  waitForThese.push(setDefaultCommandContext())
 
   window.addEventListener('beforeunload', () => {
     eventBus.emit('/window/reload')
   })
 
-  await initThemes()
+  waitForThese.push(import('../themes/init').then(_ => _.default()))
+
+  await Promise.all(waitForThese)
 
   //
   // see if we were passed an argv to execute on load
   //
-  if (inElectron()) {
+  if ((await Capabilities).inElectron()) {
     debug('setting up /init/done handler')
     eventBus.once('/init/done', async () => {
       debug('got /init/done')

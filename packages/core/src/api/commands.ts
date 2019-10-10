@@ -28,6 +28,7 @@ import * as Plugins from '../models/plugin'
 import * as Entity from '../models/entity'
 import * as Sidecar from '../webapp/views/sidecar'
 import { optionsToString } from '@kui-shell/core/core/utility'
+import * as Context from '../commands/context'
 
 export namespace Commands {
   export import Arguments = _Commands.EvaluatorArgs
@@ -38,6 +39,8 @@ export namespace Commands {
   export import DefaultExecOptions = _ExecOptions.DefaultExecOptions
   export import ExecOptions = _ExecOptions.ExecOptions
   export import withLanguage = _ExecOptions.withLanguage
+
+  export import getCurrentContext = Context.getCurrentContext
 
   export import ExecType = _Commands.ExecType
   export import Registrar = _Commands.CommandRegistrar

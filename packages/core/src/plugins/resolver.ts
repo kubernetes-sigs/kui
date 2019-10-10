@@ -166,4 +166,4 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
   } /* resolver */
 
   return resolver
-} /* makeResolver */
+}

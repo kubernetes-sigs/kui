@@ -17,8 +17,7 @@
 import Debug from 'debug'
 import * as openwhisk from 'openwhisk'
 
-import { getDefaultCommandContext } from '@kui-shell/core/core/command-tree'
-import { Capabilities, Models, Settings, Util } from '@kui-shell/core'
+import { Capabilities, Commands, Models, Settings, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/openwhisk/models/auth')
 
@@ -131,7 +130,7 @@ export const initOW = () => {
   ow = initOWFromConfig(owConfig)
   return ow
 }
-if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] === 'action') {
+if (Commands.getCurrentContext()[0] === 'wsk' && Commands.getCurrentContext()[1] === 'action') {
   initOW()
 }
 
