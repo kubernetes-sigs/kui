@@ -88,7 +88,7 @@ popd
 # we expect "docker not found" error on travis osx
 # we still want to test the webpack build logic before building docker image
 #
-echo "building external clients"
+echo "building external client"
 ./clients/bin/mkclient.sh
 
 echo "starting webpack dev server"
