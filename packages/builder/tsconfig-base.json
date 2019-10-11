@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "target": "ES2016",
     "sourceMap": true,
+    "removeComments": true,
     "declaration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
