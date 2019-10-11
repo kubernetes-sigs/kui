@@ -210,8 +210,11 @@ function win32 {
 	    --win32metadata.CompanyName="Apache" \
 	    --win32metadata.ProductName="${PRODUCT_NAME}")
 
-      # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
-      mv "$BUILDDIR/${PRODUCT_NAME}-win32-x64/" "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
+	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
+	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
+	    mv "$BUILDDIR/${PRODUCT_NAME}-win32-x64/" "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
+	fi
 
         #
         # deal with win32 packaging
@@ -255,7 +258,10 @@ function mac {
         cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
 
         # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
-        mv "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/" "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
+	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
+            mv "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/" "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
+	fi
 
         # create the installers
         #if [ -n "$ZIP_INSTALLER" ]; then
@@ -309,8 +315,11 @@ function linux {
             --icon=$ICON_LINUX \
 	    --overwrite)
 
-      # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
-      mv "$BUILDDIR/${PRODUCT_NAME}-linux-x64/" "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
+	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
+	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
+	    mv "$BUILDDIR/${PRODUCT_NAME}-linux-x64/" "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
+	fi
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
