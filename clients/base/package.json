@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The base of Kui client definition",
   "scripts": {
-    "preinstall": "rm -rf node_modules; cd ../../ && npm run pack",
+    "preinstall": "rm -rf node_modules package-lock.json; (cd ../../ && npm run pack)",
     "build:electron": "build() { npx --no-install kui-build-electron /tmp $1 Kui-base; }; build"
   },
   "author": "Mengting Yan",
@@ -13,11 +13,11 @@
     "readme": "../../README.md"
   },
   "dependencies": {
-    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core-5.1.0.tgz",
-    "@kui-shell/plugin-tutorials": "file:/tmp/kui-packs/kui-shell-plugin-tutorials-5.1.0.tgz",
-    "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support-5.1.0.tgz"
+    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
+    "@kui-shell/plugin-tutorials": "file:/tmp/kui-packs/kui-shell-plugin-tutorials.tgz",
+    "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz"
   },
   "devDependencies": {
-    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder-5.1.0.tgz"
+    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz"
   }
 }
