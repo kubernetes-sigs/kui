@@ -173,11 +173,13 @@ export default function() {
   global.window = {}
   try {
     global.localStorage = Store()
+    global.sessionStorage = Store()
     debug('successfully initialized persistent localStorage')
   } catch (err) {
     debug('error initializing persistent localStorage', err)
 
     const _localStorage: Record<string, string> = {}
+    const _sessionStorage: Record<string, string> = {}
     global.localStorage = {
       setItem: (k: string, v: string) => {
         _localStorage[k] = v
@@ -185,8 +187,16 @@ export default function() {
       },
       getItem: (k: string) => _localStorage[k] || null
     }
+    global.sessionStorage = {
+      setItem: (k: string, v: string) => {
+        _sessionStorage[k] = v
+        return v
+      },
+      getItem: (k: string) => _sessionStorage[k] || null
+    }
   } finally {
     global.window.localStorage = localStorage
+    global.window.sessionStorage = sessionStorage
   }
 
   window.addEventListener = () => true
