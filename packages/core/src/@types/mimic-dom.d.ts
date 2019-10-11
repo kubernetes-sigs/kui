@@ -9,6 +9,7 @@ interface SimpleLocalStorage {
 interface SimpleWindow {
   addEventListener?: () => void
   localStorage?: SimpleLocalStorage
+  sessionStorage?: SimpleLocalStorage
 }
 
 interface SimpleDocument {
@@ -23,6 +24,7 @@ declare module NodeJS  {
   interface Global {
     window: SimpleWindow
     localStorage: SimpleLocalStorage
+    sessionStorage: SimpleLocalStorage
     document: SimpleDocument
   }
 }
