@@ -10,10 +10,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "debug": "4.1.1",
-    "electron": "6.0.8",
-    "electron-installer-debian": "2.0.0",
+    "electron": "6.0.12",
+    "electron-installer-debian": "2.0.1",
     "electron-installer-dmg": "3.0.0",
-    "electron-packager": "14.0.5",
+    "electron-packager": "14.0.6",
     "glob": "7.1.4",
     "minifier": "0.8.1"
   }
