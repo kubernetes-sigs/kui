@@ -36,7 +36,10 @@ export default async (prescan: PrescanModel) => {
       // extends the capabilities of Kui
       try {
         debug('preloading capabilities.1 %s', module.path)
-        const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+        const registrationRef =
+          module.path.charAt(0) === '/'
+            ? await import(module.path)
+            : await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
         debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration = registrationRef.registerCapability
         if (registration) {
@@ -60,7 +63,10 @@ export default async (prescan: PrescanModel) => {
           // webpack can be isntructed to pull in the plugins into the
           // build see the corresponding NOTE in ./assembler.ts and
           // ./plugins.ts
-          const registrationRef = await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+          const registrationRef =
+            module.path.charAt(0) === '/'
+              ? await import(module.path)
+              : await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
           const registration: PreloadRegistration = registrationRef.default || registrationRef
           await registration(proxy(module.route))
           debug('done preloading %s', module.path)
