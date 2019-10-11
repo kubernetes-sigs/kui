@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The base of Kui client definition",
   "scripts": {
-    "preinstall": "rm -rf node_modules package-lock.json; (cd ../../ && npm run pack)",
+    "preinstall": "rm -rf node_modules package-lock.json; (cd ../../ && npm ci && npm run pack)",
     "build:electron": "build() { npx --no-install kui-build-electron /tmp $1 Kui-base; }; build"
   },
   "author": "Mengting Yan",
