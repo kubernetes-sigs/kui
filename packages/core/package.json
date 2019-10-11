@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/core",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "An Electron-based shell for cloud-native development",
   "homepage": "https://github.com/IBM/kui#readme",
   "license": "Apache-2.0",
@@ -45,8 +45,8 @@
     "properties-parser": "0.3.1",
     "strip-ansi": "5.2.0",
     "tmp": "0.1.0",
-    "yargs-parser": "14.0.0",
-    "uuid": "3.3.3"
+    "uuid": "3.3.3",
+    "yargs-parser": "14.0.0"
   },
   "publishConfig": {
     "access": "public"
