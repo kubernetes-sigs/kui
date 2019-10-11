@@ -26,4 +26,8 @@ for i in /tmp/kui-packs/*.tgz; do
     mv $i ${i//-[[:digit:]].[[:digit:]].[[:digit:]]}
 done
 
+if [ -n "$TRAVIS_JOB_ID" ]; then
+    ls -l /tmp/kui-packs
+fi
+
 echo "$(tput setaf 2)done:$(tput sgr0) packs generated in /tmp/kui-packs"

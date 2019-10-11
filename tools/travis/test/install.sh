@@ -161,3 +161,6 @@ if [ -z "$LAYERS" ] && [ -n "$SCRIPTS" ]; then
     #
     npm ci
 fi
+
+echo "PPPPPPPPPPPPPPPPPPPPPP"
+npm run pack
