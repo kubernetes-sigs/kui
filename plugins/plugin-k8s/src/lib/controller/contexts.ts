@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { Commands, i18n, REPL, Tables } from '@kui-shell/core'
+import { Commands, i18n, Errors, Tables } from '@kui-shell/core'
 
 const strings = i18n('plugin-k8s')
 
 const usage = {
-  context: command => ({
+  context: (command: string): Errors.UsageModel => ({
     command,
     strict: command,
     docs: 'Print your current kubernetes context',
     example: 'kubectl context'
   }),
-  contexts: command => ({
+  contexts: (command: string): Errors.UsageModel => ({
     command,
     strict: command,
     docs: 'List your available kubernetes contexts',
@@ -37,7 +37,11 @@ const usage = {
  * Add click handlers to change context
  *
  */
-const addClickHandlers = (table: Tables.Table, execOptions): Tables.Table => {
+const addClickHandlers = (
+  table: Tables.Table,
+  { REPL }: Commands.Arguments,
+  execOptions: Commands.ExecOptions
+): Tables.Table => {
   const body: Tables.Row[] = table.body.map(
     (row): Tables.Row => {
       const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
@@ -74,13 +78,20 @@ const addClickHandlers = (table: Tables.Table, execOptions): Tables.Table => {
  * List contets command handler
  *
  */
-const listContexts = opts =>
-  REPL.qexec(`kubectl config get-contexts`, undefined, undefined, opts.execOptions).then(
-    (contexts: Tables.Table | Tables.MultiTable) =>
-      Tables.isMultiTable(contexts)
-        ? contexts.tables.map(context => addClickHandlers(context, opts.execOptions))
-        : addClickHandlers(contexts, opts.execOptions)
+const listContexts = (opts: Commands.Arguments): Promise<Tables.Table | Tables.MultiTable> => {
+  const execOptions = Object.assign({}, opts.execOptions, { render: false })
+
+  return opts.REPL.qexec<Tables.Table | Tables.MultiTable>(
+    `kubectl config get-contexts`,
+    undefined,
+    undefined,
+    execOptions
+  ).then((contexts: Tables.Table | Tables.MultiTable) =>
+    Tables.isMultiTable(contexts)
+      ? { tables: contexts.tables.map(context => addClickHandlers(context, opts, execOptions)) }
+      : addClickHandlers(contexts, opts, execOptions)
   )
+}
 
 /**
  * Register the commands
@@ -89,7 +100,7 @@ const listContexts = opts =>
 export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/k8s/context',
-    async ({ execOptions }) => {
+    async ({ execOptions, REPL }) => {
       return (await REPL.qexec<string>(
         `kubectl config current-context`,
         undefined,
