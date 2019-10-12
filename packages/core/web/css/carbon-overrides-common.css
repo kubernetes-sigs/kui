@@ -95,8 +95,8 @@ body[kui-theme-style] .bx--link:hover {
 }
 
 .repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle.bx--loading__stroke-kui {
-  stroke: var(--color-text-02);
-  stroke-dashoffset: 10;
+  stroke: var(--color-base0C);
+  stroke-dashoffset: 30;
 }
 
 body[kui-theme-style] .bx--structured-list-th,
