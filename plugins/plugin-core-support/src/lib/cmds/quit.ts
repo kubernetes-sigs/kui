@@ -19,9 +19,9 @@
  *
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
-const doQuit = () => REPL.qexec('tab close')
+const doQuit = ({ REPL }: Commands.Arguments) => REPL.qexec('tab close')
 
 const usage = (command: string) => ({
   command,
@@ -32,14 +32,12 @@ const usage = (command: string) => ({
 export default (commandTree: Commands.Registrar) => {
   const quitCmd = commandTree.listen('/quit', doQuit, {
     usage: usage('quit'),
-    inBrowserOk: true,
-    noAuthOk: true
+    inBrowserOk: true
   })
 
   // just for fun, make /exit a synonym for /quit
   commandTree.synonym('/exit', doQuit, quitCmd, {
     usage: usage('exit'),
-    inBrowserOk: true,
-    noAuthOk: true
+    inBrowserOk: true
   })
 }

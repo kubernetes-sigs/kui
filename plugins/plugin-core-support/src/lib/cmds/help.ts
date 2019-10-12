@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import { Capabilities, Commands, Errors, i18n, REPL } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -26,7 +26,7 @@ const strings = i18n('plugin-core-support')
  * Respond with a top-level usage document
  *
  */
-const help = usage => ({ argvNoOptions: args }: Commands.Arguments) => {
+const help = usage => ({ argvNoOptions: args, REPL }: Commands.Arguments) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 

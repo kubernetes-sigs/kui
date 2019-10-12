@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import REPL from './repl'
 import { Entity } from './entity'
 import { CodedError } from './errors'
 import { ExecOptions } from './execOptions'
@@ -133,6 +134,8 @@ export interface EvaluatorArgs<Options = ParsedOptions> extends CommandLine<Opti
    * The tab context in which the command was initiated
    */
   tab: Tab
+
+  REPL: REPL
 
   /**
    * Optional command channel options that one command can use to

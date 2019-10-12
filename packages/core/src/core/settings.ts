@@ -87,5 +87,5 @@ export async function exportTo(dirpath: string) {
   const filepath = join(dirpath, 'node_modules/@kui-shell/settings/config.json')
   await ensureFile(filepath)
 
-  await writeJSON(filepath, theme)
+  await writeJSON(filepath, { theme, env, config })
 }

@@ -710,6 +710,8 @@ class InProcessExecutor implements Executor {
 
             return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
               tab,
+              // eslint-disable-next-line @typescript-eslint/no-use-before-define
+              REPL: { qexec, rexec, pexec, click, encodeComponent },
               block: block || true,
               nextBlock,
               argv,
@@ -980,10 +982,10 @@ export const pexec = <T = Response>(command: string, execOptions?: ExecOptions):
  * Execute a command in response to an in-view click
  *
  */
-export const click = async (command: string | (() => Promise<string>), evt: MouseEvent) => {
+export const click = async (command: string | (() => Promise<string>), evt: MouseEvent): Promise<void> => {
   const { drilldown } = await import('../webapp/picture-in-picture')
   const tab = cli.getTabFromTarget(evt.currentTarget)
-  return drilldown(tab, command)(evt)
+  await drilldown(tab, command)(evt)
 }
 
 /**
