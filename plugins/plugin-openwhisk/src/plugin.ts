@@ -34,7 +34,6 @@ import roots from './lib/cmds/activations/roots'
 import on from './lib/cmds/rules/on'
 import every from './lib/cmds/rules/every'
 import modes from './lib/views/mode'
-import beautify from './lib/cmds/beautify'
 import core from './lib/cmds/openwhisk-core'
 
 import activationList from './lib/cmds/activations/list'
@@ -54,7 +53,6 @@ export default async (commandTree: Commands.Registrar) => {
   await listAll(commandTree)
   await loadTest(commandTree)
   await addParameter(commandTree)
-  await beautify(commandTree)
 
   // action extensions
   await letCommand(commandTree)
