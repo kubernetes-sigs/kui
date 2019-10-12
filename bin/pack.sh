@@ -26,14 +26,18 @@ if [ $CODE != 0 ]; then
     fi
 fi
 
+# here, we strip off the "-x.y.z" semver part of the generated
+# filenames, so that we can have hard-wired package.json dependencies
+# that are independent of version
+# as to why we don't just use bash shell expansion, see https://github.com/IBM/kui/issues/2985
+for i in /tmp/kui-packs/*.tgz; do
+    mv $i $(node -e "console.log('$i'.replace(/-[\d]+\.[\d]+\.[\d]+/, ''))")
+done
+
 if [ -n "$TRAVIS_JOB_ID" ]; then
     echo "Generated these packs:"
     ls -l /tmp/kui-packs/
 fi
-
-for i in /tmp/kui-packs/*.tgz; do
-    mv $i ${i//-[[:digit:]].[[:digit:]].[[:digit:]]}
-done
 
 echo "$(tput setaf 2)done:$(tput sgr0) packs generated in /tmp/kui-packs"
 
