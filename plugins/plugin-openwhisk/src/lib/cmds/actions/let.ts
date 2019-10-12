@@ -35,8 +35,8 @@ import Debug from 'debug'
 import * as minimist from 'yargs-parser'
 import * as needle from 'needle'
 import * as withRetry from 'promise-retry'
-import { basename, join } from 'path'
-import { createWriteStream, existsSync, stat, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
+import { basename } from 'path'
+import { existsSync, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
 
 import { Capabilities, Commands, REPL, Util } from '@kui-shell/core'
 
@@ -130,7 +130,6 @@ const fetchRemote = (location: string, mimeType: string): Promise<Remote> =>
       return rp(locationWithoutQuotes).then(async (data: string | Buffer) => {
         debug(`fetchRemote done`)
         const extension = mimeType || locationWithoutQuotes.substring(locationWithoutQuotes.lastIndexOf('.'))
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const tmp = await import('tmp')
         tmp.tmpName({ postfix: extension }, (err: Error, tmpFilePath: string) => {
           if (err) {
@@ -287,76 +286,6 @@ const makeZipActionFromZipFile = (name: string, location: string, options, execO
   })
 
 /**
- * Execute `npm install` in the given directory
- *
- */
-const doNpmInstall = (dir: string) =>
-  new Promise((resolve, reject) => {
-    require('child_process').exec('npm install', { cwd: dir }, err => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(true)
-      }
-    })
-  })
-
-/**
- * Create a zip action, given location, which is a directory
- * containing (at least) an index.js.  If the directory also contains
- * a package.json, and the directory does not contain a node_modules
- * subdirectory, then `npm install` will executed prior to zipping up
- * the directory
- *
- */
-const makeZipAction = (name: string, location: string, options, execOptions: Commands.ExecOptions) =>
-  new Promise((resolve, reject) => {
-    try {
-      debug('makeZipAction', location)
-      stat(location, (err, stats) => {
-        if (err) {
-          reject(err)
-        } else if (!stats.isDirectory()) {
-          reject(new Error('I think you asked to create a zip action, but the specified location is not a directory.'))
-        } else {
-          const needsNpmInstall =
-            existsSync(join(location, 'package.json')) && !existsSync(join(location, 'node_modules'))
-          const npmInstallTask = !needsNpmInstall ? Promise.resolve(true) : doNpmInstall(location)
-
-          npmInstallTask.then(() => {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const archiver = require('archiver')
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const tmp = require('tmp')
-            const archive = archiver('zip')
-
-            tmp.tmpName((err, path) => {
-              if (err) {
-                reject(err)
-              } else {
-                const output = createWriteStream(path)
-
-                // when the zip archiver completes, and closes the output file...
-                output.on('close', () => {
-                  makeZipActionFromZipFile(name, path, options, execOptions).then(resolve, reject)
-                })
-
-                // create the zip
-                archive.pipe(output)
-                archive.directory(location, '')
-                archive.finalize()
-              }
-            })
-          })
-        }
-      })
-    } catch (err) {
-      console.error(err)
-      reject(new Error('Internal error'))
-    }
-  })
-
-/**
  * Create a managed web asset
  *
  */
@@ -466,8 +395,6 @@ export default async (commandTree: Commands.Registrar) => {
 
     if (extension === '.zip') {
       return makeZipActionFromZipFile(name, location, options, execOptions)
-    } else if (mimeType === '.zip') {
-      return makeZipAction(name, location, options, execOptions)
     } else if (kind && mimeType !== '.webjs') {
       //
       // then this is a built-in type

@@ -158,8 +158,7 @@ export default (tab: UI.Tab, entity, options: ShowOptions) => {
       } else {
         const data = JSON.stringify(result, undefined, 4)
         if (data.length < 30 * 1024) {
-          const beautify = require('js-beautify').js_beautify
-          const prettier = beautify(data, { indent_size: 2 })
+          const prettier = data
 
           // colorify
           const contentType = 'language-json'

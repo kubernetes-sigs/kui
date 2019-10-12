@@ -30,6 +30,7 @@ export interface AppAndCount {
  * so: every key in struct1 must be in struct2, but not vice versa
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sameStruct = (struct1: Record<string, any>, struct2: Record<string, any>, subset = false): boolean => {
   if (struct1 === struct2) {
     return true

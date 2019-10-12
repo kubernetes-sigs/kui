@@ -138,9 +138,7 @@ export default async (
         if (match[3].indexOf('{') >= 0) {
           // possibly JSON?
           try {
-            const beautify = require('js-beautify').js_beautify
-            const prettier = beautify(match[3], { indent_size: 2 })
-            mesg.innerText = prettier
+            mesg.innerText = JSON.stringify(JSON.parse(match[3]), undefined, 2)
           } catch (err) {
             // not json!
             mesg.innerText = match[3]
@@ -174,8 +172,7 @@ export default async (
         return M
       }, {})
     }
-    const beautify = require('js-beautify').js_beautify
-    const prettier = beautify(JSON.stringify(value), { indent_size: 2 })
+    const prettier = JSON.stringify(value, undefined, 2)
 
     // apply the syntax highlighter to the JSON
     container.innerText = prettier

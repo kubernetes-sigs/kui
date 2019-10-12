@@ -112,15 +112,4 @@ describe('edit actions', function(this: Common.ISuite) {
     CLI.command('edit seq', this.app)
       .then(ReplExpect.error(406))
       .catch(Common.oops(this)))
-
-  it('should create a zip action', () =>
-    CLI.command(`let zippy.zip = ${ROOT}/data/openwhisk/zip`, this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('zippy'))
-      .catch(Common.oops(this)))
-  it('should report 406 for edit of zip', () =>
-    CLI.command('edit zippy', this.app)
-      .then(ReplExpect.error(406))
-      .catch(Common.oops(this)))
 })

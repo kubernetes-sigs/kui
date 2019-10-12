@@ -17,8 +17,6 @@
 import ls from './lib/cmds/ls'
 import open from './lib/cmds/open'
 import bash from './lib/cmds/bash-like'
-import gitDiff from './lib/cmds/git-diff'
-import gitStatus from './lib/cmds/git-status'
 import ptyServer from './pty/server'
 import exportCommand from './lib/cmds/export'
 import { registerCommands as sessionReady } from './pty/session'
@@ -35,8 +33,6 @@ export default async (commandTree: Commands.Registrar) => {
     open(commandTree),
     bash(commandTree),
     ptyServer(commandTree),
-    gitDiff(commandTree),
-    gitStatus(commandTree),
     sessionReady(commandTree),
     exportCommand(commandTree)
   ])
