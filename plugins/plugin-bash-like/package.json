@@ -26,7 +26,6 @@
     "@types/shelljs": "0.8.5",
     "cookie": "0.4.0",
     "debug": "4.1.1",
-    "diff2html": "2.11.3",
     "marked": "0.7.0",
     "node-pty-prebuilt-multiarch": "^0.9.0-beta21.legacy",
     "shelljs": "0.8.3",
@@ -38,7 +37,6 @@
     "exclude": {
       "headless": [
         "asciidoctor.js",
-        "diff2html",
         "marked",
         "xterm",
         "ws",

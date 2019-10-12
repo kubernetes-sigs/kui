@@ -144,6 +144,7 @@ export function init() {
   theCommandModel = new CommandModelImpl()
 
   if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;((window as any) as WindowWithModel)._kuiCommandModel = theCommandModel
   }
 }

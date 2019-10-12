@@ -31,7 +31,7 @@ fi
 # that are independent of version
 # as to why we don't just use bash shell expansion, see https://github.com/IBM/kui/issues/2985
 for i in /tmp/kui-packs/*.tgz; do
-    mv $i $(node -e "console.log('$i'.replace(/-[\d]+\.[\d]+\.[\d]+/, ''))")
+    mv $i $(node -e "console.log('$i'.replace(/-[\d]+\.[\d]+\.[\d]+/, '').replace(/-dev.[\d]+.[\d]+/,''))")
 done
 
 if [ -n "$TRAVIS_JOB_ID" ]; then
