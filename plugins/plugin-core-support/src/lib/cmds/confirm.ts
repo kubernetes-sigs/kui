@@ -16,7 +16,7 @@
 
 import { dirname, join } from 'path'
 
-import { Capabilities, Commands, Errors, eventBus, i18n, REPL, UI } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, i18n, UI } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -46,7 +46,7 @@ const usage: Errors.UsageModel = {
 export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/confirm',
-    ({ tab, argvNoOptions, parsedOptions, execOptions }) =>
+    ({ tab, argvNoOptions, parsedOptions, execOptions, REPL }) =>
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         const message = parsedOptions.asking || strings('areYouSure')
@@ -94,8 +94,8 @@ export default async (commandTree: Commands.Registrar) => {
           // the following bits handle mouse clicks on the underlying
           // page; we want the confirmation popup to disappear onclick
           let notAClick = false
-          let currentClickX
-          let currentClickY
+          let currentClickX: number
+          let currentClickY: number
           const blurryClick = () => {
             if (!notAClick) {
               cancel()

@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, i18n, i18nFromMap, REPL, Settings, UI } from '@kui-shell/core'
+import { Commands, i18n, i18nFromMap, Settings, REPL, UI } from '@kui-shell/core'
 
 import usage from './usage'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
@@ -182,7 +182,7 @@ function renderVersion(name: string) {
   return bottomContent
 }
 
-async function renderGettingStarted() {
+async function renderGettingStarted({ REPL }: Commands.Arguments) {
   if (Settings.theme.gettingStarted && typeof Settings.theme.gettingStarted !== 'string') {
     const marked = await markdown()
     const wrapper = document.createElement('div')
@@ -209,8 +209,10 @@ interface Options extends Commands.ParsedOptions {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async ({ parsedOptions }: Commands.Arguments<Options>): Promise<Commands.Response> => {
+const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.Response> => {
   debug('aboutWindow')
+
+  const { parsedOptions, REPL } = args
 
   try {
     UI.injectCSS({
@@ -233,7 +235,7 @@ const aboutWindow = async ({ parsedOptions }: Commands.Arguments<Options>): Prom
   debug('defaultMode', defaultMode)
 
   if (parsedOptions.content) {
-    const response: HTMLElement = await REPL.qexec(parsedOptions.content, undefined, undefined, { render: true })
+    const response = await REPL.qexec<HTMLElement>(parsedOptions.content, undefined, undefined, { render: true })
     debug('rendering content', parsedOptions.content, response)
 
     const container = document.createElement('div')
@@ -246,7 +248,7 @@ const aboutWindow = async ({ parsedOptions }: Commands.Arguments<Options>): Prom
     innerContainer.appendChild(response)
     content.appendChild(container)
   } else if (defaultMode === 'gettingStarted') {
-    content.appendChild(await renderGettingStarted())
+    content.appendChild(await renderGettingStarted(args))
   } else if (defaultMode === 'version') {
     content.appendChild(await renderVersion(name))
   } else if (defaultMode === 'about') {
@@ -319,9 +321,6 @@ export default (commandTree: Commands.Registrar) => {
     return aboutWindow({} as Commands.Arguments<Options>)
   }
 
-  // these commands don't require any auth
-  const noAuthOk = true
-
   /**
    * Print out the current version of the tool, as text
    *
@@ -329,7 +328,7 @@ export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/version', // the command path
     reportVersion, // the command handler
-    { noAuthOk, usage: usage.version }
+    { usage: usage.version }
   )
 
   /**
@@ -339,13 +338,11 @@ export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/about', aboutWindow, {
     hidden: true, // don't list about in the help menu
     needsUI: true, // about requires a window
-    inBrowserOk: true,
-    noAuthOk // about doesn't require openwhisk authentication
+    inBrowserOk: true
   })
 
   // getting started shortcut
-  commandTree.listen('/getting/started', () => REPL.qexec('about --mode gettingStarted'), {
-    noAuthOk,
+  commandTree.listen('/getting/started', ({ REPL }) => REPL.qexec('about --mode gettingStarted'), {
     needsUI: true,
     inBrowserOk: true
   })

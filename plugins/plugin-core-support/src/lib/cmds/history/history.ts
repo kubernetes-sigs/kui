@@ -22,7 +22,7 @@
 
 import Debug from 'debug' // the default number of history elements to show with /history
 
-import { Commands, Models, REPL, Tables } from '@kui-shell/core'
+import { Commands, Models, Tables } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/history')
 
@@ -72,7 +72,7 @@ const usage = {
  * Execute the command N again
  *
  */
-const again = (N: number, historyEntry) => {
+const again = ({ REPL }: Commands.Arguments, N: number, historyEntry) => {
   debug('again', N, historyEntry)
 
   if (!Models.History.line(N)) {
@@ -175,10 +175,10 @@ export default (commandTree: Commands.Registrar) => {
   // commandTree.listen('/history/purge', Models.History.wipe, { docs: 'Clear your command history' })
 
   /** re-execute from history */
-  const againCmd = () => ({ argv, execOptions }) => {
-    const N = argv[1] || Models.History.cursor - 2 // use the last command, if the user entered only "!!"
-    console.error(execOptions)
-    return again(N, execOptions && execOptions.history)
+  const againCmd = () => (args: Commands.Arguments) => {
+    const N = args.argv[1] ? parseInt(args.argv[1], 10) : Models.History.cursor - 2 // use the last command, if the user entered only "!!"
+    console.error(args.execOptions)
+    return again(args, N, args.execOptions && args.execOptions.history)
   }
   const cmd = commandTree.listen('/!!', againCmd(), {
     usage: usage.again('!!'),

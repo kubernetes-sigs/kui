@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { Capabilities, Commands, i18n, REPL, UI, Util } from '@kui-shell/core'
+import { Capabilities, Commands, i18n, Util } from '@kui-shell/core'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
@@ -29,7 +29,7 @@ const debug = Debug('plugins/bash-like/cmds/open')
  * Decide how to display a given filepath
  *
  */
-const open = async (tab: UI.Tab, filepath: string) => {
+const open = async ({ tab, REPL }: Commands.Arguments, filepath: string) => {
   debug('open', filepath)
 
   const fullpath = Util.findFile(Util.expandHomeDir(filepath))
@@ -127,9 +127,9 @@ const usage = {
 export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/open',
-    ({ tab, argvNoOptions: argv }) => {
-      return open(tab, argv[argv.indexOf('open') + 1])
+    args => {
+      return open(args, args.argvNoOptions[args.argvNoOptions.indexOf('open') + 1])
     },
-    { usage, needsUI: true, inBrowserOk: true, noAuthOk: true }
+    { usage, needsUI: true, inBrowserOk: true }
   )
 }
