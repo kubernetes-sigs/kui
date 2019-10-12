@@ -752,6 +752,18 @@ interface TableViewInfo {
   tableModel: Table | WatchableTable
 }
 
+function widthOfRow(row: Row) {
+  return (row.attributes || []).reduce((sum, cell) => {
+    return sum + cell.value.length * 0.96
+  }, row.name.length)
+}
+
+function maxWidth(table: Table) {
+  return table.body.concat(table.header || []).reduce((max, row) => {
+    return Math.max(max, widthOfRow(row))
+  }, 0)
+}
+
 /**
  * Format the table view
  *
@@ -850,6 +862,11 @@ export const formatTable = (
     const rowSelection = tableDom.querySelector('.selected-row')
     if (rowSelection) {
       tableDom.classList.add('has-row-selection')
+    }
+
+    if (isPopup()) {
+      const width = maxWidth(table)
+      tableDom.style.fontSize = 98 / width + 'vw'
     }
 
     return {

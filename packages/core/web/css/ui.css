@@ -800,6 +800,10 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   flex: 1;
   overflow: hidden;
 }
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
+  height: 3vmin;
+}
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
 }
@@ -840,6 +844,14 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg.kui--error-icon {
   display: block;
 }
+body.subwindow sidecar .sidecar-bottom-stripe svg {
+  width: 2.5vmin;
+  height: 2.5vmin;
+}
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar svg {
+  width: 1.5vmin;
+  height: 1.5vmin;
+}
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
   font-size: 0.75em;
   display: block;
@@ -847,6 +859,9 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-te
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+  font-size: 1.375vmin;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
   display: flex;
@@ -897,6 +912,10 @@ sidecar .sidecar-header {
   border-bottom: 1px solid var(--color-content-divider);
   flex-basis: 8rem;
   min-height: 8rem; /* see shell issue #712 */
+}
+body.subwindow sidecar .sidecar-header {
+  flex-basis: 15vh;
+  min-height: 15vh;
 }
 sidecar .sidecar-header .header-main-content {
   flex: 1;
@@ -988,6 +1007,9 @@ sidecar .sidecar-header-name {
    the header name text */
   padding-right: 1rem;
   -webkit-app-region: no-drag !important;
+}
+body.subwindow sidecar .sidecar-header-name {
+  font-size: 4vh;
 }
 sidecar .sidecar-header .entity-name-line {
   display: flex;
@@ -1917,8 +1939,7 @@ body.subwindow .repl-block .ok-line,
 body.subwindow .repl-block .oops {
   font-size: 2.5vmin;
 }
-body.subwindow[data-presentation="SidecarFullscreenForPopups"] sidecar .sidecar-bottom-stripe-close,
-body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-bottom-stripe-close {
+body.subwindow sidecar .sidecar-bottom-stripe-close {
   /* no close button if in subwindow/popup mode */
   display: none;
 }
@@ -2068,6 +2089,7 @@ body.subwindow .scrollable {
 }
 body.subwindow .scrollable-auto {
   overflow-x: auto;
+  flex: 1;
 }
 body.subwindow .result-as-table.result-as-multi-table-flex-wrap {
   display: initial;
@@ -2900,7 +2922,7 @@ badge.clickable:not(.badge-as-fontawesome):hover {
   color: var(--color-text-01);
   background: var(--color-stripe-02);
 }
-.sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
+body:not(.subwindow) .sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
   border-right: 1px solid var(--color-table-border1);
 }
 .sidecar-bottom-stripe-right-bits,
@@ -2919,6 +2941,12 @@ badge.clickable:not(.badge-as-fontawesome):hover {
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
   padding-left: 1em;
+}
+body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
+  padding-left: 0.875vw;
+}
+body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
+  padding-right: 0.875vw;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
   padding-right: 1em;

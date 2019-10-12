@@ -1040,7 +1040,12 @@ export const printResults = (
         }
       } else if (isCustomSpec(response)) {
         if (echo || (execOptions && execOptions.replSilence)) {
-          await showCustom(tab, response, execOptions, customContainer)
+          await showCustom(
+            tab,
+            response,
+            isPopup() ? Object.assign({}, execOptions, { leaveBottomStripeAlone: true }) : execOptions,
+            customContainer
+          )
 
           if (!isPopup()) {
             ok(resultDom.parentElement)
