@@ -345,7 +345,7 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   display: block;
 }
 .repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle {
-  stroke: var(--color-yellow);
+  stroke: var(--color-brand-03);
 }
 .repl-block .repl-prompt-right-element-status-icon svg path[data-icon-path="inner-path"] {
   opacity: 1;
@@ -790,6 +790,9 @@ body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-st
 sidecar .sidecar-bottom-stripe-toolbar {
   display: flex;
 }
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar {
+  font-size: 1.5vw;
+}
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   background-color: var(--color-sidecar-toolbar-background);
@@ -799,10 +802,6 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   align-items: center;
   flex: 1;
   overflow: hidden;
-}
-body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
-body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
-  height: 3vmin;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
@@ -1954,8 +1953,8 @@ body.subwindow .repl-block.processing .kui--repl-prompt-buttons {
 }
 body.subwindow .repl-block.processing .kui--icon-processing > svg {
   /* loading icon */
-  width: 10vmin;
-  height: 10vmin;
+  width: 15vmin;
+  height: 15vmin;
 }
 body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
   /* in subwindow mode, no maximize or unmaximize buttons */
@@ -2110,9 +2109,11 @@ body.subwindow .repl-output {
 }
 body.subwindow .repl-prompt {
   border: none;
+  margin-right: 0;
 }
 body.subwindow .repl-prompt svg {
-  transform: scale(2);
+  width: 5vh;
+  height: 5vh;
 }
 body.subwindow .repl .repl-input .repl-prompt,
 body.subwindow .repl-result-spinner,
@@ -2127,6 +2128,7 @@ body.subwindow .repl-block {
 }
 body.subwindow sidecar .sidecar-bottom-stripe {
   font-size: 2vmin;
+  min-height: unset;
 }
 body.subwindow sidecar .usage-error-wrapper .page-content {
   display: flex;
