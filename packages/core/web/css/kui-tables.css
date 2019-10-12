@@ -79,6 +79,10 @@
 sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
   padding: 0 0.6875em;
 }
+body.subwindow .result-table:not([kui-table-style="Light"]) .header-cell .cell-inner,
+body.subwindow sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
+  padding: 0 0.6875vmin;
+}
 .header-cell:not(:first-child) .cell-inner {
   border-left: 1px solid var(--color-table-border3);
 }
@@ -114,6 +118,10 @@ sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
   padding: 0.6875em;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+body.subwindow .bx--data-table.result-table .entity-attributes > td,
+body.subwidnow .bx--data-table.result-table .entity-attributes > th {
+  padding: 0.6875vmin;
 }
 .bx--data-table.result-table .entity-attributes > th.header-cell {
   padding-left: 0;
