@@ -40,9 +40,10 @@ const usage = {
 export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/tekton/flow',
-    async ({ argvNoOptions, tab }) => {
+    async command => {
+      const { argvNoOptions, tab } = command
       const filepath = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
-      const raw = await read(filepath)
+      const raw = await read(command, filepath)
       const jsons = await parse(raw)
 
       // return a kui view

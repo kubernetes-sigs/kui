@@ -33,6 +33,8 @@ export namespace Errors {
   export import UsageRow = Usage.UsageRow
   export import UsageError = Usage.UsageError
   export import isUsageError = Usage.isUsageError
+
+  export import YargsParserConfiguration = Usage.YargsParserConfiguration
 }
 
 export default Errors

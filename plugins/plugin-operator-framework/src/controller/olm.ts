@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
 // const getSources = `oc get opsrc -o json --all-namespaces ${parsedOptions.config ? `--config ${parsedOptions.config}` : ''}`
 
@@ -51,7 +51,7 @@ export default async (commandTree: Commands.Registrar) => {
 
   commandTree.listen(
     '/olm/catalog',
-    async ({ block, parsedOptions, execOptions }) => {
+    async ({ block, parsedOptions, execOptions, REPL }) => {
       const namespace = parsedOptions.n || parsedOptions.namespace
       const getSources = `oc get OperatorSources ${
         namespace ? `-n ${namespace}` : '--all-namespaces'
@@ -69,7 +69,7 @@ export default async (commandTree: Commands.Registrar) => {
 
   commandTree.listen(
     '/olm/installed',
-    async ({ block, parsedOptions, execOptions }) => {
+    async ({ block, parsedOptions, execOptions, REPL }) => {
       const namespace = parsedOptions.n || parsedOptions.namespace
       const getSources = `oc get ClusterServiceVersions -n ${namespace || 'default'} ${
         parsedOptions.config ? `--config ${parsedOptions.config}` : ''

@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 import { Action, withHeader } from '@kui-shell/plugin-openwhisk'
 
 import { appList } from '../../utility/usage'
@@ -43,7 +43,7 @@ interface ListOptions extends Commands.ParsedOptions {
 export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     `/wsk/app/list`,
-    ({ argvNoOptions, parsedOptions, execOptions }: Commands.Arguments<ListOptions>) => {
+    ({ argvNoOptions, parsedOptions, execOptions, REPL }: Commands.Arguments<ListOptions>) => {
       const limit = parsedOptions.limit || 10 // limit 10 sessions in session list if users didn't specify --limit
 
       if (limit === 0) {

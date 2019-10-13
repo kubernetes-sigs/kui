@@ -22,7 +22,7 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI, Util } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, Tables, UI, Util } from '@kui-shell/core'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 
 import * as namespace from '../models/namespace'
@@ -246,7 +246,7 @@ const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> =
  * List registered namespaces
  *
  */
-const list = async (): Promise<Tables.Table> => {
+const list = async ({ REPL }: Commands.Arguments): Promise<Tables.Table> => {
   debug('list')
 
   const list = await namespace.list()
@@ -304,7 +304,7 @@ interface UseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: Commands.Arguments) =>
+const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: Commands.Arguments): Promise<string> =>
   namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
     if (auth) {
       /**
@@ -346,7 +346,7 @@ const clicky = (parent: HTMLElement, cmd: string, exec) => {
  * Command impl for auth add
  *
  */
-const addFn = (tab: UI.Tab, key: string, subject: string) => {
+const addFn = (tab: UI.Tab, key: string, subject: string): Promise<string> => {
   debug('add', key, subject)
 
   const previousAuth = authModel.get()
@@ -367,7 +367,7 @@ const addFn = (tab: UI.Tab, key: string, subject: string) => {
         // otherwise, guide the user towards possibly helpful commands
         const dom = document.createElement('div')
         dom.appendChild(document.createTextNode('Please select a namespace, using '))
-        clicky(dom, 'wsk auth list', REPL.pexec)
+        clicky(dom, 'wsk auth list', tab.REPL.pexec)
         dom.appendChild(document.createTextNode(' or '))
         clicky(dom, 'wsk auth add', UI.LowLevel.partialInput)
         throw new Errors.UsageError(dom)
@@ -379,7 +379,8 @@ const addFn = (tab: UI.Tab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: Commands.Arguments) => {
+const hostSet = async (command: Commands.Arguments): Promise<Commands.Response> => {
+  const { argvNoOptions, parsedOptions: options, execOptions, REPL } = command
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
@@ -457,7 +458,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: C
         if (specifiedKey) {
           // use `wsk auth add` to register the key for this host
           debug('using specified key')
-          return REPL.qexec(`wsk auth add ${specifiedKey}`)
+          return REPL.qexec<string>(`wsk auth add ${specifiedKey}`)
         } else if (auths.length === 0) {
           if (isLocal && !process.env.LOCAL_OPENWHISK) {
             // fixed key for local openwhisk
@@ -466,7 +467,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: C
             debug('using fixed localhost key')
             const key =
               '23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP'
-            return REPL.qexec(`wsk auth add ${key}`)
+            return REPL.qexec<string>(`wsk auth add ${key}`)
           }
 
           // no keys, yet. enter a special mode requesting further assistance
@@ -493,7 +494,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: C
           // otherwise, offer a list of them to the user
           debug('found multiple auths')
           namespace.setPleaseSelectNamespace()
-          return list()
+          return list(command)
         }
       })
     )

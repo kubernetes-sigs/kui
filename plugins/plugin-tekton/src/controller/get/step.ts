@@ -30,13 +30,15 @@ const usage = {
   optional: [{ name: '--file', alias: '-f', docs: 'Path to resource specification' }]
 }
 
-const getStep = async ({ argvNoOptions, parsedOptions }: Commands.Arguments<Options>) => {
+const getStep = async (command: Commands.Arguments<Options>) => {
+  const { argvNoOptions, parsedOptions } = command
+
   const pipelineName = argvNoOptions[argvNoOptions.indexOf('step') + 1]
   const taskName = argvNoOptions[argvNoOptions.indexOf('step') + 2]
   const stepName = argvNoOptions[argvNoOptions.indexOf('step') + 3]
 
   // either we fetch the model from a given file (given a filepath), or from the cluster
-  const task = await fetchTask(pipelineName, taskName, parsedOptions.f)
+  const task = await fetchTask(command, pipelineName, taskName, parsedOptions.f)
 
   if (!task) {
     const err: Errors.CodedError = new Error('task not found')

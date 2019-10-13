@@ -65,7 +65,7 @@ function isArrayOfStrings(a: (Activation | string)[]): a is string[] {
  * Fetch activation records
  *
  */
-const fetch = async (activationIds: Activation[] | string[]): Promise<Activation[]> => {
+const fetch = async (tab: UI.Tab, activationIds: Activation[] | string[]): Promise<Activation[]> => {
   debug('fetching', activationIds)
 
   if (!isArrayOfStrings(activationIds)) {
@@ -73,7 +73,7 @@ const fetch = async (activationIds: Activation[] | string[]): Promise<Activation
   } else {
     const activations: Activation[] = await Promise.all(
       activationIds.map(_ => {
-        return REPL.qexec<Activation>(`wsk activation get ${_}`).catch(err => {
+        return tab.REPL.qexec<Activation>(`wsk activation get ${_}`).catch(err => {
           console.error(err)
           return undefined
         })
@@ -134,6 +134,7 @@ interface Args {
 
 const _render = (args: Args) => {
   const {
+    tab,
     entity,
     activationIds,
     container,
@@ -146,7 +147,6 @@ const _render = (args: Args) => {
     limit,
     parsedOptions
   } = args
-  const tab: UI.Tab = args.tab
 
   const currentRows: NodeListOf<HTMLTableRowElement> = container.querySelectorAll('tr.log-line')
 
@@ -199,13 +199,13 @@ const _render = (args: Args) => {
 
   // picture in picture
   const pip = (cmd: string) => {
-    return () => REPL.pexec(cmd)
+    return () => tab.REPL.pexec(cmd)
   }
 
   return Promise.all([
-    fetch(activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
+    fetch(tab, activationIds).then(activations => (entity ? [entity, ...activations] : activations)), // add entity to the front
     parsedOptions &&
-      (REPL.qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`) as Promise<number>)
+      (tab.REPL.qexec(`wsk activation count ${parsedOptions.name ? parsedOptions.name : ''}`) as Promise<number>)
   ]).then(([activations, count]) => {
     // duration of the activation. this will be helpful for
     // normalizing the bar dimensions
@@ -312,8 +312,8 @@ const _render = (args: Args) => {
       // command to be executed when clicking on the entity name cell
       const path = activation.annotations && activation.annotations.find(({ key }) => key === 'path')
       const gridCommand = !path
-        ? `grid ${REPL.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
-        : `grid ${REPL.encodeComponent(`/${path.value}`)}`
+        ? `grid ${tab.REPL.encodeComponent(`/${activation.namespace}/${activation.name}`)}` // triggers, at least, have no path annotation
+        : `grid ${tab.REPL.encodeComponent(`/${path.value}`)}`
 
       nameClick.onclick = pip(gridCommand)
 
@@ -527,7 +527,7 @@ const _render = (args: Args) => {
           button.classList.add('clickable')
 
           buttonContainer.setAttribute('data-button-command', command)
-          buttonContainer.onclick = () => REPL.pexec(command)
+          buttonContainer.onclick = () => tab.REPL.pexec(command)
         })
 
         // description of current page
@@ -568,8 +568,8 @@ const _render = (args: Args) => {
         const listCommand = activations.every(activation => activation.sessionId !== undefined)
           ? 'session list'
           : 'wsk activation list'
-        return REPL.qexec(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
-          .then((activations: ActivationListTable) => activations.body)
+        return tab.REPL.qexec<ActivationListTable>(`${listCommand} ${mapToOptions(parsedOptions, { skip })}`)
+          .then(activations => activations.body)
           .then(activationIds => {
             if (activationIds.length === 0) {
               // we're at the end! disable the next button

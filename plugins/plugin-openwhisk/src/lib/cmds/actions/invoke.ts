@@ -27,10 +27,11 @@
 
 import Debug from 'debug'
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands, Errors } from '@kui-shell/core'
 
 import { actions } from '../openwhisk-usage'
 import { synonyms } from '../../models/synonyms'
+import { Activation } from '../../models/activation'
 
 const debug = Debug('plugins/openwhisk/cmds/actions/invoke')
 
@@ -42,17 +43,32 @@ const docs = () => ({
   usage: actions.available.find(({ command }) => command === 'invoke')
 })
 
+interface PartialActivation {
+  activationId: string
+}
+
+/** if an activation fails with 502, that means there was an application error; the response is a partial activation */
+interface Error502 extends Errors.CodedError {
+  statusCode: 502
+  error: PartialActivation
+}
+function isError502(err: Errors.CodedError): err is Error502 {
+  return err.statusCode === 502
+}
+
 /**
  * Fetch the full activation record from a partial one. Blocking
  * invokes, with the OpenWhisk API, give back a partial activation
  * record. One thing these partial records lack is logs.
  *
  */
-const fetchActivation = partialActivation => REPL.qexec(`wsk activations await ${partialActivation.activationId}`)
-const fetchFromError = error => {
-  if (error['statusCode'] === 502) {
+const fetchActivation = ({ REPL }: Commands.Arguments) => (partialActivation: PartialActivation) => {
+  return REPL.qexec<Activation>(`wsk activations await ${partialActivation.activationId}`)
+}
+const fetchFromError = (command: Commands.Arguments) => (error: Error502) => {
+  if (isError502(error)) {
     // then this is a action error, display it as an activation failure
-    return fetchActivation(error.error)
+    return fetchActivation(command)(error.error)
   } else {
     // then this is some user (i.e. tool user) error, rethrow the
     // exception so that the repl can display it
@@ -84,7 +100,9 @@ const respond = (options: Commands.ParsedOptions) => response => {
  * impl to perform a blocking invocation.
  *
  */
-const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Arguments) => {
+const doInvoke = (rawInvoke: Commands.CommandHandler<Activation>) => (
+  opts: Commands.Arguments
+): Promise<Activation> => {
   if (!opts.argv.find(opt => opt === '-b' || opt === '-r' || opt === '--blocking' || opt === '--result')) {
     // doInvoke means blocking invoke, so make sure that the argv
     // indicates that we want a blocking invocation
@@ -102,7 +120,7 @@ const doInvoke = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Argumen
   // do the invocation, then fetch the full activation record
   // (blocking invokes return incomplete records; no logs)
   return Promise.resolve(rawInvoke(opts))
-    .then(fetchActivation, fetchFromError)
+    .then(fetchActivation(opts), fetchFromError(opts))
     .then(respond(options))
     .catch(error => Promise.reject(error))
 }
@@ -130,7 +148,7 @@ const doAsync = (rawInvoke: Commands.CommandHandler) => (opts: Commands.Argument
  */
 export default async (commandTree: Commands.Registrar) => {
   const rawInvoke = await commandTree.find('/wsk/action/invoke') // this is the command impl we're overriding, we'll delegate to it
-  const rawHandler = rawInvoke.$
+  const rawHandler = rawInvoke.$ as Commands.CommandHandler<Activation>
   const syncInvoke = doInvoke(rawHandler) // the command handler for sync invokes
   const asyncInvoke = doAsync(rawHandler) //             ... and for async
 

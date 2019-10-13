@@ -41,11 +41,11 @@ const flowMode: UI.Mode = {
     } else {
       const resource = _.resource
       if (isPipelineRun(resource)) {
-        const [pipeline, tasks] = await Promise.all([getPipelineFromRef(resource), getTasks()])
+        const [pipeline, tasks] = await Promise.all([getPipelineFromRef(tab, resource), getTasks(tab)])
         return flowView(tab, [pipeline as KubeResource].concat(tasks), resource)
       } else if (isPipeline(resource)) {
         // fetch any accompanying Tasks
-        const tasks = await getTasks()
+        const tasks = await getTasks(tab)
         return flowView(tab, [resource as KubeResource].concat(tasks))
       } else {
         return flowView(tab, [resource])

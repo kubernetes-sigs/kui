@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Capabilities } from '@kui-shell/core'
+import { Capabilities, Commands } from '@kui-shell/core'
 import { registerListView } from '@kui-shell/core/webapp/cli'
 
 import { activations as usage } from '../openwhisk-usage'
@@ -83,7 +83,7 @@ const doList = wsk => async ({ command, argvNoOptions, parsedOptions, execOption
   }
 }
 
-export default (commandTree, wsk) => {
+export default (commandTree: Commands.Registrar, wsk) => {
   if (!Capabilities.isHeadless()) {
     registerListView('activations', renderActivationListView)
 

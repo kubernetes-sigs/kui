@@ -16,14 +16,14 @@
 
 import Debug from 'debug'
 
-import { Commands, Errors, REPL } from '@kui-shell/core'
+import { Commands, Errors } from '@kui-shell/core'
 import { ActivationListTable } from '@kui-shell/plugin-openwhisk'
 
 import { sessionList } from '../../utility/usage'
 
 const debug = Debug('plugins/apache-composer/cmd/session-list')
 
-interface ListOptions {
+interface ListOptions extends Commands.ParsedOptions {
   name?: string
   count?: number
   limit?: number
@@ -38,9 +38,11 @@ export default async (commandTree: Commands.Registrar) => {
   sessionSyns.forEach(noun => {
     commandTree.listen(
       `/wsk/${noun}/list`,
-      async ({ argvNoOptions, parsedOptions: options }): Promise<ActivationListTable | number> => {
-        const parsedOptions = (options as any) as ListOptions // eslint-disable-line @typescript-eslint/no-explicit-any
-
+      async ({
+        argvNoOptions,
+        parsedOptions,
+        REPL
+      }: Commands.Arguments<ListOptions>): Promise<ActivationListTable | number> => {
         const limit = parsedOptions.limit === undefined ? 10 : parsedOptions.limit // limit 10 sessions in session list if users didn't specify --limit
         const skip = parsedOptions.skip || 0 // skip 0 sessions in session list by default if users didn't specify --skip
         const scanLimit = parsedOptions['scan-limit']
@@ -61,8 +63,8 @@ export default async (commandTree: Commands.Registrar) => {
 
         // find sessions in activation list
         const findSessions = async (skip = 0, name = '', limit = 20) => {
-          return REPL.qexec(`wsk activation list "${name}" --skip ${skip} --limit ${limit}`)
-            .then((activations: ActivationListTable) => {
+          return REPL.qexec<ActivationListTable>(`wsk activation list "${name}" --skip ${skip} --limit ${limit}`)
+            .then(activations => {
               // filter activations to find session
               debug('finding sessions in activation list', activations)
               return activations.body.filter(activation => {
@@ -81,7 +83,7 @@ export default async (commandTree: Commands.Registrar) => {
         }
 
         if (scanLimit) {
-          const max: number = await REPL.qexec('wsk activation count') // get the number of total activations
+          const max = await REPL.qexec<number>('wsk activation count') // get the number of total activations
           let foundSessions = []
           for (let scanned = 0; scanned < max && foundSessions.length < scanLimit; scanned += 200) {
             const sessions = await findSessions(scanned, name, 200)

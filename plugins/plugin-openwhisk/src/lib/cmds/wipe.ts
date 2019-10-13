@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Commands, REPL, Tables, UI } from '@kui-shell/core'
+import { Capabilities, Commands, Tables, UI } from '@kui-shell/core'
 import { hide as hideSidecar } from '@kui-shell/core/webapp/views/sidecar'
 
 const debug = Debug('plugins/openwhisk/cmds/wipe')
@@ -32,7 +32,7 @@ const debug = Debug('plugins/openwhisk/cmds/wipe')
  * Log a message, then call the given function
  *
  */
-const logThen = f => (msg: string) => {
+const logThen = (f: () => Promise<void>) => (msg: string) => {
   debug(`retry ${msg}`)
   return f()
 }
@@ -41,10 +41,15 @@ const logThen = f => (msg: string) => {
  * Delete all of the entities in the given `entities` array
  *
  */
-const deleteAllOnce = entities =>
-  Promise.all(
+const deleteAllOnce = async (
+  { REPL }: Commands.Arguments,
+  entities: { type: string; namespace: string; name: string }[]
+): Promise<void> => {
+  await Promise.all(
     entities.map(entity => {
-      const tryDelete = () => REPL.qexec(`wsk ${entity.type} delete "/${entity.namespace}/${entity.name}"`)
+      const tryDelete = async () => {
+        await REPL.qexec(`wsk ${entity.type} delete "/${entity.namespace}/${entity.name}"`)
+      }
 
       // with retries...
       return tryDelete()
@@ -66,26 +71,30 @@ const deleteAllOnce = entities =>
         .catch(logThen(tryDelete))
     })
   )
+}
 
 /**
  * List the entities of a given entity type (e.g. actions)
  *
  */
-const list = type => REPL.qexec(`wsk ${type} list --limit 200`).then((response: Tables.Table) => response.body)
+const list = ({ REPL }: Commands.Arguments, type: string) =>
+  REPL.qexec<Tables.Table>(`wsk ${type} list --limit 200`).then(response => response.body)
 
 /**
  * Because we can only list at most 200 entities at a time, we'll need to loop...
  *
  */
-const deleteAllUntilDone = (type: string) => entities => {
+const deleteAllUntilDone = (command: Commands.Arguments, type: string) => (
+  entities: { type: string; namespace: string; name: string }[]
+) => {
   debug(`deleteAllUntilDone ${type} ${entities.length}`)
 
   if (entities.length === 0) {
     return Promise.resolve(true)
   } else {
-    return deleteAllOnce(entities)
-      .then(() => list(type))
-      .then(deleteAllUntilDone(type))
+    return deleteAllOnce(command, entities)
+      .then(() => list(command, type))
+      .then(deleteAllUntilDone(command, type))
   }
 }
 
@@ -93,7 +102,7 @@ const deleteAllUntilDone = (type: string) => entities => {
  * This method initiates the deleteAllUntilDone loop
  *
  */
-const clean = (type: string, quiet?: boolean) => {
+const clean = (command: Commands.Arguments, type: string, quiet?: boolean) => {
   if (!quiet) {
     if (Capabilities.isHeadless()) {
       process.stdout.write('.'['random'])
@@ -101,7 +110,7 @@ const clean = (type: string, quiet?: boolean) => {
       debug(`Cleaning ${type}`)
     }
   }
-  return list(type).then(deleteAllUntilDone(type))
+  return list(command, type).then(deleteAllUntilDone(command, type))
 }
 
 /**
@@ -122,13 +131,19 @@ const handle404s = (retry: () => void) => err => {
  * The main wipe method: clean triggers and actions, then rules and packages
  *
  */
-const doWipe1 = (quiet = false) =>
-  Promise.all([clean('trigger', quiet), clean('action', quiet)]).catch(handle404s(() => doWipe1(true)))
-const doWipe2 = (quiet = false) =>
-  Promise.all([clean('rule', quiet), clean('package', quiet)]).catch(handle404s(() => doWipe2(true)))
-const doWipe = () =>
-  doWipe1()
-    .then(() => doWipe2())
+const doWipe1 = (command: Commands.Arguments, quiet = false) =>
+  Promise.all([clean(command, 'trigger', quiet), clean(command, 'action', quiet)]).catch(
+    handle404s(() => doWipe1(command, true))
+  )
+
+const doWipe2 = (command: Commands.Arguments, quiet = false) =>
+  Promise.all([clean(command, 'rule', quiet), clean(command, 'package', quiet)]).catch(
+    handle404s(() => doWipe2(command, true))
+  )
+
+const doWipe = (command: Commands.Arguments) =>
+  doWipe1(command)
+    .then(() => doWipe2(command))
     .then(() => {
       if (Capabilities.isHeadless()) {
         // we did process.stdout.write above, so clear a newline
@@ -136,7 +151,9 @@ const doWipe = () =>
       }
     })
 
-const doWipeWithConfirmation = async ({ tab, block, nextBlock }: Commands.Arguments) => {
+const doWipeWithConfirmation = async (command: Commands.Arguments) => {
+  const { tab, block, nextBlock } = command
+
   //
   // first, hide the sidecar
   //
@@ -164,7 +181,7 @@ const doWipeWithConfirmation = async ({ tab, block, nextBlock }: Commands.Argume
         //
         // here is the core logic, initiate the wipe, then return to the home context with a message
         //
-        return doWipe()
+        return doWipe(command)
           .then(() => 'Your OpenWhisk assets have been successfully removed')
           .catch(err => {
             console.error(`wipe::oops ${err}`)

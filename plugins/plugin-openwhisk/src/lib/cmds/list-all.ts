@@ -21,14 +21,14 @@
 
 import Debug from 'debug'
 
-import { REPL, Tables } from '@kui-shell/core'
+import { Commands, Tables } from '@kui-shell/core'
 
 import { wsk } from './openwhisk-usage'
 
 const debug = Debug('plugins/openwhisk/cmds/list-all')
 
 /** usage model */
-const usage = cmd => ({
+const usage = (cmd: string) => ({
   strict: cmd, // enforce no positional or optional arguments
   title: 'List all',
   header: `${wsk.available.find(({ command }) => command === 'list').docs}.`,
@@ -37,17 +37,18 @@ const usage = cmd => ({
 })
 
 /** construct a struct that informs the command tree of our usage model */
-const docs = cmd => ({ usage: usage(cmd) })
+const docs = (cmd: string) => ({ usage: usage(cmd) })
 
 /** list all of these entity types: */
 const types = ['actions', 'packages', 'triggers', 'rules']
 
 /** list the entities of a given type */
-const list = type => REPL.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
+const list = ({ REPL }: Commands.Arguments) => (type: string) =>
+  REPL.qexec(`wsk ${type} list`, undefined, undefined, { showHeader: true })
 
 /** the command handler */
-const doList = () => async () => {
-  const response = await Promise.all(types.map(list)).then(result => {
+const doList = () => async (command: Commands.Arguments) => {
+  const response = await Promise.all(types.map(list(command))).then(result => {
     return result.filter(
       res =>
         (Tables.isTable(res) && res.body.length > 0) ||

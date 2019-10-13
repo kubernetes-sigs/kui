@@ -24,7 +24,7 @@ import stripClean from 'strip-ansi'
 import { safeLoad } from 'js-yaml'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
-import { Capabilities, Commands, Errors, eventBus, REPL, Tables, UI, Util } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, eventBus, Tables, UI, Util } from '@kui-shell/core'
 import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import {
   setCustomCaret,
@@ -440,15 +440,15 @@ const injectFont = (terminal: xterm.Terminal, flush = false) => {
   }
 }
 
-type ChannelFactory = () => Promise<Channel>
+type ChannelFactory = (tab: UI.Tab) => Promise<Channel>
 
 /**
  * Create a websocket channel to a remote bash
  *
  */
-const remoteChannelFactory: ChannelFactory = async () => {
+const remoteChannelFactory: ChannelFactory = async (tab: UI.Tab) => {
   try {
-    const { url, uid, gid }: { url: string; uid: number; gid: number } = await REPL.qexec(
+    const { url, uid, gid }: { url: string; uid: number; gid: number } = await tab.REPL.qexec(
       'bash websocket open',
       undefined,
       undefined,
@@ -537,7 +537,7 @@ const getOrCreateChannel = async (
 
   if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
     // allocating new channel
-    const ws = await channelFactory()
+    const ws = await channelFactory(tab)
     tab['ws'] = ws
 
     // when the websocket is ready, handle any queued input; only then

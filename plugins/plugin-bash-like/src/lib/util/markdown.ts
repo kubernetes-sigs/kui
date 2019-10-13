@@ -17,7 +17,7 @@
 import * as url from 'url'
 import * as path from 'path'
 
-import { REPL, UI } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 
 declare let hljs
 
@@ -94,14 +94,14 @@ const wrap = (tab: UI.Tab, htmlString: string, fullpath: string): Markdown => {
       // will all, at some point, and we can restore that commented
       // out part
       exec.onclick = () =>
-        REPL.pexec(
+        tab.REPL.pexec(
           url
             .substring(1) /* .replace(new RegExp('(?<!\\)\/', 'g'), ' ') */
             .replace(/\\\//, '/')
             .replace(/\$\{cwd\}/g, path.dirname(fullpath))
         )
     } else {
-      exec.onclick = () => REPL.pexec(`open ${url}`)
+      exec.onclick = () => tab.REPL.pexec(`open ${url}`)
     }
   }
 

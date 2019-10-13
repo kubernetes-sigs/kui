@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 import { Action, synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { appGet } from '../../utility/usage'
@@ -29,7 +29,7 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for app get */
   commandTree.listen(
     `/wsk/app/get`,
-    ({ argvNoOptions, execOptions, parsedOptions }) =>
+    ({ argvNoOptions, execOptions, parsedOptions, REPL }) =>
       REPL.qexec<Action>(
         `wsk action get "${parseUtil.parseName(argvNoOptions, 'get')}"`,
         undefined,

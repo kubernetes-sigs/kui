@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Errors, REPL } from '@kui-shell/core'
+import { Errors, UI } from '@kui-shell/core'
 
 import { PipelineRun, Pipeline, Task } from './resource'
 
@@ -22,8 +22,8 @@ import { PipelineRun, Pipeline, Task } from './resource'
  * Get the Pipeline referenced by a PipelineRun
  *
  */
-export function getPipelineFromRef(run: PipelineRun): Promise<Pipeline> {
-  return REPL.rexec(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
+export function getPipelineFromRef(tab: UI.Tab, run: PipelineRun): Promise<Pipeline> {
+  return tab.REPL.rexec(`kubectl get Pipeline ${run.spec.pipelineRef.name}`) // want: Pipeline.tekton.dev, but that is much slower
     .catch((err: Errors.CodedError) => {
       if (err.code === 404) {
         return undefined
@@ -37,6 +37,6 @@ export function getPipelineFromRef(run: PipelineRun): Promise<Pipeline> {
  * Retrieve all Tasks
  *
  */
-export function getTasks(): Promise<Task[]> {
-  return REPL.rexec('kubectl get Task') // want Task.tekton.dev, but that is much slower
+export function getTasks(tab: UI.Tab): Promise<Task[]> {
+  return tab.REPL.rexec('kubectl get Task') // want Task.tekton.dev, but that is much slower
 }

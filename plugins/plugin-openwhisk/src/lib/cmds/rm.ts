@@ -26,7 +26,7 @@
 
 import * as minimist from 'yargs-parser'
 
-import { Commands, Models, REPL, Tables } from '@kui-shell/core'
+import { Commands, Models, Tables } from '@kui-shell/core'
 
 import { synonyms } from '../models/synonyms'
 import { Action, Package } from '../models/openwhisk-entity'
@@ -61,7 +61,7 @@ export default async (commandTree: Commands.Registrar) => {
   }
 
   /** Recursive removal helpers */
-  const rmHelper = type => entities => {
+  const rmHelper = (type: string) => ({ REPL }: Commands.Arguments, entities: string[]) => {
     if (!entities || entities.length === 0) {
       return Promise.resolve([])
     } else {
@@ -79,17 +79,20 @@ export default async (commandTree: Commands.Registrar) => {
    * Recursively remove a package and its contents
    *
    */
-  const deletePackageAndContents = pckage =>
+  const deletePackageAndContents = (command: Commands.Arguments, pckage: string) =>
     new Promise((resolve, reject) => {
-      REPL.qexec<Package>(`wsk package get "${pckage}"`)
-        .then(pckage => Promise.all([rmActions(reify(pckage, 'actions')), rmTriggers(reify(pckage, 'feeds'))]))
+      command.REPL.qexec<Package>(`wsk package get "${pckage}"`)
+        .then(pckage =>
+          Promise.all([rmActions(command, reify(pckage, 'actions')), rmTriggers(command, reify(pckage, 'feeds'))])
+        )
         .then(flatten)
         .then(removedSoFar => {
           //
           // while openwhisk may return from deleting packaged actions,
           // but deleting the package can still fail with a 409; retry!
           //
-          const tryDelete = () => REPL.qexec(`wsk package delete "${pckage}"`).then(() => removedSoFar.concat([pckage]))
+          const tryDelete = () =>
+            command.REPL.qexec(`wsk package delete "${pckage}"`).then(() => removedSoFar.concat([pckage]))
 
           const tryDeleteWithRetry = waitTime => {
             tryDelete()
@@ -116,20 +119,20 @@ export default async (commandTree: Commands.Registrar) => {
    * Return the fully qualified name of the given entity
    *
    */
-  const fqn = entity => `/${entity.namespace}/${entity.name}`
+  const fqn = (entity: { namespace: string; name: string }) => `/${entity.namespace}/${entity.name}`
 
   /**
    * Fetch entities of the given type
    *
    */
   const BATCH = 200 // keep this at 200, but you can temporarily set it to lower values for debugging
-  const fetch = (type, skip = 0, soFar = []) => {
-    return REPL.qexec(`wsk ${type} list --limit ${BATCH} --skip ${skip}`)
-      .then((response: Tables.Table) => response.body)
+  const fetch = (command: Commands.Arguments, type: string, skip = 0, soFar = []) => {
+    return command.REPL.qexec<Tables.Table>(`wsk ${type} list --limit ${BATCH} --skip ${skip}`)
+      .then(response => response.body)
       .then(items => {
         if (items.length === BATCH) {
           // then there may be more
-          return fetch(type, skip + BATCH, soFar.concat(items))
+          return fetch(command, type, skip + BATCH, soFar.concat(items))
         } else if (items.length === 0) {
           return soFar
         } else {
@@ -142,7 +145,11 @@ export default async (commandTree: Commands.Registrar) => {
    * Do a glob-style match, using the given list of patterns
    *
    */
-  const glob = (type, list) => {
+  const glob = (
+    command: Commands.Arguments,
+    type: string,
+    list: string[]
+  ): Promise<{ isExact: boolean; item: string }[]> => {
     const wildcards = list
       .filter(pattern => pattern.indexOf('*') >= 0)
       .map(pattern => new RegExp(pattern.replace(/\*/g, '.*')))
@@ -151,7 +158,7 @@ export default async (commandTree: Commands.Registrar) => {
     if (wildcards.length === 0) {
       return Promise.resolve(exacts)
     } else {
-      return fetch(type)
+      return fetch(command, type)
         .then(items => items.filter(item => wildcards.find(wildcard => item.name.match(wildcard))))
         .then(wildcardMatches => exacts.concat(wildcardMatches.map(fqn).map(item => ({ isExact: false, item: item }))))
     }
@@ -161,7 +168,9 @@ export default async (commandTree: Commands.Registrar) => {
    * This is the core logic
    *
    */
-  const rm = (type: string) => ({ tab, block, nextBlock, argv: fullArgv, execOptions }: Commands.Arguments) => {
+  const rm = (type: string) => (command: Commands.Arguments) => {
+    const { tab, block, nextBlock, argv: fullArgv, execOptions, REPL } = command
+
     const options = minimist(fullArgv, {
       alias: { q: 'quiet', f: 'force', r: 'recursive' },
       boolean: ['quiet', 'force', 'recursive'],
@@ -183,7 +192,7 @@ export default async (commandTree: Commands.Registrar) => {
       }
     }
 
-    return glob(type, toBeDeletedList)
+    return glob(command, type, toBeDeletedList)
       .then(toBeDeleted =>
         Promise.all(
           toBeDeleted.map(match => {
@@ -235,7 +244,7 @@ export default async (commandTree: Commands.Registrar) => {
                 }
               })
             } else if (options.recursive && type === 'packages') {
-              return deletePackageAndContents(arg)
+              return deletePackageAndContents(command, arg)
             } else {
               // no special handling for other entity types
               return REPL.qexec(`wsk ${type} delete "${arg}"`, block as HTMLElement, undefined, undefined, nextBlock)
