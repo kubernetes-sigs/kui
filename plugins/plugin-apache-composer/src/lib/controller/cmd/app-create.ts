@@ -29,7 +29,9 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for app create */
   commandTree.listen(
     `/wsk/app/create`,
-    async ({ tab, argvNoOptions, execOptions }) => {
+    async command => {
+      const { tab, argvNoOptions } = command
+
       // load and parse the source file to JSON-encoded composition and then deploy
       let inputFile = argvNoOptions[argvNoOptions.indexOf('create') + 2]
       let name = argvNoOptions[argvNoOptions.indexOf('create') + 1]
@@ -51,7 +53,7 @@ export default async (commandTree: Commands.Registrar) => {
       return compileUtil
         .sourceToComposition({ inputFile, name })
         .then(source =>
-          client.deploy({ composition: source, overwrite: false }).then(view.formatCompositionEntity(execOptions))
+          client.deploy({ composition: source, overwrite: false }).then(view.formatCompositionEntity(command))
         )
         .catch(err => {
           throw err
@@ -63,7 +65,9 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for app update */
   commandTree.listen(
     `/wsk/app/update`,
-    async ({ tab, argvNoOptions, execOptions }) => {
+    async command => {
+      const { tab, argvNoOptions } = command
+
       // load and parse the source file to JSON-encoded composition and then deploy
       let inputFile = argvNoOptions[argvNoOptions.indexOf('update') + 2]
       let name = argvNoOptions[argvNoOptions.indexOf('update') + 1]
@@ -85,7 +89,7 @@ export default async (commandTree: Commands.Registrar) => {
       return compileUtil
         .sourceToComposition({ inputFile, name })
         .then(composition =>
-          client.deploy({ composition, overwrite: true }).then(view.formatCompositionEntity(execOptions))
+          client.deploy({ composition, overwrite: true }).then(view.formatCompositionEntity(command))
         )
     },
     { usage: create('update') }

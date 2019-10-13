@@ -18,7 +18,7 @@ import Debug from 'debug'
 import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
-import { Commands, Errors, i18n, REPL, Tables, Util } from '@kui-shell/core'
+import { Commands, Errors, i18n, Tables, Util } from '@kui-shell/core'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -98,7 +98,7 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
  * If the given filepath is a directory, then ls it, otherwise cat it
  *
  */
-const lsOrOpen = async ({ argvNoOptions }: Commands.Arguments) => {
+const lsOrOpen = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   const filepath = argvNoOptions[argvNoOptions.indexOf('lsOrOpen') + 1]
 
   const stats: { isDirectory: boolean; viewer: string } = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)}`)
@@ -166,9 +166,12 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
  * Turn ls output into a REPL table
  *
  */
-const tabularize = (cmd: string, parsedOptions: Commands.ParsedOptions, parent = '', parentAsGiven = '') => async (
-  output: string
-): Promise<true | Tables.Table> => {
+const tabularize = (
+  cmd: string,
+  { REPL, parsedOptions }: Commands.Arguments,
+  parent = '',
+  parentAsGiven = ''
+) => async (output: string): Promise<true | Tables.Table> => {
   if (output.length === 0) {
     debug('tabularize empty')
     return true
@@ -393,13 +396,13 @@ const tabularize = (cmd: string, parsedOptions: Commands.ParsedOptions, parent =
 const doLs = (cmd: string) => async (
   opts: Commands.Arguments
 ): Promise<Commands.MixedResponse | Tables.Table | true> => {
-  const semi = await REPL.semicolonInvoke(opts)
+  const semi = await opts.REPL.semicolonInvoke(opts)
   if (semi) {
     debug('ls with semi', semi)
     return semi
   }
 
-  const { command, execOptions, argvNoOptions: argv, parsedOptions: options } = opts
+  const { command, execOptions, argvNoOptions: argv } = opts
 
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
   const filepath = Util.findFile(Util.expandHomeDir(filepathAsGiven), {
@@ -422,7 +425,7 @@ const doLs = (cmd: string) => async (
         LS_COLWIDTHS: '100:100:100:100:100:100:100:100'
       }
     })
-  ).then(tabularize(command, options, filepath, filepathAsGiven))
+  ).then(tabularize(command, opts, filepath, filepathAsGiven))
 }
 
 const usage = (command: string) => ({

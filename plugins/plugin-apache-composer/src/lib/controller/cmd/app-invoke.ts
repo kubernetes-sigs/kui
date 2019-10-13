@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
+import { Activation } from '@kui-shell/plugin-openwhisk'
 
 import { invoke, async } from '../../utility/usage'
 import * as view from '../../view/entity-view'
@@ -23,8 +24,11 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for app invoke */
   commandTree.listen(
     `/wsk/app/invoke`,
-    ({ command, parsedOptions: options }) => {
-      return REPL.qexec(command.replace('app', 'action')).then(result => view.formatCompositionResult(result, options))
+    args => {
+      const { command, parsedOptions: options, REPL } = args
+      return REPL.qexec<Activation>(command.replace('app', 'action')).then(result =>
+        view.formatCompositionResult(args, result, options)
+      )
     },
     { usage: invoke }
   )
@@ -32,8 +36,8 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for app async */
   commandTree.listen(
     `/wsk/app/async`,
-    ({ command }) => {
-      return REPL.qexec(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
+    ({ command, REPL }) => {
+      return REPL.qexec<Activation>(command.replace('app', 'action')) // asynchronous composition invocation is the same with asynchronous action invocation
     },
     { usage: async }
   )

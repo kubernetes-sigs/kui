@@ -18,6 +18,7 @@ import Debug from 'debug'
 const debug = Debug('webapp/cli')
 debug('loading')
 
+import REPL from '../models/repl'
 import eventBus from '../core/events'
 import { oopsMessage } from '../core/oops'
 import { theme as settings, inBottomInputMode } from '../core/settings'
@@ -158,6 +159,7 @@ export const pasteQueuedInput = (value: string) => {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Tab extends HTMLElement {
+  REPL: REPL
   state: TabState
 }
 const tabTagPattern = /^tab$/i

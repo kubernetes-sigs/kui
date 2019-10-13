@@ -26,7 +26,7 @@ import { isCRUDable, crudableTypes } from '../models/crudable'
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
 import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig, initOW } from '../models/auth'
-import { Action, Rule, Annotations, Parameters, currentSelection } from '../models/openwhisk-entity'
+import { Action, Rule, Annotations, Parameters, Package, currentSelection } from '../models/openwhisk-entity'
 
 import * as namespace from '../models/namespace'
 
@@ -1060,10 +1060,11 @@ const handle204 = name => response => {
  * Execute a given command
  *
  */
-const executor = (commandTree: Commands.Registrar, _entity, _verb, verbSynonym?) => async ({
+const executor = (commandTree: Commands.Registrar, _entity, _verb: string, verbSynonym?: string) => async ({
   argv: argvFull,
   execOptions,
-  tab
+  tab,
+  REPL
 }: Commands.Arguments) => {
   let entity = _entity
   let verb = _verb
@@ -1339,17 +1340,17 @@ export const update = execOptions => (entity, retryCount = 0) => {
   }
 }
 
-export const fillInActionDetails = (Package, type = 'actions') => actionSummary => {
+export const fillInActionDetails = (pkage: Package, type = 'actions') => actionSummary => {
   const kindAnnotation = actionSummary.annotations && actionSummary.annotations.find(_ => _.key === 'exec')
   const kind = kindAnnotation && kindAnnotation.value
 
   return Object.assign({}, actionSummary, {
     // given the actionSummary from the 'actions' field of a package entity
     type,
-    packageName: Package.name,
-    namespace: `${Package.namespace}/${Package.name}`,
+    packageName: pkage.name,
+    namespace: `${pkage.namespace}/${pkage.name}`,
     kind,
-    onclick: `wsk action get ${REPL.encodeComponent(`/${Package.namespace}/${Package.name}/${actionSummary.name}`)}`
+    onclick: `wsk action get ${REPL.encodeComponent(`/${pkage.namespace}/${pkage.name}/${actionSummary.name}`)}`
   })
 }
 

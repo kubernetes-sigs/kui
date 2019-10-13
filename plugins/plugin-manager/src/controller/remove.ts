@@ -19,7 +19,7 @@ import { join } from 'path'
 import { ensureDir } from 'fs-extra'
 import { execFile } from 'child_process'
 
-import { Commands, Errors, i18n, REPL, Settings } from '@kui-shell/core'
+import { Commands, Errors, i18n, Settings } from '@kui-shell/core'
 
 import locateNpm from '../util/locate-npm'
 import { installedPlugin } from '../util/usage-common'
@@ -40,7 +40,7 @@ const usage = (command: string): Errors.UsageModel => ({
   required: installedPlugin
 })
 
-const doRemove = async ({ argvNoOptions }: Commands.Arguments) => {
+const doRemove = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)

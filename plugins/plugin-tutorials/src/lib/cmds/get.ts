@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { join } from 'path'
 
-import { Commands, REPL, UI } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 
 import { entities, usage } from '../usage'
 import { modes } from './modes'
@@ -29,7 +29,7 @@ debug('loading')
 import * as marked from 'marked'
 
 // Include start button for modules with accompanying tutorials
-const startButton = args => {
+const startButton = (args: string[], command: Commands.Arguments) => {
   // Create button that says 'Try a guided tutorial'
   const start = document.createElement('button')
   start.setAttribute('id', 'start')
@@ -44,7 +44,7 @@ const startButton = args => {
   const projectHome = projectHomeDir(projectName)
 
   // Set button action
-  start.onclick = () => REPL.pexec(`tutorial use '${projectHome}/package.json'`)
+  start.onclick = () => command.REPL.pexec(`tutorial use '${projectHome}/package.json'`)
 
   return start
 }
@@ -140,11 +140,6 @@ const renderDeps = deps => {
  *
  */
 const fetchProjectData = () => info => {
-  // const projectName = info.config.projectName
-
-  // return Promise.all([ REPL.qexec(`tutorial deps "${projectName}"`),
-  //                   REPL.qexec(`tutorial imports "${projectName}"`) ])
-  // .then(([deps, imports]) => ({ info, deps, imports }));
   return { info, deps: [], imports: [] }
 }
 
@@ -152,10 +147,10 @@ const fetchProjectData = () => info => {
  * module get command
  *
  */
-const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<Commands.Response> => {
+const doGet = async (command: Commands.Arguments): Promise<Commands.Response> => {
   debug(`tutorial get impl`)
 
-  const args: string[] = argvNoOptions
+  const args: string[] = command.argvNoOptions
   return setup(args)
     .then(fetchProjectData())
     .then(
@@ -237,7 +232,7 @@ const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<Commands.Re
           // same styling as configure buttons
           buttons.className = 'project-config-buttons'
           content.appendChild(buttons)
-          buttons.appendChild(startButton(args))
+          buttons.appendChild(startButton(args, command))
         }
 
         // render the wskflow of the composition
@@ -246,7 +241,9 @@ const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<Commands.Re
         content.appendChild(wskflowContainer)
 
         // asynchronously render wskflow
-        REPL.qexec(`preview "${projectHome}/composition.js"`, undefined, undefined, { container: wskflowContainer })
+        command.REPL.qexec(`preview "${projectHome}/composition.js"`, undefined, undefined, {
+          container: wskflowContainer
+        })
 
         return {
           type: 'custom',

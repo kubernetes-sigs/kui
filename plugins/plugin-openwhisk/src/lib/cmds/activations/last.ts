@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
 import { synonyms } from '../../models/synonyms'
+import { Activation } from '../../models/activation'
 import { ActivationListTable } from '../../views/cli/activations/list'
 
 /**
  * wsk activation last: find and display the (temporally) last activation
  *
  */
-const last = ({ argv: fullArgv }: Commands.Arguments) => {
+const last = ({ argv: fullArgv, REPL }: Commands.Arguments): Promise<Activation> => {
   const argv = fullArgv.slice(fullArgv.indexOf('last'))
 
   const limit = argv.length === 1 ? 1 : 200 // if no options, then we're showing just the last activation
-  return REPL.qexec(`wsk activation list --limit ${limit} ${argv.slice(1).join(' ')}`).then(
-    (response: ActivationListTable) => {
+  return REPL.qexec<ActivationListTable>(`wsk activation list --limit ${limit} ${argv.slice(1).join(' ')}`).then(
+    response => {
       if (response.body.length === 0) {
         throw new Error(argv.length === 1 ? 'You have no activations' : 'No matching activations')
       } else {
-        return REPL.qexec(`wsk activation get ${response.body[0].activationId}`)
+        return REPL.qexec<Activation>(`wsk activation get ${response.body[0].activationId}`)
       }
     }
   )
@@ -41,7 +42,9 @@ const last = ({ argv: fullArgv }: Commands.Arguments) => {
 export default (commandTree: Commands.Registrar) => {
   synonyms('activations').forEach(syn => {
     commandTree.listen(`/wsk/${syn}/last`, last, {
-      docs: 'Show the last activation. Hint: try passing --name xxx to filter results'
+      usage: {
+        docs: 'Show the last activation. Hint: try passing --name xxx to filter results'
+      }
     })
   })
 }

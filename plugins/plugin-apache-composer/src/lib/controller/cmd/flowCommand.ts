@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, Errors, REPL } from '@kui-shell/core'
+import { Commands, Errors } from '@kui-shell/core'
 import { Action, Activation } from '@kui-shell/plugin-openwhisk'
 
 import { astAnnotation } from '../../utility/ast'
@@ -46,10 +46,10 @@ function isWskflowError(maybe: MaybeAction): maybe is WskflowError {
  * Get an activation
  *
  */
-const get = (activationId: string) =>
+const get = ({ REPL }: Commands.Arguments, activationId: string): Promise<Activation> =>
   new Promise((resolve, reject) => {
     const once = (retryCount: number) =>
-      REPL.qexec(`wsk activation get ${activationId}`)
+      REPL.qexec<Activation>(`wsk activation get ${activationId}`)
         .then(resolve)
         .catch((err: Errors.CodedError) => {
           if (err && err.statusCode === 404 && retryCount < 10) {
@@ -65,7 +65,7 @@ const get = (activationId: string) =>
  * Fetch the action itself, so we have the AST
  *
  */
-const fetchTheAction = (session: Activation): Promise<MaybeAction> => {
+const fetchTheAction = ({ REPL }: Commands.Arguments, session: Activation): Promise<MaybeAction> => {
   const path = session.annotations.find(({ key }) => key === 'path').value
 
   return REPL.qexec<Action>(`wsk action get "/${path}"`).catch(err => {
@@ -78,22 +78,23 @@ const fetchTheAction = (session: Activation): Promise<MaybeAction> => {
  * Fetch the rest of the activations in the trace; fetch at most 2 at a time
  *
  */
-const generatePromises = (activation: Activation) =>
+const generatePromises = (command: Commands.Arguments, activation: Activation) =>
   function*() {
     // generator function
     for (let idx = 0; idx < activation.logs.length; idx++) {
-      yield get(activation.logs[idx]) // yield generates one value
+      yield get(command, activation.logs[idx]) // yield generates one value
     }
   }
 // by default, PromisePool does not return any arguments in then, causing activations to always be undefined
 // use event listeners here to access return data as described in the docs
-const fetchTrace = (activation: Activation) =>
+const fetchTrace = (command: Commands.Arguments, activation: Activation) =>
   new Promise(resolve => {
+    // the type declaration for this module don't seem right. sigh.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const PromisePool = require('es6-promise-pool')
 
     const data = []
-    const pool = new PromisePool(generatePromises(activation), 2) // at most 2 at a time, here
+    const pool = new PromisePool(generatePromises(command, activation), 2) // at most 2 at a time, here
 
     pool.addEventListener('fulfilled', event => data.push(event.data.result))
     pool.addEventListener('rejected', event => data.push(event.data.error))
@@ -105,13 +106,15 @@ export default (commandTree: Commands.Registrar) => {
   // register the "session flow" command
   commandTree.listen(
     '/wsk/session/flow',
-    ({ tab, argvNoOptions }) => {
+    command => {
+      const { tab, argvNoOptions, REPL } = command
+
       const sessionId = argvNoOptions[argvNoOptions.indexOf('flow') + 1]
       debug('session flow', sessionId)
 
       // fetch the session, then fetch the trace (so we can show the flow) and action (to get the AST)
       return REPL.qexec<Activation>(`wsk session get ${sessionId}`)
-        .then(session => Promise.all([session, fetchTrace(session), fetchTheAction(session)]))
+        .then(session => Promise.all([session, fetchTrace(command, session), fetchTheAction(command, session)]))
         .then(async ([session, activations, action]) => {
           let ast
           if (isWskflowError(action)) {

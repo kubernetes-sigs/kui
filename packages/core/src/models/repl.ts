@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { Tab } from '../webapp/cli'
+import { MixedResponse } from './entity'
+import { EvaluatorArgs } from './command'
 import { ExecOptions } from './execOptions'
 
 export default interface REPL {
@@ -56,9 +59,31 @@ export default interface REPL {
   click(command: string | (() => Promise<string>), evt: MouseEvent): Promise<void>
 
   /**
+   * Evaluate a command and place the result in the current active view for the given tab
+   *
+   */
+  update(tab: Tab, command: string, execOptions?: ExecOptions): Promise<void>
+
+  /**
+   * If the command is semicolon-separated, invoke each element of the
+   * split separately
+   *
+   */
+  semicolonInvoke(opts: EvaluatorArgs): Promise<MixedResponse>
+
+  /**
    * Prepare a string to be part of a `command` argument to the *exec
    * functions, quoting and escaping as necessary.
    *
    */
   encodeComponent(component: string | number | boolean, quote?: string)
+
+  /**
+   * Split the given string into an argv
+   *
+   * @param [true] removeOuterQuotes
+   * @param [false] removeInlineOuterQuotes
+   *
+   */
+  split(str: string, removeOuterQuotes?: boolean, removeInlineOuterQuotes?: boolean): string[]
 }

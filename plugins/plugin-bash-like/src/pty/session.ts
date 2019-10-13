@@ -17,7 +17,7 @@
 import Debug from 'debug'
 
 import { getPrompt, getCurrentProcessingBlock, setStatus } from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, Errors, i18n, REPL, Settings, UI } from '@kui-shell/core'
+import { Capabilities, Commands, Errors, i18n, Settings, UI } from '@kui-shell/core'
 
 import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -58,7 +58,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
         setStatus(block, 'processing')
       }
 
-      return REPL.qexec('echo initializing session', block, undefined, {
+      return tab.REPL.qexec('echo initializing session', block, undefined, {
         tab,
         quiet: true,
         noHistory: true,
@@ -136,7 +136,7 @@ function newSessionForTab(tab: UI.Tab) {
       if (placeholderChanged) {
         setStatus(block, 'repl-active')
         prompt.placeholder = Settings.theme.placeholder || ''
-        await REPL.pexec('ready', { tab })
+        await tab.REPL.pexec('ready', { tab })
       }
 
       tab.classList.add('kui--session-init-done')
@@ -152,7 +152,7 @@ export function registerCommands(commandTree: Commands.Registrar) {
   // this is the default "session is ready" command handler
   commandTree.listen(
     '/ready',
-    () => {
+    ({ REPL }) => {
       const message = document.createElement('pre')
       message.appendChild(
         document.createTextNode(strings('Successfully connected to your cloud. For next steps, try this command: '))

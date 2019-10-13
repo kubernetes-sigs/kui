@@ -30,7 +30,6 @@ import invoke from './lib/cmds/actions/invoke'
 import webbify from './lib/cmds/actions/webbify'
 import awaitCommand from './lib/cmds/activations/await'
 import last from './lib/cmds/activations/last'
-import roots from './lib/cmds/activations/roots'
 import on from './lib/cmds/rules/on'
 import every from './lib/cmds/rules/every'
 import modes from './lib/views/mode'
@@ -61,9 +60,8 @@ export default async (commandTree: Commands.Registrar) => {
 
   // activation extensions
   await activationList(commandTree, wsk)
-  await awaitCommand(commandTree, wsk)
+  await awaitCommand(commandTree)
   await last(commandTree)
-  await roots(commandTree, wsk)
 
   // rule extension
   await on(commandTree)

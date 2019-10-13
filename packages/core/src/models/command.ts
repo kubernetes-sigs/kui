@@ -168,7 +168,7 @@ export interface EvaluatorArgs<Options = ParsedOptions> extends CommandLine<Opti
 export type Response = Entity
 
 /** base command handler */
-export type CommandHandler = (args: EvaluatorArgs) => Response | Promise<Response>
+export type CommandHandler<T = Response, O = ParsedOptions> = (args: EvaluatorArgs<O>) => T | Promise<T>
 
 /**
  * Evaluator
