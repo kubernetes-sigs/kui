@@ -27,7 +27,7 @@ import {
   show as showSidecar,
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
-import { Commands, REPL, UI, Util } from '@kui-shell/core'
+import { Commands, UI, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -215,9 +215,15 @@ const setHighlightPosition = ({ selector }) => {
  * Execute a command, handling the fullscreen toggle
  *
  */
-const commandFromFullscreen = (pane: TutorialPane, command: string, display = command, nested = false) => () => {
+const commandFromFullscreen = (
+  tab: UI.Tab,
+  pane: TutorialPane,
+  command: string,
+  display = command,
+  nested = false
+) => () => {
   const go = () => {
-    REPL.pexec(command)
+    tab.REPL.pexec(command)
 
     if (command.startsWith('preview')) {
       // start a cycle of hover effects
@@ -271,7 +277,7 @@ const commandFromFullscreen = (pane: TutorialPane, command: string, display = co
  * @param table the model
  *
  */
-const renderOneTable = (parent: Element, pane: TutorialPane, nested = false) => table => {
+const renderOneTable = (tab: UI.Tab, parent: Element, pane: TutorialPane, nested = false) => table => {
   const template = document.querySelector('#tutorial-structured-list-template')
   const tableDom = template.cloneNode(true) as HTMLElement
   const tableBody = tableDom.querySelector('.bx--structured-list-tbody')
@@ -315,7 +321,7 @@ const renderOneTable = (parent: Element, pane: TutorialPane, nested = false) => 
         row.forEach((cell, idx) => {
           const value = typeof cell === 'string' ? cell : cell.value
           const onclick =
-            cell.onclick || (cell.command && commandFromFullscreen(pane, cell.command, cell.display, nested))
+            cell.onclick || (cell.command && commandFromFullscreen(tab, pane, cell.command, cell.display, nested))
 
           debug('cell', value)
           const cellDom = document.createElement('td')
@@ -466,7 +472,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
               {
                 value: display,
                 when,
-                onclick: commandFromFullscreen(pane, command, display, nested)
+                onclick: commandFromFullscreen(tab, pane, command, display, nested)
               },
               doc
             ])
@@ -484,9 +490,9 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
       } else {
         // ok, then the page model specifies one or more tables
         if (Array.isArray(table)) {
-          table.forEach(renderOneTable(extrasPart, pane, nested))
+          table.forEach(renderOneTable(tab, extrasPart, pane, nested))
         } else {
-          renderOneTable(extrasPart, pane, nested)(table)
+          renderOneTable(tab, extrasPart, pane, nested)(table)
         }
       }
 
@@ -501,7 +507,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
           element.className = 'tutorial-showcase-element'
 
           if (command) {
-            element.onclick = commandFromFullscreen(pane, command, display, nested)
+            element.onclick = commandFromFullscreen(tab, pane, command, display, nested)
           }
 
           const imagePart = document.createElement('img')
@@ -658,7 +664,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
   // Execute a command
   if (execute) {
     debug('execute', execute)
-    REPL.pexec(execute)
+    tab.REPL.pexec(execute)
   }
 
   // Preview a composition
@@ -667,7 +673,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
 
     if (file) {
       debug('preview', file)
-      REPL.pexec(`preview ${file}`)
+      tab.REPL.pexec(`preview ${file}`)
     }
   }
 }

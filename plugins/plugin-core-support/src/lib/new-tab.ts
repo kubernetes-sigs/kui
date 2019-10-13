@@ -253,6 +253,8 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   tabButton.setAttribute('data-tab-id', newTabId)
   tabButton.onclick = () => switchTab(newTabId)
 
+  REPL.getImpl(tab)
+
   eventBus.emit('/tab/new', tab)
 
   if (doListen) {

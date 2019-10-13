@@ -25,7 +25,7 @@
 
 import * as parse from 'parse-duration'
 
-import { REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
 const MILLIS_PER_SECOND = 1000
 
@@ -33,7 +33,7 @@ const MILLIS_PER_SECOND = 1000
  * Command handler
  *
  */
-const doEvery = async ({ argv }) => {
+const doEvery = async ({ argv, REPL }: Commands.Arguments) => {
   const actionName = argv[argv.length - 1]
   const timeSpec = argv.slice(1, argv.length - 2)
   const timeSpecString = timeSpec.join(' ')

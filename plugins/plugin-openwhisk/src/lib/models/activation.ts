@@ -30,6 +30,7 @@ export interface Activation extends OpenWhiskEntity {
   end: number
   duration: number
   response?: {
+    status?: string
     success: boolean
     result: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   }

@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Capabilities, REPL, UI } from '@kui-shell/core'
+import { Capabilities, Commands, UI } from '@kui-shell/core'
 
 import { hasAst } from '../utility/ast'
 import { decorateAsApp } from '../utility/decorate'
@@ -29,7 +29,7 @@ const defaultMode = 'visualization'
  * Format the given activation record for display as a session
  *
  */
-export const formatSessionResponse = activation => {
+export const formatSessionResponse = ({ REPL }: Commands.Arguments, activation) => {
   activation.prettyType = 'sessions'
 
   const path = activation.annotations.find(({ key }) => key === 'path').value
@@ -51,13 +51,13 @@ export const formatSessionResponse = activation => {
   return activation
 }
 
-export const formatCompositionEntity = execOptions => response => {
+export const formatCompositionEntity = ({ REPL, execOptions }: Commands.Arguments) => response => {
   return Capabilities.isHeadless()
     ? response
     : REPL.qexec(`wsk app get "${response.name}"`, undefined, undefined, execOptions)
 }
 
-export const formatCompositionResult = (result, options) => {
+export const formatCompositionResult = ({ REPL }: Commands.Arguments, result, options) => {
   if (options.result || options.r) return result
   else
     return Capabilities.isHeadless() ? result.response.result : REPL.qexec(`wsk activation get ${result.activationId}`)
@@ -68,11 +68,11 @@ export const formatDeleteResult = response => {
   return response
 }
 
-export const formatSessionGet = response => {
+export const formatSessionGet = (command: Commands.Arguments, response) => {
   debug('session get response', response)
   if (response && response.annotations && response.annotations.find(({ key, value }) => key === 'conductor' && value)) {
     debug('activation is session')
-    return formatSessionResponse(response)
+    return formatSessionResponse(command, response)
   } else {
     debug('activation is not session')
     return response

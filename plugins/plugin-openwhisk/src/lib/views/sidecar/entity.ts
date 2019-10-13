@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { REPL, Tables, UI } from '@kui-shell/core'
+import { Tables, UI } from '@kui-shell/core'
 
 import { element } from '@kui-shell/core/webapp/util/dom'
 import { addBadge, beautify, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
@@ -158,7 +158,7 @@ export const showEntity = async (
             linkToOriginal.className = 'clickable'
             linkToOriginal.innerText = 'View original action'
             linkToOriginal.onclick = async () => {
-              REPL.pexec(`wsk action get "${annotation.original}"`)
+              tab.REPL.pexec(`wsk action get "${annotation.original}"`)
             }
             thirdPartyBodyContent.appendChild(linkToOriginal)
           }
@@ -244,7 +244,7 @@ export const showEntity = async (
         const actions: Action[] = await Promise.all(
           entity.exec.components.map(
             (actionName: string): Promise<Action> =>
-              REPL.qexec<OpenWhiskAction>(`wsk action get "${actionName}"`)
+              tab.REPL.qexec<OpenWhiskAction>(`wsk action get "${actionName}"`)
                 .then(action => {
                   debug('got sequence component', action)
                   const anonymousCode = isAnonymousLet(action)

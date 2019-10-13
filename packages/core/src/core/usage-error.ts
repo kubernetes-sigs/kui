@@ -814,6 +814,13 @@ interface TitledContent {
   content: string
 }
 
+type YargsParserConfigurationValue = string | boolean | number
+export interface YargsParserConfiguration {
+  'camel-case-expansion'?: YargsParserConfigurationValue
+  'short-option-groups'?: YargsParserConfigurationValue
+  'duplicate-arguments-array'?: YargsParserConfigurationValue
+}
+
 export interface UsageModel extends CapabilityRequirements {
   // usage generator
   fn?: (command: string) => UsageModel
@@ -828,7 +835,7 @@ export interface UsageModel extends CapabilityRequirements {
   onlyEnforceOptions?: boolean | string[]
 
   // yargs-parser configuration to override the default settings
-  configuration?: Record<'short-option-groups', string | boolean | number>
+  configuration?: YargsParserConfiguration
 
   hide?: boolean
   children?: Record<string, { route: string; usage?: UsageModel }>

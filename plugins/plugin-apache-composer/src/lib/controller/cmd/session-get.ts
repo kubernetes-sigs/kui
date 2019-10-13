@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 import { Activation, ActivationListTable, synonyms } from '@kui-shell/plugin-openwhisk'
 
 import { sessionGet } from '../../utility/usage'
@@ -23,7 +23,7 @@ import * as view from '../../view/entity-view'
 export default async (commandTree: Commands.Registrar) => {
   commandTree.listen(
     `/wsk/session/result`,
-    ({ command }) => {
+    ({ command, REPL }) => {
       return REPL.qexec<Activation>(command.replace('session result', 'activation get')).then(
         result => result.response.result
       )
@@ -34,10 +34,12 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for session get */
   commandTree.listen(
     `/wsk/session/get`,
-    ({ command, parsedOptions }) => {
+    args => {
+      const { command, parsedOptions, REPL } = args
+
       if (parsedOptions.last || parsedOptions['last-failed']) {
-        return REPL.qexec('wsk activation list --limit 200')
-          .then((activations: ActivationListTable) => activations.body)
+        return REPL.qexec<ActivationListTable>('wsk activation list --limit 200')
+          .then(activations => activations.body)
           .then(activations => {
             return activations.find(activation => {
               if (
@@ -89,19 +91,21 @@ export default async (commandTree: Commands.Registrar) => {
         const last = opts.parsedOptions.last
 
         if (last) {
-          return REPL.qexec(`wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : ''))
-            .then((activations: ActivationListTable) => activations.body)
+          return opts.REPL.qexec<ActivationListTable>(
+            `wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : '')
+          )
+            .then(activations => activations.body)
             .then(activations => {
               if (activations.length === 0) {
                 throw new Error('No such activation found')
               } else {
-                return REPL.qexec(`wsk activation get ${activations[0].activationId}`)
+                return opts.REPL.qexec<Activation>(`wsk activation get ${activations[0].activationId}`)
               }
             })
         }
 
         return Promise.resolve(activationGet(opts))
-          .then(response => view.formatSessionGet(response))
+          .then(response => view.formatSessionGet(opts, response))
           .catch(err => {
             throw err
           })

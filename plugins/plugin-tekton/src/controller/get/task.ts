@@ -33,11 +33,11 @@ const usage = (command: string) => ({
  * Command handler
  *
  */
-const getTask = (cmd: string) => async ({ argvNoOptions, parsedOptions }: Commands.Arguments<Options>) => {
-  const pipelineName = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
-  const taskName = argvNoOptions[argvNoOptions.indexOf(cmd) + 2]
+const getTask = (cmd: string) => async (command: Commands.Arguments<Options>) => {
+  const pipelineName = command.argvNoOptions[command.argvNoOptions.indexOf(cmd) + 1]
+  const taskName = command.argvNoOptions[command.argvNoOptions.indexOf(cmd) + 2]
 
-  const task = await fetchTask(pipelineName, taskName, parsedOptions.f)
+  const task = await fetchTask(command, pipelineName, taskName, command.parsedOptions.f)
 
   if (!task) {
     const err: Errors.CodedError = new Error('task not found')

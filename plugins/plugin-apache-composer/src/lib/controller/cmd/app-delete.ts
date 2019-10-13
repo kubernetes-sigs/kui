@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
+import { Action } from '@kui-shell/plugin-openwhisk'
 
 import { appDelete } from '../../utility/usage'
 import * as view from '../../view/entity-view'
@@ -23,8 +24,8 @@ export default async (commandTree: Commands.Registrar) => {
   /* command handler for app delete */
   commandTree.listen(
     `/wsk/app/delete`,
-    ({ command }) => {
-      return REPL.qexec(command.replace('app', 'action')).then(result => view.formatDeleteResult(result))
+    ({ command, REPL }) => {
+      return REPL.qexec<Action>(command.replace('app', 'action')).then(result => view.formatDeleteResult(result))
     },
     { usage: appDelete }
   )

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
@@ -197,7 +197,8 @@ const logThen = f => err => {
 const add = (type: string) => (op: string, opKind = op, attr = 'parameters') => async ({
   command: rawCommand,
   execOptions,
-  tab
+  tab,
+  REPL
 }: Commands.Arguments): Promise<Commands.Response> => {
   /** fetch the given entity with the given type */
   const fetchEntityWithType = (name, type) => REPL.qexec(`wsk ${type} get ${name}`)

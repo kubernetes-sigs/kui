@@ -411,7 +411,7 @@ const traceMode: UI.Mode = {
   mode: 'trace',
   direct: async (tab: UI.Tab, _: ResponseObject) => {
     const resource = _.resource as PipelineRun
-    const [pipeline, tasks] = await Promise.all([getPipelineFromRef(resource), getTasks()])
+    const [pipeline, tasks] = await Promise.all([getPipelineFromRef(tab, resource), getTasks(tab)])
     return traceView(tab, resource, pipeline, tasks)
   },
   defaultMode: true,

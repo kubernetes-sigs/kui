@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { REPL } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 
 import { FlowNode } from './graph'
 import ActivationLike from './activation'
@@ -28,6 +28,7 @@ const debug = Debug('plugins/wskflow/subtext')
  *
  */
 export default async function(
+  tab: UI.Tab,
   actions: Record<string, string[]>,
   activations: ActivationLike[],
   graphData: FlowNode,
@@ -39,7 +40,7 @@ export default async function(
       const array = []
       const names = Object.keys(actions)
       names.forEach(name => {
-        array.push(REPL.qexec(`wsk action get "${name}"`))
+        array.push(tab.REPL.qexec(`wsk action get "${name}"`))
       })
 
       const result = await Promise.all(array.map(p => p.catch(e => e)))

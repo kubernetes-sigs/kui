@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { Errors } from '@kui-shell/core'
+
 const all = ['wsk action', 'wsk activation', 'wsk package', 'wsk rule', 'wsk trigger']
-const except = str => all.filter(_ => _ !== str)
+const except = (str: string) => all.filter(_ => _ !== str)
 
 const aliases = {
   get: [],
@@ -23,12 +25,12 @@ const aliases = {
 }
 
 /** yargs-parser configuration */
-const configuration = {
+const configuration: Errors.YargsParserConfiguration = {
   'camel-case-expansion': false,
   'duplicate-arguments-array': false // see shell issue #616
 }
 
-const context = type => [{ command: 'wsk' }, { command: `wsk ${type}` }]
+const context = (type: string) => [{ command: 'wsk' }, { command: `wsk ${type}` }]
 
 /** deployed variant of an entity name */
 const deployed = entity => [Object.assign({}, entity[0], { entity: `wsk ${entity[0].name}` })]
@@ -661,7 +663,7 @@ export const packages = {
   related: except('wsk package')
 }
 
-export const activations = alias => ({
+export const activations = (alias: string) => ({
   title: 'Activation operations',
   header: 'These commands will help you to work with activations.',
   example: `wsk ${alias} <command>`,
@@ -669,7 +671,7 @@ export const activations = alias => ({
   available: [
     {
       command: 'get',
-      fn: (command, syn = 'activation') => ({
+      fn: (command: string, syn = 'activation') => ({
         command,
         docs: 'get the full details of an activation',
         strict: command,

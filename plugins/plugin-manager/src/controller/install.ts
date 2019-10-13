@@ -19,7 +19,7 @@ import { ensureDir } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'
 
-import { Commands, Errors, i18n, REPL, Settings } from '@kui-shell/core'
+import { Commands, Errors, i18n, Settings } from '@kui-shell/core'
 
 import locateNpm from '../util/locate-npm'
 
@@ -47,7 +47,7 @@ const usage: Errors.UsageModel = {
  * This is the command handler for `plugin install`
  *
  */
-const doInstall = async ({ argvNoOptions }: Commands.Arguments) => {
+const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)

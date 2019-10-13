@@ -24,9 +24,12 @@
 const POLL_INTERVAL = parseInt(process.env.POLL_INTERVAL, 10) || 1000
 
 import Debug from 'debug'
-const debug = Debug('openwhisk.await')
+const debug = Debug('plugins/openwhisk/cmds/activations/await')
 
-import { Models, REPL } from '@kui-shell/core'
+import { Commands, Models } from '@kui-shell/core'
+
+import { synonyms } from '../../models/synonyms'
+import { Activation } from '../../models/activation'
 
 /** was the given activation handled by the conductor */
 const uuidPattern = /^[0-9a-f]{32}$/
@@ -36,7 +39,7 @@ const isConductorActivation = activation => {
   return yup
 }
 
-const handleComposer = options => activation => {
+const handleComposer = ({ REPL, parsedOptions: options }: Commands.Arguments) => (activation: Activation) => {
   if (isConductorActivation(activation)) {
     debug('waiting for conductor activation')
 
@@ -51,7 +54,7 @@ const handleComposer = options => activation => {
       // since we have ready access to the name and path of the wrapper,
       //       pass it through, to avoid fetching it again in await-app
       //
-      return REPL.qexec(`await-app ${activation.activationId}`)
+      return REPL.qexec<Activation>(`await-app ${activation.activationId}`)
     }
   } else {
     // otherwise, this is a normal activation, so return it to the user
@@ -67,12 +70,12 @@ const handleComposer = options => activation => {
  * been recorded... the inner fetchPoll loop deals with that
  *
  */
-const fetch = activationId =>
+const fetch = ({ REPL }: Commands.Arguments) => (activationId: string): Promise<Activation> =>
   new Promise((resolve, reject) => {
     const fetchPoll = () =>
       (isConductorActivation(activationId)
-        ? REPL.qexec(`wsk session get ${activationId}`)
-        : REPL.qexec(`wsk activation get ${activationId}`)
+        ? REPL.qexec<Activation>(`wsk session get ${activationId}`)
+        : REPL.qexec<Activation>(`wsk activation get ${activationId}`)
       )
         .then(resolve)
         .catch(err => {
@@ -92,7 +95,7 @@ const fetch = activationId =>
  * Check to see whether the given activation has completed
  *
  */
-const poll = activation =>
+const poll = (command: Commands.Arguments) => (activation: Activation): Promise<Activation> =>
   new Promise(resolve => {
     const iter = () => {
       if (activation.end || activation.response.status) {
@@ -102,7 +105,7 @@ const poll = activation =>
       } else {
         // otherwise, the activation is recorded, but not yet complete, so retry after some time
         debug('poll still waiting for completion', activation.activationId)
-        setTimeout(() => fetch(activation.activationId).then(poll), POLL_INTERVAL)
+        setTimeout(() => fetch(command)(activation.activationId).then(poll(command)), POLL_INTERVAL)
       }
     }
     iter()
@@ -112,15 +115,17 @@ const poll = activation =>
  * If not given an activationId, then find one
  *
  */
-const findActivationId = (options, activationId?: string) =>
+const findActivationId = (command: Commands.Arguments, activationId?: string) =>
   new Promise((resolve, reject) => {
+    const { REPL, parsedOptions: options } = command
+
     if (activationId) {
       resolve(activationId)
     } else {
       if (options && options.remote) {
         // the user has requested that we ignore local history; so fetch the last activation from openwhisk
-        return REPL.qexec(`wsk activation last`)
-          .then(poll)
+        return REPL.qexec<Activation>(`wsk activation last`)
+          .then(poll(command))
           .catch(reject)
       } else {
         // otherwise, use our local history to find the last activation id
@@ -131,7 +136,7 @@ const findActivationId = (options, activationId?: string) =>
 
         if (lastActivationCommand) {
           // in some cases, the history does not yet record the activationId, so poll until it does
-          const findPoll = iter => {
+          const findPoll = (iter: number) => {
             if (lastActivationCommand.response && lastActivationCommand.response.activationId) {
               // got it!
               resolve(lastActivationCommand.response.activationId)
@@ -156,15 +161,15 @@ const findActivationId = (options, activationId?: string) =>
  * await command handler
  *
  */
-const doAwait = ({ argvNoOptions: argv, parsedOptions: options }) =>
+const doAwait = (command: Commands.Arguments): Promise<Activation> =>
   new Promise((resolve, reject) => {
-    const activationId = argv[argv.indexOf('await') + 1]
+    const activationId = command.argvNoOptions[command.argvNoOptions.indexOf('await') + 1]
     debug('activationId', activationId)
 
-    findActivationId(options, activationId)
-      .then(fetch)
-      .then(poll)
-      .then(handleComposer(options))
+    findActivationId(command, activationId)
+      .then(fetch(command))
+      .then(poll(command))
+      .then(handleComposer(command))
       .then(resolve, reject)
   }) /* doAwait */
 
@@ -172,11 +177,13 @@ const doAwait = ({ argvNoOptions: argv, parsedOptions: options }) =>
  * Register commands
  *
  */
-export default (commandTree, wsk) => {
+export default (commandTree: Commands.Registrar) => {
   // install the routes
-  wsk.synonyms('activations').map(syn => {
+  synonyms('activations').map(syn => {
     commandTree.listen(`/wsk/${syn}/await`, doAwait, {
-      docs: 'Wait until a previous activation completes (default: the last activation)'
+      usage: {
+        docs: 'Wait until a previous activation completes (default: the last activation)'
+      }
     })
   })
 }

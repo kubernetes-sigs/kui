@@ -22,13 +22,11 @@
  *
  */
 
-import { REPL } from '@kui-shell/core'
-
 /**
  * on <trigger> do <action>
  *
  */
-const on = ({ argvNoOptions: argv, parsedOptions }) => {
+const on = ({ argvNoOptions: argv, parsedOptions, REPL }) => {
   const idx = argv.indexOf('on') + 1
 
   const trigger = argv[idx]

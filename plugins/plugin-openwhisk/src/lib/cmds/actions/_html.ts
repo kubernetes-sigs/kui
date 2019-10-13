@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-'use strict'
-
 import { lstat, readFile } from 'fs'
 import { dirname, resolve as pathResolve } from 'path'
 import { Parser } from 'htmlparser2/lib/Parser'
 
-import { REPL, Util } from '@kui-shell/core'
+import { Commands, Util } from '@kui-shell/core'
 
 /**
  * Deploy a linked asset
  *
  */
-const link = (dir, file) =>
+const link = ({ REPL }: Commands.Arguments, dir: string, file: string): Promise<void> =>
   new Promise((resolve, reject) => {
     const filepath = pathResolve(dir, file)
     lstat(filepath, (err, stats) => {
       if (stats) {
         const mime = file.endsWith('.js') ? '.webjs' : ''
-        REPL.qexec(`let ${file}${mime} = ${filepath}`).then(resolve, reject)
+        REPL.qexec(`let ${file}${mime} = ${filepath}`).then(() => resolve(), reject)
       }
       if (err) {
         resolve()
@@ -44,7 +42,7 @@ const link = (dir, file) =>
  * Turn an attribute map into a key=value string
  *
  */
-const mapToString = map => {
+const mapToString = (map: Record<string, string>): string => {
   let str = ''
   for (const key in map) {
     str += ` ${key}="${map[key]}"`
@@ -57,7 +55,7 @@ const mapToString = map => {
  * be served with a .http extension
  *
  */
-const webbify = uri => {
+const webbify = (uri: string): string => {
   if (uri.endsWith('.css') || uri.endsWith('.png')) {
     return `${uri.substring(0, uri.lastIndexOf('.'))}.http`
   } else {
@@ -69,7 +67,7 @@ const webbify = uri => {
  * Deploy an HTML page, along with any locally linked scripts and stylesheets
  *
  */
-export const deployHTMLViaOpenWhisk = location =>
+export const deployHTMLViaOpenWhisk = (command: Commands.Arguments, location: string) =>
   new Promise((resolve, reject) => {
     try {
       const filepath = Util.expandHomeDir(location)
@@ -86,14 +84,14 @@ export const deployHTMLViaOpenWhisk = location =>
 
           const parser = new Parser(
             {
-              onopentag: (name, attribs) => {
+              onopentag: (name: string, attribs) => {
                 if (name === 'script' && attribs.src) {
                   const webbed = webbify(attribs.src)
-                  Ps.push(link(dir, attribs.src))
+                  Ps.push(link(command, dir, attribs.src))
                   attribs.src = webbed
                 } else if (name === 'link' && attribs.href) {
                   const webbed = webbify(attribs.href)
-                  Ps.push(link(dir, attribs.href))
+                  Ps.push(link(command, dir, attribs.href))
                   attribs.href = webbed
                 }
 

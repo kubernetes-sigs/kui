@@ -19,7 +19,7 @@
  *
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
 import { synonyms } from '../models/synonyms'
 import { CMD as copy } from './copy'
@@ -50,7 +50,7 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const mv = (type: string) => (op: string) => ({ argvNoOptions: argv }: Commands.Arguments) => {
+const mv = (type: string) => (op: string) => ({ argvNoOptions: argv, REPL }: Commands.Arguments) => {
   const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
   const newName = argv[idx + 1]

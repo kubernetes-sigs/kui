@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { safeLoadAll } from 'js-yaml'
 
-import { REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
@@ -39,8 +39,10 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<KubeReso
  * Read in a resource spec from a path
  *
  */
-export const read = async (filepath: string): Promise<string> => {
-  const stats: { data: string } = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)} --with-data`)
+export const read = async (command: Commands.Arguments, filepath: string): Promise<string> => {
+  const stats: { data: string } = await command.REPL.qexec(
+    `fstat ${command.REPL.encodeComponent(filepath)} --with-data`
+  )
 
   return stats.data
 }
@@ -49,9 +51,16 @@ export const read = async (filepath: string): Promise<string> => {
  * Fetch the Pipeline and Task models
  *
  */
-export const fetchTask = async (pipelineName: string, taskName: string, filepath: string): Promise<Task> => {
+export const fetchTask = async (
+  command: Commands.Arguments,
+  pipelineName: string,
+  taskName: string,
+  filepath: string
+): Promise<Task> => {
+  const { REPL } = command
+
   if (filepath) {
-    const model: KubeResource[] = await parse(read(filepath))
+    const model: KubeResource[] = await parse(read(command, filepath))
     const task = taskName
       ? model.find(_ => _.kind === 'Task' && _.metadata.name === taskName)
       : model.filter(_ => _.kind === 'Task')

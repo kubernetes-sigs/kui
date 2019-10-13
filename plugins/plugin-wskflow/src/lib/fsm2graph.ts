@@ -814,7 +814,7 @@ export default async function fsm2graph(
   ) // link the end of the graph to Exit
 
   debug('graphData', renderState.graphData)
-  const subtext = await renderSubtext(renderState.actions, renderState.activations, renderState.graphData, options)
+  const subtext = await renderSubtext(tab, renderState.actions, renderState.activations, renderState.graphData, options)
   debug('subtext', subtext)
 
   debug('inserting DOM, calling graph2doms')

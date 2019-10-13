@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { REPL, UI } from '@kui-shell/core'
+import { UI } from '@kui-shell/core'
 import { element } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
@@ -93,7 +93,7 @@ export default (tab: UI.Tab, entity, options: ShowOptions) => {
   entityName.onclick =
     entity.onclick ||
     (async () => {
-      REPL.pexec(`wsk action get "/${entityNameWithPackageAndNamespace}"`)
+      tab.REPL.pexec(`wsk action get "/${entityNameWithPackageAndNamespace}"`)
     })
 
   // add the activation id to the header

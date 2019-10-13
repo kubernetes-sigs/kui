@@ -35,6 +35,7 @@ import {
   Response
 } from '../models/command'
 
+import REPL from '../models/repl'
 import { ElementMimic } from '../util/mimic-dom'
 import { isEntitySpec, EntitySpec, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
@@ -280,6 +281,7 @@ class InProcessExecutor implements Executor {
 
   async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
     const tab = execOptions.tab || cli.getCurrentTab()
+    const REPL = getImpl(tab) // eslint-disable-line @typescript-eslint/no-use-before-define
 
     if (!isHeadless()) {
       const curDic = SymbolTable.read(tab)
@@ -711,7 +713,7 @@ class InProcessExecutor implements Executor {
             return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
               tab,
               // eslint-disable-next-line @typescript-eslint/no-use-before-define
-              REPL: { qexec, rexec, pexec, click, encodeComponent },
+              REPL,
               block: block || true,
               nextBlock,
               argv,
@@ -1075,6 +1077,16 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
     })
     return result
   }
+}
+
+/**
+ * @return an instance that obeys the REPL interface
+ *
+ */
+export function getImpl(tab: cli.Tab): REPL {
+  const impl = { qexec, rexec, pexec, click, update, semicolonInvoke, encodeComponent, split } as REPL
+  tab.REPL = impl
+  return impl
 }
 
 debug('loading done')

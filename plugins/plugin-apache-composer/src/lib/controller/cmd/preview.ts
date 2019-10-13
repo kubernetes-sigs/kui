@@ -18,7 +18,7 @@ import Debug from 'debug'
 import { readFile as fsReadFile, stat } from 'fs'
 import { basename } from 'path'
 
-import { Capabilities, Commands, REPL, UI, Util } from '@kui-shell/core'
+import { Capabilities, Commands, UI, Util } from '@kui-shell/core'
 
 import * as usage from './preview-usage'
 import { codeViewMode, vizAndfsmViewModes } from '../../utility/decorate'
@@ -273,6 +273,7 @@ export default (commandTree: Commands.Registrar) => {
   /** command handler */
   const doIt = (cmd: string, mode = defaultMode) => ({
     tab,
+    REPL,
     execOptions,
     argvNoOptions,
     parsedOptions: options

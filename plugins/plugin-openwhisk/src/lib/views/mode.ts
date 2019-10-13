@@ -19,7 +19,7 @@
  *
  */
 
-import { Capabilities, Commands, REPL } from '@kui-shell/core'
+import { Capabilities, Commands } from '@kui-shell/core'
 import { show as showSidecar, showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
 import { synonyms } from '../models/synonyms'
@@ -92,7 +92,7 @@ export default async (commandTree: Commands.Registrar) => {
       }
     } else if (args.length === 3 || args.length === 4) {
       // activation logs xxx or wsk activation logs xxx
-      const activation = await REPL.qexec<Activation>(`wsk ${entityType} get ${entityId}`)
+      const activation = await tab.REPL.qexec<Activation>(`wsk ${entityType} get ${entityId}`)
       if (Capabilities.isHeadless()) {
         return activation[mode]
       } else {

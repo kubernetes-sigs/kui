@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { REPL, Tables, UI, Util } from '@kui-shell/core'
+import { Tables, UI, Util } from '@kui-shell/core'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { Pod } from '@kui-shell/plugin-k8s'
@@ -32,8 +32,10 @@ const mode: UI.Mode = {
     const run = _.resource as PipelineRun
 
     const [taskRuns, pods] = await Promise.all([
-      REPL.rexec<TaskRun[]>(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
-      REPL.rexec<Pod[]>(`kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`)
+      tab.REPL.rexec<TaskRun[]>(`kubectl get taskrun -l tekton.dev/pipelineRun=${run.metadata.name}`),
+      tab.REPL.rexec<Pod[]>(
+        `kubectl get pods -n ${run.metadata.namespace} -l tekton.dev/pipelineRun=${run.metadata.name}`
+      )
     ])
 
     const containers: Tables.Row[] = Util.flatten(

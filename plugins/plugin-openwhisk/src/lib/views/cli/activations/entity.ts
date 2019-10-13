@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, REPL, UI } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 import { ok } from '@kui-shell/core/webapp/cli'
 import { showEntity } from '@kui-shell/core/webapp/views/sidecar'
 
@@ -56,7 +56,7 @@ export default async (
     clickable.innerText = response.activationId
     clickable.onclick = () => {
       const fetch = async (iter: number) => {
-        return REPL.pexec(`await ${response.activationId}`).catch(err => {
+        return tab.REPL.pexec(`await ${response.activationId}`).catch(err => {
           if (iter < 10) {
             setTimeout(() => fetch(iter + 1), 500)
           } else {

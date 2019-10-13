@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Capabilities, Commands, i18n, Errors, Plugins, REPL } from '@kui-shell/core'
+import { Capabilities, Commands, i18n, Errors, Plugins } from '@kui-shell/core'
 
 const strings = i18n('plugin-manager')
 
@@ -25,7 +25,7 @@ const usage: Errors.UsageModel = {
 export default function(commandTree: Commands.Registrar) {
   commandTree.listen(
     '/plugin/home',
-    async () => {
+    async ({ REPL }) => {
       const home = await Plugins.userHome()
 
       if (Capabilities.isHeadless()) {

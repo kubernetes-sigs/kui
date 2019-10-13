@@ -21,9 +21,9 @@
 
 import Debug from 'debug'
 
-import { Commands, REPL } from '@kui-shell/core'
+import { Commands } from '@kui-shell/core'
 
-import { synonyms } from '..//models/synonyms'
+import { synonyms } from '../models/synonyms'
 
 const debug = Debug('plugins/openwhisk/cmds/copy')
 
@@ -53,16 +53,10 @@ const usage = (type: string, command: string) => ({
  * This is the core logic
  *
  */
-const copy = (type: string) => (op: string) => ({
-  block: retryOK,
-  argvNoOptions: argv,
-  parsedOptions: options
-}: {
-  block: boolean | Element
-  argvNoOptions: string[]
-  parsedOptions: Commands.ParsedOptions
-}) => {
+const copy = (type: string) => (op: string) => (command: Commands.Arguments, retryOK = true) => {
   debug(`${type} ${op}`)
+
+  const { argvNoOptions: argv, REPL } = command
 
   const idx = argv.indexOf(op) + 1
   const oldName = argv[idx]
@@ -78,13 +72,10 @@ const copy = (type: string) => (op: string) => ({
       const path = name.split('/')
       const packageName = path.length === 2 ? path[0] : path.length === 3 ? path[1] : undefined
       if (packageName) {
-        return REPL.qexec(`wsk package update "${packageName}"`).then(() =>
-          copy(type)(op)({
-            block: false,
-            argvNoOptions: argv,
-            parsedOptions: options
-          })
-        ) // false: don't retry again
+        return REPL.qexec(`wsk package update "${packageName}"`).then(() => {
+          // false: don't retry again
+          return copy(type)(op)(command, false)
+        })
       }
     }
 

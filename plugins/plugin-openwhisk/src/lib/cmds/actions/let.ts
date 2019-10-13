@@ -38,7 +38,7 @@ import * as withRetry from 'promise-retry'
 import { basename } from 'path'
 import { existsSync, lstat, readFile, readFileSync, unlink, writeFile } from 'fs'
 
-import { Capabilities, Commands, REPL, Util } from '@kui-shell/core'
+import { Capabilities, Commands, Util } from '@kui-shell/core'
 
 import { OpenWhiskEntity, Action, Package } from '../../models/openwhisk-entity'
 import { synonyms } from '../../models/synonyms'
@@ -388,6 +388,7 @@ export default async (commandTree: Commands.Registrar) => {
     location: string,
     letType: string,
     options,
+    command: Commands.Arguments,
     execOptions: Commands.ExecOptions
   ) => {
     const extension = location.substring(location.lastIndexOf('.'))
@@ -400,7 +401,7 @@ export default async (commandTree: Commands.Registrar) => {
       // then this is a built-in type
       //
       // const annotationArgs = (options.annotations || []).map(kv => `-a ${kv.key} ${kv.value}`).join(' ')
-      return REPL.qexec<Action>(`wsk action update "${name}" "${location}" --kind "${kind}"`)
+      return command.REPL.qexec<Action>(`wsk action update "${name}" "${location}" --kind "${kind}"`)
         .then(action => {
           ;(annotators[letType] || []).forEach(annotator => annotator(action))
           if (mimeType) (annotators[mimeType] || []).forEach(annotator => annotator(action))
@@ -421,7 +422,9 @@ export default async (commandTree: Commands.Registrar) => {
       // otherwise, assume this is a web action for now
       //
       const extra =
-        mimeType === '.html' || extension === '.html' ? deployHTMLViaOpenWhisk(location) : Promise.resolve({ location })
+        mimeType === '.html' || extension === '.html'
+          ? deployHTMLViaOpenWhisk(command, location)
+          : Promise.resolve({ location })
       return extra.then(({ location, text }) => {
         return makeWebAsset(name, mimeType || extension, location, text, options, execOptions)
       })
@@ -472,7 +475,7 @@ export default async (commandTree: Commands.Registrar) => {
       })
 
   const doCreate = (args: Commands.Arguments) => {
-    const { block: retryOK, argv: fullArgv, command: fullCommand, execOptions } = args
+    const { block: retryOK, argv: fullArgv, command: fullCommand, execOptions, REPL } = args
     const update = execOptions.createOnly ? 'create' : 'update'
 
     /**
@@ -501,10 +504,11 @@ export default async (commandTree: Commands.Registrar) => {
       location: string,
       letType = 'let',
       options = {},
+      command: Commands.Arguments,
       execOptions: Commands.ExecOptions = {}
     ) => {
       return fetchRemote(location, mimeType).then(location => {
-        return createFromFile(name, mimeType, location.location, letType, options, execOptions)
+        return createFromFile(name, mimeType, location.location, letType, options, command, execOptions)
           .catch(packageAutoCreate(name))
           .then(resource => {
             if (location.removeWhenDone) {
@@ -558,7 +562,9 @@ export default async (commandTree: Commands.Registrar) => {
             basename(component.replace(/\..*$/, ''))
           )
             .then(reservedAction => reservedAction.name)
-            .then(reservedName => maybeComponentIsFile(reservedName, undefined, component, 'let', {}, { nested: true }))
+            .then(reservedName =>
+              maybeComponentIsFile(reservedName, undefined, component, 'let', {}, args, { nested: true })
+            )
         } else {
           debug('sequence component is named action', component)
           // then we assume, for now, that `component` is a named action
@@ -725,7 +731,7 @@ export default async (commandTree: Commands.Registrar) => {
             const name = figureName(actionFromFileMatch[2], mimeType)
             const location = actionFromFileMatch[4]
 
-            return maybeComponentIsFile(name, mimeType, location, letType, options, execOptions)
+            return maybeComponentIsFile(name, mimeType, location, letType, options, args, execOptions)
           } else {
             throw new Error('Unable to parse your command')
           }
@@ -756,52 +762,6 @@ export default async (commandTree: Commands.Registrar) => {
   return {
     /** is the given action the result of an anonymous let */
     isAnonymousLet,
-    isAnonymousLetFor,
-
-    // resolve the given expression to an action
-    //   e.g. is "a" the name of an action, or the name of a file
-    resolve: (expr: string, parentActionName: string, execOptions: Commands.ExecOptions, idx: number) =>
-      REPL.qexec<Action>(`wsk actions get ${expr}`, undefined, undefined, {
-        noRetry: true
-      }).catch((err: StatusCodeError) => {
-        if (err.statusCode === 404 || err.statusCode === 400) {
-          // then this isn't an action (yet)
-
-          const commandFn = (iter: number, baseName = parentActionName) =>
-            `let ${baseName}-anon${iter === 0 ? '' : '-' + iter} = ${expr}`
-          const command = commandFn(0)
-          const actionMatch = command.match(patterns.action.expr.full)
-          const sequenceMatch = command.match(patterns.sequence.expr)
-          const components = sequenceMatch && sequenceMatch[4].split(patterns.sequence.components)
-          const isSequenceMatch = sequenceMatch && components.length > 1
-
-          if (!isSequenceMatch && actionMatch) {
-            // then this is an inline anonymous function
-            debug('resolve::inline')
-            return createWithRetryOnName(`let main = ${expr}`, parentActionName, execOptions, idx, 0)
-          } else {
-            const actionFromFileMatch = command.match(patterns.action.expr.fromFile)
-            let baseName: string
-
-            if (actionFromFileMatch) {
-              // try to pull an action name from the file name
-              baseName = basename(actionFromFileMatch[4])
-            }
-
-            const once = (iter: number) =>
-              REPL.qexec(commandFn(iter, baseName), undefined, undefined, {
-                createOnly: true
-              }).catch((err: StatusCodeError) => {
-                if (err.statusCode === 409) {
-                  return once(iter + 1)
-                }
-              })
-            debug('resolve::via let', baseName, parentActionName)
-            return once(0)
-          }
-        } else {
-          throw err
-        }
-      })
+    isAnonymousLetFor
   }
 }

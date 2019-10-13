@@ -23,7 +23,7 @@
 import Debug from 'debug'
 import { exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
-import { Capabilities, Commands, i18n, REPL } from '@kui-shell/core'
+import { Capabilities, Commands, i18n } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -121,9 +121,11 @@ export const doExec = (
     })
   })
 
-export const doShell = (argv: string[], options: Commands.ParsedOptions, execOptions?: Commands.ExecOptions) =>
+const doShell = (argv: string[], args: Commands.Arguments) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
+    const { execOptions, REPL } = args
+
     if (Capabilities.inBrowser()) {
       reject(new Error('Local file access not supported when running in a browser'))
     }
@@ -217,16 +219,16 @@ const usage = {
  * cd command
  *
  */
-const cd = ({ command, parsedOptions, execOptions }: Commands.Arguments) => {
-  const dir = REPL.split(command, true, true)[1] || ''
+const cd = (args: Commands.Arguments) => {
+  const dir = args.REPL.split(args.command, true, true)[1] || ''
   debug('cd dir', dir)
-  return doShell(['!', 'cd', dir], parsedOptions, execOptions).catch(err => {
+  return doShell(['!', 'cd', dir], args).catch(err => {
     err['code'] = 500
     throw err
   })
 }
 
-const bcd = async ({ command, execOptions }: Commands.Arguments) => {
+const bcd = async ({ command, execOptions, REPL }: Commands.Arguments) => {
   const pwd: string = await REPL.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
   debug('pwd', pwd)
   process.env.PWD = pwd
