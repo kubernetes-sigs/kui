@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.3](https://github.com/IBM/kui/compare/v4.5.0...v5.1.3) (2019-10-13)
+
+### Bug Fixes
+
+- **plugins/plugin-apache-composer:** let.js demo versus safari ([dea7610](https://github.com/IBM/kui/commit/dea7610)), closes [#2820](https://github.com/IBM/kui/issues/2820)
+
 ## [5.1.2](https://github.com/IBM/kui/compare/v4.5.0...v5.1.2) (2019-10-11)
 
 ### Bug Fixes
