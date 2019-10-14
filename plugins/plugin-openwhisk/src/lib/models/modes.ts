@@ -19,7 +19,10 @@ const debug = Debug('plugins/openwhisk/models/modes')
 
 import { UI } from '@kui-shell/core'
 
-export const actionSpecificModes: UI.Mode[] = [{ mode: 'code', defaultMode: true }, { mode: 'limits' }]
+export const actionSpecificModes: UI.Mode[] = [
+  { mode: 'code', defaultMode: true, direct: 'wsk action code' },
+  { mode: 'limits', direct: 'wsk action limits' }
+]
 
 /**
  * Add action modes; where=push|unshift

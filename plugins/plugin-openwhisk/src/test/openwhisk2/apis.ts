@@ -47,7 +47,7 @@ describe('Create api gateway', function(this: Common.ISuite) {
       .catch(Common.oops(this)))
 
   it('should webbify the action', () =>
-    CLI.command(`webbify`, this.app)
+    CLI.command(`wsk action webbify`, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing('echo'))

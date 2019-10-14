@@ -42,7 +42,7 @@ describe('List all OpenWhisk entities', function(this: Common.ISuite) {
 
   // create rule (and trigger)
   it('should create a rule', () =>
-    CLI.command(`on ${triggerName} do ${packageName}/${actionName}`, this.app)
+    CLI.command(`wsk on ${triggerName} do ${packageName}/${actionName}`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(ruleName)))

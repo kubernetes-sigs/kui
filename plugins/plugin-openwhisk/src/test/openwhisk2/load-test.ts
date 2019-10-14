@@ -41,14 +41,14 @@ describe('Load tester', function(this: Common.ISuite) {
 
   it('load test it with lt', () =>
     CLI.command(
-      `lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===40 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
+      `wsk testing lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0 -p ${key} ${value} --validator "numErrors=(results.length===40 ? 0 : 1) + results.reduce((errCount,v)=>errCount+(v.${key}!==${value} ? 1 : 0),0);"`,
       this.app
     )
       .then(ReplExpect.okWithCustom({ expect: 'Run was valid' }))
       .catch(Common.oops(this)))
 
   it('load test it with lt with no params', () =>
-    CLI.command(`lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`, this.app)
+    CLI.command(`wsk testing lt ${actionName} --numIters 20 --numThreads 2 --thinkTime 0`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'Run was valid' }))
       .catch(Common.oops(this)))
 })

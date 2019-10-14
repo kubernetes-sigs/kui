@@ -22,7 +22,7 @@ describe('Error handling', function(this: Common.ISuite) {
   after(Common.after(this))
 
   it('bind with no args', () =>
-    CLI.command('bind', this.app)
+    CLI.command('wsk package bind', this.app)
       .then(ReplExpect.error(497))
       .catch(Common.oops(this)))
 })

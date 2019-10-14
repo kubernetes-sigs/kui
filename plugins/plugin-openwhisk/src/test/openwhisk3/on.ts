@@ -54,7 +54,7 @@ describe('Create a rule via on', function(this: Common.ISuite) {
       .catch(Common.oops(this)))
 
   it('should create a rule via on, using a new trigger', () =>
-    CLI.command(`on ${triggerName} do ${actionName}`, this.app)
+    CLI.command(`wsk on ${triggerName} do ${actionName}`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(ruleName))
@@ -62,7 +62,7 @@ describe('Create a rule via on', function(this: Common.ISuite) {
       .catch(Common.oops(this)))
 
   it('should create a rule via on, using the trigger created by the first on', () =>
-    CLI.command(`on ${triggerName} do ${actionName2}`, this.app)
+    CLI.command(`wsk on ${triggerName} do ${actionName2}`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(ruleName2))
@@ -70,7 +70,7 @@ describe('Create a rule via on', function(this: Common.ISuite) {
       .catch(Common.oops(this)))
 
   it('should create a rule via on, using a pre-existing trigger', () =>
-    CLI.command(`on ${triggerName2} do ${actionName2}`, this.app)
+    CLI.command(`wsk on ${triggerName2} do ${actionName2}`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(ruleName3))

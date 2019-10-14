@@ -30,7 +30,7 @@ const packageName3 = 'ppp3'
 const key1 = 'foo'
 const value1 = 'bar'
 
-const CMD = 'copy'
+const CMD = 'wsk action copy'
 
 describe('Use copy to copy openwhisk entities', function(this: Common.ISuite) {
   before(openwhisk.before(this))
@@ -104,7 +104,7 @@ describe('Use copy to copy openwhisk entities', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName1))
       .catch(Common.oops(this)))
   cp(actionName1, actionName1b)
-  cp(actionName1, actionName1c, undefined, undefined, 'copy')
+  cp(actionName1, actionName1c)
 
   // COPY PACKAGED ACTION TO NON-PACKAGED ACTION
   it('should create a packaged action via let', () =>
@@ -114,7 +114,7 @@ describe('Use copy to copy openwhisk entities', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName2, undefined, undefined, packageName1))
       .catch(Common.oops(this)))
   cp(actionName2, actionName2b, packageName1)
-  cp(actionName2, actionName2c, packageName1, undefined, 'copy')
+  cp(actionName2, actionName2c, packageName1)
 
   // COPY PACKAGED ACTION TO PACKAGED ACTION, existing package
   it('should create a package', () =>

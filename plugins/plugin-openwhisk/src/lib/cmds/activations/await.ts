@@ -178,12 +178,14 @@ const doAwait = (command: Commands.Arguments): Promise<Activation> =>
  *
  */
 export default (commandTree: Commands.Registrar) => {
-  // install the routes
+  const opts = {
+    usage: {
+      docs: 'Wait until a previous activation completes (default: the last activation)'
+    }
+  }
+
+  commandTree.listen(`/await`, doAwait, opts)
   synonyms('activations').map(syn => {
-    commandTree.listen(`/wsk/${syn}/await`, doAwait, {
-      usage: {
-        docs: 'Wait until a previous activation completes (default: the last activation)'
-      }
-    })
+    commandTree.listen(`/wsk/${syn}/await`, doAwait, opts)
   })
 }

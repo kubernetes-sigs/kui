@@ -107,7 +107,7 @@ export const edit = (tab: UI.Tab, entity: EditorEntity, options: Options, execOp
 
 export default async (commandTree: Commands.Registrar) => {
   // command registration: edit an existing entity
-  commandTree.listen('/editor/edit', editCmd, {
+  commandTree.listen('/edit', editCmd, {
     usage: usage.editUsage('edit'),
     noAuthOk: true,
     inBrowserOk: true,

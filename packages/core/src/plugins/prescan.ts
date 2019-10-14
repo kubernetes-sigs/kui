@@ -47,7 +47,7 @@ export interface PrescanModel {
   flat: PrescanCommandDefinitions
   overrides: { [key: string]: string }
   usage: PrescanUsage
-  disambiguator: Disambiguator
+  disambiguator?: Disambiguator
   catchalls: CatchAllHandler[]
 }
 
@@ -65,7 +65,7 @@ export function unify(modelA: PrescanModel, modelB: PrescanModel): PrescanModel 
     flat: modelA.flat.concat(modelB.flat),
     overrides: Object.assign({}, modelA.overrides, modelB.overrides),
     usage: Object.assign({}, modelA.usage, modelB.usage),
-    disambiguator: Object.assign({}, modelA.disambiguator, modelB.disambiguator),
+    disambiguator: Object.assign({}, modelA.disambiguator || {}, modelB.disambiguator || {}),
     catchalls: modelA.catchalls.concat(modelB.catchalls)
   }
 }

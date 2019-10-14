@@ -70,7 +70,7 @@ export class CommandModelImpl implements CommandModel {
    */
   public async read(argv: string[], execOptions: ExecOptions): Promise<CommandTreeResolution> {
     const { read: readImpl } = await import('../core/command-tree')
-    return readImpl(this.root, argv, undefined, undefined, execOptions)
+    return readImpl(this.root, argv, undefined, execOptions)
   }
 
   /**
