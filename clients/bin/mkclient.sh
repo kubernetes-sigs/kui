@@ -46,10 +46,9 @@ EOF
 mkdir plugins
 cp -a -L ../clients/default/theme .
 
-if [  "$1" == "-f" ] || [ ! -f "$SCRIPTDIR"/client-package.json ] || [ ! -f "$SCRIPTDIR"/client-package-lock.json ]; then
-    echo "$(tput setaf 1)building from scratch$(tput sgr0)"
+echo "$(tput setaf 1)building from scratch$(tput sgr0)"
 
-    cat > package.json <<EOF
+cat > package.json <<EOF
 {
   "name": "kui",
   "version": "0.0.1",
@@ -71,11 +70,6 @@ if [  "$1" == "-f" ] || [ ! -f "$SCRIPTDIR"/client-package.json ] || [ ! -f "$SC
 }
 EOF
 
-    npm install --save-dev /tmp/kui-packs/{*builder*,*test*,*webpack*,*proxy*} typescript electron@6.0.8 spectron@8.0.0 @types/uuid @types/node --save /tmp/kui-packs/{*core*,*plugin-*}
-    cp package-lock.json "$SCRIPTDIR"/client-package-lock.json
-    cp package.json "$SCRIPTDIR"/client-package.json
-else
-    cp "$SCRIPTDIR"/client-package-lock.json package-lock.json
-    cp "$SCRIPTDIR"/client-package.json package.json
-    npm ci
-fi
+npm install --save-dev /tmp/kui-packs/{*builder*,*test*,*webpack*,*proxy*} typescript electron@6.0.8 spectron@8.0.0 @types/uuid @types/node --save /tmp/kui-packs/{*core*,*plugin-*}
+cp package-lock.json "$SCRIPTDIR"/client-package-lock.json
+cp package.json "$SCRIPTDIR"/client-package.json
