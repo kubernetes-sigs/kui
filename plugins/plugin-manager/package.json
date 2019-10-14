@@ -33,7 +33,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "08941498fa276ba569ecfedd0eb870f88b39509b"
+  "gitHead": "08941498fa276ba569ecfedd0eb870f88b39509b",
   "devDependencies": {
     "@types/which": "^1.3.2"
   }
