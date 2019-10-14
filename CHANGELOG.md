@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.7](https://github.com/IBM/kui/compare/v5.1.6...v5.1.7) (2019-10-14)
+
+### Bug Fixes
+
+- revert to webpack 4.40 ([391c741](https://github.com/IBM/kui/commit/391c741)), closes [#3005](https://github.com/IBM/kui/issues/3005)
+
 ## [5.1.6](https://github.com/IBM/kui/compare/v4.5.0...v5.1.6) (2019-10-14)
 
 ### Bug Fixes
