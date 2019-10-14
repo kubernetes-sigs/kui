@@ -31,7 +31,7 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
       .then(reload)
       .catch(Common.oops(this, true)))
 
-  it('should try "sample hi" and fail', () =>
+  it('should try "hi" and fail', () =>
     CLI.command('hi', this.app)
       .then(ReplExpect.error(404))
       .catch(Common.oops(this, true)))
@@ -61,7 +61,7 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
     CLI.command('plugin commands @kui-shell/plugin-sample', this.app)
       .then(ReplExpect.okWithCustom({ expect: 'hello', passthrough: true }))
       .then(async N => {
-        await this.app.client.click(`${Selectors.OUTPUT_N(N)} .entity[data-name="sample hello"] .clickable`)
+        await this.app.client.click(`${Selectors.OUTPUT_N(N)} .entity[data-name="hello"] .clickable`)
         await this.app.client.waitForExist(Selectors.OUTPUT_N(N + 1))
         await this.app.client.waitForText(Selectors.OUTPUT_N(N + 1))
         return this.app.client.getText(Selectors.OUTPUT_N(N + 1))
