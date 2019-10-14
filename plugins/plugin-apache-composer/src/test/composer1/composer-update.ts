@@ -41,7 +41,7 @@ describe('confirm that app update preserves annotations and parameters', functio
       .catch(Common.oops(this)))
 
   it('should webbify the app', () =>
-    CLI.command(`webbify ${appName1}`, this.app)
+    CLI.command(`wsk action webbify ${appName1}`, this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(() => this.app)
       .then(SidecarExpect.open)

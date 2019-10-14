@@ -744,6 +744,9 @@ export default async (commandTree: Commands.Registrar) => {
 
   // Install the routes
   synonyms('actions').forEach(async syn => {
+    commandTree.listen('/let', doCreate, {
+      docs: 'Create an OpenWhisk action'
+    })
     const cmd = commandTree.listen(`/wsk/${syn}/let`, doCreate, {
       docs: 'Create an OpenWhisk action'
     })

@@ -143,8 +143,8 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
     /** load any plugins required by the given command */
     resolve: (command: string, { subtree = false } = {}) => {
       // subpath if we are looking for plugins for a subtree, e.g. for cd /auth
-      let plugin
-      let matchLen
+      let plugin: string
+      let matchLen: number
       for (const route in prescan.commandToPlugin) {
         if (route === command) {
           plugin = prescan.commandToPlugin[route]

@@ -47,6 +47,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: C
     // click on parameters mode button
     it(`should show parameters for ${name} by clicking on bottom stripe`, async () => {
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('parameters'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('parameters'))
       return SidecarExpect.open(this.app)
         .then(SidecarExpect.showing(name))
         .then(() => this.app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
@@ -57,6 +58,7 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: C
     // click on annotations mode button
     it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('annotations'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('annotations'))
       return SidecarExpect.open(this.app)
         .then(SidecarExpect.showing(name))
         .then(() => this.app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))
@@ -65,8 +67,9 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: C
     })
 
     // click on code mode button
-    it(`should show annotations for ${actionName} by clicking on bottom stripe`, async () => {
+    it(`should show code for ${name} by clicking on bottom stripe`, async () => {
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('code'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('code'))
       return SidecarExpect.open(this.app)
         .then(SidecarExpect.showing(name))
         .then(() => this.app.client.getText(`${Selectors.SIDECAR_CONTENT} .action-source`))

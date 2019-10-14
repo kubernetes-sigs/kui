@@ -315,7 +315,7 @@ export const newAction = ({
 
 export default async (commandTree: Commands.Registrar) => {
   // command registration: create new action
-  commandTree.listen('/editor/new', newAction(), {
+  commandTree.listen('/new', newAction(), {
     usage: newUsage,
     noAuthOk: true,
     needsUI: true,

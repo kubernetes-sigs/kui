@@ -370,7 +370,7 @@ export default (commandTree: Commands.Registrar) => {
         .catch(reject)
     })
 
-  const vizCmd = commandTree.listen(`/wsk/app/preview`, doIt('preview'), {
+  const opts = {
     usage: usage.preview('preview'),
     needsUI: true,
     viewName: viewNameLong,
@@ -378,17 +378,16 @@ export default (commandTree: Commands.Registrar) => {
     width: 800,
     height: 600,
     clearREPLOnLoad: true,
-    noAuthOk: true,
     placeholder: 'Loading visualization ...'
-  })
+  }
+  commandTree.listen(`/preview`, doIt('preview'), opts)
+  const vizCmd = commandTree.listen(`/wsk/app/preview`, doIt('preview'), opts)
   commandTree.synonym(`/wsk/app/viz`, doIt('viz'), vizCmd, {
-    usage: usage.preview('viz'),
-    noAuthOk: true
+    usage: usage.preview('viz')
   })
 
   commandTree.listen('/wsk/app/src', doIt('src', 'src'), {
-    usage: usage.source('src'),
-    noAuthOk: true
+    usage: usage.source('src')
   })
 
   return Promise.resolve()

@@ -51,7 +51,7 @@ describe('Webbify actions', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName2)))
 
   it('should webbify with implicit action', () =>
-    CLI.command(`webbify`, this.app)
+    CLI.command('wsk action webbify', this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: `${href}?message=test`, rejectUnauthorized: false })) // provide an input to the remote request
@@ -61,7 +61,7 @@ describe('Webbify actions', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName2)))
 
   it('should webbify with explicit action', () =>
-    CLI.command(`webbify ${actionName}`, this.app)
+    CLI.command(`wsk action webbify ${actionName}`, this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: `${href}?message2=test2`, rejectUnauthorized: false })) // provide an input to the remote request
@@ -83,7 +83,7 @@ describe('Webbify actions', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName4, undefined, undefined, packageName)))
 
   it('should webbify a packaged action with implicit action', () =>
-    CLI.command(`webbify`, this.app)
+    CLI.command('wsk action webbify', this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: `${href}?message3=test3`, rejectUnauthorized: false })) // provide an input to the remote request
@@ -93,7 +93,7 @@ describe('Webbify actions', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName4, undefined, undefined, packageName)))
 
   it('should webbify a packaged action with explicit action', () =>
-    CLI.command(`webbify ${packageName}/${actionName3}`, this.app)
+    CLI.command(`wsk action webbify ${packageName}/${actionName3}`, this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: `${href}?message4=test4`, rejectUnauthorized: false })) // provide an input to the remote request
@@ -115,7 +115,7 @@ describe('Webbify actions', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName6)))
 
   it('should webbify as http with implicit action', () =>
-    CLI.command(`webbify as http`, this.app)
+    CLI.command('wsk action webbify as http', this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: `${href}?message=test5`, rejectUnauthorized: false })) // provide an input to the remote request
@@ -125,7 +125,7 @@ describe('Webbify actions', function(this: Common.ISuite) {
       .then(SidecarExpect.showing(actionName6)))
 
   it('should webbify as http with explicit action', () =>
-    CLI.command(`webbify ${actionName5} as http`, this.app)
+    CLI.command(`wsk action webbify ${actionName5} as http`, this.app)
       .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: `${href}?message=test6`, rejectUnauthorized: false })) // provide an input to the remote request

@@ -23,7 +23,6 @@ import {
   CommandRegistrar,
   CommandTree,
   CommandTreeResolution,
-  Disambiguator,
   ExecType,
   CatchAllOffer,
   Command,
@@ -47,45 +46,6 @@ import { getModelInternal } from '../commands/tree'
 import { Context, getCurrentContext } from '../commands/context'
 
 debug('finished loading modules')
-
-// for plugins.js
-export const endScan = (/* state: Disambiguator */): Disambiguator => {
-  debug('finishing up', getModelInternal().disambiguator)
-  const map: Disambiguator = {}
-  for (const command in getModelInternal().disambiguator) {
-    map[command] = getModelInternal().disambiguator[command].map(({ route, options }) => ({
-      route,
-      plugin: options && options.plugin
-    }))
-  }
-  /* if (state) {
-    disambiguator = state
-  } */
-  return map
-}
-
-/**
- * In support of plugin removal, cull the disambiguator cache
- *
- */
-export function cullFromDisambiguator(pluginToBeRemoved: string) {
-  for (const key in getModelInternal().disambiguator) {
-    getModelInternal().disambiguator[key] = getModelInternal().disambiguator[key].filter(({ plugin }) => {
-      if (plugin !== pluginToBeRemoved) {
-        debug('cullFromDisambiguator deleted', key)
-        return false
-      } else {
-        return true
-      }
-    })
-    const after = getModelInternal().disambiguator[key].length
-    if (after === 0) {
-      debug('cullFromDisambiguator purged', key, getModelInternal().disambiguator[key])
-      delete getModelInternal().disambiguator[key]
-    }
-  }
-  debug('cullFromDisambiguator done', getModelInternal().disambiguator)
-}
 
 /**
  * Plugin registry
@@ -218,22 +178,6 @@ const _listen = (
 
     leaf.$ = handler
     leaf.route = route
-
-    // update the disambiguator map
-    if (
-      /*! (options && options.synonymFor) && */ // leaf is NOT a synonym
-      !(leaf.parent && leaf.parent.options && leaf.parent.options.synonymFor)
-    ) {
-      // tree is NOT a synonym
-      let resolutions = getModelInternal().disambiguator[leaf.key]
-      if (!resolutions) {
-        resolutions = getModelInternal().disambiguator[leaf.key] = []
-      }
-
-      if (!resolutions.find(resolution => resolution.route === leaf.route)) {
-        resolutions.push(leaf)
-      }
-    }
 
     return leaf
   }
@@ -538,76 +482,6 @@ const internalRead = (model: CommandTree, argv: string[]): Promise<false | Comma
 }
 
 /**
- * Is the given suffix-unambiguous registered command A compatible
- * with the given executed command B?
- *
- *   A: [ which, ls ], B: [ ls ] => true, because 'ls' is a unambiguous suffix of the registered command A
- *   A: [ ls ], B: [ which, ls ] => false, because the user asked for 'which ls', and all we could find was 'ls'
- *
- */
-const areCompatible = (A: string[], B: string[]): boolean => {
-  const start = A.indexOf(B[0])
-
-  let Bidx = 0
-  for (let Aidx = start; Aidx < A.length && Bidx < B.length; Aidx++, Bidx++) {
-    if (A[Aidx] !== B[Bidx]) {
-      break
-    }
-  }
-
-  return Bidx > 0
-}
-
-/**
- * See if the given `argv` resolves unambiguously, independent of
- * command context.
- *
- */
-const disambiguate = async (argv: string[], noRetry = false): Promise<CommandHandlerWithEvents> => {
-  let idx: number
-  const resolutions =
-    (((idx = 0) || true) && resolver.disambiguate(argv[idx])) ||
-    (argv.length > 1 && ((idx = argv.length - 1) || true) && resolver.disambiguate(argv[idx])) ||
-    []
-  debug('disambiguate', argv, resolutions)
-
-  if (resolutions.length === 0 && !noRetry) {
-    // maybe we haven't loaded the plugin, yet
-    await resolver.resolve(`/${argv.join('/')}`)
-    return disambiguate(argv, true)
-  } else if (resolutions.length === 1) {
-    // one unambiguous resolution! great, but we need to
-    // double-check: if the resolution is a subtree, then it better have a child that matches
-    const argvForMatch = resolutions[0].route.split('/').slice(1)
-    const cmdMatch = treeMatch(getModelInternal().root, argvForMatch)
-    const leaf = cmdMatch && cmdMatch.$ ? areCompatible(argvForMatch, argv) && cmdMatch : undefined
-
-    if (!leaf || !leaf.$) {
-      if (!noRetry && resolutions[0].plugin) {
-        await resolver.resolveOne(resolutions[0].plugin)
-        return disambiguate(argv, true)
-      } else {
-        return
-      }
-    } else if (idx === argv.length - 1 && leaf.children) {
-      // then the match is indeed a subtree
-      const next = argv[argv.length - 1]
-      for (const cmd in leaf.children) {
-        if (cmd === next) {
-          return withEvents(leaf.children[cmd].$, leaf.children[cmd])
-        }
-      }
-
-      return
-    } else if (idx < argv.length - 1 && leaf.children) {
-      return
-    }
-
-    return withEvents(leaf.$, leaf)
-  }
-}
-
-/**
  * We could not find a registered command handler for the given `argv`.
  *
  */
@@ -671,21 +545,13 @@ export const read = async (
   root: CommandTree,
   argv: string[],
   noRetry = false,
-  noSubtreeRetry = false,
   execOptions: ExecOptions
 ): Promise<CommandTreeResolution> => {
-  let cmd: false | CodedError | CommandHandlerWithEvents = await disambiguate(argv)
+  let cmd: false | CodedError | CommandHandlerWithEvents
 
-  if (cmd && resolver.isOverridden(cmd.route) && !noRetry) {
-    await resolver.resolve(cmd.route)
-    return read(root, argv, true, noSubtreeRetry, execOptions)
-  }
-
-  if (!cmd) {
-    if (!noRetry) {
-      await resolver.resolve(`/${argv.join('/')}`)
-      cmd = (await disambiguate(argv)) || (await internalRead(root, argv))
-    }
+  if (!noRetry) {
+    await resolver.resolve(`/${argv.join('/')}`)
+    cmd = await internalRead(root, argv)
   }
 
   if (!cmd) {
@@ -699,7 +565,7 @@ export const read = async (
       const allButLast = argv.slice(0, argv.length - 1)
       const last = argv[argv.length - 1]
 
-      const parent = (await internalRead(root, allButLast)) || (await disambiguate(allButLast))
+      const parent = await internalRead(root, allButLast)
       if (parent) {
         matches = await findPartialMatchesAt(prescanModel().usage, last)
       }
