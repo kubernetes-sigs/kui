@@ -76,7 +76,7 @@ export default interface REPL {
    * functions, quoting and escaping as necessary.
    *
    */
-  encodeComponent(component: string | number | boolean, quote?: string)
+  encodeComponent(component: string | number | boolean, quote?: string): string
 
   /**
    * Split the given string into an argv

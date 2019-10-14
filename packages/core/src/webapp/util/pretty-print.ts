@@ -14,39 +14,38 @@
  * limitations under the License.
  */
 
-import * as Convert from 'ansi-to-html'
-
-import { flatten } from '../../core/utility'
-
 /**
- * A preallocated converter instance. Note that we are using CSS
- * variables, which should make this instance resilient to theme
- * changes
+ * @return A converter instance. Note that we are using CSS variables,
+ * which should make this instance resilient to theme changes
  */
-const convert = new Convert({
-  newline: true,
-  escapeXML: true,
-  bg: 'var(--color-ui-01)',
-  fg: 'var(--color-text-01)',
-  colors: {
-    0: 'var(--color-black)',
-    1: 'var(--color-red)',
-    2: 'var(--color-green)',
-    3: 'var(--color-yellow-text)',
-    4: 'var(--color-blue)',
-    5: 'var(--color-magenta)',
-    6: 'var(--color-cyan)',
-    7: 'var(--color-white)',
-    8: 'var(--color-black)',
-    9: 'var(--color-red)',
-    10: 'var(--color-green)',
-    11: 'var(--color-yellow)',
-    12: 'var(--color-blue)',
-    13: 'var(--color-magenta)',
-    14: 'var(--color-cyan)',
-    15: 'var(--color-white)'
-  }
-})
+async function makeConverter() {
+  const Convert = await import('ansi-to-html')
+
+  return new Convert({
+    newline: true,
+    escapeXML: true,
+    bg: 'var(--color-ui-01)',
+    fg: 'var(--color-text-01)',
+    colors: {
+      0: 'var(--color-black)',
+      1: 'var(--color-red)',
+      2: 'var(--color-green)',
+      3: 'var(--color-yellow-text)',
+      4: 'var(--color-blue)',
+      5: 'var(--color-magenta)',
+      6: 'var(--color-cyan)',
+      7: 'var(--color-white)',
+      8: 'var(--color-black)',
+      9: 'var(--color-red)',
+      10: 'var(--color-green)',
+      11: 'var(--color-yellow)',
+      12: 'var(--color-blue)',
+      13: 'var(--color-magenta)',
+      14: 'var(--color-cyan)',
+      15: 'var(--color-white)'
+    }
+  })
+}
 
 /**
  * Remove trailing blank lines
@@ -72,11 +71,14 @@ function trim(strings: string[]) {
  * @return void if there is nothing worth formatting, otherwise return
  * an Element containing the formatted strings
  */
-export default function formatAsPty(_strings: string[], wrap = true): HTMLElement {
+export default async function formatAsPty(_strings: string[], wrap = true): Promise<HTMLElement> {
   if (!_strings || (_strings.length === 1 && _strings.every(_ => _.length === 0 || /^\s+$/.test(_)))) {
     // don't bother with empty content, or if every line is just whitespace
     return
   }
+
+  const convert = await makeConverter()
+  const { flatten } = await import('../../core/utility')
 
   const strings = trim(flatten(_strings.map(_ => _.split(/[\n]/))))
   const container = document.createElement('div')

@@ -28,12 +28,22 @@ import ISubwindowPrefs from '../models/SubwindowPrefs'
  */
 let nWindows = 0
 
+interface EventEmitter {
+  on(event: string, listener: Function): void
+  once(event: string, listener: Function): void
+}
+interface App extends EventEmitter {
+  hide(): void
+  quit(): void
+  exit(exitCode?: number): void
+  requestSingleInstanceLock(): boolean
+}
+
 /**
  * Keep refs to the electron app around
  *
  */
-let electron
-let app
+let app: App
 
 export function createWindow(
   noHeadless = false,
@@ -67,13 +77,13 @@ export function createWindow(
   }
 
   let promise = Promise.resolve()
-  if (!electron) {
+  if (!app) {
     debug('we need to spawn electron', subwindowPlease, subwindowPrefs)
     delete subwindowPrefs.synonymFor // circular JSON
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs)
       .then(async () => {
-        electron = await import('electron')
+        app = (await import('electron')).app as App
       })
       .catch((err: Error) => {
         // headless
@@ -139,7 +149,11 @@ export function createWindow(
       opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
     }
     debug('createWindow::new BrowserWindow')
-    const mainWindow = new Electron.BrowserWindow(opts)
+    interface KuiBrowserWindow extends Electron.BrowserWindow {
+      executeThisArgvPlease?: string[]
+      subwindow?: ISubwindowPrefs
+    }
+    const mainWindow = new Electron.BrowserWindow(opts) as KuiBrowserWindow
     nWindows++
     debug('createWindow::new BrowserWindow success')
 
@@ -155,18 +169,22 @@ export function createWindow(
 
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
-    const fixedWindows = {}
+    interface Win {
+      window?: Electron.BrowserWindow
+      url?: string
+    }
+    const fixedWindows: Record<string, Win> = {}
     const openFixedWindow = (opts: {
       type: string
       event: Event
       url: string
       size?: { width: number; height: number }
       position?: { x: number; y: number }
-      options?
+      options?: any // eslint-disable-line @typescript-eslint/no-explicit-any
     }) => {
       const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
 
-      const existing = fixedWindows[type] || {}
+      const existing = fixedWindows[type] || ({} as Win)
       const { window: existingWindow, url: currentURL } = existing
 
       if (!existingWindow || existingWindow.isDestroyed()) {
@@ -209,27 +227,25 @@ export function createWindow(
     })
 
     /** jump in and manage the way popups create new windows */
-    mainWindow.webContents.on('new-window', (
-      event: Event,
-      url: string,
-      frameName: string,
-      disposition: string,
-      options /*, additionalFeatures */
-    ) => {
-      if (url.startsWith('https://youtu.be')) {
-        // special handling of youtube links
-        openFixedWindow({
-          type: 'videos',
-          event,
-          url,
-          options,
-          size: { width: 800, height: 600 }
-        })
-      } else {
-        event.preventDefault()
-        require('open')(url)
+    mainWindow.webContents.on(
+      'new-window',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (event: Event, url: string, frameName: string, disposition: string, options: any) => {
+        if (url.startsWith('https://youtu.be')) {
+          // special handling of youtube links
+          openFixedWindow({
+            type: 'videos',
+            event,
+            url,
+            options,
+            size: { width: 800, height: 600 }
+          })
+        } else {
+          event.preventDefault()
+          require('open')(url)
+        }
       }
-    })
+    )
 
     let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => /--command-context/.test(_))
     if (commandContext) {
@@ -241,11 +257,11 @@ export function createWindow(
 
     if (noHeadless === true && executeThisArgvPlease) {
       debug('setting argv', executeThisArgvPlease)
-      mainWindow['executeThisArgvPlease'] = executeThisArgvPlease
+      mainWindow.executeThisArgvPlease = executeThisArgvPlease
     }
     debug('subwindowPrefs', subwindowPrefs)
     if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
-      mainWindow['subwindow'] = subwindowPrefs
+      mainWindow.subwindow = subwindowPrefs
     }
 
     // and load the index.html of the app.
@@ -432,45 +448,6 @@ export async function initElectron(
   } catch (err) {
     debug('electron components not directly installed')
 
-    const spawnGraphics = () => {
-      debug('waiting for graphics')
-      return app.graphics.wait().then(async graphics => {
-        const argv = command.slice(command.indexOf('--') + 1).concat(forceUI ? ['--ui'] : [])
-
-        debug('spawning graphics', graphics, argv)
-        try {
-          const { spawn } = await import('child_process')
-          const child = spawn(graphics, argv, {
-            detached: !debug.enabled,
-            env: Object.assign({}, process.env, {
-              KUI_HEADLESS: true,
-              subwindowPlease,
-              subwindowPrefs: JSON.stringify(subwindowPrefs)
-            })
-          })
-          child.stdout.on('data', data => {
-            if (data.toString().indexOf('WARNING: Textured window') < 0) {
-              debug(data.toString())
-            }
-          })
-          child.stderr.on('data', data => {
-            debug(data.toString())
-          })
-
-          if (!debug.enabled) {
-            child.unref()
-          }
-        } catch (err) {
-          debug('error spawning graphics', err)
-        }
-
-        debug('done with spawning graphics')
-        if (!debug.enabled) {
-          process.exit(0)
-        }
-      })
-    }
-
     /**
      * We seem to be running with a headless.zip build; now determine
      * the best course of action
@@ -480,17 +457,12 @@ export async function initElectron(
         const { initHeadless } = await import('./headless')
         await initHeadless(process.argv, true)
       }
-      if (app.graphics) {
-        promise = spawnGraphics()
-      } else {
-        const colors = await import('colors/safe')
-        console.log(colors.red('Graphical components are not installed.'))
-        process.exit(126)
-      }
+      const colors = await import('colors/safe')
+      console.log(colors.red('Graphical components are not installed.'))
+      process.exit(126)
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       // then this is probably an unrelated package.json file
       // _location will only be present for npm install'd assets
       // and the name is there to match our top-level package.json
@@ -507,10 +479,9 @@ export async function initElectron(
 
   if (promise) {
     return promise
-  } else if (!electron) {
+  } else if (!app) {
     debug('loading electron')
     const Electron = await import('electron')
-    electron = Electron
     app = Electron.app
 
     if (!app) {
@@ -523,10 +494,10 @@ export async function initElectron(
       debug('spawning electron', appHome, args)
 
       // pass through any window options, originating from the command's usage model, on to the subprocess
-      const windowOptions = {}
+      const windowOptions: Record<string, string> = {}
       if (subwindowPlease) {
         debug('passing through subwindowPlease', subwindowPlease)
-        windowOptions['subwindowPlease'] = subwindowPlease
+        windowOptions['subwindowPlease'] = subwindowPlease.toString()
       }
       if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
         debug('passing through subwindowPrefs', subwindowPrefs)
@@ -558,16 +529,9 @@ export async function initElectron(
     }
   }
 
-  // linux oddities; you may see this, and disabling hardware acceleration
-  // used to address it:
-  //   "context mismatch in svga_sampler_view_destroy"
-  /* if (process.platform === 'linux') {
-        app.disableHardwareAcceleration()
-    } */
-
   // deal with multiple processes
   if (!process.env.RUNNING_SHELL_TEST) {
-    app.on('second-instance', (event, commandLine: string[]) => {
+    app.on('second-instance', (event: Electron.Event, commandLine: string[]) => {
       // Someone tried to run a second instance, open a new window
       // to handle it
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)

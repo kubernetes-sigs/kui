@@ -19,6 +19,7 @@
  *
  */
 
+console.trace()
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import Debug from 'debug'
@@ -1025,7 +1026,7 @@ export const setExecutorImpl = (impl: Executor): void => {
  * Add quotes if the argument needs it; compare to encodeURIComponent
  *
  */
-export const encodeComponent = (component: string | number | boolean, quote = '"') => {
+export const encodeComponent = (component: string | number | boolean, quote = '"'): string => {
   if (component === undefined) {
     return ''
   } else if (
@@ -1036,7 +1037,7 @@ export const encodeComponent = (component: string | number | boolean, quote = '"
   ) {
     return `${quote}${component}${quote}`
   } else {
-    return component
+    return component.toString()
   }
 }
 

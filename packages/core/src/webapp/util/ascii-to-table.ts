@@ -92,106 +92,110 @@ interface Pair {
   valueDom: Element
   css: string
 }
-const split = (str: string, splits: number[], headerCells?: string[]): Pair[] => {
+const split = async (str: string, splits: number[], headerCells?: string[]): Promise<Pair[]> => {
   const stripped = stripClean(str)
 
   let lastEnd = 0
-  return splits.map((splitIndex, idx) => {
-    const plain = stripped.substring(splitIndex, splits[idx + 1] || stripped.length).trim()
-    const { startIdx, endIdx } = indexOf(str, plain, lastEnd)
-    const value = str.slice(startIdx, endIdx).trim()
-    const valueDom = maybeURL(plain) || formatAsPty([value], false)
+  return Promise.all(
+    splits.map(async (splitIndex, idx) => {
+      const plain = stripped.substring(splitIndex, splits[idx + 1] || stripped.length).trim()
+      const { startIdx, endIdx } = indexOf(str, plain, lastEnd)
+      const value = str.slice(startIdx, endIdx).trim()
+      const valueDom = maybeURL(plain) || (await formatAsPty([value], false))
 
-    lastEnd = endIdx
+      lastEnd = endIdx
 
-    return {
-      key: headerCells && headerCells[idx],
-      value: plain,
-      valueDom,
-      css: ''
-    }
-  })
+      return {
+        key: headerCells && headerCells[idx],
+        value: plain,
+        valueDom,
+        css: ''
+      }
+    })
+  )
 }
 
 /**
  * Find the column splits
  *
  */
-export const preprocessTable = (raw: string[]): { rows?: Pair[][]; trailingString?: string }[] => {
-  return raw.map(table => {
-    const firstNewlineIdx = table.indexOf('\n')
-    let header = stripClean(table.substring(0, firstNewlineIdx).replace(/\t/g, ' '))
+export const preprocessTable = async (raw: string[]): Promise<{ rows?: Pair[][]; trailingString?: string }[]> => {
+  return Promise.all(
+    raw.map(async table => {
+      const firstNewlineIdx = table.indexOf('\n')
+      let header = stripClean(table.substring(0, firstNewlineIdx).replace(/\t/g, ' '))
 
-    if (header.trim().length === 0) {
-      // the first line might be blank (except for control characters)
-      table = table.slice(firstNewlineIdx + 1)
-      const secondNewlineIdx = table.indexOf('\n')
-      header = stripClean(table.substring(0, secondNewlineIdx).replace(/\t/g, ' '))
-    }
+      if (header.trim().length === 0) {
+        // the first line might be blank (except for control characters)
+        table = table.slice(firstNewlineIdx + 1)
+        const secondNewlineIdx = table.indexOf('\n')
+        header = stripClean(table.substring(0, secondNewlineIdx).replace(/\t/g, ' '))
+      }
 
-    const headerCells = header
-      .split(/(\t|\s\s)+\s?/)
-      .filter(x => x && !x.match(/(\t|\s\s)/))
-      .map(_ => _.trim())
+      const headerCells = await header
+        .split(/(\t|\s\s)+\s?/)
+        .filter(x => x && !x.match(/(\t|\s\s)/))
+        .map(_ => _.trim())
 
-    // now we scan the header row to determine the column start indices
-    const columnStarts: number[] = []
+      // now we scan the header row to determine the column start indices
+      const columnStarts: number[] = []
 
-    for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
-      const { offset, prefix } = idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
+      for (let idx = 0, jdx = 0; idx < headerCells.length; idx++) {
+        const { offset, prefix } = idx === 0 ? { offset: 0, prefix: '' } : { offset: 1, prefix: ' ' }
 
-      const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
-      if (newJdx < 0) {
-        // last column
-        jdx = header.indexOf(' ' + headerCells[idx], jdx)
+        const newJdx = header.indexOf(prefix + headerCells[idx] + ' ', jdx)
+        if (newJdx < 0) {
+          // last column
+          jdx = header.indexOf(' ' + headerCells[idx], jdx)
+        } else {
+          jdx = newJdx
+        }
+        columnStarts.push(jdx + offset)
+
+        jdx = newJdx + headerCells[idx].length
+      }
+
+      // do we have just tiny columns? if so, it's not worth tabularizing
+      const tinyColumns = columnStarts.reduce((yup, start, idx) => {
+        return yup && (idx > 0 && start - columnStarts[idx - 1] <= 2)
+      }, true)
+
+      if (columnStarts.length <= 1 || tinyColumns) {
+        // probably not a table
+        return {
+          trailingString: table
+        }
       } else {
-        jdx = newJdx
-      }
-      columnStarts.push(jdx + offset)
+        const possibleRows = table.split(/\n/)
 
-      jdx = newJdx + headerCells[idx].length
-    }
+        // look to see if any of the possibleRows violate the
+        // columnStarts alignment; this is a good indication that the
+        // possibleRows are not really rows of a table
+        const endOfTable = possibleRows.map(stripClean).findIndex(row => {
+          const nope = columnStarts.findIndex(idx => {
+            return idx > 0 && !/\s/.test(row[idx - 1])
+          })
 
-    // do we have just tiny columns? if so, it's not worth tabularizing
-    const tinyColumns = columnStarts.reduce((yup, start, idx) => {
-      return yup && (idx > 0 && start - columnStarts[idx - 1] <= 2)
-    }, true)
-
-    if (columnStarts.length <= 1 || tinyColumns) {
-      // probably not a table
-      return {
-        trailingString: table
-      }
-    } else {
-      const possibleRows = table.split(/\n/)
-
-      // look to see if any of the possibleRows violate the
-      // columnStarts alignment; this is a good indication that the
-      // possibleRows are not really rows of a table
-      const endOfTable = possibleRows.map(stripClean).findIndex(row => {
-        const nope = columnStarts.findIndex(idx => {
-          return idx > 0 && !/\s/.test(row[idx - 1])
+          return nope !== -1
         })
 
-        return nope !== -1
-      })
+        const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
-      const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
+        const preprocessed = (await Promise.all(
+          rows.map(line => {
+            return split(line, columnStarts, headerCells)
+          })
+        )).filter(x => x)
 
-      const preprocessed = rows
-        .map(line => {
-          return split(line, columnStarts, headerCells)
-        })
-        .filter(x => x)
+        const trailingString = endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
 
-      const trailingString = endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
-
-      return {
-        trailingString,
-        rows: preprocessed
+        return {
+          trailingString,
+          rows: preprocessed
+        }
       }
-    }
-  })
+    })
+  )
 }
 
 /** normalize the status badge by capitalization */
