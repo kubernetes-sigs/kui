@@ -967,7 +967,7 @@ export const doExec = (
 
             if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
               try {
-                const tables = preprocessTable(raw.split(/^(?=NAME|Name|ID|\n\*)/m)).filter(x => x)
+                const tables = (await preprocessTable(raw.split(/^(?=NAME|Name|ID|\n\*)/m))).filter(x => x)
 
                 if (tables && tables.length > 0) {
                   const tableRows = Util.flatten(tables.filter(_ => _.rows !== undefined).map(_ => _.rows))
@@ -983,7 +983,7 @@ export const doExec = (
 
                     const trailingStrings = tables.map(_ => _.trailingString).filter(x => x)
                     if (trailingStrings && trailingStrings.length > 0) {
-                      const trailers = UI.PrettyPrinters.ansi(trailingStrings)
+                      const trailers = await UI.PrettyPrinters.ansi(trailingStrings)
                       if (!trailers) {
                         // nothing worth formatting
                         pendingTable = [tableModel]
