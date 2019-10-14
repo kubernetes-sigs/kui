@@ -19,9 +19,6 @@
  *
  */
 
-console.trace()
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-
 import Debug from 'debug'
 const debug = Debug('core/repl')
 debug('loading')
@@ -90,9 +87,9 @@ export interface ReplEval {
  *
  */
 export class DirectReplEval implements ReplEval {
-  name = 'DirectReplEval'
+  public name = 'DirectReplEval'
 
-  apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
+  public apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
     return evaluator.eval(args)
   }
 }
@@ -278,9 +275,9 @@ const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
  *
  */
 class InProcessExecutor implements Executor {
-  name = 'InProcessExecutor'
+  public name = 'InProcessExecutor'
 
-  async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
+  public async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
     const tab = execOptions.tab || cli.getCurrentTab()
     const REPL = getImpl(tab) // eslint-disable-line @typescript-eslint/no-use-before-define
 
