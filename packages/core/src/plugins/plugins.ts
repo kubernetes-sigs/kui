@@ -105,7 +105,7 @@ export const init = async (): Promise<boolean> => {
 
         // merge builtin plugins with user-installed plugins
         prescan = unify(prescan, userInstalledPrescan)
-        debug('prescan', prescan)
+        // debug('prescan', prescan)
       }
       debug('user-installed prescan loaded')
     } catch (err) {

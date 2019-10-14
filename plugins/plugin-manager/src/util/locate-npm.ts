@@ -15,15 +15,16 @@
  */
 
 import { platform } from 'os'
-import * as which from 'which'
 import { delimiter, dirname } from 'path'
 
 /**
  * Find the location of the npm executable
  *
  */
-export default (): Promise<{ npm: string; env?: Record<string, string> } | void> =>
-  new Promise(resolve => {
+export default async (): Promise<{ npm: string; env?: Record<string, string> } | void> => {
+  const which = await import('which')
+
+  return new Promise(resolve => {
     const resolveWith = (npm: string) => {
       const npmpath = dirname(npm)
       const env = Object.assign({}, process.env)
@@ -32,7 +33,7 @@ export default (): Promise<{ npm: string; env?: Record<string, string> } | void>
       resolve({ npm, env })
     }
 
-    which('npm', { nothrow: true }, (err, resolved) => {
+    which('npm', (err, resolved) => {
       if (resolved) {
         resolveWith(resolved)
         return
@@ -52,3 +53,4 @@ export default (): Promise<{ npm: string; env?: Record<string, string> } | void>
       }
     })
   })
+}
