@@ -732,5 +732,5 @@ export default async (commandTree: Commands.Registrar) => {
 
   commandTree.listen(`/wsk/table`, tableIt('table'), opts)
 
-  commandTree.listen(`/wsk/summary`, tableIt('summary'), opts)
+  commandTree.listen(`/summary`, tableIt('summary'), opts)
 }

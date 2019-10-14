@@ -23,7 +23,6 @@ import { assemble } from './scanner'
 import { PrescanCommandDefinitions, PrescanDocs, PrescanNode, PrescanModel, PrescanUsage } from './prescan'
 
 import eventBus from '../core/events'
-import { cullFromDisambiguator } from '../core/command-tree'
 import { initIfNeeded, getModel } from '../commands/tree'
 
 const debug = Debug('core/plugins/assembler')
@@ -200,10 +199,6 @@ export const compile = async (
  */
 export async function compileUserInstalled(pluginToBeRemoved?: string) {
   debug('compileUserInstalled', pluginToBeRemoved)
-
-  if (pluginToBeRemoved) {
-    cullFromDisambiguator(pluginToBeRemoved)
-  }
 
   const home = await plugins.userInstalledHome()
   const pluginRoot = join(home, 'node_modules')

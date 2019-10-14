@@ -426,7 +426,7 @@ export const generatePrescanModel = async (
     flat: scanCache.flat,
     overrides: scanCache.overrides,
     usage: scanCache.usage,
-    disambiguator: commandTree.endScan(/* state */),
+    disambiguator: undefined,
     catchalls: getModel().catchalls,
     docs: undefined // assembler.ts will fill this in
   }

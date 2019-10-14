@@ -36,22 +36,22 @@ const fixedOf = val => () => val // the match is always a fixed value
  */
 const matchers = [
   {
-    pattern: /^\s*webbify\s+as\s+(.+)\s*$/,
+    pattern: /^\s*wsk\s+(action|actions)\s+webbify\s+as\s+(.+)\s*$/,
     action: (_, tab: UI.Tab) => Models.Selection.current(tab),
-    mimeType: matchOf(1)
-  },
-  {
-    pattern: /^\s*webbify\s+(.+)\s+as\s+(.+)\s*$/,
-    action: matchOf(1),
     mimeType: matchOf(2)
   },
   {
-    pattern: /^\s*webbify\s+(.+)\s*$/,
-    action: matchOf(1),
+    pattern: /^\s*wsk\s+(action|actions)\s+webbify\s+(.+)\s+as\s+(.+)\s*$/,
+    action: matchOf(2),
+    mimeType: matchOf(3)
+  },
+  {
+    pattern: /^\s*wsk\s+(action|actions)\s+webbify\s+(.+)\s*$/,
+    action: matchOf(2),
     mimeType: fixedOf('json')
   },
   {
-    pattern: /^\s*webbify\s*$/,
+    pattern: /^\s*wsk\s+(action|actions)\s+webbify\s*$/,
     action: (_, tab: UI.Tab) => Models.Selection.current(tab),
     mimeType: fixedOf('json')
   }

@@ -361,7 +361,7 @@ export const newAction = ({
 
 export default async (commandTree: Commands.Registrar) => {
   // command registration: create new app/composition
-  commandTree.listen('/editor/compose', newAction(compositionOptions({ cmd: 'compose' })), {
+  commandTree.listen('/compose', newAction(compositionOptions({ cmd: 'compose' })), {
     usage: composeUsage,
     noAuthOk: true,
     needsUI: true,

@@ -668,27 +668,13 @@ export default async (commandTree: Commands.Registrar) => {
     { hide: true }
   )
 
-  const route = `/wsk/grid`
-  debug('installing command', route)
-
-  commandTree.listen(route, fixedGrid, {
+  const opts = {
     usage,
     needsUI: true,
     viewName,
     noAuthOk: true // the underlying data queries will ensure whatever auth they need
-  })
+  }
 
-  // coloring
-  /* const cmd = commandTree.listen(`/wsk/${syn}/color/grid/by`, ({ argvNoOptions }) => {
-            const strategy = argvNoOptions[argvNoOptions.indexOf('by') + 1]
-            if (strategy === 'pass/fail') {
-                return colorBy('pass/fail')
-            } else if (strategy === 'duration' || strategy === 'default' || strategy === 'reset') {
-                return colorBy('duration')
-            } else {
-                throw new Error('Usage: color by default|pass/fail|duration')
-            }
-        }, { docs: 'Change the coloring strategy of the activation grid' })
-        commandTree.listen('/wsk/$dur', () => colorBy('duration'), cmd)
-        commandTree.listen('/wsk/$pf', () => colorBy('pass/fail'), cmd) */
+  commandTree.listen('/grid', fixedGrid, opts)
+  commandTree.listen('/wsk/grid', fixedGrid, opts)
 }
