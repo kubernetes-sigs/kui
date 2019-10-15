@@ -20,7 +20,6 @@
   },
   "gettingStarted": "tutorial play @tutorials/getting-started",
   "about": [{ "mode": "contexts", "label": "Contexts", "direct": "about --mode contexts --content contexts" }],
-  "defaultContext": ["k8s"],
   "defaultTheme": "Dark",
   "themes": [
     {
