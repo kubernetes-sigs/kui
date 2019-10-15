@@ -17,7 +17,6 @@
 import Debug from 'debug'
 import { basename } from 'path'
 
-import { REPL } from '@kui-shell/core'
 import { extension } from '@kui-shell/plugin-editor'
 
 const debug = Debug('plugins/openwhisk-editor-extensions/model/composition-persister')
@@ -115,10 +114,11 @@ export const persister = {
         if (err) {
           reject(err)
         } else {
-          fs.write(fd, app.exec.code, err => {
+          fs.write(fd, app.exec.code, async err => {
             if (err) {
               reject(err)
             } else {
+              const { REPL } = await import('@kui-shell/core/api/repl')
               return REPL.pexec(
                 `wsk app update ${REPL.encodeComponent(app.name)} ${REPL.encodeComponent(filepath)} --kind ${
                   app.exec.kind

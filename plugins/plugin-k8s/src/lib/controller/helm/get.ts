@@ -15,7 +15,6 @@
  */
 
 import Debug from 'debug'
-import { safeDump } from 'js-yaml'
 import { exec } from 'child_process'
 
 import { Commands, Models } from '@kui-shell/core'
@@ -77,6 +76,8 @@ export default async function helmGet(args: Commands.Arguments): Promise<Command
   const releaseName = maybeVerb
   debug('releaseName', releaseName)
   const basicInfo = await getBasicInfo(releaseName)
+
+  const { safeDump } = await import('js-yaml')
 
   const response = {
     type: 'custom',

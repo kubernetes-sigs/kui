@@ -16,7 +16,7 @@
 
 import stripClean from 'strip-ansi'
 
-import * as repl from '../../core/repl'
+import encodeComponent from '../../repl/encode'
 import { ParsedOptions } from '../../models/command'
 import { Cell, Row, Table, TableStyle } from '../models/table'
 
@@ -374,10 +374,9 @@ export const formatTable = (
   const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const namespace = options.n || options.namespace
-  const drilldownNamespace = namespace && !Array.isArray(namespace) ? `-n ${repl.encodeComponent(namespace)}` : ''
+  const drilldownNamespace = namespace && !Array.isArray(namespace) ? `-n ${encodeComponent(namespace)}` : ''
 
-  const config =
-    options.config && !Array.isArray(options.config) ? `--config ${repl.encodeComponent(options.config)}` : ''
+  const config = options.config && !Array.isArray(options.config) ? `--config ${encodeComponent(options.config)}` : ''
 
   const drilldownKind = (nameSplit: string[]): string => {
     if (drilldownVerb === 'get') {
@@ -415,9 +414,7 @@ export const formatTable = (
     // if there isn't a global namespace specifier, maybe there is a row namespace specifier
     // we use the row specifier in preference to a global specifier -- is that right?
     const ns =
-      (namespaceColumnIdx >= 0 &&
-        command !== 'helm' &&
-        `-n ${repl.encodeComponent(columns[namespaceColumnIdx].value)}`) ||
+      (namespaceColumnIdx >= 0 && command !== 'helm' && `-n ${encodeComponent(columns[namespaceColumnIdx].value)}`) ||
       drilldownNamespace ||
       ''
 
@@ -426,7 +423,7 @@ export const formatTable = (
       idx === 0 || /[":]/.test(nameForDrilldown)
         ? false
         : drilldownVerb
-        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${repl.encodeComponent(
+        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${encodeComponent(
             nameForDrilldown
           )} ${drilldownFormat} ${ns} ${config}`
         : false

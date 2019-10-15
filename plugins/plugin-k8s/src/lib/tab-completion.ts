@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, REPL } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
 
 import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
@@ -23,6 +23,7 @@ import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/p
  *
  */
 async function getMatchingStrings(cmd: string, spec: TabCompletionSpec): Promise<string[]> {
+  const { REPL } = await import('@kui-shell/core/api/repl')
   const completions: string = await REPL.rexec(cmd)
   const list: string[] = completions.split(/[\n\r]/).map(_ => _.replace(/^\w+\//, ''))
 

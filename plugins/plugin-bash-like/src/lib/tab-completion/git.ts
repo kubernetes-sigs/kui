@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, REPL } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
 
 import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
@@ -32,6 +32,7 @@ async function completeGitBranches(commandLine: Commands.CommandLine, spec: TabC
 
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
     try {
+      const { REPL } = await import('@kui-shell/core/api/repl')
       const completions = await REPL.rexec<string>(
         `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`
       )

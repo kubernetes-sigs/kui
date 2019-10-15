@@ -18,7 +18,14 @@ import Debug from 'debug'
 const debug = Debug('k8s/controller/kubectl')
 debug('loading')
 
-import { Capabilities, Commands, Errors, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Tables from '@kui-shell/core/api/tables'
+import Util from '@kui-shell/core/api/util'
+import { Badge, Mode } from '@kui-shell/core/api/registrars'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
 
 import Options from './options'
 import abbreviations from './abbreviations'
@@ -217,7 +224,7 @@ const stripThese = {
 const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    const { argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
+    const { REPL, argv: rawArgv, argvNoOptions: argv, execOptions, parsedOptions: options, command: rawCommand } = opts
 
     const isKube = isKubeLike(command)
 
@@ -390,7 +397,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
           const expectedState = verb === 'create' || verb === 'apply' ? FinalState.OnlineLike : FinalState.OfflineLike
           const finalState = `--final-state ${expectedState.toString()}`
           const resourceNamespace =
-            options.n || options.namespace ? `-n ${REPL.encodeComponent(options.n || options.namespace)}` : ''
+            options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
 
           debug('about to get status', file, entityType, entity, resourceNamespace)
           return REPL.qexec(
@@ -545,7 +552,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
           return cleanupAndResolve(result)
         }
 
-        const modes: UI.Mode[] = [
+        const modes: Mode[] = [
           {
             mode: 'result',
             direct: rawCommand,
@@ -587,7 +594,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
         const { name, nameHash } = extractAppAndName(yaml)
 
         // sidecar badges
-        const badges: UI.Badge[] = []
+        const badges: Badge[] = []
 
         if (verb === 'describe') {
           const getCmd = opts.command.replace(/describe/, 'get').replace(/(-o|--output)[= ](yaml|json)/, '')
@@ -709,6 +716,7 @@ const shouldSendToPTY = (opts: Commands.Arguments): boolean =>
   opts.argvNoOptions.includes('|')
 
 async function kubectl(opts: Commands.Arguments) {
+  const { REPL } = opts
   const semi = await REPL.semicolonInvoke(opts)
   if (semi) {
     return semi

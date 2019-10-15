@@ -19,7 +19,10 @@ import { dirname, join } from 'path'
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Capabilities, Commands, Models, UI } from '@kui-shell/core'
+import UI from '@kui-shell/core/api/ui'
+import Models from '@kui-shell/core/api/models'
+import Commands from '@kui-shell/core/api/commands'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
 import { Entity as EditorEntity } from './fetchers'
 import { Editor, EditorResponse } from './response'

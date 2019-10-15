@@ -25,13 +25,20 @@ import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
 import { CapabilityRequirements } from '../models/command'
 import { isHTML } from '../util/types'
-import { pexec, qexec } from '../core/repl'
 
 interface UsageOptions {
   noHide?: boolean
   noBreadcrumb?: boolean
 }
 class DefaultUsageOptions implements UsageOptions {}
+
+/** lazily load repl */
+function pexec(command: string) {
+  return async () => {
+    const { pexec } = await import('../repl/exec')
+    pexec(command)
+  }
+}
 
 /**
  * Map a asynchronous function to an array sequentially from front to
@@ -133,6 +140,7 @@ function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
  *
  */
 const breadcrumbFromCommand = async (command: string): Promise<string> => {
+  const { qexec } = await import('../repl/exec')
   const usageError: UsageError = await qexec(command, undefined, undefined, { failWithUsage: true })
 
   if (isMessageWithUsageModel(usageError.raw)) {
@@ -177,7 +185,7 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
 
     if (cmd) {
       dom.classList.add('bx--link')
-      dom.onclick = () => pexec(cmd)
+      dom.onclick = pexec(cmd)
     }
 
     return item
@@ -569,7 +577,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
               const dirPart = isDir && span('/')
 
               if (!noclick) {
-                cmdPart.onclick = () => pexec(commandForExec(alias))
+                cmdPart.onclick = pexec(commandForExec(alias))
               }
 
               aliasesPart.appendChild(cmdCell)
@@ -601,21 +609,22 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
             cmdPart.onclick = async event => {
-              const cli = await import('../webapp/cli')
+              const Prompt = await import('../webapp/prompt')
+              const { getCurrentTab } = await import('../webapp/tab')
               if (partial) {
-                return cli.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
+                return Prompt.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
                 if (drilldownWithPip) {
                   const { drilldown } = await import('../webapp/picture-in-picture')
                   return drilldown(
-                    cli.getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
+                    getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
                     commandForExec(command, name !== command ? name : undefined),
                     undefined,
                     resultWrapper.parentNode.parentNode as Element,
                     'Previous Usage'
                   )(event)
                 } else {
-                  return pexec(commandForExec(command, name !== command ? name : undefined))
+                  return pexec(commandForExec(command, name !== command ? name : undefined))()
                 }
               }
             }
@@ -723,7 +732,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
         commandPart.appendChild(commaPart)
         commandPart.appendChild(clickablePart)
-        clickablePart.onclick = () => pexec(command)
+        clickablePart.onclick = pexec(command)
 
         listPart.appendChild(commandPart)
       })

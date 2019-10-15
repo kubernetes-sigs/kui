@@ -21,11 +21,12 @@ debug('loading')
 import { removeAllDomChildren } from './util/dom'
 import { getSidecar, showEntity, getActiveView } from './views/sidecar'
 
+import { Tab } from './tab'
+import { popupListen } from './listen'
 import Presentation from './views/presentation'
-import { popupListen, Tab } from './cli'
 import { ExecOptions } from '../models/execOptions'
 import { EntitySpec } from '../models/entity'
-import { pexec, qexec } from '../core/repl'
+import { pexec, qexec } from '../repl/exec'
 import { css, rawCSS } from './bottom-stripe'
 import { isCapturable } from './models/capturable'
 

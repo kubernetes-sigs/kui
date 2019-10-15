@@ -17,7 +17,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { Watchable } from './basicModels'
-import { sortBody } from '../views/table'
 import { Entity } from '../../models/entity'
 import { SidecarMode } from '../bottom-stripe'
 
@@ -189,6 +188,19 @@ export function formatWatchableTable<T extends Table | MultiTable>(model: T, wat
     // TODO: we might need to consider the variance of model, throw error for now
     throw new Error('models other than table(s) are not supported in watch mode yet')
   }
+}
+
+/**
+ * sort the body of table
+ *
+ */
+export const sortBody = (rows: Row[]): Row[] => {
+  return rows.sort(
+    (a, b) =>
+      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
+      (a.packageName || '').localeCompare(b.packageName || '') ||
+      a.name.localeCompare(b.name)
+  )
 }
 
 export class Icon {

@@ -39,7 +39,7 @@ const defaultCharHeight = 10
  * Capitalize a given string
  *
  */
-const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1)
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.substring(1)
 
 function id2log(id: string): string {
   return id
@@ -78,10 +78,10 @@ class RenderState {
     }
   }
 
-  addDummy(sources = [], targets, obj, options?, directionS?: string, directionT?: string) {
+  addDummy(sources = [], targets: string[], obj, options?: NodeOptions, directionS?: string, directionT?: string) {
     const dummyId = 'dummy_' + this.dummyCount
     let o
-    let port
+    let port: string
     this.dummyCount++
     obj.children.push(this.drawNodeNew(dummyId, options.label || dummyId, options.type || 'Dummy', sources, options))
     if (sources && sources.length > 0) {
@@ -626,7 +626,7 @@ class RenderState {
         parent = [fork]
 
         // render the par/map body
-        let exits
+        let exits: string[]
         if (AST.isMapLike(ir)) {
           // for map, render the components as a sequence
           //         Fork (the "fork" node that we rendered just above)
@@ -700,7 +700,7 @@ class RenderState {
  * @return the cumulative number of nodes in the given composition that are not of type Function
  *
  */
-const numNonFunctions = composition => {
+const numNonFunctions = (composition: AST.ASTNode): number => {
   if (composition === undefined) return 0
   if (composition.type === 'function') {
     return 0
@@ -722,8 +722,8 @@ const numNonFunctions = composition => {
  * Heuristic: is this composition "pretty simple"?
  *
  */
-const isSimpleComposition = ir => {
-  const isShort = ir.components ? ir.components.length <= 2 : true
+const isSimpleComposition = (ir: AST.ASTNode): boolean => {
+  const isShort = AST.isComponentArrayBearing(ir) ? ir.components.length <= 2 : true
   const numNonFuncs = numNonFunctions(ir)
   const atMostOneNonFunction = numNonFuncs <= 3
 
@@ -736,8 +736,8 @@ export default async function fsm2graph(
   ir: AST.ASTNode,
   containerElement?: HTMLElement,
   acts?: ActivationLike[],
-  options?,
-  rule?
+  options?: NodeOptions,
+  rule?: { trigger: { name: string } }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Response> {
   // console.log(ir, containerElement, acts);

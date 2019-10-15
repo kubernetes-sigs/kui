@@ -22,6 +22,8 @@ import { v4 as uuidgen } from 'uuid'
 import { Capabilities, Commands, Errors, REPL, Settings, UI } from '@kui-shell/core'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
+import { isDisabled, ProxyServerConfig } from './config'
+
 // import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
 // copied for now, until we can figure out typescript compiler issues
 interface Channel {
@@ -36,22 +38,6 @@ function getSessionForTab(tab: UI.Tab): Promise<Channel> {
 }
 
 const debug = Debug('plugins/proxy-support/executor')
-
-interface ActualProxyServerConfig {
-  url: string
-  // needleOptions?: needle.NeedleOptions
-}
-
-interface DisabledProxyServerConfig {
-  enabled: boolean
-}
-
-export function isDisabled(_config: ProxyServerConfig): _config is DisabledProxyServerConfig {
-  const config = _config as DisabledProxyServerConfig
-  return config && config.enabled === false
-}
-
-type ProxyServerConfig = DisabledProxyServerConfig | ActualProxyServerConfig
 
 /**
  * The proxy server configuration.

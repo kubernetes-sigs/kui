@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Tables, UI, Util } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { Mode } from '@kui-shell/core/api/registrars'
+import Util from '@kui-shell/core/api/util'
+import Tables from '@kui-shell/core/api/tables'
 import { cssForValue } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { Pod } from '@kui-shell/plugin-k8s'
@@ -26,9 +29,9 @@ import { PipelineRun, TaskRun } from '../resource'
  * The sidecar mode for the tekton logs of a PipelineRun
  *
  */
-const mode: UI.Mode = {
+const mode: Mode = {
   mode: 'Logs',
-  direct: async (tab: UI.Tab, _: ResponseObject) => {
+  direct: async (tab: Tab, _: ResponseObject) => {
     const run = _.resource as PipelineRun
 
     const [taskRuns, pods] = await Promise.all([

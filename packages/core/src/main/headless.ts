@@ -21,7 +21,7 @@ const debug = Debug('main/headless')
 debug('loading')
 
 import { Entity } from '../models/entity'
-import { installOopsHandler, exec } from '../core/repl'
+import { installOopsHandler, exec } from '../repl/exec'
 import mimicDom from '../util/mimic-dom'
 import { preload, init as pluginsInit } from '../plugins/plugins'
 import { CodedError } from '../models/errors'

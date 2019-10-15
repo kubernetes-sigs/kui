@@ -16,7 +16,8 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Commands } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
 const debug = Debug('plugins/bash-like/cmds/catchall')
 

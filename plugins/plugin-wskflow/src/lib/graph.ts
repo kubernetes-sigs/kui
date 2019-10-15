@@ -18,6 +18,12 @@ interface Port {
   id: string
 }
 
+interface FlowNodeProperties {
+  fontSize?: string
+  maxLabelLength?: number
+  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
 export interface FlowNode {
   readonly id: string
   readonly type?: string
@@ -36,7 +42,7 @@ export interface FlowNode {
   width?: number
   height?: number
   layoutOptions?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
-  properties?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  properties?: FlowNodeProperties
   ports?: Port[]
   visited?: number[]
   children?: FlowNode[]
@@ -46,6 +52,8 @@ export interface FlowNode {
 }
 
 export interface NodeOptions {
+  type?: string
+  label?: string
   value?: string
   tooltip?: string
   tooltipHeader?: string

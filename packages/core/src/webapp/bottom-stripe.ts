@@ -25,7 +25,7 @@ import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
-import { pexec, qexec } from '../core/repl'
+import { pexec, qexec } from '../repl/exec'
 import { isHTML } from '../util/types'
 import { Entity, EntitySpec, isMetadataBearingByReference } from '../models/entity'
 

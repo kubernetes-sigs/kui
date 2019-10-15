@@ -23,7 +23,7 @@ const all = [
   // 'timeline',
   'grid'
 ]
-const allExcept = cmd => all.filter(_ => _ !== cmd)
+const allExcept = (cmd: string) => all.filter(_ => _ !== cmd)
 
 interface Optional {
   name: string

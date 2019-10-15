@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Capabilities, Models } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Models from '@kui-shell/core/api/models'
 
 const localStorageKey = {
   auth: 'kui.k8s.auth'

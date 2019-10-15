@@ -17,7 +17,9 @@
 import Debug from 'debug'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { UI } from '@kui-shell/core'
+import * as UI from '@kui-shell/core/api/ui-lite'
+import { Mode, Badge } from '@kui-shell/core/api/registrars'
+import { prettyPrintTime } from '@kui-shell/core/api/pretty-print'
 
 import { KubeResource } from '@kui-shell/plugin-k8s'
 import { ActivationLikeFull as ActivationLike } from '@kui-shell/plugin-wskflow'
@@ -263,7 +265,7 @@ export const render = (tab: UI.Tab, activations: ActivationLike[], container: El
       const previous = activations[idx - 1]
       const previousWaitTime = 0
       const previousStart = previous && previous.start - previousWaitTime
-      const time = UI.PrettyPrinters.time(activation.start - waitTime, 'short', previousStart)
+      const time = prettyPrintTime(activation.start - waitTime, 'short', previousStart)
       start.className =
         'somewhat-smaller-text lighter-text log-field log-field-right-align start-time-field timestamp-like'
       start.appendChild(startInner)
@@ -389,7 +391,7 @@ export const traceView = (tab: UI.Tab, run: PipelineRun, pipeline: Pipeline, jso
   const runActivation = makeRunActivationLike(run)
   render(tab, [runActivation].concat(makeTaskRunsActivationLike(run, pipeline, jsons)), content)
 
-  const badges: UI.Badge[] = ['Tekton']
+  const badges: Badge[] = ['Tekton']
 
   return {
     type: 'custom',
@@ -407,7 +409,7 @@ export const traceView = (tab: UI.Tab, run: PipelineRun, pipeline: Pipeline, jso
  * Sidecar mode for a pipeline run trace view
  *
  */
-const traceMode: UI.Mode = {
+const traceMode: Mode = {
   mode: 'trace',
   direct: async (tab: UI.Tab, _: ResponseObject) => {
     const resource = _.resource as PipelineRun
