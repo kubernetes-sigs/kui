@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Commands, Tables } from '@kui-shell/core'
+import Tables from '@kui-shell/core/api/tables'
+import Commands from '@kui-shell/core/api/commands'
 
 /**
  * Maybe add a header row for tables. If this is a nested call,

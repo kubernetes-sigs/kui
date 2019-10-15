@@ -17,7 +17,11 @@
 import Debug from 'debug'
 import * as path from 'path'
 
-import { Capabilities, Commands, Errors, eventBus, UI } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import eventBus from '@kui-shell/core/api/events'
+import { injectCSS } from '@kui-shell/core/api/inject'
 
 const debug = Debug('plugins/core-support/zoom')
 
@@ -164,13 +168,13 @@ export default (commandTree: Commands.Registrar) => {
   // inject our CSS
   //
   if (Capabilities.inBrowser()) {
-    UI.injectCSS({
+    injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
       key: 'zoom.css'
     })
   } else {
     const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    UI.injectCSS(path.join(root, 'web/css/zoom.css'))
+    injectCSS(path.join(root, 'web/css/zoom.css'))
   }
 
   const overlay = document.createElement('div')

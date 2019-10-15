@@ -16,10 +16,10 @@
 
 import Debug from 'debug'
 
-import { Tab } from '../../cli'
-import { MetadataBearing } from '../../../models/entity'
-import { addBadge, BadgeSpec, BadgeOptions } from '../sidecar'
+import { Tab } from '../../tab'
 import { SidecarModeFilter } from './modes'
+import { MetadataBearing } from '../../../models/entity'
+import { addBadge, BadgeSpec, BadgeOptions } from '../badge'
 
 const debug = Debug('webapp/views/registrar/badges')
 

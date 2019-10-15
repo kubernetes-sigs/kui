@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
-
-export default async () => {
-  await UI.injectScript('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js')
-}
+export { SidecarMode as Mode } from '../webapp/bottom-stripe'
+export {
+  SidecarModeFilter as ModeFilter,
+  ModeRegistration,
+  registerSidecarMode as registerMode
+} from '../webapp/views/registrar/modes'
+export { registerSidecarBadge as registerBadge } from '../webapp/views/registrar/badges'
+export { Badge } from '../webapp/views/badge'

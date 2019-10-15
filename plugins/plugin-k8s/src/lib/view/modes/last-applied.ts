@@ -15,9 +15,11 @@
  */
 
 import Debug from 'debug'
-import { safeDump } from 'js-yaml'
 
-import { Commands, i18n, UI } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import { i18n } from '@kui-shell/core/api/i18n'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
 
 import { Resource, KubeResource } from '../../model/resource'
 
@@ -48,9 +50,9 @@ function hasLastApplied(resource: KubeResource): boolean {
  * the given resource.
  *
  */
-export const lastAppliedMode: UI.ModeRegistration<KubeResource> = {
+export const lastAppliedMode: ModeRegistration<KubeResource> = {
   when: hasLastApplied,
-  mode: (command: string, resource: Resource): UI.Mode => {
+  mode: (command: string, resource: Resource): Mode => {
     debug('lastApplied', resource)
     try {
       return {
@@ -79,7 +81,9 @@ interface Parameters {
  *
  * @param lastRaw the last applied configuration, unparsed
  */
-function respondWith(lastRaw: string, fullResource: KubeResource): Commands.CustomResponse {
+async function respondWith(lastRaw: string, fullResource: KubeResource): Promise<Commands.CustomResponse> {
+  const { safeDump } = await import('js-yaml')
+
   // oof, it comes in as a JSON string, but we want a YAML string
   const resource: KubeResource = JSON.parse(lastRaw) // we will extract some parameters from this
   const content = safeDump(resource) // this is what we want to show up in the UI
@@ -101,7 +105,7 @@ function respondWith(lastRaw: string, fullResource: KubeResource): Commands.Cust
   }
 }
 
-export const renderAndViewLastApplied = async (tab: UI.Tab, parameters: Parameters) => {
+export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewLastApplied', command, resource)
 

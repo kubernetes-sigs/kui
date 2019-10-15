@@ -69,7 +69,7 @@ function id(theme: string) {
  * Internal logic to switch themes
  *
  */
-export const switchTo = async (theme: string, webContents?: WebContents): Promise<void> => {
+export const switchTo = async (theme: string, webContents?: WebContents, saveNotNeeded = false): Promise<void> => {
   const themeModel = findThemeByName(theme)
   if (!themeModel) {
     debug('could not find theme', theme, Settings.theme)
@@ -144,7 +144,11 @@ export const switchTo = async (theme: string, webContents?: WebContents): Promis
     throw err
   }
 
-  await Settings.setPreference(persistedThemePreferenceKey, theme)
+  if (!saveNotNeeded) {
+    // e.g. if we are doing a switch to the persisted theme choice,
+    // there is no need to re-persist this choice
+    await Settings.setPreference(persistedThemePreferenceKey, theme)
+  }
 
   // set the theme attributes on document.body
   if (webContents) {
@@ -184,18 +188,21 @@ document.body.setAttribute('kui-theme-style', '${themeModel.style}');`
  *
  */
 export const switchToPersistedThemeChoice = async (webContents?: WebContents, isDarkMode = false): Promise<void> => {
+  // Notes: the "true" passed to switchTo means indicates that we know
+  // that we don't need to re-save the theme choice (after all, we
+  // just read it in)
   const theme = await getPersistedThemeChoice()
   if (theme) {
     debug('switching to persisted theme choice')
     try {
-      await switchTo(theme, webContents)
+      await switchTo(theme, webContents, true)
     } catch (err) {
       debug('error switching to persisted theme choice, using default')
-      await switchTo(getDefaultTheme(isDarkMode), webContents)
+      await switchTo(getDefaultTheme(isDarkMode), webContents, true)
     }
   } else {
     debug('no persisted theme choice')
-    await switchTo(getDefaultTheme(), webContents)
+    await switchTo(getDefaultTheme(), webContents, true)
   }
 }
 

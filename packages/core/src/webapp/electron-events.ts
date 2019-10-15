@@ -18,10 +18,9 @@ import Debug from 'debug'
 const debug = Debug('webapp/electron-events')
 debug('loading')
 
-import { IpcRenderer, Remote } from 'electron'
+import { IpcRenderer } from 'electron'
 
 import { inElectron, Media, setMedia } from '../core/capabilities'
-import { qexec, pexec } from '../core/repl'
 
 /**
  * Listen for the main process telling us to execute a command
@@ -31,13 +30,15 @@ const listenForRemoteEvents = (ipcRenderer: IpcRenderer) => {
   debug('listenForRemoteEvents')
 
   if (inElectron() && ipcRenderer) {
-    ipcRenderer.on('/repl/pexec', (event, { command }) => {
+    ipcRenderer.on('/repl/pexec', async (event, { command }) => {
       debug('remote pexec', command)
+      const { pexec } = await import('../repl/exec')
       return pexec(command)
     })
 
-    ipcRenderer.on('/repl/qexec', (event, { command }) => {
+    ipcRenderer.on('/repl/qexec', async (event, { command }) => {
       debug('remote qexec', command)
+      const { qexec } = await import('../repl/exec')
       return qexec(command)
     })
   }
@@ -53,14 +54,13 @@ const initializeIPC = async () => {
   try {
     const electron = await import('electron')
     const ipcRenderer = electron.ipcRenderer
-    const remote = electron.remote
-    if (!ipcRenderer || !remote) {
+    if (!ipcRenderer) {
       debug('probably browser 1')
       setMedia(Media.Browser)
       document.body.classList.add('not-electron')
     } else {
       setMedia(Media.Electron)
-      return { ipcRenderer, remote }
+      return { ipcRenderer }
     }
   } catch (err) {
     debug('could not find electron')
@@ -80,28 +80,6 @@ const initializeIPC = async () => {
   }
 
   return {}
-}
-
-/**
- * Deal with full-screen changes; also note that we need to do a
- * one-time check on page load to see whether we're in full screen;
- * it'd be nice if there were a CSS :fullscreen selector for this :(
- *
- */
-const listenForWindowEvents = (remote?: Remote) => {
-  if (remote) {
-    debug('listenForWindowEvents')
-
-    if (remote.getCurrentWindow().isFullScreen()) {
-      document.body.classList.add('fullscreen')
-    }
-    remote.getCurrentWindow().on('enter-full-screen', function() {
-      document.body.classList.add('fullscreen')
-    })
-    remote.getCurrentWindow().on('leave-full-screen', function() {
-      document.body.classList.remove('fullscreen')
-    })
-  }
 }
 
 /**
@@ -154,10 +132,8 @@ export const tellMain = (
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const init = (prefs = {}) => {
-  return initializeIPC().then(({ remote, ipcRenderer }) => {
+  return initializeIPC().then(({ ipcRenderer }) => {
     listenForRemoteEvents(ipcRenderer)
-
-    listenForWindowEvents(remote)
     listenForTestEvents(ipcRenderer)
   })
 }

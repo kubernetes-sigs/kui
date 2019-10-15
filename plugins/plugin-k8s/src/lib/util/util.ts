@@ -16,8 +16,6 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { Capabilities } from '@kui-shell/core'
-
 export interface TypedEntityName {
   type: string
   fqn: string
@@ -51,7 +49,8 @@ export const maybeAsDate = str => {
 export const isDirectory = (filepath: string): Promise<boolean> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise<boolean>(async (resolve, reject) => {
-    if (Capabilities.inBrowser()) {
+    const { inBrowser } = await import('@kui-shell/core/api/capabilities')
+    if (inBrowser()) {
       resolve(false)
     } else {
       // why the dynamic import? being browser friendly here

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, getTabId } from '../webapp/cli'
+import { Tab, getTabId } from '../webapp/tab'
 import sessionStore from '../models/sessionStore'
 
 /**

@@ -19,7 +19,7 @@ const debug = Debug('plugins/apache-composer/preload')
 debug('loading')
 
 import { dirname } from 'path'
-import { Util } from '@kui-shell/core'
+import Util from '@kui-shell/core/api/util'
 import initRequirePath from './initRequirePath'
 
 /**

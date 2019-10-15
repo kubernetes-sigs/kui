@@ -20,7 +20,9 @@ debug('loading')
 
 import { dirname, join } from 'path'
 
-import { Capabilities, UI, Util } from '@kui-shell/core'
+import { ModeFilter, registerMode, ModeRegistration } from '@kui-shell/core/api/registrars'
+import Util from '@kui-shell/core/api/util'
+import { isHeadless } from '@kui-shell/core/api/capabilities'
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import { isPipeline, isPipelineRun, isTask } from './model/resource'
@@ -32,7 +34,7 @@ import { isPipeline, isPipelineRun, isTask } from './model/resource'
  * A sidecar mode relevancy filter
  *
  */
-function either(...filters: UI.ModeFilter<KubeResource>[]): UI.ModeFilter<KubeResource> {
+function either(...filters: ModeFilter<KubeResource>[]): ModeFilter<KubeResource> {
   return (resource: KubeResource) => filters.some(filter => filter(resource))
 }
 
@@ -44,7 +46,7 @@ async function registerModes() {
   ])
 
   /** sidecar mode for tekton Flow view */
-  const flowSpec: UI.ModeRegistration<KubeResource> = {
+  const flowSpec: ModeRegistration<KubeResource> = {
     mode: flowMode.default,
     when: either(isPipeline, isPipelineRun, isTask)
   }
@@ -68,7 +70,7 @@ async function registerModes() {
   }
 
   // UI.registerSidecarMode(runSpec)
-  return Promise.all([UI.registerMode(flowSpec), UI.registerMode(traceSpec), UI.registerMode(logsSpec)])
+  return Promise.all([registerMode(flowSpec), registerMode(traceSpec), registerMode(logsSpec)])
 }
 
 /** on preload, register our sidecar modes */
@@ -77,7 +79,7 @@ export default () => {
   const specialPath = join(dirname(require.resolve('@kui-shell/plugin-tekton/package.json')), 'samples/@demos')
   Util.augmentModuleLoadPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
 
-  if (!Capabilities.isHeadless()) {
+  if (!isHeadless()) {
     return registerModes()
   }
 }

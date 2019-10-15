@@ -13,6 +13,7 @@ packages/core/commands/
 packages/core/main/
 packages/core/models/
 packages/core/plugins/
+packages/core/repl/
 packages/core/test/
 packages/core/util/
 packages/core/webapp/

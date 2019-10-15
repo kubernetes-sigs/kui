@@ -16,7 +16,7 @@
 
 import { Tab } from '../webapp/cli'
 import { MixedResponse } from './entity'
-import { EvaluatorArgs } from './command'
+import { EvaluatorArgs, Response } from './command'
 import { ExecOptions } from './execOptions'
 
 export default interface REPL {

@@ -16,7 +16,8 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Models, REPL, UI } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Models from '@kui-shell/core/api/models'
 
 import { apiHost, auth as authModel } from './auth'
 
@@ -92,6 +93,11 @@ export const setApiHost = (apiHost = '') => {
    }))
    self.__lookup = () => apiHost.get().then(host => read().then(model => console.error(`Namespace list for ${host} is ${model.namespaces ? JSON.stringify(model.namespaces) : 'empty'}`))) */
 
+async function REPL() {
+  const { REPL } = await import('@kui-shell/core/api/repl')
+  return REPL
+}
+
 /**
  * User does not have a namespace! warn the user of how to proceed
  *
@@ -104,7 +110,10 @@ export const setNoNamespace = (provideHelp = true) => {
   const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
   namespaceDom.className += ' oops'
   namespaceDom.innerText = 'no auth key!'
-  namespaceDom.onclick = () => UI.LowLevel.partialInput('wsk auth add <your_auth_key>')
+  namespaceDom.onclick = async () => {
+    const { UI } = await import('@kui-shell/core/api/ui')
+    UI.LowLevel.partialInput('wsk auth add <your_auth_key>')
+  }
   namespaceDom.removeAttribute('data-value')
   document.body.classList.add('no-auth')
 
@@ -113,7 +122,9 @@ export const setNoNamespace = (provideHelp = true) => {
 
   if (provideHelp) {
     if (Capabilities.inBrowser()) {
-      REPL.qexec('getting started')
+      setTimeout(async () => {
+        ;(await REPL()).qexec('getting started')
+      })
     }
   }
 }
@@ -171,7 +182,7 @@ export const setNeedsNamespace = async (err?: Error) => {
   if (localSelectedNS) {
     debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
     try {
-      return await REPL.qexec(`wsk auth switch ${localSelectedNS}`)
+      return await (await REPL()).qexec(`wsk auth switch ${localSelectedNS}`)
     } catch (err) {
       console.error('The previously selected namespace probably does not align with the currently selected host', err)
 
@@ -180,7 +191,7 @@ export const setNeedsNamespace = async (err?: Error) => {
   }
 
   debug('no selected namespace in local storage')
-  return list().then(auths => {
+  return list().then(async auths => {
     if (auths.length === 0) {
       // user has no namespaces, and so needs to use
       // wsk auth add to tell us about one
@@ -190,12 +201,14 @@ export const setNeedsNamespace = async (err?: Error) => {
       // user has one namespace, so select it
       const singleNamespace = auths[0].namespace
       debug('user has just one namespace, auto-selecting it', singleNamespace)
-      REPL.qexec(`wsk auth switch ${singleNamespace}`)
+      const repl = await REPL()
+      repl.qexec(`wsk auth switch ${singleNamespace}`)
     } else {
       // user has many namespaces, and didn't select one previously, so list them
       debug('user has more than one namespace, listing them')
       setPleaseSelectNamespace()
-      REPL.pexec(`wsk auth list`)
+      const repl = await REPL()
+      repl.pexec(`wsk auth list`)
     }
   })
 }
@@ -224,13 +237,18 @@ const setNamespace = (namespace: string) => {
   debug(`setNamespace ${namespace}`)
   const namespaceDom = document.querySelector('#openwhisk-namespace') as HTMLElement
   namespaceDom.className = 'clickable' // remove any prior oops
-  namespaceDom.onclick = () => REPL.pexec('wsk auth list')
+  namespaceDom.onclick = async () => {
+    ;(await REPL()).pexec('wsk auth list')
+  }
   namespaceDom.innerText = namespace
   namespaceDom.setAttribute('data-value', namespace)
 
   const hostDom = document.querySelector('#openwhisk-api-host') as HTMLElement
   hostDom.className = 'clickable'
-  hostDom.onclick = () => UI.LowLevel.partialInput('host set <your_api_host>')
+  hostDom.onclick = async () => {
+    const { UI } = await import('@kui-shell/core/api/ui')
+    UI.LowLevel.partialInput('host set <your_api_host>')
+  }
 
   // cache
   currentNS = namespace
@@ -249,7 +267,7 @@ export const init = async (noCatch = false, { noAuthOk = false } = {}) => {
   return apiHost
     .get() // get the current apihost
     .then(setApiHost) // udpate the UI for the apihost
-    .then(() => REPL.qexec('wsk auth namespace get')) // get the namespace associated with the current auth key
+    .then(async () => (await REPL()).qexec('wsk auth namespace get')) // get the namespace associated with the current auth key
     .then(setNamespace) // update the UI for the namespace
     .catch(err => {
       debug('namespace init error', noAuthOk)
@@ -292,7 +310,7 @@ export const current = async (opts: CurrentOptions = new DefaultCurrentOptions()
 export const useAndSave = (auth: string) =>
   authModel
     .set(auth)
-    .then(() => REPL.qexec('wsk namespace current'))
+    .then(async () => (await REPL()).qexec('wsk namespace current'))
     .then(namespace => writeSelectedNS(namespace)) // store the selected namesapce to local storage (use case e.g. reload the browser after auth switch)
     .then(() => init())
 

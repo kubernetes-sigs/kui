@@ -17,7 +17,6 @@
 import { inBrowser } from '../core/capabilities'
 
 import Debug from 'debug'
-import { pexec } from '../core/repl'
 
 const debug = Debug('webapp/query')
 debug('loading')
@@ -34,6 +33,7 @@ export const init = async () => {
 
       if (query.command) {
         // execute ?command=<command>
+        const { pexec } = await import('../repl/exec')
         const queryExec = () => pexec(query.command)
 
         queryExec()

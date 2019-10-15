@@ -17,7 +17,8 @@
 import Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 
-import { eventBus as globalEventBus, UI } from '@kui-shell/core'
+import { Mode } from '@kui-shell/core/api/registrars'
+import globalEventBus from '@kui-shell/core/api/events'
 
 import strings from './strings'
 import { EditorEntity, EditorState, Editor } from './response'
@@ -79,7 +80,7 @@ export const persisters = {
  * Save the given entity
  *
  */
-export const save = ({ getEntity, editor, eventBus }: EditorState): UI.Mode => {
+export const save = ({ getEntity, editor, eventBus }: EditorState): Mode => {
   const entityRightNow = getEntity()
   const mode: string = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
 
@@ -111,7 +112,7 @@ export const save = ({ getEntity, editor, eventBus }: EditorState): UI.Mode => {
  * Revert to the currently deployed version
  *
  */
-export const revert = (state: EditorState): UI.Mode => ({
+export const revert = (state: EditorState): Mode => ({
   mode: strings.revert,
   actAsButton: true,
   flush: 'right',

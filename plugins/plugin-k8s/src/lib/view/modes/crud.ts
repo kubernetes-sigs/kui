@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { i18n, UI } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/api/i18n'
+import { Mode } from '@kui-shell/core/api/registrars'
 
 import makeButton from './button'
 
 const strings = i18n('plugin-k8s')
 
-export const createResourceButton = (fn?): UI.Mode =>
+export const createResourceButton = (fn?): Mode =>
   makeButton(
     {
       mode: 'create',
@@ -29,7 +30,7 @@ export const createResourceButton = (fn?): UI.Mode =>
     fn
   )
 
-export const deleteResourceButton = (fn?): UI.Mode =>
+export const deleteResourceButton = (fn?): Mode =>
   makeButton(
     {
       mode: 'delete',

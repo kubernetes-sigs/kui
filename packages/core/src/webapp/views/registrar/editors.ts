@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Tab } from '../../cli'
-import { CustomSpec } from '../sidecar'
+import { Tab } from '../../tab'
+import { CustomSpec } from '../sidecar-core'
 import Presentation from '../presentation'
 import { ExecOptions } from '../../../models/execOptions'
 

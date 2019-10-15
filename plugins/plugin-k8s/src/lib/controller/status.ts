@@ -16,9 +16,11 @@
 
 import Debug from 'debug'
 import { join } from 'path'
-import { safeLoadAll as parseYAML } from 'js-yaml'
 
-import { Errors, Commands, REPL, Tables, Util } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import Tables from '@kui-shell/core/api/tables'
+import Util from '@kui-shell/core/api/util'
 
 import Options from './options'
 import { withRetryOn404 } from '../util/retry'
@@ -166,7 +168,8 @@ interface FinalStateOptions extends Options {
 const getDirectReferences = (command: string) => async ({
   execOptions,
   argvNoOptions,
-  parsedOptions
+  parsedOptions,
+  REPL
 }: Commands.Arguments<FinalStateOptions>): Promise<{
   kind: string
   resource: Promise<KubeResource | KubeResource[]>
@@ -190,13 +193,15 @@ const getDirectReferences = (command: string) => async ({
       : ''
   }
 
+  const { safeLoadAll: parseYAML } = await import('js-yaml')
+
   if (file.charAt(0) === '!') {
     const resources: KubeResource[] = parseYAML(execOptions.parameters[file.slice(1)])
     debug('status by programmatic parameter', resources)
     return {
       kind: 'file',
       resource: Promise.all(
-        resources.map(_ => {
+        resources.map(async _ => {
           return REPL.qexec<KubeResource>(
             `kubectl get "${_.kind}" "${_.metadata.name}" ${ns(_)} -o json`,
             undefined,
@@ -216,7 +221,7 @@ const getDirectReferences = (command: string) => async ({
 
     // note: don't retry the getter on 404 if we're expecting the
     // element (eventually) not to exist
-    const getter = (): Promise<KubeResource> => {
+    const getter = async (): Promise<KubeResource> => {
       return REPL.qexec<KubeResource>(command, undefined, undefined, raw)
     }
 
@@ -256,9 +261,14 @@ const getDirectReferences = (command: string) => async ({
       return {
         kind: 'dir',
         resource: Promise.all(
-          yamlsWithMainFirst.map(filepath =>
-            REPL.qexec(`k status "${filepath}" --final-state ${finalState}`, undefined, undefined, execOptions)
-          )
+          yamlsWithMainFirst.map(async filepath => {
+            return REPL.qexec<KubeResource>(
+              `k status "${filepath}" --final-state ${finalState}`,
+              undefined,
+              undefined,
+              execOptions
+            )
+          })
         )
       }
     } else if (isDir === undefined) {
@@ -295,7 +305,7 @@ const getDirectReferences = (command: string) => async ({
       // debug('specs', specs)
 
       const kubeEntities = Promise.all(
-        specs.map(spec => {
+        specs.map(async spec => {
           return REPL.qexec<KubeResource>(
             `kubectl get "${spec.kind}" "${spec.metadata.name}" ${ns(spec)} -o json`,
             undefined,

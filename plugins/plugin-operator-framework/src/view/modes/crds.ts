@@ -16,7 +16,9 @@
 
 import Debug from 'debug'
 
-import { Tables, UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { Table } from '@kui-shell/core/api/table-models'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
 import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
@@ -66,9 +68,9 @@ function isCRDBearer(resource: KubeResource): resource is CRDBearer {
  * Show spec.customresourcedefinitions
  *
  */
-export const crdsMode: UI.ModeRegistration<KubeResource> = {
+export const crdsMode: ModeRegistration<KubeResource> = {
   when: isCRDBearer,
-  mode: (command: string, resource: Resource): UI.Mode => {
+  mode: (command: string, resource: Resource): Mode => {
     try {
       return {
         mode: 'CRDs',
@@ -91,7 +93,7 @@ interface Parameters {
   resource: Resource<CRDBearer>
 }
 
-function toTable(resource: CRDBearer): Tables.Table {
+function toTable(resource: CRDBearer): Table {
   return {
     title: 'CRDs',
     header: {
@@ -118,7 +120,7 @@ function toTable(resource: CRDBearer): Tables.Table {
   }
 }
 
-export const renderAndView = (tab: UI.Tab, parameters: Parameters) => {
+export const renderAndView = (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndView', command, resource)
 

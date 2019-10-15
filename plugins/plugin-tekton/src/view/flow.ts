@@ -16,10 +16,9 @@
 
 import Debug from 'debug'
 
-import { safeDump } from 'js-yaml'
 import { basename, dirname } from 'path'
 
-import { UI } from '@kui-shell/core'
+import UI from '@kui-shell/core/api/ui'
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
 import runMode from '../model/modes/run'
@@ -33,13 +32,12 @@ const debug = Debug('plugins/tekton/view/flow')
  * Format a repl response
  *
  */
-export default async (
-  tab: UI.Tab,
-  jsons: KubeResource[],
-  run?: PipelineRun,
-  raw: string = safeDump(jsons),
-  filepath?: string
-) => {
+export default async (tab: UI.Tab, jsons: KubeResource[], run?: PipelineRun, raw?: string, filepath?: string) => {
+  if (!raw) {
+    const { safeDump } = await import('js-yaml')
+    raw = safeDump(jsons)
+  }
+
   const [graph] = await Promise.all([
     tekton2graph(jsons, filepath, run) // generate the graph model
   ])

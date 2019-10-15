@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { safeDump } from 'js-yaml'
-
-import { UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { Mode } from '@kui-shell/core/api/registrars'
 
 import { ResponseObject } from './flow'
 
@@ -24,10 +23,12 @@ import { ResponseObject } from './flow'
  * The sidecar mode for the tekton flow visualization
  *
  */
-const mode: UI.Mode = {
+const mode: Mode = {
   mode: 'Run Config',
-  direct: async (tab: UI.Tab, _: ResponseObject) => {
+  direct: async (tab: Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
+      const { safeDump } = await import('js-yaml')
+
       // then _ is already the response we need
       const models = _.model.filter(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')
       const model = models.length === 1 && models[0]

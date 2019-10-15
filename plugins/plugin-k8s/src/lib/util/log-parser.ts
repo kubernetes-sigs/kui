@@ -16,7 +16,8 @@
 
 import Debug from 'debug'
 
-import { Commands, UI } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import { prettyPrintTime } from '@kui-shell/core/api/pretty-print'
 
 const debug = Debug('k8s/util/log-parser')
 
@@ -246,7 +247,7 @@ const parseIstio = (raw: string, execOptions: Commands.ExecOptions): ZaprEntry[]
 
         const zapr: ZaprEntry = {
           timestamp: timestamp
-            ? UI.PrettyPrinters.time(timestamp, timestampFormat, prevTimestamp, Commands.withLanguage(execOptions))
+            ? prettyPrintTime(timestamp, timestampFormat, prevTimestamp, Commands.withLanguage(execOptions))
             : '',
           rawTimestamp: timestamp,
           logType,
@@ -302,8 +303,7 @@ const parseIstio = (raw: string, execOptions: Commands.ExecOptions): ZaprEntry[]
 
         const zapr: ZaprEntry = {
           timestamp:
-            timestamp &&
-            UI.PrettyPrinters.time(timestamp, timestampFormat, prevTimestamp, Commands.withLanguage(execOptions)),
+            timestamp && prettyPrintTime(timestamp, timestampFormat, prevTimestamp, Commands.withLanguage(execOptions)),
           rawTimestamp: timestamp,
           logType,
           provider,

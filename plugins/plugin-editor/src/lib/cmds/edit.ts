@@ -73,7 +73,7 @@ const editCmd = async ({
   //
   debug('name', name)
   const [entity, injectEntityIntoView] = await Promise.all([
-    programmaticArgs || fetchEntity(name, parsedOptions, execOptions), // fetch the entity model
+    programmaticArgs || fetchEntity(tab, name, parsedOptions, execOptions), // fetch the entity model
     openEditor(tab, name, parsedOptions, execOptions) // prepare the editor view
   ])
 

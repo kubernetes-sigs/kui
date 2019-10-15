@@ -22,7 +22,9 @@
 
 import Debug from 'debug' // the default number of history elements to show with /history
 
-import { Commands, Models, Tables } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Models from '@kui-shell/core/api/models'
+import Tables from '@kui-shell/core/api/tables'
 
 const debug = Debug('plugins/core-support/history')
 

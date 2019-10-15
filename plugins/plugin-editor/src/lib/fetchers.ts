@@ -17,7 +17,9 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { Commands, Models, REPL } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import Models from '@kui-shell/core/api/models'
+import Commands from '@kui-shell/core/api/commands'
 
 import { persisters, Persister } from './persisters'
 
@@ -62,7 +64,8 @@ export type IFetcher = (
   entityName: string,
   parsedOptions?: Commands.ParsedOptions,
   execOptions?: Commands.ExecOptions,
-  createIfAbsent?: boolean
+  createIfAbsent?: boolean,
+  tab?: Tab
 ) => Promise<Entity>
 
 /**
@@ -71,7 +74,6 @@ export type IFetcher = (
  */
 const fetchers: { fetcher: IFetcher }[] = []
 export const registerFetcher = (fetcher: IFetcher): void => {
-  debug('registerFetcher')
   fetchers.push({ fetcher })
 }
 
@@ -79,24 +81,30 @@ export const registerFetcher = (fetcher: IFetcher): void => {
  * Touch a local filepath
  *
  */
-function createFile(filepath: string, execOptions: Commands.ExecOptions) {
-  return REPL.rexec(`touch ${REPL.encodeComponent(filepath)}`, Object.assign({}, execOptions, { forceProxy: true }))
+function createFile(tab: Tab, filepath: string, execOptions: Commands.ExecOptions) {
+  return tab.REPL.rexec(
+    `touch ${tab.REPL.encodeComponent(filepath)}`,
+    Object.assign({}, execOptions, { forceProxy: true })
+  )
 }
 
 /**
  * Creates parent directories if needed, then creates a file then edits it
  *
  */
-async function createFilepath(filepath: string, execOptions: Commands.ExecOptions) {
+async function createFilepath(tab: Tab, filepath: string, execOptions: Commands.ExecOptions) {
   const dir = dirname(filepath)
   const base = basename(filepath)
 
   if (base !== filepath) {
     debug('making parent directories', dir)
-    await REPL.rexec(`mkdir -p ${REPL.encodeComponent(dir)}`, Object.assign({}, execOptions, { forceProxy: true }))
+    await tab.REPL.rexec(
+      `mkdir -p ${tab.REPL.encodeComponent(dir)}`,
+      Object.assign({}, execOptions, { forceProxy: true })
+    )
   }
 
-  return createFile(filepath, execOptions)
+  return createFile(tab, filepath, execOptions)
 }
 
 /**
@@ -107,17 +115,23 @@ export const fetchFile: IFetcher = async (
   filepath: string,
   parsedOptions: Commands.ParsedOptions,
   execOptions: Commands.ExecOptions,
-  createIfAbsent: boolean
+  createIfAbsent: boolean,
+  tab: Tab
 ): Promise<Entity> => {
   let stats: { isDirectory: boolean; filepath: string; fullpath: string; data: string }
   try {
-    stats = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)} --with-data`)
+    if (!tab) {
+      const { getTabFromTarget, getCurrentPrompt } = await import('@kui-shell/core/api/ui-lite')
+      tab = getTabFromTarget(getCurrentPrompt())
+    }
+
+    stats = await tab.REPL.qexec(`fstat ${tab.REPL.encodeComponent(filepath)} --with-data`)
   } catch (err) {
     debug('error code', err.code)
     if (err.code === 404 && createIfAbsent) {
       // Code is a string in this case, not a number
       debug('creating file')
-      return createFilepath(filepath, execOptions).then(() => fetchFile(filepath, parsedOptions, execOptions)) // no create flag here, so no infinite recursion
+      return createFilepath(tab, filepath, execOptions).then(() => fetchFile(filepath, parsedOptions, execOptions)) // no create flag here, so no infinite recursion
     }
     throw err
   }
@@ -158,6 +172,7 @@ export const fetchFile: IFetcher = async (
  *
  */
 export const fetchEntity = async (
+  tab: Tab,
   entityName: string,
   parsedOptions: Commands.ParsedOptions,
   execOptions: Commands.ExecOptions
@@ -170,7 +185,7 @@ export const fetchEntity = async (
       const { fetcher } = fetchers[idx]
 
       try {
-        const entity = await fetcher(entityName, parsedOptions, execOptions, false)
+        const entity = await fetcher(entityName, parsedOptions, execOptions, false, tab)
         if (entity) {
           return entity
         }
@@ -184,7 +199,7 @@ export const fetchEntity = async (
   }
 
   debug('treating this as an createIfAbsent edit of a local filepath')
-  return fetchFile(entityName, parsedOptions, execOptions, true)
+  return fetchFile(entityName, parsedOptions, execOptions, true, tab)
 }
 
 /* register the built-in local file fetcher */

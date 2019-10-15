@@ -18,10 +18,10 @@ import Debug from 'debug'
 const debug = Debug('plugins/openwhisk-editor-extensions/preload')
 debug('loading')
 
-import { Capabilities, UI } from '@kui-shell/core'
+import { Tabs } from '@kui-shell/core/api/ui'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
 import { lockIcon, edit, registerFetcher } from '@kui-shell/plugin-editor'
-import { addActionMode } from '@kui-shell/plugin-openwhisk'
 
 debug('done loading prereqs')
 
@@ -33,11 +33,10 @@ export default async () => {
   debug('initializing')
 
   if (!Capabilities.isHeadless()) {
-    const { Models } = await import('@kui-shell/core')
-
+    const { Models } = await import('@kui-shell/core/api/models')
     const { persisters } = await import('./lib/cmds/new')
 
-    const getEntity = (tab: UI.Tab) => {
+    const getEntity = (tab: Tabs.Tab) => {
       const entity = Models.Selection.current(tab)
       entity['persister'] = persisters.actions
       debug('getEntity', entity)
@@ -60,7 +59,10 @@ export default async () => {
       })
     })
 
-    addActionMode(unlock, 'unshift')
+    setTimeout(async () => {
+      const { addActionMode } = await import('@kui-shell/plugin-openwhisk')
+      addActionMode(unlock, 'unshift')
+    })
   }
 }
 

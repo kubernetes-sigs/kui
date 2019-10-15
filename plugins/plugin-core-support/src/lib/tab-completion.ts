@@ -15,43 +15,21 @@
  */
 
 import Debug from 'debug'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as minimist from 'yargs-parser'
+import { lstat, readdir, realpath } from 'fs'
+import { basename, dirname as pathDirname, join } from 'path'
 
-import { Capabilities, Commands, Errors, REPL, Tables, UI, Util } from '@kui-shell/core'
+import { applyEnumerator } from './tab-completion-registrar'
+
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Errors from '@kui-shell/core/api/errors'
+import * as REPLUtil from '@kui-shell/core/api/repl-util'
+import Tables from '@kui-shell/core/api/tables'
+import * as UI from '@kui-shell/core/api/ui-lite'
+import * as LowLevel from '@kui-shell/core/api/ui-low-level'
+import { injectCSS } from '@kui-shell/core/api/inject'
+import Util from '@kui-shell/core/api/util'
 
 const debug = Debug('plugins/core-support/tab completion')
-
-/**
- * A registrar for enumerators
- *
- */
-export interface TabCompletionSpec {
-  /**
-   * The prefix of the to-be-completed parameter that has been typed
-   * so far.
-   */
-  toBeCompleted: string
-
-  /**
-   * An index into CommandLine.argv, or -1 if it is the trailing
-   * argument that is to be completed.
-   */
-  toBeCompletedIdx: number
-}
-type Enumerator = (commandLine: Commands.CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
-
-const enumerators: Enumerator[] = []
-
-export function registerEnumerator(enumerator: Enumerator) {
-  enumerators.push(enumerator)
-}
-
-async function applyEnumerator(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
-  const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
-  return Util.flatten(lists.map(x => x)).filter(x => x)
-}
 
 /**
  * Install keyboard up-arrow and down-arrow handlers in the given REPL
@@ -90,7 +68,7 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
       moveTo('previousSibling', evt)
     } else if (char === UI.Keys.Codes.C && evt.ctrlKey) {
       // Ctrl+C, cancel
-      UI.LowLevel.doCancel()
+      LowLevel.doCancel()
     }
   }
 
@@ -181,7 +159,7 @@ const makeCompletionContainer = (
       return temporaryContainer.cleanup()
     }
 
-    const args = REPL.split(prompt.value)
+    const args = REPLUtil.split(prompt.value)
     const currentText = args[temporaryContainer.lastIdx]
     const prevMatches = temporaryContainer.currentMatches
     const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
@@ -247,14 +225,14 @@ const completeWith = (partial: string, match: string, doEscape = false, addSpace
  */
 const isDirectory = (filepath: string): Promise<boolean> =>
   new Promise((resolve, reject) => {
-    fs.lstat(filepath, (err, stats) => {
+    lstat(filepath, (err, stats) => {
       if (err) {
         reject(err)
       } else {
         if (stats.isSymbolicLink()) {
           debug('following symlink')
           // TODO: consider turning these into the better async calls?
-          return fs.realpath(filepath, (err, realpath) => {
+          return realpath(filepath, (err, realpath) => {
             if (err) {
               reject(err)
             } else {
@@ -316,7 +294,7 @@ const complete = (
 
   if (dirname) {
     // see if we need to add a trailing slash
-    const filepath = Util.expandHomeDir(path.join(dirname, match))
+    const filepath = Util.expandHomeDir(join(dirname, match))
     isDirectory(filepath)
       .then(isDir => {
         if (isDir) {
@@ -525,17 +503,17 @@ const suggestLocalFile = (
   // could also be that last is itself the name
   // of a directory
   const lastIsDir = last.charAt(last.length - 1) === '/'
-  const dirname = lastIsDir ? last : path.dirname(last)
+  const dirname = lastIsDir ? last : pathDirname(last)
 
   debug('suggest local file', dirname, last)
 
   if (dirname) {
     // then dirname exists! now scan the directory so we can find matches
-    fs.readdir(Util.expandHomeDir(dirname), (err, files) => {
+    readdir(Util.expandHomeDir(dirname), (err, files) => {
       if (err) {
         debug('fs.readdir error', err)
       } else {
-        const partial = path.basename(last)
+        const partial = basename(last)
         const matches: string[] = files.filter(_f => {
           const f = shellescape(_f)
           return (lastIsDir || f.indexOf(partial) === 0) && !f.endsWith('~') && f !== '.' && f !== '..'
@@ -580,7 +558,7 @@ const suggestLocalFile = (
             )(match, idx)
 
             // see if the match is a directory, so that we add a trailing slash
-            const filepath = path.join(dirname, match)
+            const filepath = join(dirname, match)
             isDirectory(filepath)
               .then(isDir => {
                 if (isDir) {
@@ -718,9 +696,10 @@ const suggest = (
   } else if (param.entity) {
     // then the expected parameter is an existing entity; so we
     // can enumerate the entities of the specified type
-    return REPL.qexec(`${param.entity} list --limit 200`)
-      .then((response: Tables.Table) => response.body)
-      .then(filterAndPresentEntitySuggestions(path.basename(last), block, prompt, temporaryContainer, lastIdx))
+    const tab = UI.getTabFromTarget(block)
+    return tab.REPL.qexec<Tables.Table>(`${param.entity} list --limit 200`)
+      .then(response => response.body)
+      .then(filterAndPresentEntitySuggestions(basename(last), block, prompt, temporaryContainer, lastIdx))
   }
 }
 
@@ -732,13 +711,13 @@ export default () => {
   if (typeof document === 'undefined') return
 
   if (Capabilities.inBrowser()) {
-    UI.injectCSS({
+    injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
       key: 'tab-completion.css'
     })
   } else {
-    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    UI.injectCSS(path.join(root, 'web/css/tab-completion.css'))
+    const root = pathDirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    injectCSS(join(root, 'web/css/tab-completion.css'))
   }
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
@@ -782,7 +761,7 @@ export default () => {
       const prompt = UI.getCurrentPrompt()
 
       if (prompt) {
-        if (UI.LowLevel.isUsingCustomPrompt(prompt)) {
+        if (LowLevel.isUsingCustomPrompt(prompt)) {
           // there is a custom prompt, we want to swallow the tab, to
           // maintain focus on the prompt
           evt.preventDefault()
@@ -838,7 +817,7 @@ export default () => {
 
               debug('positionals', positionals)
               if (positionals.length > 0) {
-                const args = REPL.split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
+                const args = REPLUtil.split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
                 const commandIdx = args.indexOf(usage.command) // the terminal command of the prompt
                 const nActuals = args.length - commandIdx - 1
                 const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
@@ -866,7 +845,7 @@ export default () => {
                 }
               }
             } else if (!Capabilities.inBrowser()) {
-              const { A: args, endIndices } = REPL._split(prompt.value, true, true) as REPL.Split
+              const { A: args, endIndices } = REPLUtil._split(prompt.value, true, true) as REPLUtil.Split
               const lastIdx = prompt.selectionStart
               debug('falling back on local file completion', args, lastIdx)
 
@@ -882,8 +861,11 @@ export default () => {
           }
 
           const lastIdx = prompt.selectionStart
-          const { A: argv, endIndices } = REPL._split(prompt.value, true, true) as REPL.Split
+          const { A: argv, endIndices } = REPLUtil._split(prompt.value, true, true) as REPLUtil.Split
+
+          const minimist = await import('yargs-parser')
           const options = minimist(argv)
+
           const toBeCompletedIdx = endIndices.findIndex(idx => idx >= lastIdx) // e.g. git branch f<tab>
           const completingTrailingEmpty = lastIdx > endIndices[endIndices.length - 1] // e.g. git branch <tab>
           if (toBeCompletedIdx >= 0 || completingTrailingEmpty) {
@@ -955,7 +937,8 @@ export default () => {
 
           try {
             debug('fetching usage', value)
-            const usage: Promise<Errors.UsageError> = REPL.qexec(`${value} --help`, undefined, undefined, {
+            const tab = UI.getTabFromTarget(block)
+            const usage: Promise<Errors.UsageError> = tab.REPL.qexec(`${value} --help`, undefined, undefined, {
               failWithUsage: true
             })
             if (usage.then) {

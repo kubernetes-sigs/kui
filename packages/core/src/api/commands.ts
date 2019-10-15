@@ -27,7 +27,7 @@ import * as _Commands from '../models/command'
 import * as Plugins from '../models/plugin'
 import * as Entity from '../models/entity'
 import * as Sidecar from '../webapp/views/sidecar'
-import { optionsToString } from '@kui-shell/core/core/utility'
+import { optionsToString } from '../core/utility'
 import * as Context from '../commands/context'
 
 export namespace Commands {
@@ -62,3 +62,6 @@ export namespace Commands {
    */
   export const unparse = optionsToString
 }
+
+export { _ExecOptions as ExecOptions }
+export default Commands

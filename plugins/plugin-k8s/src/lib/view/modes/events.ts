@@ -16,7 +16,10 @@
 
 import Debug from 'debug'
 
-import { i18n, REPL, Tables, UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { i18n } from '@kui-shell/core/api/i18n'
+import { Table, isTable } from '@kui-shell/core/api/table-models'
 
 import { Resource, KubeResource, isKubeResource } from '../../model/resource'
 
@@ -28,7 +31,7 @@ const debug = Debug('k8s/view/modes/events')
  * Extract the events
  *
  */
-async function getEvents(resource: KubeResource): Promise<string | Tables.Table> {
+async function getEvents(tab: Tab, resource: KubeResource): Promise<string | Table> {
   try {
     const cmdGetPodEvents = `kubectl get events --field-selector involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace} -n ${resource.metadata.namespace}`
 
@@ -40,11 +43,11 @@ async function getEvents(resource: KubeResource): Promise<string | Tables.Table>
 
     debug('getEvents', cmd)
 
-    return REPL.qexec<Tables.Table>(cmd).then(result => {
+    return tab.REPL.qexec<Table>(cmd).then(result => {
       // When using custom-columns, if a pod doesn't have any events,
       // we can't get the 'No resources found.' error from kubectl,
       // so we handle this error by checking whether the table has content
-      if (Tables.isTable(result) && !result.body[0]) {
+      if (isTable(result) && !result.body[0]) {
         return strings('No resources found.')
       }
 
@@ -69,9 +72,9 @@ function hasEvents(resource: KubeResource): boolean {
  * the given resource.
  *
  */
-export const eventsMode: UI.ModeRegistration<KubeResource> = {
+export const eventsMode: ModeRegistration<KubeResource> = {
   when: hasEvents,
-  mode: (command: string, resource: Resource): UI.Mode => {
+  mode: (command: string, resource: Resource): Mode => {
     debug('events', resource)
     try {
       return {
@@ -95,11 +98,11 @@ interface Parameters {
   resource: Resource
 }
 
-export const renderAndViewEvents = async (tab: UI.Tab, parameters: Parameters) => {
+export const renderAndViewEvents = async (tab: Tab, parameters: Parameters) => {
   const { command, resource } = parameters
   debug('renderAndViewEvents', command, resource)
 
-  const events = await getEvents(resource.resource)
+  const events = await getEvents(tab, resource.resource)
 
   if (typeof events === 'string') {
     const pre = document.createElement('pre')

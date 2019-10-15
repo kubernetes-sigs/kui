@@ -16,7 +16,11 @@
 
 import Debug from 'debug'
 
-import { Errors, i18n, REPL, Tables, UI } from '@kui-shell/core'
+import Errors from '@kui-shell/core/api/errors'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Tables from '@kui-shell/core/api/tables'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
 
 import { FinalState } from '../../model/states'
 import Resource from '../../model/resource'
@@ -49,7 +53,7 @@ export const statusButton = (command: string, resource: Resource, finalState: Fi
  *
  */
 export const renderStatus = async (
-  tab: UI.Tab,
+  tab: Tab,
   command: string,
   resource: Resource,
   finalState: FinalState
@@ -70,13 +74,13 @@ export const renderStatus = async (
   // kubectl status => k8s status
   const commandForRepl = command === 'kubectl' ? 'k8s' : command
 
-  const fetchModels = `${commandForRepl} status ${REPL.encodeComponent(
+  const fetchModels = `${commandForRepl} status ${encodeComponent(
     resource.filepathForDrilldown || resource.kind || resource.resource.kind
-  )} ${REPL.encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
+  )} ${encodeComponent(resource.name)} ${final} -n "${resource.resource.metadata.namespace}"`
   debug('issuing command', fetchModels)
 
   try {
-    const model: Tables.Table | Tables.MultiTable = await REPL.qexec(fetchModels)
+    const model: Tables.Table | Tables.MultiTable = await tab.REPL.qexec(fetchModels)
     debug('renderStatus.models', model)
 
     return model
@@ -99,7 +103,7 @@ interface Parameters {
   resource: Resource
   finalState: FinalState
 }
-export const renderAndViewStatus = (tab: UI.Tab, parameters: Parameters) => {
+export const renderAndViewStatus = (tab: Tab, parameters: Parameters) => {
   const { command, resource, finalState } = parameters
   return renderStatus(tab, command, resource, finalState)
 }

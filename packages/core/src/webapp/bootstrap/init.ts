@@ -116,24 +116,22 @@ export const init = async () => {
 
         if (prefs && prefs.partialExec) {
           // document.body.classList.add('repl-lite')
-          const cli = await import('../cli')
-          cli.partial(command)
+          const { partial } = await import('../prompt')
+          partial(command)
         } else {
-          const repl = await import('../../core/repl')
+          const { pexec } = await import('../../repl/exec')
           const noEcho = prefs && prefs.noEcho // don't echo the command, just do it
-          repl
-            .pexec(
-              command,
-              Object.assign(prefs || {}, {
-                causedByHeadless: true,
-                echo: !noEcho
-              })
-            )
-            .then(() => {
-              /* if (!noEcho && prefs && prefs.clearREPLOnLoad) {
+          pexec(
+            command,
+            Object.assign(prefs || {}, {
+              causedByHeadless: true,
+              echo: !noEcho
+            })
+          ).then(() => {
+            /* if (!noEcho && prefs && prefs.clearREPLOnLoad) {
                  setTimeout(() => repl.pexec('clear'), 1000)
                  } */
-            })
+          })
         }
       }
     })

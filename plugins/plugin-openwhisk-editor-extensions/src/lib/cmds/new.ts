@@ -15,7 +15,12 @@
  */
 
 import Debug from 'debug'
-import { Commands, REPL } from '@kui-shell/core'
+
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
+import Commands from '@kui-shell/core/api/commands'
+
+import { Action } from '@kui-shell/plugin-openwhisk'
 
 import {
   EditorEntity as Entity,
@@ -142,21 +147,22 @@ const failIfNot404 = err => {
  * Enter read-only mode
  *
  */
-export const gotoReadonlyView = ({ getEntity }) => async () => {
+export const gotoReadonlyView = ({ getEntity }) => async (tab: Tab) => {
   const { name, namespace } = await getEntity()
   const fqn = `/${namespace}/${name}`
   debug('readonly', fqn)
-  return REPL.pexec(`wsk action get ${REPL.encodeComponent(fqn)}`)
+  return tab.REPL.pexec<Action>(`wsk action get ${encodeComponent(fqn)}`)
 }
 
 export const persisters = {
   // persisters for regular actions
   actions: {
     getCode: entity => entity,
-    revert: (entity: Entity, { editor }) => {
+    revert: async (entity: Entity, { editor }) => {
       debug('revert', entity)
       const namespacePart = entity.namespace ? `/${entity.namespace}/` : ''
 
+      const { REPL } = await import('@kui-shell/core/api/repl')
       return REPL.qexec(`wsk action get "${namespacePart}${entity.name}"`)
         .then(persisters.actions.getCode)
         .then(entity => {
@@ -165,7 +171,7 @@ export const persisters = {
           return entity
         })
     },
-    save: action => {
+    save: async action => {
       debug('save', action)
       const namespacePart = action.namespace ? `/${action.namespace}/` : ''
 
@@ -173,6 +179,7 @@ export const persisters = {
       // https://github.com/apache/incubator-openwhisk/issues/3237
       delete action.version
 
+      const { REPL } = await import('@kui-shell/core/api/repl')
       return REPL.qexec(`wsk action update "${namespacePart}${action.name}"`, undefined, undefined, {
         entity: { action }
       })
@@ -190,7 +197,7 @@ interface Options extends Commands.ParsedOptions {
  * compatible with the editor
  *
  */
-export const fetchAction = (check = checkForConformance, tryLocal = true) => (
+export const fetchAction = (check = checkForConformance, tryLocal = true) => async (
   name: string,
   parsedOptions?: Options,
   execOptions?: Commands.ExecOptions
@@ -212,6 +219,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
       })
     }
   }
+  const { REPL } = await import('@kui-shell/core/api/repl')
   return REPL.qexec(`wsk action get "${name}"`)
     .then(check)
     .then(entity =>
@@ -252,7 +260,7 @@ export const betterNotExist = (name: string, options): Promise<boolean> => {
  *
  */
 export const prepareEditorWithAction = ([action, updateFn]) => {
-  debug('prepareEditorWithAction')
+  debug('prepareEditorWithAction', action, updateFn)
   return updateFn(action)
 }
 

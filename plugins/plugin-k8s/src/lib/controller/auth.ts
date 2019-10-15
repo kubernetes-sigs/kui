@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
 
 import { setAuth } from '../model/auth'
 

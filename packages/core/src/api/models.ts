@@ -24,7 +24,7 @@
 
 import * as _Entity from '../models/entity'
 import _History from '../models/history'
-import { clearSelection, currentSelection } from '../webapp/views/sidecar'
+import { clearSelection, currentSelection } from '../webapp/views/sidecar-visibility'
 import _Store from '../models/store'
 import _SymbolTable from '../core/symbol-table'
 import TabState from '../models/tab-state'
@@ -48,3 +48,5 @@ export namespace Models {
     State: TabState
   }
 }
+
+export default Models

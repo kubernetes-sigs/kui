@@ -40,6 +40,8 @@ export const keys = {
   HOME: 36
 }
 
+export { keys as Codes }
+
 /** does the given keycode correspond to a cursor movement? */
 export const isCursorMovement = (evt: KeyboardEvent): boolean => {
   const code = evt.keyCode

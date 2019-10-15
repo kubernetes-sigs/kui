@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
-
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { Mode } from '@kui-shell/core/api/registrars'
 import { KubeResource } from '@kui-shell/plugin-k8s'
 
-import flowView from '../../view/flow'
 import { getPipelineFromRef, getTasks } from '../fetch'
 import { isPipelineRun, isPipeline } from '../resource'
 
@@ -32,14 +31,15 @@ export interface ResponseObject {
  * The sidecar mode for the tekton flow visualization
  *
  */
-const flowMode: UI.Mode = {
+const flowMode: Mode = {
   mode: 'flow',
-  direct: async (tab: UI.Tab, _: ResponseObject) => {
+  direct: async (tab: Tab, _: ResponseObject) => {
     if (_.isFromFlowCommand) {
       // then _ is already the response we need
       return _
     } else {
       const resource = _.resource
+      const flowView = (await import('../../view/flow')).default
       if (isPipelineRun(resource)) {
         const [pipeline, tasks] = await Promise.all([getPipelineFromRef(tab, resource), getTasks(tab)])
         return flowView(tab, [pipeline as KubeResource].concat(tasks), resource)

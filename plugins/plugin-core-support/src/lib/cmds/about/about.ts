@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Commands, i18n, i18nFromMap, Settings, REPL, UI } from '@kui-shell/core'
+import { Commands, i18n, i18nFromMap, Settings, UI } from '@kui-shell/core'
 
 import usage from './usage'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
@@ -346,9 +346,4 @@ export default (commandTree: Commands.Registrar) => {
     needsUI: true,
     inBrowserOk: true
   })
-}
-
-export const preload = () => {
-  // install click handlers
-  ;(document.querySelector('#help-button') as HTMLElement).onclick = () => REPL.pexec('about')
 }

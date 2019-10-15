@@ -18,17 +18,43 @@ import Debug from 'debug'
 const debug = Debug('webapp/views/sidecar')
 debug('loading')
 
-import { v4 as uuid } from 'uuid'
+import * as uuid from 'uuid/v4'
 import * as prettyPrintDuration from 'pretty-ms'
 
-import { Tab, isPopup, scrollIntoView, oops, getTabFromTarget } from '../cli'
+import { Sidecar, getSidecar, CustomSpec, CustomContent } from './sidecar-core'
+export { Sidecar, getSidecar, CustomSpec, CustomContent }
+
+import presentAs from './sidecar-present'
+
+import { isCustomSpec } from './custom-content'
+export { isCustomSpec }
+
+import { BadgeSpec, Badge, BadgeOptions, getBadgesDomContainer, addBadge, clearBadges } from './badge'
+export { BadgeSpec, Badge, BadgeOptions }
+
+import { isPopup } from '../popup-core'
+import { Tab, getTabFromTarget } from '../tab'
+
+import {
+  isVisible,
+  toggle,
+  show,
+  hide,
+  clearSelection,
+  currentSelection,
+  setVisibleClass,
+  setMaximization,
+  toggleMaximization,
+  remove,
+  enableTabIndex
+} from './sidecar-visibility'
+export { isVisible, toggle, show, hide, clearSelection, currentSelection, setMaximization, toggleMaximization, remove }
+
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
 import { prettyPrintTime } from '../util/time'
-import { css as bottomStripeCSS, addModeButtons } from '../bottom-stripe'
-import { keys } from '../keys'
+import { addModeButtons } from '../bottom-stripe'
 import { ShowOptions, DefaultShowOptions } from './show-options'
-import sidecarSelector from './sidecar-selector'
 import Formattable from './formattable'
 import { ToolbarText, ToolbarTextImpl, isToolbarText, isRefreshableToolbarText } from './toolbar-text'
 import Presentation from './presentation'
@@ -37,8 +63,7 @@ import {
   isMetadataBearing,
   MetadataBearingByReference,
   isMetadataBearingByReference,
-  EntitySpec,
-  Entity
+  EntitySpec
 } from '../../models/entity'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
@@ -59,69 +84,6 @@ export const beautify = (kind: string, code: string) => {
   return code
 }
 
-/**
- * Return the sidecar model
- *
- */
-interface Sidecar extends HTMLElement {
-  entity: EntitySpec | CustomSpec
-  uuid?: string
-}
-export const getSidecar = (tab: Tab): Sidecar => {
-  return tab.querySelector('sidecar') as Sidecar
-}
-
-export const currentSelection = (tab: Tab): EntitySpec | CustomSpec => {
-  const sidecar = getSidecar(tab)
-  return sidecar && sidecar.entity
-}
-
-const enableTabIndex = (sidecar: Sidecar, tabbable = true) => {
-  const notabElements = document.querySelectorAll('.kui--notab-when-sidecar-hidden')
-
-  notabElements.forEach(element => {
-    if (tabbable) {
-      element.removeAttribute('tabindex')
-    } else {
-      element.setAttribute('tabindex', '-1')
-    }
-  })
-}
-
-export const hide = (tab: Tab, clearSelectionToo = false) => {
-  debug('hide')
-
-  const sidecar = getSidecar(tab)
-  sidecar.classList.remove('visible')
-  enableTabIndex(sidecar, false)
-
-  if (!clearSelectionToo) {
-    // only minimize if we weren't asked to clear the selection
-    sidecar.classList.add('minimized')
-    tab.classList.add('sidecar-is-minimized')
-  } else {
-    document.body.classList.remove('sidecar-visible')
-  }
-
-  const replView = tab.querySelector('.repl')
-  replView.classList.remove('sidecar-visible')
-
-  // we just hid the sidecar. make sure the current prompt is active for text input
-  // cli.getCurrentPrompt().focus()
-
-  // were we asked also to clear the selection?
-  if (clearSelectionToo && sidecar.entity) {
-    delete sidecar.entity
-  }
-
-  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 0)
-  return true
-}
-
-export const clearSelection = (tab: Tab) => {
-  // true means also clear selection model
-  return hide(tab, true)
-}
 export const maybeHideEntity = (tab: Tab, entity: EntitySpec): boolean => {
   const sidecar = getSidecar(tab)
 
@@ -147,126 +109,8 @@ export const getActiveView = (tab: Tab) => {
   return container
 }
 
-/**
- * Sidecar badges
- *
- */
-
-/**
- * Return the DOM elements housing the sidecar badges
- *
- */
-function getBadgesDomContainer(sidecar: Sidecar) {
-  const badgesDomContainer = sidecar.querySelector('.header-right-bits .custom-header-content')
-  let badgesDom = badgesDomContainer.querySelector('.badges') as HTMLElement
-  if (!badgesDom) {
-    badgesDom = document.createElement('span')
-    badgesDom.classList.add('badges')
-    badgesDomContainer.appendChild(badgesDom)
-  } else {
-    removeAllDomChildren(badgesDom)
-  }
-
-  return { badgesDomContainer, badgesDom }
-}
-
-/**
- * This is the most complete form of a badge specification, allowing
- * the caller to provide a title, an onclick handler, and an optional
- * fontawesome icon representation.
- *
- */
-export interface BadgeSpec {
-  title: string
-  fontawesome?: string
-  image?: HTMLImageElement
-  css?: string
-  onclick?: (evt: MouseEvent) => boolean
-}
-
-export type Badge = string | BadgeSpec | Element
-
-export interface BadgeOptions {
-  css?: string
-  onclick?: () => void
-  badgesDom: Element
-}
-class DefaultBadgeOptions implements BadgeOptions {
-  public readonly badgesDom: HTMLElement
-
-  public constructor(tab: Tab) {
-    const { badgesDom } = getBadgesDomContainer(getSidecar(tab))
-    this.badgesDom = badgesDom
-  }
-}
-
-/**
- * Show custom content in the sidecar
- *
- */
-export type CustomContent =
-  | string
-  | Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
-  | HTMLElement
-  | Promise<HTMLElement>
-export interface CustomSpec<Content = void> extends EntitySpec, MetadataBearing<CustomContent> {
-  /** noZoom: set to true for custom content to control the zoom event handler */
-  noZoom?: boolean
-
-  isREPL?: boolean
-  presentation?: Presentation
-  renderAs?: string
-  subtext?: Formattable
-  toolbarText?: ToolbarText
-  content: CustomContent
-  badges?: Badge[]
-  resource?: MetadataBearing<Content>
-  createdOnString?: string
-}
-
-export function isCustomSpec(entity: Entity): entity is CustomSpec {
-  const custom = entity as CustomSpec
-  return (
-    custom !== undefined &&
-    (custom.type === 'custom' ||
-      custom.renderAs === 'custom' ||
-      (custom.kind !== undefined && custom.content !== undefined && isMetadataBearing(custom)))
-  )
-}
 function isHTML(content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
-}
-
-type Op = (elt: Element, cls: string) => void
-const remove: Op = (elt: Element, cls: string) => elt.classList.remove(cls)
-const add: Op = (elt: Element, cls: string) => elt.classList.add(cls)
-const toggleClass: Op = (elt: Element, cls: string) => elt.classList.toggle(cls)
-
-/**
- * Ensure that we are in sidecar maximization mode
- *
- */
-export const setMaximization = (tab: Tab, op: Op = add, cause: MaximizationCause = 'default') => {
-  if (document.body.classList.contains('subwindow')) {
-    op(document.body, 'sidecar-full-screen')
-    op(document.body, 'sidecar-visible')
-  }
-
-  const before = tab.classList.contains('sidecar-full-screen')
-  op(tab, 'sidecar-full-screen')
-  const after = tab.classList.contains('sidecar-full-screen')
-
-  if (before !== after) {
-    setTimeout(() => eventBus.emit('/sidecar/maximize'), 0)
-  }
-
-  if (after) {
-    // if we entered full screen mode, remember if the user caused it,
-    // so that we don't undo it during our normal flow
-    tab.setAttribute('maximization-cause', cause)
-  } else {
-    tab.removeAttribute('maximization-cause')
-  }
 }
 
 /**
@@ -286,77 +130,6 @@ export const linkify = (dom: Element): void => {
       attr.appendChild(link)
     }
   }
-}
-
-export const presentAs = (tab: Tab, presentation?: Presentation) => {
-  if (presentation || presentation === Presentation.Default) {
-    document.body.setAttribute('data-presentation', Presentation[presentation].toString())
-    if (!isPopup() && presentation === Presentation.Default && tab.getAttribute('maximization-cause') !== 'user') {
-      setMaximization(tab, remove)
-    }
-  } else {
-    document.body.removeAttribute('data-presentation')
-  }
-}
-
-export const addBadge = (
-  tab: Tab,
-  badgeText: Badge,
-  { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)
-) => {
-  debug('addBadge', badgeText, badgesDom)
-
-  const badge = document.createElement('badge') as HTMLElement
-  badgesDom.appendChild(badge)
-
-  if (typeof badgeText === 'string') {
-    badge.innerText = badgeText as string
-  } else if (badgeText instanceof Element) {
-    badge.appendChild(badgeText as Element)
-    badge.classList.add('badge-as-image')
-  } else {
-    // otherwise, badge is an IBadgeSpec
-    if (badgeText.image) {
-      // badge is an HTMLImageElement
-      badgeText.image.alt = badgeText.title
-      badge.appendChild(badgeText.image)
-      badge.classList.add('badge-as-image')
-    } else if (badgeText.fontawesome) {
-      // badge is a named fontawesome icon
-      const awesome = document.createElement('i')
-      awesome.className = badgeText.fontawesome
-      badge.classList.add('badge-as-fontawesome')
-      badge.appendChild(awesome)
-    } else {
-      badge.innerText = badgeText.title
-
-      if (badgeText.css) {
-        badge.classList.add(badgeText.css)
-      }
-    }
-
-    if (badgeText.onclick) {
-      badge.classList.add('clickable')
-      badge.onclick = badgeText.onclick
-    }
-  }
-
-  if (css) {
-    badge.classList.add(css)
-  }
-
-  if (onclick) {
-    badge.classList.add('clickable')
-    badge.onclick = onclick
-  }
-
-  return badge
-}
-
-export const clearBadges = (tab: Tab) => {
-  const sidecar = getSidecar(tab)
-  const header = sidecar.querySelector('.sidecar-header')
-  removeAllDomChildren(header.querySelector('.badges'))
 }
 
 /**
@@ -554,10 +327,6 @@ export const addNameToSidecarHeader = async (
   }
 
   return nameDom
-}
-
-const setVisibleClass = (sidecar: Sidecar) => {
-  sidecar.classList.add('visible')
 }
 
 export const isFullscreen = (tab: Tab) => {
@@ -824,36 +593,6 @@ export const getEnclosingTab = (sidecar: Sidecar): Tab => {
   return getTabFromTarget(sidecar)
 }
 
-const setVisible = (sidecar: Sidecar) => {
-  const tab = getEnclosingTab(sidecar)
-
-  setVisibleClass(sidecar)
-  enableTabIndex(sidecar)
-  tab.classList.remove('sidecar-is-minimized')
-  sidecar.classList.remove('minimized')
-  document.body.classList.add('sidecar-visible')
-
-  const replView = tab.querySelector('.repl')
-  replView.classList.add('sidecar-visible')
-
-  scrollIntoView()
-
-  setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 0)
-}
-
-export const show = (tab: Tab, block?: HTMLElement, nextBlock?: HTMLElement) => {
-  debug('show')
-
-  const sidecar = getSidecar(tab)
-  if (currentSelection(tab) || sidecar.className.indexOf('custom-content') >= 0) {
-    setVisible(sidecar)
-    enableTabIndex(sidecar)
-    return true
-  } else if (block && nextBlock) {
-    oops(undefined, block, nextBlock)(new Error('You have no entity to show'))
-  }
-}
-
 /**
  * View State of the sidecar of a tab
  *
@@ -879,37 +618,6 @@ export const getSidecarState = (tab: Tab): SidecarState => {
     return SidecarState.Minimized
   } else {
     return SidecarState.NotShown
-  }
-}
-
-export const isVisible = (tab: Tab): boolean => {
-  const sidecar = getSidecar(tab)
-  return !!(sidecar.classList.contains('visible') && sidecar)
-}
-
-/** was maximization changed by user request, or by normal default processes? */
-type MaximizationCause = 'default' | 'user'
-
-/**
- * Toggle sidecar maximization
- *
- */
-export const toggleMaximization = (tab: Tab, cause?: MaximizationCause) => {
-  setMaximization(tab, toggleClass, cause)
-}
-
-/**
- * Toggle sidecar visibility
- *
- */
-export const toggle = (tab: Tab) => {
-  if (!isVisible(tab)) {
-    return show(tab)
-  } else {
-    const presentationString = document.body.getAttribute('data-presentation') as keyof typeof Presentation
-    const presentation: Presentation = presentationString && Presentation[presentationString]
-    // Key.Escape for Presentation.SidecarThin is interpreted as Close
-    return presentation === Presentation.SidecarThin ? clearSelection(tab) : hide(tab)
   }
 }
 
@@ -1030,53 +738,6 @@ export const showEntity = (
 
     return true
   }
-}
-
-/**
- * One-time initialization of sidecar view
- *
- */
-export const init = async () => {
-  debug('init')
-
-  // command-left go back
-  document.addEventListener('keydown', async (event: KeyboardEvent) => {
-    if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {
-      const tab = getTabFromTarget(event.srcElement)
-      const back = bottomStripeCSS.backButton(tab)
-      const clickEvent = document.createEvent('Events')
-      clickEvent.initEvent('click', true, false)
-      back.dispatchEvent(clickEvent)
-    }
-  })
-
-  // escape key toggles sidecar visibility
-  document.addEventListener('keyup', (evt: KeyboardEvent) => {
-    if (
-      document.activeElement &&
-      !(
-        document.activeElement === document.body ||
-        document.activeElement.classList.contains('inputarea') || // monaco-editor
-        document.activeElement.classList.contains('repl-input-element')
-      )
-    ) {
-      // not focused on repl
-      return
-    }
-
-    if (evt.keyCode === keys.ESCAPE) {
-      if (!isPopup()) {
-        const tab = getTabFromTarget(evt.srcElement)
-        const closeButton = sidecarSelector(tab, '.sidecar-bottom-stripe-close')
-        if (isVisible(tab)) {
-          closeButton.classList.add('hover')
-          setTimeout(() => closeButton.classList.remove('hover'), 500)
-        }
-        toggle(tab)
-        scrollIntoView()
-      }
-    }
-  })
 }
 
 /**

@@ -16,4 +16,7 @@
 
 // this file defines the external API
 
-export { registerEnumerator as registerTabCompletionEnumerator, TabCompletionSpec } from './lib/tab-completion'
+export {
+  registerEnumerator as registerTabCompletionEnumerator,
+  TabCompletionSpec
+} from './lib/tab-completion-registrar'

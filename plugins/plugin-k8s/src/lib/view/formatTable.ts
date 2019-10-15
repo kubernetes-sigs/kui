@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { REPL, Tables } from '@kui-shell/core'
+import { Tables } from '@kui-shell/core/api/tables'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length, maxColumns) => {
@@ -219,7 +220,7 @@ export const formatTable = (
   const drilldownFormat = drilldownCommand === 'kubectl' && drilldownVerb === 'get' ? '-o yaml' : ''
 
   const drilldownNamespace =
-    options.n || options.namespace ? `-n ${REPL.encodeComponent(options.n || options.namespace)}` : ''
+    options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
   const drilldownKind = (nameSplit: string[], row: Pair[]) => {
@@ -272,9 +273,7 @@ export const formatTable = (
       // if there isn't a global namespace specifier, maybe there is a row namespace specifier
       // we use the row specifier in preference to a global specifier -- is that right?
       const ns =
-        (namespaceColumnIdx >= 0 &&
-          command !== 'helm' &&
-          `-n ${REPL.encodeComponent(rows[namespaceColumnIdx].value)}`) ||
+        (namespaceColumnIdx >= 0 && command !== 'helm' && `-n ${encodeComponent(rows[namespaceColumnIdx].value)}`) ||
         drilldownNamespace ||
         ''
 
@@ -283,7 +282,7 @@ export const formatTable = (
         idx === 0
           ? false
           : drilldownVerb
-          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${REPL.encodeComponent(
+          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${encodeComponent(
               nameForDrilldown
             )} ${drilldownFormat} ${ns}`
           : false

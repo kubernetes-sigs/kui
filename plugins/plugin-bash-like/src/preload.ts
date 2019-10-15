@@ -18,9 +18,9 @@ import Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { Capabilities, Commands } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
-import prefetchShellState from './pty/prefetch'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 export const registerCapability: Capabilities.Registration = async () => {
@@ -40,6 +40,7 @@ export default async (commandTree: Commands.Registrar) => {
 
   if (!Capabilities.inBrowser()) {
     try {
+      const prefetchShellState = (await import('./pty/prefetch')).default
       await prefetchShellState()
       debug('done with state prefetch')
     } catch (err) {

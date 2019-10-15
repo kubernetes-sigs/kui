@@ -17,12 +17,25 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import Debug from 'debug'
-import { v4 as uuid } from 'uuid'
+import * as uuid from 'uuid/v4'
 
-import { Capabilities, Commands, eventBus, i18n, Models, REPL, Settings, UI } from '@kui-shell/core'
-import { isVisible as isSidecarVisible, toggle, toggleMaximization } from '@kui-shell/core/webapp/views/sidecar'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
+import eventBus from '@kui-shell/core/api/events'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Models from '@kui-shell/core/api/models'
+import Settings from '@kui-shell/core/api/settings'
+import * as UI from '@kui-shell/core/api/ui-lite'
+
+import {
+  isVisible as isSidecarVisible,
+  toggle,
+  toggleMaximization
+} from '@kui-shell/core/webapp/views/sidecar-visibility'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { listen, getCurrentTab, getTabId, setStatus } from '@kui-shell/core/webapp/cli'
+import { listen } from '@kui-shell/core/webapp/listen'
+import { setStatus } from '@kui-shell/core/webapp/status'
+import { getCurrentTab, getTabId } from '@kui-shell/core/webapp/tab'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/new-tab')
@@ -189,7 +202,7 @@ const closeTab = (tab = getCurrentTab()) => {
   if (nTabs <= 1) {
     if (Capabilities.inElectron()) {
       debug('closing window on close of last tab')
-      REPL.qexec('window close')
+      tab.REPL.qexec('window close')
     }
     return true
   }
@@ -253,9 +266,11 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   tabButton.setAttribute('data-tab-id', newTabId)
   tabButton.onclick = () => switchTab(newTabId)
 
-  REPL.getImpl(tab)
-
-  eventBus.emit('/tab/new', tab)
+  setTimeout(async () => {
+    const { REPL } = await import('@kui-shell/core/api/repl')
+    REPL.getImpl(tab)
+    eventBus.emit('/tab/new', tab)
+  })
 
   if (doListen) {
     listen(UI.getCurrentPrompt(tab))
@@ -322,7 +337,7 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   // screenshot button
   sidecarSelector(tab, '.sidecar-screenshot-button').onclick = () => {
     debug('sidecar screenshot')
-    REPL.pexec('screenshot sidecar')
+    tab.REPL.pexec('screenshot sidecar')
   }
 }
 
@@ -359,6 +374,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
     temps[idx].remove()
   }
 
+  const { REPL } = await import('@kui-shell/core/api/repl')
   const currentlyProcessingBlock: true | HTMLElement = await REPL.qexec(
     'clear --keep-current-active',
     undefined,

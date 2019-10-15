@@ -62,6 +62,7 @@ const preferencesFilepath = () => join(userDataDir(), 'prefs.json')
  *
  */
 const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
+  console.error('!!!!!!!!!')
   if (inBrowser()) {
     store().setItem('kui.userprefs', JSON.stringify(prefs))
   } else {
@@ -71,6 +72,19 @@ const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
   }
 
   return prefs
+}
+
+async function readFile(filepath: string): Promise<string> {
+  const { readFile } = await import('fs')
+  return new Promise((resolve, reject) => {
+    readFile(filepath, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data.toString())
+      }
+    })
+  })
 }
 
 /**
@@ -96,11 +110,9 @@ const preferences = async (): Promise<Preferences> => {
   }
 
   try {
-    const { readFile } = await import('fs-extra')
-
     const filepath = preferencesFilepath()
     debug('reading persisted preference model', filepath)
-    const raw = (await readFile(filepath)).toString()
+    const raw = await readFile(filepath)
     try {
       return JSON.parse(raw)
     } catch (err) {
