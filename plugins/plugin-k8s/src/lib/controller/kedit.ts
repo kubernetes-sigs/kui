@@ -223,9 +223,8 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments):
  *
  */
 const registration = (commandTree: Commands.Registrar) => {
-  commandTree.listen('/k8s/kedit', kedit, {
-    usage: usage.kedit,
-    noAuthOk: ['openwhisk']
+  commandTree.listen('/kedit', kedit, {
+    usage: usage.kedit
   })
 }
 

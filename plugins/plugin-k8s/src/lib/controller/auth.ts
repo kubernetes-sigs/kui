@@ -117,9 +117,8 @@ const add = async ({ block, nextBlock, tab }: Commands.Arguments) => {
  *
  */
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen('/k8s/auth/add', add, {
+  commandTree.listen('/auth/add', add, {
     usage: usage.add,
-    noAuthOk: ['openwhisk'],
     inBrowserOk: true
   })
 }
