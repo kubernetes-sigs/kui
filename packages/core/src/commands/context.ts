@@ -47,7 +47,7 @@ function parseCommandContext(str: string): string[] {
  *
  */
 let _defaultContext: string[] =
-  (theme && theme.defaultContext) || parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || []
+  parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || (theme && theme.defaultContext) || []
 
 /**
  * The command context model, defaulting to the _defaultContext, which
