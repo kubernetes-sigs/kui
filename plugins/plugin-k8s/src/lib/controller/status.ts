@@ -352,15 +352,13 @@ export const status = (command: string) => async (
  *
  */
 export default (commandTree: Commands.Registrar) => {
-  const cmd = commandTree.listen('/k8s/status', status('status'), {
+  commandTree.listen('/status', status('status'), {
     usage: usage('status'),
-    inBrowserOk: true,
-    noAuthOk: ['openwhisk']
+    inBrowserOk: true
   })
 
-  commandTree.synonym('/k8s/list', status('list'), cmd, {
+  /* commandTree.synonym('/k8s/list', status('list'), cmd, {
     usage: usage('list'),
-    inBrowserOk: true,
-    noAuthOk: ['openwhisk']
-  })
+    inBrowserOk: true
+  }) */
 }

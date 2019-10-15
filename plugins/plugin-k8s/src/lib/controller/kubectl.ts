@@ -739,25 +739,6 @@ async function kubectl(opts: Commands.Arguments) {
   }
 }
 
-/**
- * Delegate 'k8s <verb>' to 'kubectl verb'
- *
- */
-const dispatchViaDelegationTo = (delegate: Commands.CommandHandler) => (opts: Commands.Arguments) => {
-  if (opts.argv[0] === 'k8s') {
-    opts.argv[0] = 'kubectl'
-    opts.argvNoOptions[0] = 'kubectl'
-    opts.command = opts.command.replace(/^(\s*)(k8s)(\s*)/, '$1kubectl$2')
-  } else {
-    opts.argv.splice(0, 0, 'kubectl')
-    opts.argvNoOptions.splice(0, 0, 'kubectl')
-    opts.command = `kubectl ${opts.command}`
-  }
-
-  debug('delegating invoke', opts.argv[0], opts.command)
-  return delegate(opts)
-}
-
 // use boolean flags here to tell yarg parser
 // that arguments should be parsed as booleans
 // TODO: find a better solution here to avoid hard-coding
@@ -783,35 +764,31 @@ const flags = {
  *
  */
 export default async (commandTree: Commands.Registrar) => {
-  await commandTree.listen('/k8s/_kubectl', _kubectl, {
+  await commandTree.listen('/_kubectl', _kubectl, {
     usage: usage('kubectl', true),
     flags,
-    requiresLocal: true,
-    noAuthOk: ['openwhisk']
+    requiresLocal: true
   })
-  const kubectlCmd = await commandTree.listen('/k8s/kubectl', kubectl, {
+  const kubectlCmd = await commandTree.listen('/kubectl', kubectl, {
     usage: usage('kubectl'),
     flags,
-    inBrowserOk: true,
-    noAuthOk: ['openwhisk']
+    inBrowserOk: true
   })
-  await commandTree.synonym('/k8s/k', kubectl, kubectlCmd, {
+  await commandTree.synonym('/k', kubectl, kubectlCmd, {
     usage: usage('kubectl'),
     flags,
-    inBrowserOk: true,
-    noAuthOk: ['openwhisk']
+    inBrowserOk: true
   })
 
-  await commandTree.listen('/k8s/helm', helm, {
+  await commandTree.listen('/helm', helm, {
     usage: usage('helm'),
     flags,
-    requiresLocal: true,
-    noAuthOk: ['openwhisk']
+    requiresLocal: true
   })
 
   // for debugging: read in a previously captured raw kubectl output from disk, and then pass it to the visualizations
   await commandTree.listen(
-    '/k8s/kdebug',
+    '/kdebug',
     async ({ argvNoOptions, parsedOptions, execOptions }: Commands.Arguments<Options>) => {
       const file = argvNoOptions[argvNoOptions.length - 1]
       const { readFile } = await import('fs-extra')
@@ -823,29 +800,6 @@ export default async (commandTree: Commands.Registrar) => {
       const tableModel = table(out, '', command, verb, command === 'helm' ? '' : entityType, undefined, {}, execOptions)
       return tableModel
     },
-    { noAuthOk: true, inBrowserOk: true }
-  )
-
-  //
-  // register some of the common verbs so that the kubectl plugin works more gracefully:
-  // e.g. kubectl kui get pods
-  //
-  const shorthands = [
-    'create',
-    'get',
-    'delete',
-    //    'describe',
-    'explain',
-    'logs'
-  ]
-  await Promise.all(
-    shorthands.map(verb => {
-      return commandTree.listen(`/k8s/${verb}`, dispatchViaDelegationTo(kubectl), {
-        usage: usage('kubectl'),
-        flags,
-        requiresLocal: true,
-        noAuthOk: ['openwhisk']
-      })
-    })
+    { inBrowserOk: true }
   )
 }
