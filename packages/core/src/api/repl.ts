@@ -22,3 +22,4 @@
 import * as REPL from '../core/repl'
 
 export { REPL }
+export default REPL

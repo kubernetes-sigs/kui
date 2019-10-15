@@ -29,7 +29,8 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { Commands, Errors } from '@kui-shell/core'
+import Errors from '@kui-shell/core/api/errors'
+import Commands from '@kui-shell/core/api/commands'
 
 const debug = Debug('plugins/bash-like/pty/server')
 

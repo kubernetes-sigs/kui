@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Commands, i18n, Errors, Tables } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Errors from '@kui-shell/core/api/errors'
+import Tables from '@kui-shell/core/api/tables'
 
 const strings = i18n('plugin-k8s')
 

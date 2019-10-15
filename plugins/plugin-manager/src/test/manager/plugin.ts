@@ -60,7 +60,7 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
   it('should show available commands with "plugin commands @kui-shell/plugin-sample", then click on a command', () =>
     CLI.command('plugin commands @kui-shell/plugin-sample', this.app)
       .then(ReplExpect.okWithCustom({ expect: 'hello', passthrough: true }))
-      .then(async N => {
+      .then(async (N: number) => {
         await this.app.client.click(`${Selectors.OUTPUT_N(N)} .entity[data-name="hello"] .clickable`)
         await this.app.client.waitForExist(Selectors.OUTPUT_N(N + 1))
         await this.app.client.waitForText(Selectors.OUTPUT_N(N + 1))

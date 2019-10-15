@@ -21,8 +21,6 @@ debug('loading')
 import { exec } from 'child_process'
 import * as propertiesParser from 'properties-parser'
 
-import { getLoginShell } from './server'
-
 /**
  * Preprocess bash/zsh environment variables
  *
@@ -36,6 +34,7 @@ function prefetchEnv() {
     }
 
     debug('prefetchEnv')
+    const { getLoginShell } = await import('./server')
     const shell = await getLoginShell()
     debug('prefetchEnv got shell', shell)
 

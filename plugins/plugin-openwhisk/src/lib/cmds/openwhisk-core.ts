@@ -21,6 +21,7 @@ import { type as osType } from 'os'
 import { oopsMessage } from '@kui-shell/core/core/oops'
 import { Capabilities, Commands, Errors, eventBus, Models, Settings, REPL, UI, Util } from '@kui-shell/core'
 
+import agent from '../models/agent'
 import withHeader from '../models/withHeader'
 import { isCRUDable, crudableTypes } from '../models/crudable'
 import { synonymsTable, synonyms } from '../models/synonyms'
@@ -540,12 +541,6 @@ const standardViewModes = (defaultMode, fn?) => {
   }
 }
 
-export const agent = isLinux
-  ? new (require(process.env.LOCAL_OPENWHISK ? 'http' : 'https')).Agent({
-      keepAlive: true,
-      keepAliveMsecs: process.env.RUNNING_SHELL_TEST ? 20000 : 1000
-    })
-  : undefined
 interface WskOpts {
   action?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -556,7 +551,7 @@ export const owOpts = (options = {}): WskOpts => {
   if (isLinux) {
     // options.forever = true
     options['timeout'] = 5000
-    options['agent'] = agent
+    options['agent'] = agent()
   }
 
   if (Settings.theme.userAgent && !process.env.TEST_SPACE && !process.env.TRAVIS) {

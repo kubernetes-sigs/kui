@@ -16,9 +16,9 @@
 
 import Debug from 'debug'
 
-import { Capabilities } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
-import { isDisabled } from './lib/proxy-executor'
+import { isDisabled } from './lib/config'
 
 const debug = Debug('plugins/proxy-support/preload')
 

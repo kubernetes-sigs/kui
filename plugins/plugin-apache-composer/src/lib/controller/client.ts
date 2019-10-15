@@ -36,7 +36,7 @@ const options = {
 export const deploy = ({ composition, overwrite }) => {
   // deploys the JSON-encoded composition
   debug('deploying composition', composition)
-  const httpOptons = { agent }
+  const httpOptons = { agent: agent() }
   return Client(options)
     .compositions.deploy(composition, overwrite, undefined, undefined, undefined, httpOptons)
     .then(entity => {

@@ -19,6 +19,8 @@
  *
  */
 
+export { inBrowser, inElectron, isHeadless } from '../core/capabilities'
+
 import * as Capabilities from '../core/capabilities'
 export { Capabilities }
 export default Capabilities

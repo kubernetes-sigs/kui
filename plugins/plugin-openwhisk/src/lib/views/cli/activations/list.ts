@@ -19,6 +19,7 @@ import * as prettyPrintDuration from 'pretty-ms'
 
 import { Commands, REPL, Tables, UI } from '@kui-shell/core'
 
+import installHighlightJS from '../../hljs'
 import { Activation } from '../../../models/activation'
 
 declare let hljs
@@ -346,7 +347,10 @@ const _render = (args: Args) => {
         result.className = 'somewhat-smaller-text lighter-text log-field activation-result'
         if (activation.response) {
           code.innerText = JSON.stringify(activation.response.result || {}).substring(0, 40)
-          setTimeout(() => hljs.highlightBlock(code), 0)
+          setTimeout(async () => {
+            await installHighlightJS()
+            hljs.highlightBlock(code)
+          }, 0)
         }
       }
 

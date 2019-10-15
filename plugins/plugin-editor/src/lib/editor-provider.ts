@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { Commands, UI } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import * as UI from '@kui-shell/core/api/ui-lite'
+import * as Editor from '@kui-shell/core/api/editor'
 
 import { EditorEntity } from './response'
 
-class MonacoEditorProvider implements UI.Editor.Provider {
+class MonacoEditorProvider implements Editor.Provider {
   public async tryOpen(tab: UI.Tab, custom: Commands.CustomResponse, options: Commands.ExecOptions) {
     const [{ Models }, { edit }] = await Promise.all([import('@kui-shell/core'), import('./cmds/edit')])
 
@@ -51,5 +53,5 @@ class MonacoEditorProvider implements UI.Editor.Provider {
 }
 
 export default function register() {
-  UI.Editor.registerProvider(new MonacoEditorProvider())
+  Editor.registerProvider(new MonacoEditorProvider())
 }

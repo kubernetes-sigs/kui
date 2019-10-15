@@ -23,7 +23,8 @@ import contexts from './lib/controller/contexts'
 import kubectl from './lib/controller/kubectl'
 import status from './lib/controller/status'
 
-import { Capabilities, Commands } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
 
 export default async (commandTree: Commands.Registrar) => {
   return Promise.all([

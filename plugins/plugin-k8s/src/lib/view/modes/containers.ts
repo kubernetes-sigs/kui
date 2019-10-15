@@ -16,7 +16,11 @@
 
 import Debug from 'debug'
 
-import { i18n, REPL, Tables, UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { Row } from '@kui-shell/core/api/table-models'
+import { i18n } from '@kui-shell/core/api/i18n'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
 
 import { Resource, KubeResource } from '../../model/resource'
 import { TrafficLight } from '../../model/states'
@@ -29,7 +33,7 @@ const debug = Debug('k8s/view/modes/containers')
  * for the given resource
  *
  */
-export const containersButton = (command: string, resource: Resource, overrides?): UI.Mode =>
+export const containersButton = (command: string, resource: Resource, overrides?): Mode =>
   Object.assign(
     {},
     {
@@ -49,11 +53,11 @@ export const containersButton = (command: string, resource: Resource, overrides?
  * for by the given resource.
  *
  */
-export const containersMode: UI.ModeRegistration<KubeResource> = {
+export const containersMode: ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => {
     return resource.spec && resource.spec.containers
   },
-  mode: (command: string, resource: Resource): UI.Mode => {
+  mode: (command: string, resource: Resource): Mode => {
     try {
       return containersButton(command, resource)
     } catch (err) {
@@ -67,10 +71,10 @@ export const containersMode: UI.ModeRegistration<KubeResource> = {
  * Return a drilldown function that shows container logs
  *
  */
-const showLogs = (tab: UI.Tab, { pod, container }) => {
-  const podName = REPL.encodeComponent(pod.metadata.name)
-  const containerName = REPL.encodeComponent(container.name)
-  const ns = REPL.encodeComponent(pod.metadata.namespace)
+const showLogs = (tab: Tab, { pod, container }) => {
+  const podName = encodeComponent(pod.metadata.name)
+  const containerName = encodeComponent(container.name)
+  const ns = encodeComponent(pod.metadata.namespace)
 
   return `kubectl logs ${podName} ${containerName} -n ${ns}`
 }
@@ -79,7 +83,7 @@ const showLogs = (tab: UI.Tab, { pod, container }) => {
  * Render the table header model
  *
  */
-const headerModel = (resource: Resource): Tables.Row => {
+const headerModel = (resource: Resource): Row => {
   const statuses = resource.resource.status && resource.resource.status.containerStatuses
 
   const specAttrs = [{ value: 'PORTS', outerCSS: 'header-cell pretty-narrow' }]
@@ -105,11 +109,11 @@ const headerModel = (resource: Resource): Tables.Row => {
  * Render the table body model
  *
  */
-const bodyModel = (tab: UI.Tab, resource: Resource): Tables.Row[] => {
+const bodyModel = (tab: Tab, resource: Resource): Row[] => {
   const pod = resource.resource
   const statuses = pod.status && pod.status.containerStatuses
 
-  const bodyModel: Tables.Row[] = pod.spec.containers
+  const bodyModel: Row[] = pod.spec.containers
     .map(container => {
       const status = statuses && statuses.find(_ => _.name === container.name)
 
@@ -184,16 +188,16 @@ const bodyModel = (tab: UI.Tab, resource: Resource): Tables.Row[] => {
  * Render the tabular containers view
  *
  */
-export const renderContainers = async (tab: UI.Tab, command: string, resource: Resource) => {
+export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
   debug('renderContainers', command, resource)
 
-  const fetchPod = `kubectl get pod ${REPL.encodeComponent(resource.resource.metadata.name)} -n "${
+  const fetchPod = `kubectl get pod ${encodeComponent(resource.resource.metadata.name)} -n "${
     resource.resource.metadata.namespace
   }" -o json`
   debug('issuing command', fetchPod)
 
   try {
-    const podResource = await REPL.qexec<Resource>(fetchPod)
+    const podResource = await tab.REPL.qexec<Resource>(fetchPod)
     debug('renderContainers.response', podResource)
 
     return {
@@ -219,6 +223,6 @@ interface Parameters {
   command: string
   resource: Resource
 }
-export const renderAndViewContainers = (tab: UI.Tab, parameters: Parameters) => {
+export const renderAndViewContainers = (tab: Tab, parameters: Parameters) => {
   return renderContainers(tab, parameters.command, parameters.resource)
 }

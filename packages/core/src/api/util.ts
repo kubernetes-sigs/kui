@@ -36,3 +36,5 @@ export namespace Util {
 
   export import flatten = Utility.flatten
 }
+
+export default Util

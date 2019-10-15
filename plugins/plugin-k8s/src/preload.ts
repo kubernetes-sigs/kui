@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/k8s/preload')
 debug('loading')
 
-import { Capabilities } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
 /**
  * This is the capabilities registraion
@@ -38,9 +38,7 @@ export const registerCapability: Capabilities.Registration = async () => {
  */
 export default async () => {
   if (!Capabilities.isHeadless()) {
-    const {
-      UI: { registerMode }
-    } = await import('@kui-shell/core')
+    const { registerMode } = await import('@kui-shell/core/api/registrars')
     Promise.all([
       import('./lib/view/modes/pods')
         .then(_ => _.podMode)

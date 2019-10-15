@@ -19,13 +19,21 @@
 import Debug from 'debug'
 import { basename, dirname, join } from 'path'
 
-import { Capabilities, Commands, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Tables from '@kui-shell/core/api/tables'
+import Util from '@kui-shell/core/api/util'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { injectCSS } from '@kui-shell/core/api/inject'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
+
+// import { Capabilities, Commands, i18n, REPL, Tables, UI, Util } from '@kui-shell/core'
 
 import { FinalState } from '../model/states'
 import { KubeResource, Resource } from '../model/resource'
 import { statusButton } from '../view/modes/status'
 import { formatEntity } from '../view/formatEntity'
-import generateForm from '../view/form'
 
 const strings = i18n('plugin-k8s')
 const debug = Debug('k8s/controller/kedit')
@@ -51,17 +59,17 @@ const usage = {
  * Show a customized view of a given yaml in the editor
  *
  */
-const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) => {
+const showResource = async (yaml: KubeResource, filepath: string, tab: Tab) => {
   debug('showing one resource', yaml)
 
   if (Capabilities.inBrowser()) {
-    UI.injectCSS({
+    injectCSS({
       css: require('@kui-shell/plugin-k8s/web/css/main.css').toString(),
       key: 'kedit'
     })
   } else {
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-k8s/package.json'))
-    UI.injectCSS(join(ourRoot, 'web/css/main.css'))
+    injectCSS(join(ourRoot, 'web/css/main.css'))
   }
 
   // override the type shown in the sidecar header to show the
@@ -134,7 +142,7 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) =
   const openInEditor = () => {
     debug('openInEditor', yaml.metadata.name)
 
-    return REPL.qexec(
+    return tab.REPL.qexec(
       `edit !source --type "${typeOverride}" --name "${nameOverride(editorEntity.resource)}" --language yaml`,
       undefined,
       undefined,
@@ -145,7 +153,8 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) =
   }
 
   /** open the content as a pretty-printed form */
-  const openAsForm = () => {
+  const openAsForm = async () => {
+    const generateForm = (await import('../view/form')).default
     return Promise.resolve(
       generateForm(tab)(editorEntity.resource, filepath, nameOverride(editorEntity.resource), typeOverride, extract)
     ).then(addModeButtons('edit'))
@@ -159,7 +168,11 @@ const showResource = async (yaml: KubeResource, filepath: string, tab: UI.Tab) =
  * Render the resources as a REPL table
  *
  */
-const showAsTable = async (yamls: KubeResource[], filepathAsGiven: string, parsedOptions): Promise<Tables.Table> => {
+const showAsTable = async (
+  yamls: KubeResource[],
+  filepathAsGiven: string,
+  { parsedOptions, REPL }: Commands.Arguments
+): Promise<Tables.Table> => {
   debug('showing as table', yamls)
 
   const ourOptions = {
@@ -167,9 +180,7 @@ const showAsTable = async (yamls: KubeResource[], filepathAsGiven: string, parse
     onclickFn: (kubeEntity: KubeResource) => {
       return evt => {
         evt.stopPropagation() // row versus name click handling; we don't want both
-        return REPL.pexec(
-          `kedit ${REPL.encodeComponent(filepathAsGiven)} ${REPL.encodeComponent(kubeEntity.metadata.name)}`
-        )
+        return REPL.pexec(`kedit ${encodeComponent(filepathAsGiven)} ${encodeComponent(kubeEntity.metadata.name)}`)
       }
     }
   }
@@ -183,7 +194,9 @@ const showAsTable = async (yamls: KubeResource[], filepathAsGiven: string, parse
  * kedit command handler
  *
  */
-const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments): Promise<Commands.Response> => {
+const kedit = async (args: Commands.Arguments): Promise<Commands.Response> => {
+  const { tab, argvNoOptions, REPL } = args
+
   const idx = argvNoOptions.indexOf('kedit') + 1
   const filepathAsGiven = argvNoOptions[idx]
   const resource = argvNoOptions[idx + 1]
@@ -203,7 +216,7 @@ const kedit = async ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments):
       debug('The specified file does not contain any Kubernetes resource definitions')
       return REPL.qexec(`edit "${filepathAsGiven}"`)
     } else if (yamls.length > 1 && !resource) {
-      return showAsTable(yamls, filepathAsGiven, parsedOptions)
+      return showAsTable(yamls, filepathAsGiven, args)
     } else {
       const yamlIdx = !resource ? 0 : yamls.findIndex(({ metadata }) => metadata && metadata.name === resource)
       if (yamlIdx < 0) {

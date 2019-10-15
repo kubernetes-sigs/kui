@@ -34,9 +34,8 @@ async function initCommandRegistrar() {
 const domReady = () => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
-  const cli = import('../../webapp/cli')
-  const sidecar = import('../views/sidecar')
-  const electronEvents = import('../electron-events')
+  const cli = import('../../webapp/cli-init')
+  const sidecarInit = import('../views/sidecar-init')
   const events = import('../../core/events')
   // const query = import('../query')
 
@@ -54,13 +53,13 @@ const domReady = () => async () => {
     )
 
     waitForThese.push(
-      electronEvents
+      import('../electron-events')
         .then(_ => _.init())
         .then(() => cli)
-        .then(_ => _.init())
+        .then(_ => _.default())
     )
 
-    sidecar.then(_ => _.init())
+    sidecarInit.then(_ => _.default())
 
     waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init()))
 
