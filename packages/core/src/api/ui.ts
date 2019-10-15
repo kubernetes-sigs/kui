@@ -40,9 +40,15 @@ import * as _ToolbarText from '../webapp/views/toolbar-text'
 import * as MMR from '../models/MultiModalResponse'
 import * as _Themes from '../webapp/themes'
 
+import * as Tabs from '../webapp/tab'
+import * as Block from '../webapp/block'
+import * as Prompt from '../webapp/prompt'
+import * as Scroll from '../webapp/scroll'
+import * as PromptForInput from '../webapp/prompt-for-input'
+
 export namespace UI {
   /** interface defining the top-level UI tabs */
-  export import Tab = CLI.Tab
+  export import Tab = Tabs.Tab
 
   export import injectCSS = Inject.injectCSS
   export import uninjectCSS = Inject.uninjectCSS
@@ -77,8 +83,8 @@ export namespace UI {
   export import Presentation = _Presentation
   export import isPopup = CLI.isPopup
 
-  export import getCurrentPrompt = CLI.getCurrentPrompt
-  export import getCurrentBlock = CLI.getCurrentBlock
+  export import getCurrentPrompt = Prompt.getCurrentPrompt
+  export import getCurrentBlock = Block.getCurrentBlock
 
   export namespace PrettyPrinters {
     export import time = Time.prettyPrintTime
@@ -91,10 +97,13 @@ export namespace UI {
   }
 
   export namespace LowLevel {
-    export import prompt = CLI.prompt
-    export import partialInput = CLI.partial
-    export import scrollIntoView = CLI.scrollIntoView
+    export import prompt = PromptForInput.prompt
+    export import partialInput = Prompt.partial
+    export import scrollIntoView = Scroll.scrollIntoView
     export import doCancel = CLI.doCancel
-    export import isUsingCustomPrompt = CLI.isUsingCustomPrompt
+    export import isUsingCustomPrompt = Prompt.isUsingCustomPrompt
   }
 }
+
+export { Tabs }
+export default UI

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
-import { addBadge } from '@kui-shell/core/webapp/views/sidecar'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { addBadge } from '@kui-shell/core/webapp/views/badge'
 
 /**
  * Given a web action, return the url that points to the deployed action
@@ -44,7 +44,7 @@ export const formatWebActionURL = action => {
  * with an onclick handler that invokes the web action endpoint.
  *
  */
-export const addWebBadge = (tab: UI.Tab, action) => {
+export const addWebBadge = (tab: Tab, action) => {
   const isWebExported = action.annotations && action.annotations.find(kv => kv.key === 'web-export' && kv.value)
   if (isWebExported) {
     const anchor = document.createElement('a')

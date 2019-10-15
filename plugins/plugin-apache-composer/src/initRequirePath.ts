@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import * as path from 'path'
 
-import { Capabilities } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
 const debug = Debug('plugins/apache-composer/initRequirePath')
 

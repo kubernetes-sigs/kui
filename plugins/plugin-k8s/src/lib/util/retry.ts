@@ -15,9 +15,6 @@
  */
 
 import Debug from 'debug'
-
-import { Commands, REPL } from '@kui-shell/core'
-
 const debug = Debug('k8s/util/retry')
 
 export const withRetryOnCode = (code: number) => <T>(fn: () => Promise<T>, cmd: string): Promise<T> =>
@@ -40,23 +37,3 @@ export const withRetryOnCode = (code: number) => <T>(fn: () => Promise<T>, cmd: 
   })
 
 export const withRetryOn404 = withRetryOnCode(404)
-
-/**
- * Swallow 404s
- *
- */
-export const okIf404 = async (
-  command: string,
-  execOptions: Commands.ExecOptions = new Commands.DefaultExecOptions()
-) => {
-  try {
-    await REPL.qexec(command, undefined, undefined, execOptions)
-  } catch (err) {
-    if (err.code === 404) {
-      // no worries!
-    } else {
-      debug('not okIf404', err.code, err)
-      throw err
-    }
-  }
-}

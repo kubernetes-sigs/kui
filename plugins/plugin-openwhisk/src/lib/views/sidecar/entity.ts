@@ -19,12 +19,14 @@ import Debug from 'debug'
 import { Tables, UI } from '@kui-shell/core'
 
 import { element } from '@kui-shell/core/webapp/util/dom'
-import { addBadge, beautify, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
+import { addBadge } from '@kui-shell/core/webapp/views/badge'
+import { beautify, getSidecar } from '@kui-shell/core/webapp/views/sidecar'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { ShowOptions, DefaultShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
 import { Action, ComponentArrayBearing } from '@kui-shell/plugin-wskflow'
 
+import installHighlightJS from '../hljs'
 import renderField from '../render-field'
 import showActivation from './activations'
 import { formatWebActionURL, addWebBadge } from './web-action'
@@ -132,7 +134,10 @@ export const showEntity = async (
               const src = element('.action-source', sidecar)
 
               src.innerText = beautify(indexEntryJavascript ? 'nodejs' : 'other', indexContent.toString())
-              setTimeout(() => hljs.highlightBlock(src), 0)
+              setTimeout(async () => {
+                await installHighlightJS()
+                hljs.highlightBlock(src)
+              }, 0)
             } else {
               addThirdPartyMessage('Unable to locate the index.js file in the zip file')
             }
@@ -297,6 +302,7 @@ export const showEntity = async (
                 // that attaches some code; we can
                 // show the code
                 code.appendChild(document.createTextNode(entity.exec.code))
+                await installHighlightJS()
                 hljs.highlightBlock(code)
               } else {
                 // otherwise, just show the image name
@@ -332,6 +338,7 @@ export const showEntity = async (
               // we need to repeat in order to assure that the whole block isn't rendered as a giant comment
               // WARNING: hljs.highlightBlock is buggy, at least as of 9.14.2 (same with 9.12.0)
               // but hljs.highlight seems better
+              await installHighlightJS()
               code.innerHTML = hljs.highlight(lang, codeText).value
               code.className = `action-source ${lang}`
             } else {

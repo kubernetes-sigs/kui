@@ -22,6 +22,7 @@ import { element } from '@kui-shell/core/webapp/util/dom'
 import { linkify, getSidecar, showCustom } from '@kui-shell/core/webapp/views/sidecar'
 import { ShowOptions } from '@kui-shell/core/webapp/views/show-options'
 
+import installHighlightJS from '../hljs'
 import renderField from '../render-field'
 import { isActivationId } from '../../models/activation'
 import { render as renderActivationTable } from '../cli/activations/list'
@@ -29,7 +30,7 @@ import { render as renderActivationTable } from '../cli/activations/list'
 declare let hljs
 const debug = Debug('plugins/openwhisk/views/sidecar/activation')
 
-export default (tab: UI.Tab, entity, options: ShowOptions) => {
+export default async (tab: UI.Tab, entity, options: ShowOptions) => {
   debug('showing activation')
 
   const sidecar = getSidecar(tab)
@@ -149,6 +150,7 @@ export default (tab: UI.Tab, entity, options: ShowOptions) => {
             activationResult.setAttribute('data-content-type', contentType)
             activationResult.classList.remove('json')
 
+            await installHighlightJS()
             activationResult.innerHTML = hljs.highlight(entity.contentType, projection).value
             linkify(activationResult)
           } else {
@@ -167,6 +169,7 @@ export default (tab: UI.Tab, entity, options: ShowOptions) => {
           activationResult.setAttribute('data-content-type', contentType)
 
           // apply the syntax highlighter to the code
+          await installHighlightJS()
           activationResult.innerHTML = hljs.highlight('javascript', prettier).value
           linkify(activationResult)
         } else {

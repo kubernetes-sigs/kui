@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { Errors } from '@kui-shell/core'
-
-const debug = require('debug')('k8s/util/help')
+import Errors from '@kui-shell/core/api/errors'
 
 /**
  * Some of the kubectl doc strings try to be polite have form
@@ -34,8 +32,6 @@ const removeSolitaryAndTrailingPeriod = (str: string) => str.replace(/^\s*([^.]+
  *
  */
 export const renderHelp = (out: string, command: string, verb: string, exitCode: number) => {
-  debug('renderHelp')
-
   // kube and helm help often have a `Use "this command" to do that operation`
   // let's pick those off and place them into the detailedExample model
   const splitOutUse = out.match(/((Use[^\n]+\n)+)$/)

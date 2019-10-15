@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-import { Capabilities } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
 
 /**
  * Here, we prefetch the editor, which is especially important if

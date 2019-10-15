@@ -16,7 +16,7 @@
 
 // this file defines the external API
 
-export { agent } from './lib/cmds/openwhisk-core'
+export { default as agent } from './lib/models/agent'
 export { synonyms } from './lib/models/synonyms'
 export { addActionMode } from './lib/models/modes'
 export { default as withHeader } from './lib/models/withHeader'

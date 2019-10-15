@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-import { Capabilities, UI } from '@kui-shell/core'
+import { registerMode, registerBadge } from '@kui-shell/core/api/registrars'
+import { isHeadless } from '@kui-shell/core/api/capabilities'
 
 /**
  * This is the module
  *
  */
 export default async () => {
-  if (!Capabilities.isHeadless()) {
+  if (!isHeadless()) {
     return Promise.all([
       import('./view/modes/crds')
         .then(_ => _.crdsMode)
-        .then(UI.registerMode), // show any owned crds
+        .then(registerMode), // show any owned crds
       import('./view/modes/packages')
         .then(_ => _.packagesMode)
-        .then(UI.registerMode), // show packages of OperatorSource
+        .then(registerMode), // show packages of OperatorSource
       import('./view/modes/description')
         .then(_ => _.descriptionMode)
-        .then(UI.registerMode), // show description
+        .then(registerMode), // show description
       import('./view/modes/icon')
         .then(_ => _.iconBadge)
-        .then(UI.registerBadge) // olm icon
+        .then(registerBadge) // olm icon
     ])
   }
 }

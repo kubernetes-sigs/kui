@@ -17,14 +17,17 @@
 import Debug from 'debug'
 import * as minimist from 'yargs-parser'
 
-import { Tab, isPopup, getCurrentPrompt } from '../cli'
-import { pexec, qexec, _split as split, Split } from '../../core/repl'
+import { Tab } from '../tab'
+import { isPopup } from '../popup-core'
+import { getCurrentPrompt } from '../prompt'
+import { _split as split, Split } from '../../repl/split'
 import {
   Table,
   MultiTable,
   Row,
   Cell,
   Icon,
+  sortBody,
   TableStyle,
   WatchableTable,
   diffTableRows,
@@ -57,19 +60,6 @@ const mediumPolling = 3000 // initial polling rate for watching a steady state
 const finalPolling = (theme && theme.tablePollingInterval) || 5000 // final polling rate (do not increase the interval beyond this!)
 
 debug('table polling intervals', fastPolling, mediumPolling, finalPolling)
-
-/**
- * sort the body of table
- *
- */
-export const sortBody = (rows: Row[]): Row[] => {
-  return rows.sort(
-    (a, b) =>
-      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
-      (a.packageName || '').localeCompare(b.packageName || '') ||
-      a.name.localeCompare(b.name)
-  )
-}
 
 /**
  * get an array of row models
@@ -212,6 +202,7 @@ const registerWatcher = (
     let processedMultiTableRow: Row[][] = []
 
     try {
+      const { qexec } = await import('../../repl/exec')
       const response = await qexec<Table | MultiTable>(command)
 
       const processedResponse = processRefreshResponse(response)
@@ -483,10 +474,12 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
         return drilldown(tab, entity.onclick, undefined, undefined, 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = () => {
+      entityNameClickable.onclick = async () => {
         if (!entity.onclickExec || entity.onclickExec === 'pexec') {
+          const { pexec } = await import('../../repl/exec')
           pexec(entity.onclick, { tab })
         } else {
+          const { qexec } = await import('../../repl/exec')
           qexec(entity.onclick, undefined, undefined, { tab })
         }
       }
@@ -616,6 +609,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
         } else if (typeof onclick === 'string') {
           // TODO: define types here carefully
+          const { pexec } = await import('../../repl/exec')
           pexec(onclick, { tab })
         } else {
           onclick(evt)

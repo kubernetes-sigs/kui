@@ -15,9 +15,13 @@
  */
 
 import Debug from 'debug'
-import * as openwhisk from 'openwhisk'
+import { Options as OpenwhiskOptions } from 'openwhisk'
 
-import { Capabilities, Commands, Models, Settings, Util } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
+import Models from '@kui-shell/core/api/models'
+import Settings from '@kui-shell/core/api/settings'
+import Util from '@kui-shell/core/api/util'
 
 const debug = Debug('plugins/openwhisk/models/auth')
 
@@ -94,7 +98,7 @@ const ignoreCerts = (apiHost: string): boolean =>
     wskprops.INSECURE_SSL
   )
 
-export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Client */ => {
+export const initOWFromConfig = (owConfig: OpenwhiskOptions) /* : openwhisk.Client */ => {
   debug('initOWFromConfig', owConfig)
 
   if (owConfig.api_key !== 'unknown') {
@@ -102,6 +106,7 @@ export const initOWFromConfig = (owConfig: openwhisk.Options) /* : openwhisk.Cli
   }
 
   debug('initOW', owConfig)
+  const openwhisk = require('openwhisk')
   const ow = openwhisk(owConfig)
   ow['api'] = ow.routes
   delete ow.routes

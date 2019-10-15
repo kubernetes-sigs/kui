@@ -19,7 +19,7 @@ import Debug from 'debug'
 import { KubeResource, KubeStatus } from './resource'
 import { maybeAsDate, TryLaterError } from '../util/util'
 
-import { REPL } from '@kui-shell/core'
+import { encodeComponent } from '@kui-shell/core/api/repl-util'
 
 const debug = Debug('k8s/states')
 
@@ -163,7 +163,7 @@ const contextOption = (context?: string) => (context ? '--context "' + context +
 
 /** format a CLI --namespace option, if we have one */
 const ns = (namespace?: string) =>
-  namespace && namespace !== 'default' ? `--namespace ${REPL.encodeComponent(namespace)}` : ''
+  namespace && namespace !== 'default' ? `--namespace ${encodeComponent(namespace)}` : ''
 
 /**
  * Pretty generic online message; hepful for resource kinds that
@@ -276,7 +276,7 @@ const getStatusOfDeployment = (kubeEntity: KubeResource, desiredFinalState: Fina
  * Get the deployment status of the given resource name of the given kind
  *
  */
-export const getStatus = async (
+const getStatus = async (
   desiredFinalState: FinalState,
   apiVersion: string,
   kind: string,
@@ -289,6 +289,7 @@ export const getStatus = async (
       namespace
     )} -o json`
     // debug('getStatus', cmd);
+    const { REPL } = await import('@kui-shell/core/api/repl')
     const response = await REPL.rexec<KubeResource>(cmd)
 
     if (
@@ -435,7 +436,7 @@ export const watchStatus = async (watch: Watch, finalStateStr: string | FinalSta
       (finalState === FinalState.OfflineLike && isOfflineLike(newState))
     // || (!offlineOk && newState === States.Disparity);
 
-    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${REPL.encodeComponent(
+    const getKubernetesResource = `kubectl get ${kindForQuery(watch.apiVersion, kind)} ${encodeComponent(
       name
     )} ${contextOption(context)} ${ns(namespace)} -o yaml`
 

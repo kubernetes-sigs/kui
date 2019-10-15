@@ -18,14 +18,19 @@
 
 import Debug from 'debug'
 
-import { Capabilities, eventBus, Models, Settings, UI } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Models from '@kui-shell/core/api/models'
+import eventBus from '@kui-shell/core/api/events'
+import Settings from '@kui-shell/core/api/settings'
+import * as UI from '@kui-shell/core/api/ui-lite'
+
+import { getTabFromTarget } from '@kui-shell/core/webapp/tab'
 import {
-  getTabFromTarget,
   getBlockOfPrompt,
+  getCurrentPromptLeft,
   setUsingCustomPrompt,
-  unsetUsingCustomPrompt,
-  getCurrentPromptLeft
-} from '@kui-shell/core/webapp/cli'
+  unsetUsingCustomPrompt
+} from '@kui-shell/core/webapp/prompt'
 
 const debug = Debug('core-support/history/reverse-i-search')
 

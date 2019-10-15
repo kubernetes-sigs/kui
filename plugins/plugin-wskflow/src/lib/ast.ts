@@ -178,6 +178,11 @@ export interface ComponentArrayBearing<ComponentType = ASTNode> extends ASTNode 
   components: ComponentType[]
 }
 
+export function isComponentArrayBearing(ast: ASTNode): ast is ComponentArrayBearing {
+  const cb = ast as ComponentArrayBearing
+  return Array.isArray(cb.components) && cb.components.length > 0
+}
+
 export interface ParallelLike extends ComponentArrayBearing {
   type: 'parallel' | 'par' | 'map' | 'forall'
   set?: ASTNode

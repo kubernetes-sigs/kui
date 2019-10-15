@@ -16,9 +16,9 @@
 
 import Debug from 'debug'
 
-import { Capabilities } from '../api/capabilities'
+import { inBrowser } from '../api/capabilities'
 import { Settings } from '../api/settings'
-import { UI } from '../api/ui'
+import { getCurrentPrompt } from '../webapp/prompt'
 import { WatchableJob } from '../core/job'
 
 const debug = Debug('core/models/TabState')
@@ -60,10 +60,10 @@ export default class TabState {
 
   public capture() {
     this._env = Object.assign({}, process.env)
-    this._cwd = Capabilities.inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
+    this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
     if (Settings.inBottomInputMode) {
-      this._currentBottomInputValue = UI.getCurrentPrompt().value
+      this._currentBottomInputValue = getCurrentPrompt().value
     }
 
     debug('captured tab state', this.cwd)
@@ -153,7 +153,7 @@ export default class TabState {
   public restore() {
     process.env = this._env
 
-    if (Capabilities.inBrowser()) {
+    if (inBrowser()) {
       debug('changing cwd', process.env.PWD, this._cwd)
       process.env.PWD = this._cwd
     } else {
@@ -162,7 +162,7 @@ export default class TabState {
     }
 
     if (Settings.inBottomInputMode) {
-      UI.getCurrentPrompt().value = this.currentBottomInputValue
+      getCurrentPrompt().value = this.currentBottomInputValue
     }
   }
 }

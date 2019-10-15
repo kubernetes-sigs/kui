@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { eventBus } from '@kui-shell/core'
+import eventBus from '@kui-shell/core/api/events'
 
 import { toOpenWhiskFQN } from '../util/util'
 import { FinalState, watchStatus, rendering as stateRendering } from '../model/states'

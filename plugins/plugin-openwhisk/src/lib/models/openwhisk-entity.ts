@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Models, UI } from '@kui-shell/core'
+import UI from '@kui-shell/core/api/ui'
+import Models from '@kui-shell/core/api/models'
 import { EntitySpec } from '@kui-shell/core/models/entity'
 
 export type Annotation = { key: string; value: string | number | boolean }
@@ -47,7 +48,7 @@ export interface Action extends OpenWhiskEntity {
   }
 }
 
-export function currentSelection(tab: UI.Tab) {
+export function currentSelection(tab: UI.Tab): OpenWhiskEntity {
   return Models.Selection.current(tab) as OpenWhiskEntity
 }
 

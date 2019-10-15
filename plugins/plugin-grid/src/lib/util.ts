@@ -145,7 +145,7 @@ const filterBySuccess = ({ success, failure }: { success?: boolean; failure?: bo
  * Fetch the activation data from the OpenWhisk API
  *
  */
-export const fetchActivationData /* FromBackend */ = (N, options): Promise<Activation[]> => {
+export const fetchActivationData /* FromBackend */ = (N: number, options): Promise<Activation[]> => {
   const { nocrawl = false, path, filter, include, exclude, skip = 0, batchSize = defaults.batchSize, all } = options
   let { name = '' } = options
 
