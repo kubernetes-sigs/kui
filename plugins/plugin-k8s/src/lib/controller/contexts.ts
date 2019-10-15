@@ -99,7 +99,7 @@ const listContexts = (opts: Commands.Arguments): Promise<Tables.Table | Tables.M
  */
 export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
-    '/k8s/context',
+    '/context',
     async ({ execOptions, REPL }) => {
       return (await REPL.qexec<string>(
         `kubectl config current-context`,
@@ -110,16 +110,14 @@ export default (commandTree: Commands.Registrar) => {
     },
     {
       usage: usage.context('context'),
-      inBrowserOk: true,
-      noAuthOk: ['openwhisk']
+      inBrowserOk: true
     }
   )
 
-  commandTree.listen('/k8s/contexts', listContexts, {
+  commandTree.listen('/contexts', listContexts, {
     usage: usage.contexts('contexts'),
     width: 1024,
     height: 600,
-    inBrowserOk: true,
-    noAuthOk: ['openwhisk']
+    inBrowserOk: true
   })
 }
