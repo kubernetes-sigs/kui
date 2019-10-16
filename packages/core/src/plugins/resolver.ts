@@ -64,6 +64,8 @@ const prequire = async (
             console.error(`prequire error ${route}`, err)
             reject(err)
           }
+        } else {
+          reject(new Error('Internal error: plugin not found'))
         }
       })
     }
