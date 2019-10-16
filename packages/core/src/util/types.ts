@@ -19,7 +19,7 @@ import { MessageWithUsageModel } from '../core/usage-error'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isHTML(message: Entity | MessageWithUsageModel | Node): message is HTMLElement {
-  return !!(message as HTMLElement).nodeName
+  return !!message && !!(message as HTMLElement).nodeName
 }
 
 export function isPromise<T, U>(content: U | Promise<T>): content is Promise<T> {
