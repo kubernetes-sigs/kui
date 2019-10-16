@@ -721,18 +721,8 @@ class InProcessExecutor implements Executor {
     } catch (err) {
       const e = err as CodedError
 
-      if (isHeadless() && e.code !== 404) {
-        try {
-          debug('attempting to run the command graphically', e)
-          const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
-          const argv = split(command)
-          await import('../main/spawn-electron').then(({ initElectron }) =>
-            initElectron(argv, { forceUI: true }, true, { fullscreen: true })
-          )
-        } catch (err) {
-          debug('nope, we failed to run the command graphically')
-          console.error(err)
-        }
+      if (e.code !== 404) {
+        console.error(err)
       }
 
       if (execOptions && execOptions.failWithUsage) {
