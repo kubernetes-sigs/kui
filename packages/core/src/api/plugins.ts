@@ -56,3 +56,5 @@ export namespace Plugins {
     return commandsOffered.default(plugin)
   }
 }
+
+export default Plugins

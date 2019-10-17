@@ -55,7 +55,7 @@ import { getModel } from '../commands/tree'
 import { isSuccessfulCommandResolution } from '../commands/resolution'
 
 import { unlisten } from '../webapp/listen'
-import { setStatus } from '../webapp/status'
+import { setStatus, Status } from '../webapp/status'
 import { printResults, replResult, streamTo as streamToUI } from '../webapp/print'
 import { oops as oopsUI, showHelp } from '../webapp/oops'
 import { Tab, getCurrentTab, getTabFromTarget } from '../webapp/tab'
@@ -209,7 +209,7 @@ class InProcessExecutor implements Executor {
     const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
     if (!command) {
       if (block) {
-        setStatus(block, 'valid-response')
+        setStatus(block, Status.validResponse)
         installBlock(blockParent, block, nextBlock)()
       }
       return emptyPromise()
@@ -222,7 +222,7 @@ class InProcessExecutor implements Executor {
 
     try {
       if (block && !nested && echo) {
-        setStatus(block, 'processing')
+        setStatus(block, Status.processing)
         prompt.readOnly = true
       }
 
@@ -231,7 +231,7 @@ class InProcessExecutor implements Executor {
 
       if (argv.length === 0) {
         if (block) {
-          setStatus(block, 'valid-response')
+          setStatus(block, Status.validResponse)
           installBlock(blockParent, block, nextBlock)()
         }
         return emptyPromise()

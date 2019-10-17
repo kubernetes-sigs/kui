@@ -604,10 +604,6 @@ badge:only-child {
   /* we only need margins around badges if there is more than one badge */
   margin: 0;
 }
-sidecar .sidecar-header badge.version {
-  /* badge for action version */
-  font-size: 0.75em;
-}
 i.clickable:hover,
 badge.clickable:hover {
   /* no underline effect for icons (i) and badges */
@@ -875,7 +871,7 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"
   font-size: 0.875em;
 }
 sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
-  color: var(--color-base0D);
+  color: var(--color-base03);
 }
 sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
   fill: var(--color-sidecar-toolbar-foreground);
@@ -1101,7 +1097,7 @@ sidecar .custom-content .padding-content {
   display: block;
   padding: 1.5em 1em;
 }
-sidecar .custom-content .padding-content.scrollable {
+sidecar .custom-content > .scrollable {
   /* for scrollable padding-content, we want the scrollbar to be flush-right */
   flex: 1;
 }
@@ -2891,9 +2887,9 @@ span[data-extra-decoration="application error"] {
 }
 
 sidecar .sidecar-header badge.version {
-  /* badge for action version */
+  /* badge for resource version */
   background-color: var(--color-tag-ibm-fill);
-  mix-blend-mode: difference;
+  color: var(--color-tag-ibm-text);
 }
 
 badge.clickable:not(.badge-as-fontawesome):hover {
@@ -3164,6 +3160,7 @@ body {
   --color-tag-beta-fill: var(--color-base05);
   --color-tag-beta-text: var(--color-base01);
   --color-tag-ibm-fill: var(--color-base0D);
+  --color-tag-ibm-text: var(--color-base01);
 
   /* default latency color spectrum */
   --color-latency-0: #2166ac;
