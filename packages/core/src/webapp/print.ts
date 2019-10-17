@@ -19,7 +19,7 @@ const debug = Debug('webapp/cli/print')
 debug('loading')
 
 import { Tab } from './tab'
-import { setStatus } from './status'
+import { setStatus, Status } from './status'
 import { popupListen } from './listen'
 import { SidecarMode as Mode } from './bottom-stripe'
 import { isPopup } from './popup-core'
@@ -38,7 +38,8 @@ import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents } from '../models/command'
 import { Table, isTable, isMultiTable } from './models/table'
 import { ExecOptions, ParsedOptions } from '../models/execOptions'
-import { isMultiModalResponse, show as showMultiModalResponse } from '../models/MultiModalResponse'
+import { isMultiModalResponse } from '../models/mmr/is'
+import { show as showMultiModalResponse } from '../models/mmr/show'
 import { Entity, isEntitySpec, isMessageBearingEntity, MixedResponsePart, isMixedResponse } from '../models/entity'
 
 import UsageError from '../core/usage-error'
@@ -267,7 +268,7 @@ export const printResults = (
   }
 
   if (echo) {
-    setStatus(block, response === false ? 'error' : 'valid-response')
+    setStatus(block, response === false ? Status.error : Status.validResponse)
   }
 
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {

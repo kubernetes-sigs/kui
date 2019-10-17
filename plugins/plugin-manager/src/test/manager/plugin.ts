@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 
 Common.localDescribe('plugin manager', function(this: Common.ISuite) {
   before(Common.before(this))
@@ -33,6 +33,16 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
 
   it('should try "hi" and fail', () =>
     CLI.command('hi', this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this, true)))
+
+  it('should try "plugin version fdiaosfjdasoi" and fail', () =>
+    CLI.command('plugin version fdiaosfjdasoi', this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this, true)))
+
+  it('should try "plugin get fdiaosfjdasoi" and fail', () =>
+    CLI.command('plugin get fdiaosfjdasoi', this.app)
       .then(ReplExpect.error(404))
       .catch(Common.oops(this, true)))
 
@@ -55,6 +65,14 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
   it('should show the sample plugin via plugin list', () =>
     CLI.command('plugin list', this.app)
       .then(ReplExpect.okWith('@kui-shell/plugin-sample'))
+      .catch(Common.oops(this, true)))
+
+  it('should show the plugin details via plugin get', () =>
+    CLI.command('plugin get @kui-shell/plugin-sample', this.app)
+      .then(ReplExpect.blank)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing('@kui-shell/plugin-sample'))
+      .then(SidecarExpect.mode('commands'))
       .catch(Common.oops(this, true)))
 
   it('should show available commands with "plugin commands @kui-shell/plugin-sample", then click on a command', () =>

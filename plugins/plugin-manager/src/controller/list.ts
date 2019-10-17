@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,13 @@ import Debug from 'debug'
 import { pathExists, readJSON } from 'fs-extra'
 import { join } from 'path'
 
-import { Commands, Errors, i18n, Plugins, Tables } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Plugins from '@kui-shell/core/api/plugins'
+import Tables from '@kui-shell/core/api/tables'
+
+import { getVersion } from './version'
 
 const strings = i18n('plugin-manager')
 const debug = Debug('plugins/plugin-manager/cmd/list')
@@ -35,30 +41,6 @@ const usage: Errors.UsageModel = {
   example: 'plugin list'
 }
 
-interface Version {
-  name: string
-  version: string
-}
-
-/**
- * Read the package.json of one given plugin to get its version
- *
- */
-const getVersion = async (pluginDir: string): Promise<Version> => {
-  try {
-    debug('getVersion', pluginDir)
-    const { name, version } = (await readJSON(join(pluginDir, 'package.json'))) as { name: string; version: string }
-
-    return { name, version }
-  } catch (error) {
-    const err = error as Errors.CodedError<string>
-    if (err.code !== 'ENOTDIR') {
-      console.error(err)
-    }
-    return undefined
-  }
-}
-
 const doList = async (): Promise<Tables.Table> => {
   const moduleDir = await Plugins.userHome()
   debug('command execution started', moduleDir)
@@ -72,12 +54,12 @@ const doList = async (): Promise<Tables.Table> => {
   debug('dependencies', dependencies)
 
   // read the top-level directory contents, then extract plugin versions
-  const installedPlugins = await Promise.all(
-    Object.keys(dependencies).map(dependence => getVersion(join(moduleDir, 'node_modules', dependence)))
-  ).catch(err => {
-    console.error(err)
-    throw new Error('Internal Error')
-  })
+  const installedPlugins = await Promise.all(Object.keys(dependencies).map(dependence => getVersion(dependence))).catch(
+    err => {
+      console.error(err)
+      throw new Error('Internal Error')
+    }
+  )
 
   if (installedPlugins.length > 0) {
     //
@@ -93,7 +75,7 @@ const doList = async (): Promise<Tables.Table> => {
         type: 'plugin',
         name,
         attributes: [{ key: 'version', value: version }],
-        onclick: `plugin commands ${name}`
+        onclick: `plugin get ${name}`
       }))
     }
   } else {
