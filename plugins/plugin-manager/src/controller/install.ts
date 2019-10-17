@@ -19,7 +19,10 @@ import { ensureDir } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'
 
-import { Commands, Errors, i18n, Settings } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Settings from '@kui-shell/core/api/settings'
 
 import locateNpm from '../util/locate-npm'
 
@@ -51,7 +54,6 @@ const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)
-
   const name = argvNoOptions.shift()
 
   const rootDir = Settings.userDataDir()

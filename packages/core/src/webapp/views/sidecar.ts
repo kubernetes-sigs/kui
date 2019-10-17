@@ -334,7 +334,7 @@ export const isFullscreen = (tab: Tab) => {
 }
 
 export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
-  if (!custom || !custom.content) return
+  if (!custom || custom.content === undefined) return
   debug('showCustom', custom, options, resultDom)
 
   const sidecar = getSidecar(tab)
@@ -581,7 +581,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     padding.appendChild(pre)
     container.appendChild(padding)
   } else {
-    console.error('content type not specified for custom content')
+    console.error('content type not specified for custom content', custom)
   }
 } /* showCustom */
 

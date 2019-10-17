@@ -19,9 +19,11 @@ import { Capabilities, Commands } from '@kui-shell/core'
 import commands from './controller/commands'
 import compile from './controller/compile'
 import install from './controller/install'
+import get from './controller/get'
 import list from './controller/list'
 import home from './controller/home'
 import remove from './controller/remove'
+import version from './controller/version'
 
 export default async (commandTree: Commands.Registrar) => {
   if (!Capabilities.inBrowser()) {
@@ -29,10 +31,11 @@ export default async (commandTree: Commands.Registrar) => {
       commands(commandTree),
       compile(commandTree),
       install(commandTree),
-      install(commandTree),
+      get(commandTree),
       list(commandTree),
       home(commandTree),
-      remove(commandTree)
+      remove(commandTree),
+      version(commandTree)
     ])
   }
 }

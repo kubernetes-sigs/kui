@@ -37,7 +37,7 @@ import * as _Editor from '../webapp/views/registrar/editors'
 import * as _TopTabs from '../webapp/views/top-tabs'
 import * as _ToolbarText from '../webapp/views/toolbar-text'
 
-import * as MMR from '../models/MultiModalResponse'
+import * as MMR from '../models/mmr/types'
 import * as _Themes from '../webapp/themes'
 
 import * as Tabs from '../webapp/tab'
