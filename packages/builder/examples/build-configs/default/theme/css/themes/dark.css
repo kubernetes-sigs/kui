@@ -49,7 +49,7 @@ body[kui-theme="Dark"] {
   --color-confirm-foreground:var(--color-base05);
 
   /* table header row */
-  --color-ui-06: #373d42;
+  --color-ui-06: #1a2024;
 }
 
 body[kui-theme="Dark"] .header-cell {

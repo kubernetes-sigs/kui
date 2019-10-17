@@ -43,7 +43,7 @@ const debug = Debug('webapp/picture-in-picture')
  *
  */
 type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
-export type DirectViewControllerFunction = (tab: Tab, entity: object) => PromiseLike<object> | object | void
+export type DirectViewControllerFunction<E = object, R = object> = (tab: Tab, entity: E) => PromiseLike<R> | R | void
 
 type DirectViewEntity = CustomSpec
 

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-export { Tab, getTabFromTarget } from '../webapp/tab'
-export { isPopup } from '../webapp/popup-core'
-export { getCurrentPrompt } from '../webapp/prompt'
-export { getCurrentBlock } from '../webapp/block'
-export { removeAllDomChildren as empty } from '../webapp/util/dom'
-export { default as Presentation } from '../webapp/views/presentation'
-export { MultiModalResponse } from '../models/mmr/types'
+import { Entity, isMetadataBearing } from '../entity'
+import { MultiModalResponse } from './types'
 
-import { Codes, isCursorMovement } from '../webapp/keys'
-export const Keys = {
-  Codes,
-  isCursorMovement
+export function isMultiModalResponse(entity: Entity): entity is MultiModalResponse {
+  const mmr = entity as MultiModalResponse
+  return (
+    isMetadataBearing(mmr) &&
+    mmr.modes &&
+    Array.isArray(mmr.modes) &&
+    mmr.modes[0] &&
+    mmr.modes[0].content !== undefined
+  )
 }

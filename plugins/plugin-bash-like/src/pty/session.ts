@@ -16,7 +16,8 @@
 
 import Debug from 'debug'
 
-import { getPrompt, getCurrentProcessingBlock, setStatus } from '@kui-shell/core/webapp/cli'
+import { setStatus, Status } from '@kui-shell/core/webapp/status'
+import { getPrompt, getCurrentProcessingBlock } from '@kui-shell/core/webapp/cli'
 import { Capabilities, Commands, Errors, i18n, Settings, UI } from '@kui-shell/core'
 
 import { Channel } from './channel'
@@ -55,7 +56,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
         previousText = prompt.value
         prompt.value = '' // to make the placeholder visible
 
-        setStatus(block, 'processing')
+        setStatus(block, Status.processing)
       }
 
       return tab.REPL.qexec('echo initializing session', block, undefined, {
@@ -74,7 +75,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
               const prompt = getPrompt(block)
               prompt.readOnly = false
               prompt.placeholder = Settings.theme.placeholder || ''
-              setStatus(block, 'repl-active')
+              setStatus(block, Status.replActive)
 
               if (previousText) {
                 prompt.value = previousText
@@ -125,7 +126,7 @@ function newSessionForTab(tab: UI.Tab) {
       // change the placeholder if sessionInitialization is slow
       const placeholderAsync = setTimeout(() => {
         prompt.placeholder = strings('Please wait while we connect to your cloud')
-        setStatus(block, 'processing')
+        setStatus(block, Status.processing)
         placeholderChanged = true
       }, Settings.theme.millisBeforeProxyConnectionWarning || 250)
 
@@ -134,7 +135,7 @@ function newSessionForTab(tab: UI.Tab) {
       clearTimeout(placeholderAsync)
       prompt.readOnly = false
       if (placeholderChanged) {
-        setStatus(block, 'repl-active')
+        setStatus(block, Status.replActive)
         prompt.placeholder = Settings.theme.placeholder || ''
         await tab.REPL.pexec('ready', { tab })
       }

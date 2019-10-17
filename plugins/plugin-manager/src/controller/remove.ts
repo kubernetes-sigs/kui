@@ -19,7 +19,10 @@ import { join } from 'path'
 import { ensureDir } from 'fs-extra'
 import { execFile } from 'child_process'
 
-import { Commands, Errors, i18n, Settings } from '@kui-shell/core'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import { i18n } from '@kui-shell/core/api/i18n'
+import Settings from '@kui-shell/core/api/settings'
 
 import locateNpm from '../util/locate-npm'
 import { installedPlugin } from '../util/usage-common'
@@ -44,7 +47,6 @@ const doRemove = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   debug('command execution started')
 
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)
-
   const name = argvNoOptions.shift()
 
   const rootDir = Settings.userDataDir()
@@ -74,7 +76,7 @@ const doRemove = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
 
   await REPL.qexec(`plugin compile ${name}`)
 
-  return true
+  return `plugin ${name} successfully removed`
 }
 
 export default (commandTree: Commands.Registrar) => {

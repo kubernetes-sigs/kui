@@ -10,5 +10,7 @@
   "remove an installed plugin": "remove an installed plugin",
   "List plugins": "List plugins",
   "list installed plugins": "list installed plugins",
-  "No user-installed plugins found": "No user-installed plugins found"
+  "No user-installed plugins found": "No user-installed plugins found",
+  "Installed on": "Installed on {0}",
+  "Plugin not found": "Plugin not found"
 }

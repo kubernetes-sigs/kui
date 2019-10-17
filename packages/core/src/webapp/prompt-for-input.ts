@@ -23,7 +23,7 @@ import { keys } from './keys'
 import { oops } from './oops'
 import { listen, unlisten } from './listen'
 import { getPrompt } from './prompt'
-import { setStatus } from './status'
+import { setStatus, Status } from './status'
 import { installBlock } from './block'
 import { printResults } from './print'
 
@@ -132,7 +132,7 @@ export const prompt = (
   }
 
   const restorePrompt = (err?: Error) => {
-    setStatus(block, 'valid-response')
+    setStatus(block, Status.validResponse)
     selection.innerText = currentSelection
     promptDom.value = currentInput
     promptDom.setAttribute('type', currentType)

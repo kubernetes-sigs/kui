@@ -24,7 +24,7 @@ import * as colors from 'colors/safe'
 import { ElementMimic } from '../util/mimic-dom'
 import { isTable, isMultiTable, Row } from '../webapp/models/table'
 import { isEntitySpec, isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
-import { isMultiModalResponse } from '../models/MultiModalResponse'
+import { isMultiModalResponse } from '../models/mmr/is'
 import { isHTML, isPromise } from '../util/types'
 
 const log = console.log

@@ -19,7 +19,7 @@ const debug = Debug('webapp/oops')
 debug('loading')
 
 import { getPrompt } from './prompt'
-import { setStatus } from './status'
+import { setStatus, Status } from './status'
 import { popupListen } from './listen'
 import { installBlock } from './block'
 import { isPopup } from './popup-core'
@@ -60,7 +60,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     getPrompt(block).value = command
   }
 
-  setStatus(block, 'error')
+  setStatus(block, Status.error)
 
   const resultDom = isPopup() ? createPopupContentContainer(['error']) : block.querySelector('.repl-result')
   const oopsDom = document.createElement('div')

@@ -34,7 +34,7 @@ import {
 } from '@kui-shell/core/webapp/views/sidecar-visibility'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { listen } from '@kui-shell/core/webapp/listen'
-import { setStatus } from '@kui-shell/core/webapp/status'
+import { setStatus, Status } from '@kui-shell/core/webapp/status'
 import { getCurrentTab, getTabId } from '@kui-shell/core/webapp/tab'
 
 const strings = i18n('plugin-core-support')
@@ -387,7 +387,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
       currentlyProcessingBlock,
       currentlyProcessingBlock.querySelector('.repl-result').children.length
     )
-    setStatus(currentlyProcessingBlock, 'repl-active')
+    setStatus(currentlyProcessingBlock, Status.replActive)
   }
 
   // this must occur after the REPL.qexec('clear'), otherwise we may select

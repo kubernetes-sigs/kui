@@ -18,7 +18,7 @@ import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table
 import { CustomSpec } from '../webapp/views/sidecar'
 import { SidecarMode } from '../webapp/bottom-stripe'
 import { ToolbarText } from '../webapp/views/toolbar-text'
-import { MultiModalResponse } from './MultiModalResponse'
+import { MultiModalResponse } from './mmr/types'
 
 export interface EntitySpec {
   type?: string
@@ -73,6 +73,9 @@ export interface MetadataBearing<Content = void> {
 
     creationTimestamp?: string
   }
+
+  /** optional designation of resource version */
+  version?: string
 
   /** name hash, e.g. the hash part of auto-generated names, or an openwhisk activation id */
   nameHash?: string

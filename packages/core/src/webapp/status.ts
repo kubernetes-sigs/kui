@@ -27,27 +27,38 @@ import { element } from './util/dom'
 import { isHeadless } from '../core/capabilities'
 import { inBottomInputMode } from '../core/settings'
 
+export const enum Status {
+  processing = 'processing',
+  replActive = 'repl-active',
+  validResponse = 'valid-response',
+  error = 'error'
+}
+
+type Status2 = 'processing' | 'repl-active' | 'valid-response' | 'error'
+
 /**
  * Set the processing/active status for the given block
  *
  */
-export const setStatus = (block: HTMLElement, status: 'processing' | 'repl-active' | 'valid-response' | 'error') => {
+export const setStatus = (block: HTMLElement, status: Status) => {
   if (block) {
-    block.classList.remove('processing')
-    block.classList.remove('repl-active')
+    block.classList.remove(Status.processing)
+    block.classList.remove(Status.replActive)
+    block.classList.remove(Status.validResponse)
+    block.classList.remove(Status.error)
     block.classList.add(status)
 
-    if (status === 'processing') {
+    if (status === Status.processing) {
       startInputQueueing()
       if (!isHeadless()) {
         const spinner = element('.repl-result-spinner', block)
         scrollIntoView({ when: 0, element: spinner })
       }
-    } else if (status === 'repl-active') {
+    } else if (status === Status.replActive) {
       getPrompt(block).value = ''
     }
 
-    if (status !== 'repl-active' && inBottomInputMode) {
+    if (status !== Status.replActive && inBottomInputMode) {
       // for either processing or the final output, and if we are in
       // bottom input model, then copy repl input from the bottom
       // input
