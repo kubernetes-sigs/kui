@@ -117,18 +117,20 @@ class OraStream extends Writable {
     const restDom = document.createElement('span')
     line.appendChild(spinnerDom)
     line.appendChild(restDom)
-    line.classList.add('flex-layout', 'flex-align-top')
+    line.classList.add('flex-layout')
 
     // here, we modify the spinner text a bit, e.g. replacing ✔ and ✖
     // with SVG analogs
     spinnerDom.classList.add(this.color)
     if (spinnerPart === '✔') {
       // replace the unicode text with a "success" SVG
+      line.classList.remove('flex-align-top')
       spinnerDom.style.display = 'inline-flex'
       spinnerDom.innerHTML =
         '<svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM14 21.5l-5-5 1.59-1.5L14 18.35 21.41 11 23 12.58z"></path><title>Checkbox checked filled</title></svg>'
     } else if (spinnerPart === '✖') {
       // replace the unicode text with an "error" SVG
+      line.classList.remove('flex-align-top')
       spinnerDom.style.display = 'inline-flex'
       spinnerDom.innerHTML =
         '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M29.88 27.52l-13-25a1 1 0 0 0-1.76 0l-13 25a1 1 0 0 0 0 1A1 1 0 0 0 3 29h26a1 1 0 0 0 .86-.49 1 1 0 0 0 .02-.99zM14.88 10h2.25v10h-2.25zM16 26a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 26z"></path><title>Warning alt filled</title></svg>'
@@ -136,6 +138,7 @@ class OraStream extends Writable {
       // otherwise, use whatever spinner unicode text ora throws at
       // us, but increase the font size a bit
       spinnerDom.classList.add('even-larger-text')
+      line.classList.add('flex-align-top')
       spinnerDom.innerText = spinnerPart
     }
 
