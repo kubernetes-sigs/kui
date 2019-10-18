@@ -389,7 +389,7 @@ export const print = (
             (msg.header && (msg.header.prettyType || msg.header.type)) ||
             (msg.body.length > 0 && (msg.body[0].prettyType || msg.body[0].type))
 
-          const print = type ? rowify[type] : rowify._default
+          const print = (type && rowify[type]) || rowify._default
 
           logger(
             require('columnify')(msg.body.map(print), {
