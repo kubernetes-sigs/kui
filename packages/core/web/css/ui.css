@@ -384,6 +384,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   margin: 0 !important;
 }
 .repl-result,
+.repl-result-like,
 .repl-input input,
 .repl-input-like {
   font-size: 0.875em;

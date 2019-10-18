@@ -22,6 +22,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "fs-extra": "8.1.0",
+    "ora": "4.0.2",
     "tmp": "0.1.0",
     "which": "1.3.1"
   },
@@ -35,6 +36,6 @@
   },
   "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32",
   "devDependencies": {
-    "@types/which": "^1.3.2"
+    "@types/which": "1.3.2"
   }
 }
