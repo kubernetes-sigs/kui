@@ -17,13 +17,14 @@
 import Debug from 'debug'
 import { join } from 'path'
 import { ensureDir } from 'fs-extra'
-import { execFile } from 'child_process'
+import { spawn } from 'child_process'
 
 import Commands from '@kui-shell/core/api/commands'
 import Errors from '@kui-shell/core/api/errors'
 import { i18n } from '@kui-shell/core/api/i18n'
 import Settings from '@kui-shell/core/api/settings'
 
+import Ora from '../util/ora'
 import locateNpm from '../util/locate-npm'
 import { installedPlugin } from '../util/usage-common'
 
@@ -43,40 +44,61 @@ const usage = (command: string): Errors.UsageModel => ({
   required: installedPlugin
 })
 
-const doRemove = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
-  debug('command execution started')
+const doRemove = async (args: Commands.Arguments) => {
+  const { argvNoOptions, REPL } = args
+  const name = argvNoOptions[argvNoOptions.indexOf('remove') + 1]
 
-  argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('remove') + 1)
-  const name = argvNoOptions.shift()
+  const spinner = await new Ora().init(strings('Preparing to remove', name), args)
 
   const rootDir = Settings.userDataDir()
   const pluginHome = join(rootDir, 'plugins')
   await ensureDir(pluginHome)
 
-  debug(`remove plugin ${name} in ${pluginHome}`)
+  debug(`removing plugin ${name} in ${pluginHome}`)
 
   const resolved = await locateNpm()
   if (!resolved) {
     throw new Error('npm could not be found. Please install npm and try again')
   }
 
+  await spinner.next(strings('Removing', name))
   await new Promise((resolve, reject) => {
     const { npm } = resolved
-    execFile(npm, ['uninstall', name, '--no-package-lock'], { cwd: pluginHome }, (err, stdout, stderr) => {
-      if (stderr) {
-        console.error(stderr)
-      }
-      if (err) {
-        reject(err)
+    const sub = spawn(npm, ['uninstall', name, '--no-package-lock', '--loglevel', 'info'], { cwd: pluginHome })
+
+    sub.on('err', async err => {
+      console.error(err)
+      await spinner.fail()
+      reject(err)
+    })
+
+    sub.stderr.on('data', data => {
+      spinner.text = data.toString()
+    })
+
+    sub.stdout.on('data', data => {
+      spinner.text = data.toString()
+    })
+
+    sub.on('close', async code => {
+      debug('npm uninstall done', code)
+
+      if (code !== 0) {
+        await spinner.fail()
+        reject(new Error('Internal Error'))
       } else {
         resolve()
       }
     })
   })
 
+  await spinner.next(strings('Updating plugin registry'), strings('Removing', name))
   await REPL.qexec(`plugin compile ${name}`)
 
-  return `plugin ${name} successfully removed`
+  await spinner.next(strings('Successfully removed'))
+  await spinner.stop()
+
+  return true
 }
 
 export default (commandTree: Commands.Registrar) => {

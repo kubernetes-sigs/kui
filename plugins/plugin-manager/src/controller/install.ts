@@ -24,7 +24,7 @@ import Errors from '@kui-shell/core/api/errors'
 import { i18n } from '@kui-shell/core/api/i18n'
 import Settings from '@kui-shell/core/api/settings'
 
-import OraStream from '../util/ora'
+import Ora from '../util/ora'
 import locateNpm from '../util/locate-npm'
 
 const strings = i18n('plugin-manager')
@@ -55,7 +55,7 @@ const doInstall = async (args: Commands.Arguments) => {
   const { argvNoOptions, REPL } = args
   const name = argvNoOptions[argvNoOptions.indexOf('install') + 1]
 
-  const spinner = await new OraStream().init(args)
+  const spinner = await new Ora().init(strings('Preparing to install', name), args)
 
   const rootDir = Settings.userDataDir()
   const pluginHome = join(rootDir, 'plugins')
@@ -74,11 +74,14 @@ const doInstall = async (args: Commands.Arguments) => {
   const { npm } = resolved
 
   // npm init
-  await spinner.next(strings('Setup'))
+  await spinner.next(strings('Configuring plugin sandbox'))
   await new Promise((resolve, reject) => {
-    execFile(npm, ['init', '-y'], { cwd: pluginHome }, (error, stdout, stderr) => {
+    execFile(npm, ['init', '-y'], { cwd: pluginHome }, async (error, stdout, stderr) => {
       if (error) {
-        return reject(error)
+        console.error(error)
+        await spinner.fail()
+        reject(error)
+        return
       }
 
       if (stderr.length > 0) {
@@ -93,7 +96,8 @@ const doInstall = async (args: Commands.Arguments) => {
 
   // npm install
   await spinner.next(strings('Installing dependencies'))
-  await new Promise((resolve, reject) => {
+  // eslint-disable-next-line no-async-promise-executor
+  await new Promise(async (resolve, reject) => {
     const args = ['install', name, '--prod', '--no-package-lock', '--loglevel', 'info']
     debug('npm install args', args)
     const sub = spawn(npm, args, {
@@ -101,21 +105,24 @@ const doInstall = async (args: Commands.Arguments) => {
     })
 
     if (!sub) {
-      reject(new Error('Internal Error'))
+      await spinner.fail()
+      reject(new Error(strings('Error installing dependencies')))
     }
 
-    sub.stderr.on('data', data => {
+    sub.stderr.on('data', async data => {
       const error = data.toString()
       if (error.indexOf('code E404') >= 0) {
         // the user tried to install a plugin which
         // doesn't exist in the npm registry
         sub.kill()
-        return reject(new Error(`The plugin ${name} does not exist`))
+        await spinner.fail()
+        reject(new Error(strings('The plugin {0} does not exist', name)))
       } else if (error.indexOf('ERR') >= 0) {
         // some other error we don't know about
+        await spinner.fail()
         return reject(error)
       } else {
-        debug(error)
+        // debug(error)
         spinner.text = error
       }
     })
@@ -128,6 +135,7 @@ const doInstall = async (args: Commands.Arguments) => {
       debug('npm install done', code)
 
       if (code !== 0) {
+        await spinner.fail()
         reject(new Error('Internal Error'))
       } else {
         resolve()
@@ -135,11 +143,11 @@ const doInstall = async (args: Commands.Arguments) => {
     })
   })
 
-  await spinner.next(strings('Compiling'), strings('Installing dependencies'))
+  await spinner.next(strings('Updating plugin registry'), strings('Installing dependencies'))
   await REPL.qexec('plugin compile')
 
   await spinner.next(strings('Successfully installed. Here are your new commands:'))
-  await spinner.stop(true)
+  await spinner.stop()
 
   return REPL.qexec(`plugin commands ${name}`)
 }
