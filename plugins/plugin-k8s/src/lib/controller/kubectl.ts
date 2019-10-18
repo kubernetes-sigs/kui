@@ -511,6 +511,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
         execOptions.raw ||
         (Capabilities.isHeadless() &&
           !output &&
+          !shouldWeDisplayAsTable(verb, entityType, output, options) &&
           execOptions.type === Commands.ExecType.TopLevel &&
           !execOptions.isProxied)
       ) {
