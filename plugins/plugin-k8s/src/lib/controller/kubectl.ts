@@ -564,9 +564,10 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
         ]
 
         if (verb === 'logs') {
+          const directCmd = rawCommand.replace(/^_kubectl(\s)?/, 'kubectl$1').replace(/^_k(\s)?/, 'kubectl$1')
           modes.push({
             mode: 'previous',
-            direct: `${rawCommand} --previous`,
+            direct: `${directCmd} --previous`,
             execOptions: {
               exec: 'pexec'
             }
