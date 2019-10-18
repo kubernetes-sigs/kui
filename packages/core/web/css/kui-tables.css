@@ -79,10 +79,6 @@
 sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
   padding: 0 0.6875em;
 }
-body.subwindow .result-table:not([kui-table-style="Light"]) .header-cell .cell-inner,
-body.subwindow sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
-  padding: 0 0.6875vmin;
-}
 .header-cell:not(:first-child) .cell-inner {
   border-left: 1px solid var(--color-table-border3);
 }
@@ -121,7 +117,11 @@ body.subwindow sidecar .result-table[kui-table-style="Light"] .header-cell .cell
 }
 body.subwindow .bx--data-table.result-table .entity-attributes > td,
 body.subwidnow .bx--data-table.result-table .entity-attributes > th {
-  padding: 0.6875vmin;
+  padding: 1.25vh 1.25vw;
+}
+body.subwindow .result-table:not([kui-table-style="Light"]) .header-cell .cell-inner,
+body.subwindow sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
+  padding: 0 1.25vw;
 }
 .bx--data-table.result-table .entity-attributes > th.header-cell {
   padding-left: 0;
