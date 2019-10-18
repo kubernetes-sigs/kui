@@ -21,6 +21,6 @@ import { CustomSpec } from '../webapp/views/sidecar'
 export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec | MixedResponse
 export default Streamable
 
-export type Stream = (response: Streamable, killLine?: boolean) => void
+export type Stream = (response: Streamable, killLine?: boolean) => Promise<void>
 
 export type StreamableFactory = () => Promise<Stream>
