@@ -1357,11 +1357,17 @@ code.fancy-code.hljs {
   display: flex;
   align-items: center;
 }
+.flex-align-top {
+  align-items: flex-start;
+}
 .normal-text {
   color: var(--color-text-01);
   font-weight: 400;
   opacity: 1;
   font-size: 1em;
+}
+.even-larger-text {
+  font-size: 2em;
 }
 .larger-text {
   font-size: 1.5em;
