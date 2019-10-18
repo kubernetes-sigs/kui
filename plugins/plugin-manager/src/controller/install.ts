@@ -24,6 +24,7 @@ import Errors from '@kui-shell/core/api/errors'
 import { i18n } from '@kui-shell/core/api/i18n'
 import Settings from '@kui-shell/core/api/settings'
 
+import OraStream from '../util/ora'
 import locateNpm from '../util/locate-npm'
 
 const strings = i18n('plugin-manager')
@@ -50,11 +51,11 @@ const usage: Errors.UsageModel = {
  * This is the command handler for `plugin install`
  *
  */
-const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
-  debug('command execution started')
+const doInstall = async (args: Commands.Arguments) => {
+  const { argvNoOptions, REPL } = args
+  const name = argvNoOptions[argvNoOptions.indexOf('install') + 1]
 
-  argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('install') + 1)
-  const name = argvNoOptions.shift()
+  const spinner = await new OraStream().init(args)
 
   const rootDir = Settings.userDataDir()
   const pluginHome = join(rootDir, 'plugins')
@@ -73,6 +74,7 @@ const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   const { npm } = resolved
 
   // npm init
+  await spinner.next(strings('Setup'))
   await new Promise((resolve, reject) => {
     execFile(npm, ['init', '-y'], { cwd: pluginHome }, (error, stdout, stderr) => {
       if (error) {
@@ -90,8 +92,9 @@ const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   })
 
   // npm install
+  await spinner.next(strings('Installing dependencies'))
   await new Promise((resolve, reject) => {
-    const args = ['install', name, '--prod', '--no-package-lock']
+    const args = ['install', name, '--prod', '--no-package-lock', '--loglevel', 'info']
     debug('npm install args', args)
     const sub = spawn(npm, args, {
       cwd: pluginHome
@@ -113,6 +116,7 @@ const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
         return reject(error)
       } else {
         debug(error)
+        spinner.text = error
       }
     })
 
@@ -131,7 +135,11 @@ const doInstall = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
     })
   })
 
+  await spinner.next(strings('Compiling'), strings('Installing dependencies'))
   await REPL.qexec('plugin compile')
+
+  await spinner.next(strings('Successfully installed. Here are your new commands:'))
+  await spinner.stop(true)
 
   return REPL.qexec(`plugin commands ${name}`)
 }

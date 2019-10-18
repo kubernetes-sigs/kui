@@ -23,6 +23,7 @@ import { setStatus, Status } from './status'
 import { popupListen } from './listen'
 import { SidecarMode as Mode } from './bottom-stripe'
 import { isPopup } from './popup-core'
+import { scrollIntoView } from './scroll'
 import { renderPopupContent, createPopupContentContainer } from './popup'
 
 import { formatTable } from './views/table'
@@ -109,13 +110,16 @@ const printTable = async (
  *
  */
 export const streamTo = (tab: Tab, block: Element): Stream => {
-  const resultDom = block.querySelector('.repl-result') as HTMLElement
-  // so we can scroll this into view as streaming output arrives
+  const container = block.querySelector('.repl-output') as HTMLElement
+  const resultDom = container ? document.createElement('div') : (block.querySelector('.repl-result') as HTMLElement)
+  if (container) {
+    container.classList.add('repl-result-has-content')
+    container.insertBefore(resultDom, container.childNodes[0])
+  }
 
   let previousLine: HTMLElement
-  return (response: Streamable, killLine = false) => {
-    // debug('stream', response)
-
+  return (response: Streamable, killLine = false): Promise<void> => {
+    // debug('stream', response, killLine)
     resultDom.setAttribute('data-stream', 'data-stream')
     ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
 
@@ -138,6 +142,7 @@ export const streamTo = (tab: Tab, block: Element): Stream => {
           return formatPart(_, para)
         })
       } else if (isHTML(response)) {
+        response.classList.add('repl-result-like')
         previousLine = response
         resultDom.appendChild(previousLine)
       } else if (isMultiTable(response)) {
@@ -145,20 +150,23 @@ export const streamTo = (tab: Tab, block: Element): Stream => {
         const br = document.createElement('br')
         resultDom.appendChild(br)
       } else if (isTable(response)) {
-        await printTable(tab, response, resultDom)
+        const wrapper = document.createElement('div')
+        wrapper.classList.add('repl-result')
+        resultDom.appendChild(wrapper)
+        await printTable(tab, response, wrapper)
       } else if (isCustomSpec(response)) {
         showCustom(tab, response, {})
       } else {
         previousLine = document.createElement('pre')
-        previousLine.classList.add('streaming-output')
+        previousLine.classList.add('streaming-output', 'repl-result-like')
         previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
         resultDom.appendChild(previousLine)
       }
     }
 
-    return formatPart(response, resultDom)
-
-    // scrollIntoView({ when: 0, element: spinner })
+    return formatPart(response, resultDom).then(() => {
+      scrollIntoView({ element: resultDom, when: 0 })
+    })
   }
 }
 

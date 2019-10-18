@@ -35,5 +35,6 @@ export const streamTo = async () => {
     debug('streaming response', response)
     print(response)
     debug('streaming response2')
+    return Promise.resolve()
   }
 }
