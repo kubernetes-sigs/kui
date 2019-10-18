@@ -179,7 +179,7 @@ export default (commandTree: Commands.Registrar) => {
   /** re-execute from history */
   const againCmd = () => (args: Commands.Arguments) => {
     const N = args.argv[1] ? parseInt(args.argv[1], 10) : Models.History.cursor - 2 // use the last command, if the user entered only "!!"
-    console.error(args.execOptions)
+    debug('againCmd', args.execOptions)
     return again(args, N, args.execOptions && args.execOptions.history)
   }
   const cmd = commandTree.listen('/!!', againCmd(), {
