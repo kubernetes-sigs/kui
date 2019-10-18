@@ -241,7 +241,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
       options.o ||
       (command === 'helm' && verb === 'get' && 'yaml') || // helm get seems to spit out yaml without our asking
         (isKube && verb === 'describe' && 'yaml') ||
-        (isKube && verb === 'logs' && 'Latest') ||
+        (isKube && verb === 'logs' && 'latest') ||
         (isKube && verb === 'get' && execOptions.raw && 'json'))
 
     if (
@@ -566,6 +566,7 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
         if (verb === 'logs') {
           modes.push({
             mode: 'previous',
+            label: strings('previous'),
             direct: `${rawCommand} --previous`,
             execOptions: {
               exec: 'pexec'
