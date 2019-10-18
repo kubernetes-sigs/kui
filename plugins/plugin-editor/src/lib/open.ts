@@ -44,7 +44,7 @@ const setText = (editor: MonacoEditor.ICodeEditor, options, execOptions?) => ({
 }) => {
   // options is --language yaml command line
   // execOptions is side channel progmmatic information passed via repl.exec
-  const lang: string = (options && options.language) || (execOptions && execOptions.language) || language(kind)
+  const lang: string = (options && options.language) || language(kind)
   debug('setText language', kind, lang)
   debug('setText code', code.substring(0, 20))
 
