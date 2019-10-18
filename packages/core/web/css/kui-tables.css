@@ -36,7 +36,9 @@
   /* for Light tables, there is no th background color, thus no need for extra space */
   padding-top: 0;
   padding-bottom: 0;
-  font-weight: bold;
+  font-weight: 300;
+  color: var(--color-text-02);
+  text-transform: uppercase;
 }
 [kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) th.header-cell {
   border-bottom: none;
@@ -58,7 +60,6 @@
 [kui-theme-style] .result-table-title-outer {
   background-color: transparent;
   color: var(--color-name);
-  padding: 0.6875em 0;
 }
 .result-as-multi-table .result-table-outer-wrapper:first-child .result-table-title-outer {
   padding-top: 0;
@@ -82,9 +83,7 @@ sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
 .header-cell:not(:first-child) .cell-inner {
   border-left: 1px solid var(--color-table-border3);
 }
-.log-lines .header-cell,
-.repl .result-as-table .result-table[kui-table-style="Light"] .header-row .header-cell,
-.repl .result-as-table.result-table[kui-table-style="Light"] .header-row .header-cell {
+.log-lines .header-cell {
   border-bottom: 1px solid var(--color-content-divider);
 }
 
@@ -243,10 +242,6 @@ sidecar .log-lines[kui-table-style="Light"] .log-line,
 .repl .bx--data-table[kui-table-style="Light"] .entity-attributes > th .cell-inner,
 .repl .bx--data-table[kui-table-style="Light"] .entity-attributes > td .cell-inner {
   border: none;
-}
-.repl .bx--data-table[kui-table-style="Light"] badge {
-  height: 1.75em;
-  line-height: 1.75em;
 }
 .result-as-table .result-table-outer[kui-table-style="Light"] .result-table-title,
 .result-as-table .result-table-outer[kui-table-style="Medium"] .result-table-title {
