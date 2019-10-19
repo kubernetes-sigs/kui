@@ -437,8 +437,17 @@ export const printResults = (
         const modes: Mode[] = isEntitySpec(response) && response.modes
 
         // entity type
+        // Notes: if we have a table, pull from the first row
+        // (see https://github.com/IBM/kui/issues/3052)
         const prettyType: string =
-          isEntitySpec(response) && (response.kind || response.prettyType || response.prettyKind || response.type)
+          (isTable(response) &&
+            response.body[0] &&
+            (response.body[0].prettyType ||
+              response.body[0].prettyKind ||
+              response.body[0].type ||
+              response.body[0].kind)) ||
+          (isEntitySpec(response) &&
+            (response.kind || response.prettyType || response.prettyKind || response.type || response.kind))
 
         // presentation mode
         const presentation =
