@@ -3144,6 +3144,7 @@ body {
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
+  --color-text-inverted02: var(--color-text-02);
 
   --color-sidecar-background: var(--color-ui-02);
   --color-sidecar-border: var(--color-ui-04);
