@@ -65,7 +65,7 @@ const prequire = async (
             reject(err)
           }
         } else {
-          reject(new Error('Internal error: plugin not found'))
+          reject(new Error(`Internal error: plugin ${route} not found`))
         }
       })
     }
@@ -143,7 +143,7 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
     },
 
     /** load any plugins required by the given command */
-    resolve: (command: string, { subtree = false } = {}) => {
+    resolve: async (command: string, { subtree = false } = {}): Promise<void> => {
       // subpath if we are looking for plugins for a subtree, e.g. for cd /auth
       let plugin: string
       let matchLen: number
@@ -159,10 +159,21 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
         }
       }
       if (plugin) {
-        return resolveOne(plugin)
+        await resolveOne(plugin)
       } else if (prescan.catchalls.length > 0) {
         // see if we have catchall
-        return Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin)))
+        await Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin))).catch(err => {
+          console.error(
+            'There seems to be an inconsistency in the prescan model versus the current state of the filesystem: the prescan model refers to a catchall that cannot currently be found',
+            err
+          )
+
+          // Note: we hope for the best, and intentionally don't
+          // rethrow the error. the upstream, in plugin.ts where it
+          // calls resolver.resolve(), will handle the catastrophe
+          // (which, at worst, will be a "command not found"), if it
+          // ensues
+        })
       }
     }
   } /* resolver */
