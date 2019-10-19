@@ -32,7 +32,7 @@
 [kui-theme-style] .bx--data-table td {
   color: var(--color-text-01);
 }
-[kui-theme-style] .repl .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
+[kui-theme-style] .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
   /* for Light tables, there is no th background color, thus no need for extra space */
   padding-top: 0;
   padding-bottom: 0;
@@ -40,11 +40,14 @@
   color: var(--color-text-02);
   text-transform: uppercase;
 }
-[kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) th.header-cell {
+[kui-theme-style] sidecar .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
+  color: var(--color-text-inverted02);
+}
+[kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) th.header-cell {
   border-bottom: none;
 }
-[kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) td,
-[kui-theme-style] .repl .bx--data-table:not([kui-table-style="Light"]) th {
+[kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) td,
+[kui-theme-style] .bx--data-table:not([kui-table-style="Light"]) th {
   border-top: none;
 }
 
@@ -76,8 +79,7 @@
 .header-cell svg path {
   fill: var(--color-text-against-dark-bg);
 }
-.result-table:not([kui-table-style="Light"]) .header-cell .cell-inner,
-sidecar .result-table[kui-table-style="Light"] .header-cell .cell-inner {
+.result-table:not([kui-table-style="Light"]) .header-cell .cell-inner {
   padding: 0 0.6875em;
 }
 .header-cell:not(:first-child) .cell-inner {
@@ -140,8 +142,8 @@ body.subwindow sidecar .result-table[kui-table-style="Light"] .header-cell .cell
   /* no row-hover effects for kui-tables */
   color: unset;
 }
-.repl .bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > td,
-.repl .bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > th {
+.bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > td,
+.bx--data-table.result-table[kui-table-style="Light"] .entity-attributes > th {
   padding-left: 0.375em;
   padding-right: 0.375em;
 }
@@ -203,7 +205,7 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
   padding-bottom: 0;
 }
 
-.repl .bx--data-table.result-table:not([kui-table-style="Light"]) .entity-attributes > td.not-too-compact {
+.bx--data-table.result-table:not([kui-table-style="Light"]) .entity-attributes > td.not-too-compact {
   padding-top: 0.375em;
   padding-bottom: 0.375em;
 }
@@ -211,21 +213,21 @@ body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
 .result-as-table .bx--data-table.result-table[kui-table-style="Medium"] {
   border: none;
 }
-.repl .result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell,
-.repl .result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell {
+.result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell,
+.result-as-table .bx--data-table.result-table[kui-table-style="Light"] .header-row .header-cell {
   background: none;
 }
-.repl .result-as-table .bx--data-table.log-lines[kui-table-style="Light"] .log-line .log-line-bar-field,
-.repl .log-lines[kui-table-style="Light"] .log-line .log-field {
+.result-as-table .bx--data-table.log-lines[kui-table-style="Light"] .log-line .log-line-bar-field,
+.log-lines[kui-table-style="Light"] .log-line .log-field {
   border: none;
 }
-.repl .bx--data-table.result-table[kui-table-style="Light"] .entity th,
-.repl .bx--data-table.result-table[kui-table-style="Light"] .entity td,
+.bx--data-table.result-table[kui-table-style="Light"] .entity th,
+.bx--data-table.result-table[kui-table-style="Light"] .entity td,
 sidecar .bx--data-table.result-table[kui-table-style="Light"] .entity td,
 .bx--data-table.result-table[kui-table-style="Medium"] .entity td {
   background: none;
 }
-.repl .bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes {
+.bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes {
   height: 1.5em;
 }
 .bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes,
@@ -237,10 +239,10 @@ sidecar .log-lines[kui-table-style="Light"] .log-line,
 .log-lines[kui-table-style="Medium"] .log-line {
   height: 2em;
 }
-.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > th,
-.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > td,
-.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > th .cell-inner,
-.repl .bx--data-table[kui-table-style="Light"] .entity-attributes > td .cell-inner {
+.bx--data-table[kui-table-style="Light"] .entity-attributes > th,
+.bx--data-table[kui-table-style="Light"] .entity-attributes > td,
+.bx--data-table[kui-table-style="Light"] .entity-attributes > th .cell-inner,
+.bx--data-table[kui-table-style="Light"] .entity-attributes > td .cell-inner {
   border: none;
 }
 .result-as-table .result-table-outer[kui-table-style="Light"] .result-table-title,
