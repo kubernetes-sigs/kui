@@ -283,12 +283,20 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 .repl-prompt-right-elements {
   display: flex;
   align-items: center;
-  margin-left: 1em;
   flex: 0;
   white-space: nowrap;
+  margin-left: 1em;
+}
+body.subwindow .repl-prompt-right-elements {
+  margin: 0;
+  flex: 1;
+  justify-content: center;
 }
 .kui--repl-prompt-buttons {
   margin-right: 1em;
+}
+body.subwindow .kui--repl-prompt-buttons {
+  display: none;
 }
 .kui--repl-prompt-buttons .graphical-icon {
   opacity: 0.0375;
@@ -304,10 +312,12 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   fill: var(--color-text-01);
 }
 .repl .repl-prompt-right-element-status-icon.deemphasize {
-  margin-left: 0.5em;
   font-size: 0.875em; /* see the comment for repl-input re: min-height; that should match this */
   opacity: 1;
   transition-property: all;
+}
+body:not(.subwindow) .repl .repl-prompt-right-element-status-icon.deemphasize {
+  margin-left: 0.5em;
 }
 .repl-prompt-right-element-status-icon.deemphasize .bx--loading {
   width: unset;
@@ -388,6 +398,12 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl-input input,
 .repl-input-like {
   font-size: 0.875em;
+}
+.repl-block:not(.processing) .repl-result-like {
+  filter: opacity(0.75) grayscale(0.5);
+}
+.repl-block:not(.processing) .repl-result-like:last-child {
+  margin-bottom: 0.375em;
 }
 .repl-input input,
 .repl-input-like {
@@ -1941,6 +1957,9 @@ body.subwindow .repl-block .ok-line,
 body.subwindow .repl-block .oops {
   font-size: 2.5vmin;
 }
+body.subwindow .repl-result-like {
+  font-size: 2vmin;
+}
 body.subwindow sidecar .sidecar-bottom-stripe-close {
   /* no close button if in subwindow/popup mode */
   display: none;
@@ -1954,8 +1973,8 @@ body.subwindow .repl-block.processing .kui--repl-prompt-buttons {
   /* screenshot etc. widgets */
   display: none;
 }
-body.subwindow .repl-block.processing .kui--icon-processing > svg {
-  /* loading icon */
+body.subwindow .repl-block.processing .kui--icon-processing > svg, /* loading icon */
+body.subwindow .repl .repl-prompt-right-element-status-icon svg {
   width: 15vmin;
   height: 15vmin;
 }
@@ -1999,18 +2018,6 @@ body.subwindow[data-presentation="FixedSize"] .repl-block .repl-result {
 }
 body.subwindow:not(.sidecar-visible) .repl {
   display: flex;
-}
-body.subwindow:not(.sidecar-visible),
-body.subwindow:not(.sidecar-visible) .page,
-body.subwindow:not(.sidecar-visible) .main,
-body.subwindow:not(.sidecar-visible) .xxxrepl,
-body.subwindow:not(.sidecar-visible) .tab-container,
-body.subwindow:not(.sidecar-visible) tab {
-  xxxheight: auto;
-  overflow: auto;
-  max-height: unset;
-  align-items: center;
-  justify-content: center;
 }
 body.subwindow.tutorial-is-fullscreen .main {
   align-items: initial;
@@ -2068,7 +2075,7 @@ body.subwindow sidecar .sidecar-header-secondary-content {
 }
 body.subwindow:not([data-presentation="FixedSize"]) .repl,
 body.subwindow:not([data-presentation="FixedSize"]) .custom-content {
-  font-size: 2vmin;
+  font-size: 2.5vmin;
 }
 body.subwindow .repl,
 body.subwindow .repl-block,
@@ -2096,6 +2103,9 @@ body.subwindow .scrollable-auto {
 body.subwindow .result-as-table.result-as-multi-table-flex-wrap {
   display: initial;
 }
+body.subwindow .repl {
+  overflow: hidden;
+}
 body.subwindow .repl.sidecar-visible {
   display: none;
   flex: 0;
@@ -2107,6 +2117,10 @@ body.subwindow .repl.sidecar-visible {
 body.subwindow .repl-input {
   padding: 0;
 }
+body.subwindow .repl-block.processing .repl-output {
+  padding-top: 1em;
+  display: block;
+}
 body.subwindow .repl-output {
   padding: 0 1em 0 1em;
 }
@@ -2115,8 +2129,7 @@ body.subwindow .repl-prompt {
   margin-right: 0;
 }
 body.subwindow .repl-prompt svg {
-  width: 5vh;
-  height: 5vh;
+  display: none;
 }
 body.subwindow .repl .repl-input .repl-prompt,
 body.subwindow .repl-result-spinner,
@@ -2126,8 +2139,19 @@ body.subwindow sidecar .repl-input,
 body.subwindow sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
   display: none;
 }
+body.subwindow .repl-inner {
+  display: flex;
+}
 body.subwindow .repl-block {
+  padding: 0;
+  display: flex;
+  flex: 1;
   background-color: transparent;
+  justify-content: center;
+  overflow: hidden;
+}
+body.subwindow .repl-block:not(:first-child) {
+  display: none;
 }
 body.subwindow sidecar .sidecar-bottom-stripe {
   font-size: 2vmin;
