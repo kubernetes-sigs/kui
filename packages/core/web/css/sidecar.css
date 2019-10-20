@@ -171,3 +171,7 @@ sidecar .sidecar-content-container {
 sidecar .bx--data-table {
   white-space: normal;
 }
+
+.kui--sidecar-inverted sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
+  color: var(--color-text-inverted02);
+}

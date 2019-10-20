@@ -1,0 +1,112 @@
+/**
+ * scheme: "Tomorrow Night"
+ * author: "Chris Kempson (http://chriskempson.com)"
+ */
+body[kui-theme="Dark"] {
+  --color-base00: #13171a; /* Default Background */
+  --color-base01: #202529; /* Lighter Background (Used for status bars) */
+  --color-base02: #272c30; /* Selection Background */
+  --color-base03: #373d42;
+  --color-base04: #565656; /* Dark Foreground (Used for status bars) */
+  --color-base05: #9fa5ad; /* Default Foreground, Caret, Delimiters, Operators */
+  --color-base06: #f2f4f8; /* Light Foreground (Not often used) */
+  --color-base07: #ffffff; /* Light Background (Not often used) */
+  --color-base08: #fb4b53; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+  --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+  --color-base0A: #fdd13a; /* YELLOW: Classes, Markup Bold, Search Text Background */
+  --color-base0B: #3dbb61; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+  --color-base0C: #6ccaff; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+  --color-base0D: #97c1ff; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+  --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+  --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+  /* SidecarThin */
+  --color-background-inverted01: var(--color-sidecar-background);
+  --color-background-inverted02: var(--color-sidecar-header);
+  --color-text-inverted01: var(--color-text-01);
+
+  --color-table-border1: #616466;
+  --color-table-border2: #a5a9ad;
+  --color-table-border3: #383d40;
+
+  --color-sidecar-header: var(--color-base03);
+  --color-sidecar-border: #1a2024;
+
+  --color-stripe-01: #4f565c;
+  --color-sidecar-toolbar-background: #d7dce3;
+  --color-sidecar-toolbar-foreground: var(--color-base02);
+
+  --color-selection-background: var(--color-base05);
+
+  --color-brand-03: #418cff;
+  --color-tag-beta-fill: #202529;
+  --color-tag-beta-text: var(--color-text-01);
+  --color-text-02: #b3bac1;
+
+  --color-screenshot-background: var(--color-selection-background);
+  --color-confirm-background: #272c30;
+  --color-confirm-foreground: var(--color-base05);
+
+  /* table header row */
+  --color-ui-06: #1a2024;
+}
+
+body[kui-theme="Dark"] .header-cell {
+  color: #d8dce3;
+}
+
+/* tomorrow-night hightlightjs theme */
+.hljs-comment,
+.hljs-quote {
+  color: #969896;
+}
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+  color: #cc6666;
+}
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: #de935f;
+}
+.hljs-attribute {
+  color: var(--color-support-03);
+}
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #b5bd68;
+}
+.hljs-title,
+.hljs-section {
+  color: #81a2be;
+}
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #b294bb;
+}
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: transparent;
+  color: #c5c8c6;
+  padding: 0.5em;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: bold;
+}
