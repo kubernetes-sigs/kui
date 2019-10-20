@@ -20,7 +20,7 @@
   },
   "gettingStarted": "tutorial play @tutorials/getting-started",
   "about": [{ "mode": "contexts", "label": "Contexts", "direct": "about --mode contexts --content contexts" }],
-  "defaultTheme": "Dark",
+  "defaultTheme": "Carbon Gray10",
   "themes": [
     {
       "name": "Light",
