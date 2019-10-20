@@ -117,8 +117,8 @@
   text-overflow: ellipsis;
 }
 body.subwindow .bx--data-table.result-table .entity-attributes > td,
-body.subwidnow .bx--data-table.result-table .entity-attributes > th {
-  padding: 1.25vh 1.25vw;
+body.subwindow .bx--data-table.result-table .entity-attributes > th {
+  padding: 0 1.25vw;
 }
 .bx--data-table.result-table .entity-attributes > th.header-cell {
   padding-left: 0;

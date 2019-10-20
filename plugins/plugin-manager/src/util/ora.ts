@@ -109,37 +109,40 @@ class OraStream extends Writable {
 
   public async _write(chunk: Buffer, enc: string, next: (error?: Error | null) => void) {
     const str = chunk.toString()
-    const spinnerPart = str[0]
-    const restPart = str.slice(1)
+    const splitIdx = str[0] === '\u001b' ? str.indexOf('m', 1) + 2 : 1
+    const spinnerPart = str[splitIdx - 1]
+    const restPart = str[splitIdx] === '\u001b' ? str.slice(splitIdx + 5) : str.slice(splitIdx)
 
     const line = document.createElement('pre')
-    const spinnerDom = document.createElement('span')
-    const restDom = document.createElement('span')
+    const spinnerDom = document.createElement('div')
+    const restDom = document.createElement('div')
     line.appendChild(spinnerDom)
     line.appendChild(restDom)
     line.classList.add('flex-layout')
+    restDom.classList.add('do-not-overflow', 'small-left-pad')
 
     // here, we modify the spinner text a bit, e.g. replacing ✔ and ✖
     // with SVG analogs
     spinnerDom.classList.add(this.color)
-    if (spinnerPart === '✔') {
+    if (/✔/.test(spinnerPart)) {
       // replace the unicode text with a "success" SVG
       line.classList.remove('flex-align-top')
       spinnerDom.style.display = 'inline-flex'
       spinnerDom.innerHTML =
         '<svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM14 21.5l-5-5 1.59-1.5L14 18.35 21.41 11 23 12.58z"></path><title>Checkbox checked filled</title></svg>'
-    } else if (spinnerPart === '✖') {
+    } else if (/'✖'/.test(spinnerPart)) {
       // replace the unicode text with an "error" SVG
-      line.classList.remove('flex-align-top')
       spinnerDom.style.display = 'inline-flex'
+      line.classList.remove('flex-align-top')
       spinnerDom.innerHTML =
-        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M29.88 27.52l-13-25a1 1 0 0 0-1.76 0l-13 25a1 1 0 0 0 0 1A1 1 0 0 0 3 29h26a1 1 0 0 0 .86-.49 1 1 0 0 0 .02-.99zM14.88 10h2.25v10h-2.25zM16 26a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 26z"></path><title>Warning alt filled</title></svg>'
+        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><path d="M29.88 27.52l-13-25a1 1 0 0 0-1.76 0l-13 25a1 1 0 0 0 0 1A1 1 0 0 0 3 29h26a1 1 0 0 0 .86-.49 1 1 0 0 0 .02-.99zM14.88 10h2.25v10h-2.25zM16 26a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 26z"></path><title>Warning alt filled</title></svg>'
     } else {
       // otherwise, use whatever spinner unicode text ora throws at
       // us, but increase the font size a bit
       spinnerDom.classList.add('even-larger-text')
       line.classList.add('flex-align-top')
       spinnerDom.innerText = spinnerPart
+      restDom.classList.add('even-lighter-text')
     }
 
     // the rest of the line we use unchanged
