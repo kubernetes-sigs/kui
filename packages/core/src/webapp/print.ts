@@ -440,6 +440,7 @@ export const printResults = (
         // Notes: if we have a table, pull from the first row
         // (see https://github.com/IBM/kui/issues/3052)
         const prettyType: string =
+          (isTable(response) && response.title) ||
           (isTable(response) &&
             response.body[0] &&
             (response.body[0].prettyType ||

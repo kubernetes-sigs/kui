@@ -150,7 +150,8 @@ body[kui-theme="Carbon Gray10"] .kui--input-stripe input {
   background-color: var(--color-base01);
 }
 
-body[kui-theme="Carbon Gray10"] .bx--data-table {
+body[kui-theme="Carbon Gray10"] .bx--data-table,
+body[kui-theme="Carbon Gray10"] .repl-result-like {
   font-family: var(--font-sans-serif);
 }
 body[kui-theme="Carbon Gray10"] .bx--data-table td {

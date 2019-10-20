@@ -15,7 +15,7 @@
  */
 
 import * as Debug from 'debug'
-import { ensureDir } from 'fs-extra'
+import { ensureDir, symlink, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'
 
@@ -145,6 +145,25 @@ const doInstall = async (args: Commands.Arguments) => {
 
   await spinner.next(strings('Updating plugin registry'), strings('Installing dependencies'))
   await REPL.qexec('plugin compile')
+
+  if (process.env.KUI_BIN_DIR && process.env.KUI_BIN_PREFIX && process.env.KUI_BIN) {
+    await spinner.next(strings('Creating command-line executable'))
+    try {
+      const sourcePath = process.env.KUI_BIN
+      const commandPrefix = name.replace(/^.*plugin-(.*)$/, '$1')
+      const target = `${process.env.KUI_BIN_PREFIX}${commandPrefix}`
+      debug(
+        `creating command-line executable with sourcePath=${sourcePath} commandPrefix=${commandPrefix} target=${target} binDir=${process.env.KUI_BIN_DIR}`
+      )
+      const targetPath = join(process.env.KUI_BIN_DIR, target)
+      await ensureDir(process.env.KUI_BIN_DIR)
+      await unlink(targetPath)
+      await symlink(sourcePath, targetPath)
+    } catch (err) {
+      await spinner.fail()
+      throw err
+    }
+  }
 
   await spinner.next(strings('Successfully installed. Here are your new commands:'))
   await spinner.stop()
