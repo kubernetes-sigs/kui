@@ -18,6 +18,7 @@ import Debug from 'debug'
 const debug = Debug('core/main/headless-support')
 debug('loading')
 
+import { clearLine, cursorTo } from 'readline'
 import { Streamable } from '../models/streamable'
 
 /**
@@ -30,11 +31,20 @@ import { Streamable } from '../models/streamable'
 export const streamTo = async () => {
   const { print } = await import('./headless-pretty-print')
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (response: Streamable) => {
-    debug('streaming response', response)
+  return (response: Streamable, killLine?: boolean) => {
+    debug('streaming response', killLine)
+
+    if (killLine) {
+      clearLine(process.stdout, 0)
+      cursorTo(process.stdout, 0, null)
+    }
+
     print(response)
-    debug('streaming response2')
+
+    if (!killLine) {
+      process.stdout.write('\n')
+    }
+
     return Promise.resolve()
   }
 }

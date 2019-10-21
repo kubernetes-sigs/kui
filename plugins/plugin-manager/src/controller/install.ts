@@ -53,16 +53,17 @@ const usage: Errors.UsageModel = {
  */
 const doInstall = async (args: Commands.Arguments) => {
   const { argvNoOptions, REPL } = args
-  const name = argvNoOptions[argvNoOptions.indexOf('install') + 1]
+  const nameWithVersion = argvNoOptions[argvNoOptions.indexOf('install') + 1]
+  const nameWithoutVersion = nameWithVersion.replace(/^(@?[^@]+)@.+$/, '$1')
 
-  const spinner = await new Ora().init(strings('Preparing to install', name), args)
+  const spinner = await new Ora().init(strings('Preparing to install', nameWithoutVersion), args)
 
   const rootDir = Settings.userDataDir()
   const pluginHome = join(rootDir, 'plugins')
-  const targetDir = join(pluginHome, basename(name)) // final location of the plugin
+  const targetDir = join(pluginHome, basename(nameWithoutVersion)) // final location of the plugin
   await ensureDir(targetDir)
 
-  debug(`installing ${name} into pluginHome=${pluginHome} targetDir=${targetDir}`)
+  debug(`installing ${nameWithoutVersion} into pluginHome=${pluginHome} targetDir=${targetDir}`)
 
   await Settings.exportTo(pluginHome)
 
@@ -98,7 +99,7 @@ const doInstall = async (args: Commands.Arguments) => {
   await spinner.next(strings('Installing dependencies'))
   // eslint-disable-next-line no-async-promise-executor
   await new Promise(async (resolve, reject) => {
-    const args = ['install', name, '--prod', '--no-package-lock', '--loglevel', 'info']
+    const args = ['install', nameWithVersion, '--prod', '--no-package-lock', '--loglevel', 'info']
     debug('npm install args', args)
     const sub = spawn(npm, args, {
       cwd: pluginHome
@@ -116,7 +117,7 @@ const doInstall = async (args: Commands.Arguments) => {
         // doesn't exist in the npm registry
         sub.kill()
         await spinner.fail()
-        reject(new Error(strings('The plugin {0} does not exist', name)))
+        reject(new Error(strings('The plugin {0} does not exist', nameWithVersion)))
       } else if (error.indexOf('ERR') >= 0) {
         // some other error we don't know about
         await spinner.fail()
@@ -150,7 +151,7 @@ const doInstall = async (args: Commands.Arguments) => {
     await spinner.next(strings('Creating command-line executable'))
     try {
       const sourcePath = process.env.KUI_BIN
-      const commandPrefix = name.replace(/^.*plugin-(.*)$/, '$1')
+      const commandPrefix = nameWithoutVersion.replace(/^.*plugin-(.*)$/, '$1')
       const target = `${process.env.KUI_BIN_PREFIX}${commandPrefix}`
       debug(
         `creating command-line executable with sourcePath=${sourcePath} commandPrefix=${commandPrefix} target=${target} binDir=${process.env.KUI_BIN_DIR}`
@@ -168,7 +169,7 @@ const doInstall = async (args: Commands.Arguments) => {
   await spinner.next(strings('Successfully installed. Here are your new commands:'))
   await spinner.stop()
 
-  return REPL.qexec(`plugin commands ${name}`)
+  return REPL.qexec(`plugin commands "${nameWithoutVersion}"`)
 }
 
 export default (commandTree: Commands.Registrar) => {

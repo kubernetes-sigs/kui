@@ -49,15 +49,17 @@ export const renderPopupContent = async (
   execOptions: ExecOptions,
   entity: PopupEntity = {}
 ) => {
-  debug('renderPopupContent', command, entity)
-
   const {
-    prettyType = '',
+    prettyType: _prettyType,
     modes = [],
     badges = [],
     controlHeaders = false,
     presentation = Presentation.SidecarFullscreenForPopups
   } = entity
+
+  const prettyType =
+    !_prettyType || _prettyType === 'custom' ? process.env.KUI_DEFAULT_PRETTY_TYPE || command : _prettyType
+  debug('renderPopupContent', command, entity, prettyType)
 
   // Last updated... text
   const subtext = document.createElement('div')
@@ -103,9 +105,10 @@ export const renderPopupContent = async (
       controlHeaders,
       content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
     }
+    console.error('WTF', custom)
 
     const { showCustom } = await import('./views/sidecar')
-    showCustom(getCurrentTab(), Object.assign({}, custom, entity), execOptions)
+    showCustom(getCurrentTab(), Object.assign({}, custom, entity, { prettyType }), execOptions)
   }
 }
 

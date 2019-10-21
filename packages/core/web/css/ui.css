@@ -399,9 +399,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl-input-like {
   font-size: 0.875em;
 }
-.repl-block:not(.processing) .repl-result-like {
-  filter: opacity(0.75) grayscale(0.5);
-}
 .repl-block:not(.processing) .repl-result-like:last-child {
   margin-bottom: 0.375em;
 }
@@ -1384,6 +1381,7 @@ code.fancy-code.hljs {
 }
 .even-larger-text {
   font-size: 2em;
+  line-height: 1em;
 }
 .larger-text {
   font-size: 1.5em;
@@ -2900,6 +2898,12 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 }
 .yellow-text svg path {
   fill: var(--color-support-03-darker);
+}
+.processing-text {
+  color: var(--color-processing) !important;
+}
+.processing-text > svg path {
+  fill: var(--color-processing) !important;
 }
 .cyan-text {
   color: var(--color-cyan) !important;
