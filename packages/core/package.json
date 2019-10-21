@@ -34,8 +34,6 @@
     "colors": "1.4.0",
     "columnify": "1.5.4",
     "debug": "4.1.1",
-    "electron-context-menu": "0.15.0",
-    "electron-squirrel-startup": "1.0.0",
     "extract-zip": "1.6.7",
     "fs-extra": "8.1.0",
     "marked": "^0.7.0",
