@@ -37,7 +37,7 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
     const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv)
     initElectron(
       strippedArgv,
-      { isRunningHeadless, forceUI },
+      { isRunningHeadless },
       !!(env.subwindowPlease || subwindowPlease),
       env.subwindowPrefs
         ? typeof env.subwindowPrefs === 'string'
