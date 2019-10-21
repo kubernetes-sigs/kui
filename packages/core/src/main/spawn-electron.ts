@@ -95,13 +95,6 @@ export function createWindow(
   // but this doesn't render the inset window buttons
   // see https://github.com/electron/electron/issues/10243
   promise.then(async () => {
-    try {
-      require('electron-context-menu')()
-    } catch (err) {
-      debug('not ready for graphics, still', err)
-      return
-    }
-
     const {
       theme,
       env
@@ -434,52 +427,13 @@ export const getCommand = (argv: string[]): Command => {
  */
 export async function initElectron(
   command: string[] = [],
-  { isRunningHeadless = false, forceUI = false } = {},
+  { isRunningHeadless = false } = {},
   subwindowPlease?: boolean,
   subwindowPrefs?: ISubwindowPrefs
 ) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
-  let promise: Promise<void>
-
-  // handle squirrel install and update events
-  try {
-    if (require('electron-squirrel-startup')) return
-  } catch (err) {
-    debug('electron components not directly installed')
-
-    /**
-     * We seem to be running with a headless.zip build; now determine
-     * the best course of action
-     */
-    const maybeSpawnGraphics = async () => {
-      if (!forceUI && !app) {
-        const { initHeadless } = await import('./headless')
-        await initHeadless(process.argv, true)
-      }
-      const colors = await import('colors/safe')
-      console.log(colors.red('Graphical components are not installed.'))
-      process.exit(126)
-    }
-
-    try {
-      // then this is probably an unrelated package.json file
-      // _location will only be present for npm install'd assets
-      // and the name is there to match our top-level package.json
-      await maybeSpawnGraphics()
-    } catch (err) {
-      // we couldn't find ../package.json; we're probably using a
-      // headless.zip installation
-      debug(err)
-
-      console.log('Graphical components are not installed.')
-      process.exit(126)
-    }
-  }
-
-  if (promise) {
-    return promise
-  } else if (!app) {
+  if (!app) {
     debug('loading electron')
     const Electron = await import('electron')
     app = Electron.app
