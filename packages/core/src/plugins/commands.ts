@@ -79,7 +79,7 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
       .map(({ command, name }) => ({
         type: 'command',
         name,
-        attributes: [{ value: docs[command] }],
+        attributes: [{ key: 'about', value: docs[command] }],
         onclick: name
       }))
   }

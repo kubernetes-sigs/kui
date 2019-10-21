@@ -17,7 +17,10 @@
 import * as ora from 'ora'
 import { Writable } from 'stream'
 
+import { isHeadless } from '@kui-shell/core/api/capabilities'
 import Commands from '@kui-shell/core/api/commands'
+
+const defaultColor = 'processing-text'
 
 class OraStream extends Writable {
   private stdout!: (response: HTMLElement | string, killLine?: boolean) => Promise<void>
@@ -25,7 +28,7 @@ class OraStream extends Writable {
   private spinner!: ora.Ora
 
   private killLine = true
-  private color = 'yellow-text'
+  private color = defaultColor
 
   // private pendingWrite: Promise<void>
   private cb: () => void
@@ -40,6 +43,7 @@ class OraStream extends Writable {
     this.spinner = ora({
       text,
       isEnabled: true,
+      spinner: 'growHorizontal',
       stream: this
     }).start()
 
@@ -81,6 +85,10 @@ class OraStream extends Writable {
     } else {
       await this.succeed()
     }
+
+    if (isHeadless()) {
+      await this.stdout('\n')
+    }
   }
 
   private blank() {
@@ -93,7 +101,7 @@ class OraStream extends Writable {
       this.color = 'red-text'
       this.spinner.fail(message)
     }).then(() => {
-      this.color = 'yellow-text'
+      this.color = defaultColor
     })
   }
 
@@ -103,53 +111,49 @@ class OraStream extends Writable {
       this.color = 'green-text'
       this.spinner.succeed(message)
     }).then(() => {
-      this.color = 'yellow-text'
+      this.color = defaultColor
     })
   }
 
   public async _write(chunk: Buffer, enc: string, next: (error?: Error | null) => void) {
-    const str = chunk.toString()
-    const splitIdx = str[0] === '\u001b' ? str.indexOf('m', 1) + 2 : 1
-    const spinnerPart = str[splitIdx - 1]
-    const restPart = str[splitIdx] === '\u001b' ? str.slice(splitIdx + 5) : str.slice(splitIdx)
-
-    const line = document.createElement('pre')
-    const spinnerDom = document.createElement('div')
-    const restDom = document.createElement('div')
-    line.appendChild(spinnerDom)
-    line.appendChild(restDom)
-    line.classList.add('flex-layout')
-    restDom.classList.add('do-not-overflow', 'small-left-pad')
-
-    // here, we modify the spinner text a bit, e.g. replacing ✔ and ✖
-    // with SVG analogs
-    spinnerDom.classList.add(this.color)
-    if (/✔/.test(spinnerPart)) {
-      // replace the unicode text with a "success" SVG
-      line.classList.remove('flex-align-top')
-      spinnerDom.style.display = 'inline-flex'
-      spinnerDom.innerHTML =
-        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM14 21.5l-5-5 1.59-1.5L14 18.35 21.41 11 23 12.58z"></path><title>Checkbox checked filled</title></svg>'
-    } else if (/'✖'/.test(spinnerPart)) {
-      // replace the unicode text with an "error" SVG
-      spinnerDom.style.display = 'inline-flex'
-      line.classList.remove('flex-align-top')
-      spinnerDom.innerHTML =
-        '<svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><path d="M29.88 27.52l-13-25a1 1 0 0 0-1.76 0l-13 25a1 1 0 0 0 0 1A1 1 0 0 0 3 29h26a1 1 0 0 0 .86-.49 1 1 0 0 0 .02-.99zM14.88 10h2.25v10h-2.25zM16 26a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 16 26z"></path><title>Warning alt filled</title></svg>'
+    if (isHeadless()) {
+      const str = chunk.toString()
+      await this.stdout(str.substring(0, str.indexOf('\n')), this.killLine)
     } else {
-      // otherwise, use whatever spinner unicode text ora throws at
-      // us, but increase the font size a bit
-      spinnerDom.classList.add('even-larger-text')
-      line.classList.add('flex-align-top')
+      const str = chunk.toString()
+      const splitIdx = str[0] === '\u001b' ? str.indexOf('m', 1) + 2 : 1
+      const spinnerPart = str[splitIdx - 1]
+      const restPart = str[splitIdx] === '\u001b' ? str.slice(splitIdx + 5) : str.slice(splitIdx)
+
+      const line = document.createElement('pre')
+      const spinnerDom = document.createElement('div')
+      const restDom = document.createElement('div')
+      line.appendChild(spinnerDom)
+      line.appendChild(restDom)
+      line.classList.add('flex-layout')
+      restDom.classList.add('do-not-overflow')
+
+      // here, we modify the spinner text a bit, e.g. replacing ✔ and ✖
+      // with SVG analogs
+      spinnerDom.classList.add(this.color)
       spinnerDom.innerText = spinnerPart
-      restDom.classList.add('even-lighter-text')
+
+      if (!/✔/.test(spinnerPart) && !/'✖'/.test(spinnerPart)) {
+        restDom.classList.add('lighter-text')
+        line.classList.add('flex-align-top')
+      } else {
+        spinnerDom.style.fontSize = '125%'
+        spinnerDom.style.lineHeight = '1.2rem'
+        spinnerDom.style.width = '1rem'
+        spinnerDom.style.textAlign = 'center'
+      }
+
+      // the rest of the line we use unchanged
+      restDom.innerText = restPart
+
+      // emit the line to the UI
+      await this.stdout(line, this.killLine)
     }
-
-    // the rest of the line we use unchanged
-    restDom.innerText = restPart
-
-    // emit the line to the UI
-    await this.stdout(line, this.killLine)
 
     // notify any waiters from within this class
     if (this.cb) {

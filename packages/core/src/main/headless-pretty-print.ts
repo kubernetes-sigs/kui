@@ -359,8 +359,7 @@ export const print = (
         debug('printing plain true')
         logger(colors.green(ok))
       } else if (typeof msg === 'string' || typeof msg === 'boolean' || typeof msg === 'number') {
-        // logger(colors.green(`${ok}: `) + msg)
-        logger(msg)
+        stream.write(msg)
       } else if (ElementMimic.isFakeDom(msg)) {
         // msg is a DOM facade
         debug('printing fake dom')
@@ -398,7 +397,10 @@ export const print = (
           )
         }
       } else if (isMixedResponse(msg)) {
-        msg.forEach(_ => print(_))
+        msg.forEach(_ => {
+          print(_)
+          stream.write('\n')
+        })
         return logger(colors.green(ok))
       } else if (isMultiModalResponse(msg)) {
         throw new Error('cannot format this response in headless mode')

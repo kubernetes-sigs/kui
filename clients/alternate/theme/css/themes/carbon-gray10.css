@@ -1,5 +1,5 @@
 /* color variables */
-body[kui-theme="IBM Light"] {
+body[kui-theme="Carbon Gray10"] {
   --color-base00: #ffffff;
   --color-base01: #f3f3f3;
   --color-base02: #8c8c8c;
@@ -22,8 +22,13 @@ body[kui-theme="IBM Light"] {
   --color-background-inverted02: var(--color-sidecar-header);
   --color-text-inverted01: #fff;
   --color-text-inverted02: var(--color-text-inverted01);
-  --color-text-inverted03: var(--color-text-01);
+  --color-text-inverted03: var(--color-base01);
   --color-tab-selected-inverted: var(--color-name);
+
+  --color-name-sidecar: #30b0ff;
+  --color-red-sidecar: #fb4b53;
+  --color-yellow-sidecar: #fdd13a;
+  --color-green-sidecar: #56d679;
 
   --color-brand-01: #0062ff;
   --color-brand-02: #171717;
@@ -40,7 +45,6 @@ body[kui-theme="IBM Light"] {
   --color-table-border2: #3d4144;
   --color-table-border3: #a5adb4;
 
-  --color-sidecar-toolbar-background: #bebebe;
   --color-sidecar-toolbar-foreground: var(--color-text-01);
 
   --color-sidecar-header: #282828;
@@ -63,130 +67,92 @@ body[kui-theme="IBM Light"] {
   --color-light-yellow: hsla(46, 99%, 59%, 50%);
 }
 
-body[kui-theme="IBM Light"] sidecar .sidecar-header {
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td,
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table th {
+  color: var(--color-text-inverted03);
+}
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td .slightly-deemphasize {
+  color: var(--color-base02);
+}
+
+body[kui-theme="Carbon Gray10"] sidecar .sidecar-header {
   border-bottom-color: #4c4c4c;
 }
 
-body[kui-theme="IBM Light"] .result-table-title-outer {
+body[kui-theme="Carbon Gray10"] .result-table-title-outer {
   background-color: transparent;
 }
-body[kui-theme="IBM Light"] sidecar .bx--data-table-header__title {
+body[kui-theme="Carbon Gray10"] sidecar .bx--data-table-header__title {
   color: var(--color-base07);
 }
 
-body[kui-theme="IBM Light"] sidecar,
-body[kui-theme="IBM Light"] sidecar .sidecar-bottom-stripe,
-body[kui-theme="IBM Light"] sidecar .monaco-editor,
-body[kui-theme="IBM Light"] sidecar .monaco-editor .mtk5,
-body[kui-theme="IBM Light"]
+body[kui-theme="Carbon Gray10"] sidecar .bx--link {
+  color: var(--color-map-key);
+}
+body[kui-theme="Carbon Gray10"] sidecar,
+body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe,
+body[kui-theme="Carbon Gray10"] sidecar .monaco-editor,
+body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .mtk5,
+body[kui-theme="Carbon Gray10"]
   sidecar
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-base07);
 }
-body[kui-theme="IBM Light"]
+body[kui-theme="Carbon Gray10"]
   sidecar
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   border-bottom-color: var(--color-map-key);
 }
-body[kui-theme="IBM Light"]
+body[kui-theme="Carbon Gray10"]
   sidecar
   .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-base01);
 }
 
-body[kui-theme="IBM Light"] sidecar .sidecar-bottom-stripe svg path {
+body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe svg path {
   fill: var(--color-base07);
 }
-body[kui-theme="IBM Light"] sidecar a.bx--tabs__nav-link,
-body[kui-theme="IBM Light"] sidecar .sidecar-bottom-stripe {
+body[kui-theme="Carbon Gray10"] sidecar a.bx--tabs__nav-link,
+body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe {
   background-color: var(--color-sidecar-header);
   border-bottom-color: #6f6f6f;
   color: var(--color-sidecar-toolbar-background);
 }
-body[kui-theme="IBM Light"] .monaco-editor .margin-view-overlays .current-line-margin,
-body[kui-theme="IBM Light"] .monaco-editor .view-overlays .current-line {
+body[kui-theme="Carbon Gray10"] .monaco-editor .margin-view-overlays .current-line-margin,
+body[kui-theme="Carbon Gray10"] .monaco-editor .view-overlays .current-line {
   border-color: #565656;
 }
-body[kui-theme="IBM Light"] sidecar .sidecar-header-secondary-content,
-body[kui-theme="IBM Light"] sidecar .monaco-editor .mtk7,
-body[kui-theme="IBM Light"] sidecar .monaco-editor .line-numbers {
+body[kui-theme="Carbon Gray10"] sidecar .sidecar-header-secondary-content,
+body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .mtk7,
+body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .line-numbers {
   color: var(--color-sidecar-toolbar-background);
 }
-body[kui-theme="IBM Light"] .monaco-editor .current-line ~ .line-numbers {
+body[kui-theme="Carbon Gray10"] .monaco-editor .current-line ~ .line-numbers {
   color: #fa75a6;
 }
-body[kui-theme="IBM Light"] .kui--input-stripe .repl-input {
+body[kui-theme="Carbon Gray10"] sidecar .repl-input input {
+  color: var(--color-text-inverted01);
+}
+body[kui-theme="Carbon Gray10"] .kui--input-stripe .repl-input {
   background-color: var(--color-base04);
 }
-body[kui-theme="IBM Light"] .repl {
+body[kui-theme="Carbon Gray10"] .repl,
+body[kui-theme="Carbon Gray10"] .left-tab-stripe-button-selected {
   background-color: var(--color-base01);
 }
-body[kui-theme="IBM Light"] .kui--input-stripe {
+body[kui-theme="Carbon Gray10"] .kui--input-stripe {
   background-color: var(--color-base00);
 }
-body[kui-theme="IBM Light"] .kui--input-stripe input {
+body[kui-theme="Carbon Gray10"] .kui--input-stripe input {
   background-color: var(--color-base01);
 }
 
-body[kui-theme="IBM Light"] .bx--data-table {
+body[kui-theme="Carbon Gray10"] .bx--data-table {
   font-family: var(--font-sans-serif);
 }
-body[kui-theme="IBM Light"] .bx--data-table td {
+body[kui-theme="Carbon Gray10"] .bx--data-table td {
   background-color: var(--color-base00);
-}
-
-/* mono-blue hightlightjs theme */
-.hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: #eaeef3;
-}
-.hljs {
-  color: #00193a;
-}
-.hljs-keyword,
-.hljs-selector-tag,
-.hljs-title,
-.hljs-section,
-.hljs-doctag,
-.hljs-name,
-.hljs-strong {
-  font-weight: bold;
-}
-.hljs-comment {
-  color: #738191;
-}
-.hljs-string,
-.hljs-title,
-.hljs-section,
-.hljs-built_in,
-.hljs-literal,
-.hljs-params,
-.hljs-type,
-.hljs-addition,
-.hljs-tag,
-.hljs-quote,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class {
-  color: #0048ab;
-}
-.hljs-meta,
-.hljs-subst,
-.hljs-symbol,
-.hljs-regexp,
-.hljs-attribute,
-.hljs-deletion,
-.hljs-variable,
-.hljs-template-variable,
-.hljs-link,
-.hljs-bullet {
-  color: #4c81c9;
-}
-.hljs-emphasis {
-  font-style: italic;
 }

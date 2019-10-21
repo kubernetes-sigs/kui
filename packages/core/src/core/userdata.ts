@@ -62,7 +62,6 @@ const preferencesFilepath = () => join(userDataDir(), 'prefs.json')
  *
  */
 const fsyncPreferences = async (prefs: Preferences): Promise<Preferences> => {
-  console.error('!!!!!!!!!')
   if (inBrowser()) {
     store().setItem('kui.userprefs', JSON.stringify(prefs))
   } else {

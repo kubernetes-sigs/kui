@@ -439,7 +439,7 @@ export const printResults = (
         // entity type
         // Notes: if we have a table, pull from the first row
         // (see https://github.com/IBM/kui/issues/3052)
-        const prettyType: string =
+        const prettyType =
           (isTable(response) && response.title) ||
           (isTable(response) &&
             response.body[0] &&
@@ -448,7 +448,8 @@ export const printResults = (
               response.body[0].type ||
               response.body[0].kind)) ||
           (isEntitySpec(response) &&
-            (response.kind || response.prettyType || response.prettyKind || response.type || response.kind))
+            (response.kind || response.prettyType || response.prettyKind || response.type || response.kind)) ||
+          false
 
         // presentation mode
         const presentation =
@@ -456,6 +457,11 @@ export const printResults = (
           (prettyType && Array.isArray(response) && Presentation.FixedSize) ||
           Presentation.SidecarFullscreenForPopups
 
+        // Notes: we try to avoid "custom" in the display, since
+        // "custom" is an internal term of the low-level kui
+        // CustomSpec API. If we weren't able to find a reasonable
+        // prettyType in the above logic, then use the command that
+        // the user executed
         await renderPopupContent(
           command,
           alreadyRendered !== true && resultDom,

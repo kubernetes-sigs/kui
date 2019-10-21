@@ -31,10 +31,13 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
       .then(reload)
       .catch(Common.oops(this, true)))
 
-  it('should try "hi" and fail', () =>
-    CLI.command('hi', this.app)
-      .then(ReplExpect.error(404))
-      .catch(Common.oops(this, true)))
+  if (process.platform !== 'darwin') {
+    // macOS has a /usr/bin/sample
+    it('should try "sample hi" and fail', () =>
+      CLI.command('sample hi', this.app)
+        .then(ReplExpect.error(404))
+        .catch(Common.oops(this, true)))
+  }
 
   it('should try "plugin version fdiaosfjdasoi" and fail', () =>
     CLI.command('plugin version fdiaosfjdasoi', this.app)
@@ -47,18 +50,18 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 
   it('should install @kui-shell/plugin-sample', () =>
-    CLI.command('plugin install @kui-shell/plugin-sample', this.app)
+    CLI.command('plugin install @kui-shell/plugin-sample@1.0.7', this.app)
       .then(ReplExpect.okWithCustom({ passthrough: true }))
       .then(reload) // reload the app, to pick up the plugin model changes
       .catch(Common.oops(this, true)))
 
-  it('should try "hi" and succeed', () =>
-    CLI.command('hi', this.app)
+  it('should try "sample hi" and succeed', () =>
+    CLI.command('sample hi', this.app)
       .then(ReplExpect.okWithString('hello world'))
       .catch(Common.oops(this, true)))
 
-  it('should try "hello" and succeed', () =>
-    CLI.command('hello', this.app)
+  it('should try "sample hello" and succeed', () =>
+    CLI.command('sample hello', this.app)
       .then(ReplExpect.ok)
       .catch(Common.oops(this, true)))
 
@@ -79,7 +82,7 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
     CLI.command('plugin commands @kui-shell/plugin-sample', this.app)
       .then(ReplExpect.okWithCustom({ expect: 'hello', passthrough: true }))
       .then(async (N: number) => {
-        await this.app.client.click(`${Selectors.OUTPUT_N(N)} .entity[data-name="hello"] .clickable`)
+        await this.app.client.click(`${Selectors.OUTPUT_N(N)} .entity[data-name="sample hello"] .clickable`)
         await this.app.client.waitForExist(Selectors.OUTPUT_N(N + 1))
         await this.app.client.waitForText(Selectors.OUTPUT_N(N + 1))
         return this.app.client.getText(Selectors.OUTPUT_N(N + 1))
@@ -98,10 +101,13 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
       .then(ReplExpect.error(404))
       .catch(Common.oops(this, true)))
 
-  it('should try "hi" and fail', () =>
-    CLI.command('hi', this.app)
-      .then(ReplExpect.error(404))
-      .catch(Common.oops(this, true)))
+  if (process.platform !== 'darwin') {
+    // macOS has a /usr/bin/sample
+    it('should try "sample hi" and fail', () =>
+      CLI.command('sample hi', this.app)
+        .then(ReplExpect.error(404))
+        .catch(Common.oops(this, true)))
+  }
 
   it('should successfully execute plugin compile', () =>
     CLI.command('plugin compile', this.app)

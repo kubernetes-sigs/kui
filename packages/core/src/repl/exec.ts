@@ -46,7 +46,6 @@ import { CodedError } from '../models/errors'
 import { UsageError, UsageModel, UsageRow } from '../core/usage-error'
 
 import { isHeadless, hasLocalAccess } from '../core/capabilities'
-import { streamTo as headlessStreamTo } from '../main/headless-support' // FIXME
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
 import SymbolTable from '../core/symbol-table'
@@ -592,7 +591,14 @@ class InProcessExecutor implements Executor {
               parsedOptions,
               createOutputStream:
                 execOptions.createOutputStream ||
-                (() => (isHeadless() ? headlessStreamTo() : Promise.resolve(streamToUI(tab, block))))
+                (async () => {
+                  if (isHeadless()) {
+                    const { streamTo: headlessStreamTo } = await import('../main/headless-support')
+                    return headlessStreamTo()
+                  } else {
+                    return Promise.resolve(streamToUI(tab, block))
+                  }
+                })
             })
           })
           .then(async (response: Response) => {
