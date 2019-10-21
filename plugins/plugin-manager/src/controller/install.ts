@@ -158,7 +158,11 @@ const doInstall = async (args: Commands.Arguments) => {
       )
       const targetPath = join(process.env.KUI_BIN_DIR, target)
       await ensureDir(process.env.KUI_BIN_DIR)
-      await unlink(targetPath)
+      await unlink(targetPath).catch(err => {
+        if (err.code !== 'ENOENT') {
+          throw err
+        }
+      })
       await symlink(sourcePath, targetPath)
     } catch (err) {
       await spinner.fail()
