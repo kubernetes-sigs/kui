@@ -113,13 +113,11 @@ export const init = async (): Promise<boolean> => {
     }
   }
 
-  if (!Capabilities.isHeadless()) {
-    const { default: eventBus } = await import('../core/events')
-    eventBus.on('/plugin/compile/request', async (pluginToBeRemoved?: string) => {
-      const { compileUserInstalled } = await import('./assembler')
-      compileUserInstalled(pluginToBeRemoved)
-    })
-  }
+  const { default: eventBus } = await import('../core/events')
+  eventBus.on('/plugin/compile/request', async (pluginToBeRemoved?: string) => {
+    const { compileUserInstalled } = await import('./assembler')
+    compileUserInstalled(pluginToBeRemoved)
+  })
 
   setPluginResolver(makeResolver(prescan, registrar))
 

@@ -50,7 +50,7 @@ odescribe('openwhisk headless mode', function(this: Common.ISuite) {
   it(`should show current version`, () =>
     cli
       .command('version')
-      .then(cli.expectOK(`${expectedVersion}\n`, { exact: true }))
+      .then(cli.expectOK(expectedVersion, { exact: true }))
       .catch(Common.oops(this)))
 
   it(`should show current namespace`, () =>
