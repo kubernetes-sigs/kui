@@ -78,7 +78,7 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
       .filter(_ => !_.usage || (!_.usage.synonymFor && !_.usage.children))
       .map(({ command, name }) => ({
         type: 'command',
-        name,
+        name: process.env.KUI_BIN_PREFIX_FOR_COMMANDS ? `${process.env.KUI_BIN_PREFIX_FOR_COMMANDS} ${name}` : name,
         attributes: [{ key: 'about', value: docs[command] }],
         onclick: name
       }))
