@@ -8,7 +8,6 @@ services:
 
 os:
   - linux
-  - osx
 
 env:
   matrix:
