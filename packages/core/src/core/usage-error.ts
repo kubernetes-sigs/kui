@@ -600,6 +600,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
           if (!noclick) {
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
+            cmdPart.setAttribute('tabindex', '0')
             cmdPart.onclick = async event => {
               const cli = await import('../webapp/cli')
               if (partial) {
