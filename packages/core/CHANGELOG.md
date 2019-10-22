@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.10](https://github.com/IBM/kui/compare/v5.1.9...v5.1.10) (2019-10-22)
+
+### Bug Fixes
+
+- **packages/core:** remove electron-context-menu dependence ([4efac45](https://github.com/IBM/kui/commit/4efac45)), closes [#3064](https://github.com/IBM/kui/issues/3064) [#3014](https://github.com/IBM/kui/issues/3014)
+
 ## [5.1.9](https://github.com/IBM/kui/compare/v5.1.8...v5.1.9) (2019-10-16)
 
 **Note:** Version bump only for package @kui-shell/core

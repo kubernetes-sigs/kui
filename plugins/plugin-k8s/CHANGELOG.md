@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.10](https://github.com/IBM/kui/compare/v5.1.9...v5.1.10) (2019-10-22)
+
+### Bug Fixes
+
+- **plugins/plugin-k8s:** clicking Previous Log Tab in browser issues \_kubectl command in REPL ([c19889d](https://github.com/IBM/kui/commit/c19889d)), closes [#3040](https://github.com/IBM/kui/issues/3040)
+- **plugins/plugin-k8s:** latest and previous logs labels are translated but not externalized ([b431c41](https://github.com/IBM/kui/commit/b431c41)), closes [#3038](https://github.com/IBM/kui/issues/3038)
+
 ## [5.1.9](https://github.com/IBM/kui/compare/v5.1.8...v5.1.9) (2019-10-16)
 
 **Note:** Version bump only for package @kui-shell/plugin-k8s
