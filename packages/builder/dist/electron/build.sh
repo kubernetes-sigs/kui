@@ -34,20 +34,20 @@ echo "staging directory: $STAGING"
 CLIENT_HOME="$(pwd)"
 APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
-BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
+export BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
 
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(monaco-editor/dev)|(monaco-editor/min-maps)|(lerna.json)|(@types)'                          
+export IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(monaco-editor/dev)|(monaco-editor/min-maps)|(lerna.json)|(@types)'                          
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
 #
 set +e
-VERSION=$(cat "$CLIENT_HOME"/package.json | jq --raw-output .version)
+export VERSION=$(cat "$CLIENT_HOME"/package.json | jq --raw-output .version)
 if [ $? != 0 ]; then VERSION=0.0.1; fi
 set -e
 echo "Using VERSION=$VERSION"
@@ -108,7 +108,7 @@ function configure {
     # so that electron's prune doesn't eliminate @kui-shell/settings
     mkdir "$STAGING"/settings
     echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/settings/package.json
-    npm install --save --no-package-lock --ignore-scripts "$STAGING"/settings
+    npm install --save --no-package-lock --ignore-scripts ./settings
 
     CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
     UGLIFY=true npx --no-install kui-prescan
@@ -190,22 +190,7 @@ function win32 {
           which mono || brew install mono
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
-	    "$STAGING" \
-	    "${PRODUCT_NAME}" \
-            ${NO_PRUNE} \
-            --electron-version $ELECTRON_VERSION \
-	    --asar \
-	    --ignore="$IGNORE" \
-            --app-version=$VERSION \
-            --build-version=$VERSION \
-	    --out=$BUILDDIR \
-	    --platform=win32 \
-	    --icon=$ICON_WIN32 \
-	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
-	    --overwrite \
-	    --win32metadata.CompanyName="Apache" \
-	    --win32metadata.ProductName="${PRODUCT_NAME}")
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" win32 $ICON_WIN32)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
@@ -236,20 +221,7 @@ function mac {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ]; then
         echo "Electron build darwin $STAGING"
 
-        (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
-	    "$STAGING" \
-	    "${PRODUCT_NAME}" \
-            ${NO_PRUNE} \
-            --electron-version $ELECTRON_VERSION \
-	    --asar \
-	    --ignore="$IGNORE" \
-            --app-version=$VERSION \
-            --build-version=$VERSION \
-	    --out=$BUILDDIR \
-	    --platform=darwin \
-	    --icon=$ICON_MAC \
-	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
-	    --overwrite)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ICON_MAC)
 
         # use a custom icon for mac
         cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
@@ -297,20 +269,7 @@ function linux {
           which fakeroot || brew install fakeroot
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-packager \
-	    "$STAGING" \
-	    "${PRODUCT_NAME}" \
-            ${NO_PRUNE} \
-            --electron-version $ELECTRON_VERSION \
-	    --asar \
-	    --ignore="$IGNORE" \
-            --app-version=$VERSION \
-            --build-version=$VERSION \
-	    --out=$BUILDDIR \
-	    --platform=linux \
-	    --protocol=wsk --protocol-name="Execute ${PRODUCT_NAME} commands" \
-            --icon=$ICON_LINUX \
-	    --overwrite)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" linux $ICON_LINUX)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then

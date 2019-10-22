@@ -2,3 +2,5 @@ build
 builds
 node_modules
 *.js
+!dist/electron/builders/**/*.js
+!dist/electron/vendor/*/build
