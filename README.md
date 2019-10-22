@@ -25,8 +25,7 @@ for installation details and alternative installation options.
 
 ## Contributing
 
-If you want to help please take a look to our
-[developer guide](docs/dev/README.md).
+If you want to help, please take a look at our [guidelines](CONTRIBUTING.md) and [developer guide](docs/dev/README.md).
 
 ## The Kui Experience
 
