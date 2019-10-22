@@ -130,3 +130,8 @@ body[kui-theme-style] .monaco-editor .selected-text {
   transition: background 300ms ease-in-out;
   background: var(--color-selection-background);
 }
+
+/* tooltip text is unreadble */
+.monaco-editor .monaco-editor-hover .hover-row p {
+  color: #171717;
+}
