@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-editor",
-  "version": "5.1.10",
+  "version": "5.1.11",
   "description": "Kui plugin that integrates the monaco-editor component",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -45,5 +45,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "d549cbfd23be9f60a003011a85406d378c12aab3"
+  "gitHead": "2b89f10a5c9e8cc47bdab2ad7b72d4b5c64dd0d2"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-openwhisk-editor-extensions",
-  "version": "5.1.10",
+  "version": "5.1.11",
   "description": "Kui plugin for OpenWhisk that extends plugin-editor",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -25,7 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "d549cbfd23be9f60a003011a85406d378c12aab3",
+  "gitHead": "2b89f10a5c9e8cc47bdab2ad7b72d4b5c64dd0d2",
   "dependencies": {
     "debug": "4.1.1"
   }
