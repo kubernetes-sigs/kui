@@ -415,6 +415,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   entityNameClickable.className = 'entity-name cell-inner'
   if (!isHeaderCell) {
     entityNameClickable.classList.add('clickable')
+    entityNameClickable.setAttribute('tabindex', '0')
   } else {
     entityNameClickable.classList.add('bx--table-header-label')
   }
