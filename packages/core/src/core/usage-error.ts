@@ -608,6 +608,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
           if (!noclick) {
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
+            cmdPart.setAttribute('tabindex', '0')
             cmdPart.onclick = async event => {
               const Prompt = await import('../webapp/prompt')
               const { getCurrentTab } = await import('../webapp/tab')
