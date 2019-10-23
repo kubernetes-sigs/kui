@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/IBM/kui/compare/v5.2.0...v5.2.1) (2019-10-23)
+
+### Bug Fixes
+
+- improve plugin install ([c51dc8b](https://github.com/IBM/kui/commit/c51dc8b)), closes [#3057](https://github.com/IBM/kui/issues/3057)
+- **packages/core:** avoid "custom" in the sidecar "kind" display ([0ffcb4a](https://github.com/IBM/kui/commit/0ffcb4a)), closes [#3059](https://github.com/IBM/kui/issues/3059) [#3061](https://github.com/IBM/kui/issues/3061)
+- **plugins/plugin-manager:** minor alignment issue with ora checkmarks ([9a9a0a3](https://github.com/IBM/kui/commit/9a9a0a3)), closes [#3032](https://github.com/IBM/kui/issues/3032)
+- **plugins/plugin-manager:** plugin install fails if symlink does not exist ([a42d9f5](https://github.com/IBM/kui/commit/a42d9f5)), closes [#3062](https://github.com/IBM/kui/issues/3062)
+- **plugins/plugin-manager:** use ora for plugin remove ([4a3af86](https://github.com/IBM/kui/commit/4a3af86)), closes [#3029](https://github.com/IBM/kui/issues/3029) [#3028](https://github.com/IBM/kui/issues/3028)
+
+### Features
+
+- extend MultiModalResponse to support functions that produce content ([bfb9757](https://github.com/IBM/kui/commit/bfb9757)), closes [#3022](https://github.com/IBM/kui/issues/3022)
+- plugin install should offer a spinner ([f1a24c6](https://github.com/IBM/kui/commit/f1a24c6)), closes [#3024](https://github.com/IBM/kui/issues/3024)
+
 # [5.2.0](https://github.com/IBM/kui/compare/v4.5.0...v5.2.0) (2019-10-14)
 
 ### Bug Fixes
