@@ -26,6 +26,7 @@ import * as CLI from '../webapp/cli'
 import * as Inject from '../webapp/util/inject'
 import * as Dom from '../webapp/util/dom'
 import * as Sidecar from '../webapp/views/sidecar'
+import { clearSelection } from '../webapp/views/sidecar-visibility'
 import * as ModeManager from '../webapp/bottom-stripe'
 import * as ModeRegistrar from '../webapp/views/registrar/modes'
 import * as BadgeRegistrar from '../webapp/views/registrar/badges'
@@ -94,6 +95,18 @@ export namespace UI {
   export namespace Keys {
     export import Codes = keys.keys
     export import isCursorMovement = keys.isCursorMovement
+  }
+
+  /**
+   * Close all open views associated with the given `tab`. Currently,
+   * the UI supports a single open view ("the sidecar") associated
+   * with each tab; thus, currently, calling this function will close
+   * the sidecar, if it is currently open. However, this function
+   * should be assumed to close any such open views in the future.
+   *
+   */
+  export const closeAllViews = (tab: Tab) => {
+    clearSelection(tab)
   }
 
   export namespace LowLevel {

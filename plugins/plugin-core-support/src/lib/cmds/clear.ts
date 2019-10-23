@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,9 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
       return (tab.querySelector(processing) as HTMLElement) || true
     }
   }
+
+  // close the sidecar on clear
+  UI.closeAllViews(tab)
 
   // tell the repl we're all good
   return true
