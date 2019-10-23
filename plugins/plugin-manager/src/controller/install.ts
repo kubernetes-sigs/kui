@@ -147,11 +147,20 @@ const doInstall = async (args: Commands.Arguments) => {
   await spinner.next(strings('Updating plugin registry'), strings('Installing dependencies'))
   await REPL.qexec('plugin compile')
 
+  let commandPrefix = nameWithoutVersion.replace(/^.*plugin-(.*)$/, '$1')
+  try {
+    const pjson = await import(join(pluginHome, 'node_modules', nameWithoutVersion, 'package.json'))
+    if (pjson.krew && pjson.krew.commandPrefix) {
+      commandPrefix = pjson.krew.commandPrefix
+    }
+  } catch (err) {
+    console.error('could not find pjson', err)
+  }
+
   if (process.env.KUI_BIN_DIR && process.env.KUI_BIN_PREFIX && process.env.KUI_BIN) {
     await spinner.next(strings('Creating command-line executable'))
     try {
       const sourcePath = process.env.KUI_BIN
-      const commandPrefix = nameWithoutVersion.replace(/^.*plugin-(.*)$/, '$1')
       const target = `${process.env.KUI_BIN_PREFIX}${commandPrefix}`
       debug(
         `creating command-line executable with sourcePath=${sourcePath} commandPrefix=${commandPrefix} target=${target} binDir=${process.env.KUI_BIN_DIR}`
