@@ -133,5 +133,6 @@ body[kui-theme-style] .monaco-editor .selected-text {
 
 /* tooltip text is unreadble */
 .monaco-editor .monaco-editor-hover .hover-row p {
-  color: #171717;
+  background: var(--color-sidecar-toolbar-background);
+  color: var(--color-sidecar-toolbar-foreground);
 }
