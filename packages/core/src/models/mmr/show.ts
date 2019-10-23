@@ -16,9 +16,9 @@
 
 import { Tab } from '../../webapp/tab'
 import { MetadataBearing } from '../entity'
-import { CustomSpec, isCustomSpec, showCustom, insertView } from '../../webapp/views/sidecar'
-import { DirectViewControllerFunction, SidecarMode } from '../../webapp/bottom-stripe'
-import { isTable, isMultiTable } from '../../webapp/models/table'
+import { CustomSpec, isCustomSpec, showCustom } from '../../webapp/views/sidecar'
+import { SidecarMode, addModeButtons } from '../../webapp/bottom-stripe'
+import { isTable, isMultiTable, Table, MultiTable } from '../../webapp/models/table'
 import { formatTable } from '../../webapp/views/table'
 
 import { MultiModalResponse, Button } from './types'
@@ -28,14 +28,11 @@ import {
   ScalarResource,
   ScalarContent,
   isCommandStringContent,
+  isStringWithContentType,
   isFunctionContent
 } from './content-types'
 
-type Viewable = CustomSpec | DirectViewControllerFunction<void | CustomSpec, HTMLElement | void>
-
-function isCustom(spec: Viewable): spec is CustomSpec {
-  return isCustomSpec(spec as CustomSpec)
-}
+type Viewable = CustomSpec | HTMLElement | Table | MultiTable
 
 /**
  * Turn a Resource into a Viewable
@@ -59,24 +56,21 @@ async function format<T extends MetadataBearing>(
   } else if (isCustomSpec(resource.content)) {
     return resource.content
   } else if (isTable(resource.content) || isMultiTable(resource.content)) {
-    const content = resource.content
-    return (tab, entity) => {
-      const dom1 = document.createElement('div')
-      const dom2 = document.createElement('div')
-      dom1.classList.add('scrollable', 'scrollable-auto')
-      dom2.classList.add('result-as-table', 'repl-result')
-      dom1.appendChild(dom2)
-      formatTable(tab, content, dom2)
-      if (entity) {
-        insertView(tab)(dom1)
-      } else {
-        return dom1
-      }
-    }
+    return resource.content
   } else {
     // otherwise, we have string or HTMLElement content
     return Object.assign({ kind: mmr.kind, metadata: mmr.metadata, version: mmr.version, type: 'custom' }, resource)
   }
+}
+
+function wrapTable(tab: Tab, table: Table | MultiTable): HTMLElement {
+  const dom1 = document.createElement('div')
+  const dom2 = document.createElement('div')
+  dom1.classList.add('scrollable', 'scrollable-auto')
+  dom2.classList.add('result-as-table', 'repl-result')
+  dom1.appendChild(dom2)
+  formatTable(tab, table, dom2)
+  return dom1
 }
 
 function formatButtons(buttons: Button[]): SidecarMode[] {
@@ -88,30 +82,46 @@ function formatButtons(buttons: Button[]): SidecarMode[] {
   }))
 }
 
+function renderContent<T extends MetadataBearing>(tab: Tab, content: string | object) {
+  if (isStringWithContentType(content)) {
+    return content
+  } else if (isTable(content) || isMultiTable(content)) {
+    return {
+      content: wrapTable(tab, content)
+    }
+  } else {
+    return {
+      content
+    }
+  }
+}
+
 /**
  * Render a MultiModalResponse to the sidecar
  *
  */
 export async function show(tab: Tab, mmr: MultiModalResponse) {
-  const modes: SidecarMode<Viewable>[] = await Promise.all(
+  const modes: SidecarMode[] = await Promise.all(
     mmr.modes.map(async _ => ({
       mode: _.mode,
       label: _.label || _.mode,
-      direct: isCustomSpec(_) ? _ : await format(tab, mmr, _),
+      direct: (tab: Tab) => {
+        if (isCustomSpec(_)) {
+          return _
+        } else {
+          return format(tab, mmr, _)
+        }
+      },
       defaultMode: _.defaultMode,
       leaveBottomStripeAlone: true
     }))
   )
 
+  addModeButtons(tab, modes, mmr)
+
   const modesWithButtons: SidecarMode[] = mmr.buttons
     ? (modes as SidecarMode[]).concat(formatButtons(mmr.buttons))
     : (modes as SidecarMode[])
-
-  modes.forEach(_ => {
-    if (isCustom(_.direct)) {
-      _.direct.modes = modesWithButtons
-    }
-  })
 
   if (!modes.find(_ => _.defaultMode)) {
     modes[0].defaultMode = true
@@ -119,22 +129,28 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
 
   const defaultMode = modes.find(_ => _.defaultMode) || modes[0]
 
-  if (isCustom(defaultMode.direct)) {
-    return showCustom(tab, defaultMode.direct)
-  } else {
-    const content = await defaultMode.direct(tab)
-    if (content) {
-      return showCustom(tab, {
-        type: 'custom',
-        kind: mmr.kind,
-        metadata: mmr.metadata,
-        toolbarText: mmr.toolbarText,
-        version: mmr.version,
-        modes: modesWithButtons,
-        content
-      })
+  const content = typeof defaultMode.direct === 'function' ? await defaultMode.direct(tab, mmr) : defaultMode.direct
+
+  if (content) {
+    if (isCustomSpec(content)) {
+      return showCustom(tab, Object.assign({ modes: modesWithButtons }, content))
     } else {
-      console.error('empty content')
+      return showCustom(
+        tab,
+        Object.assign(
+          {
+            type: 'custom',
+            kind: mmr.kind,
+            metadata: mmr.metadata,
+            toolbarText: mmr.toolbarText,
+            version: mmr.version,
+            modes: modesWithButtons
+          },
+          renderContent(tab, content)
+        )
+      )
     }
+  } else {
+    console.error('empty content')
   }
 }

@@ -62,7 +62,7 @@ export interface ExecOptions {
   preserveBackButton?: boolean
   type?: ExecType
 
-  exec?: 'pexec' | 'qexec'
+  exec?: 'pexec' | 'qexec' | 'rexec'
 
   container?: Element
   raw?: boolean

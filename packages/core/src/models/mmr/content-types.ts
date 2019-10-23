@@ -16,7 +16,7 @@
 
 import { Tab } from '../../webapp/tab'
 import { Table, MultiTable } from '../../webapp/models/table'
-import { MetadataBearing } from '../entity'
+import { Entity, MetadataBearing } from '../entity'
 import { CustomSpec } from '../../webapp/views/sidecar-core'
 
 /**
@@ -35,8 +35,13 @@ export interface ScalarContent<T = ScalarResource> {
  * optionally provide a `contentType`.
  *
  */
-interface StringContent<ContentType = 'text/markdown' | 'text/html'> extends ScalarContent<string> {
+export interface StringContent<ContentType = 'text/markdown' | 'text/html'> extends ScalarContent<string> {
   contentType?: ContentType
+}
+
+export function isStringWithContentType(entity: Entity): entity is StringContent {
+  const string = entity as StringContent
+  return string && string.content !== undefined && string.contentType !== undefined
 }
 
 /**

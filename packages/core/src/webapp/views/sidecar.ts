@@ -419,10 +419,10 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   if (!options || !options.leaveBottomStripeAlone) {
     addModeButtons(tab, modes, custom, options)
     sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
-    setVisibleClass(sidecar)
   } else {
     sidecar.classList.add('custom-content')
   }
+  setVisibleClass(sidecar)
 
   if (custom.sidecarHeader === false) {
     // view doesn't want a sidecar header
@@ -750,6 +750,23 @@ export const insertView = (tab: Tab) => (view: HTMLElement) => {
 
   const container = getActiveView(tab)
   debug('insertView.container', container)
+
+  removeAllDomChildren(container)
+  container.appendChild(view)
+
+  presentAs(tab, Presentation.Default)
+}
+
+/**
+ * Update the current view into the sidecar; this is helpful for tab
+ * mode switching.
+ *
+ */
+export const insertCustomContent = (tab: Tab, view: HTMLElement) => {
+  debug('insertCustomContent', view)
+
+  const container = getSidecar(tab).querySelector('.custom-content')
+  debug('insertCustomContent.container', container)
 
   removeAllDomChildren(container)
   container.appendChild(view)

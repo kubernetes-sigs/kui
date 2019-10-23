@@ -21,13 +21,14 @@ import { removeAllDomChildren } from './util/dom'
 import { isTable, isMultiTable, Table, MultiTable } from './models/table'
 import { Capturable } from './models/capturable'
 import { formatTable } from './views/table'
-import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertView } from './views/sidecar'
+import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertCustomContent } from './views/sidecar'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
-import { pexec, qexec } from '../repl/exec'
+import { pexec, qexec, rexec } from '../repl/exec'
 import { isHTML } from '../util/types'
-import { Entity, EntitySpec, isMetadataBearingByReference } from '../models/entity'
+import { Entity, EntitySpec, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
+import { isStringWithContentType } from '../models/mmr/content-types'
 
 const debug = Debug('webapp/picture-in-picture')
 
@@ -88,6 +89,8 @@ const callDirect = async (
     debug('makeView as string')
     if (execOptions && execOptions.exec === 'pexec') {
       return pexec(makeView, execOptions)
+    } else if (execOptions && execOptions.exec === 'rexec') {
+      return rexec(makeView, execOptions)
     } else {
       return qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
     }
@@ -451,7 +454,7 @@ const _addModeButton = (
 
             changeActiveButton()
           } else if (view && !actAsButton && !isToggle(view)) {
-            if (isTable(view)) {
+            if (isTable(view) || isStringWithContentType(view)) {
               changeActiveButton()
             }
 
@@ -459,12 +462,22 @@ const _addModeButton = (
               const dom = document.createElement('div')
               dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.innerText = view
-              insertView(tab)(dom)
+              insertCustomContent(tab, dom)
+            } else if (isStringWithContentType(view)) {
+              showCustom(
+                tab,
+                Object.assign({}, entity, {
+                  type: 'custom',
+                  content: view.content,
+                  contentType: view.contentType
+                }),
+                { leaveBottomStripeAlone: true }
+              )
             } else if (isHTML(view)) {
               const dom = document.createElement('div')
               dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
               dom.appendChild(view)
-              insertView(tab)(dom)
+              insertCustomContent(tab, dom)
             } else if (isCustomSpec(view)) {
               showCustom(tab, view, { leaveBottomStripeAlone })
             } else if (isTable(view) || isMultiTable(view)) {
@@ -474,7 +487,7 @@ const _addModeButton = (
               dom2.classList.add('result-as-table', 'repl-result')
               dom1.appendChild(dom2)
               formatTable(tab, view, dom2, { usePip: true })
-              insertView(tab)(dom1)
+              insertCustomContent(tab, dom1)
             }
           } else if (!isToggle(view) && isCustomSpec(view)) {
             showCustom(tab, view, { leaveBottomStripeAlone })
@@ -512,7 +525,7 @@ export const addModeButton = (
   return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = (
+export const addModeButtons = <Direct = DirectViewController>(
   tab: Tab,
   modesUnsorted: SidecarMode[] = [],
   entity: EntitySpec | CustomSpec,
@@ -521,7 +534,9 @@ export const addModeButtons = (
   // consult the view registrar for registered view modes
   // relevant to this resource
   const command = ''
-  if (isMetadataBearingByReference(entity)) {
+  if (isMetadataBearing(entity)) {
+    addRelevantModes(modesUnsorted, command, { resource: entity })
+  } else if (isMetadataBearingByReference(entity)) {
     addRelevantModes(modesUnsorted, command, entity)
   }
 
