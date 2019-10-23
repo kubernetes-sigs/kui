@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/IBM/kui/compare/v5.2.0...v5.2.1) (2019-10-23)
+
+### Bug Fixes
+
+- **packages/core:** avoid "custom" in the sidecar "kind" display ([0ffcb4a](https://github.com/IBM/kui/commit/0ffcb4a)), closes [#3059](https://github.com/IBM/kui/issues/3059) [#3061](https://github.com/IBM/kui/issues/3061)
+
 # [5.2.0](https://github.com/IBM/kui/compare/v4.5.0...v5.2.0) (2019-10-14)
 
 ### Bug Fixes
