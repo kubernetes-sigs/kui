@@ -16,7 +16,7 @@
 
 import * as assert from 'assert'
 
-import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, Keys, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 
 describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -74,6 +74,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   it('should clear the console', () =>
     CLI.command('clear', this.app)
       .then(() => ReplExpect.consoleToBeClear(this.app))
+      .then(() => SidecarExpect.closed)
       .catch(Common.oops(this, true)))
 
   // get something on the screen
