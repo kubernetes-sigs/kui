@@ -18,6 +18,8 @@ import Debug from 'debug'
 
 import { Capabilities, Commands, UI } from '@kui-shell/core'
 import { resetCount } from '@kui-shell/core/webapp/cli'
+import Models from '@kui-shell/core/api/models'
+import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar-visibility'
 
 const debug = Debug('plugins/core-support/clear')
 
@@ -57,6 +59,9 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
       return (tab.querySelector(processing) as HTMLElement) || true
     }
   }
+
+  // close the sidecar on clear
+  isSidecarVisible(tab) && Models.Selection.clear(tab)
 
   // tell the repl we're all good
   return true
