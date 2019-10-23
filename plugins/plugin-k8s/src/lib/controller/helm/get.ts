@@ -70,6 +70,9 @@ export default async function helmGet(args: Commands.Arguments): Promise<Command
     maybeVerb === 'values'
   ) {
     debug('delegating to underlining helm')
+    if (maybeVerb === 'notes') {
+      args.parsedOptions.o = 'raw' // bypass yaml formatting
+    }
     return _helm(args)
   }
 
