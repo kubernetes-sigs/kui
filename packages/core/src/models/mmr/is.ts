@@ -19,11 +19,5 @@ import { MultiModalResponse } from './types'
 
 export function isMultiModalResponse(entity: Entity): entity is MultiModalResponse {
   const mmr = entity as MultiModalResponse
-  return (
-    isMetadataBearing(mmr) &&
-    mmr.modes &&
-    Array.isArray(mmr.modes) &&
-    mmr.modes[0] &&
-    mmr.modes[0].content !== undefined
-  )
+  return isMetadataBearing(mmr) && mmr.modes && Array.isArray(mmr.modes)
 }

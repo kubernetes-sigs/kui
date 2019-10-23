@@ -19,4 +19,4 @@
  *
  */
 
-export { Table, isTable, Row } from '../webapp/models/table'
+export { Table, MultiTable, Row, isTable, isMultiTable } from '../webapp/models/table'
