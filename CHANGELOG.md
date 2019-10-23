@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/IBM/kui/compare/v5.2.0...v5.2.1) (2019-10-23)
+
+### Bug Fixes
+
+- allow KUI_COMMAND_CONTEXT env var to override default theme setting ([d244061](https://github.com/IBM/kui/commit/d244061)), closes [#3009](https://github.com/IBM/kui/issues/3009)
+- improve plugin install ([c51dc8b](https://github.com/IBM/kui/commit/c51dc8b)), closes [#3057](https://github.com/IBM/kui/issues/3057)
+- remove CSP from clients/base ([567aabe](https://github.com/IBM/kui/commit/567aabe)), closes [#3069](https://github.com/IBM/kui/issues/3069)
+- **plugins/plugin-manager:** minor alignment issue with ora checkmarks ([9a9a0a3](https://github.com/IBM/kui/commit/9a9a0a3)), closes [#3032](https://github.com/IBM/kui/issues/3032)
+- remove k8s command prefix for kube commands ([269e69b](https://github.com/IBM/kui/commit/269e69b)), closes [#3008](https://github.com/IBM/kui/issues/3008)
+- **packages/core:** adjust REPL tables to be a bit more standard ([5d44328](https://github.com/IBM/kui/commit/5d44328)), closes [#3036](https://github.com/IBM/kui/issues/3036)
+- **packages/core:** avoid "custom" in the sidecar "kind" display ([0ffcb4a](https://github.com/IBM/kui/commit/0ffcb4a)), closes [#3059](https://github.com/IBM/kui/issues/3059) [#3061](https://github.com/IBM/kui/issues/3061)
+- **packages/core:** eliminate repl/exec -> spawn-electron import path ([69a751c](https://github.com/IBM/kui/commit/69a751c)), closes [#3014](https://github.com/IBM/kui/issues/3014)
+- **packages/core:** fix for low-level bug in resolver.resolve ([7bf65fe](https://github.com/IBM/kui/commit/7bf65fe)), closes [#3050](https://github.com/IBM/kui/issues/3050)
+- **packages/core:** inconsistent horizontal padding in popup tables ([e784f99](https://github.com/IBM/kui/commit/e784f99)), closes [#3048](https://github.com/IBM/kui/issues/3048)
+- **packages/core:** isHTML fails if input is null ([f695d16](https://github.com/IBM/kui/commit/f695d16)), closes [#3019](https://github.com/IBM/kui/issues/3019)
+- **packages/core:** kui hangs if prescan references non-existent plugin ([a3a12a5](https://github.com/IBM/kui/commit/a3a12a5)), closes [#3018](https://github.com/IBM/kui/issues/3018)
+- **packages/core:** poor popup table cell spacing ([78253cd](https://github.com/IBM/kui/commit/78253cd)), closes [#3026](https://github.com/IBM/kui/issues/3026)
+- **packages/core:** popup kind displays CUSTOM for tables ([fe3e5fc](https://github.com/IBM/kui/commit/fe3e5fc)), closes [#3052](https://github.com/IBM/kui/issues/3052)
+- **packages/core:** remove debugging printf from core popup ([6a315a5](https://github.com/IBM/kui/commit/6a315a5)), closes [#3073](https://github.com/IBM/kui/issues/3073)
+- **packages/core:** remove electron-context-menu dependence ([65ed0f9](https://github.com/IBM/kui/commit/65ed0f9)), closes [#3064](https://github.com/IBM/kui/issues/3064) [#3014](https://github.com/IBM/kui/issues/3014)
+- **packages/core:** update sidecar tables to match [#3037](https://github.com/IBM/kui/issues/3037) ([fdd1d7c](https://github.com/IBM/kui/commit/fdd1d7c)), closes [#3045](https://github.com/IBM/kui/issues/3045)
+- some long-standing issues with table display in headless mode ([a0e3397](https://github.com/IBM/kui/commit/a0e3397)), closes [#3034](https://github.com/IBM/kui/issues/3034)
+- **plugins/plugin-core-support:** command `!!` returns console error ([e2a555e](https://github.com/IBM/kui/commit/e2a555e)), closes [#2893](https://github.com/IBM/kui/issues/2893)
+- **plugins/plugin-editor:** syntax coloring not always active ([b489a4a](https://github.com/IBM/kui/commit/b489a4a)), closes [#3043](https://github.com/IBM/kui/issues/3043)
+- **plugins/plugin-k8s:** clicking Previous Log Tab in browser issues \_kubectl command in REPL ([0bb1c42](https://github.com/IBM/kui/commit/0bb1c42)), closes [#3040](https://github.com/IBM/kui/issues/3040)
+- **plugins/plugin-k8s:** latest and previous logs labels are translated but not externalized ([e0141eb](https://github.com/IBM/kui/commit/e0141eb)), closes [#3038](https://github.com/IBM/kui/issues/3038)
+- **plugins/plugin-manager:** plugin install fails if symlink does not exist ([a42d9f5](https://github.com/IBM/kui/commit/a42d9f5)), closes [#3062](https://github.com/IBM/kui/issues/3062)
+- **plugins/plugin-manager:** use ora for plugin remove ([4a3af86](https://github.com/IBM/kui/commit/4a3af86)), closes [#3029](https://github.com/IBM/kui/issues/3029) [#3028](https://github.com/IBM/kui/issues/3028)
+- use carbon gray10 as default theme for clients/base ([62cb021](https://github.com/IBM/kui/commit/62cb021)), closes [#3054](https://github.com/IBM/kui/issues/3054)
+
+### Features
+
+- extend MultiModalResponse to support functions that produce content ([bfb9757](https://github.com/IBM/kui/commit/bfb9757)), closes [#3022](https://github.com/IBM/kui/issues/3022)
+- plugin install should offer a spinner ([f1a24c6](https://github.com/IBM/kui/commit/f1a24c6)), closes [#3024](https://github.com/IBM/kui/issues/3024)
+- **packages/core:** plugin commands table should support command prefix ([cbc318b](https://github.com/IBM/kui/commit/cbc318b)), closes [#3070](https://github.com/IBM/kui/issues/3070)
+
 # [5.2.0](https://github.com/IBM/kui/compare/v4.5.0...v5.2.0) (2019-10-14)
 
 ### Bug Fixes
