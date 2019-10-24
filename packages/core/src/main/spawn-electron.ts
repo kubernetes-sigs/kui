@@ -235,7 +235,7 @@ export function createWindow(
           })
         } else {
           event.preventDefault()
-          require('open')(url)
+          Electron.shell.openExternal(url)
         }
       }
     )
