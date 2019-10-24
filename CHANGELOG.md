@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.12](https://github.com/IBM/kui/compare/v5.1.11...v5.1.12) (2019-10-24)
+
+### Bug Fixes
+
+- **packages/core:** remove use of "open" npm ([52cee5b](https://github.com/IBM/kui/commit/52cee5b)), closes [#3090](https://github.com/IBM/kui/issues/3090)
+- **plugins/plugin-k8s:** fix helm get notes in sidecar ([0473d09](https://github.com/IBM/kui/commit/0473d09))
+
 ## [5.1.11](https://github.com/IBM/kui/compare/v5.1.10...v5.1.11) (2019-10-22)
 
 **Note:** Version bump only for package kui-shell
