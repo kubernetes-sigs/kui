@@ -26,7 +26,6 @@ import * as CLI from '../webapp/cli'
 import * as Inject from '../webapp/util/inject'
 import * as Dom from '../webapp/util/dom'
 import * as Sidecar from '../webapp/views/sidecar'
-import { clearSelection } from '../webapp/views/sidecar-visibility'
 import * as ModeManager from '../webapp/bottom-stripe'
 import * as ModeRegistrar from '../webapp/views/registrar/modes'
 import * as BadgeRegistrar from '../webapp/views/registrar/badges'
@@ -100,7 +99,7 @@ export namespace UI {
    *
    */
   export const closeAllViews = (tab: Tab) => {
-    clearSelection(tab)
+    Sidecar.clearSelection(tab)
   }
 
   export namespace LowLevel {
