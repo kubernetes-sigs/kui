@@ -117,15 +117,15 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
     }))
   )
 
+  if (!modes.find(_ => _.defaultMode) && modes.length > 0) {
+    modes[0].defaultMode = true
+  }
+
   addModeButtons(tab, modes, mmr)
 
   const modesWithButtons: SidecarMode[] = mmr.buttons
     ? (modes as SidecarMode[]).concat(formatButtons(mmr.buttons))
     : (modes as SidecarMode[])
-
-  if (!modes.find(_ => _.defaultMode)) {
-    modes[0].defaultMode = true
-  }
 
   const defaultMode = modes.find(_ => _.defaultMode) || modes[0]
 
@@ -133,7 +133,7 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
 
   if (content) {
     if (isCustomSpec(content)) {
-      return showCustom(tab, Object.assign({ modes: modesWithButtons }, content))
+      return showCustom(tab, Object.assign({ modes: modesWithButtons }, content), { leaveBottomStripeAlone: true })
     } else {
       return showCustom(
         tab,
@@ -147,7 +147,8 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
             modes: modesWithButtons
           },
           renderContent(tab, content)
-        )
+        ),
+        { leaveBottomStripeAlone: true }
       )
     }
   } else {
