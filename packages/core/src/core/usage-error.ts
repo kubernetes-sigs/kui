@@ -609,7 +609,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
             cmdPart.setAttribute('tabindex', '0')
-            cmdPart.onclick = async event => {
+            const handler = async (event: Event) => {
               const Prompt = await import('../webapp/prompt')
               const { getCurrentTab } = await import('../webapp/tab')
               if (partial) {
@@ -629,6 +629,8 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
                 }
               }
             }
+            cmdPart.onclick = handler
+            cmdPart.onkeypress = event => event.keyCode === 32 && handler(event) // will only support space bar for now since there is a global listen for enter key...
           }
         }
       } /* renderRow */

@@ -411,7 +411,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     packagePrefix.innerText = entity.packageName + '/'
     entityNameGroup.appendChild(packagePrefix)
   }
-  const entityNameClickable = document.createElement('span')
+  const entityNameClickable = document.createElement('a')
   entityNameClickable.className = 'entity-name cell-inner'
   if (!isHeaderCell) {
     entityNameClickable.classList.add('clickable')
@@ -470,12 +470,14 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     entityNameClickable.classList.remove('clickable')
   } else {
     if (isPopup() || options.usePip) {
+      console.log('first')
       entityNameClickable.onclick = async (evt: MouseEvent) => {
         const { drilldown } = await import('../picture-in-picture')
         return drilldown(tab, entity.onclick, undefined, undefined, 'previous view')(evt)
       }
     } else if (typeof entity.onclick === 'string') {
-      entityNameClickable.onclick = async () => {
+      console.log('second')
+      const handler = async () => {
         if (!entity.onclickExec || entity.onclickExec === 'pexec') {
           const { pexec } = await import('../../repl/exec')
           pexec(entity.onclick, { tab })
@@ -484,7 +486,10 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           qexec(entity.onclick, undefined, undefined, { tab })
         }
       }
+      entityNameClickable.onclick = handler
+      entityNameClickable.onkeypress = event => event.keyCode === 32 && handler() // will only support space bar for now since there is a global listen for enter key...
     } else {
+      console.log('third')
       entityNameClickable.onclick = entity.onclick
     }
   }
