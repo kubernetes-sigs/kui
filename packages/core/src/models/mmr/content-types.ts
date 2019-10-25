@@ -50,7 +50,10 @@ export function isStringWithContentType(entity: Entity): entity is StringContent
  * contentType } wrapper.
  *
  */
-type FunctionThatProducesContent<T extends MetadataBearing> = (tab: Tab, entity: T) => ScalarResource | ScalarContent
+type FunctionThatProducesContent<T extends MetadataBearing> = (
+  tab: Tab,
+  entity: T
+) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent>
 interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
