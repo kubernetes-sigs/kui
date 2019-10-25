@@ -121,14 +121,13 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
     modes[0].defaultMode = true
   }
 
-  addModeButtons(tab, modes, mmr)
+  const modesWithButtons = mmr.buttons ? modes.concat(formatButtons(mmr.buttons)) : modes
 
-  const modesWithButtons: SidecarMode[] = mmr.buttons
-    ? (modes as SidecarMode[]).concat(formatButtons(mmr.buttons))
-    : (modes as SidecarMode[])
+  addModeButtons(tab, modesWithButtons, mmr)
 
   const defaultMode = modes.find(_ => _.defaultMode) || modes[0]
 
+  console.error('!!!!!', modesWithButtons)
   const content = typeof defaultMode.direct === 'function' ? await defaultMode.direct(tab, mmr) : defaultMode.direct
 
   if (content) {
