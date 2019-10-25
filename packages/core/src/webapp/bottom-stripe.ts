@@ -96,8 +96,7 @@ const callDirect = async (
     }
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return Promise.resolve(makeView(tab, entity) as any)
+    return Promise.resolve(makeView(tab, entity) as DirectResult)
   } else if (isDirectViewEntity(makeView)) {
     const combined = Object.assign({}, entity, makeView)
     return combined

@@ -49,7 +49,7 @@ async function format<T extends MetadataBearing>(
     return format(tab, mmr, { content: resource })
   } else if (isFunctionContent(resource)) {
     // then resource.content is a funciton that will provide the information
-    return format(tab, mmr, resource.content(tab, mmr))
+    return format(tab, mmr, await resource.content(tab, mmr))
   } else if (isCommandStringContent(resource)) {
     const content = await tab.REPL.qexec<ScalarResource | ScalarContent>(resource.content)
     return format(tab, mmr, content)
@@ -123,11 +123,10 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
 
   const modesWithButtons = mmr.buttons ? modes.concat(formatButtons(mmr.buttons)) : modes
 
-  addModeButtons(tab, modesWithButtons, mmr)
+  addModeButtons(tab, modesWithButtons, mmr, { preserveBackButton: true })
 
   const defaultMode = modes.find(_ => _.defaultMode) || modes[0]
 
-  console.error('!!!!!', modesWithButtons)
   const content = typeof defaultMode.direct === 'function' ? await defaultMode.direct(tab, mmr) : defaultMode.direct
 
   if (content) {
