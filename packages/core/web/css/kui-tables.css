@@ -36,9 +36,10 @@
   /* for Light tables, there is no th background color, thus no need for extra space */
   padding-top: 0;
   padding-bottom: 0;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--color-text-02);
   text-transform: uppercase;
+  opacity: 0.75;
 }
 [kui-theme-style] sidecar .bx--data-table[kui-table-style="Light"] .bx--table-header-label {
   color: var(--color-text-inverted02);
@@ -224,7 +225,7 @@ sidecar .bx--data-table.result-table[kui-table-style="Light"] .entity td,
   background: none;
 }
 .bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes {
-  height: 1.5em;
+  height: 1.25em;
 }
 .bx--data-table.result-table[kui-table-style="Light"] .entity .entity-attributes,
 .bx--data-table.result-table[kui-table-style="Medium"] .entity .entity-attributes {
