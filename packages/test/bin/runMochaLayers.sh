@@ -26,6 +26,7 @@ if [ -z "$MONOREPO_MODE" ]; then
     ROOT="$SCRIPTDIR"/../..
     export TEST_SUITE_ROOT="$ROOT"/node_modules/@kui-shell
     export TEST_ROOT="$TEST_SUITE_ROOT"/test
+    cd "$SCRIPTDIR"
 else
     ROOT="$SCRIPTDIR"/../../..
     echo "running in monorepo $ROOT"
