@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.5](https://github.com/IBM/kui/compare/v4.5.0...v5.2.5) (2019-10-25)
+
+### Bug Fixes
+
+- revert to webpack 4.40 ([141a407](https://github.com/IBM/kui/commit/141a407)), closes [#3005](https://github.com/IBM/kui/issues/3005)
+
+### Features
+
+- revive plugin-manager ([b78fed5](https://github.com/IBM/kui/commit/b78fed5)), closes [#2921](https://github.com/IBM/kui/issues/2921)
+
 ## [5.2.4](https://github.com/IBM/kui/compare/v4.5.0...v5.2.4) (2019-10-24)
 
 ### Bug Fixes
