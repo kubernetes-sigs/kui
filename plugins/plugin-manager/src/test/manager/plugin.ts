@@ -72,7 +72,7 @@ Common.localDescribe('plugin manager', function(this: Common.ISuite) {
 
   it('should show the plugin details via plugin get', () =>
     CLI.command('plugin get @kui-shell/plugin-sample', this.app)
-      .then(ReplExpect.blank)
+      .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing('@kui-shell/plugin-sample'))
       .then(SidecarExpect.mode('commands'))

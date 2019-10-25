@@ -358,6 +358,9 @@ export const printResults = (
         return true
       } else if (isMultiModalResponse(response)) {
         await showMultiModalResponse(tab, response)
+        if (!isPopup()) {
+          ok(resultDom.parentElement)
+        }
       } else if (isMixedResponse(response)) {
         debug('mixed response')
         const paragraph = (part: MixedResponsePart) => {
