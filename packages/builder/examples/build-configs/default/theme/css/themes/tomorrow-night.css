@@ -24,6 +24,7 @@ body[kui-theme="tomorrow-night"] {
   --color-text-inverted01: var(--color-text-01);
 
   --color-black: var(--color-base05); /* e.g. husky's "No partially staged files found" */
+  --color-name: var(--color-base0D);
 }
 
 /* tomorrow-night hightlightjs theme */
