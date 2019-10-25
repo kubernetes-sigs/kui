@@ -3329,6 +3329,9 @@ body.kui--bottom-input .repl-context {
 }
 
 /* row selection */
+.row-selection-context .clickable {
+  display: inline-block;
+}
 .row-selection-context.selected-row .selected-entity {
   font-size: 1.25em;
   color: var(--color-brand-03);
@@ -3344,6 +3347,10 @@ body.kui--bottom-input .repl-context {
 .row-selection-context:not(.selected-row) .selected-entity:hover .kui--radio-unchecked svg,
 .row-selection-context.selected-row .selected-entity .kui--radio-unchecked svg {
   display: none;
+}
+.kui--radio-checked,
+.kui--radio-unchecked {
+  display: flex;
 }
 .kui--radio-checked svg,
 .kui--radio-unchecked svg {
