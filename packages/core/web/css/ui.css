@@ -157,7 +157,7 @@ body.still-loading .repl {
   background: transparent;
 }
 .repl-block {
-  padding: 1em 0 0;
+  padding: 0.5em 0 0;
   display: flex;
   flex-direction: column;
 }
