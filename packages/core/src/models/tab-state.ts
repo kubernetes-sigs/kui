@@ -46,6 +46,9 @@ export default class TabState {
 
   private _currentBottomInputValue = ''
 
+  /** is there a drilldown in progress for this tab? */
+  public drilldownInProgress: Promise<void>
+
   public get env() {
     return this._env
   }
