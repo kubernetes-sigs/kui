@@ -104,8 +104,12 @@ const restore = (
   // sidecar.classList.add('custom-content')
   // pippedContainer.classList.remove('picture-in-picture-stage1')
   if (pippedContainer !== true && pippedContainer !== false) {
-    if (pippedContainer.parentNode) pippedContainer.parentNode.removeChild(pippedContainer)
-    parent.appendChild(pippedContainer)
+    if (!pippedContainer.classList.contains('sidecar-content')) {
+      if (pippedContainer.parentNode) {
+        pippedContainer.parentNode.removeChild(pippedContainer)
+      }
+      parent.appendChild(pippedContainer)
+    }
   }
   // pippedContainer.onclick = null
   // }, 300)
@@ -128,7 +132,9 @@ const pip = (
 ) => {
   try {
     if (container !== true && container !== false) {
-      container.parentNode.removeChild(container)
+      if (!container.classList.contains('sidecar-content')) {
+        container.parentNode.removeChild(container)
+      }
     }
   } catch (e) {
     // ok
@@ -156,7 +162,11 @@ const pip = (
 
   backButton.addEventListener(
     'click',
-    () => {
+    async () => {
+      // Notes: wait for any drilldown in the current tab to finish
+      // before actuating the back button behavior.
+      // https://github.com/IBM/kui/issues/3114
+      await (tab.state.drilldownInProgress || Promise.resolve())
       restoreFn()
       backContainer.classList.remove('has-back-button')
     },
@@ -242,7 +252,7 @@ export const drilldown = (
   ccontainer?: string | Element,
   returnTo?: string,
   options?: PipOptions
-) => (event?: Event) => {
+) => async (event?: Event): Promise<void> => {
   if (event) event.stopPropagation()
 
   // maybe ccontainer is a query selector
@@ -288,30 +298,47 @@ export const drilldown = (
   // now we can safely begin executing the command
   debug('executing command', command)
 
-  if (typeof command === 'string') {
-    debug('drilling down with string command')
-
-    const execOptions: ExecOptions = Object.assign(
-      {},
-      {
-        isDrilldown: true,
-        preserveBackButton: true,
-        rethrowErrors: true,
-        reportErrors: true
-      },
-      (options && options.execOptions) || {}
-    )
-
-    if (!options || options.exec === 'pexec') {
-      return pexec(command, execOptions).catch(restoreFn)
-    } else {
-      return qexec(command, undefined, undefined, execOptions).catch(restoreFn)
+  // eslint-disable-next-line no-async-promise-executor
+  tab.state.drilldownInProgress = new Promise(async resolve => {
+    const done = () => {
+      tab.state.drilldownInProgress = undefined
+      resolve()
     }
-  } else if (typeof command === 'function') {
-    return command().catch(restoreFn)
-  } else {
-    return showEntity(tab, command, { preserveBackButton: true })
-  }
+
+    if (typeof command === 'string') {
+      debug('drilling down with string command')
+
+      const execOptions: ExecOptions = Object.assign(
+        {},
+        {
+          isDrilldown: true,
+          preserveBackButton: true,
+          rethrowErrors: true,
+          reportErrors: true
+        },
+        (options && options.execOptions) || {}
+      )
+
+      if (!options || options.exec === 'pexec') {
+        return pexec(command, execOptions)
+          .then(done)
+          .catch(restoreFn)
+      } else {
+        return qexec(command, undefined, undefined, execOptions)
+          .then(done)
+          .catch(restoreFn)
+      }
+    } else if (typeof command === 'function') {
+      return command()
+        .then(done)
+        .catch(restoreFn)
+    } else {
+      await showEntity(tab, command, { preserveBackButton: true })
+      done()
+    }
+  })
+
+  await tab.state.drilldownInProgress
 }
 
 export default drilldown
