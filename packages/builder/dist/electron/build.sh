@@ -41,7 +41,7 @@ export BUILDDIR="$CLIENT_HOME"/dist/electron
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(monaco-editor/dev)|(monaco-editor/min-maps)|(lerna.json)'
+IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(monaco-editor/dev)|(monaco-editor/min-maps)|(lerna.json)|(@types)'                          
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
@@ -81,8 +81,6 @@ function tarCopy {
            --exclude "./packages/*/node_modules/*" \
            --exclude "./plugins/*/node_modules/*" \
            --exclude "./packages/*/dist" \
-           --exclude "./plugins/*/build" \
-           --exclude "./plugins/*/dist" \
            --exclude "**/*~" \
            --exclude "**/.bak" \
            --exclude "**/yarn.lock" \
@@ -90,7 +88,6 @@ function tarCopy {
 	   --exclude "monaco-editor/dev" \
 	   --exclude "monaco-editor/esm" \
 	   --exclude "monaco-editor/min-maps" \
-           --exclude "node_modules/@types" \
            --exclude "node_modules/*.bak/*" \
            --exclude "node_modules/**/*.md" \
            --exclude "node_modules/**/*.DOCS" \
@@ -386,7 +383,7 @@ function tarball {
 # copy the npmrc into the client staging area
 function npmrc {
     cp "$BUILDER_HOME"/npmrc "$STAGING/.npmrc"
-    (cd "$STAGING" && npm rebuild --update-binary)
+    (cd "$STAGING" && npm rebuild --update-binary node-pty-prebuilt-multiarch)
 }
 
 # this is the main routine
