@@ -84,11 +84,11 @@ const pollForEndMarker = async (fd /*: number */) /* : Promise<string> */ => {
 }
 
 /**
- * Append to a PATH env; note this is not a filesystem path, but
+ * Prepend to a PATH env; note this is not a filesystem path, but
  * rather the executable PATH environment variable.
  *
  */
-const appendPATH = (path, extra) => {
+const prependPATH = (path, extra) => {
   if (!extra) {
     return path
   } else {
@@ -118,7 +118,7 @@ class CLI {
       debug('executing command', command)
 
       const ourEnv = Object.assign({}, process.env, env, {
-        PATH: appendPATH(env.PATH || process.env.PATH, this.pathEnv)
+        PATH: prependPATH(env.PATH || process.env.PATH, this.pathEnv)
       })
 
       // for headless-to-electron tests, we leverage the
