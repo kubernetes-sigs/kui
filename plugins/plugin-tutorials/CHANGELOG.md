@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.11](https://github.com/IBM/kui/compare/v4.5.0...v5.2.11) (2019-10-28)
+
+**Note:** Version bump only for package @kui-shell/plugin-tutorials
+
 ## [5.2.10](https://github.com/IBM/kui/compare/v5.2.9...v5.2.10) (2019-10-26)
 
 **Note:** Version bump only for package @kui-shell/plugin-tutorials
