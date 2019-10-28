@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-bash-like",
-  "version": "5.2.12",
+  "version": "5.2.13",
   "description": "Kui plugin that offers local bash-like shell integrations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -56,5 +56,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "b64f5d706116f7572960b0acd90ade595d874a29"
+  "gitHead": "56c1c91f3ea30a669a65390c398340b367bbaec9"
 }
