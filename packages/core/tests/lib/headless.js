@@ -93,7 +93,7 @@ const prependPATH = (path, extra) => {
     return path
   } else {
     const sep = process.platform === 'win32' ? ';' : ':'
-    return `${path}${sep}${extra}`
+    return `${extra}${sep}${path}`
   }
 }
 
