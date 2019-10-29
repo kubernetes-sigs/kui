@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { join } from 'path'
 import * as colors from 'colors'
 import { Func, Suite, HookFunction, after as mochaAfter } from 'mocha'
 import { Application } from 'spectron'
@@ -84,7 +85,7 @@ const prepareElectron = (popup: string[]) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
     console.log(`Testing Webpack against chromium`)
     opts['path'] = electron // this means spectron will use electron located in node_modules
-    opts['args'] = ['../core/tests/lib/main.js'] // relative to the tests/ directory
+    opts['args'] = [join(process.env.TEST_SUITE_ROOT, 'core/tests/lib/main.js')]
   } else if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
     opts['path'] = process.env.TEST_FROM_BUILD
