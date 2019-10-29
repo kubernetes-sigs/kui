@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-tutorials",
-  "version": "5.2.16",
+  "version": "5.2.17",
   "description": "IBM Cloud shell plugin for tutorials",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
