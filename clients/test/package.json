@@ -1,0 +1,41 @@
+{
+  "name": "client-test",
+  "version": "1.0.0",
+  "description": "A test client for the Kui",
+  "main": "node_modules/@kui-shell/core/main/main.js",
+  "scripts": {
+    "preinstall": "rm -rf node_modules package-lock.json; (cd ../../ && npm ci && npm run pack)",
+    "build:electron": "build() { npx --no-install kui-build-electron /tmp $1; }; build",
+    "compile": "kui-compile",
+    "postinstall": "kui-compile",
+    "test": "kui-test",
+    "watch": "tsc --build . --watch",
+    "pty:rebuild": "if [ -d node_modules/node-pty-prebuilt-multiarch ]; then cd node_modules/node-pty-prebuilt-multiarch && npm run install; fi",
+    "pty:electron": "if [ -d node_modules/node-pty-prebuilt-multiarch ]; then if [ ! -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then cp node_modules/@kui-shell/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild; fi; fi",
+    "pty:nodejs": "if [ -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild; fi",
+    "start": "npm run -s compile && npm run -s pty:electron && electron . shell"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kui-shell/plugin-sample.git"
+  },
+  "keywords": [],
+  "author": "Mengting Yan",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz",
+    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
+    "@kui-shell/test": "file:/tmp/kui-packs/kui-shell-test.tgz",
+    "@types/mocha": "5.2.7",
+    "@types/node": "12.7.12",
+    "@types/uuid": "^3.4.5",
+    "@types/webdriverio": "^4.13.3",
+    "electron": "6.0.12",
+    "mocha": "6.2.1",
+    "spectron": "8.0.0",
+    "typescript": "3.6.4"
+  },
+  "dependencies": {
+    "@kui-shell/plugin-test": "file:plugins/plugin-test"
+  }
+}

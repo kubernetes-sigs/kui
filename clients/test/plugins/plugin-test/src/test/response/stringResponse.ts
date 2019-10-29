@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TestStringResponse } from '@kui-shell/test'
 
-// this file defines the external API
-import * as Common from './api/common'
-import * as CLI from './api/cli'
-import * as ReplExpect from './api/repl-expect'
-import * as SidecarExpect from './api/sidecar-expect'
-import * as Selectors from './api/selectors'
-import * as Util from './api/util'
-
-export { Common }
-export { CLI }
-export { keys as Keys } from './api/keys'
-export { ReplExpect }
-export { Selectors }
-export { SidecarExpect }
-export { Util }
-
-export { TestStringResponse } from './api/string-response'
+/* eslint-disable no-new */
+new TestStringResponse({
+  command: 'test string',
+  expect: 'hello world',
+  exact: true
+})
