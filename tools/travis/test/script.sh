@@ -159,7 +159,13 @@ if [ -n "$LAYERS" ]; then
             export PORT_OFFSET_BASE
 
             echo "running these non-headless layers with $MOCHA_RUN_TARGET: $NON_HEADLESS_LAYERS"
-            (MONOREPO_MODE=true npm run test $NON_HEADLESS_LAYERS) &
+
+            if [ "$KUI_USE_CLIENT" == test ]; then
+              (cd clients/"$MOCHA_RUN_TARGET"; npm run test $NON_HEADLESS_LAYERS) &
+            else
+              (MONOREPO_MODE=true npm run test $NON_HEADLESS_LAYERS) &
+            fi
+
             children+=("$!")
             childrenNames+=("mocha layers")
             childrenStartTimes+=("$(date +%s)")

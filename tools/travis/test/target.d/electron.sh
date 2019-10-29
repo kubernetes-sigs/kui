@@ -30,8 +30,8 @@ PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
 
 cd clients/electron
 
-# pick up the dependencies of kui-base
-[[ "$KUI_USE_CLIENT" == base ]] && npm install
+# pick up the dependencies of the client
+[[ -n "$KUI_USE_CLIENT" ]] && npm install
 
 NO_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` npm run build:electron -- ${PLATFORM} # we want to test Mac DMG Build
 

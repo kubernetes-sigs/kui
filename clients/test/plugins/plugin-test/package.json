@@ -1,0 +1,20 @@
+{
+  "name": "@kui-shell/plugin-test",
+  "version": "0.0.1",
+  "description": "A test plugin for the Kui",
+  "author": "Mengting Yan",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kui",
+    "plugin",
+    "sample",
+    "example"
+  ],
+  "main": "dist/plugin.js",
+  "dependencies": {
+    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
