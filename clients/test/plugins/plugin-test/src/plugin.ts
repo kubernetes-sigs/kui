@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-// this file defines the external API
-import * as Common from './api/common'
-import * as CLI from './api/cli'
-import * as ReplExpect from './api/repl-expect'
-import * as SidecarExpect from './api/sidecar-expect'
-import * as Selectors from './api/selectors'
-import * as Util from './api/util'
+import { CommandRegistrar } from '@kui-shell/core/models/command'
 
-export { Common }
-export { CLI }
-export { keys as Keys } from './api/keys'
-export { ReplExpect }
-export { Selectors }
-export { SidecarExpect }
-export { Util }
+const usage = (command: string) => ({
+  command,
+  docs: 'Say hello!'
+})
 
-export { TestStringResponse } from './api/string-response'
+const options = (cmd: string) => ({ usage: usage(cmd), noAuthOk: true })
+
+const stringResponse = () => {
+  return 'hello world'
+}
+
+export default async (commandTree: CommandRegistrar) => {
+  commandTree.listen('/test/string', stringResponse, options('test string'))
+}
