@@ -23,6 +23,10 @@ const debug = Debug('webapp/views/registrar/modes')
 
 export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
 
+type ModeDeclaration<Resource extends MetadataBearing> =
+  | SidecarMode
+  | ((command: string, resource: { resource: Resource }) => SidecarMode)
+
 /**
  * Interpretation: if the resource passes the given "when" filter,
  * then add the given sidecar mode
@@ -30,7 +34,7 @@ export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Res
  */
 export interface ModeRegistration<Resource extends MetadataBearing> {
   when: SidecarModeFilter<Resource> // when this filter returns true...
-  mode: SidecarMode | ((command: string, resource: { resource: Resource }) => SidecarMode) // ...display this mode option
+  mode: ModeDeclaration<Resource> // ...display this mode option
 }
 
 /** registered mode handlers */
@@ -44,6 +48,12 @@ export function registerSidecarMode<Resource extends MetadataBearing>(registrati
   registrar.push(registration)
 }
 export default registerSidecarMode
+
+export const registerModeWhen = <Resource extends MetadataBearing>(when: SidecarModeFilter<Resource>) => (
+  mode: ModeDeclaration<Resource>
+) => {
+  registerSidecarMode({ when, mode })
+}
 
 /**
  * Apply all registered modes that are relevant to the given resource
@@ -78,11 +88,9 @@ export function apply<Resource extends MetadataBearing>(
         }
       } */
 
-      // otherwise, push
-      if (typeof mode === 'function') {
-        modes.push(mode(command, resource))
-      } else {
-        modes.push(mode)
+      const theMode = typeof mode === 'function' ? mode(command, resource) : mode
+      if (!modes.find(({ mode }) => mode === theMode.mode)) {
+        modes.push(theMode)
       }
 
       /* if (grabDefaultMode) {
