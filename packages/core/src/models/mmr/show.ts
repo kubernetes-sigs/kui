@@ -127,7 +127,11 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
 
   const defaultMode = modes.find(_ => _.defaultMode) || modes[0]
 
-  const content = typeof defaultMode.direct === 'function' ? await defaultMode.direct(tab, mmr) : defaultMode.direct
+  const content = hasContent(defaultMode)
+    ? defaultMode
+    : typeof defaultMode.direct === 'function'
+    ? await defaultMode.direct(tab, mmr)
+    : defaultMode.direct
 
   if (content) {
     if (isCustomSpec(content)) {

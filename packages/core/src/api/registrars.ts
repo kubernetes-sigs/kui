@@ -18,6 +18,7 @@ export { SidecarMode as Mode } from '../webapp/bottom-stripe'
 export {
   SidecarModeFilter as ModeFilter,
   ModeRegistration,
+  registerModeWhen,
   registerSidecarMode as registerMode
 } from '../webapp/views/registrar/modes'
 export { registerSidecarBadge as registerBadge } from '../webapp/views/registrar/badges'

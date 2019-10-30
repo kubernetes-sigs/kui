@@ -34,14 +34,14 @@ interface View<Resource extends MetadataBearing> {
  * A `Mode` is a `Label` plus some `Content` and `ModeTraits`
  *
  */
-type Mode<T extends MetadataBearing> = Label & Content<T> & ModeTraits
+export type Mode<T = MetadataBearing> = Label & Content<T> & ModeTraits
 
 /**
  * Optional traits of a mode, e.g. a designation as the
  * `defaultMode` to display
  *
  */
-interface ModeTraits {
+export interface ModeTraits {
   defaultMode?: boolean
 }
 
@@ -59,7 +59,7 @@ export type Button = Label & {
  * Both `Modes` and `Buttons` have Labels
  *
  */
-interface Label {
+export interface Label {
   mode: string
   label?: string
 }
