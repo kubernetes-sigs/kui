@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.21](https://github.com/IBM/kui/compare/v4.5.0...v5.2.21) (2019-10-30)
+
+### Bug Fixes
+
+- revert to webpack 4.40 ([141a407](https://github.com/IBM/kui/commit/141a407)), closes [#3005](https://github.com/IBM/kui/issues/3005)
+
+### Features
+
+- revive plugin-manager ([b78fed5](https://github.com/IBM/kui/commit/b78fed5)), closes [#2921](https://github.com/IBM/kui/issues/2921)
+
 ## [5.2.20](https://github.com/IBM/kui/compare/v5.2.19...v5.2.20) (2019-10-30)
 
 **Note:** Version bump only for package @kui-shell/webpack
