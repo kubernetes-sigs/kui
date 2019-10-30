@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-manager",
-  "version": "5.2.17",
+  "version": "5.2.18",
   "description": "Support for field installation of plugins",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
