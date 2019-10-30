@@ -60,10 +60,12 @@ export namespace UI {
   export import empty = Dom.removeAllDomChildren
 
   export import MultiModalResponse = MMR.MultiModalResponse
+  export import MultiModalMode = MMR.Mode
   export import Mode = ModeManager.SidecarMode
   export import ModeRegistration = ModeRegistrar.ModeRegistration
   export import ModeFilter = ModeRegistrar.SidecarModeFilter
   export import registerMode = ModeRegistrar.registerSidecarMode
+  export import registerModeWhen = ModeRegistrar.registerModeWhen
 
   export import Badge = Sidecar.Badge
   export import BadgeSpec = Sidecar.BadgeSpec

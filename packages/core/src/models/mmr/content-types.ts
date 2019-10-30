@@ -15,9 +15,11 @@
  */
 
 import { Tab } from '../../webapp/tab'
-import { Table, MultiTable } from '../../webapp/models/table'
+import { Table, MultiTable, isTable, isMultiTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
 import { CustomSpec } from '../../webapp/views/sidecar-core'
+import { isCustomSpec } from '../../webapp/views/custom-content'
+import { SidecarMode } from '../../webapp/bottom-stripe'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -30,6 +32,14 @@ export interface ScalarContent<T = ScalarResource> {
   content: T
 }
 
+export function isScalarContent(entity: Entity | SidecarMode): entity is ScalarContent {
+  const content = (entity as ScalarContent).content
+  return (
+    content !== undefined &&
+    (typeof content === 'string' || isTable(content) || isMultiTable(content) || isCustomSpec(content))
+  )
+}
+
 /**
  * Special case of `ScalarContent` for strings; string content may
  * optionally provide a `contentType`.
@@ -39,7 +49,7 @@ export interface StringContent<ContentType = 'text/markdown' | 'text/html'> exte
   contentType?: ContentType
 }
 
-export function isStringWithContentType(entity: Entity): entity is StringContent {
+export function isStringWithContentType(entity: Entity | SidecarMode): entity is StringContent {
   const string = entity as StringContent
   return string && string.content !== undefined && string.contentType !== undefined
 }
@@ -50,11 +60,11 @@ export function isStringWithContentType(entity: Entity): entity is StringContent
  * contentType } wrapper.
  *
  */
-type FunctionThatProducesContent<T extends MetadataBearing> = (
+export type FunctionThatProducesContent<T extends MetadataBearing> = (
   tab: Tab,
   entity: T
 ) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent>
-interface FunctionContent<T extends MetadataBearing> {
+export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
 export function isFunctionContent<T extends MetadataBearing>(content: Content<T>): content is FunctionContent<T> {
@@ -93,6 +103,8 @@ export type Content<T extends MetadataBearing> =
   | FunctionContent<T>
   | CommandStringContent
 
-export function hasContent<T extends MetadataBearing>(resource: ScalarResource | Content<T>): resource is Content<T> {
+export function hasContent<T extends MetadataBearing>(
+  resource: ScalarResource | Content<T> | SidecarMode
+): resource is Content<T> {
   return Object.prototype.hasOwnProperty.call(resource, 'content')
 }
