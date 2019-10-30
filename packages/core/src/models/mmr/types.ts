@@ -42,7 +42,11 @@ export type Mode<T = MetadataBearing> = Label & Content<T> & ModeTraits
  *
  */
 export interface ModeTraits {
+  /** should this mode be given preference as the default selected mode? */
   defaultMode?: boolean
+
+  /** sort order; default is as given */
+  order?: number
 }
 
 /**

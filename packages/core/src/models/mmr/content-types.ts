@@ -45,7 +45,7 @@ export function isScalarContent(entity: Entity | SidecarMode): entity is ScalarC
  * optionally provide a `contentType`.
  *
  */
-export interface StringContent<ContentType = 'text/markdown' | 'text/html'> extends ScalarContent<string> {
+export interface StringContent<ContentType = 'yaml' | 'text/markdown' | 'text/html'> extends ScalarContent<string> {
   contentType?: ContentType
 }
 
@@ -67,8 +67,11 @@ export type FunctionThatProducesContent<T extends MetadataBearing> = (
 export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
-export function isFunctionContent<T extends MetadataBearing>(content: Content<T>): content is FunctionContent<T> {
-  return !!content && !!content.content && typeof (content as FunctionContent<T>).content === 'function'
+export function isFunctionContent<T extends MetadataBearing>(
+  content: string | object | Content<T>
+): content is FunctionContent<T> {
+  const func = content as FunctionContent<T>
+  return !!func && !!func.content && typeof func.content === 'function'
 }
 
 /**

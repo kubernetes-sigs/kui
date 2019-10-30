@@ -27,6 +27,7 @@ import {
   hasContent,
   ScalarResource,
   ScalarContent,
+  isScalarContent,
   isCommandStringContent,
   isStringWithContentType,
   isFunctionContent
@@ -38,9 +39,9 @@ type Viewable = CustomSpec | HTMLElement | Table | MultiTable
  * Turn a Resource into a Viewable
  *
  */
-async function format<T extends MetadataBearing>(
+export async function format<T extends MetadataBearing>(
   tab: Tab,
-  mmr: MultiModalResponse<T>,
+  mmr: T,
   resource: ScalarResource | Content<T>
 ): Promise<Viewable> {
   if (!hasContent(resource)) {
@@ -82,16 +83,30 @@ function formatButtons(buttons: Button[]): SidecarMode[] {
   }))
 }
 
-function renderContent<T extends MetadataBearing>(tab: Tab, content: string | object) {
+async function renderContent<T extends MetadataBearing>(
+  tab: Tab,
+  bearer: T,
+  content: string | object
+): Promise<ScalarContent> {
   if (isStringWithContentType(content)) {
     return content
   } else if (isTable(content) || isMultiTable(content)) {
     return {
       content: wrapTable(tab, content)
     }
+  } else if (isFunctionContent(content)) {
+    console.error('!!!!R', content, await content.content(tab, bearer))
+    const actualContent: ScalarResource | ScalarContent = await content.content(tab, bearer)
+    if (!isScalarContent(actualContent)) {
+      return {
+        content: actualContent
+      }
+    } else {
+      return actualContent
+    }
   } else {
     return {
-      content
+      content: content as ScalarContent
     }
   }
 }
@@ -132,6 +147,8 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
     : typeof defaultMode.direct === 'function'
     ? await defaultMode.direct(tab, mmr)
     : defaultMode.direct
+  console.error('!!!!M', defaultMode, hasContent(defaultMode))
+  console.error('!!!!C', content)
 
   if (content) {
     if (isCustomSpec(content)) {
@@ -148,7 +165,7 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
             version: mmr.version,
             modes: modesWithButtons
           },
-          renderContent(tab, content)
+          await renderContent(tab, mmr, content)
         ),
         { leaveBottomStripeAlone: true }
       )

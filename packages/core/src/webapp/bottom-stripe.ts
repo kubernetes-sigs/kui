@@ -128,9 +128,6 @@ const callDirect = async (
 }
 
 export interface LowLevelContent<Direct = DirectViewController> {
-  // sort order; default is as given
-  order?: number
-
   // weak: if we have exclusively flush:right buttons, then snap them all left
   // right: always place this button flush:right
   // default: use the order? field if defined; otherwise: order mode tabs/buttons as given
@@ -388,127 +385,141 @@ const _addModeButton = (
     getSidecar(tab).entity = entity
   }
 
-  if (!hasContent(opts)) {
-    if (opts.url) {
-      //
-      // onclick, open a new page
-      //
-      button.onclick = () => window.open(opts.url)
-    } else if (opts.command || opts.direct) {
-      //
-      // insert the command handler
-      //
-      button.onclick = async () => {
-        // change the active button
-        const changeActiveButton = () => {
-          if (!opts.actAsButton) {
-            const currentActive = modeStripe.querySelector(`.${css.active}`)
-            if (currentActive) {
-              currentActive.classList.remove(css.active)
-            }
-            button.classList.add(css.active)
+  const url = !hasContent(opts) && opts.url
+  if (url) {
+    //
+    // onclick, open a new page
+    //
+    button.onclick = () => window.open(url)
+  } else if (hasContent(opts) || opts.command || opts.direct) {
+    //
+    // insert the command handler
+    //
+    button.onclick = async () => {
+      // change the active button
+      const leaveBottomStripeAlone = hasContent(opts) || opts.leaveBottomStripeAlone
+      const actAsButton = !hasContent(opts) && opts.actAsButton
 
-            const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
-            for (let idx = 0; idx < visibleWhens.length; idx++) {
-              const otherButton = visibleWhens[idx] as HTMLElement
-              const when = otherButton.getAttribute('data-visible-when')
-              if (when === mode) {
-                otherButton.classList.remove('not-displayed')
-              } else {
-                otherButton.classList.add('not-displayed')
-              }
-            }
-          } else if (opts.actAsButton && opts.selected !== undefined) {
-            if (opts.radioButton) {
-              button.classList.toggle(css.selected)
+      const changeActiveButton = () => {
+        const radioButton = !hasContent(opts) && opts.radioButton
+        const selected = !hasContent(opts) && opts.selected
+
+        if (!actAsButton) {
+          const currentActive = modeStripe.querySelector(`.${css.active}`)
+          if (currentActive) {
+            currentActive.classList.remove(css.active)
+          }
+          button.classList.add(css.active)
+
+          const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
+          for (let idx = 0; idx < visibleWhens.length; idx++) {
+            const otherButton = visibleWhens[idx] as HTMLElement
+            const when = otherButton.getAttribute('data-visible-when')
+            if (when === mode) {
+              otherButton.classList.remove('not-displayed')
             } else {
-              const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
-              if (currentSelected) {
-                currentSelected.classList.remove(css.selected)
-              }
-              button.classList.add(css.selected)
+              otherButton.classList.add('not-displayed')
             }
           }
-        }
-
-        // execute the command
-        if (opts.direct) {
-          try {
-            if (isDirectViewEntity(opts.direct) || opts.leaveBottomStripeAlone) {
-              // change the active button before we fetch the model
-              changeActiveButton()
+        } else if (actAsButton && selected !== undefined) {
+          if (radioButton) {
+            button.classList.toggle(css.selected)
+          } else {
+            const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
+            if (currentSelected) {
+              currentSelected.classList.remove(css.selected)
             }
+            button.classList.add(css.selected)
+          }
+        }
+      }
 
-            const view = await callDirect(tab, opts.direct, entity, opts.execOptions)
-            if (opts.actAsButton && isToggle(view)) {
-              view.toggle.forEach(({ mode, disabled }) => {
-                const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
-                if (button) {
-                  if (disabled) {
-                    button.classList.add('disabled')
-                  } else {
-                    button.classList.remove('disabled')
-                  }
+      const present = (view: Entity) => {
+        if (typeof view === 'string') {
+          const dom = document.createElement('div')
+          dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+          dom.innerText = view
+          insertCustomContent(tab, dom)
+        } else if (isStringWithContentType(view)) {
+          showCustom(
+            tab,
+            Object.assign({}, entity, {
+              type: 'custom',
+              content: view.content,
+              contentType: view.contentType
+            }),
+            { leaveBottomStripeAlone: true }
+          )
+        } else if (isHTML(view)) {
+          const dom = document.createElement('div')
+          dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+          dom.appendChild(view)
+          insertCustomContent(tab, dom)
+        } else if (isCustomSpec(view)) {
+          showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
+        } else if (isTable(view) || isMultiTable(view)) {
+          const dom1 = document.createElement('div')
+          const dom2 = document.createElement('div')
+          dom1.classList.add('scrollable', 'scrollable-auto')
+          dom2.classList.add('result-as-table', 'repl-result')
+          dom1.appendChild(dom2)
+          formatTable(tab, view, dom2, { usePip: true })
+          insertCustomContent(tab, dom1)
+        }
+      }
+
+      // execute the command
+      if (!hasContent(opts) && opts.direct) {
+        try {
+          if (isDirectViewEntity(opts.direct) || leaveBottomStripeAlone) {
+            // change the active button before we fetch the model
+            changeActiveButton()
+          }
+
+          const view = await callDirect(tab, opts.direct, entity, opts.execOptions)
+          if (actAsButton && isToggle(view)) {
+            view.toggle.forEach(({ mode, disabled }) => {
+              const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
+              if (button) {
+                if (disabled) {
+                  button.classList.add('disabled')
+                } else {
+                  button.classList.remove('disabled')
                 }
-              })
-
-              changeActiveButton()
-            } else if (view && !opts.actAsButton && !isToggle(view)) {
-              if (isTable(view) || isStringWithContentType(view)) {
-                changeActiveButton()
               }
+            })
 
-              if (typeof view === 'string') {
-                const dom = document.createElement('div')
-                dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
-                dom.innerText = view
-                insertCustomContent(tab, dom)
-              } else if (isStringWithContentType(view)) {
-                showCustom(
-                  tab,
-                  Object.assign({}, entity, {
-                    type: 'custom',
-                    content: view.content,
-                    contentType: view.contentType
-                  }),
-                  { leaveBottomStripeAlone: true }
-                )
-              } else if (isHTML(view)) {
-                const dom = document.createElement('div')
-                dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
-                dom.appendChild(view)
-                insertCustomContent(tab, dom)
-              } else if (isCustomSpec(view)) {
-                showCustom(tab, view, { leaveBottomStripeAlone: opts.leaveBottomStripeAlone })
-              } else if (isTable(view) || isMultiTable(view)) {
-                const dom1 = document.createElement('div')
-                const dom2 = document.createElement('div')
-                dom1.classList.add('scrollable', 'scrollable-auto')
-                dom2.classList.add('result-as-table', 'repl-result')
-                dom1.appendChild(dom2)
-                formatTable(tab, view, dom2, { usePip: true })
-                insertCustomContent(tab, dom1)
-              }
-            } else if (!isToggle(view) && isCustomSpec(view)) {
-              showCustom(tab, view, { leaveBottomStripeAlone: opts.leaveBottomStripeAlone })
-            } else if (!opts.leaveBottomStripeAlone) {
+            changeActiveButton()
+          } else if (view && !actAsButton && !isToggle(view)) {
+            if (isTable(view) || isStringWithContentType(view)) {
               changeActiveButton()
             }
-          } catch (err) {
-            // do not change active bottom if the command failed!
-            console.error(err)
+
+            present(view)
+          } else if (!isToggle(view) && isCustomSpec(view)) {
+            showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
+          } else if (!leaveBottomStripeAlone) {
+            changeActiveButton()
           }
-        } else {
-          try {
-            const { echo, noHistory, replSilence } = opts
-            await pexec(opts.command(entity), { echo, noHistory, replSilence })
-            if (opts.leaveBottomStripeAlone) {
-              changeActiveButton()
-            }
-          } catch (err) {
-            console.error(err)
-          }
+        } catch (err) {
+          // do not change active bottom if the command failed!
+          console.error(err)
         }
+      } else if (!hasContent(opts) && opts.command) {
+        try {
+          const { echo, noHistory, replSilence } = opts
+          await pexec(opts.command(entity), { echo, noHistory, replSilence })
+          if (leaveBottomStripeAlone) {
+            changeActiveButton()
+          }
+        } catch (err) {
+          console.error(err)
+        }
+      } else if (hasContent(opts)) {
+        const { format } = await import('../models/mmr/show')
+        const view = await format(tab, entity as MetadataBearing, opts)
+        changeActiveButton()
+        present(view)
       }
     }
   }
@@ -553,9 +564,7 @@ export const addModeButtons = <Direct = DirectViewController>(
       // then use the natural order of a versus b: a mode model can
       // optionally specify a numeric sort order; if not specified,
       // then use the order as given
-      const aOrder = hasContent(a) ? undefined : a.order
-      const bOrder = hasContent(b) ? undefined : b.order
-      return (aOrder || 0) - (bOrder || 0)
+      return (a.order || 0) - (b.order || 0)
     } else {
       if (aFlush === 'right' || aFlush === 'weak') {
         return 1
