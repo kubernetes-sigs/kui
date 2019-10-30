@@ -95,7 +95,6 @@ async function renderContent<T extends MetadataBearing>(
       content: wrapTable(tab, content)
     }
   } else if (isFunctionContent(content)) {
-    console.error('!!!!R', content, await content.content(tab, bearer))
     const actualContent: ScalarResource | ScalarContent = await content.content(tab, bearer)
     if (!isScalarContent(actualContent)) {
       return {
@@ -147,8 +146,6 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
     : typeof defaultMode.direct === 'function'
     ? await defaultMode.direct(tab, mmr)
     : defaultMode.direct
-  console.error('!!!!M', defaultMode, hasContent(defaultMode))
-  console.error('!!!!C', content)
 
   if (content) {
     if (isCustomSpec(content)) {
