@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.18](https://github.com/IBM/kui/compare/v4.5.0...v5.2.18) (2019-10-30)
+
+### Bug Fixes
+
+- **packages/test:** runMochaLayers versus external clients ([89578dc](https://github.com/IBM/kui/commit/89578dc)), closes [#3106](https://github.com/IBM/kui/issues/3106)
+
+### Features
+
+- enable plugin-manager for electron clients ([4814cb9](https://github.com/IBM/kui/commit/4814cb9)), closes [#2935](https://github.com/IBM/kui/issues/2935)
+
 ## [5.2.17](https://github.com/IBM/kui/compare/v5.2.16...v5.2.17) (2019-10-29)
 
 **Note:** Version bump only for package @kui-shell/test
