@@ -57,7 +57,7 @@ describe('Tab completion core', function(this: Common.ISuite) {
     return tabbyWithOptions(
       this.app,
       `ls ${join(tmp2.name, 'foo')}`,
-      ['foo\\ bar1', 'foo\\ bar2'],
+      ['foo bar1', 'foo bar2'],
       `ls ${join(tmp2.name, 'foo bar1')}`,
       { click: 0 }
     )
@@ -67,7 +67,7 @@ describe('Tab completion core', function(this: Common.ISuite) {
     return tabbyWithOptions(
       this.app,
       `ls -l ${join(tmp2.name, 'foo')}`,
-      ['foo\\ bar1', 'foo\\ bar2'],
+      ['foo bar1', 'foo bar2'],
       `ls -l ${join(tmp2.name, 'foo bar1')}`,
       { click: 0 }
     )
@@ -77,7 +77,7 @@ describe('Tab completion core', function(this: Common.ISuite) {
     return tabbyWithOptions(
       this.app,
       `ls ${join(tmp2.name, 'foo\\ ')}`,
-      ['foo\\ bar1', 'foo\\ bar2'],
+      ['foo bar1', 'foo bar2'],
       `ls ${join(tmp2.name, 'foo bar2')}`,
       { click: 1 }
     )
@@ -86,17 +86,6 @@ describe('Tab completion core', function(this: Common.ISuite) {
   Common.localIt('should tab complete file with spaces unique with backslash escape variant 2', () => {
     return tabby(this.app, `ls ${join(tmp2.name, 'foo\\ bar1')}`, `ls ${join(tmp2.name, 'foo bar1')}`)
   })
-
-  // tab completion using default file completion handler (i.e. if the
-  // command does not register a usage model, then always tab
-  // completion local files)
-  Common.localIt('should complete on the single-entry directory with git diff', () =>
-    tabby(
-      this.app,
-      `git diff ${ROOT}/data/core/core_single_entry_dir`,
-      `git diff ${ROOT}/data/core/core_single_entry_directory/`
-    )
-  )
 
   // tab completion of directories
   Common.localIt('should complete on the single-entry directory', () =>
