@@ -16,8 +16,6 @@
 
 import stripClean from 'strip-ansi'
 
-import encodeComponent from '../../repl/encode'
-import { ParsedOptions } from '../../models/command'
 import { Cell, Row, Table, TableStyle } from '../models/table'
 
 import formatAsPty from './pretty-print'
@@ -203,17 +201,6 @@ const capitalize = (str: string): string => {
   return str.length === 0 ? str : str[0].toUpperCase() + str.slice(1).toLowerCase()
 }
 
-/**
- * Several commands seem to be cropping up that give a facade over
- * kubectl; this is a start at such a list
- *
- * 1) kubectl, bien sûr
- * 2) oc, redhat openshift CLI
- *
- */
-const kubelike = /kubectl|oc/
-const isKubeLike = (command: string): boolean => kubelike.test(command)
-
 /** decorate certain columns specially */
 export const outerCSSForKey: { [key: string]: string } = {
   NAME: 'entity-name-group',
@@ -347,86 +334,22 @@ export const cssForValue: { [key: string]: string } = {
  * TODO factor out kube-specifics to plugin-k8s
  *
  */
-export const formatTable = (
-  command: string,
-  verb: string,
-  entityType: string,
-  options: ParsedOptions,
-  lines: Pair[][]
-): Table => {
-  // for helm status, table clicks should dispatch to kubectl;
-  // otherwise, stay with the command (kubectl or helm) that we
-  // started with
-  const isHelmStatus = command === 'helm' && verb === 'status'
-  const drilldownCommand = isHelmStatus ? 'kubectl' : command
-  const isKube = isKubeLike(drilldownCommand)
-
-  const drilldownVerb =
-    (verb === 'get'
-      ? 'get'
-      : command === 'helm' && (verb === 'list' || verb === 'ls')
-      ? 'status'
-      : isHelmStatus
-      ? 'get'
-      : undefined) || verb
-
-  // helm doesn't support --output
-  const drilldownFormat = isKube && drilldownVerb === 'get' ? '-o yaml' : ''
-
-  const namespace = options.n || options.namespace
-  const drilldownNamespace = namespace && !Array.isArray(namespace) ? `-n ${encodeComponent(namespace)}` : ''
-
-  const config = options.config && !Array.isArray(options.config) ? `--config ${encodeComponent(options.config)}` : ''
-
-  const drilldownKind = (nameSplit: string[]): string => {
-    if (drilldownVerb === 'get') {
-      const kind = nameSplit.length > 1 ? nameSplit[0] : entityType
-      return kind ? ' ' + kind : ''
-      /* } else if (drilldownVerb === 'config') {
-         return ' use-context'; */
-    } else if (drilldownVerb === verb && entityType && !/-get$/.test(entityType)) {
-      return ` ${entityType.replace(/s$/, '')}-get`
-    } else {
-      return ''
-    }
-  }
-
+export const formatTable = (entityType: string, lines: Pair[][]): Table => {
   // maximum column count across all rows
   const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
-  const namespaceColumnIdx = lines[0].findIndex(({ key }) => key === 'NAMESPACE')
   const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
 
   // e.g. Name: -> NAME
   const keyForFirstColumn = lines[0][nameColumnIdx].key.replace(/:/g, '').toUpperCase()
 
   const allRows: Row[] = lines.map((columns: Pair[], idx: number) => {
-    const name = columns[nameColumnIdx].value
-    const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
     const nameForDisplay = columns[0].value
-    const nameForDrilldown = nameSplit[1] || name
     const firstColumnCSS = idx === 0 || columns[0].key !== 'CURRENT' ? '' : 'selected-entity'
 
     const rowIsSelected = columns[0].key === 'CURRENT' && nameForDisplay === '*'
     // const rowKey = columns[0].key
     // const rowValue = columns[0].value
     const rowCSS = [rowIsSelected ? 'selected-row' : '']
-
-    // if there isn't a global namespace specifier, maybe there is a row namespace specifier
-    // we use the row specifier in preference to a global specifier -- is that right?
-    const ns =
-      (namespaceColumnIdx >= 0 && command !== 'helm' && `-n ${encodeComponent(columns[namespaceColumnIdx].value)}`) ||
-      drilldownNamespace ||
-      ''
-
-    // idx === 0: don't click on header row
-    const onclick =
-      idx === 0 || /[":]/.test(nameForDrilldown)
-        ? false
-        : drilldownVerb
-        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit)} ${encodeComponent(
-            nameForDrilldown
-          )} ${drilldownFormat} ${ns} ${config}`
-        : false
 
     const attributes: Cell[] = columns
       .slice(1)
@@ -439,7 +362,7 @@ export const formatTable = (
       .map(({ key, value: column, valueDom, css }, colIdx) => ({
         key,
         tag: (idx > 0 && tagForKey[key]) || undefined,
-        onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
+        onclick: false,
         outerCSS:
           (outerCSSForKey[key] || '') +
           (colIdx <= 1 || colIdx === nameColumnIdx - 1 || /STATUS/i.test(key) ? '' : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
@@ -460,7 +383,7 @@ export const formatTable = (
       name: nameForDisplay,
       nameDom: columns[0].valueDom,
       fontawesome: idx !== 0 && columns[0].key === 'CURRENT' && 'fas fa-network-wired',
-      onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
+      onclick: false,
       css: firstColumnCSS,
       rowCSS,
       // title: tables.length > 1 && idx === 0 && lines.length > 1 && kindFromResourceName(lines[1][0].value),
