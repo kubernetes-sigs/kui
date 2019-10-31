@@ -16,27 +16,30 @@
 import * as Common from './common'
 import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
+import * as SidecarExpect from './sidecar-expect'
 
 interface Param {
   command: string
-  expect: string
-  exact: boolean
+  metadata: {
+    name: string
+  }
 }
 
-export class TestStringResponse {
+export class TestMMR {
   // eslint-disable-next-line no-useless-constructor
   public constructor(public readonly param: Param) {}
 
-  public string() {
-    const { command, expect, exact } = this.param
-
-    describe(`string response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  public name() {
+    const { command, metadata } = this.param
+    describe(`multi model response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
-      it('should return a string', () =>
+      it(`should show name ${metadata.name} in sidecar`, () =>
         CLI.command(command, this.app)
-          .then(ReplExpect.okWithString(expect, exact))
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.name(metadata.name))
           .catch(Common.oops(this, true)))
     })
   }

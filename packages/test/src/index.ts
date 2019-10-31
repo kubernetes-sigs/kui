@@ -31,3 +31,4 @@ export { SidecarExpect }
 export { Util }
 
 export { TestStringResponse } from './api/string-response'
+export { TestMMR } from './api/mmr'

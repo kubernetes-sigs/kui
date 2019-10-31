@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
-
-import sayHello from './lib/cmds/say-hello'
-import mmrName from './lib/cmds/mmr-name'
-
-export default async (commandTree: Commands.Registrar) => {
-  // commands
-  await Promise.all([sayHello(commandTree), mmrName(commandTree)])
-}
+export default () => 'test plain text'
