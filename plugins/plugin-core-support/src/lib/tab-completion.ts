@@ -281,15 +281,11 @@ const complete = (
   }
 
   const addToPrompt = (extra: string): void => {
-    const pos = prompt.selectionStart + extra.length
-    prompt.value =
-      prompt.value.substring(0, prompt.selectionStart) + extra + prompt.value.substring(prompt.selectionStart)
-    prompt.setSelectionRange(pos, pos)
+    prompt.value = prompt.value + extra
 
     // make sure the new text is visible
     // see https://github.com/IBM/kui/issues/1367
-    prompt.scrollLeft =
-      (prompt.scrollWidth * Math.max(0, pos - partial.length - extra.length - 1)) / prompt.value.length
+    prompt.scrollLeft = prompt.scrollWidth
   }
 
   if (dirname) {
@@ -416,8 +412,10 @@ const updateReplToReflectLongestPrefix = (
     const partialComplete = (idx: number) => {
       // debug('partial complete', idx)
       const completion = completeWith(partial, matches[0].substring(0, idx), true)
-      temporaryContainer.partial = temporaryContainer.partial + completion
-      prompt.value = prompt.value + completion
+      if (completion.length > 0) {
+        temporaryContainer.partial = completion
+        prompt.value = prompt.value + completion
+      }
       return temporaryContainer.partial
     }
 
@@ -467,8 +465,8 @@ const presentEnumeratorSuggestions = (
       temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
     }
 
-    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
-    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+    updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, last, dirname, prompt))
   }
 }
 
@@ -513,7 +511,7 @@ const suggestLocalFile = (
       if (err) {
         debug('fs.readdir error', err)
       } else {
-        const partial = basename(last)
+        const partial = basename(last) + (lastIsDir ? '/' : '')
         const matches: string[] = files.filter(_f => {
           const f = shellescape(_f)
           return (lastIsDir || f.indexOf(partial) === 0) && !f.endsWith('~') && f !== '.' && f !== '..'
@@ -545,17 +543,14 @@ const suggestLocalFile = (
             temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
           }
 
-          const prefix = updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
+          updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
 
           // add each match to that temporary div
           matches.forEach((match, idx) => {
-            const { option, optionInner, innerPost } = addSuggestion(
-              temporaryContainer,
-              prefix || '',
-              dirname,
-              prompt,
-              true
-            )(match, idx)
+            const { option, optionInner, innerPost } = addSuggestion(temporaryContainer, '', dirname, prompt, true)(
+              match,
+              idx
+            )
 
             // see if the match is a directory, so that we add a trailing slash
             const filepath = join(dirname, match)
@@ -622,9 +617,9 @@ const filterAndPresentEntitySuggestions = (
       temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
     }
 
-    const prefix = updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
+    updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
 
-    filteredList.forEach(addSuggestion(temporaryContainer, prefix || last, dirname, prompt))
+    filteredList.forEach(addSuggestion(temporaryContainer, last, dirname, prompt))
   }
 }
 
