@@ -117,6 +117,23 @@ export const mode = (expectedMode: string) => async (app: Application) => {
   return app
 }
 
+export const name = (expectedName: string, expectSubstringMatchOnName?: boolean) => async (app: Application) => {
+  await app.client.waitUntil(
+    async () => {
+      return app.client
+        .then(() => app.client.waitForText(Selectors.SIDECAR_TITLE, timeout))
+        .then(() => app.client.getText(Selectors.SIDECAR_TITLE))
+        .then(name => {
+          return expectSubstringMatchOnName
+            ? name.indexOf(expectedName) >= 0 || expectedName.indexOf(name) >= 0
+            : name === expectedName
+        })
+    },
+    undefined,
+    `expect name ${expectedName} in sidecar substringOk? ${expectSubstringMatchOnName}`
+  )
+}
+
 export const showing = (
   expectedName: string,
   expectedActivationId?: string,

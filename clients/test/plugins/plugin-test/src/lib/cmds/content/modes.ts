@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TestStringResponse } from '@kui-shell/test'
 
-/* eslint-disable no-new */
-new TestStringResponse({
-  command: 'test string',
-  expect: 'hello world',
-  exact: true
-})
+import { UI } from '@kui-shell/core'
+
+import plainTextContent from './text-plain'
+
+export const plainTextMode: UI.MultiModalMode[] = [{ mode: 'text', label: 'Plain Text', content: plainTextContent() }]

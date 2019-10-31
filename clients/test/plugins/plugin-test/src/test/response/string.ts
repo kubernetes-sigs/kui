@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TestStringResponse } from '@kui-shell/test'
 
-import { Commands } from '@kui-shell/core'
+const test = new TestStringResponse({
+  command: 'test string',
+  expect: 'hello world',
+  exact: true
+})
 
-import sayHello from './lib/cmds/say-hello'
-import mmrName from './lib/cmds/mmr-name'
-
-export default async (commandTree: Commands.Registrar) => {
-  // commands
-  await Promise.all([sayHello(commandTree), mmrName(commandTree)])
-}
+test.string()
