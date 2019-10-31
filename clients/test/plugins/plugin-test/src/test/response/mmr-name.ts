@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+/**
+ * This file tests "test mmr name" command that opens the sidecar with
+ * a plain text mode associated with a name metadata.
+ *
+ * See the command implementation in: plugin-test/src/lib/cmds/mmr-name.ts
+ *
+ */
 
-import sayHello from './lib/cmds/say-hello'
-import mmrName from './lib/cmds/mmr-name'
+import { TestMMR } from '@kui-shell/test'
 
-export default async (commandTree: Commands.Registrar) => {
-  // commands
-  await Promise.all([sayHello(commandTree), mmrName(commandTree)])
-}
+const test = new TestMMR({
+  command: 'test mmr name',
+  metadata: {
+    name: 'this is the name part'
+  }
+})
+
+test.name()

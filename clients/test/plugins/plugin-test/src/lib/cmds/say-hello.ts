@@ -16,10 +16,14 @@
 
 import { Commands } from '@kui-shell/core'
 
-import sayHello from './lib/cmds/say-hello'
-import mmrName from './lib/cmds/mmr-name'
+const sayHello = (): Commands.Response => {
+  return 'hello world'
+}
 
-export default async (commandTree: Commands.Registrar) => {
-  // commands
-  await Promise.all([sayHello(commandTree), mmrName(commandTree)])
+export default (commandTree: Commands.Registrar) => {
+  commandTree.listen('/test/string', sayHello, {
+    usage: {
+      docs: 'The obligatory hello world'
+    }
+  })
 }
