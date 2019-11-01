@@ -975,10 +975,8 @@ export const doExec = (
                   if (tableRows && tableRows.length > 0) {
                     // debug(`table came from ${stripClean(raw)}`)
                     // debug(`tableRows ${tableRows.length}`)
-                    const command = argvNoOptions[0]
-                    const verb = argvNoOptions[1]
                     const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
-                    const tableModel = formatTable(command, verb, entityType, parsedOptions, tableRows)
+                    const tableModel = formatTable(entityType, tableRows)
                     debug('tableModel', tableModel)
 
                     const trailingStrings = tables.map(_ => _.trailingString).filter(x => x)
