@@ -158,6 +158,8 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
             type: 'custom',
             kind: mmr.kind,
             metadata: mmr.metadata,
+            prettyName: mmr.prettyName,
+            nameHash: mmr.nameHash,
             toolbarText: mmr.toolbarText,
             version: mmr.version,
             modes: modesWithButtons
