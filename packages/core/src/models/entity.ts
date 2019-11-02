@@ -78,6 +78,7 @@ export interface MetadataBearing<Content = void> {
   version?: string
 
   /** name hash, e.g. the hash part of auto-generated names, or an openwhisk activation id */
+  prettyName?: string
   nameHash?: string
 
   content?: Content
