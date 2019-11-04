@@ -20,6 +20,7 @@ import * as SidecarExpect from './sidecar-expect'
 
 interface Param {
   command: string
+  kind?: string
   metadata: {
     name: string
     namespace?: string
@@ -56,6 +57,21 @@ export class TestMMR {
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.namespace(metadata.namespace))
+          .catch(Common.oops(this, true)))
+    })
+  }
+
+  public kind() {
+    const { command, kind } = this.param
+    describe(`multi model response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should show kind ${kind} in sidecar`, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.kind(kind.toUpperCase()))
           .catch(Common.oops(this, true)))
     })
   }

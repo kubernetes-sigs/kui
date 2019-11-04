@@ -130,6 +130,8 @@ export const name = (expectedName: string) => show(expectedName, Selectors.SIDEC
 
 export const namespace = (expectedNamespace: string) => show(expectedNamespace, Selectors.SIDECAR_PACKAGE_NAME_TITLE)
 
+export const kind = (expectedKind: string) => show(expectedKind, Selectors.SIDECAR_KIND)
+
 export const showing = (
   expectedName: string,
   expectedActivationId?: string,
