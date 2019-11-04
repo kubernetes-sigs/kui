@@ -13,6 +13,7 @@ export const SIDECAR_FULLY_HIDDEN = `${SIDECAR_BASE}:not(.visible):not(.minimize
 export const SIDECAR_ACTIVATION_TITLE = `${SIDECAR} .sidecar-header-name .entity-name-hash`
 export const SIDECAR_TITLE = `${SIDECAR} .sidecar-header-name-content .entity-name`
 export const SIDECAR_PACKAGE_NAME_TITLE = `${SIDECAR} .sidecar-bottom-stripe .package-prefix`
+export const SIDECAR_KIND = `${SIDECAR} .sidecar-bottom-stripe .sidecar-header-icon`
 export const SIDECAR_CONTENT = `${SIDECAR} .sidecar-content`
 export const SIDECAR_WEB_ACTION_URL = `${SIDECAR} .sidecar-header .entity-web-export-url.has-url`
 export const SIDECAR_ACTION_SOURCE = `${SIDECAR_CONTENT} .action-content .action-source`
