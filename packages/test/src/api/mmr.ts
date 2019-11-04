@@ -22,6 +22,7 @@ interface Param {
   command: string
   metadata: {
     name: string
+    namespace?: string
   }
 }
 
@@ -40,6 +41,21 @@ export class TestMMR {
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.name(metadata.name))
+          .catch(Common.oops(this, true)))
+    })
+  }
+
+  public namespace() {
+    const { command, metadata } = this.param
+    describe(`multi model response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should show namespace ${metadata.namespace} in sidecar`, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.namespace(metadata.namespace))
           .catch(Common.oops(this, true)))
     })
   }

@@ -117,22 +117,18 @@ export const mode = (expectedMode: string) => async (app: Application) => {
   return app
 }
 
-export const name = (expectedName: string, expectSubstringMatchOnName?: boolean) => async (app: Application) => {
-  await app.client.waitUntil(
-    async () => {
-      return app.client
-        .then(() => app.client.waitForText(Selectors.SIDECAR_TITLE, timeout))
-        .then(() => app.client.getText(Selectors.SIDECAR_TITLE))
-        .then(name => {
-          return expectSubstringMatchOnName
-            ? name.indexOf(expectedName) >= 0 || expectedName.indexOf(name) >= 0
-            : name === expectedName
-        })
-    },
-    undefined,
-    `expect name ${expectedName} in sidecar substringOk? ${expectSubstringMatchOnName}`
-  )
+const show = (expected: string, selector: string) => async (app: Application) => {
+  await app.client.waitUntil(async () => {
+    return app.client
+      .then(() => app.client.waitForText(selector, timeout))
+      .then(() => app.client.getText(selector))
+      .then(text => text === expected)
+  })
 }
+
+export const name = (expectedName: string) => show(expectedName, Selectors.SIDECAR_TITLE)
+
+export const namespace = (expectedNamespace: string) => show(expectedNamespace, Selectors.SIDECAR_PACKAGE_NAME_TITLE)
 
 export const showing = (
   expectedName: string,

@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+/**
+ * This file tests "test mmr namespace" command that opens the sidecar with
+ * a plain text mode associated with `name` and `namespace`.
+ *
+ * See the command implementation in: plugin-test/src/lib/cmds/mmr-namespace.ts
+ *
+ */
 
-import sayHello from './lib/cmds/say-hello'
-import mmrName from './lib/cmds/mmr-name'
-import mmrNamespace from './lib/cmds/mmr-namespace'
+import { TestMMR } from '@kui-shell/test'
 
-export default async (commandTree: Commands.Registrar) => {
-  // commands
-  await Promise.all([sayHello(commandTree), mmrName(commandTree), mmrNamespace(commandTree)])
-}
+const test = new TestMMR({
+  command: 'test mmr namespace',
+  metadata: {
+    name: 'this is the name part',
+    namespace: 'this is the namespace part'
+  }
+})
+
+test.namespace()
