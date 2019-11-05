@@ -44,5 +44,9 @@
   "About": "Informationen zu",
   "Getting Started": "Erste Schritte",
   "Configure": "Konfigurieren",
-  "Version": "Version"
+  "Version": "Version",
+  "Closing in {0} seconds": "Wird in {0} Sekunden geschlossen",
+  "Save to desktop": "Auf Desktop speichern",
+  "Screenshot copied to clipboard": "Der Screenshot wurde in die Zwischenablage kopiert",
+  "Successfully captured a screenshot to the clipboard": "Ein Screenshot wurde erfolgreich in der Zwischenablage aufgezeichnet"
 }

@@ -44,5 +44,9 @@
   "About": "關於",
   "Getting Started": "開始使用",
   "Configure": "配置",
-  "Version": "版本"
+  "Version": "版本",
+  "Closing in {0} seconds": "將在 {0} 秒後關閉",
+  "Save to desktop": "儲存至桌面",
+  "Screenshot copied to clipboard": "擷取畫面已複製到剪貼簿",
+  "Successfully captured a screenshot to the clipboard": "已順利將擷取畫面擷取至剪貼簿"
 }

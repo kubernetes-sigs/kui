@@ -19,8 +19,9 @@
   "conditions": "condiciones",
   "logs": "registros",
   "containers": "contenedores",
-  "events": "sucesos",
-  "allContexts": "Recursos en todos los clústeres",
+  "events": "eventos",
+  "No resources found.": "No se han encontrado recursos.",
+  "allContexts": "Recursos en todos los contextos",
   "currentContext": "Este es su contexto actual",
   "notCurrentContext": "Este no es su contexto actual"
 }

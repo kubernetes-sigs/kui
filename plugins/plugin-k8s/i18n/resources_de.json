@@ -20,6 +20,7 @@
   "logs": "Protokolle",
   "containers": "Container",
   "events": "Ereignisse",
+  "No resources found.": "Keine Ressourcen gefunden.",
   "allContexts": "Ressourcen in allen Kontexten",
   "currentContext": "Dies ist der aktuelle Kontext",
   "notCurrentContext": "Dies ist nicht der aktuelle Kontext"

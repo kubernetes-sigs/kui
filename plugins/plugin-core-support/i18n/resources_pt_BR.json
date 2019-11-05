@@ -44,5 +44,9 @@
   "About": "Sobre",
   "Getting Started": "Como Começar",
   "Configure": "Configurar",
-  "Version": "Versão"
+  "Version": "Versão",
+  "Closing in {0} seconds": "Fechando em {0} segundos",
+  "Save to desktop": "Salvar na área de trabalho",
+  "Screenshot copied to clipboard": "Captura de tela copiada para a área de transferência",
+  "Successfully captured a screenshot to the clipboard": "Uma captura de tela realizada foi enviada com sucesso para a área de transferência"
 }

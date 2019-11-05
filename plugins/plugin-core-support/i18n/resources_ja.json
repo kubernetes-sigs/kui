@@ -33,7 +33,7 @@
   "Default Dark": "デフォルト・ダーク",
   "pleaseConfirm": "確認してください",
   "areYouSure": "実行しますか?",
-  "aboutToExecute": "実行しようとしているコマンド:  ",
+  "aboutToExecute": "実行しようとしているコマンド:",
   "confirmationMessage": "確認メッセージ",
   "commandToBeExecuted": "実行されるコマンド",
   "operationCancelled": "操作がキャンセルされました",
@@ -44,5 +44,9 @@
   "About": "情報",
   "Getting Started": "始めに",
   "Configure": "構成",
-  "Version": "バージョン"
+  "Version": "バージョン",
+  "Closing in {0} seconds": "{0} 秒で閉じます",
+  "Save to desktop": "デスクトップに保存",
+  "Screenshot copied to clipboard": "スクリーン・ショットはクリップボードにコピーされました",
+  "Successfully captured a screenshot to the clipboard": "スクリーン・ショットをクリップボードに正常にキャプチャーしました"
 }
