@@ -44,5 +44,9 @@
   "About": "정보",
   "Getting Started": "시작하기",
   "Configure": "구성",
-  "Version": "버전"
+  "Version": "버전",
+  "Closing in {0} seconds": "{0}초 후에 닫음",
+  "Save to desktop": "데스크탑에 저장",
+  "Screenshot copied to clipboard": "클립보드에 복사된 스크린샷",
+  "Successfully captured a screenshot to the clipboard": "스크린샷을 클립보드에 캡처함"
 }

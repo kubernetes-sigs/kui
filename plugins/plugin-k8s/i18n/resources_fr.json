@@ -20,6 +20,7 @@
   "logs": "journaux",
   "containers": "conteneurs",
   "events": "événements",
+  "No resources found.": "Aucune ressource trouvée.",
   "allContexts": "Ressources sur l'ensemble des contextes",
   "currentContext": "Il s'agit de votre contexte actuel",
   "notCurrentContext": "Ce n'est pas votre contexte actuel"
