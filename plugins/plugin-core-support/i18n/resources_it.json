@@ -44,5 +44,9 @@
   "About": "Informazioni su",
   "Getting Started": "Introduzione",
   "Configure": "Configura",
-  "Version": "Versione"
+  "Version": "Versione",
+  "Closing in {0} seconds": "Chiusura tra {0} secondi",
+  "Save to desktop": "Salva sul desktop",
+  "Screenshot copied to clipboard": "Schermata copiata negli appunti",
+  "Successfully captured a screenshot to the clipboard": "Una schermata è stata catturata correttamente negli appunti"
 }
