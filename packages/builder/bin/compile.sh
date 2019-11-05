@@ -29,17 +29,17 @@ if [ ! -d plugins ] ; then
 fi
 
 if [ ! -f tsconfig.json ]; then
-    echo "Error: missing tsconfig.json"
+    echo "Warning: skipped compiling Typescript because of missing tsconfig.json"
+else
+  # make typescript happy, until we have the real prescan model ready
+  # (produced by builder/lib/configure.js, but which cannot be run
+  # until after we've compiled the source)
+  mkdir -p ./node_modules/@kui-shell
+  touch ./node_modules/@kui-shell/prescan.json
+
+  # compile the source
+  npx tsc -b .
 fi
-
-# make typescript happy, until we have the real prescan model ready
-# (produced by builder/lib/configure.js, but which cannot be run
-# until after we've compiled the source)
-mkdir -p ./node_modules/@kui-shell
-touch ./node_modules/@kui-shell/prescan.json
-
-# compile the source
-npx tsc -b .
 
 # initialize the html bits
 CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$CLIENT_HOME" node node_modules/@kui-shell/builder/lib/configure.js

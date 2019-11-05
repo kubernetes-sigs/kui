@@ -37,12 +37,6 @@ npm run -s pack
 
 cd "$tmpdir"
 
-cat > tsconfig.json <<EOF
-{
-  "extends": "./node_modules/@kui-shell/builder/tsconfig-base.json"
-}
-EOF
-
 mkdir plugins
 cp -a -L ../clients/default/theme .
 
