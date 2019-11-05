@@ -20,6 +20,7 @@
   "logs": "日誌",
   "containers": "儲存器",
   "events": "事件",
+  "No resources found.": "找不到資源。",
   "allContexts": "所有環境定義內的資源",
   "currentContext": "這是您的現行環境定義",
   "notCurrentContext": "這不是您的現行環境定義"

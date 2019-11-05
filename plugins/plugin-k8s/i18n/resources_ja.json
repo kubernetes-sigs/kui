@@ -20,6 +20,7 @@
   "logs": "ログ",
   "containers": "コンテナー",
   "events": "イベント",
+  "No resources found.": "リソースが見つかりません。",
   "allContexts": "すべてのコンテキストにわたるリソース",
   "currentContext": "これは現在のコンテキストです",
   "notCurrentContext": "これは現在のコンテキストではありません"
