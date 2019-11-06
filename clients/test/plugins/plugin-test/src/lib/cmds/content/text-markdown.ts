@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * This file tests "test mmr name" command that opens the sidecar with
- * a plain text mode associated with a name metadata.
- *
- * See the command implementation in: plugin-test/src/lib/cmds/mmr-name.ts
- *
- */
+export default () => `
+# Markdown Content
+This should render as HTML.
 
-import { TestMMR } from '@kui-shell/test'
-import { command, metadata } from '../../lib/cmds/mmr-mode'
-
-const test = new TestMMR(Object.assign(metadata, { command }))
-
-test.name()
+[Link Fun](https://github.com/IBM/kui)
+`

@@ -23,16 +23,14 @@
 import { Commands, UI } from '@kui-shell/core'
 
 import { plainTextMode } from './content/modes'
+import { metadataWithNameOnly } from './metadata'
 
-const metadata = {
-  kind: 'this is the kind part',
-  metadata: {
-    name: 'this is the name part'
-  }
-}
+export const command = 'test mmr kind'
+export const kind = 'this is the kind part'
+export const metadata = metadataWithNameOnly
 
 const doModes = (): (() => UI.MultiModalResponse) => {
-  return () => Object.assign(metadata, { modes: plainTextMode })
+  return () => Object.assign(metadata, { kind, modes: plainTextMode })
 }
 
 export default (commandTree: Commands.Registrar) => {

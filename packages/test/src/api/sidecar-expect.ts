@@ -132,6 +132,30 @@ export const namespace = (expectedNamespace: string) => show(expectedNamespace, 
 
 export const kind = (expectedKind: string) => show(expectedKind, Selectors.SIDECAR_KIND)
 
+interface Mode {
+  mode: string
+  label?: string
+}
+
+const _mode = (expected: Mode) => async (app: Application) => {
+  await app.client.waitUntil(async () => {
+    const actualMode = `${Selectors.SIDECAR_MODE_BUTTON(expected.mode)}`
+    await app.client.waitForVisible(actualMode)
+
+    if (expected.label) {
+      const actualLabel = await app.client.getText(actualMode)
+      return actualLabel === expected.label
+    } else {
+      return true
+    }
+  })
+
+  return app
+}
+
+export const modes = (expected: Mode[]) => async (app: Application) =>
+  Promise.all(expected.map(_ => _mode(_)(app))).then(() => app)
+
 export const showing = (
   expectedName: string,
   expectedActivationId?: string,

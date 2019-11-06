@@ -18,13 +18,24 @@ import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
 import * as SidecarExpect from './sidecar-expect'
 
-interface Param {
+type Param = Command & MMRParam
+
+interface Command {
   command: string
+}
+
+interface MMRParam {
   kind?: string
   metadata: {
     name: string
     namespace?: string
   }
+  modes?: ModeParam[]
+}
+
+interface ModeParam {
+  mode: string
+  label?: string
 }
 
 export class TestMMR {
@@ -72,6 +83,22 @@ export class TestMMR {
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.kind(kind.toUpperCase()))
+          .catch(Common.oops(this, true)))
+    })
+  }
+
+  public modes() {
+    const { command, modes } = this.param
+
+    describe(`mmr modes ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should show modes in sidecar`, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.modes(modes))
           .catch(Common.oops(this, true)))
     })
   }
