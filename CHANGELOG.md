@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.13](https://github.com/IBM/kui/compare/v5.1.12...v5.1.13) (2019-11-06)
+
+### Bug Fixes
+
+- **packages/core:** broken clickable resource names for CLIs that don't have a kui plugin ([39500ba](https://github.com/IBM/kui/commit/39500ba)), closes [#2888](https://github.com/IBM/kui/issues/2888)
+- **plugins/plugin-core-support:** tab completion versus cursor motion ([c8d61f5](https://github.com/IBM/kui/commit/c8d61f5)), closes [#3087](https://github.com/IBM/kui/issues/3087)
+- mkclient.sh failed with tsc error ([112f8ce](https://github.com/IBM/kui/commit/112f8ce)), closes [#3146](https://github.com/IBM/kui/issues/3146)
+- wrong colors (Gray90 and Red50) in Carbon-90 theme ([449f97b](https://github.com/IBM/kui/commit/449f97b)), closes [#3157](https://github.com/IBM/kui/issues/3157)
+
 ## [5.1.12](https://github.com/IBM/kui/compare/v5.1.11...v5.1.12) (2019-10-24)
 
 ### Bug Fixes
