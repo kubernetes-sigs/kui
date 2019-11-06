@@ -358,8 +358,9 @@ export const printResults = (
         // we rendered the content
         return true
       } else if (isMultiModalResponse(response)) {
+        const echoOk = echo || (execOptions && execOptions.replSilence)
         await showMultiModalResponse(tab, response)
-        if (!isPopup()) {
+        if (echoOk && !isPopup()) {
           ok(resultDom.parentElement)
         }
       } else if (isMixedResponse(response)) {
