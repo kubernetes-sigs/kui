@@ -151,7 +151,7 @@ sidecar
   .repl-result:not(.result-table-with-custom-entity-colors)
   .entity-name-group:not(.header-cell)
   .entity-name[data-key="NAME"] {
-  color: var(--color-name-sidecar);
+  color: var(--color-map-key);
 }
 .repl-result:not(.result-table-with-custom-entity-colors)
   .entity-name-group:not(.header-cell)

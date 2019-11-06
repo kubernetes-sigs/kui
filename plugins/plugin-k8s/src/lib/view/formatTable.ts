@@ -302,6 +302,7 @@ export const formatTable = (
         name: nameForDisplay,
         fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
+        onclickSilence: true,
         css: firstColumnCSS,
         rowCSS,
         outerCSS: `${header} ${outerCSSForKey[rows[0].key] || ''}`,

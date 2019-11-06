@@ -63,6 +63,8 @@ export class Row {
 
   rowCSS?: string | string[]
 
+  onclickSilence?: boolean
+
   onclickExec?: 'pexec' | 'qexec'
 
   onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any

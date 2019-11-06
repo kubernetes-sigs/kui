@@ -415,7 +415,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
   entityNameClickable.className = 'entity-name cell-inner'
   if (!isHeaderCell) {
     entityNameClickable.classList.add('clickable')
-    entityNameClickable.setAttribute('tabindex', '0')
+    // entityNameClickable.setAttribute('tabindex', '0') <-- see https://github.com/IBM/kui/issues/2507
   } else {
     entityNameClickable.classList.add('bx--table-header-label')
   }
@@ -478,7 +478,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       entityNameClickable.onclick = async () => {
         if (!entity.onclickExec || entity.onclickExec === 'pexec') {
           const { pexec } = await import('../../repl/exec')
-          pexec(entity.onclick, { tab })
+          pexec(entity.onclick, { tab, echo: !entity.onclickSilence })
         } else {
           const { qexec } = await import('../../repl/exec')
           qexec(entity.onclick, undefined, undefined, { tab })
