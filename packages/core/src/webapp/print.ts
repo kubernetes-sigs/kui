@@ -36,7 +36,7 @@ import { promiseEach } from '../util/async'
 
 import { isWatchable } from './models/basicModels'
 import { Streamable, Stream } from '../models/streamable'
-import { CommandHandlerWithEvents } from '../models/command'
+import { CommandHandlerWithEvents, ExecType } from '../models/command'
 import { Table, isTable, isMultiTable } from './models/table'
 import { ExecOptions, ParsedOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
@@ -252,7 +252,7 @@ export const printResults = (
   parsedOptions?: ParsedOptions,
   command?: string,
   evaluator?: CommandHandlerWithEvents
-) => (response: Entity) => {
+) => async (response: Entity): Promise<boolean> => {
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?
@@ -295,7 +295,8 @@ export const printResults = (
           ok(resultDom.parentElement).classList.add('ok-for-list')
         }
       } else if (isCustomSpec(response)) {
-        if (echo || (execOptions && execOptions.replSilence)) {
+        const echoOk = echo || (execOptions && execOptions.replSilence)
+        if (echoOk || (execOptions && execOptions.type === ExecType.ClickHandler)) {
           await showCustom(
             tab,
             response,
@@ -303,7 +304,7 @@ export const printResults = (
             customContainer
           )
 
-          if (!isPopup()) {
+          if (echoOk && !isPopup()) {
             ok(resultDom.parentElement)
           }
 
@@ -428,7 +429,7 @@ export const printResults = (
     }
   }
 
-  return promise.then(async (alreadyRendered: boolean) => {
+  await promise.then(async (alreadyRendered: boolean) => {
     if (
       isPopup() &&
       (Array.isArray(response) ||
@@ -486,4 +487,7 @@ export const printResults = (
       }
     }
   })
+
+  // did we print something to the repl?
+  return !isCustomSpec(response)
 }

@@ -676,6 +676,10 @@ class InProcessExecutor implements Executor {
                         resolve(response)
                       }, 100)
                     } else {
+                      // even if we aren't installing a new block,
+                      // make sure that the input is focused (but
+                      // don't scroll to make it visible)
+                      getPrompt(block).focus({ preventScroll: true })
                       resolve(response)
                     }
                   })
@@ -757,7 +761,7 @@ class InProcessExecutor implements Executor {
           const resultDom = blockForError.querySelector('.repl-result') as HTMLElement
           return Promise.resolve(cmd)
             .then(printResults(blockForError, nextBlock, tab, resultDom))
-            .then(installBlock(blockForError.parentNode, blockForError, nextBlock))
+            .then(() => installBlock(blockForError.parentNode, blockForError, nextBlock)())
         }
       })
     }

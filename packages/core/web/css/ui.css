@@ -357,6 +357,7 @@ body:not(.subwindow) .repl .repl-prompt-right-element-status-icon.deemphasize {
 .repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle {
   stroke: var(--color-brand-03);
 }
+svg.kui--error-icon path[data-icon-path="inner-path"],
 .repl-block .repl-prompt-right-element-status-icon svg path[data-icon-path="inner-path"] {
   opacity: 1;
   stroke: var(--color-ui-01);
@@ -370,6 +371,7 @@ body:not(.subwindow) .repl .repl-prompt-right-element-status-icon.deemphasize {
   stroke: var(--color-ok);
   stroke-opacity: 0.5;
 }
+svg.kui--error-icon path:not([data-icon-path="inner-path"]),
 .repl-block.error .repl-prompt-right-element-status-icon svg.kui--icon-error path:not([data-icon-path="inner-path"]) {
   fill: var(--color-error);
   stroke: var(--color-error);
@@ -1379,6 +1381,15 @@ code.fancy-code.hljs {
   opacity: 1;
   font-size: 1em;
 }
+.normal-text svg path {
+  fill: var(--color-text-01);
+}
+.kui--sidecar-inverted sidecar .normal-text {
+  color: var(--color-text-inverted01);
+}
+.kui--sidecar-inverted sidecar .normal-text svg path {
+  fill: var(--color-text-inverted01);
+}
 .even-larger-text {
   font-size: 2em;
   line-height: 1em;
@@ -1397,6 +1408,9 @@ code.fancy-code.hljs {
 }
 .sub-text {
   color: var(--color-text-02);
+}
+.kui--sidecar-inverted sidecar .sub-text {
+  color: var(--color-text-inverted03);
 }
 .lighter-text {
   font-weight: 300;
@@ -3329,7 +3343,7 @@ body.kui--bottom-input .repl-context {
 }
 
 /* row selection */
-.row-selection-context .clickable {
+.has-row-selection .row-selection-context .clickable {
   display: inline-block;
 }
 .row-selection-context.selected-row .selected-entity {
