@@ -16,6 +16,18 @@
 
 import { UI } from '@kui-shell/core'
 
+import htmlTextContent from './text-html'
 import plainTextContent from './text-plain'
+import markdownTextContent from './text-markdown'
 
 export const plainTextMode: UI.MultiModalMode[] = [{ mode: 'text', label: 'Plain Text', content: plainTextContent() }]
+
+const htmlTextMode: UI.MultiModalMode[] = [
+  { mode: 'html', label: 'HTML Text', content: htmlTextContent(), contentType: 'text/html' }
+]
+
+const markdownTextMode: UI.MultiModalMode[] = [
+  { mode: 'markdown', content: markdownTextContent(), contentType: 'text/markdown' }
+]
+
+export const textModes: UI.MultiModalMode[] = [].concat(plainTextMode, htmlTextMode, markdownTextMode)

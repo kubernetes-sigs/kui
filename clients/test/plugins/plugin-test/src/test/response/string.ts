@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { TestStringResponse } from '@kui-shell/test'
+import { command } from '../../lib/cmds/say-hello'
 
 const test = new TestStringResponse({
-  command: 'test string',
+  command,
   expect: 'hello world',
   exact: true
 })
