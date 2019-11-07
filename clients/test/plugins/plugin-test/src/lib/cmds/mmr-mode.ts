@@ -29,8 +29,15 @@ export const command = 'test mmr mode'
 export const modes = textModes
 export const metadata = metadataWithNameOnly
 
+const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
+
+const toolbarText = {
+  type: 'info',
+  text: 'this is the toolbar text'
+}
+
 const doModes = (): (() => UI.MultiModalResponse) => {
-  return () => Object.assign(metadata, { modes })
+  return () => Object.assign(metadata, { modes, buttons, toolbarText })
 }
 
 export default (commandTree: Commands.Registrar) => {

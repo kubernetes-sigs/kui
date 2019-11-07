@@ -42,7 +42,7 @@ const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<MultiModalR
       text: strings('Installed on', installedOn.toLocaleString())
     },
     modes: [{ mode: 'commands', content: `plugin commands ${name}`, contentType: 'command' }],
-    buttons: [{ mode: 'uninstall', label: 'Remove', command: `confirm "plugin remove ${name}"` }]
+    buttons: [{ mode: 'uninstall', label: 'Remove', command: `confirm "plugin remove ${name}"`, kind: 'drilldown' }]
   }
 
   return response

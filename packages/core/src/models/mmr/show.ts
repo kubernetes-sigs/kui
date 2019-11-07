@@ -21,7 +21,7 @@ import { SidecarMode, addModeButtons } from '../../webapp/bottom-stripe'
 import { isTable, isMultiTable, Table, MultiTable } from '../../webapp/models/table'
 import { formatTable } from '../../webapp/views/table'
 
-import { MultiModalResponse, Button } from './types'
+import { MultiModalResponse, Button, isButton } from './types'
 import {
   Content,
   hasContent,
@@ -60,7 +60,10 @@ export async function format<T extends MetadataBearing>(
     return resource.content
   } else {
     // otherwise, we have string or HTMLElement content
-    return Object.assign({ kind: mmr.kind, metadata: mmr.metadata, version: mmr.version, type: 'custom' }, resource)
+    return Object.assign(
+      { toolbarText: mmr.toolbarText, kind: mmr.kind, metadata: mmr.metadata, type: 'custom' },
+      resource
+    )
   }
 }
 
@@ -74,13 +77,27 @@ function wrapTable(tab: Tab, table: Table | MultiTable): HTMLElement {
   return dom1
 }
 
-function formatButtons(buttons: Button[]): SidecarMode[] {
-  return buttons.map(({ mode, label, command, confirm }) => ({
+export function formatButton<T extends MetadataBearing>(
+  tab: Tab,
+  resource: T,
+  { mode, label, command, confirm, kind }: Button
+): SidecarMode {
+  const cmd = typeof command === 'string' ? command : command(tab, resource)
+
+  return {
     mode,
     label,
     flush: 'right',
-    direct: confirm ? `confirm "${command}"` : command
-  }))
+    actAsButton: true,
+    direct: confirm ? `confirm "${cmd}"` : cmd,
+    execOptions: {
+      exec: kind === 'view' ? 'qexec' : 'pexec'
+    }
+  }
+}
+
+function formatButtons(tab: Tab, mmr: MultiModalResponse, buttons: Button[]): SidecarMode[] {
+  return buttons.map(button => formatButton(tab, mmr, button))
 }
 
 async function renderContent<T extends MetadataBearing>(
@@ -127,6 +144,7 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
         }
       },
       defaultMode: _.defaultMode,
+      toolbarText: mmr.toolbarText,
       leaveBottomStripeAlone: true
     }))
   )
@@ -135,11 +153,17 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
     modes[0].defaultMode = true
   }
 
-  const modesWithButtons = mmr.buttons ? modes.concat(formatButtons(mmr.buttons)) : modes
+  const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
+  const modesWithButtons = modes.concat(buttons)
 
   addModeButtons(tab, modesWithButtons, mmr, { preserveBackButton: true })
 
-  const defaultMode = modes.find(_ => _.defaultMode) || modes[0]
+  const defaultMode = modesWithButtons.find(_ => _.defaultMode) || modesWithButtons[0]
+
+  if (isButton(defaultMode)) {
+    console.error('default mode is a button', defaultMode, mmr)
+    throw new Error('Internal Error')
+  }
 
   const content = hasContent(defaultMode)
     ? defaultMode
@@ -149,25 +173,22 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
 
   if (content) {
     if (isCustomSpec(content)) {
-      return showCustom(tab, Object.assign({ modes: modesWithButtons }, content), { leaveBottomStripeAlone: true })
+      return showCustom(tab, Object.assign({ modes: modesWithButtons, toolbarText: mmr.toolbarText }, content), {
+        leaveBottomStripeAlone: true
+      })
     } else {
-      return showCustom(
-        tab,
-        Object.assign(
-          {
-            type: 'custom',
-            kind: mmr.kind,
-            metadata: mmr.metadata,
-            prettyName: mmr.prettyName,
-            nameHash: mmr.nameHash,
-            toolbarText: mmr.toolbarText,
-            version: mmr.version,
-            modes: modesWithButtons
-          },
-          await renderContent(tab, mmr, content)
-        ),
-        { leaveBottomStripeAlone: true }
-      )
+      const customBase = {
+        type: 'custom',
+        resource: mmr,
+        modes: modesWithButtons,
+        toolbarText: mmr.toolbarText,
+        prettyName: mmr.prettyName,
+        nameHash: mmr.nameHash
+      }
+
+      const custom = Object.assign(customBase, await renderContent(tab, mmr, content))
+
+      return showCustom(tab, custom, { leaveBottomStripeAlone: true })
     }
   } else {
     console.error('empty content')

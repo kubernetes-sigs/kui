@@ -444,11 +444,19 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
       sidecar.entity.type = sidecar.entity.viewName
     }
 
-    hashDom.innerText = entity.nameHash !== undefined ? entity.nameHash : ''
+    const prettyName =
+      (entity.prettyName || isMetadataBearingByReference(custom) ? custom.resource.prettyName : undefined) ||
+      entity.name
+    hashDom.innerText =
+      (entity.nameHash !== undefined
+        ? entity.nameHash
+        : isMetadataBearingByReference(custom)
+        ? custom.resource.nameHash
+        : undefined) || ''
 
     addNameToSidecarHeader(
       sidecar,
-      entity.prettyName || entity.name,
+      prettyName,
       entity.packageName || entity.namespace,
       undefined,
       entity.prettyType || entity.type || entity.kind,
@@ -471,11 +479,11 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   if (custom && custom.badges) {
     custom.badges.forEach(badge => addBadge(tab, badge, { badgesDom }))
   }
-  if (isMetadataBearingByReference(custom)) {
+  if (isMetadataBearing(custom) || isMetadataBearingByReference(custom)) {
     const badgeOptions: BadgeOptions = {
       badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
     }
-    addRelevantBadges(tab, custom, badgeOptions)
+    addRelevantBadges(tab, isMetadataBearingByReference(custom) ? custom : { resource: custom }, badgeOptions)
   }
 
   const replView = tab.querySelector('.repl')

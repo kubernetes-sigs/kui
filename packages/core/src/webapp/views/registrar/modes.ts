@@ -16,7 +16,10 @@
 
 import Debug from 'debug'
 
+import { Tab } from '../../tab'
 import { MetadataBearing } from '../../../models/entity'
+import { Button, isButton } from '../../../models/mmr/types'
+import { formatButton } from '../../../models/mmr/show'
 import { SidecarMode } from '../../bottom-stripe'
 
 const debug = Debug('webapp/views/registrar/modes')
@@ -26,6 +29,7 @@ export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Res
 type ModeDeclaration<Resource extends MetadataBearing> =
   | SidecarMode
   | ((command: string, resource: { resource: Resource }) => SidecarMode)
+  | Button
 
 /**
  * Interpretation: if the resource passes the given "when" filter,
@@ -61,6 +65,7 @@ export const registerModeWhen = <Resource extends MetadataBearing>(when: Sidecar
  *
  */
 export function apply<Resource extends MetadataBearing>(
+  tab: Tab,
   modes: SidecarMode[],
   command: string,
   resource: { resource: Resource }
@@ -88,7 +93,10 @@ export function apply<Resource extends MetadataBearing>(
         }
       } */
 
-      const theMode = typeof mode === 'function' ? mode(command, resource) : mode
+      const theModeOrButton: Button | SidecarMode = typeof mode === 'function' ? mode(command, resource) : mode
+      const theMode = isButton(theModeOrButton)
+        ? formatButton(tab, resource.resource, theModeOrButton)
+        : theModeOrButton
       if (!modes.find(({ mode }) => mode === theMode.mode)) {
         modes.push(theMode)
       }
@@ -106,7 +114,7 @@ export function apply<Resource extends MetadataBearing>(
  * @return the relevant modes for the given command on the given resource
  *
  */
-export function get<Resource extends MetadataBearing>(
+/* export function get<Resource extends MetadataBearing>(
   command: string,
   resource: { resource: Resource }
 ): SidecarMode[] {
@@ -114,4 +122,4 @@ export function get<Resource extends MetadataBearing>(
   const modes: SidecarMode[] = []
   apply(modes, command, resource)
   return modes
-}
+} */
