@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.14](https://github.com/IBM/kui/compare/v5.1.13...v5.1.14) (2019-11-07)
+
+**Note:** Version bump only for package @kui-shell/plugin-k8s
+
 ## [5.1.13](https://github.com/IBM/kui/compare/v5.1.12...v5.1.13) (2019-11-06)
 
 **Note:** Version bump only for package @kui-shell/plugin-k8s

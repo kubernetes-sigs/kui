@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.14](https://github.com/IBM/kui/compare/v5.1.13...v5.1.14) (2019-11-07)
+
+### Bug Fixes
+
+- allow ascii-to-table drilldown effect for `oc` commands ([b3850de](https://github.com/IBM/kui/commit/b3850de))
+
 ## [5.1.13](https://github.com/IBM/kui/compare/v5.1.12...v5.1.13) (2019-11-06)
 
 ### Bug Fixes
