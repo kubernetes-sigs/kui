@@ -283,7 +283,11 @@ export const printResults = (
     if (response && response !== true) {
       if (await renderResult(response, tab, execOptions, parsedOptions, resultDom, echo)) {
         // then renderResult took care of things
-      } else if (typeof response === 'number' || typeof response === 'string' || isMessageBearingEntity(response)) {
+      } else if (
+        typeof response === 'number' ||
+        typeof response === 'string' ||
+        (isMessageBearingEntity(response) && !isMultiModalResponse(response))
+      ) {
         // if either the response is a string, or it's a non-entity (no response.type) and has a message field
         //     then treat the response as a simple string response
         if (echo) {

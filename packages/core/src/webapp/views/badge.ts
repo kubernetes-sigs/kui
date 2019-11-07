@@ -51,7 +51,7 @@ export function getBadgesDomContainer(sidecar: Sidecar) {
 export interface BadgeSpec {
   title: string
   fontawesome?: string
-  image?: HTMLImageElement
+  image?: HTMLImageElement | SVGElement
   css?: string
   onclick?: (evt: MouseEvent) => boolean
 }
@@ -73,6 +73,10 @@ export class DefaultBadgeOptions implements BadgeOptions {
   }
 }
 
+function isHTMLImage(img: HTMLImageElement | SVGElement): img is HTMLImageElement {
+  return (img as HTMLImageElement).alt !== undefined
+}
+
 export const addBadge = (
   tab: Tab,
   badgeText: Badge,
@@ -92,7 +96,9 @@ export const addBadge = (
     // otherwise, badge is an IBadgeSpec
     if (badgeText.image) {
       // badge is an HTMLImageElement
-      badgeText.image.alt = badgeText.title
+      if (isHTMLImage(badgeText.image)) {
+        badgeText.image.alt = badgeText.title
+      }
       badge.appendChild(badgeText.image)
       badge.classList.add('badge-as-image')
     } else if (badgeText.fontawesome) {

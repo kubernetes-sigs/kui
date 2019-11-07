@@ -28,7 +28,7 @@ import { apply as addRelevantModes } from './views/registrar/modes'
 import { pexec, qexec, rexec } from '../repl/exec'
 import { isHTML } from '../util/types'
 import { Entity, EntitySpec, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
-import { Label, ModeTraits } from '../models/mmr/types'
+import { Label, ModeTraits, Button, isButton } from '../models/mmr/types'
 import { Content as HighLevelContent, hasContent, isStringWithContentType } from '../models/mmr/content-types'
 
 const debug = Debug('webapp/picture-in-picture')
@@ -167,7 +167,16 @@ export interface LowLevelContent<Direct = DirectViewController> {
   replSilence?: boolean
 }
 
-type Content<Direct = DirectViewController, T = MetadataBearing> = HighLevelContent<T> | LowLevelContent<Direct>
+type Content<Direct = DirectViewController, T = MetadataBearing> =
+  | Button<T>
+  | HighLevelContent<T>
+  | LowLevelContent<Direct>
+
+function isHighLevelMode<T extends MetadataBearing>(
+  mode: Button<T> | HighLevelContent<T> | SidecarMode
+): mode is Button<T> | HighLevelContent<T> {
+  return isButton(mode) || hasContent(mode)
+}
 
 /**
  * Bottom stripe button specification
@@ -176,7 +185,7 @@ type Content<Direct = DirectViewController, T = MetadataBearing> = HighLevelCont
 export type SidecarMode<Direct = DirectViewController> = Label & ModeTraits & Content<Direct>
 export function isSidecarMode(entity: string | HTMLElement | Table | MultiTable | SidecarMode): entity is SidecarMode {
   const mode = entity as SidecarMode
-  return mode.mode !== undefined && (hasContent(mode) || mode.direct !== undefined || mode.command !== undefined)
+  return mode.mode !== undefined && (isHighLevelMode(mode) || mode.direct !== undefined || mode.command !== undefined)
 }
 
 interface BottomStripOptions {
@@ -241,7 +250,9 @@ const _addModeButton = (
   } = opts */
 
   // create the button dom, and attach it
-  const isTab = hasContent(opts) || !(opts.flush === 'right' || opts.flush === 'weak')
+  const isTab =
+    (hasContent(opts) && !isButton(opts)) ||
+    (!isHighLevelMode(opts) && !(opts.flush === 'right' || opts.flush === 'weak'))
   const button = document.createElement(isTab ? 'li' : 'a')
   const buttonAction = document.createElement(isTab ? 'a' : 'span')
   button.appendChild(buttonAction)
@@ -255,7 +266,7 @@ const _addModeButton = (
     button.classList.add('kui--tab-navigatable', 'kui--notab-when-sidecar-hidden')
   }
 
-  if (!hasContent(opts)) {
+  if (!isHighLevelMode(opts)) {
     if (opts.visibleWhen && opts.visibleWhen !== show) {
       // only visible when a specific mode is active!
       return
@@ -292,13 +303,16 @@ const _addModeButton = (
     }
   }
 
-  if ((((!show || show === 'default') && defaultMode) || show === mode) && (hasContent(opts) || !opts.actAsButton)) {
+  if (
+    (((!show || show === 'default') && defaultMode) || show === mode) &&
+    (isHighLevelMode(opts) || !opts.actAsButton)
+  ) {
     button.classList.add(css.active)
   }
   button.setAttribute('data-mode', mode)
 
   // add the button label
-  const fontawesome = !hasContent(opts) && opts.fontawesome
+  const fontawesome = !isHighLevelMode(opts) && opts.fontawesome
   if (fontawesome) {
     const iconContainer = document.createElement('span')
     const icon = document.createElement('i')
@@ -338,7 +352,7 @@ const _addModeButton = (
     iconContainer.appendChild(icon)
     iconContainer.classList.add('icon-container')
 
-    if (!hasContent(opts) && opts.labelBelow) {
+    if (!isHighLevelMode(opts) && opts.labelBelow) {
       const labelContainer = document.createElement('div')
       labelContainer.classList.add('deemphasize')
       labelContainer.innerText = label
@@ -369,7 +383,7 @@ const _addModeButton = (
   }
   container.appendChild(button)
 
-  if (!hasContent(opts) && opts.balloon) {
+  if (!isHighLevelMode(opts) && opts.balloon) {
     button.setAttribute('data-balloon', opts.balloon)
     button.setAttribute('data-balloon-pos', !isTab ? 'down-right' : 'down')
     if (opts.balloonLength) {
@@ -385,24 +399,24 @@ const _addModeButton = (
     getSidecar(tab).entity = entity
   }
 
-  const url = !hasContent(opts) && opts.url
+  const url = !isHighLevelMode(opts) && opts.url
   if (url) {
     //
     // onclick, open a new page
     //
     button.onclick = () => window.open(url)
-  } else if (hasContent(opts) || opts.command || opts.direct) {
+  } else if (isHighLevelMode(opts) || opts.command || opts.direct) {
     //
     // insert the command handler
     //
     button.onclick = async () => {
       // change the active button
-      const leaveBottomStripeAlone = hasContent(opts) || opts.leaveBottomStripeAlone
-      const actAsButton = !hasContent(opts) && opts.actAsButton
+      const leaveBottomStripeAlone = isHighLevelMode(opts) || opts.leaveBottomStripeAlone
+      const actAsButton = !isHighLevelMode(opts) && opts.actAsButton
 
       const changeActiveButton = () => {
-        const radioButton = !hasContent(opts) && opts.radioButton
-        const selected = !hasContent(opts) && opts.selected
+        const radioButton = !isHighLevelMode(opts) && opts.radioButton
+        const selected = !isHighLevelMode(opts) && opts.selected
 
         if (!actAsButton) {
           const currentActive = modeStripe.querySelector(`.${css.active}`)
@@ -440,14 +454,15 @@ const _addModeButton = (
           dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
           dom.innerText = view
           insertCustomContent(tab, dom)
-        } else if (isStringWithContentType(view)) {
+        } else if (isStringWithContentType(view) && isMetadataBearing(entity)) {
           showCustom(
             tab,
-            Object.assign({}, entity, {
+            {
               type: 'custom',
+              resource: entity,
               content: view.content,
               contentType: view.contentType
-            }),
+            },
             { leaveBottomStripeAlone: true }
           )
         } else if (isHTML(view)) {
@@ -469,7 +484,7 @@ const _addModeButton = (
       }
 
       // execute the command
-      if (!hasContent(opts) && opts.direct) {
+      if (!isHighLevelMode(opts) && opts.direct) {
         try {
           if (isDirectViewEntity(opts.direct) || leaveBottomStripeAlone) {
             // change the active button before we fetch the model
@@ -505,7 +520,7 @@ const _addModeButton = (
           // do not change active bottom if the command failed!
           console.error(err)
         }
-      } else if (!hasContent(opts) && opts.command) {
+      } else if (!isHighLevelMode(opts) && opts.command) {
         try {
           const { echo, noHistory, replSilence } = opts
           await pexec(opts.command(entity), { echo, noHistory, replSilence })
@@ -548,17 +563,17 @@ export const addModeButtons = <Direct = DirectViewController>(
   // relevant to this resource
   const command = ''
   if (isMetadataBearing(entity)) {
-    addRelevantModes(modesUnsorted, command, { resource: entity })
+    addRelevantModes(tab, modesUnsorted, command, { resource: entity })
   } else if (isMetadataBearingByReference(entity)) {
-    addRelevantModes(modesUnsorted, command, entity)
+    addRelevantModes(tab, modesUnsorted, command, entity)
   }
 
   // Place flush:right items at the end. Notes on flush:weak; this
   // means place to the right, unless there are no flush:right|weak
   // buttons.
   const modes = modesUnsorted.sort((a, b) => {
-    const aFlush = hasContent(a) ? undefined : a.flush
-    const bFlush = hasContent(b) ? undefined : b.flush
+    const aFlush = isHighLevelMode(a) ? undefined : a.flush
+    const bFlush = isHighLevelMode(b) ? undefined : b.flush
 
     if (aFlush === bFlush || (aFlush === 'weak' && bFlush === 'right') || (aFlush === 'right' && bFlush === 'weak')) {
       // then use the natural order of a versus b: a mode model can
