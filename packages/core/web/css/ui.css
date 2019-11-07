@@ -1788,8 +1788,8 @@ sidecar .activation-result .log-line .log-field > div > div:first-child code {
 }
 .repl.sidecar-visible .log-lines .log-line .log-line-bar-field,
 .repl.sidecar-visible .log-lines .log-line .log-field.start-time-field,
-.repl.sidecar-visible .log-lines .log-line .hide-with-sidecar,
-.repl.sidecar-visible .entity-attributes .hide-with-sidecar {
+.repl.sidecar-visible .log-lines .log-line .hide-with-sidecar:not(.keep-with-sidecar),
+.repl.sidecar-visible .entity-attributes .hide-with-sidecar:not(.keep-with-sidecar) {
   /* hide bar chart when the sidecar is visible */
   max-width: 0;
   padding: 0;
@@ -2939,6 +2939,16 @@ sidecar .sidecar-header badge.version {
   /* badge for resource version */
   background-color: var(--color-tag-ibm-fill);
   color: var(--color-tag-ibm-text);
+}
+sidecar .sidecar-header badge.red-background {
+  background-color: var(--color-red);
+}
+sidecar .sidecar-header badge.yellow-background {
+  background-color: var(--color-yellow);
+  color: var(--color-base01);
+}
+sidecar .sidecar-header badge.green-background {
+  background-color: var(--color-green);
 }
 
 badge.clickable:not(.badge-as-fontawesome):hover {

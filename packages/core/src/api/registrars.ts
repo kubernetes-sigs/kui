@@ -21,5 +21,5 @@ export {
   registerModeWhen,
   registerSidecarMode as registerMode
 } from '../webapp/views/registrar/modes'
-export { registerSidecarBadge as registerBadge } from '../webapp/views/registrar/badges'
+export { BadgeRegistration, registerSidecarBadge as registerBadge } from '../webapp/views/registrar/badges'
 export { Badge } from '../webapp/views/badge'
