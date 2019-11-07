@@ -18,6 +18,7 @@ import { Application } from 'spectron'
 
 import { timeout, waitTimeout } from './cli'
 import * as Selectors from './selectors'
+import { keys as Keys } from './keys'
 import { expectSubset, expectStruct } from './util'
 
 export const open = async (app: Application) => {
@@ -43,6 +44,12 @@ export const closed = async (app: Application) => {
 /** fully closed, not just minimized */
 export const fullyClosed = async (app: Application) => {
   return app.client.waitForExist(Selectors.SIDECAR_FULLY_HIDDEN, timeout).then(() => app)
+}
+
+/** close the sidecar by ESCAPE key */
+export const keyToClose = async (app: Application) => {
+  await app.client.keys(Keys.ESCAPE)
+  return closed(app)
 }
 
 export const sourceStruct = (expectedJSON: object) => async (app: Application) => {
