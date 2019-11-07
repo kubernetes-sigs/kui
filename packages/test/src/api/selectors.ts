@@ -3,10 +3,10 @@ export const TAB_N = (N: number) => `tab:nth-child(${N})`
 export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
 export const SIDECAR_BASE = `${CURRENT_TAB} sidecar`
-export const SIDECAR_FULLSCREEN = `${CURRENT_TAB}.sidecar-full-screen sidecar.visible`
+export const SIDECAR_FULLSCREEN = `${CURRENT_TAB}.sidecar-full-screen sidecar.visible:not(.minimized)`
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
 export const OOPS = `${CURRENT_TAB} .repl .repl-block .oops`
-export const SIDECAR = `${SIDECAR_BASE}.visible`
+export const SIDECAR = `${SIDECAR_BASE}.visible:not(.minimized)`
 export const SIDECAR_WITH_FAILURE = `${SIDECAR_BASE}.visible.activation-success-false`
 export const SIDECAR_HIDDEN = `${SIDECAR_BASE}:not(.visible)`
 export const SIDECAR_FULLY_HIDDEN = `${SIDECAR_BASE}:not(.visible):not(.minimized)`
