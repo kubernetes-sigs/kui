@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/builder",
-  "version": "5.2.27",
+  "version": "5.2.28",
   "description": "Kui plugin development helpers",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -30,5 +30,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "b5cef116ba360af3e71bb2feeb115777c5b0ce8c"
+  "gitHead": "b2d91f5c0c60a3ad9a9273e1058ddd8323235728"
 }
