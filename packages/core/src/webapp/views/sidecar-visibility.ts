@@ -42,6 +42,7 @@ export const isVisible = (tab: Tab): boolean => {
 }
 
 export const setVisibleClass = (sidecar: Sidecar) => {
+  sidecar.classList.remove('minimized')
   sidecar.classList.add('visible')
 }
 

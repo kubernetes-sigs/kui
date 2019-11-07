@@ -94,12 +94,20 @@ export class TestMMR {
       before(Common.before(this))
       after(Common.after(this))
 
-      it(`should show modes in sidecar`, () =>
-        CLI.command(command, this.app)
-          .then(ReplExpect.ok)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.modes(modes))
-          .catch(Common.oops(this, true)))
+      const showModes = () =>
+        it(`should show modes in sidecar`, () =>
+          CLI.command(command, this.app)
+            .then(ReplExpect.ok)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.modes(modes))
+            .catch(Common.oops(this, true)))
+
+      const closeSidecar = () =>
+        it('should minimize the sidecar', () => SidecarExpect.keyToClose(this.app).catch(Common.oops(this, true)))
+
+      showModes()
+      closeSidecar()
+      showModes()
     })
   }
 }
