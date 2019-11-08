@@ -131,6 +131,8 @@ const show = (expected: string, selector: string) => async (app: Application) =>
       .then(() => app.client.getText(selector))
       .then(text => text === expected)
   })
+
+  return app
 }
 
 export const name = (expectedName: string) => show(expectedName, Selectors.SIDECAR_TITLE)

@@ -27,11 +27,7 @@ import Models from '@kui-shell/core/api/models'
 import Settings from '@kui-shell/core/api/settings'
 import * as UI from '@kui-shell/core/api/ui-lite'
 
-import {
-  isVisible as isSidecarVisible,
-  toggle,
-  toggleMaximization
-} from '@kui-shell/core/webapp/views/sidecar-visibility'
+import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar-visibility'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
 import { listen } from '@kui-shell/core/webapp/listen'
 import { setStatus, Status } from '@kui-shell/core/webapp/status'
@@ -304,34 +300,6 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   getTabCloser(tab).onclick = (event: MouseEvent) => {
     event.stopPropagation()
     return closeTab(tab)
-  }
-
-  // maximize button
-  sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
-    debug('toggle sidecar maximization')
-    // indicate that the user requested maximization
-    toggleMaximization(tab, 'user')
-  }
-
-  // close button
-  sidecarSelector(tab, '.toggle-sidecar-button').onclick = () => {
-    debug('toggle sidecar visibility')
-    toggle(tab)
-  }
-
-  // quit button
-  sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
-    try {
-      if (UI.isPopup()) {
-        debug('quit button click')
-        window.close()
-      } else {
-        debug('close sidecar button click')
-        Models.Selection.clear(tab)
-      }
-    } catch (err) {
-      console.error('error handling quit button click', err)
-    }
   }
 
   // screenshot button
