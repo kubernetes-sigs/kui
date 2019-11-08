@@ -17,6 +17,8 @@ import * as Common from './common'
 import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
 import * as SidecarExpect from './sidecar-expect'
+import * as Selectors from './selectors'
+import { keys as Keys } from './keys'
 
 type Param = Command & MMRParam
 
@@ -38,13 +40,25 @@ interface ModeParam {
   label?: string
 }
 
+interface TestModeOptions {
+  windowButtons?: boolean
+}
+
+enum SidecarState {
+  minimized = 'minimized',
+  quited = 'quited',
+  maximized = 'maximized'
+}
+
+type SidecarStateParam = 'minimized' | 'quited' | 'maximized'
+
 export class TestMMR {
   // eslint-disable-next-line no-useless-constructor
   public constructor(public readonly param: Param) {}
 
   public name() {
     const { command, metadata } = this.param
-    describe(`multi model response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr name ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -59,7 +73,7 @@ export class TestMMR {
 
   public namespace() {
     const { command, metadata } = this.param
-    describe(`multi model response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -74,7 +88,7 @@ export class TestMMR {
 
   public kind() {
     const { command, kind } = this.param
-    describe(`multi model response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr kind ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -87,7 +101,7 @@ export class TestMMR {
     })
   }
 
-  public modes() {
+  public modes(options?: TestModeOptions) {
     const { command, modes } = this.param
 
     describe(`mmr modes ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -102,12 +116,91 @@ export class TestMMR {
             .then(SidecarExpect.modes(modes))
             .catch(Common.oops(this, true)))
 
-      const closeSidecar = () =>
-        it('should minimize the sidecar', () => SidecarExpect.keyToClose(this.app).catch(Common.oops(this, true)))
+      const toggleSidecarWithESC = (expectOpen = false) =>
+        it(`should hit ESCAPE key and expect sidecar ${expectOpen ? 'open' : 'closed'}`, async () => {
+          try {
+            await this.app.client.keys(Keys.ESCAPE)
+            expectOpen ? await SidecarExpect.open(this.app) : await SidecarExpect.closed(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+
+      const quit = () =>
+        it('should fully close the sidecar', async () => {
+          try {
+            await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+            await this.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+            await SidecarExpect.fullyClosed(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+
+      const maximize = () =>
+        it('should maximize the sidecar', async () => {
+          try {
+            await this.app.client.waitForVisible(Selectors.SIDECAR_MAXIMIZE_BUTTON)
+            await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON)
+            await SidecarExpect.fullscreen(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+
+      const minimize = () => {
+        it('should toggle the sidebar closed with close button click', async () => {
+          try {
+            await this.app.client.waitForVisible(Selectors.SIDECAR_CLOSE_BUTTON)
+            await this.app.client.click(Selectors.SIDECAR_CLOSE_BUTTON)
+            await SidecarExpect.closed(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+      }
+
+      const backToOpen = (prevState: SidecarStateParam) => {
+        const button =
+          prevState === SidecarState.minimized
+            ? Selectors.SIDECAR_RESUME_FROM_CLOSE_BUTTON
+            : Selectors.SIDECAR_MAXIMIZE_BUTTON
+
+        if (prevState === SidecarState.minimized || prevState === SidecarState.maximized) {
+          it(`should resume the sidecar from ${prevState} to open`, async () => {
+            try {
+              await this.app.client.waitForVisible(button)
+              await this.app.client.click(button)
+              await SidecarExpect.open(this.app)
+            } catch (err) {
+              await Common.oops(this, true)
+            }
+          })
+        }
+      }
 
       showModes()
-      closeSidecar()
-      showModes()
+
+      if (options && options.windowButtons === true) {
+        toggleSidecarWithESC()
+        toggleSidecarWithESC(true)
+
+        toggleSidecarWithESC()
+        showModes()
+
+        minimize()
+        backToOpen(SidecarState.minimized)
+
+        minimize()
+        showModes()
+
+        maximize()
+        backToOpen(SidecarState.maximized)
+        showModes()
+
+        quit()
+        showModes()
+      }
     })
   }
 }

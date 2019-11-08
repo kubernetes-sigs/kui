@@ -24,4 +24,4 @@ const test = new TestMMR(
   })
 )
 
-test.modes()
+test.modes({ windowButtons: true })

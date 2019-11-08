@@ -13,15 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Debug from 'debug'
+const debug = Debug('webapp/views/sidecar-init')
 
 import { keys } from '../keys'
 import { isPopup } from '../popup-core'
-import { getTabFromTarget } from '../tab'
+import { getTabFromTarget, Tab, getCurrentTab } from '../tab'
 import { scrollIntoView } from '../scroll'
 import sidecarSelector from './sidecar-selector'
+import eventBus from '../../core/events'
 
-import { isVisible, toggle } from './sidecar-visibility'
+import { isVisible, toggle, toggleMaximization, clearSelection } from './sidecar-visibility'
 
+/**
+ * Add onclick handlers to Sidecar Buttons
+ *
+ */
+const registerWindowButtonsListeners = (tab: Tab) => {
+  // maximize button
+  sidecarSelector(tab, '.toggle-sidecar-maximization-button').onclick = () => {
+    debug('toggle sidecar maximization')
+    // indicate that the user requested maximization
+    toggleMaximization(tab, 'user')
+  }
+
+  // close button
+  sidecarSelector(tab, '.toggle-sidecar-button').onclick = () => {
+    debug('toggle sidecar visibility')
+    toggle(tab)
+  }
+
+  // quit button
+  sidecarSelector(tab, '.sidecar-bottom-stripe-quit').onclick = () => {
+    try {
+      if (isPopup()) {
+        debug('quit button click')
+        window.close()
+      } else {
+        debug('close sidecar button click')
+        clearSelection(tab)
+      }
+    } catch (err) {
+      console.error('error handling quit button click', err)
+    }
+  }
+}
 /**
  * One-time initialization of sidecar view
  *
@@ -66,5 +102,11 @@ export default async () => {
         scrollIntoView()
       }
     }
+  })
+
+  registerWindowButtonsListeners(getCurrentTab())
+
+  eventBus.on('/tab/new', (tab: Tab) => {
+    registerWindowButtonsListeners(tab)
   })
 }

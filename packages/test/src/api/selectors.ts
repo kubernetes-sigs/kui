@@ -35,6 +35,7 @@ export const SIDECAR_MODE_BUTTON_SELECTED = (mode: string) =>
 export const SIDECAR_BACK_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
 export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe
+export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close` // resume button in minimized mode
 export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit` // fully close button in the bottom stripe
 export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
