@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-wskflow",
-  "version": "5.2.29",
+  "version": "5.2.30",
   "description": "Visualizations for Composer apps",
   "license": "Apache-2.0",
   "author": "Kerry Chang",
