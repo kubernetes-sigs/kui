@@ -97,8 +97,23 @@ export function apply<Resource extends MetadataBearing>(
       const theMode = isButton(theModeOrButton)
         ? formatButton(tab, resource.resource, theModeOrButton)
         : theModeOrButton
-      if (!modes.find(({ mode }) => mode === theMode.mode)) {
+
+      const idxOfPreexistingRegistrationForSameMode = modes.findIndex(({ mode }) => mode === theMode.mode)
+      if (idxOfPreexistingRegistrationForSameMode < 0) {
         modes.push(theMode)
+      } else {
+        // two plugins register the same mode; see if we can break the
+        // tie using the `priority` field of the modes
+        const oldMode = modes[idxOfPreexistingRegistrationForSameMode]
+        const prio1 = oldMode.priority || 0
+        const prio2 = theMode.priority || 0
+        if (prio2 > prio1) {
+          // splice the override in place, deleting the existing entry
+          if (oldMode.defaultMode && theMode.defaultMode !== false) {
+            theMode.defaultMode = true
+          }
+          modes.splice(idxOfPreexistingRegistrationForSameMode, 1, theMode)
+        }
       }
 
       /* if (grabDefaultMode) {
