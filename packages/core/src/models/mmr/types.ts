@@ -71,8 +71,13 @@ export interface ModeTraits {
   /** should this mode be given preference as the default selected mode? */
   defaultMode?: boolean
 
-  /** sort order; default is as given */
+  /** order in view; lower will be rendered further to the "left" for
+   * LTR; default order registration order */
   order?: number
+
+  /** registration tie-breaker: if more than one plugin offers the
+   * same mode, the one with the highest numeric priority wins */
+  priority?: number
 }
 
 /**

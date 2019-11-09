@@ -114,8 +114,14 @@ async function renderContent<T extends MetadataBearing>(
   } else if (isFunctionContent(content)) {
     const actualContent: ScalarResource | ScalarContent = await content.content(tab, bearer)
     if (!isScalarContent(actualContent)) {
-      return {
-        content: actualContent
+      if (isTable(actualContent) || isMultiTable(actualContent)) {
+        return {
+          content: wrapTable(tab, actualContent)
+        }
+      } else {
+        return {
+          content: actualContent
+        }
       }
     } else {
       return actualContent
