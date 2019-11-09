@@ -190,8 +190,8 @@ sidecar
   /* table row striping */
   background-color: var(--color-ui-02);
 }
-body sidecar .result-table .entity:nth-child(2n + 1) td,
-body sidecar .result-table .entity:nth-child(2n + 1) .entity-attributes {
+body sidecar .result-table .entity:nth-child(2n) td,
+body sidecar .result-table .entity:nth-child(2n) .entity-attributes {
   /* table row striping in sidecar (when not full screen) */
   background: var(--color-ui-03);
 }

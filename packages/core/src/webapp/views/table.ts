@@ -21,6 +21,7 @@ import { Tab } from '../tab'
 import { isPopup } from '../popup-core'
 import { getCurrentPrompt } from '../prompt'
 import { _split as split, Split } from '../../repl/split'
+import { isMetadataBearing } from '../../models/entity'
 import {
   Table,
   MultiTable,
@@ -483,6 +484,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           const { qexec } = await import('../../repl/exec')
           qexec(entity.onclick, undefined, undefined, { tab })
         }
+      }
+    } else if (isMetadataBearing(entity.onclick)) {
+      entityNameClickable.onclick = async () => {
+        const { show } = await import('../../models/mmr/show')
+        return show(tab, entity.onclick)
       }
     } else {
       entityNameClickable.onclick = entity.onclick

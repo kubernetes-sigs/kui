@@ -301,7 +301,10 @@ export const addNameToSidecarHeader = async (
   }
 
   // handle ToolbarText
-  const toolbarTextSpec = isToolbarText(subtext) ? subtext : isCustomSpec(entity) && entity.toolbarText
+  const toolbarTextSpec = isToolbarText(subtext)
+    ? subtext
+    : isCustomSpec(entity) &&
+      (entity.toolbarText || (isMetadataBearingByReference(entity) && entity.resource.toolbarText))
   const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
   const toolbarTextContent = element('.sidecar-toolbar-text-content', toolbarTextContainer)
   removeAllDomChildren(toolbarTextContent)
