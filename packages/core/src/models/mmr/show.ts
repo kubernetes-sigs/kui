@@ -49,7 +49,7 @@ export async function format<T extends MetadataBearing>(
     // assumes a Content structure, so wrap it up as such
     return format(tab, mmr, { content: resource })
   } else if (isFunctionContent(resource)) {
-    // then resource.content is a funciton that will provide the information
+    // then resource.content is a function that will provide the information
     return format(tab, mmr, await resource.content(tab, mmr))
   } else if (isCommandStringContent(resource)) {
     const content = await tab.REPL.qexec<ScalarResource | ScalarContent>(resource.content)
@@ -61,7 +61,7 @@ export async function format<T extends MetadataBearing>(
   } else {
     // otherwise, we have string or HTMLElement content
     return Object.assign(
-      { toolbarText: mmr.toolbarText, kind: mmr.kind, metadata: mmr.metadata, type: 'custom' },
+      { resource: mmr, toolbarText: mmr.toolbarText, kind: mmr.kind, metadata: mmr.metadata, type: 'custom' },
       resource
     )
   }
