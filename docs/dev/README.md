@@ -6,7 +6,7 @@ build the code:
 ```bash
 git clone git@github.com:IBM/kui.git
 export PATH=$PWD/kui/bin:$PATH
-cd kui && npm install
+cd kui && npm ci
 kubectl kui version
 ```
 
@@ -35,7 +35,7 @@ deployments are also possible, further extending the reach of Kui.
 
 Kui is written in [TypeScript](https://www.typescriptlang.org/), which
 is a typed variant of JavaScript in fairly wide use now across the
-JavaScript ecosystem. After the initial `npm install`, you can set up
+JavaScript ecosystem. After the initial `npm ci`, you can set up
 a compile watcher via this command, executed in the top-level
 directory:
 

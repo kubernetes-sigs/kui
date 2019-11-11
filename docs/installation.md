@@ -41,6 +41,12 @@ commands via:
 kubectl kui get pods --ui
 ```
 
+### Important Note
+
+For using Kui as a kubectl plugin, we recommend using
+[Kubernetes Visualization Client](https://github.com/kui-shell/plugin-kubeui).
+We are in the process of transitioning to this repo, and it will be incorporated shortly.
+
 ## Setting up Kubernetes Authorization
 
 If you have a KUBECONFIG environment variable defined in your
