@@ -2942,6 +2942,7 @@ sidecar .sidecar-header badge.version {
 }
 sidecar .sidecar-header badge.red-background {
   background-color: var(--color-red);
+  color: var(--color-base00);
 }
 sidecar .sidecar-header badge.yellow-background {
   background-color: var(--color-yellow);
@@ -2949,6 +2950,10 @@ sidecar .sidecar-header badge.yellow-background {
 }
 sidecar .sidecar-header badge.green-background {
   background-color: var(--color-green);
+}
+sidecar .sidecar-header badge.scope {
+  background-color: var(--color-base0E);
+  color: var(--color-base01);
 }
 
 badge.clickable:not(.badge-as-fontawesome):hover {
