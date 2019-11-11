@@ -713,14 +713,14 @@ class InProcessExecutor implements Executor {
               err = evaluator.error(command, tab, (execOptions && execOptions.type) || ExecType.TopLevel, err)
 
               if (!nested && !rethrowIt) {
-                debug('reporting command execution error to user via repl')
+                debug('reporting command execution error to user via repl', err)
                 // console.error(err)
                 oops(command, block, nextBlock)(err)
               } else {
                 debug('rethrowing command execution error', err)
                 if (reportIt) {
                   // maybe the caller also wants us to report it via the repl?
-                  debug('also reporting command execution error to user via repl')
+                  debug('also reporting command execution error to user via repl', err)
                   oops(command, block, nextBlock)(err)
                 }
                 throw err
