@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-core-support",
-  "version": "5.2.31",
+  "version": "5.2.32",
   "description": "Kui plugin offering core extensions such as help and screenshot commands",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -30,5 +30,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "b2d91f5c0c60a3ad9a9273e1058ddd8323235728"
+  "gitHead": "30f1be37c97b01d54e26266ead3215e64d964bb8"
 }
