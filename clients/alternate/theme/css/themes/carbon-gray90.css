@@ -1,6 +1,6 @@
 /* color variables */
 body[kui-theme="IBM Dark"][kui-theme-style] {
-  --color-base00: #282828;
+  --color-base00: #262626;
   --color-base01: #171717;
   --color-base02: #565656;
   --color-base03: #565656;
@@ -8,7 +8,7 @@ body[kui-theme="IBM Dark"][kui-theme-style] {
   --color-base05: #adadad;
   --color-base06: #f3f3f3;
   --color-base07: #fff;
-  --color-base08: #fb4b53;
+  --color-base08: #fa4d56;
   --color-base09: #bf5b17;
   --color-base0A: #fdd13a;
   --color-base0B: #56d679;
