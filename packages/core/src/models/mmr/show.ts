@@ -29,7 +29,7 @@ import {
   ScalarContent,
   isScalarContent,
   isCommandStringContent,
-  isStringWithContentType,
+  isStringWithOptionalContentType,
   isFunctionContent
 } from './content-types'
 
@@ -105,7 +105,7 @@ async function renderContent<T extends MetadataBearing>(
   bearer: T,
   content: string | object
 ): Promise<ScalarContent> {
-  if (isStringWithContentType(content)) {
+  if (isStringWithOptionalContentType(content)) {
     return content
   } else if (isTable(content) || isMultiTable(content)) {
     return {

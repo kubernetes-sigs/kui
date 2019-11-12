@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-export { SidecarMode as Mode } from '../webapp/bottom-stripe'
-export {
-  SidecarModeFilter as ModeFilter,
-  ModeRegistration,
-  registerModeWhen,
-  registerSidecarMode as registerMode
-} from '../webapp/views/registrar/modes'
+import { TestMMR } from '@kui-shell/test'
 
-export { BadgeRegistration, registerSidecarBadge as registerBadge } from '../webapp/views/registrar/badges'
-export { Badge } from '../webapp/views/badge'
+import { command, metadata as _meta } from '../../lib/cmds/mmr-mode-via-registration'
+import { badgesWeWillRegister as badges, modesWeWillRegister as modes } from '../../lib/modes'
 
-export { PreloadRegistration, PreloadRegistrar } from '../models/plugin'
+const { metadata } = _meta
+
+const test = new TestMMR({
+  metadata,
+  command,
+  modes
+})
+
+test.badges({
+  name: 'mmr-mode-via-registration',
+  badges
+})
+
+test.modes({
+  name: 'mmr-mode-via-registration',
+  windowButtons: true
+})

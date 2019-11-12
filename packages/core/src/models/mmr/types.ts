@@ -96,7 +96,7 @@ export type DrilldownButton = Button & {
 }
 
 export function isButton<T extends MetadataBearing>(mode: Button<T> | Content<T> | SidecarMode): mode is Button<T> {
-  return (mode as Button).command !== undefined
+  return mode !== undefined && (mode as Button).command !== undefined
 }
 
 /**

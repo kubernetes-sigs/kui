@@ -16,7 +16,7 @@
 
 /**
  * This file introduces a "test mmr mode" command that opens the sidecar with
- * some texts modes.
+ * some text modes.
  *
  */
 

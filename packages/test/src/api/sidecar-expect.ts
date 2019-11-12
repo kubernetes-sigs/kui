@@ -153,7 +153,7 @@ const _mode = (expected: Mode) => async (app: Application) => {
 
     if (expected.label) {
       const actualLabel = await app.client.getText(actualMode)
-      return actualLabel === expected.label
+      return actualLabel.toLowerCase() === expected.label.toLowerCase()
     } else {
       return true
     }
