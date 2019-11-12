@@ -25,11 +25,6 @@
 import { TestMMR } from '@kui-shell/test'
 import { command, metadata, kind } from '../../lib/cmds/mmr-kind'
 
-const test = new TestMMR(
-  Object.assign(metadata, {
-    command,
-    kind
-  })
-)
+const test = new TestMMR(Object.assign(metadata, { command }))
 
-test.kind()
+test.kind(kind)

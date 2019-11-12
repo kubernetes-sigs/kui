@@ -27,6 +27,11 @@ export const SIDECAR_SEQUENCE_CANVAS_NODES = `${SIDECAR_SEQUENCE_CANVAS} .node.a
 export const SIDECAR_SEQUENCE_CANVAS_NODE_N = (N: number) => `${SIDECAR_SEQUENCE_CANVAS_NODES}[data-task-index="${N}"]`
 export const SIDECAR_LIMIT = (type: string) => `${SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 export const SIDECAR_BADGES = `${SIDECAR} .sidecar-header .badges`
+export const SIDECAR_TOOLBAR = `${SIDECAR} .sidecar-bottom-stripe-toolbar`
+export const SIDECAR_TOOLBAR_TEXT = (type: string) =>
+  `${SIDECAR_TOOLBAR} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
+export const SIDECAR_TOOLBAR_BUTTON = (mode: string) =>
+  `${SIDECAR_TOOLBAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button[data-mode="${mode}"] [role="tab"]`
 export const SIDECAR_CUSTOM_CONTENT = `${SIDECAR} .custom-content`
 export const SIDECAR_MODE_BUTTONS = `${SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 export const SIDECAR_MODE_BUTTON = (mode: string) => `${SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe

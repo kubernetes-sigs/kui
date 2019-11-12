@@ -22,16 +22,15 @@
 
 import { Commands, UI } from '@kui-shell/core'
 
-import { metadataWithNameOnly } from './metadata'
+import { metadataWithNameOnly as metadata } from './metadata'
 import { textModes } from './content/modes'
 
+// exporting these for consumption in tests
 export const command = 'test mmr mode'
 export const modes = textModes
-export const metadata = metadataWithNameOnly
-
-const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
-
-const toolbarText = {
+export { metadata }
+export const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
+export const toolbarText = {
   type: 'info',
   text: 'this is the toolbar text'
 }
@@ -41,7 +40,7 @@ const doModes = (): (() => UI.MultiModalResponse) => {
 }
 
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen('/test/mmr/mode', doModes(), {
+  commandTree.listen(`/${command.split(/ /).join('/')}`, doModes(), {
     usage: {
       docs: 'A test of MultiModalResponse mode'
     }

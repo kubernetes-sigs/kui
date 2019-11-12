@@ -19,7 +19,7 @@ import { Application } from 'spectron'
 import { timeout, waitTimeout } from './cli'
 import * as Selectors from './selectors'
 import { keys as Keys } from './keys'
-import { expectSubset, expectStruct } from './util'
+import { expectSubset, expectStruct, expectText } from './util'
 
 export const open = async (app: Application) => {
   await app.client.waitForVisible(Selectors.SIDECAR, timeout)
@@ -95,6 +95,11 @@ export const badge = (badge: string) => async (app: Application) => {
   return app
 }
 
+export const button = (button: { mode: string; label?: string }) => async (app: Application) => {
+  await expectText(app, button.label || button.mode)(Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode))
+  return app
+}
+
 export const limit = (type: string, expectedValue: number | string) => async (app: Application) => {
   const expect: Record<string, number | string> = {}
   expect[type] = expectedValue
@@ -124,6 +129,11 @@ export const mode = (expectedMode: string) => async (app: Application) => {
   return app
 }
 
+export const toolbarText = (expect: { type: string; text: string }) => async (app: Application) => {
+  await expectText(app, expect.text)(Selectors.SIDECAR_TOOLBAR_TEXT(expect.type))
+  return app
+}
+
 const show = (expected: string, selector: string) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     return app.client
@@ -141,12 +151,7 @@ export const namespace = (expectedNamespace: string) => show(expectedNamespace, 
 
 export const kind = (expectedKind: string) => show(expectedKind, Selectors.SIDECAR_KIND)
 
-interface Mode {
-  mode: string
-  label?: string
-}
-
-const _mode = (expected: Mode) => async (app: Application) => {
+const _mode = (expected: { mode: string; label?: string }) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     const actualMode = `${Selectors.SIDECAR_MODE_BUTTON(expected.mode)}`
     await app.client.waitForVisible(actualMode)
@@ -162,7 +167,7 @@ const _mode = (expected: Mode) => async (app: Application) => {
   return app
 }
 
-export const modes = (expected: Mode[]) => async (app: Application) =>
+export const modes = (expected: { mode: string; label?: string }[]) => async (app: Application) =>
   Promise.all(expected.map(_ => _mode(_)(app))).then(() => app)
 
 export const showing = (
