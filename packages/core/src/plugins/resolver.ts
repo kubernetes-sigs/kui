@@ -25,11 +25,35 @@ import { KuiPlugin, PluginRegistration } from '../models/plugin'
 const debug = Debug('core/plugins/resolver')
 
 export interface PluginResolver {
-  resolve: (route: string, options?: { subtree: boolean }) => void
+  /**
+   * Look for a plugin that might be able to handle the given
+   * `route`. If `tryCatchalls` is true, then the caller is desperate,
+   * and wants us to see if there are any plugins that might have a
+   * catchall that could possibly service the given `route`.
+   *
+   */
+  resolve: (route: string, options?: { subtree?: boolean; tryCatchalls: boolean }) => void
+
   disambiguate: (route: string) => CommandBase[]
   disambiguatePartial: (partial: string) => string[]
-  resolveOne: (route: string) => Promise<KuiPlugin>
+
+  /**
+   * Unconditionally resolve the given named `plugin`
+   *
+   */
+  resolveOne: (plugin: string) => Promise<KuiPlugin>
+
+  /**
+   * Has the given `route` been overridden by some plugin?
+   *
+   */
   isOverridden: (route: string) => boolean
+
+  /**
+   * Is the given `plugin` the definitive master of the given `route`?
+   * it might not be, if some other plugin has overridden it
+   */
+  isAlpha: (route: string, plugin: string) => boolean
 }
 
 /** export the prequire function */
@@ -120,6 +144,8 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
   /** a plugin resolver impl */
   const resolver = {
     isOverridden: (route: string): boolean => prescan.overrides[route] !== undefined,
+    isAlpha: (route: string, plugin: string): boolean =>
+      prescan.overrides[route] === undefined || prescan.overrides[route] === plugin,
 
     resolveOne,
 
@@ -143,7 +169,7 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
     },
 
     /** load any plugins required by the given command */
-    resolve: async (command: string, { subtree = false } = {}): Promise<void> => {
+    resolve: async (command: string, { subtree = false, tryCatchalls = true } = {}): Promise<void> => {
       // subpath if we are looking for plugins for a subtree, e.g. for cd /auth
       let plugin: string
       let matchLen: number
@@ -160,7 +186,7 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
       }
       if (plugin) {
         await resolveOne(plugin)
-      } else if (prescan.catchalls.length > 0) {
+      } else if (prescan.catchalls.length > 0 && tryCatchalls) {
         // see if we have catchall
         await Promise.all(prescan.catchalls.map(_ => resolveOne(_.plugin))).catch(err => {
           console.error(

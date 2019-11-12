@@ -357,9 +357,14 @@ const resolveFromLocalFilesystem = async (scanCache: ScanCache, opts: PrescanOpt
       }
     }
 
-    // we take the union of the client-provided plugins and the client-required plugins
-    plugins = Object.assign({}, clientHosted.plugins, clientRequired.plugins)
-    preloads = Object.assign({}, clientHosted.preloads, clientRequired.preloads)
+    // we take the union of the client-provided plugins and the
+    // client-required plugins note: place clientRequired first, so
+    // that we process the registrations in clientRequired plugins
+    // first (this processing occurs in topologicalSortForScan);
+    // nodejs guarantees FIFO iteration order for object properties
+    // https://github.com/IBM/kui/issues/3191
+    plugins = Object.assign({}, clientRequired.plugins, clientHosted.plugins)
+    preloads = Object.assign({}, clientRequired.preloads, clientHosted.preloads)
   }
 
   debug('availablePlugins %s', JSON.stringify(plugins))

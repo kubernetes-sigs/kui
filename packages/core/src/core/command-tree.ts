@@ -20,10 +20,12 @@ debug('loading')
 
 import {
   CommandHandler,
+  CommandOverrideHandler,
   CommandRegistrar,
   CommandTree,
   CommandTreeResolution,
   ExecType,
+  EvaluatorArgs,
   CatchAllOffer,
   Command,
   CommandHandlerWithEvents,
@@ -415,7 +417,7 @@ const _read = async (
     // loaded, yet; so: invoke the plugin resolver and retry
     //
     const route = `/${argv.join('/')}`
-    await resolver.resolve(route)
+    await resolver.resolve(route, { tryCatchalls: !contextRetry || contextRetry.length === 0 })
     leaf = treeMatch(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
     evaluator = leaf && leaf.$
   }
@@ -550,7 +552,7 @@ export const read = async (
   let cmd: false | CodedError | CommandHandlerWithEvents
 
   if (!noRetry) {
-    await resolver.resolve(`/${argv.join('/')}`)
+    await resolver.resolve(`/${argv.join('/')}`, { tryCatchalls: false })
     cmd = await internalRead(root, argv)
   }
 
@@ -627,11 +629,30 @@ export class ImplForPlugins implements CommandRegistrar {
     return _subtreeSynonym(route, master, options)
   }
 
-  public async find(route: string, noOverride = true) {
+  public async override(
+    route: string,
+    fromPlugin: string,
+    overrideHandler: CommandOverrideHandler,
+    options?: CommandOptions
+  ): Promise<Command> {
+    const currentHandler = (await this.find(route, fromPlugin)).$
+    if (!currentHandler) {
+      throw new Error(`Cannot find desired command handler for ${route} from plugin ${fromPlugin}`)
+    }
+
+    const handler: CommandHandler = (args: EvaluatorArgs) => overrideHandler(args, currentHandler)
+    return this.listen(route, handler, options)
+  }
+
+  public async find(route: string, fromPlugin?: string, noOverride = true) {
     const cmd = match(route.split('/').slice(1), true)
     if (!cmd || cmd.route !== route || (!noOverride && resolver && resolver.isOverridden(cmd.route))) {
       if (resolver) {
-        await resolver.resolve(route)
+        if (fromPlugin) {
+          await resolver.resolveOne(fromPlugin)
+        } else {
+          await resolver.resolve(route, { tryCatchalls: false })
+        }
       }
       return match(route.split('/').slice(1), true)
     } else {

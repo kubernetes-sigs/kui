@@ -79,38 +79,40 @@ export default async (commandTree: Commands.Registrar) => {
     { usage: sessionGet('get') }
   )
 
-  // override wsk activation get
-  const activationGet = (await commandTree.find('/wsk/activation/get')).$
-  synonyms('activations').forEach(syn => {
-    commandTree.listen(
-      `/wsk/${syn}/get`,
-      opts => {
-        if (!activationGet) {
-          return Promise.reject(new Error())
-        }
-        const last = opts.parsedOptions.last
+  await Promise.all(
+    synonyms('activations').map(syn => {
+      // override wsk activation get
+      return commandTree.override(
+        `/wsk/${syn}/get`,
+        'plugin-openwhisk',
+        (opts, activationGet) => {
+          if (!activationGet) {
+            return Promise.reject(new Error())
+          }
+          const last = opts.parsedOptions.last
 
-        if (last) {
-          return opts.REPL.qexec<ActivationListTable>(
-            `wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : '')
-          )
-            .then(activations => activations.body)
-            .then(activations => {
-              if (activations.length === 0) {
-                throw new Error('No such activation found')
-              } else {
-                return opts.REPL.qexec<Activation>(`wsk activation get ${activations[0].activationId}`)
-              }
+          if (last) {
+            return opts.REPL.qexec<ActivationListTable>(
+              `wsk activation list --limit 1` + (typeof last === 'string' ? ` --name ${last}` : '')
+            )
+              .then(activations => activations.body)
+              .then(activations => {
+                if (activations.length === 0) {
+                  throw new Error('No such activation found')
+                } else {
+                  return opts.REPL.qexec<Activation>(`wsk activation get ${activations[0].activationId}`)
+                }
+              })
+          }
+
+          return Promise.resolve(activationGet(opts))
+            .then(response => view.formatSessionGet(opts, response))
+            .catch(err => {
+              throw err
             })
-        }
-
-        return Promise.resolve(activationGet(opts))
-          .then(response => view.formatSessionGet(opts, response))
-          .catch(err => {
-            throw err
-          })
-      },
-      {}
-    )
-  })
+        },
+        {}
+      )
+    })
+  )
 }
