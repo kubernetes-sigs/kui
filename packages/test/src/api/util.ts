@@ -19,6 +19,9 @@ import { safeLoad } from 'js-yaml'
 
 import * as Selectors from './selectors'
 import * as CLI from './cli'
+import * as Common from './common'
+import * as ReplExpect from './repl-expect'
+import * as SidecarExpect from './sidecar-expect'
 
 export interface AppAndCount {
   app: Application
@@ -195,4 +198,73 @@ export const expectText = (app: Application, expectedText: string) => async (sel
   await app.client.waitForText(selector)
   const actualText = await app.client.getText(selector)
   assert.strictEqual(actualText, expectedText)
+}
+
+/**
+ *
+ * - Type the command
+ * - Expect a command not found
+ * - Expect the given list of available related commands
+ * - Optionally click on a given "click" index of the available list
+ * - If so, then either: expect the subsequent command output to have the given terminal breadcrumb in its usage message
+ *                   or: expect the sidecar icon to be "sidecar"
+ *
+ */
+export function expectSuggestionsFor(
+  this: Common.ISuite,
+  cmd: string,
+  expectedAvailable: string[],
+  {
+    click = undefined,
+    expectedBreadcrumb = undefined,
+    sidecar: expectedIcon = undefined,
+    expectedString = undefined
+  }: { click?: number; expectedBreadcrumb?: string; sidecar?: string; expectedString?: string } = {}
+) {
+  return CLI.command(cmd, this.app)
+    .then(ReplExpect.errorWithPassthrough(404, 'Command not found'))
+    .then(N => {
+      const base = `${Selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
+      const availableItems = `${base} .clickable`
+
+      return this.app.client
+        .getText(availableItems)
+        .then(expectArray(expectedAvailable, false, true))
+        .then(() => {
+          if (click !== undefined) {
+            // then click on the given index; note that nth-child is 1-indexed, hence the + 1 part
+            const clickOn = `${base}:nth-child(${click + 1}) .clickable`
+
+            return this.app.client.click(clickOn).then(() => {
+              if (expectedBreadcrumb) {
+                //
+                // then expect the next command to have the given terminal breadcrumb
+                //
+                const breadcrumb = `${Selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
+                return this.app.client
+                  .getText(breadcrumb)
+                  .then(actualBreadcrumb => assert.strictEqual(actualBreadcrumb, expectedBreadcrumb))
+              } else if (expectedIcon) {
+                //
+                // then wait for the sidecar to be open and showing the expected sidecar icon text
+                //
+                const icon = `${Selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
+                return SidecarExpect.open(this.app)
+                  .then(() => this.app.client.getText(icon))
+                  .then(actualIcon => actualIcon.toLowerCase())
+                  .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))
+              } else if (expectedString) {
+                //
+                // then wait for the given command output
+                //
+                return this.app.client.waitUntil(async () => {
+                  const text = await this.app.client.getText(Selectors.OUTPUT_N(N + 1))
+                  return text === expectedString
+                })
+              }
+            })
+          }
+        })
+    })
+    .catch(Common.oops(this))
 }
