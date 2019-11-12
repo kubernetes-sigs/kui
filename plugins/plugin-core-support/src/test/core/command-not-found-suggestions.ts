@@ -16,15 +16,15 @@
 
 import { Common, Util } from '@kui-shell/test'
 
-describe('Suggestions for command not found editor', function(this: Common.ISuite) {
+describe('Suggestions for command not found core-support', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  it('should present suggestions for "edi" -> edit', () => {
+  it('should present suggestions for "versio" -> version', () => {
     return Util.expectSuggestionsFor.call(
       this,
-      'edi', // type this
-      ['edit'] // expect these completions
+      'versio', // type this
+      ['version'] // expect these completions
     )
   })
 })
