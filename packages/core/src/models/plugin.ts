@@ -15,13 +15,22 @@
  */
 
 import { CommandRegistrar } from './command'
-
 import { PrescanUsage } from '../plugins/prescan'
+import { MetadataBearing } from '../models/entity'
+import { BadgeRegistration, ModeRegistration } from '../api/registrars'
 
 export type KuiPlugin = void | Promise<void>
 
 export type PluginRegistration = (commandTree: CommandRegistrar, options?: { usage: PrescanUsage }) => KuiPlugin
 
-export type PreloadRegistration = (commandTree: CommandRegistrar) => Promise<void | void[]>
+export interface PreloadRegistrar extends CommandRegistrar {
+  registerMode<Resource extends MetadataBearing>(registration: ModeRegistration<Resource>): void
+  registerModes<Resource extends MetadataBearing>(...registrations: ModeRegistration<Resource>[]): void
+
+  registerBadge<Resource extends MetadataBearing>(registration: BadgeRegistration<Resource>): void
+  registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void
+}
+
+export type PreloadRegistration = (registrar: PreloadRegistrar) => Promise<void | void[]>
 
 export type CapabilityRegistration = () => Promise<void>

@@ -49,9 +49,11 @@ export interface StringContent<ContentType = 'yaml' | 'text/markdown' | 'text/ht
   contentType?: ContentType
 }
 
-export function isStringWithContentType(entity: Entity | SidecarMode): entity is StringContent {
-  const string = entity as StringContent
-  return string && string.content !== undefined && string.contentType !== undefined
+export function isStringWithOptionalContentType(entity: Entity | SidecarMode): entity is StringContent {
+  const str = entity as StringContent
+  return (
+    str && typeof str.content === 'string' && (str.contentType === undefined || typeof str.contentType === 'string')
+  )
 }
 
 /**

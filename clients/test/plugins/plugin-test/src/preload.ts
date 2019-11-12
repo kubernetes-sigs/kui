@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-export { SidecarMode as Mode } from '../webapp/bottom-stripe'
-export {
-  SidecarModeFilter as ModeFilter,
-  ModeRegistration,
-  registerModeWhen,
-  registerSidecarMode as registerMode
-} from '../webapp/views/registrar/modes'
+import { isHeadless } from '@kui-shell/core/api/capabilities'
+import { PreloadRegistrar } from '@kui-shell/core/api/registrars'
 
-export { BadgeRegistration, registerSidecarBadge as registerBadge } from '../webapp/views/registrar/badges'
-export { Badge } from '../webapp/views/badge'
+import { mode1, mode2, mode3, badge1, badge2 } from './lib/modes'
 
-export { PreloadRegistration, PreloadRegistrar } from '../models/plugin'
+export default async (registrar: PreloadRegistrar) => {
+  if (!isHeadless()) {
+    registrar.registerModes(mode1, mode2, mode3)
+    registrar.registerBadges(badge1, badge2)
+  }
+}

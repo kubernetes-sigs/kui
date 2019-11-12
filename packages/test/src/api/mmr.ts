@@ -35,12 +35,20 @@ interface MMRParam {
   modes?: ModeParam[]
 }
 
-interface ModeParam {
+export interface ModeParam {
   mode: string
   label?: string
 }
 
-interface TestModeOptions {
+export interface BadgeParam {
+  title: string
+}
+
+interface TestNameOptions {
+  name?: string
+}
+
+interface TestModeOptions extends TestNameOptions {
   windowButtons?: boolean
 }
 
@@ -101,10 +109,25 @@ export class TestMMR {
     })
   }
 
+  public badges(options: { badges: BadgeParam[] } & TestNameOptions) {
+    const command = this.param.command
+
+    describe(`mmr badges ${options.name || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should show badges in sidecar`, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(app => Promise.all(options.badges.map(badge => SidecarExpect.badge(badge.title)(app)))))
+    })
+  }
+
   public modes(options?: TestModeOptions) {
     const { command, modes } = this.param
 
-    describe(`mmr modes ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr modes ${options.name || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
