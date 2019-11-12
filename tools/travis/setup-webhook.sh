@@ -28,4 +28,4 @@ cd "$SCRIPTDIR"
 ../../bin/kui wsk app update travis-for-kui/done ./done.js
 
 # make a web action out of the composition
-../../bin/kui webbify travis-for-kui/done
+../../bin/kui wsk action webbify travis-for-kui/done
