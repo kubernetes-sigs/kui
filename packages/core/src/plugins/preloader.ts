@@ -20,8 +20,34 @@ debug('loading')
 
 import { PrescanModel } from './prescan'
 
-import { proxy } from '../core/command-tree'
-import { PreloadRegistration, CapabilityRegistration } from '../models/plugin'
+import { MetadataBearing } from '../models/entity'
+import { ImplForPlugins } from '../core/command-tree'
+import { registerBadge, registerMode, BadgeRegistration, ModeRegistration } from '../api/registrars'
+import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
+
+class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar {
+  // why does eslint consider this to be a useless constructor??
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(plugin: string) {
+    super(plugin)
+  }
+
+  public registerMode<Resource extends MetadataBearing>(registration: ModeRegistration<Resource>): void {
+    registerMode(registration)
+  }
+
+  public registerModes<Resource extends MetadataBearing>(...registrations: ModeRegistration<Resource>[]): void {
+    registrations.forEach(_ => this.registerMode(_))
+  }
+
+  public registerBadge<Resource extends MetadataBearing>(registration: BadgeRegistration<Resource>): void {
+    registerBadge(registration)
+  }
+
+  public registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void {
+    registrations.forEach(_ => this.registerBadge(_))
+  }
+}
 
 /**
  * This module allows for plugins to register themselves to be
@@ -68,7 +94,7 @@ export default async (prescan: PrescanModel) => {
               ? await import(module.path)
               : await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
           const registration: PreloadRegistration = registrationRef.default || registrationRef
-          await registration(proxy(module.route))
+          await registration(new PreloaderRegistrarImpl(module.route))
           debug('done preloading %s', module.path)
         } catch (err) {
           debug('error invoking preload', module.path, err)

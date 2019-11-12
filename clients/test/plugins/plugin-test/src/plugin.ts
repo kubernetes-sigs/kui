@@ -21,8 +21,16 @@ import mmrName from './lib/cmds/mmr-name'
 import mmrNamespace from './lib/cmds/mmr-namespace'
 import mmrKind from './lib/cmds/mmr-kind'
 import mmrMode from './lib/cmds/mmr-mode'
+import mmrModeViaRegistration from './lib/cmds/mmr-mode-via-registration'
 
 export default async (commandTree: Commands.Registrar) => {
   // commands
-  await Promise.all([sayHello(commandTree), mmrName(commandTree), mmrNamespace(commandTree), mmrKind(commandTree), mmrMode(commandTree)])
+  await Promise.all([
+    sayHello(commandTree),
+    mmrName(commandTree),
+    mmrNamespace(commandTree),
+    mmrKind(commandTree),
+    mmrMode(commandTree),
+    mmrModeViaRegistration(commandTree)
+  ])
 }

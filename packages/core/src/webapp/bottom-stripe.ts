@@ -29,7 +29,7 @@ import { pexec, qexec, rexec } from '../repl/exec'
 import { isHTML } from '../util/types'
 import { Entity, EntitySpec, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
 import { Label, ModeTraits, Button, isButton } from '../models/mmr/types'
-import { Content as HighLevelContent, hasContent, isStringWithContentType } from '../models/mmr/content-types'
+import { Content as HighLevelContent, hasContent, isStringWithOptionalContentType } from '../models/mmr/content-types'
 
 const debug = Debug('webapp/picture-in-picture')
 
@@ -454,7 +454,7 @@ const _addModeButton = (
           dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
           dom.innerText = view
           insertCustomContent(tab, dom)
-        } else if (isStringWithContentType(view) && isMetadataBearing(entity)) {
+        } else if (isStringWithOptionalContentType(view) && isMetadataBearing(entity)) {
           showCustom(
             tab,
             {
@@ -506,7 +506,7 @@ const _addModeButton = (
 
             changeActiveButton()
           } else if (view && !actAsButton && !isToggle(view)) {
-            if (isTable(view) || isStringWithContentType(view)) {
+            if (isTable(view) || isStringWithOptionalContentType(view)) {
               changeActiveButton()
             }
 
@@ -615,7 +615,8 @@ export const addModeButtons = <Direct = DirectViewController>(
     }
   }
 
-  const defaultMode = modes && modes.find(({ defaultMode }) => defaultMode)
+  const defaultMode =
+    modes && (modes.find(({ defaultMode }) => defaultMode) || modes.find(_ => isHighLevelMode(_) || !_.flush))
   const show = (options && options.show) || (defaultMode && (defaultMode.mode || defaultMode.label))
 
   addModeButtons(tab, modes, entity, show)
