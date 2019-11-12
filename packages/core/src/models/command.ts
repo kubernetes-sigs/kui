@@ -170,6 +170,12 @@ export type Response = Entity
 /** base command handler */
 export type CommandHandler<T = Response, O = ParsedOptions> = (args: EvaluatorArgs<O>) => T | Promise<T>
 
+/** command handler when overriding commands from other plugins */
+export type CommandOverrideHandler<T = Response, O = ParsedOptions> = (
+  args: EvaluatorArgs<O>,
+  underlyingHandler: CommandHandler<T, O>
+) => T | Promise<T>
+
 /**
  * Evaluator
  *
@@ -255,8 +261,14 @@ export interface CatchAllHandler extends Command {
 type CommandListener = (route: string, handler: CommandHandler, options?: CommandOptions) => Command
 
 export interface CommandRegistrar {
-  find: (route: string, noOverride?: boolean) => Promise<Command>
+  find: (route: string, fromPlugin?: string, noOverride?: boolean) => Promise<Command>
   listen: CommandListener
+  override: (
+    route: string,
+    fromPlugin: string,
+    handler: CommandOverrideHandler,
+    options?: CommandOptions
+  ) => Promise<Command>
   synonym: (route: string, handler: CommandHandler, master: Command, options?: CommandOptions) => void
   subtree: (route: string, options: CommandOptions) => Command
   subtreeSynonym: (route: string, masterTree: Command, options?: CommandOptions) => void

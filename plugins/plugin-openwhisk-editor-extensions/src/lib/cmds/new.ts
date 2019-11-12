@@ -110,7 +110,7 @@ const checkForConformance = action => {
     const err = new Error('Editing of binary actions not yet supported')
     err['code'] = 406 // 406: Not Acceptable http status code
     throw err
-  } else if (action.ast) {
+  } else if (action.ast || action.annotations.find(_ => _.key === 'composerVersion')) {
     // try to find the source for this composition
     debug('trying to find source for composition')
     return compositionPersister.getCode(action)
