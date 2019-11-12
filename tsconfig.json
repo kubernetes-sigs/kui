@@ -2,10 +2,10 @@
   "extends": "./packages/builder/tsconfig-base.json",
   "references": [
     {
-      "path": "packages/test"
+      "path": "packages/core"
     },
     {
-      "path": "packages/core"
+      "path": "packages/test"
     },
     {
       "path": "packages/builder"
