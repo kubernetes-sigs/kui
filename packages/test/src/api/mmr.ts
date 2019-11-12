@@ -20,19 +20,13 @@ import * as SidecarExpect from './sidecar-expect'
 import * as Selectors from './selectors'
 import { keys as Keys } from './keys'
 
-type Param = Command & MMRParam
-
-interface Command {
+interface TestParam {
   command: string
-}
-
-interface MMRParam {
-  kind?: string
+  testName?: string
   metadata: {
     name: string
     namespace?: string
   }
-  modes?: ModeParam[]
 }
 
 export interface ModeParam {
@@ -44,26 +38,20 @@ export interface BadgeParam {
   title: string
 }
 
-interface TestNameOptions {
-  name?: string
-}
-
-interface TestModeOptions extends TestNameOptions {
-  windowButtons?: boolean
-}
-
-enum SidecarState {
-  minimized = 'minimized',
-  quited = 'quited',
-  maximized = 'maximized'
-}
-
-type SidecarStateParam = 'minimized' | 'quited' | 'maximized'
-
 export class TestMMR {
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(public readonly param: Param) {}
+  /**
+   * new TestMMR() instantiates a class of multi-model-response tests
+   * @param { TestParam } param includes: command, testName and metadata
+   * @param { string } command is the command needs to be executed
+   * @param { string } testName (optional) helps with filtering the Mocha Test Suites by description
+   * @param { string } metadata is the metadata shown in Sidecar
+   */
+  public constructor(public readonly param: TestParam) {} // eslint-disable-line no-useless-constructor
 
+  /**
+   * name() starts a Mocha Test Suite
+   * name() executes `command` in REPL and expects `name` is shown in Sidecar
+   */
   public name() {
     const { command, metadata } = this.param
     describe(`mmr name ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -79,6 +67,11 @@ export class TestMMR {
     })
   }
 
+  /**
+   * namespace() starts a Mocha Test Suite
+   * namespace() executes `command` in REPL and expects `namespace` is shown in Sidecar
+   *
+   */
   public namespace() {
     const { command, metadata } = this.param
     describe(`mmr namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -94,8 +87,14 @@ export class TestMMR {
     })
   }
 
-  public kind() {
-    const { command, kind } = this.param
+  /**
+   * kind() starts a Mocha Test Suite
+   * kind() executes `command` in REPL and expects `kind` is showin in Sidecar
+   * @param { string } kind is the expected kind text shown in the Sidecar
+   *
+   */
+  public kind(kind: string) {
+    const command = this.param.command
     describe(`mmr kind ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
@@ -109,10 +108,16 @@ export class TestMMR {
     })
   }
 
-  public badges(options: { badges: BadgeParam[] } & TestNameOptions) {
-    const command = this.param.command
+  /**
+   * badges() starts a Mocha Test Suite
+   * badges() executes `command` in REPL and expects `badges` are showin in Sidecar
+   * @param { BadgeParam[] } badges is the expected badges shown in the Sidecar
+   *
+   */
+  public badges(badges: BadgeParam[]) {
+    const { command, testName } = this.param
 
-    describe(`mmr badges ${options.name || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr badges ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -120,14 +125,22 @@ export class TestMMR {
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(app => Promise.all(options.badges.map(badge => SidecarExpect.badge(badge.title)(app)))))
+          .then(app => Promise.all(badges.map(badge => SidecarExpect.badge(badge.title)(app)))))
     })
   }
 
-  public modes(options?: TestModeOptions) {
-    const { command, modes } = this.param
+  /**
+   * modes() starts a Mocha Test Suite
+   * modes() executes `command` in REPL and expects `modes` are showin in Sidecar
+   * @param { ModeParam[] } modes is the expected modes shown as Sidecar Tabs
+   * @param  options includes: testWindowButtons
+   * @param { boolean } testWindowButtons indicates whether modes() will test the sidecar window buttons as well
+   *
+   */
+  public modes(modes: ModeParam[], options?: { testWindowButtons?: boolean }) {
+    const { command, testName } = this.param
 
-    describe(`mmr modes ${options.name || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr modes ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -183,28 +196,25 @@ export class TestMMR {
         })
       }
 
-      const backToOpen = (prevState: SidecarStateParam) => {
-        const button =
-          prevState === SidecarState.minimized
-            ? Selectors.SIDECAR_RESUME_FROM_CLOSE_BUTTON
-            : Selectors.SIDECAR_MAXIMIZE_BUTTON
+      const backToOpen = (backFromMinimized: boolean) => {
+        const button = backFromMinimized
+          ? Selectors.SIDECAR_RESUME_FROM_CLOSE_BUTTON
+          : Selectors.SIDECAR_MAXIMIZE_BUTTON
 
-        if (prevState === SidecarState.minimized || prevState === SidecarState.maximized) {
-          it(`should resume the sidecar from ${prevState} to open`, async () => {
-            try {
-              await this.app.client.waitForVisible(button)
-              await this.app.client.click(button)
-              await SidecarExpect.open(this.app)
-            } catch (err) {
-              await Common.oops(this, true)
-            }
-          })
-        }
+        it(`should resume the sidecar from ${backFromMinimized ? 'minimized' : 'maximized'} to open`, async () => {
+          try {
+            await this.app.client.waitForVisible(button)
+            await this.app.client.click(button)
+            await SidecarExpect.open(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
       }
 
       showModes()
 
-      if (options && options.windowButtons === true) {
+      if (options && options.testWindowButtons === true) {
         toggleSidecarWithESC()
         toggleSidecarWithESC(true)
 
@@ -212,18 +222,86 @@ export class TestMMR {
         showModes()
 
         minimize()
-        backToOpen(SidecarState.minimized)
+        backToOpen(true)
 
         minimize()
         showModes()
 
         maximize()
-        backToOpen(SidecarState.maximized)
+        backToOpen(false)
         showModes()
 
         quit()
         showModes()
       }
+    })
+  }
+
+  /**
+   * toolbarButtons() starts a Mocha Test Suite
+   * toolbarButtons() executes `command` and expects the `buttons` shown in Sidecar having correct labels and drildown handlers
+   *
+   * @param buttons is the expected array of `button` shown in the Sidecar Toolbar
+   *
+   */
+  public toolbarButtons(buttons: { mode: string; label?: string; command: string; kind: 'drilldown' | 'view' }[]) {
+    const command = this.param.command
+
+    describe(`mmr toolbar buttons ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should show toolbar buttons in sidecar `, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(app => Promise.all(buttons.map(button => SidecarExpect.button(button)(app))))
+          .catch(Common.oops(this, true)))
+
+      const drilldownButtons = buttons.filter(_ => _.kind === 'drilldown')
+      if (drilldownButtons.length > 0) {
+        it(`should drilldown toolbar buttons in sidecar `, async () => {
+          const { app, count } = await CLI.command(command, this.app)
+          await ReplExpect.ok({ app, count })
+          await SidecarExpect.open(app)
+
+          await Promise.all(
+            drilldownButtons.map(async (button, index) => {
+              // the button should be clickable
+              const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode)
+              await app.client.waitForVisible(buttonSelector)
+              await app.client.click(buttonSelector)
+
+              // after clicking the button, a command should show up in the next prompt
+              const promptSelector = Selectors.PROMPT_N(count + 1 + index)
+              await ReplExpect.ok({ app, count: count + 1 + index })
+              await CLI.expectInput(promptSelector, button.command)(app)
+            })
+          )
+        })
+      }
+    })
+  }
+
+  /**
+   * toolbarText() starts a Mocha Test Suite
+   * toolbarText() executes `command` and expects Sidecar Toolbar has correct `text` and `type`
+   *
+   * @param  toolbarText is the expected text content and type shown in the Sidecar Toolbar
+   */
+  public toolbarText(toolbarText: { type: string; text: string }) {
+    const command = this.param.command
+
+    describe(`mmr toolbar text ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should show toolbar text in sidecar `, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.toolbarText(toolbarText))
+          .catch(Common.oops(this, true)))
     })
   }
 }

@@ -22,17 +22,10 @@ import { badgesWeWillRegister as badges, modesWeWillRegister as modes } from '..
 const { metadata } = _meta
 
 const test = new TestMMR({
+  testName: 'mmr-mode-via-registration',
   metadata,
-  command,
-  modes
+  command
 })
 
-test.badges({
-  name: 'mmr-mode-via-registration',
-  badges
-})
-
-test.modes({
-  name: 'mmr-mode-via-registration',
-  windowButtons: true
-})
+test.badges(badges)
+test.modes(modes, { testWindowButtons: true })
