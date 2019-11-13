@@ -30,4 +30,13 @@ const markdownTextMode: UI.MultiModalMode[] = [
   { mode: 'markdown', content: markdownTextContent(), contentType: 'text/markdown' }
 ]
 
-export const textModes: UI.MultiModalMode[] = [].concat(plainTextMode, htmlTextMode, markdownTextMode)
+const yamlMode: UI.MultiModalMode[] = [
+  {
+    mode: 'yaml',
+    label: 'raw',
+    content: 'apiVersion: this is the api version field\nkind: this is the kind field',
+    contentType: 'yaml'
+  }
+]
+
+export const textModes: UI.MultiModalMode[] = [].concat(plainTextMode, htmlTextMode, markdownTextMode, yamlMode)

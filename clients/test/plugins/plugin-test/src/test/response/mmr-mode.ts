@@ -14,11 +14,44 @@
  * limitations under the License.
  */
 
-import { TestMMR } from '@kui-shell/test'
-import { command, modes, metadata, toolbarText, buttons } from '../../lib/cmds/mmr-mode'
+/**
+ * This file tests "test mmr mode" command that opens the sidecar with
+ * 3 text modes associated with `toolbar text` and `toolbar button`.
+ *
+ * See the command implementation in: plugin-test/src/lib/cmds/mmr-mode.ts
+ *
+ */
+import { TestMMR, MMRExpectMode } from '@kui-shell/test'
+import { metadata as _meta } from '../../lib/cmds/mmr-mode'
 
-const test = new TestMMR(Object.assign(metadata, { command }))
+const { metadata } = _meta
 
-test.modes(modes, { testWindowButtons: true })
+const test = new TestMMR({
+  metadata,
+  command: 'test mmr mode'
+})
+
+// this is the expected modes result showing in the sidecar
+const expectModes: MMRExpectMode[] = [
+  { mode: 'text', label: 'Plain Text', content: 'test plain text', contentType: 'text/plain' },
+  { mode: 'html', label: 'HTML Text', contentType: 'text/html' },
+  { mode: 'markdown', contentType: 'text/markdown' },
+  {
+    mode: 'yaml',
+    label: 'raw',
+    content: 'apiVersion: this is the api version field\nkind: this is the kind field',
+    contentType: 'yaml'
+  }
+]
+
+const toolbarText = {
+  type: 'info',
+  text: 'this is the toolbar text'
+}
+
+const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
+
+test.name()
+test.modes(expectModes, { testWindowButtons: true })
 test.toolbarText(toolbarText)
 test.toolbarButtons(buttons)

@@ -25,8 +25,7 @@
 import { Commands, UI } from '@kui-shell/core'
 import { metadataWithNameOnly as metadata } from './metadata'
 
-// exporting these for consumption in tests
-export const command = 'test mmr mode-via-registration'
+// exporting this for consumption in tests
 export { metadata }
 
 // these are the modes we return to the REPL, not the modes we expect
@@ -50,7 +49,7 @@ const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalRespons
 }
 
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen(`/${command.split(/ /).join('/')}`, doModes(), {
+  commandTree.listen(`/test/mmr/mode-via-registration`, doModes(), {
     usage: {
       docs: 'A test of MultiModalResponse mode'
     },

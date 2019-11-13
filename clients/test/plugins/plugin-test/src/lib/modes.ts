@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { BadgeParam, ModeParam } from '@kui-shell/test'
 import { Tab } from '@kui-shell/core/api/tab'
 import Models from '@kui-shell/core/api/models'
+import { UI } from '@kui-shell/core'
 import { BadgeRegistration, ModeRegistration } from '@kui-shell/core/api/registrars'
 
 export interface MyResource extends Models.ResourceWithMetadata {
@@ -85,5 +84,4 @@ export const badge2 = {
 const checkingBadgeType2: BadgeRegistration<MyResource> = badge2
 
 // these are for the tests
-export const modesWeWillRegister: ModeParam[] = [mode1, mode2, mode3].map(_ => _.mode)
-export const badgesWeWillRegister: BadgeParam[] = [badge1, badge2].map(_ => _.badge)
+export const badgesWeWillRegister: UI.BadgeSpec[] = [badge1, badge2].map(_ => _.badge)

@@ -20,8 +20,6 @@ const sayHello = (): Commands.Response => {
   return 'hello world'
 }
 
-export const command = 'test string'
-
 export default (commandTree: Commands.Registrar) => {
   commandTree.listen('/test/string', sayHello, {
     usage: {
