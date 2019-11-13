@@ -1,1 +1,0 @@
-# wskng-activation-viz-plugins
