@@ -21,10 +21,15 @@
  * See the command implementation in: plugin-test/src/lib/cmds/mmr-namespace.ts
  *
  */
-
 import { TestMMR } from '@kui-shell/test'
-import { command, metadata } from '../../lib/cmds/mmr-namespace'
 
-const test = new TestMMR(Object.assign(metadata, { command }))
+const test = new TestMMR({
+  command: 'test mmr namespace',
+  metadata: {
+    name: 'this is the name part',
+    namespace: 'this is the namespace part'
+  }
+})
 
+test.name()
 test.namespace()

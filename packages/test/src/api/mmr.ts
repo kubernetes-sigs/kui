@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { UI } from '@kui-shell/core'
+
 import * as Common from './common'
 import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
@@ -29,13 +32,23 @@ interface TestParam {
   }
 }
 
-export interface ModeParam {
+export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor)
+
+interface Label {
   mode: string
   label?: string
 }
 
-export interface BadgeParam {
-  title: string
+interface PlainTextContent {
+  content?: string
+  contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
+  editor?: false
+}
+
+interface YamlContentWithEditor {
+  content: object
+  contentType: 'yaml'
+  editor: true
 }
 
 export class TestMMR {
@@ -111,10 +124,10 @@ export class TestMMR {
   /**
    * badges() starts a Mocha Test Suite
    * badges() executes `command` in REPL and expects `badges` are showin in Sidecar
-   * @param { BadgeParam[] } badges is the expected badges shown in the Sidecar
+   * @param { UI.Badge[] } badges is the expected badges shown in the Sidecar
    *
    */
-  public badges(badges: BadgeParam[]) {
+  public badges(badges: UI.BadgeSpec[]) {
     const { command, testName } = this.param
 
     describe(`mmr badges ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -132,89 +145,133 @@ export class TestMMR {
   /**
    * modes() starts a Mocha Test Suite
    * modes() executes `command` in REPL and expects `modes` are showin in Sidecar
-   * @param { ModeParam[] } modes is the expected modes shown as Sidecar Tabs
+   * @param { TestMode[] } expectModes is the expected modes shown as Sidecar Tabs
    * @param  options includes: testWindowButtons
    * @param { boolean } testWindowButtons indicates whether modes() will test the sidecar window buttons as well
    *
    */
-  public modes(modes: ModeParam[], options?: { testWindowButtons?: boolean }) {
+  public modes(expectModes: MMRExpectMode[], options?: { testWindowButtons?: boolean }) {
     const { command, testName } = this.param
 
     describe(`mmr modes ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
-      const showModes = () =>
+      const showModes = () => {
         it(`should show modes in sidecar`, () =>
           CLI.command(command, this.app)
             .then(ReplExpect.ok)
             .then(SidecarExpect.open)
-            .then(SidecarExpect.modes(modes))
+            .then(SidecarExpect.modes(expectModes))
             .catch(Common.oops(this, true)))
-
-      const toggleSidecarWithESC = (expectOpen = false) =>
-        it(`should hit ESCAPE key and expect sidecar ${expectOpen ? 'open' : 'closed'}`, async () => {
-          try {
-            await this.app.client.keys(Keys.ESCAPE)
-            expectOpen ? await SidecarExpect.open(this.app) : await SidecarExpect.closed(this.app)
-          } catch (err) {
-            await Common.oops(this, true)
-          }
-        })
-
-      const quit = () =>
-        it('should fully close the sidecar', async () => {
-          try {
-            await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
-            await this.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
-            await SidecarExpect.fullyClosed(this.app)
-          } catch (err) {
-            await Common.oops(this, true)
-          }
-        })
-
-      const maximize = () =>
-        it('should maximize the sidecar', async () => {
-          try {
-            await this.app.client.waitForVisible(Selectors.SIDECAR_MAXIMIZE_BUTTON)
-            await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON)
-            await SidecarExpect.fullscreen(this.app)
-          } catch (err) {
-            await Common.oops(this, true)
-          }
-        })
-
-      const minimize = () => {
-        it('should toggle the sidebar closed with close button click', async () => {
-          try {
-            await this.app.client.waitForVisible(Selectors.SIDECAR_CLOSE_BUTTON)
-            await this.app.client.click(Selectors.SIDECAR_CLOSE_BUTTON)
-            await SidecarExpect.closed(this.app)
-          } catch (err) {
-            await Common.oops(this, true)
-          }
-        })
       }
 
-      const backToOpen = (backFromMinimized: boolean) => {
-        const button = backFromMinimized
-          ? Selectors.SIDECAR_RESUME_FROM_CLOSE_BUTTON
-          : Selectors.SIDECAR_MAXIMIZE_BUTTON
+      const cycleTheTabs = () =>
+        expectModes.forEach(expectMode => {
+          it(`should switch to the ${expectMode.mode} tab`, async () => {
+            try {
+              await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))
+              await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(expectMode.mode))
+            } catch (err) {
+              return Common.oops(this)(err)
+            }
+          })
 
-        it(`should resume the sidecar from ${backFromMinimized ? 'minimized' : 'maximized'} to open`, async () => {
-          try {
-            await this.app.client.waitForVisible(button)
-            await this.app.client.click(button)
-            await SidecarExpect.open(this.app)
-          } catch (err) {
-            await Common.oops(this, true)
+          if (expectMode.contentType === 'text/plain') {
+            it(`should show plain text content in the ${expectMode.mode} tab`, async () => {
+              try {
+                await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+              } catch (err) {
+                return Common.oops(this)(err)
+              }
+            })
+          } else if (expectMode.contentType === 'yaml') {
+            if (expectMode.editor === true) {
+              it(`should open editor and show yaml content in the ${expectMode.mode} tab`, async () => {
+                try {
+                  await SidecarExpect.yaml(expectMode.content)(this.app)
+                } catch (err) {
+                  return Common.oops(this)(err)
+                }
+              })
+            } else {
+              it(`should show plain yaml content in the ${expectMode.mode} tab`, async () => {
+                try {
+                  await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                } catch (err) {
+                  return Common.oops(this)(err)
+                }
+              })
+            }
           }
         })
-      }
 
       showModes()
+      cycleTheTabs()
+      cycleTheTabs()
 
       if (options && options.testWindowButtons === true) {
+        const toggleSidecarWithESC = (expectOpen = false) =>
+          it(`should hit ESCAPE key and expect sidecar ${expectOpen ? 'open' : 'closed'}`, async () => {
+            try {
+              await this.app.client.keys(Keys.ESCAPE)
+              expectOpen ? await SidecarExpect.open(this.app) : await SidecarExpect.closed(this.app)
+            } catch (err) {
+              await Common.oops(this, true)
+            }
+          })
+
+        const quit = () =>
+          it('should fully close the sidecar', async () => {
+            try {
+              await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+              await this.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+              await SidecarExpect.fullyClosed(this.app)
+            } catch (err) {
+              await Common.oops(this, true)
+            }
+          })
+
+        const maximize = () =>
+          it('should maximize the sidecar', async () => {
+            try {
+              await this.app.client.waitForVisible(Selectors.SIDECAR_MAXIMIZE_BUTTON)
+              await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON)
+              await SidecarExpect.fullscreen(this.app)
+            } catch (err) {
+              await Common.oops(this, true)
+            }
+          })
+
+        const minimize = () => {
+          it('should toggle the sidebar closed with close button click', async () => {
+            try {
+              await this.app.client.waitForVisible(Selectors.SIDECAR_CLOSE_BUTTON)
+              await this.app.client.click(Selectors.SIDECAR_CLOSE_BUTTON)
+              await SidecarExpect.closed(this.app)
+            } catch (err) {
+              await Common.oops(this, true)
+            }
+          })
+        }
+
+        const backToOpen = (backFromMinimized: boolean) => {
+          const button = backFromMinimized
+            ? Selectors.SIDECAR_RESUME_FROM_CLOSE_BUTTON
+            : Selectors.SIDECAR_MAXIMIZE_BUTTON
+
+          it(`should resume the sidecar from ${backFromMinimized ? 'minimized' : 'maximized'} to open`, async () => {
+            try {
+              await this.app.client.waitForVisible(button)
+              await this.app.client.click(button)
+              await SidecarExpect.open(this.app)
+            } catch (err) {
+              await Common.oops(this, true)
+            }
+          })
+        }
+
+        showModes()
         toggleSidecarWithESC()
         toggleSidecarWithESC(true)
 

@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * This file tests "test string" command that expects a simple `hello world`
+ * string response
+ *
+ * See the command implementation in: plugin-test/src/lib/cmds/say-hello.ts
+ *
+ */
 import { TestStringResponse } from '@kui-shell/test'
-import { command } from '../../lib/cmds/say-hello'
 
 const test = new TestStringResponse({
-  command,
+  command: 'test string',
   expect: 'hello world',
   exact: true
 })

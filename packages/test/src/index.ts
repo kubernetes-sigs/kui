@@ -31,4 +31,4 @@ export { SidecarExpect }
 export { Util }
 
 export { TestStringResponse } from './api/string-response'
-export { TestMMR, BadgeParam, ModeParam } from './api/mmr'
+export { TestMMR, MMRExpectMode } from './api/mmr'

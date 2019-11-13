@@ -24,8 +24,7 @@ import { Commands, UI } from '@kui-shell/core'
 
 import { plainTextMode } from './content/modes'
 
-export const command = 'test mmr namespace'
-export const metadata = {
+const metadata = {
   metadata: {
     name: 'this is the name part',
     namespace: 'this is the namespace part'
