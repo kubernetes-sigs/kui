@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
-import { TestMMR } from '@kui-shell/test'
+/**
+ * This file tests "test mmr mode-via-registration" command that opens the sidecar with
+ * pre-registred mode and badges.
+ *
+ * See the command implementation in: plugin-test/src/lib/cmds/mmr-mode-via-registration.ts
+ *
+ */
+import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
-import { command, metadata as _meta } from '../../lib/cmds/mmr-mode-via-registration'
-import { badgesWeWillRegister as badges, modesWeWillRegister as modes } from '../../lib/modes'
+import { metadata as _meta } from '../../lib/cmds/mmr-mode-via-registration'
+import { badgesWeWillRegister as badges } from '../../lib/modes'
 
 const { metadata } = _meta
 
 const test = new TestMMR({
   testName: 'mmr-mode-via-registration',
   metadata,
-  command
+  command: 'test mmr mode-via-registration'
 })
 
+const expectModes: MMRExpectMode[] = [
+  { mode: 'mode1', content: 'yo: this is mode1', contentType: 'text/plain' },
+  { mode: 'mode2', content: 'this is mode2', contentType: 'text/plain' },
+  { mode: 'mode3', label: 'mode3 label', contentType: 'text/markdown' }
+]
+
 test.badges(badges)
-test.modes(modes, { testWindowButtons: true })
+test.modes(expectModes, { testWindowButtons: true })

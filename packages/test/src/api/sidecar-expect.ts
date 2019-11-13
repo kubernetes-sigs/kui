@@ -19,7 +19,7 @@ import { Application } from 'spectron'
 import { timeout, waitTimeout } from './cli'
 import * as Selectors from './selectors'
 import { keys as Keys } from './keys'
-import { expectSubset, expectStruct, expectText } from './util'
+import { expectSubset, expectStruct, expectText, getValueFromMonaco, expectYAMLSubset } from './util'
 
 export const open = async (app: Application) => {
   await app.client.waitForVisible(Selectors.SIDECAR, timeout)
@@ -169,6 +169,20 @@ const _mode = (expected: { mode: string; label?: string }) => async (app: Applic
 
 export const modes = (expected: { mode: string; label?: string }[]) => async (app: Application) =>
   Promise.all(expected.map(_ => _mode(_)(app))).then(() => app)
+
+export const textPlainContent = (content: string) => async (app: Application) => {
+  await expectText(app, content)(Selectors.SIDECAR_CUSTOM_CONTENT)
+  return app
+}
+
+export const yaml = (content: object) => async (app: Application) => {
+  await app.client.waitUntil(async () => {
+    const ok: boolean = await getValueFromMonaco(app).then(expectYAMLSubset(content, false))
+    return ok
+  })
+
+  return app
+}
 
 export const showing = (
   expectedName: string,
