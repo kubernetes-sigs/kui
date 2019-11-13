@@ -207,24 +207,20 @@ Common.localDescribe(`kedit ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   // make sure editing without saving works
   makeACopy()
   editWithoutSaving()
-  reopenWith('open').andExpect(initialContent)
   reopenWith('kedit').andExpect(initialContent)
 
   // now update via form with "kedit"
   // makeACopy() <-- note no copy, this will double-check that the editWithoutSaving truly did not save
   updateViaForm()
-  reopenWith('open').andExpect(updatedContent)
   reopenWith('kedit').andExpect(updatedContent)
 
   // now update with "kedit"
   makeACopy()
   updateWith('kedit')
-  reopenWith('open').andExpect(updatedContent)
   reopenWith('kedit').andExpect(updatedContent)
 
   // now update with "edit"
   makeACopy()
   updateWith('edit')
-  reopenWith('open').andExpect(updatedContent)
   reopenWith('kedit').andExpect(updatedContent)
 })

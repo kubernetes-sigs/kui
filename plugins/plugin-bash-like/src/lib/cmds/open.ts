@@ -42,13 +42,11 @@ const open = async ({ tab, REPL }: Commands.Arguments, filepath: string) => {
     suffix === 'txt' ||
     suffix === 'swift' ||
     suffix === 'py' ||
-    suffix === 'json'
+    suffix === 'json' ||
+    suffix === 'yaml'
   ) {
     // open json and javascript files in the editor
     return REPL.qexec(`edit "${filepath}"`)
-  } else if (suffix === 'yaml' || suffix === 'yml') {
-    // use the k8s plugin to edit yamls
-    return REPL.qexec(`kedit "${filepath}"`)
   } else if (
     suffix === 'png' ||
     suffix === 'jpg' ||
