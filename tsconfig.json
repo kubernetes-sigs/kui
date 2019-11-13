@@ -26,18 +26,6 @@
       "path": "plugins/plugin-wskflow"
     },
     {
-      "path": "plugins/plugin-openwhisk"
-    },
-    {
-      "path": "plugins/plugin-apache-composer"
-    },
-    {
-      "path": "plugins/plugin-grid"
-    },
-    {
-      "path": "plugins/plugin-openwhisk-editor-extensions"
-    },
-    {
       "path": "plugins/plugin-k8s"
     },
     {

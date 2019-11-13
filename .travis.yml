@@ -29,21 +29,6 @@ env:
       OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui"
       TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
 
-    - SCRIPTS="build-webpack-client.sh lint.sh typecov.sh"
-      WAIT_LAYERS="manager"
-      LAYERS="openwhisk1 openwhisk3 openwhisk-editor grid"
-      MOCHA_TARGETS="webpack electron"
-      KUI_USE_PROXY=false
-      NEEDS_OPENWHISK=true
-
-    - LAYERS="openwhisk2 openwhisk4 composer1 composer2"
-      MOCHA_TARGETS="electron"
-      NEEDS_OPENWHISK=true
-      NEEDS_OPENWHISK_API_GATEWAY=true
-      NEEDS_OPENWHISK_NODEJS8=true
-      NEEDS_OPENWHISK_JAVA8=true
-      NEEDS_SECOND_OPENWHISK_AUTH=true # see plugins/plugin-openwhisk/src/test/openwhisk2/auth.ts
-
     - WAIT_LAYERS="k8s"
       LAYERS="k8s1 k8s2"
       MOCHA_TARGETS="electron"
@@ -68,12 +53,7 @@ env:
     - WEB_COMPRESS=none
     - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true
-    - TEST_ORG=testorg
-    - TEST_SPACE=testspace
     - CSP_ALLOWED_HOSTS="http://localhost:3000 ws://localhost:3000 http://localhost:9953"
-    - LOCAL_OPENWHISK=true # allows e.g. openwhisk/src/test/openwhisk1/headless to avoid trying to host set <not-local>
-    - NO_OPENWHISK_API_MGMT=true # no openwhisk api management support
-    - IGNORE_CERTS=true # apache-composer needs this, because it doesn't obey INSECURE_SSL in wskprops
     - PATH=bin:$PATH
     - NO_MAC_DMG_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` # we can't build macOS DMG files in linux travis :(
     - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
@@ -92,11 +72,7 @@ matrix:
     - os: osx
       env: LAYERS="core" MOCHA_TARGETS="electron" KUI_USE_CLIENT=base LINUX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-linux-x64/Kui" OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
     - os: osx
-      env: SCRIPTS="build-webpack-client.sh lint.sh typecov.sh" WAIT_LAYERS="manager" LAYERS="openwhisk1 openwhisk3 openwhisk-editor grid" MOCHA_TARGETS="webpack electron" KUI_USE_PROXY=false NEEDS_OPENWHISK=true
-    - os: osx
       env: LAYERS="response" MOCHA_TARGETS="electron" KUI_USE_CLIENT=test
-    - os: osx
-      env: LAYERS="openwhisk2 openwhisk4 composer1 composer2" MOCHA_TARGETS="electron" NEEDS_OPENWHISK=true NEEDS_OPENWHISK_API_GATEWAY=true NEEDS_OPENWHISK_NODEJS8=true NEEDS_OPENWHISK_JAVA8=true NEEDS_SECOND_OPENWHISK_AUTH=true
     - os: osx
       env: WAIT_LAYERS="k8s" LAYERS="k8s1 k8s2" MOCHA_TARGETS="electron" NEEDS_KUBERNETES=true NEEDS_HELM=true TIMEOUT=100000
     - os: osx

@@ -20,7 +20,7 @@ set -e
 set -o pipefail
 
 # composer/kui doesn't support travis osx and travis osx doesn't have docker
-if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == composer/kui ] || [ "$NEEDS_OPENWHISK" == true ] || [ "$NEEDS_KUBERNETES" == true ]); then
+if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == composer/kui ] || [ "$NEEDS_KUBERNETES" == true ]); then
   exit 0
 fi
 
@@ -77,12 +77,6 @@ function spawnXvfb {
     done
 }
 
-# NMM 20190202: is this still needed?
-# dist/compile.sh needs something here
-# (see the call to initOW in openwhisk-core.js)
-echo "APIHOST=$API_HOST" > ~/.wskprops
-echo "AUTH=nope" >>  ~/.wskprops
-
 if [ -n "$LAYERS" ]; then
     #
     # we are running mocha test suites (which suites as indicated by $LAYERS)
@@ -107,14 +101,6 @@ if [ -n "$LAYERS" ]; then
         ./tools/travis/installers/microk8s/start-cluster.sh &
         children+=("$!")
         echo "microk8s PID $!"
-    fi
-
-    if [ "$NEEDS_OPENWHISK" == "true" ]; then
-        # install the openwhisk runtime
-        echo "Installing openwhisk"
-        ./tools/travis/installers/openwhisk.sh &
-        children+=("$!")
-        echo "openwhisk PID $!"
     fi
 
     # start the installation; here, we use `npm ci` as 1) it's a bit
@@ -147,7 +133,7 @@ if [ -n "$LAYERS" ]; then
         done
     fi
 
-    # wait for the openwhisk or kubernetes setup logic to complete
+    # wait for the kubernetes setup logic to complete
     wait_and_get_exit_codes "${children[@]}"
     if [ $EXIT_CODE != 0 ]; then exit $EXIT_CODE; fi
 fi

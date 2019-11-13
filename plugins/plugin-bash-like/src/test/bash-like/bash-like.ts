@@ -113,14 +113,6 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .then(ReplExpect.error(500, header('ibmcloud')))
       .catch(Common.oops(this, true)))
 
-  if (!process.env.LOCAL_OPENWHISK) {
-    Common.pit('should give ok for known outer command: ibmcloud target', () =>
-      CLI.command(`ibmcloud target`, this.app)
-        .then(ReplExpect.ok)
-        .catch(Common.oops(this, true))
-    )
-  }
-
   if (hasExe('ibmcloud')) {
     // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
     it.skip('should give usage for ibmcloud config', () =>
