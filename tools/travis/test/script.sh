@@ -25,7 +25,7 @@ set -e
 set -o pipefail
 
 # composer/kui doesn't support travis osx and travis osx doesn't have docker
-if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == "composer/kui" ] || [ "$NEEDS_OPENWHISK" == true ] || [ "$NEEDS_KUBERNETES" == true ]); then
+if [ "$TRAVIS_OS_NAME" == "osx" ] && ([ "$TRAVIS_REPO_SLUG" == "composer/kui" ] || [ "$NEEDS_KUBERNETES" == true ]); then
   exit 0
 fi
 
@@ -135,10 +135,6 @@ if [ -n "$LAYERS" ]; then
         # fail if we don't have TEST_SPACE.
 
         export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_1"
-        if [ -n "$NEEDS_OPENWHISK" ]; then
-            export WSK_CONFIG_FILE=~/.wskprops_${KEY}_1
-            . ${WSK_CONFIG_FILE}
-        fi
         (cd /tmp/kui && MOCHA_RUN_TARGET=headless npm run test) & # see ./install.sh for the /tmp/kui target
         children+=("$!")
         childrenNames+=("headless layer")

@@ -73,17 +73,16 @@ inspection of several of your resources. The animated gif should give
 you a sense of the possibilities (click on it to see a larger
 version).
 
-## Further Reading and Examples
+## Kui as a Tool Platform
 
-Kui also has support for [Apache
-OpenWhisk](https://github.com/apache/incubator-openwhisk) and [Apache
-Composer](https://github.com/apache/incubator-openwhisk-composer/).
-In all three cases, from Kubernetes, to serverless, to serverless
-composition, the story is the same: you can gracefully transition into
-the world of visualizations without altering your normal productive
-workflows.
+Kui can form the basis for delivering CLI-driven GUI experiences. Here
+are a few such uses of Kui:
 
-- [More Kubernetes Examples](docs/readme/examples/kubernetes.md)
-- [Apache OpenWhisk Examples](docs/readme/examples/openwhisk.md)
-- [Apache Composer Examples](docs/readme/examples/composer.md)
-- [Creating your own Custom Kui Client](docs/dev/custom-clients.md)
+- Apache OpenWhisk visualizations: [Oui](https://github.com/kui-shell/oui#readme)
+
+If you want to create your own client, with a custom theme, custom
+icons, and an enhanced set of commands, you can start here:
+
+- [Clone and own a boilerplate repo](https://github.com/kui-shell/plugin-kubectl-boilerplate)
+- [API documentation for authoring new commands](https://github.com/IBM/kui/wiki/Authoring-Kui-Plugins)
+- [Some older documentation](docs/dev/custom-clients.md); we will be consolidating this into the newer docs.
