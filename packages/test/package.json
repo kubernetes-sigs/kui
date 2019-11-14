@@ -11,18 +11,6 @@
   "bin": {
     "kui-test": "./bin/runMochaLayers.sh"
   },
-  "nyc": {
-    "exclude": [
-      "**/tests/lib/**",
-      "**/tests/data/**",
-      "**/tests/**/*.js",
-      "coverage/**",
-      "**/node_modules/**"
-    ],
-    "include": [
-      "app/plugins/node_modules/@ibm-functions/**/*.js"
-    ]
-  },
   "kui": {
     "electron": false,
     "proxy": false,
