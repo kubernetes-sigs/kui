@@ -34,11 +34,26 @@ const test = new TestMMR({
   command: 'test mmr mode-via-registration'
 })
 
-const expectModes: MMRExpectMode[] = [
+const modes: MMRExpectMode[] = [
+  { mode: 'text', label: 'Plain Text', content: 'test plain text', contentType: 'text/plain' },
+  { mode: 'html', label: 'HTML Text', contentType: 'text/html' },
+  { mode: 'markdown', contentType: 'text/markdown' },
+  {
+    mode: 'yaml',
+    label: 'raw',
+    content: 'apiVersion: this is the api version field\nkind: this is the kind field',
+    contentType: 'yaml'
+  }
+]
+
+// these modes come from the mode registrations in preload.ts
+const modesFromRegistration: MMRExpectMode[] = [
   { mode: 'mode1', content: 'yo: this is mode1', contentType: 'text/plain' },
   { mode: 'mode2', content: 'this is mode2', contentType: 'text/plain' },
   { mode: 'mode3', label: 'mode3 label', contentType: 'text/markdown' }
 ]
+
+const expectModes: MMRExpectMode[] = modes.concat(modesFromRegistration)
 
 test.badges(badges)
 test.modes(expectModes, { testWindowButtons: true })
