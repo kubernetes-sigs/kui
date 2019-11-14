@@ -181,4 +181,10 @@ if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$NEEDS_TOP" ]; then
     kill $TOP_PID
 fi
 
+# code coverage report generation
+if [ -n "$NYC" ]; then
+    set +e # we don't want report generation failures to induce a test failure
+    "$SCRIPTDIR"/../../../tools/codecov/report.sh
+fi
+
 exit $EXIT_CODE

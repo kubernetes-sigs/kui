@@ -80,26 +80,36 @@ fi
 
 echo "Running these test suites: $TEST_SUITES"
 
-# when running on a laptop, we aren't using multiple X displays; only
-# in travis
+# when running on a local (i.e. not-travis) device, we aren't using
+# multiple X displays
 if [ -n "$TRAVIS_JOB_ID" ]; then
+    # travis: we may have multiple DISPLAYs
     echo "DISPLAY=$DISPLAY"
 else
+    # not travis: just one display
     export DISPLAY=:0
 fi
 export DISPLAY
 
-#
-# note that, in the following, passing --bail to mocha means we fail
-# fast, if any test within the test suite fails
-#
-
-NYC="${SCRIPTDIR}/../node_modules/.bin/nyc"
+# a signifier in case plugins or core want to do something different
+# while running tests
 export RUNNING_SHELL_TEST=true
 
+#
+# Notes:
+#
+# 1) passing --bail to mocha means we fail fast, if any test within
+# the test suite fails
+#
+# 2) flycheck is an emacs module that integrates with tslint; it
+# creates temporary files in-directory :( we use a mocha exclude
+# pattern to ensure we aren't executing tests in these temp files
+#
+# 3) we haven't yet figured out why spectron does not exit gracefully
+# on its own, hence we pass --exit to mocha, which tells mocha to do a
+# process.exit after the last test has been performed
+#
 function go {
-    # flycheck is an emacs module that integrates with tslint; it creates temporary files in-directory :(
-    # we use a mocha exclude pattern to ensure we aren't executing tests in these temp files
     NO_USAGE_TRACKING=true mocha \
                      -c \
                      --exit \
@@ -113,7 +123,9 @@ function go {
 }
 
 if [ -n "$TRAVIS_JOB_ID" ]; then
+    # travis: we try a few times
     go || go || go || go
 else
+    # not travis: fail fast
     go
 fi
