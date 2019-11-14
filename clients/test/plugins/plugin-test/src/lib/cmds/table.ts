@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
+/**
+ * This file introduces a "test table" command that presents a table in the REPL.
+ *
+ */
+
+// Notes: this is part of the Kui core API
 import { Commands } from '@kui-shell/core'
 
-import sayHello from './lib/cmds/say-hello'
-import mmrName from './lib/cmds/mmr-name'
-import mmrNamespace from './lib/cmds/mmr-namespace'
-import mmrKind from './lib/cmds/mmr-kind'
-import mmrMode from './lib/cmds/mmr-mode'
-import mmrModeViaRegistration from './lib/cmds/mmr-mode-via-registration'
-import table from './lib/cmds/table'
+import tableContent from './content/table-with-drilldown'
 
-export default async (commandTree: Commands.Registrar) => {
-  // commands
-  await Promise.all([
-    sayHello(commandTree),
-    mmrName(commandTree),
-    mmrNamespace(commandTree),
-    mmrKind(commandTree),
-    mmrMode(commandTree),
-    mmrModeViaRegistration(commandTree),
-    table(commandTree)
-  ])
+/**
+ * Here is where we register our command.
+ *
+ */
+export default (commandTree: Commands.Registrar) => {
+  commandTree.listen('/test/table', () => tableContent(), {
+    usage: {
+      docs: 'A showcase of the Table view'
+    }
+  })
 }
