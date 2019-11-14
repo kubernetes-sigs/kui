@@ -37,6 +37,10 @@ fi
 # reporter seems pretty reasonable for this.
 nyc report -x '**/*.ts' -x '**/core/tests/**'
 
+# print out the keys of a coverage file, so we can confirm them later as being compatible with codecov
+# the files should be file paths, and we may need to fix them up in our .codecov.yml
+node -e 'const f = require("fs").readdirSync("./packages/test/.nyc_output").find(_ => _.endsWith(".json")); console.log(Object.keys(require(`./packages/test/.nyc_output/${f}`)))' || true
+
 if [ -n "$TRAVIS_JOB_ID" ] && [ -z "$CODECOV_NO_UPLOAD" ]; then
     # In travis, unless otherwise instructed, upload to codecov.
 
