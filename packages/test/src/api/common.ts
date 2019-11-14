@@ -78,9 +78,16 @@ async function writeCodeCoverage(app: Application) {
         // this.exclude.shouldInstrument filter (on our about line 343 of its index.js)
         // nyc.writeCoverageFile()
 
+        // see https://github.com/IBM/kui/issues/3217 for some discussion
+        Object.keys(__coverage__).forEach(function(absFile) {
+          const map = JSON.parse(require('fs').readFileSync(`${absFile}.map`))
+          nyc.sourceMaps._sourceMapCache.registerMap(absFile, map)
+        }, nyc)
+
         // so... instead we take care of writeCoverageFile ourselves
+        const coverage = nyc.sourceMaps.remapCoverage(__coverage__)
         const coverageFilename = require('path').resolve(tempDirectory, nyc.processInfo.uuid + '.json')
-        require('fs').writeFileSync(coverageFilename, JSON.stringify(__coverage__), 'utf-8')
+        require('fs').writeFileSync(coverageFilename, JSON.stringify(coverage), 'utf-8')
         setTimeout(done, 0)
       },
       codeCoverageTempDirectory(),
