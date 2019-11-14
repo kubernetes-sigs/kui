@@ -24,14 +24,12 @@
 
 import { Commands, UI } from '@kui-shell/core'
 import { metadataWithNameOnly as metadata } from './metadata'
+import { textModes } from './content/modes'
 
 // exporting this for consumption in tests
 export { metadata }
 
-// these are the modes we return to the REPL, not the modes we expect
-// to be displayed; those modes come from the mode registrations in
-// preload.ts
-const modes: UI.MultiModalMode[] = []
+const modes: UI.MultiModalMode[] = textModes
 
 interface Options extends Commands.ParsedOptions {
   foo: boolean
