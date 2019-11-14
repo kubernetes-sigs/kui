@@ -15,7 +15,6 @@
  */
 
 import { Application } from 'spectron'
-import * as assert from 'assert'
 
 import * as Common from './common'
 import * as Selectors from './selectors'
@@ -128,6 +127,9 @@ export const makeCustom = (selector: string, expect: string, exact?: boolean) =>
 export const exitCode = (statusCode: number | string) => statusCode
 
 export const expectInput = (selector: string, expectedText: string) => async (app: Application) => {
-  const actualText = await app.client.getValue(selector)
-  assert.strictEqual(actualText, expectedText)
+  await app.client.waitUntil(async () => {
+    const inputText = await app.client.getValue(selector)
+    return inputText === expectedText
+  })
+  return app
 }

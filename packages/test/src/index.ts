@@ -32,3 +32,4 @@ export { Util }
 
 export { TestStringResponse } from './api/string-response'
 export { TestMMR, MMRExpectMode } from './api/mmr'
+export { TestTable } from './api/table'

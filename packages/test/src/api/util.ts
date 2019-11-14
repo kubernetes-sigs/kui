@@ -195,9 +195,11 @@ export const waitForXtermInput = (app: Application, N: number) => {
 }
 
 export const expectText = (app: Application, expectedText: string) => async (selector: string) => {
-  await app.client.waitForText(selector)
-  const actualText = await app.client.getText(selector)
-  assert.strictEqual(actualText, expectedText)
+  await app.client.waitUntil(async () => {
+    const actualText = await app.client.getText(selector)
+    return actualText === expectedText
+  })
+  return app
 }
 
 /**
