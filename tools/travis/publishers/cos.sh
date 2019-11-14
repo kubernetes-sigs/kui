@@ -19,8 +19,13 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="$SCRIPTDIR/../../../"
 
+if [ "$TRAVIS_BUILD_STAGE_NAME" == "Npm" ]; then
+    echo "skipping cos publish for npm release stage"
+    exit
+fi
+
 #
-# this script expects you tod efine, elsewhere (e.g. a travis env var):
+# this script expects you to define, elsewhere (e.g. a travis env var):
 # @env PUBLISH_THIS_REPO_SLUG the "org/repo" that you wish to result in a publish to s3
 #
 # TODO: For now we hardcoded travis job number in deployment logic. We should consider using Travis Build Stages once ibm travis adds the support.
