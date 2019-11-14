@@ -35,11 +35,11 @@ fi
 
 # Print something user-friendly to the console; nyc's default
 # reporter seems pretty reasonable for this.
-nyc report -x '**/*.ts' -x '**/core/tests/**'
+nyc report --exclude-after-remap=false
 
 # print out the keys of a coverage file, so we can confirm them later as being compatible with codecov
 # the files should be file paths, and we may need to fix them up in our .codecov.yml
-node -e 'const f = require("fs").readdirSync("./packages/test/.nyc_output").find(_ => _.endsWith(".json")); console.log(Object.keys(require(`./packages/test/.nyc_output/${f}`)))' || true
+# node -e 'const f = require("fs").readdirSync("./packages/test/.nyc_output").find(_ => _.endsWith(".json")); console.log(Object.keys(require(`./packages/test/.nyc_output/${f}`)))' || true
 
 if [ -n "$TRAVIS_JOB_ID" ] && [ -z "$CODECOV_NO_UPLOAD" ]; then
     # In travis, unless otherwise instructed, upload to codecov.
@@ -50,5 +50,5 @@ if [ -n "$TRAVIS_JOB_ID" ] && [ -z "$CODECOV_NO_UPLOAD" ]; then
 
     # Then, generate a codecov-compatible report, and invoke the codecov tool.
     echo "$(tput setaf 2)uploading code coverage report$(tput sgr0)" # green text
-    nyc report --reporter=text-lcov -x '**/*.ts' -x '**/core/tests/**' > coverage.lcov && codecov
+    nyc report --reporter=text-lcov --exclude-after-remap=false > coverage.lcov && codecov
 fi
