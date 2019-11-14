@@ -39,7 +39,7 @@ if [ "$TRAVIS_REPO_SLUG" == "$PUBLISH_THIS_REPO_SLUG" ] && [ "$TRAVIS_BRANCH" ==
       sudo apt-get update && sudo apt-get install wine fakeroot
     fi
 
-    (cd $TOPDIR/packages/builder/dist/publishers/s3 && npm install && BRANCH="dev.$TRAVIS_BUILD_NUMBER" ./publish.sh)
+    (cd $TOPDIR/packages/builder/dist/publishers/s3 && npm ci && BRANCH="dev.$TRAVIS_BUILD_NUMBER" ./publish.sh)
 else
     echo "not pushing builds"
 fi
