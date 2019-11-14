@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import { join, relative } from 'path'
 import * as colors from 'colors'
 import { Func, Suite, HookFunction, after as mochaAfter } from 'mocha'
 import { Application } from 'spectron'
@@ -24,10 +24,70 @@ import * as Selectors from './selectors'
 
 colors.enable()
 
+const codeCoverageNyc = () =>
+  process.env.TRAVIS_BUILD_DIR
+    ? join(process.env.TRAVIS_BUILD_DIR, 'node_modules/nyc')
+    : join(process.env.TEST_SUITE_ROOT, '../nyc')
+const codeCoverageRoot = () => relative(process.env.TEST_ROOT, join(process.env.TEST_SUITE_ROOT, 'core'))
+const codeCoverageTempDirectory = () =>
+  process.env.TRAVIS_BUILD_DIR
+    ? join(process.env.TRAVIS_BUILD_DIR, 'packages/test/.nyc_output')
+    : join(process.env.TEST_ROOT, '.nyc_output')
+
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface ISuite extends Suite {
   app: Application
   _kuiDestroyAfter?: boolean
+}
+
+/**
+ * Were we asked to generate code coverage data? The logic here is: if
+ * we were asked for codecov, i.e. NYC is defined, then outside of
+ * travis, always do it; inside of travis, only do it for electron
+ * targets (i.e. not for headless and not for webpack).
+ *
+ */
+function codeCoverageDesired() {
+  return process.env.NYC !== undefined && (!process.env.TRAVIS_JOB_ID || process.env.MOCHA_RUN_TARGET === 'electron')
+}
+
+/**
+ * Write out any code coverage data we might have accumulated
+ *
+ */
+declare let __coverage__: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+async function writeCodeCoverage(app: Application) {
+  if (codeCoverageDesired() && app && app.client) {
+    console.log('Writing code coverage data')
+    await app.client.executeAsync(
+      (tempDirectory: string, nycModule: string, root: string, done: () => void) => {
+        // Notes: in several places, the nyc constructor assumes
+        // process.cwd() exists; in some of our tests, e.g. those that
+        // cd around, this might not be the case. So: before we invoke
+        // the constructor, change to an extant directory
+        process.chdir('/tmp')
+
+        // Create the nyc instance
+        const NYC = require(nycModule)
+        const nyc = new NYC({ tempDirectory, cwd: root })
+
+        // in case we are the first to the line
+        nyc.createTempDirectory()
+
+        // Notes: the nyc impl of this removes all of our coverage data due to its
+        // this.exclude.shouldInstrument filter (on our about line 343 of its index.js)
+        // nyc.writeCoverageFile()
+
+        // so... instead we take care of writeCoverageFile ourselves
+        const coverageFilename = require('path').resolve(tempDirectory, nyc.processInfo.uuid + '.json')
+        require('fs').writeFileSync(coverageFilename, JSON.stringify(__coverage__), 'utf-8')
+        setTimeout(done, 0)
+      },
+      codeCoverageTempDirectory(),
+      codeCoverageNyc(),
+      codeCoverageRoot()
+    )
+  }
 }
 
 /**
@@ -215,18 +275,7 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
 export const after = (ctx: ISuite, f?: () => void): HookFunction => async () => {
   if (f) await f()
 
-  //
-  // write out test coverage data from the renderer process
-  //
-  /* const nyc = new (require('nyc'))(),
-           tempDirectory = require('path').resolve(nyc._tempDirectory)
-     nyc.createTempDirectory()
-     const C = ctx.app.client.execute(tempDirectory => {
-         const config = { tempDirectory },             // the nyc config
-               nyc = new (require('nyc'))(config)      // create the nyc instance
-         nyc.createTempDirectory()                     // in case we are the first to the line
-         nyc.writeCoverageFile()                       // write out the coverage data for the renderer code
-     }, tempDirectory) */
+  await writeCodeCoverage(ctx.app)
 
   // when we're done with a test suite, look for any important
   // SEVERE errors in the chrome console logs. try to ignore

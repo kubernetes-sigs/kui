@@ -21,6 +21,17 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+if [ -n "$NYC" ]; then
+    if [ -z "$TRAVIS_JOB_ID" ]; then
+        # for travis, we will do the instrumentation in advance, in tools/travis/install.sh
+        # for not-travis, do the instrumentation now:
+        "$SCRIPTDIR"/../../../tools/codecov/instrument.sh
+
+        # also for non-travis: clean out any prior code coverage data
+        rm -rf .nyc_output
+    fi
+fi
+
 if [ -z "$MONOREPO_MODE" ]; then
     echo "running as external custom client"
     ROOT="$SCRIPTDIR"/../..
@@ -112,21 +123,13 @@ function wait_and_get_exit_codes() {
 wait_and_get_exit_codes "${children[@]}"
 
 # finally, if the tests were successful, report on code coverage
-if [ $? == 0 ]; then
-    if [ -d .nyc_output ]; then
-        # always print something user-friendly to the console
-        # nyc's default reporter seems pretty reasonable for this
-        ls -l .nyc_output
-        (cd .nyc_output && ls -l | sort -k5 -n -r | head -1 | awk '{print $NF}' | xargs head -c 1000) # print a bit of the biggest file
-        nyc report
-
-        if [ -n "$TRAVIS" ]; then
-            # if in travis, link with codecov, which wants a certain output format
-            nyc report --reporter=text-lcov > coverage.lcov && codecov
+if [ $EXIT_CODE == 0 ]; then
+    if [ -n "$NYC" ]; then
+        # in travis, we will do the report generation in tools/travis/script.sh
+        if [ -z "$TRAVIS_JOB_ID" ]; then
+            set +e # we don't want report generation failures to induce a test failure
+            "$SCRIPTDIR"/../../../tools/codecov/report.sh
         fi
-
-        # make sure we don't fail the tests with bugs in this here postscript
-        exit 0
     fi
 fi
 

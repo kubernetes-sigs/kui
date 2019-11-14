@@ -109,6 +109,9 @@ if [ -n "$LAYERS" ]; then
     echo "starting kui npm install"
     npm ci
 
+    # set up for code coverage
+    ./tools/codecov/instrument.sh
+
     # create a dist build to test against
     if [ -n "$NEEDS_HEADLESS" ]; then
         # create a headless dist to test against
