@@ -746,10 +746,6 @@ sidecar .sidecar-bottom-stripe .package-prefix {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-sidecar .sidecar-bottom-stripe .package-prefix:first-letter {
-  /* first-letter avoids README.md -> README.Md */
-  text-transform: capitalize;
-}
 sidecar .sidecar-header .limits {
   /* don't show limits in header for now */
   display: none;
