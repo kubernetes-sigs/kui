@@ -26,9 +26,15 @@ import { metadata as _meta } from '../../lib/cmds/mmr-mode'
 
 const { metadata } = _meta
 
-const test = new TestMMR({
+const testDefault = new TestMMR({
   metadata,
   command: 'test mmr mode'
+})
+
+const testOrder = new TestMMR({
+  testName: 'change order',
+  metadata,
+  command: 'test mmr mode --defaultMode html'
 })
 
 // this is the expected modes result showing in the sidecar
@@ -51,7 +57,8 @@ const toolbarText = {
 
 const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
 
-test.name()
-test.modes(expectModes, { testWindowButtons: true })
-test.toolbarText(toolbarText)
-test.toolbarButtons(buttons)
+testDefault.name()
+testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
+testDefault.toolbarText(toolbarText)
+testDefault.toolbarButtons(buttons)
+testOrder.modes(expectModes, expectModes[1])

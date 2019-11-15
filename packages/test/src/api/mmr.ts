@@ -145,12 +145,13 @@ export class TestMMR {
   /**
    * modes() starts a Mocha Test Suite
    * modes() executes `command` in REPL and expects `modes` are showin in Sidecar
-   * @param { TestMode[] } expectModes is the expected modes shown as Sidecar Tabs
+   * @param { MMRExpectMode[] } expectModes is the expected modes shown as Sidecar Tabs
+   * @param { MMRExpectMode } defaultMode is the expected default Sidecar Tab
    * @param  options includes: testWindowButtons
    * @param { boolean } testWindowButtons indicates whether modes() will test the sidecar window buttons as well
    *
    */
-  public modes(expectModes: MMRExpectMode[], options?: { testWindowButtons?: boolean }) {
+  public modes(expectModes: MMRExpectMode[], defaultMode: MMRExpectMode, options?: { testWindowButtons?: boolean }) {
     const { command, testName } = this.param
 
     describe(`mmr modes ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -158,10 +159,11 @@ export class TestMMR {
       after(Common.after(this))
 
       const showModes = () => {
-        it(`should show modes in sidecar`, () =>
+        it(`should show sidecar tabs`, () =>
           CLI.command(command, this.app)
             .then(ReplExpect.ok)
             .then(SidecarExpect.open)
+            .then(SidecarExpect.defaultMode(defaultMode))
             .then(SidecarExpect.modes(expectModes))
             .catch(Common.oops(this, true)))
       }

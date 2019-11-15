@@ -28,7 +28,13 @@ import { badgesWeWillRegister as badges } from '../../lib/modes'
 
 const { metadata } = _meta
 
-const test = new TestMMR({
+const testRegistrationOnly = new TestMMR({
+  testName: 'mmr-mode-via-registration',
+  metadata,
+  command: 'test mmr mode-via-registration --registrationOnly'
+})
+
+const testRegistrationWithModes = new TestMMR({
   testName: 'mmr-mode-via-registration',
   metadata,
   command: 'test mmr mode-via-registration'
@@ -53,7 +59,13 @@ const modesFromRegistration: MMRExpectMode[] = [
   { mode: 'mode3', label: 'mode3 label', contentType: 'text/markdown' }
 ]
 
-const expectModes: MMRExpectMode[] = modes.concat(modesFromRegistration)
+const buttonFromRegistration = [
+  { mode: 'mode4', label: 'mode4 label', command: 'test string', kind: 'drilldown' as const }
+]
 
-test.badges(badges)
-test.modes(expectModes, { testWindowButtons: true })
+testRegistrationWithModes.badges(badges)
+testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })
+testRegistrationWithModes.toolbarButtons(buttonFromRegistration)
+
+testRegistrationOnly.modes(modesFromRegistration, modesFromRegistration[0])
+testRegistrationOnly.toolbarButtons(buttonFromRegistration)
