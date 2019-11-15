@@ -29,10 +29,9 @@ import { textModes } from './content/modes'
 // exporting this for consumption in tests
 export { metadata }
 
-const modes: UI.MultiModalMode[] = textModes
-
 interface Options extends Commands.ParsedOptions {
   foo: boolean
+  registrationOnly: boolean
 }
 
 /**
@@ -40,10 +39,17 @@ interface Options extends Commands.ParsedOptions {
  *
  * test mmr mode-via-registration
  * test mmr mode-via-registration --foo
+ * test mmr mode-via-registration --noMode
  *
  */
 const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse) => {
-  return (args: Commands.Arguments<Options>) => Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes })
+  return (args: Commands.Arguments<Options>) => {
+    if (args.parsedOptions.registrationOnly) {
+      return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: [] })
+    } else {
+      return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: textModes })
+    }
+  }
 }
 
 export default (commandTree: Commands.Registrar) => {
@@ -52,7 +58,7 @@ export default (commandTree: Commands.Registrar) => {
       docs: 'A test of MultiModalResponse mode'
     },
     flags: {
-      boolean: ['foo']
+      boolean: ['foo', 'registrationOnly']
     }
   })
 }

@@ -28,15 +28,31 @@ import { textModes } from './content/modes'
 // exporting this for consumption in tests
 export { metadata }
 
-const modes = textModes
-const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
+interface Options extends Commands.ParsedOptions {
+  defaultMode: string
+}
+
+const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const, defaultMode: true }] // intend to set `defaultMode` here, for testing error handling
+
 const toolbarText = {
   type: 'info',
   text: 'this is the toolbar text'
 }
 
-const doModes = (): (() => UI.MultiModalResponse) => {
-  return () => Object.assign(metadata, { modes, buttons, toolbarText })
+const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse) => {
+  return (args: Commands.Arguments<Options>) => {
+    if (args.parsedOptions.defaultMode !== textModes[0].mode) {
+      // change the default mode as requested
+      textModes.forEach(mode => {
+        if (mode.mode === args.parsedOptions.defaultMode) {
+          mode.defaultMode = true
+        }
+        return mode
+      })
+    }
+
+    return Object.assign(metadata, { modes: textModes, buttons, toolbarText })
+  }
 }
 
 export default (commandTree: Commands.Registrar) => {
