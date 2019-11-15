@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+import { Arguments, Registrar, ParsedOptions, Response } from '@kui-shell/core/api/commands'
 
-const sayHello = (): Commands.Response => {
-  return 'hello world'
+interface Options extends ParsedOptions {
+  grumble?: number
 }
 
-export default (commandTree: Commands.Registrar) => {
+const sayHello = ({ parsedOptions }: Arguments<Options>): Response => {
+  return 'hello world' + (parsedOptions.grumble ? ` ${parsedOptions.grumble}` : '')
+}
+
+export default (commandTree: Registrar) => {
   commandTree.listen('/test/string', sayHello, {
     usage: {
+      command: 'string',
+      strict: 'string',
+      optional: [{ name: '--grumble', numeric: true }],
       docs: 'The obligatory hello world'
     }
   })

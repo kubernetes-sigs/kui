@@ -28,5 +28,11 @@ const test = new TestStringResponse({
   expect: 'hello world',
   exact: true
 })
-
 test.string()
+
+const test2 = new TestStringResponse({
+  command: 'test string --grumble 3',
+  expect: 'hello world 3',
+  exact: true
+})
+test2.string()
