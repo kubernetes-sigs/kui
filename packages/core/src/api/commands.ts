@@ -63,5 +63,17 @@ export namespace Commands {
   export const unparse = optionsToString
 }
 
+// export some of the common types, to allow for imports that avoid dynamic requires
+// see https://github.com/IBM/kui/issues/3222
+export { PluginRegistration, PreloadRegistration } from '../models/plugin'
+export {
+  CommandLine,
+  Evaluator,
+  ExecType,
+  Response,
+  EvaluatorArgs as Arguments,
+  CommandRegistrar as Registrar
+} from '../models/command'
+
 export { _ExecOptions as ExecOptions }
 export default Commands
