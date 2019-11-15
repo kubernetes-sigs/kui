@@ -245,7 +245,7 @@ export type CommandTreeResolution = boolean | CommandHandlerWithEvents | CodedEr
 
 export interface YargsParserFlags {
   boolean?: string[]
-  alias?: string[]
+  alias?: Record<string, string[]>
 }
 
 /** a catch all handler is presented with an offer to handle a given argv */
