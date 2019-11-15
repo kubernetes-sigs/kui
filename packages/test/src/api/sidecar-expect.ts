@@ -151,9 +151,30 @@ export const namespace = (expectedNamespace: string) => show(expectedNamespace, 
 
 export const kind = (expectedKind: string) => show(expectedKind, Selectors.SIDECAR_KIND)
 
-const _mode = (expected: { mode: string; label?: string }) => async (app: Application) => {
+// expect sidecar tabs have correct `mode` and `label`
+export const modes = (expected: { mode: string; label?: string; dafaultMode?: boolean }[]) => async (
+  app: Application
+) =>
+  Promise.all(
+    expected.map(async _ => {
+      await app.client.waitUntil(async () => {
+        const actualMode = `${Selectors.SIDECAR_MODE_BUTTON(_.mode)}`
+        await app.client.waitForVisible(actualMode)
+
+        if (_.label) {
+          const actualLabel = await app.client.getText(actualMode)
+          return actualLabel.toLowerCase() === _.label.toLowerCase()
+        } else {
+          return true
+        }
+      })
+    })
+  ).then(() => app)
+
+// expect sidecar tab has the correct default tab
+export const defaultMode = (expected: { mode: string; label?: string }) => async (app: Application) => {
   await app.client.waitUntil(async () => {
-    const actualMode = `${Selectors.SIDECAR_MODE_BUTTON(expected.mode)}`
+    const actualMode = `${Selectors.SIDECAR_MODE_BUTTON_SELECTED(expected.mode)}`
     await app.client.waitForVisible(actualMode)
 
     if (expected.label) {
@@ -166,9 +187,6 @@ const _mode = (expected: { mode: string; label?: string }) => async (app: Applic
 
   return app
 }
-
-export const modes = (expected: { mode: string; label?: string }[]) => async (app: Application) =>
-  Promise.all(expected.map(_ => _mode(_)(app))).then(() => app)
 
 export const textPlainContent = (content: string) => async (app: Application) => {
   await expectText(app, content)(Selectors.SIDECAR_CUSTOM_CONTENT)

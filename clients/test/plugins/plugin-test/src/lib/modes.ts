@@ -64,6 +64,20 @@ export const mode3 = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const checkingModeType3: ModeRegistration<MyResource> = mode3
 
+export const button = {
+  when: isMyResource,
+  mode: {
+    mode: 'mode4',
+    label: 'mode4 label',
+    command: 'test string',
+    kind: 'drilldown' as const,
+    defaultMode: true // set defaultMode true to test error handling
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const checkingModeType4: ModeRegistration<MyResource> = button
+
 export const badge1 = {
   when: isMyResource,
   badge: {
