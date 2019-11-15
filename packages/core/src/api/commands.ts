@@ -71,6 +71,7 @@ export {
   Evaluator,
   ExecType,
   Response,
+  ParsedOptions,
   EvaluatorArgs as Arguments,
   CommandRegistrar as Registrar
 } from '../models/command'
