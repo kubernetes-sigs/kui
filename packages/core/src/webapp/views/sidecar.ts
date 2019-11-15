@@ -285,7 +285,7 @@ export const addNameToSidecarHeader = async (
     }
   }
 
-  if (subtext && !isToolbarText(subtext) && isCustomSpec(entity) && entity.toolbarText) {
+  if (subtext && !isToolbarText(subtext) && (isMetadataBearing(entity) || isCustomSpec(entity)) && entity.toolbarText) {
     // both subtext and toolbarText?
     const subtextContainer = sidecar.querySelector(
       '.sidecar-header-secondary-content .custom-header-content'
@@ -303,7 +303,7 @@ export const addNameToSidecarHeader = async (
   // handle ToolbarText
   const toolbarTextSpec = isToolbarText(subtext)
     ? subtext
-    : isCustomSpec(entity) &&
+    : (isMetadataBearing(entity) || isCustomSpec(entity)) &&
       (entity.toolbarText || (isMetadataBearingByReference(entity) && entity.resource.toolbarText))
   const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
   const toolbarTextContent = element('.sidecar-toolbar-text-content', toolbarTextContainer)
@@ -441,7 +441,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   const { badgesDomContainer, badgesDom } = getBadgesDomContainer(sidecar)
 
   if (custom && (custom.isEntity || isMetadataBearing(custom) || isMetadataBearingByReference(custom))) {
-    const entity = custom
+    const entity = isMetadataBearingByReference(custom) ? custom.resource : custom
     sidecar.entity = entity
     if (sidecar.entity.viewName) {
       sidecar.entity.type = sidecar.entity.viewName
@@ -449,7 +449,9 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 
     const prettyName =
       (entity.prettyName || isMetadataBearingByReference(custom) ? custom.resource.prettyName : undefined) ||
-      entity.name
+      isMetadataBearing(entity)
+        ? entity.metadata.name
+        : entity.name
     hashDom.innerText =
       (entity.nameHash !== undefined
         ? entity.nameHash
@@ -460,10 +462,10 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     addNameToSidecarHeader(
       sidecar,
       prettyName,
-      entity.packageName || entity.namespace,
+      !isMetadataBearing(entity) && (entity.packageName || entity.namespace),
       undefined,
-      entity.prettyType || entity.type || entity.kind,
-      entity.subtext,
+      (!isMetadataBearing(entity) && (entity.prettyType || entity.type)) || entity.kind,
+      !isMetadataBearing(entity) && entity.subtext,
       entity
     )
 
