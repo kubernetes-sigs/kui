@@ -49,4 +49,8 @@ export namespace Models {
   }
 }
 
+// export some of the common types, to allow for imports that avoid dynamic requires
+// see https://github.com/IBM/kui/issues/3222
+export { MetadataBearing as ResourceWithMetadata } from '../models/entity'
+
 export default Models
