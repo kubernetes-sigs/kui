@@ -481,7 +481,9 @@ class InProcessExecutor implements Executor {
               if (
                 implicitIdx >= 0 &&
                 selection &&
-                required[implicitIdx].implicitOK.find(_ => _ === selection.type || _ === selection.prettyType)
+                required[implicitIdx].implicitOK.find(
+                  _ => _ === selection.type || _ === selection.prettyType || _ === selection.kind
+                )
               ) {
                 nActualArgsWithImplicit++
 
