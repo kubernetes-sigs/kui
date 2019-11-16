@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.4](https://github.com/IBM/kui/compare/v4.5.0...v5.3.4) (2019-11-16)
+
+**Note:** Version bump only for package @kui-shell/plugin-operator-framework
+
 ## [5.3.3](https://github.com/IBM/kui/compare/v4.5.0...v5.3.3) (2019-11-16)
 
 **Note:** Version bump only for package @kui-shell/plugin-operator-framework
