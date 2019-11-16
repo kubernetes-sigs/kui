@@ -67,6 +67,7 @@ export namespace Commands {
 // see https://github.com/IBM/kui/issues/3222
 export { PluginRegistration, PreloadRegistration } from '../models/plugin'
 export {
+  CommandOptions,
   CommandLine,
   Evaluator,
   ExecType,
