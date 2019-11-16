@@ -29,7 +29,7 @@ import presentAs from './sidecar-present'
 import { isCustomSpec } from './custom-content'
 export { isCustomSpec }
 
-import { BadgeSpec, Badge, BadgeOptions, getBadgesDomContainer, addBadge, clearBadges } from './badge'
+import { BadgeSpec, Badge, BadgeOptions, getBadgesDomContainer, addBadge, clearBadges, hasBadge } from './badge'
 export { BadgeSpec, Badge, BadgeOptions }
 
 import { isPopup } from '../popup-core'
@@ -141,6 +141,10 @@ export const addVersionBadge = (
   entity: EntitySpec,
   { clear = false, badgesDom = undefined }: { clear?: boolean; badgesDom?: HTMLElement } = {}
 ) => {
+  if (hasBadge(tab, '.version')) {
+    return
+  }
+
   if (clear) {
     clearBadges(tab)
   }
@@ -440,6 +444,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 
   const { badgesDomContainer, badgesDom } = getBadgesDomContainer(sidecar)
 
+  let addVersion: () => void
   if (custom && (custom.isEntity || isMetadataBearing(custom) || isMetadataBearingByReference(custom))) {
     const entity = isMetadataBearingByReference(custom) ? custom.resource : custom
     sidecar.entity = entity
@@ -470,7 +475,8 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     )
 
     // render badges
-    addVersionBadge(tab, entity, { clear: true, badgesDom })
+    clearBadges(tab)
+    addVersion = () => addVersionBadge(tab, entity, { badgesDom })
 
     if (custom.duration) {
       const duration = document.createElement('div')
@@ -490,6 +496,8 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     }
     addRelevantBadges(tab, isMetadataBearingByReference(custom) ? custom : { resource: custom }, badgeOptions)
   }
+
+  if (addVersion) addVersion()
 
   const replView = tab.querySelector('.repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
