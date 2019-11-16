@@ -138,3 +138,9 @@ export const clearBadges = (tab: Tab) => {
   const header = sidecar.querySelector('.sidecar-header')
   removeAllDomChildren(header.querySelector('.badges'))
 }
+
+export function hasBadge(tab: Tab, cls: string) {
+  const sidecar = getSidecar(tab)
+  const header = sidecar.querySelector('.sidecar-header')
+  return !!header.querySelector(`.badges ${cls}`)
+}
