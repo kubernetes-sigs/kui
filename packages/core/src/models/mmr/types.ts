@@ -54,6 +54,12 @@ interface View<Resource extends MetadataBearing> {
    * of a Mode
    */
   buttons?: Button[]
+
+  /**
+   * An optional selection of the default mode
+   *
+   */
+  defaultMode?: string
 }
 
 /**
