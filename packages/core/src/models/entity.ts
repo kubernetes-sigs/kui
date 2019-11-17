@@ -81,6 +81,13 @@ export interface MetadataBearing<Content = void> {
   prettyName?: string
   nameHash?: string
 
+  /** family of onclick handlers */
+  onclick?: {
+    name?: string
+    nameHash?: string
+    namespace?: string
+  }
+
   content?: Content
   contentType?: string
   toolbarText?: ToolbarText
