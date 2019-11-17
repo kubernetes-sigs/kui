@@ -42,7 +42,7 @@ export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = 
     kind: entity.kind,
     version: entity.version,
     metadata: {
-      name: entity.name,
+      name: (entity.metadata && entity.metadata.name) || entity.name,
       generation: entity.version || (entity.metadata && entity.metadata.generation),
       namespace: entity.namespace || (entity.metadata && entity.metadata.namespace)
     },
