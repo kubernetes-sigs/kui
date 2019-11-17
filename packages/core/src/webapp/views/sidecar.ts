@@ -297,6 +297,10 @@ export const addNameToSidecarHeader = async (
         const tab = getEnclosingTab(sidecar)
         tab.REPL.pexec(entity.onclick.name, { tab })
       }
+    } else {
+      const clickable = element('.entity-name', nameDom)
+      clickable.classList.remove('clickable')
+      clickable.onclick = undefined
     }
     if (entity.onclick.namespace) {
       const clickable = element('.sidecar-header-icon-wrapper .package-prefix', sidecar)
@@ -305,6 +309,10 @@ export const addNameToSidecarHeader = async (
         const tab = getEnclosingTab(sidecar)
         tab.REPL.pexec(entity.onclick.namespace, { tab })
       }
+    } else {
+      const clickable = element('.sidecar-header-icon-wrapper .package-prefix', sidecar)
+      clickable.classList.remove('clickable')
+      clickable.onclick = undefined
     }
     if (entity.onclick.nameHash) {
       const clickable = element('.entity-name-hash', nameDom)
@@ -313,6 +321,10 @@ export const addNameToSidecarHeader = async (
         const tab = getEnclosingTab(sidecar)
         tab.REPL.pexec(entity.onclick.nameHash, { tab })
       }
+    } else {
+      const clickable = element('.entity-name-hash', nameDom)
+      clickable.classList.remove('clickable')
+      clickable.onclick = undefined
     }
   }
 
