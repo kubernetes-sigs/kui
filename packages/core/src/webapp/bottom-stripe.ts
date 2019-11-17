@@ -558,7 +558,7 @@ export const addModeButtons = <Direct = DirectViewController>(
   modesUnsorted: SidecarMode[] = [],
   entity: EntitySpec | CustomSpec,
   options?: BottomStripOptions
-) => {
+): SidecarMode[] => {
   // consult the view registrar for registered view modes
   // relevant to this resource
   const command = ''
@@ -566,6 +566,14 @@ export const addModeButtons = <Direct = DirectViewController>(
     addRelevantModes(tab, modesUnsorted, command, { resource: entity })
   } else if (isMetadataBearingByReference(entity)) {
     addRelevantModes(tab, modesUnsorted, command, entity)
+  }
+
+  if (options.show && modesUnsorted.find(_ => _.mode === options.show)) {
+    modesUnsorted = modesUnsorted.map(_ => Object.assign({}, _))
+
+    modesUnsorted.filter(_ => _.defaultMode && _.mode !== options.show).forEach(_ => (_.defaultMode = false))
+
+    modesUnsorted.find(_ => _.mode === options.show).defaultMode = true
   }
 
   // Place flush:right items at the end. Notes on flush:weak; this
@@ -625,4 +633,6 @@ export const addModeButtons = <Direct = DirectViewController>(
     const backContainer = css.backContainer(tab)
     backContainer.classList.remove('has-back-button')
   }
+
+  return modesUnsorted
 }

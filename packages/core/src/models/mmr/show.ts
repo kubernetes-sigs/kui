@@ -160,10 +160,12 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
   }
 
   const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
-  const modesWithButtons = modes.concat(buttons)
+  const ourModesWithButtons = modes.concat(buttons)
 
-  addModeButtons(tab, modesWithButtons, mmr, { preserveBackButton: true })
-
+  const modesWithButtons = addModeButtons(tab, ourModesWithButtons, mmr, {
+    preserveBackButton: true,
+    show: mmr.defaultMode
+  })
   const defaultMode = modesWithButtons.find(_ => _.defaultMode) || modesWithButtons[0]
 
   if (isButton(defaultMode)) {

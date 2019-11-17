@@ -34,6 +34,12 @@ const testRegistrationOnly = new TestMMR({
   command: 'test mmr mode-via-registration --registrationOnly'
 })
 
+const testRegistrationOnlyWithShow = new TestMMR({
+  testName: 'mmr-mode-via-registration',
+  metadata,
+  command: 'test mmr mode-via-registration --registrationOnly --show mode2'
+})
+
 const testRegistrationWithModes = new TestMMR({
   testName: 'mmr-mode-via-registration',
   metadata,
@@ -69,3 +75,5 @@ testRegistrationWithModes.toolbarButtons(buttonFromRegistration)
 
 testRegistrationOnly.modes(modesFromRegistration, modesFromRegistration[0])
 testRegistrationOnly.toolbarButtons(buttonFromRegistration)
+
+testRegistrationOnlyWithShow.modes(modesFromRegistration, modesFromRegistration[1])

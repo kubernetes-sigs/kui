@@ -30,6 +30,7 @@ import { textModes } from './content/modes'
 export { metadata }
 
 interface Options extends Commands.ParsedOptions {
+  show?: string
   foo: boolean
   registrationOnly: boolean
 }
@@ -39,15 +40,20 @@ interface Options extends Commands.ParsedOptions {
  *
  * test mmr mode-via-registration
  * test mmr mode-via-registration --foo
- * test mmr mode-via-registration --noMode
+ * test mmr mode-via-registration --registrationOnly
+ * test mmr mode-via-registration --show <mode>
  *
  */
 const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse) => {
   return (args: Commands.Arguments<Options>) => {
     if (args.parsedOptions.registrationOnly) {
-      return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: [] })
+      return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: [], defaultMode: args.parsedOptions.show })
     } else {
-      return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: textModes })
+      return Object.assign(metadata, {
+        foo: !!args.parsedOptions.foo,
+        modes: textModes,
+        defaultMode: args.parsedOptions.show
+      })
     }
   }
 }
