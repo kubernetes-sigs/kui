@@ -84,11 +84,18 @@ export const beautify = (kind: string, code: string) => {
   return code
 }
 
-export const maybeHideEntity = (tab: Tab, entity: EntitySpec): boolean => {
+export const maybeHideEntity = (tab: Tab, entity: EntitySpec | MetadataBearing): boolean => {
   const sidecar = getSidecar(tab)
 
   const entityMatchesSelection =
-    sidecar.entity && sidecar.entity.name === entity.name && sidecar.entity.namespace === entity.namespace
+    sidecar.entity &&
+    ((!isMetadataBearing(entity) &&
+      sidecar.entity.name === entity.name &&
+      sidecar.entity.namespace === entity.namespace) ||
+      (isMetadataBearing(entity) &&
+        isMetadataBearing(sidecar.entity) &&
+        sidecar.entity.metadata.name === entity.metadata.name &&
+        sidecar.entity.metadata.namespace === entity.metadata.namespace))
 
   debug('maybeHideEntity', entityMatchesSelection, entity, sidecar.entity)
   if (entityMatchesSelection) {
