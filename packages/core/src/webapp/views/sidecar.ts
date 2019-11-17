@@ -501,6 +501,13 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
         : isMetadataBearingByReference(custom)
         ? custom.resource.nameHash
         : undefined) || ''
+    const header = sidecar.querySelector('.sidecar-header')
+    const nameDom = header.querySelector('.sidecar-header-name-content')
+    if (hashDom.innerText.length > 0) {
+      nameDom.setAttribute('data-has-name-hash', 'data-has-name-hash')
+    } else {
+      nameDom.removeAttribute('data-has-name-hash')
+    }
 
     addNameToSidecarHeader(
       sidecar,

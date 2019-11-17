@@ -1051,6 +1051,9 @@ sidecar .sidecar-header-name-content .entity-name {
   /* direction: rtl;
     text-align: left; */
 }
+sidecar .sidecar-header-name-content[data-has-name-hash] .entity-name {
+  white-space: nowrap;
+}
 sidecar .sidecar-header-name-content > span {
   display: block;
   vertical-align: middle;
