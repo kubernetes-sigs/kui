@@ -91,7 +91,7 @@ export const badge = (badge: string) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     const badges = await app.client.getText(Selectors.SIDECAR_BADGES)
     return badges.indexOf(badge) >= 0
-  })
+  }, waitTimeout)
   return app
 }
 
@@ -124,7 +124,7 @@ export const mode = (expectedMode: string) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     await app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON(expectedMode)}.bx--tabs__nav-item--selected`)
     return true
-  })
+  }, waitTimeout)
 
   return app
 }
@@ -140,7 +140,7 @@ const show = (expected: string, selector: string) => async (app: Application) =>
       .then(() => app.client.waitForText(selector, timeout))
       .then(() => app.client.getText(selector))
       .then(text => text === expected)
-  })
+  }, waitTimeout)
 
   return app
 }
@@ -167,7 +167,7 @@ export const modes = (expected: { mode: string; label?: string; dafaultMode?: bo
         } else {
           return true
         }
-      })
+      }, waitTimeout)
     })
   ).then(() => app)
 
@@ -183,7 +183,7 @@ export const defaultMode = (expected: { mode: string; label?: string }) => async
     } else {
       return true
     }
-  })
+  }, waitTimeout)
 
   return app
 }
@@ -197,7 +197,7 @@ export const yaml = (content: object) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     const ok: boolean = await getValueFromMonaco(app).then(expectYAMLSubset(content, false))
     return ok
-  })
+  }, waitTimeout)
 
   return app
 }
@@ -242,12 +242,19 @@ export const showing = (
 
   if (expectedActivationId) {
     await app.client.waitUntil(
-      async () =>
-        app.client
-          .waitForText(Selectors.SIDECAR_ACTIVATION_TITLE, timeout)
-          .then(() => app.client.getText(Selectors.SIDECAR_ACTIVATION_TITLE))
-          .then(id => id === expectedActivationId),
-      timeout,
+      async () => {
+        try {
+          const actualId = await app.client.getText(Selectors.SIDECAR_ACTIVATION_TITLE)
+          if (actualId === expectedActivationId) {
+            return true
+          } else {
+            console.error(`still waiting for nameHash; currently "${actualId}"; expecting "${expectedActivationId}"`)
+          }
+        } catch (err) {
+          console.error(`error waiting for nameHash ${err.message}`, err)
+        }
+      },
+      waitTimeout,
       `expect activation id ${expectedActivationId} in sidecar`
     )
   }
