@@ -51,7 +51,8 @@ const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalRespons
       })
     }
 
-    return Object.assign(metadata, { modes: textModes, buttons, toolbarText })
+    // TODO: @myan can you add support for testing the onclick part?
+    return Object.assign(metadata, { modes: textModes, buttons, toolbarText, onclick: { name: 'test string' } })
   }
 }
 

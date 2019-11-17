@@ -215,6 +215,14 @@ const createdOn = (resource: MetadataBearing, entity: CustomSpec): HTMLElement =
 }
 
 /**
+ * @return the enclosing tab for the given sidecar
+ *
+ */
+export const getEnclosingTab = (sidecar: Sidecar): Tab => {
+  return getTabFromTarget(sidecar)
+}
+
+/**
  * Given an entity name and an optional packageName, decorate the sidecar header
  *
  */
@@ -249,7 +257,10 @@ export const addNameToSidecarHeader = async (
   const footer = sidecar.querySelector('.sidecar-bottom-stripe')
   const nameDom = header.querySelector('.sidecar-header-name-content')
   nameDom.className = nameDom.getAttribute('data-base-class')
-  element('.package-prefix', footer).innerText = packageName
+
+  if (packageName) {
+    element('.package-prefix', footer).innerText = packageName
+  }
 
   if (isCustomSpec(entity) && entity.isREPL) {
     header.querySelector('.sidecar-header-text').classList.add('is-repl-like')
@@ -276,6 +287,33 @@ export const addNameToSidecarHeader = async (
     const clickable = element('.entity-name', nameDom)
     clickable.classList.add('clickable')
     clickable.onclick = onclick
+  }
+
+  if (isMetadataBearing(entity) && entity.onclick) {
+    if (entity.onclick.name) {
+      const clickable = element('.entity-name', nameDom)
+      clickable.classList.add('clickable')
+      clickable.onclick = () => {
+        const tab = getEnclosingTab(sidecar)
+        tab.REPL.pexec(entity.onclick.name, { tab })
+      }
+    }
+    if (entity.onclick.namespace) {
+      const clickable = element('.sidecar-header-icon-wrapper .package-prefix', sidecar)
+      clickable.classList.add('clickable')
+      clickable.onclick = () => {
+        const tab = getEnclosingTab(sidecar)
+        tab.REPL.pexec(entity.onclick.namespace, { tab })
+      }
+    }
+    if (entity.onclick.nameHash) {
+      const clickable = element('.entity-name-hash', nameDom)
+      clickable.classList.add('clickable')
+      clickable.onclick = () => {
+        const tab = getEnclosingTab(sidecar)
+        tab.REPL.pexec(entity.onclick.nameHash, { tab })
+      }
+    }
   }
 
   addSidecarHeaderIconText(viewName, sidecar)
@@ -605,14 +643,6 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     console.error('content type not specified for custom content', custom)
   }
 } /* showCustom */
-
-/**
- * @return the enclosing tab for the given sidecar
- *
- */
-export const getEnclosingTab = (sidecar: Sidecar): Tab => {
-  return getTabFromTarget(sidecar)
-}
 
 /**
  * View State of the sidecar of a tab
