@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.11](https://github.com/IBM/kui/compare/v4.5.0...v5.3.11) (2019-11-18)
+
+**Note:** Version bump only for package @kui-shell/proxy
+
 ## [5.3.10](https://github.com/IBM/kui/compare/v5.3.9...v5.3.10) (2019-11-17)
 
 **Note:** Version bump only for package @kui-shell/proxy

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.11](https://github.com/IBM/kui/compare/v4.5.0...v5.3.11) (2019-11-18)
+
+### Bug Fixes
+
+- **plugins/plugin-wskflow:** improve "is deployed" to be more k8s metadata-like ([f5af9d0](https://github.com/IBM/kui/commit/f5af9d0)), closes [#3248](https://github.com/IBM/kui/issues/3248)
+
 ## [5.3.10](https://github.com/IBM/kui/compare/v5.3.9...v5.3.10) (2019-11-17)
 
 **Note:** Version bump only for package @kui-shell/plugin-wskflow
