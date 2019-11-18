@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.12](https://github.com/IBM/kui/compare/v5.3.11...v5.3.12) (2019-11-18)
+
+**Note:** Version bump only for package @kui-shell/core
+
 ## [5.3.11](https://github.com/IBM/kui/compare/v4.5.0...v5.3.11) (2019-11-18)
 
 ### Bug Fixes
