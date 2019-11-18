@@ -147,6 +147,8 @@ const show = (expected: string, selector: string) => async (app: Application) =>
 
 export const name = (expectedName: string) => show(expectedName, Selectors.SIDECAR_TITLE)
 
+export const namehash = (expectedNameHash: string) => show(expectedNameHash, Selectors.SIDECAR_ACTIVATION_TITLE)
+
 export const namespace = (expectedNamespace: string) => show(expectedNamespace, Selectors.SIDECAR_PACKAGE_NAME_TITLE)
 
 export const kind = (expectedKind: string) => show(expectedKind, Selectors.SIDECAR_KIND)

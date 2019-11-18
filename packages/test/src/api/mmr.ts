@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Application } from 'spectron'
+
 import { UI } from '@kui-shell/core'
 
 import * as Common from './common'
@@ -34,23 +36,6 @@ interface TestParam {
 
 export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor)
 
-interface Label {
-  mode: string
-  label?: string
-}
-
-interface PlainTextContent {
-  content?: string
-  contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
-  editor?: false
-}
-
-interface YamlContentWithEditor {
-  content: object
-  contentType: 'yaml'
-  editor: true
-}
-
 export class TestMMR {
   /**
    * new TestMMR() instantiates a class of multi-model-response tests
@@ -61,22 +46,64 @@ export class TestMMR {
    */
   public constructor(public readonly param: TestParam) {} // eslint-disable-line no-useless-constructor
 
+  private testClickResult = (cmdIdx: number, command: string, expect: string) => async (app: Application) => {
+    await CLI.expectInput(Selectors.PROMPT_N(cmdIdx), command)(app)
+    if (typeof expect === 'string') {
+      await ReplExpect.okWithString(expect, true)({ app: app, count: cmdIdx })
+    }
+  }
+
   /**
    * name() starts a Mocha Test Suite
    * name() executes `command` in REPL and expects `name` is shown in Sidecar
    */
-  public name() {
+  public name(opt?: {
+    nameHash?: string
+    onclick?: {
+      name: ClickExpect
+      nameHash?: ClickExpect
+    }
+  }) {
     const { command, metadata } = this.param
+    const testClickResult = this.testClickResult
+
     describe(`mmr name ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
-      it(`should show name ${metadata.name} in sidecar`, () =>
+      const { nameHash, onclick } = opt
+
+      it(`should show name ${nameHash ? 'and namehash' : ''} in sidecar header`, () =>
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.name(metadata.name))
+          .then(app => (nameHash ? SidecarExpect.namehash(nameHash) : app))
           .catch(Common.oops(this, true)))
+
+      let cmdIdx = 0 // keep track of the command execution number
+
+      if (onclick.name) {
+        it('should click the name part of sidecar and expect the command shows in repl', async () => {
+          try {
+            await this.app.client.click(Selectors.SIDECAR_TITLE)
+            await testClickResult(++cmdIdx, onclick.name.command, onclick.name.expect)(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+      }
+
+      if (onclick.nameHash) {
+        it('should click the namehash part of sidecar and expect the command shows in repl', async () => {
+          try {
+            await this.app.client.click(Selectors.SIDECAR_ACTIVATION_TITLE)
+            await testClickResult(++cmdIdx, onclick.nameHash.command, onclick.nameHash.expect)(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+      }
     })
   }
 
@@ -85,11 +112,15 @@ export class TestMMR {
    * namespace() executes `command` in REPL and expects `namespace` is shown in Sidecar
    *
    */
-  public namespace() {
+  public namespace(opt?: { onclick: ClickExpect }) {
     const { command, metadata } = this.param
+    const testClickResult = this.testClickResult
+
     describe(`mmr namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
+
+      const onclick = opt && opt.onclick
 
       it(`should show namespace ${metadata.namespace} in sidecar`, () =>
         CLI.command(command, this.app)
@@ -97,6 +128,17 @@ export class TestMMR {
           .then(SidecarExpect.open)
           .then(SidecarExpect.namespace(metadata.namespace))
           .catch(Common.oops(this, true)))
+
+      if (onclick) {
+        it(`should click the namespace part of sidecar and expect the command shows in repl`, async () => {
+          try {
+            await this.app.client.click(Selectors.SIDECAR_PACKAGE_NAME_TITLE)
+            await testClickResult(1, onclick.command, onclick.expect)(this.app)
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+      }
     })
   }
 
@@ -363,4 +405,26 @@ export class TestMMR {
           .catch(Common.oops(this, true)))
     })
   }
+}
+
+interface Label {
+  mode: string
+  label?: string
+}
+
+interface PlainTextContent {
+  content?: string
+  contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
+  editor?: false
+}
+
+interface YamlContentWithEditor {
+  content: object
+  contentType: 'yaml'
+  editor: true
+}
+
+interface ClickExpect {
+  command: string
+  expect?: string
 }
