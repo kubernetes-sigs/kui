@@ -32,7 +32,16 @@ const metadata = {
 }
 
 const doModes = (): (() => UI.MultiModalResponse) => {
-  return () => Object.assign(metadata, { modes: plainTextMode })
+  return () =>
+    Object.assign(metadata, {
+      modes: plainTextMode,
+      nameHash: 'this is the namehash part',
+      onclick: {
+        name: 'test string --grumble 1',
+        namespace: 'test string --grumble 2',
+        nameHash: 'test string --grumble 3'
+      }
+    })
 }
 
 export default (commandTree: Commands.Registrar) => {
