@@ -55,8 +55,8 @@ export default async function(
       }
 
       result.forEach((r, index) => {
-        if (r.type === 'actions' && r.name) {
-          debug(`action ${r.name} is deployed`)
+        if (r.kind === 'Action' && r.metadata.name) {
+          debug(`action ${r.metadata.name} is deployed`)
           actions[names[index]].forEach(id => {
             graphChildrenStatus(graphData.children, id, true)
           })
