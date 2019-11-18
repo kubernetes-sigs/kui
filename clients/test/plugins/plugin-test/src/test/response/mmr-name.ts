@@ -30,4 +30,10 @@ const test = new TestMMR({
   }
 })
 
-test.name()
+test.name({
+  nameHash: 'this is the namehash part',
+  onclick: {
+    name: { command: 'test string', expect: 'hello world' },
+    nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
+  }
+})

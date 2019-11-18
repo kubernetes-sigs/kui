@@ -57,7 +57,7 @@ const toolbarText = {
 
 const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
 
-testDefault.name()
+testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello world' } } })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault.toolbarText(toolbarText)
 testDefault.toolbarButtons(buttons)
