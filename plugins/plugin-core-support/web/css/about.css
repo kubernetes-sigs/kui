@@ -3,10 +3,6 @@
   flex: 1;
 }
 
-.about-window-long-description {
-  text-align: justify;
-}
-
 .about-window .logo {
   display: flex;
   flex-direction: column;
