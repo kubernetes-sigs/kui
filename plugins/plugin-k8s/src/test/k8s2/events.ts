@@ -74,7 +74,7 @@ describe(`kubectl get events ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
           `${Selectors.SIDECAR_CUSTOM_CONTENT} .result-table badge[data-key="REASON"].yellow-background`
         )
       } catch (err) {
-        return Common.oops(this, true)
+        return Common.oops(this, true)(err)
       }
     })
 
