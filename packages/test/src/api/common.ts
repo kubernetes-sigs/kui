@@ -321,6 +321,8 @@ export const after = (ctx: ISuite, f?: () => void): HookFunction => async () => 
 }
 
 export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
+  process.env.NYC = undefined // don't write code coverage data if the test has failed
+
   try {
     if (process.env.MOCHA_RUN_TARGET) {
       console.log(`Error: mochaTarget=${process.env.MOCHA_RUN_TARGET} testTitle=${ctx.title}`)
