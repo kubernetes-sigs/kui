@@ -87,8 +87,8 @@ describe('pty session status offline at start', function(this: Common.ISuite) {
       await this.app.client.waitForExist('.kui--plugin-bash-like--pty-offline-indicator', 20000, true)
 
       await CLI.waitForRepl(this.app)
-    } catch {
-      await Common.oops(this, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
     }
   })
 

@@ -89,7 +89,7 @@ export class TestMMR {
             await this.app.client.click(Selectors.SIDECAR_TITLE)
             await testClickResult(++cmdIdx, onclick.name.command, onclick.name.expect)(this.app)
           } catch (err) {
-            await Common.oops(this, true)
+            await Common.oops(this, true)(err)
           }
         })
       }
@@ -100,7 +100,7 @@ export class TestMMR {
             await this.app.client.click(Selectors.SIDECAR_ACTIVATION_TITLE)
             await testClickResult(++cmdIdx, onclick.nameHash.command, onclick.nameHash.expect)(this.app)
           } catch (err) {
-            await Common.oops(this, true)
+            await Common.oops(this, true)(err)
           }
         })
       }
@@ -135,7 +135,7 @@ export class TestMMR {
             await this.app.client.click(Selectors.SIDECAR_PACKAGE_NAME_TITLE)
             await testClickResult(1, onclick.command, onclick.expect)(this.app)
           } catch (err) {
-            await Common.oops(this, true)
+            await Common.oops(this, true)(err)
           }
         })
       }
@@ -261,7 +261,7 @@ export class TestMMR {
               await this.app.client.keys(Keys.ESCAPE)
               expectOpen ? await SidecarExpect.open(this.app) : await SidecarExpect.closed(this.app)
             } catch (err) {
-              await Common.oops(this, true)
+              await Common.oops(this, true)(err)
             }
           })
 
@@ -272,7 +272,7 @@ export class TestMMR {
               await this.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
               await SidecarExpect.fullyClosed(this.app)
             } catch (err) {
-              await Common.oops(this, true)
+              await Common.oops(this, true)(err)
             }
           })
 
@@ -283,7 +283,7 @@ export class TestMMR {
               await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON)
               await SidecarExpect.fullscreen(this.app)
             } catch (err) {
-              await Common.oops(this, true)
+              await Common.oops(this, true)(err)
             }
           })
 
