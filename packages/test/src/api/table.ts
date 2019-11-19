@@ -67,10 +67,9 @@ export class TestTable {
           try {
             await this.app.client.waitForExist(cell)
             await this.app.client.click(cell)
-            await ReplExpect.ok({ app: this.app, count: replIndex })
             await CLI.expectInput(prompt, command)(this.app)
           } catch (err) {
-            await Common.oops(this, true)
+            await Common.oops(this, true)(err)
           }
         })
       }
@@ -82,7 +81,7 @@ export class TestTable {
             await this.app.client.click(cell)
             await CLI.expectInput(prompt, '')(this.app)
           } catch (err) {
-            await Common.oops(this, true)
+            await Common.oops(this, true)(err)
           }
         })
       }

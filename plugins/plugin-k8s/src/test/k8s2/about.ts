@@ -32,7 +32,7 @@ describe('about contexts', function(this: Common.ISuite) {
       await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED('contexts'))
       await this.app.client.waitForExist(`${Selectors.SIDECAR_CUSTOM_CONTENT} .bx--data-table`)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 })
