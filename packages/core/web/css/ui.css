@@ -738,11 +738,7 @@ body:not(.subwindow) tab:not(.sidecar-full-screen) sidecar .sidecar-bottom-strip
   width: 0;
   height: 0;
 }
-.sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-return-to::first-letter,
-.sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button[data-mode] {
-  /* for bottom mode-switching buttons, capitalize the text; for actual buttons, keep the capitalization as it was given */
-  text-transform: capitalize;
-}
+
 sidecar .sidecar-bottom-stripe .package-prefix {
   /* kubectl namespace and openwhisk package name, etc. */
   display: block;
