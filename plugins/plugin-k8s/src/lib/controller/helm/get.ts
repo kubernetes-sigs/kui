@@ -33,7 +33,7 @@ function getBasicInfo(releaseName: string): Promise<Models.ResourceWithMetadata>
     const cmd = `${helm} get ${releaseName}`
     debug('cmd', cmd)
 
-    exec(cmd, (err, stdout, stderr) => {
+    exec(cmd, { maxBuffer: 4 * 1024 * 1024 }, (err, stdout, stderr) => {
       if (stderr) {
         console.error(stderr)
       }
