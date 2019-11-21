@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 import { Tables } from '@kui-shell/core'
+import { promiseEach } from '@kui-shell/core/util/async'
 
 import * as Common from './common'
 import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
 import * as Selectors from './selectors'
+import * as Utils from './util'
+
+interface RowWithBadgeAndMessage {
+  name: string // row name
+  badgeCss: string
+  badgeText: string
+  message: string
+}
 
 export class TestTable {
   public command: string
@@ -34,6 +43,49 @@ export class TestTable {
   public constructor(test: { command: string; testName?: string }) {
     this.command = test.command
     this.testName = test.testName
+  }
+
+  /**
+   * statusBadge() starts a Mocha Test Suite
+   * statusBadge() executes `command` in REPL and checks the table status badges are rendered correctly
+   *
+   * @param { RowWithBadgeAndMessage } expectRow is the expected rows shown in the REPL
+   *
+   */
+  public statusBadge(testVariations: { testName: string; command: string; expectRow: RowWithBadgeAndMessage[] }[]) {
+    describe(`show table status ${this.testName || ''}${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      testVariations.forEach(test => {
+        const command = test.command
+        const expectRow = test.expectRow
+
+        it(`${test.testName || 'should show status badge in row'}`, async () => {
+          try {
+            const { app, count } = await CLI.command(command, this.app)
+
+            await promiseEach(expectRow, async row => {
+              const rowSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.BY_NAME(row.name)}`
+              this.app.client.waitForExist(rowSelector)
+
+              // wait for message
+              const messageSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.TABLE_CELL(row.name, 'MESSAGE')}`
+              await app.client.waitForExist(messageSelector)
+              await Utils.expectText(app, row.message)(messageSelector)
+
+              // wait for badge
+              const badge = `${rowSelector} badge.${row.badgeCss}`
+              await app.client.waitForExist(badge)
+              await Utils.expectText(app, row.badgeText)(badge)
+            })
+          } catch (err) {
+            await Common.oops(this, true)(err)
+          }
+        })
+      })
+    })
   }
 
   /**

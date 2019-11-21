@@ -20,16 +20,84 @@
  */
 
 // Notes: this is part of the Kui core API
-import { Commands } from '@kui-shell/core'
+import { Commands, Tables } from '@kui-shell/core'
+import { Watchable } from '@kui-shell/core/api/models'
 
 import tableContent from './content/table-with-drilldown'
+
+interface Options extends Commands.ParsedOptions {
+  watch: 'push' | 'poll'
+  'final-state': string
+}
+
+// generateNewPush generates new `Row` with badge and message
+const generateNewPush = (name: string, onlineLike: boolean, message: string): Tables.Row => {
+  const status = onlineLike ? 'Running' : 'Terminating'
+  const css = onlineLike ? 'green-background' : 'yellow-background'
+  return { name, attributes: [{ key: 'STATUS', tag: 'badge', value: status, css }, { key: 'MESSAGE', value: message }] }
+}
+
+const doTable = (): ((args: Commands.Arguments<Options>) => Tables.Table & Partial<Watchable>) => {
+  return (args: Commands.Arguments<Options>) => {
+    const table = tableContent()
+    const emptyRows: Tables.Row[] = []
+
+    const tableWithoutRows: Tables.Table = {
+      noSort: true,
+      header: { name: 'name', attributes: [{ value: 'status' }, { value: 'message' }] },
+      body: emptyRows
+    }
+
+    const watch = args.parsedOptions.watch
+    const finalState = args.parsedOptions['final-state']
+
+    if (watch && watch === 'push' && finalState) {
+      const watch: Watchable = {
+        watch: {
+          init: (update, offline) => {
+            const name1 = 'foo1'
+            const name2 = 'foo2'
+
+            update(generateNewPush(name1, true, 'should create a new row'))
+            if (finalState === 'createRow1') return
+
+            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row')), 1000)
+            if (finalState === 'terminateRow1') return
+
+            setTimeout(() => offline(name1), 1500)
+            if (finalState === 'deleteRow1') return
+
+            setTimeout(() => update(generateNewPush(name1, true, 'should activate the deleted row')), 2000)
+            if (finalState === 'activateRow1') return
+
+            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row again')), 2500)
+            if (finalState === 'terminateRow1Again') return
+
+            setTimeout(() => offline(name1), 3000)
+            if (finalState === 'deleteRow1Again') return
+
+            setTimeout(() => update(generateNewPush(name2, true, 'should create the second row')), 3500)
+            if (finalState === 'createRow2') return
+
+            if (finalState === 'activeRow1Again')
+              setTimeout(() => update(generateNewPush(name1, true, 'should activate the first row again')), 4000)
+          }
+        }
+      }
+
+      return Object.assign({}, tableWithoutRows, watch)
+    } else {
+      return table
+    }
+  }
+}
 
 /**
  * Here is where we register our command.
  *
  */
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen('/test/table', () => tableContent(), {
+  commandTree.listen('/test/table', doTable(), {
     usage: {
       docs: 'A showcase of the Table view'
     }

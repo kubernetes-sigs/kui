@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { Watchable } from './basicModels'
+import { Watchable, Poller } from './watch'
 import { MetadataBearing, Entity } from '../../models/entity'
 import { SidecarMode } from '../bottom-stripe'
 
@@ -159,8 +159,6 @@ export class Table<RowType extends Row = Row> {
   }
 }
 
-export interface WatchableTable extends Table, Watchable {}
-
 export function isTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): model is Table {
   return (
     model !== undefined && (model instanceof Table || ((model as Table).body && Array.isArray((model as Table).body)))
@@ -183,7 +181,8 @@ export function isMultiTable<C>(model: SidecarMode | MetadataBearing<C> | Entity
 
 export type WatchableMultiTable = MultiTable & Watchable
 
-export function formatWatchableTable<T extends Table | MultiTable>(model: T, watch: Watchable): T & Watchable {
+export function formatWatchableTable<T extends Table | MultiTable>(model: T, poller: Poller): T & Watchable {
+  const watch: Watchable = { watch: poller }
   if (isTable(model) || isMultiTable(model)) {
     return Object.assign(model, watch)
   } else {
@@ -236,7 +235,7 @@ interface RowDeletion {
   deleteIndex: number
 }
 
-export interface RowDiff {
+interface RowDiff {
   rowUpdate: RowUpdate[]
   rowDeletion: RowDeletion[]
   rowInsertion: RowInsertion[]

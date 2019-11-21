@@ -44,3 +44,74 @@ test.drilldownFromREPL({
   header: expectHeaderText,
   body: expectRow
 })
+
+const testPush = new TestTable({
+  command: 'test table --watch=push'
+})
+
+testPush.statusBadge([
+  {
+    testName: 'should create a new row',
+    command: 'test table --watch=push --final-state=createRow1',
+    expectRow: [
+      { name: 'foo1', badgeCss: 'green-background', badgeText: 'Running', message: 'should create a new row' }
+    ]
+  },
+  {
+    testName: 'should terminate the row',
+    command: 'test table --watch=push --final-state=terminateRow1',
+    expectRow: [
+      { name: 'foo1', badgeCss: 'yellow-background', badgeText: 'Terminating', message: 'should terminate the row' }
+    ]
+  },
+  {
+    testName: 'should delete the row',
+    command: 'test table --watch=push --final-state=deleteRow1',
+    expectRow: [{ name: 'foo1', badgeCss: 'red-background', badgeText: 'Offline', message: 'should terminate the row' }]
+  },
+  {
+    testName: 'should activate the deleted row',
+    command: 'test table --watch=push --final-state=activateRow1',
+    expectRow: [
+      { name: 'foo1', badgeCss: 'green-background', badgeText: 'Running', message: 'should activate the deleted row' }
+    ]
+  },
+  {
+    testName: 'should terminate the row again',
+    command: 'test table --watch=push --final-state=terminateRow1Again',
+    expectRow: [
+      {
+        name: 'foo1',
+        badgeCss: 'yellow-background',
+        badgeText: 'Terminating',
+        message: 'should terminate the row again'
+      }
+    ]
+  },
+  {
+    testName: 'should delete the row again',
+    command: 'test table --watch=push --final-state=deleteRow1Again',
+    expectRow: [
+      { name: 'foo1', badgeCss: 'red-background', badgeText: 'Offline', message: 'should terminate the row again' }
+    ]
+  },
+  {
+    testName: 'should create the second row',
+    command: 'test table --watch=push --final-state=createRow2',
+    expectRow: [
+      { name: 'foo2', badgeCss: 'green-background', badgeText: 'Running', message: 'should create the second row' }
+    ]
+  },
+  {
+    testName: 'should activate the first row again',
+    command: 'test table --watch=push --final-state=activeRow1Again',
+    expectRow: [
+      {
+        name: 'foo1',
+        badgeCss: 'green-background',
+        badgeText: 'Running',
+        message: 'should activate the first row again'
+      }
+    ]
+  }
+])

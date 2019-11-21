@@ -33,7 +33,7 @@ import presentAs from './views/sidecar-present'
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
 
-import { isWatchable } from './models/basicModels'
+import { isWatchable } from './models/watch'
 import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents, ExecType, KResponse, ParsedOptions } from '../models/command'
 import { Table, isTable, isMultiTable } from './models/table'
