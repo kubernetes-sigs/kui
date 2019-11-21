@@ -53,4 +53,6 @@ export namespace Models {
 // see https://github.com/IBM/kui/issues/3222
 export { MetadataBearing as ResourceWithMetadata } from '../models/entity'
 
+export { Watchable } from '../webapp/models/watch'
+
 export default Models

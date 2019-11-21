@@ -30,13 +30,11 @@ import {
   Icon,
   sortBody,
   TableStyle,
-  WatchableTable,
   diffTableRows,
   isMultiTable,
   isTable
 } from '../models/table'
-import { isWatchable } from '../models/basicModels'
-import { applyDiffTable } from '../views/diffTable'
+import { isWatchable, isPusher, Watchable } from '../models/watch'
 import { theme } from '../../core/settings'
 
 import { WatchableJob } from '../../core/job'
@@ -44,13 +42,19 @@ import { isHTML } from '../../util/types'
 
 const debug = Debug('webapp/views/table')
 
-interface TableFormatOptions {
-  usePip?: boolean
+/** ExistingTableSpec helps the watcher update the existing `Table` and view */
+interface ExistingTableSpec {
+  renderedRows: HTMLElement[]
+  rowsModel: Row[]
+  renderedTable: HTMLElement
+  tableModel: Table & Partial<Watchable>
 }
 
-export interface RowFormatOptions extends TableFormatOptions {
+/** RowFormatOptions helps FormatOneRowResult render the `Row` */
+export interface RowFormatOptions {
   excludePackageName?: boolean
   useRepeatingEffect?: boolean
+  usePip?: boolean
 }
 
 /** groups of States that mark desired final outcomes */
@@ -71,7 +75,7 @@ debug('table polling intervals', fastPolling, mediumPolling, finalPolling)
  * get an array of row models
  *
  */
-const prepareTable = (tab: Tab, response: Table | WatchableTable): Row[] => {
+const prepareTable = (tab: Tab, response: Table & Partial<Watchable>): Row[] => {
   const { header, body, noSort } = response
 
   if (header) {
@@ -150,141 +154,6 @@ const calculateLadder = (initial: number): number[] => {
 
   debug('ladder', ladder)
   return ladder
-}
-
-/**
- * register a watchable job
- *
- */
-const registerWatcher = (
-  tab: Tab,
-  watchLimit = 100000,
-  command: string,
-  resultDom: HTMLElement,
-  tableViewInfo: TableViewInfo | TableViewInfo[],
-  formatRowOption?: RowFormatOptions
-) => {
-  let job: WatchableJob // eslint-disable-line prefer-const
-
-  // the final state we want to reach to
-  const expectedFinalState = findFinalStateFromCommand(command)
-
-  // establish the initial watch interval,
-  // if we're on resource creation/deletion, do fast polling, otherwise we do steady polling
-  const initalPollingInterval =
-    expectedFinalState === 'OfflineLike' || expectedFinalState === 'OnlineLike' ? fastPolling : mediumPolling
-
-  // increase the table polling interval until it reaches the steady polling interval, store the ladder in an array
-  const ladder = calculateLadder(initalPollingInterval)
-
-  /**
-   * process the refreshed result
-   * @return processed Table info: { table: Row[], reachedFinalState: boolean }, or
-   *         processed MultiTable info: { tables: Row[][], reachedFinalState: boolean}
-   *
-   */
-  const processRefreshResponse = (response: Table | MultiTable) => {
-    if (!isTable(response) && !isMultiTable(response)) {
-      console.error('refresh result is not a table', response)
-      throw new Error('refresh result is not a table')
-    }
-
-    const reachedFinalState = hasReachedFinalState(response)
-
-    return isTable(response)
-      ? { table: prepareTable(tab, response), reachedFinalState }
-      : {
-          tables: response.tables.map(table => {
-            return prepareTable(tab, table)
-          }),
-          reachedFinalState
-        }
-  }
-
-  // execute the refresh command and apply the result
-  const refreshTable = async () => {
-    debug(`refresh with ${command}`)
-    let processedTableRow: Row[] = []
-    let processedMultiTableRow: Row[][] = []
-
-    try {
-      const { qexec } = await import('../../repl/exec')
-      const response = await qexec<Table | MultiTable>(command)
-
-      const processedResponse = processRefreshResponse(response)
-
-      processedTableRow = processedResponse.table
-      processedMultiTableRow = processedResponse.tables
-
-      // stop watching if all resources in the table reached to the finial state
-      if (processedResponse.reachedFinalState) {
-        job.abort()
-      } else {
-        // if the refreshed result doesn't reach the expected state,
-        // then we increment the table polling interval by ladder until it reaches the steady polling interval
-        const newTimer = ladder.shift()
-        if (newTimer) {
-          // reshedule the job using new polling interval
-          job.abort()
-          job = new WatchableJob(tab, watchIt, newTimer + ~~(100 * Math.random())) // eslint-disable-line @typescript-eslint/no-use-before-define
-          job.start()
-        }
-      }
-    } catch (err) {
-      if (err.code === 404) {
-        if (expectedFinalState === 'OfflineLike') {
-          debug('resource not found after status check, but that is ok because that is what we wanted')
-          job.abort()
-        }
-      } else {
-        while (resultDom.firstChild) {
-          resultDom.removeChild(resultDom.firstChild)
-        }
-        job.abort()
-        throw err
-      }
-    }
-
-    // diff the refreshed model from the existing one and apply the change
-    const applyRefreshResult = (newRowModel: Row[], tableViewInfo: TableViewInfo) => {
-      const diffs = diffTableRows(tableViewInfo.rowsModel, newRowModel)
-      applyDiffTable(
-        diffs,
-        tab,
-        tableViewInfo.renderedTable,
-        tableViewInfo.renderedRows,
-        tableViewInfo.rowsModel,
-        formatRowOption
-      )
-    }
-
-    if (Array.isArray(tableViewInfo)) {
-      processedMultiTableRow.forEach((newRowModel, index) => {
-        applyRefreshResult(newRowModel, tableViewInfo[index])
-      })
-    } else {
-      applyRefreshResult(processedTableRow, tableViewInfo)
-    }
-  }
-
-  // timer handler
-  const watchIt = () => {
-    if (--watchLimit < 0) {
-      console.error('watchLimit exceeded')
-      job.abort()
-    } else {
-      try {
-        Promise.resolve(refreshTable())
-      } catch (err) {
-        console.error('Error refreshing table', err)
-        job.abort()
-      }
-    }
-  }
-
-  // establish the inital watchable job
-  job = new WatchableJob(tab, watchIt, ladder.shift() + ~~(100 * Math.random()))
-  job.start()
 }
 
 /**
@@ -678,6 +547,213 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 }
 
 /**
+ * Update a row in the exiting table
+ *
+ */
+const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingTableSpec) => (
+  tab: Tab,
+  option?: RowFormatOptions
+) => {
+  const newRowView = formatOneRowResult(tab, option)(newRow)
+  existingTable.renderedTable.replaceChild(newRowView, existingTable.renderedRows[updateIndex])
+  existingTable.renderedRows[updateIndex] = newRowView
+
+  // apply the change to the exiting rows
+  existingTable.rowsModel[updateIndex] = newRow
+}
+
+/**
+ * Insert a new row to the existing table
+ *
+ */
+const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: ExistingTableSpec) => (
+  tab: Tab,
+  option?: RowFormatOptions
+) => {
+  const newRowView = formatOneRowResult(tab, option)(newRow)
+  existingTable.renderedTable.insertBefore(newRowView, existingTable.renderedRows[insertBeforeIndex])
+  existingTable.renderedRows.splice(insertBeforeIndex, 0, newRowView)
+  existingTable.rowsModel.splice(insertBeforeIndex, 0, newRow)
+}
+
+/**
+ * Delete a row from the existing table
+ *
+ */
+const deleteTheRow = (deleteRow: Row, deleteIndex: number, existingTable: ExistingTableSpec) => {
+  // change the status badge to `offline`
+  deleteRow.attributes.forEach(attr => {
+    if (attr.key === 'STATUS') {
+      attr.value = 'Offline'
+      attr.css = 'red-background'
+    }
+  })
+
+  // apply the change to the exiting rows
+  existingTable.rowsModel[deleteIndex] = deleteRow
+
+  // render the status badge change
+  const status = existingTable.renderedRows[deleteIndex].querySelector('.cell-inner[data-key="STATUS"]') as HTMLElement
+  if (status) {
+    status.className = 'cell-inner red-background'
+    status.innerText = 'Offline'
+  }
+
+  // remove the repeating pulse effect remained from the previous state, e.g. Terminating
+  const pulse = existingTable.renderedRows[deleteIndex].querySelector('.repeating-pulse') as HTMLElement
+  if (pulse) pulse.classList.remove('repeating-pulse')
+}
+
+/**
+ * register a watchable job
+ *
+ */
+const registerWatcher = (
+  tab: Tab,
+  watchLimit = 100000,
+  command: string,
+  resultDom: HTMLElement,
+  existingTable: ExistingTableSpec | ExistingTableSpec[],
+  formatRowOption?: RowFormatOptions
+) => {
+  let job: WatchableJob // eslint-disable-line prefer-const
+
+  // the final state we want to reach to
+  const expectedFinalState = findFinalStateFromCommand(command)
+
+  // establish the initial watch interval,
+  // if we're on resource creation/deletion, do fast polling, otherwise we do steady polling
+  const initalPollingInterval =
+    expectedFinalState === 'OfflineLike' || expectedFinalState === 'OnlineLike' ? fastPolling : mediumPolling
+
+  // increase the table polling interval until it reaches the steady polling interval, store the ladder in an array
+  const ladder = calculateLadder(initalPollingInterval)
+
+  /**
+   * process the refreshed result
+   * @return processed Table info: { table: Row[], reachedFinalState: boolean }, or
+   *         processed MultiTable info: { tables: Row[][], reachedFinalState: boolean}
+   *
+   */
+  const processRefreshResponse = (response: Table | MultiTable) => {
+    if (!isTable(response) && !isMultiTable(response)) {
+      console.error('refresh result is not a table', response)
+      throw new Error('refresh result is not a table')
+    }
+
+    const reachedFinalState = hasReachedFinalState(response)
+
+    return isTable(response)
+      ? { table: prepareTable(tab, response), reachedFinalState }
+      : {
+          tables: response.tables.map(table => {
+            return prepareTable(tab, table)
+          }),
+          reachedFinalState
+        }
+  }
+
+  // execute the refresh command and apply the result
+  const refreshTable = async () => {
+    debug(`refresh with ${command}`)
+    let processedTableRow: Row[] = []
+    let processedMultiTableRow: Row[][] = []
+
+    try {
+      const { qexec } = await import('../../repl/exec')
+      const response = await qexec<Table | MultiTable>(command)
+
+      const processedResponse = processRefreshResponse(response)
+
+      processedTableRow = processedResponse.table
+      processedMultiTableRow = processedResponse.tables
+
+      // stop watching if all resources in the table reached to the finial state
+      if (processedResponse.reachedFinalState) {
+        job.abort()
+      } else {
+        // if the refreshed result doesn't reach the expected state,
+        // then we increment the table polling interval by ladder until it reaches the steady polling interval
+        const newTimer = ladder.shift()
+        if (newTimer) {
+          // reshedule the job using new polling interval
+          job.abort()
+          job = new WatchableJob(tab, watchIt, newTimer + ~~(100 * Math.random())) // eslint-disable-line @typescript-eslint/no-use-before-define
+          job.start()
+        }
+      }
+    } catch (err) {
+      if (err.code === 404) {
+        if (expectedFinalState === 'OfflineLike') {
+          debug('resource not found after status check, but that is ok because that is what we wanted')
+          job.abort()
+        }
+      } else {
+        while (resultDom.firstChild) {
+          resultDom.removeChild(resultDom.firstChild)
+        }
+        job.abort()
+        throw err
+      }
+    }
+
+    // diff the refreshed model from the existing one and apply the change
+    const applyRefreshResult = (newRowModel: Row[], existingTable: ExistingTableSpec) => {
+      const diff = diffTableRows(existingTable.rowsModel, newRowModel)
+      if (diff.rowUpdate && diff.rowUpdate.length > 0) {
+        debug('update rows', diff.rowUpdate)
+        diff.rowUpdate.map(update => {
+          udpateTheRow(update.model, update.updateIndex, existingTable)(tab, formatRowOption)
+        })
+      }
+
+      if (diff.rowDeletion && diff.rowDeletion.length > 0) {
+        debug('delete rows', diff.rowDeletion)
+        diff.rowDeletion
+          .filter(_ => _.model.name !== 'NAME')
+          .map(rowDeletion => {
+            deleteTheRow(rowDeletion.model, rowDeletion.deleteIndex, existingTable)
+          })
+      }
+
+      if (diff.rowInsertion && diff.rowInsertion.length > 0) {
+        debug('insert rows', diff.rowInsertion)
+        diff.rowInsertion.map(insert => {
+          insertTheRow(insert.model, insert.insertBeforeIndex, existingTable)(tab, formatRowOption)
+        })
+      }
+    }
+
+    if (Array.isArray(existingTable)) {
+      processedMultiTableRow.forEach((newRowModel, index) => {
+        applyRefreshResult(newRowModel, existingTable[index])
+      })
+    } else {
+      applyRefreshResult(processedTableRow, existingTable)
+    }
+  }
+
+  // timer handler
+  const watchIt = () => {
+    if (--watchLimit < 0) {
+      console.error('watchLimit exceeded')
+      job.abort()
+    } else {
+      try {
+        Promise.resolve(refreshTable())
+      } catch (err) {
+        console.error('Error refreshing table', err)
+        job.abort()
+      }
+    }
+  }
+
+  // establish the inital watchable job
+  job = new WatchableJob(tab, watchIt, ladder.shift() + ~~(100 * Math.random()))
+  job.start()
+}
+
+/**
  * Carbon Components has its own classes of table compactness
  *
  */
@@ -703,14 +779,6 @@ function setStyle(tableDom: HTMLElement, table: Table) {
   adoptCarbonTableStyle(tableDom)
 }
 
-// This helps multi-table view handler to use the the processed data from single-table view handler
-interface TableViewInfo {
-  renderedRows: HTMLElement[]
-  rowsModel: Row[]
-  renderedTable: HTMLElement
-  tableModel: Table | WatchableTable
-}
-
 /**
  * Format the table view
  *
@@ -719,10 +787,10 @@ export const formatTable = (
   tab: Tab,
   response: Table | MultiTable,
   resultDom: HTMLElement,
-  options: TableFormatOptions = {}
+  options: { usePip?: boolean } = {}
 ) => {
   const formatRowOption = Object.assign(options, {
-    useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault
+    useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response)
   })
 
   const format = (table: Table) => {
@@ -819,9 +887,42 @@ export const formatTable = (
     }
   }
 
-  const tableViewInfo = isMultiTable(response) ? response.tables.map(table => format(table)) : format(response)
+  const existingTable = isMultiTable(response) ? response.tables.map(table => format(table)) : format(response)
 
-  if (!hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault) {
-    registerWatcher(tab, response.watchLimit, response.refreshCommand, resultDom, tableViewInfo, formatRowOption)
+  if (isWatchable(response)) {
+    const watch = response.watch
+    if (isPusher(watch)) {
+      if (!Array.isArray(existingTable)) {
+        /** offline takes the rowKey of the row to be deleted and applies this to the table view */
+        const offline = (rowKey: string) => {
+          const existingRows = existingTable.rowsModel
+          const foundIndex = existingRows.findIndex(_ => _.name === rowKey)
+          deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+        }
+
+        /** update consumes the update notification and apply it to the table view */
+        const update = (newRow: Row) => {
+          const existingRows = existingTable.rowsModel
+          const foundIndex = existingRows.findIndex(_ => _.name === newRow.name)
+
+          if (foundIndex === -1) {
+            // To get the insertion index, first concat the new row with the existing rows, then sort the rows
+            const index = sortBody([newRow].concat(existingRows)).findIndex(_ => _.name === newRow.name)
+            insertTheRow(newRow, index + 1, existingTable)(tab, formatRowOption)
+          } else {
+            const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
+            if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
+          }
+        }
+
+        // initiate the pusher watch
+        watch.init(update, offline)
+      }
+    } else {
+      if (!hasReachedFinalState(response)) {
+        // initiate the poller watch
+        registerWatcher(tab, watch.watchLimit, watch.refreshCommand, resultDom, existingTable, formatRowOption)
+      }
+    }
   }
 }
