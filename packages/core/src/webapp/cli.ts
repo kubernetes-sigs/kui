@@ -62,8 +62,7 @@ export {
 import { installBlock, getInitialBlock, getCurrentBlock, getCurrentProcessingBlock } from './block'
 export { installBlock, getInitialBlock, getCurrentBlock, getCurrentProcessingBlock }
 
-import { registerListView, registerEntityView, ViewHandler, ok } from './print'
-export { registerListView, registerEntityView, ViewHandler, ok }
+export { ok } from './print'
 
 debug('finished loading modules')
 

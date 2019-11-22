@@ -271,13 +271,14 @@ const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.
 
   return {
     type: 'custom',
-    isEntity: true,
     prettyType: 'about',
     presentation:
       (document.body.classList.contains('subwindow') && UI.Presentation.SidecarFullscreen) ||
       UI.Presentation.SidecarThin,
     modes,
-    name,
+    metadata: {
+      name
+    },
     // badges,
     // version,
     content

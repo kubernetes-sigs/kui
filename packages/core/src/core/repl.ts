@@ -28,7 +28,6 @@ export { split, _split, Split }
 import {
   exec,
   click,
-  update,
   semicolonInvoke,
   qexec,
   pexec,
@@ -38,16 +37,4 @@ import {
   ReplEval,
   DirectReplEval
 } from '../repl/exec'
-export {
-  exec,
-  click,
-  update,
-  semicolonInvoke,
-  qexec,
-  pexec,
-  rexec,
-  getImpl,
-  setEvaluatorImpl,
-  ReplEval,
-  DirectReplEval
-}
+export { exec, click, semicolonInvoke, qexec, pexec, rexec, getImpl, setEvaluatorImpl, ReplEval, DirectReplEval }

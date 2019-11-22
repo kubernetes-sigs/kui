@@ -21,12 +21,14 @@
 
 import { CustomSpec } from './sidecar-core'
 
-import { isMetadataBearing, Entity } from '../../models/entity'
+import { isMultiModalResponse } from '../../models/mmr/is'
+import { MetadataBearing, isMetadataBearing, Entity } from '../../models/entity'
 
-export function isCustomSpec(entity: Entity): entity is CustomSpec {
+export function isCustomSpec(entity: MetadataBearing | CustomSpec | Entity): entity is CustomSpec {
   const custom = entity as CustomSpec
   return (
     custom !== undefined &&
+    !isMultiModalResponse(custom) &&
     (custom.type === 'custom' ||
       custom.renderAs === 'custom' ||
       (custom.kind !== undefined && custom.content !== undefined && isMetadataBearing(custom)))
