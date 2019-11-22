@@ -37,7 +37,7 @@ Common.localDescribe(`edit helm template ${process.env.MOCHA_RUN_TARGET}`, funct
     await SidecarExpect.fullyClosed(this.app)
   })
 
-  it(`kedit helm-template.yaml`, () => {
+  xit(`kedit helm-template.yaml`, () => {
     return CLI.command(`kedit ${join(ROOT, 'data/k8s/helm-template.yaml')}`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)

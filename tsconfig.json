@@ -32,9 +32,6 @@
       "path": "plugins/plugin-operator-framework"
     },
     {
-      "path": "plugins/plugin-tekton"
-    },
-    {
       "path": "plugins/plugin-tutorials"
     },
     {

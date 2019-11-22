@@ -38,7 +38,6 @@ export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = 
 
   return {
     type: 'custom',
-    isEntity: true,
     kind: entity.kind,
     version: entity.version,
     metadata: {

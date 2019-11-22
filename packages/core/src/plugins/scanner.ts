@@ -22,7 +22,7 @@ import { pluginRoot } from './plugins'
 import { PrescanModel, PrescanUsage } from './prescan'
 
 import * as commandTree from '../core/command-tree'
-import { Command, CommandHandler, CommandOptions } from '../models/command'
+import { Command, CommandHandler, CommandOptions, ParsedOptions } from '../models/command'
 import { isCodedError } from '../models/errors'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
 
@@ -78,7 +78,11 @@ class CommandRegistrarForScan extends commandTree.ImplForPlugins {
     }
   }
 
-  public listen(route: string, handler: CommandHandler, options: CommandOptions) {
+  public listen<T = Response, O = ParsedOptions>(
+    route: string,
+    handler: CommandHandler<T, O>,
+    options: CommandOptions
+  ) {
     this.cmdToPlugin[route] = this.plugin
     return super.listen(route, handler, options)
   }

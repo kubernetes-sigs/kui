@@ -19,7 +19,12 @@
 import Debug from 'debug'
 import { v4 as uuidgen } from 'uuid'
 
-import { Capabilities, Commands, Errors, REPL, Settings, UI } from '@kui-shell/core'
+import Capabilities from '@kui-shell/core/api/capabilities'
+import Commands from '@kui-shell/core/api/commands'
+import Errors from '@kui-shell/core/api/errors'
+import REPL from '@kui-shell/core/api/repl'
+import Settings from '@kui-shell/core/api/settings'
+import { Tab } from '@kui-shell/core/api/ui-lite'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
 import { isDisabled, ProxyServerConfig } from './config'
@@ -33,7 +38,7 @@ interface Channel {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener: (eventType: string, handler: any) => void
 }
-function getSessionForTab(tab: UI.Tab): Promise<Channel> {
+function getSessionForTab(tab: Tab): Promise<Channel> {
   return tab['_kui_session'] as Promise<Channel>
 }
 

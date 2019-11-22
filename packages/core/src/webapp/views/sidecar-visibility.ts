@@ -20,7 +20,7 @@ import { Tab, getTabFromTarget } from '../tab'
 import Presentation from './presentation'
 import { scrollIntoView } from '../scroll'
 
-import { EntitySpec } from '../../models/entity'
+import { MetadataBearing } from '../../models/entity'
 
 import eventBus from '../../core/events'
 
@@ -63,7 +63,7 @@ const setVisible = (sidecar: Sidecar) => {
   setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 0)
 }
 
-export const currentSelection = (tab: Tab): EntitySpec | CustomSpec => {
+export const currentSelection = (tab: Tab): MetadataBearing | CustomSpec => {
   const sidecar = getSidecar(tab)
   return sidecar && sidecar.entity
 }

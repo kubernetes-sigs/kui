@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { Badge } from '../webapp/views/badge'
 export { Tab, getTabFromTarget } from '../webapp/tab'
 export { isPopup } from '../webapp/popup-core'
 export { getCurrentPrompt } from '../webapp/prompt'

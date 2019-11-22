@@ -19,13 +19,12 @@ const debug = Debug('webapp/pip')
 debug('loading')
 
 import { removeAllDomChildren } from './util/dom'
-import { getSidecar, showEntity, getActiveView } from './views/sidecar'
+import { getSidecar, getActiveView } from './views/sidecar'
 
 import { Tab } from './tab'
 import { popupListen } from './listen'
 import Presentation from './views/presentation'
 import { ExecOptions } from '../models/execOptions'
-import { EntitySpec } from '../models/entity'
 import { pexec, qexec } from '../repl/exec'
 import { css, rawCSS } from './bottom-stripe'
 import { isCapturable } from './models/capturable'
@@ -247,7 +246,7 @@ type StringProducing = () => Promise<string>
  */
 export const drilldown = (
   tab: Tab,
-  command?: string | EntitySpec | StringProducing,
+  command?: string | StringProducing,
   highlightThis?: Element | Element[],
   ccontainer?: string | Element,
   returnTo?: string,
@@ -333,7 +332,7 @@ export const drilldown = (
         .then(done)
         .catch(restoreFn)
     } else {
-      await showEntity(tab, command, { preserveBackButton: true })
+      console.error('no viewer for content')
       done()
     }
   })

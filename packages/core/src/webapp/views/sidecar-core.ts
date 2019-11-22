@@ -21,7 +21,8 @@ import { ToolbarText } from './toolbar-text'
 import Formattable from './formattable'
 import Presentation from './presentation'
 
-import { MetadataBearing, EntitySpec } from '../../models/entity'
+import { SidecarMode } from '../bottom-stripe'
+import { MetadataBearing } from '../../models/entity'
 
 export type CustomContent =
   | string
@@ -29,8 +30,9 @@ export type CustomContent =
   | HTMLElement
   | Promise<HTMLElement>
 
-export interface CustomSpec<Content = void> extends EntitySpec, MetadataBearing<CustomContent> {
+export interface CustomSpec<Content = void> extends /* EntitySpec, */ MetadataBearing<CustomContent> {
   /** noZoom: set to true for custom content to control the zoom event handler */
+  type: 'custom'
   noZoom?: boolean
 
   isREPL?: boolean
@@ -42,6 +44,13 @@ export interface CustomSpec<Content = void> extends EntitySpec, MetadataBearing<
   badges?: Badge[]
   resource?: MetadataBearing<Content>
   createdOnString?: string
+
+  prettyType?: string
+  displayOptions?: string[]
+  controlHeaders?: boolean | string[]
+  sidecarHeader?: boolean
+  modes?: SidecarMode[]
+  uuid?: string
 }
 
 /**
@@ -49,7 +58,7 @@ export interface CustomSpec<Content = void> extends EntitySpec, MetadataBearing<
  *
  */
 export interface Sidecar extends HTMLElement {
-  entity: EntitySpec | CustomSpec
+  entity: MetadataBearing | CustomSpec
   uuid?: string
 }
 

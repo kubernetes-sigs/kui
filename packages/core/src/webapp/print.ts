@@ -29,7 +29,7 @@ import { renderPopupContent, createPopupContentContainer } from './popup'
 import { formatTable } from './views/table'
 import Presentation from './views/presentation'
 import presentAs from './views/sidecar-present'
-import { showEntity, showCustom, isCustomSpec } from './views/sidecar'
+import { showCustom, isCustomSpec } from './views/sidecar'
 
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
@@ -38,63 +38,25 @@ import { isWatchable } from './models/basicModels'
 import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents, ExecType } from '../models/command'
 import { Table, isTable, isMultiTable } from './models/table'
-import { ExecOptions, ParsedOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { show as showMultiModalResponse } from '../models/mmr/show'
-import { Entity, isEntitySpec, isMessageBearingEntity, MixedResponsePart, isMixedResponse } from '../models/entity'
+import {
+  Entity,
+  isVerbEntity,
+  isMessageBearingEntity,
+  MixedResponsePart,
+  isMixedResponse,
+  isMetadataBearing
+} from '../models/entity'
 
 import UsageError from '../core/usage-error'
-
-/** plugins can register view handlers for a given type: string */
-export type ViewHandler = (
-  tab: Tab,
-  response: Entity,
-  resultDom: Element,
-  parsedOptions: ParsedOptions,
-  execOptions: ExecOptions
-) => Promise<any> | void // eslint-disable-line @typescript-eslint/no-explicit-any
-interface ViewRegistrar {
-  [key: string]: ViewHandler
-}
-
-/**
- * Register a renderer for a given kind[]
- *
- */
-const registeredListViews: ViewRegistrar = {}
-export const registerListView = (kind: string, handler: ViewHandler) => {
-  registeredListViews[kind] = handler
-}
-
-/**
- * Register a renderer for a given <kind>
- *
- */
-const registeredEntityViews: ViewRegistrar = {}
-export const registerEntityView = (kind: string, handler: ViewHandler) => {
-  registeredEntityViews[kind] = handler
-}
 
 /**
  * Standard handling of Table responses
  *
  */
-const printTable = async (
-  tab: Tab,
-  response: Table,
-  resultDom: HTMLElement,
-  execOptions?: ExecOptions,
-  parsedOptions?: ParsedOptions
-) => {
-  //
-  // some sort of list response; format as a table
-  //
-  const registeredListView = registeredListViews[response.type]
-  if (registeredListView) {
-    await registeredListView(tab, response, resultDom, parsedOptions, execOptions)
-    return resultDom.children.length === 0
-  }
-
+const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement) => {
   ;(resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
 
   if (response.noEntityColors) {
@@ -202,17 +164,9 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
   return okLine
 }
 
-export async function renderResult(
-  response: Entity,
-  tab: Tab,
-  execOptions: ExecOptions,
-  parsedOptions: ParsedOptions,
-  resultDom: HTMLElement,
-  echo = true,
-  attach = echo
-) {
+export async function renderResult(response: Entity, tab: Tab, resultDom: HTMLElement, echo = true, attach = echo) {
   if (isTable(response)) {
-    await printTable(tab, response, resultDom, execOptions, parsedOptions)
+    await printTable(tab, response, resultDom)
     return true
   } else if (isHTML(response)) {
     // TODO is this the best way to detect response is a dom??
@@ -249,7 +203,6 @@ export const printResults = (
   resultDom: HTMLElement,
   echo = true,
   execOptions?: ExecOptions,
-  parsedOptions?: ParsedOptions,
   command?: string,
   evaluator?: CommandHandlerWithEvents
 ) => async (response: Entity): Promise<boolean> => {
@@ -281,7 +234,7 @@ export const printResults = (
 
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
-      if (await renderResult(response, tab, execOptions, parsedOptions, resultDom, echo)) {
+      if (await renderResult(response, tab, resultDom, echo)) {
         // then renderResult took care of things
       } else if (
         typeof response === 'number' ||
@@ -318,15 +271,7 @@ export const printResults = (
 
           return !customContainer || customContainer.children.length === 0
         }
-      } else if (isEntitySpec(response) && registeredEntityViews[response.type]) {
-        // there is a registered entity view handler for this response
-        if (await registeredEntityViews[response.type](tab, response, resultDom, parsedOptions, execOptions)) {
-          if (echo) ok(resultDom.parentElement)
-        }
-
-        // we rendered the content?
-        return resultDom.children.length === 0
-      } else if (isEntitySpec(response) && response.verb === 'delete') {
+      } else if (isVerbEntity(response) && response.verb === 'delete') {
         if (echo) {
           // we want the 'ok:' part to appear even in popup mode
           if (response.type) {
@@ -335,32 +280,6 @@ export const printResults = (
             ok(resultDom)
           }
         }
-      } else if (
-        isEntitySpec(response) &&
-        (response.verb === 'get' || response.verb === 'create' || response.verb === 'update')
-      ) {
-        // get response?
-        const forRepl = await showEntity(
-          tab,
-          response,
-          Object.assign({}, execOptions || {}, {
-            echo,
-            show: response.show || 'default'
-          })
-        )
-
-        // forRepl means: the sidecar wants to display something on the repl when it's done
-        // it's either a promise or a DOM entry directly
-        if (echo) {
-          if (forRepl && forRepl !== true) {
-            render(forRepl, { echo, resultDom })
-          } else if (forRepl) {
-            ok(resultDom.parentElement)
-          }
-        }
-
-        // we rendered the content
-        return true
       } else if (isMultiModalResponse(response)) {
         const echoOk = echo || (execOptions && execOptions.replSilence)
         await showMultiModalResponse(tab, response)
@@ -381,9 +300,7 @@ export const printResults = (
         }
 
         response.forEach(part => {
-          printResults(block, nextBlock, tab, resultDom, echo, execOptions, parsedOptions, command, evaluator)(
-            paragraph(part)
-          )
+          printResults(block, nextBlock, tab, resultDom, echo, execOptions, command, evaluator)(paragraph(part))
         })
       } else if (typeof response === 'object') {
         // render random json in the REPL directly
@@ -443,7 +360,7 @@ export const printResults = (
     ) {
       if (!incognito) {
         // view modes
-        const modes: Mode[] = isEntitySpec(response) && response.modes
+        const modes: Mode[] = isCustomSpec(response) && response.modes
 
         // entity type
         // Notes: if we have a table, pull from the first row
@@ -456,8 +373,7 @@ export const printResults = (
               response.body[0].prettyKind ||
               response.body[0].type ||
               response.body[0].kind)) ||
-          (isEntitySpec(response) &&
-            (response.kind || response.prettyType || response.prettyKind || response.type || response.kind)) ||
+          (isMetadataBearing(response) && response.kind) ||
           false
 
         // presentation mode
@@ -479,7 +395,7 @@ export const printResults = (
             modes: modes || undefined,
             prettyType,
             badges: isCustomSpec(response) && response.badges,
-            controlHeaders: isEntitySpec(response) && response.controlHeaders,
+            // controlHeaders: isEntitySpec(response) && response.controlHeaders,
             presentation
           })
         )
