@@ -61,7 +61,7 @@ export async function format<T extends MetadataBearing>(
   } else {
     // otherwise, we have string or HTMLElement content
     return Object.assign(
-      { resource: mmr, toolbarText: mmr.toolbarText, kind: mmr.kind, metadata: mmr.metadata, type: 'custom' },
+      { resource: mmr, toolbarText: mmr.toolbarText, kind: mmr.kind, metadata: mmr.metadata, type: 'custom' as const },
       resource
     )
   }
@@ -103,16 +103,12 @@ function formatButtons(tab: Tab, mmr: MultiModalResponse, buttons: Button[]): Si
 async function renderContent<T extends MetadataBearing>(
   tab: Tab,
   bearer: T,
-  content: string | object
+  content: Content<T> | MetadataBearing | SidecarMode
 ): Promise<ScalarContent> {
   if (isStringWithOptionalContentType(content)) {
     return content
-  } else if (isTable(content) || isMultiTable(content)) {
-    return {
-      content: wrapTable(tab, content)
-    }
   } else if (isFunctionContent(content)) {
-    const actualContent: ScalarResource | ScalarContent = await content.content(tab, bearer)
+    const actualContent = (await content.content(tab, bearer)) as ScalarResource | ScalarContent
     if (!isScalarContent(actualContent)) {
       if (isTable(actualContent) || isMultiTable(actualContent)) {
         return {
@@ -126,9 +122,11 @@ async function renderContent<T extends MetadataBearing>(
     } else {
       return actualContent
     }
-  } else {
+  } else if (isScalarContent(content)) {
+    return content
+  } else if (isTable(content) || isMultiTable(content)) {
     return {
-      content: content as ScalarContent
+      content: wrapTable(tab, content)
     }
   }
 }
@@ -177,7 +175,7 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
     ? defaultMode
     : typeof defaultMode.direct === 'function'
     ? await defaultMode.direct(tab, mmr)
-    : defaultMode.direct
+    : undefined // defaultMode.direct
 
   if (content) {
     if (isCustomSpec(content)) {
@@ -185,16 +183,17 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
         leaveBottomStripeAlone: true
       })
     } else {
-      const customBase = {
-        type: 'custom',
-        resource: mmr,
-        modes: modesWithButtons,
-        toolbarText: mmr.toolbarText,
-        prettyName: mmr.prettyName,
-        nameHash: mmr.nameHash
-      }
-
-      const custom = Object.assign(customBase, await renderContent(tab, mmr, content))
+      const custom: CustomSpec = Object.assign(
+        {
+          type: 'custom' as const,
+          resource: mmr,
+          modes: modesWithButtons,
+          toolbarText: mmr.toolbarText,
+          prettyName: mmr.prettyName,
+          nameHash: mmr.nameHash
+        },
+        await renderContent(tab, mmr, content)
+      )
 
       return showCustom(tab, custom, { leaveBottomStripeAlone: true })
     }

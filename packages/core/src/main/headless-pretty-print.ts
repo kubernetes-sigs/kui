@@ -23,7 +23,7 @@ import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
 import { isTable, isMultiTable, Row } from '../webapp/models/table'
-import { isEntitySpec, isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
+import { isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { isHTML, isPromise } from '../util/types'
 
@@ -323,13 +323,13 @@ const rowify: Record<string, (row: Row) => Record<string, string>> = {
   live: rowifySession
 }
 
-function activationId(msg: Entity) {
+/* function activationId(msg: Entity) {
   return (msg as { activationId: string }).activationId
 }
 function name(msg: Entity) {
   const entity = msg as { entity: { name: string } }
   return entity.entity.name
-}
+} */
 
 /**
  * Pretty print routine that dispatches to the underlying smarter
@@ -443,64 +443,6 @@ export const print = (
           logger()
         } else {
           logger(msg.message)
-        }
-      } else if (isEntitySpec(msg)) {
-        debug('printing some sort of javascript object')
-
-        if (msg.verb && msg.name && (msg.verb === 'create' || msg.verb === 'update')) {
-          // msg is an entity, that has just been created or updated
-          debug('printing create or update')
-          const isWebExported = msg.annotations && !!msg.annotations.find(({ key }) => key === 'web-export')
-          if (isWebExported) {
-            const contentType: { value: string } = (msg.annotations &&
-              msg.annotations.find(({ key }) => key === 'content-type-extension')) || { value: 'json' }
-            const apiHost: string = (msg as { apiHost: string }).apiHost
-            const https =
-              apiHost.startsWith('https://') || apiHost.startsWith('http://')
-                ? ''
-                : apiHost === 'localhost'
-                ? 'http://'
-                : 'https://'
-            const urlText = `${https}${apiHost}/api/v1/web/${msg.namespace}/${!msg.packageName ? 'default/' : ''}${
-              msg.name
-            }.${contentType.value}`
-            logger(colors.blue(urlText))
-          }
-          logger(colors.green(`${ok}:`) + ` updated ${msg.type.replace(/s$/, '')} ${msg.name}`)
-        } else if (msg.verb === 'delete') {
-          debug('printing delete')
-          logger(colors.green(`${ok}:`) + ` deleted ${msg.type.replace(/s$/, '')} ${msg.name}`)
-        } else if (msg.verb === 'async' && activationId(msg)) {
-          // The returned msgs of action and app are different
-          msg.type === 'activations'
-            ? logger(colors.green(`${ok}:`) + ` invoked ${name(msg)} with id ${activationId(msg)}`)
-            : logger(colors.green(`${ok}:`) + ` invoked ${msg.name} with id ${activationId(msg)}`)
-        } else if (msg.verb === 'get' && activationId(msg)) {
-          // msg is an entity representing an invocation
-          // commenting out this line diverges us from bx wsk output, but we're ok with that:
-          // logger(colors.green(`${ok}:`) + ` got activation ${msg.activationId}`)
-          debug('printing get activation')
-          delete msg.prettyType
-          delete msg.verb
-          // delete msg['publish']
-          delete msg.type
-          // delete msg['apiHost']
-          delete msg.modes
-          delete msg.version
-          // delete msg['entity']
-          prettyJSON(msg, logger)
-        } else {
-          // otherwise, print it as generic JSON
-          if (msg.verb === 'get') {
-            // delete msg['exec']
-            delete msg.verb
-            // delete msg['publish']
-            delete msg.type
-            // delete msg['apiHost']
-            delete msg.modes
-            delete msg.version
-          }
-          prettyJSON(msg, logger)
         }
       } else if (typeof msg === 'object') {
         prettyJSON(msg, logger)

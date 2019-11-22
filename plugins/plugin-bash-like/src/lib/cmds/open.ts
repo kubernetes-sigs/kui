@@ -17,7 +17,10 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { Capabilities, Commands, i18n, Util } from '@kui-shell/core'
+import Util from '@kui-shell/core/api/util'
+import { i18n } from '@kui-shell/core/api/i18n'
+import { isHeadless } from '@kui-shell/core/api/capabilities'
+import { Arguments, Registrar, Response } from '@kui-shell/core/api/commands'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
@@ -29,7 +32,8 @@ const debug = Debug('plugins/bash-like/cmds/open')
  * Decide how to display a given filepath
  *
  */
-const open = async ({ tab, REPL }: Commands.Arguments, filepath: string) => {
+async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<Response> {
+  const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
   const fullpath = Util.findFile(Util.expandHomeDir(filepath))
@@ -84,7 +88,7 @@ const open = async ({ tab, REPL }: Commands.Arguments, filepath: string) => {
       let name = basename(filepath)
       let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
-      if ((suffix === 'adoc' || suffix === 'md') && !Capabilities.isHeadless()) {
+      if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
         const { title, body } = await markdownify(tab, suffix, data, fullpath)
 
         data = body
@@ -99,10 +103,11 @@ const open = async ({ tab, REPL }: Commands.Arguments, filepath: string) => {
 
       return {
         type: 'custom',
-        isEntity: true,
-        prettyType: 'file',
-        name,
-        packageName,
+        kind: 'file',
+        metadata: {
+          name,
+          namespace: packageName
+        },
         contentType: suffix === 'sh' ? 'shell' : suffix,
         content: data
       }
@@ -122,12 +127,6 @@ const usage = {
  * Register command handlers
  *
  */
-export default (commandTree: Commands.Registrar) => {
-  commandTree.listen(
-    '/open',
-    args => {
-      return open(args, args.argvNoOptions[args.argvNoOptions.indexOf('open') + 1])
-    },
-    { usage, needsUI: true, inBrowserOk: true }
-  )
+export default (registrar: Registrar) => {
+  registrar.listen('/open', open, { usage, needsUI: true, inBrowserOk: true })
 }

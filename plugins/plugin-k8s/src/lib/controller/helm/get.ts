@@ -83,8 +83,7 @@ export default async function helmGet(args: Commands.Arguments): Promise<Command
   const { safeDump } = await import('js-yaml')
 
   const response = {
-    type: 'custom',
-    isEntity: true,
+    type: 'custom' as const,
     kind: 'helm',
     createdOnString: 'Released on ',
     content: safeDump(basicInfo),

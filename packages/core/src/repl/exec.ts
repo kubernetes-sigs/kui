@@ -38,7 +38,7 @@ import {
 
 import REPL from '../models/repl'
 import { ElementMimic } from '../util/mimic-dom'
-import { isEntitySpec, EntitySpec, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
+import { Blank, isVerbEntity, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventBus from '../core/events'
 import historyModel from '../models/history'
@@ -107,8 +107,8 @@ export const setEvaluatorImpl = (impl: ReplEval): void => {
 }
 
 /** an empty promise, for blank lines */
-const emptyPromise = () => {
-  const emptyPromise = Promise.resolve({ blank: true })
+const emptyPromise = (): Promise<Blank> => {
+  const emptyPromise = Promise.resolve({ blank: true as const })
   return emptyPromise
 }
 
@@ -147,7 +147,7 @@ const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 class InProcessExecutor implements Executor {
   public name = 'InProcessExecutor'
 
-  public async exec(commandUntrimmed: string, execOptions = emptyExecOptions()) {
+  public async exec(commandUntrimmed: string, execOptions = emptyExecOptions()): Promise<Response> {
     const tab = execOptions.tab || getCurrentTab()
     const REPL = getImpl(tab) // eslint-disable-line @typescript-eslint/no-use-before-define
 
@@ -175,7 +175,8 @@ class InProcessExecutor implements Executor {
       const { container, returnTo } = execOptions.pip
       try {
         const { drilldown } = await import('../webapp/picture-in-picture') // FIXME
-        return drilldown(tab, commandUntrimmed, undefined, document.querySelector(container), returnTo)()
+        await drilldown(tab, commandUntrimmed, undefined, document.querySelector(container), returnTo)()
+        return
       } catch (err) {
         console.error(err as Error)
         // fall through to normal execution, if pip fails
@@ -335,7 +336,8 @@ class InProcessExecutor implements Executor {
           if (execOptions && execOptions.failWithUsage) {
             return evaluator.options.usage
           } else {
-            return oops(command, block, nextBlock)(new UsageError({ usage: evaluator.options.usage }))
+            oops(command, block, nextBlock)(new UsageError({ usage: evaluator.options.usage }))
+            return
           }
         }
 
@@ -411,7 +413,8 @@ class InProcessExecutor implements Executor {
               if (execOptions && execOptions.failWithUsage) {
                 return err
               } else {
-                return oops(command, block, nextBlock)(err)
+                oops(command, block, nextBlock)(err)
+                return
               }
             } else if (
               (match.boolean && typeof parsedOptions[optionalArg] !== 'boolean') ||
@@ -460,7 +463,8 @@ class InProcessExecutor implements Executor {
               if (execOptions && execOptions.failWithUsage) {
                 return error
               } else {
-                return oops(command, block, nextBlock)(error)
+                oops(command, block, nextBlock)(error)
+                return
               }
             }
           }
@@ -478,13 +482,7 @@ class InProcessExecutor implements Executor {
 
               let nActualArgsWithImplicit = nActualArgs
 
-              if (
-                implicitIdx >= 0 &&
-                selection &&
-                required[implicitIdx].implicitOK.find(
-                  _ => _ === selection.type || _ === selection.prettyType || _ === selection.kind
-                )
-              ) {
+              if (implicitIdx >= 0 && selection && required[implicitIdx].implicitOK.find(_ => _ === selection.kind)) {
                 nActualArgsWithImplicit++
 
                 // if implicit, maybe other required parameters aren't needed
@@ -514,7 +512,8 @@ class InProcessExecutor implements Executor {
                   return err
                 } else {
                   debug('broadcasting usage error')
-                  return oops(command, block, nextBlock)(err)
+                  oops(command, block, nextBlock)(err)
+                  return
                 }
               } else {
                 debug('repl selection', selection)
@@ -522,7 +521,9 @@ class InProcessExecutor implements Executor {
                 args.splice(
                   implicitIdx,
                   cmdArgsStart + 1,
-                  selection.namespace ? `/${selection.namespace}/${selection.name}` : selection.name
+                  selection.metadata.namespace
+                    ? `/${selection.metadata.namespace}/${selection.metadata.name}`
+                    : selection.metadata.name
                 )
                 debug('spliced in implicit argument', cmdArgsStart, implicitIdx, args)
               }
@@ -541,7 +542,8 @@ class InProcessExecutor implements Executor {
           debug('command does not work in a browser')
           const err = new Error('Command requires local access') as CodedError
           err.code = 406 // http not acceptable
-          return oops(command, block, nextBlock)(err)
+          oops(command, block, nextBlock)(err)
+          return
         }
 
         // if we don't have a head (yet), but this command
@@ -571,7 +573,7 @@ class InProcessExecutor implements Executor {
         //
         // the Eval part of REPL
         //
-        return Promise.resolve()
+        const response: Promise<Response> = Promise.resolve()
           .then(() => {
             eventBus.emit('/command/start', {
               tab,
@@ -620,7 +622,7 @@ class InProcessExecutor implements Executor {
               return
             }
 
-            if (isEntitySpec(response) && response.verb === 'delete') {
+            if (isVerbEntity(response) && response.verb === 'delete') {
               const { maybeHideEntity } = await import('../webapp/views/sidecar') // FIXME
               if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
@@ -656,18 +658,10 @@ class InProcessExecutor implements Executor {
             } else {
               // we're the top-most exec, so deal with the repl!
               const resultDom = render ? replResult() : (block.querySelector('.repl-result') as HTMLElement)
-              return new Promise(resolve => {
-                printResults(
-                  block,
-                  nextBlock,
-                  tab,
-                  resultDom,
-                  echo && !render,
-                  execOptions,
-                  parsedOptions,
-                  command,
-                  evaluator
-                )(response) // <--- the Print part of REPL
+              const rresponse: Promise<Response> = new Promise<Response>(resolve => {
+                printResults(block, nextBlock, tab, resultDom, echo && !render, execOptions, command, evaluator)(
+                  response
+                ) // <--- the Print part of REPL
                   .then(() => {
                     if (render) {
                       resolve(resultDom.parentElement)
@@ -696,6 +690,7 @@ class InProcessExecutor implements Executor {
                     }
                   })
               })
+              return rresponse
             }
           })
           .catch((err: CodedError) => {
@@ -729,6 +724,7 @@ class InProcessExecutor implements Executor {
               }
             }
           })
+        return response
       }
     } catch (err) {
       const e = err as CodedError
@@ -754,7 +750,7 @@ class InProcessExecutor implements Executor {
 
       const blockForError = block || getCurrentProcessingBlock(tab)
 
-      return Promise.resolve(e.message).then(message => {
+      await Promise.resolve(e.message).then(message => {
         if (isHTML(message)) {
           e.message = message
           oops(command, block, nextBlock)(e)
@@ -861,29 +857,6 @@ export const click = async (command: string | (() => Promise<string>), evt: Mous
 }
 
 /**
- *
- *
- */
-export async function update(tab: Tab, command: string, execOptions?: ExecOptions) {
-  const [resource, { showEntity }] = await Promise.all([
-    pexec<EntitySpec>(
-      command,
-      Object.assign(
-        {
-          echo: false,
-          alreadyWatching: true,
-          noHistory: true
-        },
-        execOptions
-      )
-    ),
-    import('../webapp/views/sidecar')
-  ])
-
-  await showEntity(tab, resource)
-}
-
-/**
  * Update the executor impl
  *
  */
@@ -935,7 +908,7 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
  *
  */
 export function getImpl(tab: Tab): REPL {
-  const impl = { qexec, rexec, pexec, click, update, semicolonInvoke, encodeComponent, split } as REPL
+  const impl = { qexec, rexec, pexec, click, semicolonInvoke, encodeComponent, split } as REPL
   tab.REPL = impl
   return impl
 }

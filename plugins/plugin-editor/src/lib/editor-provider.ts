@@ -31,7 +31,7 @@ class MonacoEditorProvider implements Editor.Provider {
     const entity: EditorEntity = {
       // EditorEntity
       type: custom.prettyType,
-      name: custom.name,
+      name: metadataBearer.metadata.name,
       kind: metadataBearer.kind,
       metadata: metadataBearer.metadata,
       noZoom: custom.noZoom,

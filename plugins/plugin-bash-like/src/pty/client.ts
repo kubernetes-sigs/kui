@@ -1075,11 +1075,14 @@ export const doExec = (
                   } else {
                     execOptions.stdout({
                       type: 'custom',
-                      isEntity: true,
-                      name:
-                        argvNoOptions[0] === 'cat' ? path.basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
-                      packageName: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1]),
-                      prettyType: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
+                      metadata: {
+                        name:
+                          argvNoOptions[0] === 'cat'
+                            ? path.basename(argvNoOptions[1])
+                            : argvNoOptions.slice(3).join(' '),
+                        namespace: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1])
+                      },
+                      kind: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
                       contentType,
                       content: stripClean(raw),
                       resource,

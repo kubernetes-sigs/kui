@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-const debug = Debug('k8s/loader')
-debug('loading')
-
 import auth from './lib/controller/auth'
 import contexts from './lib/controller/contexts'
 import kubectl from './lib/controller/kubectl'
 import status from './lib/controller/status'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
-import Commands from '@kui-shell/core/api/commands'
+import { Registrar } from '@kui-shell/core/api/commands'
 
-export default async (commandTree: Commands.Registrar) => {
-  return Promise.all([
-    auth(commandTree),
-    contexts(commandTree),
-    status(commandTree),
-    kubectl(commandTree),
-    Capabilities.inBrowser() ? Promise.resolve() : (await import('./lib/controller/kedit')).default(commandTree)
-  ])
+export default async (commandTree: Registrar) => {
+  return Promise.all([auth(commandTree), contexts(commandTree), status(commandTree), kubectl(commandTree)])
 }

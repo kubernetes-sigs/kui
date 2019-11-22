@@ -118,11 +118,3 @@ export class DefaultExecOptionsForTab extends DefaultExecOptions {
     this.tab = tab
   }
 }
-
-/**
- * command line options
- * @deprecated
- */
-export interface ParsedOptions {
-  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
-}

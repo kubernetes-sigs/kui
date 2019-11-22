@@ -97,8 +97,7 @@ async function respondWith(lastRaw: string, fullResource: KubeResource): Promise
 
   return {
     type: 'custom',
-    isEntity: true,
-    name: resource.metadata.name,
+    metadata: resource.metadata,
     contentType: 'yaml',
     content,
     resource

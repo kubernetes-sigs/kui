@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { Watchable } from './basicModels'
-import { Entity } from '../../models/entity'
+import { MetadataBearing, Entity } from '../../models/entity'
 import { SidecarMode } from '../bottom-stripe'
 
 export class Row {
@@ -161,7 +161,7 @@ export class Table {
 
 export interface WatchableTable extends Table, Watchable {}
 
-export function isTable(model: SidecarMode | Entity): model is Table {
+export function isTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): model is Table {
   return (
     model !== undefined && (model instanceof Table || ((model as Table).body && Array.isArray((model as Table).body)))
   )
@@ -171,7 +171,7 @@ export interface MultiTable {
   tables: Table[]
 }
 
-export function isMultiTable(model: SidecarMode | Entity): model is MultiTable {
+export function isMultiTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): model is MultiTable {
   return (
     model !== undefined &&
     (model as MultiTable).tables !== undefined &&

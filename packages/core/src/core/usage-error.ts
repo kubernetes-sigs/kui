@@ -903,8 +903,17 @@ function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
 type MessageLike = string | HTMLElement
 type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
 
-export class UsageError extends Error implements CodedError {
-  private formattedMessage: Promise<HTMLElement>
+export interface UsageErrorLike {
+  code?: number
+  statusCode?: number
+  message?: string
+  formattedMessage?: Promise<HTMLElement>
+  stack?: string
+  raw?: UsageLike
+}
+
+export class UsageError extends Error implements CodedError, UsageErrorLike {
+  public formattedMessage: Promise<HTMLElement>
 
   raw: UsageLike
 
@@ -930,7 +939,7 @@ export class UsageError extends Error implements CodedError {
     return (this.raw as MessageWithUsageModel).usage
   }
 
-  static getFormattedMessage(err: UsageError): Promise<HTMLElement> {
+  static getFormattedMessage(err: UsageErrorLike): Promise<HTMLElement> {
     if (err.formattedMessage && !err.formattedMessage.then && Object.keys(err.formattedMessage).length === 0) {
       err.formattedMessage = format(err.raw)
     }
@@ -938,13 +947,13 @@ export class UsageError extends Error implements CodedError {
     return err.formattedMessage ? err.formattedMessage : Promise.resolve(span(err.message))
   }
 
-  static isUsageError(error: Entity): error is UsageError {
+  static isUsageError(error: Entity | UsageErrorLike): error is UsageErrorLike {
     const err = error as UsageError
     return !!(err.formattedMessage && err.code)
   }
 }
 
-export function isUsageError(error: Entity): error is UsageError {
+export function isUsageError(error: Entity | UsageErrorLike): error is UsageErrorLike {
   return UsageError.isUsageError(error)
 }
 

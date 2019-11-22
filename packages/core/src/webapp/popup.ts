@@ -27,6 +27,7 @@ import { Badge } from './views/badge'
 import Presentation from './views/presentation'
 import Formattable from './views/formattable'
 import presentAs from './views/sidecar-present'
+import { CustomSpec } from './views/sidecar-core'
 
 import { ExecOptions } from '../models/execOptions'
 
@@ -92,11 +93,12 @@ export const renderPopupContent = async (
       ;(container.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
     }
 
-    const custom = {
+    const custom: CustomSpec = {
       type: 'custom',
-      isEntity: true,
+      metadata: {
+        name: command
+      },
       isREPL: true,
-      name: command,
       presentation,
       prettyType,
       subtext,

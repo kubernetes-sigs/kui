@@ -27,7 +27,7 @@ import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
 import { pexec, qexec, rexec } from '../repl/exec'
 import { isHTML } from '../util/types'
-import { Entity, EntitySpec, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
+import { Entity, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
 import { Label, ModeTraits, Button, isButton } from '../models/mmr/types'
 import { Content as HighLevelContent, hasContent, isStringWithOptionalContentType } from '../models/mmr/content-types'
 
@@ -83,7 +83,7 @@ export type DirectResult = Toggle | Entity
 const callDirect = async (
   tab: Tab,
   makeView: DirectViewController,
-  entity: EntitySpec | CustomSpec,
+  entity: MetadataBearing | CustomSpec,
   execOptions: ExecOptions
 ): Promise<DirectResult> => {
   if (typeof makeView === 'string') {
@@ -117,7 +117,7 @@ const callDirect = async (
     //
     const provider: Record<
       string,
-      (tab: Tab, parameters: object, entity: EntitySpec | CustomSpec) => DirectResult
+      (tab: Tab, parameters: object, entity: MetadataBearing | CustomSpec) => DirectResult
     > = await import('@kui-shell/plugin-' + makeView.plugin)
     try {
       return provider[makeView.operation](tab, makeView.parameters, entity)
@@ -150,7 +150,7 @@ export interface LowLevelContent<Direct = DirectViewController> {
 
   data?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  command?: (entity: EntitySpec | CustomSpec) => string
+  command?: (entity: MetadataBearing | CustomSpec) => string
   direct?: Direct
   url?: string
 
@@ -224,7 +224,7 @@ const _addModeButton = (
   modeStripe: Element,
   bottomStripe: Element,
   opts: SidecarMode,
-  entity: EntitySpec | CustomSpec,
+  entity: MetadataBearing | CustomSpec,
   show: string
 ) => {
   const { mode, label, defaultMode } = opts
@@ -395,7 +395,7 @@ const _addModeButton = (
 
   // back button does not modify sidecar entity, causing the mode buttons to have the wrong behavior (using the previous entity)
   // set sidecar entity to the current entity every time when mode buttons are regenerated
-  if (entity.type !== 'custom') {
+  if (isCustomSpec(entity) && entity.type !== 'custom') {
     getSidecar(tab).entity = entity
   }
 
@@ -556,7 +556,7 @@ export const addModeButton = (
 export const addModeButtons = <Direct = DirectViewController>(
   tab: Tab,
   modesUnsorted: SidecarMode[] = [],
-  entity: EntitySpec | CustomSpec,
+  entity: MetadataBearing | CustomSpec,
   options?: BottomStripOptions
 ): SidecarMode[] => {
   // consult the view registrar for registered view modes
@@ -598,7 +598,7 @@ export const addModeButtons = <Direct = DirectViewController>(
   })
 
   // for going back
-  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: EntitySpec | CustomSpec, show: string) => {
+  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: MetadataBearing | CustomSpec, show: string) => {
     const modeStripe = css.modeContainer(tab)
     const bottomStripe = css.bottomContainer(tab) as Capturable
     removeAllDomChildren(modeStripe)

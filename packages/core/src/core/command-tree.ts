@@ -30,7 +30,8 @@ import {
   Command,
   CommandHandlerWithEvents,
   CommandOptions,
-  Event
+  Event,
+  ParsedOptions
 } from '../models/command'
 
 import eventBus from './events'
@@ -152,10 +153,10 @@ class DefaultCommandOptions implements CommandOptions {}
  * Register a command handler on the given route
  *
  */
-const _listen = (
+const _listen = <T = Response, O = ParsedOptions>(
   model: CommandTree,
   route: string,
-  handler: CommandHandler,
+  handler: CommandHandler<T, O>,
   options: CommandOptions = new DefaultCommandOptions()
 ): Command => {
   const path = route.split('/').splice(1)
@@ -178,15 +179,18 @@ const _listen = (
       leaf.options.override = leaf.$
     }
 
-    leaf.$ = handler
+    leaf.$ = (handler as any) as CommandHandler
     leaf.route = route
 
     return leaf
   }
 }
 
-const listen = (route: string, handler: CommandHandler, options: CommandOptions) =>
-  _listen(getModelInternal().root, route, handler, options)
+const listen = <T = Response, O = ParsedOptions>(
+  route: string,
+  handler: CommandHandler<T, O>,
+  options: CommandOptions
+) => _listen(getModelInternal().root, route, handler, options)
 
 /**
  * Register a subtree in the command tree
@@ -613,7 +617,11 @@ export class ImplForPlugins implements CommandRegistrar {
     })
   }
 
-  public listen(route: string, handler: CommandHandler, options: CommandOptions) {
+  public listen<T = Response, O = ParsedOptions>(
+    route: string,
+    handler: CommandHandler<T, O>,
+    options: CommandOptions
+  ) {
     return listen(route, handler, Object.assign({}, options, { plugin: this.plugin }))
   }
 

@@ -16,34 +16,10 @@
 
 import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
-import { SidecarMode } from '../webapp/bottom-stripe'
 import { ToolbarText } from '../webapp/views/toolbar-text'
+import { CodedError } from './errors'
+import { UsageModel } from '../core/usage-error'
 import { MultiModalResponse } from './mmr/types'
-
-export interface EntitySpec {
-  type?: string
-  kind?: string
-
-  verb?: string
-  viewName?: string
-  isEntity?: boolean
-  name?: string
-  packageName?: string
-  prettyName?: string
-  prettyType?: string
-  prettyKind?: string
-  show?: string
-  displayOptions?: string[]
-  controlHeaders?: boolean | string[]
-  uuid?: string
-  sidecarHeader?: boolean
-  modes?: SidecarMode[]
-
-  version?: string
-  duration?: number
-  namespace?: string
-  annotations?: { key: string; value: any }[] // eslint-disable-line @typescript-eslint/no-explicit-any
-}
 
 export interface MessageBearingEntity {
   message: string
@@ -51,11 +27,6 @@ export interface MessageBearingEntity {
 
 export function isMessageBearingEntity(entity: Entity): entity is MessageBearingEntity {
   return (entity as MessageBearingEntity).message !== undefined
-}
-
-export function isEntitySpec(entity: Entity): entity is EntitySpec {
-  const spec = entity as EntitySpec
-  return spec.verb !== undefined || spec.type !== undefined || spec.name !== undefined
 }
 
 /**
@@ -95,7 +66,7 @@ export interface MetadataBearing<Content = void> {
     displayName?: string
   }
 }
-export function isMetadataBearing(spec: Entity): spec is MetadataBearing {
+export function isMetadataBearing(spec: MetadataBearing | Entity): spec is MetadataBearing {
   const meta = spec as MetadataBearing
   return meta !== undefined && meta.metadata !== undefined && meta.metadata.name !== undefined
 }
@@ -107,7 +78,9 @@ export function isMetadataBearing(spec: Entity): spec is MetadataBearing {
 export interface MetadataBearingByReference<Content = void> extends CustomSpec<Content> {
   resource: MetadataBearing<Content>
 }
-export function isMetadataBearingByReference(spec: Entity): spec is MetadataBearingByReference {
+export function isMetadataBearingByReference(
+  spec: MetadataBearing | MetadataBearingByReference | Entity
+): spec is MetadataBearingByReference {
   const ref = spec as MetadataBearingByReference
   return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
 }
@@ -148,13 +121,30 @@ export function isLowLevelLoop(entity: Entity): entity is LowLevelLoop {
   return looper.mode === 'prompt'
 }
 
+export interface VerbEntity {
+  verb: 'delete'
+  type: string
+  name: string
+  namespace?: string
+}
+
+export function isVerbEntity(entity: Entity): entity is VerbEntity {
+  const verby = entity as VerbEntity
+  return verby.verb === 'delete' && typeof verby.type === 'string' && typeof verby.name === 'string'
+}
+
+export interface Blank {
+  blank?: true
+}
+
 /**
  * A potentially more complex entity with a "spec"
  *
  */
-export type Entity =
+export type Entity<Content = void> =
   | SimpleEntity
-  | EntitySpec
+  | MetadataBearing<Content>
+  | VerbEntity
   | CustomSpec
   | MixedResponse
   | MultiModalResponse
@@ -162,3 +152,6 @@ export type Entity =
   | Table
   | MultiTable
   | LowLevelLoop
+  | CodedError
+  | UsageModel
+  | Blank
