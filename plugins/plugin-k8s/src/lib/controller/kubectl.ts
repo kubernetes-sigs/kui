@@ -623,13 +623,14 @@ const executeLocally = (command: string) => (opts: Commands.Arguments<Options>) 
         const record = {
           type: 'custom',
           isEntity: verb === 'logs' || verb === 'describe' || (yaml && yaml.metadata !== undefined),
-          name: name || entity,
+          kind: yaml ? yaml.kind : entityTypeForDisplay || command,
+          metadata: !yaml && {
+            name: name || entity,
+            namespace: options.namespace || options.n
+          },
           nameHash,
-          packageName: (yaml && yaml.metadata && yaml.metadata.namespace) || '',
-          namespace: options.namespace || options.n,
           duration,
           version,
-          prettyType: (yaml && yaml.kind) || entityTypeForDisplay || command,
           noCost: true, // don't display the cost in the UI
           modes,
           badges: badges.filter(x => x),
