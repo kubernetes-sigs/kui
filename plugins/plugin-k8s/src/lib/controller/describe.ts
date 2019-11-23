@@ -82,7 +82,7 @@ const renderDescribe = async (
   const description = {
     type: 'custom',
     isEntity: true,
-    name,
+    prettyName: name,
     nameHash,
     duration,
     badges,

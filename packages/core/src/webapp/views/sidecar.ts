@@ -502,11 +502,15 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     } */
 
     const prettyName =
-      (entity.prettyName || isMetadataBearingByReference(custom) ? custom.resource.prettyName : undefined) ||
-      entity.metadata.name
+      (isCustomSpec(custom) && custom.prettyName) ||
+      ((custom.prettyName || entity.prettyName || isMetadataBearingByReference(custom)
+        ? custom.resource.prettyName
+        : undefined) ||
+        entity.metadata.name)
+    const nameHash = entity.nameHash || custom.nameHash
     hashDom.innerText =
-      (entity.nameHash !== undefined
-        ? entity.nameHash
+      (nameHash !== undefined
+        ? nameHash
         : isMetadataBearingByReference(custom)
         ? custom.resource.nameHash
         : undefined) || ''
