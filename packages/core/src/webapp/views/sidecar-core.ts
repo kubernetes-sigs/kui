@@ -46,6 +46,8 @@ export interface CustomSpec<Content = void> extends /* EntitySpec, */ MetadataBe
   createdOnString?: string
 
   prettyType?: string
+  prettyName?: string
+
   displayOptions?: string[]
   controlHeaders?: boolean | string[]
   sidecarHeader?: boolean
