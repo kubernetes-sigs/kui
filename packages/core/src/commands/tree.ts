@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { CatchAllHandler, Command, CommandTree, CommandTreeResolution, Disambiguator } from '../models/command'
+import {
+  CatchAllHandler,
+  Command,
+  CommandTree,
+  CommandTreeResolution,
+  Disambiguator,
+  Response,
+  ParsedOptions
+} from '../models/command'
 
 import { ExecOptions } from '../models/execOptions'
 
@@ -24,20 +32,23 @@ import { ExecOptions } from '../models/execOptions'
  *
  */
 interface CommandModel {
-  catchalls: CatchAllHandler[]
+  catchalls: CatchAllHandler<Response, ParsedOptions>[]
 
   /**
    * Look up a command handler for the given `argv`. This is the main
    * Read part of a REPL.
    *
    */
-  read(argv: string[], execOptions: ExecOptions): Promise<CommandTreeResolution>
+  read<T extends Response, O extends ParsedOptions>(
+    argv: string[],
+    execOptions: ExecOptions
+  ): Promise<CommandTreeResolution<T, O>>
 
   /**
    * Call the given callback function `fn` for each node in the command tree
    *
    */
-  forEachNode(fn: (command: Command) => void): void
+  forEachNode(fn: (command: Command<Response, ParsedOptions>) => void): void
 }
 
 /**
@@ -58,8 +69,8 @@ export class CommandModelImpl implements CommandModel {
   }
 
   /** handlers for command not found */
-  private readonly _catchalls: CatchAllHandler[] = []
-  public get catchalls(): CatchAllHandler[] {
+  private readonly _catchalls: CatchAllHandler<Response, ParsedOptions>[] = []
+  public get catchalls(): CatchAllHandler<Response, ParsedOptions>[] {
     return this._catchalls
   }
 
@@ -68,7 +79,10 @@ export class CommandModelImpl implements CommandModel {
    * Read part of a REPL.
    *
    */
-  public async read(argv: string[], execOptions: ExecOptions): Promise<CommandTreeResolution> {
+  public async read<T extends Response, O extends ParsedOptions>(
+    argv: string[],
+    execOptions: ExecOptions
+  ): Promise<CommandTreeResolution<T, O>> {
     const { read: readImpl } = await import('../core/command-tree')
     return readImpl(this.root, argv, undefined, execOptions)
   }
@@ -77,8 +91,8 @@ export class CommandModelImpl implements CommandModel {
    * Call the given callback function `fn` for each node in the command tree
    *
    */
-  public forEachNode(fn: (command: Command) => void) {
-    const iter = (root: Command) => {
+  public forEachNode(fn: (command: Command<Response, ParsedOptions>) => void) {
+    const iter = (root: Command<Response, ParsedOptions>) => {
       if (root) {
         fn(root)
         if (root.children) {

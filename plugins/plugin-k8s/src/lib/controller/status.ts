@@ -25,7 +25,7 @@ import Util from '@kui-shell/core/api/util'
 import Options from './options'
 import { withRetryOn404 } from '../util/retry'
 import { isDirectory } from '../util/util'
-import { KubeResource } from '../model/resource'
+import { KubeItems, KubeResource } from '../model/resource'
 import { States, FinalState } from '../model/states'
 import { formatEntity } from '../view/formatEntity'
 
@@ -275,7 +275,7 @@ const getDirectReferences = (command: string) => async ({
       // then the file does not exist; maybe the user specified a resource kind, e.g. k status pods
       debug('status by resource kind', file, name)
 
-      const kubeEntities = REPL.qexec<KubeResource[]>(
+      const kubeEntities = REPL.qexec<KubeItems>(
         `kubectl get "${file}" "${name || ''}" ${ns()} -o json`,
         undefined,
         undefined,
@@ -324,9 +324,7 @@ const getDirectReferences = (command: string) => async ({
  * k status command handler
  *
  */
-export const status = (command: string) => async (
-  args: Commands.Arguments<FinalStateOptions>
-): Promise<KubeResource | Tables.Table> => {
+export const status = (command: string) => async (args: Commands.Arguments<FinalStateOptions>) => {
   const doWatch = args.parsedOptions.watch || args.parsedOptions.w
 
   const refreshCommand = args.command.replace('--watch', '').replace('-w', '')
@@ -335,9 +333,9 @@ export const status = (command: string) => async (
   const direct = await resource
   // debug('getDirectReferences', direct)
 
-  if (args.execOptions.raw && !Array.isArray(direct)) {
+  /* if (args.execOptions.raw && !Array.isArray(direct)) {
     return direct
-  }
+  } */
 
   const body = Array.isArray(direct)
     ? await Promise.all(direct.map(formatEntity(args.parsedOptions)))

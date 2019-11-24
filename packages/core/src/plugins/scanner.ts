@@ -22,7 +22,7 @@ import { pluginRoot } from './plugins'
 import { PrescanModel, PrescanUsage } from './prescan'
 
 import * as commandTree from '../core/command-tree'
-import { Command, CommandHandler, CommandOptions, ParsedOptions } from '../models/command'
+import { Command, CommandHandler, CommandOptions, Response, ParsedOptions } from '../models/command'
 import { isCodedError } from '../models/errors'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
 
@@ -70,7 +70,7 @@ class CommandRegistrarForScan extends commandTree.ImplForPlugins {
     super(plugin)
   }
 
-  public subtreeSynonym(route: string, master: Command) {
+  public subtreeSynonym<T extends Response, O extends ParsedOptions>(route: string, master: Command<T, O>) {
     if (route !== master.route) {
       this.scanCache.isSubtreeSynonym[route] = true
       this.scanCache.isSubtreeSynonym[master.route] = true
@@ -78,7 +78,7 @@ class CommandRegistrarForScan extends commandTree.ImplForPlugins {
     }
   }
 
-  public listen<T = Response, O = ParsedOptions>(
+  public listen<T extends Response, O extends ParsedOptions>(
     route: string,
     handler: CommandHandler<T, O>,
     options: CommandOptions
@@ -87,7 +87,7 @@ class CommandRegistrarForScan extends commandTree.ImplForPlugins {
     return super.listen(route, handler, options)
   }
 
-  public subtree(route: string, options: CommandOptions) {
+  public subtree<T extends Response, O extends ParsedOptions>(route: string, options: CommandOptions): Command<T, O> {
     return super.subtree(
       route,
       Object.assign(
@@ -99,7 +99,12 @@ class CommandRegistrarForScan extends commandTree.ImplForPlugins {
     )
   }
 
-  public synonym(route: string, handler: CommandHandler, master: Command, options: CommandOptions) {
+  public synonym<T extends Response, O extends ParsedOptions>(
+    route: string,
+    handler: CommandHandler<T, O>,
+    master: Command<T, O>,
+    options: CommandOptions
+  ) {
     this.cmdToPlugin[route] = this.plugin
     this.scanCache.isSynonym[route] = true
     return super.synonym(route, handler, master, options)

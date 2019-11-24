@@ -37,4 +37,6 @@ export namespace Errors {
   export import YargsParserConfiguration = Usage.YargsParserConfiguration
 }
 
+export { CodedError } from '../models/errors'
+
 export default Errors
