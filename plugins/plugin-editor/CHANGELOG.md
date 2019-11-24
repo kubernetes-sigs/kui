@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/IBM/kui/compare/v4.5.0...v5.4.0) (2019-11-24)
+
+### Bug Fixes
+
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+- **plugins/plugin-editor:** editor does not use metadata.name ([7578ec2](https://github.com/IBM/kui/commit/7578ec2)), closes [#3240](https://github.com/IBM/kui/issues/3240)
+- **plugins/plugin-editor:** fix sidecar editor tooltip contrast issue ([3b612a2](https://github.com/IBM/kui/commit/3b612a2))
+- **plugins/plugin-editor:** syntax coloring not always active ([2f565bf](https://github.com/IBM/kui/commit/2f565bf)), closes [#3043](https://github.com/IBM/kui/issues/3043)
+
+### BREAKING CHANGES
+
+- **packages/core:** remove old EntitySpec support
+
 # [5.1.0](https://github.com/IBM/kui/compare/v4.5.0...v5.1.0) (2019-10-11)
 
 **Note:** Version bump only for package @kui-shell/plugin-editor
