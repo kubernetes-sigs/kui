@@ -21,20 +21,14 @@ import makeButton from './button'
 
 const strings = i18n('plugin-k8s')
 
-export const createResourceButton = (fn?): Mode =>
-  makeButton(
-    {
-      mode: 'create',
-      label: strings('createResource')
-    },
-    fn
-  )
+export const createResourceButton = (): Mode =>
+  makeButton({
+    mode: 'create',
+    label: strings('createResource')
+  })
 
-export const deleteResourceButton = (fn?): Mode =>
-  makeButton(
-    {
-      mode: 'delete',
-      label: strings('deleteResource')
-    },
-    fn
-  )
+export const deleteResourceButton = (): Mode =>
+  makeButton({
+    mode: 'delete',
+    label: strings('deleteResource')
+  })

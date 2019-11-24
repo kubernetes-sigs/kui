@@ -30,9 +30,8 @@ type Renderer = (resource: KubeResource) => KubeResource
 
 interface Parameters {
   overrides: BaseInfo
-  fn: Renderer
 }
-export const renderButton = async (tab: UI.Tab, { overrides, fn }: Parameters, args): Promise<KubeResource> => {
+export const renderButton = async (tab: UI.Tab, { overrides }: Parameters, args): Promise<void> => {
   const resource = args.resource || args
   const { prettyType, kind = prettyType || '-f', metadata, name, resourceName, namespace: ns } = resource
 
@@ -40,26 +39,19 @@ export const renderButton = async (tab: UI.Tab, { overrides, fn }: Parameters, a
   const commandToExec = `kubectl ${overrides.mode} ${kind} ${resourceName || name || (metadata && metadata.name)} ${
     namespace ? '-n ' + namespace : ''
   }`
-  const response: KubeResource = await REPL.qexec(
-    `confirm ${REPL.encodeComponent(commandToExec)}`,
-    undefined,
-    undefined,
-    {
-      noStatus: !!fn,
-      tab
-    }
-  )
-  return fn ? fn(response) : response
+  await REPL.qexec(`confirm ${REPL.encodeComponent(commandToExec)}`, undefined, undefined, {
+    tab
+  })
 }
 
-const makeButton = (overrides: BaseInfo, fn?: Renderer) =>
+const makeButton = (overrides: BaseInfo) =>
   Object.assign(
     {},
     {
       direct: {
         plugin: 'k8s/dist/index',
         operation: 'renderButton',
-        parameters: { overrides, fn }
+        parameters: { overrides }
       },
       echo: true,
       noHistory: false,

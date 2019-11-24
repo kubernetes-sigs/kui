@@ -130,7 +130,7 @@ const describe = async ({ command, parsedOptions, execOptions }: Commands.Argume
   debug('getCmd', getCmd)
 
   const [resource, summary] = await Promise.all([
-    REPL.rexec(getCmd, noDelegationPlease) as Promise<KubeResource>,
+    REPL.qexec(getCmd, undefined, undefined, Object.assign({ raw: true }, noDelegationPlease)) as Promise<KubeResource>,
     REPL.qexec(`${getCmd} -o wide`, undefined, undefined, noDelegationPlease).then(toMap)
   ])
   debug('resource', resource)

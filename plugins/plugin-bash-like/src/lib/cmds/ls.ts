@@ -18,7 +18,8 @@ import Debug from 'debug'
 import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
-import { Commands, Errors, i18n, Tables, Util } from '@kui-shell/core'
+import { Errors, i18n, Tables, Util } from '@kui-shell/core'
+import { Arguments, RawResponse, MixedResponse, Registrar } from '@kui-shell/core/api/commands'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -98,10 +99,10 @@ const myreaddir = (dir: string): Promise<Record<string, boolean>> =>
  * If the given filepath is a directory, then ls it, otherwise cat it
  *
  */
-const lsOrOpen = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
+const lsOrOpen = async ({ argvNoOptions, REPL }: Arguments) => {
   const filepath = argvNoOptions[argvNoOptions.indexOf('lsOrOpen') + 1]
 
-  const stats: { isDirectory: boolean; viewer: string } = await REPL.qexec(`fstat ${REPL.encodeComponent(filepath)}`)
+  const stats = (await REPL.rexec<FStat>(`fstat ${REPL.encodeComponent(filepath)}`)).content
 
   const filepathForRepl = REPL.encodeComponent(filepath)
 
@@ -112,12 +113,20 @@ const lsOrOpen = async ({ argvNoOptions, REPL }: Commands.Arguments) => {
   }
 }
 
+export interface FStat {
+  viewer: string
+  filepath: string
+  fullpath: string
+  isDirectory: boolean
+  data?: string
+}
+
 /**
  * Kui command for fs.stat
  *
  */
-const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
-  return new Promise((resolve, reject) => {
+const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
+  return new Promise<RawResponse<FStat>>((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
     const { resolved: fullpath, viewer = 'open' } = Util.findFileWithViewer(Util.expandHomeDir(filepath))
@@ -138,10 +147,13 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
         }
       } else if (stats.isDirectory() || !parsedOptions['with-data']) {
         resolve({
-          viewer,
-          filepath,
-          fullpath: prettyFullPath,
-          isDirectory: stats.isDirectory()
+          mode: 'raw',
+          content: {
+            viewer,
+            filepath,
+            fullpath: prettyFullPath,
+            isDirectory: stats.isDirectory()
+          }
         })
       } else {
         readFile(fullpath, (err, data) => {
@@ -149,11 +161,14 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
             reject(err)
           } else {
             resolve({
-              viewer,
-              filepath,
-              fullpath: prettyFullPath,
-              data: data.toString(),
-              isDirectory: false
+              mode: 'raw',
+              content: {
+                viewer,
+                filepath,
+                fullpath: prettyFullPath,
+                data: data.toString(),
+                isDirectory: false
+              }
             })
           }
         })
@@ -166,12 +181,9 @@ const fstat = ({ argvNoOptions, parsedOptions }: Commands.Arguments) => {
  * Turn ls output into a REPL table
  *
  */
-const tabularize = (
-  cmd: string,
-  { REPL, parsedOptions }: Commands.Arguments,
-  parent = '',
-  parentAsGiven = ''
-) => async (output: string): Promise<true | Tables.Table> => {
+const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = '', parentAsGiven = '') => async (
+  output: string
+): Promise<true | Tables.Table> => {
   if (output.length === 0) {
     debug('tabularize empty')
     return true
@@ -393,9 +405,7 @@ const tabularize = (
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (
-  opts: Commands.Arguments
-): Promise<Commands.MixedResponse | Tables.Table | true> => {
+const doLs = (cmd: string) => async (opts: Arguments): Promise<MixedResponse | Tables.Table | true> => {
   const semi = await opts.REPL.semicolonInvoke(opts)
   if (semi) {
     debug('ls with semi', semi)
@@ -462,7 +472,7 @@ const usage = (command: string) => ({
  * Register command handlers
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/fstat', fstat, {
     hidden: true,
     noAuthOk: true,

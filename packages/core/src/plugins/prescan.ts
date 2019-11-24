@@ -15,7 +15,7 @@
  */
 
 import { UsageModel } from '../core/usage-error'
-import { Disambiguator, CapabilityRequirements, CatchAllHandler } from '../models/command'
+import { Disambiguator, CapabilityRequirements, CatchAllHandler, Response, ParsedOptions } from '../models/command'
 
 export interface PrescanNode extends CapabilityRequirements {
   route: string
@@ -48,7 +48,7 @@ export interface PrescanModel {
   overrides: { [key: string]: string }
   usage: PrescanUsage
   disambiguator?: Disambiguator
-  catchalls: CatchAllHandler[]
+  catchalls: CatchAllHandler<Response, ParsedOptions>[]
 }
 
 /**

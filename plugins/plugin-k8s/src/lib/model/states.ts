@@ -290,7 +290,7 @@ const getStatus = async (
     )} -o json`
     // debug('getStatus', cmd);
     const { REPL } = await import('@kui-shell/core/api/repl')
-    const response = await REPL.rexec<KubeResource>(cmd)
+    const response = await REPL.qexec<KubeResource>(cmd, undefined, undefined, { raw: true })
 
     if (
       !response.status || // resource does not define a status; consider it Online

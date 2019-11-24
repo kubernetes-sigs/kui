@@ -31,6 +31,7 @@ import {
   CommandHandlerWithEvents,
   CommandOptions,
   Event,
+  Response,
   ParsedOptions
 } from '../models/command'
 
@@ -87,19 +88,19 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree `model`, following the given `path` as [n1,n2,n3]
  *
  */
-const treeMatch = (
+const treeMatch = <T extends Response, O extends ParsedOptions>(
   model: CommandTree,
   path: string[],
   readonly = false,
   hide = false,
   idxStart = 0,
   noWildcard = false
-): Command => {
+): Command<T, O> => {
   let parent = model
-  let cur: Command
+  let cur: Command<T, O>
 
   for (let idx = idxStart; idx < path.length; idx++) {
-    cur = parent.children && parent.children[path[idx]]
+    cur = (parent.children && parent.children[path[idx]]) as Command<T, O>
 
     if (!cur) {
       // then we've reached the bottom of the tree
@@ -124,14 +125,14 @@ const treeMatch = (
     }
 
     parent = cur
-    cur = cur.children && cur.children[path[idx]]
+    cur = (cur.children && cur.children[path[idx]]) as Command<T, O>
     // console.log('match', idx, path[idx], cur)
   }
 
   if (!cur && !noWildcard) {
     // prefix match, e.g. "cleanAll !!!" should match a /cleanAll listener, as we have an implicit suffix wildcard
     // console.log('end of the line', parent)
-    cur = parent
+    cur = parent as Command<T, O>
   }
 
   if (cur.options && cur.options.noArgs && !exactlyTheSameRoute(cur.route, path)) {
@@ -143,7 +144,7 @@ const treeMatch = (
     return cur
   }
 }
-const match = (path: string[], readonly: boolean): Command => {
+const match = <T extends Response, O extends ParsedOptions>(path: string[], readonly: boolean): Command<T, O> => {
   return treeMatch(getModelInternal().root, path, readonly)
 }
 
@@ -153,12 +154,12 @@ class DefaultCommandOptions implements CommandOptions {}
  * Register a command handler on the given route
  *
  */
-const _listen = <T = Response, O = ParsedOptions>(
+const _listen = <T extends Response, O extends ParsedOptions>(
   model: CommandTree,
   route: string,
   handler: CommandHandler<T, O>,
   options: CommandOptions = new DefaultCommandOptions()
-): Command => {
+): Command<T, O> => {
   const path = route.split('/').splice(1)
   const leaf = treeMatch(getModelInternal().root, path, false, options.hide)
 
@@ -179,24 +180,27 @@ const _listen = <T = Response, O = ParsedOptions>(
       leaf.options.override = leaf.$
     }
 
-    leaf.$ = (handler as any) as CommandHandler
+    leaf.$ = (handler as any) as CommandHandler<T, O>
     leaf.route = route
 
-    return leaf
+    return leaf as Command<T, O>
   }
 }
 
-const listen = <T = Response, O = ParsedOptions>(
+const listen = <T extends Response, O extends ParsedOptions>(
   route: string,
   handler: CommandHandler<T, O>,
   options: CommandOptions
-) => _listen(getModelInternal().root, route, handler, options)
+): Command<T, O> => _listen(getModelInternal().root, route, handler, options)
 
 /**
  * Register a subtree in the command tree
  *
  */
-const _subtree = (route: string, options: CommandOptions) => {
+const _subtree = <T extends Response, O extends ParsedOptions>(
+  route: string,
+  options: CommandOptions
+): Command<T, O> => {
   const myListen = options.listen || listen
   const path = route.split('/').splice(1)
   const leaf = match(path, false /*, options */)
@@ -237,7 +241,7 @@ const _subtree = (route: string, options: CommandOptions) => {
     myListen(route, help, Object.assign({}, options, opts))
     myListen(`${route}/help`, help, Object.assign({}, options, opts))
 
-    return leaf
+    return leaf as Command<T, O>
   }
 }
 
@@ -245,7 +249,11 @@ const _subtree = (route: string, options: CommandOptions) => {
  * Register a synonym of a subtree
  *
  */
-const _subtreeSynonym = (route: string, master: Command, options = master.options) => {
+const _subtreeSynonym = <T extends Response, O extends ParsedOptions>(
+  route: string,
+  master: Command<T, O>,
+  options = master.options
+) => {
   if (route !== master.route) {
     // <-- don't alias to yourself!
     const mySubtree = _subtree(route, Object.assign({}, options, { synonymFor: master }))
@@ -261,7 +269,12 @@ const _subtreeSynonym = (route: string, master: Command, options = master.option
  *    master is the return value of `listen`
  *
  */
-const _synonym = (route: string, handler: CommandHandler, master: Command, options = master.options) => {
+const _synonym = <T extends Response, O extends ParsedOptions>(
+  route: string,
+  handler: CommandHandler<T, O>,
+  master: Command<T, O>,
+  options = master.options
+) => {
   if (route !== master.route) {
     // don't alias to yourself!
     const node = listen(route, handler, Object.assign({}, options, { synonymFor: master }))
@@ -344,11 +357,11 @@ const suggestPartialMatches = (
  * @return a command handler with success and failure event handlers
  *
  */
-const withEvents = (
-  evaluator: CommandHandler,
-  leaf: Command,
+const withEvents = <T extends Response, O extends ParsedOptions>(
+  evaluator: CommandHandler<T, O>,
+  leaf: Command<T, O>,
   partialMatches?: PartialMatch[]
-): CommandHandlerWithEvents => {
+): CommandHandlerWithEvents<T, O> => {
   // let the world know we have resolved a command, and are about to evaluate it
   const event: Event = {
     // context: currentContext()
@@ -361,7 +374,7 @@ const withEvents = (
     event.plugin = leaf.options.plugin || 'builtin' // e.g. "bash-like"
   }
 
-  const handler: CommandHandlerWithEvents = {
+  const handler: CommandHandlerWithEvents<T, O> = {
     subtree: leaf,
     route: leaf.route,
     eval: evaluator,
@@ -406,14 +419,14 @@ const withEvents = (
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
-const _read = async (
+const _read = async <T extends Response, O extends ParsedOptions>(
   model: CommandTree,
   argv: string[],
   contextRetry: string[],
   originalArgv: string[]
-): Promise<false | CommandHandlerWithEvents> => {
-  let leaf = treeMatch(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
-  let evaluator = leaf && leaf.$
+): Promise<false | CommandHandlerWithEvents<T, O>> => {
+  let leaf = treeMatch<T, O>(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
+  let evaluator: CommandHandler<T, O> = (leaf && leaf.$) as CommandHandler<T, O>
 
   if (!evaluator) {
     //
@@ -423,7 +436,7 @@ const _read = async (
     const route = `/${argv.join('/')}`
     await resolver.resolve(route, { tryCatchalls: !contextRetry || contextRetry.length === 0 })
     leaf = treeMatch(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
-    evaluator = leaf && leaf.$
+    evaluator = (leaf && leaf.$) as CommandHandler<T, O>
   }
 
   if (!evaluator) {
@@ -436,7 +449,7 @@ const _read = async (
       contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]
     ) {
       // command not found so far, look further afield.
-      const maybeInContextRetry = _read(
+      const maybeInContextRetry = _read<T, O>(
         getModelInternal().root,
         contextRetry.concat(originalArgv),
         contextRetry.slice(0, contextRetry.length - 1),
@@ -451,7 +464,7 @@ const _read = async (
       const newContext = getCurrentContext()
         .concat(originalArgv)
         .filter((elt, idx, A) => elt !== A[idx - 1])
-      const maybeInDefaultContext = _read(
+      const maybeInDefaultContext = _read<T, O>(
         getModelInternal().root,
         newContext,
         contextRetry.slice(0, contextRetry.length - 1),
@@ -477,12 +490,15 @@ const _read = async (
       }
     }
 
-    return withEvents(evaluator, leaf)
+    return withEvents<T, O>(evaluator, leaf)
   }
 }
 
 /** read, with retries based on the current context */
-const internalRead = (model: CommandTree, argv: string[]): Promise<false | CommandHandlerWithEvents> => {
+const internalRead = <T extends Response, O extends ParsedOptions>(
+  model: CommandTree,
+  argv: string[]
+): Promise<false | CommandHandlerWithEvents<T, O>> => {
   if (argv[0] === 'kui') argv.shift()
   return _read(getModelInternal().root, argv, Context.current, argv)
 }
@@ -547,13 +563,13 @@ const findPartialMatchesAt = (usage: PrescanUsage, partial: string): PartialMatc
  * Read part of a REPL.
  *
  */
-export const read = async (
+export const read = async <T extends Response, O extends ParsedOptions>(
   root: CommandTree,
   argv: string[],
   noRetry = false,
   execOptions: ExecOptions
-): Promise<CommandTreeResolution> => {
-  let cmd: false | CodedError | CommandHandlerWithEvents
+): Promise<CommandTreeResolution<T, O>> => {
+  let cmd: false | CodedError | CommandHandlerWithEvents<T, O>
 
   if (!noRetry) {
     await resolver.resolve(`/${argv.join('/')}`, { tryCatchalls: false })
@@ -584,7 +600,7 @@ export const read = async (
       matches = undefined
     }
 
-    return commandNotFound(argv, matches, execOptions)
+    return commandNotFound(argv, matches, execOptions) as CommandTreeResolution<T, O>
   } else {
     return cmd
   }
@@ -598,9 +614,9 @@ export class ImplForPlugins implements CommandRegistrar {
   // eslint-disable-next-line no-useless-constructor
   public constructor(protected readonly plugin: string) {}
 
-  public catchall(
+  public catchall<T extends Response, O extends ParsedOptions>(
     offer: CatchAllOffer,
-    handler: CommandHandler,
+    handler: CommandHandler<T, O>,
     prio = 0,
     options: CommandOptions = new DefaultCommandOptions()
   ) {
@@ -617,43 +633,56 @@ export class ImplForPlugins implements CommandRegistrar {
     })
   }
 
-  public listen<T = Response, O = ParsedOptions>(
+  public listen<T extends Response, O extends ParsedOptions>(
     route: string,
     handler: CommandHandler<T, O>,
-    options: CommandOptions
-  ) {
+    options?: CommandOptions
+  ): Command<T, O> {
     return listen(route, handler, Object.assign({}, options, { plugin: this.plugin }))
   }
 
-  public synonym(route: string, handler: CommandHandler, master: Command, options: CommandOptions) {
+  public synonym<T extends Response, O extends ParsedOptions>(
+    route: string,
+    handler: CommandHandler<T, O>,
+    master: Command<T, O>,
+    options: CommandOptions
+  ) {
     return _synonym(route, handler, master, options && Object.assign({}, options, { plugin: this.plugin }))
   }
 
-  public subtree(route: string, options: CommandOptions) {
+  public subtree<T extends Response, O extends ParsedOptions>(route: string, options: CommandOptions): Command<T, O> {
     return _subtree(route, options)
   }
 
-  public subtreeSynonym(route: string, master: Command, options = master.options) {
+  public subtreeSynonym<T extends Response, O extends ParsedOptions>(
+    route: string,
+    master: Command<T, O>,
+    options = master.options
+  ) {
     return _subtreeSynonym(route, master, options)
   }
 
-  public async override(
+  public async override<T extends Response, O extends ParsedOptions>(
     route: string,
     fromPlugin: string,
-    overrideHandler: CommandOverrideHandler,
+    overrideHandler: CommandOverrideHandler<T, O>,
     options?: CommandOptions
-  ): Promise<Command> {
-    const currentHandler = (await this.find(route, fromPlugin)).$
+  ): Promise<Command<T, O>> {
+    const currentHandler = (await this.find<T, O>(route, fromPlugin)).$
     if (!currentHandler) {
       throw new Error(`Cannot find desired command handler for ${route} from plugin ${fromPlugin}`)
     }
 
-    const handler: CommandHandler = (args: EvaluatorArgs) => overrideHandler(args, currentHandler)
+    const handler = (args: EvaluatorArgs<O>) => overrideHandler(args, currentHandler)
     return this.listen(route, handler, options)
   }
 
-  public async find(route: string, fromPlugin?: string, noOverride = true) {
-    const cmd = match(route.split('/').slice(1), true)
+  public async find<T extends Response, O extends ParsedOptions>(
+    route: string,
+    fromPlugin?: string,
+    noOverride = true
+  ): Promise<Command<T, O>> {
+    const cmd = match<T, O>(route.split('/').slice(1), true)
     if (!cmd || cmd.route !== route || (!noOverride && resolver && resolver.isOverridden(cmd.route))) {
       if (resolver) {
         if (fromPlugin) {

@@ -119,7 +119,12 @@ function main(cmdline, execOptions, server, port, host, existingSession, locale)
             path: `/bash/${N}`
           },
           response: {
-            url: `${proto}://${host}/bash/${N}`
+            mode: 'raw',
+            content: {
+              url: `${proto}://${host}/bash/${N}`,
+              uid,
+              gid
+            }
           }
         })
       })

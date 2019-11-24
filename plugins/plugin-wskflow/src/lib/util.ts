@@ -53,16 +53,17 @@ export const textualPropertiesOfCode = (code: string): TextualProperties => {
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (tab: UI.Tab, visualize, { ast, name, namespace, viewOptions, container }) => {
+export const wskflow = async (tab: UI.Tab, visualize, { ast, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
-  const isPartOfRule = await tab.REPL.qexec<{ action: { name: string; path: string } }[]>('wsk rule list')
+  const isPartOfRule = false
+  /* const isPartOfRule = await tab.REPL.qexec<{ action: { name: string; path: string } }[]>('wsk rule list')
     .then(rules =>
       rules.find(({ action: ruleAction }) => {
         return ruleAction.name === name && ruleAction.path === namespace
       })
     )
-    .catch(() => [])
+    .catch(() => []) */
 
   return visualize(tab, ast, container, undefined, undefined, undefined, viewOptions, isPartOfRule)
 }

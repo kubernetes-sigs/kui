@@ -77,5 +77,7 @@ export {
   CommandRegistrar as Registrar
 } from '../models/command'
 
+export { MixedResponse, RawResponse } from '../models/entity'
+
 export { _ExecOptions as ExecOptions }
 export default Commands

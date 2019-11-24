@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, Models } from '@kui-shell/core'
+import { ResourceWithMetadata } from '@kui-shell/core/api/models'
 
 export interface KubeStatusCondition {
   lastProbeTime?: string
@@ -93,7 +93,7 @@ interface RoleRef {
   name: string
 }
 
-export interface KubeResource<Status = KubeStatus> extends Models.ResourceWithMetadata {
+export interface KubeResource<Status = KubeStatus> extends ResourceWithMetadata {
   apiVersion: string
   kind: string
   metadata?: KubeMetadata
@@ -101,7 +101,7 @@ export interface KubeResource<Status = KubeStatus> extends Models.ResourceWithMe
   spec?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   data?: object
 }
-export function isKubeResource(entity: Commands.Response): entity is KubeResource {
+export function isKubeResource(entity: ResourceWithMetadata): entity is KubeResource {
   const kube = entity as KubeResource
   return kube.apiVersion !== undefined && kube.kind !== undefined
 }
@@ -159,6 +159,17 @@ export interface Pod extends KubeResource {
       workingDir: string
     }[]
   }
+}
+
+/**
+ * e.g. `kubectl get pods -o json` will return a kind: items
+ *
+ */
+
+export interface KubeItems extends KubeResource {
+  apiVersion: 'v1'
+  kind: 'List'
+  items: KubeResource[]
 }
 
 export interface Resource<T = KubeResource> {

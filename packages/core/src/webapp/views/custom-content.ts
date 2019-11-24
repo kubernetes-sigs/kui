@@ -27,7 +27,6 @@ import { MetadataBearing, isMetadataBearing, Entity } from '../../models/entity'
 export function isCustomSpec(entity: MetadataBearing | CustomSpec | Entity): entity is CustomSpec {
   const custom = entity as CustomSpec
   return (
-    custom !== undefined &&
     !isMultiModalResponse(custom) &&
     (custom.type === 'custom' ||
       custom.renderAs === 'custom' ||

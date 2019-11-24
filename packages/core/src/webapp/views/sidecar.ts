@@ -75,14 +75,6 @@ export { isMetadataBearingByReference }
 
 debug('finished loading modules')
 
-/**
- * Beautify any kinds we know how to
- *
- */
-export const beautify = (kind: string, code: string) => {
-  return code
-}
-
 export const maybeHideEntity = (tab: Tab, entity: Entity): boolean => {
   const sidecar = getSidecar(tab)
 
@@ -114,25 +106,6 @@ export const getActiveView = (tab: Tab) => {
 
 function isHTML(content: CustomContent): content is HTMLElement {
   return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
-}
-
-/**
- * Find and format links in the given dom tree
- *
- */
-export const linkify = (dom: Element): void => {
-  const attrs = dom.querySelectorAll('.hljs-attr')
-  for (let idx = 0; idx < attrs.length; idx++) {
-    const attr = attrs[idx] as HTMLElement
-    if (attr.innerText.indexOf('http') === 0) {
-      const link = document.createElement('a')
-      link.href = attr.innerText
-      link.innerText = attr.innerText.substring(attr.innerText.lastIndexOf('/') + 1)
-      link.target = '_blank'
-      attr.innerText = ''
-      attr.appendChild(link)
-    }
-  }
 }
 
 /**
@@ -638,12 +611,9 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
         // caller gave us a content type. attempt to decorate
         const contentType = `language-${custom.contentType}`
         code.classList.add(contentType)
+        code.classList.remove('json')
         code.classList.remove(code.getAttribute('data-content-type')) // remove previous
         code.setAttribute('data-content-type', contentType)
-        code.classList.remove('json')
-        setTimeout(() => {
-          setTimeout(() => linkify(code), 100)
-        }, 0)
       }
     }
   } else if (isHTML(custom.content)) {
@@ -705,23 +675,6 @@ export type ISidecarViewHandler = (
 const registeredEntityViews: Record<string, ISidecarViewHandler> = {}
 export const registerEntityView = (kind: string, handler: ISidecarViewHandler) => {
   registeredEntityViews[kind] = handler
-}
-
-/**
- * Update the current view into the sidecar; this is helpful for tab
- * mode switching.
- *
- */
-export const insertView = (tab: Tab) => (view: HTMLElement) => {
-  debug('insertView', view)
-
-  const container = getActiveView(tab)
-  debug('insertView.container', container)
-
-  removeAllDomChildren(container)
-  container.appendChild(view)
-
-  presentAs(tab, Presentation.Default)
 }
 
 /**

@@ -24,7 +24,7 @@ import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/p
  */
 async function getMatchingStrings(cmd: string, spec: TabCompletionSpec): Promise<string[]> {
   const { REPL } = await import('@kui-shell/core/api/repl')
-  const completions: string = await REPL.rexec(cmd)
+  const completions: string = await REPL.qexec(cmd, undefined, undefined, { raw: true })
   const list: string[] = completions.split(/[\n\r]/).map(_ => _.replace(/^\w+\//, ''))
 
   return list.filter(name => name.startsWith(spec.toBeCompleted))

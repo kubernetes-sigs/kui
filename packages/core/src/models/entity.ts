@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
+import { Table, Row, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
@@ -29,21 +29,26 @@ export function isMessageBearingEntity(entity: Entity): entity is MessageBearing
 }
 
 /**
+ * The name part of a metadata bearing resource.
+ *
+ */
+interface MetadataNamedResource {
+  kind?: string
+
+  metadata?: {
+    name: string
+    namespace?: string
+    generation?: string
+    creationTimestamp?: string
+  }
+}
+
+/**
  * A minimal subset of a kubernetes-like resource specification that
  * identifies a resource
  *
  */
-export interface MetadataBearing<Content = void> {
-  kind?: string
-  metadata?: {
-    name: string
-    namespace?: string
-
-    generation?: string
-
-    creationTimestamp?: string
-  }
-
+export interface MetadataBearing<Content = void> extends MetadataNamedResource {
   /** optional designation of resource version */
   version?: string
 
@@ -88,7 +93,7 @@ export function isMetadataBearingByReference(
  * A mostly scalar entity
  *
  */
-export type SimpleEntity = Error | string | number | HTMLElement | MessageBearingEntity
+export type SimpleEntity = boolean | string | number | HTMLElement | MessageBearingEntity | Error
 
 /**
  * The plugin returns a mix of types; e.g. `helm status` returns
@@ -120,31 +125,64 @@ export function isLowLevelLoop(entity: Entity): entity is LowLevelLoop {
   return looper.mode === 'prompt'
 }
 
-export interface VerbEntity {
-  verb: 'delete'
-  type: string
-  name: string
-  namespace?: string
+/**
+ * Transforms optional fields to required fields
+ *
+ */
+type Complete<T> = {
+  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined)
 }
 
-export function isVerbEntity(entity: Entity): entity is VerbEntity {
-  const verby = entity as VerbEntity
-  return verby.verb === 'delete' && typeof verby.type === 'string' && typeof verby.name === 'string'
+/**
+ * A `ResourceModification` command response allows a plugin to inform
+ * the core that a CRUD action has been performed against a named
+ * resource.
+ *
+ */
+export type ResourceModification = Complete<MetadataNamedResource> & {
+  /** for now, we only support deletion modifications */
+  verb: 'delete'
+}
+
+export function isResourceModification(entity: Entity): entity is ResourceModification {
+  const mod = entity as ResourceModification
+  return (
+    mod !== undefined && mod.verb === 'delete' && typeof mod.kind === 'string' && typeof mod.metadata.name === 'string'
+  )
+}
+
+/**
+ * This allows commands to pass through raw responses from their backend
+ *
+ */
+export type RawContent = any // eslint-disable-line @typescript-eslint/no-explicit-any
+export interface RawResponse<Content extends RawContent> {
+  mode: 'raw'
+  content: Content
+}
+
+export function isRawResponse<Content extends RawContent>(entity: Entity<Content>): entity is RawResponse<Content> {
+  const raw = entity as RawResponse<Content>
+  return raw.mode === 'raw' && raw.content !== undefined
 }
 
 /**
  * A potentially more complex entity with a "spec"
  *
  */
-export type Entity<Content = void> =
+export type Entity<
+  Content = void,
+  RowType extends Row = Row,
+  Meta extends MetadataBearing<Content> = MetadataBearing<Content>
+> =
   | SimpleEntity
-  | MetadataBearing<Content>
-  | VerbEntity
+  | Table<RowType>
+  | MultiTable
+  | ResourceModification
   | CustomSpec
   | MixedResponse
   | MultiModalResponse
-  | boolean
-  | Table
-  | MultiTable
   | LowLevelLoop
   | UsageModel
+  | Meta
+  | RawResponse<Content>

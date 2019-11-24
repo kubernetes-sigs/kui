@@ -15,7 +15,7 @@
  */
 
 import { Tab } from '../webapp/cli'
-import { MixedResponse } from './entity'
+import { MixedResponse, RawContent, RawResponse } from './entity'
 import { EvaluatorArgs, Response } from './command'
 import { ExecOptions } from './execOptions'
 
@@ -25,7 +25,7 @@ export default interface REPL {
    * emitting output to the console.
    *
    */
-  qexec<T = Response>(
+  qexec<T extends Response>(
     command: string,
     block?: HTMLElement | boolean,
     contextChangeOK?: boolean,
@@ -38,7 +38,7 @@ export default interface REPL {
    * want the original model back, not the view-oriented model.
    *
    */
-  rexec<T = Response>(command: string, execOptions?: ExecOptions): Promise<T>
+  rexec<Raw extends RawContent>(command: string, execOptions?: ExecOptions): Promise<RawResponse<Raw>>
 
   /**
    * Programmatic eval. Useful to execute one command from another,
@@ -46,7 +46,7 @@ export default interface REPL {
    * the REPL interaction to appear on the console.
    *
    */
-  pexec<T = Response>(command: string, execOptions?: ExecOptions): Promise<T>
+  pexec<T extends Response>(command: string, execOptions?: ExecOptions): Promise<T>
 
   /**
    * Execute a command in response to an in-view click in a sidecar

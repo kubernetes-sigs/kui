@@ -23,6 +23,13 @@ import { Tab } from '../webapp/cli'
 import { StreamableFactory } from './streamable'
 
 /**
+ * A command `Response` can be any supported `Entity` type
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Response<Content extends any = any> = Entity<Content>
+
+/**
  * "top-level", meaning the user hit enter in the CLI,
  * "click-handler", meaning that the user clicked on a UI element
  * "nested", meaning that some evaluator uses the repl in its internal implementation
@@ -70,9 +77,9 @@ export interface CommandOptions extends CapabilityRequirements {
 
   listen?: CommandListener
   docs?: string
-  synonymFor?: Command
+  synonymFor?: Command<Response, ParsedOptions>
   hide?: boolean
-  override?: CommandHandler
+  override?: CommandHandler<Response, ParsedOptions>
   plugin?: string
   okOptions?: string[]
   isIntention?: boolean
@@ -164,14 +171,11 @@ export interface EvaluatorArgs<Options = ParsedOptions> extends CommandLine<Opti
   nextBlock: HTMLElement
 }
 
-// TODO
-export type Response = Entity
-
 /** base command handler */
-export type CommandHandler<T = Response, O = ParsedOptions> = (args: EvaluatorArgs<O>) => T | Promise<T>
+export type CommandHandler<T extends Response, O extends ParsedOptions> = (args: EvaluatorArgs<O>) => T | Promise<T>
 
 /** command handler when overriding commands from other plugins */
-export type CommandOverrideHandler<T = Response, O = ParsedOptions> = (
+export type CommandOverrideHandler<T extends Response, O extends ParsedOptions> = (
   args: EvaluatorArgs<O>,
   underlyingHandler: CommandHandler<T, O>
 ) => T | Promise<T>
@@ -180,8 +184,8 @@ export type CommandOverrideHandler<T = Response, O = ParsedOptions> = (
  * Evaluator
  *
  */
-export interface Evaluator {
-  eval: CommandHandler
+export interface Evaluator<T extends Response, O extends ParsedOptions> {
+  eval: CommandHandler<T, O>
 }
 
 export interface CommandBase {
@@ -193,23 +197,23 @@ export interface CommandBase {
 type CommandKey = string
 // we can't use CommandKey here; yay tsc; TS1336
 interface CommandKeyMap {
-  [key: string]: Command
+  [key: string]: Command<Response, ParsedOptions>
 }
 // we can't use CommandKey here; yay tsc; TS1336
 export interface Disambiguator {
   [key: string]: CommandBase[]
 }
 
-export interface Command extends CommandBase {
-  $: CommandHandler
+export interface Command<T extends Response, O extends ParsedOptions> extends CommandBase {
+  $: CommandHandler<T, O>
   key: CommandKey
-  parent: Command
+  parent: Command<Response, ParsedOptions>
   children?: CommandKeyMap
   synonyms?: CommandKeyMap
 }
 
 /** a command tree rooted by a command */
-export type CommandTree = Command
+export type CommandTree = Command<Response, ParsedOptions>
 
 export interface CapabilityRequirements {
   needsUI?: boolean
@@ -229,19 +233,24 @@ export type OnSuccess = (args: {
 
 export type OnError = (command: string, tab: Tab, type: ExecType, err: CodedError) => CodedError
 
-export interface CommandHandlerWithEvents extends Evaluator {
-  subtree: Command
+export interface CommandHandlerWithEvents<T extends Response, O extends ParsedOptions> extends Evaluator<T, O> {
+  subtree: Command<T, O>
   route: string
   options: CommandOptions
   success: OnSuccess
   error: OnError
 }
-export function isCommandHandlerWithEvents(evaluator: Evaluator): evaluator is CommandHandlerWithEvents {
-  const handler = evaluator as CommandHandlerWithEvents
+export function isCommandHandlerWithEvents<T extends Response, O extends ParsedOptions>(
+  evaluator: Evaluator<T, O>
+): evaluator is CommandHandlerWithEvents<T, O> {
+  const handler = evaluator as CommandHandlerWithEvents<T, O>
   return handler.options !== undefined
 }
 
-export type CommandTreeResolution = boolean | CommandHandlerWithEvents | CodedError
+export type CommandTreeResolution<T extends Response, O extends ParsedOptions> =
+  | boolean
+  | CommandHandlerWithEvents<T, O>
+  | CodedError
 
 export interface YargsParserFlags {
   boolean?: string[]
@@ -251,30 +260,48 @@ export interface YargsParserFlags {
 /** a catch all handler is presented with an offer to handle a given argv */
 export type CatchAllOffer = (argv: string[]) => boolean
 
-export interface CatchAllHandler extends Command {
+export interface CatchAllHandler<T extends Response, O extends ParsedOptions> extends Command<T, O> {
   prio: number
   plugin: string // registered plugin
   offer: CatchAllOffer // does the handler accept the given command?
-  eval: CommandHandler // command evaluator
+  eval: CommandHandler<T, O> // command evaluator
 }
 
-type CommandListener = <T = Response, O = ParsedOptions>(
+type CommandListener = <T extends Response, O extends ParsedOptions>(
   route: string,
   handler: CommandHandler<T, O>,
   options?: CommandOptions
-) => Command
+) => Command<T, O>
 
 export interface CommandRegistrar {
-  find: (route: string, fromPlugin?: string, noOverride?: boolean) => Promise<Command>
+  find: <T extends Response, O extends ParsedOptions>(
+    route: string,
+    fromPlugin?: string,
+    noOverride?: boolean
+  ) => Promise<Command<T, O>>
   listen: CommandListener
-  override: (
+  override: <T extends Response, O extends ParsedOptions>(
     route: string,
     fromPlugin: string,
-    handler: CommandOverrideHandler,
+    handler: CommandOverrideHandler<T, O>,
     options?: CommandOptions
-  ) => Promise<Command>
-  synonym: (route: string, handler: CommandHandler, master: Command, options?: CommandOptions) => void
-  subtree: (route: string, options: CommandOptions) => Command
-  subtreeSynonym: (route: string, masterTree: Command, options?: CommandOptions) => void
-  catchall: (offer: CatchAllOffer, handler: CommandHandler, prio: number, options: CommandOptions) => void
+  ) => Promise<Command<T, O>>
+  synonym: <T extends Response, O extends ParsedOptions>(
+    route: string,
+    handler: CommandHandler<T, O>,
+    master: Command<T, O>,
+    options?: CommandOptions
+  ) => void
+  subtree: <T extends Response, O extends ParsedOptions>(route: string, options: CommandOptions) => Command<T, O>
+  subtreeSynonym: <T extends Response, O extends ParsedOptions>(
+    route: string,
+    masterTree: Command<T, O>,
+    options?: CommandOptions
+  ) => void
+  catchall: <T extends Response, O extends ParsedOptions>(
+    offer: CatchAllOffer,
+    handler: CommandHandler<T, O>,
+    prio: number,
+    options: CommandOptions
+  ) => void
 }
