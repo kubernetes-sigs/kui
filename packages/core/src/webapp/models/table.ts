@@ -127,14 +127,14 @@ export enum TableStyle {
   Heavy
 }
 
-export class Table {
-  body: Row[]
+export class Table<RowType extends Row = Row> {
+  body: RowType[]
 
   type?: string
 
   style?: TableStyle
 
-  header?: Row
+  header?: RowType
 
   footer?: Footer
 

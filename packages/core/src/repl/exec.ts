@@ -26,19 +26,18 @@ debug('loading')
 import encodeComponent from './encode'
 import { split, patterns } from './split'
 
-import {
-  CommandTreeResolution,
-  ExecType,
-  Evaluator,
-  EvaluatorArgs,
-  ParsedOptions,
-  YargsParserFlags,
-  Response
-} from '../models/command'
+import { ExecType, Evaluator, EvaluatorArgs, Response, ParsedOptions, YargsParserFlags } from '../models/command'
 
 import REPL from '../models/repl'
 import { ElementMimic } from '../util/mimic-dom'
-import { isVerbEntity, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
+import {
+  RawContent,
+  RawResponse,
+  isResourceModification,
+  isLowLevelLoop,
+  MixedResponse,
+  MixedResponsePart
+} from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventBus from '../core/events'
 import historyModel from '../models/history'
@@ -70,7 +69,10 @@ import * as minimist from 'yargs-parser'
  */
 export interface Executor {
   name: string
-  exec(commandUntrimmed: string, execOptions: ExecOptions): Promise<Response>
+  exec<T extends Response, O extends ParsedOptions>(
+    commandUntrimmed: string,
+    execOptions: ExecOptions
+  ): Promise<T | CodedError<number> | HTMLElement>
 }
 
 /**
@@ -79,12 +81,12 @@ export interface Executor {
  */
 export interface ReplEval {
   name: string
-  apply(
+  apply<T extends Response, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions: ExecOptions,
-    evaluator: Evaluator,
-    args: EvaluatorArgs
-  ): Response | Promise<Response>
+    evaluator: Evaluator<T, O>,
+    args: EvaluatorArgs<O>
+  ): T | Promise<T>
 }
 
 /**
@@ -95,7 +97,12 @@ export interface ReplEval {
 export class DirectReplEval implements ReplEval {
   public name = 'DirectReplEval'
 
-  public apply(commandUntrimmed: string, execOptions: ExecOptions, evaluator: Evaluator, args: EvaluatorArgs) {
+  public apply<T extends Response, O extends ParsedOptions>(
+    commandUntrimmed: string,
+    execOptions: ExecOptions,
+    evaluator: Evaluator<T, O>,
+    args: EvaluatorArgs<O>
+  ) {
     return evaluator.eval(args)
   }
 }
@@ -141,7 +148,10 @@ const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 class InProcessExecutor implements Executor {
   public name = 'InProcessExecutor'
 
-  public async exec(commandUntrimmed: string, execOptions = emptyExecOptions()): Promise<Response> {
+  public async exec<T extends Response, O extends ParsedOptions>(
+    commandUntrimmed: string,
+    execOptions = emptyExecOptions()
+  ): Promise<T | CodedError<number> | HTMLElement> {
     const tab = execOptions.tab || getCurrentTab()
     const REPL = getImpl(tab) // eslint-disable-line @typescript-eslint/no-use-before-define
 
@@ -206,7 +216,8 @@ class InProcessExecutor implements Executor {
         setStatus(block, Status.validResponse)
         installBlock(blockParent, block, nextBlock)()
       }
-      return true
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (true as any) as T
     }
 
     if (execOptions && execOptions.echo && prompt) {
@@ -228,7 +239,8 @@ class InProcessExecutor implements Executor {
           setStatus(block, Status.validResponse)
           installBlock(blockParent, block, nextBlock)()
         }
-        return true
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (true as any) as T
       }
 
       // add a history entry
@@ -242,7 +254,7 @@ class InProcessExecutor implements Executor {
 
       // the Read part of REPL
       const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator: CommandTreeResolution = await getModel().read(argvNoOptions, execOptions)
+      const evaluator = await getModel().read<T, O>(argvNoOptions, execOptions)
 
       if (isSuccessfulCommandResolution(evaluator)) {
         //
@@ -254,7 +266,8 @@ class InProcessExecutor implements Executor {
 
         if (execOptions && execOptions.failWithUsage && !usage) {
           debug('caller needs usage model, but none exists for this command', evaluator)
-          return false
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (false as any) as T
         }
 
         const builtInOptions: UsageRow[] = [{ name: '--quiet', alias: '-q', hidden: true, boolean: true }]
@@ -328,7 +341,7 @@ class InProcessExecutor implements Executor {
         //
         if ((!usage || !usage.noHelp) && parsedOptions.help && evaluator.options && evaluator.options.usage) {
           if (execOptions && execOptions.failWithUsage) {
-            return evaluator.options.usage
+            return evaluator.options.usage as T
           } else {
             oops(command, block, nextBlock)(new UsageError({ usage: evaluator.options.usage }))
             return
@@ -405,7 +418,8 @@ class InProcessExecutor implements Executor {
               err.code = 499
               debug(message, args, parsedOptions, optional, argv) // args is argv with options stripped
               if (execOptions && execOptions.failWithUsage) {
-                return err
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return (err as any) as T
               } else {
                 oops(command, block, nextBlock)(err)
                 return
@@ -455,7 +469,8 @@ class InProcessExecutor implements Executor {
               debug(message, match)
               error.code = 498
               if (execOptions && execOptions.failWithUsage) {
-                return error
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return (error as any) as T
               } else {
                 oops(command, block, nextBlock)(error)
                 return
@@ -503,7 +518,8 @@ class InProcessExecutor implements Executor {
 
                 if (execOptions && execOptions.nested) {
                   debug('returning usage error')
-                  return err
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  return (err as any) as T
                 } else {
                   debug('broadcasting usage error')
                   oops(command, block, nextBlock)(err)
@@ -553,7 +569,8 @@ class InProcessExecutor implements Executor {
           import('../main/headless').then(({ createWindow }) =>
             createWindow(argv, evaluator.options.fullscreen, evaluator.options)
           )
-          return Promise.resolve(true)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (true as any) as T
         }
 
         if (execOptions && execOptions.placeholder && prompt) {
@@ -567,7 +584,7 @@ class InProcessExecutor implements Executor {
         //
         // the Eval part of REPL
         //
-        const response: Promise<Response> = Promise.resolve()
+        const response = Promise.resolve()
           .then(() => {
             eventBus.emit('/command/start', {
               tab,
@@ -576,7 +593,7 @@ class InProcessExecutor implements Executor {
               execType: (execOptions && execOptions.type) || ExecType.TopLevel
             })
 
-            return currentEvaluatorImpl.apply(commandUntrimmed, execOptions, evaluator, {
+            return currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, {
               tab,
               // eslint-disable-next-line @typescript-eslint/no-use-before-define
               REPL,
@@ -586,7 +603,7 @@ class InProcessExecutor implements Executor {
               command,
               execOptions,
               argvNoOptions,
-              parsedOptions,
+              parsedOptions: parsedOptions as O,
               createOutputStream:
                 execOptions.createOutputStream ||
                 (async () => {
@@ -599,7 +616,7 @@ class InProcessExecutor implements Executor {
                 })
             })
           })
-          .then(async (response: Response) => {
+          .then(async (response: T) => {
             if (execOptions.rawResponse) {
               return response
             }
@@ -616,7 +633,7 @@ class InProcessExecutor implements Executor {
               return
             }
 
-            if (isVerbEntity(response) && response.verb === 'delete') {
+            if (isResourceModification(response) && response.verb === 'delete') {
               const { maybeHideEntity } = await import('../webapp/views/sidecar') // FIXME
               if (maybeHideEntity(tab, response) && nextBlock) {
                 // cli.setContextUI(commandTree.currentContext(), nextBlock)
@@ -652,7 +669,7 @@ class InProcessExecutor implements Executor {
             } else {
               // we're the top-most exec, so deal with the repl!
               const resultDom = render ? replResult() : (block.querySelector('.repl-result') as HTMLElement)
-              const rresponse: Promise<Response> = new Promise<Response>(resolve => {
+              const rresponse = new Promise<T | CodedError<number> | HTMLElement>(resolve => {
                 printResults(block, nextBlock, tab, resultDom, echo && !render, execOptions, command, evaluator)(
                   response
                 ) // <--- the Print part of REPL
@@ -728,7 +745,8 @@ class InProcessExecutor implements Executor {
       }
 
       if (execOptions && execOptions.failWithUsage) {
-        return e
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (e as any) as T
       } else if (isHeadless()) {
         throw e
       }
@@ -790,7 +808,7 @@ export const doEval = ({ block = getCurrentBlock(), prompt = getPrompt(block) } 
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qexec = <T = Response>(
+export const qexec = <T extends Response>(
   command: string,
   block?: HTMLElement | boolean,
   contextChangeOK?: boolean,
@@ -828,15 +846,18 @@ export const qfexec = (
  * "raw" exec, where we want the data model back directly
  *
  */
-export const rexec = <T = Response>(command: string, execOptions = emptyExecOptions()): Promise<T> => {
-  return qexec(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
+export const rexec = <Raw extends RawContent>(
+  command: string,
+  execOptions = emptyExecOptions()
+): Promise<RawResponse<Raw>> => {
+  return qexec<RawResponse<Raw>>(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
 }
 
 /**
  * Programmatic exec, as opposed to human typing and hitting enter
  *
  */
-export const pexec = <T = Response>(command: string, execOptions?: ExecOptions): Promise<T> => {
+export const pexec = <T extends Response>(command: string, execOptions?: ExecOptions): Promise<T> => {
   return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions)) as Promise<T>
 }
 

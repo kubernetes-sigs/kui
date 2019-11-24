@@ -36,14 +36,14 @@ import { promiseEach } from '../util/async'
 
 import { isWatchable } from './models/basicModels'
 import { Streamable, Stream } from '../models/streamable'
-import { CommandHandlerWithEvents, ExecType } from '../models/command'
+import { CommandHandlerWithEvents, ExecType, Response, ParsedOptions } from '../models/command'
 import { Table, isTable, isMultiTable } from './models/table'
 import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { show as showMultiModalResponse } from '../models/mmr/show'
 import {
   Entity,
-  isVerbEntity,
+  isResourceModification,
   isMessageBearingEntity,
   MixedResponsePart,
   isMixedResponse,
@@ -204,7 +204,7 @@ export const printResults = (
   echo = true,
   execOptions?: ExecOptions,
   command?: string,
-  evaluator?: CommandHandlerWithEvents
+  evaluator?: CommandHandlerWithEvents<Response, ParsedOptions>
 ) => async (response: Entity): Promise<boolean> => {
   debug('printResults', response)
 
@@ -271,11 +271,11 @@ export const printResults = (
 
           return !customContainer || customContainer.children.length === 0
         }
-      } else if (isVerbEntity(response) && response.verb === 'delete') {
+      } else if (isResourceModification(response) && response.verb === 'delete') {
         if (echo) {
           // we want the 'ok:' part to appear even in popup mode
-          if (response.type) {
-            ok(resultDom, `deleted ${response.type.replace(/s$/, '')} ${response.name}`, 'show-in-popup')
+          if (response.kind) {
+            ok(resultDom, `deleted ${response.kind.replace(/s$/, '')} ${response.metadata.name}`, 'show-in-popup')
           } else {
             ok(resultDom)
           }

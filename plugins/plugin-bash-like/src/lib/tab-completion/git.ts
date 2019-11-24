@@ -33,8 +33,11 @@ async function completeGitBranches(commandLine: Commands.CommandLine, spec: TabC
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
     try {
       const { REPL } = await import('@kui-shell/core/api/repl')
-      const completions = await REPL.rexec<string>(
-        `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`
+      const completions = await REPL.qexec<string>(
+        `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`,
+        undefined,
+        undefined,
+        { raw: true }
       )
 
       return completions

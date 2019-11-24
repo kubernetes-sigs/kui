@@ -88,12 +88,12 @@ function renderDom(content: ElementMimic): HTMLElement {
 class ProxyEvaluator implements REPL.ReplEval {
   name = 'ProxyEvaluator'
 
-  async apply(
+  async apply<T extends Commands.Response, O extends Commands.ParsedOptions>(
     command: string,
     execOptions: Commands.ExecOptions,
-    evaluator: Commands.Evaluator,
-    args: Commands.Arguments
-  ) {
+    evaluator: Commands.Evaluator<T, O>,
+    args: Commands.Arguments<O>
+  ): Promise<T> {
     debug('apply', evaluator)
     debug('execOptions', execOptions)
 
@@ -178,14 +178,14 @@ class ProxyEvaluator implements REPL.ReplEval {
                         }
                       } else if (ElementMimic.isFakeDom(response.response)) {
                         debug('rendering fakedom', response.response)
-                        resolve(renderDom(response.response))
+                        resolve(renderDom(response.response) as T)
                       } else if (ElementMimic.isFakeDom(response.response.content)) {
                         debug('rendering fakedom content', response.response.content)
                         response.response.content = renderDom(response.response.content)
-                        resolve(response.response)
+                        resolve(response.response as T)
                       } else {
                         debug('response', response)
-                        resolve(response.response)
+                        resolve(response.response as T)
                       }
                     }
                   })
@@ -266,7 +266,8 @@ class ProxyEvaluator implements REPL.ReplEval {
           if (ElementMimic.isFakeDom(response.body)) {
             debug('catch a fakedom, try to unwind')
             if (response.body.innerText) {
-              return response.body.innerText
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              return (response.body.innerText as any) as T
             } else {
               const err = new Error('Internal Error: Fakedom objects are not accepted by proxy executor')
               err['code'] = 500
@@ -274,7 +275,7 @@ class ProxyEvaluator implements REPL.ReplEval {
             }
           }
 
-          return response.body
+          return response.body as T
         }
       } catch (err) {
         debug(

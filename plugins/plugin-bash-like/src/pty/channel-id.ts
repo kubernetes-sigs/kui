@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import { CommandHandlerWithEvents, CommandTreeResolution, Response, ParsedOptions } from '../models/command'
-
-/**
- * A call to `read` may or may not have successfully resolved the
- * given `argv.` This method clarifies the situation.
- *
- */
-export function isSuccessfulCommandResolution<T extends Response, O extends ParsedOptions>(
-  resolution: CommandTreeResolution<T, O>
-): resolution is CommandHandlerWithEvents<T, O> {
-  return (resolution as CommandHandlerWithEvents<T, O>).eval !== undefined
+interface ChannelId {
+  url: string
+  uid: number
+  gid: number
 }
+
+export default ChannelId

@@ -24,6 +24,7 @@ import { Arguments, Registrar, Response } from '@kui-shell/core/api/commands'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
+import { FStat } from './ls'
 
 const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/cmds/open')
@@ -74,9 +75,7 @@ async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<Response> 
   } else if (suffix === 'pkl' || suffix === 'sab') {
     throw new Error('Opening of binary files not supported')
   } else {
-    const stats: { isDirectory: boolean; filepath: string; data: string } = await REPL.qexec(
-      `fstat ${REPL.encodeComponent(filepath)} --with-data`
-    )
+    const stats = (await REPL.rexec<FStat>(`fstat ${REPL.encodeComponent(filepath)} --with-data`)).content
 
     if (stats.isDirectory) {
       debug('trying to open a directory; delegating to ls')

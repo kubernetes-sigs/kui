@@ -107,6 +107,13 @@ async function createFilepath(tab: Tab, filepath: string, execOptions: Commands.
   return createFile(tab, filepath, execOptions)
 }
 
+interface FStat {
+  isDirectory: boolean
+  filepath: string
+  fullpath: string
+  data: string
+}
+
 /**
  * Read a local file, optionally creating it
  *
@@ -118,14 +125,14 @@ export const fetchFile: IFetcher = async (
   createIfAbsent: boolean,
   tab: Tab
 ): Promise<Entity> => {
-  let stats: { isDirectory: boolean; filepath: string; fullpath: string; data: string }
+  let stats: FStat
   try {
     if (!tab) {
       const { getTabFromTarget, getCurrentPrompt } = await import('@kui-shell/core/api/ui-lite')
       tab = getTabFromTarget(getCurrentPrompt())
     }
 
-    stats = await tab.REPL.qexec(`fstat ${tab.REPL.encodeComponent(filepath)} --with-data`)
+    stats = (await tab.REPL.rexec<FStat>(`fstat ${tab.REPL.encodeComponent(filepath)} --with-data`)).content
   } catch (err) {
     debug('error code', err.code)
     if (err.code === 404 && createIfAbsent) {

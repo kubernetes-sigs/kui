@@ -29,8 +29,8 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import Errors from '@kui-shell/core/api/errors'
-import Commands from '@kui-shell/core/api/commands'
+import { CodedError } from '@kui-shell/core/api/errors'
+import { ExecOptions, Registrar } from '@kui-shell/core/api/commands'
 
 const debug = Debug('plugins/bash-like/pty/server')
 
@@ -230,7 +230,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         cols?: number
 
         uuid?: string // for request-response
-        execOptions?: Commands.ExecOptions
+        execOptions?: ExecOptions.ExecOptions
       } = JSON.parse(data)
 
       switch (msg.type) {
@@ -262,7 +262,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             )
           } catch (error) {
             debug('got error', error.message)
-            const err: Errors.CodedError = error
+            const err: CodedError = error
             terminate(
               JSON.stringify({
                 type: 'object',
@@ -368,7 +368,12 @@ const createDefaultServer = (): Server => {
  */
 let cachedWss: Server
 let cachedPort: number
-export const main = async (N: string, server?: Server, preexistingPort?: number, expectedCookie?: SessionCookie) => {
+export const main = async (
+  N: string,
+  server?: Server,
+  preexistingPort?: number,
+  expectedCookie?: SessionCookie
+): Promise<number | { wss: Server; port: number }> => {
   if (cachedWss) {
     return cachedPort
   } else {
@@ -442,9 +447,8 @@ export const main = async (N: string, server?: Server, preexistingPort?: number,
  * Register command handlers
  *
  */
-let count = 0
 // const children = []
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen(
     '/bash/websocket/stdio',
     () =>
@@ -462,62 +466,10 @@ export default (commandTree: Commands.Registrar) => {
     { noAuthOk: true }
   )
 
-  commandTree.listen(
-    '/bash/websocket/open',
-    ({ execOptions }) =>
-      // eslint-disable-next-line no-async-promise-executor
-      new Promise(async (resolve, reject) => {
-        const N = count++
-
-        /**
-         * Return a websocket URL for the given port
-         *
-         */
-        const resolveWithHost = (port: number) => {
-          const host: string = execOptions['host'] || `localhost:${port}`
-          resolve(`wss://${host}/bash/${N}`)
-        }
-
-        if (execOptions.isProxied) {
-          // console.log(`do we have a port? ${execOptions['port']}`)
-          return main(N.toString(), execOptions['server'], execOptions['port'])
-            .then(resolveWithHost)
-            .catch(reject)
-        } else {
-          const { ipcRenderer } = await import('electron')
-
-          if (!ipcRenderer) {
-            const error = new Error('electron not available')
-            error['code'] = 127
-            return reject(error)
-          }
-
-          ipcRenderer.send(
-            '/exec/invoke',
-            JSON.stringify({
-              module: '@kui-shell/plugin-bash-like/pty/server',
-              hash: N
-            })
-          )
-
-          const channel = `/exec/response/${N}`
-          ipcRenderer.once(channel, (event: never, arg: string) => {
-            const message: { error?: Error; success?: boolean; returnValue: number } = JSON.parse(arg)
-            if (!message.success) {
-              reject(message.error)
-            } else {
-              const port = message.returnValue
-              resolveWithHost(port)
-            }
-          })
-        }
-      }),
-    { noAuthOk: true }
-  )
+  // Notes: this is a placeholder, simplify to make the command
+  // resolver happy; the real implementation is to be found in the
+  // proxy server, e.g. packages/proxy/app/routes/exec.js
+  commandTree.listen('/bash/websocket/open', () => {
+    throw new Error('Unsupported operation')
+  })
 }
-
-// this is the entry point when we re-invoke ourselves as a separate
-// process (see just above)
-/* if (require.main === module) {
-   main(parseInt(process.argv[2], 10))
-   } */
