@@ -38,7 +38,7 @@ import {
 
 import REPL from '../models/repl'
 import { ElementMimic } from '../util/mimic-dom'
-import { Blank, isVerbEntity, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
+import { isVerbEntity, isLowLevelLoop, MixedResponse, MixedResponsePart } from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventBus from '../core/events'
 import historyModel from '../models/history'
@@ -104,12 +104,6 @@ let currentEvaluatorImpl: ReplEval = new DirectReplEval()
 export const setEvaluatorImpl = (impl: ReplEval): void => {
   debug('setting evaluator impl', impl.name)
   currentEvaluatorImpl = impl
-}
-
-/** an empty promise, for blank lines */
-const emptyPromise = (): Promise<Blank> => {
-  const emptyPromise = Promise.resolve({ blank: true as const })
-  return emptyPromise
 }
 
 /** trim the optional suffix e.g. --last [actionName] */
@@ -212,7 +206,7 @@ class InProcessExecutor implements Executor {
         setStatus(block, Status.validResponse)
         installBlock(blockParent, block, nextBlock)()
       }
-      return emptyPromise()
+      return true
     }
 
     if (execOptions && execOptions.echo && prompt) {
@@ -234,7 +228,7 @@ class InProcessExecutor implements Executor {
           setStatus(block, Status.validResponse)
           installBlock(blockParent, block, nextBlock)()
         }
-        return emptyPromise()
+        return true
       }
 
       // add a history entry

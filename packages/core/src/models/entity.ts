@@ -17,7 +17,6 @@
 import { Table, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { ToolbarText } from '../webapp/views/toolbar-text'
-import { CodedError } from './errors'
 import { UsageModel } from '../core/usage-error'
 import { MultiModalResponse } from './mmr/types'
 
@@ -133,10 +132,6 @@ export function isVerbEntity(entity: Entity): entity is VerbEntity {
   return verby.verb === 'delete' && typeof verby.type === 'string' && typeof verby.name === 'string'
 }
 
-export interface Blank {
-  blank?: true
-}
-
 /**
  * A potentially more complex entity with a "spec"
  *
@@ -152,6 +147,4 @@ export type Entity<Content = void> =
   | Table
   | MultiTable
   | LowLevelLoop
-  | CodedError
   | UsageModel
-  | Blank
