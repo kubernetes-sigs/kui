@@ -48,6 +48,11 @@ interface TableFormatOptions {
   usePip?: boolean
 }
 
+export interface RowFormatOptions extends TableFormatOptions {
+  excludePackageName?: boolean
+  useRepeatingEffect?: boolean
+}
+
 /** groups of States that mark desired final outcomes */
 // NOTE: This is a copy from kubectl plguin, and we should port models/states in kubectl plugin to the core
 enum FinalState {
@@ -667,53 +672,6 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
         tag
       })
     })
-  } else {
-    // otherwise, we have some generic attribute handlers, here
-    const addKind = () => {
-      if (entity.kind || entity.prettyKind) {
-        addCellToRow({
-          className: 'entity-kind',
-          value: entity.prettyKind || entity.kind
-        })
-      }
-    }
-    const addStatus = () => {
-      if (entity.status) {
-        const cell = addCellToRow({
-          className: `entity-rule-status`,
-          value: 'Pending', // delay status display
-          innerClassName: 'repeating-pulse', // css
-          tag: 'badge',
-          tagClass: 'gray-background'
-        })
-
-        /** normalize the status badge by capitalization */
-        const capitalize = (str: string): string => {
-          return str[0].toUpperCase() + str.slice(1).toLowerCase()
-        }
-
-        Promise.resolve(entity.status).then(status => {
-          const badge = cell.querySelector('badge') as HTMLElement
-          badge.innerText = capitalize(status)
-          badge.classList.remove('gray-background')
-          badge.classList.add(status === 'active' ? 'green-background' : 'red-background')
-          badge.classList.remove('repeating-pulse')
-        })
-      }
-    }
-    const addVersion = () => {
-      if (entity.version || entity.prettyVersion) {
-        addCellToRow({
-          className: 'entity-version hide-with-sidecar',
-          value: entity.prettyVersion || entity.version,
-          innerClassName: 'slightly-deemphasize'
-        })
-      }
-    }
-
-    addKind()
-    addStatus()
-    addVersion()
   }
 
   return dom
@@ -866,18 +824,4 @@ export const formatTable = (
   if (!hasReachedFinalState(response) && isWatchable(response) && response.watchByDefault) {
     registerWatcher(tab, response.watchLimit, response.refreshCommand, resultDom, tableViewInfo, formatRowOption)
   }
-}
-
-export interface RowFormatOptions extends TableFormatOptions {
-  excludePackageName?: boolean
-  useRepeatingEffect?: boolean
-}
-
-/**
- * Format a tabular view
- *
- */
-export const formatTableResult = (tab: Tab, response: Table): HTMLElement[] => {
-  debug('formatTableResult', response)
-  return prepareTable(tab, response).map(formatOneRowResult(tab))
 }
