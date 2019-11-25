@@ -20,7 +20,7 @@ import {
   CommandTree,
   CommandTreeResolution,
   Disambiguator,
-  Response,
+  KResponse,
   ParsedOptions
 } from '../models/command'
 
@@ -32,14 +32,14 @@ import { ExecOptions } from '../models/execOptions'
  *
  */
 interface CommandModel {
-  catchalls: CatchAllHandler<Response, ParsedOptions>[]
+  catchalls: CatchAllHandler<KResponse, ParsedOptions>[]
 
   /**
    * Look up a command handler for the given `argv`. This is the main
    * Read part of a REPL.
    *
    */
-  read<T extends Response, O extends ParsedOptions>(
+  read<T extends KResponse, O extends ParsedOptions>(
     argv: string[],
     execOptions: ExecOptions
   ): Promise<CommandTreeResolution<T, O>>
@@ -48,7 +48,7 @@ interface CommandModel {
    * Call the given callback function `fn` for each node in the command tree
    *
    */
-  forEachNode(fn: (command: Command<Response, ParsedOptions>) => void): void
+  forEachNode(fn: (command: Command<KResponse, ParsedOptions>) => void): void
 }
 
 /**
@@ -69,8 +69,8 @@ export class CommandModelImpl implements CommandModel {
   }
 
   /** handlers for command not found */
-  private readonly _catchalls: CatchAllHandler<Response, ParsedOptions>[] = []
-  public get catchalls(): CatchAllHandler<Response, ParsedOptions>[] {
+  private readonly _catchalls: CatchAllHandler<KResponse, ParsedOptions>[] = []
+  public get catchalls(): CatchAllHandler<KResponse, ParsedOptions>[] {
     return this._catchalls
   }
 
@@ -79,7 +79,7 @@ export class CommandModelImpl implements CommandModel {
    * Read part of a REPL.
    *
    */
-  public async read<T extends Response, O extends ParsedOptions>(
+  public async read<T extends KResponse, O extends ParsedOptions>(
     argv: string[],
     execOptions: ExecOptions
   ): Promise<CommandTreeResolution<T, O>> {
@@ -91,8 +91,8 @@ export class CommandModelImpl implements CommandModel {
    * Call the given callback function `fn` for each node in the command tree
    *
    */
-  public forEachNode(fn: (command: Command<Response, ParsedOptions>) => void) {
-    const iter = (root: Command<Response, ParsedOptions>) => {
+  public forEachNode(fn: (command: Command<KResponse, ParsedOptions>) => void) {
+    const iter = (root: Command<KResponse, ParsedOptions>) => {
       if (root) {
         fn(root)
         if (root.children) {

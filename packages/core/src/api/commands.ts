@@ -32,9 +32,12 @@ import * as Context from '../commands/context'
 
 export namespace Commands {
   export import Arguments = _Commands.EvaluatorArgs
-  export import Response = _Commands.Response
+  export import KResponse = _Commands.KResponse
+
+  export import SimpleEntity = Entity.SimpleEntity
   export import CustomResponse = Sidecar.CustomSpec
   export import MixedResponse = Entity.MixedResponse
+  export import ResourceModification = Entity.ResourceModification
 
   export import DefaultExecOptions = _ExecOptions.DefaultExecOptions
   export import ExecOptions = _ExecOptions.ExecOptions
@@ -71,13 +74,17 @@ export {
   CommandLine,
   Evaluator,
   ExecType,
-  Response,
+  KResponse,
   ParsedOptions,
   EvaluatorArgs as Arguments,
   CommandRegistrar as Registrar
 } from '../models/command'
 
-export { MixedResponse, RawResponse } from '../models/entity'
+export { MixedResponse, RawResponse, ResourceModification } from '../models/entity'
+
+export { isCommandHandlerWithEvents } from '../models/command'
+
+export { withLanguage } from '../models/execOptions'
 
 export { _ExecOptions as ExecOptions }
 export default Commands

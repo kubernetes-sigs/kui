@@ -30,7 +30,7 @@ export type CustomContent =
   | HTMLElement
   | Promise<HTMLElement>
 
-export interface CustomSpec<Content = void> extends /* EntitySpec, */ MetadataBearing<CustomContent> {
+export interface CustomSpec<Content = void> extends MetadataBearing<CustomContent> {
   /** noZoom: set to true for custom content to control the zoom event handler */
   type: 'custom'
   noZoom?: boolean

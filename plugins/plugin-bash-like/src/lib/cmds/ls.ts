@@ -392,7 +392,6 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
   )
 
   return new Tables.Table({
-    type: cmd,
     style: Tables.TableStyle.Light,
     noEntityColors: true,
     noSort: true,

@@ -147,7 +147,7 @@ const fetchProjectData = () => info => {
  * module get command
  *
  */
-const doGet = async (command: Commands.Arguments): Promise<Commands.Response> => {
+const doGet = async (command: Commands.Arguments): Promise<Commands.KResponse> => {
   debug(`tutorial get impl`)
 
   const args: string[] = command.argvNoOptions

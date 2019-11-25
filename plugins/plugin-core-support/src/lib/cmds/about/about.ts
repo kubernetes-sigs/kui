@@ -209,7 +209,7 @@ interface Options extends Commands.ParsedOptions {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.Response> => {
+const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.KResponse> => {
   debug('aboutWindow')
 
   const { parsedOptions, REPL } = args

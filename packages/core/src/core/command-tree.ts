@@ -31,7 +31,7 @@ import {
   CommandHandlerWithEvents,
   CommandOptions,
   Event,
-  Response,
+  KResponse,
   ParsedOptions
 } from '../models/command'
 
@@ -88,7 +88,7 @@ const exactlyTheSameRoute = (route: string, path: string[]): boolean => {
  * Navigate the given tree `model`, following the given `path` as [n1,n2,n3]
  *
  */
-const treeMatch = <T extends Response, O extends ParsedOptions>(
+const treeMatch = <T extends KResponse, O extends ParsedOptions>(
   model: CommandTree,
   path: string[],
   readonly = false,
@@ -144,7 +144,7 @@ const treeMatch = <T extends Response, O extends ParsedOptions>(
     return cur
   }
 }
-const match = <T extends Response, O extends ParsedOptions>(path: string[], readonly: boolean): Command<T, O> => {
+const match = <T extends KResponse, O extends ParsedOptions>(path: string[], readonly: boolean): Command<T, O> => {
   return treeMatch(getModelInternal().root, path, readonly)
 }
 
@@ -154,7 +154,7 @@ class DefaultCommandOptions implements CommandOptions {}
  * Register a command handler on the given route
  *
  */
-const _listen = <T extends Response, O extends ParsedOptions>(
+const _listen = <T extends KResponse, O extends ParsedOptions>(
   model: CommandTree,
   route: string,
   handler: CommandHandler<T, O>,
@@ -187,7 +187,7 @@ const _listen = <T extends Response, O extends ParsedOptions>(
   }
 }
 
-const listen = <T extends Response, O extends ParsedOptions>(
+const listen = <T extends KResponse, O extends ParsedOptions>(
   route: string,
   handler: CommandHandler<T, O>,
   options: CommandOptions
@@ -197,7 +197,7 @@ const listen = <T extends Response, O extends ParsedOptions>(
  * Register a subtree in the command tree
  *
  */
-const _subtree = <T extends Response, O extends ParsedOptions>(
+const _subtree = <T extends KResponse, O extends ParsedOptions>(
   route: string,
   options: CommandOptions
 ): Command<T, O> => {
@@ -249,7 +249,7 @@ const _subtree = <T extends Response, O extends ParsedOptions>(
  * Register a synonym of a subtree
  *
  */
-const _subtreeSynonym = <T extends Response, O extends ParsedOptions>(
+const _subtreeSynonym = <T extends KResponse, O extends ParsedOptions>(
   route: string,
   master: Command<T, O>,
   options = master.options
@@ -269,7 +269,7 @@ const _subtreeSynonym = <T extends Response, O extends ParsedOptions>(
  *    master is the return value of `listen`
  *
  */
-const _synonym = <T extends Response, O extends ParsedOptions>(
+const _synonym = <T extends KResponse, O extends ParsedOptions>(
   route: string,
   handler: CommandHandler<T, O>,
   master: Command<T, O>,
@@ -357,7 +357,7 @@ const suggestPartialMatches = (
  * @return a command handler with success and failure event handlers
  *
  */
-const withEvents = <T extends Response, O extends ParsedOptions>(
+const withEvents = <T extends KResponse, O extends ParsedOptions>(
   evaluator: CommandHandler<T, O>,
   leaf: Command<T, O>,
   partialMatches?: PartialMatch[]
@@ -419,7 +419,7 @@ const withEvents = <T extends Response, O extends ParsedOptions>(
  * Parse the given argv, and return an evaluator or throw an Error
  *
  */
-const _read = async <T extends Response, O extends ParsedOptions>(
+const _read = async <T extends KResponse, O extends ParsedOptions>(
   model: CommandTree,
   argv: string[],
   contextRetry: string[],
@@ -495,7 +495,7 @@ const _read = async <T extends Response, O extends ParsedOptions>(
 }
 
 /** read, with retries based on the current context */
-const internalRead = <T extends Response, O extends ParsedOptions>(
+const internalRead = <T extends KResponse, O extends ParsedOptions>(
   model: CommandTree,
   argv: string[]
 ): Promise<false | CommandHandlerWithEvents<T, O>> => {
@@ -563,7 +563,7 @@ const findPartialMatchesAt = (usage: PrescanUsage, partial: string): PartialMatc
  * Read part of a REPL.
  *
  */
-export const read = async <T extends Response, O extends ParsedOptions>(
+export const read = async <T extends KResponse, O extends ParsedOptions>(
   root: CommandTree,
   argv: string[],
   noRetry = false,
@@ -614,7 +614,7 @@ export class ImplForPlugins implements CommandRegistrar {
   // eslint-disable-next-line no-useless-constructor
   public constructor(protected readonly plugin: string) {}
 
-  public catchall<T extends Response, O extends ParsedOptions>(
+  public catchall<T extends KResponse, O extends ParsedOptions>(
     offer: CatchAllOffer,
     handler: CommandHandler<T, O>,
     prio = 0,
@@ -633,7 +633,7 @@ export class ImplForPlugins implements CommandRegistrar {
     })
   }
 
-  public listen<T extends Response, O extends ParsedOptions>(
+  public listen<T extends KResponse, O extends ParsedOptions>(
     route: string,
     handler: CommandHandler<T, O>,
     options?: CommandOptions
@@ -641,7 +641,7 @@ export class ImplForPlugins implements CommandRegistrar {
     return listen(route, handler, Object.assign({}, options, { plugin: this.plugin }))
   }
 
-  public synonym<T extends Response, O extends ParsedOptions>(
+  public synonym<T extends KResponse, O extends ParsedOptions>(
     route: string,
     handler: CommandHandler<T, O>,
     master: Command<T, O>,
@@ -650,11 +650,11 @@ export class ImplForPlugins implements CommandRegistrar {
     return _synonym(route, handler, master, options && Object.assign({}, options, { plugin: this.plugin }))
   }
 
-  public subtree<T extends Response, O extends ParsedOptions>(route: string, options: CommandOptions): Command<T, O> {
+  public subtree<T extends KResponse, O extends ParsedOptions>(route: string, options: CommandOptions): Command<T, O> {
     return _subtree(route, options)
   }
 
-  public subtreeSynonym<T extends Response, O extends ParsedOptions>(
+  public subtreeSynonym<T extends KResponse, O extends ParsedOptions>(
     route: string,
     master: Command<T, O>,
     options = master.options
@@ -662,7 +662,7 @@ export class ImplForPlugins implements CommandRegistrar {
     return _subtreeSynonym(route, master, options)
   }
 
-  public async override<T extends Response, O extends ParsedOptions>(
+  public async override<T extends KResponse, O extends ParsedOptions>(
     route: string,
     fromPlugin: string,
     overrideHandler: CommandOverrideHandler<T, O>,
@@ -677,7 +677,7 @@ export class ImplForPlugins implements CommandRegistrar {
     return this.listen(route, handler, options)
   }
 
-  public async find<T extends Response, O extends ParsedOptions>(
+  public async find<T extends KResponse, O extends ParsedOptions>(
     route: string,
     fromPlugin?: string,
     noOverride = true

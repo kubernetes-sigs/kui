@@ -20,7 +20,15 @@ import Debug from 'debug'
 import { v4 as uuidgen } from 'uuid'
 
 import Capabilities from '@kui-shell/core/api/capabilities'
-import Commands from '@kui-shell/core/api/commands'
+import {
+  Arguments,
+  Evaluator,
+  ExecOptions,
+  KResponse,
+  isCommandHandlerWithEvents,
+  ParsedOptions,
+  withLanguage
+} from '@kui-shell/core/api/commands'
 import Errors from '@kui-shell/core/api/errors'
 import REPL from '@kui-shell/core/api/repl'
 import Settings from '@kui-shell/core/api/settings'
@@ -88,18 +96,18 @@ function renderDom(content: ElementMimic): HTMLElement {
 class ProxyEvaluator implements REPL.ReplEval {
   name = 'ProxyEvaluator'
 
-  async apply<T extends Commands.Response, O extends Commands.ParsedOptions>(
+  async apply<T extends KResponse, O extends ParsedOptions>(
     command: string,
-    execOptions: Commands.ExecOptions,
-    evaluator: Commands.Evaluator<T, O>,
-    args: Commands.Arguments<O>
+    execOptions: ExecOptions.ExecOptions,
+    evaluator: Evaluator<T, O>,
+    args: Arguments<O>
   ): Promise<T> {
     debug('apply', evaluator)
     debug('execOptions', execOptions)
 
     if (
       isDisabled(proxyServerConfig) ||
-      (Commands.isCommandHandlerWithEvents(evaluator) &&
+      (isCommandHandlerWithEvents(evaluator) &&
         evaluator.options &&
         !execOptions.forceProxy &&
         (evaluator.options.inBrowserOk || evaluator.options.needsUI))
@@ -107,7 +115,7 @@ class ProxyEvaluator implements REPL.ReplEval {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)
     } else {
-      const execOptionsForInvoke = Commands.withLanguage(
+      const execOptionsForInvoke = withLanguage(
         Object.assign({}, execOptions, {
           isProxied: true,
           cwd: process.env.PWD,

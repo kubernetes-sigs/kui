@@ -158,7 +158,6 @@ const showHistory = ({ argv, parsedOptions: options }) => {
     .filter(x => x)
 
   return new Tables.Table({
-    type: 'history',
     noSort: true,
     body
   })

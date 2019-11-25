@@ -16,7 +16,7 @@
 
 import { Tab } from '../webapp/cli'
 import { MixedResponse, RawContent, RawResponse } from './entity'
-import { EvaluatorArgs, Response } from './command'
+import { EvaluatorArgs, KResponse } from './command'
 import { ExecOptions } from './execOptions'
 
 export default interface REPL {
@@ -25,7 +25,7 @@ export default interface REPL {
    * emitting output to the console.
    *
    */
-  qexec<T extends Response>(
+  qexec<T extends KResponse>(
     command: string,
     block?: HTMLElement | boolean,
     contextChangeOK?: boolean,
@@ -46,7 +46,7 @@ export default interface REPL {
    * the REPL interaction to appear on the console.
    *
    */
-  pexec<T extends Response>(command: string, execOptions?: ExecOptions): Promise<T>
+  pexec<T extends KResponse>(command: string, execOptions?: ExecOptions): Promise<T>
 
   /**
    * Execute a command in response to an in-view click in a sidecar

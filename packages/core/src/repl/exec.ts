@@ -26,7 +26,7 @@ debug('loading')
 import encodeComponent from './encode'
 import { split, patterns } from './split'
 
-import { ExecType, Evaluator, EvaluatorArgs, Response, ParsedOptions, YargsParserFlags } from '../models/command'
+import { ExecType, Evaluator, EvaluatorArgs, KResponse, ParsedOptions, YargsParserFlags } from '../models/command'
 
 import REPL from '../models/repl'
 import { ElementMimic } from '../util/mimic-dom'
@@ -69,7 +69,7 @@ import * as minimist from 'yargs-parser'
  */
 export interface Executor {
   name: string
-  exec<T extends Response, O extends ParsedOptions>(
+  exec<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions: ExecOptions
   ): Promise<T | CodedError<number> | HTMLElement>
@@ -81,7 +81,7 @@ export interface Executor {
  */
 export interface ReplEval {
   name: string
-  apply<T extends Response, O extends ParsedOptions>(
+  apply<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions: ExecOptions,
     evaluator: Evaluator<T, O>,
@@ -97,7 +97,7 @@ export interface ReplEval {
 export class DirectReplEval implements ReplEval {
   public name = 'DirectReplEval'
 
-  public apply<T extends Response, O extends ParsedOptions>(
+  public apply<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions: ExecOptions,
     evaluator: Evaluator<T, O>,
@@ -148,7 +148,7 @@ const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 class InProcessExecutor implements Executor {
   public name = 'InProcessExecutor'
 
-  public async exec<T extends Response, O extends ParsedOptions>(
+  public async exec<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions = emptyExecOptions()
   ): Promise<T | CodedError<number> | HTMLElement> {
@@ -808,7 +808,7 @@ export const doEval = ({ block = getCurrentBlock(), prompt = getPrompt(block) } 
  * If, while evaluating a command, it needs to evaluate a sub-command...
  *
  */
-export const qexec = <T extends Response>(
+export const qexec = <T extends KResponse>(
   command: string,
   block?: HTMLElement | boolean,
   contextChangeOK?: boolean,
@@ -857,7 +857,7 @@ export const rexec = <Raw extends RawContent>(
  * Programmatic exec, as opposed to human typing and hitting enter
  *
  */
-export const pexec = <T extends Response>(command: string, execOptions?: ExecOptions): Promise<T> => {
+export const pexec = <T extends KResponse>(command: string, execOptions?: ExecOptions): Promise<T> => {
   return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions)) as Promise<T>
 }
 

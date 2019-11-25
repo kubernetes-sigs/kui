@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Arguments, CommandOptions, Registrar, ParsedOptions, Response } from '@kui-shell/core/api/commands'
+import { Arguments, CommandOptions, Registrar, ParsedOptions, KResponse } from '@kui-shell/core/api/commands'
 
 interface Options extends ParsedOptions {
   grumble?: number
 }
 
-const sayHello = ({ parsedOptions }: Arguments<Options>): Response => {
+const sayHello = ({ parsedOptions }: Arguments<Options>): KResponse => {
   return 'hello world' + (parsedOptions.grumble ? ` ${parsedOptions.grumble}` : '')
 }
 
