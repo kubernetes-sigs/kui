@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
+/**
+ * This is intended to be an implementation of `MyResource` from
+ * `./mmr-mode.ts`. Intentionally not importing that type, so we can
+ * check that types are inferred properly.
+ *
+ */
 export const metadataWithNameOnly = {
+  kind: 'Fancy' as const,
   metadata: {
     name: 'this is the name part'
-  }
+  },
+  grumble: 5
 }

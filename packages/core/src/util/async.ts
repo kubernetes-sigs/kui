@@ -19,10 +19,11 @@
  * back.
  *
  */
-export async function promiseEach<T, R>(arr: T[], fn: (t: T) => Promise<R>): Promise<R[]> {
+export async function promiseEach<T, R>(arr: T[], fn: (t: T, idx: number) => Promise<R>): Promise<R[]> {
   const result = []
+  let idx = 0
   for (const item of arr) {
-    result.push(await fn(item))
+    result.push(await fn(item, idx++))
   }
   return result
 }
