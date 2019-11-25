@@ -29,7 +29,7 @@ import { split, patterns } from './split'
 import { ExecType, Evaluator, EvaluatorArgs, KResponse, ParsedOptions, YargsParserFlags } from '../models/command'
 
 import REPL from '../models/repl'
-import { ElementMimic } from '../util/mimic-dom'
+import isFakeDom from '../util/is-fake-dom'
 import {
   RawContent,
   RawResponse,
@@ -40,7 +40,6 @@ import {
 } from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventBus from '../core/events'
-import historyModel from '../models/history'
 import { CodedError } from '../models/errors'
 import { UsageError, UsageModel, UsageRow } from '../core/usage-error'
 
@@ -246,6 +245,7 @@ class InProcessExecutor implements Executor {
       // add a history entry
       if (!execOptions || !execOptions.noHistory) {
         if (!execOptions || !execOptions.quiet) {
+          const historyModel = (await import('../models/history')).default
           execOptions.history = historyModel.add({
             raw: command
           })
@@ -486,7 +486,7 @@ class InProcessExecutor implements Executor {
             if (!(nActualArgs >= nRequiredArgs && nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
               // yup, scan for implicitOK
               const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
-              const { currentSelection } = await import('../webapp/views/sidecar') // FIXME
+              const { currentSelection } = await import('../webapp/views/sidecar-visibility') // FIXME
               const selection = currentSelection(tab)
 
               let nActualArgsWithImplicit = nActualArgs
@@ -658,10 +658,7 @@ class InProcessExecutor implements Executor {
             // response=true means we are in charge of 'ok'
             if (
               !render &&
-              ((execOptions && execOptions.replSilence) ||
-                nested ||
-                isLowLevelLoop(response) ||
-                ElementMimic.isFakeDom(block))
+              ((execOptions && execOptions.replSilence) || nested || isLowLevelLoop(response) || isFakeDom(block))
             ) {
               // the parent exec will deal with the repl
               debug('passing control back to prompt processor or headless')

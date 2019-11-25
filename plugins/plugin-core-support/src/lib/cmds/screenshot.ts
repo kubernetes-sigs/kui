@@ -18,7 +18,7 @@ import { dirname, join } from 'path'
 
 import { Capabilities, Commands, Errors, i18n, UI } from '@kui-shell/core'
 import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar'
+import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar-visibility'
 
 const strings = i18n('plugin-core-support')
 

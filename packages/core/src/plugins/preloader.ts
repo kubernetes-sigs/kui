@@ -22,7 +22,8 @@ import { PrescanModel } from './prescan'
 
 import { MetadataBearing } from '../models/entity'
 import { ImplForPlugins } from '../core/command-tree'
-import { registerBadge, registerMode, BadgeRegistration, ModeRegistration } from '../api/registrars'
+import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
+import { registerSidecarMode as registerMode, ModeRegistration } from '../webapp/views/registrar/modes'
 import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
 
 class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar {

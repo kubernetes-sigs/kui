@@ -18,15 +18,12 @@ import Debug from 'debug'
 const debug = Debug('webapp/views/sidecar')
 debug('loading')
 
-import * as uuid from 'uuid/v4'
-
 import { Sidecar, getSidecar, CustomSpec, CustomContent } from './sidecar-core'
 export { Sidecar, getSidecar, CustomSpec, CustomContent }
 
 import presentAs from './sidecar-present'
 
 import { isCustomSpec } from './custom-content'
-export { isCustomSpec }
 
 import { BadgeSpec, Badge, BadgeOptions, getBadgesDomContainer, addBadge, clearBadges, hasBadge } from './badge'
 export { BadgeSpec, Badge, BadgeOptions }
@@ -34,20 +31,7 @@ export { BadgeSpec, Badge, BadgeOptions }
 import { isPopup } from '../popup-core'
 import { Tab, getTabFromTarget } from '../tab'
 
-import {
-  isVisible,
-  toggle,
-  show,
-  hide,
-  clearSelection,
-  currentSelection,
-  setVisibleClass,
-  setMaximization,
-  toggleMaximization,
-  remove,
-  enableTabIndex
-} from './sidecar-visibility'
-export { isVisible, toggle, show, hide, clearSelection, currentSelection, setMaximization, toggleMaximization, remove }
+import { clearSelection, setVisibleClass, setMaximization, enableTabIndex, isFullscreen } from './sidecar-visibility'
 
 import eventBus from '../../core/events'
 import { element, removeAllDomChildren } from '../util/dom'
@@ -74,6 +58,12 @@ export { MetadataBearingByReference }
 export { isMetadataBearingByReference }
 
 debug('finished loading modules')
+
+/** cheapo uuid; we only need single-threaded uniqueness */
+let _uuidCounter = 1
+function uuid() {
+  return (_uuidCounter++).toString()
+}
 
 export const maybeHideEntity = (tab: Tab, entity: Entity): boolean => {
   const sidecar = getSidecar(tab)
@@ -356,10 +346,6 @@ export const addNameToSidecarHeader = async (
   }
 
   return nameDom
-}
-
-export const isFullscreen = (tab: Tab) => {
-  return tab.classList.contains('sidecar-full-screen')
 }
 
 export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
