@@ -47,12 +47,13 @@ const testRegistrationWithModes = new TestMMR({
 })
 
 const modes: MMRExpectMode[] = [
-  { mode: 'text', label: 'Plain Text', content: 'test plain text', contentType: 'text/plain' },
-  { mode: 'html', label: 'HTML Text', contentType: 'text/html' },
-  { mode: 'markdown', contentType: 'text/markdown' },
+  { mode: 'text', label: 'T1', content: 'test plain text', contentType: 'text/plain' },
+  { mode: 'text2', label: 'T2', content: 'plain as day', contentType: 'text/plain' },
+  { mode: 'html', label: 'H', contentType: 'text/html' },
+  { mode: 'm', contentType: 'text/markdown' },
   {
     mode: 'yaml',
-    label: 'raw',
+    label: 'R',
     content: 'apiVersion: this is the api version field\nkind: this is the kind field',
     contentType: 'yaml'
   }

@@ -36,6 +36,7 @@
     "typescript": "3.6.4"
   },
   "dependencies": {
+    "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-test": "file:plugins/plugin-test"
   }
 }
