@@ -112,6 +112,9 @@ if [ -n "$LAYERS" ]; then
     # set up for code coverage
     ./tools/codecov/instrument.sh
 
+    # get codecov of the plugin assembler logic
+    TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile
+
     # create a dist build to test against
     if [ -n "$NEEDS_HEADLESS" ]; then
         # create a headless dist to test against
