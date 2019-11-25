@@ -20,7 +20,7 @@ import { basename, dirname } from 'path'
 import Util from '@kui-shell/core/api/util'
 import { i18n } from '@kui-shell/core/api/i18n'
 import { isHeadless } from '@kui-shell/core/api/capabilities'
-import { Arguments, Registrar, Response } from '@kui-shell/core/api/commands'
+import { Arguments, Registrar, KResponse } from '@kui-shell/core/api/commands'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
@@ -33,7 +33,7 @@ const debug = Debug('plugins/bash-like/cmds/open')
  * Decide how to display a given filepath
  *
  */
-async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<Response> {
+async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<KResponse> {
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
