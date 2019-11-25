@@ -161,9 +161,9 @@ export const modes = (expected: { mode: string; label?: string; dafaultMode?: bo
     expected.map(async _ => {
       await app.client.waitUntil(async () => {
         const actualMode = `${Selectors.SIDECAR_MODE_BUTTON(_.mode)}`
-        await app.client.waitForVisible(actualMode)
+        await app.client.waitForExist(actualMode)
 
-        if (_.label) {
+        if (_.label && (await app.client.isVisible(actualMode))) {
           const actualLabel = await app.client.getText(actualMode)
           return actualLabel.toLowerCase() === _.label.toLowerCase()
         } else {

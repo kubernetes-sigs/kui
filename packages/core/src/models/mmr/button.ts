@@ -33,7 +33,7 @@ export function formatButton<T extends MetadataBearing>(
     actAsButton: true,
     direct: confirm ? `confirm "${cmd}"` : cmd,
     execOptions: {
-      exec: kind === 'view' ? 'qexec' : 'pexec'
+      exec: kind === 'view' || confirm ? 'qexec' : 'pexec'
     }
   }
 }

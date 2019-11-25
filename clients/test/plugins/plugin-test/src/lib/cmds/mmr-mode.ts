@@ -20,7 +20,7 @@
  *
  */
 
-import { Commands, UI } from '@kui-shell/core'
+import { Commands, Models, UI } from '@kui-shell/core'
 
 import { metadataWithNameOnly as metadata } from './metadata'
 import { textModes } from './content/modes'
@@ -32,14 +32,40 @@ interface Options extends Commands.ParsedOptions {
   defaultMode: string
 }
 
-const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const, defaultMode: true }] // intend to set `defaultMode` here, for testing error handling
+export interface MyResource extends Models.ResourceWithMetadata {
+  kind: 'Fancy'
+  grumble: number
+}
+
+const buttons = [
+  { mode: 'b0', command: 'test string', kind: 'drilldown' as const, confirm: true },
+  { mode: 'b1', command: 'test string', kind: 'drilldown' as const },
+  { mode: 'b2', command: () => 'test string', kind: 'drilldown' as const },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  { mode: 'b3', command: (tab: UI.Tab) => 'test string', kind: 'drilldown' as const },
+  {
+    mode: 'b4',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    command: (tab: UI.Tab, resource: MyResource) => `test string --grumble ${resource.grumble}`,
+    kind: 'drilldown' as const
+  },
+  {
+    mode: 'b5',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    command: (tab: UI.Tab, resource: MyResource) => `some non-existant command`,
+    kind: 'drilldown' as const
+  },
+
+  // intentionally setting `defaultMode` here, to test error handling
+  { mode: 'hi', command: 'test string', kind: 'drilldown' as const, defaultMode: true }
+]
 
 const toolbarText = {
   type: 'info',
   text: 'this is the toolbar text'
 }
 
-const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse) => {
+const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse<MyResource>) => {
   return (args: Commands.Arguments<Options>) => {
     if (args.parsedOptions.defaultMode !== textModes[0].mode) {
       // change the default mode as requested

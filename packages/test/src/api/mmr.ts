@@ -17,6 +17,7 @@
 import { Application } from 'spectron'
 
 import { UI } from '@kui-shell/core'
+import { promiseEach } from '@kui-shell/core/util/async'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -64,10 +65,11 @@ export class TestMMR {
       nameHash?: ClickExpect
     }
   }) {
-    const { command, metadata } = this.param
+    const { command, testName, metadata } = this.param
     const testClickResult = this.testClickResult
 
-    describe(`mmr name ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr name ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -113,10 +115,11 @@ export class TestMMR {
    *
    */
   public namespace(opt?: { onclick: ClickExpect }) {
-    const { command, metadata } = this.param
+    const { command, testName, metadata } = this.param
     const testClickResult = this.testClickResult
 
-    describe(`mmr namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr namespace ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -149,8 +152,9 @@ export class TestMMR {
    *
    */
   public kind(kind: string) {
-    const command = this.param.command
-    describe(`mmr kind ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    const { command, testName } = this.param
+    describe(`mmr kind ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -196,7 +200,8 @@ export class TestMMR {
   public modes(expectModes: MMRExpectMode[], defaultMode: MMRExpectMode, options?: { testWindowButtons?: boolean }) {
     const { command, testName } = this.param
 
-    describe(`mmr modes ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr modes ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -214,8 +219,10 @@ export class TestMMR {
         expectModes.forEach(expectMode => {
           it(`should switch to the ${expectMode.mode} tab`, async () => {
             try {
-              await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))
-              await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(expectMode.mode))
+              if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))
+                await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(expectMode.mode))
+              }
             } catch (err) {
               return Common.oops(this)(err)
             }
@@ -345,10 +352,20 @@ export class TestMMR {
    * @param buttons is the expected array of `button` shown in the Sidecar Toolbar
    *
    */
-  public toolbarButtons(buttons: { mode: string; label?: string; command: string; kind: 'drilldown' | 'view' }[]) {
-    const command = this.param.command
+  public toolbarButtons(
+    buttons: {
+      mode: string
+      label?: string
+      command: string | Function
+      kind: 'drilldown' | 'view'
+      confirm?: boolean
+      expectError?: 404
+    }[]
+  ) {
+    const { command, testName } = this.param
 
-    describe(`mmr toolbar buttons ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr toolbar buttons ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -361,24 +378,54 @@ export class TestMMR {
 
       const drilldownButtons = buttons.filter(_ => _.kind === 'drilldown')
       if (drilldownButtons.length > 0) {
-        it(`should drilldown toolbar buttons in sidecar `, async () => {
-          const { app, count } = await CLI.command(command, this.app)
-          await ReplExpect.ok({ app, count })
-          await SidecarExpect.open(app)
+        it(`should drilldown toolbar buttons in sidecar`, async () => {
+          try {
+            const { app, count } = await CLI.command(command, this.app)
+            await ReplExpect.ok({ app, count })
+            await SidecarExpect.open(app)
 
-          await Promise.all(
-            drilldownButtons.map(async (button, index) => {
+            await promiseEach(drilldownButtons, async (button, index) => {
               // the button should be clickable
               const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode)
               await app.client.waitForVisible(buttonSelector)
               await app.client.click(buttonSelector)
 
+              if (button.confirm) {
+                const dialog = '#confirm-dialog'
+                const denyIt = `${dialog} .bx--btn--secondary`
+                const confirmIt = `${dialog} .bx--btn--danger`
+                await Promise.all([app.client.waitForVisible(denyIt), app.client.waitForVisible(confirmIt)])
+
+                // first click deny, and expect the confirm dialog to be gone
+                await app.client.click(denyIt)
+                await app.client.waitForExist(denyIt, 5000, true)
+
+                // after clicking deny, the next prompt should *not* exist
+                const nextPromptSelector = Selectors.PROMPT_N(count + 1 + index + 1)
+                await app.client.waitForExist(nextPromptSelector, 5000, true)
+
+                // now click the button again, then click confirm
+                await app.client.click(buttonSelector)
+                await Promise.all([app.client.waitForVisible(denyIt), await app.client.waitForVisible(confirmIt)])
+                await app.client.click(confirmIt)
+              }
+
               // after clicking the button, a command should show up in the next prompt
               const promptSelector = Selectors.PROMPT_N(count + 1 + index)
-              await ReplExpect.ok({ app, count: count + 1 + index })
-              await CLI.expectInput(promptSelector, button.command)(app)
+
+              if (!button.expectError) {
+                await ReplExpect.ok({ app, count: count + 1 + index })
+              } else {
+                await ReplExpect.error(button.expectError)
+              }
+
+              if (typeof button.command === 'string') {
+                await CLI.expectInput(promptSelector, button.command)(app)
+              }
             })
-          )
+          } catch (err) {
+            await Common.oops(this, true)(err)
+          }
         })
       }
     })
@@ -391,9 +438,10 @@ export class TestMMR {
    * @param  toolbarText is the expected text content and type shown in the Sidecar Toolbar
    */
   public toolbarText(toolbarText: { type: string; text: string }) {
-    const command = this.param.command
+    const { command, testName } = this.param
 
-    describe(`mmr toolbar text ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr toolbar text ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

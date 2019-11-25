@@ -21,13 +21,15 @@
  * See the command implementation in: plugin-test/src/lib/cmds/mmr-mode.ts
  *
  */
+import { UI } from '@kui-shell/core'
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
-import { metadata as _meta } from '../../lib/cmds/mmr-mode'
+import { MyResource, metadata as _meta } from '../../lib/cmds/mmr-mode'
 
 const { metadata } = _meta
 
 const testDefault = new TestMMR({
   metadata,
+  testName: 'test mmr mode',
   command: 'test mmr mode'
 })
 
@@ -39,12 +41,13 @@ const testOrder = new TestMMR({
 
 // this is the expected modes result showing in the sidecar
 const expectModes: MMRExpectMode[] = [
-  { mode: 'text', label: 'Plain Text', content: 'test plain text', contentType: 'text/plain' },
-  { mode: 'html', label: 'HTML Text', contentType: 'text/html' },
-  { mode: 'markdown', contentType: 'text/markdown' },
+  { mode: 'text', label: 'T1', content: 'test plain text', contentType: 'text/plain' },
+  { mode: 'text2', label: 'T2', content: 'plain as day', contentType: 'text/plain' },
+  { mode: 'html', label: 'H', contentType: 'text/html' },
+  { mode: 'm', contentType: 'text/markdown' },
   {
     mode: 'yaml',
-    label: 'raw',
+    label: 'R',
     content: 'apiVersion: this is the api version field\nkind: this is the kind field',
     contentType: 'yaml'
   }
@@ -55,10 +58,30 @@ const toolbarText = {
   text: 'this is the toolbar text'
 }
 
-const buttons = [{ mode: 'hi', command: 'test string', kind: 'drilldown' as const }]
+const buttons = [
+  { mode: 'b0', command: 'test string', kind: 'drilldown' as const, confirm: true },
+  { mode: 'b1', command: 'test string', kind: 'drilldown' as const },
+  { mode: 'b2', command: () => 'test string', kind: 'drilldown' as const },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  { mode: 'b3', command: (tab: UI.Tab) => 'test string', kind: 'drilldown' as const },
+  {
+    mode: 'b4',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    command: (tab: UI.Tab, resource: MyResource) => `test string --grumble {resource.grumble}`,
+    kind: 'drilldown' as const
+  },
+  {
+    mode: 'b5',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    command: (tab: UI.Tab, resource: MyResource) => `some non-existant command`,
+    kind: 'drilldown' as const,
+    expectError: 404 as const
+  },
+  { mode: 'hi', command: 'test string', kind: 'drilldown' as const }
+]
 
 testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello world' } } })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault.toolbarText(toolbarText)
 testDefault.toolbarButtons(buttons)
-testOrder.modes(expectModes, expectModes[1])
+testOrder.modes(expectModes, expectModes[2])
