@@ -111,7 +111,6 @@ const list = async () => {
   )
 
   return new Tables.Table({
-    type: 'theme',
     noSort: true,
     header,
     body

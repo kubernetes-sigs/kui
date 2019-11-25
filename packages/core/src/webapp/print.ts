@@ -36,7 +36,7 @@ import { promiseEach } from '../util/async'
 
 import { isWatchable } from './models/basicModels'
 import { Streamable, Stream } from '../models/streamable'
-import { CommandHandlerWithEvents, ExecType, Response, ParsedOptions } from '../models/command'
+import { CommandHandlerWithEvents, ExecType, KResponse, ParsedOptions } from '../models/command'
 import { Table, isTable, isMultiTable } from './models/table'
 import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
@@ -204,7 +204,7 @@ export const printResults = (
   echo = true,
   execOptions?: ExecOptions,
   command?: string,
-  evaluator?: CommandHandlerWithEvents<Response, ParsedOptions>
+  evaluator?: CommandHandlerWithEvents<KResponse, ParsedOptions>
 ) => async (response: Entity): Promise<boolean> => {
   debug('printResults', response)
 

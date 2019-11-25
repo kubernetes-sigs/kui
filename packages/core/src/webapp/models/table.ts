@@ -130,7 +130,7 @@ export enum TableStyle {
 export class Table<RowType extends Row = Row> {
   body: RowType[]
 
-  type?: string
+  // type?: string
 
   style?: TableStyle
 

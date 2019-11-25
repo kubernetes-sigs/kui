@@ -58,7 +58,7 @@ function getBasicInfo(releaseName: string): Promise<Models.ResourceWithMetadata>
   })
 }
 
-export default async function helmGet(args: Commands.Arguments): Promise<Commands.Response> {
+export default async function helmGet(args: Commands.Arguments): Promise<Commands.KResponse> {
   const idx = args.argvNoOptions.indexOf('get')
 
   const maybeVerb = args.argvNoOptions[idx + 1]

@@ -16,8 +16,8 @@
 
 import Debug from 'debug'
 
-import UI from '@kui-shell/core/api/ui'
-import Commands from '@kui-shell/core/api/commands'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { KResponse } from '@kui-shell/core/api/commands'
 
 const debug = Debug('plugins/editor/readonly')
 
@@ -25,7 +25,7 @@ const debug = Debug('plugins/editor/readonly')
  * Enter read-only mode
  *
  */
-export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: UI.Tab): Promise<Commands.Response> => {
+export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: Tab): Promise<KResponse> => {
   const entity = await getEntity(tab)
   debug('readonly', entity.name, entity)
   return tab.REPL.pexec(`open ${tab.REPL.encodeComponent(entity.filepath)}`)
@@ -35,7 +35,7 @@ export const gotoReadonlyLocalFile = ({ getEntity }) => async (tab: UI.Tab): Pro
  * Enter edit mode
  *
  */
-export const edit = ({ getEntity, lock = undefined }) => async (tab: UI.Tab): Promise<Commands.Response> => {
+export const edit = ({ getEntity, lock = undefined }) => async (tab: Tab): Promise<KResponse> => {
   const { namespace, name } = await getEntity(tab)
 
   return tab.REPL.qexec(`edit "/${namespace}/${name}"`, undefined, undefined, {

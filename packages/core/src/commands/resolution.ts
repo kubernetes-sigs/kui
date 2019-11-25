@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { CommandHandlerWithEvents, CommandTreeResolution, Response, ParsedOptions } from '../models/command'
+import { CommandHandlerWithEvents, CommandTreeResolution, KResponse, ParsedOptions } from '../models/command'
 
 /**
  * A call to `read` may or may not have successfully resolved the
  * given `argv.` This method clarifies the situation.
  *
  */
-export function isSuccessfulCommandResolution<T extends Response, O extends ParsedOptions>(
+export function isSuccessfulCommandResolution<T extends KResponse, O extends ParsedOptions>(
   resolution: CommandTreeResolution<T, O>
 ): resolution is CommandHandlerWithEvents<T, O> {
   return (resolution as CommandHandlerWithEvents<T, O>).eval !== undefined
