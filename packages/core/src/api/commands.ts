@@ -77,6 +77,7 @@ export {
   KResponse,
   ParsedOptions,
   EvaluatorArgs as Arguments,
+  Event,
   CommandRegistrar as Registrar
 } from '../models/command'
 

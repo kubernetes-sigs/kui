@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export { Tab } from '../webapp/tab'
-export { default as TabState } from '../models/tab-state'
+/**
+ * This is a cheap form of isFakeDom for use by repl/exec.ts
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function isFakeDom(dom: any): boolean {
+  return dom && Object.prototype.hasOwnProperty.call(dom, '_isFakeDom')
+}

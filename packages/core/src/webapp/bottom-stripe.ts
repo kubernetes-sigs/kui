@@ -20,8 +20,8 @@ import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
 import { isTable, isMultiTable, Table, MultiTable } from './models/table'
 import { Capturable } from './models/capturable'
-import { formatTable } from './views/table'
-import { getSidecar, showCustom, isCustomSpec, CustomSpec, insertCustomContent } from './views/sidecar'
+import { CustomSpec, getSidecar } from './views/sidecar-core'
+import { isCustomSpec } from './views/custom-content'
 import sidecarSelector from './views/sidecar-selector'
 import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
@@ -448,13 +448,15 @@ const _addModeButton = (
         }
       }
 
-      const present = (view: Entity) => {
+      const present = async (view: Entity) => {
         if (typeof view === 'string') {
           const dom = document.createElement('div')
           dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
           dom.innerText = view
+          const { insertCustomContent } = await import('./views/sidecar')
           insertCustomContent(tab, dom)
         } else if (isStringWithOptionalContentType(view) && isMetadataBearing(entity)) {
+          const { showCustom } = await import('./views/sidecar')
           showCustom(
             tab,
             {
@@ -469,8 +471,10 @@ const _addModeButton = (
           const dom = document.createElement('div')
           dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
           dom.appendChild(view)
+          const { insertCustomContent } = await import('./views/sidecar')
           insertCustomContent(tab, dom)
         } else if (isCustomSpec(view)) {
+          const { showCustom } = await import('./views/sidecar')
           showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
         } else if (isTable(view) || isMultiTable(view)) {
           const dom1 = document.createElement('div')
@@ -478,7 +482,9 @@ const _addModeButton = (
           dom1.classList.add('scrollable', 'scrollable-auto')
           dom2.classList.add('result-as-table', 'repl-result')
           dom1.appendChild(dom2)
+          const { formatTable } = await import('./views/table')
           formatTable(tab, view, dom2, { usePip: true })
+          const { insertCustomContent } = await import('./views/sidecar')
           insertCustomContent(tab, dom1)
         }
       }
@@ -510,8 +516,9 @@ const _addModeButton = (
               changeActiveButton()
             }
 
-            present(view)
+            await present(view)
           } else if (!isToggle(view) && isCustomSpec(view)) {
+            const { showCustom } = await import('./views/sidecar')
             showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
           } else if (!leaveBottomStripeAlone) {
             changeActiveButton()
@@ -534,7 +541,7 @@ const _addModeButton = (
         const { format } = await import('../models/mmr/show')
         const view = await format(tab, entity as MetadataBearing, opts)
         changeActiveButton()
-        present(view)
+        await present(view)
       }
     }
   }

@@ -16,12 +16,12 @@
 
 import { Tab } from '../../webapp/tab'
 import { MetadataBearing } from '../entity'
-import { CustomSpec, isCustomSpec, showCustom } from '../../webapp/views/sidecar'
+import { CustomSpec } from '../../webapp/views/sidecar-core'
+import { isCustomSpec } from '../../webapp/views/custom-content'
 import { SidecarMode, addModeButtons } from '../../webapp/bottom-stripe'
 import { isTable, isMultiTable, Table, MultiTable } from '../../webapp/models/table'
-import { formatTable } from '../../webapp/views/table'
 
-import { MultiModalResponse, Button, isButton } from './types'
+import { MultiModalResponse, isButton } from './types'
 import {
   Content,
   hasContent,
@@ -32,6 +32,8 @@ import {
   isStringWithOptionalContentType,
   isFunctionContent
 } from './content-types'
+
+import { formatButtons } from './button'
 
 type Viewable = CustomSpec | HTMLElement | Table | MultiTable
 
@@ -67,37 +69,17 @@ export async function format<T extends MetadataBearing>(
   }
 }
 
-function wrapTable(tab: Tab, table: Table | MultiTable): HTMLElement {
+async function wrapTable(tab: Tab, table: Table | MultiTable): Promise<HTMLElement> {
   const dom1 = document.createElement('div')
   const dom2 = document.createElement('div')
   dom1.classList.add('scrollable', 'scrollable-auto')
   dom2.classList.add('result-as-table', 'repl-result')
   dom1.appendChild(dom2)
+
+  const { formatTable } = await import('../../webapp/views/table')
   formatTable(tab, table, dom2)
+
   return dom1
-}
-
-export function formatButton<T extends MetadataBearing>(
-  tab: Tab,
-  resource: T,
-  { mode, label, command, confirm, kind }: Button
-): SidecarMode {
-  const cmd = typeof command === 'string' ? command : command(tab, resource)
-
-  return {
-    mode,
-    label,
-    flush: 'right',
-    actAsButton: true,
-    direct: confirm ? `confirm "${cmd}"` : cmd,
-    execOptions: {
-      exec: kind === 'view' ? 'qexec' : 'pexec'
-    }
-  }
-}
-
-function formatButtons(tab: Tab, mmr: MultiModalResponse, buttons: Button[]): SidecarMode[] {
-  return buttons.map(button => formatButton(tab, mmr, button))
 }
 
 async function renderContent<T extends MetadataBearing>(
@@ -112,7 +94,7 @@ async function renderContent<T extends MetadataBearing>(
     if (!isScalarContent(actualContent)) {
       if (isTable(actualContent) || isMultiTable(actualContent)) {
         return {
-          content: wrapTable(tab, actualContent)
+          content: await wrapTable(tab, actualContent)
         }
       } else {
         return {
@@ -126,7 +108,7 @@ async function renderContent<T extends MetadataBearing>(
     return content
   } else if (isTable(content) || isMultiTable(content)) {
     return {
-      content: wrapTable(tab, content)
+      content: await wrapTable(tab, content)
     }
   }
 }
@@ -179,6 +161,7 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
 
   if (content) {
     if (isCustomSpec(content)) {
+      const { showCustom } = await import('../../webapp/views/sidecar')
       return showCustom(tab, Object.assign({ modes: modesWithButtons, toolbarText: mmr.toolbarText }, content), {
         leaveBottomStripeAlone: true
       })
@@ -195,6 +178,7 @@ export async function show(tab: Tab, mmr: MultiModalResponse) {
         await renderContent(tab, mmr, content)
       )
 
+      const { showCustom } = await import('../../webapp/views/sidecar')
       return showCustom(tab, custom, { leaveBottomStripeAlone: true })
     }
   } else {

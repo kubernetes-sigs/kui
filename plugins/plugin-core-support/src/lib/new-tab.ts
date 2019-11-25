@@ -17,13 +17,13 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import Debug from 'debug'
-import * as uuid from 'uuid/v4'
 
 import Capabilities from '@kui-shell/core/api/capabilities'
-import Commands from '@kui-shell/core/api/commands'
+import { Arguments, Registrar, Event, ExecType } from '@kui-shell/core/api/commands'
 import eventBus from '@kui-shell/core/api/events'
 import { i18n } from '@kui-shell/core/api/i18n'
-import Models from '@kui-shell/core/api/models'
+import { TabState } from '@kui-shell/core/api/tab'
+import { clearSelection } from '@kui-shell/core/api/selection'
 import Settings from '@kui-shell/core/api/settings'
 import * as UI from '@kui-shell/core/api/ui-lite'
 
@@ -42,6 +42,12 @@ interface TabConfig {
   topTabs?: { names: 'fixed' | 'command' }
 }
 const { topTabs = { names: 'command' } } = Settings.config as TabConfig
+
+/** cheapo uuid; we only need single-threaded uniqueness */
+let _uuidCounter = 1
+function uuid() {
+  return (_uuidCounter++).toString()
+}
 
 const usage = {
   strict: 'switch',
@@ -142,8 +148,8 @@ const addKeyboardListeners = (): void => {
  *
  */
 const addCommandEvaluationListeners = (): void => {
-  eventBus.on('/command/complete', (event: Commands.Event) => {
-    if (event.execType !== undefined && event.execType !== Commands.ExecType.Nested && event.route) {
+  eventBus.on('/command/complete', (event: Event) => {
+    if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       // debug('got event', event)
       const button = getTabButton(event.tab)
@@ -154,8 +160,8 @@ const addCommandEvaluationListeners = (): void => {
     }
   })
 
-  eventBus.on('/command/start', (event: Commands.Event) => {
-    if (event.execType !== undefined && event.execType !== Commands.ExecType.Nested && event.route) {
+  eventBus.on('/command/start', (event: Event) => {
+    if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
       // ignore nested, which means one plugin calling another
       // debug('got event', event)
 
@@ -255,7 +261,7 @@ function isInViewport(el: Element) {
  *
  */
 const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
-  tab.state = new Models.Tab.State()
+  tab.state = new TabState()
 
   const newTabId = uuid()
   tab.setAttribute('data-tab-id', newTabId)
@@ -362,7 +368,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   // the wrong repl-result
   UI.empty(newTab.querySelector('.repl-result'))
 
-  Models.Selection.clear(newTab)
+  clearSelection(newTab)
   perTabInit(newTab, newTabButton)
 
   newTabButton.scrollIntoView()
@@ -410,7 +416,7 @@ const oneTimeInit = (): void => {
  * Same as newTab, but done asynchronously
  *
  */
-const newTabAsync = ({ execOptions }: Commands.Arguments) => {
+const newTabAsync = ({ execOptions }: Arguments) => {
   if (execOptions.nested) {
     newTab()
     return true
@@ -423,7 +429,7 @@ const newTabAsync = ({ execOptions }: Commands.Arguments) => {
   }
 }
 
-const registerCommandHandlers = (commandTree: Commands.Registrar) => {
+const registerCommandHandlers = (commandTree: Registrar) => {
   commandTree.listen(
     '/tab/switch',
     ({ argvNoOptions }) => switchTab(getTabId(getTabFromIndex(parseInt(argvNoOptions[argvNoOptions.length - 1], 10)))),
@@ -439,7 +445,7 @@ const registerCommandHandlers = (commandTree: Commands.Registrar) => {
   })
 }
 
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   if (typeof document !== 'undefined') {
     oneTimeInit()
 
