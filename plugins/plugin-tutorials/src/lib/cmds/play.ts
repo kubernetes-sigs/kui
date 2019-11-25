@@ -26,7 +26,7 @@ import {
   hide as hideSidecar,
   show as showSidecar,
   toggleMaximization
-} from '@kui-shell/core/webapp/views/sidecar'
+} from '@kui-shell/core/webapp/views/sidecar-visibility'
 import { Commands, UI, Util } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')

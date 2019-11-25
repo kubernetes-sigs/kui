@@ -19,7 +19,6 @@
 import Debug from 'debug'
 
 import Capabilities from '@kui-shell/core/api/capabilities'
-import Models from '@kui-shell/core/api/models'
 import eventBus from '@kui-shell/core/api/events'
 import Settings from '@kui-shell/core/api/settings'
 import * as UI from '@kui-shell/core/api/ui-lite'
@@ -140,8 +139,9 @@ class ActiveISearch {
    * Attempt to initiate or extend a search
    *
    */
-  doSearch(evt: KeyboardEventPlusPlus) {
+  async doSearch(evt: KeyboardEventPlusPlus) {
     debug('doSearch', evt)
+    const Models = (await import('@kui-shell/core/api/models')).default
 
     if (evt.inputType === 'deleteContentBackward') {
       // if the user hits Backspace, reset currentSearchIdx

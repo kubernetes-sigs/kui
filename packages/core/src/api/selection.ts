@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { Tab } from '../webapp/tab'
-export { default as TabState } from '../models/tab-state'
+export { clearSelection, currentSelection } from '../webapp/views/sidecar-visibility'

@@ -25,11 +25,10 @@ import { SidecarMode as Mode } from './bottom-stripe'
 import { isPopup } from './popup-core'
 import { scrollIntoView } from './scroll'
 import { renderPopupContent, createPopupContentContainer } from './popup'
+import { isCustomSpec } from './views/custom-content'
 
-import { formatTable } from './views/table'
 import Presentation from './views/presentation'
 import presentAs from './views/sidecar-present'
-import { showCustom, isCustomSpec } from './views/sidecar'
 
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
@@ -40,7 +39,6 @@ import { CommandHandlerWithEvents, ExecType, KResponse, ParsedOptions } from '..
 import { Table, isTable, isMultiTable } from './models/table'
 import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
-import { show as showMultiModalResponse } from '../models/mmr/show'
 import {
   Entity,
   isResourceModification,
@@ -64,6 +62,7 @@ const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement) => 
     resultDom.classList.add('result-table-with-custom-entity-colors')
   }
 
+  const { formatTable } = await import('./views/table')
   formatTable(tab, response, resultDom)
 }
 
@@ -117,6 +116,7 @@ export const streamTo = (tab: Tab, block: Element): Stream => {
         resultDom.appendChild(wrapper)
         await printTable(tab, response, wrapper)
       } else if (isCustomSpec(response)) {
+        const { showCustom } = await import('./views/sidecar')
         showCustom(tab, response, {})
       } else {
         previousLine = document.createElement('pre')
@@ -254,6 +254,7 @@ export const printResults = (
       } else if (isCustomSpec(response)) {
         const echoOk = echo || (execOptions && execOptions.replSilence)
         if (echoOk || (execOptions && execOptions.type === ExecType.ClickHandler)) {
+          const { showCustom } = await import('./views/sidecar')
           await showCustom(
             tab,
             response,
@@ -282,6 +283,7 @@ export const printResults = (
         }
       } else if (isMultiModalResponse(response)) {
         const echoOk = echo || (execOptions && execOptions.replSilence)
+        const { show: showMultiModalResponse } = await import('../models/mmr/show')
         await showMultiModalResponse(tab, response)
         if (echoOk && !isPopup()) {
           ok(resultDom.parentElement)
@@ -334,6 +336,7 @@ export const printResults = (
 
     // multi-table output; false means that the renderer hasn't placed
     // anything in the DOM; it's up to us here
+    const { formatTable } = await import('./views/table')
     promise = Promise.resolve(formatTable(tab, response, resultDom)).then(() => false)
   } else {
     promise = render(response, { echo, resultDom })

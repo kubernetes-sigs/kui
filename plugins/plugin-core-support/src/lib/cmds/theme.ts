@@ -16,7 +16,10 @@
 
 import Debug from 'debug'
 
-import { Commands, i18n, Settings, Tables, UI } from '@kui-shell/core'
+import { Arguments, Registrar } from '@kui-shell/core/api/commands'
+import { i18n } from '@kui-shell/core/api/i18n'
+import { Row, Table } from '@kui-shell/core/api/table-models'
+import UI from '@kui-shell/core/api/ui'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/theme')
@@ -59,12 +62,14 @@ const usage = {
  *
  */
 const list = async () => {
-  const header: Tables.Row = {
+  const header: Row = {
     type: 'theme',
     name: '',
     outerCSS: 'not-a-name',
     attributes: [{ value: strings('Theme') }, { value: strings('Style') }]
   }
+
+  const Settings = (await import('@kui-shell/core/api/settings')).default
 
   // careful: the user's chosen theme might not be available in the
   // settings.themes model; e.g. they previously selected a theme that
@@ -74,9 +79,9 @@ const list = async () => {
   debug('currentTheme', currentTheme)
   debug('theme list', Settings.theme.themes)
 
-  const body: Tables.Row[] = (Settings.theme.themes || []).map(
-    (theme: UI.Themes.Theme): Tables.Row => {
-      const row: Tables.Row = {
+  const body: Row[] = (Settings.theme.themes || []).map(
+    (theme: UI.Themes.Theme): Row => {
+      const row: Row = {
         type: 'theme',
         name: theme.name,
         fontawesome: 'fas fa-check',
@@ -110,7 +115,7 @@ const list = async () => {
     }
   )
 
-  return new Tables.Table({
+  return new Table({
     noSort: true,
     header,
     body
@@ -121,7 +126,7 @@ const list = async () => {
  * REPL command to switch themes
  *
  */
-const set = async ({ argvNoOptions }: Commands.Arguments) => {
+const set = async ({ argvNoOptions }: Arguments) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
   await UI.Themes.Persistence.switchTo(theme)
@@ -132,7 +137,7 @@ const set = async ({ argvNoOptions }: Commands.Arguments) => {
  * The command handlers
  *
  */
-export const plugin = (commandTree: Commands.Registrar) => {
+export const plugin = (commandTree: Registrar) => {
   debug('plugin')
 
   commandTree.listen('/theme/list', list, {

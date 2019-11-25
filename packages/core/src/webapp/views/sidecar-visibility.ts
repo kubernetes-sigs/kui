@@ -169,3 +169,11 @@ type MaximizationCause = 'default' | 'user'
 export const toggleMaximization = (tab: Tab, cause?: MaximizationCause) => {
   setMaximization(tab, toggleClass, cause)
 }
+
+/**
+ * Is the sidecar presenting as full screen in the given `tab`?
+ *
+ */
+export const isFullscreen = (tab: Tab) => {
+  return tab.classList.contains('sidecar-full-screen')
+}

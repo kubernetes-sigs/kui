@@ -21,7 +21,6 @@ debug('loading')
 import { getCurrentTab } from './tab'
 import { SidecarMode } from './bottom-stripe'
 
-import { prettyPrintTime } from './util/time'
 import { removeAllDomChildren } from './util/dom'
 import { Badge } from './views/badge'
 import Presentation from './views/presentation'
@@ -61,6 +60,8 @@ export const renderPopupContent = async (
   const prettyType =
     !_prettyType || _prettyType === 'custom' ? process.env.KUI_DEFAULT_PRETTY_TYPE || command : _prettyType
   debug('renderPopupContent', command, entity, prettyType)
+
+  const { prettyPrintTime } = await import('./util/time')
 
   // Last updated... text
   const subtext = document.createElement('div')
