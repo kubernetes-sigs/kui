@@ -21,10 +21,27 @@ import plainTextContent from './text-plain'
 import markdownTextContent from './text-markdown'
 
 // string from content function
-export const plainTextMode: UI.MultiModalMode[] = [{ mode: 'text', label: 'T1', content: plainTextContent() }]
+export const plainTextMode: UI.MultiModalMode[] = [{ mode: 'text', label: 'T1', content: plainTextContent }]
 
 // string directly as content
 export const plainTextModeAlt: UI.MultiModalMode[] = [{ mode: 'text2', label: 'T2', content: 'plain as day' }]
+
+// string directly as content function string
+// this should take the output of the `test string` command and place it in the mode content section
+export const plainTextModeAlt2: UI.MultiModalMode[] = [
+  { mode: 'text3', label: 'T3', content: 'test string', contentType: 'command' }
+]
+
+// table directly as content
+export const tableMode: UI.MultiModalMode[] = [
+  {
+    mode: 'table',
+    label: 'Tbl1',
+    content: {
+      body: [{ name: 'c11', attributes: [{ value: 'c12' }] }, { name: 'c21', attributes: [{ value: 'c22' }] }]
+    }
+  }
+]
 
 // html string
 const htmlTextMode: UI.MultiModalMode[] = [
@@ -47,6 +64,8 @@ const yamlMode: UI.MultiModalMode[] = [
 export const textModes: UI.MultiModalMode[] = [].concat(
   plainTextMode,
   plainTextModeAlt,
+  plainTextModeAlt2,
+  tableMode,
   htmlTextMode,
   markdownTextMode,
   yamlMode

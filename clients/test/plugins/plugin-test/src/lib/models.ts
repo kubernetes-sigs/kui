@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/api/ui-lite'
-import { MyResource } from '../../models'
+import { Models } from '@kui-shell/core'
 
-export default (tab: Tab, resource: MyResource) => `test plain text ${resource.grumble}`
+export interface MyResource extends Models.ResourceWithMetadata {
+  kind: 'Fancy'
+  grumble: number
+}
