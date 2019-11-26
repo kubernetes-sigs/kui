@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
+import { Button } from '@kui-shell/core/api/ui-lite'
 
-import { language } from './file-types'
+// import { language } from './file-types'
 import { save, revert } from './persisters'
-import { EditorResponse, EditorState, CommandResponse } from './response'
+import { EditorResource, EditorResponse, EditorState, CommandResponse } from './response'
 
-type ModeFunction = (state: EditorState) => UI.Mode
+type ModeFunction = (state: EditorState) => Button<EditorResource>
 
 /**
  * Prepare a response for the REPL. Consumes the output of
  * updateEditor
  *
  */
-export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = []) => (
+export const respondToRepl = (extraModes: ModeFunction[] = [] /*, displayOptions = [] */) => (
   response: EditorResponse
 ): CommandResponse => {
   const entity = response.getEntity()
 
-  const badges: UI.Badge[] = [{ title: language(entity.exec.kind), css: 'is-kind-like' }]
+  // const badges: UI.Badge[] = [{ title: language(entity.exec.kind), css: 'is-kind-like' }]
 
-  const modes: UI.Mode[] = [save(response), revert(response)].concat(extraModes.map(modeFn => modeFn(response)))
+  const buttons: Button<EditorResource>[] = [save(response), revert(response)].concat(
+    extraModes.map(modeFn => modeFn(response))
+  )
 
-  return {
-    type: 'custom',
+  const resp: CommandResponse = {
     kind: entity.kind,
     version: entity.version,
     metadata: {
@@ -47,12 +48,20 @@ export const respondToRepl = (extraModes: ModeFunction[] = [], displayOptions = 
     },
     content: response.content,
     toolbarText: response.toolbarText,
-    controlHeaders: ['.header-right-bits'],
-    displayOptions: [`entity-is-${entity.type}`, 'edit-mode'].concat(displayOptions),
-    noZoom: true,
-    badges,
-    modes
+    // controlHeaders: ['.header-right-bits'],
+    // displayOptions: [`entity-is-${entity.type}`, 'edit-mode'].concat(displayOptions),
+    // noZoom: true,
+    // badges,
+    modes: [
+      {
+        mode: 'edit',
+        content: response.content
+      }
+    ],
+    buttons
   }
+
+  return resp
 }
 
 export default respondToRepl

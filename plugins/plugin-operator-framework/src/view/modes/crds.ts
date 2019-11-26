@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
 import { Tab } from '@kui-shell/core/api/ui-lite'
-import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { ModeRegistration } from '@kui-shell/core/api/registrars'
 import { Table } from '@kui-shell/core/api/table-models'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
 
-import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
-
-const debug = Debug('plugin/operator-framework/view/modes/crds')
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 /**
  * e.g. ClusterServiceVersion
@@ -64,36 +60,7 @@ function isCRDBearer(resource: KubeResource): resource is CRDBearer {
   )
 }
 
-/**
- * Show spec.customresourcedefinitions
- *
- */
-export const crdsMode: ModeRegistration<KubeResource> = {
-  when: isCRDBearer,
-  mode: (command: string, resource: Resource): Mode => {
-    try {
-      return {
-        mode: 'CRDs',
-        leaveBottomStripeAlone: true,
-        direct: {
-          plugin: 'operator-framework/dist/index',
-          operation: 'renderAndViewCrds',
-          parameters: { command, resource }
-        }
-      }
-    } catch (err) {
-      debug('error rendering crds button')
-      console.error(err)
-    }
-  }
-}
-
-interface Parameters {
-  command: string
-  resource: Resource<CRDBearer>
-}
-
-function toTable(resource: CRDBearer): Table {
+function content(tab: Tab, resource: CRDBearer): Table {
   return {
     title: 'CRDs',
     header: {
@@ -120,9 +87,16 @@ function toTable(resource: CRDBearer): Table {
   }
 }
 
-export const renderAndView = (tab: Tab, parameters: Parameters) => {
-  const { command, resource } = parameters
-  debug('renderAndView', command, resource)
-
-  return toTable(resource.resource)
+/**
+ * Show spec.customresourcedefinitions
+ *
+ */
+export const crdsMode: ModeRegistration<KubeResource> = {
+  when: isCRDBearer,
+  mode: {
+    mode: 'CRDs',
+    content
+  }
 }
+
+export default crdsMode

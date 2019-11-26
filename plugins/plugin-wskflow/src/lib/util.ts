@@ -93,26 +93,24 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
       {
         mode: 'zoom-one-to-one',
         label: strings['1:1'],
-        actAsButton: true,
-        flush: 'right',
         balloon: 'Use a fixed-size canvas',
         selected: controller.is1to1(),
         selectionController: zoom1to1Bus,
         visibleWhen: visibleWhenShowing,
-        direct: () => {
+        kind: 'view',
+        command: () => {
           controller.zoom1to1()
         }
       },
       {
         mode: 'zoom-to-fit',
         label: strings['Fit'],
-        actAsButton: true,
-        flush: 'right',
         balloon: 'Use a zoom to fit canvas',
         selected: !controller.is1to1(),
         selectionController: zoomToFitBus,
         visibleWhen: visibleWhenShowing,
-        direct: () => {
+        kind: 'view',
+        command: () => {
           controller.zoomToFit()
         }
       }

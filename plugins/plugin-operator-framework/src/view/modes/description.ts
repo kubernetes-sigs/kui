@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
 import * as marked from 'marked'
 
-import { UI } from '@kui-shell/core'
-import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
-
-const debug = Debug('plugin/operator-framework/view/modes/description')
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { ModeRegistration } from '@kui-shell/core/api/registrars'
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 /**
  * e.g. ClusterServiceVersion
@@ -37,40 +35,22 @@ function isDescriptionBearer(resource: KubeResource): resource is DescriptionBea
   return bearer !== undefined && bearer.spec !== undefined && bearer.spec.description !== undefined
 }
 
+function content(tab: Tab, resource: DescriptionBearer) {
+  const container = document.createElement('div')
+  container.innerHTML = marked(resource.spec.description)
+  return container
+}
+
 /**
  * Show spec.customresourcedefinitions
  *
  */
-export const descriptionMode: UI.ModeRegistration<KubeResource> = {
+export const descriptionMode: ModeRegistration<KubeResource> = {
   when: isDescriptionBearer,
-  mode: (command: string, resource: Resource): UI.Mode => {
-    try {
-      return {
-        mode: 'Description',
-        leaveBottomStripeAlone: true,
-        direct: {
-          plugin: 'operator-framework/dist/index',
-          operation: 'renderAndViewDescription',
-          parameters: { command, resource }
-        }
-      }
-    } catch (err) {
-      debug('error rendering description button')
-      console.error(err)
-    }
+  mode: {
+    mode: 'Description',
+    content
   }
 }
 
-interface Parameters {
-  command: string
-  resource: Resource<DescriptionBearer>
-}
-
-export const renderAndView = (tab: UI.Tab, parameters: Parameters) => {
-  const { command, resource } = parameters
-  debug('renderAndView', command, resource)
-
-  const container = document.createElement('div')
-  container.innerHTML = marked(resource.resource.spec.description)
-  return container
-}
+export default descriptionMode

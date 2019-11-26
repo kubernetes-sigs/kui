@@ -45,7 +45,7 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
       .catch(Common.oops(this))
   })
 
-  it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
+  xit(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
     try {
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
       await this.app.client.waitForExist('#confirm-dialog')

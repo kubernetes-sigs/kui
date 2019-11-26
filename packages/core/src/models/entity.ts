@@ -49,6 +49,8 @@ interface MetadataNamedResource {
  *
  */
 export interface MetadataBearing<Content = void> extends MetadataNamedResource {
+  apiVersion?: string
+
   /** optional designation of resource version */
   version?: string
 
@@ -66,13 +68,22 @@ export interface MetadataBearing<Content = void> extends MetadataNamedResource {
   content?: Content
   contentType?: string
   toolbarText?: ToolbarText
-  spec?: {
-    displayName?: string
-  }
 }
+
 export function isMetadataBearing(spec: MetadataBearing | Entity): spec is MetadataBearing {
   const meta = spec as MetadataBearing
   return meta !== undefined && meta.metadata !== undefined && meta.metadata.name !== undefined
+}
+
+export interface WithDisplayName extends MetadataBearing {
+  spec: {
+    displayName: string
+  }
+}
+
+export function hasDisplayName(resource: MetadataBearing): resource is WithDisplayName {
+  const res = resource as WithDisplayName
+  return isMetadataBearing(resource) && res.spec !== undefined && typeof res.spec.displayName === 'string'
 }
 
 /**

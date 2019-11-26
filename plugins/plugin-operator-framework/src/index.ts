@@ -15,7 +15,3 @@
  */
 
 // this file defines the external API
-
-export { renderAndView as renderAndViewCrds } from './view/modes/crds'
-export { renderAndView as renderAndViewPackages } from './view/modes/packages'
-export { renderAndView as renderAndViewDescription } from './view/modes/description'

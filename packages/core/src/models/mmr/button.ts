@@ -16,24 +16,42 @@
 
 import { Tab } from '../../webapp/tab'
 import { MetadataBearing } from '../entity'
-import { MultiModalResponse, Button } from './types'
+import { MultiModalResponse, Button, isViewButton } from './types'
 import { SidecarMode } from '../../webapp/bottom-stripe'
 
-export function formatButton<T extends MetadataBearing>(
-  tab: Tab,
-  resource: T,
-  { mode, label, command, confirm, kind }: Button
-): SidecarMode {
-  const cmd = typeof command === 'string' ? command : command(tab, resource)
+function direct<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
+  if (isViewButton(button)) {
+    return button.command
+  } else {
+    const cmd = typeof button.command === 'string' ? button.command : button.command(tab, resource)
+    if (button.confirm) {
+      return `confirm "${cmd}"`
+    } else {
+      return cmd
+    }
+  }
+}
+
+export function formatButton<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>): SidecarMode {
+  const { mode, label, balloon, visibleWhen, selected, selectionController } = button
 
   return {
+    // Label
     mode,
     label,
+
+    // VisibilityTraits
+    balloon,
+    visibleWhen,
+    selected,
+    selectionController,
+
+    // low-level impl
     flush: 'right',
     actAsButton: true,
-    direct: confirm ? `confirm "${cmd}"` : cmd,
+    direct: direct(tab, resource, button),
     execOptions: {
-      exec: kind === 'view' || confirm ? 'qexec' : 'pexec'
+      exec: isViewButton(button) || button.confirm ? 'qexec' : 'pexec'
     }
   }
 }

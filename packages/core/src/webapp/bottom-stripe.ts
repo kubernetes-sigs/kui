@@ -44,7 +44,7 @@ const debug = Debug('webapp/picture-in-picture')
  * across remote proxies, and thus is preferable to the former.
  *
  */
-type DirectViewController = string | DirectViewControllerFunction | DirectViewControllerSpec | DirectViewEntity
+type DirectViewController = string | DirectViewControllerFunction | DirectViewEntity
 export type DirectViewControllerFunction<E = object, R = object> = (tab: Tab, entity: E) => PromiseLike<R> | R | void
 
 type DirectViewEntity = CustomSpec
@@ -98,34 +98,13 @@ const callDirect = async (
   } else if (typeof makeView === 'function') {
     debug('makeView as function')
     return Promise.resolve(makeView(tab, entity) as DirectResult)
-  } else if (isDirectViewEntity(makeView)) {
+  } /* if (isDirectViewEntity(makeView)) */ else {
     const combined = Object.assign({}, entity, makeView)
     return combined
-  } else {
-    //
-    // what we want: a dynamic import of the plugin's "main"
-    //
-    // what we can't have: webpack does not support this; this seems
-    // reasonable, as support this use case would require webpack to
-    // scan for matches while it is building
-    //
-    // what we do instead: rely users of this API to provide the full
-    // path to their main
-    //
-    // what we could also do in the future: enforce a policy on
-    // plugins as to path to their main, e.g. /dist/index.js
-    //
-    const provider: Record<
-      string,
-      (tab: Tab, parameters: object, entity: MetadataBearing | CustomSpec) => DirectResult
-    > = await import('@kui-shell/plugin-' + makeView.plugin)
-    try {
-      return provider[makeView.operation](tab, makeView.parameters, entity)
-    } catch (err) {
-      console.error('could not render mode', makeView.operation, err)
-    }
   }
 }
+
+export type SelectionController = { on: (evt: 'change', cb: (selected: boolean) => void) => void }
 
 export interface LowLevelContent<Direct = DirectViewController> {
   // weak: if we have exclusively flush:right buttons, then snap them all left
@@ -134,7 +113,7 @@ export interface LowLevelContent<Direct = DirectViewController> {
   flush?: 'right' | 'weak'
 
   selected?: boolean
-  selectionController?: { on: (evt: 'change', cb: (selected: boolean) => void) => void }
+  selectionController?: SelectionController
   visibleWhen?: string
   leaveBottomStripeAlone?: boolean
 
