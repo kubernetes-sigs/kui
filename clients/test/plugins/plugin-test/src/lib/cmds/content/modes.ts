@@ -61,7 +61,8 @@ const yamlMode: UI.MultiModalMode[] = [
   }
 ]
 
-export const textModes: UI.MultiModalMode[] = [].concat(
+/** string content as function mode first */
+export const modes1: UI.MultiModalMode[] = [].concat(
   plainTextMode,
   plainTextModeAlt,
   plainTextModeAlt2,
@@ -70,3 +71,49 @@ export const textModes: UI.MultiModalMode[] = [].concat(
   markdownTextMode,
   yamlMode
 )
+
+/** table mode first */
+export const modes2: UI.MultiModalMode[] = [].concat(
+  tableMode, // swapped to first
+  plainTextModeAlt,
+  plainTextModeAlt2,
+  plainTextMode, // swapped with tableMode
+  htmlTextMode,
+  markdownTextMode,
+  yamlMode
+)
+
+/** plain string content mode first */
+export const modes3: UI.MultiModalMode[] = [].concat(
+  plainTextModeAlt, // swapped to first
+  plainTextMode, // swapped with plainTextModeAlt
+  plainTextModeAlt2,
+  tableMode,
+  htmlTextMode,
+  markdownTextMode,
+  yamlMode
+)
+
+/** command string mode first */
+export const modes4: UI.MultiModalMode[] = [].concat(
+  plainTextModeAlt2, // swapped to first
+  plainTextModeAlt,
+  plainTextMode, // swapped with plainTextModeAlt2
+  tableMode,
+  htmlTextMode,
+  markdownTextMode,
+  yamlMode
+)
+
+/** html string mode first */
+export const modes5: UI.MultiModalMode[] = [].concat(
+  htmlTextMode, // swapped to first
+  plainTextModeAlt,
+  plainTextModeAlt2,
+  tableMode,
+  plainTextMode, // swapped with htmlTextMode
+  markdownTextMode,
+  yamlMode
+)
+
+export const modeOrderVariants = [modes1, modes2, modes3, modes4, modes5]
