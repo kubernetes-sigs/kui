@@ -24,7 +24,7 @@
 
 import { Commands, UI } from '@kui-shell/core'
 import { metadataWithNameOnly as metadata } from './metadata'
-import { textModes } from './content/modes'
+import { modes1 as textModes } from './content/modes'
 
 // exporting this for consumption in tests
 export { metadata }

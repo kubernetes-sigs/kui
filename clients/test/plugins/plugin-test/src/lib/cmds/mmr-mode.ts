@@ -23,7 +23,7 @@
 import { Commands, UI } from '@kui-shell/core'
 
 import { metadataWithNameOnly as metadata } from './metadata'
-import { textModes } from './content/modes'
+import { modeOrderVariants } from './content/modes'
 import { MyResource } from '../models'
 
 // exporting this for consumption in tests
@@ -61,8 +61,13 @@ const toolbarText = {
   text: 'this is the toolbar text'
 }
 
-const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse<MyResource>) => {
+/**
+ * @param idx into modeOrderVariants array
+ *
+ */
+const doModes = (idx: number): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse<MyResource>) => {
   return (args: Commands.Arguments<Options>) => {
+    const textModes = modeOrderVariants[idx]
     if (args.parsedOptions.defaultMode !== textModes[0].mode) {
       // change the default mode as requested
       textModes.forEach(mode => {
@@ -78,9 +83,14 @@ const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalRespons
 }
 
 export default (commandTree: Commands.Registrar) => {
-  commandTree.listen('/test/mmr/mode', doModes(), {
+  commandTree.listen('/test/mmr/mode', doModes(0), {
     usage: {
       docs: 'A test of MultiModalResponse mode'
     }
+  })
+
+  modeOrderVariants.slice(1).forEach((_, idx) => {
+    // `test mmr mode2/3/4/5` which uses modeOrderVariants[1/2/3/4]
+    commandTree.listen(`/test/mmr/mode${idx + 2}`, doModes(idx + 1))
   })
 }

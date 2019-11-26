@@ -29,18 +29,6 @@ import { metadata as _meta } from '../../lib/cmds/mmr-mode'
 
 const { metadata } = _meta
 
-const testDefault = new TestMMR({
-  metadata,
-  testName: 'test mmr mode',
-  command: 'test mmr mode'
-})
-
-const testOrder = new TestMMR({
-  testName: 'change order',
-  metadata,
-  command: 'test mmr mode --defaultMode html'
-})
-
 // this is the expected modes result showing in the sidecar
 const expectModes: MMRExpectMode[] = [
   { mode: 'text', label: 'T1', content: 'test plain text 5', contentType: 'text/plain' },
@@ -56,6 +44,55 @@ const expectModes: MMRExpectMode[] = [
     contentType: 'yaml'
   }
 ]
+
+function swapToFirst(modes: MMRExpectMode[], whichMode: string) {
+  const swapped = modes.slice(0)
+  const idxOfNewFirst = swapped.findIndex(_ => _.mode === whichMode)
+  if (idxOfNewFirst < 0) {
+    throw new Error('cannot swapToFirst')
+  }
+  const tmp = swapped[0]
+  swapped[0] = swapped[idxOfNewFirst]
+  swapped[idxOfNewFirst] = tmp
+  return swapped
+}
+
+const expectModes2 = swapToFirst(expectModes, 'table')
+const expectModes3 = swapToFirst(expectModes, 'text2')
+const expectModes4 = swapToFirst(expectModes, 'text3')
+const expectModes5 = swapToFirst(expectModes, 'html')
+
+const testDefault = new TestMMR({
+  metadata,
+  testName: 'test mmr mode',
+  command: 'test mmr mode'
+})
+const testDefault2 = new TestMMR({
+  metadata,
+  testName: 'test mmr mode2',
+  command: 'test mmr mode2'
+})
+const testDefault3 = new TestMMR({
+  metadata,
+  testName: 'test mmr mode3',
+  command: 'test mmr mode3'
+})
+const testDefault4 = new TestMMR({
+  metadata,
+  testName: 'test mmr mode4',
+  command: 'test mmr mode4'
+})
+const testDefault5 = new TestMMR({
+  metadata,
+  testName: 'test mmr mode5',
+  command: 'test mmr mode5'
+})
+
+const testOrder = new TestMMR({
+  testName: 'change order',
+  metadata,
+  command: 'test mmr mode --defaultMode html'
+})
 
 const toolbarText = {
   type: 'info',
@@ -86,6 +123,10 @@ const buttons = [
 
 testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello world' } } })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
+testDefault2.modes(expectModes2, expectModes2[0])
+testDefault3.modes(expectModes3, expectModes3[0])
+testDefault4.modes(expectModes4, expectModes4[0])
+testDefault5.modes(expectModes5, expectModes5[0])
 testDefault.toolbarText(toolbarText)
 testDefault.toolbarButtons(buttons)
 testOrder.modes(expectModes, expectModes[4])
