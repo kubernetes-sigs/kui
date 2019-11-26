@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert'
 import { Application } from 'spectron'
 
 import { UI } from '@kui-shell/core'
@@ -35,7 +36,7 @@ interface TestParam {
   }
 }
 
-export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor)
+export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor | TableContent)
 
 export class TestMMR {
   /**
@@ -231,7 +232,30 @@ export class TestMMR {
           if (expectMode.contentType === 'text/plain') {
             it(`should show plain text content in the ${expectMode.mode} tab`, async () => {
               try {
-                await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                  await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                }
+              } catch (err) {
+                return Common.oops(this)(err)
+              }
+            })
+          } else if (expectMode.contentType === 'table') {
+            it(`should show ${expectMode.nRows} table rows in the ${expectMode.mode} tab`, async () => {
+              try {
+                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                  const rows = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr`)
+                  assert.strictEqual(rows.value.length, expectMode.nRows)
+                }
+              } catch (err) {
+                return Common.oops(this)(err)
+              }
+            })
+            it(`should show ${expectMode.nCells} table cells in the ${expectMode.mode} tab`, async () => {
+              try {
+                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                  const cells = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} td`)
+                  assert.strictEqual(cells.value.length, expectMode.nCells)
+                }
               } catch (err) {
                 return Common.oops(this)(err)
               }
@@ -240,7 +264,9 @@ export class TestMMR {
             if (expectMode.editor === true) {
               it(`should open editor and show yaml content in the ${expectMode.mode} tab`, async () => {
                 try {
-                  await SidecarExpect.yaml(expectMode.content)(this.app)
+                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                    await SidecarExpect.yaml(expectMode.content)(this.app)
+                  }
                 } catch (err) {
                   return Common.oops(this)(err)
                 }
@@ -248,7 +274,9 @@ export class TestMMR {
             } else {
               it(`should show plain yaml content in the ${expectMode.mode} tab`, async () => {
                 try {
-                  await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                    await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                  }
                 } catch (err) {
                   return Common.oops(this)(err)
                 }
@@ -464,6 +492,12 @@ interface PlainTextContent {
   content?: string
   contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
   editor?: false
+}
+
+interface TableContent {
+  nRows: number
+  nCells: number
+  contentType: 'table'
 }
 
 interface YamlContentWithEditor {

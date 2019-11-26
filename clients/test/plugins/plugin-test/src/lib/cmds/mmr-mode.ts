@@ -20,21 +20,17 @@
  *
  */
 
-import { Commands, Models, UI } from '@kui-shell/core'
+import { Commands, UI } from '@kui-shell/core'
 
 import { metadataWithNameOnly as metadata } from './metadata'
 import { textModes } from './content/modes'
+import { MyResource } from '../models'
 
 // exporting this for consumption in tests
 export { metadata }
 
 interface Options extends Commands.ParsedOptions {
   defaultMode: string
-}
-
-export interface MyResource extends Models.ResourceWithMetadata {
-  kind: 'Fancy'
-  grumble: number
 }
 
 const buttons = [
