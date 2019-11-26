@@ -23,7 +23,9 @@
  */
 import { UI } from '@kui-shell/core'
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
-import { MyResource, metadata as _meta } from '../../lib/cmds/mmr-mode'
+
+import { MyResource } from '../../lib/models'
+import { metadata as _meta } from '../../lib/cmds/mmr-mode'
 
 const { metadata } = _meta
 
@@ -41,8 +43,10 @@ const testOrder = new TestMMR({
 
 // this is the expected modes result showing in the sidecar
 const expectModes: MMRExpectMode[] = [
-  { mode: 'text', label: 'T1', content: 'test plain text', contentType: 'text/plain' },
+  { mode: 'text', label: 'T1', content: 'test plain text 5', contentType: 'text/plain' },
   { mode: 'text2', label: 'T2', content: 'plain as day', contentType: 'text/plain' },
+  { mode: 'text3', label: 'T3', content: 'hello world', contentType: 'text/plain' },
+  { mode: 'table', label: 'Tbl1', nRows: 2, nCells: 4, contentType: 'table' },
   { mode: 'html', label: 'H', contentType: 'text/html' },
   { mode: 'm', contentType: 'text/markdown' },
   {
@@ -84,4 +88,4 @@ testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello wor
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault.toolbarText(toolbarText)
 testDefault.toolbarButtons(buttons)
-testOrder.modes(expectModes, expectModes[2])
+testOrder.modes(expectModes, expectModes[4])

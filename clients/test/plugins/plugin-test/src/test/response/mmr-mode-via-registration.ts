@@ -47,8 +47,10 @@ const testRegistrationWithModes = new TestMMR({
 })
 
 const modes: MMRExpectMode[] = [
-  { mode: 'text', label: 'T1', content: 'test plain text', contentType: 'text/plain' },
+  { mode: 'text', label: 'T1', content: 'test plain text 5', contentType: 'text/plain' },
   { mode: 'text2', label: 'T2', content: 'plain as day', contentType: 'text/plain' },
+  { mode: 'text3', label: 'T3', content: 'hello world', contentType: 'text/plain' },
+  { mode: 'table', label: 'Tbl1', nRows: 2, nCells: 4, contentType: 'table' },
   { mode: 'html', label: 'H', contentType: 'text/html' },
   { mode: 'm', contentType: 'text/markdown' },
   {
