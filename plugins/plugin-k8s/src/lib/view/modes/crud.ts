@@ -15,19 +15,19 @@
  */
 
 import { i18n } from '@kui-shell/core/api/i18n'
-import { Mode } from '@kui-shell/core/api/registrars'
+import { Button } from '@kui-shell/core/api/ui-lite'
 
 import makeButton from './button'
 
 const strings = i18n('plugin-k8s')
 
-export const createResourceButton = (): Mode =>
+export const createResourceButton = (): Button =>
   makeButton({
     mode: 'create',
     label: strings('createResource')
   })
 
-export const deleteResourceButton = (): Mode =>
+export const deleteResourceButton = (): Button =>
   makeButton({
     mode: 'delete',
     label: strings('deleteResource')

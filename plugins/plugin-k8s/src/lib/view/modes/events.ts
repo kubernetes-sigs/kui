@@ -17,7 +17,7 @@
 import Debug from 'debug'
 
 import { Tab } from '@kui-shell/core/api/ui-lite'
-import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { ModeRegistration } from '@kui-shell/core/api/registrars'
 import { i18n } from '@kui-shell/core/api/i18n'
 import { Table, isTable } from '@kui-shell/core/api/table-models'
 
@@ -67,41 +67,7 @@ function hasEvents(resource: KubeResource): boolean {
   return isKubeResource(resource) && !(resource.apiVersion === 'v1' && resource.kind === 'Event')
 }
 
-/**
- * Add a Events mode button to the given modes model, if called for by
- * the given resource.
- *
- */
-export const eventsMode: ModeRegistration<KubeResource> = {
-  when: hasEvents,
-  mode: (command: string, resource: Resource): Mode => {
-    debug('events', resource)
-    try {
-      return {
-        mode: 'events',
-        label: strings('events'),
-        leaveBottomStripeAlone: true,
-        direct: {
-          plugin: 'k8s/dist/index',
-          operation: 'renderAndViewEvents',
-          parameters: { command, resource }
-        }
-      }
-    } catch (err) {
-      debug('error rendering events mode', err)
-    }
-  }
-}
-
-interface Parameters {
-  command: string
-  resource: Resource
-}
-
-export const renderAndViewEvents = async (tab: Tab, parameters: Parameters) => {
-  const { command, resource } = parameters
-  debug('renderAndViewEvents', command, resource)
-
+export const renderAndViewEvents = async (tab: Tab, resource: Resource) => {
   const events = await getEvents(tab, resource.resource)
 
   if (typeof events === 'string') {
@@ -112,5 +78,19 @@ export const renderAndViewEvents = async (tab: Tab, parameters: Parameters) => {
     return pre
   } else {
     return events
+  }
+}
+
+/**
+ * Add a Events mode button to the given modes model, if called for by
+ * the given resource.
+ *
+ */
+export const eventsMode: ModeRegistration<KubeResource> = {
+  when: hasEvents,
+  mode: {
+    mode: 'events',
+    label: strings('events'),
+    content: renderAndViewEvents
   }
 }

@@ -17,7 +17,7 @@
 import Debug from 'debug'
 
 import { Tab } from '@kui-shell/core/api/ui-lite'
-import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { ModeRegistration } from '@kui-shell/core/api/registrars'
 import { Row } from '@kui-shell/core/api/table-models'
 import { i18n } from '@kui-shell/core/api/i18n'
 import { encodeComponent } from '@kui-shell/core/api/repl-util'
@@ -27,45 +27,6 @@ import { TrafficLight } from '../../model/states'
 
 const strings = i18n('plugin-k8s')
 const debug = Debug('k8s/view/modes/containers')
-
-/**
- * Return a sidecar mode button model that shows a containers table
- * for the given resource
- *
- */
-export const containersButton = (command: string, resource: Resource, overrides?): Mode =>
-  Object.assign(
-    {},
-    {
-      mode: 'containers',
-      label: strings('containers'),
-      direct: {
-        plugin: 'k8s/dist/index',
-        operation: 'renderAndViewContainers',
-        parameters: { command, resource }
-      }
-    },
-    overrides || {}
-  )
-
-/**
- * Add a Containers mode button to the given modes model, if called
- * for by the given resource.
- *
- */
-export const containersMode: ModeRegistration<KubeResource> = {
-  when: (resource: KubeResource) => {
-    return resource.spec && resource.spec.containers
-  },
-  mode: (command: string, resource: Resource): Mode => {
-    try {
-      return containersButton(command, resource)
-    } catch (err) {
-      debug('error rendering containers button')
-      console.error(err)
-    }
-  }
-}
 
 /**
  * Return a drilldown function that shows container logs
@@ -188,8 +149,8 @@ const bodyModel = (tab: Tab, resource: Resource): Row[] => {
  * Render the tabular containers view
  *
  */
-export const renderContainers = async (tab: Tab, command: string, resource: Resource) => {
-  debug('renderContainers', command, resource)
+export const renderContainers = async (tab: Tab, resource: Resource) => {
+  debug('renderContainers', resource)
 
   const fetchPod = `kubectl get pod ${encodeComponent(resource.resource.metadata.name)} -n "${
     resource.resource.metadata.namespace
@@ -219,10 +180,22 @@ export const renderContainers = async (tab: Tab, command: string, resource: Reso
  * Render a containers table and show it in the sidecar
  *
  */
-interface Parameters {
-  command: string
-  resource: Resource
+export const renderAndViewContainers = (tab: Tab, resource: Resource) => {
+  return renderContainers(tab, resource)
 }
-export const renderAndViewContainers = (tab: Tab, parameters: Parameters) => {
-  return renderContainers(tab, parameters.command, parameters.resource)
+
+/**
+ * Add a Containers mode button to the given modes model, if called
+ * for by the given resource.
+ *
+ */
+export const containersMode: ModeRegistration<KubeResource> = {
+  when: (resource: KubeResource) => {
+    return resource.spec && resource.spec.containers
+  },
+  mode: {
+    mode: 'containers',
+    label: strings('containers'),
+    content: renderContainers
+  }
 }

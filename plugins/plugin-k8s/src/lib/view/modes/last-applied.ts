@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
 import Commands from '@kui-shell/core/api/commands'
 import { i18n } from '@kui-shell/core/api/i18n'
 import { Tab } from '@kui-shell/core/api/ui-lite'
-import { ModeRegistration, Mode } from '@kui-shell/core/api/registrars'
+import { ModeRegistration } from '@kui-shell/core/api/registrars'
 
 import { Resource, KubeResource } from '../../model/resource'
 
 const strings = i18n('plugin-k8s')
-const debug = Debug('k8s/view/modes/last-applied')
 
 /**
  * Extract the last-applied-configuration annotation
@@ -43,37 +40,6 @@ function getLastAppliedRaw(resource: KubeResource): string {
  */
 function hasLastApplied(resource: KubeResource): boolean {
   return getLastAppliedRaw(resource) !== undefined
-}
-
-/**
- * Add a Pods mode button to the given modes model, if called for by
- * the given resource.
- *
- */
-export const lastAppliedMode: ModeRegistration<KubeResource> = {
-  when: hasLastApplied,
-  mode: (command: string, resource: Resource): Mode => {
-    debug('lastApplied', resource)
-    try {
-      return {
-        mode: 'last applied',
-        label: strings('lastApplied'),
-        leaveBottomStripeAlone: true,
-        direct: {
-          plugin: 'k8s/dist/index',
-          operation: 'renderAndViewLastApplied',
-          parameters: { command, resource }
-        }
-      }
-    } catch (err) {
-      debug('error rendering last applied', err)
-    }
-  }
-}
-
-interface Parameters {
-  command: string
-  resource: Resource
 }
 
 /**
@@ -104,9 +70,20 @@ async function respondWith(lastRaw: string, fullResource: KubeResource): Promise
   }
 }
 
-export const renderAndViewLastApplied = async (tab: Tab, parameters: Parameters) => {
-  const { command, resource } = parameters
-  debug('renderAndViewLastApplied', command, resource)
-
+export const renderAndViewLastApplied = async (tab: Tab, resource: Resource) => {
   return respondWith(getLastAppliedRaw(resource.resource), resource.resource)
+}
+
+/**
+ * Add a Pods mode button to the given modes model, if called for by
+ * the given resource.
+ *
+ */
+export const lastAppliedMode: ModeRegistration<KubeResource> = {
+  when: hasLastApplied,
+  mode: {
+    mode: 'last applied',
+    label: strings('lastApplied'),
+    content: renderAndViewLastApplied
+  }
 }

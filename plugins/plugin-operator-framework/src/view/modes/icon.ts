@@ -52,7 +52,7 @@ function isIconBearer(resource: KubeResource): resource is IconBearer {
  * Show spec.customresourcedefinitions
  *
  */
-export const iconBadge: UI.BadgeRegistration<IconBearer> = {
+const iconBadge: UI.BadgeRegistration<IconBearer> = {
   when: isIconBearer,
   badge: (resource: IconBearer): UI.BadgeSpec => {
     const { mediatype, base64data } = resource.spec.icon[0]
@@ -66,3 +66,5 @@ export const iconBadge: UI.BadgeRegistration<IconBearer> = {
     }
   }
 }
+
+export default iconBadge

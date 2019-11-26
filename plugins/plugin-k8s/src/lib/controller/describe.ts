@@ -20,7 +20,7 @@ import { safeDump } from 'js-yaml'
 import { Commands, i18n, REPL, Tables, UI } from '@kui-shell/core'
 
 import extractAppAndName from '../util/name'
-import { deleteResourceButton } from '../view/modes/crud'
+// import { deleteResourceButton } from '../view/modes/crud'
 import { KubeStatus, DefaultKubeStatus, KubeMetadata, DefaultKubeMetadata, KubeResource } from '../model/resource'
 
 const strings = i18n('plugin-k8s')
@@ -64,7 +64,7 @@ const renderDescribe = async (
     order: 999,
     leaveBottomStripeAlone: true
   })
-  modes.push(deleteResourceButton())
+  // modes.push(deleteResourceButton())
 
   // attempt to separate out the app and generated parts of the resource name
   const { name, nameHash } = extractAppAndName(resource)

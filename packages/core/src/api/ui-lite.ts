@@ -21,7 +21,8 @@ export { getCurrentPrompt } from '../webapp/prompt'
 export { getCurrentBlock } from '../webapp/block'
 export { removeAllDomChildren as empty } from '../webapp/util/dom'
 export { default as Presentation } from '../webapp/views/presentation'
-export { Mode as MultiModalMode, MultiModalResponse } from '../models/mmr/types'
+export { Button, Mode as MultiModalMode, MultiModalResponse } from '../models/mmr/types'
+export { ToolbarText } from '../webapp/views/toolbar-text'
 
 import { Codes, isCursorMovement } from '../webapp/keys'
 export const Keys = {

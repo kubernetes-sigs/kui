@@ -103,7 +103,7 @@ describe('electron namespace', function(this: Common.ISuite) {
     }
 
     const deleteViaButton = (ns: string) => {
-      it('should delete the namespace via clicking deletion button in the sidecar', () => {
+      xit('should delete the namespace via clicking deletion button in the sidecar', () => {
         return CLI.command(`${kubectl} get ns ${ns} -o yaml`, this.app)
           .then(async res => {
             await ReplExpect.justOK(res)
