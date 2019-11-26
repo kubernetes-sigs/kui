@@ -17,7 +17,8 @@
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Commands, UI } from '@kui-shell/core'
+import { MultiModalResponse, ToolbarText } from '@kui-shell/core/api/ui-lite'
+import { ResourceWithMetadata } from '@kui-shell/core/api/models'
 
 import { Entity as EditorEntity } from './fetchers'
 export { EditorEntity }
@@ -30,15 +31,18 @@ export interface EditorState {
   getEntity: () => EditorEntity
   editor: Editor
   eventBus: EventEmitter
-  toolbarText: UI.ToolbarText
+  toolbarText: ToolbarText
 }
 
 export interface EditorResponse extends EditorState {
   content: HTMLElement
 }
 
-export interface CommandResponse extends Commands.CustomResponse {
+/* export interface CommandResponse extends Commands.CustomResponse {
   content: HTMLElement
-}
+  } */
+
+export type EditorResource = ResourceWithMetadata<HTMLElement>
+export type CommandResponse = MultiModalResponse<EditorResource>
 
 export default EditorResponse

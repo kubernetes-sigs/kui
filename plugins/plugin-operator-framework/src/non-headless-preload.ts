@@ -15,14 +15,18 @@
  */
 
 import { PreloadRegistrar } from '@kui-shell/core/api/registrars'
-import { isHeadless } from '@kui-shell/core/api/capabilities'
+
+import crds from './view/modes/crds'
+import packages from './view/modes/packages'
+import description from './view/modes/description'
+
+import iconBadge from './view/modes/icon'
 
 /**
  * This is the module
  *
  */
 export default async (registrar: PreloadRegistrar) => {
-  if (!isHeadless()) {
-    ;(await import('./non-headless-preload')).default(registrar)
-  }
+  registrar.registerModes(crds, packages, description)
+  registrar.registerBadges(iconBadge)
 }

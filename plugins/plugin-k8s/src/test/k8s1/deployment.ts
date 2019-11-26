@@ -110,7 +110,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   }
 
   const deleteItByClickingOnButton = () => {
-    it('should delete the deployment by clicking on the sidecar delete button', async () => {
+    xit('should delete the deployment by clicking on the sidecar delete button', async () => {
       try {
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
         await this.app.client.waitForExist('#confirm-dialog')

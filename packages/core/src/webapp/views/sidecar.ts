@@ -44,6 +44,7 @@ import Presentation from './presentation'
 import {
   MetadataBearing,
   isMetadataBearing,
+  hasDisplayName,
   MetadataBearingByReference,
   isMetadataBearingByReference,
   Entity
@@ -203,7 +204,8 @@ export const addNameToSidecarHeader = async (
   // mine for identifying characteristics
   const metadataBearer = isMetadataBearingByReference(entity) ? entity.resource : isMetadataBearing(entity) && entity
   if (metadataBearer) {
-    const maybeName = name || (metadataBearer.spec && metadataBearer.spec.displayName) || metadataBearer.metadata.name
+    const maybeName =
+      name || (hasDisplayName(metadataBearer) && metadataBearer.spec.displayName) || metadataBearer.metadata.name
     if (maybeName) {
       name = maybeName
     }

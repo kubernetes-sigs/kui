@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { REPL, UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
 
 import { KubeResource } from '../../model/resource'
 
@@ -22,8 +22,6 @@ import { KubeResource } from '../../model/resource'
 interface BaseInfo {
   mode: string
   label?: string
-  fontawesome?: string
-  balloon?: string
 }
 
 type Renderer = (resource: KubeResource) => KubeResource
@@ -31,36 +29,20 @@ type Renderer = (resource: KubeResource) => KubeResource
 interface Parameters {
   overrides: BaseInfo
 }
-export const renderButton = async (tab: UI.Tab, { overrides }: Parameters, args): Promise<void> => {
-  const resource = args.resource || args
-  const { prettyType, kind = prettyType || '-f', metadata, name, resourceName, namespace: ns } = resource
+export const renderButton = (mode: string) => (tab: Tab, resource: KubeResource) => {
+  const { kind, metadata } = resource
+  const namespace = metadata.namespace
 
-  const namespace = (metadata && metadata.namespace) || ns
-  const commandToExec = `kubectl ${overrides.mode} ${kind} ${resourceName || name || (metadata && metadata.name)} ${
-    namespace ? '-n ' + namespace : ''
-  }`
-  await REPL.qexec(`confirm ${REPL.encodeComponent(commandToExec)}`, undefined, undefined, {
-    tab
-  })
+  return `kubectl ${mode} ${kind} ${metadata.name} ${namespace ? '-n ' + namespace : ''}`
 }
 
-const makeButton = (overrides: BaseInfo) =>
-  Object.assign(
-    {},
-    {
-      direct: {
-        plugin: 'k8s/dist/index',
-        operation: 'renderButton',
-        parameters: { overrides }
-      },
-      echo: true,
-      noHistory: false,
-      replSilence: false,
-      balloonLength: 'medium',
-      actAsButton: true,
-      flush: 'right'
-    },
-    overrides
-  )
+const makeButton = (overrides: BaseInfo) => ({
+  mode: overrides.mode,
+  label: overrides.label,
+  command: renderButton(overrides.mode),
+  kind: 'drilldown' as const,
+  confirm: true
+  // balloonLength: 'medium',
+})
 
 export default makeButton

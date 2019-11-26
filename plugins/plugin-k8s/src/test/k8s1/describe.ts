@@ -114,7 +114,7 @@ Common.localDescribe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function
     it(`should flip to summary tab`, () => testSummaryTab(this).catch(Common.oops(this, true)))
 
     // click delete button
-    it('should initiate deletion of the pod via sidecar deletion button', async () => {
+    xit('should initiate deletion of the pod via sidecar deletion button', async () => {
       try {
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('delete'))
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
@@ -128,7 +128,7 @@ Common.localDescribe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function
       }
     })
 
-    it('should show that the click-delete has started', () => {
+    xit('should show that the click-delete has started', () => {
       // a deletion command should be issued
       let idx = 0
       return this.app.client
@@ -143,7 +143,7 @@ Common.localDescribe(`kubectl summary ${process.env.MOCHA_RUN_TARGET}`, function
         .catch(Common.oops(this, true))
     })
 
-    it('should wait for that click-delete to finish', async () => {
+    xit('should wait for that click-delete to finish', async () => {
       try {
         const count = parseInt(await this.app.client.getAttribute(Selectors.PROMPT_BLOCK_FINAL, 'data-input-count'), 10)
         const newResourceSelector = await ReplExpect.okWithCustom({

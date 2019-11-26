@@ -17,11 +17,11 @@
 import Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 
-import { Mode } from '@kui-shell/core/api/registrars'
+import { Button } from '@kui-shell/core/api/ui-lite'
 import globalEventBus from '@kui-shell/core/api/events'
 
 import strings from './strings'
-import { EditorEntity, EditorState, Editor } from './response'
+import { EditorResource, EditorEntity, EditorState, Editor } from './response'
 
 const debug = Debug('plugins/editor/persisters')
 
@@ -80,16 +80,13 @@ export const persisters = {
  * Save the given entity
  *
  */
-export const save = ({ getEntity, editor, eventBus }: EditorState): Mode => {
+export const save = ({ getEntity, editor, eventBus }: EditorState): Button<EditorResource> => {
   const entityRightNow = getEntity()
   const mode: string = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
-
   return {
     mode,
-    actAsButton: true,
-    flush: 'right',
-    // fontawesome: 'fas fa-cloud-upload-alt',
-    direct: () => {
+    kind: 'view',
+    command: () => {
       const entity = getEntity()
       const persister = entity.persister
       debug('persister', persister, entity)
@@ -112,13 +109,10 @@ export const save = ({ getEntity, editor, eventBus }: EditorState): Mode => {
  * Revert to the currently deployed version
  *
  */
-export const revert = (state: EditorState): Mode => ({
+export const revert = (state: EditorState): Button<EditorResource> => ({
   mode: strings.revert,
-  actAsButton: true,
-  flush: 'right',
-  // fontawesome: 'fas fa-cloud-download-alt',
-  // fontawesome: 'fas fa-sync-alt',
-  direct: () => {
+  kind: 'view',
+  command: () => {
     const entity = state.getEntity()
     const persister = entity.persister
     debug('revert', entity)

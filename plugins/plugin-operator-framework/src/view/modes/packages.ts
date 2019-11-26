@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
-import { Tables, UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core/api/ui-lite'
+import { Table } from '@kui-shell/core/api/table-models'
+import { ModeRegistration } from '@kui-shell/core/api/registrars'
 import { outerCSSForKey, cssForKey } from '@kui-shell/core/webapp/util/ascii-to-table'
-
-import { Resource, KubeResource } from '@kui-shell/plugin-k8s'
-
-const debug = Debug('plugin/operator-framework/view/modes/packages')
+import { KubeResource } from '@kui-shell/plugin-k8s'
 
 interface PackageBearerStatus {
   packages: string
@@ -45,36 +42,7 @@ function isPackageBearer(
   )
 }
 
-/**
- * Show status.packages as a Table
- *
- */
-export const packagesMode: UI.ModeRegistration<KubeResource> = {
-  when: isPackageBearer,
-  mode: (command: string, resource: Resource): UI.Mode => {
-    try {
-      return {
-        mode: 'Packages',
-        leaveBottomStripeAlone: true,
-        direct: {
-          plugin: 'operator-framework/dist/index',
-          operation: 'renderAndViewPackages',
-          parameters: { command, resource }
-        }
-      }
-    } catch (err) {
-      debug('error rendering description button')
-      console.error(err)
-    }
-  }
-}
-
-interface Parameters {
-  command: string
-  resource: Resource<PackageBearer>
-}
-
-function toTable(resource: PackageBearer): Tables.Table {
+function content(tab: Tab, resource: PackageBearer): Table {
   return {
     title: 'Packages',
     header: {
@@ -90,9 +58,16 @@ function toTable(resource: PackageBearer): Tables.Table {
   }
 }
 
-export const renderAndView = (tab: UI.Tab, parameters: Parameters): Tables.Table => {
-  const { command, resource } = parameters
-  debug('renderAndView', command, resource)
-
-  return toTable(resource.resource)
+/**
+ * Show status.packages as a Table
+ *
+ */
+const packagesMode: ModeRegistration<KubeResource> = {
+  when: isPackageBearer,
+  mode: {
+    mode: 'Packages',
+    content
+  }
 }
+
+export default packagesMode

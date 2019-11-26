@@ -1096,7 +1096,7 @@ export const doExec = (
                       contentType,
                       content: stripClean(raw),
                       resource,
-                      modes: [{ mode: 'raw', direct: cmdline, defaultMode: true }]
+                      modes: [{ mode: 'raw', content: cmdline, contentType: 'command', defaultMode: true }]
                     })
                   }
                 } catch (err) {
