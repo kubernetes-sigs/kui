@@ -29,11 +29,18 @@ import { metadata as _meta } from '../../lib/cmds/mmr-mode'
 
 const { metadata } = _meta
 
+const expectedMarkdownContent = `hello world
+aaa
+bbbb
+sub
+hi`
+
 // this is the expected modes result showing in the sidecar
 const expectModes: MMRExpectMode[] = [
   { mode: 'text', label: 'T1', content: 'test plain text 5', contentType: 'text/plain' },
   { mode: 'text2', label: 'T2', content: 'plain as day', contentType: 'text/plain' },
   { mode: 'text3', label: 'T3', content: 'hello world', contentType: 'text/plain' },
+  { mode: 'text4', label: 'T4', content: expectedMarkdownContent, contentType: 'text/plain' },
   { mode: 'table', label: 'Tbl1', nRows: 2, nCells: 4, contentType: 'table' },
   { mode: 'html', label: 'H', contentType: 'text/html' },
   { mode: 'm', contentType: 'text/markdown' },
@@ -129,4 +136,4 @@ testDefault4.modes(expectModes4, expectModes4[0])
 testDefault5.modes(expectModes5, expectModes5[0])
 testDefault.toolbarText(toolbarText)
 testDefault.toolbarButtons(buttons)
-testOrder.modes(expectModes, expectModes[4])
+testOrder.modes(expectModes, expectModes.find(_ => _.mode === 'html'))

@@ -54,8 +54,15 @@ export async function format<T extends MetadataBearing>(
     // then resource.content is a function that will provide the information
     return format(tab, mmr, await resource.content(tab, mmr))
   } else if (isCommandStringContent(resource)) {
-    const content = await tab.REPL.qexec<ScalarResource | ScalarContent>(resource.content)
-    return format(tab, mmr, content)
+    const content = await tab.REPL.qexec<ScalarResource | ScalarContent>(resource.contentFrom)
+    if (resource.contentType && typeof content === 'string') {
+      return format(tab, mmr, {
+        content,
+        contentType: resource.contentType
+      })
+    } else {
+      return format(tab, mmr, content)
+    }
   } else if (isCustomSpec(resource.content)) {
     return resource.content
   } else if (isTable(resource.content) || isMultiTable(resource.content)) {
