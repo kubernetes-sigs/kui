@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.7](https://github.com/IBM/kui/compare/v4.5.0...v5.4.7) (2019-11-27)
+
+### Bug Fixes
+
+- **plugins/plugin-wskflow:** improve "is deployed" to be more k8s metadata-like ([f5af9d0](https://github.com/IBM/kui/commit/f5af9d0)), closes [#3248](https://github.com/IBM/kui/issues/3248)
+
 ## [5.4.6](https://github.com/IBM/kui/compare/v4.5.0...v5.4.6) (2019-11-27)
 
 ### Bug Fixes
