@@ -24,6 +24,7 @@ body[kui-theme="Dark"] {
   --color-background-inverted01: var(--color-sidecar-background);
   --color-background-inverted02: var(--color-sidecar-header);
   --color-text-inverted01: var(--color-text-01);
+  --color-text-inverted02: var(--color-text-02);
 
   --color-table-border1: #616466;
   --color-table-border2: #a5a9ad;
