@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.5](https://github.com/IBM/kui/compare/v4.5.0...v5.4.5) (2019-11-27)
+
+### Bug Fixes
+
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+
+### BREAKING CHANGES
+
+- **packages/core:** remove old EntitySpec support
+
 ## [5.4.4](https://github.com/IBM/kui/compare/v4.5.0...v5.4.4) (2019-11-25)
 
 ### Bug Fixes

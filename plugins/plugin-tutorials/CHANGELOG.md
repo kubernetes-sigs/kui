@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.5](https://github.com/IBM/kui/compare/v4.5.0...v5.4.5) (2019-11-27)
+
+### Bug Fixes
+
+- reduce expense of preloader on webapp init ([00b87c0](https://github.com/IBM/kui/commit/00b87c0)), closes [#3286](https://github.com/IBM/kui/issues/3286)
+
 ## [5.4.4](https://github.com/IBM/kui/compare/v4.5.0...v5.4.4) (2019-11-25)
 
 ### Bug Fixes
