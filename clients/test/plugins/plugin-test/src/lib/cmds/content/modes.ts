@@ -28,8 +28,12 @@ export const plainTextModeAlt: UI.MultiModalMode[] = [{ mode: 'text2', label: 'T
 
 // string directly as content function string
 // this should take the output of the `test string` command and place it in the mode content section
-export const plainTextModeAlt2: UI.MultiModalMode[] = [
-  { mode: 'text3', label: 'T3', content: 'test string', contentType: 'command' }
+export const plainTextModeAlt2: UI.MultiModalMode[] = [{ mode: 'text3', label: 'T3', contentFrom: 'test string' }]
+
+// string directly as content function string, with contentType
+// this should take the output of the `test string` command and place it in the mode content section
+export const plainTextModeAlt3: UI.MultiModalMode[] = [
+  { mode: 'text4', label: 'T4', contentFrom: 'test markdown', contentType: 'text/markdown' }
 ]
 
 // table directly as content
@@ -66,6 +70,7 @@ export const modes1: UI.MultiModalMode[] = [].concat(
   plainTextMode,
   plainTextModeAlt,
   plainTextModeAlt2,
+  plainTextModeAlt3,
   tableMode,
   htmlTextMode,
   markdownTextMode,
@@ -77,6 +82,7 @@ export const modes2: UI.MultiModalMode[] = [].concat(
   tableMode, // swapped to first
   plainTextModeAlt,
   plainTextModeAlt2,
+  plainTextModeAlt3,
   plainTextMode, // swapped with tableMode
   htmlTextMode,
   markdownTextMode,
@@ -88,6 +94,7 @@ export const modes3: UI.MultiModalMode[] = [].concat(
   plainTextModeAlt, // swapped to first
   plainTextMode, // swapped with plainTextModeAlt
   plainTextModeAlt2,
+  plainTextModeAlt3,
   tableMode,
   htmlTextMode,
   markdownTextMode,
@@ -99,6 +106,7 @@ export const modes4: UI.MultiModalMode[] = [].concat(
   plainTextModeAlt2, // swapped to first
   plainTextModeAlt,
   plainTextMode, // swapped with plainTextModeAlt2
+  plainTextModeAlt3,
   tableMode,
   htmlTextMode,
   markdownTextMode,
@@ -110,6 +118,7 @@ export const modes5: UI.MultiModalMode[] = [].concat(
   htmlTextMode, // swapped to first
   plainTextModeAlt,
   plainTextModeAlt2,
+  plainTextModeAlt3,
   tableMode,
   plainTextMode, // swapped with htmlTextMode
   markdownTextMode,

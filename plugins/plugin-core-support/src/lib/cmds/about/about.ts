@@ -256,20 +256,18 @@ const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.
   }
 
   const standardModes: UI.Mode[] = [
-    { mode: 'about', label: strings('About'), content: 'about', contentType: 'command' },
+    { mode: 'about', label: strings('About'), contentFrom: 'about' },
     {
       mode: 'gettingStarted',
       label: strings('Getting Started'),
-      content: 'about --mode gettingStarted',
-      contentType: 'command'
+      contentFrom: 'about --mode gettingStarted'
     },
     {
       mode: 'configure',
       label: strings('Configure'),
-      content: 'about --mode configure --content themes',
-      contentType: 'command'
+      contentFrom: 'about --mode configure --content themes'
     },
-    { mode: 'version', label: strings('Version'), content: 'about --mode version', contentType: 'command' }
+    { mode: 'version', label: strings('Version'), contentFrom: 'about --mode version' }
   ]
   const modes: UI.Mode[] = standardModes.concat(Settings.theme.about || [])
 
