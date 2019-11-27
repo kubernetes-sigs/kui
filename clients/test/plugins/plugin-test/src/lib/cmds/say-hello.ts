@@ -24,6 +24,16 @@ const sayHello = ({ parsedOptions }: Arguments<Options>): KResponse => {
   return 'hello world' + (parsedOptions.grumble ? ` ${parsedOptions.grumble}` : '')
 }
 
+const sayMarkdown = (): KResponse => {
+  return `
+# hello world
+- aaa
+- bbbb
+
+## sub
+hi`
+}
+
 const options: CommandOptions = {
   usage: {
     command: 'string',
@@ -35,4 +45,5 @@ const options: CommandOptions = {
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/string', sayHello, options)
+  commandTree.listen('/test/markdown', sayMarkdown)
 }

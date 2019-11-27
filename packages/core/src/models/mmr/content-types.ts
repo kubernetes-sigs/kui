@@ -43,13 +43,32 @@ export function isScalarContent<T extends MetadataBearing>(
 }
 
 /**
+ * Supported String content types
+ *
+ */
+type SupportedStringContent = 'yaml' | 'text/markdown' | 'text/html' | 'json'
+
+function isSupportedContentType(contentType: string) {
+  return (
+    contentType === 'yaml' || contentType === 'text/markdown' || contentType === 'text/html' || contentType === 'json'
+  )
+}
+
+/**
+ * Trait that provides optional contentType for string content
+ *
+ */
+interface WithOptionalContentType<ContentType = SupportedStringContent> {
+  contentType?: ContentType
+}
+
+/**
  * Special case of `ScalarContent` for strings; string content may
  * optionally provide a `contentType`.
  *
  */
-export interface StringContent<ContentType = 'yaml' | 'text/markdown' | 'text/html'> extends ScalarContent<string> {
-  contentType?: ContentType
-}
+export type StringContent<ContentType = SupportedStringContent> = ScalarContent<string> &
+  WithOptionalContentType<ContentType>
 
 export function isStringWithOptionalContentType<T extends MetadataBearing>(
   entity: Entity | Content<T> | MetadataBearing | SidecarMode
@@ -69,7 +88,7 @@ export function isStringWithOptionalContentType<T extends MetadataBearing>(
 export type FunctionThatProducesContent<T extends MetadataBearing> = (
   tab: Tab,
   entity: T
-) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent>
+) => ScalarResource | ScalarContent | CommandStringContent | Promise<ScalarResource> | Promise<ScalarContent>
 export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
@@ -86,15 +105,18 @@ export function isFunctionContent<T extends MetadataBearing>(
  * `ScalarRersource` or `ScalarContent`.
  *
  */
-type CommandStringContent = StringContent<'command'>
+type CommandStringContent = WithOptionalContentType<SupportedStringContent> & {
+  contentFrom: string
+}
+
 export function isCommandStringContent<T extends MetadataBearing>(
-  content: Content<T>
+  content: ScalarResource | Content<T> | SidecarMode
 ): content is CommandStringContent {
+  const command = content as CommandStringContent
   return (
-    !!content &&
-    !!content.content &&
-    typeof (content as CommandStringContent).content === 'string' &&
-    (content as CommandStringContent).contentType === 'command'
+    !!command &&
+    typeof command.contentFrom === 'string' &&
+    (command.contentType === undefined || isSupportedContentType(command.contentType))
   )
 }
 
@@ -115,5 +137,5 @@ export type Content<T extends MetadataBearing> =
 export function hasContent<T extends MetadataBearing>(
   resource: ScalarResource | Content<T> | SidecarMode
 ): resource is Content<T> {
-  return Object.prototype.hasOwnProperty.call(resource, 'content')
+  return Object.prototype.hasOwnProperty.call(resource, 'content') || isCommandStringContent(resource)
 }
