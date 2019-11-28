@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table, Row, MultiTable, isTable, isMultiTable } from '../webapp/models/table'
+import { Table, Row, isTable } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
@@ -112,14 +112,14 @@ export type SimpleEntity = boolean | string | number | HTMLElement | MessageBear
  * preface and trailing `string` messages
  *
  */
-export type MixedResponsePart = string | Table | MultiTable | HTMLElement
+export type MixedResponsePart = string | Table | HTMLElement
 export type MixedResponse = MixedResponsePart[]
 
 export function isMixedResponse(response: Entity): response is MixedResponse {
   return (
     Array.isArray(response) &&
     response.length > 0 &&
-    (typeof response[0] === 'string' || isTable(response[0]) || isMultiTable(response[0]))
+    (typeof response[0] === 'string' || isTable(response[0]))
   )
 }
 
@@ -188,7 +188,6 @@ export type Entity<
 > =
   | SimpleEntity
   | Table<RowType>
-  | MultiTable
   | ResourceModification
   | CustomSpec
   | MixedResponse

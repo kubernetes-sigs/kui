@@ -31,9 +31,6 @@ export namespace Tables {
   export import Cell = TableModel.Cell
   export import isTable = TableModel.isTable
 
-  export import MultiTable = TableModel.MultiTable
-  export import isMultiTable = TableModel.isMultiTable
-
   export import TableStyle = TableModel.TableStyle
 
   export import formatWatchableTable = TableModel.formatWatchableTable // TODO why is this in TableModel?

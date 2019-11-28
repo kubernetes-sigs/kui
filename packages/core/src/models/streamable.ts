@@ -15,10 +15,10 @@
  */
 
 import { SimpleEntity, MixedResponse } from './entity'
-import { Table, MultiTable } from '../webapp/models/table'
+import { Table } from '../webapp/models/table'
 import { CustomSpec } from '../webapp/views/sidecar'
 
-export type Streamable = SimpleEntity | Table | MultiTable | CustomSpec | MixedResponse
+export type Streamable = SimpleEntity | Table | CustomSpec | MixedResponse
 export default Streamable
 
 export type Stream = (response: Streamable, killLine?: boolean) => Promise<void>

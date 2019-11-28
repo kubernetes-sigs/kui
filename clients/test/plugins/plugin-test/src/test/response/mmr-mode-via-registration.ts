@@ -29,13 +29,13 @@ import { badgesWeWillRegister as badges } from '../../lib/modes'
 const { metadata } = _meta
 
 const testRegistrationOnly = new TestMMR({
-  testName: 'mmr-mode-via-registration',
+  testName: 'mmr-mode-via-registration-registrationOnly',
   metadata,
   command: 'test mmr mode-via-registration --registrationOnly'
 })
 
 const testRegistrationOnlyWithShow = new TestMMR({
-  testName: 'mmr-mode-via-registration',
+  testName: 'mmr-mode-via-registration-with-show',
   metadata,
   command: 'test mmr mode-via-registration --registrationOnly --show mode2'
 })
@@ -86,4 +86,9 @@ testRegistrationWithModes.toolbarButtons(buttonFromRegistration)
 testRegistrationOnly.modes(modesFromRegistration, modesFromRegistration[0])
 testRegistrationOnly.toolbarButtons(buttonFromRegistration)
 
+// iterate back and forth between these two, to make sure there is no
+// erroneous state transfer across the mode models
 testRegistrationOnlyWithShow.modes(modesFromRegistration, modesFromRegistration[1])
+testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })
+testRegistrationOnlyWithShow.modes(modesFromRegistration, modesFromRegistration[1])
+testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })

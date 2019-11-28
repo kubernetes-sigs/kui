@@ -21,6 +21,7 @@ interface Param {
   command: string
   expect: string
   exact: boolean
+  streaming?: boolean
 }
 
 export class TestStringResponse {
@@ -28,15 +29,16 @@ export class TestStringResponse {
   public constructor(public readonly param: Param) {}
 
   public string() {
-    const { command, expect, exact } = this.param
+    const { command, expect, exact, streaming } = this.param
 
-    describe(`string response ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`string response for command=${command} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
       it('should return a string', () =>
         CLI.command(command, this.app)
-          .then(ReplExpect.okWithString(expect, exact))
+          .then(ReplExpect.okWithString(expect, exact, streaming))
           .catch(Common.oops(this, true)))
     })
   }

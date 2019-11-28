@@ -61,7 +61,7 @@ function tarCopy {
   fi
     # word of warning for linux: in the TAR command below, the `-cf -` has
     # to come before the --exclude rules!
-    "$TAR" -C "$CLIENT_HOME" -cf - \
+    "$TAR" -C "$CLIENT_HOME" -h -cf - \
            --exclude "./npm-packs" \
            --exclude "./theme" \
            --exclude "./kui" \
@@ -95,6 +95,13 @@ function tarCopy {
            --exclude "node_modules/**/docs/**/*.html" \
            --exclude "node_modules/**/docs/**/*.png" \
            --exclude "node_modules/**/docs/**/*.js" \
+           --exclude "./plugins" \
+           --exclude "./docs" \
+           --exclude "./attic" \
+           --exclude "./.*" \
+           --exclude "./README.md" \
+           --exclude "**/tsconfig.json" \
+           --exclude "**/tslint.json" \
            --exclude "node_modules/**/test/*" . \
         | "$TAR" -C "$STAGING" -xf -
 

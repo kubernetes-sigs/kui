@@ -36,7 +36,7 @@ import { promiseEach } from '../util/async'
 import { isWatchable } from './models/watch'
 import { Streamable, Stream } from '../models/streamable'
 import { CommandHandlerWithEvents, ExecType, KResponse, ParsedOptions } from '../models/command'
-import { Table, isTable, isMultiTable } from './models/table'
+import { Table, isTable } from './models/table'
 import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
 import {
@@ -106,10 +106,6 @@ export const streamTo = (tab: Tab, block: Element): Stream => {
         response.classList.add('repl-result-like')
         previousLine = response
         resultDom.appendChild(previousLine)
-      } else if (isMultiTable(response)) {
-        response.tables.forEach(async _ => printTable(tab, _, resultDom))
-        const br = document.createElement('br')
-        resultDom.appendChild(br)
       } else if (isTable(response)) {
         const wrapper = document.createElement('div')
         wrapper.classList.add('repl-result')
@@ -325,24 +321,9 @@ export const printResults = (
     response = true
   }
 
-  if (isMultiTable(response)) {
-    ;(resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-multi-table', 'result-vertical')
+  promise = render(response, { echo, resultDom })
 
-    const tables = response.tables
-
-    if (tables[0].flexWrap) {
-      ;(resultDom.parentNode as HTMLElement).classList.add('result-as-multi-table-flex-wrap')
-    }
-
-    // multi-table output; false means that the renderer hasn't placed
-    // anything in the DOM; it's up to us here
-    const { formatTable } = await import('./views/table')
-    promise = Promise.resolve(formatTable(tab, response, resultDom)).then(() => false)
-  } else {
-    promise = render(response, { echo, resultDom })
-  }
-
-  if (isTable(response) || isMultiTable(response)) {
+  if (isTable(response)) {
     if (isPopup()) {
       presentAs(tab, Presentation.FixedSize)
     }
