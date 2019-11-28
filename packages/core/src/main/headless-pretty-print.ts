@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import { Writable } from 'stream'
 import * as colors from 'colors/safe'
 
 import { ElementMimic } from '../util/mimic-dom'
-import { isTable, isMultiTable, Row } from '../webapp/models/table'
+import { isTable, Row } from '../webapp/models/table'
 import { isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { isHTML, isPromise } from '../util/types'
@@ -377,25 +377,21 @@ export const print = (
         // msg is a promise; resolve it and try again
         debug('printing promise')
         return msg.then(msg => print(msg, logger, stream, colorFn, ok))
-      } else if (isTable(msg) || isMultiTable(msg)) {
+      } else if (isTable(msg)) {
         debug('printing table')
 
-        if (isMultiTable(msg)) {
-          msg.tables.map(_ => print(_, logger, stream, colorFn, ok))
-        } else {
-          // strip off header row, as we'll make our own
-          const type =
-            (msg.header && (msg.header.prettyType || msg.header.type)) ||
-            (msg.body.length > 0 && (msg.body[0].prettyType || msg.body[0].type))
+        // strip off header row, as we'll make our own
+        const type =
+          (msg.header && (msg.header.prettyType || msg.header.type)) ||
+          (msg.body.length > 0 && (msg.body[0].prettyType || msg.body[0].type))
 
-          const print = (type && rowify[type]) || rowify._default
+        const print = (type && rowify[type]) || rowify._default
 
-          logger(
-            require('columnify')(msg.body.map(print), {
-              headingTransform: (_: string) => colors.dim(_)
-            })
-          )
-        }
+        logger(
+          require('columnify')(msg.body.map(print), {
+            headingTransform: (_: string) => colors.dim(_)
+          })
+        )
       } else if (isMixedResponse(msg)) {
         msg.forEach(_ => {
           print(_)

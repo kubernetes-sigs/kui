@@ -59,7 +59,7 @@ function trim(strings: string[]) {
     }
   }
   if (idx > 0) {
-    return strings.slice(0, idx)
+    return strings.slice(0, idx + 1)
   } else {
     return strings
   }

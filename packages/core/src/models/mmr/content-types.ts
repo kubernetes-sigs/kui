@@ -15,11 +15,12 @@
  */
 
 import { Tab } from '../../webapp/tab'
-import { Table, MultiTable, isTable, isMultiTable } from '../../webapp/models/table'
+import { Table, isTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
 import { CustomSpec } from '../../webapp/views/sidecar-core'
 import { isCustomSpec } from '../../webapp/views/custom-content'
 import { SidecarMode } from '../../webapp/bottom-stripe'
+import { isHTML } from '../../util/types'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -27,7 +28,7 @@ import { SidecarMode } from '../../webapp/bottom-stripe'
  * function call.
  *
  */
-export type ScalarResource = CustomSpec | string | HTMLElement | Table | MultiTable
+export type ScalarResource = CustomSpec | string | HTMLElement | Table
 export interface ScalarContent<T = ScalarResource> {
   content: T
 }
@@ -38,7 +39,10 @@ export function isScalarContent<T extends MetadataBearing>(
   const content = (entity as ScalarContent).content
   return (
     content !== undefined &&
-    (typeof content === 'string' || isTable(content) || isMultiTable(content) || isCustomSpec(content))
+    (typeof content === 'string' ||
+      isTable(content) ||
+      isHTML(content) ||
+      isCustomSpec(content))
   )
 }
 
@@ -110,7 +114,7 @@ type CommandStringContent = WithOptionalContentType<SupportedStringContent> & {
 }
 
 export function isCommandStringContent<T extends MetadataBearing>(
-  content: ScalarResource | Content<T> | SidecarMode
+  content: ScalarResource | Content<T> | MetadataBearing | SidecarMode
 ): content is CommandStringContent {
   const command = content as CommandStringContent
   return (

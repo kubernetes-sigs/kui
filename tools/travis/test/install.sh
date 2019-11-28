@@ -93,16 +93,6 @@ if [ -n "$LAYERS" ]; then
         echo "ibmcloud PID $!"
     fi
 
-    if [ "$NEEDS_KUBERNETES" == "true" ]; then
-        # install kubectl: no longer needed, as we are getting it from kubeadm-dind
-        # ./tools/travis/installers/kubectl.sh &
-
-        # set up a local cluster, using kubeadm-dind
-        ./tools/travis/installers/microk8s/start-cluster.sh &
-        children+=("$!")
-        echo "microk8s PID $!"
-    fi
-
     # start the installation; here, we use `npm ci` as 1) it's a bit
     # faster than `npm install`; and 2) we want to avoid any
     # contamination of e.g. package-lock.json

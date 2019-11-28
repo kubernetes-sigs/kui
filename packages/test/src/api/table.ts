@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import * as assert from 'assert'
 import { Tables } from '@kui-shell/core'
 import { promiseEach } from '@kui-shell/core/util/async'
 
@@ -27,6 +29,12 @@ interface RowWithBadgeAndMessage {
   badgeCss: string
   badgeText: string
   message: string
+}
+
+interface TableValidation {
+  validation: {
+    cells: ((value: string, rowIdx: number) => void)[]
+  }
 }
 
 export class TestTable {
@@ -89,33 +97,62 @@ export class TestTable {
   }
 
   /**
+   * Execute the table-generating command, and validate the content.
+   *
+   */
+  private executeAndValidate(ctx: Common.ISuite, expectTable: Tables.Table, validation?: TableValidation) {
+    const command = this.command
+
+    it(`should execute command from test table: ${this.command}`, () =>
+      CLI.command(command, ctx.app)
+        .then(
+          ReplExpect.okWithCustom({
+            selector: Selectors.TABLE_HEADER_CELL(expectTable.header.name)
+          })
+        )
+        .catch(Common.oops(ctx)))
+
+    if (validation) {
+      if (validation.validation.cells) {
+        expectTable.body.forEach((_, rowIdx) => {
+          it(`should validate cells of row ${rowIdx} in test table output: ${this.command}`, async () => {
+            const cellSelector = `${Selectors.OUTPUT_LAST} tbody:nth-child(${rowIdx + 2}) td > .cell-inner`
+            const actualCellValues = await ctx.app.client.getText(cellSelector)
+            if (Array.isArray(actualCellValues)) {
+              actualCellValues.forEach((_, cellIdx) => validation.validation.cells[cellIdx](_, rowIdx))
+            } else if (validation.validation.cells.length === 1) {
+              // got one cell, expecting one cell
+              validation.validation.cells[0](actualCellValues, rowIdx)
+            } else {
+              const actualCellCount = Array.isArray(actualCellValues) ? actualCellValues.length : 1
+              assert.fail(
+                `mismatch between expected cell count ${validation.validation.cells.length} and actual cell count ${actualCellCount}`
+              )
+            }
+          })
+        })
+      }
+    }
+  }
+
+  /**
    * drilldownFromREPL() starts a Mocha Test Suite
    * drilldownFromREPL() executes `command` in REPL and drilldown from the table
    *
    * @param { Tables.Table } expectTable is the expected table shown in the REPL
    *
    */
-  public drilldownFromREPL(expectTable: Tables.Table) {
-    const command = this.command
+  public drilldownFromREPL(expectTable: Tables.Table, validation?: TableValidation) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this
 
-    describe(`drilldown from table in REPL ${this.testName || ''}${process.env.MOCHA_RUN_TARGET ||
+    describe(`drilldown from test table in REPL ${this.testName || ''}${process.env.MOCHA_RUN_TARGET ||
       ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
-      const executeTheCommand = () => {
-        it(`should execute: ${command}`, () =>
-          CLI.command(command, this.app)
-            .then(
-              ReplExpect.okWithCustom({
-                selector: Selectors.TABLE_CELL(expectTable.body[0].name, expectTable.header.name)
-              })
-            )
-            .catch(Common.oops(this)))
-      }
-
       const clickCell = (cell: string, command: string, replIndex: number, prompt: string) => {
-        it(`should click to execute: ${command}`, async () => {
+        it(`should click to execute from test table: ${command}`, async () => {
           try {
             await this.app.client.waitForExist(cell)
             await this.app.client.click(cell)
@@ -127,9 +164,10 @@ export class TestTable {
       }
 
       const clickCellSilently = (cell: string, command: string, prompt: string) => {
-        it(`should click to silently execute: ${command}`, async () => {
+        it(`should click to silently execute from test table: ${command}`, async () => {
           try {
             await this.app.client.waitForExist(cell)
+            await new Promise(resolve => setTimeout(resolve, 300))
             await this.app.client.click(cell)
             await CLI.expectInput(prompt, '')(this.app)
           } catch (err) {
@@ -139,7 +177,7 @@ export class TestTable {
       }
 
       /* Here comes the tests */
-      executeTheCommand()
+      self.executeAndValidate(this, expectTable, validation)
 
       // For each row, check the first cell
       expectTable.body.forEach((row, rowIndex) => {

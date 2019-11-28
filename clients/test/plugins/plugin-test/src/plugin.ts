@@ -17,6 +17,7 @@
 import { Commands } from '@kui-shell/core'
 
 import sayHello from './lib/cmds/say-hello'
+import streamHello from './lib/cmds/stream-hello'
 import mmrName from './lib/cmds/mmr-name'
 import mmrNamespace from './lib/cmds/mmr-namespace'
 import mmrKind from './lib/cmds/mmr-kind'
@@ -28,6 +29,7 @@ export default async (commandTree: Commands.Registrar) => {
   // commands
   await Promise.all([
     sayHello(commandTree),
+    streamHello(commandTree),
     mmrName(commandTree),
     mmrNamespace(commandTree),
     mmrKind(commandTree),
