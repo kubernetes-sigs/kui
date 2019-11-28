@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,14 @@
 
 import Debug from 'debug'
 import * as minimist from 'yargs-parser'
+import * as prettyPrintDuration from 'pretty-ms'
 
 import { Tab } from '../tab'
 import { isPopup } from '../popup-core'
 import { getCurrentPrompt } from '../prompt'
 import { _split as split, Split } from '../../repl/split'
 import { isMetadataBearing } from '../../models/entity'
-import {
-  Table,
-  MultiTable,
-  Row,
-  Cell,
-  Icon,
-  sortBody,
-  TableStyle,
-  diffTableRows,
-  isMultiTable,
-  isTable
-} from '../models/table'
+import { Table, Row, Cell, Icon, sortBody, TableStyle, diffTableRows, isTable } from '../models/table'
 import { isWatchable, isPusher, Watchable } from '../models/watch'
 import { theme } from '../../core/settings'
 
@@ -96,7 +86,7 @@ const prepareTable = (tab: Tab, response: Table & Partial<Watchable>): Row[] => 
  * maybe the resources in table have all reach to the final state?
  *
  */
-const hasReachedFinalState = (response: Table | MultiTable): boolean => {
+const hasReachedFinalState = (response: Table): boolean => {
   let reachedFinalState = false
 
   if (isTable(response)) {
@@ -105,16 +95,6 @@ const hasReachedFinalState = (response: Table | MultiTable): boolean => {
     }
 
     return reachedFinalState
-  } else if (isMultiTable(response)) {
-    let allDone = true // allDone is used to indicate if all resources have reached to the final state
-
-    response.tables.map(table => {
-      if (table.body.some(row => !row.done)) {
-        allDone = false
-      }
-    })
-
-    reachedFinalState = allDone
   }
 
   return reachedFinalState
@@ -219,13 +199,7 @@ const formatCellValue = (key: string, value: string) => {
     }
 
     const ms = Date.now() - timestamp
-    const s = 1000 * Math.round(ms / 1000) // round to nearest second
-    const d = new Date(s)
-    const hours = d.getUTCHours() > 0 ? `${d.getUTCHours()}h` : ''
-    const minutes = d.getUTCMinutes() > 0 ? `${d.getUTCMinutes()}m` : ''
-    const seconds = d.getUTCSeconds() > 0 ? `${d.getUTCSeconds()}s` : ''
-
-    return hours ? `${hours}${minutes}` : `${minutes}${seconds}`
+    return prettyPrintDuration(ms)
   }
 
   return dateKey[key] && !dateKey[value] ? formatAge(value) : value
@@ -613,7 +587,7 @@ const registerWatcher = (
   watchLimit = 100000,
   command: string,
   resultDom: HTMLElement,
-  existingTable: ExistingTableSpec | ExistingTableSpec[],
+  existingTable: ExistingTableSpec,
   formatRowOption?: RowFormatOptions
 ) => {
   let job: WatchableJob // eslint-disable-line prefer-const
@@ -631,42 +605,32 @@ const registerWatcher = (
 
   /**
    * process the refreshed result
-   * @return processed Table info: { table: Row[], reachedFinalState: boolean }, or
-   *         processed MultiTable info: { tables: Row[][], reachedFinalState: boolean}
+   * @return processed Table info: { table: Row[], reachedFinalState: boolean }
    *
    */
-  const processRefreshResponse = (response: Table | MultiTable) => {
-    if (!isTable(response) && !isMultiTable(response)) {
+  const processRefreshResponse = (response: Table) => {
+    if (!isTable(response)) {
       console.error('refresh result is not a table', response)
       throw new Error('refresh result is not a table')
     }
 
     const reachedFinalState = hasReachedFinalState(response)
 
-    return isTable(response)
-      ? { table: prepareTable(tab, response), reachedFinalState }
-      : {
-          tables: response.tables.map(table => {
-            return prepareTable(tab, table)
-          }),
-          reachedFinalState
-        }
+    return { table: prepareTable(tab, response), reachedFinalState }
   }
 
   // execute the refresh command and apply the result
   const refreshTable = async () => {
     debug(`refresh with ${command}`)
     let processedTableRow: Row[] = []
-    let processedMultiTableRow: Row[][] = []
 
     try {
       const { qexec } = await import('../../repl/exec')
-      const response = await qexec<Table | MultiTable>(command)
+      const response = await qexec<Table>(command)
 
       const processedResponse = processRefreshResponse(response)
 
       processedTableRow = processedResponse.table
-      processedMultiTableRow = processedResponse.tables
 
       // stop watching if all resources in the table reached to the finial state
       if (processedResponse.reachedFinalState) {
@@ -724,13 +688,7 @@ const registerWatcher = (
       }
     }
 
-    if (Array.isArray(existingTable)) {
-      processedMultiTableRow.forEach((newRowModel, index) => {
-        applyRefreshResult(newRowModel, existingTable[index])
-      })
-    } else {
-      applyRefreshResult(processedTableRow, existingTable)
-    }
+    applyRefreshResult(processedTableRow, existingTable)
   }
 
   // timer handler
@@ -783,12 +741,7 @@ function setStyle(tableDom: HTMLElement, table: Table) {
  * Format the table view
  *
  */
-export const formatTable = (
-  tab: Tab,
-  response: Table | MultiTable,
-  resultDom: HTMLElement,
-  options: { usePip?: boolean } = {}
-) => {
+export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, options: { usePip?: boolean } = {}) => {
   const formatRowOption = Object.assign(options, {
     useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response)
   })
@@ -887,7 +840,7 @@ export const formatTable = (
     }
   }
 
-  const existingTable = isMultiTable(response) ? response.tables.map(table => format(table)) : format(response)
+  const existingTable = format(response)
 
   if (isWatchable(response)) {
     const watch = response.watch

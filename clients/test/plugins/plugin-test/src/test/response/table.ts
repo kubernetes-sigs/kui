@@ -20,29 +20,63 @@
  * See the command implementation in: plugin-test/src/lib/cmds/table.ts
  *
  */
+
+import * as assert from 'assert'
 import { TestTable } from '@kui-shell/test'
+import { firstSeen } from '../../lib/cmds/content/table-with-drilldown'
 
 const test = new TestTable({
   command: 'test table'
 })
 
-const expectHeaderText = { name: 'NAME', attributes: [{ value: 'FOO' }, { value: 'BAR' }] }
+/** is millisecond delta, e.g. "100ms" */
+const deltaPlaceholder = '' // <-- the test rig doesn't care about this value
+const isDelta = /^\d+(.\d+)?[m]?s$/
 
+const expectHeaderText = { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen.toUpperCase() }] }
+
+const firstCol = ['TestString', 'TestTable', 'TestMMRName', 'TestMMRModeSilence']
 const expectRow = [
-  { name: 'TestString', onclick: `test string`, attributes: [{ value: 'foo' }, { value: 'bar' }] },
-  { name: 'TestTable', onclick: `test table`, attributes: [{ value: 'foo' }, { value: 'bar' }] },
-  { name: 'TestMMRName', onclick: `test mmr name`, attributes: [{ value: 'foo' }, { value: 'bar' }] },
+  { name: firstCol[0], onclick: `test string`, attributes: [{ value: 'foo' }, { value: deltaPlaceholder }] },
+  { name: firstCol[1], onclick: `test table`, attributes: [{ value: 'foo' }, { value: deltaPlaceholder }] },
+  { name: firstCol[2], onclick: `test mmr name`, attributes: [{ value: 'foo' }, { value: deltaPlaceholder }] },
   {
-    name: 'TestMMRModeSilence',
+    name: firstCol[3],
     onclick: `test mmr mode`,
     onclickSilence: true,
-    attributes: [{ value: 'foo' }, { value: 'bar' }]
+    attributes: [{ value: 'foo' }, { value: deltaPlaceholder }]
   }
 ]
 
-test.drilldownFromREPL({
+const testPoll = new TestTable({
+  command: 'test table --watch=poll'
+})
+
+test.drilldownFromREPL(
+  {
+    header: expectHeaderText,
+    body: expectRow
+  },
+  {
+    validation: {
+      cells: [
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, firstCol[rowIdx])
+        },
+        (value: string) => {
+          assert.strictEqual(value, '') // we expect an icon, no text
+        },
+        (value: string) => {
+          assert.ok(isDelta.test(value), `value should have [nnn]ms pattern ${value}`)
+        }
+      ]
+    }
+  }
+)
+
+testPoll.drilldownFromREPL({
   header: expectHeaderText,
-  body: expectRow
+  body: expectRow.slice(0, 1)
 })
 
 const testPush = new TestTable({

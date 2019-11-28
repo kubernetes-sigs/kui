@@ -6,47 +6,9 @@ cache: false # as of 20190709 trav-ci.org started loading garbage from the build
 services:
   - docker
 
-os:
-  - linux
-
 env:
-  matrix:
-    - WAIT_LAYERS="bash-like-wait"
-      LAYERS="core bash-like core-support editor"
-      MOCHA_TARGETS="webpack electron"
-      KUI_USE_PROXY=true
-      NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
-
-    - LAYERS="response"
-      MOCHA_TARGETS="electron"
-      KUI_USE_CLIENT=test
-
-    - LAYERS="core"
-      MOCHA_TARGETS="electron"
-      KUI_USE_CLIENT=base
-      LINUX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-linux-x64/Kui"
-      OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui"
-      TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
-
-    - WAIT_LAYERS="k8s"
-      LAYERS="k8s1 k8s2"
-      MOCHA_TARGETS="electron"
-      NEEDS_KUBERNETES=true
-      NEEDS_HELM=true
-      TIMEOUT=100000
-
-    - LAYERS="HEADLESS k8s1 k8s2"
-      KUI_USE_PROXY=true
-      MOCHA_TARGETS="webpack"
-      NEEDS_KUBERNETES=true
-      NEEDS_HELM=true
-      NEEDS_HEADLESS=true
-      TIMEOUT=100000
-
   global:
     - NYC=true # we want code coverage stats
-    - TRAVIS_KUBE_VERSION=1.12
-    - TRAVIS_HELM_VERSION=2.13.0
     - NEEDS_TOP=true # uncomment this if you want cpu and memory utilization output
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
     - WEBPACK_POLL_INTERVAL=200000 # no need to poll for updates while testing
@@ -64,27 +26,43 @@ env:
     - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
     - HOMEBREW_NO_AUTO_UPDATE=1           # disable auto update before running brew install, brew upgrade or brew tap
 
-# to save some time in the runs, exclude layers that are not currently
-# compatible with osx; the travis method for this is a bit clumsy: we
-# have to repeat the entire env!
-matrix:
-  exclude:
-    - os: osx
-      env: LAYERS="core" MOCHA_TARGETS="electron" KUI_USE_CLIENT=base LINUX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-linux-x64/Kui" OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
-    - os: osx
-      env: LAYERS="response" MOCHA_TARGETS="electron" KUI_USE_CLIENT=test
-    - os: osx
-      env: WAIT_LAYERS="k8s" LAYERS="k8s1 k8s2" MOCHA_TARGETS="electron" NEEDS_KUBERNETES=true NEEDS_HELM=true TIMEOUT=100000
-    - os: osx
-      env: LAYERS="HEADLESS k8s1 k8s2" KUI_USE_PROXY=true MOCHA_TARGETS="webpack" NEEDS_KUBERNETES=true NEEDS_HELM=true NEEDS_HEADLESS=true TIMEOUT=100000
-
 install: ./tools/travis/test/install.sh
 script: ./tools/travis/test/script.sh
 
-after_success: ./tools/travis/publishers/cos.sh
+stages:
+  - test
+  - name: npm
+    if: branch = master AND type = push
 
 jobs:
   include:
+    - &test-core
+      env:
+        - LAYERS="core core-support editor"
+        - MOCHA_TARGETS="webpack electron"
+        - KUI_USE_PROXY=true
+    - <<: *test-core
+      os: osx
+    - stage: test
+      env:
+        - WAIT_LAYERS="bash-like-wait"
+        - LAYERS="bash-like"
+        - MOCHA_TARGETS="webpack electron"
+        - KUI_USE_PROXY=true
+        - NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
+    - stage: test
+      env:
+        - LAYERS="response"
+        - MOCHA_TARGETS="electron"
+        - KUI_USE_CLIENT=test
+    - stage: test
+      env:
+        - LAYERS="core"
+        - MOCHA_TARGETS="electron"
+        - KUI_USE_CLIENT=base
+        - LINUX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-linux-x64/Kui"
+        - OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui"
+        - TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
     # Notes:
     #
     # re: on the `npm ci` and `npm install -g` below: here, we are
@@ -120,7 +98,3 @@ jobs:
               branch: master
               repo: IBM/kui
               condition: $TRAVIS_EVENT_TYPE = cron
-
-notifications:
-  webhooks:
-    - https://openwhisk.ng.bluemix.net/api/v1/web/nickm_production/travis-for-kui/done.json

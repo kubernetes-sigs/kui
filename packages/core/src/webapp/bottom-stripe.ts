@@ -14,157 +14,35 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
 import { Tab } from './cli'
 import { removeAllDomChildren } from './util/dom'
-import { isTable, isMultiTable, Table, MultiTable } from './models/table'
+import { isTable, Table } from './models/table'
 import { Capturable } from './models/capturable'
 import { CustomSpec, getSidecar } from './views/sidecar-core'
 import { isCustomSpec } from './views/custom-content'
 import sidecarSelector from './views/sidecar-selector'
-import { ExecOptions } from '../models/execOptions'
 import { apply as addRelevantModes } from './views/registrar/modes'
-import { pexec, qexec, rexec } from '../repl/exec'
 import { isHTML } from '../util/types'
 import { Entity, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
-import { Label, ModeTraits, Button, isButton } from '../models/mmr/types'
-import { Content as HighLevelContent, hasContent, isStringWithOptionalContentType } from '../models/mmr/content-types'
-
-const debug = Debug('webapp/picture-in-picture')
-
-/**
- * A mode button provider can, via direct, as to take charge of view
- * insertion (otherwise, the button stripe will use the normal REPL
- * view dispatching logic, e.g. opening entities in sidecar, tuples as
- * tables, etc.)
- *
- * A direct view controller is either a function from entity to view,
- * or a specification of such; the latter allows for serialization
- * across remote proxies, and thus is preferable to the former.
- *
- */
-type DirectViewController = string | DirectViewControllerFunction | DirectViewEntity
-export type DirectViewControllerFunction<E = object, R = object> = (tab: Tab, entity: E) => PromiseLike<R> | R | void
-
-type DirectViewEntity = CustomSpec
-
-function isDirectViewEntity(direct: DirectViewController): direct is DirectViewEntity {
-  return isCustomSpec(direct as DirectViewEntity)
-}
-
-// Notes: for reasons I don't understand fully, we need to export
-// this, even though nobody uses it outside of this file (by name). I
-// understand that this is necessary for generation of declrations
-// files, however I am not sure why we didn't have to do this before
-// some seemingly minor changes in other places in this file.
-// Reference material:
-// https://github.com/Microsoft/TypeScript/issues/5711
-export interface DirectViewControllerSpec {
-  plugin: string
-  operation: string
-  parameters: object
-}
+import { Mode, Button, isButton } from '../models/mmr/types'
+import { onclick as buttonOnclick } from '../models/mmr/button'
+import { hasContent, isStringWithOptionalContentType } from '../models/mmr/content-types'
 
 /** clicking on a button can toggle other buttons */
-interface Toggle {
+/* interface Toggle {
   toggle: { mode: string; disabled: boolean }[]
-}
-function isToggle(result: DirectResult): result is Toggle {
-  return result && Array.isArray((result as Toggle).toggle)
-}
-
-export type DirectResult = Toggle | Entity
-
-/**
- * Call a "direct" impl
- *
- */
-const callDirect = async (
-  tab: Tab,
-  makeView: DirectViewController,
-  entity: MetadataBearing | CustomSpec,
-  execOptions: ExecOptions
-): Promise<DirectResult> => {
-  if (typeof makeView === 'string') {
-    debug('makeView as string')
-    if (execOptions && execOptions.exec === 'pexec') {
-      return pexec(makeView, execOptions)
-    } else if (execOptions && execOptions.exec === 'rexec') {
-      return rexec(makeView, execOptions)
-    } else {
-      return qexec(makeView, undefined, undefined, Object.assign({}, execOptions, { rethrowErrors: true }))
-    }
-  } else if (typeof makeView === 'function') {
-    debug('makeView as function')
-    return Promise.resolve(makeView(tab, entity) as DirectResult)
-  } /* if (isDirectViewEntity(makeView)) */ else {
-    const combined = Object.assign({}, entity, makeView)
-    return combined
-  }
-}
+} */
 
 export type SelectionController = { on: (evt: 'change', cb: (selected: boolean) => void) => void }
-
-export interface LowLevelContent<Direct = DirectViewController> {
-  // weak: if we have exclusively flush:right buttons, then snap them all left
-  // right: always place this button flush:right
-  // default: use the order? field if defined; otherwise: order mode tabs/buttons as given
-  flush?: 'right' | 'weak'
-
-  selected?: boolean
-  selectionController?: SelectionController
-  visibleWhen?: string
-  leaveBottomStripeAlone?: boolean
-
-  // icon label?
-  fontawesome?: string
-
-  // show label below the fontawesome?
-  labelBelow?: boolean
-
-  // tooltip text
-  balloon?: string
-  balloonLength?: string
-
-  data?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
-
-  command?: (entity: MetadataBearing | CustomSpec) => string
-  direct?: Direct
-  url?: string
-
-  execOptions?: ExecOptions
-
-  actAsButton?: boolean
-
-  radioButton?: boolean
-
-  echo?: boolean
-
-  noHistory?: boolean
-
-  replSilence?: boolean
-}
-
-type Content<Direct = DirectViewController, T = MetadataBearing> =
-  | Button<T>
-  | HighLevelContent<T>
-  | LowLevelContent<Direct>
-
-function isHighLevelMode<T extends MetadataBearing>(
-  mode: Button<T> | HighLevelContent<T> | SidecarMode
-): mode is Button<T> | HighLevelContent<T> {
-  return isButton(mode) || hasContent(mode)
-}
 
 /**
  * Bottom stripe button specification
  *
  */
-export type SidecarMode<Direct = DirectViewController> = Label & ModeTraits & Content<Direct>
-export function isSidecarMode(entity: string | HTMLElement | Table | MultiTable | SidecarMode): entity is SidecarMode {
+export type SidecarMode<T extends MetadataBearing = MetadataBearing> = Mode<T> | Button<T>
+export function isSidecarMode(entity: string | HTMLElement | Table | SidecarMode): entity is SidecarMode {
   const mode = entity as SidecarMode
-  return mode.mode !== undefined && (isHighLevelMode(mode) || mode.direct !== undefined || mode.command !== undefined)
+  return mode.mode !== undefined && (isButton(mode) || hasContent(mode))
 }
 
 interface BottomStripOptions {
@@ -207,31 +85,9 @@ const _addModeButton = (
   show: string
 ) => {
   const { mode, label, defaultMode } = opts
-  /* const { flush,
-    selected,
-    selectionController,
-    visibleWhen,
-    leaveBottomStripeAlone = false,
-    fontawesome,
-    labelBelow, // show label below the fontawesome?
-    balloon,
-    balloonLength,
-    data,
-    command = () => mode,
-    direct,
-    url,
-    execOptions,
-    actAsButton,
-    radioButton = false,
-    echo = false,
-    noHistory = true,
-    replSilence = true
-  } = opts */
 
   // create the button dom, and attach it
-  const isTab =
-    (hasContent(opts) && !isButton(opts)) ||
-    (!isHighLevelMode(opts) && !(opts.flush === 'right' || opts.flush === 'weak'))
+  const isTab = !isButton(opts)
   const button = document.createElement(isTab ? 'li' : 'a')
   const buttonAction = document.createElement(isTab ? 'a' : 'span')
   button.appendChild(buttonAction)
@@ -245,53 +101,47 @@ const _addModeButton = (
     button.classList.add('kui--tab-navigatable', 'kui--notab-when-sidecar-hidden')
   }
 
-  if (!isHighLevelMode(opts)) {
-    if (opts.visibleWhen && opts.visibleWhen !== show) {
-      // only visible when a specific mode is active!
-      return
-    } else if (opts.visibleWhen) {
-      button.setAttribute('data-visible-when', opts.visibleWhen)
-    }
-
-    if (opts.actAsButton) {
-      // some plugins want to add buttons, not mode-switchers to the bottom bar
-      // let's make them behave a bit more like buttons
-      button.classList.add(css.buttonActingAsButton)
-
-      if (opts.radioButton) {
-        button.classList.add(css.buttonActingAsRadioButton)
-      }
-
-      if (opts.selected) {
-        button.classList.add(css.selected)
-      }
-
-      if (opts.selectionController) {
-        opts.selectionController.on('change', (selected: boolean) => {
-          const op = selected ? 'add' : 'remove'
-          button.classList[op](css.selected)
-        })
-      }
-    }
-
-    if (opts.data) {
-      // we were asked to add some data attributes
-      for (const attr in opts.data) {
-        button.setAttribute(attr, opts.data[attr])
-      }
-    }
+  if (opts.visibleWhen && opts.visibleWhen !== show) {
+    // only visible when a specific mode is active!
+    return
+  } else if (opts.visibleWhen) {
+    button.setAttribute('data-visible-when', opts.visibleWhen)
   }
 
-  if (
-    (((!show || show === 'default') && defaultMode) || show === mode) &&
-    (isHighLevelMode(opts) || !opts.actAsButton)
-  ) {
+  if (isButton(opts)) {
+    // some plugins want to add buttons, not mode-switchers to the bottom bar
+    // let's make them behave a bit more like buttons
+    button.classList.add(css.buttonActingAsButton)
+
+    /* if (opts.radioButton) {
+      button.classList.add(css.buttonActingAsRadioButton)
+    }
+    if (opts.selected) {
+      button.classList.add(css.selected)
+    }
+
+    if (opts.selectionController) {
+      opts.selectionController.on('change', (selected: boolean) => {
+        const op = selected ? 'add' : 'remove'
+        button.classList[op](css.selected)
+      })
+    } */
+  }
+
+  /* if (opts.data) {
+    // we were asked to add some data attributes
+    for (const attr in opts.data) {
+      button.setAttribute(attr, opts.data[attr])
+    }
+  } */
+
+  if ((((!show || show === 'default') && defaultMode) || show === mode) && !isButton(opts)) {
     button.classList.add(css.active)
   }
   button.setAttribute('data-mode', mode)
 
   // add the button label
-  const fontawesome = !isHighLevelMode(opts) && opts.fontawesome
+  const fontawesome = opts.fontawesome
   if (fontawesome) {
     const iconContainer = document.createElement('span')
     const icon = document.createElement('i')
@@ -331,7 +181,7 @@ const _addModeButton = (
     iconContainer.appendChild(icon)
     iconContainer.classList.add('icon-container')
 
-    if (!isHighLevelMode(opts) && opts.labelBelow) {
+    if (opts.labelBelow) {
       const labelContainer = document.createElement('div')
       labelContainer.classList.add('deemphasize')
       labelContainer.innerText = label
@@ -362,7 +212,7 @@ const _addModeButton = (
   }
   container.appendChild(button)
 
-  if (!isHighLevelMode(opts) && opts.balloon) {
+  if (opts.balloon) {
     button.setAttribute('data-balloon', opts.balloon)
     button.setAttribute('data-balloon-pos', !isTab ? 'down-right' : 'down')
     if (opts.balloonLength) {
@@ -378,150 +228,97 @@ const _addModeButton = (
     getSidecar(tab).entity = entity
   }
 
-  const url = !isHighLevelMode(opts) && opts.url
-  if (url) {
-    //
-    // onclick, open a new page
-    //
-    button.onclick = () => window.open(url)
-  } else if (isHighLevelMode(opts) || opts.command || opts.direct) {
-    //
-    // insert the command handler
-    //
-    button.onclick = async () => {
-      // change the active button
-      const leaveBottomStripeAlone = isHighLevelMode(opts) || opts.leaveBottomStripeAlone
-      const actAsButton = !isHighLevelMode(opts) && opts.actAsButton
+  //
+  // insert the command handler
+  //
+  button.onclick = async () => {
+    // change the active button
+    const leaveBottomStripeAlone = true
+    const actAsButton = isButton(opts)
 
-      const changeActiveButton = () => {
-        const radioButton = !isHighLevelMode(opts) && opts.radioButton
-        const selected = !isHighLevelMode(opts) && opts.selected
+    const changeActiveButton = () => {
+      const radioButton = false
+      const selected = false // && opts.selected
 
-        if (!actAsButton) {
-          const currentActive = modeStripe.querySelector(`.${css.active}`)
-          if (currentActive) {
-            currentActive.classList.remove(css.active)
-          }
-          button.classList.add(css.active)
+      if (!isButton(opts)) {
+        const currentActive = modeStripe.querySelector(`.${css.active}`)
+        if (currentActive) {
+          currentActive.classList.remove(css.active)
+        }
+        button.classList.add(css.active)
 
-          const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
-          for (let idx = 0; idx < visibleWhens.length; idx++) {
-            const otherButton = visibleWhens[idx] as HTMLElement
-            const when = otherButton.getAttribute('data-visible-when')
-            if (when === mode) {
-              otherButton.classList.remove('not-displayed')
-            } else {
-              otherButton.classList.add('not-displayed')
-            }
-          }
-        } else if (actAsButton && selected !== undefined) {
-          if (radioButton) {
-            button.classList.toggle(css.selected)
+        const visibleWhens = bottomStripe.querySelectorAll('.sidecar-bottom-stripe-button[data-visible-when]')
+        for (let idx = 0; idx < visibleWhens.length; idx++) {
+          const otherButton = visibleWhens[idx] as HTMLElement
+          const when = otherButton.getAttribute('data-visible-when')
+          if (when === mode) {
+            otherButton.classList.remove('not-displayed')
           } else {
-            const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
-            if (currentSelected) {
-              currentSelected.classList.remove(css.selected)
-            }
-            button.classList.add(css.selected)
+            otherButton.classList.add('not-displayed')
           }
+        }
+      } else if (actAsButton && selected !== undefined) {
+        if (radioButton) {
+          button.classList.toggle(css.selected)
+        } else {
+          const currentSelected = bottomStripe.querySelector(`.${css.selected}`)
+          if (currentSelected) {
+            currentSelected.classList.remove(css.selected)
+          }
+          button.classList.add(css.selected)
         }
       }
+    }
 
-      const present = async (view: Entity) => {
-        if (typeof view === 'string') {
-          const dom = document.createElement('div')
-          dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
-          dom.innerText = view
-          const { insertCustomContent } = await import('./views/sidecar')
-          insertCustomContent(tab, dom)
-        } else if (isStringWithOptionalContentType(view) && isMetadataBearing(entity)) {
-          const { showCustom } = await import('./views/sidecar')
-          showCustom(
-            tab,
-            {
-              type: 'custom',
-              resource: entity,
-              content: view.content,
-              contentType: view.contentType
-            },
-            { leaveBottomStripeAlone: true }
-          )
-        } else if (isHTML(view)) {
-          const dom = document.createElement('div')
-          dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
-          dom.appendChild(view)
-          const { insertCustomContent } = await import('./views/sidecar')
-          insertCustomContent(tab, dom)
-        } else if (isCustomSpec(view)) {
-          const { showCustom } = await import('./views/sidecar')
-          showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
-        } else if (isTable(view) || isMultiTable(view)) {
-          const dom1 = document.createElement('div')
-          const dom2 = document.createElement('div')
-          dom1.classList.add('scrollable', 'scrollable-auto')
-          dom2.classList.add('result-as-table', 'repl-result')
-          dom1.appendChild(dom2)
-          const { formatTable } = await import('./views/table')
-          formatTable(tab, view, dom2, { usePip: true })
-          const { insertCustomContent } = await import('./views/sidecar')
-          insertCustomContent(tab, dom1)
-        }
+    const present = async (view: Entity) => {
+      if (typeof view === 'string') {
+        const dom = document.createElement('div')
+        dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+        dom.innerText = view
+        const { insertCustomContent } = await import('./views/sidecar')
+        insertCustomContent(tab, dom)
+      } else if (isStringWithOptionalContentType(view) && isMetadataBearing(entity)) {
+        const { showCustom } = await import('./views/sidecar')
+        showCustom(
+          tab,
+          {
+            type: 'custom',
+            resource: entity,
+            content: view.content,
+            contentType: view.contentType
+          },
+          { leaveBottomStripeAlone: true }
+        )
+      } else if (isHTML(view)) {
+        const dom = document.createElement('div')
+        dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
+        dom.appendChild(view)
+        const { insertCustomContent } = await import('./views/sidecar')
+        insertCustomContent(tab, dom)
+      } else if (isCustomSpec(view)) {
+        const { showCustom } = await import('./views/sidecar')
+        showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
+      } else if (isTable(view)) {
+        const dom1 = document.createElement('div')
+        const dom2 = document.createElement('div')
+        dom1.classList.add('scrollable', 'scrollable-auto')
+        dom2.classList.add('result-as-table', 'repl-result')
+        dom1.appendChild(dom2)
+        const { formatTable } = await import('./views/table')
+        formatTable(tab, view, dom2, { usePip: true })
+        const { insertCustomContent } = await import('./views/sidecar')
+        insertCustomContent(tab, dom1)
       }
+    }
 
-      // execute the command
-      if (!isHighLevelMode(opts) && opts.direct) {
-        try {
-          if (isDirectViewEntity(opts.direct) || leaveBottomStripeAlone) {
-            // change the active button before we fetch the model
-            changeActiveButton()
-          }
-
-          const view = await callDirect(tab, opts.direct, entity, opts.execOptions)
-          if (actAsButton && isToggle(view)) {
-            view.toggle.forEach(({ mode, disabled }) => {
-              const button = modeStripe.querySelector(`.sidecar-bottom-stripe-button[data-mode="${mode}"]`)
-              if (button) {
-                if (disabled) {
-                  button.classList.add('disabled')
-                } else {
-                  button.classList.remove('disabled')
-                }
-              }
-            })
-
-            changeActiveButton()
-          } else if (view && !actAsButton && !isToggle(view)) {
-            if (isTable(view) || isStringWithOptionalContentType(view)) {
-              changeActiveButton()
-            }
-
-            await present(view)
-          } else if (!isToggle(view) && isCustomSpec(view)) {
-            const { showCustom } = await import('./views/sidecar')
-            showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
-          } else if (!leaveBottomStripeAlone) {
-            changeActiveButton()
-          }
-        } catch (err) {
-          // do not change active bottom if the command failed!
-          console.error(err)
-        }
-      } else if (!isHighLevelMode(opts) && opts.command) {
-        try {
-          const { echo, noHistory, replSilence } = opts
-          await pexec(opts.command(entity), { echo, noHistory, replSilence })
-          if (leaveBottomStripeAlone) {
-            changeActiveButton()
-          }
-        } catch (err) {
-          console.error(err)
-        }
-      } else if (hasContent(opts)) {
-        const { format } = await import('../models/mmr/show')
-        const view = await format(tab, entity as MetadataBearing, opts)
-        changeActiveButton()
-        await present(view)
-      }
+    // execute the actual onclick handler
+    if (isButton(opts)) {
+      buttonOnclick(tab, entity as MetadataBearing, opts)
+    } else if (hasContent(opts)) {
+      const { formatForTab } = await import('../models/mmr/show')
+      const view = await formatForTab(tab, entity as MetadataBearing, opts)
+      changeActiveButton()
+      await present(view)
     }
   }
 
@@ -539,7 +336,7 @@ export const addModeButton = (
   return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
 }
 
-export const addModeButtons = <Direct = DirectViewController>(
+export const addModeButtons = (
   tab: Tab,
   modesUnsorted: SidecarMode[] = [],
   entity: MetadataBearing | CustomSpec,
@@ -562,25 +359,9 @@ export const addModeButtons = <Direct = DirectViewController>(
     modesUnsorted.find(_ => _.mode === options.show).defaultMode = true
   }
 
-  // Place flush:right items at the end. Notes on flush:weak; this
-  // means place to the right, unless there are no flush:right|weak
-  // buttons.
+  // obey the `order` constraints of the modes
   const modes = modesUnsorted.sort((a, b) => {
-    const aFlush = isHighLevelMode(a) ? undefined : a.flush
-    const bFlush = isHighLevelMode(b) ? undefined : b.flush
-
-    if (aFlush === bFlush || (aFlush === 'weak' && bFlush === 'right') || (aFlush === 'right' && bFlush === 'weak')) {
-      // then use the natural order of a versus b: a mode model can
-      // optionally specify a numeric sort order; if not specified,
-      // then use the order as given
-      return (a.order || 0) - (b.order || 0)
-    } else {
-      if (aFlush === 'right' || aFlush === 'weak') {
-        return 1
-      } else {
-        return -1
-      }
-    }
+    return (a.order || 0) - (b.order || 0)
   })
 
   // for going back
@@ -609,8 +390,7 @@ export const addModeButtons = <Direct = DirectViewController>(
     }
   }
 
-  const defaultMode =
-    modes && (modes.find(({ defaultMode }) => defaultMode) || modes.find(_ => isHighLevelMode(_) || !_.flush))
+  const defaultMode = modes && (modes.find(_ => _.defaultMode && !isButton(_)) || modes.find(_ => !isButton(_)))
   const show = (options && options.show) || (defaultMode && (defaultMode.mode || defaultMode.label))
 
   addModeButtons(tab, modes, entity, show)

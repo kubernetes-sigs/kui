@@ -16,10 +16,9 @@
 
 import { Tab } from '../../webapp/tab'
 import { MetadataBearing } from '../entity'
-import { MultiModalResponse, Button, isViewButton } from './types'
-import { SidecarMode } from '../../webapp/bottom-stripe'
+import { Button, isViewButton } from './types'
 
-function direct<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
+function getCommand<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
   if (isViewButton(button)) {
     return button.command
   } else {
@@ -32,30 +31,16 @@ function direct<T extends MetadataBearing>(tab: Tab, resource: T, button: Button
   }
 }
 
-export function formatButton<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>): SidecarMode {
-  const { mode, label, balloon, visibleWhen, selected, selectionController } = button
+export function onclick<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
+  const cmd = getCommand(tab, resource, button)
 
-  return {
-    // Label
-    mode,
-    label,
-
-    // VisibilityTraits
-    balloon,
-    visibleWhen,
-    selected,
-    selectionController,
-
-    // low-level impl
-    flush: 'right',
-    actAsButton: true,
-    direct: direct(tab, resource, button),
-    execOptions: {
-      exec: isViewButton(button) || button.confirm ? 'qexec' : 'pexec'
+  if (typeof cmd === 'string') {
+    if (isViewButton(button) || button.confirm) {
+      return tab.REPL.qexec(cmd, undefined, undefined, { rethrowErrors: true })
+    } else {
+      return tab.REPL.pexec(cmd)
     }
+  } else {
+    cmd(tab, resource)
   }
-}
-
-export function formatButtons(tab: Tab, mmr: MultiModalResponse, buttons: Button[]): SidecarMode[] {
-  return buttons.map(button => formatButton(tab, mmr, button))
 }

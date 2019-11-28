@@ -17,7 +17,7 @@
 import { UI } from '@kui-shell/core'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { modCmd } = require('./util')
+// const { modCmd } = require('./util')
 
 /* interface Mode {
   mode: string
@@ -33,7 +33,7 @@ const { modCmd } = require('./util')
 } */
 
 /** view modes */
-const _modes: UI.Mode[] = [
+const _modes: UI.Mode[] = [] /* [
   { mode: 'get', label: 'About' },
   { mode: 'api', label: 'API' },
   { mode: 'config', label: 'Configure' }
@@ -42,7 +42,7 @@ const _modes: UI.Mode[] = [
     onclick: false,
     command: ({ name }) => `${modCmd} ${_.mode} "${name}"` // add the command handler, e.g. "module get foo"
   })
-)
+) */
 
 /** flush-right buttons for the bottom stripe */
 const buttons: UI.Mode[] = [
@@ -53,8 +53,7 @@ const buttons: UI.Mode[] = [
     { mode: 'undeploy', label: 'Undeploy', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Undeploy this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name}) => `${modCmd} undeploy "${name}"` }, */
-
-  {
+  /* {
     mode: 'status',
     label: 'Status',
     fontawesome: 'fas fa-info-circle',
@@ -66,8 +65,7 @@ const buttons: UI.Mode[] = [
     noHistory: false,
     command: ({ name }) => `${modCmd}
  status "${name}"`
-  }
-
+  } */
   /* { mode: 'invoke', label: 'Invoke', //fontawesome: 'fas fa-trash-alt',
       balloon: 'Perform a trial inovcation of this project',
       actAsButton: true, flush: 'right', echo: true, noHistory: false, command: ({name, api}) => `invoke main ${apiToDefaultParams(api)}` } */

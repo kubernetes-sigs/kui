@@ -31,10 +31,20 @@ interface Options extends Commands.ParsedOptions {
 }
 
 // generateNewPush generates new `Row` with badge and message
-const generateNewPush = (name: string, onlineLike: boolean, message: string): Tables.Row => {
+const generateNewPush = (
+  name: string,
+  onlineLike: boolean,
+  message: string,
+  args: Commands.Arguments<Options>
+): Tables.Row => {
   const status = onlineLike ? 'Running' : 'Terminating'
   const css = onlineLike ? 'green-background' : 'yellow-background'
-  return { name, attributes: [{ key: 'STATUS', tag: 'badge', value: status, css }, { key: 'MESSAGE', value: message }] }
+  const onclick = () => args.REPL.pexec('test string')
+  return {
+    name,
+    onclick,
+    attributes: [{ key: 'STATUS', tag: 'badge', value: status, css }, { key: 'MESSAGE', value: message }]
+  }
 }
 
 const doTable = (): ((args: Commands.Arguments<Options>) => Tables.Table & Partial<Watchable>) => {
@@ -58,34 +68,36 @@ const doTable = (): ((args: Commands.Arguments<Options>) => Tables.Table & Parti
             const name1 = 'foo1'
             const name2 = 'foo2'
 
-            update(generateNewPush(name1, true, 'should create a new row'))
+            update(generateNewPush(name1, true, 'should create a new row', args))
             if (finalState === 'createRow1') return
 
-            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row')), 1000)
+            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row', args)), 1000)
             if (finalState === 'terminateRow1') return
 
             setTimeout(() => offline(name1), 1500)
             if (finalState === 'deleteRow1') return
 
-            setTimeout(() => update(generateNewPush(name1, true, 'should activate the deleted row')), 2000)
+            setTimeout(() => update(generateNewPush(name1, true, 'should activate the deleted row', args)), 2000)
             if (finalState === 'activateRow1') return
 
-            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row again')), 2500)
+            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row again', args)), 2500)
             if (finalState === 'terminateRow1Again') return
 
             setTimeout(() => offline(name1), 3000)
             if (finalState === 'deleteRow1Again') return
 
-            setTimeout(() => update(generateNewPush(name2, true, 'should create the second row')), 3500)
+            setTimeout(() => update(generateNewPush(name2, true, 'should create the second row', args)), 3500)
             if (finalState === 'createRow2') return
 
             if (finalState === 'activeRow1Again')
-              setTimeout(() => update(generateNewPush(name1, true, 'should activate the first row again')), 4000)
+              setTimeout(() => update(generateNewPush(name1, true, 'should activate the first row again', args)), 4000)
           }
         }
       }
 
       return Object.assign({}, tableWithoutRows, watch)
+    } else if (watch && watch === 'poll') {
+      return Object.assign({}, tableWithoutRows, { watch: { refreshCommand: 'test table' } })
     } else {
       return table
     }

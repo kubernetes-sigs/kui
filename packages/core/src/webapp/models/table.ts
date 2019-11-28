@@ -165,25 +165,9 @@ export function isTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): mo
   )
 }
 
-export interface MultiTable {
-  tables: Table[]
-}
-
-export function isMultiTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): model is MultiTable {
-  return (
-    model !== undefined &&
-    (model as MultiTable).tables !== undefined &&
-    Array.isArray((model as MultiTable).tables) &&
-    (model as MultiTable).tables.length >= 1 &&
-    (model as MultiTable).tables.filter(table => !isTable(table)).length === 0
-  )
-}
-
-export type WatchableMultiTable = MultiTable & Watchable
-
-export function formatWatchableTable<T extends Table | MultiTable>(model: T, poller: Poller): T & Watchable {
+export function formatWatchableTable<T extends Table>(model: T, poller: Poller): T & Watchable {
   const watch: Watchable = { watch: poller }
-  if (isTable(model) || isMultiTable(model)) {
+  if (isTable(model)) {
     return Object.assign(model, watch)
   } else {
     // TODO: we might need to consider the variance of model, throw error for now

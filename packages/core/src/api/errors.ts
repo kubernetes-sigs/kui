@@ -38,5 +38,6 @@ export namespace Errors {
 }
 
 export { CodedError } from '../models/errors'
+export { UsageModel } from '../core/usage-error'
 
 export default Errors

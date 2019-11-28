@@ -66,7 +66,7 @@ interface View<Resource extends MetadataBearing> {
  * A `Mode` is a `Label` plus some `Content` and `ModeTraits`
  *
  */
-export type Mode<T = MetadataBearing> = Label & Content<T> & ModeTraits
+export type Mode<T = MetadataBearing> = Label & ModeTraits & VisibilityTraits & Content<T>
 
 /**
  * Optional traits of a mode, e.g. a designation as the
@@ -92,6 +92,7 @@ export interface ModeTraits {
  *
  */
 export type DrilldownButton<T = MetadataBearing> = Label &
+  ModeTraits &
   VisibilityTraits & {
     command: string | ((tab: Tab, resource: T) => string)
     confirm?: boolean
@@ -99,6 +100,7 @@ export type DrilldownButton<T = MetadataBearing> = Label &
   }
 
 export type ViewButton<T = MetadataBearing> = Label &
+  ModeTraits &
   VisibilityTraits & {
     kind: 'view'
     command: (tab: Tab, resource: T) => void
@@ -122,7 +124,12 @@ export function isButton<T extends MetadataBearing>(mode: Button<T> | Content<T>
 export interface Label {
   mode: string
   label?: string
+
   balloon?: string
+  balloonLength?: string
+
+  fontawesome?: string
+  labelBelow?: string
 }
 
 /**

@@ -31,6 +31,7 @@ interface CustomSpec {
   expect?: string
   exact?: boolean
   passthrough?: boolean
+  streaming?: boolean
 }
 
 interface Options {
@@ -44,6 +45,7 @@ interface Options {
   expectJustOK?: boolean
   expectString?: string
   expectArray?: string[]
+  streaming?: boolean
 }
 
 const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
@@ -85,7 +87,9 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
           .then(name => assert.ok(name !== opt.expectArray[0] && name.find(_ => _.indexOf(opt.expectArray[0]) >= 0)))
       } else if (opt && (opt.selector || opt.expect)) {
         // more custom, look for expect text under given selector
-        const selector = `${Selectors.OUTPUT_N(N - 1)} ${opt.selector || ''}`
+        const selector = `${
+          opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1) : Selectors.OUTPUT_N(N - 1)
+        } ${opt.selector || ''}`
         if (opt.elements) {
           return app.client.elements(selector)
         } else {
@@ -183,9 +187,9 @@ export const okWithTextContent = (expect: string, exact = false, failFast = true
   }
 }
 
-export const okWithString = (expect: string, exact = false) => async (res: AppAndCount) => {
+export const okWithString = (expect: string, exact = false, streaming = false) => async (res: AppAndCount) => {
   // first try innerText
-  return okWithCustom({ expect, exact })(res).catch(async err1 => {
+  return okWithCustom({ expect, exact, streaming })(res).catch(async err1 => {
     // use .textContent as a backup plan
     return okWithTextContent(expect, exact)(res).catch(() => {
       throw err1

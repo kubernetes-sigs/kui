@@ -33,9 +33,7 @@
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
     "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
     "@kui-shell/plugin-editor": "file:plugins/plugin-editor",
-    "@kui-shell/plugin-k8s": "file:plugins/plugin-k8s",
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
-    "@kui-shell/plugin-operator-framework": "file:plugins/plugin-operator-framework",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-tutorials": "file:plugins/plugin-tutorials",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"

@@ -13,6 +13,7 @@ export const SIDECAR_FULLY_HIDDEN = `${SIDECAR_BASE}:not(.visible):not(.minimize
 export const SIDECAR_ACTIVATION_TITLE = `${SIDECAR} .sidecar-header-name .entity-name-hash`
 export const SIDECAR_TITLE = `${SIDECAR} .sidecar-header-name-content .entity-name`
 export const SIDECAR_PACKAGE_NAME_TITLE = `${SIDECAR} .sidecar-bottom-stripe .package-prefix`
+export const SIDECAR_POPUP_TITLE = `${SIDECAR} .sidecar-header-input`
 export const SIDECAR_KIND = `${SIDECAR} .sidecar-bottom-stripe .sidecar-header-icon`
 export const SIDECAR_CONTENT = `${SIDECAR} .sidecar-content`
 export const SIDECAR_WEB_ACTION_URL = `${SIDECAR} .sidecar-header .entity-web-export-url.has-url`
@@ -49,6 +50,7 @@ export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
 export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} input`
 export const PROMPT_N = (N: number) => `${PROMPT_BLOCK_N(N)} input`
 export const OUTPUT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result`
+export const OUTPUT_N_STREAMING = (N: number) => `${PROMPT_BLOCK_N(N)} [data-stream]`
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} input`
@@ -56,6 +58,7 @@ export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
 export const LIST_RESULTS_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result .entity:not(.header-row)`
 export const LIST_RESULTS_BY_NAME_N = (N: number) => `${LIST_RESULTS_N(N)} .entity-name`
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string) => `${LIST_RESULTS_N(N)}[data-name="${name}"]`
+export const TABLE_HEADER_CELL = (cellKey: string) => `.entity.header-row .cell-inner[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) =>
   `.entity:not(.header-row)[data-name="${rowKey}"] .cell-inner[data-key="${cellKey}"]`
 export const BY_NAME = (name: string) => `.entity:not(.header-row)[data-name="${name}"]`

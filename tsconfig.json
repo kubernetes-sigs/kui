@@ -26,12 +26,6 @@
       "path": "plugins/plugin-wskflow"
     },
     {
-      "path": "plugins/plugin-k8s"
-    },
-    {
-      "path": "plugins/plugin-operator-framework"
-    },
-    {
       "path": "plugins/plugin-tutorials"
     },
     {

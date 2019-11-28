@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert'
 import { Application } from 'spectron'
 
 import { timeout, waitTimeout } from './cli'
@@ -195,6 +196,14 @@ export const textPlainContent = (content: string) => async (app: Application) =>
   return app
 }
 
+export async function tableContent(app: Application, nRows: number, nCells: number) {
+  const rows = (await app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr`)).value
+  assert.strictEqual(nRows, rows.length, 'nRows must match')
+
+  const cells = (await app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} td`)).value
+  assert.strictEqual(nCells, cells.length, 'nCells must match')
+}
+
 export const yaml = (content: object) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     const ok: boolean = await getValueFromMonaco(app).then(expectYAMLSubset(content, false))
@@ -202,6 +211,12 @@ export const yaml = (content: object) => async (app: Application) => {
   }, waitTimeout)
 
   return app
+}
+
+export async function popupTitle(app: Application, expectedTitle: string) {
+  await app.client.waitForValue(Selectors.SIDECAR_POPUP_TITLE)
+  const actualTitle = await app.client.getValue(Selectors.SIDECAR_POPUP_TITLE)
+  assert.strictEqual(actualTitle, expectedTitle)
 }
 
 export const showing = (

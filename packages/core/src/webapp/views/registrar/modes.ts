@@ -18,18 +18,17 @@ import Debug from 'debug'
 
 import { Tab } from '../../tab'
 import { MetadataBearing } from '../../../models/entity'
-import { Button, isButton } from '../../../models/mmr/types'
-import { formatButton } from '../../../models/mmr/button'
+// import { Button } from '../../../models/mmr/types'
+// import { formatButton } from '../../../models/mmr/button'
 import { SidecarMode } from '../../bottom-stripe'
 
 const debug = Debug('webapp/views/registrar/modes')
 
 export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
 
-type ModeDeclaration<Resource extends MetadataBearing> =
-  | SidecarMode
-  | ((command: string, resource: { resource: Resource }) => SidecarMode)
-  | Button
+type ModeDeclaration<Resource extends MetadataBearing> = SidecarMode
+//  | ((command: string, resource: { resource: Resource }) => SidecarMode)
+//  | Button
 
 /**
  * Interpretation: if the resource passes the given "when" filter,
@@ -93,10 +92,10 @@ export function apply<Resource extends MetadataBearing>(
         }
       } */
 
-      const theModeOrButton: Button | SidecarMode = typeof mode === 'function' ? mode(command, resource) : mode
-      const theMode = isButton(theModeOrButton)
+      const theModeOrButton = mode // : Button | SidecarMode = typeof mode === 'function' ? mode(command, resource) : mode
+      const theMode = theModeOrButton /* isButton(theModeOrButton)
         ? formatButton(tab, resource.resource, theModeOrButton)
-        : theModeOrButton
+        : theModeOrButton */
 
       const idxOfPreexistingRegistrationForSameMode = modes.findIndex(({ mode }) => mode === theMode.mode)
       if (idxOfPreexistingRegistrationForSameMode < 0) {

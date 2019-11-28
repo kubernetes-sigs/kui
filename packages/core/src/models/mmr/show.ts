@@ -19,7 +19,7 @@ import { MetadataBearing } from '../entity'
 import { CustomSpec } from '../../webapp/views/sidecar-core'
 import { isCustomSpec } from '../../webapp/views/custom-content'
 import { SidecarMode, addModeButtons } from '../../webapp/bottom-stripe'
-import { isTable, isMultiTable, Table, MultiTable } from '../../webapp/models/table'
+import { isTable, Table } from '../../webapp/models/table'
 
 import { MultiModalResponse, isButton } from './types'
 import {
@@ -29,43 +29,42 @@ import {
   ScalarContent,
   isScalarContent,
   isCommandStringContent,
+  StringContent,
   isStringWithOptionalContentType,
   isFunctionContent
 } from './content-types'
 
-import { formatButtons } from './button'
-
-type Viewable = CustomSpec | HTMLElement | Table | MultiTable
+type TabPresentableContent = CustomSpec | HTMLElement | Table
 
 /**
- * Turn a Resource into a Viewable
+ * Turn a Resource into content that can be presented in a sidecar tab
  *
  */
-export async function format<T extends MetadataBearing>(
+export async function formatForTab<T extends MetadataBearing>(
   tab: Tab,
   mmr: T,
   resource: ScalarResource | Content<T>
-): Promise<Viewable> {
+): Promise<TabPresentableContent> {
   if (!hasContent(resource)) {
     // then we have a plain resource. the rest of this function
     // assumes a Content structure, so wrap it up as such
-    return format(tab, mmr, { content: resource })
+    return formatForTab(tab, mmr, { content: resource })
   } else if (isFunctionContent(resource)) {
     // then resource.content is a function that will provide the information
-    return format(tab, mmr, await resource.content(tab, mmr))
+    return formatForTab(tab, mmr, await resource.content(tab, mmr))
   } else if (isCommandStringContent(resource)) {
     const content = await tab.REPL.qexec<ScalarResource | ScalarContent>(resource.contentFrom)
     if (resource.contentType && typeof content === 'string') {
-      return format(tab, mmr, {
+      return formatForTab(tab, mmr, {
         content,
         contentType: resource.contentType
       })
     } else {
-      return format(tab, mmr, content)
+      return formatForTab(tab, mmr, content)
     }
   } else if (isCustomSpec(resource.content)) {
     return resource.content
-  } else if (isTable(resource.content) || isMultiTable(resource.content)) {
+  } else if (isTable(resource.content)) {
     return resource.content
   } else {
     // otherwise, we have string or HTMLElement content
@@ -76,7 +75,7 @@ export async function format<T extends MetadataBearing>(
   }
 }
 
-async function wrapTable(tab: Tab, table: Table | MultiTable): Promise<HTMLElement> {
+async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
   const dom1 = document.createElement('div')
   const dom2 = document.createElement('div')
   dom1.classList.add('scrollable', 'scrollable-auto')
@@ -93,13 +92,13 @@ async function renderContent<T extends MetadataBearing>(
   tab: Tab,
   bearer: T,
   content: Content<T> | MetadataBearing | SidecarMode
-): Promise<ScalarContent> {
+): Promise<ScalarContent | StringContent> {
   if (isStringWithOptionalContentType(content)) {
     return content
   } else if (isFunctionContent(content)) {
     const actualContent = (await content.content(tab, bearer)) as ScalarResource | ScalarContent
     if (!isScalarContent(actualContent)) {
-      if (isTable(actualContent) || isMultiTable(actualContent)) {
+      if (isTable(actualContent)) {
         return {
           content: await wrapTable(tab, actualContent)
         }
@@ -112,10 +111,21 @@ async function renderContent<T extends MetadataBearing>(
       return actualContent
     }
   } else if (isScalarContent(content)) {
-    return content
-  } else if (isTable(content) || isMultiTable(content)) {
+    if (isTable(content.content)) {
+      return {
+        content: await wrapTable(tab, content.content)
+      }
+    } else {
+      return content
+    }
+  } else if (isTable(content)) {
     return {
       content: await wrapTable(tab, content)
+    }
+  } else if (isCommandStringContent(content)) {
+    return {
+      content: await tab.REPL.qexec<ScalarResource>(content.contentFrom),
+      contentType: content.contentType
     }
   }
 }
@@ -124,47 +134,26 @@ async function renderContent<T extends MetadataBearing>(
  * Render a MultiModalResponse to the sidecar
  *
  */
-export async function show(tab: Tab, mmr: MultiModalResponse) {
-  const modes: SidecarMode[] = await Promise.all(
-    mmr.modes.map(async _ => ({
-      mode: _.mode,
-      label: _.label || _.mode,
-      direct: (tab: Tab) => {
-        if (isCustomSpec(_)) {
-          return _
-        } else {
-          return format(tab, mmr, _)
-        }
-      },
-      defaultMode: _.defaultMode,
-      toolbarText: mmr.toolbarText,
-      leaveBottomStripeAlone: true
-    }))
-  )
+export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalResponse<T>) {
+  const modes = mmr.modes as SidecarMode<T>[]
 
-  if (!modes.find(_ => _.defaultMode) && modes.length > 0) {
-    modes[0].defaultMode = true
-  }
-
-  const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
-  const ourModesWithButtons = modes.concat(buttons)
+  // const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
+  const ourModesWithButtons = modes.concat(mmr.buttons || [])
 
   const modesWithButtons = addModeButtons(tab, ourModesWithButtons, mmr, {
     preserveBackButton: true,
     show: mmr.defaultMode
   })
-  const defaultMode = modesWithButtons.find(_ => _.defaultMode) || modesWithButtons[0]
+
+  const defaultMode =
+    modesWithButtons.find(_ => !isButton(_) && _.defaultMode) || modesWithButtons.find(_ => !isButton(_))
 
   if (isButton(defaultMode)) {
-    console.error('default mode is a button', defaultMode, mmr)
-    throw new Error('Internal Error')
+    console.error('default mode is a button', defaultMode.mode, modesWithButtons, mmr)
+    throw new Error('default mode is a button')
   }
 
-  const content = hasContent(defaultMode)
-    ? defaultMode
-    : typeof defaultMode.direct === 'function'
-    ? await defaultMode.direct(tab, mmr)
-    : undefined // defaultMode.direct
+  const content = hasContent(defaultMode) ? defaultMode : undefined
 
   if (content) {
     if (isCustomSpec(content)) {
