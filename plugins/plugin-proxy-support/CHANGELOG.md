@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/IBM/kui/compare/v4.5.0...v5.5.0) (2019-11-29)
+
+### Bug Fixes
+
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+
+### BREAKING CHANGES
+
+- **packages/core:** remove old EntitySpec support
+
 # [5.1.0](https://github.com/IBM/kui/compare/v4.5.0...v5.1.0) (2019-10-11)
 
 **Note:** Version bump only for package @kui-shell/plugin-proxy-support
