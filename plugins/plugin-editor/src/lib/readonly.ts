@@ -53,7 +53,7 @@ export const lockIcon = ({
   label = 'Done Editing',
   // icon = 'fas fa-unlock-alt',
   tooltip = 'Return to read-only mode', // TODO externalize string
-  direct = gotoReadonlyLocalFile({ getEntity })
+  command = gotoReadonlyLocalFile({ getEntity })
 }) => ({
   mode,
   label,
@@ -61,5 +61,6 @@ export const lockIcon = ({
   actAsButton: true,
   // fontawesome: icon,
   balloon: tooltip,
-  direct
+  command,
+  kind: 'drilldown'
 })
