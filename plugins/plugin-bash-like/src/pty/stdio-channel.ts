@@ -62,7 +62,7 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
       // upstream client has sent data downstream; forward it to the subprocess
       ws.on('message', (data: string) => {
         debugW('forwarding message downstream')
-        child.stdin.write(data)
+        child.stdin.write(`${data}${MARKER}`)
       })
 
       // on pong response, indicate we remain alive
@@ -165,8 +165,14 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
     await onConnection(onExit)(this)
 
     process.stdin.on('data', (data: Buffer) => {
-      debugK('input', data.toString())
-      this.emit('message', data)
+      data
+        .toString()
+        .split(MARKER)
+        .filter(_ => _)
+        .forEach(_ => {
+          debugK('input', _)
+          this.emit('message', _)
+        })
     })
 
     this.send('open')
