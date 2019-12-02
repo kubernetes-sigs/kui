@@ -168,7 +168,12 @@ class ProxyEvaluator implements REPL.ReplEval {
                           debug('rejecting as other error', response)
                           const err: Errors.CodedError = new Error(response.response.message)
                           err.stack = response.response.stack
-                          err.code = err.statusCode = code
+                          err.code = code
+
+                          // see https://github.com/IBM/kui/issues/3318
+                          err.statusCode =
+                            response.response.statusCode !== undefined ? response.response.statusCode : code
+
                           err.body = response.response
                           reject(err)
                         }
