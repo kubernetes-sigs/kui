@@ -35,6 +35,14 @@ export function getChannelForTab(tab: UI.Tab): Channel {
 }
 
 /**
+ * Return the session for the given tab
+ *
+ */
+export function getSessionForTab(tab: UI.Tab): Promise<Channel> {
+  return tab['_kui_session'] as Promise<Channel>
+}
+
+/**
  * Keep trying until we can establish a session
  *
  */

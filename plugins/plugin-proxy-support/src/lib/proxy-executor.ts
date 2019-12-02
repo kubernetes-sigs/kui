@@ -32,23 +32,11 @@ import {
 import Errors from '@kui-shell/core/api/errors'
 import REPL from '@kui-shell/core/api/repl'
 import Settings from '@kui-shell/core/api/settings'
-import { Tab } from '@kui-shell/core/api/ui-lite'
 import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
 
 import { isDisabled, ProxyServerConfig } from './config'
 
-// import { getChannelForTab } from '@kui-shell/plugin-bash-like/pty/session'
-// copied for now, until we can figure out typescript compiler issues
-interface Channel {
-  send: (msg: string) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  on: (eventType: string, handler: any) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  removeEventListener: (eventType: string, handler: any) => void
-}
-function getSessionForTab(tab: Tab): Promise<Channel> {
-  return tab['_kui_session'] as Promise<Channel>
-}
+import { getSessionForTab } from '@kui-shell/plugin-bash-like'
 
 const debug = Debug('plugins/proxy-support/executor')
 

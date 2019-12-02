@@ -17,3 +17,4 @@
 // this file defines the external API
 export { main } from './pty/server'
 export { StdioChannelWebsocketSide } from './pty/stdio-channel'
+export { getSessionForTab } from './pty/session'
