@@ -269,6 +269,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
                 uuid: msg.uuid,
                 response: {
                   code: err.code || err.statusCode,
+                  statusCode: err.statusCode, // see https://github.com/IBM/kui/issues/3318
                   message: err.message,
                   stack: err.stack
                 }
