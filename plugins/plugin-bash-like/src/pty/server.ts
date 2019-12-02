@@ -343,6 +343,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           break
       }
     } catch (err) {
+      console.error(`error trying to parse: ${data}`)
       console.error(err)
     }
   })
