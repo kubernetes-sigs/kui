@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.6](https://github.com/IBM/kui/compare/v4.5.0...v5.5.6) (2019-12-03)
+
+### Bug Fixes
+
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+- propagate statusCode back from the proxy ([275240a](https://github.com/IBM/kui/commit/275240a)), closes [#3318](https://github.com/IBM/kui/issues/3318)
+
+### BREAKING CHANGES
+
+- **packages/core:** remove old EntitySpec support
+
 ## [5.5.5](https://github.com/IBM/kui/compare/v4.5.0...v5.5.5) (2019-12-03)
 
 ### Bug Fixes
