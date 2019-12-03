@@ -26,7 +26,8 @@
     "start": "node bin/kui shell"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=8.15.0",
+    "npm": ">=5.7.1"
   },
   "dependencies": {
     "@kui-shell/core": "file:packages/core",
