@@ -314,14 +314,12 @@ export const printResults = (
     }
   }
 
-  let promise: Promise<boolean>
-
   // print ok if it's an empty table
   if (!isWatchable(response) && isTable(response) && response.body.length === 0) {
     response = true
   }
 
-  promise = render(response, { echo, resultDom })
+  const promise = render(response, { echo, resultDom })
 
   if (isTable(response)) {
     if (isPopup()) {
@@ -377,7 +375,7 @@ export const printResults = (
           execOptions,
           Object.assign({}, response, {
             modes: modes || undefined,
-            prettyType,
+            prettyType: prettyType === false ? undefined : prettyType,
             badges: isCustomSpec(response) && response.badges,
             // controlHeaders: isEntitySpec(response) && response.controlHeaders,
             presentation

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import stripClean from 'strip-ansi'
+import stripClean = require('strip-ansi')
 
 import { Cell, Row, Table, TableStyle } from '../models/table'
 
@@ -155,7 +155,7 @@ export const preprocessTable = async (raw: string[]): Promise<{ rows?: Pair[][];
 
       // do we have just tiny columns? if so, it's not worth tabularizing
       const tinyColumns = columnStarts.reduce((yup, start, idx) => {
-        return yup && (idx > 0 && start - columnStarts[idx - 1] <= 2)
+        return yup && idx > 0 && start - columnStarts[idx - 1] <= 2
       }, true)
 
       if (columnStarts.length <= 1 || tinyColumns) {
@@ -179,11 +179,13 @@ export const preprocessTable = async (raw: string[]): Promise<{ rows?: Pair[][];
 
         const rows = endOfTable === -1 ? possibleRows : possibleRows.slice(0, endOfTable)
 
-        const preprocessed = (await Promise.all(
-          rows.map(line => {
-            return split(line, columnStarts, headerCells)
-          })
-        )).filter(x => x)
+        const preprocessed = (
+          await Promise.all(
+            rows.map(line => {
+              return split(line, columnStarts, headerCells)
+            })
+          )
+        ).filter(x => x)
 
         const trailingString = endOfTable !== -1 && possibleRows.slice(endOfTable).join('\n')
 
@@ -336,7 +338,10 @@ export const cssForValue: { [key: string]: string } = {
  */
 export const formatTable = (entityType: string, lines: Pair[][]): Table => {
   // maximum column count across all rows
-  const nameColumnIdx = Math.max(0, lines[0].findIndex(({ key }) => key === 'NAME'))
+  const nameColumnIdx = Math.max(
+    0,
+    lines[0].findIndex(({ key }) => key === 'NAME')
+  )
   const maxColumns = lines.reduce((max, columns) => Math.max(max, columns.length), 0)
 
   // e.g. Name: -> NAME

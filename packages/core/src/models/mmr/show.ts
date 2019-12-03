@@ -156,27 +156,20 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
   const content = hasContent(defaultMode) ? defaultMode : undefined
 
   if (content) {
-    if (isCustomSpec(content)) {
-      const { showCustom } = await import('../../webapp/views/sidecar')
-      return showCustom(tab, Object.assign({ modes: modesWithButtons, toolbarText: mmr.toolbarText }, content), {
-        leaveBottomStripeAlone: true
-      })
-    } else {
-      const custom: CustomSpec = Object.assign(
-        {
-          type: 'custom' as const,
-          resource: mmr,
-          modes: modesWithButtons,
-          toolbarText: mmr.toolbarText,
-          prettyName: mmr.prettyName,
-          nameHash: mmr.nameHash
-        },
-        await renderContent(tab, mmr, content)
-      )
+    const custom: CustomSpec = Object.assign(
+      {
+        type: 'custom' as const,
+        resource: mmr,
+        modes: modesWithButtons,
+        toolbarText: mmr.toolbarText,
+        prettyName: mmr.prettyName,
+        nameHash: mmr.nameHash
+      },
+      await renderContent(tab, mmr, content)
+    )
 
-      const { showCustom } = await import('../../webapp/views/sidecar')
-      return showCustom(tab, custom, { leaveBottomStripeAlone: true })
-    }
+    const { showCustom } = await import('../../webapp/views/sidecar')
+    return showCustom(tab, custom, { leaveBottomStripeAlone: true })
   } else {
     console.error('empty content')
   }

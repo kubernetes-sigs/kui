@@ -28,7 +28,7 @@
     "marked": "0.7.0"
   },
   "devDependencies": {
-    "@types/marked": "0.6.5"
+    "@types/marked": "0.7.2"
   },
   "kui": {
     "headless": false,

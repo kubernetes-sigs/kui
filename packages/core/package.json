@@ -29,7 +29,7 @@
     "kubectl-kui": "bin/kubectl-kui"
   },
   "dependencies": {
-    "ansi-to-html": "0.6.11",
+    "ansi-to-html": "0.6.13",
     "app-module-path": "2.2.0",
     "colors": "1.4.0",
     "columnify": "1.5.4",
@@ -39,12 +39,12 @@
     "marked": "^0.7.0",
     "mkdirp": "0.5.1",
     "needle": "2.4.0",
-    "pretty-ms": "5.0.0",
+    "pretty-ms": "5.1.0",
     "properties-parser": "0.3.1",
-    "strip-ansi": "5.2.0",
+    "strip-ansi": "6.0.0",
     "tmp": "0.1.0",
     "uuid": "3.3.3",
-    "yargs-parser": "14.0.0"
+    "yargs-parser": "16.1.0"
   },
   "publishConfig": {
     "access": "public"

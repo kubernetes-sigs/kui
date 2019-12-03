@@ -20,7 +20,7 @@ import Debug from 'debug'
 import * as path from 'path'
 import { v4 as uuid } from 'uuid'
 import * as xterm from 'xterm'
-import stripClean from 'strip-ansi'
+import stripClean = require('strip-ansi')
 import { safeLoad } from 'js-yaml'
 import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 

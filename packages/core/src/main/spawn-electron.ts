@@ -18,6 +18,8 @@ import Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
+import { IpcMainEvent, Rectangle } from 'electron'
+
 import windowDefaults from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
@@ -296,19 +298,18 @@ export function createWindow(
     // plugin has to pollute main.js
     //
     debug('ipc registration')
-    ipcMain.on('capture-page-to-clipboard', (event, contentsId: string, rect) => {
+    ipcMain.on('capture-page-to-clipboard', async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
       try {
         const { clipboard, nativeImage, webContents } = Electron
-        webContents.fromId(parseInt(contentsId, 10)).capturePage(rect, image => {
-          try {
-            const buf = image.toPNG()
-            clipboard.writeImage(nativeImage.createFromBuffer(buf))
-            event.sender.send('capture-page-to-clipboard-done', buf)
-          } catch (err) {
-            console.log(err)
-            event.sender.send('capture-page-to-clipboard-done')
-          }
-        })
+        const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
+        try {
+          const buf = image.toPNG()
+          clipboard.writeImage(nativeImage.createFromBuffer(buf))
+          event.sender.send('capture-page-to-clipboard-done', buf)
+        } catch (err) {
+          console.log(err)
+          event.sender.send('capture-page-to-clipboard-done')
+        }
       } catch (err) {
         console.log(err)
         event.sender.send('capture-page-to-clipboard-done')
