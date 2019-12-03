@@ -20,7 +20,7 @@ import { setStatus, Status } from '@kui-shell/core/webapp/status'
 import { getPrompt, getCurrentProcessingBlock } from '@kui-shell/core/webapp/cli'
 import { Capabilities, Commands, Errors, i18n, Settings, UI } from '@kui-shell/core'
 
-import { Channel } from './channel'
+import { Channel, InProcessChannel } from './channel'
 import { setOnline, setOffline } from './ui'
 
 const strings = i18n('plugin-bash-like')
@@ -38,8 +38,16 @@ export function getChannelForTab(tab: UI.Tab): Channel {
  * Return the session for the given tab
  *
  */
-export function getSessionForTab(tab: UI.Tab): Promise<Channel> {
-  return tab['_kui_session'] as Promise<Channel>
+export async function getSessionForTab(tab: UI.Tab): Promise<Channel> {
+  if (tab['_kui_session'] === undefined && Capabilities.inElectron()) {
+    const channel = new InProcessChannel()
+    await channel.init()
+    tab['_kui_session'] = channel
+
+    return tab['_kui_session']
+  } else {
+    return tab['_kui_session'] as Promise<Channel>
+  }
 }
 
 /**
