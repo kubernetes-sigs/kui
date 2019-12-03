@@ -194,7 +194,7 @@ module.exports = {
     'electron'
   ],
   devServer: {
-    headers: {},
+    headers: { 'Access-Control-Allow-Origin': '*' },
     compress: true,
     clientLogLevel: 'silent',
     watchOptions: {
