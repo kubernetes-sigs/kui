@@ -18,7 +18,7 @@
     "clean": "npm run compile:clean; rm -rf node_modules; for i in plugins/*; do rm -rf $i/node_modules; done; for i in packages/*; do rm -rf $i/node_modules; done",
     "purge": "npm run clean; rm -f package-lock.json",
     "pack": "./bin/pack.sh",
-    "pty:rebuild": "cd node_modules/node-pty-prebuilt-multiarch && npm run install",
+    "pty:rebuild": "cd node_modules/node-pty-prebuilt-multiarch && node-gyp rebuild --target=6.0.0 --runtime=electron --dist-url=https://atom.io/download/electron",
     "pty:electron": "rm -f .npmrc; cp packages/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild",
     "pty:nodejs": "rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild",
     "build:html": "CLIENT=${CLIENT-default}; rm -f node_modules/@kui-shell/settings/config-dev.json; npm run pty:electron && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" node packages/builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/builder/bin/seticon.js",
