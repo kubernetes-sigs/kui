@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { join, relative } from 'path'
+import { join, relative, sep } from 'path'
 import { ensureFile, writeFile } from 'fs-extra'
 
 import * as plugins from './plugins'
@@ -167,7 +167,8 @@ export const compile = async (
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts
-    const fixed = externalOnly ? filepath : relative(pluginRoot, filepath).replace(/^(.*\/)(plugin-.*)$/, '$2')
+    const pattern = new RegExp(`^(.*\\${sep})(plugin-.*)$`)
+    const fixed = externalOnly ? filepath : relative(pluginRoot, filepath).replace(pattern, '$2')
     return fixed
   }
   const fixupPaths = (pluginList: PrescanCommandDefinitions) =>
