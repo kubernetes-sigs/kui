@@ -101,7 +101,7 @@ export function createWindow(
       theme,
       env
     }: {
-      theme: { productName: string; filesystemIcons: { linux: string } }
+      theme: { productName: string; filesystemIcons: { linux: string; win32: string } }
       env: { imageHome: string }
     } = await import('@kui-shell/settings/config.json')
 
@@ -124,7 +124,10 @@ export function createWindow(
     const { dirname, join } = await import('path')
     const root = dirname(require.resolve('@kui-shell/settings/package.json'))
     if (process.platform === 'linux') {
-      const icon = join(root, env.imageHome, '/../..', theme.filesystemIcons.linux)
+      const icon = join(root, env.imageHome, '/../../../build', theme.filesystemIcons.linux)
+      opts.icon = icon
+    } else if (process.platform === 'win32') {
+      const icon = join(root, env.imageHome, '/../../../build', theme.filesystemIcons.win32)
       opts.icon = icon
     }
     if (process.platform === 'linux' || process.platform === 'win32') {
@@ -467,7 +470,8 @@ export async function initElectron(
       delete env.KUI_HEADLESS
       const child = spawn(Electron.toString(), args, {
         stdio: debug.enabled ? 'inherit' : 'ignore',
-        env
+        env,
+        detached: true // needed on windows to separate this process into its own process group
       })
 
       if (!debug.enabled) {

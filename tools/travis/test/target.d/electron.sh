@@ -27,19 +27,29 @@ set -o pipefail
 
 # create an electron dist to test against
 PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
+if [[ $TRAVIS_OS_NAME = windows ]]; then
+    # uname isn't quite right on windows
+    echo "setting PLATFORM to windows"
+    PLATFORM=windows
+fi
 
 cd clients/electron
 
 # pick up the dependencies of the client
 [[ -n "$KUI_USE_CLIENT" ]] && npm install
 
-NO_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` npm run build:electron -- ${PLATFORM} # we want to test Mac DMG Build
+NO_INSTALLER=`([[ "$TRAVIS_OS_NAME" == linux ]] || [[ "$TRAVIS_OS_NAME" == windows ]]) && echo true` npm run build:electron -- ${PLATFORM} # we want to test Mac DMG Build
 
 # we expect no mac builds on linux, and no linux builds on mac
 # ls exits with code 2 if the file does not exist, which is what we want
 if [ "$PLATFORM" == linux ]; then
   ls dist/electron/*darwin* >& /dev/null && exit 1
+  ls dist/electron/*win32* >& /dev/null && exit 1
 elif [ "$PLATFORM" == darwin ]; then
+  ls dist/electron/*linux* >& /dev/null && exit 1
+  ls dist/electron/*win32* >& /dev/null && exit 1
+elif [ "$PLATFORM" == windows ]; then
+  ls dist/electron/*darwin* >& /dev/null && exit 1
   ls dist/electron/*linux* >& /dev/null && exit 1
 fi
 

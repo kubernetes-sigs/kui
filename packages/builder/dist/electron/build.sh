@@ -117,6 +117,11 @@ function configure {
     echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/settings/package.json
     npm install --save --no-package-lock --ignore-scripts ./settings
 
+    if [ "$(uname)" != "Darwin" ] && [ "$(uname -o)" = "Msys" ]; then
+        echo "for some reason, npm install to a relative path creates absolute-path symlinks on windows. fixing"
+	(cd node_modules/@kui-shell && rm settings && ln -s ../../settings)
+    fi
+
     CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
     UGLIFY=true npx --no-install kui-prescan
 }
@@ -346,18 +351,30 @@ function tarball {
     wait
 }
 
-# copy the npmrc into the client staging area
-function npmrc {
-    cp "$BUILDER_HOME"/npmrc "$STAGING/.npmrc"
-    (cd "$STAGING" && npm rebuild --update-binary node-pty-prebuilt-multiarch)
+# make sure we have the needed native modules compiled and ready
+function native {
+    (cd "$STAGING" && npx --no-install kui-pty-rebuild electron)
+}
+
+# windows-specific bits
+function windows {
+    if [ "$(uname)" != "Darwin" ] && [ "$(uname -o)" = "Msys" ]; then
+        echo "handling windows idiosyncracies"
+        if [ ! -d theme ]; then
+            echo "handling symlink issues for windows"
+            rm -f theme
+            cp -a node_modules/@kui-shell/builder/examples/build-configs/default/theme theme
+        fi
+    fi
 }
 
 # this is the main routine
 function build {
+    echo "windows" && windows
     echo "prereq" && prereq
     echo "init" && init
     echo "tarCopy" && tarCopy
-    echo "npmrc" && npmrc
+    echo "native" && native
     echo "configure" && configure
     echo "assembleHTMLPieces" && assembleHTMLPieces
     echo "win32" && win32
