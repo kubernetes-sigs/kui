@@ -22,7 +22,14 @@ STAGING="${TOPDIR}"/node_modules/@kui-shell/build
 
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/core/web/css)
 
-THEME=$(cd "$CLIENT_HOME"/theme && pwd)
+# (darwin doesn't support uname -o, but linux and git bash on windows both do)
+if [ "$(uname)" != "Darwin" ] && [ "$(uname -o)" = "Msys" ]; then
+    # a bit of a hack for windows, given that clients/default/theme is
+    # a symlink
+    THEME=$(cd "$TOPDIR"/packages/builder/examples/build-configs/default/theme && pwd)
+else
+    THEME=$(cd "$CLIENT_HOME"/theme && pwd)
+fi
 if [ ! -d "$THEME" ]; then
     echo "Cannot find THEME"
     exit 1

@@ -43,7 +43,7 @@
 
 const { join } = require('path')
 const { createGunzip } = require('zlib')
-const { createReadStream, createWriteStream } = require('fs')
+const { createReadStream, createWriteStream, readdir } = require('fs')
 const packager = require('electron-packager')
 
 process.argv.shift()
@@ -57,23 +57,49 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, arch, cal
     // nothing to do
     callback()
   } else {
-    const source = join(
+    const sourceDir = join(
       process.env.BUILDER_HOME,
       'dist/electron/vendor',
       nodePty,
       'build',
       targetPlatform,
-      'electron/pty.node.gz'
+      'electron'
     )
-    const target = join(buildPath, 'node_modules', nodePty, 'build/Release/pty.node')
-    console.log(`node-pty source: ${source}`)
-    console.log(`node-pty target: ${target}`)
 
-    createReadStream(source)
-      .pipe(createGunzip())
-      .pipe(createWriteStream(target))
-      .on('error', callback)
-      .on('finish', () => callback())
+    readdir(sourceDir, async (err, files) => {
+      if (err) {
+        callback(err)
+      } else {
+        try {
+          await Promise.all(
+            files.map(
+              sourceFileGz =>
+                new Promise((resolve, reject) => {
+                  const source = join(sourceDir, sourceFileGz)
+                  const target = join(
+                    buildPath,
+                    'node_modules',
+                    nodePty,
+                    'build/Release',
+                    sourceFileGz.replace(/\.gz$/, '')
+                  )
+                  console.log(`node-pty source: ${source}`)
+                  console.log(`node-pty target: ${target}`)
+
+                  createReadStream(source)
+                    .pipe(createGunzip())
+                    .pipe(createWriteStream(target))
+                    .on('error', reject)
+                    .on('finish', resolve)
+                })
+            )
+          )
+          callback()
+        } catch (err) {
+          callback(err)
+        }
+      }
+    })
   }
 }
 
@@ -95,7 +121,7 @@ const args = {
   ignore: process.env.IGNORE,
 
   // default settings
-  asar: true,
+  asar: process.platform !== 'win32', // node-pty loading native modules versus asar :(
   overwrite: true,
 
   // and finally, this is the reason we are here:
