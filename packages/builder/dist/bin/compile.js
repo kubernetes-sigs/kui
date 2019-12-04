@@ -33,7 +33,7 @@ function codecov() {
       ? join(process.env.TRAVIS_BUILD_DIR, 'packages/test/.nyc_output')
       : join(process.env.TEST_ROOT, '.nyc_output')
 
-  process.chdir('/tmp')
+  process.chdir(require('os').tmpdir())
 
   // Create the nyc instance
   const tempDirectory = codeCoverageTempDirectory()

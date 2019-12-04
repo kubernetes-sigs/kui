@@ -2,7 +2,7 @@
   "name": "kui-shell",
   "version": "5.1.0",
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
-  "main": "node_modules/@kui-shell/core/dist/src/main/main.js",
+  "main": "node_modules/@kui-shell/core/main/main.js",
   "scripts": {
     "lint": "eslint '**/*.{js,ts}'",
     "format": "prettier --write '**/*.{css,html,js,json,md,ts}'",
@@ -18,12 +18,12 @@
     "clean": "npm run compile:clean; rm -rf node_modules; for i in plugins/*; do rm -rf $i/node_modules; done; for i in packages/*; do rm -rf $i/node_modules; done",
     "purge": "npm run clean; rm -f package-lock.json",
     "pack": "./bin/pack.sh",
-    "pty:rebuild": "cd node_modules/node-pty-prebuilt-multiarch && npm run install",
-    "pty:electron": "rm -f .npmrc; cp packages/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild",
-    "pty:nodejs": "rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild",
-    "build:html": "CLIENT=${CLIENT-default}; rm -f node_modules/@kui-shell/settings/config-dev.json; npm run pty:electron && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" node packages/builder/lib/configure.js && CLIENT_HOME=./clients/$CLIENT ./packages/builder/dist/dev/build.sh && CLIENT_HOME=./clients/$CLIENT ./packages/builder/bin/seticon.js",
+    "pty:rebuild": "kui-pty-rebuild",
+    "pty:electron": "npm run pty:rebuild electron",
+    "pty:nodejs": "npm run pty:rebuild node",
+    "build:html": "CLIENT=${CLIENT-default}; rm -f node_modules/@kui-shell/settings/config-dev.json; npm run pty:electron && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" node packages/builder/lib/configure.js && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/dist/dev/build.sh && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/bin/seticon.js",
     "postinstall": "npm run build:html && npm run compile",
-    "start": "node bin/kui shell"
+    "start": "electron . shell"
   },
   "engines": {
     "node": ">=8.15.0",

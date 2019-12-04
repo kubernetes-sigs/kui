@@ -22,6 +22,8 @@ import { Application } from 'spectron'
 import * as CLI from './cli'
 import * as Selectors from './selectors'
 
+const TMP = require('os').tmpdir()
+
 colors.enable()
 
 const codeCoverageNyc = () =>
@@ -60,12 +62,12 @@ async function writeCodeCoverage(app: Application) {
   if (codeCoverageDesired() && app && app.client) {
     console.log('Writing code coverage data')
     await app.client.executeAsync(
-      (tempDirectory: string, nycModule: string, root: string, done: () => void) => {
+      (tempDirectory: string, nycModule: string, root: string, TMP: string, done: () => void) => {
         // Notes: in several places, the nyc constructor assumes
         // process.cwd() exists; in some of our tests, e.g. those that
         // cd around, this might not be the case. So: before we invoke
         // the constructor, change to an extant directory
-        process.chdir('/tmp')
+        process.chdir(TMP)
 
         // Create the nyc instance
         const NYC = require(nycModule)
@@ -92,7 +94,8 @@ async function writeCodeCoverage(app: Application) {
       },
       codeCoverageTempDirectory(),
       codeCoverageNyc(),
-      codeCoverageRoot()
+      codeCoverageRoot(),
+      TMP
     )
   }
 }
@@ -142,7 +145,7 @@ const prepareElectron = (popup: string[]) => {
   if (process.env.PORT_OFFSET) {
     opts['port'] = 9515 + parseInt(process.env.PORT_OFFSET, 10)
 
-    const userDataDir = `/tmp/kui-profile-${process.env.PORT_OFFSET}`
+    const userDataDir = join(TMP, `kui-profile-${process.env.PORT_OFFSET}`)
     opts.chromeDriverArgs.push(`--user-data-dir=${userDataDir}`)
 
     console.log(`Using chromedriver port ${opts['port']}`)
@@ -332,19 +335,29 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
     if (ctx.app) {
       try {
         promises.push(
-          await ctx.app.client.getHTML(Selectors.OUTPUT_LAST).then(html => {
-            console.log('here is the output of the prior output:')
-            console.log(html.replace(/<style>.*<\/style>/, ''))
-          })
+          await ctx.app.client
+            .getHTML(Selectors.OUTPUT_LAST)
+            .then(html => {
+              console.log('here is the output of the prior output:')
+              console.log(html.replace(/<style>.*<\/style>/, ''))
+            })
+            .catch(err => {
+              console.error('error trying to get the output of the previous block', err)
+            })
         )
         promises.push(
-          await ctx.app.client.getHTML(Selectors.PROMPT_BLOCK_FINAL).then(html => {
-            console.log('here is the content of the last block:')
-            console.log(html.replace(/<style>.*<\/style>/, ''))
-          })
+          await ctx.app.client
+            .getHTML(Selectors.PROMPT_BLOCK_FINAL)
+            .then(html => {
+              console.log('here is the content of the last block:')
+              console.log(html.replace(/<style>.*<\/style>/, ''))
+            })
+            .catch(err => {
+              console.error('error trying to get the output of the final block', err)
+            })
         )
       } catch (err) {
-        console.error('error trying to get the output of the last block', err)
+        console.error('error trying to get output html', err)
       }
 
       promises.push(

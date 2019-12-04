@@ -1,5 +1,5 @@
 language: node_js
-node_js: 8
+node_js: 12   # Note: windows requires 10 or higher
 dist: xenial # Note: dist>=xenial required by microk8s
 cache: false # as of 20190709 trav-ci.org started loading garbage from the build cache
 
@@ -22,7 +22,8 @@ env:
     - WINDOW_HEIGHT=1050                  # ! ibid !
     - LINUX_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-linux-x64/Kui" # test against linux electron build
     - OSX_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui" # test against darwin electron build
-    - TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BUILD" || echo "$OSX_BUILD"`
+    - WINDOWS_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-win32-x64/Kui.exe" # test against darwin electron build
+    - TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "$LINUX_BUILD" || ([ "$TRAVIS_OS_NAME" = osx ] && echo "$OSX_BUILD" || echo "$WINDOWS_BUILD")`
     - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
     - HOMEBREW_NO_AUTO_UPDATE=1           # disable auto update before running brew install, brew upgrade or brew tap
 
@@ -43,6 +44,10 @@ jobs:
         - KUI_USE_PROXY=true
     - <<: *test-core
       os: osx
+    - stage: test
+      os: windows
+      before_install: npm config set script-shell C:\\Program\ Files\\git\\bin\\bash.exe
+      env: LAYERS=core MOCHA_TARGETS="electron" TEST_FILTER='about'
     - stage: test
       env:
         - WAIT_LAYERS="bash-like-wait"

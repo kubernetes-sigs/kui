@@ -408,7 +408,10 @@ const oneTimeInit = (): void => {
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
-    UI.getCurrentPrompt().focus()
+    const prompt = UI.getCurrentPrompt()
+    if (prompt) {
+      prompt.focus()
+    }
   }
 }
 

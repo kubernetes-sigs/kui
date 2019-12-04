@@ -256,6 +256,12 @@ const loadOverrides = (programmaticOverrides = {}) => {
       overrideDirectory = path.resolve(path.join(process.cwd(), 'theme'))
     }
   }
+  const stats = overrideDirectory && fs.statSync(overrideDirectory)
+  if ((!stats || !stats.isDirectory()) && process.platform === 'win32') {
+    // a bit of a hack for windows, given that clients/default/theme
+    // is a symlink
+    overrideDirectory = path.resolve('./node_modules/@kui-shell/builder/examples/build-configs/default/theme')
+  }
   info('theme directory', overrideDirectory)
 
   const loadOverride = file => {

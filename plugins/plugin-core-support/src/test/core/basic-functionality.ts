@@ -22,7 +22,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { Common } from '@kui-shell/test'
+import { Common, CLI } from '@kui-shell/test'
 
 const APP_TITLE = process.env.APP_TITLE || 'Kui'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
@@ -43,12 +43,17 @@ Common.localDescribe('Basic Functionality', function(this: Common.ISuite) {
     app.client
       .getWindowCount()
       .then(count => assert.strictEqual(count, 1)) // Verify that one window is open
-      .then(() => app.browserWindow.isVisible()) // Check if the window is visible
-      .then(isVisible => assert.strictEqual(isVisible, true)) // Verify the window is visible
+      .then(() =>
+        app.client.waitUntil(async () => {
+          // Check if the window is visible
+          console.log(`waiting for browser window visibility ${await app.browserWindow.isVisible()}`)
+          return app.browserWindow.isVisible()
+        }, CLI.waitTimeout)
+      )
       .then(() => app.client.getTitle()) // Get the window's title
       .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title
 
-  it('shows an initial window', () => openWindow(this.app).catch(Common.oops(this)))
+  it('shows an initial window', () => openWindow(this.app).catch(Common.oops(this, true)))
 
   it('has an initial focus on the CLI prompt', () => assert.ok(this.app.client.hasFocus(selectors.PROMPT)))
 
