@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.8](https://github.com/IBM/kui/compare/v4.5.0...v5.5.8) (2019-12-05)
+
+### Bug Fixes
+
+- add 'Access-Control-Allow-Origin': '\*' to webpack dev server config ([fdb18c1](https://github.com/IBM/kui/commit/fdb18c1)), closes [#3324](https://github.com/IBM/kui/issues/3324)
+- revert to webpack 4.40 ([141a407](https://github.com/IBM/kui/commit/141a407)), closes [#3005](https://github.com/IBM/kui/issues/3005)
+
+### Features
+
+- revive plugin-manager ([b78fed5](https://github.com/IBM/kui/commit/b78fed5)), closes [#2921](https://github.com/IBM/kui/issues/2921)
+
 ## [5.5.7](https://github.com/IBM/kui/compare/v4.5.0...v5.5.7) (2019-12-04)
 
 ### Bug Fixes
