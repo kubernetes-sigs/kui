@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { UI } from '@kui-shell/core'
+import { Tab, Mode } from '@kui-shell/core'
 
 const debug = Debug('plugins/wskflow/util')
 
@@ -53,7 +53,7 @@ export const textualPropertiesOfCode = (code: string): TextualProperties => {
  *
  * @return { view, controller } where controller is the API exported by graph2doms
  */
-export const wskflow = async (tab: UI.Tab, visualize, { ast, viewOptions, container }) => {
+export const wskflow = async (tab: Tab, visualize, { ast, viewOptions, container }) => {
   debug('wskflow', viewOptions)
 
   const isPartOfRule = false
@@ -75,7 +75,7 @@ export const wskflow = async (tab: UI.Tab, visualize, { ast, viewOptions, contai
  * @param visibleWhenShowing only show the zoom buttons when the given mode is active
  *
  */
-export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): UI.Mode[] => {
+export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualization' } = {}): Mode[] => {
   if (controller && controller.register) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const events = require('events')

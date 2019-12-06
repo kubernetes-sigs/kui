@@ -35,26 +35,26 @@ export namespace Plugins {
     const { compileUserInstalled } = await import('../plugins/assembler')
     compileUserInstalled(pluginToBeRemoved)
   }
+}
 
-  /**
-   * Home for user-installed plugins
-   *
-   */
-  export const userHome = async () => {
-    const { userInstalledHome } = await import('../plugins/plugins')
-    return userInstalledHome()
-  }
+/**
+ * Render the commands provided by a given plugin
+ *
+ * @param {string} [plugin] enumerate the commands offered by the
+ * given plugin
+ */
+export const commandsOffered = async (plugin?: string) => {
+  const commandsOffered = await import('../plugins/commands')
+  return commandsOffered.default(plugin)
+}
 
-  /**
-   * Render the commands provided by a given plugin
-   *
-   * @param {string} [plugin] enumerate the commands offered by the
-   * given plugin
-   */
-  export const commandsOffered = async (plugin?: string) => {
-    const commandsOffered = await import('../plugins/commands')
-    return commandsOffered.default(plugin)
-  }
+/**
+ * Home for user-installed plugins
+ *
+ */
+export const userHome = async () => {
+  const { userInstalledHome } = await import('../plugins/plugins')
+  return userInstalledHome()
 }
 
 export default Plugins

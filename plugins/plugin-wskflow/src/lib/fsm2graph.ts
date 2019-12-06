@@ -17,8 +17,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import Debug from 'debug'
-
-import { UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core'
 
 import Response from './response'
 import ActivationLike from './activation'
@@ -732,7 +731,7 @@ const isSimpleComposition = (ir: AST.ASTNode): boolean => {
 }
 
 export default async function fsm2graph(
-  tab: UI.Tab,
+  tab: Tab,
   ir: AST.ASTNode,
   containerElement?: HTMLElement,
   acts?: ActivationLike[],

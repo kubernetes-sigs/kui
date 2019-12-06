@@ -21,13 +21,25 @@ import { readProject, TutorialDefinition, TutorialTable } from './util'
 import { wskflowCycle } from './wskflow'
 
 import {
+  Arguments,
+  ExecType,
+  Registrar,
+  empty,
+  scrollIntoView,
+  Tab,
+  findFile,
+  getCurrentPrompt,
+  injectCSS,
+  loadHTML,
+  partialInput,
   clearSelection,
-  isFullscreen as isSidecarFullscreen,
-  hide as hideSidecar,
-  show as showSidecar,
+
+  // deprecated
+  isSidecarFullscreen,
+  hideSidecar,
+  showSidecar,
   toggleMaximization
-} from '@kui-shell/core/webapp/views/sidecar-visibility'
-import { Commands, UI, Util } from '@kui-shell/core'
+} from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -80,19 +92,19 @@ const rowFilters = {
 const injectOurCSS = () => {
   try {
     // webpack style
-    UI.injectCSS({
+    injectCSS({
       css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(),
       key: 'tutorial.main'
     })
-    UI.injectCSS({
+    injectCSS({
       css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css'),
       key: 'tutorial.tutorials'
     })
   } catch {
     // local file style
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
-    UI.injectCSS(join(ourRoot, 'web/css/main.css'))
-    UI.injectCSS(join(ourRoot, 'web/css/tutorials.css'))
+    injectCSS(join(ourRoot, 'web/css/main.css'))
+    injectCSS(join(ourRoot, 'web/css/tutorials.css'))
   }
 }
 
@@ -108,7 +120,7 @@ const injectHTML = () => {
     debug('webpack html inject')
   } catch {
     const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
-    loader = UI.loadHTML(join(ourRoot, 'web/html/index.html'))
+    loader = loadHTML(join(ourRoot, 'web/html/index.html'))
     debug('local file html inject')
   }
 
@@ -133,12 +145,12 @@ const cancelAsyncs = obj => {
 
 /** Sidecar management. TODO extract this */
 const sidecarManager = {
-  enterFullscreen: (tab: UI.Tab) => {
+  enterFullscreen: (tab: Tab) => {
     showSidecar(tab)
     toggleMaximization(tab)
   },
 
-  exitFullscreen: (tab: UI.Tab) => {
+  exitFullscreen: (tab: Tab) => {
     clearSelection(tab)
     toggleMaximization(tab)
   }
@@ -160,7 +172,7 @@ const clearHighlights = () => {
  * Close the current tutorial
  *
  */
-const close = (tab: UI.Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
+const close = (tab: Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 500) => () =>
   new Promise<boolean>(resolve => {
     debug('close')
 
@@ -192,7 +204,7 @@ const close = (tab: UI.Tab, pane: TutorialPane, obj: TutorialDefinition, delay =
     }
 
     // make sure the repl has focus when we're done
-    UI.getCurrentPrompt().focus()
+    getCurrentPrompt().focus()
   })
 
 /**
@@ -216,7 +228,7 @@ const setHighlightPosition = ({ selector }) => {
  *
  */
 const commandFromFullscreen = (
-  tab: UI.Tab,
+  tab: Tab,
   pane: TutorialPane,
   command: string,
   display = command,
@@ -277,7 +289,7 @@ const commandFromFullscreen = (
  * @param table the model
  *
  */
-const renderOneTable = (tab: UI.Tab, parent: Element, pane: TutorialPane, nested = false) => table => {
+const renderOneTable = (tab: Tab, parent: Element, pane: TutorialPane, nested = false) => table => {
   const template = document.querySelector('#tutorial-structured-list-template')
   const tableDom = template.cloneNode(true) as HTMLElement
   const tableBody = tableDom.querySelector('.bx--structured-list-tbody')
@@ -300,7 +312,7 @@ const renderOneTable = (tab: UI.Tab, parent: Element, pane: TutorialPane, nested
   // column headers
   if (table.columns) {
     const headerRow = tableDom.querySelector('.bx--structured-list-row.bx--structured-list-row--header-row')
-    // UI.empty(headerRow);
+    // empty(headerRow);
     table.columns.forEach(column => {
       const headerDom = document.createElement('th')
       headerDom.classList.add('bx--structured-list-th')
@@ -352,7 +364,7 @@ const renderOneTable = (tab: UI.Tab, parent: Element, pane: TutorialPane, nested
  * Handle transitions between steps
  *
  */
-const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, pane: TutorialPane, nested = false) => {
+const transitionSteps = (tab: Tab, stepNum: number, obj: TutorialDefinition, pane: TutorialPane, nested = false) => {
   debug('step', stepNum, obj)
 
   // cancel any background tasks
@@ -387,7 +399,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
 
   const fontGraphics = pane.querySelector('.tutorial-font-graphics')
   if (fontGraphics) {
-    UI.empty(fontGraphics)
+    empty(fontGraphics)
     if (fontawesome) {
       // add a font graphic
       debug('fontawesome', fontawesome)
@@ -420,10 +432,10 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
 
   /* const previousExtras = extrasPart.querySelectorAll('.tutorial-content-extras-body');
     for (let idx = 0; idx < previousExtras.length; idx++) {
-    UI.empty(previousExtras[idx]);
+    empty(previousExtras[idx]);
     } */
 
-  // UI.empty(extrasPart);
+  // empty(extrasPart);
   const learnMore = pane.querySelector('.tutorial-learn-more')
   if (learnMore) {
     learnMore.classList.remove('has-learn-more')
@@ -498,7 +510,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
 
       if (extras.showcase) {
         const container = pane.querySelector('.tutorial-bottom')
-        UI.empty(container)
+        empty(container)
 
         pane.setAttribute('tutorial-has-showcase', 'tutorial-has-showcase')
 
@@ -657,7 +669,7 @@ const transitionSteps = (tab: UI.Tab, stepNum: number, obj: TutorialDefinition, 
       $(selector).val(value)
     } else {
       debug('autocomplete', value)
-      UI.LowLevel.partialInput(value)
+      partialInput(value)
     }
   }
 
@@ -703,7 +715,7 @@ const focusOnBiggestScrollable = () => {
  * Launches the specified tutorial
  *
  */
-const showTutorial = (tab: UI.Tab, tutorialName: string, obj: TutorialDefinition) => {
+const showTutorial = (tab: Tab, tutorialName: string, obj: TutorialDefinition) => {
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open
@@ -800,7 +812,7 @@ const showTutorial = (tab: UI.Tab, tutorialName: string, obj: TutorialDefinition
     // skills badges
     const headerExtrasContainer = pane.querySelector('.tutorial-header-extras') as HTMLElement
     const skillsContainer = headerExtrasContainer.querySelector('.tutorial-skills')
-    UI.empty(skillsContainer)
+    empty(skillsContainer)
     if (obj.skills) {
       obj.skills.forEach(skill => {
         const skillBadge = document.createElement('badge')
@@ -812,7 +824,7 @@ const showTutorial = (tab: UI.Tab, tutorialName: string, obj: TutorialDefinition
 
     // blocks to represent steps
     const stepBlocksContainer = pane.querySelector('.tutorial-header-blocks') as HTMLElement
-    UI.empty(stepBlocksContainer)
+    empty(stepBlocksContainer)
 
     // if we want a square aspect ratio:
     // const dim = closestSquare(obj.steps.length);
@@ -845,7 +857,7 @@ const showTutorial = (tab: UI.Tab, tutorialName: string, obj: TutorialDefinition
     transitionSteps(tab, 0, obj, pane)
 
     // we'll be bumping up from the bottom; make sure the active repl prompt is visible
-    UI.LowLevel.scrollIntoView({ when: 800 })
+    scrollIntoView({ when: 800 })
 
     // so that the user can immediately arrow and pageup/pagedown in the biggest scrollable
     setTimeout(focusOnBiggestScrollable, 800)
@@ -859,7 +871,7 @@ const showTutorial = (tab: UI.Tab, tutorialName: string, obj: TutorialDefinition
  * Command handler for tutorial play
  *
  */
-const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: Commands.Arguments) => {
+const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: Arguments) => {
   injectOurCSS()
 
   // inject the HTML if needed
@@ -867,9 +879,9 @@ const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOpt
 
   const filepath = argvNoOptions[argvNoOptions.indexOf(cmd) + 1]
 
-  const [{ config, tutorial }] = await Promise.all([readProject(Util.findFile(filepath)), ready])
+  const [{ config, tutorial }] = await Promise.all([readProject(findFile(filepath)), ready])
 
-  if (execOptions.type === Commands.ExecType.Nested && !parsedOptions['top-level']) {
+  if (execOptions.type === ExecType.Nested && !parsedOptions['top-level']) {
     // initiate just the first step
     const pane = document.createElement('div') as TutorialPane
     pane.classList.add('tutorialPane')
@@ -929,7 +941,7 @@ const usage = (cmd: string) => ({
  * Here we register as a listener for commands
  *
  */
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   // synonyms for playing a tutorial
   const cmd = commandTree.listen('/tutorial/play', use('play'), {
     usage: usage('play'),

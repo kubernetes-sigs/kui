@@ -25,16 +25,6 @@ export { encodeComponent }
 import { split, _split, Split } from '../repl/split'
 export { split, _split, Split }
 
-import {
-  exec,
-  click,
-  semicolonInvoke,
-  qexec,
-  pexec,
-  rexec,
-  getImpl,
-  setEvaluatorImpl,
-  ReplEval,
-  DirectReplEval
-} from '../repl/exec'
-export { exec, click, semicolonInvoke, qexec, pexec, rexec, getImpl, setEvaluatorImpl, ReplEval, DirectReplEval }
+export { exec, click, semicolonInvoke, qexec, pexec, rexec, getImpl, setEvaluatorImpl } from '../repl/exec'
+
+export { ReplEval, DirectReplEval } from '../repl/types'

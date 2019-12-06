@@ -18,19 +18,19 @@ import Debug from 'debug'
 const debug = Debug('plugins/editor/preload')
 debug('loading')
 
-import Capabilities from '@kui-shell/core/api/capabilities'
+import { isHeadless } from '@kui-shell/core'
 
 /**
  * Here, we prefetch the editor, which is especially important if
  * we're running in browser mode. It is slow to load.
  *
  */
-export default async () => {
-  if (!Capabilities.isHeadless()) {
+export default () => {
+  if (!isHeadless()) {
     // NOTE how there is no await; this is because our goal is only to
     // prefetch it
     setTimeout(() => {
-      import('./lib/open').then(_ => _.preload())
+      import('./lib/preload').then(_ => _.default())
     }, 500)
 
     return import('./lib/editor-provider').then(_ => _.default())

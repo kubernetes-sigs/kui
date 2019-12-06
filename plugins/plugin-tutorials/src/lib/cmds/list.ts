@@ -15,8 +15,7 @@
  */
 
 import { readdir } from 'fs'
-
-import { Commands, Tables } from '@kui-shell/core'
+import { Registrar, Row, Table } from '@kui-shell/core'
 
 import { contentDir } from './util'
 
@@ -38,7 +37,7 @@ const sort = list => {
  * The tutorials list command handler
  *
  */
-const doList = (): Promise<Tables.Table> =>
+const doList = (): Promise<Table> =>
   new Promise((resolve, reject) => {
     readdir(contentDir, async (err, files) => {
       if (err) {
@@ -47,62 +46,64 @@ const doList = (): Promise<Tables.Table> =>
         const pane = document.querySelector('#tutorialPane')
         const nowPlaying = pane && pane.getAttribute('now-playing')
 
-        const tutorials: Tables.Row[] = (await Promise.all(
-          files.map(async name => {
-            const { disabled, description, level } = await import(
-              '@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json'
-            )
+        const tutorials: Row[] = (
+          await Promise.all(
+            files.map(async name => {
+              const { disabled, description, level } = await import(
+                '@kui-shell/plugin-tutorials/samples/@tutorials/' + name + '/package.json'
+              )
 
-            if (disabled) {
-              // then this tutorial is currently disabled
-              return
-            }
+              if (disabled) {
+                // then this tutorial is currently disabled
+                return
+              }
 
-            const attributes = []
+              const attributes = []
 
-            // add a "level" column
-            attributes.push({
-              key: 'level',
-              value: level,
-              css: 'slightly-deemphasize'
+              // add a "level" column
+              attributes.push({
+                key: 'level',
+                value: level,
+                css: 'slightly-deemphasize'
+              })
+
+              let descriptionForDisplay = description
+              if (nowPlaying === name) {
+                const descriptionWrapper = document.createElement('div')
+                descriptionWrapper.appendChild(document.createTextNode(description))
+
+                const isNowPlaying = document.createElement('span')
+                isNowPlaying.className = 'red-text semi-bold small-left-pad'
+                isNowPlaying.innerText = '(now playing)'
+                descriptionWrapper.appendChild(isNowPlaying)
+
+                descriptionForDisplay = descriptionWrapper
+              }
+
+              // add a "description" column attributes for the list model
+              attributes.push({
+                key: 'description',
+                value: descriptionForDisplay,
+                css: 'sans-serif hide-with-sidecar'
+              })
+
+              // here is the entity model for list elements
+              const row: Row = {
+                type: 'tutorials',
+                name: name.replace(/-/g, ' '),
+                nameCss: ['capitalize', 'semi-bold'],
+                // sort,
+                // level,
+                onclick: `tutorial play @tutorials/${name}`,
+                attributes
+              }
+
+              return row
             })
+          )
+        ).filter(x => x) // filter out any nils due to disabled tutorials
 
-            let descriptionForDisplay = description
-            if (nowPlaying === name) {
-              const descriptionWrapper = document.createElement('div')
-              descriptionWrapper.appendChild(document.createTextNode(description))
-
-              const isNowPlaying = document.createElement('span')
-              isNowPlaying.className = 'red-text semi-bold small-left-pad'
-              isNowPlaying.innerText = '(now playing)'
-              descriptionWrapper.appendChild(isNowPlaying)
-
-              descriptionForDisplay = descriptionWrapper
-            }
-
-            // add a "description" column attributes for the list model
-            attributes.push({
-              key: 'description',
-              value: descriptionForDisplay,
-              css: 'sans-serif hide-with-sidecar'
-            })
-
-            // here is the entity model for list elements
-            const row: Tables.Row = {
-              type: 'tutorials',
-              name: name.replace(/-/g, ' '),
-              nameCss: ['capitalize', 'semi-bold'],
-              // sort,
-              // level,
-              onclick: `tutorial play @tutorials/${name}`,
-              attributes
-            }
-
-            return row
-          })
-        )).filter(x => x) // filter out any nils due to disabled tutorials
-
-        const table: Tables.Table = {
+        const table: Table = {
           noSort: true,
           body: sort(tutorials)
         }
@@ -129,7 +130,7 @@ const usage = {
  * Here we register as a listener for commands
  *
  */
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   const opts = { usage, noAuthOk: true }
 
   commandTree.listen(`/tutorial/list`, doList, opts)

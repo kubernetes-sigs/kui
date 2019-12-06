@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Capabilities, UI } from '@kui-shell/core'
+import { isHeadless, Tab } from '@kui-shell/core'
 
 import injectCSS from './inject'
 import Response from './response'
@@ -32,7 +32,7 @@ type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void
  *
  */
 export default async (
-  tab: UI.Tab,
+  tab: Tab,
   passedFsm: ASTNode | ComponentBearing,
   container?: HTMLElement,
   w?: number,
@@ -42,7 +42,7 @@ export default async (
   rule?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Response> => {
-  if (Capabilities.isHeadless()) {
+  if (isHeadless()) {
     return
   }
 

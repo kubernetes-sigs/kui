@@ -19,10 +19,7 @@ import { join } from 'path'
 import { ensureDir } from 'fs-extra'
 import { spawn } from 'child_process'
 
-import Commands from '@kui-shell/core/api/commands'
-import Errors from '@kui-shell/core/api/errors'
-import { i18n } from '@kui-shell/core/api/i18n'
-import Settings from '@kui-shell/core/api/settings'
+import { userDataDir, i18n, Arguments, Registrar, UsageModel } from '@kui-shell/core'
 
 import Ora from '../util/ora'
 import locateNpm from '../util/locate-npm'
@@ -35,7 +32,7 @@ const debug = Debug('plugins/plugin-manager/cmd/remove')
  * Usage model for plugin remove
  *
  */
-const usage = (command: string): Errors.UsageModel => ({
+const usage = (command: string): UsageModel => ({
   strict: command,
   command,
   breadcrumb: strings('Remove plugin'),
@@ -44,13 +41,13 @@ const usage = (command: string): Errors.UsageModel => ({
   required: installedPlugin
 })
 
-const doRemove = async (args: Commands.Arguments) => {
+const doRemove = async (args: Arguments) => {
   const { argvNoOptions, REPL } = args
   const name = argvNoOptions[argvNoOptions.indexOf('remove') + 1]
 
   const spinner = await new Ora().init(strings('Preparing to remove', name), args)
 
-  const rootDir = Settings.userDataDir()
+  const rootDir = userDataDir()
   const pluginHome = join(rootDir, 'plugins')
   await ensureDir(pluginHome)
 
@@ -101,7 +98,7 @@ const doRemove = async (args: Commands.Arguments) => {
   return true
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   const cmd = commandTree.listen('/plugin/remove', doRemove, {
     usage: usage('remove')
   })

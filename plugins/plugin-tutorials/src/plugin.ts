@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
 import list from './lib/cmds/list'
 import get from './lib/cmds/get'
 import play from './lib/cmds/play'
 import shortcuts from './lib/cmds/shortcuts'
 
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   return Promise.all([list(commandTree), get(commandTree), play(commandTree), shortcuts(commandTree)])
 }

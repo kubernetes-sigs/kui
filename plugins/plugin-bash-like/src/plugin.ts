@@ -21,13 +21,13 @@ import ptyServer from './pty/server'
 import exportCommand from './lib/cmds/export'
 import { registerCommands as sessionReady } from './pty/session'
 
-import { Commands } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
 /**
  * This is the module
  *
  */
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   return Promise.all([
     ls(commandTree),
     open(commandTree),

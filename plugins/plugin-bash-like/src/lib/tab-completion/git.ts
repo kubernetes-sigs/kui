@@ -15,9 +15,7 @@
  */
 
 import Debug from 'debug'
-
-import Commands from '@kui-shell/core/api/commands'
-
+import { Tab, CommandLine } from '@kui-shell/core'
 import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support'
 
 const debug = Debug('plugins/bash-like/tab-completion/git')
@@ -26,14 +24,13 @@ const debug = Debug('plugins/bash-like/tab-completion/git')
  * Tab completion handler for git branch names
  *
  */
-async function completeGitBranches(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+async function completeGitBranches(tab: Tab, commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const args = commandLine.argvNoOptions
   const { toBeCompleted } = spec
 
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
     try {
-      const { REPL } = await import('@kui-shell/core/api/repl')
-      const completions = await REPL.qexec<string>(
+      const completions = await tab.REPL.qexec<string>(
         `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`,
         undefined,
         undefined,

@@ -17,7 +17,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { UI } from '@kui-shell/core'
+import { BadgeSpec } from '@kui-shell/core'
 import { promiseEach } from '@kui-shell/core/util/async'
 
 import * as Common from './common'
@@ -171,10 +171,10 @@ export class TestMMR {
   /**
    * badges() starts a Mocha Test Suite
    * badges() executes `command` in REPL and expects `badges` are showin in Sidecar
-   * @param { UI.Badge[] } badges is the expected badges shown in the Sidecar
+   * @param { BadgeSpec[] } badges is the expected badges shown in the Sidecar
    *
    */
-  public badges(badges: UI.BadgeSpec[]) {
+  public badges(badges: BadgeSpec[]) {
     const { command, testName } = this.param
 
     describe(`mmr badges ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {

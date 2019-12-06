@@ -25,8 +25,9 @@ debug('loading')
 
 import encodeComponent from './encode'
 import { split, patterns } from './split'
+import { Executor, ReplEval, DirectReplEval } from './types'
 
-import { ExecType, Evaluator, EvaluatorArgs, KResponse, ParsedOptions, YargsParserFlags } from '../models/command'
+import { ExecType, EvaluatorArgs, KResponse, ParsedOptions, YargsParserFlags } from '../models/command'
 
 import REPL from '../models/repl'
 import isFakeDom from '../util/is-fake-dom'
@@ -61,50 +62,6 @@ import { installBlock, getCurrentBlock, getCurrentProcessingBlock, removeAnyTemp
 
 import * as minimist from 'yargs-parser'
 
-/**
- * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
- * backed by an implementation of this interface
- *
- */
-export interface Executor {
-  name: string
-  exec<T extends KResponse, O extends ParsedOptions>(
-    commandUntrimmed: string,
-    execOptions: ExecOptions
-  ): Promise<T | CodedError<number> | HTMLElement>
-}
-
-/**
- * Apply the given evaluator to the given arguments
- *
- */
-export interface ReplEval {
-  name: string
-  apply<T extends KResponse, O extends ParsedOptions>(
-    commandUntrimmed: string,
-    execOptions: ExecOptions,
-    evaluator: Evaluator<T, O>,
-    args: EvaluatorArgs<O>
-  ): T | Promise<T>
-}
-
-/**
- * Directly apply the given evaluator to the given arguments. This is
- * the default evaluator implementation.
- *
- */
-export class DirectReplEval implements ReplEval {
-  public name = 'DirectReplEval'
-
-  public apply<T extends KResponse, O extends ParsedOptions>(
-    commandUntrimmed: string,
-    execOptions: ExecOptions,
-    evaluator: Evaluator<T, O>,
-    args: EvaluatorArgs<O>
-  ) {
-    return evaluator.eval(args)
-  }
-}
 let currentEvaluatorImpl: ReplEval = new DirectReplEval()
 
 export const setEvaluatorImpl = (impl: ReplEval): void => {
@@ -667,9 +624,16 @@ class InProcessExecutor implements Executor {
               // we're the top-most exec, so deal with the repl!
               const resultDom = render ? replResult() : (block.querySelector('.repl-result') as HTMLElement)
               const rresponse = new Promise<T | CodedError<number> | HTMLElement>(resolve => {
-                printResults(block, nextBlock, tab, resultDom, echo && !render, execOptions, command, evaluator)(
-                  response
-                ) // <--- the Print part of REPL
+                printResults(
+                  block,
+                  nextBlock,
+                  tab,
+                  resultDom,
+                  echo && !render,
+                  execOptions,
+                  command,
+                  evaluator
+                )(response) // <--- the Print part of REPL
                   .then(() => {
                     if (render) {
                       resolve(resultDom.parentElement)
@@ -886,31 +850,34 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
   if (commands.length > 1) {
     debug('semicolonInvoke', commands)
 
-    const result: MixedResponse = await promiseEach(commands.filter(_ => _), async command => {
-      const block = subblock()
+    const result: MixedResponse = await promiseEach(
+      commands.filter(_ => _),
+      async command => {
+        const block = subblock()
 
-      // note: xterm.js 3.14 requires that this subblock be attached
-      // somewhere; it'll be reattached in the right place by
-      // cli.printResults, when the commands are all done
-      if (typeof opts.block !== 'boolean') {
-        opts.block.querySelector('.repl-result').appendChild(block)
-      }
+        // note: xterm.js 3.14 requires that this subblock be attached
+        // somewhere; it'll be reattached in the right place by
+        // cli.printResults, when the commands are all done
+        if (typeof opts.block !== 'boolean') {
+          opts.block.querySelector('.repl-result').appendChild(block)
+        }
 
-      const entity = await qexec<MixedResponsePart | true>(
-        command,
-        block,
-        undefined,
-        Object.assign({}, opts.execOptions, { quiet: false })
-      )
-      if (entity === true) {
-        // pty output
-        return block
-      } else {
-        // not a pty, so remove that subblock, as we have an entity response
-        block.remove()
-        return entity
+        const entity = await qexec<MixedResponsePart | true>(
+          command,
+          block,
+          undefined,
+          Object.assign({}, opts.execOptions, { quiet: false })
+        )
+        if (entity === true) {
+          // pty output
+          return block
+        } else {
+          // not a pty, so remove that subblock, as we have an entity response
+          block.remove()
+          return entity
+        }
       }
-    })
+    )
     return result
   }
 }

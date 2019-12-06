@@ -18,6 +18,8 @@ import Debug from 'debug'
 const debug = Debug('webapp/views/sidecar')
 debug('loading')
 
+import * as Marked from 'marked'
+
 import { Sidecar, getSidecar, CustomSpec, CustomContent } from './sidecar-core'
 export { Sidecar, getSidecar, CustomSpec, CustomContent }
 
@@ -71,10 +73,10 @@ export const maybeHideEntity = (tab: Tab, entity: Entity): boolean => {
 
   const entityMatchesSelection =
     sidecar.entity &&
-    (isMetadataBearing(entity) &&
-      isMetadataBearing(sidecar.entity) &&
-      sidecar.entity.metadata.name === entity.metadata.name &&
-      sidecar.entity.metadata.namespace === entity.metadata.namespace)
+    isMetadataBearing(entity) &&
+    isMetadataBearing(sidecar.entity) &&
+    sidecar.entity.metadata.name === entity.metadata.name &&
+    sidecar.entity.metadata.namespace === entity.metadata.namespace
 
   debug('maybeHideEntity', entityMatchesSelection, entity, sidecar.entity)
   if (entityMatchesSelection) {
@@ -464,10 +466,10 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
 
     const prettyName =
       (isCustomSpec(custom) && custom.prettyName) ||
-      ((custom.prettyName || entity.prettyName || isMetadataBearingByReference(custom)
+      (custom.prettyName || entity.prettyName || isMetadataBearingByReference(custom)
         ? custom.resource.prettyName
         : undefined) ||
-        entity.metadata.name)
+      entity.metadata.name
     const nameHash = entity.nameHash || custom.nameHash
     hashDom.innerText =
       (nameHash !== undefined
@@ -548,7 +550,6 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
       }
     } else if (custom.contentType === 'text/markdown') {
       if (typeof projection === 'string') {
-        const Marked = await import('marked')
         const renderer = new Marked.Renderer()
         const marked = (_: string): string => Marked(_, { renderer })
         renderer.link = (href: string, title: string, text: string) => {
@@ -621,34 +622,6 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     console.error('content type not specified for custom content', custom)
   }
 } /* showCustom */
-
-/**
- * View State of the sidecar of a tab
- *
- */
-export enum SidecarState {
-  NotShown,
-  Minimized,
-  Open,
-  FullScreen
-}
-
-/**
- * @return the view state of the sidecar in a given tab
- *
- */
-export const getSidecarState = (tab: Tab): SidecarState => {
-  const sidecar = getSidecar(tab)
-  if (tab.classList.contains('sidecar-full-screen')) {
-    return SidecarState.FullScreen
-  } else if (sidecar.classList.contains('visible')) {
-    return SidecarState.Open
-  } else if (sidecar.classList.contains('minimized')) {
-    return SidecarState.Minimized
-  } else {
-    return SidecarState.NotShown
-  }
-}
 
 /**
  * Register a renderer for a given <kind>

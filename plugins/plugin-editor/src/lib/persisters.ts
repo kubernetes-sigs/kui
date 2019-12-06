@@ -17,11 +17,11 @@
 import Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 
-import { Button } from '@kui-shell/core/api/ui-lite'
-import globalEventBus from '@kui-shell/core/api/events'
+import { eventBus as globalEventBus, Button } from '@kui-shell/core'
 
 import strings from './strings'
-import { EditorResource, EditorEntity, EditorState, Editor } from './response'
+import EditorEntity from './entity'
+import { EditorResource, EditorState, Editor } from './response'
 
 const debug = Debug('plugins/editor/persisters')
 

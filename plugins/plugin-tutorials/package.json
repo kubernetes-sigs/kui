@@ -23,6 +23,7 @@
     "Zoë Barnswell"
   ],
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "dependencies": {
     "jquery": "3.4.1",
     "marked": "0.7.0"

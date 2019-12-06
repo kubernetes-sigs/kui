@@ -205,8 +205,8 @@ const mkToplevel = () => {
     available: []
   }
 
-  for (const cmd in exports.usage) {
-    model.available.push(exports.usage[cmd])
+  for (const cmd in usage) {
+    model.available.push(usage[cmd])
   }
 
   return model

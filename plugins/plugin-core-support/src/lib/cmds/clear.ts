@@ -16,8 +16,7 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Commands, UI } from '@kui-shell/core'
-import { resetCount } from '@kui-shell/core/webapp/cli'
+import { isHeadless, Arguments, Registrar, empty, closeAllViews, resetCount } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/clear')
 
@@ -29,12 +28,12 @@ const usage = {
   optional: [{ name: '--keep-current-active', alias: '-k', boolean: true, hidden: true }]
 }
 
-const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
-  if (!Capabilities.isHeadless()) {
+const clear = ({ parsedOptions, tab }: Arguments) => {
+  if (!isHeadless()) {
     if (!parsedOptions.k) {
       // don't keep the current active prompt
       debug('clearing everything, the repl loop will set up the next prompt for us')
-      UI.empty(tab.querySelector('.repl-inner'))
+      empty(tab.querySelector('.repl-inner'))
 
       // abort the jobs for the current tab
       const tabState = tab.state
@@ -59,7 +58,7 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
   }
 
   // close the sidecar on clear
-  UI.closeAllViews(tab)
+  closeAllViews(tab)
 
   // tell the repl we're all good
   return true
@@ -69,7 +68,7 @@ const clear = ({ parsedOptions, tab }: Commands.Arguments) => {
  * This plugin introduces the /clear command, which clear the consoles
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/clear', clear, {
     usage,
     noAuthOk: true,

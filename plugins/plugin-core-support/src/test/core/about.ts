@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-import { Settings } from '@kui-shell/core'
+import { theme } from '@kui-shell/core'
 
 describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -24,7 +24,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     CLI.command('about', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(Settings.theme.productName))
+      .then(SidecarExpect.showing(theme.productName))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
       .catch(Common.oops(this, true)))
 
@@ -32,7 +32,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     CLI.command('about #About Kui', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(Settings.theme.productName))
+      .then(SidecarExpect.showing(theme.productName))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
       .catch(Common.oops(this, true)))
 
@@ -58,7 +58,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     return CLI.command('getting started', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(Settings.theme.productName))
+      .then(SidecarExpect.showing(theme.productName))
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('gettingStarted')))
       .catch(Common.oops(this, true))
   })

@@ -20,7 +20,7 @@
  */
 export default () => {
   ;(document.querySelector('#help-button') as HTMLElement).onclick = async () => {
-    const { REPL } = await import('@kui-shell/core/api/repl')
-    REPL.pexec('about')
+    const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
+    pexec('about')
   }
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+import { ParsedOptions } from '@kui-shell/core'
 
-import EditorEntity from './fetchers'
+import EditorEntity from './entity'
 
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   name?: string
   type?: string
 }

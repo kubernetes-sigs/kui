@@ -20,6 +20,7 @@ debug('loading')
 
 import { PrescanModel } from './prescan'
 
+import formatPath from './path'
 import { MetadataBearing } from '../models/entity'
 import { ImplForPlugins } from '../core/command-tree'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
@@ -65,8 +66,8 @@ export default async (prescan: PrescanModel) => {
         debug('preloading capabilities.1 %s', module.path)
         const registrationRef =
           module.path.charAt(0) === '/'
-            ? await import(module.path)
-            : await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+            ? await import(/* webpackMode: "weak" */ module.path)
+            : await import(/* webpackMode: "lazy" */ '@kui-shell/plugin-' + formatPath(module.path))
         debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration = registrationRef.registerCapability
         if (registration) {
@@ -92,8 +93,8 @@ export default async (prescan: PrescanModel) => {
           // ./plugins.ts
           const registrationRef =
             module.path.charAt(0) === '/'
-              ? await import(module.path)
-              : await import('@kui-shell/plugin-' + module.path.replace(/^plugin-/, ''))
+              ? await import(/* webpackMode: "weak" */ module.path)
+              : await import(/* webpackMode: "lazy" */ '@kui-shell/plugin-' + formatPath(module.path))
           const registration: PreloadRegistration = registrationRef.default || registrationRef
           await registration(new PreloaderRegistrarImpl(module.route))
           debug('done preloading %s', module.path)

@@ -24,9 +24,6 @@ export { setStatus }
 import doCancel from './cancel'
 export { doCancel }
 
-import { disableInputQueueing, pasteQueuedInput } from './queueing'
-export { disableInputQueueing, pasteQueuedInput }
-
 import { isPopup } from './popup-core'
 export { isPopup }
 
@@ -65,54 +62,3 @@ export { installBlock, getInitialBlock, getCurrentBlock, getCurrentProcessingBlo
 export { ok } from './print'
 
 debug('finished loading modules')
-
-/**
- * Reset input count for the given block
- *
- */
-export const resetCount = (block: HTMLElement) => {
-  block.setAttribute('data-input-count', '0')
-}
-
-/**
- * Allow commands to take charge of the cursor/caret/block rendering
- *
- */
-export const setCustomCaret = (block: HTMLElement) => {
-  block.classList.add('custom-caret')
-}
-
-/**
- * Clear current text selection
- *
- */
-export const clearTextSelection = () => {
-  try {
-    window.getSelection().removeAllRanges()
-  } catch (err) {
-    debug('unable to clear text selection', err)
-  }
-}
-
-/**
- * Allow for plugins to self-manage text selection
- *
- */
-let pendingTextSelection: string
-export const clearPendingTextSelection = () => {
-  pendingTextSelection = undefined
-}
-export const setPendingTextSelection = (str: string) => {
-  pendingTextSelection = str
-  if (!document.oncopy) {
-    document.addEventListener('select', () => {
-      pendingTextSelection = undefined
-    })
-    document.addEventListener('copy', (evt: ClipboardEvent) => {
-      if (pendingTextSelection) {
-        evt.clipboardData.setData('text', pendingTextSelection)
-        evt.preventDefault()
-      }
-    })
-  }
-}

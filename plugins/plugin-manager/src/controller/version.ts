@@ -17,10 +17,7 @@
 import { join } from 'path'
 import { lstat, readJSON } from 'fs-extra'
 
-import Commands from '@kui-shell/core/api/commands'
-import { i18n } from '@kui-shell/core/api/i18n'
-import Errors from '@kui-shell/core/api/errors'
-import Plugins from '@kui-shell/core/api/plugins'
+import { i18n, pluginUserHome, CodedError, Arguments, Registrar } from '@kui-shell/core'
 
 const strings = i18n('plugin-manager')
 
@@ -41,7 +38,7 @@ const _getVersion = async (pluginDir: string): Promise<Version> => {
 
     return { name, version, installedOn: new Date(ctime) }
   } catch (error) {
-    const err = error as Errors.CodedError<string>
+    const err = error as CodedError<string>
     if (err.code !== 'ENOTDIR') {
       console.error(err)
     }
@@ -50,11 +47,11 @@ const _getVersion = async (pluginDir: string): Promise<Version> => {
 }
 
 export async function getVersion(plugin: string): Promise<Version> {
-  const moduleDir = await Plugins.userHome()
+  const moduleDir = await pluginUserHome()
   const version = await _getVersion(join(moduleDir, 'node_modules', plugin))
 
   if (!version) {
-    const err: Errors.CodedError = new Error(strings('Plugin not found'))
+    const err: CodedError = new Error(strings('Plugin not found'))
     err.code = 404
     throw err
   } else {
@@ -66,13 +63,13 @@ export async function getVersion(plugin: string): Promise<Version> {
  * This is the command handler for `plugin get`
  *
  */
-const doVersion = async ({ argvNoOptions }: Commands.Arguments): Promise<string> => {
+const doVersion = async ({ argvNoOptions }: Arguments): Promise<string> => {
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('version') + 1)
   const name = argvNoOptions.shift()
   const version = await getVersion(name)
   return version.version
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/plugin/version', doVersion)
 }

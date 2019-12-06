@@ -19,17 +19,19 @@ import { dirname, join } from 'path'
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import UI from '@kui-shell/core/api/ui'
-import Models from '@kui-shell/core/api/models'
-import Commands from '@kui-shell/core/api/commands'
-import Capabilities from '@kui-shell/core/api/capabilities'
+import { Tab, inBrowser, ToolbarText, injectCSS, injectScript, ExecOptions, currentSelection } from '@kui-shell/core'
 
-import { Entity as EditorEntity } from './fetchers'
+import { Entity as EditorEntity } from './entity'
 import { Editor, EditorResponse } from './response'
 import strings from './strings'
+import injectTheme from './theme'
 import { language } from './file-types'
 
 const debug = Debug('plugins/editor/open')
+
+/** optimization: avoid calling injectTheme more than once for each
+ * `edit` command execution */
+let pre2 = false
 
 /**
  * Update the code in the editor to use the given text
@@ -71,54 +73,6 @@ const setText = (editor: MonacoEditor.ICodeEditor, options, execOptions?) => ({
   return code
 }
 
-/** optimization: injectTheme asynchronously on preload */
-let pre = false
-
-/** optimization: avoid calling injectTheme more than once for each
- * `edit` command execution */
-let pre2 = false
-
-/**
- * Inject the current theme into the editor
- *
- */
-const injectTheme = () => {
-  if (pre) {
-    debug('skipping injectTheme', pre)
-    return
-  }
-  debug('injectTheme')
-
-  const key = `kui.editor.theme`
-
-  // dangit: in webpack we can require the CSS; but in plain nodejs,
-  // we cannot, so have to use filesystem operations to acquire the
-  // CSS content
-  try {
-    // try webpack style
-    UI.injectCSS({
-      css: require('@kui-shell/plugin-editor/web/css/theme-alignment.css').toString(),
-      key
-    })
-  } catch (err) {
-    // oh well, try filesystem style
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    UI.injectCSS({ key, path: join(ourRoot, 'web/css/theme-alignment.css') })
-  }
-}
-
-/**
- * Attempt to mask any latencies of injectTheme by doing so
- * asynchronously on startup
- *
- */
-export const preload = () => {
-  setTimeout(() => {
-    injectTheme()
-    pre = true
-  }, 0)
-}
-
 /**
  * Open the code editor
  *
@@ -129,13 +83,13 @@ export const preload = () => {
  *     - content: a dom that contains the instance; this must be attached somewhere!
  *
  */
-export const openEditor = async (tab: UI.Tab, name: string, options, execOptions: Commands.ExecOptions) => {
+export const openEditor = async (tab: Tab, name: string, options, execOptions: ExecOptions) => {
   debug('openEditor')
 
   /** returns the current entity */
   const custom = execOptions.custom
 
-  const getEntityFn = (custom && custom.getEntity) || Models.Selection.current
+  const getEntityFn = (custom && custom.getEntity) || currentSelection
   let currentEntity = getEntityFn(tab)
   const getEntity = () => currentEntity
 
@@ -148,19 +102,19 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
   }
 
   if (!pre2) {
-    if (!Capabilities.inBrowser()) {
+    if (!inBrowser()) {
       const monacoRoot = dirname(require.resolve('monaco-editor/package.json'))
-      UI.injectScript(join(monacoRoot, 'min/vs/loader.js'))
+      injectScript(join(monacoRoot, 'min/vs/loader.js'))
     }
 
     try {
-      UI.injectCSS({
+      injectCSS({
         css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(),
         key: 'editor.editor'
       })
     } catch (err) {
       const ourRoot = dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-      UI.injectCSS(join(ourRoot, 'web/css/editor.css'))
+      injectCSS(join(ourRoot, 'web/css/editor.css'))
     }
     pre2 = true
   }
@@ -254,7 +208,7 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
       upToDate.className = 'is-up-to-date'
       modified.className = 'is-modified'
 
-      const toolbarText = new UI.ToolbarText('info', status)
+      const toolbarText = new ToolbarText('info', status)
 
       /** update isdecar header */
       const updateHeader = (isModified: boolean) => {
@@ -312,9 +266,9 @@ export const openEditor = async (tab: UI.Tab, name: string, options, execOptions
     }
   } /* end of updater */
 
-  const initEditor = Capabilities.inBrowser()
-    ? (await import('./init/esm')).default
-    : (await import('./init/amd')).default
+  const initEditor = inBrowser()
+    ? (await import(/* webpackMode: "lazy" */ './init/esm')).default
+    : (await import(/* webpackMode: "weak" */ './init/amd')).default
 
   // once the editor is ready, return a function that can populate it
   return initEditor(editorWrapper, options).then(makeUpdater)
