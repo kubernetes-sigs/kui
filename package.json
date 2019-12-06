@@ -80,7 +80,7 @@
     "request-promise": "4.2.5",
     "spectron": "8.0.0",
     "tmp": "0.1.0",
-    "typescript": "3.7.2",
+    "typescript": "3.7.3",
     "uuid": "3.3.3"
   },
   "husky": {
