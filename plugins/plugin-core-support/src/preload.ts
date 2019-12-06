@@ -18,8 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/core-support/preload')
 debug('loading')
 
-import { PreloadRegistration, PreloadRegistrar } from '@kui-shell/core/api/registrars'
-import Capabilities from '@kui-shell/core/api/capabilities'
+import { isHeadless, inBrowser, PreloadRegistration, PreloadRegistrar } from '@kui-shell/core'
 
 /**
  * This is the module
@@ -28,7 +27,7 @@ import Capabilities from '@kui-shell/core/api/capabilities'
 const registration: PreloadRegistration = async (commandTree: PreloadRegistrar) => {
   const asyncs = []
 
-  if (!Capabilities.isHeadless()) {
+  if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.default(commandTree)))
     asyncs.push(import('./lib/new-tab').then(_ => _.default(commandTree)))
     asyncs.push(import('./lib/cmds/history/reverse-i-search').then(_ => _.default()))
@@ -36,7 +35,7 @@ const registration: PreloadRegistration = async (commandTree: PreloadRegistrar) 
     asyncs.push(import('./lib/tab-completion').then(_ => _.default()))
   }
 
-  if (!Capabilities.isHeadless() && !Capabilities.inBrowser()) {
+  if (!isHeadless() && !inBrowser()) {
     // in webpack, use the default text-search bar of browser
     asyncs.push(import('./lib/text-search').then(_ => _.default()))
   }

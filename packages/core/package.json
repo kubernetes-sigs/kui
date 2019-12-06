@@ -24,6 +24,7 @@
     "Mengting Yan"
   ],
   "main": "index.js",
+  "module": "mdist/index.js",
   "bin": {
     "kui": "bin/kui",
     "kubectl-kui": "bin/kubectl-kui"
@@ -41,7 +42,6 @@
     "needle": "2.4.0",
     "pretty-ms": "5.1.0",
     "properties-parser": "0.3.1",
-    "strip-ansi": "6.0.0",
     "tmp": "0.1.0",
     "uuid": "3.3.3",
     "yargs-parser": "16.1.0"

@@ -49,6 +49,8 @@ fi
 
 export KUI_MONO_HOME=$(cd ./ && pwd)
 
+tsc --build tsconfig-es6.json --watch &
+
 # finally, launch webpack-dev-server
 webpack-dev-server $PROGRESS --config packages/webpack/webpack.config.js
 

@@ -18,11 +18,7 @@ import Debug from 'debug'
 import { pathExists, readJSON } from 'fs-extra'
 import { join } from 'path'
 
-import Commands from '@kui-shell/core/api/commands'
-import Errors from '@kui-shell/core/api/errors'
-import { i18n } from '@kui-shell/core/api/i18n'
-import Plugins from '@kui-shell/core/api/plugins'
-import Tables from '@kui-shell/core/api/tables'
+import { i18n, pluginUserHome, Registrar, Table, UsageModel } from '@kui-shell/core'
 
 import { getVersion } from './version'
 
@@ -33,7 +29,7 @@ const debug = Debug('plugins/plugin-manager/cmd/list')
  * Format usage message
  *
  */
-const usage: Errors.UsageModel = {
+const usage: UsageModel = {
   strict: 'list',
   command: 'list',
   breadcrumb: strings('List plugins'),
@@ -41,8 +37,8 @@ const usage: Errors.UsageModel = {
   example: 'plugin list'
 }
 
-const doList = async (): Promise<Tables.Table> => {
-  const moduleDir = await Plugins.userHome()
+const doList = async (): Promise<Table> => {
+  const moduleDir = await pluginUserHome()
   debug('command execution started', moduleDir)
 
   const pjson = join(moduleDir, 'package.json')
@@ -83,7 +79,7 @@ const doList = async (): Promise<Tables.Table> => {
   }
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/plugin/list', doList, {
     usage
   })

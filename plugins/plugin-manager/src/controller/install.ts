@@ -19,10 +19,7 @@ import { ensureDir, symlink, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'
 
-import Commands from '@kui-shell/core/api/commands'
-import Errors from '@kui-shell/core/api/errors'
-import { i18n } from '@kui-shell/core/api/i18n'
-import Settings from '@kui-shell/core/api/settings'
+import { userDataDir, exportSettingsTo, i18n, Arguments, Registrar, UsageModel } from '@kui-shell/core'
 
 import Ora from '../util/ora'
 import locateNpm from '../util/locate-npm'
@@ -34,7 +31,7 @@ const debug = Debug('plugins/plugin-manager/cmd/install')
  * Usage model for plugin install
  *
  */
-const usage: Errors.UsageModel = {
+const usage: UsageModel = {
   strict: 'install',
   command: 'install',
   breadcrumb: strings('Install plugin'),
@@ -51,21 +48,21 @@ const usage: Errors.UsageModel = {
  * This is the command handler for `plugin install`
  *
  */
-const doInstall = async (args: Commands.Arguments) => {
+const doInstall = async (args: Arguments) => {
   const { argvNoOptions, REPL } = args
   const nameWithVersion = argvNoOptions[argvNoOptions.indexOf('install') + 1]
   const nameWithoutVersion = nameWithVersion.replace(/^(@?[^@]+)@.+$/, '$1')
 
   const spinner = await new Ora().init(strings('Preparing to install', nameWithoutVersion), args)
 
-  const rootDir = Settings.userDataDir()
+  const rootDir = userDataDir()
   const pluginHome = join(rootDir, 'plugins')
   const targetDir = join(pluginHome, basename(nameWithoutVersion)) // final location of the plugin
   await ensureDir(targetDir)
 
   debug(`installing ${nameWithoutVersion} into pluginHome=${pluginHome} targetDir=${targetDir}`)
 
-  await Settings.exportTo(pluginHome)
+  await exportSettingsTo(pluginHome)
 
   const resolved = await locateNpm()
   if (!resolved) {
@@ -185,7 +182,7 @@ const doInstall = async (args: Commands.Arguments) => {
   return REPL.qexec(`plugin commands "${nameWithoutVersion}"`)
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/plugin/install', doInstall, {
     usage
   })

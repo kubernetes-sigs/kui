@@ -22,9 +22,7 @@
 
 import Debug from 'debug' // the default number of history elements to show with /history
 
-import Commands from '@kui-shell/core/api/commands'
-import Models from '@kui-shell/core/api/models'
-import Tables from '@kui-shell/core/api/tables'
+import { Arguments, Registrar, Table, Row, History } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/history')
 
@@ -74,17 +72,18 @@ const usage = {
  * Execute the command N again
  *
  */
-const again = ({ REPL }: Commands.Arguments, N: number, historyEntry) => {
+const again = async ({ tab, REPL }: Arguments, N: number, historyEntry) => {
   debug('again', N, historyEntry)
 
-  if (!Models.History.line(N)) {
+  const history = await History(tab)
+  if (!history.line(N)) {
     throw new Error('Could not find the command to re-execute')
   } else {
     // console.log('history::again', N, lines[N])
-    Models.History.update(historyEntry, entry => {
-      entry.raw = Models.History.line(N).raw
+    history.update(historyEntry, entry => {
+      entry.raw = history.line(N).raw
     })
-    return REPL.qexec(Models.History.line(N).raw)
+    return REPL.qexec(history.line(N).raw)
   }
 }
 
@@ -97,10 +96,12 @@ const again = ({ REPL }: Commands.Arguments, N: number, historyEntry) => {
  *    history <filterStr>        look back at most 20 commands for those that contain filterStr
  *
  */
-const showHistory = ({ argv, parsedOptions: options }) => {
+const showHistory = async ({ tab, argv, parsedOptions: options }) => {
+  const history = await History(tab)
+
   if (options.c) {
     debug('clearing command history')
-    return Models.History.wipe()
+    return history.wipe()
   }
 
   const historyIdx = argv.indexOf('history')
@@ -114,9 +115,9 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   const filterStr = filterIdx > 0 && argv[filterIdx]
   const filter = filterStr ? line => line.raw.indexOf(filterStr) >= 0 : () => true
 
-  const startIdx = Math.max(0, Models.History.cursor - N - 1)
-  const endIdx = Models.History.cursor - 1
-  const recent = Models.History.slice(startIdx, endIdx)
+  const startIdx = Math.max(0, history.cursor - N - 1)
+  const endIdx = history.cursor - 1
+  const recent = history.slice(startIdx, endIdx)
 
   debug('argv', argv)
   debug('Nargs', Nargs)
@@ -126,7 +127,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
   debug('filterStr', filterStr)
   debug('got', recent.length, startIdx, endIdx)
 
-  const body: Tables.Row[] = recent
+  const body: Row[] = recent
     .map((line, idx) => {
       if (!filter(line)) return
 
@@ -141,7 +142,7 @@ const showHistory = ({ argv, parsedOptions: options }) => {
         rest.innerText = shortForm.substring(whitespace)
       }
 
-      return new Tables.Row({
+      return new Row({
         beforeAttributes: [
           {
             key: 'N',
@@ -157,13 +158,13 @@ const showHistory = ({ argv, parsedOptions: options }) => {
     })
     .filter(x => x)
 
-  return new Tables.Table({
+  return new Table({
     noSort: true,
     body
   })
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   debug('init')
 
   commandTree.listen('/history', showHistory, {
@@ -176,8 +177,9 @@ export default (commandTree: Commands.Registrar) => {
   // commandTree.listen('/history/purge', Models.History.wipe, { docs: 'Clear your command history' })
 
   /** re-execute from history */
-  const againCmd = () => (args: Commands.Arguments) => {
-    const N = args.argv[1] ? parseInt(args.argv[1], 10) : Models.History.cursor - 2 // use the last command, if the user entered only "!!"
+  const againCmd = () => async (args: Arguments) => {
+    const history = await History(args.tab)
+    const N = args.argv[1] ? parseInt(args.argv[1], 10) : history.cursor - 2 // use the last command, if the user entered only "!!"
     debug('againCmd', args.execOptions)
     return again(args, N, args.execOptions && args.execOptions.history)
   }

@@ -20,6 +20,8 @@ import Debug from 'debug'
 const debug = Debug('core/usage-error')
 debug('loading')
 
+import * as Marked from 'marked'
+
 import { isHeadless } from './capabilities'
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
@@ -349,7 +351,6 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
       if (!isHeadless()) {
         try {
-          const Marked = await import('marked')
           const renderer = new Marked.Renderer()
           const marked = (_: string): string => Marked(_, { renderer })
           renderer.link = (href: string, title: string, text: string) => {

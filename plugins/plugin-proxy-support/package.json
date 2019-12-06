@@ -17,6 +17,7 @@
     "plugin"
   ],
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "kui": {
     "webpack": "KUI_USE_PROXY",
     "headless": false,

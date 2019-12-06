@@ -17,53 +17,16 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { Tab } from '@kui-shell/core/api/ui-lite'
-import Models from '@kui-shell/core/api/models'
-import Commands from '@kui-shell/core/api/commands'
+import { Tab, ParsedOptions, ExecOptions } from '@kui-shell/core'
 
-import { persisters, Persister } from './persisters'
+import Entity from './entity'
 
 const debug = Debug('plugins/editor/fetchers')
 
-interface ExecSpec {
-  kind: string
-  code: string
-}
-
-interface KeyValuePair {
-  key: string
-  value: string
-}
-
-interface Getter {
-  getEntity: () => object
-}
-
-export interface Entity extends Models.ResourceWithMetadata {
-  type: string
-  name: string
-  version?: string
-  isNew?: boolean
-  namespace?: string
-  noZoom?: boolean
-  viewName?: string
-  extract?: (raw: string, entity: Entity) => Entity
-  extractName?: (raw: string) => string // re-extract name from raw source, e.g. after a save or revert
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  lock?: any // set to false if you don't want a lock icon
-  filepath?: string
-  exec: ExecSpec
-  persister?: Persister
-  gotoReadonlyView?: (Getter) => any // eslint-disable-line @typescript-eslint/no-explicit-any
-  annotations: KeyValuePair[]
-}
-
-export default Entity
-
 export type IFetcher = (
   entityName: string,
-  parsedOptions?: Commands.ParsedOptions,
-  execOptions?: Commands.ExecOptions,
+  parsedOptions?: ParsedOptions,
+  execOptions?: ExecOptions,
   createIfAbsent?: boolean,
   tab?: Tab
 ) => Promise<Entity>
@@ -81,7 +44,7 @@ export const registerFetcher = (fetcher: IFetcher): void => {
  * Touch a local filepath
  *
  */
-function createFile(tab: Tab, filepath: string, execOptions: Commands.ExecOptions) {
+function createFile(tab: Tab, filepath: string, execOptions: ExecOptions) {
   return tab.REPL.rexec(
     `touch ${tab.REPL.encodeComponent(filepath)}`,
     Object.assign({}, execOptions, { forceProxy: true })
@@ -92,7 +55,7 @@ function createFile(tab: Tab, filepath: string, execOptions: Commands.ExecOption
  * Creates parent directories if needed, then creates a file then edits it
  *
  */
-async function createFilepath(tab: Tab, filepath: string, execOptions: Commands.ExecOptions) {
+async function createFilepath(tab: Tab, filepath: string, execOptions: ExecOptions) {
   const dir = dirname(filepath)
   const base = basename(filepath)
 
@@ -120,15 +83,15 @@ interface FStat {
  */
 export const fetchFile: IFetcher = async (
   filepath: string,
-  parsedOptions: Commands.ParsedOptions,
-  execOptions: Commands.ExecOptions,
+  parsedOptions: ParsedOptions,
+  execOptions: ExecOptions,
   createIfAbsent: boolean,
   tab: Tab
 ): Promise<Entity> => {
   let stats: FStat
   try {
     if (!tab) {
-      const { getTabFromTarget, getCurrentPrompt } = await import('@kui-shell/core/api/ui-lite')
+      const { getTabFromTarget, getCurrentPrompt } = await import('@kui-shell/core')
       tab = getTabFromTarget(getCurrentPrompt())
     }
 
@@ -153,6 +116,8 @@ export const fetchFile: IFetcher = async (
     const extension = dotIdx < 0 ? 'text' : filepath.substring(dotIdx + 1)
     const kind =
       extension === 'js' ? 'javascript' : extension === 'ts' ? 'typescript' : extension === 'py' ? 'python' : extension
+
+    const { persisters } = await import('./persisters')
 
     return {
       type: 'file',
@@ -181,8 +146,8 @@ export const fetchFile: IFetcher = async (
 export const fetchEntity = async (
   tab: Tab,
   entityName: string,
-  parsedOptions: Commands.ParsedOptions,
-  execOptions: Commands.ExecOptions
+  parsedOptions: ParsedOptions,
+  execOptions: ExecOptions
 ): Promise<Entity> => {
   if (!parsedOptions.create) {
     // The --create option means don't try any of the other fetchers;

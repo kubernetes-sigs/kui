@@ -1,0 +1,38 @@
+{
+  "extends": "./packages/builder/tsconfig-base.json",
+  "compilerOptions": {
+    "module": "es6"
+  },
+  "references": [
+    {
+      "path": "packages/core/tsconfig-es6.json"
+    },
+    {
+      "path": "packages/test/tsconfig-es6.json"
+    },
+    {
+      "path": "packages/builder/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-core-support/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-bash-like/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-editor/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-manager/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-wskflow/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-tutorials/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-proxy-support/tsconfig-es6.json"
+    }
+  ]
+}

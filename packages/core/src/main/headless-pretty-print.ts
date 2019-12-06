@@ -21,7 +21,7 @@ debug('loading')
 import { Writable } from 'stream'
 import * as colors from 'colors/safe'
 
-import { ElementMimic } from '../util/mimic-dom'
+import ElementMimic from '../util/element-mimic'
 import { isTable, Row } from '../webapp/models/table'
 import { isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
 import { isMultiModalResponse } from '../models/mmr/is'

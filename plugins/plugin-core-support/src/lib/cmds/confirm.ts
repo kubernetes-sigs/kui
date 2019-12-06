@@ -16,11 +16,22 @@
 
 import { dirname, join } from 'path'
 
-import { Capabilities, Commands, Errors, eventBus, i18n, UI } from '@kui-shell/core'
+import {
+  inBrowser,
+  Registrar,
+  ExecType,
+  UsageModel,
+  eventBus,
+  i18n,
+  getCurrentPrompt,
+  injectCSS,
+  KeyCodes,
+  Tab
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
-const usage: Errors.UsageModel = {
+const usage: UsageModel = {
   command: 'confirm',
   strict: 'confirm',
   example: 'confirm [--asking <confirmation message>] <your-command-to-execute>',
@@ -43,7 +54,7 @@ const usage: Errors.UsageModel = {
  * This plugin introduces the /confirm command
  *
  */
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   commandTree.listen(
     '/confirm',
     ({ tab, argvNoOptions, parsedOptions, execOptions, REPL }) =>
@@ -52,14 +63,14 @@ export default async (commandTree: Commands.Registrar) => {
         const message = parsedOptions.asking || strings('areYouSure')
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
 
-        if (Capabilities.inBrowser()) {
-          UI.injectCSS({
+        if (inBrowser()) {
+          injectCSS({
             css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
             key: 'plugin-core-support/confirm.css'
           })
         } else {
           const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-          UI.injectCSS(join(root, 'web/css/confirm.css'))
+          injectCSS(join(root, 'web/css/confirm.css'))
         }
 
         const confirm = () => {
@@ -75,7 +86,7 @@ export default async (commandTree: Commands.Registrar) => {
 
             setTimeout(() => {
               document.body.removeChild(modal)
-              const prompt = UI.getCurrentPrompt(tab)
+              const prompt = getCurrentPrompt(tab)
               if (prompt) {
                 prompt.readOnly = false
                 prompt.focus()
@@ -128,7 +139,7 @@ export default async (commandTree: Commands.Registrar) => {
           initMouseEvents()
 
           const executeCommandForReal = () => REPL.pexec(command, { tab })
-          const executeCommand = (thatTab: UI.Tab) => {
+          const executeCommand = (thatTab: Tab) => {
             if (thatTab === tab) {
               executeCommandForReal()
               eventBus.off('/core/cli/install-block', executeCommand)
@@ -137,7 +148,7 @@ export default async (commandTree: Commands.Registrar) => {
           const exec = () => {
             success()
 
-            if (execOptions.type === Commands.ExecType.TopLevel) {
+            if (execOptions.type === ExecType.TopLevel) {
               eventBus.on('/core/cli/install-block', executeCommand)
             } else {
               executeCommandForReal()
@@ -199,8 +210,8 @@ export default async (commandTree: Commands.Registrar) => {
           continueButton.onclick = exec
 
           // temporarily disable the repl
-          if (UI.getCurrentPrompt(tab)) {
-            UI.getCurrentPrompt(tab).readOnly = true
+          if (getCurrentPrompt(tab)) {
+            getCurrentPrompt(tab).readOnly = true
           }
 
           // to capture the Escape key event
@@ -213,7 +224,7 @@ export default async (commandTree: Commands.Registrar) => {
           modal.addEventListener(
             'keyup',
             (evt: KeyboardEvent) => {
-              if (evt.keyCode === UI.Keys.Codes.ESCAPE) {
+              if (evt.keyCode === KeyCodes.ESCAPE) {
                 evt.preventDefault()
                 cancel()
               }

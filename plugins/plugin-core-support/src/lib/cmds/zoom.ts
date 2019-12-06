@@ -15,13 +15,9 @@
  */
 
 import Debug from 'debug'
-import * as path from 'path'
+import { dirname, join } from 'path'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
-import Commands from '@kui-shell/core/api/commands'
-import Errors from '@kui-shell/core/api/errors'
-import eventBus from '@kui-shell/core/api/events'
-import { injectCSS } from '@kui-shell/core/api/inject'
+import { UsageError, eventBus, injectCSS, Arguments, Registrar, inBrowser } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/zoom')
 
@@ -78,7 +74,7 @@ const _set = newZoom => {
     main.setAttribute('data-zoom', newZoom)
     // maybe? repl.scrollIntoView()
   } else {
-    throw new Errors.UsageError({
+    throw new UsageError({
       message: 'Unsupported zoom level',
       usage: usage.set
     })
@@ -99,7 +95,7 @@ const _set = newZoom => {
 
   return true
 }
-const set = ({ argvNoOptions }: Commands.Arguments) => {
+const set = ({ argvNoOptions }: Arguments) => {
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }
@@ -152,7 +148,7 @@ const get = () => {
  * Plugin registration
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/zoom/get', get, { usage: usage.get })
   commandTree.listen('/zoom/set', set, { usage: usage.set })
   commandTree.listen('/zoom/reset', reset, { usage: usage.reset })
@@ -167,14 +163,14 @@ export default (commandTree: Commands.Registrar) => {
   //
   // inject our CSS
   //
-  if (Capabilities.inBrowser()) {
+  if (inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
       key: 'zoom.css'
     })
   } else {
-    const root = path.dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(path.join(root, 'web/css/zoom.css'))
+    const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
+    injectCSS(join(root, 'web/css/zoom.css'))
   }
 
   const overlay = document.createElement('div')

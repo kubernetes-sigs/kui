@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import Commands from '@kui-shell/core/api/commands'
-import { i18n } from '@kui-shell/core/api/i18n'
-import { MultiModalResponse } from '@kui-shell/core/api/ui-lite'
+import { MultiModalResponse, i18n, Arguments, Registrar } from '@kui-shell/core'
 
 import { getVersion } from './version'
 
@@ -26,7 +24,7 @@ const strings = i18n('plugin-manager')
  * This is the command handler for `plugin get`
  *
  */
-const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<MultiModalResponse> => {
+const doGet = async ({ argvNoOptions }: Arguments): Promise<MultiModalResponse> => {
   argvNoOptions = argvNoOptions.slice(argvNoOptions.indexOf('get') + 1)
   const name = argvNoOptions.shift()
   const { installedOn, version } = await getVersion(name)
@@ -48,6 +46,6 @@ const doGet = async ({ argvNoOptions }: Commands.Arguments): Promise<MultiModalR
   return response
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/plugin/get', doGet)
 }

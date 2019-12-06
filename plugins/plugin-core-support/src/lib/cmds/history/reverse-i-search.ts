@@ -18,18 +18,21 @@
 
 import Debug from 'debug'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
-import eventBus from '@kui-shell/core/api/events'
-import Settings from '@kui-shell/core/api/settings'
-import * as UI from '@kui-shell/core/api/ui-lite'
-
-import { getTabFromTarget } from '@kui-shell/core/webapp/tab'
 import {
+  Tab,
+  inBrowser,
+  eventBus,
+  inBottomInputMode,
+  getCurrentPrompt,
   getBlockOfPrompt,
   getCurrentPromptLeft,
   setUsingCustomPrompt,
-  unsetUsingCustomPrompt
-} from '@kui-shell/core/webapp/prompt'
+  unsetUsingCustomPrompt,
+  getTabFromTarget,
+  KeyCodes,
+  isCursorMovement,
+  History
+} from '@kui-shell/core'
 
 const debug = Debug('core-support/history/reverse-i-search')
 
@@ -46,7 +49,7 @@ const strings = {
 class ActiveISearch {
   private isSearchActive = true
 
-  private readonly tab: UI.Tab
+  private readonly tab: Tab
 
   private readonly currentOnKeypress: (evt: KeyboardEvent) => void
 
@@ -70,9 +73,9 @@ class ActiveISearch {
 
   private readonly promptLeft: Element
 
-  constructor(tab: UI.Tab) {
+  constructor(tab: Tab) {
     this.tab = tab
-    this.prompt = UI.getCurrentPrompt(tab)
+    this.prompt = getCurrentPrompt(tab)
     this.promptLeft = getCurrentPromptLeft(tab)
 
     this.placeholder = document.createElement('span')
@@ -117,13 +120,13 @@ class ActiveISearch {
    *
    */
   cancelISearch(evt?: KeyboardEvent) {
-    const isCtrlC = evt && evt.keyCode === UI.Keys.Codes.C && evt.ctrlKey
+    const isCtrlC = evt && evt.keyCode === KeyCodes.C && evt.ctrlKey
     this.tab['_kui_active_i_search'] = undefined
 
     if (this.isSearchActive) {
       this.isSearchActive = false
 
-      if (!isCtrlC || Settings.inBottomInputMode) {
+      if (!isCtrlC || inBottomInputMode) {
         unsetUsingCustomPrompt(getBlockOfPrompt(this.prompt))
         if (this.placeholder.parentNode) {
           this.placeholder.parentNode.removeChild(this.placeholder)
@@ -141,8 +144,6 @@ class ActiveISearch {
    */
   async doSearch(evt: KeyboardEventPlusPlus) {
     debug('doSearch', evt)
-    const Models = (await import('@kui-shell/core/api/models')).default
-
     if (evt.inputType === 'deleteContentBackward') {
       // if the user hits Backspace, reset currentSearchIdx
       // TODO confirm that this is the behavior of bash
@@ -156,7 +157,9 @@ class ActiveISearch {
     const userHitCtrlR = evt.ctrlKey && evt.code === 'KeyR'
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
 
-    const newSearchIdx = this.prompt.value && Models.History.findIndex(this.prompt.value, startIdx)
+    const history = await History(this.tab)
+
+    const newSearchIdx = this.prompt.value && history.findIndex(this.prompt.value, startIdx)
     debug('search index', this.prompt.value, newSearchIdx)
 
     if (newSearchIdx > 0) {
@@ -166,7 +169,7 @@ class ActiveISearch {
         .replace(/\$1/, '') // ` ${newSearchIdx}`
         .replace(/\$2/, this.prompt.value)
 
-      const newValue = Models.History.line(this.currentSearchIdx).raw
+      const newValue = history.line(this.currentSearchIdx).raw
       debug('newValue', newValue)
       const caretPosition = newValue.indexOf(this.prompt.value) + 1
       debug('caretPosition', caretPosition)
@@ -207,7 +210,7 @@ class ActiveISearch {
    */
   maybeComplete(evt: KeyboardEvent) {
     if (this.isSearchActive) {
-      if (evt.keyCode === UI.Keys.Codes.ENTER) {
+      if (evt.keyCode === KeyCodes.ENTER) {
         this.completeSearch()
         this.prompt.dispatchEvent(new KeyboardEvent(evt.type, evt))
       }
@@ -225,8 +228,8 @@ function registerListener() {
     return
   }
 
-  if (Settings.inBottomInputMode) {
-    eventBus.on('/core/cli/install-block', (tab: UI.Tab) => {
+  if (inBottomInputMode) {
+    eventBus.on('/core/cli/install-block', (tab: Tab) => {
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']
       if (activeSearch) {
         activeSearch.cancelISearch()
@@ -254,12 +257,13 @@ function registerListener() {
       evt.ctrlKey &&
       (process.platform === 'darwin' ||
         /Macintosh/.test(navigator.userAgent) ||
-        ((!Capabilities.inBrowser() && !process.env.RUNNING_SHELL_TEST) || evt.metaKey))
+        (!inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
+        evt.metaKey)
     ) {
       const tab = getTabFromTarget(evt.srcElement)
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']
 
-      if (evt.keyCode === UI.Keys.Codes.R) {
+      if (evt.keyCode === KeyCodes.R) {
         debug('got ctrl+r')
         if (activeSearch) {
           debug('continuation of existing reverse-i-search')
@@ -268,7 +272,7 @@ function registerListener() {
           debug('new reverse-i-search')
           tab['_kui_active_i_search'] = new ActiveISearch(tab)
         }
-      } else if (activeSearch && UI.Keys.isCursorMovement(evt)) {
+      } else if (activeSearch && isCursorMovement(evt)) {
         activeSearch.completeSearch()
       } else if (activeSearch) {
         // with ctrl key down, let any other keycode result in cancelling the outstanding i-search

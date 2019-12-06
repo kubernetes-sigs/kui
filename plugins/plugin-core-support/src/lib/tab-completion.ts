@@ -15,19 +15,29 @@
  */
 
 import Debug from 'debug'
+import * as minimist from 'yargs-parser'
 import { lstat, readdir, realpath } from 'fs'
 import { basename, dirname as pathDirname, join } from 'path'
 
 import { applyEnumerator } from './tab-completion-registrar'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
-import Errors from '@kui-shell/core/api/errors'
-import * as REPLUtil from '@kui-shell/core/api/repl-util'
-import Tables from '@kui-shell/core/api/tables'
-import * as UI from '@kui-shell/core/api/ui-lite'
-import * as LowLevel from '@kui-shell/core/api/ui-low-level'
-import { injectCSS } from '@kui-shell/core/api/inject'
-import Util from '@kui-shell/core/api/util'
+import {
+  inBrowser,
+  injectCSS,
+  UsageError,
+  Table,
+  getCurrentBlock,
+  getCurrentPrompt,
+  getTabFromTarget,
+  KeyCodes,
+  split,
+  _split,
+  Split,
+  expandHomeDir,
+  findFile,
+  doCancel,
+  isUsingCustomPrompt
+} from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/tab completion')
 
@@ -39,7 +49,7 @@ const debug = Debug('plugins/core-support/tab completion')
  */
 const listenForUpDown = (prompt: HTMLInputElement) => {
   const moveTo = (nextOp: string, evt: Event) => {
-    const block = UI.getCurrentBlock()
+    const block = getCurrentBlock()
     const temporaryContainer = block && block.querySelector('.tab-completion-temporary')
 
     if (temporaryContainer) {
@@ -62,13 +72,13 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
     // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
     const char = evt.keyCode
 
-    if (char === UI.Keys.Codes.DOWN) {
+    if (char === KeyCodes.DOWN) {
       moveTo('nextSibling', evt)
-    } else if (char === UI.Keys.Codes.UP) {
+    } else if (char === KeyCodes.UP) {
       moveTo('previousSibling', evt)
-    } else if (char === UI.Keys.Codes.C && evt.ctrlKey) {
+    } else if (char === KeyCodes.C && evt.ctrlKey) {
       // Ctrl+C, cancel
-      LowLevel.doCancel()
+      doCancel()
     }
   }
 
@@ -91,8 +101,8 @@ const listenForEscape = () => {
   }
 
   document.onkeyup = evt => {
-    if (evt.keyCode === UI.Keys.Codes.ESCAPE) {
-      const block = UI.getCurrentBlock()
+    if (evt.keyCode === KeyCodes.ESCAPE) {
+      const block = getCurrentBlock()
       const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
       if (temporaryContainer) {
@@ -159,7 +169,7 @@ const makeCompletionContainer = (
       return temporaryContainer.cleanup()
     }
 
-    const args = REPLUtil.split(prompt.value)
+    const args = split(prompt.value)
     const currentText = args[temporaryContainer.lastIdx]
     const prevMatches = temporaryContainer.currentMatches
     const newMatches = prevMatches.filter(({ match }) => match.indexOf(currentText) === 0)
@@ -290,7 +300,7 @@ const complete = (
 
   if (dirname) {
     // see if we need to add a trailing slash
-    const filepath = Util.expandHomeDir(join(dirname, match))
+    const filepath = expandHomeDir(join(dirname, match))
     isDirectory(filepath)
       .then(isDir => {
         if (isDir) {
@@ -507,7 +517,7 @@ const suggestLocalFile = (
 
   if (dirname) {
     // then dirname exists! now scan the directory so we can find matches
-    readdir(Util.expandHomeDir(dirname), (err, files) => {
+    readdir(expandHomeDir(dirname), (err, files) => {
       if (err) {
         debug('fs.readdir error', err)
       } else {
@@ -547,10 +557,13 @@ const suggestLocalFile = (
 
           // add each match to that temporary div
           matches.forEach((match, idx) => {
-            const { option, optionInner, innerPost } = addSuggestion(temporaryContainer, '', dirname, prompt, true)(
-              match,
-              idx
-            )
+            const { option, optionInner, innerPost } = addSuggestion(
+              temporaryContainer,
+              '',
+              dirname,
+              prompt,
+              true
+            )(match, idx)
 
             // see if the match is a directory, so that we add a trailing slash
             const filepath = join(dirname, match)
@@ -691,8 +704,8 @@ const suggest = (
   } else if (param.entity) {
     // then the expected parameter is an existing entity; so we
     // can enumerate the entities of the specified type
-    const tab = UI.getTabFromTarget(block)
-    return tab.REPL.qexec<Tables.Table>(`${param.entity} list --limit 200`)
+    const tab = getTabFromTarget(block)
+    return tab.REPL.qexec<Table>(`${param.entity} list --limit 200`)
       .then(response => response.body)
       .then(filterAndPresentEntitySuggestions(basename(last), block, prompt, temporaryContainer, lastIdx))
   }
@@ -705,7 +718,7 @@ const suggest = (
 export default () => {
   if (typeof document === 'undefined') return
 
-  if (Capabilities.inBrowser()) {
+  if (inBrowser()) {
     injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
       key: 'tab-completion.css'
@@ -718,10 +731,11 @@ export default () => {
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   let currentEnumeratorAsync: number
   document.addEventListener('keydown', async (evt: KeyboardEvent) => {
-    const block = UI.getCurrentBlock()
+    const block = getCurrentBlock()
+    const tab = getTabFromTarget(block)
     const temporaryContainer = block && (block.querySelector('.tab-completion-temporary') as TemporaryContainer)
 
-    if (evt.keyCode === UI.Keys.Codes.ENTER) {
+    if (evt.keyCode === KeyCodes.ENTER) {
       if (temporaryContainer) {
         //
         // user hit enter, and we have a temporary container open; remove it
@@ -733,7 +747,7 @@ export default () => {
           const completion = current.getAttribute('data-completion')
           const doEscape = current.hasAttribute('data-do-escape')
           const addSpace = current.hasAttribute('data-add-space')
-          const prompt = UI.getCurrentPrompt()
+          const prompt = getCurrentPrompt()
 
           complete(completion, prompt, {
             temporaryContainer,
@@ -752,11 +766,11 @@ export default () => {
           // it may have already been removed elsewhere
         }
       }
-    } else if (evt.keyCode === UI.Keys.Codes.TAB) {
-      const prompt = UI.getCurrentPrompt()
+    } else if (evt.keyCode === KeyCodes.TAB) {
+      const prompt = getCurrentPrompt()
 
       if (prompt) {
-        if (LowLevel.isUsingCustomPrompt(prompt)) {
+        if (isUsingCustomPrompt(prompt)) {
           // there is a custom prompt, we want to swallow the tab, to
           // maintain focus on the prompt
           evt.preventDefault()
@@ -812,7 +826,7 @@ export default () => {
 
               debug('positionals', positionals)
               if (positionals.length > 0) {
-                const args = REPLUtil.split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
+                const args = split(prompt.value).filter(_ => !/^-/.test(_)) // this is the "argv", for the current prompt value
                 const commandIdx = args.indexOf(usage.command) // the terminal command of the prompt
                 const nActuals = args.length - commandIdx - 1
                 const lastIdx = Math.max(0, nActuals - 1) // if no actuals, use first param
@@ -828,7 +842,7 @@ export default () => {
                     // we found a required positional parameter, now suggest values for this parameter
                     suggest(
                       param,
-                      Util.findFile(args[commandIdx + lastIdx + 1], { safe: true }),
+                      findFile(args[commandIdx + lastIdx + 1], { safe: true }),
                       block,
                       prompt,
                       temporaryContainer,
@@ -839,8 +853,8 @@ export default () => {
                   }
                 }
               }
-            } else if (!Capabilities.inBrowser()) {
-              const { A: args, endIndices } = REPLUtil._split(prompt.value, true, true) as REPLUtil.Split
+            } else if (!inBrowser()) {
+              const { A: args, endIndices } = _split(prompt.value, true, true) as Split
               const lastIdx = prompt.selectionStart
               debug('falling back on local file completion', args, lastIdx)
 
@@ -856,9 +870,8 @@ export default () => {
           }
 
           const lastIdx = prompt.selectionStart
-          const { A: argv, endIndices } = REPLUtil._split(prompt.value, true, true) as REPLUtil.Split
+          const { A: argv, endIndices } = _split(prompt.value, true, true) as Split
 
-          const minimist = await import('yargs-parser')
           const options = minimist(argv)
 
           const toBeCompletedIdx = endIndices.findIndex(idx => idx >= lastIdx) // e.g. git branch f<tab>
@@ -899,7 +912,7 @@ export default () => {
               }
 
               const myEnumeratorAsync = setTimeout(async () => {
-                const completions = await applyEnumerator(commandLine, spec)
+                const completions = await applyEnumerator(tab, commandLine, spec)
 
                 if (myEnumeratorAsync !== currentEnumeratorAsync) {
                   // overruled case 2: while waiting to fetch the
@@ -932,8 +945,8 @@ export default () => {
 
           try {
             debug('fetching usage', value)
-            const tab = UI.getTabFromTarget(block)
-            const usage: Promise<Errors.UsageError> = tab.REPL.qexec(`${value} --help`, undefined, undefined, {
+            const tab = getTabFromTarget(block)
+            const usage: Promise<UsageError> = tab.REPL.qexec(`${value} --help`, undefined, undefined, {
               failWithUsage: true
             })
             if (usage.then) {

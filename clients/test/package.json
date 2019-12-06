@@ -27,13 +27,13 @@
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/test": "file:/tmp/kui-packs/kui-shell-test.tgz",
     "@types/mocha": "5.2.7",
-    "@types/node": "12.7.12",
-    "@types/uuid": "^3.4.5",
+    "@types/node": "12.12.14",
+    "@types/uuid": "^3.4.6",
     "@types/webdriverio": "^4.13.3",
-    "electron": "6.0.12",
-    "mocha": "6.2.1",
+    "electron": "6.1.5",
+    "mocha": "6.2.2",
     "spectron": "8.0.0",
-    "typescript": "3.6.4"
+    "typescript": "3.7.3"
   },
   "dependencies": {
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",

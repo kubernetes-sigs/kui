@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { Capabilities, Commands, i18n, Errors, Plugins } from '@kui-shell/core'
+import { isHeadless, Registrar, i18n, UsageModel, pluginUserHome } from '@kui-shell/core'
 
 const strings = i18n('plugin-manager')
 
-const usage: Errors.UsageModel = {
+const usage: UsageModel = {
   docs: strings('the home directory for user-installed plugins')
 }
 
-export default function(commandTree: Commands.Registrar) {
+export default function(commandTree: Registrar) {
   commandTree.listen(
     '/plugin/home',
     async ({ REPL }) => {
-      const home = await Plugins.userHome()
+      const home = await pluginUserHome()
 
-      if (Capabilities.isHeadless()) {
+      if (isHeadless()) {
         return home
       } else {
         const link = document.createElement('div')

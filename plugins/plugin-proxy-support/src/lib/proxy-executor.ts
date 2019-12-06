@@ -19,20 +19,23 @@
 import Debug from 'debug'
 import { v4 as uuidgen } from 'uuid'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
 import {
+  getValidCredentials,
   Arguments,
   Evaluator,
   ExecOptions,
   KResponse,
   isCommandHandlerWithEvents,
   ParsedOptions,
-  withLanguage
-} from '@kui-shell/core/api/commands'
-import Errors from '@kui-shell/core/api/errors'
-import REPL from '@kui-shell/core/api/repl'
-import Settings from '@kui-shell/core/api/settings'
-import { ElementMimic } from '@kui-shell/core/util/mimic-dom'
+  withLanguage,
+  UsageError,
+  isUsageError,
+  CodedError,
+  ReplEval,
+  DirectReplEval,
+  config,
+  ElementMimic
+} from '@kui-shell/core'
 
 import { isDisabled, ProxyServerConfig } from './config'
 
@@ -47,11 +50,11 @@ const debug = Debug('plugins/proxy-support/executor')
  *
  */
 import defaultProxyServerConfig from './defaultProxyServerConfig'
-const proxyServerConfig: ProxyServerConfig = Settings.config['proxyServer'] || defaultProxyServerConfig
+const proxyServerConfig: ProxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
-const directEvaluator = new REPL.DirectReplEval()
+const directEvaluator = new DirectReplEval()
 
 function renderDom(content: ElementMimic): HTMLElement {
   const dom = document.createElement(content.nodeType || 'span')
@@ -81,12 +84,12 @@ function renderDom(content: ElementMimic): HTMLElement {
  * A repl.exec implementation that proxies to the packages/proxy container
  *
  */
-class ProxyEvaluator implements REPL.ReplEval {
+class ProxyEvaluator implements ReplEval {
   name = 'ProxyEvaluator'
 
   async apply<T extends KResponse, O extends ParsedOptions>(
     command: string,
-    execOptions: ExecOptions.ExecOptions,
+    execOptions: ExecOptions,
     evaluator: Evaluator<T, O>,
     args: Arguments<O>
   ): Promise<T> {
@@ -108,7 +111,7 @@ class ProxyEvaluator implements REPL.ReplEval {
           isProxied: true,
           cwd: process.env.PWD,
           env: process.env,
-          credentials: Capabilities.getValidCredentials(),
+          credentials: getValidCredentials(),
           tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
           rawResponse: true // we will post-process the response
         })
@@ -159,14 +162,14 @@ class ProxyEvaluator implements REPL.ReplEval {
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
-                        if (Errors.isUsageError(response.response)) {
+                        if (isUsageError(response.response)) {
                           // e.g. k get -h
                           debug('rejecting as usage error', response)
                           reject(response.response)
                         } else {
                           // e.g. k get pod nonExistantName
                           debug('rejecting as other error', response)
-                          const err: Errors.CodedError = new Error(response.response.message)
+                          const err: CodedError = new Error(response.response.message)
                           err.stack = response.response.stack
                           err.code = code
 
@@ -253,7 +256,7 @@ class ProxyEvaluator implements REPL.ReplEval {
         if (response.statusCode !== 200) {
           debug('rethrowing non-200 response', response)
           // to trigger the catch just below
-          const err: Errors.CodedError = new Error(response.body as string)
+          const err: CodedError = new Error(response.body as string)
           err.code = err.statusCode = response.statusCode
           err.body = response.body
           throw err
@@ -287,16 +290,16 @@ class ProxyEvaluator implements REPL.ReplEval {
           err
         )
 
-        if (err.body && Errors.isUsageError(err.body)) {
+        if (err.body && isUsageError(err.body)) {
           debug('the error is a usage error, rethrowing as such')
-          throw new Errors.UsageError({
+          throw new UsageError({
             message: err.body.raw.message,
             usage: err.body.raw.usage,
             code: err.body.code,
             extra: err.body.extra
           })
         } else {
-          const error: Errors.CodedError = new Error(
+          const error: CodedError = new Error(
             (err.body && err.body.message) ||
               (typeof err.body === 'string' ? err.body : err.message || 'Internal error')
           )

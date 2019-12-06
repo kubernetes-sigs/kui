@@ -15,9 +15,7 @@
  */
 
 import Debug from 'debug'
-
-import Commands from '@kui-shell/core/api/commands'
-import Capabilities from '@kui-shell/core/api/capabilities'
+import { isHeadless, inBrowser, hasProxy, Arguments, Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -33,7 +31,7 @@ export const dispatchToShell = async ({
   execOptions,
   parsedOptions,
   createOutputStream
-}: Commands.Arguments) => {
+}: Arguments) => {
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
   const cleanUpError = (err: Error) => {
     if (err.message && typeof err.message === 'string') {
@@ -47,8 +45,8 @@ export const dispatchToShell = async ({
       ? execOptions
       : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
-  if (Capabilities.isHeadless() || (!Capabilities.inBrowser() && execOptions.raw)) {
-    const { doExec } = await import('./bash-like')
+  if (isHeadless() || (!inBrowser() && execOptions.raw)) {
+    const { doExec } = await import(/* webpackMode: "weak" */ './bash-like')
     const response = await doExec(command.replace(/^! /, ''), eOptions).catch(cleanUpError)
     if (execOptions.raw && typeof response === 'string') {
       try {
@@ -59,7 +57,7 @@ export const dispatchToShell = async ({
     }
     return response
   } else {
-    const { doExec } = await import('../../pty/client')
+    const { doExec } = await import(/* webpackMode: "lazy-once" */ '../../pty/client')
     return doExec(
       tab,
       block as HTMLElement,
@@ -75,8 +73,8 @@ export const dispatchToShell = async ({
  * On preload, register the catchall handler
  *
  */
-export const preload = (commandTree: Commands.Registrar) => {
-  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
+export const preload = (commandTree: Registrar) => {
+  if (inBrowser() && !hasProxy()) {
     debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
   }

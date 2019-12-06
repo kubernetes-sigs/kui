@@ -84,7 +84,7 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * an example of this.
  *
  */
-const main = path.join(stageDir, 'node_modules/@kui-shell/core/webapp/bootstrap/webpack')
+const main = path.join(stageDir, 'node_modules/@kui-shell/core/mdist/webapp/bootstrap/webpack')
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
@@ -111,7 +111,7 @@ if (CompressionPlugin) {
 }
 
 const optimization = {
-  minimize: false
+  minimize: true
 }
 
 // the Kui builder plugin

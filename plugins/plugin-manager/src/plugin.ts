@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Capabilities, Commands } from '@kui-shell/core'
+import { inBrowser, Registrar } from '@kui-shell/core'
 
 import commands from './controller/commands'
 import compile from './controller/compile'
@@ -25,8 +25,8 @@ import home from './controller/home'
 import remove from './controller/remove'
 import version from './controller/version'
 
-export default async (commandTree: Commands.Registrar) => {
-  if (!Capabilities.inBrowser()) {
+export default async (commandTree: Registrar) => {
+  if (!inBrowser()) {
     await Promise.all([
       commands(commandTree),
       compile(commandTree),

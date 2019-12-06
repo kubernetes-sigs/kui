@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Errors } from '@kui-shell/core'
+import { UsageRow } from '@kui-shell/core'
 
 /** required parameter: name of installed plugin */
-export const installedPlugin: Errors.UsageRow[] = [{ name: 'plugin', docs: 'the name of an installed plugin' }]
+export const installedPlugin: UsageRow[] = [{ name: 'plugin', docs: 'the name of an installed plugin' }]

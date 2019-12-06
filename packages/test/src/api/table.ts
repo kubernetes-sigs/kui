@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { Tables } from '@kui-shell/core'
+import { Table } from '@kui-shell/core'
 import { promiseEach } from '@kui-shell/core/util/async'
 
 import * as Common from './common'
@@ -100,7 +100,7 @@ export class TestTable {
    * Execute the table-generating command, and validate the content.
    *
    */
-  private executeAndValidate(ctx: Common.ISuite, expectTable: Tables.Table, validation?: TableValidation) {
+  private executeAndValidate(ctx: Common.ISuite, expectTable: Table, validation?: TableValidation) {
     const command = this.command
 
     it(`should execute command from test table: ${this.command}`, () =>
@@ -139,10 +139,10 @@ export class TestTable {
    * drilldownFromREPL() starts a Mocha Test Suite
    * drilldownFromREPL() executes `command` in REPL and drilldown from the table
    *
-   * @param { Tables.Table } expectTable is the expected table shown in the REPL
+   * @param { Table } expectTable is the expected table shown in the REPL
    *
    */
-  public drilldownFromREPL(expectTable: Tables.Table, validation?: TableValidation) {
+  public drilldownFromREPL(expectTable: Table, validation?: TableValidation) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
 

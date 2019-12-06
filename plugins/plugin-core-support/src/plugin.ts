@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Capabilities, Commands } from '@kui-shell/core'
+import { isHeadless, Registrar } from '@kui-shell/core'
 
 import help from './lib/cmds/help'
 import quit from './lib/cmds/quit'
@@ -33,7 +33,7 @@ import confirm from './lib/cmds/confirm'
  * This is the module
  *
  */
-export default async (commandTree: Commands.Registrar, options?) => {
+export default async (commandTree: Registrar, options?) => {
   await Promise.all([
     help(commandTree, options),
     openui(commandTree),
@@ -47,7 +47,7 @@ export default async (commandTree: Commands.Registrar, options?) => {
     confirm(commandTree)
   ])
 
-  if (!Capabilities.isHeadless()) {
+  if (!isHeadless()) {
     await Promise.all([
       import('./lib/cmds/window').then(_ => _.default(commandTree)),
       import('./lib/cmds/screenshot').then(_ => _.default(commandTree)),

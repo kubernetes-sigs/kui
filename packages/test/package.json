@@ -5,6 +5,7 @@
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "scripts": {
     "test": "./bin/runMochaLayers.sh"
   },

@@ -17,11 +17,9 @@
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { MultiModalResponse, ToolbarText } from '@kui-shell/core/api/ui-lite'
-import { ResourceWithMetadata } from '@kui-shell/core/api/models'
+import { ResourceWithMetadata, MultiModalResponse, ToolbarText } from '@kui-shell/core'
 
-import { Entity as EditorEntity } from './fetchers'
-export { EditorEntity }
+import { Entity as EditorEntity } from './entity'
 
 export interface Editor extends MonacoEditor.ICodeEditor {
   updateText: (entity: EditorEntity) => void

@@ -20,6 +20,7 @@
     "Mengting Yan"
   ],
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "dependencies": {
     "@types/cookie": "0.3.3",
     "@types/marked": "0.7.2",
@@ -30,7 +31,7 @@
     "marked": "0.7.0",
     "node-pty-prebuilt-multiarch": "^0.9.0-beta21.legacy",
     "shelljs": "0.8.3",
-    "strip-ansi": "6.0.0",
+    "strip-ansi": "5.2.0",
     "ws": "7.2.0",
     "xterm": "3.14.5"
   },

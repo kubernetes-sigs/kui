@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
+import { ExecOptions, ParsedOptions, Registrar, Tab } from '@kui-shell/core'
 
-import { Commands, UI } from '@kui-shell/core'
-
-import openEditor from '../open'
-import applyOverrides from '../overrides'
-import respondToRepl from '../util'
+import EditorEntity from '../entity'
+import { editUsage } from '../../usage'
 import { CommandResponse } from '../response'
-import { Entity as EditorEntity, fetchEntity } from '../fetchers'
-import * as usage from '../../usage'
-import { persisters } from '../persisters'
 
-const debug = Debug('plugins/editor/cmds/edit')
-
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   language?: string
 }
 
@@ -42,12 +34,18 @@ const editCmd = async ({
   parsedOptions = {},
   execOptions
 }: {
-  tab: UI.Tab
+  tab: Tab
   argvNoOptions: string[]
   parsedOptions: Options
-  execOptions: Commands.ExecOptions
+  execOptions: ExecOptions
 }): Promise<CommandResponse> => {
-  debug('edit command execution started', execOptions)
+  const [openEditor, applyOverrides, respondToRepl, { fetchEntity }, { persisters }] = await Promise.all([
+    import(/* webpackMode: "lazy" */ '../open').then(_ => _.default),
+    import(/* webpackMode: "lazy" */ '../overrides').then(_ => _.default),
+    import(/* webpackMode: "lazy" */ '../util').then(_ => _.default),
+    import(/* webpackMode: "lazy" */ '../fetchers'),
+    import('../persisters')
+  ])
 
   // maybe the caller is passing us the name and entity programmatically?
   const { parameters: programmaticArgs } = execOptions
@@ -71,7 +69,6 @@ const editCmd = async ({
   // then update the editor to show the entity
   // then send a response back to the repl
   //
-  debug('name', name)
   const [entity, injectEntityIntoView] = await Promise.all([
     programmaticArgs || fetchEntity(tab, name, parsedOptions, execOptions), // fetch the entity model
     openEditor(tab, name, parsedOptions, execOptions) // prepare the editor view
@@ -93,7 +90,7 @@ const editCmd = async ({
  * Open editor to a given entity, passed programmatically
  *
  */
-export const edit = (tab: UI.Tab, entity: EditorEntity, options: Options, execOptions: Commands.ExecOptions) =>
+export const edit = (tab: Tab, entity: EditorEntity, options: Options, execOptions: ExecOptions) =>
   editCmd({
     tab,
     argvNoOptions: [],
@@ -105,10 +102,10 @@ export const edit = (tab: UI.Tab, entity: EditorEntity, options: Options, execOp
     })
   })
 
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   // command registration: edit an existing entity
   commandTree.listen('/edit', editCmd, {
-    usage: usage.editUsage('edit'),
+    usage: editUsage('edit'),
     noAuthOk: true,
     inBrowserOk: true,
     needsUI: true

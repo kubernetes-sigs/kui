@@ -18,8 +18,22 @@ import Debug from 'debug'
 import { lstat, readdir, readFile, stat } from 'fs'
 import { dirname, isAbsolute, join } from 'path'
 
-import { Errors, i18n, Tables, Util } from '@kui-shell/core'
-import { Arguments, RawResponse, MixedResponse, Registrar } from '@kui-shell/core/api/commands'
+import {
+  expandHomeDir,
+  isSpecialDirectory,
+  findFile,
+  findFileWithViewer,
+  i18n,
+  CodedError,
+  Arguments,
+  RawResponse,
+  MixedResponse,
+  Registrar,
+  Table,
+  Row,
+  TableStyle,
+  flatten
+} from '@kui-shell/core'
 
 import { doExec } from './bash-like'
 import { localFilepath } from '../util/usage-helpers'
@@ -129,8 +143,8 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
   return new Promise<RawResponse<FStat>>((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
-    const { resolved: fullpath, viewer = 'open' } = Util.findFileWithViewer(Util.expandHomeDir(filepath))
-    debug('fullpath', fullpath, filepath, Util.expandHomeDir(filepath))
+    const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
+    debug('fullpath', fullpath, filepath, expandHomeDir(filepath))
 
     const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
 
@@ -138,7 +152,7 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
     stat(fullpath, (err, stats) => {
       if (err) {
         if (err.code === 'ENOENT') {
-          const error: Errors.CodedError = new Error(err.message)
+          const error: CodedError = new Error(err.message)
           error.stack = err.stack
           error.code = 404
           reject(error)
@@ -183,7 +197,7 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
  */
 const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = '', parentAsGiven = '') => async (
   output: string
-): Promise<true | Tables.Table> => {
+): Promise<true | Table> => {
   if (output.length === 0) {
     debug('tabularize empty')
     return true
@@ -274,7 +288,7 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
           }
         })
     )
-    .map(Util.flatten)
+    .map(flatten)
     .map(row => row.filter(x => x))
     .filter(x => x.length > 0)
     .filter(row => !row[row.length - 1].match(/~$/)) // hack for now: remove emacs ~ temporary files
@@ -310,7 +324,7 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
 
   const headerAttributes = permissionAttrs.concat(ownerAttrs).concat(normalAttrs)
 
-  const headerRow: Tables.Row = {
+  const headerRow: Row = {
     name: 'NAME',
     type: 'file',
     onclick: false,
@@ -318,8 +332,8 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
     attributes: headerAttributes
   }
 
-  const body: Tables.Row[] = rows.map(
-    (columns): Tables.Row => {
+  const body: Row[] = rows.map(
+    (columns): Row => {
       const stats = columns[0]
       const isDirectory = stats.charAt(0) === 'd'
       const isLink = stats.charAt(0) === 'l'
@@ -380,7 +394,7 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
         })
         .filter(x => x)
 
-      return new Tables.Row({
+      return new Row({
         type: cmd,
         name: nameForDisplay,
         onclickExec: 'qexec',
@@ -391,8 +405,8 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
     }
   )
 
-  return new Tables.Table({
-    style: Tables.TableStyle.Light,
+  return new Table({
+    style: TableStyle.Light,
     noEntityColors: true,
     noSort: true,
     header: headerRow,
@@ -404,7 +418,7 @@ const tabularize = (cmd: string, { REPL, parsedOptions }: Arguments, parent = ''
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: Arguments): Promise<MixedResponse | Tables.Table | true> => {
+const doLs = (cmd: string) => async (opts: Arguments): Promise<MixedResponse | Table | true> => {
   const semi = await opts.REPL.semicolonInvoke(opts)
   if (semi) {
     debug('ls with semi', semi)
@@ -414,12 +428,12 @@ const doLs = (cmd: string) => async (opts: Arguments): Promise<MixedResponse | T
   const { command, execOptions, argvNoOptions: argv } = opts
 
   const filepathAsGiven = argv[argv.indexOf(cmd) + 1]
-  const filepath = Util.findFile(Util.expandHomeDir(filepathAsGiven), {
+  const filepath = findFile(expandHomeDir(filepathAsGiven), {
     safe: true,
     keepRelative: true
   })
 
-  if (filepath.match(/app.asar/) && Util.isSpecialDirectory(filepathAsGiven)) {
+  if (filepath.match(/app.asar/) && isSpecialDirectory(filepathAsGiven)) {
     // for now, we don't support ls of @ directories
     throw new Error('File not found')
   }

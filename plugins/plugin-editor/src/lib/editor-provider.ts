@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-import Commands from '@kui-shell/core/api/commands'
-import * as UI from '@kui-shell/core/api/ui-lite'
-import * as Editor from '@kui-shell/core/api/editor'
+import {
+  Tab,
+  EditorProvider,
+  registerEditor,
+  Presentation,
+  CustomResponse,
+  ExecOptions,
+  isResourceByReference
+} from '@kui-shell/core'
 
-import { EditorEntity } from './response'
+import EditorEntity from './entity'
 
-class MonacoEditorProvider implements Editor.Provider {
-  public async tryOpen(tab: UI.Tab, custom: Commands.CustomResponse, options: Commands.ExecOptions) {
-    const [{ Models }, { edit }] = await Promise.all([import('@kui-shell/core'), import('./cmds/edit')])
+class MonacoEditorProvider implements EditorProvider {
+  public async tryOpen(tab: Tab, custom: CustomResponse, options: ExecOptions) {
+    const { edit } = await import(/* webpackMode: "lazy" */ './cmds/edit')
 
     const projection = custom.content
 
-    const metadataBearer = Models.isResourceByReference(custom) ? custom.resource : custom
+    const metadataBearer = isResourceByReference(custom) ? custom.resource : custom
 
     const entity: EditorEntity = {
       // EditorEntity
@@ -47,11 +53,11 @@ class MonacoEditorProvider implements Editor.Provider {
 
     return {
       content,
-      presentation: UI.Presentation.FixedSize
+      presentation: Presentation.FixedSize
     }
   }
 }
 
 export default function register() {
-  Editor.registerProvider(new MonacoEditorProvider())
+  registerEditor(new MonacoEditorProvider())
 }

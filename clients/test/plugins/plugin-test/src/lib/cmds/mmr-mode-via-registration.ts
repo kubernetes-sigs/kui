@@ -22,14 +22,15 @@
  *
  */
 
-import { Commands, UI } from '@kui-shell/core'
+import { Arguments, ParsedOptions, Registrar, MultiModalResponse } from '@kui-shell/core'
+
 import { metadataWithNameOnly as metadata } from './metadata'
 import { modes1 as textModes } from './content/modes'
 
 // exporting this for consumption in tests
 export { metadata }
 
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   show?: string
   foo: boolean
   registrationOnly: boolean
@@ -44,8 +45,8 @@ interface Options extends Commands.ParsedOptions {
  * test mmr mode-via-registration --show <mode>
  *
  */
-const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse) => {
-  return (args: Commands.Arguments<Options>) => {
+const doModes = (): ((args: Arguments<Options>) => MultiModalResponse) => {
+  return (args: Arguments<Options>) => {
     if (args.parsedOptions.registrationOnly) {
       return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: [], defaultMode: args.parsedOptions.show })
     } else {
@@ -58,7 +59,7 @@ const doModes = (): ((args: Commands.Arguments<Options>) => UI.MultiModalRespons
   }
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen(`/test/mmr/mode-via-registration`, doModes(), {
     usage: {
       docs: 'A test of MultiModalResponse mode'

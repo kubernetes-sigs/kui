@@ -17,38 +17,39 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import Debug from 'debug'
-import * as path from 'path'
 import { v4 as uuid } from 'uuid'
-import * as xterm from 'xterm'
-import stripClean = require('strip-ansi')
-import { safeLoad } from 'js-yaml'
-import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
+import { basename, dirname, join } from 'path'
+import { Terminal as XTerminal } from 'xterm'
+// import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
 // uses of the public kui-shell API
-import Util from '@kui-shell/core/api/util'
-import Tables from '@kui-shell/core/api/tables'
-import eventBus from '@kui-shell/core/api/events'
-import { Tab } from '@kui-shell/core/api/ui-lite'
-import { injectCSS } from '@kui-shell/core/api/inject'
-import { CodedError } from '@kui-shell/core/api/errors'
-import { inBrowser } from '@kui-shell/core/api/capabilities'
-import { prettyPrintAnsi } from '@kui-shell/core/api/pretty-print'
-import { MixedResponse, ExecType, ExecOptions, ParsedOptions } from '@kui-shell/core/api/commands'
-
-// !!! TODO this group of dependencies still talks to the non-public kui-shell API
-import { SidecarState, getSidecarState } from '@kui-shell/core/webapp/views/sidecar'
 import {
+  Tab,
+  flatten,
+  eventBus,
+  injectCSS,
+  CodedError,
+  inBrowser,
+  prettyPrintAnsi,
+  isTable,
+  MixedResponse,
+  ExecType,
+  ExecOptions,
+  ParsedOptions,
+  AsciiFormatters,
   setCustomCaret,
+  sameTab,
+  disableInputQueueing,
+  pasteQueuedInput,
   clearPendingTextSelection,
   setPendingTextSelection,
   clearTextSelection,
-  disableInputQueueing,
-  pasteQueuedInput,
-  sameTab
-} from '@kui-shell/core/webapp/cli'
-import { formatUsage } from '@kui-shell/core/webapp/util/ascii-to-usage'
-import { preprocessTable, formatTable } from '@kui-shell/core/webapp/util/ascii-to-table'
-// !!! end of TODO
+  stripAnsi as stripClean,
+
+  // deprecated
+  SidecarState,
+  getSidecarState
+} from '@kui-shell/core'
 
 import * as ui from './ui'
 import * as session from './session'
@@ -96,7 +97,7 @@ function setCachedSize(tab: Tab, { rows, cols }: { rows: number; cols: number })
   }
 }
 
-interface HTerminal extends xterm.Terminal {
+interface HTerminal extends XTerminal {
   _core: {
     viewport: {
       _terminal: {
@@ -121,7 +122,7 @@ class Resizer {
   private readonly tab: Tab
 
   /** execOptions */
-  private readonly execOptions: ExecOptions.ExecOptions
+  private readonly execOptions: ExecOptions
 
   /** exit alt buffer mode async */
   private exitAlt?: NodeJS.Timeout
@@ -147,7 +148,7 @@ class Resizer {
   private readonly resizeNow: () => void
   private readonly clearXtermSelectionNow: () => void
 
-  constructor(terminal: xterm.Terminal, tab: Tab, execOptions: ExecOptions.ExecOptions) {
+  constructor(terminal: XTerminal, tab: Tab, execOptions: ExecOptions) {
     this.tab = tab
     this.execOptions = execOptions
     this.terminal = terminal as HTerminal
@@ -416,84 +417,17 @@ class Resizer {
 }
 
 /**
- * Inject current font settings
+ * safeLoad from js-yaml, but protected with try/catch
  *
  */
-let cachedFontProperties: { fontFamily: string; fontSize: number }
-function getFontProperties(flush: boolean) {
-  if (flush || !cachedFontProperties) {
-    debug('computing font properties')
-    const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
-
-    /** helper to extract a kui theme color */
-    const val = (key: string, kind = 'color'): string => fontTheme.getPropertyValue(`--${kind}-${key}`).trim()
-
-    const fontSize = parseFloat(fontTheme.fontSize.replace(/px$/, ''))
-    const fontFamily = val('monospace', 'font')
-
-    cachedFontProperties = { fontFamily, fontSize }
-  }
-
-  return cachedFontProperties
-}
-const injectFont = (terminal: xterm.Terminal, flush = false) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function safeLoadWithCatch(raw: string): Promise<Record<string, any>> {
+  const { safeLoad } = await import(/* webpackMode: "lazy-once" */ 'js-yaml')
   try {
-    const { fontFamily, fontSize } = getFontProperties(flush)
-    terminal.setOption('fontFamily', fontFamily)
-    terminal.setOption('fontSize', fontSize)
-
-    debug('fontSize', fontSize)
-
-    // FIXME. not tied to theme
-    terminal.setOption('fontWeight', 400)
-    terminal.setOption('fontWeightBold', 600)
+    return safeLoad(raw)
   } catch (err) {
-    console.error('Error setting terminal font size', err)
+    console.error(err)
   }
-}
-
-type ChannelFactory = (tab: Tab) => Promise<Channel>
-
-/**
- * Create a websocket channel to a remote bash
- *
- */
-const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
-  try {
-    // Notes: this command is expected to be handled directly by the
-    // proxy server; see for example packages/proxy/app/routes/exec.js
-    const resp = await tab.REPL.rexec<ChannelId>('bash websocket open', {
-      rethrowErrors: true
-    })
-    const { url, uid, gid } = resp.content
-    debug('websocket url', url, uid, gid)
-    const WebSocketChannel = (await import('./websocket-channel')).default
-    return new WebSocketChannel(url, uid, gid)
-  } catch (err) {
-    const error = err as CodedError
-    if (error.statusCode !== 503) {
-      // don't bother complaining too much about connection refused
-      console.error('error opening websocket', err)
-    }
-    throw err
-  }
-}
-
-const electronChannelFactory: ChannelFactory = async () => {
-  const channel = new InProcessChannel()
-  channel.init()
-  return channel
-}
-
-const webviewChannelFactory: ChannelFactory = async () => {
-  console.log('webviewChannelFactory')
-  const channel = new WebViewChannelRendererSide()
-  channel.init()
-  return channel
-}
-
-interface KuiTerminal extends HTerminal {
-  _kuiAlreadyFocused: boolean
 }
 
 const focus = (terminal: KuiTerminal) => {
@@ -505,85 +439,6 @@ const focus = (terminal: KuiTerminal) => {
         terminal.focus()
       }
     }, 0)
-  }
-}
-
-/**
- * websocket factory for remote/proxy connection
- *
- */
-const getOrCreateChannel = async (
-  cmdline: string,
-  uuid: string,
-  tab: Tab,
-  execOptions: ExecOptions.ExecOptions,
-  terminal: KuiTerminal
-): Promise<Channel> => {
-  const channelFactory = inBrowser()
-    ? window['webview-proxy'] !== undefined
-      ? webviewChannelFactory
-      : remoteChannelFactory
-    : electronChannelFactory
-
-  const env = Object.assign({}, process.env, execOptions.env || {})
-
-  // tell the server to start a subprocess
-  const doExec = (ws: Channel) => {
-    const msg = {
-      type: 'exec',
-      cmdline,
-      uuid,
-      rows: terminal.rows,
-      cols: terminal.cols,
-      cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
-      env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
-    }
-    debug('exec after open', msg)
-
-    ws.send(JSON.stringify(msg))
-  }
-
-  const cachedws = session.getChannelForTab(tab)
-
-  if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
-    // allocating new channel
-    const ws = await channelFactory(tab)
-    tab['ws'] = ws
-
-    // when the websocket is ready, handle any queued input; only then
-    // do we focus the terminal (till then, the CLI module will handle
-    // queuing, and read out the value via disableInputQueueing()
-    ws.on('open', () => doExec(ws))
-
-    // when the websocket has closed, notify the user
-    ws.on('close', () => {
-      debug('channel has closed')
-      if (!tab['state'].closed) {
-        debug('attempting to reestablish connection, because the tab is still open ')
-        ui.setOffline()
-        session.pollUntilOnline(tab)
-      }
-    })
-
-    return ws
-  } else {
-    // reusing existing websocket
-    doExec(cachedws)
-    focus(terminal)
-    return cachedws
-  }
-}
-
-/**
- * safeLoad from js-yaml, but protected with try/catch
- *
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function safeLoadWithCatch(raw: string): Record<string, any> {
-  try {
-    return safeLoad(raw)
-  } catch (err) {
-    console.error(err)
   }
 }
 
@@ -647,6 +502,595 @@ function squash(elt: HTMLElement) {
 }
 
 /**
+ * Handle messages coming back from the PTY
+ *
+ */
+async function initOnMessage(
+  terminal: KuiTerminal,
+  xtermContainer: HTMLElement,
+  ourUUID: string,
+  resizer: Resizer,
+  ws: Channel,
+  tab: Tab,
+  cmdline: string,
+  argvNoOptions: string[],
+  execOptions: ExecOptions,
+  contentType: string,
+  expectingSemiStructuredOutput: boolean,
+  cleanUpTerminal: () => void,
+  resolve: (val: boolean) => void,
+  reject: (err: Error) => void
+) {
+  const { formatUsage, preprocessTable, formatTable } = await AsciiFormatters()
+
+  let pendingWrites = 0
+
+  // used to manage the race between pending writes to the
+  // terminal canvas and process exit; see
+  // https://github.com/IBM/kui/issues/1272
+  let cbAfterPendingWrites: () => void
+
+  let bytesWereWritten = false
+  let sawCode: number
+  let pendingUsage = false
+  let pendingTable: MixedResponse
+  let raw = ''
+  let nLinesRaw = 0
+
+  let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
+  let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
+
+  //
+  // here, we deal with user typing! we need to relay keyboard
+  // input to the node-pty, but we do so with a bit of debouncing
+  //
+  let queuedInput = ''
+  let flushAsync: NodeJS.Timeout
+  if (terminal) {
+    terminal.on('key', (key: string) => {
+      if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
+        debug('queued input out back', key)
+        queuedInput += key
+      } else {
+        // even with the xterm active, buffer input and flush in
+        // chunks to increase responsiveness for fast typing, and
+        // to reduce load in the proxy server (compared to sending
+        // one message per keypress)
+        queuedInput += key
+
+        // if the user typed something, be very conservative
+        definitelyNotTable = true
+        definitelyNotUsage = true
+
+        if (flushAsync) {
+          clearTimeout(flushAsync)
+        }
+        flushAsync = setTimeout(() => {
+          if (queuedInput && ws.readyState === WebSocket.OPEN) {
+            const data = queuedInput
+            queuedInput = ''
+            ws.send(JSON.stringify({ type: 'data', data, uid: ourUUID }))
+          }
+        }, 20)
+      }
+    })
+  }
+
+  const notifyOfWriteCompletion = () => {
+    if (pendingWrites > 0) {
+      pendingWrites = 0
+      if (cbAfterPendingWrites) {
+        cbAfterPendingWrites()
+        cbAfterPendingWrites = undefined
+      }
+    }
+  }
+
+  //
+  // here, we debounce scroll to bottom events
+  //
+  const activeDiv = tab.querySelector('.repl-inner')
+  const doScroll = () => {
+    if (!resizer.inAltBufferMode()) {
+      activeDiv.scrollTop = activeDiv.scrollHeight
+    }
+  }
+  const scrollPoll = terminal && setInterval(doScroll, 200)
+
+  const onFirstMessage = () => {
+    const queuedInput = disableInputQueueing()
+    if (queuedInput.length > 0) {
+      debug('queued input up front', queuedInput)
+      setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
+    }
+
+    // now that we've grabbed queued input, focus on the terminal,
+    // and it will handle input for now until the process exits
+    if (terminal) {
+      focus(terminal)
+    }
+  }
+
+  // xtermjs writes are asynchronous, and ultimately occur in an
+  // animation frame; the result is that the terminal canvas may
+  // receive updates after we receive a process exit event; but we
+  // will always receive a `refresh` event when the animation
+  // frame is done. see https://github.com/IBM/kui/issues/1272
+  let first = true
+  const onRefresh = async (evt: { start: number; end: number }) => {
+    if (evt.end > evt.start || first) {
+      resizer.hideTrailingEmptyBlanks()
+    }
+    notifyOfWriteCompletion()
+    first = false
+  }
+  if (terminal) {
+    terminal.on('refresh', onRefresh)
+  }
+
+  const onMessage = async (data: string) => {
+    const msg = JSON.parse(data)
+
+    if (msg.uuid !== ourUUID) {
+      return
+    }
+
+    if (msg.type === 'state' && msg.state === 'ready') {
+      if (terminal) {
+        onFirstMessage()
+      }
+    } else if (msg.type === 'data' && terminal) {
+      // plain old data flowing out of the PTY; send it on to the xterm UI
+
+      if (!terminal._kuiAlreadyFocused) {
+        onFirstMessage()
+      }
+
+      const flush = () => {
+        if (pendingTable) {
+          pendingTable = undefined
+          definitelyNotTable = true
+          definitelyNotUsage = true
+          bytesWereWritten = true
+          sawCode = /File exists/i.test(raw) ? 409 : /no such/i.test(raw) || /not found/i.test(raw) ? 404 : sawCode
+          terminal.write(raw)
+          raw = ''
+        }
+      }
+
+      if (enterApplicationModePattern.test(msg.data)) {
+        // e.g. less start
+        flush()
+        resizer.enterApplicationMode()
+        focus(terminal)
+      } else if (exitApplicationModePattern.test(msg.data)) {
+        // e.g. less exit
+        resizer.exitApplicationMode()
+      }
+      if (enterAltBufferPattern.test(msg.data)) {
+        // we need to fast-track this; xterm.js does not invoke the
+        // setMode/resetMode handlers till too late; we might've
+        // called raw += ... even though we are in alt buffer mode
+        flush()
+        focus(terminal)
+        resizer.enterAltBufferMode()
+      } else if (exitAltBufferPattern.test(msg.data)) {
+        // ... same here
+        resizer.exitAltBufferMode()
+      } else if (!resizer.inAltBufferMode()) {
+        raw += msg.data
+      }
+
+      const maybeUsage =
+        !resizer.wasEverInAltBufferMode() &&
+        !definitelyNotUsage &&
+        (pendingUsage ||
+          formatUsage(cmdline, stripClean(raw), {
+            drilldownWithPip: true
+          }))
+
+      if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
+        try {
+          const tables = (await preprocessTable(raw.split(/^(?=NAME|Name|ID|\n\*)/m))).filter(x => x)
+
+          if (tables && tables.length > 0) {
+            const tableRows = flatten(tables.filter(_ => _.rows !== undefined).map(_ => _.rows))
+
+            if (tableRows && tableRows.length > 0) {
+              // debug(`table came from ${stripClean(raw)}`)
+              // debug(`tableRows ${tableRows.length}`)
+              const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
+              const tableModel = formatTable(entityType, tableRows)
+              debug('tableModel', tableModel)
+
+              const trailingStrings = tables.map(_ => _.trailingString).filter(x => x)
+              if (trailingStrings && trailingStrings.length > 0) {
+                const trailers = await prettyPrintAnsi(trailingStrings)
+                if (!trailers) {
+                  // nothing worth formatting
+                  pendingTable = [tableModel]
+                } else {
+                  // some trailing strings worth formatting
+                  pendingTable = [tableModel, trailers]
+                }
+              } else {
+                // no trailing strings
+                pendingTable = [tableModel]
+              }
+            } else if (raw.length > 1000) {
+              definitelyNotTable = true
+            }
+          } else {
+            debug('definitelyNotTable')
+            definitelyNotTable = true
+          }
+        } catch (err) {
+          console.error('error parsing as table', err)
+          definitelyNotTable = true
+        }
+      }
+
+      if (pendingTable || expectingSemiStructuredOutput) {
+        // the above is taking care of this
+      } else if (maybeUsage) {
+        debug('pending usage')
+        pendingUsage = true
+      } else {
+        if (raw.length > 500) {
+          definitelyNotUsage = true
+        } else if (raw.length > 1500) {
+          definitelyNotTable = true
+        }
+
+        if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+          pendingWrites++
+          definitelyNotUsage = true
+          bytesWereWritten = true
+          sawCode = /File exists/i.test(raw) ? 409 : /no such/i.test(raw) || /not found/i.test(raw) ? 404 : sawCode
+          for (let idx = 0; idx < msg.data.length; idx++) {
+            if (msg.data[idx] === '\n') {
+              nLinesRaw++
+            }
+          }
+          terminal.write(msg.data)
+          raw = ''
+        }
+      }
+    } else if (msg.type === 'exit') {
+      // server told us that it is done with msg.exitCode
+      if (pendingTable && !pendingTable.some(_ => isTable(_) && _.body.length > 0)) {
+        if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+          bytesWereWritten = true
+          sawCode = /File exists/i.test(raw) ? 409 : /no such/i.test(raw) || /not found/i.test(raw) ? 404 : sawCode
+          if (terminal) {
+            terminal.write(raw)
+          }
+          raw = ''
+        }
+        pendingTable = undefined
+      }
+
+      /** emit our final response and return control to the repl */
+      const respondToRepl = async () => {
+        if (pendingUsage) {
+          execOptions.stdout(
+            formatUsage(cmdline, stripClean(raw), {
+              drilldownWithPip: true
+            })
+          )
+          xtermContainer.classList.add('xterm-invisible')
+        } else if (pendingTable) {
+          const response = pendingTable
+          execOptions.stdout(response.length === 1 ? response[0] : response)
+        } else if (expectingSemiStructuredOutput) {
+          try {
+            const resource =
+              contentType === 'yaml' ? await safeLoadWithCatch(stripClean(raw)) : JSON.parse(stripClean(raw))
+
+            if (typeof resource === 'string') {
+              // degenerate case e.g. cat foo.json | jq .something.something => string rather than struct
+              execOptions.stdout(resource)
+            } else {
+              execOptions.stdout({
+                type: 'custom',
+                metadata: {
+                  name: argvNoOptions[0] === 'cat' ? basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
+                  namespace: argvNoOptions[0] === 'cat' && dirname(argvNoOptions[1])
+                },
+                kind: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
+                contentType,
+                content: stripClean(raw),
+                resource,
+                modes: [{ mode: 'raw', contentFrom: cmdline, defaultMode: true }]
+              })
+            }
+          } catch (err) {
+            console.error('error parsing as semi structured output')
+            console.error(stripClean(raw))
+            execOptions.stdout(stripClean(raw))
+          }
+        }
+
+        // vi, then :wq, then :q, you will get an exit code of
+        // 1, but with no output (!bytesWereWritten); note how
+        // we treat this as "ok", i.e. no error thrown
+        if (msg.exitCode !== 0 && bytesWereWritten) {
+          const error = new Error('')
+          if (sawCode === 409) error['code'] = 409
+          // re: i18n, this is for tests
+          else if (msg.exitCode !== 127 && sawCode === 404) error['code'] = 404
+          // re: i18n, this is for tests
+          else error['code'] = msg.exitCode
+
+          if (msg.exitCode === 127) {
+            xtermContainer.classList.add('hide')
+          } else {
+            error['hide'] = true
+          }
+
+          reject(error)
+        } else {
+          if (queuedInput && queuedInput.length > 0) {
+            pasteQueuedInput(queuedInput)
+          }
+
+          resolve(true)
+        }
+      }
+      if (!terminal) {
+        respondToRepl()
+        return
+      }
+
+      /** called after final resize */
+      const finishUpAfterFinalResize = async () => {
+        clearInterval(scrollPoll)
+        doScroll()
+
+        ws.removeEventListener('message', onMessage)
+        cleanUpTerminal()
+
+        // grab a copy of the terminal now that it has terminated;
+        // see https://github.com/IBM/kui/issues/1393
+        const copy = terminal.element.cloneNode(true) as HTMLElement
+        squash(copy)
+        copy.querySelector('.xterm-viewport').remove()
+        copy.querySelector('.xterm-helpers').remove()
+        copy.querySelector('.xterm-selection').remove()
+        const styles = copy.querySelectorAll('style')
+        for (let idx = 0; idx < styles.length; idx++) {
+          styles[idx].remove()
+        }
+        copy.classList.remove('enable-mouse-events')
+        resizer.reflowLineWraps(copy)
+        resizer.hideTrailingEmptyBlanks(true, copy)
+        Resizer.hideCursorOnlyRow(copy)
+
+        xtermContainer.removeChild(terminal.element)
+        xtermContainer.appendChild(copy)
+
+        // respond to the REPL
+        await respondToRepl()
+      }
+
+      /** called after final refresh */
+      const finishUp = () => {
+        const nLines = terminal.buffer.length
+
+        if (resizer.wasEverInAltBufferMode() || (nLines <= terminal.rows && nLinesRaw < terminal.rows)) {
+          // no need to resize: output is shorter than viewport
+          setTimeout(finishUpAfterFinalResize, 50)
+        } else {
+          // resize the terminal to house the expected number of
+          // lines, then wait for the final refresh event that will
+          // be sent after the resize has manifested in the DOM
+          terminal.off('refresh', onRefresh)
+          terminal.on('refresh', finishUpAfterFinalResize)
+          terminal.resize(terminal.cols, nLines)
+        }
+      }
+
+      const nLines = terminal.buffer.length
+
+      doScroll()
+      if (pendingWrites > 0) {
+        if (!resizer.wasEverInAltBufferMode() && nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+          cbAfterPendingWrites = finishUp
+        } else {
+          // re: setTimeout, this is the same refresh issue
+          // discussed in the next comment
+          cbAfterPendingWrites = () => setTimeout(finishUp, 50)
+        }
+      } else {
+        // there seems to be a 10% chance that the 'refresh' event
+        // is sent to us while there is still pending information
+        // flowing over the Channel; we need to get more
+        // sophisticated here, but a small delay will help, for
+        // the time being.
+        if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
+          setTimeout(finishUp, 100)
+        } else {
+          setTimeout(finishUp, 400)
+        }
+      }
+    }
+  }
+
+  //
+  // here, we align browser selection and xterm.js selection models
+  //
+  if (terminal) {
+    const maybeClearSelection = () => {
+      if (!terminal.hasSelection()) {
+        clearPendingTextSelection()
+      }
+    }
+    terminal.on('focus', maybeClearSelection)
+    terminal.on('blur', maybeClearSelection)
+    terminal.on('paste', (data: string) => {
+      ws.send(JSON.stringify({ type: 'data', data }))
+    })
+    terminal.on('selection', () => {
+      // debug('xterm selection', terminal.getSelection())
+      clearTextSelection()
+      setPendingTextSelection(terminal.getSelection())
+    })
+  }
+  ws.on('message', onMessage)
+}
+
+/**
+ * Inject current font settings
+ *
+ */
+let cachedFontProperties: { fontFamily: string; fontSize: number }
+function getFontProperties(flush: boolean) {
+  if (flush || !cachedFontProperties) {
+    debug('computing font properties')
+    const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
+
+    /** helper to extract a kui theme color */
+    const val = (key: string, kind = 'color'): string => fontTheme.getPropertyValue(`--${kind}-${key}`).trim()
+
+    const fontSize = parseFloat(fontTheme.fontSize.replace(/px$/, ''))
+    const fontFamily = val('monospace', 'font')
+
+    cachedFontProperties = { fontFamily, fontSize }
+  }
+
+  return cachedFontProperties
+}
+const injectFont = (terminal: XTerminal, flush = false) => {
+  try {
+    const { fontFamily, fontSize } = getFontProperties(flush)
+    terminal.setOption('fontFamily', fontFamily)
+    terminal.setOption('fontSize', fontSize)
+
+    debug('fontSize', fontSize)
+
+    // FIXME. not tied to theme
+    terminal.setOption('fontWeight', 400)
+    terminal.setOption('fontWeightBold', 600)
+  } catch (err) {
+    console.error('Error setting terminal font size', err)
+  }
+}
+
+type ChannelFactory = (tab: Tab) => Promise<Channel>
+
+/**
+ * Create a websocket channel to a remote bash
+ *
+ */
+const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
+  try {
+    // Notes: this command is expected to be handled directly by the
+    // proxy server; see for example packages/proxy/app/routes/exec.js
+    const resp = await tab.REPL.rexec<ChannelId>('bash websocket open', {
+      rethrowErrors: true
+    })
+    const { url, uid, gid } = resp.content
+    debug('websocket url', url, uid, gid)
+    const WebSocketChannel = (await import('./websocket-channel')).default
+    return new WebSocketChannel(url, uid, gid)
+  } catch (err) {
+    const error = err as CodedError
+    if (error.statusCode !== 503) {
+      // don't bother complaining too much about connection refused
+      console.error('error opening websocket', err)
+    }
+    throw err
+  }
+}
+
+const electronChannelFactory: ChannelFactory = async () => {
+  const channel = new InProcessChannel()
+  channel.init()
+  return channel
+}
+
+const webviewChannelFactory: ChannelFactory = async () => {
+  console.log('webviewChannelFactory')
+  const channel = new WebViewChannelRendererSide()
+  channel.init()
+  return channel
+}
+
+interface KuiTerminal extends HTerminal {
+  _kuiAlreadyFocused: boolean
+}
+
+/**
+ * websocket factory for remote/proxy connection
+ *
+ */
+const getOrCreateChannel = async (
+  cmdline: string,
+  uuid: string,
+  tab: Tab,
+  execOptions: ExecOptions,
+  terminal: KuiTerminal,
+  initOnMessage: (ws: Channel) => void
+): Promise<Channel> => {
+  const channelFactory = inBrowser()
+    ? window['webview-proxy'] !== undefined
+      ? webviewChannelFactory
+      : remoteChannelFactory
+    : electronChannelFactory
+
+  const env = Object.assign({}, process.env, execOptions.env || {})
+
+  // tell the server to start a subprocess
+  const doExec = async (ws: Channel) => {
+    await initOnMessage(ws)
+    const msg = {
+      type: 'exec',
+      cmdline,
+      uuid,
+      rows: terminal ? terminal.rows : 80,
+      cols: terminal ? terminal.cols : 40,
+      cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
+      env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
+    }
+    debug('exec after open', msg)
+
+    ws.send(JSON.stringify(msg))
+  }
+
+  const cachedws = session.getChannelForTab(tab)
+
+  if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
+    // allocating new channel
+    const ws = await channelFactory(tab)
+    tab['ws'] = ws
+
+    // when the websocket is ready, handle any queued input; only then
+    // do we focus the terminal (till then, the CLI module will handle
+    // queuing, and read out the value via disableInputQueueing()
+    ws.on('open', () => doExec(ws))
+
+    // when the websocket has closed, notify the user
+    ws.on('close', function(evt) {
+      debug('channel has closed', evt.target, uuid)
+      if (!tab['state'].closed) {
+        debug('attempting to reestablish connection, because the tab is still open ')
+        ui.setOffline()
+        session.pollUntilOnline(tab)
+      }
+    })
+
+    return ws
+  } else {
+    // reusing existing websocket
+    doExec(cachedws)
+    if (terminal) {
+      focus(terminal)
+    }
+    return cachedws
+  }
+}
+
+/**
  * Inject xterm.css if we haven't already
  *
  */
@@ -661,11 +1105,11 @@ function injectXtermCSS() {
       })
     } else {
       injectCSS({
-        path: path.join(path.dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
+        path: join(dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
         key: 'xtermjs'
       })
       injectCSS({
-        path: path.join(path.dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'),
+        path: join(dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'),
         key: 'kui-xtermjs'
       })
     }
@@ -695,7 +1139,7 @@ export const doExec = (
   cmdline: string,
   argvNoOptions: string[],
   parsedOptions: Options,
-  execOptions: ExecOptions.ExecOptions
+  execOptions: ExecOptions
 ) =>
   new Promise((resolve, reject) => {
     const contentType =
@@ -711,85 +1155,108 @@ export const doExec = (
     // this is the main work
     const exec = async () => {
       // attach the terminal to the DOM
+      let resizer: Resizer
+      let terminal: KuiTerminal
+      let xtermContainer: HTMLElement
+      let cleanUpTerminal: () => void
+
       try {
-        const parent = block.querySelector('.repl-result')
-        const xtermContainer = document.createElement('xterm')
-        xtermContainer.classList.add('xterm-container')
-        xtermContainer.classList.add('repl-output-like')
-        // xtermContainer.classList.add('zoomable')
-        parent.appendChild(xtermContainer)
+        if (!execOptions.quiet && !execOptions.replSilence) {
+          const parent = block.querySelector('.repl-result')
+          xtermContainer = document.createElement('xterm')
+          xtermContainer.classList.add('xterm-container')
+          xtermContainer.classList.add('repl-output-like')
+          // xtermContainer.classList.add('zoomable')
+          parent.appendChild(xtermContainer)
 
-        if (execOptions.replSilence) {
-          debug('repl silence')
-          xtermContainer.style.display = 'none'
-          xtermContainer.classList.add('repl-temporary')
-        }
+          if (execOptions.replSilence) {
+            debug('repl silence')
+            xtermContainer.style.display = 'none'
+            xtermContainer.classList.add('repl-temporary')
+          }
 
-        // xtermjs will handle the "block"
-        setCustomCaret(block)
+          // xtermjs will handle the "block"
+          setCustomCaret(block)
 
-        const cachedSize = getCachedSize(tab)
-        const { fontFamily, fontSize } = getFontProperties(false)
-        // creating terminal
-        const terminal = new xterm.Terminal({
-          rendererType: 'dom',
-          cols: cachedSize && cachedSize.cols,
-          rows: cachedSize && cachedSize.rows,
-          fontFamily,
-          fontSize
-        }) as KuiTerminal
+          const cachedSize = getCachedSize(tab)
+          const { fontFamily, fontSize } = getFontProperties(false)
+          // creating terminal
+          const { Terminal } = await import('xterm')
+          terminal = new Terminal({
+            rendererType: 'dom',
+            cols: cachedSize && cachedSize.cols,
+            rows: cachedSize && cachedSize.rows,
+            fontFamily,
+            fontSize
+          }) as KuiTerminal
 
-        // used to manage the race between pending writes to the
-        // terminal canvas and process exit; see
-        // https://github.com/IBM/kui/issues/1272
-        let cbAfterPendingWrites: () => void
-        let pendingWrites = 0
+          terminal.open(xtermContainer)
+          // webLinksInit(terminal)
 
-        terminal.open(xtermContainer)
-        webLinksInit(terminal)
+          // theming
+          // injectFont(terminal) // inject once on startup
+          const doInjectTheme = () => injectFont(terminal, true)
+          eventBus.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
-        // theming
-        // injectFont(terminal) // inject once on startup
-        const doInjectTheme = () => injectFont(terminal, true)
-        eventBus.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
+          resizer = new Resizer(terminal, tab, execOptions)
 
-        const resizer = new Resizer(terminal, tab, execOptions)
+          // respond to font zooming
+          const doZoom = () => {
+            injectFont(terminal, true)
+            resizer.resize()
+          }
+          eventBus.on('/zoom', doZoom)
 
-        // respond to font zooming
-        const doZoom = () => {
-          injectFont(terminal, true)
-          resizer.resize()
-        }
-        eventBus.on('/zoom', doZoom)
+          const cleanupEventHandlers = () => {
+            eventBus.off('/zoom', doZoom)
+            eventBus.off('/theme/change', doInjectTheme)
+          }
 
-        const cleanupEventHandlers = () => {
-          eventBus.off('/zoom', doZoom)
-          eventBus.off('/theme/change', doInjectTheme)
-        }
+          // heuristic for hiding empty rows
+          terminal.element.classList.add('xterm-empty-row-heuristic')
+          setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
-        // heuristic for hiding empty rows
-        terminal.element.classList.add('xterm-empty-row-heuristic')
-        setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
+          //
+          // on exit, remove event handlers and the like
+          //
+          cleanUpTerminal = () => {
+            cleanupEventHandlers()
+            resizer.destroy()
 
-        //
-        // on exit, remove event handlers and the like
-        //
-        const cleanUpTerminal = () => {
-          cleanupEventHandlers()
-          resizer.destroy()
-
-          if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
-            xtermContainer.remove()
-          } else {
-            xtermContainer.classList.add('xterm-terminated')
+            if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
+              xtermContainer.remove()
+            } else {
+              xtermContainer.classList.add('xterm-terminated')
+            }
           }
         }
+
+        const ourUUID = uuid()
+
+        // this function will be called just prior to executing the
+        // command against the websocket/channel
+        const init = (ws: Channel) =>
+          initOnMessage(
+            terminal,
+            xtermContainer,
+            ourUUID,
+            resizer,
+            ws,
+            tab,
+            cmdline,
+            argvNoOptions,
+            execOptions,
+            contentType,
+            expectingSemiStructuredOutput,
+            cleanUpTerminal,
+            resolve,
+            reject
+          )
 
         //
         // create a channel to the underlying node-pty
         //
-        const ourUUID = uuid()
-        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, execOptions, terminal).catch(
+        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, execOptions, terminal, init).catch(
           (err: CodedError) => {
             if (err.code !== 503) {
               // don't bother complaining too much about connection refused
@@ -799,415 +1266,9 @@ export const doExec = (
             throw err
           }
         )
-        resizer.ws = ws
-
-        let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
-        let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
-
-        //
-        // here, we deal with user typing! we need to relay keyboard
-        // input to the node-pty, but we do so with a bit of debouncing
-        //
-        let queuedInput = ''
-        let flushAsync: NodeJS.Timeout
-        terminal.on('key', (key: string) => {
-          if (ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) {
-            debug('queued input out back', key)
-            queuedInput += key
-          } else {
-            // even with the xterm active, buffer input and flush in
-            // chunks to increase responsiveness for fast typing, and
-            // to reduce load in the proxy server (compared to sending
-            // one message per keypress)
-            queuedInput += key
-
-            // if the user typed something, be very conservative
-            definitelyNotTable = true
-            definitelyNotUsage = true
-
-            if (flushAsync) {
-              clearTimeout(flushAsync)
-            }
-            flushAsync = setTimeout(() => {
-              if (queuedInput && ws.readyState === WebSocket.OPEN) {
-                const data = queuedInput
-                queuedInput = ''
-                ws.send(JSON.stringify({ type: 'data', data, uid: ourUUID }))
-              }
-            }, 20)
-          }
-        })
-
-        //
-        // here, we align browser selection and xterm.js selection models
-        //
-        const maybeClearSelection = () => {
-          if (!terminal.hasSelection()) {
-            clearPendingTextSelection()
-          }
+        if (resizer) {
+          resizer.ws = ws
         }
-        terminal.on('focus', maybeClearSelection)
-        terminal.on('blur', maybeClearSelection)
-        terminal.on('paste', (data: string) => {
-          ws.send(JSON.stringify({ type: 'data', data }))
-        })
-        terminal.on('selection', () => {
-          // debug('xterm selection', terminal.getSelection())
-          clearTextSelection()
-          setPendingTextSelection(terminal.getSelection())
-        })
-
-        //
-        // here, we debounce scroll to bottom events
-        //
-        const activeDiv = tab.querySelector('.repl-inner')
-        const doScroll = () => {
-          if (!resizer.inAltBufferMode()) {
-            activeDiv.scrollTop = activeDiv.scrollHeight
-          }
-        }
-        const scrollPoll = setInterval(doScroll, 200)
-
-        const notifyOfWriteCompletion = () => {
-          if (pendingWrites > 0) {
-            pendingWrites = 0
-            if (cbAfterPendingWrites) {
-              cbAfterPendingWrites()
-              cbAfterPendingWrites = undefined
-            }
-          }
-        }
-
-        // xtermjs writes are asynchronous, and ultimately occur in an
-        // animation frame; the result is that the terminal canvas may
-        // receive updates after we receive a process exit event; but we
-        // will always receive a `refresh` event when the animation
-        // frame is done. see https://github.com/IBM/kui/issues/1272
-        let first = true
-        const onRefresh = async (evt: { start: number; end: number }) => {
-          if (evt.end > evt.start || first) {
-            resizer.hideTrailingEmptyBlanks()
-          }
-          notifyOfWriteCompletion()
-          first = false
-        }
-        terminal.on('refresh', onRefresh)
-
-        let bytesWereWritten = false
-        let sawCode: number
-        let pendingUsage = false
-        let pendingTable: MixedResponse
-        let raw = ''
-        let nLinesRaw = 0
-
-        const onFirstMessage = () => {
-          const queuedInput = disableInputQueueing()
-          if (queuedInput.length > 0) {
-            debug('queued input up front', queuedInput)
-            setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
-          }
-
-          // now that we've grabbed queued input, focus on the terminal,
-          // and it will handle input for now until the process exits
-          focus(terminal)
-        }
-
-        const onMessage = async (data: string) => {
-          const msg = JSON.parse(data)
-
-          if (msg.uuid !== ourUUID) {
-            return
-          }
-
-          if (msg.type === 'state' && msg.state === 'ready') {
-            onFirstMessage()
-          } else if (msg.type === 'data') {
-            // plain old data flowing out of the PTY; send it on to the xterm UI
-
-            if (!terminal._kuiAlreadyFocused) {
-              onFirstMessage()
-            }
-
-            const flush = () => {
-              if (pendingTable) {
-                pendingTable = undefined
-                definitelyNotTable = true
-                definitelyNotUsage = true
-                bytesWereWritten = true
-                sawCode = /File exists/i.test(raw)
-                  ? 409
-                  : /no such/i.test(raw) || /not found/i.test(raw)
-                  ? 404
-                  : sawCode
-                terminal.write(raw)
-                raw = ''
-              }
-            }
-
-            if (enterApplicationModePattern.test(msg.data)) {
-              // e.g. less start
-              flush()
-              resizer.enterApplicationMode()
-              focus(terminal)
-            } else if (exitApplicationModePattern.test(msg.data)) {
-              // e.g. less exit
-              resizer.exitApplicationMode()
-            }
-            if (enterAltBufferPattern.test(msg.data)) {
-              // we need to fast-track this; xterm.js does not invoke the
-              // setMode/resetMode handlers till too late; we might've
-              // called raw += ... even though we are in alt buffer mode
-              flush()
-              focus(terminal)
-              resizer.enterAltBufferMode()
-            } else if (exitAltBufferPattern.test(msg.data)) {
-              // ... same here
-              resizer.exitAltBufferMode()
-            } else if (!resizer.inAltBufferMode()) {
-              raw += msg.data
-            }
-
-            const maybeUsage =
-              !resizer.wasEverInAltBufferMode() &&
-              !definitelyNotUsage &&
-              (pendingUsage ||
-                formatUsage(cmdline, stripClean(raw), {
-                  drilldownWithPip: true
-                }))
-
-            if (!definitelyNotTable && raw.length > 0 && !resizer.wasEverInAltBufferMode()) {
-              try {
-                const tables = (await preprocessTable(raw.split(/^(?=NAME|Name|ID|\n\*)/m))).filter(x => x)
-
-                if (tables && tables.length > 0) {
-                  const tableRows = Util.flatten(tables.filter(_ => _.rows !== undefined).map(_ => _.rows))
-
-                  if (tableRows && tableRows.length > 0) {
-                    // debug(`table came from ${stripClean(raw)}`)
-                    // debug(`tableRows ${tableRows.length}`)
-                    const entityType = /\w+/.test(argvNoOptions[2]) && argvNoOptions[2]
-                    const tableModel = formatTable(entityType, tableRows)
-                    debug('tableModel', tableModel)
-
-                    const trailingStrings = tables.map(_ => _.trailingString).filter(x => x)
-                    if (trailingStrings && trailingStrings.length > 0) {
-                      const trailers = await prettyPrintAnsi(trailingStrings)
-                      if (!trailers) {
-                        // nothing worth formatting
-                        pendingTable = [tableModel]
-                      } else {
-                        // some trailing strings worth formatting
-                        pendingTable = [tableModel, trailers]
-                      }
-                    } else {
-                      // no trailing strings
-                      pendingTable = [tableModel]
-                    }
-                  } else if (raw.length > 1000) {
-                    definitelyNotTable = true
-                  }
-                } else {
-                  debug('definitelyNotTable')
-                  definitelyNotTable = true
-                }
-              } catch (err) {
-                console.error('error parsing as table', err)
-                definitelyNotTable = true
-              }
-            }
-
-            if (pendingTable || expectingSemiStructuredOutput) {
-              // the above is taking care of this
-            } else if (maybeUsage) {
-              debug('pending usage')
-              pendingUsage = true
-            } else {
-              if (raw.length > 500) {
-                definitelyNotUsage = true
-              } else if (raw.length > 1500) {
-                definitelyNotTable = true
-              }
-
-              if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
-                pendingWrites++
-                definitelyNotUsage = true
-                bytesWereWritten = true
-                sawCode = /File exists/i.test(raw)
-                  ? 409
-                  : /no such/i.test(raw) || /not found/i.test(raw)
-                  ? 404
-                  : sawCode
-                for (let idx = 0; idx < msg.data.length; idx++) {
-                  if (msg.data[idx] === '\n') {
-                    nLinesRaw++
-                  }
-                }
-                terminal.write(msg.data)
-                raw = ''
-              }
-            }
-          } else if (msg.type === 'exit') {
-            // server told us that it is done with msg.exitCode
-            if (pendingTable && !pendingTable.some(_ => Tables.isTable(_) && _.body.length > 0)) {
-              if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
-                bytesWereWritten = true
-                sawCode = /File exists/i.test(raw)
-                  ? 409
-                  : /no such/i.test(raw) || /not found/i.test(raw)
-                  ? 404
-                  : sawCode
-                terminal.write(raw)
-                raw = ''
-              }
-              pendingTable = undefined
-            }
-
-            /** emit our final response and return control to the repl */
-            const respondToRepl = () => {
-              if (pendingUsage) {
-                execOptions.stdout(
-                  formatUsage(cmdline, stripClean(raw), {
-                    drilldownWithPip: true
-                  })
-                )
-                xtermContainer.classList.add('xterm-invisible')
-              } else if (pendingTable) {
-                const response = pendingTable
-                execOptions.stdout(response.length === 1 ? response[0] : response)
-              } else if (expectingSemiStructuredOutput) {
-                try {
-                  const resource =
-                    contentType === 'yaml' ? safeLoadWithCatch(stripClean(raw)) : JSON.parse(stripClean(raw))
-
-                  if (typeof resource === 'string') {
-                    // degenerate case e.g. cat foo.json | jq .something.something => string rather than struct
-                    execOptions.stdout(resource)
-                  } else {
-                    execOptions.stdout({
-                      type: 'custom',
-                      metadata: {
-                        name:
-                          argvNoOptions[0] === 'cat'
-                            ? path.basename(argvNoOptions[1])
-                            : argvNoOptions.slice(3).join(' '),
-                        namespace: argvNoOptions[0] === 'cat' && path.dirname(argvNoOptions[1])
-                      },
-                      kind: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
-                      contentType,
-                      content: stripClean(raw),
-                      resource,
-                      modes: [{ mode: 'raw', contentFrom: cmdline, defaultMode: true }]
-                    })
-                  }
-                } catch (err) {
-                  console.error('error parsing as semi structured output')
-                  console.error(stripClean(raw))
-                  execOptions.stdout(stripClean(raw))
-                }
-              }
-
-              // vi, then :wq, then :q, you will get an exit code of
-              // 1, but with no output (!bytesWereWritten); note how
-              // we treat this as "ok", i.e. no error thrown
-              if (msg.exitCode !== 0 && bytesWereWritten) {
-                const error = new Error('')
-                if (sawCode === 409) error['code'] = 409
-                // re: i18n, this is for tests
-                else if (msg.exitCode !== 127 && sawCode === 404) error['code'] = 404
-                // re: i18n, this is for tests
-                else error['code'] = msg.exitCode
-
-                if (msg.exitCode === 127) {
-                  xtermContainer.classList.add('hide')
-                } else {
-                  error['hide'] = true
-                }
-
-                reject(error)
-              } else {
-                if (queuedInput && queuedInput.length > 0) {
-                  pasteQueuedInput(queuedInput)
-                }
-
-                resolve(true)
-              }
-            }
-
-            /** called after final resize */
-            const finishUpAfterFinalResize = () => {
-              clearInterval(scrollPoll)
-              doScroll()
-
-              ws.removeEventListener('message', onMessage)
-              cleanUpTerminal()
-
-              // grab a copy of the terminal now that it has terminated;
-              // see https://github.com/IBM/kui/issues/1393
-              const copy = terminal.element.cloneNode(true) as HTMLElement
-              squash(copy)
-              copy.querySelector('.xterm-viewport').remove()
-              copy.querySelector('.xterm-helpers').remove()
-              copy.querySelector('.xterm-selection').remove()
-              const styles = copy.querySelectorAll('style')
-              for (let idx = 0; idx < styles.length; idx++) {
-                styles[idx].remove()
-              }
-              copy.classList.remove('enable-mouse-events')
-              resizer.reflowLineWraps(copy)
-              resizer.hideTrailingEmptyBlanks(true, copy)
-              Resizer.hideCursorOnlyRow(copy)
-
-              xtermContainer.removeChild(terminal.element)
-              xtermContainer.appendChild(copy)
-
-              // respond to the REPL
-              respondToRepl()
-            }
-
-            /** called after final refresh */
-            const finishUp = () => {
-              const nLines = terminal.buffer.length
-
-              if (resizer.wasEverInAltBufferMode() || (nLines <= terminal.rows && nLinesRaw < terminal.rows)) {
-                // no need to resize: output is shorter than viewport
-                setTimeout(finishUpAfterFinalResize, 50)
-              } else {
-                // resize the terminal to house the expected number of
-                // lines, then wait for the final refresh event that will
-                // be sent after the resize has manifested in the DOM
-                terminal.off('refresh', onRefresh)
-                terminal.on('refresh', finishUpAfterFinalResize)
-                terminal.resize(terminal.cols, nLines)
-              }
-            }
-
-            const nLines = terminal.buffer.length
-
-            doScroll()
-            if (pendingWrites > 0) {
-              if (!resizer.wasEverInAltBufferMode() && nLines <= terminal.rows && nLinesRaw < terminal.rows) {
-                cbAfterPendingWrites = finishUp
-              } else {
-                // re: setTimeout, this is the same refresh issue
-                // discussed in the next comment
-                cbAfterPendingWrites = () => setTimeout(finishUp, 50)
-              }
-            } else {
-              // there seems to be a 10% chance that the 'refresh' event
-              // is sent to us while there is still pending information
-              // flowing over the Channel; we need to get more
-              // sophisticated here, but a small delay will help, for
-              // the time being.
-              if (nLines <= terminal.rows && nLinesRaw < terminal.rows) {
-                setTimeout(finishUp, 100)
-              } else {
-                setTimeout(finishUp, 400)
-              }
-            }
-          }
-        }
-
-        ws.on('message', onMessage)
       } catch (error) {
         const err = error as CodedError
         if (err.code === 127 || err.code === 404) {

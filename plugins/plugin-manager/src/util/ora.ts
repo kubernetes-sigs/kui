@@ -17,8 +17,7 @@
 import * as ora from 'ora'
 import { Writable } from 'stream'
 
-import { isHeadless } from '@kui-shell/core/api/capabilities'
-import Commands from '@kui-shell/core/api/commands'
+import { isHeadless, Arguments } from '@kui-shell/core'
 
 const defaultColor = 'processing-text'
 
@@ -37,7 +36,7 @@ class OraStream extends Writable {
     super({ highWaterMark: 0 })
   }
 
-  public async init(text: string, { createOutputStream }: Commands.Arguments) {
+  public async init(text: string, { createOutputStream }: Arguments) {
     this.stdout = await createOutputStream()
 
     this.spinner = ora({

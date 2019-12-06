@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Tab } from '@kui-shell/core/api/tab'
-import Models from '@kui-shell/core/api/models'
-import { UI } from '@kui-shell/core'
-import { BadgeRegistration, ModeRegistration } from '@kui-shell/core/api/registrars'
 
-export interface MyResource extends Models.ResourceWithMetadata {
+import { Tab, ResourceWithMetadata, BadgeSpec, BadgeRegistration, ModeRegistration } from '@kui-shell/core'
+
+export interface MyResource extends ResourceWithMetadata {
   foo: boolean
 }
 
-function isMyResource(resource: Models.ResourceWithMetadata): resource is MyResource {
+function isMyResource(resource: ResourceWithMetadata): resource is MyResource {
   return typeof (resource as MyResource).foo === 'boolean'
 }
 
@@ -98,4 +96,4 @@ export const badge2 = {
 const checkingBadgeType2: BadgeRegistration<MyResource> = badge2
 
 // these are for the tests
-export const badgesWeWillRegister: UI.BadgeSpec[] = [badge1, badge2].map(_ => _.badge)
+export const badgesWeWillRegister: BadgeSpec[] = [badge1, badge2].map(_ => _.badge)

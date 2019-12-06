@@ -92,3 +92,19 @@ export function subblock() {
 
   return block
 }
+
+/**
+ * Reset input count for the given block
+ *
+ */
+export const resetCount = (block: HTMLElement) => {
+  block.setAttribute('data-input-count', '0')
+}
+
+/**
+ * Allow commands to take charge of the cursor/caret/block rendering
+ *
+ */
+export const setCustomCaret = (block: HTMLElement) => {
+  block.classList.add('custom-caret')
+}

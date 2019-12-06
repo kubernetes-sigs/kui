@@ -20,6 +20,7 @@
     "Mengting Yan"
   ],
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "dependencies": {
     "colors": "1.4.0",
     "debug": "4.1.1",

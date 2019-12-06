@@ -29,7 +29,7 @@ try {
   // no dev overrides
 }
 
-interface Theme {
+export interface Theme {
   productName: string
   ogDescription?: string
   ogUrl?: string

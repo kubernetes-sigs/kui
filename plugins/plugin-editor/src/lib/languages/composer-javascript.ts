@@ -82,11 +82,11 @@ const strings = {
  * keys of the `strings` object above, and make a proposal out of them
  *
  */
-const makeProposal = monaco => keyword =>
+const makeProposal = languages => keyword =>
   Object.assign(
     {
       label: keyword,
-      kind: monaco.languages.CompletionItemKind.Method,
+      kind: languages.CompletionItemKind.Method,
       insertText: {
         // the map changes [x,y] to [${1:x}, ${2:y}], which gives a tab order
         value: `${keyword}(${strings[keyword].args.map((_, idx) => `\${${idx + 1}:${_}}`).join(', ')})`
@@ -95,9 +95,9 @@ const makeProposal = monaco => keyword =>
     strings[keyword]
   )
 
-const proposals = monaco => Object.keys(strings).map(makeProposal(monaco))
+const proposals = languages => Object.keys(strings).map(makeProposal(languages))
 
-export default monaco => ({
+export default languages => ({
   language: 'javascript',
 
   provider: {
@@ -117,7 +117,7 @@ export default monaco => ({
       const isPrefix = activeTyping.match(composerPattern) // activeTyping.charAt(activeTyping.length - 1) === '.'
 
       if (isPrefix) {
-        return proposals(monaco)
+        return proposals(languages)
       } else {
         return []
       }

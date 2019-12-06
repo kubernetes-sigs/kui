@@ -16,15 +16,15 @@
 
 // this file defines the external API
 
-import { Tabs } from '@kui-shell/core/api/ui'
-import { ExecOptions } from '@kui-shell/core/api/commands'
+import { Tab, ExecOptions } from '@kui-shell/core'
 
-export { language, extension } from './lib/file-types'
-export { lockIcon, edit } from './lib/readonly'
-export { Entity as EditorEntity, fetchFile, registerFetcher } from './lib/fetchers'
 export { respondToRepl } from './lib/util'
+export { lockIcon, edit } from './lib/readonly'
+export { language, extension } from './lib/file-types'
+export { Entity as EditorEntity } from './lib/entity'
+export { fetchFile, registerFetcher } from './lib/fetchers'
 
-export async function openEditor(tab: Tabs.Tab, name: string, options, execOptions: ExecOptions.ExecOptions) {
+export async function openEditor(tab: Tab, name: string, options, execOptions: ExecOptions) {
   const { openEditor } = await import('./lib/open')
   return openEditor(tab, name, options, execOptions)
 }

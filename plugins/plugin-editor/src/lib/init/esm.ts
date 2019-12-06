@@ -15,11 +15,10 @@
  */
 
 import Debug from 'debug'
-import * as monaco from 'monaco-editor'
 
-import { Settings, UI } from '@kui-shell/core'
+import { theme, injectCSS } from '@kui-shell/core'
 
-import languages from '../language-scan'
+import kuiLanguages from '../language-scan'
 import defaultMonacoOptions from './defaults'
 
 const debug = Debug('plugins/editor/init/esm')
@@ -35,7 +34,7 @@ self['MonacoEnvironment'] = {
     const hash: string = window['_kuiWebpackHash']
 
     const root: string =
-      Settings.theme.resourceRoot ||
+      theme.resourceRoot ||
       (window['_kuiWebpackResourceRoot'] !== '${resourceRoot}' ? window['_kuiWebpackResourceRoot'] : '.') // eslint-disable-line no-template-curly-in-string
     debug('monaco resource root', root)
 
@@ -62,10 +61,9 @@ export default (editorWrapper: HTMLElement, options) => {
   // wait till monaco's loader is ready, then resolve with an editor
   // widget
   //
-  let editor
   const ready = () =>
     new Promise(resolve => {
-      UI.injectCSS({
+      injectCSS({
         css: require('monaco-editor/min/vs/editor/editor.main.css').toString(),
         key: 'editor.monaco.core'
       })
@@ -73,29 +71,31 @@ export default (editorWrapper: HTMLElement, options) => {
       /**
        *
        */
-      const initEditor = () => {
+      const initEditor = async () => {
+        const { languages, editor: Monaco, Range } = await import('monaco-editor')
+
         if (!initDone) {
           // for now, try to disable the built-in Javascript-specific completion helper thingies
-          monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+          languages.typescript.javascriptDefaults.setCompilerOptions({
             noLib: true,
             allowNonTsExtensions: true
           })
 
           // install any custom languages we might have
-          languages(monaco).forEach(({ language, provider }) => {
-            monaco.languages.registerCompletionItemProvider(language, provider)
+          kuiLanguages(languages).forEach(({ language, provider }) => {
+            languages.registerCompletionItemProvider(language, provider)
           })
 
           initDone = true
         }
 
         // here we instantiate an editor widget
-        editor = monaco.editor.create(editorWrapper, Object.assign(defaultMonacoOptions(options), options))
+        const editor = Monaco.create(editorWrapper, Object.assign(defaultMonacoOptions(options), options))
 
-        editor.clearDecorations = () => {
-          debug('clearing decorations', editor.__cloudshell_decorations)
-          const none = [{ range: new monaco.Range(1, 1, 1, 1), options: {} }]
-          editor.__cloudshell_decorations = editor.deltaDecorations(editor.__cloudshell_decorations || [], none)
+        editor['clearDecorations'] = () => {
+          // debug('clearing decorations', editor['__cloudshell_decorations'])
+          const none = [{ range: new Range(1, 1, 1, 1), options: {} }]
+          editor['__cloudshell_decorations'] = editor.deltaDecorations(editor['__cloudshell_decorations'] || [], none)
         }
 
         editorWrapper['editor'] = editor

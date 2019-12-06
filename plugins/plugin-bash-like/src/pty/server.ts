@@ -29,8 +29,7 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { CodedError } from '@kui-shell/core/api/errors'
-import { ExecOptions, Registrar } from '@kui-shell/core/api/commands'
+import { CodedError, ExecOptions, Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/server')
 
@@ -230,7 +229,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         cols?: number
 
         uuid?: string // for request-response
-        execOptions?: ExecOptions.ExecOptions
+        execOptions?: ExecOptions
       } = JSON.parse(data)
 
       switch (msg.type) {
@@ -238,9 +237,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           return exitNow(msg.exitCode)
 
         case 'request': {
-          const {
-            REPL: { exec }
-          } = await import('@kui-shell/core')
+          const { internalBeCarefulExec: exec } = await import('@kui-shell/core')
           if (msg.env) {
             process.env = msg.env
           }

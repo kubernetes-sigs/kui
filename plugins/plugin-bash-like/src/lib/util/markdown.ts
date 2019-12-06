@@ -16,8 +16,8 @@
 
 import * as url from 'url'
 import * as path from 'path'
-
-import { UI } from '@kui-shell/core'
+import * as Marked from 'marked'
+import { Tab } from '@kui-shell/core'
 
 declare let hljs
 
@@ -65,7 +65,7 @@ const renderLink = (fullpath: string) => (link: HTMLAnchorElement) => {
  * Wrap a formatted innerHTML
  *
  */
-const wrap = (tab: UI.Tab, htmlString: string, fullpath: string): Markdown => {
+const wrap = (tab: Tab, htmlString: string, fullpath: string): Markdown => {
   const body = document.createElement('div')
   body.classList.add('padding-content')
   body.classList.add('overflow-auto')
@@ -153,9 +153,8 @@ const wrap = (tab: UI.Tab, htmlString: string, fullpath: string): Markdown => {
  * Render a markdown file as HTML
  *
  */
-const markdownify = async (tab: UI.Tab, source: string, fullpath: string): Promise<Markdown> => {
+const markdownify = async (tab: Tab, source: string, fullpath: string): Promise<Markdown> => {
   // use marked, but render links specially
-  const Marked = await import('marked')
   const renderer = new Marked.Renderer()
 
   const transformHref = (href: string): string => {
@@ -214,7 +213,7 @@ const markdownify = async (tab: UI.Tab, source: string, fullpath: string): Promi
  * Render a markdown file as HTML
  *
  */
-export default (tab: UI.Tab, suffix: string, source: string, fullpath: string): Promise<Markdown> => {
+export default (tab: Tab, suffix: string, source: string, fullpath: string): Promise<Markdown> => {
   if (suffix === 'md') {
     return markdownify(tab, source, fullpath)
   }

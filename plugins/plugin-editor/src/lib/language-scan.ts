@@ -23,4 +23,4 @@
 import nodejs from './languages/composer-javascript'
 import python from './languages/composer-python'
 
-export default monaco => [nodejs(monaco), python(monaco)]
+export default languages => [nodejs(languages), python(languages)]

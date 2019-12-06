@@ -17,10 +17,7 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import Util from '@kui-shell/core/api/util'
-import { i18n } from '@kui-shell/core/api/i18n'
-import { isHeadless } from '@kui-shell/core/api/capabilities'
-import { Arguments, Registrar, KResponse } from '@kui-shell/core/api/commands'
+import { isHeadless, findFile, expandHomeDir, i18n, Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import markdownify from '../util/markdown'
 import { localFilepath } from '../util/usage-helpers'
@@ -37,7 +34,7 @@ async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<KResponse>
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
-  const fullpath = Util.findFile(Util.expandHomeDir(filepath))
+  const fullpath = findFile(expandHomeDir(filepath))
   const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
 
   if (

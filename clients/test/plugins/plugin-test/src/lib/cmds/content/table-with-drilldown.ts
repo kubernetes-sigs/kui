@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tables } from '@kui-shell/core'
+import { Table } from '@kui-shell/core'
 
 export const firstSeen = 'FIRST SEEN'
 const icon1 = 'fa-network'
@@ -32,30 +32,42 @@ function deltaOf(minusMillis = 0) {
   return new Date(now - minusMillis).toLocaleString()
 }
 
-export default (): Tables.Table => ({
+export default (): Table => ({
   noSort: true,
   header: { name: 'name', attributes: [{ value: 'foo' }, { value: firstSeen }] },
   body: [
     {
       name: 'TestString',
       onclick: `test string`,
-      attributes: [{ value: 'foo', fontawesome: icon1 }, { key: firstSeen, value: deltaOf(100) }]
+      attributes: [
+        { value: 'foo', fontawesome: icon1 },
+        { key: firstSeen, value: deltaOf(100) }
+      ]
     },
     {
       name: 'TestTable',
       onclick: `test table`,
-      attributes: [{ value: 'foo', fontawesome: icon2 }, { key: firstSeen, value: deltaOf(5000) }]
+      attributes: [
+        { value: 'foo', fontawesome: icon2 },
+        { key: firstSeen, value: deltaOf(5000) }
+      ]
     },
     {
       name: 'TestMMRName',
       onclick: `test mmr name`,
-      attributes: [{ value: 'foo', fontawesome: icon3 }, { key: firstSeen, value: deltaOf(10000) }]
+      attributes: [
+        { value: 'foo', fontawesome: icon3 },
+        { key: firstSeen, value: deltaOf(10000) }
+      ]
     },
     {
       name: 'TestMMRModeSilence',
       onclick: `test mmr mode`,
       onclickSilence: true,
-      attributes: [{ value: 'foo', fontawesome: icon4 }, { key: firstSeen, value: deltaOf(30000) }]
+      attributes: [
+        { value: 'foo', fontawesome: icon4 },
+        { key: firstSeen, value: deltaOf(30000) }
+      ]
     }
   ]
 })

@@ -84,6 +84,8 @@ fi
 
 popd
 
+npm run compile:source:es6
+
 #
 # we expect "docker not found" error on travis osx
 # we still want to test the webpack build logic before building docker image

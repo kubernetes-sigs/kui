@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { UI } from '@kui-shell/core'
+import { topTabButtonExists, topTabAddIcon, topTabRemoveIcon } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/ui')
 
@@ -28,7 +28,7 @@ const buttonDesignation = 'kui--plugin-bash-like--pty-offline-indicator'
  *
  */
 function presentation(): 'offline' | 'online' {
-  if (UI.TopTabs.buttonExists(buttonDesignation)) {
+  if (topTabButtonExists(buttonDesignation)) {
     return 'offline'
   } else {
     return 'online'
@@ -49,7 +49,7 @@ export function setOffline() {
 
     const offlineIcon = tmp.querySelector('svg') as SVGElement
 
-    UI.TopTabs.addIcon(offlineIcon, buttonDesignation).classList.add('red-text')
+    topTabAddIcon(offlineIcon, buttonDesignation).classList.add('red-text')
   }
 }
 
@@ -59,5 +59,5 @@ export function setOffline() {
  */
 export function setOnline() {
   debug('setOnline')
-  UI.TopTabs.removeIcon(buttonDesignation)
+  topTabRemoveIcon(buttonDesignation)
 }

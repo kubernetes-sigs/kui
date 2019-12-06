@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import { Capabilities, Commands, Errors, i18n } from '@kui-shell/core'
+import { isHeadless, inBrowser, Arguments, Registrar, CodedError, UsageError, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -26,7 +26,7 @@ const strings = i18n('plugin-core-support')
  * Respond with a top-level usage document
  *
  */
-const help = usage => ({ argvNoOptions: args, REPL }: Commands.Arguments) => {
+const help = usage => ({ argvNoOptions: args, REPL }: Arguments) => {
   const rest = args.slice(args.indexOf('help') + 1)
   debug('help command', rest)
 
@@ -58,8 +58,8 @@ const help = usage => ({ argvNoOptions: args, REPL }: Commands.Arguments) => {
       if (
         model &&
         !model.synonymFor &&
-        (Capabilities.isHeadless() || !model.headlessOnly) &&
-        (!Capabilities.inBrowser() || !model.requiresLocal)
+        (isHeadless() || !model.headlessOnly) &&
+        (!inBrowser() || !model.requiresLocal)
       ) {
         topLevelUsage.available.push({
           label: route.substring(1),
@@ -73,11 +73,11 @@ const help = usage => ({ argvNoOptions: args, REPL }: Commands.Arguments) => {
     }
 
     debug('generated top-level usage model')
-    throw new Errors.UsageError({ usage: topLevelUsage })
+    throw new UsageError({ usage: topLevelUsage })
   } else {
     debug('no usage model')
 
-    const error: Errors.CodedError = new Error('No documentation found')
+    const error: CodedError = new Error('No documentation found')
     error.code = 404
     throw error
   }
@@ -87,7 +87,7 @@ const help = usage => ({ argvNoOptions: args, REPL }: Commands.Arguments) => {
  * The module. Here, we register as a listener for commands.
  *
  */
-export default async (commandTree: Commands.Registrar, { usage }) => {
+export default async (commandTree: Registrar, { usage }) => {
   commandTree.listen('/help', help(usage), {
     noAuthOk: true,
     inBrowserOk: true

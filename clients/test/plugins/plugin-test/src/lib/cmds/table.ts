@@ -20,39 +20,36 @@
  */
 
 // Notes: this is part of the Kui core API
-import { Commands, Tables } from '@kui-shell/core'
-import { Watchable } from '@kui-shell/core/api/models'
+import { Watchable, Table, Row, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import tableContent from './content/table-with-drilldown'
 
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   watch: 'push' | 'poll'
   'final-state': string
 }
 
 // generateNewPush generates new `Row` with badge and message
-const generateNewPush = (
-  name: string,
-  onlineLike: boolean,
-  message: string,
-  args: Commands.Arguments<Options>
-): Tables.Row => {
+const generateNewPush = (name: string, onlineLike: boolean, message: string, args: Arguments<Options>): Row => {
   const status = onlineLike ? 'Running' : 'Terminating'
   const css = onlineLike ? 'green-background' : 'yellow-background'
   const onclick = () => args.REPL.pexec('test string')
   return {
     name,
     onclick,
-    attributes: [{ key: 'STATUS', tag: 'badge', value: status, css }, { key: 'MESSAGE', value: message }]
+    attributes: [
+      { key: 'STATUS', tag: 'badge', value: status, css },
+      { key: 'MESSAGE', value: message }
+    ]
   }
 }
 
-const doTable = (): ((args: Commands.Arguments<Options>) => Tables.Table & Partial<Watchable>) => {
-  return (args: Commands.Arguments<Options>) => {
+const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) => {
+  return (args: Arguments<Options>) => {
     const table = tableContent()
-    const emptyRows: Tables.Row[] = []
+    const emptyRows: Row[] = []
 
-    const tableWithoutRows: Tables.Table = {
+    const tableWithoutRows: Table = {
       noSort: true,
       header: { name: 'name', attributes: [{ value: 'status' }, { value: 'message' }] },
       body: emptyRows
@@ -108,7 +105,7 @@ const doTable = (): ((args: Commands.Arguments<Options>) => Tables.Table & Parti
  * Here is where we register our command.
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/test/table', doTable(), {
     usage: {
       docs: 'A showcase of the Table view'

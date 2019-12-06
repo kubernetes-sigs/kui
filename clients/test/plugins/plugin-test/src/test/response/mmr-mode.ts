@@ -21,7 +21,7 @@
  * See the command implementation in: plugin-test/src/lib/cmds/mmr-mode.ts
  *
  */
-import { UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core'
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
 import { MyResource } from '../../lib/models'
@@ -111,17 +111,17 @@ const buttons = [
   { mode: 'b1', command: 'test string', kind: 'drilldown' as const },
   { mode: 'b2', command: () => 'test string', kind: 'drilldown' as const },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  { mode: 'b3', command: (tab: UI.Tab) => 'test string', kind: 'drilldown' as const },
+  { mode: 'b3', command: (tab: Tab) => 'test string', kind: 'drilldown' as const },
   {
     mode: 'b4',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    command: (tab: UI.Tab, resource: MyResource) => `test string --grumble {resource.grumble}`,
+    command: (tab: Tab, resource: MyResource) => `test string --grumble {resource.grumble}`,
     kind: 'drilldown' as const
   },
   {
     mode: 'b5',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    command: (tab: UI.Tab, resource: MyResource) => `some non-existant command`,
+    command: (tab: Tab, resource: MyResource) => `some non-existant command`,
     kind: 'drilldown' as const,
     expectError: 404 as const
   },
@@ -136,4 +136,7 @@ testDefault4.modes(expectModes4, expectModes4[0])
 testDefault5.modes(expectModes5, expectModes5[0])
 testDefault.toolbarText(toolbarText)
 testDefault.toolbarButtons(buttons)
-testOrder.modes(expectModes, expectModes.find(_ => _.mode === 'html'))
+testOrder.modes(
+  expectModes,
+  expectModes.find(_ => _.mode === 'html')
+)

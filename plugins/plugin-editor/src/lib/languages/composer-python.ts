@@ -16,7 +16,7 @@
 
 import nodejs from './composer-javascript'
 
-export default monaco => ({
+export default languages => ({
   language: 'python',
-  provider: nodejs(monaco).provider
+  provider: nodejs(languages).provider
 })
