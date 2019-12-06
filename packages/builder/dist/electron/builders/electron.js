@@ -103,12 +103,17 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, arch, cal
   }
 }
 
+// required positional arguments to our main:
+const dir = process.argv[0]
+const name = process.argv[1]
+const platform = process.argv[2]
+const icon = process.argv[3]
+
 const args = {
-  // required positional arguments to our main:
-  dir: process.argv[0],
-  name: process.argv[1],
-  platform: process.argv[2],
-  icon: process.argv[3],
+  dir,
+  name,
+  platform,
+  icon,
 
   // required environmental parameters:
   appVersion: process.env.VERSION,
@@ -121,7 +126,7 @@ const args = {
   ignore: process.env.IGNORE,
 
   // default settings
-  asar: process.platform !== 'win32', // node-pty loading native modules versus asar :(
+  asar: platform !== 'win32', // node-pty loading native modules versus asar :(
   overwrite: true,
 
   // and finally, this is the reason we are here:
