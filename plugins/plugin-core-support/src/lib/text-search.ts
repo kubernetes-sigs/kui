@@ -17,8 +17,7 @@
 import Debug from 'debug'
 import { dirname, join } from 'path'
 
-import * as UI from '@kui-shell/core/api/ui-lite'
-import { injectCSS } from '@kui-shell/core/api/inject'
+import { getCurrentPrompt, injectCSS, KeyCodes } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/text-search')
 
@@ -64,7 +63,7 @@ async function registerListener() {
     app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
     if (clear) {
       setTimeout(() => {
-        UI.getCurrentPrompt().focus()
+        getCurrentPrompt().focus()
       }, 300)
     } // focus repl text input
   }
@@ -130,7 +129,7 @@ async function registerListener() {
   document.body.addEventListener('keydown', function(e: KeyboardEvent) {
     if (
       !e.defaultPrevented &&
-      e.keyCode === UI.Keys.Codes.F &&
+      e.keyCode === KeyCodes.F &&
       ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)
     ) {
       // ctrl/cmd-f opens search, unless some interior region prevented default

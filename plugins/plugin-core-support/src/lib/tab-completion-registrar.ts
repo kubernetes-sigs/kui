@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import Util from '@kui-shell/core/api/util'
-import Commands from '@kui-shell/core/api/commands'
+import { Tab, CommandLine, flatten } from '@kui-shell/core'
 
 /**
  * A registrar for enumerators
@@ -35,7 +34,7 @@ export interface TabCompletionSpec {
   toBeCompletedIdx: number
 }
 
-type Enumerator = (commandLine: Commands.CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
+type Enumerator = (tab: Tab, commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
 
 const enumerators: Enumerator[] = []
 
@@ -43,7 +42,7 @@ export function registerEnumerator(enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
 
-export async function applyEnumerator(commandLine: Commands.CommandLine, spec: TabCompletionSpec): Promise<string[]> {
-  const lists = await Promise.all(enumerators.map(_ => _(commandLine, spec)))
-  return Util.flatten(lists.map(x => x)).filter(x => x)
+export async function applyEnumerator(tab: Tab, commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+  const lists = await Promise.all(enumerators.map(_ => _(tab, commandLine, spec)))
+  return flatten(lists.map(x => x)).filter(x => x)
 }

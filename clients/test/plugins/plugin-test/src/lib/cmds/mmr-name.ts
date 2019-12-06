@@ -20,12 +20,12 @@
  *
  */
 
-import { Commands, UI } from '@kui-shell/core'
+import { MultiModalResponse, Registrar } from '@kui-shell/core'
 
 import { metadataWithNameOnly } from './metadata'
 import { plainTextMode } from './content/modes'
 
-const doModes = (): (() => UI.MultiModalResponse) => {
+const doModes = (): (() => MultiModalResponse) => {
   return () =>
     Object.assign(metadataWithNameOnly, {
       modes: plainTextMode,
@@ -34,7 +34,7 @@ const doModes = (): (() => UI.MultiModalResponse) => {
     })
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/name', doModes(), {
     usage: {
       docs: 'A showcase of MultiModalResponse metadata name'

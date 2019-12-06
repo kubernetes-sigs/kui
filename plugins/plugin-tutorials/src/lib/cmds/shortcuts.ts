@@ -23,14 +23,14 @@ const { name: codingBasicsDocs } = require('@kui-shell/plugin-tutorials/samples/
 const { name: combinatorsDocs } = require('@kui-shell/plugin-tutorials/samples/@tutorials/combinators/package.json')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-import { Commands } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
 /**
  * Here we register as a listener for "shortcut" commands, that make
  * it a bit easier to launch of some of the entry-level tutorials.
  *
  */
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   // kubernetes coding basics shortcut
   commandTree.listen(
     '/tutorial/kubernetes/starter',

@@ -16,9 +16,23 @@
 
 import { dirname, join } from 'path'
 
-import { Capabilities, Commands, Errors, i18n, UI } from '@kui-shell/core'
-import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar-visibility'
+import {
+  inBrowser,
+  Arguments,
+  ParsedOptions,
+  Registrar,
+  UsageModel,
+  UsageError,
+  i18n,
+  KeyCodes,
+  Tab,
+  injectCSS,
+  getCurrentPrompt,
+
+  // TODO deprecated:
+  isSidecarVisible,
+  sidecarSelector
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -29,7 +43,7 @@ const SECONDS_TILL_AUTO_CLOSE = 10
  * Usage message
  *
  */
-const usage: Errors.UsageModel = {
+const usage: UsageModel = {
   strict: 'screenshot',
   command: 'screenshot',
   title: strings('screenshotUsageTitle'),
@@ -75,11 +89,11 @@ const round = Math.round
 const selectors = {
   full: 'body', // everything
   default: 'body > .page', // everything but header
-  sidecar: (tab: UI.Tab) => sidecarSelector(tab), // entire sidecar region
-  repl: (tab: UI.Tab) => tab.querySelector('.repl'), // entire REPL region
-  nth: (tab: UI.Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
-  'last-full': (tab: UI.Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
-  last: (tab: UI.Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
+  sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
+  repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
+  nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
+  'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
+  last: (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
 }
 
 /**
@@ -105,7 +119,7 @@ const squishers = {
   full: hideCurrentReplBlock,
   repl: hideCurrentReplBlock
 }
-const _squish = (tab: UI.Tab, which: string, selector: string, op) => {
+const _squish = (tab: Tab, which: string, selector: string, op) => {
   let squisher = squishers[which]
 
   if (typeof squisher === 'function') {
@@ -139,7 +153,7 @@ const _squish = (tab: UI.Tab, which: string, selector: string, op) => {
     return doNotSquish
   }
 }
-const squish = (tab: UI.Tab, which: string, selector: string) =>
+const squish = (tab: Tab, which: string, selector: string) =>
   _squish(tab, which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
     if (dryRun) {
       const scrollers = element.querySelectorAll('.overflow-auto')
@@ -154,7 +168,7 @@ const squish = (tab: UI.Tab, which: string, selector: string) =>
       if (property) element.style[property] = value
     }
   })
-const unsquish = (tab: UI.Tab, which: string, selector: string) =>
+const unsquish = (tab: Tab, which: string, selector: string) =>
   _squish(tab, which, selector, (_, element: HTMLElement, property: string, value: string, css: string) => {
     if (css) element.classList.remove(css)
     if (property) element.style[property] = null
@@ -173,18 +187,18 @@ interface SnapDom extends HTMLElement {
   kuiSnapshotTimer?: NodeJS.Timer
 }
 
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   offset: string
 }
 
 /** this is the handler body */
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   commandTree.listen(
     '/screenshot',
-    ({ tab, argvNoOptions, parsedOptions }: Commands.Arguments<Options>) =>
+    ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>) =>
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
-        if (Capabilities.inBrowser()) {
+        if (inBrowser()) {
           const error = new Error(strings('notSupportedInBrowser'))
           error['code'] = 500
           reject(error)
@@ -194,7 +208,7 @@ export default async (commandTree: Commands.Registrar) => {
 
         try {
           const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-          UI.injectCSS(join(root, 'web/css/screenshot.css'))
+          injectCSS(join(root, 'web/css/screenshot.css'))
 
           const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
           const { app } = remote
@@ -215,7 +229,7 @@ export default async (commandTree: Commands.Registrar) => {
             return reject(new Error(strings('screenshotREPLError')))
           } else if (!selector) {
             // either we couldn't find the area to
-            return reject(new Errors.UsageError({ usage }))
+            return reject(new UsageError({ usage }))
           } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
             // sanity check the sidecar option
             return reject(new Error(strings('screenshotSidecarNotOpen')))
@@ -296,8 +310,8 @@ export default async (commandTree: Commands.Registrar) => {
 
                 setTimeout(() => {
                   page.removeChild(snapDom)
-                  UI.getCurrentPrompt(tab).readOnly = false
-                  UI.getCurrentPrompt(tab).focus()
+                  getCurrentPrompt(tab).readOnly = false
+                  getCurrentPrompt(tab).focus()
                 }, 1000) // match go-away-able transition-duration; see ui.css
               }
 
@@ -412,7 +426,7 @@ export default async (commandTree: Commands.Registrar) => {
               hiddenInput.addEventListener(
                 'keyup',
                 (evt: KeyboardEvent) => {
-                  if (evt.keyCode === UI.Keys.Codes.ESCAPE) {
+                  if (evt.keyCode === KeyCodes.ESCAPE) {
                     evt.preventDefault()
                     finish()
                   }

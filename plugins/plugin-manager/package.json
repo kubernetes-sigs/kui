@@ -20,6 +20,7 @@
     "Lionel Villard"
   ],
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "dependencies": {
     "fs-extra": "8.1.0",
     "ora": "4.0.3",

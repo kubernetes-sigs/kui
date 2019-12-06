@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import stripClean = require('strip-ansi')
+import stripClean from './strip-ansi'
 
 import { Cell, Row, Table, TableStyle } from '../models/table'
 
@@ -84,7 +84,7 @@ function maybeURL(str: string): HTMLAnchorElement {
  * Split the given string at the given split indices
  *
  */
-interface Pair {
+export interface Pair {
   key: string
   value: string
   valueDom: Element

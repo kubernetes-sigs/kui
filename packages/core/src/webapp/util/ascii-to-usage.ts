@@ -26,7 +26,7 @@ const splitter = /[\n\r]([^#%][A-Za-z ]+:\s*[\n\r])([-]+[\n\r])?/
 const matcher = /[\n\r]([^#%][A-Za-z ]+:\s*[\n\r])\s+\w+/
 const doubleNewline = /(\n\n)|(\r\r)|(\r\n\r\n)/
 
-interface Options {
+export interface Options {
   drilldownWithPip?: boolean
   stderr?: string | HTMLElement
 }

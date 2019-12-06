@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, Errors, eventBus, i18n } from '@kui-shell/core'
+import { Registrar, UsageModel, eventBus, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-manager')
 
@@ -22,7 +22,7 @@ const strings = i18n('plugin-manager')
  * Usage model for plugin remove
  *
  */
-const usage: Errors.UsageModel = {
+const usage: UsageModel = {
   strict: 'compile',
   command: 'compile',
   docs: strings('for advanced use: recompile plugin registry'),
@@ -30,7 +30,7 @@ const usage: Errors.UsageModel = {
   optional: [{ name: 'pluginToBeRemoved', positional: true }]
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen(
     '/plugin/compile',
     async ({ argvNoOptions }) =>

@@ -16,11 +16,11 @@
 
 import { dirname } from 'path'
 
-import Util from '@kui-shell/core/api/util'
+import { augmentModuleLoadPath } from '@kui-shell/core'
 
 export default async () => {
   // give visibility to our @demos directory on the module path
-  Util.augmentModuleLoadPath(
+  augmentModuleLoadPath(
     dirname(dirname(require.resolve('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')))
   )
 }

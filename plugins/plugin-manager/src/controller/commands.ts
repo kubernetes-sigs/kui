@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands, i18n, Plugins, Tables } from '@kui-shell/core'
+import { Arguments, Registrar, i18n, commandsOfferedByPlugin, Table } from '@kui-shell/core'
 import { installedPlugin } from '../util/usage-common'
 
 const strings = i18n('plugin-manager')
@@ -29,12 +29,12 @@ const usage = {
   related: ['plugin install', 'plugin list']
 }
 
-const doList = ({ argvNoOptions }: Commands.Arguments): Promise<Tables.Table> => {
+const doList = ({ argvNoOptions }: Arguments): Promise<Table> => {
   const plugin = argvNoOptions[argvNoOptions.indexOf('commands') + 1]
-  return Plugins.commandsOffered(plugin)
+  return commandsOfferedByPlugin(plugin)
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/plugin/commands', doList, {
     usage
   })

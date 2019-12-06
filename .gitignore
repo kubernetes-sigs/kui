@@ -50,10 +50,14 @@ keys
 nohup.out
 
 # tsc composite build files
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # any temporary npm packs
 kui-shell-*.tgz
 
 # mkclient.sh stage
 kui-stage
+
+# es6 compiled modules
+packages/*/mdist
+plugins/*/mdist

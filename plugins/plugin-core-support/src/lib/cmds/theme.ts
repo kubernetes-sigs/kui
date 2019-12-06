@@ -16,10 +16,20 @@
 
 import Debug from 'debug'
 
-import { Arguments, Registrar } from '@kui-shell/core/api/commands'
-import { i18n } from '@kui-shell/core/api/i18n'
-import { Row, Table } from '@kui-shell/core/api/table-models'
-import UI from '@kui-shell/core/api/ui'
+import {
+  i18n,
+  Row,
+  Table,
+  Arguments,
+  Registrar,
+  getPersistedThemeChoice,
+  findThemeByName,
+  switchToTheme,
+  resetToDefaultTheme,
+  getDefaultTheme,
+  Theme,
+  theme
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/theme')
@@ -61,7 +71,7 @@ const usage = {
  * List themes
  *
  */
-const list = async () => {
+const list = async ({ REPL }: Arguments) => {
   const header: Row = {
     type: 'theme',
     name: '',
@@ -69,18 +79,16 @@ const list = async () => {
     attributes: [{ value: strings('Theme') }, { value: strings('Style') }]
   }
 
-  const Settings = (await import('@kui-shell/core/api/settings')).default
-
   // careful: the user's chosen theme might not be available in the
   // settings.themes model; e.g. they previously selected a theme that
   // has since been eliminated
-  const chosenTheme = (await UI.Themes.Persistence.getPersistedThemeChoice()) || UI.Themes.getDefault()
-  const currentTheme = UI.Themes.findByName(chosenTheme) ? chosenTheme : UI.Themes.getDefault()
+  const chosenTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
+  const currentTheme = findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
   debug('currentTheme', currentTheme)
-  debug('theme list', Settings.theme.themes)
+  debug('theme list', theme.themes)
 
-  const body: Row[] = (Settings.theme.themes || []).map(
-    (theme: UI.Themes.Theme): Row => {
+  const body: Row[] = (theme.themes || []).map(
+    (theme: Theme): Row => {
       const row: Row = {
         type: 'theme',
         name: theme.name,
@@ -101,10 +109,7 @@ const list = async () => {
       }
 
       const onclick = async () => {
-        const {
-          REPL: { encodeComponent, qexec }
-        } = await import('@kui-shell/core')
-        await qexec(`theme set ${encodeComponent(theme.name)}`)
+        await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
         row.setSelected()
       }
 
@@ -129,7 +134,7 @@ const list = async () => {
 const set = async ({ argvNoOptions }: Arguments) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
-  await UI.Themes.Persistence.switchTo(theme)
+  await switchToTheme(theme)
   return true
 }
 
@@ -163,17 +168,13 @@ export const plugin = (commandTree: Registrar) => {
   })
 
   // returns the current persisted theme choice; helpful for debugging
-  commandTree.listen(
-    '/theme/current',
-    async () => (await UI.Themes.Persistence.getPersistedThemeChoice()) || strings('theme.currentTheme'),
-    {
-      noAuthOk: true,
-      inBrowserOk: true,
-      hidden: true
-    }
-  ) // for debugging
+  commandTree.listen('/theme/current', async () => (await getPersistedThemeChoice()) || strings('theme.currentTheme'), {
+    noAuthOk: true,
+    inBrowserOk: true,
+    hidden: true
+  }) // for debugging
 
-  commandTree.listen('/theme/reset', UI.Themes.Persistence.resetToDefault, {
+  commandTree.listen('/theme/reset', resetToDefaultTheme, {
     usage: usage.reset,
     noAuthOk: true,
     inBrowserOk: true

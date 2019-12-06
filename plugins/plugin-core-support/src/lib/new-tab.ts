@@ -18,20 +18,32 @@
 
 import Debug from 'debug'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
-import { Arguments, Registrar, Event, ExecType } from '@kui-shell/core/api/commands'
-import eventBus from '@kui-shell/core/api/events'
-import { i18n } from '@kui-shell/core/api/i18n'
-import { TabState } from '@kui-shell/core/api/tab'
-import { clearSelection } from '@kui-shell/core/api/selection'
-import Settings from '@kui-shell/core/api/settings'
-import * as UI from '@kui-shell/core/api/ui-lite'
+import {
+  clearSelection,
+  TabState,
+  eventBus,
+  i18n,
+  inElectron,
+  Arguments,
+  Registrar,
+  Event,
+  ExecType,
+  config,
+  theme,
+  Tab,
+  getCurrentPrompt,
+  empty,
+  getReplImpl,
+  setStatus,
+  Status,
+  getCurrentTab,
+  getTabId,
+  internalBeCarefulListen as listen,
 
-import { isVisible as isSidecarVisible } from '@kui-shell/core/webapp/views/sidecar-visibility'
-import sidecarSelector from '@kui-shell/core/webapp/views/sidecar-selector'
-import { listen } from '@kui-shell/core/webapp/listen'
-import { setStatus, Status } from '@kui-shell/core/webapp/status'
-import { getCurrentTab, getTabId } from '@kui-shell/core/webapp/tab'
+  // deprecated
+  isSidecarVisible,
+  sidecarSelector
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/new-tab')
@@ -41,7 +53,7 @@ export const tabButtonSelector = '#new-tab-button'
 interface TabConfig {
   topTabs?: { names: 'fixed' | 'command' }
 }
-const { topTabs = { names: 'command' } } = Settings.config as TabConfig
+const { topTabs = { names: 'command' } } = config as TabConfig
 
 /** cheapo uuid; we only need single-threaded uniqueness */
 let _uuidCounter = 1
@@ -71,26 +83,26 @@ function isUsingCommandName() {
  * Given a tab index, return the tab id
  *
  */
-function getTabFromIndex(idx: number): UI.Tab {
-  return element(`.main tab:nth-child(${idx})`) as UI.Tab
+function getTabFromIndex(idx: number): Tab {
+  return element(`.main tab:nth-child(${idx})`) as Tab
 }
 
 /**
  * Helper methods to crawl the DOM
  *
  */
-const getTabButton = (tab: UI.Tab) =>
+const getTabButton = (tab: Tab) =>
   element(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-id="${getTabId(tab)}"]`)
 const getCurrentTabButton = () => element('.main .left-tab-stripe .left-tab-stripe-button-selected')
-const getTabButtonLabel = (tab: UI.Tab) =>
+const getTabButtonLabel = (tab: Tab) =>
   getTabButton(tab).querySelector('.left-tab-stripe-button-label .kui-tab--label-text') as HTMLElement
-const getTabCloser = (tab: UI.Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
+const getTabCloser = (tab: Tab) => getTabButton(tab).querySelector('.left-tab-stripe-button-closer') as HTMLElement
 
 const switchTab = (tabId: string, activateOnly = false) => {
   debug('switchTab', tabId)
 
   const currentTab = getCurrentTab()
-  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-id="${tabId}"]`) as UI.Tab
+  const nextTab = document.querySelector(`.main > .tab-container > tab[data-tab-id="${tabId}"]`) as Tab
   const nextTabButton = document.querySelector(`.main .left-tab-stripe .left-tab-stripe-button[data-tab-id="${tabId}"]`)
   // debug('nextTab', nextTab)
   // debug('nextTabButton', nextTabButton)
@@ -119,7 +131,7 @@ const switchTab = (tabId: string, activateOnly = false) => {
     nextTab.state.restore()
   }
 
-  const promptToFocus = UI.getCurrentPrompt(nextTab)
+  const promptToFocus = getCurrentPrompt(nextTab)
   if (promptToFocus) {
     promptToFocus.focus()
   }
@@ -179,7 +191,7 @@ const addCommandEvaluationListeners = (): void => {
           // command
           if (!isSidecarVisible(tab)) {
             if (isUsingCommandName()) {
-              getTabButtonLabel(tab).innerText = Settings.theme.productName
+              getTabButtonLabel(tab).innerText = theme.productName
             }
           }
         } else {
@@ -202,7 +214,7 @@ const closeTab = (tab = getCurrentTab()) => {
 
   const nTabs = document.querySelectorAll('.main > .tab-container > tab').length
   if (nTabs <= 1) {
-    if (Capabilities.inElectron()) {
+    if (inElectron()) {
       debug('closing window on close of last tab')
       tab.REPL.qexec('window close')
     }
@@ -211,7 +223,7 @@ const closeTab = (tab = getCurrentTab()) => {
 
   if (tab === getCurrentTab()) {
     // note: true means we only want to activate the given tab.
-    const makeThisTabActive = (tab.nextElementSibling as UI.Tab) || (tab.previousElementSibling as UI.Tab)
+    const makeThisTabActive = (tab.nextElementSibling as Tab) || (tab.previousElementSibling as Tab)
     debug('makeThisTabActive', makeThisTabActive, tab.nextSibling)
     switchTab(getTabId(makeThisTabActive), true)
   }
@@ -260,7 +272,7 @@ function isInViewport(el: Element) {
  * Initialize events for a new tab
  *
  */
-const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
+const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
   tab.state = new TabState()
 
   const newTabId = uuid()
@@ -269,13 +281,12 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
   tabButton.onclick = () => switchTab(newTabId)
 
   setTimeout(async () => {
-    const { REPL } = await import('@kui-shell/core/api/repl')
-    REPL.getImpl(tab)
+    getReplImpl(tab)
     eventBus.emit('/tab/new', tab)
   })
 
   if (doListen) {
-    listen(UI.getCurrentPrompt(tab))
+    listen(getCurrentPrompt(tab))
   }
 
   // keep repl prompt focused, if possible
@@ -283,7 +294,7 @@ const perTabInit = (tab: UI.Tab, tabButton: HTMLElement, doListen = true) => {
     const target = evt.target
     if (isElement(target)) {
       setTimeout(() => {
-        const prompt = UI.getCurrentPrompt(tab)
+        const prompt = getCurrentPrompt(tab)
         if (
           prompt &&
           getSelectionText().length === 0 &&
@@ -330,7 +341,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   const currentVisibleTab = getCurrentTab()
   currentVisibleTab.state.capture()
 
-  const newTab = currentVisibleTab.cloneNode(true) as UI.Tab
+  const newTab = currentVisibleTab.cloneNode(true) as Tab
   newTab.className = 'visible'
 
   const currentTabButton = getCurrentTabButton()
@@ -348,8 +359,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
     temps[idx].remove()
   }
 
-  const { REPL } = await import('@kui-shell/core/api/repl')
-  const currentlyProcessingBlock: true | HTMLElement = await REPL.qexec(
+  const currentlyProcessingBlock: true | HTMLElement = await currentVisibleTab.REPL.qexec(
     'clear --keep-current-active',
     undefined,
     undefined,
@@ -366,7 +376,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
 
   // this must occur after the REPL.qexec('clear'), otherwise we may select
   // the wrong repl-result
-  UI.empty(newTab.querySelector('.repl-result'))
+  empty(newTab.querySelector('.repl-result'))
 
   clearSelection(newTab)
   perTabInit(newTab, newTabButton)
@@ -376,7 +386,7 @@ const newTab = async (basedOnEvent = false): Promise<boolean> => {
   // make the new tab visible at the very end of the above init work!
   currentVisibleTab.classList.remove('visible')
   currentVisibleTab.parentNode.appendChild(newTab)
-  UI.getCurrentPrompt(newTab).focus()
+  getCurrentPrompt(newTab).focus()
 
   getTabButtonLabel(newTab).innerText = !isUsingCommandName() ? strings('Tab') : strings('New Tab')
 
@@ -404,11 +414,11 @@ const oneTimeInit = (): void => {
   // initialize the first tab
   perTabInit(initialTab, initialTabButton, false)
 
-  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : Settings.theme.productName
+  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : theme.productName
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {
-    const prompt = UI.getCurrentPrompt()
+    const prompt = getCurrentPrompt()
     if (prompt) {
       prompt.focus()
     }

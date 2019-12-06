@@ -15,9 +15,7 @@
  */
 
 import Debug from 'debug'
-
-import { Tab } from '@kui-shell/core/api/ui-lite'
-import { KResponse } from '@kui-shell/core/api/commands'
+import { KResponse, Tab } from '@kui-shell/core'
 
 const debug = Debug('plugins/editor/readonly')
 

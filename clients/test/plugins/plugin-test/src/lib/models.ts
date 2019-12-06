@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Models } from '@kui-shell/core'
+import { ResourceWithMetadata } from '@kui-shell/core'
 
-export interface MyResource extends Models.ResourceWithMetadata {
+export interface MyResource extends ResourceWithMetadata {
   kind: 'Fancy'
   grumble: number
 }

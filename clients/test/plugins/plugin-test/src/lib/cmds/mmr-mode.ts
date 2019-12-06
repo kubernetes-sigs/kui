@@ -20,7 +20,7 @@
  *
  */
 
-import { Commands, UI } from '@kui-shell/core'
+import { Arguments, ParsedOptions, Registrar, Tab, MultiModalResponse } from '@kui-shell/core'
 
 import { metadataWithNameOnly as metadata } from './metadata'
 import { modeOrderVariants } from './content/modes'
@@ -29,7 +29,7 @@ import { MyResource } from '../models'
 // exporting this for consumption in tests
 export { metadata }
 
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   defaultMode: string
 }
 
@@ -38,17 +38,17 @@ const buttons = [
   { mode: 'b1', command: 'test string', kind: 'drilldown' as const },
   { mode: 'b2', command: () => 'test string', kind: 'drilldown' as const },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  { mode: 'b3', command: (tab: UI.Tab) => 'test string', kind: 'drilldown' as const },
+  { mode: 'b3', command: (tab: Tab) => 'test string', kind: 'drilldown' as const },
   {
     mode: 'b4',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    command: (tab: UI.Tab, resource: MyResource) => `test string --grumble ${resource.grumble}`,
+    command: (tab: Tab, resource: MyResource) => `test string --grumble ${resource.grumble}`,
     kind: 'drilldown' as const
   },
   {
     mode: 'b5',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    command: (tab: UI.Tab, resource: MyResource) => `some non-existant command`,
+    command: (tab: Tab, resource: MyResource) => `some non-existant command`,
     kind: 'drilldown' as const
   },
 
@@ -65,8 +65,8 @@ const toolbarText = {
  * @param idx into modeOrderVariants array
  *
  */
-const doModes = (idx: number): ((args: Commands.Arguments<Options>) => UI.MultiModalResponse<MyResource>) => {
-  return (args: Commands.Arguments<Options>) => {
+const doModes = (idx: number): ((args: Arguments<Options>) => MultiModalResponse<MyResource>) => {
+  return (args: Arguments<Options>) => {
     const textModes = modeOrderVariants[idx]
     if (args.parsedOptions.defaultMode !== textModes[0].mode) {
       // change the default mode as requested
@@ -82,7 +82,7 @@ const doModes = (idx: number): ((args: Commands.Arguments<Options>) => UI.MultiM
   }
 }
 
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/mode', doModes(0), {
     usage: {
       docs: 'A test of MultiModalResponse mode'

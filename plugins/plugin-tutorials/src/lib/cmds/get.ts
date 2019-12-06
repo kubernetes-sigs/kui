@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { join } from 'path'
 
-import { Commands, UI } from '@kui-shell/core'
+import { Arguments, KResponse, Registrar, injectCSS } from '@kui-shell/core'
 
 import { entities, usage } from '../usage'
 import { modes } from './modes'
@@ -29,7 +29,7 @@ debug('loading')
 import * as marked from 'marked'
 
 // Include start button for modules with accompanying tutorials
-const startButton = (args: string[], command: Commands.Arguments) => {
+const startButton = (args: string[], command: Arguments) => {
   // Create button that says 'Try a guided tutorial'
   const start = document.createElement('button')
   start.setAttribute('id', 'start')
@@ -64,7 +64,7 @@ const setup = (args: string[]) => {
   const projectName = args[args.indexOf('get') + 1]
   const projectHome = projectHomeDir(projectName)
 
-  UI.injectCSS(join(__dirname, '../../../web/css/main.css'))
+  injectCSS(join(__dirname, '../../../web/css/main.css'))
 
   //    return checkIfAlreadyImported(projectHome, { failIf: 'not-exists' })
   return readProject(projectHome)
@@ -147,7 +147,7 @@ const fetchProjectData = () => info => {
  * module get command
  *
  */
-const doGet = async (command: Commands.Arguments): Promise<Commands.KResponse> => {
+const doGet = async (command: Arguments): Promise<KResponse> => {
   debug(`tutorial get impl`)
 
   const args: string[] = command.argvNoOptions
@@ -260,6 +260,6 @@ const doGet = async (command: Commands.Arguments): Promise<Commands.KResponse> =
     )
 }
 
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   commandTree.listen(`/tutorial/get`, doGet, { usage: usage.get })
 }

@@ -14,49 +14,50 @@
  * limitations under the License.
  */
 
-import { UI } from '@kui-shell/core'
+import { MultiModalMode } from '@kui-shell/core'
 
 import htmlTextContent from './text-html'
 import plainTextContent from './text-plain'
 import markdownTextContent from './text-markdown'
 
 // string from content function
-export const plainTextMode: UI.MultiModalMode[] = [{ mode: 'text', label: 'T1', content: plainTextContent }]
+export const plainTextMode: MultiModalMode[] = [{ mode: 'text', label: 'T1', content: plainTextContent }]
 
 // string directly as content
-export const plainTextModeAlt: UI.MultiModalMode[] = [{ mode: 'text2', label: 'T2', content: 'plain as day' }]
+export const plainTextModeAlt: MultiModalMode[] = [{ mode: 'text2', label: 'T2', content: 'plain as day' }]
 
 // string directly as content function string
 // this should take the output of the `test string` command and place it in the mode content section
-export const plainTextModeAlt2: UI.MultiModalMode[] = [{ mode: 'text3', label: 'T3', contentFrom: 'test string' }]
+export const plainTextModeAlt2: MultiModalMode[] = [{ mode: 'text3', label: 'T3', contentFrom: 'test string' }]
 
 // string directly as content function string, with contentType
 // this should take the output of the `test string` command and place it in the mode content section
-export const plainTextModeAlt3: UI.MultiModalMode[] = [
+export const plainTextModeAlt3: MultiModalMode[] = [
   { mode: 'text4', label: 'T4', contentFrom: 'test markdown', contentType: 'text/markdown' }
 ]
 
 // table directly as content
-export const tableMode: UI.MultiModalMode[] = [
+export const tableMode: MultiModalMode[] = [
   {
     mode: 'table',
     label: 'Tbl1',
     content: {
-      body: [{ name: 'c11', attributes: [{ value: 'c12' }] }, { name: 'c21', attributes: [{ value: 'c22' }] }]
+      body: [
+        { name: 'c11', attributes: [{ value: 'c12' }] },
+        { name: 'c21', attributes: [{ value: 'c22' }] }
+      ]
     }
   }
 ]
 
 // html string
-const htmlTextMode: UI.MultiModalMode[] = [
+const htmlTextMode: MultiModalMode[] = [
   { mode: 'html', label: 'H', content: htmlTextContent(), contentType: 'text/html' }
 ]
 
-const markdownTextMode: UI.MultiModalMode[] = [
-  { mode: 'm', content: markdownTextContent(), contentType: 'text/markdown' }
-]
+const markdownTextMode: MultiModalMode[] = [{ mode: 'm', content: markdownTextContent(), contentType: 'text/markdown' }]
 
-const yamlMode: UI.MultiModalMode[] = [
+const yamlMode: MultiModalMode[] = [
   {
     mode: 'yaml',
     label: 'R',
@@ -66,7 +67,7 @@ const yamlMode: UI.MultiModalMode[] = [
 ]
 
 /** string content as function mode first */
-export const modes1: UI.MultiModalMode[] = [].concat(
+export const modes1: MultiModalMode[] = [].concat(
   plainTextMode,
   plainTextModeAlt,
   plainTextModeAlt2,
@@ -78,7 +79,7 @@ export const modes1: UI.MultiModalMode[] = [].concat(
 )
 
 /** table mode first */
-export const modes2: UI.MultiModalMode[] = [].concat(
+export const modes2: MultiModalMode[] = [].concat(
   tableMode, // swapped to first
   plainTextModeAlt,
   plainTextModeAlt2,
@@ -90,7 +91,7 @@ export const modes2: UI.MultiModalMode[] = [].concat(
 )
 
 /** plain string content mode first */
-export const modes3: UI.MultiModalMode[] = [].concat(
+export const modes3: MultiModalMode[] = [].concat(
   plainTextModeAlt, // swapped to first
   plainTextMode, // swapped with plainTextModeAlt
   plainTextModeAlt2,
@@ -102,7 +103,7 @@ export const modes3: UI.MultiModalMode[] = [].concat(
 )
 
 /** command string mode first */
-export const modes4: UI.MultiModalMode[] = [].concat(
+export const modes4: MultiModalMode[] = [].concat(
   plainTextModeAlt2, // swapped to first
   plainTextModeAlt,
   plainTextMode, // swapped with plainTextModeAlt2
@@ -114,7 +115,7 @@ export const modes4: UI.MultiModalMode[] = [].concat(
 )
 
 /** html string mode first */
-export const modes5: UI.MultiModalMode[] = [].concat(
+export const modes5: MultiModalMode[] = [].concat(
   htmlTextMode, // swapped to first
   plainTextModeAlt,
   plainTextModeAlt2,

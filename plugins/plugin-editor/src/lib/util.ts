@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from '@kui-shell/core/api/ui-lite'
+import { Button } from '@kui-shell/core'
 
 // import { language } from './file-types'
 import { save, revert } from './persisters'

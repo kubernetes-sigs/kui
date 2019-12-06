@@ -15,8 +15,21 @@
  */
 
 import Debug from 'debug'
+import * as marked from 'marked'
 
-import { Commands, i18n, i18nFromMap, Settings, UI } from '@kui-shell/core'
+import {
+  Arguments,
+  KResponse,
+  ParsedOptions,
+  Registrar,
+  i18n,
+  i18nFromMap,
+  theme,
+  config,
+  injectCSS,
+  Mode,
+  Presentation
+} from '@kui-shell/core'
 
 import usage from './usage'
 import { homepage, license, version } from '@kui-shell/settings/package.json'
@@ -29,7 +42,6 @@ const debug = Debug('plugins/core-support/about')
  *
  */
 async function markdown(): Promise<(raw: string) => string> {
-  const marked = await import('marked')
   const renderer = new marked.Renderer()
 
   renderer.link = (href: string, title: string, text: string) => {
@@ -51,13 +63,13 @@ async function renderAbout() {
 
   const badges = []
 
-  const openHome = () => shell.openExternal(Settings.theme.ogUrl || homepage)
+  const openHome = () => shell.openExternal(theme.ogUrl || homepage)
 
   if (license) {
     badges.push(license)
   }
 
-  // const subtext = Settings.theme.byline || description
+  // const subtext = theme.byline || description
   /* subtext.appendChild(document.createTextNode('Distributed under an '))
   const licenseDom = document.createElement('strong')
   licenseDom.innerText = license
@@ -68,7 +80,7 @@ async function renderAbout() {
   topContent.appendChild(logo)
   logo.classList.add('logo')
 
-  const aboutImage = Settings.theme.wideIcon || Settings.theme.largeIcon
+  const aboutImage = theme.wideIcon || theme.largeIcon
   if (aboutImage) {
     const iconP = document.createElement('div')
     const icon = document.createElement('img')
@@ -77,13 +89,13 @@ async function renderAbout() {
     iconP.appendChild(icon)
     logo.appendChild(iconP)
     icon.src = aboutImage
-    icon.alt = Settings.theme.productName
-    if (Settings.theme.wideIcon) {
+    icon.alt = theme.productName
+    if (theme.wideIcon) {
       icon.classList.add('kui--wide-icon')
     }
   }
 
-  const description = Settings.theme.description || Settings.theme.ogDescription
+  const description = theme.description || theme.ogDescription
   if (description) {
     const marked = await markdown()
     const longDescription = document.createElement('div')
@@ -118,7 +130,7 @@ function renderVersion(name: string) {
 
   const versionModel = process.versions
   versionModel[name] = version
-  versionModel['build'] = Settings.config['build-info']
+  versionModel['build'] = config['build-info']
 
   const thead = document.createElement('thead')
   thead.classList.add('entity')
@@ -182,15 +194,15 @@ function renderVersion(name: string) {
   return bottomContent
 }
 
-async function renderGettingStarted({ REPL }: Commands.Arguments) {
-  if (Settings.theme.gettingStarted && typeof Settings.theme.gettingStarted !== 'string') {
+async function renderGettingStarted({ REPL }: Arguments) {
+  if (theme.gettingStarted && typeof theme.gettingStarted !== 'string') {
     const marked = await markdown()
     const wrapper = document.createElement('div')
     wrapper.classList.add('page-content')
-    wrapper.innerHTML = marked(i18nFromMap(Settings.theme.gettingStarted))
+    wrapper.innerHTML = marked(i18nFromMap(theme.gettingStarted))
     return wrapper
-  } else if (typeof Settings.theme.gettingStarted === 'string' && Settings.theme.gettingStarted !== 'getting started') {
-    return REPL.qexec<HTMLElement>(Settings.theme.gettingStarted)
+  } else if (typeof theme.gettingStarted === 'string' && theme.gettingStarted !== 'getting started') {
+    return REPL.qexec<HTMLElement>(theme.gettingStarted)
   } else {
     console.error('no getting started content defined by client')
     const empty = document.createElement('div')
@@ -198,7 +210,7 @@ async function renderGettingStarted({ REPL }: Commands.Arguments) {
   }
 }
 
-interface Options extends Commands.ParsedOptions {
+interface Options extends ParsedOptions {
   mode: string
   content: string
 }
@@ -209,23 +221,23 @@ interface Options extends Commands.ParsedOptions {
  * bringYourOwnWindow behavior, for the `about` command.
  *
  */
-const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.KResponse> => {
+const aboutWindow = async (args: Arguments<Options>): Promise<KResponse> => {
   debug('aboutWindow')
 
   const { parsedOptions, REPL } = args
 
   try {
-    UI.injectCSS({
+    injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/about.css'),
       key: 'about-window-css'
     })
   } catch (err) {
     const { dirname, join } = await import('path')
     const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    UI.injectCSS(join(ourRootDir, 'web/css/about.css'))
+    injectCSS(join(ourRootDir, 'web/css/about.css'))
   }
 
-  const name = Settings.theme.productName || (await import('electron')).app.getName()
+  const name = theme.productName || (await import('electron')).app.getName()
 
   // this is the main container for the dom
   const content = document.createElement('div')
@@ -255,7 +267,7 @@ const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.
     content.appendChild(await renderAbout())
   }
 
-  const standardModes: UI.Mode[] = [
+  const standardModes: Mode[] = [
     { mode: 'about', label: strings('About'), contentFrom: 'about' },
     {
       mode: 'gettingStarted',
@@ -269,7 +281,7 @@ const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.
     },
     { mode: 'version', label: strings('Version'), contentFrom: 'about --mode version' }
   ]
-  const modes: UI.Mode[] = standardModes.concat(Settings.theme.about || [])
+  const modes: Mode[] = standardModes.concat(theme.about || [])
 
   modes.find(_ => _.mode === defaultMode).defaultMode = true
 
@@ -277,8 +289,7 @@ const aboutWindow = async (args: Commands.Arguments<Options>): Promise<Commands.
     type: 'custom',
     prettyType: 'about',
     presentation:
-      (document.body.classList.contains('subwindow') && UI.Presentation.SidecarFullscreen) ||
-      UI.Presentation.SidecarThin,
+      (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
     modes,
     metadata: {
       name
@@ -308,8 +319,8 @@ const reportVersion = () => {
   const version = getVersion()
 
   // we were asked only to report the installed version
-  if (Settings.config['build-info']) {
-    return `${version} (build ${Settings.config['build-info']})`
+  if (config['build-info']) {
+    return `${version} (build ${config['build-info']})`
   }
   return version
 }
@@ -318,12 +329,12 @@ const reportVersion = () => {
  * Here we install the command handlers for /version and /about
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   debug('init')
 
   // for menu
   if (!commandTree) {
-    return aboutWindow({} as Commands.Arguments<Options>)
+    return aboutWindow({} as Arguments<Options>)
   }
 
   /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
 import sayHello from './lib/cmds/say-hello'
 import streamHello from './lib/cmds/stream-hello'
@@ -25,7 +25,7 @@ import mmrMode from './lib/cmds/mmr-mode'
 import mmrModeViaRegistration from './lib/cmds/mmr-mode-via-registration'
 import table from './lib/cmds/table'
 
-export default async (commandTree: Commands.Registrar) => {
+export default async (commandTree: Registrar) => {
   // commands
   await Promise.all([
     sayHello(commandTree),

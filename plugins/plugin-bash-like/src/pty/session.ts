@@ -16,9 +16,22 @@
 
 import Debug from 'debug'
 
-import { setStatus, Status } from '@kui-shell/core/webapp/status'
-import { getPrompt, getCurrentProcessingBlock } from '@kui-shell/core/webapp/cli'
-import { Capabilities, Commands, Errors, i18n, Settings, UI } from '@kui-shell/core'
+import {
+  inBrowser,
+  inElectron,
+  Registrar,
+  CodedError,
+  i18n,
+  theme,
+  config,
+  Tab,
+  getCurrentBlock,
+  getCurrentPrompt,
+  getPrompt,
+  getCurrentProcessingBlock,
+  setStatus,
+  Status
+} from '@kui-shell/core'
 
 import { Channel, InProcessChannel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -30,7 +43,7 @@ const debug = Debug('plugins/bash-like/pty/session')
  * Return the cached websocket for the given tab
  *
  */
-export function getChannelForTab(tab: UI.Tab): Channel {
+export function getChannelForTab(tab: Tab): Channel {
   return tab['ws'] as Channel
 }
 
@@ -38,8 +51,8 @@ export function getChannelForTab(tab: UI.Tab): Channel {
  * Return the session for the given tab
  *
  */
-export async function getSessionForTab(tab: UI.Tab): Promise<Channel> {
-  if (tab['_kui_session'] === undefined && Capabilities.inElectron()) {
+export async function getSessionForTab(tab: Tab): Promise<Channel> {
+  if (tab['_kui_session'] === undefined && inElectron()) {
     const channel = new InProcessChannel()
     await channel.init()
     tab['_kui_session'] = channel
@@ -54,7 +67,7 @@ export async function getSessionForTab(tab: UI.Tab): Promise<Channel> {
  * Keep trying until we can establish a session
  *
  */
-export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
+export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
   const sessionInitialization = new Promise(resolve => {
     let placeholderChanged = false
     let previousText: string
@@ -63,7 +76,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
       debug('trying to establish session', tab)
 
       if (!block) {
-        block = UI.getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
+        block = getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
         const prompt = getPrompt(block)
         prompt.readOnly = true
         prompt.placeholder = strings('Please wait while we connect to your cloud')
@@ -90,7 +103,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
             if (placeholderChanged) {
               const prompt = getPrompt(block)
               prompt.readOnly = false
-              prompt.placeholder = Settings.theme.placeholder || ''
+              prompt.placeholder = theme.placeholder || ''
               setStatus(block, Status.replActive)
 
               if (previousText) {
@@ -105,7 +118,7 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
           resolve(getChannelForTab(tab))
         })
         .catch(error => {
-          const err = error as Errors.CodedError
+          const err = error as CodedError
           if (err.code !== 503) {
             // don't bother complaining too much about connection refused
             console.error('error establishing session', err.code, err.statusCode, err)
@@ -128,12 +141,12 @@ export function pollUntilOnline(tab: UI.Tab, block?: HTMLElement) {
  * given tab
  *
  */
-function newSessionForTab(tab: UI.Tab) {
+function newSessionForTab(tab: Tab) {
   // eslint-disable-next-line no-async-promise-executor
   tab['_kui_session'] = new Promise(async (resolve, reject) => {
     try {
-      const block = UI.getCurrentBlock(tab)
-      const prompt = UI.getCurrentPrompt(tab)
+      const block = getCurrentBlock(tab)
+      const prompt = getCurrentPrompt(tab)
       prompt.readOnly = true
       let placeholderChanged = false
 
@@ -144,7 +157,7 @@ function newSessionForTab(tab: UI.Tab) {
         prompt.placeholder = strings('Please wait while we connect to your cloud')
         setStatus(block, Status.processing)
         placeholderChanged = true
-      }, Settings.theme.millisBeforeProxyConnectionWarning || 250)
+      }, theme.millisBeforeProxyConnectionWarning || 250)
 
       await sessionInitialization
 
@@ -152,7 +165,7 @@ function newSessionForTab(tab: UI.Tab) {
       prompt.readOnly = false
       if (placeholderChanged) {
         setStatus(block, Status.replActive)
-        prompt.placeholder = Settings.theme.placeholder || ''
+        prompt.placeholder = theme.placeholder || ''
         await tab.REPL.pexec('ready', { tab })
       }
 
@@ -165,7 +178,7 @@ function newSessionForTab(tab: UI.Tab) {
   })
 }
 
-export function registerCommands(commandTree: Commands.Registrar) {
+export function registerCommands(commandTree: Registrar) {
   // this is the default "session is ready" command handler
   commandTree.listen(
     '/ready',
@@ -192,22 +205,18 @@ export function registerCommands(commandTree: Commands.Registrar) {
  *
  */
 export async function init() {
-  if (
-    Capabilities.inBrowser() &&
-    Settings.config['proxyServer'] &&
-    Settings.config['proxyServer']['enabled'] !== false
-  ) {
+  if (inBrowser() && config['proxyServer'] && config['proxyServer']['enabled'] !== false) {
     debug('initializing pty sessions')
 
     const { eventBus } = await import('@kui-shell/core')
 
     // listen for new tabs
-    eventBus.on('/tab/new', (tab: UI.Tab) => {
+    eventBus.on('/tab/new', (tab: Tab) => {
       newSessionForTab(tab)
     })
 
     // listen for closed tabs
-    eventBus.on('/tab/close', async (tab: UI.Tab) => {
+    eventBus.on('/tab/close', async (tab: Tab) => {
       try {
         debug('closing session for tab')
         getChannelForTab(tab).close()

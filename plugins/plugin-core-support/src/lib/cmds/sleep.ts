@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Commands } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
 /**
  * The command usage model
@@ -30,7 +30,7 @@ const usage = {
  * The command handlers
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.listen(
     '/sleep',
     ({ argvNoOptions }) =>

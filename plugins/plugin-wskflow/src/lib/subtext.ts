@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core'
 
 import { FlowNode } from './graph'
 import ActivationLike from './activation'
@@ -28,7 +28,7 @@ const debug = Debug('plugins/wskflow/subtext')
  *
  */
 export default async function(
-  tab: UI.Tab,
+  tab: Tab,
   actions: Record<string, string[]>,
   activations: ActivationLike[],
   graphData: FlowNode,

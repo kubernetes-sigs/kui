@@ -15,8 +15,7 @@
  */
 
 import Debug from 'debug'
-
-import { UI } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core'
 
 import ActivationLike from './activation'
 import { textualPropertiesOfCode } from './util'
@@ -40,7 +39,7 @@ const wfColorAct = {
 const containerId = 'wskflowDiv'
 
 export default async function graph2doms(
-  tab: UI.Tab,
+  tab: Tab,
   JSONgraph: FlowNode,
   ifReuseContainer?: Element,
   activations?: ActivationLike[],
@@ -54,7 +53,7 @@ export default async function graph2doms(
     }
   } = {}
 ): Promise<Response> {
-  const [d3, $, ELK] = [require('d3'), require('jquery'), require('elkjs/lib/elk.bundled.js')]
+  const [d3, $, ELK] = await Promise.all([import('d3'), import('jquery'), import('elkjs/lib/elk.bundled.js')])
 
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'

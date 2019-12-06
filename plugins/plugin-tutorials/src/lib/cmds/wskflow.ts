@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('tutorial.wskflow')
+import Debug from 'debug'
+const debug = Debug('tutorial.wskflow')
 
 /** millisecond interval between hover effects */
 const stepInterval = 2500

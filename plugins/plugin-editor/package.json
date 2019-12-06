@@ -24,6 +24,7 @@
     "@kui-shell/plugins/editor/webpack/post": "bin/restore-after-prune.sh"
   },
   "main": "dist/index.js",
+  "module": "mdist/index.js",
   "dependencies": {
     "debug": "4.1.1",
     "monaco-editor": "0.14.3",

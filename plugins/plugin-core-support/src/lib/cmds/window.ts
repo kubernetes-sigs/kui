@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { tellMain } from '@kui-shell/core/webapp/electron-events'
-import { Capabilities, Commands } from '@kui-shell/core'
+import { inBrowser, Registrar, tellMain } from '@kui-shell/core'
 
 /**
  * This plugin introduces commands to control the window size.
  *
  */
-export default (commandTree: Commands.Registrar) => {
+export default (commandTree: Registrar) => {
   commandTree.subtree('/window', {
     docs: 'Window sizing commands, e.g. "window max" and "window unmax"'
   })
@@ -41,7 +40,7 @@ export default (commandTree: Commands.Registrar) => {
   commandTree.listen(
     '/window/close',
     () => {
-      if (Capabilities.inBrowser()) {
+      if (inBrowser()) {
         throw new Error('Unsupported operation')
       } else {
         const remote = require('electron').remote
