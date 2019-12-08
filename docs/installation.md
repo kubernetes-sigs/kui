@@ -11,9 +11,9 @@ However, currently, you will not be able to use Kui from your favorite
 terminal (such support should come soon); Kui's graphical shell offers
 a command line experience.
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
+[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-_Coming soon: MacOS .dmg, Linux .deb, Linux .rpm, Windows .zip_
+Coming soon: MacOS .dmg, Linux .deb, Linux .rpm
 
 ##### Example Download for MacOS double-clickable
 
@@ -28,53 +28,18 @@ time you launch these Kui builds. If this is a show-stopper for you,
 we understand! You may always choose to [git clone and
 build](./dev/README.md) Kui yourself.
 
-## Using Kui as a kubectl plugin
-
-If you have a version of kubectl newer than 1.12, then you have the
-option of using Kui as a [kubectl
-plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/).
-Adding `$PWD/kui/bin` to your PATH will enable `kubectl` to find the
-`kui` extension to `kubectl`. You may then execute kubernetes-related
-commands via:
-
-```bash
-kubectl kui get pods --ui
-```
-
 ### Important Note
 
-For using Kui as a kubectl plugin, we recommend using
-[Kubernetes Visualization Client](https://github.com/kui-shell/plugin-kubeui).
-We are in the process of transitioning to this repo, and it will be incorporated shortly.
-
-## Setting up Kubernetes Authorization
-
-If you have a KUBECONFIG environment variable defined in your
-terminal, Kui will pick that up and run with it. If you are using Kui
-in a browser context, you can use the command `k8s auth add` command
-to inject your configuration YAML and PEM into browser's local
-storage.
-
-## Setting up OpenWhisk Authorization
-
-If you are currently a user of Apache OpenWhisk, then your `.wskprops`
-file is sufficient to get you started; you may skip over this
-section. If you have _not_ yet configured your local environment for
-use with OpenWhisk, then continue reading.
-
-### Getting an Authorization Key for IBM Cloud
-
-In order to acquire the necessary authorization key, first ensure that
-you have
-[installed the `ibmcloud` tool](https://console.bluemix.net/docs/cli/index.html#overview);
-the older `bluemix/bx` tool will also suffice for this purpose. Then:
-
-```
-ibmcloud target --cf
-ibmcloud plugin install cloud-functions
-ibmcloud wsk list
-```
+The download links provided on this page include Kubernetes support
+from the [kubeui repository](https://github.com/kui-shell/plugin-kubeui).
+The repository you are currently investigating contains the core
+support of the Kui framework. The kubeui repository uses this core
+framework to build out support for Kubernetes, Helm, and other aspects
+of the Kubernetes world. For more information on using the Kui core
+framework to develop your own custom clients and plugins, check out the
+[API docs](https://apidocs.kui-shell.org/).
 
 ## Next Steps
 
 - Return to the [README](../README.md)
+- Develop your own custom Kui client! [API docs](https://apidocs.kui-shell.org/)

@@ -66,7 +66,7 @@ Common.localDescribe('screenshot', function(this: Common.ISuite) {
     CLI.command(`open ../../README.md`, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('Kui Shell', undefined, undefined, 'README.md'))
+      .then(SidecarExpect.showing('The Kui Framework for Graphical Terminals', undefined, undefined, 'README.md'))
       .catch(Common.oops(this)))
 
   // now screenshot sidecar should work

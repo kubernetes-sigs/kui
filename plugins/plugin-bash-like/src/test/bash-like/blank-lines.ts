@@ -44,7 +44,7 @@ describe('Comments and blank line handling', function(this: Common.ISuite) {
     CLI.command(`open ../../README.md  #hello  `, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('Kui Shell', undefined, undefined, 'README.md')))
+      .then(SidecarExpect.showing('The Kui Framework for Graphical Terminals', undefined, undefined, 'README.md')))
 
   it('should handle a command with suffix comment', () =>
     CLI.command(`open ../../LICENSE ### ### # #    hello  `, this.app)
