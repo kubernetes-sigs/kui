@@ -29,7 +29,7 @@ import { KuiPlugin } from '../models/plugin'
 
 debug('modules loaded')
 
-export const pluginRoot = '../../../plugins'
+export const pluginRoot = '../../../../plugins'
 
 /**
  * This is the registrar for plugins used at runtime (i.e. "live, not

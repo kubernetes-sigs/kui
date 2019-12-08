@@ -2,7 +2,7 @@
   "name": "client-test",
   "version": "1.0.0",
   "description": "A test client for the Kui",
-  "main": "node_modules/@kui-shell/core/main/main.js",
+  "main": "node_modules/@kui-shell/core/dist/main/main.js",
   "scripts": {
     "preinstall": "rm -rf node_modules package-lock.json; (cd ../../ && npm ci && npm run pack)",
     "build:electron": "build() { npx --no-install kui-build-electron /tmp $1; }; build",

@@ -133,7 +133,7 @@ interface SpectronOptions {
 const prepareElectron = (popup: string[]) => {
   const Application = require('spectron').Application
   const electron = require('electron') // relative to __dirname
-  const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/main/main.js' // relative to the tests/ directory
+  const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/dist/main/main.js' // relative to the tests/ directory
 
   const opts: SpectronOptions = {
     env: {},

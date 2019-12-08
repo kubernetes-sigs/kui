@@ -22,7 +22,8 @@ export {
   inElectron,
   isHeadless,
   assertLocalAccess,
-  assertHasProxy
+  assertHasProxy,
+  setHasAuth
 } from './core/capabilities'
 export { CapabilityRegistration } from './models/plugin'
 
@@ -182,16 +183,24 @@ export { commandsOffered as commandsOfferedByPlugin, userHome as pluginUserHome 
 // Settings
 export { inBottomInputMode, userDataDir, exportTo as exportSettingsTo, config, theme } from './core/settings'
 
+// Storage for user data
+export { default as Store } from './models/store'
+
 // SymbolTable
 export { default as SymbolTable } from './core/symbol-table'
 
 // Tables
-export { TableStyle, Table, Row, Cell, isTable } from './webapp/models/table'
+export { TableStyle, Table, Row, Cell, isTable, formatWatchableTable } from './webapp/models/table'
 
 // Util
 export { findFileWithViewer, findFile, isSpecialDirectory, addPath as augmentModuleLoadPath } from './core/find-file'
 export { expandHomeDir } from './util/home'
 export { flatten } from './core/utility'
+export { promiseEach } from './util/async'
 
 // Electron
 export { tellMain } from './webapp/electron-events'
+
+// main
+export { main } from './main/main'
+export { default as boot } from './webapp/bootstrap/boot'

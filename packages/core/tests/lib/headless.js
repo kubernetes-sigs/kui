@@ -20,12 +20,11 @@ const assert = require('assert')
 const { fileSync: makeTempFile } = require('tmp')
 const { readFile } = require('fs')
 const { exec } = require('child_process')
-
-const { dirname, join } = require('path')
+const { join } = require('path')
 
 const ROOT = process.env.TEST_ROOT
 const kui = process.env.KUI || join(ROOT, '../../bin/kui')
-const bindir = process.env.KUI ? dirname(process.env.KUI) : join(ROOT, '../../bin') // should contain kubectl-kui
+// const bindir = process.env.KUI ? dirname(process.env.KUI) : join(ROOT, '../../bin') // should contain kubectl-kui
 const { Util } = require('@kui-shell/test')
 const { expectStruct, expectSubset } = Util
 /**
@@ -261,9 +260,3 @@ exports.cli = new CLI()
 
 /** bin/kui --ui impl */
 exports.kuiElectron = new CLI(kui, undefined, true) // the last true requests teeToFile mode
-
-/** kubectl kui impl */
-exports.kubectl = new CLI('kubectl kui', bindir)
-
-/** kubectl kui --ui impl */
-exports.kubectlElectron = new CLI('kubectl kui', bindir, true) // the last true requests teeToFile mode
