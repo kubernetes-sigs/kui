@@ -24,8 +24,4 @@ if (process.cwd() === '/') {
   }
 }
 
-try {
-  require('./boot').default()
-} catch (err) {
-  require('@kui-shell/core/webapp/bootstrap/boot').default()
-}
+require('@kui-shell/core').boot()

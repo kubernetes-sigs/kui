@@ -19,7 +19,7 @@
  *
  * Usage:
  *
- * import Presentation from '@kui-shell/core/webapp/views/presentation'
+ * import { Presentation } from '@kui-shell/core'
  *
  * {
  *    type: 'custom',

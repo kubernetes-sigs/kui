@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { Arguments, CommandOptions, Registrar, ParsedOptions, KResponse } from '@kui-shell/core/api/commands'
-import { prettyPrintAnsi, prettyPrintTime } from '@kui-shell/core/api/pretty-print'
+import {
+  Arguments,
+  CommandOptions,
+  Registrar,
+  ParsedOptions,
+  KResponse,
+  prettyPrintAnsi,
+  prettyPrintTime
+} from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   grumble?: number

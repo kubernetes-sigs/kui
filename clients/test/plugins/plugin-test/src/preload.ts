@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core/api/capabilities'
-import { PreloadRegistrar } from '@kui-shell/core/api/registrars'
+import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
 
 import { mode1, mode2, mode3, button, badge1, badge2 } from './lib/modes'
 

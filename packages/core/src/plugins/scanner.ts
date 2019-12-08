@@ -184,7 +184,7 @@ const topologicalSortForScan = async (
       delete pluginPaths[route]
     } catch (err) {
       const notFound = err.message.indexOf('Module not found') >= 0 || err.message.indexOf('Cannot find module') >= 0
-      if ((!notFound || iter > 10) && (lastError && lastError.message !== err.message)) {
+      if ((!notFound || iter > 10) && lastError && lastError.message !== err.message) {
         //
         // note how we do not print the error if any of three
         // conditions hold (but we still continue iterating)
@@ -356,7 +356,7 @@ const resolveFromLocalFilesystem = async (scanCache: ScanCache, opts: PrescanOpt
 
   // this scan looks for plugins npm install'd by the client
   if (!opts.externalOnly) {
-    let clientRequired
+    let clientRequired: { plugins?: Record<string, string>; preloads?: Record<string, string> }
     try {
       const secondary = dirname(dirname(require.resolve('@kui-shell/core/package.json')))
       clientRequired = await scanForModules(secondary, false, (filename: string) => !!filename.match(/^plugin-/))

@@ -100,7 +100,7 @@ export const main = async (argv: string[]) => {
   creating('reconfiguring package.json')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const pjson = require(join(__dirname, '../../../../package.json'))
-  pjson.main = 'node_modules/@kui-shell/core/main/main.js'
+  pjson.main = 'node_modules/@kui-shell/core/dist/main/main.js'
   if (!pjson.devDependencies) {
     pjson.devDependencies = {}
   }

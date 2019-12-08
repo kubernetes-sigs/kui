@@ -18,9 +18,9 @@ import Debug from 'debug'
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
-import Settings from '@kui-shell/core/api/settings'
-import Errors from '@kui-shell/core/api/errors'
+import { inBrowser } from '../../core/capabilities'
+import Settings from '../../api/settings'
+import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
 import { injectCSS, uninjectCSS } from '../util/inject'
@@ -51,9 +51,7 @@ export const getPersistedThemeChoice = (): Promise<string> => {
  *
  */
 const getCssFilepathForGivenTheme = (addon: string): string => {
-  const prefix = Capabilities.inBrowser()
-    ? ''
-    : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
+  const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
   return join(prefix, Settings.env.cssHome, addon)
 }
 
@@ -73,7 +71,7 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
   const themeModel = findThemeByName(theme)
   if (!themeModel) {
     debug('could not find theme', theme, Settings.theme)
-    const error = new Error(strings('theme.unknown')) as Errors.CodedError
+    const error = new Error(strings('theme.unknown')) as CodedError
     error.code = 404
     throw error
   }
