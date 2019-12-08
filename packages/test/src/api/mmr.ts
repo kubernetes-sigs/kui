@@ -17,8 +17,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { BadgeSpec } from '@kui-shell/core'
-import { promiseEach } from '@kui-shell/core/util/async'
+import { promiseEach, BadgeSpec } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'

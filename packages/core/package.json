@@ -23,11 +23,10 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
   "module": "mdist/index.js",
   "bin": {
-    "kui": "bin/kui",
-    "kubectl-kui": "bin/kubectl-kui"
+    "kui": "bin/kui"
   },
   "dependencies": {
     "ansi-to-html": "0.6.13",

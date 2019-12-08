@@ -16,9 +16,8 @@
 
 import Debug from 'debug'
 
-import Settings from '@kui-shell/core/api/settings'
-
 import findThemeByName from './find'
+import Settings from '../../api/settings'
 
 const debug = Debug('core/webapp/themes/default')
 

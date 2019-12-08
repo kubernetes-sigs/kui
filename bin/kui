@@ -5,4 +5,4 @@ process.argv.shift()
 
 process.env.KUI_HEADLESS = true
 
-require('@kui-shell/core/main/main').main(process.argv)
+require('@kui-shell/core').main(process.argv)

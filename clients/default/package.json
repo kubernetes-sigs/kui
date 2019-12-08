@@ -17,7 +17,7 @@
     "url": "https://github.com/IBM/kui/issues"
   },
   "dependencies": {},
-  "main": "node_modules/@kui-shell/core/main/main.js",
+  "main": "node_modules/@kui-shell/core/dist/main/main.js",
   "kui": {
     "readme": "../../README.md"
   }

@@ -16,8 +16,8 @@
 
 import Debug from 'debug'
 
-import Capabilities from '@kui-shell/core/api/capabilities'
 import { switchToPersistedThemeChoice } from './persistence'
+import { isHeadless, inBrowser } from '../../core/capabilities'
 
 const debug = Debug('core/webapp/themes/init')
 
@@ -26,8 +26,8 @@ const debug = Debug('core/webapp/themes/init')
  *
  */
 export default () => {
-  if (!Capabilities.isHeadless()) {
-    if (Capabilities.inBrowser() || !document.body.hasAttribute('kui-theme')) {
+  if (!isHeadless()) {
+    if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
       debug('loading theme')
       return switchToPersistedThemeChoice()
     }

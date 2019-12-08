@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, CommandOptions, Registrar, ParsedOptions } from '@kui-shell/core/api/commands'
+import { Arguments, CommandOptions, Registrar, ParsedOptions } from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   grumble?: number

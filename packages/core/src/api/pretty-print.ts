@@ -15,4 +15,4 @@
  */
 
 export { prettyPrintTime } from '../webapp/util/time'
-export { default as prettyPrintAnsi } from '@kui-shell/core/webapp/util/pretty-print'
+export { default as prettyPrintAnsi } from '../webapp/util/pretty-print'

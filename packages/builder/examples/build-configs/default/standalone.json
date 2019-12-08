@@ -3,5 +3,5 @@
   "bodyCss": ["in-electron"],
   "cssHome": "css/",
   "imageHome": "icons/ico/",
-  "jsHome": "../../../node_modules/@kui-shell/core/webapp/bootstrap/"
+  "jsHome": "../../../node_modules/@kui-shell/core/dist/webapp/bootstrap/"
 }

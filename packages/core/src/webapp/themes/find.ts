@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import Settings from '@kui-shell/core/api/settings'
-
 import Theme from './Theme'
+import Settings from '../../api/settings'
 
 /**
  * @return the Theme model associated with the given theme name

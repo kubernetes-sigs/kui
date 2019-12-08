@@ -5,7 +5,7 @@
     "strictBindCallApply": true,
     "noImplicitAny": true,
     "composite": true,
-    "outDir": ".",
+    "outDir": "dist",
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {

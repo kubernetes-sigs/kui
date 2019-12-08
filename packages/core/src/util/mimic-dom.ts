@@ -84,4 +84,6 @@ export default function() {
       return dom0()
     }
   }
+
+  debug('mimicDom done')
 }

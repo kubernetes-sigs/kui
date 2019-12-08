@@ -1,13 +1,2 @@
 build
 dist
-/api/
-/core/
-/commands/
-/main/
-/models/
-/plugins/
-/repl/
-/test/
-/util/
-/webapp/
-/index.*

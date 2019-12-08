@@ -15,8 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { Table } from '@kui-shell/core'
-import { promiseEach } from '@kui-shell/core/util/async'
+import { promiseEach, Table } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'

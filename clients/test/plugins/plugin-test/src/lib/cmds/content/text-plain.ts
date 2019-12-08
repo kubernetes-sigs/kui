@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core/api/ui-lite'
+import { Tab } from '@kui-shell/core'
 import { MyResource } from '../../models'
 
 export default (tab: Tab, resource: MyResource) => `test plain text ${resource.grumble}`
