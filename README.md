@@ -1,29 +1,32 @@
-# Kui Shell
+# The Kui Framework for Graphical Terminals
 
 [![Build Status](https://travis-ci.org/IBM/kui.svg?branch=master)](https://travis-ci.org/IBM/kui)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/IBM/kui/branch/master/graph/badge.svg)](https://codecov.io/gh/IBM/kui)
 [![Type Coverage](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/badge.json?which=core)](https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/typecov-model.json)
 
-Kui Shell offers a new development experience for building
-cloud-native applications. By combining the power of familiar CLIs
-with visualizations in high-impact areas, Kui enables you to
-manipulate complex JSON and YAML data models, integrate disparate
-tooling, and provides quick access to aggregate views of operational
-data.
+Kui offers a new development experience for building cloud-native
+applications. By combining the power of familiar CLIs with
+visualizations in high-impact areas, Kui enables you to manipulate
+complex JSON and YAML data models, integrate disparate tooling, and
+provides quick access to aggregate views of operational data.
 
 ## Quick Install
 
-The fastest option is to install a prebuilt release.
+We offer prebuilt releases that offers Kubernetes support:
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux.zip](https://linux-zip.kui-shell.org)
+[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-Visit the [Kui Installation Guide](docs/installation.md)
-for installation details and alternative installation options.
+These clients leverage the core framework hosted in this repository,
+combined with the Kubernetes plugins hosted
+[here](https://github.com/kui-shell/plugin-kubeui). Visit the [Kui
+Installation Guide](docs/installation.md) for installation details and
+alternative installation options.
 
 ## Contributing
 
-If you want to help, please take a look at our [guidelines](CONTRIBUTING.md) and [developer guide](docs/dev/README.md).
+If you want to help, please take a look at our [guidelines](CONTRIBUTING.md) and [developer guide](docs/dev/README.md). If you want to develop your own custom client, using the Kui framework, check out the
+[API docs](https://apidocs.kui-shell.org/).
 
 ## The Kui Experience
 
