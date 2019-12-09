@@ -260,3 +260,11 @@ exports.cli = new CLI()
 
 /** bin/kui --ui impl */
 exports.kuiElectron = new CLI(kui, undefined, true) // the last true requests teeToFile mode
+
+/**
+ * @return a CLI impl for the given executable `exe`, located in the given `bindir`.
+ *
+ */
+exports.makeCLI = function(exe, bindir) {
+  return new CLI(exe, bindir)
+}
