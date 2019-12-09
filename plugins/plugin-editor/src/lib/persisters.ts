@@ -28,7 +28,7 @@ const debug = Debug('plugins/editor/persisters')
 export interface Persister {
   getCode: (entity: EditorEntity) => EditorEntity
   saveString: string
-  save: (entity: EditorEntity, editor: Editor) => Promise<EditorEntity>
+  save: (entity: EditorEntity, editor: Editor, state: EditorState) => Promise<EditorEntity>
   revert: (entity: EditorEntity, state: EditorState) => Promise<EditorEntity>
 }
 
@@ -80,7 +80,9 @@ export const persisters = {
  * Save the given entity
  *
  */
-export const save = ({ getEntity, editor, eventBus }: EditorState): Button<EditorResource> => {
+export const save = (state: EditorState): Button<EditorResource> => {
+  const { getEntity, editor, eventBus } = state
+
   const entityRightNow = getEntity()
   const mode: string = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
   return {
@@ -95,7 +97,7 @@ export const save = ({ getEntity, editor, eventBus }: EditorState): Button<Edito
       // transfer the latest code from the editor into the entity
       entity.exec.code = editor.getValue()
 
-      return save(entity, editor).then(entity => {
+      return save(entity, editor, state).then(entity => {
         entity.persister = persister
         eventBus.emit('/editor/save', entity, { event: 'save' })
         globalEventBus.emit('/editor/save', entity, { event: 'save' })

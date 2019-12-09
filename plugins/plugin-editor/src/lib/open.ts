@@ -262,7 +262,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions: E
       // update view header, initial call
       updateHeader(false)
 
-      return Promise.resolve({ getEntity, editor, content, eventBus, toolbarText })
+      return Promise.resolve({ getEntity, editor, content, tab, eventBus, toolbarText })
     }
   } /* end of updater */
 

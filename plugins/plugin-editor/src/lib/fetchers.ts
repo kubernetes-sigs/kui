@@ -24,11 +24,11 @@ import Entity from './entity'
 const debug = Debug('plugins/editor/fetchers')
 
 export type IFetcher = (
+  tab: Tab,
   entityName: string,
   parsedOptions?: ParsedOptions,
   execOptions?: ExecOptions,
-  createIfAbsent?: boolean,
-  tab?: Tab
+  createIfAbsent?: boolean
 ) => Promise<Entity>
 
 /**
@@ -82,11 +82,11 @@ interface FStat {
  *
  */
 export const fetchFile: IFetcher = async (
+  tab: Tab,
   filepath: string,
   parsedOptions: ParsedOptions,
   execOptions: ExecOptions,
-  createIfAbsent: boolean,
-  tab: Tab
+  createIfAbsent: boolean
 ): Promise<Entity> => {
   let stats: FStat
   try {
@@ -101,7 +101,7 @@ export const fetchFile: IFetcher = async (
     if (err.code === 404 && createIfAbsent) {
       // Code is a string in this case, not a number
       debug('creating file')
-      return createFilepath(tab, filepath, execOptions).then(() => fetchFile(filepath, parsedOptions, execOptions)) // no create flag here, so no infinite recursion
+      return createFilepath(tab, filepath, execOptions).then(() => fetchFile(tab, filepath, parsedOptions, execOptions)) // no create flag here, so no infinite recursion
     }
     throw err
   }
@@ -157,7 +157,7 @@ export const fetchEntity = async (
       const { fetcher } = fetchers[idx]
 
       try {
-        const entity = await fetcher(entityName, parsedOptions, execOptions, false, tab)
+        const entity = await fetcher(tab, entityName, parsedOptions, execOptions, false)
         if (entity) {
           return entity
         }
@@ -171,7 +171,7 @@ export const fetchEntity = async (
   }
 
   debug('treating this as an createIfAbsent edit of a local filepath')
-  return fetchFile(entityName, parsedOptions, execOptions, true, tab)
+  return fetchFile(tab, entityName, parsedOptions, execOptions, true)
 }
 
 /* register the built-in local file fetcher */

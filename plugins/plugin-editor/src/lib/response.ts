@@ -17,7 +17,7 @@
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { ResourceWithMetadata, MultiModalResponse, ToolbarText } from '@kui-shell/core'
+import { MultiModalResponse, ResourceWithMetadata, Tab, ToolbarText } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './entity'
 
@@ -26,6 +26,7 @@ export interface Editor extends MonacoEditor.ICodeEditor {
 }
 
 export interface EditorState {
+  tab: Tab
   getEntity: () => EditorEntity
   editor: Editor
   eventBus: EventEmitter

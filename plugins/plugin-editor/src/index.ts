@@ -20,6 +20,7 @@ import { Tab, ExecOptions } from '@kui-shell/core'
 
 export { respondToRepl } from './lib/util'
 export { lockIcon, edit } from './lib/readonly'
+export { Editor, EditorState } from './lib/response'
 export { language, extension } from './lib/file-types'
 export { Entity as EditorEntity } from './lib/entity'
 export { fetchFile, registerFetcher } from './lib/fetchers'
