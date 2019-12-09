@@ -208,6 +208,9 @@ module.exports = {
   optimization,
   module: {
     rules: [
+      // ignore any commonjs kui bits
+      { test: /\/node_modules\/@kui-shell\/dist\/*/, use: 'ignore-loader' },
+
       //
       // typescript exclusion rules
       { test: /\/src\/*\.ts/, use: 'ignore-loader' },
@@ -279,6 +282,7 @@ module.exports = {
       { test: /\.tsx?$/, use: 'ignore-loader' },
       { test: /Dockerfile$/, use: 'ignore-loader' },
       { test: /flycheck*\.js/, use: 'ignore-loader' },
+      { test: /flycheck*\.d.ts/, use: 'ignore-loader' },
       // end of ignore-loader
       //
       // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
