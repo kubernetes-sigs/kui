@@ -16,6 +16,16 @@
 # limitations under the License.
 #
 
+#
+# @param optionally, a caller may specify the name of a tsconfig.json
+# to use; by default, we will use the default behavior of `tsc -b .`,
+# executed from the CLIENT_HOME directory; as of this writing, tsc
+# looks for a file named "tsconfig.json" in that directory
+#
+# optional env var parameters
+# @env CLIENT_HOME the absolute path to your client's top-level directory; defaults to `pwd`
+#
+
 set -e
 set -o pipefail
 
@@ -38,7 +48,7 @@ else
   touch ./node_modules/@kui-shell/prescan.json
 
   # compile the source
-  npx tsc -b .
+  npx tsc -b ${1-.}
 fi
 
 # initialize the html bits
