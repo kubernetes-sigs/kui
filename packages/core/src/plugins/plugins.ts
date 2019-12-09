@@ -22,10 +22,10 @@ import preloader from './preloader'
 import { makeResolver } from './resolver'
 import { PrescanModel, unify } from './prescan'
 
-import Settings from '../api/settings'
-import Capabilities from '../api/capabilities'
-import { setPluginResolver } from '../core/command-tree'
 import { KuiPlugin } from '../models/plugin'
+import { userDataDir } from '../core/userdata'
+import { inBrowser } from '../core/capabilities'
+import { setPluginResolver } from '../core/command-tree'
 
 debug('modules loaded')
 
@@ -71,7 +71,7 @@ export const preload = () => {
  */
 export async function userInstalledHome() {
   const { join } = await import('path')
-  const rootDir = Settings.userDataDir()
+  const rootDir = userDataDir()
   return join(rootDir, 'plugins')
 }
 
@@ -96,7 +96,7 @@ export const init = async (): Promise<boolean> => {
     console.error('prescanned does not exist or is not valid JSON', err)
   }
 
-  if (!Capabilities.inBrowser() && prescan) {
+  if (!inBrowser() && prescan) {
     try {
       const [{ existsSync }, { join }] = await Promise.all([import('fs'), import('path')])
       const userPath = join(await userInstalledHome(), 'node_modules/@kui-shell/prescan.json')

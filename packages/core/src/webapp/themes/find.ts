@@ -15,14 +15,14 @@
  */
 
 import Theme from './Theme'
-import Settings from '../../api/settings'
+import { theme } from '../../core/settings'
 
 /**
  * @return the Theme model associated with the given theme name
  *
  */
 export function findByName(name: string): Theme {
-  return (Settings.theme.themes || []).find(_ => _.name === name)
+  return (theme.themes || []).find(_ => _.name === name)
 }
 
 export default findByName

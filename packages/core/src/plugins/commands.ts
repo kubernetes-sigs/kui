@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import Tables from '../api/tables'
-import Errors from '../api/errors'
 import { prescanModel } from './plugins'
+import { CodedError } from '../models/errors'
+import { Table } from '../webapp/models/table'
+import { UsageModel } from '../core/usage-error'
 
 /**
  * Return a table view of the commands offered by the given plugin
@@ -24,14 +25,14 @@ import { prescanModel } from './plugins'
  * @param plugin the name of an installed plugin, e.g. plugin-core-support
  *
  */
-export default async function commandsOffered(plugin?: string): Promise<Tables.Table> {
+export default async function commandsOffered(plugin?: string): Promise<Table> {
   const { commandToPlugin, flat, usage, docs } = prescanModel()
 
   const commands: string[] = []
   const pluginIsInstalled = !!flat.find(({ route }) => route === plugin)
 
   if (!pluginIsInstalled) {
-    const err = new Error(`Plugin ${plugin} is not installed`) as Errors.CodedError
+    const err = new Error(`Plugin ${plugin} is not installed`) as CodedError
     err.code = 404
     throw err
   }
@@ -55,7 +56,7 @@ export default async function commandsOffered(plugin?: string): Promise<Tables.T
     idx = 2,
     prefix = `/${A[1]}`,
     subtree = usage[prefix]
-  ): Errors.UsageModel {
+  ): UsageModel {
     if (!subtree) {
       return
     }

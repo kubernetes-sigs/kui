@@ -19,11 +19,12 @@ import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
 import { inBrowser } from '../../core/capabilities'
-import Settings from '../../api/settings'
+import { env } from '../../core/settings'
 import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
 import { injectCSS, uninjectCSS } from '../util/inject'
+import { clearPreference, getPreference, setPreference } from '../../core/userdata'
 
 import findThemeByName from './find'
 import getDefaultTheme from './default'
@@ -43,7 +44,7 @@ const persistedThemePreferenceKey = 'kui.theme.current'
  *
  */
 export const getPersistedThemeChoice = (): Promise<string> => {
-  return Settings.getPreference(persistedThemePreferenceKey)
+  return getPreference(persistedThemePreferenceKey)
 }
 
 /**
@@ -52,7 +53,7 @@ export const getPersistedThemeChoice = (): Promise<string> => {
  */
 const getCssFilepathForGivenTheme = (addon: string): string => {
   const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
-  return join(prefix, Settings.env.cssHome, addon)
+  return join(prefix, env.cssHome, addon)
 }
 
 /**
@@ -70,7 +71,7 @@ function id(theme: string) {
 export const switchTo = async (theme: string, webContents?: WebContents, saveNotNeeded = false): Promise<void> => {
   const themeModel = findThemeByName(theme)
   if (!themeModel) {
-    debug('could not find theme', theme, Settings.theme)
+    debug('could not find theme', theme, theme)
     const error = new Error(strings('theme.unknown')) as CodedError
     error.code = 404
     throw error
@@ -145,7 +146,7 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
   if (!saveNotNeeded) {
     // e.g. if we are doing a switch to the persisted theme choice,
     // there is no need to re-persist this choice
-    await Settings.setPreference(persistedThemePreferenceKey, theme)
+    await setPreference(persistedThemePreferenceKey, theme)
   }
 
   // set the theme attributes on document.body
@@ -210,7 +211,7 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
  */
 export const resetToDefault = async () => {
   debug('reset')
-  await Settings.clearPreference(persistedThemePreferenceKey)
+  await clearPreference(persistedThemePreferenceKey)
   await switchTo(getDefaultTheme())
   return true
 }

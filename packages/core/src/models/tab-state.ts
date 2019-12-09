@@ -16,10 +16,10 @@
 
 import Debug from 'debug'
 
-import { inBrowser } from '../api/capabilities'
-import { Settings } from '../api/settings'
-import { getCurrentPrompt } from '../webapp/prompt'
 import { WatchableJob } from '../core/job'
+import { inBrowser } from '../core/capabilities'
+import { getCurrentPrompt } from '../webapp/prompt'
+import { theme, inBottomInputMode } from '../core/settings'
 
 const debug = Debug('core/models/TabState')
 
@@ -65,7 +65,7 @@ export default class TabState {
     this._env = Object.assign({}, process.env)
     this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
-    if (Settings.inBottomInputMode) {
+    if (inBottomInputMode) {
       this._currentBottomInputValue = getCurrentPrompt().value
     }
 
@@ -108,7 +108,7 @@ export default class TabState {
   /** attach a job to this tab */
   public captureJob(job: WatchableJob) {
     if (!this._jobs) {
-      const maxJobs = Settings.theme.maxWatchersPerTab || 6
+      const maxJobs = theme.maxWatchersPerTab || 6
       this._jobs = new Array<WatchableJob>(maxJobs)
       this._age = new Array<number>(maxJobs)
     }
@@ -164,7 +164,7 @@ export default class TabState {
       process.chdir(this._cwd)
     }
 
-    if (Settings.inBottomInputMode) {
+    if (inBottomInputMode) {
       getCurrentPrompt().value = this.currentBottomInputValue
     }
   }

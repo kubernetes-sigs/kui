@@ -17,7 +17,7 @@
 import Debug from 'debug'
 
 import findThemeByName from './find'
-import Settings from '../../api/settings'
+import { theme } from '../../core/settings'
 
 const debug = Debug('core/webapp/themes/default')
 
@@ -26,7 +26,7 @@ const debug = Debug('core/webapp/themes/default')
  *
  */
 export function getDefault(isDarkMode = false) {
-  let defaultTheme = Settings.theme.defaultTheme
+  let defaultTheme = theme.defaultTheme
 
   if (isDarkMode) {
     const darkTheme = findThemeByName('Dark')
@@ -37,7 +37,7 @@ export function getDefault(isDarkMode = false) {
 
   if (!defaultTheme) {
     console.error('theme bug: the theme does not set a default theme')
-    defaultTheme = Settings.theme.themes[0] && Settings.theme.themes[0].name
+    defaultTheme = theme.themes[0] && theme.themes[0].name
     if (!defaultTheme) {
       throw new Error('SEVERE theme bug: no theme found')
     }
