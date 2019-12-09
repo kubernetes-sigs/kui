@@ -30,7 +30,7 @@ const debug = Debug('webapp/views/registrar/badges')
  */
 export interface BadgeRegistration<Resource extends MetadataBearing> {
   when: SidecarModeFilter<Resource> // when this filter returns true...
-  badge: BadgeSpec | ((resource: Resource) => BadgeSpec) // either a badge spec, or a function that produces one
+  badge: BadgeSpec | ((resource: Resource, tab: Tab) => BadgeSpec) // either a badge spec, or a function that produces one
 }
 
 /** registered badge handlers */
@@ -67,7 +67,7 @@ export function apply<Resource extends MetadataBearing>(
     .forEach(({ badge }) => {
       // now add the badge
       if (typeof badge === 'function') {
-        addBadge(tab, badge(entity.resource), badgeOptions)
+        addBadge(tab, badge(entity.resource, tab), badgeOptions)
       } else {
         addBadge(tab, badge, badgeOptions)
       }
