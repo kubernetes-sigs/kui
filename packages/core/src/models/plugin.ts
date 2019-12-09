@@ -17,7 +17,8 @@
 import { CommandRegistrar } from './command'
 import { PrescanUsage } from '../plugins/prescan'
 import { MetadataBearing } from '../models/entity'
-import { BadgeRegistration, ModeRegistration } from '../api/registrars'
+import { BadgeRegistration } from '../webapp/views/registrar/badges'
+import { ModeRegistration } from '../webapp/views/registrar/modes'
 
 export type KuiPlugin = void | Promise<void>
 
