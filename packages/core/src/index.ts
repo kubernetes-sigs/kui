@@ -40,6 +40,7 @@ export {
   Event,
   CommandRegistrar as Registrar
 } from './models/command'
+export { optionsToString as unparse } from './core/utility'
 export {
   MixedResponse,
   RawResponse,
