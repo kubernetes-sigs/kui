@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.2](https://github.com/IBM/kui/compare/v4.5.0...v5.6.2) (2019-12-09)
+
+### Features
+
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
 ## [5.6.1](https://github.com/IBM/kui/compare/v5.6.0...v5.6.1) (2019-12-09)
 
 **Note:** Version bump only for package @kui-shell/proxy
