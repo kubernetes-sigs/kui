@@ -1,8 +1,5 @@
 {
   "extends": "./packages/builder/tsconfig-base.json",
-  "compilerOptions": {
-    "module": "es6"
-  },
   "references": [
     {
       "path": "packages/core/tsconfig-es6.json"
