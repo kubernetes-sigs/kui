@@ -35,5 +35,9 @@ interface CLI {
 
 export var cli: CLI
 export var kuiElectron: CLI
-export var kubectl: CLI
-export var kubectlElectron: CLI
+
+/**
+ * @return a CLI impl for the given executable `exe`, located in the given `bindir`.
+ *
+ */
+export function makeCLI(exe: string, bindir: string): CLI
