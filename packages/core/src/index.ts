@@ -23,7 +23,8 @@ export {
   isHeadless,
   assertLocalAccess,
   assertHasProxy,
-  setHasAuth
+  setHasAuth,
+  getAuthValue
 } from './core/capabilities'
 export { CapabilityRegistration } from './models/plugin'
 
