@@ -13,7 +13,7 @@ provides quick access to aggregate views of operational data.
 
 ## Quick Install
 
-We offer prebuilt releases that offers Kubernetes support:
+We offer prebuilt releases that offer Kubernetes support:
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
