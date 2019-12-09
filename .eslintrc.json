@@ -16,6 +16,7 @@
     "dot-notation": "off",
     "no-undef": "off",
     "import/first": "off",
+    "no-new": "off",
     "@typescript-eslint/camelcase": [
       "error",
       {
@@ -28,6 +29,13 @@
           "follow_max",
           "open_timeout"
         ]
+      }
+    ],
+    "@typescript-eslint/no-this-alias": [
+      "error",
+      {
+        "allowDestructuring": true,
+        "allowedNames": ["self"]
       }
     ],
     "@typescript-eslint/no-unused-vars": "error",

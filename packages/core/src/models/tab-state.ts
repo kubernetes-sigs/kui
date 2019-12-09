@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { WatchableJob } from '../core/job'
+import { ResourceWatchJob } from '../core/job'
 import { inBrowser } from '../core/capabilities'
 import { getCurrentPrompt } from '../webapp/prompt'
 import { theme, inBottomInputMode } from '../core/settings'
@@ -38,7 +38,7 @@ export default class TabState {
   private _cwd: string
 
   /** jobs attached to this tab */
-  private _jobs: WatchableJob[]
+  private _jobs: ResourceWatchJob[]
 
   private _age: number[]
 
@@ -106,10 +106,10 @@ export default class TabState {
   }
 
   /** attach a job to this tab */
-  public captureJob(job: WatchableJob) {
+  public captureJob(job: ResourceWatchJob) {
     if (!this._jobs) {
       const maxJobs = theme.maxWatchersPerTab || 6
-      this._jobs = new Array<WatchableJob>(maxJobs)
+      this._jobs = new Array<ResourceWatchJob>(maxJobs)
       this._age = new Array<number>(maxJobs)
     }
     const slot = this.findFreeJobSlot()
@@ -146,9 +146,9 @@ export default class TabState {
    * caller is responsible for aborting the job.
    *
    */
-  public removeJob(job: WatchableJob) {
+  public removeJob(job: ResourceWatchJob) {
     if (this._jobs) {
-      const idx = this._jobs.findIndex(existingJob => existingJob && existingJob.id === job.id)
+      const idx = this._jobs.findIndex(existingJob => existingJob && existingJob.getId() === job.getId())
       this.clearAt(idx)
     }
   }

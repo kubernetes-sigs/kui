@@ -15,49 +15,175 @@
  */
 
 import Debug from 'debug'
+import { v4 as uuidgen } from 'uuid'
+
 import { Tab } from '../webapp/cli'
+import { theme } from './settings'
+import { hasReachedFinalState, findFinalStateFromCommand } from '../webapp/views/table'
+import { MetadataBearing as ResourceWithMetadata } from '../models/entity'
+import { Pusher, ResourceChangeFn, AllResourcesDeletedFn } from '../webapp/models/watch'
 
 const debug = Debug('webapp/views/jobs')
 
-export class WatchableJob {
-  private _id: number
+export type ResourceWatchJob = {
+  /** help manage the jobs poll */
+  getId: () => number
+  /** init the resouce watch, and update the DOM according to `updated` and `deleted` functions */
+  init: (tab: Tab, updated: ResourceChangeFn, deleted: ResourceChangeFn | AllResourcesDeletedFn) => void //
+  /** abort the resource watch */
+  abort(): void
+}
 
-  public get id() {
+const fastPolling = 500 // initial polling rate for watching OnlineLike or OfflineLike state
+const mediumPolling = 3000 // initial polling rate for watching a steady state
+const finalPolling = (theme && theme.tablePollingInterval) || 5000 // final polling rate (do not increase the interval beyond this!)
+debug('polling intervals', fastPolling, mediumPolling, finalPolling)
+
+/**
+ * help calcuate the ladder polling interval
+ *
+ */
+function createLadderInterval(expectedFinalState: string) {
+  // establish the initial watch interval,
+  // if we're on resource creation/deletion, do fast polling, otherwise we do steady polling
+  const initalPollingInterval =
+    expectedFinalState === 'OfflineLike' || expectedFinalState === 'OnlineLike' ? fastPolling : mediumPolling
+
+  // increase the table polling interval until it reaches the steady polling interval, store the ladder in an array
+  const ladder = [initalPollingInterval]
+  let current = initalPollingInterval
+
+  // increment the polling interval
+  while (current < finalPolling) {
+    if (current < 1000) {
+      current = current + 250 < 1000 ? current + 250 : 1000
+      ladder.push(current)
+    } else {
+      ladder.push(current)
+      current = current + 2000 < finalPolling ? current + 2000 : finalPolling
+      ladder.push(current)
+    }
+  }
+
+  debug('ladder', ladder)
+  return ladder
+}
+
+export class PollWatcherJob implements ResourceWatchJob {
+  private pollCommand: string
+  private pollLimit: number
+  private pollInterval: number[]
+
+  private _id: number
+  private tab: Tab
+
+  private updated: ResourceChangeFn
+  private deleted: AllResourcesDeletedFn
+
+  public getId() {
     return this._id
   }
 
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(private tab: Tab, private handler: TimerHandler, private timeout: number) {}
-
   /**
-   * Start the watchable job
+   * Instantiates a PollWatcherJob class and creates a ladder poll interval
    */
-  private startWatching(handler: TimerHandler, timeout: number) {
-    this._id = setInterval(handler, timeout)
+  public constructor(pollCommand: string, pollLimit?: number, pollInterval?: number[]) {
+    this.pollCommand = pollCommand
+    this.pollLimit = pollLimit || 100000
+    this.pollInterval = pollInterval || createLadderInterval(findFinalStateFromCommand(pollCommand))
   }
 
   /**
-   * Start the watchable job and store it in the associated tab
+   * Init the poll watcher and store the job in the associated tab
    */
-  public start() {
-    this.startWatching(this.handler, this.timeout)
+  public init(tab: Tab, updated: ResourceChangeFn, deleted: AllResourcesDeletedFn) {
+    this.tab = tab
+    this.updated = updated
+    this.deleted = deleted
+    this._id = setInterval(this.watchIt.bind(this) as TimerHandler, this.pollInterval.shift() + ~~(100 * Math.random()))
     this.tab.state.captureJob(this)
-    debug(`start job ${this._id} with timeout ${this.timeout}`)
   }
 
   /**
-   * Stop the running job
-   */
-  private stopWatching(id: number) {
-    clearInterval(id)
-  }
-
-  /**
-   * Abort the running job and remove it from the associated tab
+   * Abort the running job
    */
   public abort() {
-    this.stopWatching(this._id)
+    clearInterval(this._id)
     this.tab.state.removeJob(this)
     debug(`stop job ${this._id}`)
+  }
+
+  /**
+   * Reschedule the poll job, based on `pollInterval`
+   */
+  private reschedule() {
+    if (this.pollInterval.length > 0) {
+      this.abort()
+      new PollWatcherJob(this.pollCommand, this.pollLimit, this.pollInterval).init(this.tab, this.updated, this.deleted)
+    }
+  }
+
+  /**
+   * Poll data, and call `updated` and `deleted` functions accordingly
+   */
+  private async poll() {
+    debug(`refresh with ${this.pollCommand}`)
+
+    try {
+      const { qexec } = await import('../repl/exec')
+      const response = await qexec<ResourceWithMetadata>(this.pollCommand)
+      this.updated(response)
+      hasReachedFinalState(response) ? this.abort() : this.reschedule()
+    } catch (err) {
+      this.deleted(err)
+      throw err
+    }
+  }
+
+  /**
+   * Restrict the poll job with limit
+   */
+  private watchIt() {
+    if (--this.pollLimit < 0) {
+      console.error('watchLimit exceeded')
+      this.abort()
+    } else {
+      Promise.resolve(this.poll()).catch(() => this.abort())
+    }
+  }
+}
+
+export class PushWatchJob implements ResourceWatchJob {
+  private pusher: Pusher
+  private _id: number
+  private tab: Tab
+
+  public getId() {
+    return this._id
+  }
+
+  /**
+   * Instantiates a PushJob class and creates a poll interval
+   */
+  public constructor(pusher: Pusher) {
+    this.pusher = pusher
+  }
+
+  /**
+   * Initiate the push watcher and register to a context
+   */
+  public init(tab: Tab, updated: ResourceChangeFn, deleted: ResourceChangeFn) {
+    this.tab = tab
+    this.pusher.init(updated, deleted, this) // async here?
+    this._id = parseInt(uuidgen())
+    this.tab.state.captureJob(this)
+  }
+
+  /**
+   * Abort the push watcher and remove it from the context
+   */
+  public abort() {
+    this.pusher.abort(this)
+    this.tab.state.removeJob(this)
   }
 }

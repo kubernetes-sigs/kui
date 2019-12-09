@@ -22,12 +22,13 @@ import { Tab } from '../tab'
 import { isPopup } from '../popup-core'
 import { getCurrentPrompt } from '../prompt'
 import { _split as split, Split } from '../../repl/split'
-import { isMetadataBearing } from '../../models/entity'
+import { isMetadataBearing, MetadataBearing as ResourceWithMetadata } from '../../models/entity'
+import { CodedError } from '../../models/errors'
 import { Table, Row, Cell, Icon, sortBody, TableStyle, diffTableRows, isTable } from '../models/table'
 import { isWatchable, isPusher, Watchable } from '../models/watch'
 import { theme } from '../../core/settings'
 
-import { WatchableJob } from '../../core/job'
+import { PollWatcherJob, PushWatchJob } from '../../core/job'
 import { isHTML } from '../../util/types'
 
 const debug = Debug('webapp/views/table')
@@ -55,12 +56,6 @@ enum FinalState {
   OfflineLike
 }
 
-const fastPolling = 500 // initial polling rate for watching OnlineLike or OfflineLike state
-const mediumPolling = 3000 // initial polling rate for watching a steady state
-const finalPolling = (theme && theme.tablePollingInterval) || 5000 // final polling rate (do not increase the interval beyond this!)
-
-debug('table polling intervals', fastPolling, mediumPolling, finalPolling)
-
 /**
  * get an array of row models
  *
@@ -86,7 +81,7 @@ const prepareTable = (tab: Tab, response: Table & Partial<Watchable>): Row[] => 
  * maybe the resources in table have all reach to the final state?
  *
  */
-const hasReachedFinalState = (response: Table): boolean => {
+export const hasReachedFinalState = (response: Table | ResourceWithMetadata): boolean => {
   let reachedFinalState = false
 
   if (isTable(response)) {
@@ -104,36 +99,12 @@ const hasReachedFinalState = (response: Table): boolean => {
  * find the final state from refresh command
  *
  */
-const findFinalStateFromCommand = (command: string): string => {
+export const findFinalStateFromCommand = (command: string): string => {
   // parse the refresh command
   const { A: argv } = split(command, true, true) as Split
   const options = minimist(argv)
 
   return options['final-state'] ? FinalState[options['finalState']] : ''
-}
-
-/**
- * calcuate the polling ladder
- *
- */
-const calculateLadder = (initial: number): number[] => {
-  const ladder = [initial]
-  let current = initial
-
-  // increment the polling interval
-  while (current < finalPolling) {
-    if (current < 1000) {
-      current = current + 250 < 1000 ? current + 250 : 1000
-      ladder.push(current)
-    } else {
-      ladder.push(current)
-      current = current + 2000 < finalPolling ? current + 2000 : finalPolling
-      ladder.push(current)
-    }
-  }
-
-  debug('ladder', ladder)
-  return ladder
 }
 
 /**
@@ -579,136 +550,69 @@ const deleteTheRow = (deleteRow: Row, deleteIndex: number, existingTable: Existi
 }
 
 /**
- * register a watchable job
+ * register a poll watch job
  *
  */
-const registerWatcher = (
+function poll(
   tab: Tab,
-  watchLimit = 100000,
+  pollLimit = 100000,
   command: string,
   resultDom: HTMLElement,
   existingTable: ExistingTableSpec,
   formatRowOption?: RowFormatOptions
-) => {
-  let job: WatchableJob // eslint-disable-line prefer-const
+) {
+  /** Help diff the newly fetched resouce with the exiting table, and apply the change accordingly */
+  function applyRefreshResult(newRowModel: Row[], existingTable: ExistingTableSpec) {
+    const diff = diffTableRows(existingTable.rowsModel, newRowModel)
+    if (diff.rowUpdate && diff.rowUpdate.length > 0) {
+      debug('update rows', diff.rowUpdate)
+      diff.rowUpdate.map(update => {
+        udpateTheRow(update.model, update.updateIndex, existingTable)(tab, formatRowOption)
+      })
+    }
 
-  // the final state we want to reach to
-  const expectedFinalState = findFinalStateFromCommand(command)
+    if (diff.rowDeletion && diff.rowDeletion.length > 0) {
+      debug('delete rows', diff.rowDeletion)
+      diff.rowDeletion
+        .filter(_ => _.model.name !== 'NAME')
+        .map(rowDeletion => {
+          deleteTheRow(rowDeletion.model, rowDeletion.deleteIndex, existingTable)
+        })
+    }
 
-  // establish the initial watch interval,
-  // if we're on resource creation/deletion, do fast polling, otherwise we do steady polling
-  const initalPollingInterval =
-    expectedFinalState === 'OfflineLike' || expectedFinalState === 'OnlineLike' ? fastPolling : mediumPolling
+    if (diff.rowInsertion && diff.rowInsertion.length > 0) {
+      debug('insert rows', diff.rowInsertion)
+      diff.rowInsertion.map(insert => {
+        insertTheRow(insert.model, insert.insertBeforeIndex, existingTable)(tab, formatRowOption)
+      })
+    }
+  }
 
-  // increase the table polling interval until it reaches the steady polling interval, store the ladder in an array
-  const ladder = calculateLadder(initalPollingInterval)
-
-  /**
-   * process the refreshed result
-   * @return processed Table info: { table: Row[], reachedFinalState: boolean }
-   *
-   */
-  const processRefreshResponse = (response: Table) => {
-    if (!isTable(response)) {
-      console.error('refresh result is not a table', response)
+  /** update the table view with new resource */
+  function updated(response: ResourceWithMetadata) {
+    if (isTable(response)) {
+      applyRefreshResult(prepareTable(tab, response), existingTable)
+    } else {
       throw new Error('refresh result is not a table')
     }
-
-    const reachedFinalState = hasReachedFinalState(response)
-
-    return { table: prepareTable(tab, response), reachedFinalState }
   }
 
-  // execute the refresh command and apply the result
-  const refreshTable = async () => {
-    debug(`refresh with ${command}`)
-    let processedTableRow: Row[] = []
-
-    try {
-      const { qexec } = await import('../../repl/exec')
-      const response = await qexec<Table>(command)
-
-      const processedResponse = processRefreshResponse(response)
-
-      processedTableRow = processedResponse.table
-
-      // stop watching if all resources in the table reached to the finial state
-      if (processedResponse.reachedFinalState) {
-        job.abort()
-      } else {
-        // if the refreshed result doesn't reach the expected state,
-        // then we increment the table polling interval by ladder until it reaches the steady polling interval
-        const newTimer = ladder.shift()
-        if (newTimer) {
-          // reshedule the job using new polling interval
-          job.abort()
-          job = new WatchableJob(tab, watchIt, newTimer + ~~(100 * Math.random())) // eslint-disable-line @typescript-eslint/no-use-before-define
-          job.start()
-        }
-      }
-    } catch (err) {
-      if (err.code === 404) {
-        if (expectedFinalState === 'OfflineLike') {
-          debug('resource not found after status check, but that is ok because that is what we wanted')
-          job.abort()
-        }
-      } else {
-        while (resultDom.firstChild) {
-          resultDom.removeChild(resultDom.firstChild)
-        }
-        job.abort()
-        throw err
-      }
-    }
-
-    // diff the refreshed model from the existing one and apply the change
-    const applyRefreshResult = (newRowModel: Row[], existingTable: ExistingTableSpec) => {
-      const diff = diffTableRows(existingTable.rowsModel, newRowModel)
-      if (diff.rowUpdate && diff.rowUpdate.length > 0) {
-        debug('update rows', diff.rowUpdate)
-        diff.rowUpdate.map(update => {
-          udpateTheRow(update.model, update.updateIndex, existingTable)(tab, formatRowOption)
-        })
-      }
-
-      if (diff.rowDeletion && diff.rowDeletion.length > 0) {
-        debug('delete rows', diff.rowDeletion)
-        diff.rowDeletion
-          .filter(_ => _.model.name !== 'NAME')
-          .map(rowDeletion => {
-            deleteTheRow(rowDeletion.model, rowDeletion.deleteIndex, existingTable)
-          })
-      }
-
-      if (diff.rowInsertion && diff.rowInsertion.length > 0) {
-        debug('insert rows', diff.rowInsertion)
-        diff.rowInsertion.map(insert => {
-          insertTheRow(insert.model, insert.insertBeforeIndex, existingTable)(tab, formatRowOption)
-        })
-      }
-    }
-
-    applyRefreshResult(processedTableRow, existingTable)
-  }
-
-  // timer handler
-  const watchIt = () => {
-    if (--watchLimit < 0) {
-      console.error('watchLimit exceeded')
-      job.abort()
+  /** delete the table view */
+  function deleted(err: CodedError) {
+    if (err.code === 404 && findFinalStateFromCommand(command) === 'OfflineLike') {
+      // If the command is expecting a resource to be deleted and we got 404 error from fetch,
+      // then we update the view with an empty table, but keep watching for changes
+      applyRefreshResult([], existingTable)
     } else {
-      try {
-        Promise.resolve(refreshTable())
-      } catch (err) {
-        console.error('Error refreshing table', err)
-        job.abort()
+      // Otherwise, clear the table view and tell job manager to stop watching
+      while (resultDom.firstChild) {
+        resultDom.removeChild(resultDom.firstChild)
       }
+      throw err
     }
   }
 
-  // establish the inital watchable job
-  job = new WatchableJob(tab, watchIt, ladder.shift() + ~~(100 * Math.random()))
-  job.start()
+  new PollWatcherJob(command, pollLimit).init(tab, updated, deleted)
 }
 
 /**
@@ -846,15 +750,23 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
     const watch = response.watch
     if (isPusher(watch)) {
       if (!Array.isArray(existingTable)) {
-        /** offline takes the rowKey of the row to be deleted and applies this to the table view */
-        const offline = (rowKey: string) => {
-          const existingRows = existingTable.rowsModel
-          const foundIndex = existingRows.findIndex(_ => _.name === rowKey)
-          deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+        /** offline deletes the row */
+        const deleted = (row: Row, err: CodedError) => {
+          if (!err || (err && err.code === 404)) {
+            const existingRows = existingTable.rowsModel
+            const foundIndex = existingRows.findIndex(_ => _.name === row.name)
+            deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+          } else {
+            // real error, clear the console the throw the error, stop watching
+            while (resultDom.firstChild) {
+              resultDom.removeChild(resultDom.firstChild)
+            }
+            throw err
+          }
         }
 
         /** update consumes the update notification and apply it to the table view */
-        const update = (newRow: Row) => {
+        const updated = (newRow: Row) => {
           const existingRows = existingTable.rowsModel
           const foundIndex = existingRows.findIndex(_ => _.name === newRow.name)
 
@@ -868,13 +780,13 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
           }
         }
 
-        // initiate the pusher watch
-        watch.init(update, offline)
+        // initiate the pusher watch job
+        new PushWatchJob(watch).init(tab, updated, deleted)
       }
     } else {
       if (!hasReachedFinalState(response)) {
-        // initiate the poller watch
-        registerWatcher(tab, watch.watchLimit, watch.refreshCommand, resultDom, existingTable, formatRowOption)
+        // initiate the poller watch job
+        poll(tab, watch.watchLimit, watch.refreshCommand, resultDom, existingTable, formatRowOption)
       }
     }
   }

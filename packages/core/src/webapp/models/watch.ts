@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity } from '../../models/entity'
-import { Row } from '../models/table'
+import { CodedError } from '../../models/errors'
+import { Entity, MetadataBearing as ResourceWithMetadata } from '../../models/entity'
+import { PushWatchJob } from '../../core/job'
 
 export interface Watchable {
   watch: Poller | Pusher
@@ -32,18 +33,18 @@ interface Toggleable {
   watchByDefault: boolean
 }
 
+export type ResourceChangeFn = (resource: ResourceWithMetadata, err?: CodedError) => void
+export type AllResourcesDeletedFn = (err: CodedError) => void
+
 export interface Pusher {
   /**
    * Contract: the table renderer will call this function when the DOM
    * is ready to accept updates. when you have updates, please call
    * one or the other of the provided functions
    */
-  init: (update: WatchedRowHasUpdate, offline: WactchedRowisOffline) => void
+  init: (updated: ResourceChangeFn, deleted: ResourceChangeFn, job: PushWatchJob) => void
+  abort: (job: PushWatchJob) => void
 }
-
-/** callbacks to indicate state changes */
-type WatchedRowHasUpdate = (response: Row) => void
-type WactchedRowisOffline = (rowKey: string) => void
 
 function isPoller(model: Poller | Pusher): model is Poller {
   return (model as Poller).refreshCommand !== undefined

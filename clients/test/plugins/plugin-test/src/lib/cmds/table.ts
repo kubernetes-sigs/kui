@@ -20,17 +20,23 @@
  */
 
 // Notes: this is part of the Kui core API
-import { Watchable, Table, Row, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
+import { Watchable, Table, Row, Arguments, ParsedOptions, Registrar, CodedError } from '@kui-shell/core'
 
 import tableContent from './content/table-with-drilldown'
 
 interface Options extends ParsedOptions {
   watch: 'push' | 'poll'
-  'final-state': string
+  'final-state': string | number
 }
 
-// generateNewPush generates new `Row` with badge and message
-const generateNewPush = (name: string, onlineLike: boolean, message: string, args: Arguments<Options>): Row => {
+enum FinalState {
+  NotPendingLike,
+  OnlineLike,
+  OfflineLike
+}
+
+// newRow generates new `Row` with badge and message
+const newRow = (name: string, onlineLike: boolean, message: string, args: Arguments<Options>): Row => {
   const status = onlineLike ? 'Running' : 'Terminating'
   const css = onlineLike ? 'green-background' : 'yellow-background'
   const onclick = () => args.REPL.pexec('test string')
@@ -61,42 +67,59 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
     if (watch && watch === 'push' && finalState) {
       const watch: Watchable = {
         watch: {
-          init: (update, offline) => {
+          init: async (updated, deleted) => {
             const name1 = 'foo1'
             const name2 = 'foo2'
 
-            update(generateNewPush(name1, true, 'should create a new row', args))
+            updated(newRow(name1, true, 'should create a new row', args))
             if (finalState === 'createRow1') return
 
-            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row', args)), 1000)
+            setTimeout(() => updated(newRow(name1, false, 'should terminate the row', args)), 1000)
             if (finalState === 'terminateRow1') return
 
-            setTimeout(() => offline(name1), 1500)
+            setTimeout(() => deleted(newRow(name1, false, 'should terminate the row', args)), 1500)
             if (finalState === 'deleteRow1') return
 
-            setTimeout(() => update(generateNewPush(name1, true, 'should activate the deleted row', args)), 2000)
+            setTimeout(() => updated(newRow(name1, true, 'should activate the deleted row', args)), 2000)
             if (finalState === 'activateRow1') return
 
-            setTimeout(() => update(generateNewPush(name1, false, 'should terminate the row again', args)), 2500)
+            setTimeout(() => updated(newRow(name1, false, 'should terminate the row again', args)), 2500)
             if (finalState === 'terminateRow1Again') return
 
-            setTimeout(() => offline(name1), 3000)
+            setTimeout(() => deleted(newRow(name1, false, 'should terminate the row again', args)), 3000)
             if (finalState === 'deleteRow1Again') return
 
-            setTimeout(() => update(generateNewPush(name2, true, 'should create the second row', args)), 3500)
+            setTimeout(() => updated(newRow(name2, true, 'should create the second row', args)), 3500)
             if (finalState === 'createRow2') return
 
             if (finalState === 'activeRow1Again')
-              setTimeout(() => update(generateNewPush(name1, true, 'should activate the first row again', args)), 4000)
-          }
+              setTimeout(() => updated(newRow(name1, true, 'should activate the first row again', args)), 4000)
+          },
+          abort: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
         }
       }
 
       return Object.assign({}, tableWithoutRows, watch)
     } else if (watch && watch === 'poll') {
-      return Object.assign({}, tableWithoutRows, { watch: { refreshCommand: 'test table' } })
+      return {
+        header: tableWithoutRows.header,
+        body:
+          finalState && finalState === FinalState.OfflineLike
+            ? [newRow('foo1', true, 'should create a new row', args)]
+            : [],
+        noSort: true,
+        watch: {
+          refreshCommand:
+            finalState && finalState === FinalState.OfflineLike ? 'test table --final-state=2' : 'test table'
+        }
+      }
     } else {
-      return table
+      if (finalState && finalState === FinalState.OfflineLike) {
+        const err: CodedError = { name: 'error', message: 'resource has been deleted', code: 404 }
+        throw err
+      } else {
+        return table
+      }
     }
   }
 }
