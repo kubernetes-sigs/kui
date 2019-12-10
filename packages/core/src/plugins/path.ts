@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '../core/capabilities'
-
 /**
- * To make webpack happy...
+ * Turns plugin-X/dist/entry.js into X. This helps us with webpack
+ * dynamic imports. We can then use:
+ * `import('@kui-shell/plugin-' + webpackPath(path) + '/mdist/preload.js')`
+ * which will guide webpack towards a smaller set of possibly touched files.
  *
  */
-export default function(path: string) {
-  const cropped = path.replace(/^plugin-/, '')
-  if (inBrowser()) {
-    return cropped.replace(/\/dist\//, '/mdist/')
-  } else {
-    return cropped
-  }
+export function webpackPath(path: string) {
+  return path.replace(/^plugin-/, '').replace(/\/dist\/.*\.js$/, '')
+}
+
+/**
+ * For electron and electron-main (i.e. "headless"), right now we are
+ * stil using commonjs imports, so we don't need to be as clever. At
+ * some point, we will probably switch over to using webpack with an
+ * electron-renderer target. At that point, we will only need this for
+ * headless mode.
+ *
+ */
+export function mainPath(path: string) {
+  return '@kui-shell/' + path
 }

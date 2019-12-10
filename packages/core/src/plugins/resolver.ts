@@ -18,9 +18,10 @@ import Debug from 'debug'
 
 import { PrescanModel } from './prescan'
 
-import formatPath from './path'
+import { mainPath, webpackPath } from './path'
 import { proxy } from '../core/command-tree'
 import { CommandBase } from '../models/command'
+import { inBrowser } from '../core/capabilities'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
 
 const debug = Debug('core/plugins/resolver')
@@ -79,8 +80,12 @@ const prequire = async (
             // see the corresponding NOTE in ./assembler.ts and ./preloader.ts
             const registrationRef =
               module.path.charAt(0) === '/'
-                ? await import(/* webpackMode: "weak" */ module.path)
-                : await import(/* webpackMode: "lazy" */ '@kui-shell/plugin-' + formatPath(module.path))
+                ? await import(/* webpackIgnore: true */ module.path)
+                : !inBrowser()
+                ? await import(/* webpackIgnore: true */ mainPath(module.path))
+                : await import(
+                    /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/plugin'
+                  )
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 
