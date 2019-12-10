@@ -209,7 +209,7 @@ module.exports = {
   module: {
     rules: [
       // ignore any commonjs kui bits
-      { test: /\/node_modules\/@kui-shell\/dist\/*/, use: 'ignore-loader' },
+      { test: /\/@kui-shell\/dist\/*/, use: 'ignore-loader' },
 
       //
       // typescript exclusion rules

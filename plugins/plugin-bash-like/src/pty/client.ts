@@ -1262,7 +1262,9 @@ export const doExec = (
               // don't bother complaining too much about connection refused
               console.error('error creating channel', err)
             }
-            cleanUpTerminal()
+            if (cleanUpTerminal) {
+              cleanUpTerminal()
+            }
             throw err
           }
         )
