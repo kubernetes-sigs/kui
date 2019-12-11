@@ -25,10 +25,6 @@ import * as assert from 'assert'
 import { TestTable } from '@kui-shell/test'
 import { firstSeen } from '../../lib/cmds/content/table-with-drilldown'
 
-const test = new TestTable({
-  command: 'test table'
-})
-
 /** is millisecond delta, e.g. "100ms" */
 const deltaPlaceholder = '' // <-- the test rig doesn't care about this value
 const isDelta = /^\d+(.\d+)?[m]?s$/
@@ -48,16 +44,14 @@ const expectRow = [
   }
 ]
 
-const testPoll = new TestTable({
-  command: 'test table --watch=poll'
-})
-
-test.drilldownFromREPL(
-  {
-    header: expectHeaderText,
-    body: expectRow
-  },
-  {
+/** test table, validate its cells and drilldown from the rows */
+new TestTable('should test table with dilldown', {
+  exec: {
+    command: 'test table',
+    expectTable: {
+      header: expectHeaderText,
+      body: expectRow
+    },
     validation: {
       cells: [
         (value: string, rowIdx: number) => {
@@ -71,48 +65,100 @@ test.drilldownFromREPL(
         }
       ]
     }
+  },
+  drilldown: {
+    expectTable: {
+      header: expectHeaderText,
+      body: expectRow
+    }
   }
-)
+}).run()
 
-testPoll.drilldownFromREPL({
-  header: expectHeaderText,
-  body: expectRow.slice(0, 1)
-})
+/** test table with poll watcher that doesn't have termination state */
+new TestTable('should test table with poller', {
+  exec: {
+    command: 'test table --watch=poll',
+    expectTable: {
+      header: expectHeaderText,
+      body: expectRow.slice(0, 1)
+    }
+  },
+  drilldown: {
+    expectTable: {
+      header: expectHeaderText,
+      body: expectRow.slice(0, 1)
+    }
+  },
+  job: { finalJobCount: 1 }
+}).run()
 
-const testPush = new TestTable({
-  command: 'test table --watch=push'
-})
+/** test table with poll watcher with final state, and the job will be collected in final state */
+new TestTable('should test table with status, poller and final-state', {
+  status: {
+    command: 'test table --watch=poll --final-state=2',
+    expectRow: [
+      { name: 'foo1', badgeCss: 'green-background', badgeText: 'Running', message: 'should create a new row' }
+    ],
+    statusDescription: 'should poll for a deleted Row'
+  }
+}).run()
 
-testPush.statusBadge([
-  {
-    testName: 'should create a new row',
-    command: 'test table --watch=push --final-state=createRow1',
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should create a new row',
+    command: 'test table --watch=push --sequence=createRow1',
     expectRow: [
       { name: 'foo1', badgeCss: 'green-background', badgeText: 'Running', message: 'should create a new row' }
     ]
-  },
-  {
-    testName: 'should terminate the row',
-    command: 'test table --watch=push --final-state=terminateRow1',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should terminate the row',
+    command: 'test table --watch=push --sequence=terminateRow1',
     expectRow: [
       { name: 'foo1', badgeCss: 'yellow-background', badgeText: 'Terminating', message: 'should terminate the row' }
     ]
-  },
-  {
-    testName: 'should delete the row',
-    command: 'test table --watch=push --final-state=deleteRow1',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should delete the row',
+    command: 'test table --watch=push --sequence=deleteRow1',
     expectRow: [{ name: 'foo1', badgeCss: 'red-background', badgeText: 'Offline', message: 'should terminate the row' }]
-  },
-  {
-    testName: 'should activate the deleted row',
-    command: 'test table --watch=push --final-state=activateRow1',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should delete the row',
+    command: 'test table --watch=push --sequence=deleteRow1',
+    expectRow: [{ name: 'foo1', badgeCss: 'red-background', badgeText: 'Offline', message: 'should terminate the row' }]
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should activate the deleted row',
+    command: 'test table --watch=push --sequence=activateRow1',
     expectRow: [
       { name: 'foo1', badgeCss: 'green-background', badgeText: 'Running', message: 'should activate the deleted row' }
     ]
-  },
-  {
-    testName: 'should terminate the row again',
-    command: 'test table --watch=push --final-state=terminateRow1Again',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should terminate the row again',
+    command: 'test table --watch=push --sequence=terminateRow1Again',
     expectRow: [
       {
         name: 'foo1',
@@ -121,24 +167,36 @@ testPush.statusBadge([
         message: 'should terminate the row again'
       }
     ]
-  },
-  {
-    testName: 'should delete the row again',
-    command: 'test table --watch=push --final-state=deleteRow1Again',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should delete the row again',
+    command: 'test table --watch=push --sequence=deleteRow1Again',
     expectRow: [
       { name: 'foo1', badgeCss: 'red-background', badgeText: 'Offline', message: 'should terminate the row again' }
     ]
-  },
-  {
-    testName: 'should create the second row',
-    command: 'test table --watch=push --final-state=createRow2',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should create the second row',
+    command: 'test table --watch=push --sequence=createRow2',
     expectRow: [
       { name: 'foo2', badgeCss: 'green-background', badgeText: 'Running', message: 'should create the second row' }
     ]
-  },
-  {
-    testName: 'should activate the first row again',
-    command: 'test table --watch=push --final-state=activeRow1Again',
+  }
+}).run()
+
+/** test table with push watcher, and the final status badge and message are correct */
+new TestTable('should test table with status and pusher', {
+  status: {
+    statusDescription: 'should activate the first row again',
+    command: 'test table --watch=push --sequence=activeRow1Again',
     expectRow: [
       {
         name: 'foo1',
@@ -148,4 +206,4 @@ testPush.statusBadge([
       }
     ]
   }
-])
+}).run()
