@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { promiseEach, Table } from '@kui-shell/core'
+import { promiseEach, Table, Tab } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -31,67 +31,106 @@ interface RowWithBadgeAndMessage {
 }
 
 interface TableValidation {
-  validation: {
-    cells: ((value: string, rowIdx: number) => void)[]
-  }
+  cells: ((value: string, rowIdx: number) => void)[]
+}
+
+interface Tests {
+  exec?: { command: string; expectTable: Table; validation?: TableValidation }
+  drilldown?: { expectTable: Table }
+  status?: { expectRow: RowWithBadgeAndMessage[]; command: string; statusDescription?: string }
+  job?: { finalJobCount: number }
 }
 
 export class TestTable {
-  public command: string
-  public testName: string
+  private testName: string // used in mocha suite description
+  private outputCount: number
+  private ctx: Common.ISuite
+  private tests: Tests
 
-  /**
-   * new TestTable() instantiates a class of multi-model-response tests
-   * @param test includes: command and testName
-   * @param { string } command is the command needs to be executed
-   * @param { string } testName (optional) helps with filtering the Mocha Test Suites by description
-   *
-   */
-  public constructor(test: { command: string; testName?: string }) {
-    this.command = test.command
-    this.testName = test.testName
+  public constructor(testName?: string, tests?: Tests) {
+    this.testName = testName || 'should test table'
+    this.tests = tests
   }
 
-  /**
-   * statusBadge() starts a Mocha Test Suite
-   * statusBadge() executes `command` in REPL and checks the table status badges are rendered correctly
-   *
-   * @param { RowWithBadgeAndMessage } expectRow is the expected rows shown in the REPL
-   *
-   */
-  public statusBadge(testVariations: { testName: string; command: string; expectRow: RowWithBadgeAndMessage[] }[]) {
-    describe(`show table status ${this.testName || ''}${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+  /** new TestTable().run() will start a mocha test suite */
+  public run() {
+    const self = this // eslint-disable-line @typescript-eslint/no-this-alias
+    describe(`${this.testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
-      testVariations.forEach(test => {
-        const command = test.command
-        const expectRow = test.expectRow
+      self.ctx = this
 
-        it(`${test.testName || 'should show status badge in row'}`, async () => {
-          try {
-            const { app, count } = await CLI.command(command, this.app)
+      // when the app is refreshed, it should have 0 running job
+      self.hasJobs(0)
 
-            await promiseEach(expectRow, async row => {
-              const rowSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.BY_NAME(row.name)}`
-              this.app.client.waitForExist(rowSelector)
+      // execute the tests accordingly
+      if (self.tests) {
+        const { exec, drilldown, status, job } = self.tests
 
-              // wait for message
-              const messageSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.TABLE_CELL(row.name, 'MESSAGE')}`
-              await app.client.waitForExist(messageSelector)
-              await Utils.expectText(app, row.message)(messageSelector)
+        if (exec) {
+          self.executeAndValidate(exec.command, exec.expectTable, exec.validation)
+        }
+        if (drilldown) {
+          self.drilldownFromTable(drilldown.expectTable)
+        }
+        if (status) {
+          self.evalStatus(status)
+        }
+        if (job) {
+          self.hasJobs(job.finalJobCount || 0)
+        }
+      }
+    })
+  }
 
-              // wait for badge
-              const badge = `${rowSelector} badge.${row.badgeCss}`
-              await app.client.waitForExist(badge)
-              await Utils.expectText(app, row.badgeText)(badge)
-            })
-          } catch (err) {
-            await Common.oops(this, true)(err)
-          }
+  /** check the number of running jobs in the tab */
+  private hasJobs(jobCount: number, _ctx?: Common.ISuite) {
+    const ctx = _ctx || this.ctx
+    it(`should have ${jobCount} jobs in the tab`, async () => {
+      try {
+        const watchableJobsRaw = await ctx.app.client.execute(() => {
+          const tab = document.querySelector('tab.visible') as Tab
+          return tab.state.jobs
         })
-      })
+        const actualJobCount = watchableJobsRaw.value
+        assert.strictEqual(actualJobCount, jobCount)
+      } catch (err) {
+        await Common.oops(ctx, true)(err)
+      }
+    })
+  }
+
+  public evalStatus(_: {
+    expectRow: RowWithBadgeAndMessage[]
+    command: string
+    statusDescription?: string
+    ctx?: Common.ISuite
+  }) {
+    const { expectRow, command, statusDescription, ctx = this.ctx } = _
+    const self = this // eslint-disable-line @typescript-eslint/no-this-alias
+
+    it(`${statusDescription || 'should show status badge in row'}`, async () => {
+      try {
+        const count = command ? await CLI.command(command, ctx.app).then(_ => _.count) : self.outputCount
+
+        await promiseEach(expectRow, async row => {
+          const rowSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.BY_NAME(row.name)}`
+          ctx.app.client.waitForExist(rowSelector)
+
+          // wait for message
+          const messageSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.TABLE_CELL(row.name, 'MESSAGE')}`
+          await ctx.app.client.waitForExist(messageSelector)
+          await Utils.expectText(ctx.app, row.message)(messageSelector)
+
+          // wait for badge
+          const badge = `${rowSelector} badge.${row.badgeCss}`
+          await ctx.app.client.waitForExist(badge)
+          await Utils.expectText(ctx.app, row.badgeText)(badge)
+        })
+      } catch (err) {
+        await Common.oops(ctx, true)(err)
+      }
     })
   }
 
@@ -99,10 +138,10 @@ export class TestTable {
    * Execute the table-generating command, and validate the content.
    *
    */
-  private executeAndValidate(ctx: Common.ISuite, expectTable: Table, validation?: TableValidation) {
-    const command = this.command
+  private executeAndValidate(command: string, expectTable: Table, validation?: TableValidation, _ctx?: Common.ISuite) {
+    const ctx = this.ctx || _ctx
 
-    it(`should execute command from test table: ${this.command}`, () =>
+    it(`should execute command from test table: ${command}`, () =>
       CLI.command(command, ctx.app)
         .then(
           ReplExpect.okWithCustom({
@@ -112,20 +151,20 @@ export class TestTable {
         .catch(Common.oops(ctx)))
 
     if (validation) {
-      if (validation.validation.cells) {
+      if (validation.cells) {
         expectTable.body.forEach((_, rowIdx) => {
-          it(`should validate cells of row ${rowIdx} in test table output: ${this.command}`, async () => {
+          it(`should validate cells of row ${rowIdx} in test table output: ${command}`, async () => {
             const cellSelector = `${Selectors.OUTPUT_LAST} tbody:nth-child(${rowIdx + 2}) td > .cell-inner`
             const actualCellValues = await ctx.app.client.getText(cellSelector)
             if (Array.isArray(actualCellValues)) {
-              actualCellValues.forEach((_, cellIdx) => validation.validation.cells[cellIdx](_, rowIdx))
-            } else if (validation.validation.cells.length === 1) {
+              actualCellValues.forEach((_, cellIdx) => validation.cells[cellIdx](_, rowIdx))
+            } else if (validation.cells.length === 1) {
               // got one cell, expecting one cell
-              validation.validation.cells[0](actualCellValues, rowIdx)
+              validation.cells[0](actualCellValues, rowIdx)
             } else {
               const actualCellCount = Array.isArray(actualCellValues) ? actualCellValues.length : 1
               assert.fail(
-                `mismatch between expected cell count ${validation.validation.cells.length} and actual cell count ${actualCellCount}`
+                `mismatch between expected cell count ${validation.cells.length} and actual cell count ${actualCellCount}`
               )
             }
           })
@@ -135,60 +174,49 @@ export class TestTable {
   }
 
   /**
-   * drilldownFromREPL() starts a Mocha Test Suite
-   * drilldownFromREPL() executes `command` in REPL and drilldown from the table
+   * drilldownFromTable() drilldowns from the table
    *
    * @param { Table } expectTable is the expected table shown in the REPL
    *
    */
-  public drilldownFromREPL(expectTable: Table, validation?: TableValidation) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this
+  public drilldownFromTable(expectTable: Table, _ctx?: Common.ISuite) {
+    const ctx = _ctx || this.ctx
+    let count = 0
 
-    describe(`drilldown from test table in REPL ${this.testName || ''}${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
-      before(Common.before(this))
-      after(Common.after(this))
-
-      const clickCell = (cell: string, command: string, replIndex: number, prompt: string) => {
-        it(`should click to execute from test table: ${command}`, async () => {
-          try {
-            await this.app.client.waitForExist(cell)
-            await this.app.client.click(cell)
-            await CLI.expectInput(prompt, command)(this.app)
-          } catch (err) {
-            await Common.oops(this, true)(err)
-          }
-        })
-      }
-
-      const clickCellSilently = (cell: string, command: string, prompt: string) => {
-        it(`should click to silently execute from test table: ${command}`, async () => {
-          try {
-            await this.app.client.waitForExist(cell)
-            await new Promise(resolve => setTimeout(resolve, 300))
-            await this.app.client.click(cell)
-            await CLI.expectInput(prompt, '')(this.app)
-          } catch (err) {
-            await Common.oops(this, true)(err)
-          }
-        })
-      }
-
-      /* Here comes the tests */
-      self.executeAndValidate(this, expectTable, validation)
-
-      // For each row, check the first cell
-      expectTable.body.forEach((row, rowIndex) => {
-        const cell = `${Selectors.OUTPUT_N(0)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
-        const replIndexAfterClick = rowIndex + 1
-
-        if (!row.onclickSilence) {
-          clickCell(cell, row.onclick, replIndexAfterClick, Selectors.PROMPT_N(replIndexAfterClick))
-        } else {
-          clickCellSilently(cell, row.onclick, Selectors.PROMPT_N(replIndexAfterClick))
+    const clickCell = (cell: string, command: string, prompt: string) => {
+      it(`should click to execute from test table: ${command}`, async () => {
+        try {
+          await ctx.app.client.waitForExist(cell)
+          await ctx.app.client.click(cell)
+          await CLI.expectInput(prompt, command)(ctx.app)
+          count++
+        } catch (err) {
+          await Common.oops(ctx, true)(err)
         }
       })
+    }
+
+    const clickCellSilently = (cell: string, command: string, prompt: string) => {
+      it(`should click to silently execute from test table: ${command}`, async () => {
+        try {
+          await ctx.app.client.waitForExist(cell)
+          await new Promise(resolve => setTimeout(resolve, 300))
+          await ctx.app.client.click(cell)
+          await CLI.expectInput(prompt, '')(ctx.app)
+        } catch (err) {
+          await Common.oops(ctx, true)(err)
+        }
+      })
+    }
+
+    // For each row, check the first cell
+    expectTable.body.forEach(row => {
+      const cellSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
+      if (!row.onclickSilence) {
+        clickCell(cellSelector, row.onclick, `${Selectors.PROMPT_BLOCK_LAST} input`)
+      } else {
+        clickCellSilently(cellSelector, row.onclick, Selectors.PROMPT_FINAL)
+      }
     })
   }
 }
