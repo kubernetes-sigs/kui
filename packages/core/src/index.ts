@@ -71,7 +71,7 @@ export { injectCSS, injectScript, loadHTML } from './webapp/util/inject'
 
 // models
 export { MetadataBearing as ResourceWithMetadata } from './models/entity'
-export { Watchable } from './webapp/models/watch'
+export { Watchable } from './core/jobs/watchable'
 import { Tab } from './webapp/tab'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function History(tab: Tab) {

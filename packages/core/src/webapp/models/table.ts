@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { Watchable, Poller } from './watch'
+import { Watchable, Poller } from '../../core/jobs/watchable'
 import { MetadataBearing, Entity } from '../../models/entity'
 import { SidecarMode } from '../bottom-stripe'
 

@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { WatchableJob } from '../core/job'
+import { WatchableJob } from '../core/jobs/job'
 import { inBrowser } from '../core/capabilities'
 import { getCurrentPrompt } from '../webapp/prompt'
 import { theme, inBottomInputMode } from '../core/settings'

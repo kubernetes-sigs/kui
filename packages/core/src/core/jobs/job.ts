@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Tab } from '../webapp/cli'
+import { Tab } from '../../webapp/cli'
 
 const debug = Debug('webapp/views/jobs')
 
