@@ -24,10 +24,10 @@ import { getCurrentPrompt } from '../prompt'
 import { _split as split, Split } from '../../repl/split'
 import { isMetadataBearing } from '../../models/entity'
 import { Table, Row, Cell, Icon, sortBody, TableStyle, diffTableRows, isTable } from '../models/table'
-import { isWatchable, isPusher, Watchable } from '../models/watch'
+import { isWatchable, isPusher, Watchable } from '../../core/jobs/watchable'
 import { theme } from '../../core/settings'
 
-import { WatchableJob } from '../../core/job'
+import { WatchableJob } from '../../core/jobs/job'
 import { isHTML } from '../../util/types'
 
 const debug = Debug('webapp/views/table')
