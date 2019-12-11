@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '../../models/entity'
-import { Row } from '../models/table'
+import { Row } from '../../webapp/models/table'
 
 export interface Watchable {
   watch: Poller | Pusher
