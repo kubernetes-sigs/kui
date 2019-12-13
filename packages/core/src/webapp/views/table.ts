@@ -23,7 +23,7 @@ import { isPopup } from '../popup-core'
 import { getCurrentPrompt } from '../prompt'
 import { _split as split, Split } from '../../repl/split'
 import { isMetadataBearing } from '../../models/entity'
-import { Table, Row, Cell, Icon, sortBody, TableStyle, diffTableRows, isTable } from '../models/table'
+import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
 import { isWatchable, isPusher, Watchable } from '../../core/jobs/watchable'
 import { theme } from '../../core/settings'
 
@@ -521,75 +521,15 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
 }
 
 /**
- * Update a row in the exiting table
- *
- */
-const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingTableSpec) => (
-  tab: Tab,
-  option?: RowFormatOptions
-) => {
-  const newRowView = formatOneRowResult(tab, option)(newRow)
-  existingTable.renderedTable.replaceChild(newRowView, existingTable.renderedRows[updateIndex])
-  existingTable.renderedRows[updateIndex] = newRowView
-
-  // apply the change to the exiting rows
-  existingTable.rowsModel[updateIndex] = newRow
-}
-
-/**
- * Insert a new row to the existing table
- *
- */
-const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: ExistingTableSpec) => (
-  tab: Tab,
-  option?: RowFormatOptions
-) => {
-  const newRowView = formatOneRowResult(tab, option)(newRow)
-  existingTable.renderedTable.insertBefore(newRowView, existingTable.renderedRows[insertBeforeIndex])
-  existingTable.renderedRows.splice(insertBeforeIndex, 0, newRowView)
-  existingTable.rowsModel.splice(insertBeforeIndex, 0, newRow)
-}
-
-/**
- * Delete a row from the existing table
- *
- */
-const deleteTheRow = (deleteRow: Row, deleteIndex: number, existingTable: ExistingTableSpec) => {
-  // change the status badge to `offline`
-  deleteRow.attributes.forEach(attr => {
-    if (attr.key === 'STATUS') {
-      attr.value = 'Offline'
-      attr.css = 'red-background'
-    }
-  })
-
-  // apply the change to the exiting rows
-  existingTable.rowsModel[deleteIndex] = deleteRow
-
-  // render the status badge change
-  const status = existingTable.renderedRows[deleteIndex].querySelector('.cell-inner[data-key="STATUS"]') as HTMLElement
-  if (status) {
-    status.className = 'cell-inner red-background'
-    status.innerText = 'Offline'
-  }
-
-  // remove the repeating pulse effect remained from the previous state, e.g. Terminating
-  const pulse = existingTable.renderedRows[deleteIndex].querySelector('.repeating-pulse') as HTMLElement
-  if (pulse) pulse.classList.remove('repeating-pulse')
-}
-
-/**
  * register a watchable job
  *
  */
 const registerWatcher = (
-  tab: Tab,
   watchLimit = 100000,
   command: string,
   resultDom: HTMLElement,
-  existingTable: ExistingTableSpec,
-  formatRowOption?: RowFormatOptions
-) => {
+  existingTable: ExistingTableSpec
+) => (tab: Tab, updated: (row: Row) => void, deleted: (rowKey: string) => void) => {
   let job: WatchableJob // eslint-disable-line prefer-const
 
   // the final state we want to reach to
@@ -661,34 +601,11 @@ const registerWatcher = (
       }
     }
 
-    // diff the refreshed model from the existing one and apply the change
-    const applyRefreshResult = (newRowModel: Row[], existingTable: ExistingTableSpec) => {
-      const diff = diffTableRows(existingTable.rowsModel, newRowModel)
-      if (diff.rowUpdate && diff.rowUpdate.length > 0) {
-        debug('update rows', diff.rowUpdate)
-        diff.rowUpdate.map(update => {
-          udpateTheRow(update.model, update.updateIndex, existingTable)(tab, formatRowOption)
-        })
-      }
+    processedTableRow.forEach(updated)
 
-      if (diff.rowDeletion && diff.rowDeletion.length > 0) {
-        debug('delete rows', diff.rowDeletion)
-        diff.rowDeletion
-          .filter(_ => _.model.name !== 'NAME')
-          .map(rowDeletion => {
-            deleteTheRow(rowDeletion.model, rowDeletion.deleteIndex, existingTable)
-          })
-      }
-
-      if (diff.rowInsertion && diff.rowInsertion.length > 0) {
-        debug('insert rows', diff.rowInsertion)
-        diff.rowInsertion.map(insert => {
-          insertTheRow(insert.model, insert.insertBeforeIndex, existingTable)(tab, formatRowOption)
-        })
-      }
-    }
-
-    applyRefreshResult(processedTableRow, existingTable)
+    existingTable.rowsModel
+      .filter(_ => !processedTableRow.some(row => row.name === _.name))
+      .forEach(_ => deleted(_.name))
   }
 
   // timer handler
@@ -844,37 +761,62 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
 
   if (isWatchable(response)) {
     const watch = response.watch
-    if (isPusher(watch)) {
-      if (!Array.isArray(existingTable)) {
-        /** offline takes the rowKey of the row to be deleted and applies this to the table view */
-        const offline = (rowKey: string) => {
-          const existingRows = existingTable.rowsModel
-          const foundIndex = existingRows.findIndex(_ => _.name === rowKey)
-          deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+
+    /** delete a row by changing its status to offline */
+    const deleted = (rowKey: string) => {
+      const idx = existingTable.rowsModel.findIndex(_ => _.name === rowKey)
+
+      // change the status cell to `offline`
+      existingTable.rowsModel[idx].attributes.forEach(attr => {
+        if (attr.key === 'STATUS') {
+          attr.value = 'Offline'
+          attr.css = 'red-background'
         }
+      })
 
-        /** update consumes the update notification and apply it to the table view */
-        const update = (newRow: Row) => {
-          const existingRows = existingTable.rowsModel
-          const foundIndex = existingRows.findIndex(_ => _.name === newRow.name)
-
-          if (foundIndex === -1) {
-            // To get the insertion index, first concat the new row with the existing rows, then sort the rows
-            const index = sortBody([newRow].concat(existingRows)).findIndex(_ => _.name === newRow.name)
-            insertTheRow(newRow, index + 1, existingTable)(tab, formatRowOption)
-          } else {
-            const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
-            if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
-          }
-        }
-
-        // initiate the pusher watch
-        watch.init(update, offline)
+      // apply the status change to view
+      const status = existingTable.renderedRows[idx].querySelector('.cell-inner[data-key="STATUS"]') as HTMLElement
+      if (status) {
+        status.className = 'cell-inner red-background'
+        status.innerText = 'Offline'
       }
+
+      // remove the repeating pulse effect remained from the previous state, e.g. Terminating
+      const pulse = existingTable.renderedRows[idx].querySelector('.repeating-pulse') as HTMLElement
+      if (pulse) pulse.classList.remove('repeating-pulse')
+    }
+
+    /** insert a new row or update a row in the table view */
+    const updated = (row: Row) => {
+      const oldRows = existingTable.rowsModel
+      const found = oldRows.findIndex(_ => _.name === row.name)
+
+      if (found === -1) {
+        // insert the row
+        // To get the insertion index, first concat the new row with the existing rows, then sort the rows
+        const index = sortBody([row].concat(oldRows)).findIndex(_ => _.name === row.name) + 1
+
+        const view = formatOneRowResult(tab, formatRowOption)(row)
+        existingTable.renderedTable.insertBefore(view, existingTable.renderedRows[index])
+        existingTable.renderedRows.splice(index, 0, view)
+        existingTable.rowsModel.splice(index, 0, row)
+      } else {
+        if (JSON.stringify(row) !== JSON.stringify(oldRows[found])) {
+          // update the row
+          const view = formatOneRowResult(tab, formatRowOption)(row)
+          existingTable.renderedTable.replaceChild(view, existingTable.renderedRows[found])
+          existingTable.renderedRows[found] = view
+          existingTable.rowsModel[found] = row
+        }
+      }
+    }
+
+    if (isPusher(watch)) {
+      watch.init(updated, deleted)
     } else {
       if (!hasReachedFinalState(response)) {
         // initiate the poller watch
-        registerWatcher(tab, watch.watchLimit, watch.refreshCommand, resultDom, existingTable, formatRowOption)
+        registerWatcher(watch.watchLimit, watch.refreshCommand, resultDom, existingTable)(tab, updated, deleted)
       }
     }
   }
