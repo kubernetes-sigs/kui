@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-import { dirname, join } from 'path'
-
-import { UsageError, eventBus, injectCSS, Arguments, Registrar, inBrowser } from '@kui-shell/core'
-
-const debug = Debug('plugins/core-support/zoom')
+import { UsageError, eventBus, injectCSS, Arguments, Registrar } from '@kui-shell/core'
 
 /**
  * Keyboard event character codes
@@ -120,7 +115,6 @@ const listener = (event: KeyboardEvent): void => {
 
   if (char === keys.ZOOM_RESET && (event.ctrlKey || event.metaKey)) {
     // zooming
-    debug('reset zoom')
     event.preventDefault()
     reset()
     setTimeout(() => eventBus.emit('/zoom', 1), 100)
@@ -163,15 +157,12 @@ export default (commandTree: Registrar) => {
   //
   // inject our CSS
   //
-  if (inBrowser()) {
+  setTimeout(async () => {
     injectCSS({
       css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
       key: 'zoom.css'
     })
-  } else {
-    const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(join(root, 'web/css/zoom.css'))
-  }
+  }, 0)
 
   const overlay = document.createElement('div')
   overlay.className = 'zoom-overlay hidden'

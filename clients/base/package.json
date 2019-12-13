@@ -19,6 +19,7 @@
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz"
   },
   "devDependencies": {
-    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz"
+    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz",
+    "@kui-shell/webpack": "file:/tmp/kui-packs/kui-shell-webpack.tgz"
   }
 }

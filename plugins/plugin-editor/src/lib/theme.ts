@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'path'
 import { injectCSS } from '@kui-shell/core'
 
 /** optimization: injectTheme asynchronously on preload */
@@ -40,17 +39,10 @@ export const injectTheme = () => {
   // dangit: in webpack we can require the CSS; but in plain nodejs,
   // we cannot, so have to use filesystem operations to acquire the
   // CSS content
-  try {
-    // try webpack style
-    injectCSS({
-      css: require('@kui-shell/plugin-editor/web/css/theme-alignment.css').toString(),
-      key
-    })
-  } catch (err) {
-    // oh well, try filesystem style
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-    injectCSS({ key, path: join(ourRoot, 'web/css/theme-alignment.css') })
-  }
+  injectCSS({
+    css: require('@kui-shell/plugin-editor/web/css/theme-alignment.css').toString(),
+    key
+  })
 }
 
 export default injectTheme

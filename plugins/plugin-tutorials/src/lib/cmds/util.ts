@@ -15,12 +15,12 @@
  */
 
 import Debug from 'debug'
-import { join, basename, dirname } from 'path'
+import { join, basename, dirname, resolve } from 'path'
 
 const debug = Debug('plugins/tutorials/utils')
 
 /** enclosing directory for tutorials */
-const top = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
+const top = resolve(join(__dirname, '../../'))
 export const contentDir = join(top, 'samples/@tutorials')
 
 /** enclosing directory for a given tutorial */

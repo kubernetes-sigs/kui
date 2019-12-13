@@ -26,13 +26,14 @@ import {
   i18nFromMap,
   theme,
   config,
+  inBrowser,
   injectCSS,
   Mode,
   Presentation
 } from '@kui-shell/core'
+import { version } from '@kui-shell/settings/package.json'
 
 import usage from './usage'
-import { homepage, license, version } from '@kui-shell/settings/package.json'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/about')
@@ -52,8 +53,6 @@ async function markdown(): Promise<(raw: string) => string> {
 }
 
 async function renderAbout() {
-  const { shell } = await import('electron')
-
   const flexContent = document.createElement('div')
   flexContent.classList.add('page-content')
 
@@ -63,7 +62,16 @@ async function renderAbout() {
 
   const badges = []
 
-  const openHome = () => shell.openExternal(theme.ogUrl || homepage)
+  // intentionally require, to handle optionals
+  const { homepage, license } = require('@kui-shell/settings/package.json')
+
+  const home = theme.ogUrl || homepage
+  const openHome = async () =>
+    inBrowser()
+      ? window.open(home)
+      : (await import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ './electron-helpers')).openExternal(
+          home
+        )
 
   if (license) {
     badges.push(license)
@@ -118,6 +126,9 @@ async function renderAbout() {
 }
 
 function renderVersion(name: string) {
+  // intentionally require, to handle optionals
+  const { version } = require('@kui-shell/settings/package.json')
+
   const bottomContent = document.createElement('div')
   bottomContent.classList.add('about-window-bottom-content')
 
@@ -226,18 +237,15 @@ const aboutWindow = async (args: Arguments<Options>): Promise<KResponse> => {
 
   const { parsedOptions, REPL } = args
 
-  try {
-    injectCSS({
-      css: require('@kui-shell/plugin-core-support/web/css/about.css'),
-      key: 'about-window-css'
-    })
-  } catch (err) {
-    const { dirname, join } = await import('path')
-    const ourRootDir = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(join(ourRootDir, 'web/css/about.css'))
-  }
+  injectCSS({
+    css: require('@kui-shell/plugin-core-support/web/css/about.css'),
+    key: 'about-window-css'
+  })
 
-  const name = theme.productName || (await import('electron')).app.getName()
+  const name =
+    theme.productName ||
+    (!inBrowser() &&
+      (await import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ './electron-helpers')).getAppName())
 
   // this is the main container for the dom
   const content = document.createElement('div')

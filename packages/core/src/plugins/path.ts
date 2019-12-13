@@ -26,11 +26,10 @@ export function webpackPath(path: string) {
 }
 
 /**
- * For electron and electron-main (i.e. "headless"), right now we are
- * stil using commonjs imports, so we don't need to be as clever. At
- * some point, we will probably switch over to using webpack with an
- * electron-renderer target. At that point, we will only need this for
- * headless mode.
+ * For electron-main (i.e. "headless"), right now we are stil using
+ * commonjs imports, so we don't need to be as clever. At some point,
+ * we will probably switch over to using webpack with an electron-main
+ * target. At that point, this will go away.
  *
  */
 export function mainPath(path: string) {

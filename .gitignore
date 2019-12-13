@@ -61,3 +61,4 @@ kui-stage
 # es6 compiled modules
 packages/*/mdist
 plugins/*/mdist
+clients/**/mdist

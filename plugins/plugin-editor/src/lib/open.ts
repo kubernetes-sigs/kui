@@ -15,11 +15,10 @@
  */
 
 import Debug from 'debug'
-import { dirname, join } from 'path'
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Tab, inBrowser, ToolbarText, injectCSS, injectScript, ExecOptions, currentSelection } from '@kui-shell/core'
+import { Tab, ToolbarText, injectCSS, ExecOptions, currentSelection } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './entity'
 import { Editor, EditorResponse } from './response'
@@ -102,20 +101,10 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions: E
   }
 
   if (!pre2) {
-    if (!inBrowser()) {
-      const monacoRoot = dirname(require.resolve('monaco-editor/package.json'))
-      injectScript(join(monacoRoot, 'min/vs/loader.js'))
-    }
-
-    try {
-      injectCSS({
-        css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(),
-        key: 'editor.editor'
-      })
-    } catch (err) {
-      const ourRoot = dirname(require.resolve('@kui-shell/plugin-editor/package.json'))
-      injectCSS(join(ourRoot, 'web/css/editor.css'))
-    }
+    injectCSS({
+      css: require('@kui-shell/plugin-editor/web/css/editor.css').toString(),
+      key: 'editor.editor'
+    })
     pre2 = true
   }
 
@@ -266,9 +255,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions: E
     }
   } /* end of updater */
 
-  const initEditor = inBrowser()
-    ? (await import(/* webpackMode: "lazy" */ './init/esm')).default
-    : (await import(/* webpackMode: "weak" */ './init/amd')).default
+  const initEditor = (await import('./init/esm')).default
 
   // once the editor is ready, return a function that can populate it
   return initEditor(editorWrapper, options).then(makeUpdater)

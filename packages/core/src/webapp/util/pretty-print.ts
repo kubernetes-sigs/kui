@@ -19,7 +19,8 @@
  * which should make this instance resilient to theme changes
  */
 async function makeConverter() {
-  const Convert = await import('ansi-to-html')
+  // re: require versus import; issues with allowSyntheticDefaultImports
+  const Convert = require('ansi-to-html')
 
   return new Convert({
     newline: true,

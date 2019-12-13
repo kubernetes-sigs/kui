@@ -18,6 +18,7 @@
   ],
   "main": "dist/index.js",
   "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
   "kui": {
     "webpack": "KUI_USE_PROXY",
     "headless": false,

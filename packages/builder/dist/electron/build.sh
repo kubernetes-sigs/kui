@@ -41,7 +41,7 @@ export BUILDDIR="$CLIENT_HOME"/dist/electron
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-export IGNORE='(~$)|(\.ts$)|(monaco-editor/esm)|(monaco-editor/dev)|(monaco-editor/min-maps)|(lerna.json)|(@types)'                          
+export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(node-pty-prebuilt-multiarch)|(bak\.json)|(@kui-shell/.*/mdist)'
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
@@ -86,7 +86,7 @@ function tarCopy {
            --exclude "**/yarn.lock" \
            --exclude "**/*.debug.js" \
 	   --exclude "monaco-editor/dev" \
-	   --exclude "monaco-editor/esm" \
+	   --exclude "monaco-editor/min/*/*.js" \
 	   --exclude "monaco-editor/min-maps" \
            --exclude "node_modules/*.bak/*" \
            --exclude "node_modules/**/*.md" \
@@ -100,7 +100,7 @@ function tarCopy {
            --exclude "./attic" \
            --exclude "./.*" \
            --exclude "./README.md" \
-           --exclude "**/tsconfig.json" \
+           --exclude "*.tsbuildinfo" \
            --exclude "**/tslint.json" \
            --exclude "node_modules/**/test/*" . \
         | "$TAR" -C "$STAGING" -xf -
@@ -126,7 +126,8 @@ function configure {
     UGLIFY=true npx --no-install kui-prescan
 }
 
-function init {
+# prepare staging directory
+function initStage {
     rm -rf "$STAGING"
     mkdir -p "$STAGING"
     cd "$STAGING"
@@ -143,22 +144,23 @@ function prereq {
     fi
 }
 
-function assembleHTMLPieces {
-    export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "dist/electron/package.json")).devDependencies.electron).replace(/^[~^]/, ""))')
-    echo "ELECTRON_VERSION=$ELECTRON_VERSION"
+# compile es6 modules
+function es6 {
+    if [ -d node_modules/typescript ] && [ -f tsconfig-es6.json ]; then
+        npx --no-install tsc -b tsconfig-es6.json
+    fi
+}
 
-    # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/settings/config.json | jq --raw-output .theme.productName`}"
-    [[ -z ${CLIENT_NAME} ]] && export CLIENT_NAME="${PRODUCT_NAME}"
-    echo "PRODUCT_NAME=$PRODUCT_NAME"
-    echo "Using CLIENT_NAME=$CLIENT_NAME"
+# copy over the theme bits
+function theme {
+    THEME="$CLIENT_HOME"/theme
 
     # filesystem icons
-    THEME="$CLIENT_HOME"/theme
     ICON_MAC="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.darwin`
     ICON_WIN32="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.win32`
     ICON_LINUX="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.linux`
 
+    # copy over theme css and icons
     if [ -d "$THEME"/css ]; then
         echo "copying in theme css"
         cp -r "$THEME"/css/ "$STAGING"/node_modules/@kui-shell/build/css
@@ -172,19 +174,21 @@ function assembleHTMLPieces {
         cp -r "$THEME"/images "$STAGING"/node_modules/@kui-shell/build
     fi
 
-    # minify the core css
+    # copy over the core css
     (cd "$BUILDER_HOME/dist/electron" && npm install) # to pick up `minify`
     CSS_SOURCE="$CORE_HOME"/web/css
     CSS_TARGET="$APPDIR"/build/css
     mkdir -p "$CSS_TARGET"
-    echo "Minifying core CSS to this directory: $CSS_TARGET"
+    echo "copying core CSS to this directory: $CSS_TARGET"
     for i in "$CSS_SOURCE"/*.css; do
         css=`basename $i`
-        echo -n "Minifying $css... "
-        cp "$i" /tmp/"$css"
-        (cd "$BUILDER_HOME/dist/electron" && npx --no-install minify /tmp/"$css")
-        cp /tmp/"$css" "$CSS_TARGET"/"$css"
+        echo -n "copying $css... "
+        cp "$i" "$CSS_TARGET"/"$css"
     done
+    if [ -d "$CSS_SOURCE"/vendor ]; then
+        echo -n "copying vendor css"
+        cp -a "$CSS_SOURCE"/vendor "$CSS_TARGET"
+    fi
 }
 
 function cleanup {
@@ -230,7 +234,7 @@ function win32 {
 # deal with darwin/macOS packaging
 #
 function mac {
-    if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ]; then
+    if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ] || [ "$PLATFORM" == "osx" ]; then
         echo "Electron build darwin $STAGING"
 
         (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ICON_MAC)
@@ -368,15 +372,49 @@ function windows {
     fi
 }
 
+# install the webpackery bits
+function initWebpack {
+    pushd "$STAGING" > /dev/null
+    cp -a "$BUILDER_HOME"/../webpack/webpack.config.js .
+    (cd node_modules/.bin && rm -f webpack-cli && ln -s ../webpack-cli/bin/cli.js webpack-cli)
+    popd > /dev/null
+}
+
+# build the webpack bundles
+function webpack {
+    pushd "$STAGING" > /dev/null
+    rm -f "$BUILDDIR"/*.js*
+    TARGET=electron-renderer MODE=${MODE-production} CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli
+    popd > /dev/null
+}
+
+# install the electron-packager dependencies
+function builddeps {
+    (cd "$BUILDER_HOME/dist/electron" && npm install)
+
+    export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "dist/electron/package.json")).devDependencies.electron).replace(/^[~^]/, ""))')
+    echo "ELECTRON_VERSION=$ELECTRON_VERSION"
+
+    # product name
+    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/settings/config.json | jq --raw-output .theme.productName`}"
+    [[ -z ${CLIENT_NAME} ]] && export CLIENT_NAME="${PRODUCT_NAME}"
+    echo "PRODUCT_NAME=$PRODUCT_NAME"
+    echo "Using CLIENT_NAME=$CLIENT_NAME"
+}
+
 # this is the main routine
 function build {
     echo "windows" && windows
     echo "prereq" && prereq
-    echo "init" && init
+    echo "es6" && es6
+    echo "initStage" && initStage
     echo "tarCopy" && tarCopy
+    echo "initWebpack" && initWebpack
     echo "native" && native
     echo "configure" && configure
-    echo "assembleHTMLPieces" && assembleHTMLPieces
+    echo "webpack" && webpack
+    echo "builddeps" && builddeps
+    echo "theme" && theme
     echo "win32" && win32
     echo "mac" && mac
     echo "linux" && linux

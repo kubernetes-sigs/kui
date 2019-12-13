@@ -21,7 +21,7 @@ import { PrescanModel } from './prescan'
 import { mainPath, webpackPath } from './path'
 import { proxy } from '../core/command-tree'
 import { CommandBase } from '../models/command'
-import { inBrowser } from '../core/capabilities'
+import { isHeadless } from '../core/capabilities'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
 
 const debug = Debug('core/plugins/resolver')
@@ -81,7 +81,7 @@ const prequire = async (
             const registrationRef =
               module.path.charAt(0) === '/'
                 ? await import(/* webpackIgnore: true */ module.path)
-                : !inBrowser()
+                : isHeadless()
                 ? await import(/* webpackIgnore: true */ mainPath(module.path))
                 : await import(
                     /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/plugin'

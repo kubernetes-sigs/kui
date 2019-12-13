@@ -81,6 +81,11 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
+  it(`should rm -f ${nonExistFilePath2}`, () =>
+    CLI.command(`rm -f ${nonExistFilePath2}`, this.app) // note the -f here; it's ok if the file doesn't exist
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
   // editor save not yet supported in proxy mode
   Common.localIt('should edit and save the content of a non-existing file', () =>
     CLI.command(`edit --create ${nonExistFilePath2}`, this.app)

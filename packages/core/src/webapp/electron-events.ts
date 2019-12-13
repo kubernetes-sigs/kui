@@ -51,35 +51,10 @@ const listenForRemoteEvents = (ipcRenderer: IpcRenderer) => {
 const initializeIPC = async () => {
   debug('initializeIPC')
 
-  try {
-    const electron = await import('electron')
-    const ipcRenderer = electron.ipcRenderer
-    if (!ipcRenderer) {
-      debug('probably browser 1')
-      setMedia(Media.Browser)
-      document.body.classList.add('not-electron')
-    } else {
-      setMedia(Media.Electron)
-      return { ipcRenderer }
-    }
-  } catch (err) {
-    debug('could not find electron')
-
-    if (typeof document === 'undefined') {
-      // then we're probably compiling the modules, without electron
-      // installed; that's ok. the code below is protected for
-      // the absence of ipcRenderer and remote
-      debug('probably headless')
-      setMedia(Media.Headless)
-    } else {
-      // otherwise, we're probably in webpack mode
-      debug('probably browser 2')
-      setMedia(Media.Browser)
-      document.body.classList.add('not-electron')
-    }
-  }
-
-  return {}
+  const electron = await import('electron')
+  const ipcRenderer = electron.ipcRenderer
+  setMedia(Media.Electron)
+  return { ipcRenderer }
 }
 
 /**

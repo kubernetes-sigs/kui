@@ -264,7 +264,10 @@ export function createWindow(
 
     // and load the index.html of the app.
     const urlSpec = {
-      pathname: join(root, '../build/index.html'),
+      pathname: join(
+        dirname(root),
+        `build/index${process.env.KUI_TEST_PARALLEL && process.env.PORT_OFFSET ? process.env.PORT_OFFSET : ''}.html`
+      ),
       protocol: 'file:',
       search: commandContext ? `?${commandContext}` : '',
       slashes: true

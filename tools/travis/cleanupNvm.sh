@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Copyright 2018 IBM Corporation
+# Copyright 2017-18 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,4 +16,8 @@
 # limitations under the License.
 #
 
-npm run lint && ./tools/scancode/scancode.sh
+# errors otherwise: nvm is not compatible with the "npm_config_prefix" environment var
+
+npm config delete prefix
+rm -f ~/.bashrc ~/.bash_profile
+rm -f .nvmrc
