@@ -1,5 +1,0 @@
-{
-  "extends": "../../packages/builder/tsconfig.json",
-  "include": ["../../packages/*/src", "../../plugins/*/src"],
-  "exclude": ["**/flycheck*.ts"]
-}

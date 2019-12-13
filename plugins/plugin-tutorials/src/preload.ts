@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { dirname } from 'path'
+import { join, resolve } from 'path'
 
 import { augmentModuleLoadPath } from '@kui-shell/core'
 
 export default async () => {
   // give visibility to our @demos directory on the module path
-  augmentModuleLoadPath(
-    dirname(dirname(require.resolve('@kui-shell/plugin-tutorials/samples/@tutorials/getting-started/package.json')))
-  )
+  augmentModuleLoadPath(join(resolve(__dirname), '../samples/@tutorials'))
 }

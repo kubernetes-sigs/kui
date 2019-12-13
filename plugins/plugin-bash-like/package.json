@@ -21,6 +21,7 @@
   ],
   "main": "dist/index.js",
   "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
   "dependencies": {
     "@types/cookie": "0.3.3",
     "@types/marked": "0.7.2",

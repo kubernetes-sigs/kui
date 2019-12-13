@@ -9,26 +9,34 @@ services:
 env:
   global:
     - NYC=true # we want code coverage stats
-    - NEEDS_TOP=true # uncomment this if you want cpu and memory utilization output
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
-    - WEBPACK_POLL_INTERVAL=200000 # no need to poll for updates while testing
-    - WEB_COMPRESS=none
     - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true
-    - CSP_ALLOWED_HOSTS="http://localhost:3000 ws://localhost:3000 http://localhost:9953"
+    - CSP_ALLOWED_HOSTS="http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
     - PATH=bin:$PATH
-    - NO_MAC_DMG_INSTALLER=`[[ "$TRAVIS_OS_NAME" == linux ]] && echo true` # we can't build macOS DMG files in linux travis :(
-    - WINDOW_WIDTH=1400                   # ! important ! so that clicks don't fail due to elements being off-viewport
-    - WINDOW_HEIGHT=1050                  # ! ibid !
-    - LINUX_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-linux-x64/Kui" # test against linux electron build
-    - OSX_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui" # test against darwin electron build
-    - WINDOWS_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-win32-x64/Kui.exe" # test against darwin electron build
-    - TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "$LINUX_BUILD" || ([ "$TRAVIS_OS_NAME" = osx ] && echo "$OSX_BUILD" || echo "$WINDOWS_BUILD")`
-    - BUILD_ENV=production                # please note: used in dist/electron/build.sh with npm prune --production
-    - HOMEBREW_NO_AUTO_UPDATE=1           # disable auto update before running brew install, brew upgrade or brew tap
+    - WINDOW_WIDTH=1400         # ! important ! so that clicks don't fail due to elements being off-viewport
+    - WINDOW_HEIGHT=1050        # ! ibid !
+    - BUILD_ENV=production      # used in dist/electron/build.sh with npm prune --production
+    - MOCHA_RUN_TARGET=electron # to save some verbosity below, use this as the default; it will be adjusted to "webpack" as needed
+    - NO_OPT=true               # we don't need any webpack bundle optimizations while running tests
+    - NO_INSTALLER=true         # we don't need to bother building electron package tarballs or DMGs
 
-install: ./tools/travis/test/install.sh
-script: ./tools/travis/test/script.sh
+before_script:
+  - export DISPLAY=:1; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
+  - export DISPLAY=:2; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
+  - export DISPLAY=:3; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
+  - export DISPLAY=:4; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
+  - npm install -g concurrently
+  - ${TRAVIS_BUILD_DIR}/tools/travis/cleanupNvm.sh
+
+# upload codecov
+after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov/report.sh; fi
+
+# default install script
+install:
+  - npm ci
+  - ./tools/codecov/instrument.sh
+  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then (npm run proxy &) && npm run watch:webpack; else (cd clients/$CLIENT && npm run build:electron -- $TRAVIS_OS_NAME); fi
 
 stages:
   - test
@@ -36,39 +44,47 @@ stages:
     if: branch = master AND type = push
 
 jobs:
+  allow_failures:
+    - if: os = windows AND env(NO_WINDOWS) IS present
+    
   include:
-    - &test-core
-      env:
-        - LAYERS="core core-support editor"
-        - MOCHA_TARGETS="webpack electron"
-        - KUI_USE_PROXY=true
-    - <<: *test-core
-      os: osx
-    - stage: test
-      os: windows
+    # API Tests | os=Linux | targets=webpack-watch,electron-watch
+    - env: N="API" CLIENT="test" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
+      install:
+        - npm ci && ./tools/codecov/instrument.sh
+        - TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile # codecov of prescan
+        - cd clients/$CLIENT && npm install
+      script: npm run test:parallel
+
+    # Core Tests | os=Darwin | targets=electron-build
+    - os: osx
+      env: N="Mac core" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1
+      before_install: which jq || brew install jq
+      script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
+
+    # Core Tests | os=Windows | targets=electron-build [INCOMPLETE]
+    - os: windows
+      env: N="Windows core" CLIENT="default" TEST_FILTER="about" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-win32-x64/Kui.exe"
       before_install: npm config set script-shell C:\\Program\ Files\\git\\bin\\bash.exe
-      env: LAYERS=core MOCHA_TARGETS="electron" TEST_FILTER='about'
-    - stage: test
-      env:
-        - WAIT_LAYERS="bash-like-wait"
-        - LAYERS="bash-like"
-        - MOCHA_TARGETS="webpack electron"
-        - KUI_USE_PROXY=true
-        - NEEDS_IBMCLOUD_CLI=true # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
-    - stage: test
-      env:
-        - LAYERS="response"
-        - MOCHA_TARGETS="electron"
-        - KUI_USE_CLIENT=test
-    - stage: test
-      env:
-        - LAYERS="core"
-        - MOCHA_TARGETS="electron"
-        - KUI_USE_CLIENT=base
-        - LINUX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-linux-x64/Kui"
-        - OSX_BASE_BUILD="${TRAVIS_BUILD_DIR}/clients/electron/dist/electron/Kui-base-darwin-x64/Kui.app/Contents/MacOS/Kui"
-        - TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" == linux ] && echo "$LINUX_BASE_BUILD" || echo "$OSX_BASE_BUILD"`
-    # Notes:
+      script: npm run test1 core
+
+      # - env: N="Linux core" LAYERS="core core-support editor"
+
+    # Core Tests | os=Linux | targets=webpack-watch
+    - env: N="Webpack core" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
+      script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
+
+    # Bash Tests | os=Linux | targets=electron-build
+    - env: N="Linux bash" CLIENT="default" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-linux-x64/Kui"
+      before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
+      script: npm run test1 bash-like
+
+    # Bash Tests | os=Linux | targets=webpack-watch
+    - env: N="Webpack bash" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
+      before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
+      script: npm run test1 bash-like-wait && npm run test1 bash-like
+
+    # Npm release stage
     #
     # re: on the `npm ci` and `npm install -g` below: here, we are
     # trying to avoid contamination of package-lock.json, because

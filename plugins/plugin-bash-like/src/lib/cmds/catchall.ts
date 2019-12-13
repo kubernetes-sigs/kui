@@ -57,7 +57,7 @@ export const dispatchToShell = async ({
     }
     return response
   } else {
-    const { doExec } = await import(/* webpackMode: "lazy-once" */ '../../pty/client')
+    const { doExec } = await import(/* webpackMode: "lazy" */ '../../pty/client')
     return doExec(
       tab,
       block as HTMLElement,

@@ -24,7 +24,7 @@ import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 export const registerCapability: CapabilityRegistration = async () => {
   if (inBrowser()) {
-    import('./pty/session').then(({ init }) => init())
+    await import('./pty/session').then(({ init }) => init())
   }
 }
 
@@ -39,7 +39,7 @@ export default async (commandTree: Registrar) => {
 
   if (!inBrowser()) {
     try {
-      const prefetchShellState = (await import(/* webpackMode: "weak" */ './pty/prefetch')).default
+      const prefetchShellState = (await import('./pty/prefetch')).default
       await prefetchShellState()
       debug('done with state prefetch')
     } catch (err) {

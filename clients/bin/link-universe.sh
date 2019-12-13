@@ -30,7 +30,7 @@ rm -rf node_modules
 cp package.json bak.json
 
 # create npm packs
-for pkg in ../../packages/{core,builder,proxy,webpack,test} ../../plugins/*; do
+for pkg in ../../packages/{core,builder,webpack,proxy,test} ../../plugins/*; do
     # check for inclusion constraints; e.g. package.json -> .kui.headless == false
     if [ -n "$1" ]; then
         OK=$(cat $pkg/package.json | jq --raw-output .kui.$1)
@@ -47,8 +47,12 @@ done
 wait
 
 # npm install those npm packs
-npm install --production --save --ignore-scripts --no-package-lock "$target"/!(*builder*)
-npm install --production --save-dev --ignore-scripts --no-package-lock "$target"/*builder*
+npm install --production --save --ignore-scripts --no-package-lock "$target"/!(*builder*|*webpack*)
+if [ "$1" = "proxy" ] || [ "$1" = "headless" ]; then
+    npm install --production --save-dev --ignore-scripts --no-package-lock "$target"/*builder*
+else
+    npm install --production --save-dev --ignore-scripts --no-package-lock "$target"/{*builder*,*webpack*}
+fi
 
 #
 # make absolute path refs to the npm packs we just created (in the for pkg loop above)

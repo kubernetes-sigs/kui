@@ -15,10 +15,9 @@
  */
 
 import Debug from 'debug'
-import { dirname, join } from 'path'
+import { join } from 'path'
 import { WebContents } from 'electron'
 
-import { inBrowser } from '../../core/capabilities'
 import { env } from '../../core/settings'
 import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
@@ -52,8 +51,8 @@ export const getPersistedThemeChoice = (): Promise<string> => {
  *
  */
 const getCssFilepathForGivenTheme = (addon: string): string => {
-  const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
-  return join(prefix, env.cssHome, addon)
+  // const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
+  return join(env.cssHome, addon)
 }
 
 /**

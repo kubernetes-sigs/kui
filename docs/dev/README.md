@@ -1,29 +1,30 @@
 # Kui Developers Guide
 
+Kui is written in [TypeScript](https://www.typescriptlang.org/), which
+is a typed variant of JavaScript in fairly wide use now across the
+JavaScript ecosystem.
+
+- [Clone and Build](#clone-and-build)
+- [Coding Strategy](#coding-strategy)
+- [Packaging](packaging.md)
+- [Running Tests](#local-testing)
+- [Live Webpack Development](live-webpack-development.md)
+
+## Clone and Build
+
 To get started with developing and extending Kui, first clone and
-build the code:
+build the code, and initiate a webpack watcher:
 
 ```bash
 git clone git@github.com:IBM/kui.git
 export PATH=$PWD/kui/bin:$PATH
 cd kui && npm ci
-kubectl kui version
+npm run watch:electron
 ```
 
-The last of those commands will verify that `kui` was built
-properly. You may also try `kubectl kui shell` if you want to test out
-the graphical shell environment.
-
-If you have already set `KUBECONFIG` (or `.wskprops`, for Apache
-OpenWhisk users), then you are good to go, as far as credentials are
-concerned. Otherwise, consult the [Kui installation
-guide](../installation.md) for more information on setting up
-credentials.
-
-- [Coding Strategy](#coding-strategy)
-- [Packaging](packaging.md)
-- [Running Tests](#local-testing)
-- [Live Webpack Development](live-webpack-development.md)
+To verify your watcher, you can launch an electron client via `npm start`. You should then be able to issue e.g. filesystem command ssuch
+as `ls`, and click on the links in the table. Clicking on a JSON or
+YAML file should display the contents in an editor in the sidecar.
 
 ## Coding Strategy
 
@@ -32,16 +33,6 @@ is a framework for developing rich client applications, using browser
 technologies. Electron applications can be built to provide local
 double-clickable clients on Windows, macOS, and Linux. Browser
 deployments are also possible, further extending the reach of Kui.
-
-Kui is written in [TypeScript](https://www.typescriptlang.org/), which
-is a typed variant of JavaScript in fairly wide use now across the
-JavaScript ecosystem. After the initial `npm ci`, you can set up
-a compile watcher via this command, executed in the top-level
-directory:
-
-```bash
-> npm run watch
-```
 
 For the most part, after the TypeScript compilation completes, edits
 to source code can be incorporated into a running instance of the
@@ -82,21 +73,14 @@ realize your changes.
 
 ## Local Testing
 
-### Setup:
-
-- To install Kubernetes on your local machine, consult the official [Kubernetes Local Machine Solutions](https://kubernetes.io/docs/setup/pick-right-solution/#local-machine-solutions) .
-
-### Testing:
-
-- Go to the root of the project folder
-- Run all the test suites
+To run all tests:
 
 ```bash
 > npm test
 ```
 
-- Filter test execution
+To filter tests, e.g. to run test suites with 'About command' in their title:
 
 ```bash
-> TEST_FILTER='About command' npm test # Only run test suites containing 'About command' in suite titles
+> TEST_FILTER='About command' npm test
 ```

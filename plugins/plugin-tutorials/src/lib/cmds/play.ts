@@ -15,7 +15,6 @@
  */
 
 import Debug from 'debug'
-import { dirname, join } from 'path'
 
 import { readProject, TutorialDefinition, TutorialTable } from './util'
 import { wskflowCycle } from './wskflow'
@@ -30,7 +29,6 @@ import {
   findFile,
   getCurrentPrompt,
   injectCSS,
-  loadHTML,
   partialInput,
   clearSelection,
 
@@ -90,22 +88,14 @@ const rowFilters = {
  *
  */
 const injectOurCSS = () => {
-  try {
-    // webpack style
-    injectCSS({
-      css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(),
-      key: 'tutorial.main'
-    })
-    injectCSS({
-      css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css'),
-      key: 'tutorial.tutorials'
-    })
-  } catch {
-    // local file style
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
-    injectCSS(join(ourRoot, 'web/css/main.css'))
-    injectCSS(join(ourRoot, 'web/css/tutorials.css'))
-  }
+  injectCSS({
+    css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(),
+    key: 'tutorial.main'
+  })
+  injectCSS({
+    css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css').toString(),
+    key: 'tutorial.tutorials'
+  })
 }
 
 /**
@@ -113,16 +103,7 @@ const injectOurCSS = () => {
  *
  */
 const injectHTML = () => {
-  let loader
-
-  try {
-    loader = Promise.resolve(require('@kui-shell/plugin-tutorials/web/html/index.html').default)
-    debug('webpack html inject')
-  } catch {
-    const ourRoot = dirname(require.resolve('@kui-shell/plugin-tutorials/package.json'))
-    loader = loadHTML(join(ourRoot, 'web/html/index.html'))
-    debug('local file html inject')
-  }
+  const loader = Promise.resolve(require('@kui-shell/plugin-tutorials/web/html/index.html').default)
 
   return loader.then(html => {
     const wrapper = document.createElement('div')

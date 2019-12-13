@@ -138,8 +138,10 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
 
   // paste test; reload first to start with a clean slate in the text search box
   it('should reload the app', () => Common.refresh(this))
-  it('should paste into the text search box', () =>
-    this.app.client
+  it('should paste into the text search box', async () => {
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
+    return this.app.client
       .keys([Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
       .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
@@ -147,5 +149,6 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
       .then(() => this.app.client.getValue('#search-input'))
       .then(actual => assert.strictEqual(actual, 'grumble')) // paste made it to #search-input?
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true))
+  })
 })

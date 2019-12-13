@@ -18,9 +18,7 @@
 
 #
 # When testing locally on a laptop:
-#   PORT=8081 KUI_USE_HTTP=true ~/git/kui/tools/travis/test/target.d/proxy.sh
-#
-# When in travis, this is spawned by ./webpack.sh
+#   PORT=8081 KUI_USE_HTTP=true ~/git/kui/tools/travis/proxy.sh
 #
 
 set -e

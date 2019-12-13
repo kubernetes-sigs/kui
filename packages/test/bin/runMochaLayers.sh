@@ -88,7 +88,7 @@ function kill_them_all() {
 }
 trap kill_them_all INT
 
-idx=${PORT_OFFSET_BASE-1}
+idx=${PORT_OFFSET_BASE-${PORT_OFFSET-1}}
 if [ -z "$WHICH" ]; then
     (LAYER=$LAYER DISPLAY=":$idx" PORT_OFFSET=$idx "$TEST_ROOT"/bin/runTest.sh 2>&1)
 else

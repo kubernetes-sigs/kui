@@ -25,22 +25,20 @@
   },
   "main": "dist/index.js",
   "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
   "dependencies": {
     "debug": "4.1.1",
-    "monaco-editor": "0.14.3",
+    "monaco-editor": "0.18.1",
+    "monaco-editor-webpack-plugin": "^1.7.0",
     "tmp": "0.1.0"
   },
   "kui": {
     "headless": false,
     "proxy": false,
     "webpack": {
-      "entry": {
-        "editor.worker": "./node_modules/monaco-editor/esm/vs/editor/editor.worker.js",
-        "json.worker": "./node_modules/monaco-editor/esm/vs/language/json/json.worker.js",
-        "css.worker": "./node_modules/monaco-editor/esm/vs/language/css/css.worker.js",
-        "html.worker": "./node_modules/monaco-editor/esm/vs/language/html/html.worker.js",
-        "ts.worker": "./node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js"
-      }
+      "plugins": [
+        "monaco-editor-webpack-plugin"
+      ]
     }
   },
   "publishConfig": {

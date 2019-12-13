@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'path'
-
 import {
-  inBrowser,
   Registrar,
   ExecType,
   UsageModel,
@@ -63,15 +60,10 @@ export default async (commandTree: Registrar) => {
         const message = parsedOptions.asking || strings('areYouSure')
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
 
-        if (inBrowser()) {
-          injectCSS({
-            css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
-            key: 'plugin-core-support/confirm.css'
-          })
-        } else {
-          const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-          injectCSS(join(root, 'web/css/confirm.css'))
-        }
+        injectCSS({
+          css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
+          key: 'plugin-core-support.kui-shell.org/confirm.css'
+        })
 
         const confirm = () => {
           const modal = document.createElement('div')

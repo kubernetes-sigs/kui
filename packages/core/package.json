@@ -25,6 +25,7 @@
   ],
   "main": "dist/index.js",
   "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
   "bin": {
     "kui": "bin/kui"
   },

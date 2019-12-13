@@ -111,7 +111,7 @@ const injectCSS = (env, settings, marker = '<head>') => str => {
       // only inject test css if we are running a test
       if (!/^_test/.test(css) || process.env.RUNNING_KUI_TEST !== undefined) {
         const href = /^http/.test(css) ? css : `${env.cssHome}${css}`
-        return `<link href="${href}" rel="stylesheet" type="text/css">`
+        return `<link href="${href}" rel="stylesheet" nonce="kuiDefaultNonce">`
       } else {
         return ''
       }
@@ -139,7 +139,7 @@ const writeIndex = settings => str =>
       return resolve()
     }
 
-    const indexHtml = `index${settings.env.nameSuffix || ''}.html`
+    const indexHtml = `index${settings.env.nameSuffix !== undefined ? settings.env.nameSuffix : ''}.html`
     task(`write ${indexHtml} to ${settings.build.buildDir}`)
 
     fs.writeFile(path.join(settings.build.buildDir, indexHtml), str, err => {

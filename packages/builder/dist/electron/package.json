@@ -12,8 +12,7 @@
     "debug": "4.1.1",
     "electron": "6.1.5",
     "electron-packager": "14.1.1",
-    "glob": "7.1.6",
-    "minifier": "0.8.1"
+    "glob": "7.1.6"
   },
   "optionalDependencies": {
     "electron-installer-debian": "2.0.1",

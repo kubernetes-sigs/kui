@@ -40,6 +40,14 @@ export function registerEditor(provider: EditorProvider) {
 export default registerEditor
 
 /**
+ * Do we have an editor capability?
+ *
+ */
+export function hasEditor() {
+  return primaryProvider !== undefined
+}
+
+/**
  * Apply all registered modes that are relevant to the given resource
  * to the given modes model
  *

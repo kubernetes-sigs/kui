@@ -57,15 +57,38 @@ class State {
 const state: State = new State()
 
 /**
+ * Update the media, e.g. to indicate that we are running in a browser
+ * context versus an Electron context.
+ *
+ */
+export const setMedia = (media: Media): void => {
+  debug('setMedia %s', Media[media])
+  state.media = media
+
+  if (!state.assertedLocalAccess && media === Media.Browser) {
+    state.hasLocalAccess = false
+  }
+}
+
+/**
  * What is our presentation media?
  *
  */
 export const getMedia = () => state.media
 export const isHeadless = () => state.media === Media.Headless
 export const inElectron = () => state.media === Media.Electron
-export const inBrowser = () =>
-  state.media === Media.Browser ||
-  (!isHeadless() && typeof document !== 'undefined' && document.body.classList.contains('not-electron'))
+export const inBrowser = () => {
+  if (state.media === Media.Browser) {
+    return true
+  }
+
+  if (!isHeadless() && typeof document !== 'undefined' && document.body.classList.contains('not-electron')) {
+    setMedia(Media.Browser)
+    return true
+  } else {
+    return false
+  }
+}
 
 /**
  * Is Kui supported by a remote proxy?
@@ -79,20 +102,6 @@ export const hasProxy = () => state.hasProxy
  */
 export const assertHasProxy = () => {
   state.hasProxy = true
-}
-
-/**
- * Update the media, e.g. to indicate that we are running in a browser
- * context versus an Electron context.
- *
- */
-export const setMedia = (media: Media): void => {
-  debug('setMedia %s', Media[media])
-  state.media = media
-
-  if (!state.assertedLocalAccess && inBrowser()) {
-    state.hasLocalAccess = false
-  }
 }
 
 /**

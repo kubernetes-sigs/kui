@@ -17,7 +17,11 @@ npm run build:html
 
 # rebuild the node-pty native code, in case the user is switching from
 # electron to webpack (each of which may use a different node ABI)
-npm run pty:nodejs
+if [ "$TARGET" = "electron-renderer" ]; then
+    npm run pty:electron
+else
+    npm run pty:nodejs
+fi
 
 # npm install the webpack support, if we haven't already done so (we
 # forgo installing the webpack components initially, due to their
@@ -26,16 +30,22 @@ if [ ! -d node_modules/webpack ]; then
     npm install --no-save --ignore-scripts --no-package-lock ./packages/webpack
 fi
 
+if [ "$TARGET" = "electron-renderer" ]; then
+    TARGETDIR=dist/electron/build
+else
+    TARGETDIR=dist/webpack/build
+fi
+
 # for development purposes, we will need to do a bit of hackery to
 # link in the CLIENT theming into the dist/webpack staging area
-rm -rf clients/$CLIENT/dist/webpack
-mkdir -p clients/$CLIENT/dist/webpack/css
-(cd clients/$CLIENT/dist/webpack && \
-     ln -sf ../../theme/icons && \
-     ln -sf ../../theme/images && \
+rm -rf clients/$CLIENT/$TARGETDIR
+mkdir -p clients/$CLIENT/$TARGETDIR/css
+(cd clients/$CLIENT/$TARGETDIR && \
+     ln -sf ../../../theme/icons && \
+     ln -sf ../../../theme/images && \
      cd css && \
-     for i in ../../../../../packages/core/web/css/*; do ln -sf $i; done && \
-     for i in ../../../theme/css/*; do ln -sf $i; done \
+     for i in ../../../../../../packages/core/web/css/*; do ln -sf $i; done && \
+     for i in ../../../../theme/css/*; do ln -sf $i; done \
     )
 
 # link in any config.json settings that the CLIENT definition may specify
@@ -49,8 +59,30 @@ fi
 
 export KUI_MONO_HOME=$(cd ./ && pwd)
 
+# make sure everything is compiled for ES Modules; do this
+# synchronously!
+npm run compile:source:es6
+
+# then, launch an ES Module compilation watcher in the background; why
+# do we need to watch on our own? why doesn't ts-loader do this for
+# us? not sure, probably a bug in ts-loader:
+# https://github.com/TypeStrong/ts-loader/issues/1042 (note how we
+# make sure to terminate the watcher when we are terminated)
 tsc --build tsconfig-es6.json --watch &
+WATCH=$!
+trap ctrl_c INT
+function ctrl_c() {
+    kill $WATCH
+}
 
-# finally, launch webpack-dev-server
-webpack-dev-server $PROGRESS --config packages/webpack/webpack.config.js
+# we use this to tell the dev server to touch a lock file when it is
+# done; below, we will poll until that is the case
+export LOCKFILE=/tmp/kui-build-lock.${PORT_OFFSET-0}
+rm -f $LOCKFILE
 
+# launch webpack-dev-server
+webpack-dev-server $PROGRESS --config packages/webpack/webpack.config.js &
+
+# but don't exit until the dev server is ready
+until [ -f $LOCKFILE ]; do sleep 1; done
+rm -f $LOCKFILE

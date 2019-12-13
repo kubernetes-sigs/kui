@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'path'
+import { join } from 'path'
 
 import {
   inBrowser,
@@ -207,8 +207,10 @@ export default async (commandTree: Registrar) => {
         const options = parsedOptions
 
         try {
-          const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-          injectCSS(join(root, 'web/css/screenshot.css'))
+          injectCSS({
+            css: require('@kui-shell/plugin-core-support/web/css/screenshot.css'),
+            key: 'plugin-core-support.kui-shell.org/screenshot.css'
+          })
 
           const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
           const { app } = remote

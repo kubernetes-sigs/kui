@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-import { dirname, join } from 'path'
-
-import { getCurrentPrompt, injectCSS, KeyCodes } from '@kui-shell/core'
-
-const debug = Debug('plugins/core-support/text-search')
+import { inElectron, getCurrentPrompt, injectCSS, KeyCodes } from '@kui-shell/core'
 
 /**
  * Listen for control/command+F
@@ -28,8 +23,10 @@ const debug = Debug('plugins/core-support/text-search')
 async function registerListener() {
   if (typeof document === 'undefined') return // return if no document
 
-  const root = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-  injectCSS(join(root, 'web/css/text-search.css'))
+  injectCSS({
+    css: require('@kui-shell/plugin-core-support/web/css/text-search.css'),
+    key: 'plugin-core-support.kui-shell.org/text-search.css'
+  })
 
   const app = await import('electron')
 
@@ -153,10 +150,7 @@ async function registerListener() {
  *
  */
 export default () => {
-  try {
+  if (inElectron()) {
     registerListener()
-  } catch (err) {
-    // console.error('Not running in electron environment')
-    debug('Not running in electron environment')
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2017-2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { injectCSS } from '@kui-shell/core'
+import { app, shell } from 'electron'
 
-export default () => {
-  injectCSS({
-    css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(),
-    key: 'wskflow'
-  })
+export function openExternal(url: string) {
+  return shell.openExternal(url)
+}
+
+export function getAppName() {
+  return app && app.getName()
 }

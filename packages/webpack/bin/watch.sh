@@ -26,13 +26,16 @@ BUILDER_HOME="$MODULE_HOME"/builder
 
 CONFIG="$MODULE_HOME"/webpack/webpack.config.js
 
-npx --no-install kui-compile
+if [ -z "$LOCKFILE" ]; then
+    # if LOCKFILE is defined, then the caller will take care of building
+    npx --no-install kui-compile
 
-KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
+    KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
+fi
 
 pushd "$CLIENT_HOME"
   rm -rf dist/webpack
-  mkdir -p dist/webpack/css
+  if [ ! -d dist/webpack/css ]; then mkdir -p dist/webpack/css; fi
   pushd dist/webpack/css
     for i in "$MODULE_HOME"/core/web/css/*; do
         ln -s $i
@@ -53,4 +56,8 @@ pushd "$CLIENT_HOME"
   fi
 popd
 
-npx --no-install webpack-dev-server --progress --config "$CONFIG"
+if [ -n "$OPEN" ]; then
+    OPEN="--open"
+fi
+
+npx --no-install webpack-dev-server --progress --config "$CONFIG" $OPEN

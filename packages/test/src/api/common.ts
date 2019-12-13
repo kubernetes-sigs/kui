@@ -135,9 +135,10 @@ const prepareElectron = (popup: string[]) => {
   const electron = require('electron') // relative to __dirname
   const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/dist/main/main.js' // relative to the tests/ directory
 
+  // re: disable-dev-shm-usage; google for "error: DevToolsActivePort file doesn't exist"
   const opts: SpectronOptions = {
     env: {},
-    chromeDriverArgs: ['--no-sandbox'],
+    chromeDriverArgs: ['--no-sandbox', '--disable-dev-shm-usage'],
     startTimeout: parseInt(process.env.TIMEOUT) || 60000, // see https://github.com/IBM/kui/issues/2227
     waitTimeout: parseInt(process.env.TIMEOUT) || 60000
   }

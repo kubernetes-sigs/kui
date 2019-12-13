@@ -53,7 +53,7 @@ import {
 } from '../../models/entity'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
-import { tryOpenWithEditor } from './registrar/editors'
+import { hasEditor, tryOpenWithEditor } from './registrar/editors'
 import { isPromise } from '../../util/types'
 
 /** @deprecated */
@@ -564,7 +564,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
         container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
       }
     } else {
-      const tryToUseEditor = true
+      const tryToUseEditor = hasEditor()
       if (tryToUseEditor) {
         try {
           const { content, presentation } = await tryOpenWithEditor(tab, custom, options)
