@@ -31,10 +31,10 @@ export namespace Plugins {
    * opt not to do so, but, in this case, a subsequent full reload is
    * mandatory; this will be the *caller's responsibility*.
    */
-  export const compile = async (pluginToBeRemoved?: string) => {
+  /* export const compile = async (pluginToBeRemoved?: string) => {
     const { compileUserInstalled } = await import('../plugins/assembler')
     compileUserInstalled(pluginToBeRemoved)
-  }
+  } */
 }
 
 /**

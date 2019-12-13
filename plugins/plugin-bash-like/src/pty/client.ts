@@ -18,7 +18,7 @@
 
 import Debug from 'debug'
 import { v4 as uuid } from 'uuid'
-import { basename, dirname, join } from 'path'
+import { basename, dirname } from 'path'
 import { Terminal as XTerminal } from 'xterm'
 // import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
@@ -422,7 +422,7 @@ class Resizer {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function safeLoadWithCatch(raw: string): Promise<Record<string, any>> {
-  const { safeLoad } = await import(/* webpackMode: "lazy-once" */ 'js-yaml')
+  const { safeLoad } = await import(/* webpackMode: "lazy" */ 'js-yaml')
   try {
     return safeLoad(raw)
   } catch (err) {
@@ -1097,22 +1097,11 @@ const getOrCreateChannel = async (
 let alreadyInjectedCSS: boolean
 function injectXtermCSS() {
   if (!alreadyInjectedCSS) {
-    if (inBrowser()) {
-      injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
-      injectCSS({
-        css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
-        key: 'kui-xtermjs'
-      })
-    } else {
-      injectCSS({
-        path: join(dirname(require.resolve('xterm/package.json')), 'lib/xterm.css'),
-        key: 'xtermjs'
-      })
-      injectCSS({
-        path: join(dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')), 'web/css/xterm.css'),
-        key: 'kui-xtermjs'
-      })
-    }
+    injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
+    injectCSS({
+      css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
+      key: 'kui-xtermjs'
+    })
     alreadyInjectedCSS = true
 
     // we did indeed inject the css this time around

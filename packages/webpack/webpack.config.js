@@ -17,25 +17,43 @@
 const fs = require('fs')
 const path = require('path')
 
+const mode = process.env.MODE || 'development'
+const target = process.env.TARGET || 'web'
+const inBrowser = target === 'web'
 const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-server/.test(_))
 const webCompress = process.env.WEB_COMPRESS
-const noCompression = webCompress === 'none' || isWatching
-const useGzip = webCompress === 'gzip'
-const CompressionPlugin = !noCompression && require(useGzip ? 'compression-webpack-plugin' : 'brotli-webpack-plugin')
+const noCompression = !inBrowser || webCompress === 'none' || isWatching
+const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
 
+const optimization = {}
+if (process.env.NO_OPT) {
+  console.log('optimization? disabled')
+  optimization.minimize = false
+}
+
+const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
+
+// http port
+const port = process.env.KUI_PORT || (PORT_OFFSET === undefined ? 9080 : 9080 + parseInt(PORT_OFFSET, 10))
+
+console.log('port?', port)
+console.log('mode?', mode)
+console.log('target?', target)
+console.log('inBrowser?', inBrowser)
 console.log('watching?', isWatching)
 console.log('explicit compression option?', webCompress || '<not set>')
 console.log('bundle compression disabled?', noCompression)
-console.log('bundle compression useGzip?', useGzip)
 
 // darwin/macos seems to have high cpu utilization without poll
-const pollInterval = process.platform === 'darwin' && (process.env.WEBPACK_POLL_INTERVAL || 2000)
+const pollInterval = undefined // process.platform === 'darwin' && (process.env.WEBPACK_POLL_INTERVAL || 2000)
 console.log('webpack poll interval', pollInterval)
+
+const defaultConnectCSP = `http://localhost:8081 http://localhost:9953 ws://localhost:8081 ws://localhost:${port} http://localhost:${port}`
 
 const contentSecurityPolicyForDevServer =
   process.env.WEBPACK_DEV_SERVER &&
   `default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
-    .env.CSP_ALLOWED_HOSTS || 'http://localhost:8081 http://localhost:9953 ws://localhost:8081 ws://localhost:9080'}`
+    .env.CSP_ALLOWED_HOSTS || defaultConnectCSP}`
 if (contentSecurityPolicyForDevServer) {
   console.log('ContentSecurityPolicy: dev-server', contentSecurityPolicyForDevServer)
 } else {
@@ -50,13 +68,14 @@ if (isMonorepo) {
 }
 
 /** point webpack to the root directory */
-const stageDir = process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd()
+const stageDir = path.resolve(process.env.KUI_STAGE || process.env.KUI_MONO_HOME || process.cwd())
 console.log('stageDir', stageDir)
 
 /** point webpack to the output directory */
 const buildDir =
+  ((!inBrowser || isWatching) && path.join(stageDir, 'node_modules/@kui-shell/build')) ||
   process.env.KUI_BUILDDIR ||
-  (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'clients', process.env.CLIENT, 'dist/webpack')) ||
+  (process.env.KUI_MONO_HOME && path.join(process.env.KUI_MONO_HOME, 'node_modules/@kui-shell/build')) ||
   path.join(stageDir, 'dist/webpack')
 console.log('buildDir', buildDir)
 
@@ -77,6 +96,17 @@ if (!process.env.CLIENT_HOME) {
 console.log('clientHome', process.env.CLIENT_HOME)
 
 /**
+ * Note: these are _webpack plugins_ not Kui plugins; we will assemble
+ * this list of webpack plugins as we go.
+ */
+const plugins = []
+
+// any compression plugins?
+if (CompressionPlugin) {
+  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
+}
+
+/**
  * Define the set of bundle entry points; there is one default entry
  * point (the main: entry below). On top of this, we scan the plugins,
  * looking to see if they define a `webpack.entry` field in their
@@ -84,15 +114,36 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * an example of this.
  *
  */
-const main = path.join(stageDir, 'node_modules/@kui-shell/core/mdist/webapp/bootstrap/webpack')
+const main = path.join(stageDir, 'node_modules/@kui-shell/core/mdist/webapp/bootstrap/webpack.js')
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
-const pluginEntries = fs.readdirSync(pluginBase).map(dir => {
+const allKuiPlugins = fs.readdirSync(pluginBase)
+const kuiPluginRules = []
+const pluginEntries = allKuiPlugins.map(dir => {
   try {
     const pjson = path.join(pluginBase, dir, 'package.json')
     const { kui } = require(pjson)
     const providedEntries = (kui && kui.webpack && kui.webpack.entry) || {}
+
+    // does the kui plugin need any webpack plugins?
+    if (kui && kui.webpack) {
+      if (kui.webpack.plugins) {
+        const kuiPluginRequiredWebpackPlugins = kui.webpack.plugins
+        kuiPluginRequiredWebpackPlugins.forEach(_ => plugins.push(new (require(_))()))
+      }
+
+      if (kui.webpack.rules) {
+        if (kui.webpack.rules['file-loader']) {
+          kui.webpack.rules['file-loader'].forEach(test => {
+            kuiPluginRules.push({
+              test: new RegExp(test.replace(/(\S)\/(\S)/g, `$1\\${path.sep}$2`)),
+              use: 'file-loader'
+            })
+          })
+        }
+      }
+    }
 
     // return Object.assign({}, providedEntries, pluginEntry, preloadEntry)
     return providedEntries
@@ -103,52 +154,98 @@ const pluginEntries = fs.readdirSync(pluginBase).map(dir => {
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
 
-const plugins = []
-
-// any compression plugins?
-if (CompressionPlugin) {
-  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
-}
-
-const optimization = {
-  minimize: true
-}
+console.log('webpack plugins', plugins)
 
 // the Kui builder plugin
 plugins.push({
   apply: compiler => {
+    let hash
     compiler.hooks.compilation.tap('KuiHtmlBuilder', compilation => {
       compilation.hooks.afterHash.tap('KuiHtmlBuilder', () => {
         // we need to inject the name of the main bundle into the configuration
-        const hash = compilation.hash
-        const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
-        console.log('KuiHtmlBuilder using this build hash', hash)
+        hash = compilation.hash
+      })
+    })
+    compiler.hooks.done.tapPromise('KuiHtmlBuilder', () => {
+      // eslint-disable-next-line no-async-promise-executor
+      return new Promise(async (resolve, reject) => {
+        try {
+          const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
+          console.log('KuiHtmlBuilder using this build hash', hash)
 
-        const overrides = {
-          build: { writeConfig: false },
-          env: { main, hash, bodyCss: ['not-electron'] }
-        }
-
-        if (contentSecurityPolicyForDevServer) {
-          overrides.theme = {
-            // only override the CSP when running webpack-dev-server;
-            // otherwise, we will inherit the settings from theme.json
-            // https://github.com/IBM/kui/pull/2395
-            contentSecurityPolicy: contentSecurityPolicyForDevServer
+          const overrides = {
+            build: { writeConfig: false },
+            env: { main, hash, bodyCss: inBrowser ? ['not-electron'] : ['in-electron'] }
           }
-        }
 
-        if (isWatching) {
-          overrides.build.buildDir = buildDir
-        }
+          if (PORT_OFFSET !== undefined) {
+            overrides.env.nameSuffix = PORT_OFFSET
+          }
 
-        // and this will inject it
-        const Builder = require(path.join(builderHome, 'lib/configure'))
-        new Builder().build(isWatching ? 'webpack-watch' : 'webpack', overrides)
+          if (contentSecurityPolicyForDevServer) {
+            overrides.theme = {
+              // only override the CSP when running webpack-dev-server;
+              // otherwise, we will inherit the settings from theme.json
+              // https://github.com/IBM/kui/pull/2395
+              contentSecurityPolicy: contentSecurityPolicyForDevServer
+            }
+          }
+
+          if (!inBrowser || isWatching) {
+            overrides.build.buildDir = buildDir
+            overrides.build.configDir = path.join(path.dirname(buildDir), 'settings')
+          }
+
+          // and this will inject it
+          const Builder = require(path.join(builderHome, 'lib/configure'))
+          await new Builder().build(!inBrowser || isWatching ? 'webpack-watch' : 'webpack', overrides)
+
+          // touch the lockfile to indicate that we are done
+          if (process.env.LOCKFILE) {
+            fs.closeSync(fs.openSync(process.env.LOCKFILE, 'w'))
+          }
+
+          resolve()
+        } catch (err) {
+          reject(err)
+        }
       })
     })
   }
 })
+
+const externals = !inBrowser
+  ? []
+  : [
+      'tape', // modules/composer/node_modules/safer-buffer
+      'dns', // modules/openwhisk/node_modules/retry/example/dns.js
+      'tls', // needed by request
+      'tap', // wskflow
+      'request', // needed by some apache-composer samples
+      'babel-core/register', // wskflow
+      'aws-sdk', // wskflow
+      'node-pty-prebuilt-multiarch', // bash-like
+      './es6/crc9_1wire', // k8s
+      './es6/crc17_xmodem', // k8s, openwhisk
+      './es6/crc17_modbus', // k8s, openwhisk
+      './es6/crc17_kermit', // k8s, openwhisk
+      './es6/crc17_ccitt', // k8s, openwhisk
+      'ws',
+      'readline',
+      'chokidar',
+      'fsevents',
+      'shelljs',
+      'module',
+      'net',
+      'webworker-threads', // wskflow
+      'xml2js', // used by plugins/plugin-apache-composer/@demos/combinators/http.js
+      'redis',
+      'redis-commands', // openwhisk-composer
+      'nyc',
+      'electron'
+    ]
+
+const emptyIfInBrowser = inBrowser ? 'empty' : true
 
 module.exports = {
   context: stageDir,
@@ -157,42 +254,26 @@ module.exports = {
     warnings: false
   },
   entry,
-  target: 'web',
+  target,
+  mode,
   node: {
-    fs: 'empty',
+    __filename: true,
+    __dirname: true,
+    fs: emptyIfInBrowser,
     // eslint-disable-next-line @typescript-eslint/camelcase
-    child_process: 'empty',
-    'docker-modem': 'empty',
-    'fs-extra': 'empty'
+    child_process: emptyIfInBrowser,
+    'docker-modem': emptyIfInBrowser,
+    'fs-extra': emptyIfInBrowser
   },
-  externals: [
-    'tape', // modules/composer/node_modules/safer-buffer
-    'dns', // modules/openwhisk/node_modules/retry/example/dns.js
-    'tls', // needed by request
-    'tap', // wskflow
-    'request', // needed by some apache-composer samples
-    'babel-core/register', // wskflow
-    'aws-sdk', // wskflow
-    'node-pty-prebuilt-multiarch', // bash-like
-    './es6/crc9_1wire', // k8s
-    './es6/crc17_xmodem', // k8s, openwhisk
-    './es6/crc17_modbus', // k8s, openwhisk
-    './es6/crc17_kermit', // k8s, openwhisk
-    './es6/crc17_ccitt', // k8s, openwhisk
-    'ws',
-    'readline',
-    'chokidar',
-    'fsevents',
-    'shelljs',
-    'module',
-    'net',
-    'webworker-threads', // wskflow
-    'xml2js', // used by plugins/plugin-apache-composer/@demos/combinators/http.js
-    'redis',
-    'redis-commands', // openwhisk-composer
-    'nyc',
-    'electron'
-  ],
+  externals,
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
+  },
+  resolveLoader: {
+    alias: {
+      'asar-friendly-node-loader': require.resolve('@kui-shell/webpack/asar-friendly-node-loader')
+    }
+  },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*' },
     compress: true,
@@ -200,60 +281,51 @@ module.exports = {
     watchOptions: {
       'info-verbosity': 'verbose',
       poll: pollInterval,
-      ignored: ['**/*.d.ts', 'node_modules', '**/packages/**/src/*', '**/plugins/**/src/*', '**/clients/default/**']
+      ignored: ['**/*.d.ts', '**/*.js.map', /node_modules/, '**/clients/default/**']
     },
+    writeToDisk: !inBrowser,
     contentBase: buildDir,
-    port: process.env.KUI_PORT || 9080
+    port
   },
   optimization,
   module: {
-    rules: [
-      // ignore any commonjs kui bits
-      { test: /\/@kui-shell\/dist\/*/, use: 'ignore-loader' },
+    rules: kuiPluginRules.concat([
+      {
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              projectReferences: true,
+              configFile: path.join(stageDir, 'tsconfig-es6.json')
+            }
+          }
+        ],
+        exclude: /node_modules/
+      },
+
+      // native binaries for node-pty
+      {
+        test: new RegExp(
+          `\\${path.sep}node_modules\\${path.sep}node-pty-prebuilt-multiarch\\${path.sep}build\\${path.sep}Release`
+        ),
+        use: mode === 'production' ? 'asar-friendly-node-loader' : 'node-loader'
+      },
+
+      // ignore commonjs bits
+      {
+        test: new RegExp(`\\${path.sep}node_modules\\${path.sep}@kui-shell\\${path.sep}\\.*\\${path.sep}dist`),
+        use: 'ignore-loader'
+      },
 
       //
       // typescript exclusion rules
-      { test: /\/src\/*\.ts/, use: 'ignore-loader' },
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },
       { test: /\/node_modules\/proxy-agent\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@babel\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@types\//, use: 'ignore-loader' },
-      { test: /fetch-ui/, use: 'ignore-loader' },
       // end of typescript rules
-      //
-      // the following elide terser from modules/plugin
-      { test: /\/modules\/field-installed-plugins\//, use: 'ignore-loader' },
-      {
-        test: /\/modules\/field-installed-plugins\/node_modules\/buffer-from/,
-        use: 'ignore-loader'
-      },
-      {
-        test: /\/modules\/field-installed-plugins\/node_modules\/commander/,
-        use: 'ignore-loader'
-      },
-      {
-        test: /\/modules\/field-installed-plugins\/node_modules\/source-map/,
-        use: 'ignore-loader'
-      },
-      {
-        test: /\/modules\/field-installed-plugins\/node_modules\/terser/,
-        use: 'ignore-loader'
-      },
       { test: /\/terser\/tools/, use: 'ignore-loader' },
-      // end of modules/plugin rules
-      //
-      // we don't want to pull in both the dynamic imports and the static imports
-      // otherwise the splitter (seeing the static imports) won't be as effective
-      // { test: /app\/content\/js\/static-import.js$/, use: 'raw-loader' },
-      //
-      {
-        test: /\/modules\/editor\/node_modules\/monaco-editor\/min/,
-        use: 'raw-loader'
-      },
-      {
-        test: /\/modules\/editor\/plugin\/lib\/cmds\/edit-amd\.js/,
-        use: 'raw-loader'
-      },
       { test: /beautify-html\.js/, use: 'ignore-loader' },
       { test: /package-lock\.json/, use: 'ignore-loader' },
       { test: /jquery\.map/, use: 'ignore-loader' },
@@ -271,7 +343,7 @@ module.exports = {
       { test: /packages\/*\/node_modules/, use: 'ignore-loader' },
       // { test: /modules\/composer\/@demos\/.*\.js/, use: 'raw-loader' },
       // DANGEROUS: some node modules must have critical files under src/: { test: /\/src\//, use: 'ignore-loader' },
-      { test: /\/test\//, use: 'ignore-loader' },
+      // { test: /\/test\//, use: 'ignore-loader' },
       { test: /\/tests\//, use: 'ignore-loader' },
       { test: /AUTHORS/, use: 'ignore-loader' },
       { test: /LICENSE/, use: 'ignore-loader' },
@@ -279,7 +351,6 @@ module.exports = {
       { test: /\.md$/, use: 'ignore-loader' },
       { test: /\.markdown$/, use: 'ignore-loader' },
       { test: /~$/, use: 'ignore-loader' },
-      { test: /\.tsx?$/, use: 'ignore-loader' },
       { test: /Dockerfile$/, use: 'ignore-loader' },
       { test: /flycheck*\.js/, use: 'ignore-loader' },
       { test: /flycheck*\.d.ts/, use: 'ignore-loader' },
@@ -287,28 +358,27 @@ module.exports = {
       //
       // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
       // { test: /samples\/.*\.js$/, use: 'raw-loader' }, // don't try to parse out sample input, e.g. for dependencies
-      { test: /\.js.map$/, use: 'ignore-loader' },
+      // { test: /\.js.map$/, use: 'ignore-loader' },
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'file-loader' },
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
       { test: /\.svg$/, use: 'svg-inline-loader' },
-      { test: /\.css$/, use: ['to-string-loader', 'css-loader'] },
+      { test: /\.css$/i, use: ['to-string-loader', 'css-loader'] },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
-      { test: /monaco-editor\/min\/vs\/loader\.js/, use: 'raw-loader' },
       { test: /^kubectl-kui$/, use: 'shebang-loader' },
       { test: /^kubectl-wsk$/, use: 'shebang-loader' },
       { test: /^kui$/, use: 'shebang-loader' },
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
-    ]
+    ])
   },
   plugins,
   output: {
     globalObject: 'self', // for monaco
     filename: '[name].[hash].bundle.js',
-    publicPath: '/',
+    publicPath: inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`,
     path: buildDir
   }
 }

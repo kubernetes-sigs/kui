@@ -89,12 +89,14 @@ export class TestTable {
     const ctx = _ctx || this.ctx
     it(`should have ${jobCount} jobs in the tab`, async () => {
       try {
-        const watchableJobsRaw = await ctx.app.client.execute(() => {
-          const tab = document.querySelector('tab.visible') as Tab
-          return tab.state.jobs
+        await ctx.app.client.waitUntil(async () => {
+          const watchableJobsRaw = await ctx.app.client.execute(() => {
+            const tab = document.querySelector('tab.visible') as Tab
+            return tab && tab.state && tab.state.jobs
+          })
+          const actualJobCount = watchableJobsRaw.value
+          return actualJobCount === jobCount
         })
-        const actualJobCount = watchableJobsRaw.value
-        assert.strictEqual(actualJobCount, jobCount)
       } catch (err) {
         await Common.oops(ctx, true)(err)
       }

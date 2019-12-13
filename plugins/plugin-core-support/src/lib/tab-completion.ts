@@ -718,15 +718,10 @@ const suggest = (
 export default () => {
   if (typeof document === 'undefined') return
 
-  if (inBrowser()) {
-    injectCSS({
-      css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
-      key: 'tab-completion.css'
-    })
-  } else {
-    const root = pathDirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
-    injectCSS(join(root, 'web/css/tab-completion.css'))
-  }
+  injectCSS({
+    css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
+    key: 'plugin-core-support.kui-shell.org/tab-completion.css'
+  })
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   let currentEnumeratorAsync: number

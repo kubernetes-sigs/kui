@@ -30,6 +30,17 @@ async function initCommandRegistrar() {
   await init()
 }
 
+/* function rels() {
+  const links = document.querySelectorAll('link')
+  for (let idx = 0; idx < links.length; idx++) {
+    const link = links[idx]
+    const rel = link.getAttribute('rel')
+    if (rel === 'preload' || rel === 'prefetch') {
+      link.rel = 'stylesheet'
+    }
+  }
+} */
+
 // note: the q npm doesn't like functions called "bootstrap"!
 const domReady = () => async () => {
   const initializer = import('./init')
@@ -53,8 +64,10 @@ const domReady = () => async () => {
     )
 
     waitForThese.push(
-      import('../electron-events')
-        .then(_ => _.init())
+      (document.body.classList.contains('in-electron')
+        ? import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ '../electron-events').then(_ => _.init())
+        : Promise.resolve()
+      )
         .then(() => cli)
         .then(_ => _.default())
     )
@@ -75,6 +88,7 @@ const domReady = () => async () => {
 }
 
 export default async () => {
+  // rels()
   import('./init').then(_ => _.preinit())
 
   window.addEventListener('load', domReady(), { once: true })

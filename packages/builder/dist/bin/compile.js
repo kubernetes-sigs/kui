@@ -21,6 +21,7 @@ mimicDom()
 
 /** dump codecov? */
 function codecov() {
+  console.log('Writing code coverage data for prescan')
   const { join, relative } = require('path')
 
   const codeCoverageNyc = () =>

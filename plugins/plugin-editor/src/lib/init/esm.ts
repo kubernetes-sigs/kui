@@ -16,43 +16,16 @@
 
 import Debug from 'debug'
 
-import { theme, injectCSS } from '@kui-shell/core'
+import { injectCSS } from '@kui-shell/core'
+import { languages, editor as Monaco, Range } from 'monaco-editor'
 
-import kuiLanguages from '../language-scan'
+// import kuiLanguages from '../language-scan'
 import defaultMonacoOptions from './defaults'
 
 const debug = Debug('plugins/editor/init/esm')
 
 /** this is part of the finagling, to make sure we finagle only once */
-let initDone
-
-// Since packaging is done by you, you need
-// to instruct the editor how you named the
-// bundles that contain the web workers.
-self['MonacoEnvironment'] = {
-  getWorkerUrl: function(moduleId, label) {
-    const hash: string = window['_kuiWebpackHash']
-
-    const root: string =
-      theme.resourceRoot ||
-      (window['_kuiWebpackResourceRoot'] !== '${resourceRoot}' ? window['_kuiWebpackResourceRoot'] : '.') // eslint-disable-line no-template-curly-in-string
-    debug('monaco resource root', root)
-
-    if (label === 'json') {
-      return `${root}/json.worker.${hash}.bundle.js`
-    }
-    if (label === 'css') {
-      return `${root}/css.worker.${hash}.bundle.js`
-    }
-    if (label === 'html') {
-      return `${root}/html.worker.${hash}.bundle.js`
-    }
-    if (label === 'typescript' || label === 'javascript') {
-      return `${root}/ts.worker.${hash}.bundle.js`
-    }
-    return `${root}/editor.worker.${hash}.bundle.js`
-  }
-}
+let initDone: boolean
 
 export default (editorWrapper: HTMLElement, options) => {
   debug('init')
@@ -72,8 +45,6 @@ export default (editorWrapper: HTMLElement, options) => {
        *
        */
       const initEditor = async () => {
-        const { languages, editor: Monaco, Range } = await import('monaco-editor')
-
         if (!initDone) {
           // for now, try to disable the built-in Javascript-specific completion helper thingies
           languages.typescript.javascriptDefaults.setCompilerOptions({
@@ -82,9 +53,9 @@ export default (editorWrapper: HTMLElement, options) => {
           })
 
           // install any custom languages we might have
-          kuiLanguages(languages).forEach(({ language, provider }) => {
+          /* kuiLanguages(languages).forEach(({ language, provider }) => {
             languages.registerCompletionItemProvider(language, provider)
-          })
+          }) */
 
           initDone = true
         }

@@ -6,11 +6,14 @@
   "author": "Nick Mitchell",
   "main": "dist/index.js",
   "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
   "scripts": {
-    "test": "./bin/runMochaLayers.sh"
+    "test": "./bin/runMochaLayers.sh",
+    "testv2": "./bin/runMochaLayersv2.sh"
   },
   "bin": {
-    "kui-test": "./bin/runMochaLayers.sh"
+    "kui-test": "./bin/runMochaLayers.sh",
+    "kui-testv2": "./bin/runMochaLayersv2.sh"
   },
   "kui": {
     "electron": false,

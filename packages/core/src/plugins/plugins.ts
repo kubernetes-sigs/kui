@@ -24,7 +24,7 @@ import { PrescanModel, unify } from './prescan'
 
 import { KuiPlugin } from '../models/plugin'
 import { userDataDir } from '../core/userdata'
-import { inBrowser } from '../core/capabilities'
+import { isHeadless } from '../core/capabilities'
 import { setPluginResolver } from '../core/command-tree'
 
 debug('modules loaded')
@@ -96,7 +96,7 @@ export const init = async (): Promise<boolean> => {
     console.error('prescanned does not exist or is not valid JSON', err)
   }
 
-  if (!inBrowser() && prescan) {
+  if (isHeadless() && prescan) {
     try {
       const [{ existsSync }, { join }] = await Promise.all([import('fs'), import('path')])
       const userPath = join(await userInstalledHome(), 'node_modules/@kui-shell/prescan.json')
@@ -113,11 +113,11 @@ export const init = async (): Promise<boolean> => {
     }
   }
 
-  const { default: eventBus } = await import('../core/events')
+  /* const { default: eventBus } = await import('../core/events')
   eventBus.on('/plugin/compile/request', async (pluginToBeRemoved?: string) => {
     const { compileUserInstalled } = await import('./assembler')
     compileUserInstalled(pluginToBeRemoved)
-  })
+  }) */
 
   setPluginResolver(makeResolver(prescan, registrar))
 
