@@ -26,8 +26,8 @@ BUILDER_HOME="$MODULE_HOME"/builder
 
 CONFIG="$MODULE_HOME"/webpack/webpack.config.js
 
-if [ -z "$LOCKFILE" ]; then
-    # if LOCKFILE is defined, then the caller will take care of building
+if [ -z "$PORT_OFFSET" ]; then
+    # then the caller will take care of building
     npx --no-install kui-compile
 
     KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
@@ -58,6 +58,17 @@ popd
 
 if [ -n "$OPEN" ]; then
     OPEN="--open"
+else
+    # we use this to tell the dev server to touch a lock file when it is
+    # done; below, we will poll until that is the case
+    export LOCKFILE=/tmp/kui-build-lock.${PORT_OFFSET-0}
+    rm -f $LOCKFILE
 fi
 
-npx --no-install webpack-dev-server --progress --config "$CONFIG" $OPEN
+npx --no-install webpack-dev-server --progress --config "$CONFIG" $OPEN &
+
+if [ -n "$LOCKFILE" ]; then
+    # don't exit until the dev server is ready
+    until [ -f $LOCKFILE ]; do sleep 1; done
+    rm -f $LOCKFILE
+fi
