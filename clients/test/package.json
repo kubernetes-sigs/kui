@@ -13,7 +13,7 @@
     "test:parallel": "KUI_TEST_PARALLEL=true concurrently -n ELECTRON,WEBPACK 'npm run test:electron' 'npm run test:webpack'",
     "test": "npm run test:electron && npm run test:webpack",
     "watch": "tsc --build . --watch",
-    "watch:webpack": "npm run kill; export LOCKFILE=\"/tmp/kui-build-lock.${PORT_OFFSET-0}\"; rm -f $LOCKFILE; rm -rf node_modules/node_modules; (npx kui-watch-webpack &); until [ -f $LOCKFILE ]; do sleep 1; done",
+    "watch:webpack": "npm run kill; rm -rf node_modules/node_modules; npx kui-watch-webpack",
     "watch:electron": "TARGET=electron-renderer npm run watch:webpack",
     "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
     "pty:rebuild": "if [ -d node_modules/node-pty-prebuilt-multiarch ]; then cd node_modules/node-pty-prebuilt-multiarch && npm run install; fi",
