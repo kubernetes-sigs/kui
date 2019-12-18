@@ -27,10 +27,10 @@
   },
   "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32",
   "dependencies": {
-    "carbon-components": "^10.9.3",
-    "carbon-components-react": "^7.9.3",
+    "carbon-components": "^10.10.1",
+    "carbon-components-react": "^7.10.1",
     "carbon-icons": "^7.0.7",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
   }
 }

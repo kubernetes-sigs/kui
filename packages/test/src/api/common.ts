@@ -137,16 +137,25 @@ const prepareElectron = (popup: string[]) => {
   const electron = require('electron') // relative to __dirname
   const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/dist/main/main.js' // relative to the tests/ directory
 
-  // re: disable-dev-shm-usage; google for "error: DevToolsActivePort file doesn't exist"
   const opts: SpectronOptions = {
     env: {},
-    chromeDriverArgs: ['--no-sandbox', '--disable-dev-shm-usage'],
+    chromeDriverArgs: ['--no-sandbox'],
     startTimeout: parseInt(process.env.TIMEOUT) || 60000, // see https://github.com/IBM/kui/issues/2227
     waitTimeout: parseInt(process.env.TIMEOUT) || 60000
   }
 
+  /* if (!popup && (process.env.HEADLESS !== undefined || process.env.TRAVIS_JOB_ID !== undefined)) {
+    console.log('Using chromedriver in headless mode')
+    opts.chromeDriverArgs.push('--headless')
+  } else {
+    console.log('Using chromedriver NOT in headless mode')
+  } */
+
   if (process.env.PORT_OFFSET) {
-    opts['port'] = 9515 + parseInt(process.env.PORT_OFFSET, 10)
+    const offset = parseInt(process.env.PORT_OFFSET, 10)
+
+    opts.port = 9515 + offset
+    opts.chromeDriverArgs.push(`--remote-debugging-port=${57289 + offset}`)
 
     const userDataDir = join(TMP, `kui-profile-${process.env.PORT_OFFSET}`)
     opts.chromeDriverArgs.push(`--user-data-dir=${userDataDir}`)
@@ -188,7 +197,19 @@ const prepareElectron = (popup: string[]) => {
 
 /** reload the app */
 export const refresh = async (ctx: ISuite, wait = true, clean = false) => {
-  await ctx.app.client.refresh()
+  try {
+    await ctx.app.client.refresh()
+  } catch (err) {
+    const errorIsNavigatedError: boolean =
+      err.message.includes('Inspected target navigated or closed') ||
+      err.message.includes('cannot determine loading status') ||
+      err.message.includes('Inspected target navigated or closed')
+
+    if (!errorIsNavigatedError) {
+      throw err
+    }
+  }
+
   if (clean) {
     await ctx.app.client.localStorage('DELETE') // clean out local storage
   }
@@ -234,8 +255,14 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
             await refresh(ctx, !noProxySessionWait, true)
             return
           } catch (err) {
-            console.error('error refreshing in before for reuse start', err)
-            throw err
+            const errorIsNavigatedError: boolean =
+              err.message.includes('Inspected target navigated or closed') ||
+              err.message.includes('cannot determine loading status') ||
+              err.message.includes('Inspected target navigated or closed')
+            if (!errorIsNavigatedError) {
+              console.error('error refreshing in before for reuse start', err)
+              throw err
+            }
           }
         }
       }
@@ -420,7 +447,19 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
 
 /** restart the app */
 export const restart = async (ctx: ISuite) => {
-  await ctx.app.restart()
+  try {
+    await ctx.app.restart()
+  } catch (err) {
+    const errorIsNavigatedError: boolean =
+      err.message.includes('Inspected target navigated or closed') ||
+      err.message.includes('cannot determine loading status') ||
+      err.message.includes('Inspected target navigated or closed')
+
+    if (!errorIsNavigatedError) {
+      throw err
+    }
+  }
+
   return CLI.waitForSession(ctx)
 }
 

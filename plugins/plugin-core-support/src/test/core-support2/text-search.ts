@@ -84,13 +84,26 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
     })
   }) */
 
+  const type = async (text: string) => {
+    await this.app.client.execute(
+      (text: string) =>
+        navigator.clipboard.writeText(text).then(() => {
+          document.execCommand('paste')
+        }),
+      text
+    )
+
+    await this.app.client.keys(Keys.ENTER)
+  }
+
   it('should find 4 matches for grumble', async () => {
     try {
       this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
       await this.app.client.waitForVisible('#search-bar')
       await this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'))
       await this.app.client.waitUntil(async () => {
-        await this.app.client.setValue('#search-input', `grumble${Keys.ENTER}`)
+        await type(`grumble`)
+        // await this.app.client.setValue('#search-input', `grumble${Keys.ENTER}`)
         const txt = await this.app.client.getText('#search-found-text')
         return txt === '4 matches' // two executions plus two 'Command not found: grumble' matches, and no tab title match!
       })
@@ -112,7 +125,8 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() =>
         this.app.client.waitUntil(async () => {
-          await this.app.client.setValue('#search-input', `bojangles${Keys.ENTER}`)
+          await type(`bojangles`)
+          // await this.app.client.setValue('#search-input', `bojangles${Keys.ENTER}`)
           const txt = await this.app.client.getText('#search-found-text')
           return txt === '3 matches' // one execution, plus one "Command not found: bojangles" match, plus one tab title match
         })
@@ -134,7 +148,8 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() =>
         this.app.client.waitUntil(async () => {
-          await this.app.client.setValue('#search-input', `waldo${Keys.ENTER}`)
+          await type(`waldo`)
+          // await this.app.client.setValue('#search-input', `waldo${Keys.ENTER}`)
           const txt = await this.app.client.getText('#search-found-text')
           return txt === 'No matches'
         })
@@ -144,10 +159,8 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
   // paste test; reload first to start with a clean slate in the text search box
   it('should reload the app', () => Common.refresh(this))
   it('should paste into the text search box', async () => {
-    await new Promise(resolve => setTimeout(resolve, 3000))
-
     return this.app.client
-      .keys([Keys.ctrlOrMeta, 'f'])
+      .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
       .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() => this.app.electron.clipboard.writeText('grumble'))
