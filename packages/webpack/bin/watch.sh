@@ -26,12 +26,9 @@ BUILDER_HOME="$MODULE_HOME"/builder
 
 CONFIG="$MODULE_HOME"/webpack/webpack.config.js
 
-if [ -z "$PORT_OFFSET" ]; then
-    # then the caller will take care of building
-    npx --no-install kui-compile
-
-    KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
-fi
+# let the caller take care of building; see https://github.com/IBM/kui/issues/3377
+# npx --no-install kui-compile
+# KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
 
 pushd "$CLIENT_HOME"
   rm -rf dist/webpack
