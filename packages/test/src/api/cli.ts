@@ -96,11 +96,15 @@ export const waitForRepl = async (app: Application) => {
  * Wait, if needed, for a proxy session
  *
  */
-export const waitForSession = (ctx: Common.ISuite, noProxySessionWait = false) => {
+export const waitForSession = async (ctx: Common.ISuite, noProxySessionWait = false) => {
+  if (!process.env.MOCHA_RUN_TARGET || process.env.MOCHA_RUN_TARGET === 'electron') {
+    await ctx.app.client.waitUntilWindowLoaded()
+  }
+
   if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
     // wait for the proxy session to be established
     try {
-      return ctx.app.client.waitForExist(`${Selectors.CURRENT_TAB}.kui--session-init-done`)
+      await ctx.app.client.waitForExist(`${Selectors.CURRENT_TAB}.kui--session-init-done`)
     } catch (err) {
       throw new Error('error waiting for proxy session init')
     }

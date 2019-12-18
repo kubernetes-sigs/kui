@@ -17,7 +17,7 @@
 import * as React from 'react'
 import { i18n } from '@kui-shell/core'
 import { Camera16 as Camera, CameraAction16 as CameraAction } from '@carbon/icons-react'
-import { ToastNotification, Tooltip } from 'carbon-components-react'
+import { ToastNotification } from 'carbon-components-react'
 import { Event, NativeImage } from 'electron'
 
 import '../../web/css/static/Tooltip.scss'
@@ -199,27 +199,15 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     const onClick = this.onScreenshotButtonClick.bind(this)
 
     return (
-      <Tooltip
-        open={active && !this.state.captured}
-        direction="top"
-        className="kui--screenshot-tooltip"
-        showIcon
+      <a
+        href="#"
         tabIndex={-1}
-        renderIcon={React.forwardRef(function screenshotIcon(props, ref) {
-          return (
-            <a
-              href="#"
-              className="kui--tab-navigatable clickable kui--screenshot-button"
-              onClick={onClick}
-              data-active={active}
-            >
-              {active ? <CameraAction ref={ref} /> : <Camera ref={ref} />}
-            </a>
-          )
-        })}
+        className="kui--tab-navigatable clickable kui--screenshot-button"
+        onClick={onClick}
+        data-active={active}
       >
-        <span className="kui--screenshot-tooltip-text">{strings('Hover over a region to capture')}</span>
-      </Tooltip>
+        {active ? <CameraAction /> : <Camera />}
+      </a>
     )
   }
 
