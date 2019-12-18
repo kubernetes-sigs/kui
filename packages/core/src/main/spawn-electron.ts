@@ -112,12 +112,16 @@ export function createWindow(
         webPreferences: {
           backgroundThrottling: false,
           nodeIntegration: true // prior to electron 5, this was the default
-        },
-        show: false // do not remove without consulting the ready-to-show comment below
+        }
         // titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
       },
       subwindowPrefs && subwindowPrefs.position
     )
+
+    // if user ups zoom level, reloads, we're stuck at a higher zoom
+    // see https://github.com/electron/electron/issues/10572
+    // note that this requires show: false above
+    opts.webPreferences.zoomFactor = 1
 
     const { dirname, join } = await import('path')
     const root = dirname(require.resolve('@kui-shell/prescan.json'))
@@ -154,10 +158,6 @@ export function createWindow(
     debug('createWindow::new BrowserWindow success')
 
     mainWindow.once('ready-to-show', () => {
-      // if user ups zoom level, reloads, we're stuck at a higher zoom
-      // see https://github.com/electron/electron/issues/10572
-      // note that this requires show: false above
-      mainWindow.webContents.setZoomFactor(1)
       mainWindow.setVisibleOnAllWorkspaces(true)
       mainWindow.show()
       mainWindow.setVisibleOnAllWorkspaces(false)
@@ -265,7 +265,18 @@ export function createWindow(
       slashes: true
     }
     debug('mainWindow::loadURL', urlSpec)
-    mainWindow.loadURL(require('url').format(urlSpec))
+    try {
+      mainWindow.loadURL(require('url').format(urlSpec))
+    } catch (err) {
+      const errorIsNavigatedError: boolean =
+        err.message.includes('Inspected target navigated or closed') ||
+        err.message.includes('cannot determine loading status') ||
+        err.message.includes('Inspected target navigated or closed')
+
+      if (!process.env.TRAVIS_JOB_ID || !errorIsNavigatedError) {
+        throw err
+      }
+    }
 
     debug('install menus')
     require('./menu').install(createWindow)

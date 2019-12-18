@@ -37,7 +37,7 @@
     "debug": "4.1.1",
     "extract-zip": "1.6.7",
     "fs-extra": "8.1.0",
-    "marked": "^0.7.0",
+    "marked": "^0.8.0",
     "mkdirp": "0.5.1",
     "needle": "2.4.0",
     "pretty-ms": "5.1.0",
