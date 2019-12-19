@@ -214,8 +214,22 @@ plugins.push({
   }
 })
 
+// Notes: when !inBrowser, we want electron to pull
+// node-pty-prebuilt-multiarch in as a commonjs external module; this
+// is because node-pty has binary bits, and we are building one set of
+// bundles for all electron platforms. If, in the future, we decide to
+// rebuild the bundles for each platform, we can remove this 'commonjs
+// node-pty...' bit, and, below, restore the `rule` pertaining to
+// node-pty (i will leave that rule in the code here, for now, though
+// commented out; just make sure to remove the commonjs bit here, and
+// uncomment the node-pty rule below, if you decide to rebuild the
+// bundles, once for each platform, in the future). The kui issue
+// covering this topic is here:
+// https://github.com/IBM/kui/issues/3381; and if you're curious about
+// the 'commonjs node-pty' syntax, see
+// https://github.com/webpack/webpack/issues/4238
 const externals = !inBrowser
-  ? []
+  ? { 'node-pty-prebuilt-multiarch': 'commonjs node-pty-prebuilt-multiarch' }
   : [
       'tape', // modules/composer/node_modules/safer-buffer
       'dns', // modules/openwhisk/node_modules/retry/example/dns.js
@@ -304,13 +318,16 @@ module.exports = {
         exclude: /node_modules/
       },
 
-      // native binaries for node-pty
-      {
+      // native binaries for node-pty; commented out for now. !!!!
+      // !!! Please do not remove this (commented out) rule !!!!!!
+      // See the Notes paragraph, just above the `externals`
+      // definition)
+      /* {
         test: new RegExp(
           `\\${path.sep}node_modules\\${path.sep}node-pty-prebuilt-multiarch\\${path.sep}build\\${path.sep}Release`
         ),
         use: mode === 'production' ? 'asar-friendly-node-loader' : 'node-loader'
-      },
+      }, */
 
       // ignore commonjs bits
       {
