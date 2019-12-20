@@ -298,7 +298,7 @@ export const addNameToSidecarHeader = async (
 
   // if we weren't given a "subtext", and we find legitimate "created
   // on" metadata, then show that as the subtext
-  if (!subtext && metadataBearer) {
+  if (!subtext && !entity.toolbarText && metadataBearer) {
     const maybe = createdOn(metadataBearer, isCustomSpec(entity) && entity)
     if (maybe) {
       subtext = maybe
