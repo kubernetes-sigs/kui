@@ -31,7 +31,10 @@ export function fromMap(map: Record<string, string>) {
   return map[getLocale()] || map[getLocale2()] || map[defaultLocale]
 }
 
-export default (plugin: string, namespace = 'resources'): ((key: string, ...parameters: string[]) => string) => {
+export default (
+  plugin: string,
+  namespace = 'resources'
+): ((key: string, ...parameters: (string | number)[]) => string) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/${namespace}_en_US.json`)
 
@@ -55,10 +58,16 @@ export default (plugin: string, namespace = 'resources'): ((key: string, ...para
 
   const _strings = i18n(locale)
 
-  return function(key: string, ...parameters: string[]): string {
-    const str = _strings[key] || defaultStrings[key] || key
+  return function(key: string, ...parameters: (string | number)[]): string {
+    const str: string = _strings[key] || defaultStrings[key] || key
 
     if (!parameters) return str
-    else return parameters.reduce((str, param, idx) => str.replace(new RegExp(`\\{${idx}\\}`, 'g'), param), str) // e.g. replace all occurrences of {0} in the str
+    else
+      return parameters
+        .map(_ => _.toString()) // only needed due to https://github.com/microsoft/TypeScript/issues/7014
+        .reduce((str: string, param, idx) => {
+          // e.g. replace all occurrences of {0} in the str
+          return str.replace(new RegExp(`\\{${idx}\\}`, 'g'), param.toString())
+        }, str)
   }
 }
