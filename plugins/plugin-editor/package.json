@@ -29,7 +29,7 @@
   "dependencies": {
     "debug": "4.1.1",
     "monaco-editor": "0.18.1",
-    "monaco-editor-webpack-plugin": "^1.7.0",
+    "monaco-editor-webpack-plugin": "1.7.0",
     "tmp": "0.1.0"
   },
   "kui": {
