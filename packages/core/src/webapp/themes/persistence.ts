@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
 import { env } from '../../core/settings'
@@ -121,7 +121,12 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
           // before the window opens
           //
           const { readFile } = await import('fs-extra')
-          const css = (await readFile(getCssFilepathForGivenTheme(addon))).toString()
+          const pathToThemeCss = join(
+            dirname(require.resolve('@kui-shell/settings/package.json')),
+            '../build',
+            getCssFilepathForGivenTheme(addon)
+          )
+          const css = (await readFile(pathToThemeCss)).toString()
           debug('using electron to pre-inject CSS before the application loads, from the main process')
           return webContents.insertCSS(css)
         } else {

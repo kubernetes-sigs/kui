@@ -208,20 +208,14 @@ export function createWindow(
 
     /** this event handler will be called when the window's content finishes loading */
     mainWindow.webContents.on('did-finish-load', async () => {
-      // for some reason, adding the title attribute to the new
-      // BrowserWindow opts doesn't stick; and... this has to be on
-      // did-finish-load, for some reason... at least these are true
-      // statements for electron 1.6.x
-      /* const isDarkMode = Electron.systemPreferences.isDarkMode()
-
       if (mainWindow) {
         try {
-          const { switchToPersistedThemeChoice } = await import('@kui-shell/plugin-core-support')
-          await switchToPersistedThemeChoice(mainWindow.webContents, isDarkMode)
+          const { switchToPersistedThemeChoice } = await import('../webapp/themes/persistence')
+          await switchToPersistedThemeChoice(mainWindow.webContents /*, Electron.nativeTheme.shouldUseDarkColors */)
         } catch (err) {
           console.error('error initializing themes')
         }
-      } */
+      }
     })
 
     /** jump in and manage the way popups create new windows */
