@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import { inElectron, getCurrentPrompt, injectCSS, KeyCodes } from '@kui-shell/core'
+import { inElectron } from '@kui-shell/core'
+
+function addVisibilityStatusToDocument() {
+  document.body.classList.add('search-bar-is-visible')
+}
+function removeVisibilityStatusFromDocument() {
+  document.body.classList.remove('search-bar-is-visible')
+}
 
 /**
- * Listen for control/command+F
+ * Inject CSS and HTML into the DOM
  *
  */
-async function registerListener() {
-  if (typeof document === 'undefined') return // return if no document
+async function injectContent() {
+  const { injectCSS } = await import('@kui-shell/core')
 
   injectCSS({
     css: require('@kui-shell/plugin-core-support/web/css/text-search.css'),
     key: 'plugin-core-support.kui-shell.org/text-search.css'
   })
-
-  const app = await import('electron')
-
-  // in case the document needs to be restyled as a consequence of the
-  // searchBar visibility
-  const addVisibilityStatusToDocument = () => document.body.classList.add('search-bar-is-visible')
-  const removeVisibilityStatusFromDocument = () => document.body.classList.remove('search-bar-is-visible')
 
   // insert html
   const searchBar = document.createElement('div')
@@ -53,13 +53,16 @@ async function registerListener() {
   page.insertBefore(searchBar, page.querySelector('main').nextSibling)
 
   // now add the logic
-  const searchInput = document.getElementById('search-input') as HTMLInputElement
-  const searchFoundText = document.getElementById('search-found-text') as HTMLElement
+  const searchInput = searchBar.querySelector('#search-input') as HTMLInputElement
+  const searchFoundText = searchBar.querySelector('#search-found-text') as HTMLElement
+
+  const { remote } = await import('electron')
 
   const stopSearch = (clear: boolean) => {
-    app.remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
+    remote.getCurrentWebContents().stopFindInPage('clearSelection') // clear selections in page
     if (clear) {
-      setTimeout(() => {
+      setTimeout(async () => {
+        const { getCurrentPrompt } = await import('@kui-shell/core')
         getCurrentPrompt().focus()
       }, 300)
     } // focus repl text input
@@ -73,15 +76,15 @@ async function registerListener() {
     stopSearch(true)
   }
 
-  const searchCloseButton = document.getElementById('search-close-button')
+  const searchCloseButton = searchBar.querySelector('#search-close-button') as HTMLElement
   searchCloseButton.onclick = closeSearchBox
 
   const searchText = (value: string) => {
     searchFoundText.classList.remove('no-search-yet')
-    app.remote.getCurrentWebContents().findInPage(value) // findInPage handles highlighting matched text in page
+    remote.getCurrentWebContents().findInPage(value) // findInPage handles highlighting matched text in page
   }
 
-  app.remote.getCurrentWebContents().on('found-in-page', (event, result) => {
+  remote.getCurrentWebContents().on('found-in-page', (event, result) => {
     if (!result.finalUpdate) {
       return
     }
@@ -107,6 +110,7 @@ async function registerListener() {
   searchInput.addEventListener('click', () => {
     searchInput.focus()
   })
+
   searchInput.addEventListener('keyup', (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       // search when Enter is pressed and there is text in searchInput
@@ -123,13 +127,57 @@ async function registerListener() {
     }
   })
 
-  document.body.addEventListener('keydown', function(e: KeyboardEvent) {
+  window.onbeforeunload = () => {
+    stopSearch(false) // before reloading, clear all highlighted matched text
+    remote.getCurrentWebContents().removeAllListeners('found-in-page') // remove listner
+  }
+
+  return searchBar
+}
+
+/**
+ * Locate and return the search bar dom
+ *
+ */
+async function getSearchBar(
+  createIfAbsent = false
+): Promise<{ searchBar: HTMLElement; searchFoundText: HTMLElement; searchInput: HTMLElement }> {
+  let searchBar = document.querySelector('#search-bar') as HTMLElement
+
+  if (!searchBar && createIfAbsent) {
+    searchBar = await injectContent()
+  }
+
+  if (searchBar) {
+    const searchInput = searchBar.querySelector('#search-input') as HTMLInputElement
+    const searchFoundText = searchBar.querySelector('#search-found-text') as HTMLElement
+    return { searchBar, searchInput, searchFoundText }
+  }
+}
+
+/**
+ * Listen for control/command+F
+ *
+ */
+async function registerListener() {
+  const { KeyCodes } = await import('@kui-shell/core')
+
+  document.body.addEventListener('keydown', async function(e: KeyboardEvent) {
     if (
       !e.defaultPrevented &&
       e.keyCode === KeyCodes.F &&
       ((e.ctrlKey && process.platform !== 'darwin') || e.metaKey)
     ) {
       // ctrl/cmd-f opens search, unless some interior region prevented default
+      const barBits = await getSearchBar(true)
+
+      if (!barBits) {
+        // then there was some catastrophe
+        console.error('unable to initialize search DOM')
+        return
+      }
+
+      const { searchBar, searchFoundText, searchInput } = barBits
       searchBar.classList.add('visible')
       addVisibilityStatusToDocument()
       searchBar.style.opacity = '' // see above "we need the initial opacity:0"
@@ -138,11 +186,6 @@ async function registerListener() {
       searchInput.focus() // searchInpus focused when opened
     }
   })
-
-  window.onbeforeunload = () => {
-    stopSearch(false) // before reloading, clear all highlighted matched text
-    app.remote.getCurrentWebContents().removeAllListeners('found-in-page') // remove listner
-  }
 }
 
 /**
@@ -150,7 +193,7 @@ async function registerListener() {
  *
  */
 export default () => {
-  if (inElectron()) {
+  if (inElectron() && typeof document !== 'undefined') {
     registerListener()
   }
 }
