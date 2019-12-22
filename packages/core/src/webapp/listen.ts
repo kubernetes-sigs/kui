@@ -103,7 +103,11 @@ export const listen = (prompt: HTMLInputElement) => {
     prompt.value = ''
   }
 
-  if (!prompt.classList.contains('sidecar-header-input') && !document.activeElement.classList.contains('grab-focus')) {
+  if (
+    !prompt.classList.contains('sidecar-header-input') &&
+    !document.activeElement.classList.contains('grab-focus') &&
+    document.activeElement !== prompt
+  ) {
     prompt.focus()
   }
 
