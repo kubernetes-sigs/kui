@@ -11,5 +11,6 @@
       "@kui-shell/plugin-core-support/i18n/*": ["i18n/*"],
       "@kui-shell/plugin-core-support/*": ["src/*"]
     }
-  }
+  },
+  "references": [{ "path": "./about" }, { "path": "./screenshot" }, { "path": "./tab-completion" }]
 }

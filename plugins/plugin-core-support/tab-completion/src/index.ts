@@ -19,7 +19,8 @@ import * as minimist from 'yargs-parser'
 import { lstat, readdir, realpath } from 'fs'
 import { basename, dirname as pathDirname, join } from 'path'
 
-import { applyEnumerator } from './tab-completion-registrar'
+import { applyEnumerator } from './registrar'
+export { registerEnumerator as registerTabCompletionEnumerator, TabCompletionSpec } from './registrar'
 
 import {
   inBrowser,

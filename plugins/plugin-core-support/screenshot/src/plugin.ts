@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * Install click handlers
- *
- */
-export default () => {
-  ;(document.querySelector('#help-button') as HTMLElement).onclick = async () => {
-    const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
-    pexec('about')
+import { isHeadless, Registrar } from '@kui-shell/core'
+
+export default async (registrar: Registrar) => {
+  if (!isHeadless()) {
+    await import('.').then(_ => _.default(registrar))
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import { isHeadless, Registrar } from '@kui-shell/core'
 import help from './lib/cmds/help'
 import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
-import about from './lib/cmds/about/about'
 import base64 from './lib/cmds/base64'
 import openui from './lib/cmds/open-ui-from-terminal'
 import prompt from './lib/cmds/prompt'
@@ -43,14 +42,13 @@ export default async (commandTree: Registrar, options?) => {
     prompt(commandTree),
     sleep(commandTree),
     history(commandTree),
-    about(commandTree),
     confirm(commandTree)
   ])
 
   if (!isHeadless()) {
     await Promise.all([
+      import('./lib/cmds/zoom').then(_ => _.plugin(commandTree)),
       import('./lib/cmds/window').then(_ => _.default(commandTree)),
-      import('./lib/cmds/screenshot').then(_ => _.default(commandTree)),
       import('./lib/cmds/theme').then(_ => _.plugin(commandTree))
     ])
   }

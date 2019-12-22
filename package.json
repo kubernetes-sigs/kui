@@ -13,7 +13,7 @@
     "test3": "PORT_OFFSET=2 npm run testv2",
     "test4": "PORT_OFFSET=3 npm run testv2",
     "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
-    "watch:webpack": "npm run kill; ./bin/watch-webpack.sh",
+    "watch:webpack": "npm run compile:prescan && npm run kill; ./bin/watch-webpack.sh",
     "watch:electron": "TARGET=electron-renderer npm run watch:webpack",
     "proxy": "npm run pty:nodejs && cd packages/proxy/app && npm install && PORT=8081 KUI_USE_HTTP=true ../../../tools/travis/proxy.sh ..",
     "watch": "tsc --build . --watch",
@@ -34,7 +34,8 @@
     "pty:nodejs": "npm run pty:rebuild node",
     "build:html": "CLIENT=${CLIENT-default}; rm -f node_modules/@kui-shell/settings/config-dev.json; npm run pty:electron && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" node packages/builder/lib/configure.js && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/dist/dev/build.sh && CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/bin/seticon.js",
     "postinstall": "npm run build:html && npm run compile",
-    "start": "npm run watch:electron && electron . shell"
+    "open": "electron . shell",
+    "start": "npm run watch:electron && npm run open"
   },
   "engines": {
     "node": ">=8.15.0",

@@ -240,11 +240,15 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     const doScan = ({
       modules,
       moduleDir,
-      parentPath
+      parentPath,
+      lookForPlugin = true,
+      lookForPrescan = true
     }: {
       modules: string[]
       moduleDir: string
       parentPath?: string
+      lookForPlugin?: boolean
+      lookForPrescan?: boolean
     }) => {
       debug('doScan', modules)
 
@@ -265,12 +269,18 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
           const pluginPath = path.join(moduleDir, module, filename)
           debug('lookFor', filename, pluginPath)
 
+          /** report a successful find to the console */
+          const ok = () => {
+            const parent = parentPath ? `${parentPath}/` : ''
+            console.log(
+              colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + parent + path.basename(module)
+            )
+          }
+
           if (fs.existsSync(pluginPath)) {
             if (!quiet) {
               debug('found', name)
-              console.log(
-                colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
-              )
+              ok()
             }
             destMap[name] = pluginPath
           } else {
@@ -280,9 +290,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
             if (fs.existsSync(backupPluginPath)) {
               if (!quiet) {
                 debug('found2', name)
-                console.log(
-                  colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
-                )
+                ok()
               }
               destMap[name] = backupPluginPath
             } else {
@@ -293,9 +301,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
               if (fs.existsSync(backupPluginPath)) {
                 if (!quiet) {
                   debug('found3', name)
-                  console.log(
-                    colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
-                  )
+                  ok()
                 }
                 destMap[name] = backupPluginPath
               } else {
@@ -306,9 +312,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
                 if (fs.existsSync(backupPluginPath)) {
                   if (!quiet) {
                     debug('found4', name)
-                    console.log(
-                      colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + path.basename(module)
-                    )
+                    ok()
                   }
                   destMap[name] = backupPluginPath
                   // console.error('Skipping plugin, because it does not have a plugin.js', module)
@@ -316,10 +320,35 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
               }
             }
           }
+
+          if (fs.statSync(modulePath).isDirectory()) {
+            const subDirs = fs
+              .readdirSync(modulePath)
+              .filter(
+                _ =>
+                  !/(^m?dist)|(bin)|(web)|(src)|(samples)|(i18n)|(tests)|(node_modules)$/.test(_) &&
+                  fs.statSync(path.join(modulePath, _)).isDirectory()
+              )
+
+            if (subDirs.length > 0) {
+              doScan({
+                modules: subDirs,
+                moduleDir: modulePath,
+                parentPath: module,
+                lookForPlugin: filename === 'plugin.js',
+                lookForPrescan: filename === 'preload.js'
+              })
+            }
+          }
         }
 
-        lookFor('plugin.js', plugins, colors.bold)
-        lookFor('preload.js', preloads, colors.dim)
+        if (lookForPlugin) {
+          lookFor('plugin.js', plugins, colors.bold)
+        }
+
+        if (lookForPrescan) {
+          lookFor('preload.js', preloads, colors.dim)
+        }
       })
     }
 
