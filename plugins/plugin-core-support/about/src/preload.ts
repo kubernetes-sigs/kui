@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2017-2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-// this file defines the external API
+import { isHeadless } from '@kui-shell/core'
+
+/**
+ * Install click handlers
+ *
+ */
+export default () => {
+  if (!isHeadless()) {
+    ;(document.querySelector('#help-button') as HTMLElement).onclick = async () => {
+      const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
+      pexec('about')
+    }
+  }
+}

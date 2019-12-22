@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-// this file defines the external API
+import { Registrar } from '@kui-shell/core'
+
+import about from './about'
+
+export default async (registrar: Registrar) => {
+  about(registrar)
+}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UsageError, eventBus, injectCSS, Arguments, Registrar } from '@kui-shell/core'
+import { UsageError, Arguments, Registrar } from '@kui-shell/core'
 
 /**
  * Keyboard event character codes
@@ -58,6 +58,27 @@ const usage = {
 }
 
 /**
+ * Inject CSS
+ *
+ */
+function injectContent() {
+  if (!document.querySelector('#kui-zoom-overlay')) {
+    setTimeout(async () => {
+      const { injectCSS } = await import('@kui-shell/core')
+      injectCSS({
+        css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
+        key: 'zoom.css'
+      })
+    }, 0)
+
+    const overlay = document.createElement('div')
+    overlay.className = 'zoom-overlay hidden'
+    overlay.id = 'kui-zoom-overlay'
+    document.body.appendChild(overlay)
+  }
+}
+
+/**
  * Command handler for zoom set
  *
  */
@@ -90,7 +111,8 @@ const _set = newZoom => {
 
   return true
 }
-const set = ({ argvNoOptions }: Arguments) => {
+async function set({ argvNoOptions }: Arguments) {
+  await injectContent()
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }
@@ -104,7 +126,7 @@ const reset = () => _set(1)
  * onkeydown event listener
  *
  */
-const listener = (event: KeyboardEvent): void => {
+const listener = async (event: KeyboardEvent): Promise<void> => {
   const char = event.keyCode
 
   if (event.shiftKey) {
@@ -117,15 +139,22 @@ const listener = (event: KeyboardEvent): void => {
     // zooming
     event.preventDefault()
     reset()
-    setTimeout(() => eventBus.emit('/zoom', 1), 100)
+    setTimeout(async () => {
+      const { eventBus } = await import('@kui-shell/core')
+      eventBus.emit('/zoom', 1)
+    }, 100)
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
+    await injectContent()
     event.preventDefault()
     const main = document.querySelector('body > .page')
     const factor = char === keys.ZOOM_IN ? 1 : -1
     const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
     _set(newZoom)
-    setTimeout(() => eventBus.emit('/zoom', newZoom), 100)
+    setTimeout(async () => {
+      const { eventBus } = await import('@kui-shell/core')
+      eventBus.emit('/zoom', newZoom)
+    }, 100)
   }
 }
 
@@ -142,29 +171,19 @@ const get = () => {
  * Plugin registration
  *
  */
-export default (commandTree: Registrar) => {
-  commandTree.listen('/zoom/get', get, { usage: usage.get })
-  commandTree.listen('/zoom/set', set, { usage: usage.set })
-  commandTree.listen('/zoom/reset', reset, { usage: usage.reset })
+export function plugin(registrar: Registrar) {
+  if (typeof document === 'undefined') return
 
+  registrar.listen('/zoom/get', get, { usage: usage.get })
+  registrar.listen('/zoom/set', set, { usage: usage.set })
+  registrar.listen('/zoom/reset', reset, { usage: usage.reset })
+}
+
+export function preload() {
   if (typeof document === 'undefined') return
 
   // register as a listener for keyboard events; note that this
   // requires that this plugin be preloaded, i.e. stick it in
   // preload.json
   document.addEventListener('keydown', listener)
-
-  //
-  // inject our CSS
-  //
-  setTimeout(async () => {
-    injectCSS({
-      css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
-      key: 'zoom.css'
-    })
-  }, 0)
-
-  const overlay = document.createElement('div')
-  overlay.className = 'zoom-overlay hidden'
-  document.body.appendChild(overlay)
 }

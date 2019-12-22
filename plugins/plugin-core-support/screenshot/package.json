@@ -1,0 +1,25 @@
+{
+  "name": "@kui-shell/plugin-core-support",
+  "version": "5.1.0",
+  "description": "Kui plugin offering core extensions such as help and screenshot commands",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "keywords": [
+    "kui",
+    "plugin"
+  ],
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts"
+}

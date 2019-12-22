@@ -28,11 +28,9 @@ const registration: PreloadRegistration = async (commandTree: PreloadRegistrar) 
   const asyncs = []
 
   if (!isHeadless()) {
-    asyncs.push(import('./lib/cmds/zoom').then(_ => _.default(commandTree)))
+    asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
     asyncs.push(import('./lib/new-tab').then(_ => _.default(commandTree)))
     asyncs.push(import('./lib/cmds/history/reverse-i-search').then(_ => _.default()))
-    asyncs.push(import('./lib/cmds/about/preload').then(_ => _.default()))
-    asyncs.push(import('./lib/tab-completion').then(_ => _.default()))
   }
 
   if (!isHeadless() && !inBrowser()) {
