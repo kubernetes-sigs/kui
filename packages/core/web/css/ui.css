@@ -983,6 +983,10 @@ sidecar .sidecar-header-icon {
   align-items: center;
   text-transform: uppercase;
 }
+sidecar .sidecar-toolbar-text a,
+sidecar .sidecar-toolbar-text a:hover {
+  color: inherit !important;
+}
 sidecar .sidecar-header-icon-wrapper > span {
   padding: 0 1em;
 }
