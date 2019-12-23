@@ -19,6 +19,8 @@
  *
  */
 
+import * as Marked from 'marked'
+
 import { element } from '../util/dom'
 import Formattable from './formattable'
 
@@ -52,7 +54,7 @@ export class ToolbarTextImpl implements RefreshableToolbarText {
     if (this._container) {
       const content = element('.sidecar-toolbar-text-content', this._container)
       if (typeof this.text === 'string') {
-        content.innerText = this.text
+        content.innerHTML = Marked(this.text)
       } else {
         content.appendChild(this.text)
       }

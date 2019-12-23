@@ -2750,7 +2750,7 @@ sidecar .usage-error-wrapper .hideable {
 }
 .page-content h3,
 .page-h3 {
-  color: var(--color-content-divider);
+  color: var(--color-text-02);
   font-size: 1.125em;
   font-weight: 600;
   letter-spacing: 0;
@@ -2772,6 +2772,9 @@ sidecar .usage-error-wrapper .hideable {
 }
 sidecar .page-content pre > code {
   display: inline-block;
+  white-space: pre-wrap;
+  padding: 0;
+  color: var(--color-base0E);
 }
 
 .icon-container,
