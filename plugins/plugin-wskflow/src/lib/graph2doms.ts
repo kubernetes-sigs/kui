@@ -1084,8 +1084,8 @@ export default async function graph2doms(
         .attr('y', -14)
     }, 0)
 
-    setTimeout(addMorePathAttr, 0) // we aren't properly using d3.select.enter... hacking a bit, for now
-    setTimeout(addEdgeLabels, 0)
+    setTimeout(addMorePathAttr, 100) // we aren't properly using d3.select.enter... hacking a bit, for now
+    setTimeout(addEdgeLabels, 100)
   } /* drawGraph */
 
   const elk = new ELK()
