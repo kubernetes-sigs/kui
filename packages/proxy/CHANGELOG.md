@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.10](https://github.com/IBM/kui/compare/v4.5.0...v5.7.10) (2019-12-24)
+
+### Features
+
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
 ## [5.7.9](https://github.com/IBM/kui/compare/v4.5.0...v5.7.9) (2019-12-24)
 
 ### Features
