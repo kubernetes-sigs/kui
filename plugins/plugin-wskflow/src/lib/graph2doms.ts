@@ -53,7 +53,11 @@ export default async function graph2doms(
     }
   } = {}
 ): Promise<Response> {
-  const [d3, $, ELK] = await Promise.all([import('d3'), import('jquery'), import('elkjs/lib/elk.bundled.js')])
+  const [d3, { default: $ }, { default: ELK }] = await Promise.all([
+    import('d3'),
+    import('jquery'),
+    import('elkjs/lib/elk.bundled.js')
+  ])
 
   const maxLabelLength: number = (JSONgraph.properties && JSONgraph.properties.maxLabelLength) || defaultMaxLabelLength
   const defaultFontSize: string = (JSONgraph.properties && JSONgraph.properties.fontSize) || '7px'
