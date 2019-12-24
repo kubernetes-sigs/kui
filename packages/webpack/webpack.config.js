@@ -120,6 +120,7 @@ console.log('main', main)
 console.log('pluginBase', pluginBase)
 const allKuiPlugins = fs.readdirSync(pluginBase)
 const kuiPluginRules = []
+const kuiPluginExternals = []
 const pluginEntries = allKuiPlugins.map(dir => {
   try {
     const pjson = path.join(pluginBase, dir, 'package.json')
@@ -131,6 +132,12 @@ const pluginEntries = allKuiPlugins.map(dir => {
       if (kui.webpack.plugins) {
         const kuiPluginRequiredWebpackPlugins = kui.webpack.plugins
         kuiPluginRequiredWebpackPlugins.forEach(_ => plugins.push(new (require(_))()))
+      }
+
+      if (kui.webpack.externals) {
+        kui.webpack.externals.forEach(_ => {
+          kuiPluginExternals.push(_)
+        })
       }
 
       if (kui.webpack.rules) {
@@ -253,11 +260,17 @@ const externals = !inBrowser
       'net',
       'webworker-threads', // wskflow
       'xml2js', // used by plugins/plugin-apache-composer/@demos/combinators/http.js
-      'redis',
-      'redis-commands', // openwhisk-composer
       'nyc',
       'electron'
     ]
+
+kuiPluginExternals.forEach(_ => {
+  if (!inBrowser) {
+    externals[_] = _
+  } else {
+    externals.push(_)
+  }
+})
 
 const emptyIfInBrowser = inBrowser ? 'empty' : true
 
