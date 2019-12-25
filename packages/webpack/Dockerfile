@@ -1,4 +1,4 @@
-FROM fholzer/nginx-brotli
+FROM nginx:alpine
 
 RUN mkdir /etc/nginx/certificates
 COPY .keys/cert.pem /etc/nginx/certificates/cert.pem
