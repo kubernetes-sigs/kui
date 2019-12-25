@@ -37,7 +37,40 @@
     "proxy": false,
     "webpack": {
       "plugins": [
-        "monaco-editor-webpack-plugin"
+        {
+          "plugin": "monaco-editor-webpack-plugin",
+          "options": {
+            "languages": [
+              "css",
+              "scss",
+              "less",
+              "dockerfile",
+              "go",
+              "html",
+              "handlebars",
+              "javascript",
+              "typescript",
+              "json",
+              "markdown",
+              "python",
+              "powershell",
+              "shell",
+              "yaml"
+            ],
+            "features": [
+              "!codelens",
+              "!iPadShowKeyboard",
+              "!multicursor",
+              "!quickCommand",
+              "!quickOutline",
+              "!codeAction",
+              "!coreCommands",
+              "!fontZoom",
+              "!toggleHighContrast",
+              "!colorDetector"
+            ]
+          }
+        }
       ]
     }
   },

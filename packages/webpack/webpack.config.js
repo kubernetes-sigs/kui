@@ -21,7 +21,7 @@ const mode = process.env.MODE || 'development'
 const target = process.env.TARGET || 'web'
 const inBrowser = target === 'web'
 const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-server/.test(_))
-const webCompress = process.env.WEB_COMPRESS
+const webCompress = process.env.WEB_COMPRESS || 'none'
 const noCompression = !inBrowser || webCompress === 'none' || isWatching
 const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
 
@@ -131,7 +131,13 @@ const pluginEntries = allKuiPlugins.map(dir => {
     if (kui && kui.webpack) {
       if (kui.webpack.plugins) {
         const kuiPluginRequiredWebpackPlugins = kui.webpack.plugins
-        kuiPluginRequiredWebpackPlugins.forEach(_ => plugins.push(new (require(_))()))
+        kuiPluginRequiredWebpackPlugins.forEach(_ => {
+          if (typeof _ === 'string') {
+            plugins.push(new (require(_))())
+          } else {
+            plugins.push(new (require(_.plugin))(_.options || {}))
+          }
+        })
       }
 
       if (kui.webpack.externals) {
@@ -408,7 +414,7 @@ module.exports = {
   output: {
     globalObject: 'self', // for monaco
     filename: '[name].[hash].bundle.js',
-    publicPath: inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`,
+    publicPath: process.env.CONTEXT_ROOT || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
     path: buildDir
   }
 }
