@@ -155,7 +155,7 @@ function initWebpack {
 function webpack {
     pushd "$STAGING_DIR" > /dev/null
     rm -f "$BUILDDIR"/*.js*
-    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode production
+    MODE="${MODE-production}" CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode production
     popd > /dev/null
 }
 
@@ -194,19 +194,6 @@ function clean {
     fi
 }
 
-# were we asked to enter watch mode?
-function watch {
-    if [ -z "$WATCH" ]; then
-        echo "no watch"
-        # returning 1 will cause the || docker && clean to execute
-        return 1
-    else
-        echo "watching"
-        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --watch --progress
-        return 0
-    fi
-}
-
 # this is the main routine
 function build {
     prereq
@@ -216,7 +203,8 @@ function build {
     configure
     webpack
     assembleHTMLPieces
-    watch || docker && clean
+    docker
+    clean
 }
 
 build
