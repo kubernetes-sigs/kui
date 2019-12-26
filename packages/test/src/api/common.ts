@@ -144,7 +144,9 @@ const prepareElectron = (popup: string[]) => {
   }
 
   if (process.env.PORT_OFFSET) {
-    opts['port'] = 9515 + parseInt(process.env.PORT_OFFSET, 10)
+    const offset = parseInt(process.env.PORT_OFFSET, 10)
+    opts['port'] = 9515 + offset
+    opts.chromeDriverArgs.push(`--remote-debugging-port=${57289 + offset}`)
 
     const userDataDir = join(TMP, `kui-profile-${process.env.PORT_OFFSET}`)
     opts.chromeDriverArgs.push(`--user-data-dir=${userDataDir}`)
