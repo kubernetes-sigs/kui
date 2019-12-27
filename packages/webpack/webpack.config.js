@@ -36,11 +36,25 @@ const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
 // http port
 const port = process.env.KUI_PORT || (PORT_OFFSET === undefined ? 9080 : 9080 + parseInt(PORT_OFFSET, 10))
 
+// contextRoot
+let contextRoot = ''
+try {
+  if (process.env.CLIENT_HOME && !isWatching) {
+    contextRoot = require(path.join(process.env.CLIENT_HOME, 'theme/theme.json')).contextRoot || ''
+    if (contextRoot && !/\/$/.test(contextRoot)) {
+      contextRoot = contextRoot + '/'
+    }
+  }
+} catch (err) {
+  console.error('Error parsing contextRoot from theme', err)
+}
+
 console.log('port?', port)
 console.log('mode?', mode)
 console.log('target?', target)
 console.log('inBrowser?', inBrowser)
 console.log('watching?', isWatching)
+console.log('contextRoot?', contextRoot)
 console.log('explicit compression option?', webCompress || '<not set>')
 console.log('bundle compression disabled?', noCompression)
 
@@ -183,7 +197,7 @@ plugins.push({
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve, reject) => {
         try {
-          const main = `main.${hash}.bundle.js` // <-- this is the name of the main bundle
+          const main = contextRoot + `main.${hash}.bundle.js` // <-- this is the name of the main bundle
           console.log('KuiHtmlBuilder using this build hash', hash)
 
           const overrides = {
@@ -414,7 +428,7 @@ module.exports = {
   output: {
     globalObject: 'self', // for monaco
     filename: '[name].[hash].bundle.js',
-    publicPath: process.env.CONTEXT_ROOT || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
+    publicPath: contextRoot || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
     path: buildDir
   }
 }
