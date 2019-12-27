@@ -17,7 +17,7 @@
 import Debug from 'debug'
 
 import { injectCSS } from '@kui-shell/core'
-import { languages, editor as Monaco, Range } from 'monaco-editor'
+import { editor as Monaco, Range } from 'monaco-editor'
 
 // import kuiLanguages from '../language-scan'
 import defaultMonacoOptions from './defaults'
@@ -46,12 +46,6 @@ export default (editorWrapper: HTMLElement, options) => {
        */
       const initEditor = async () => {
         if (!initDone) {
-          // for now, try to disable the built-in Javascript-specific completion helper thingies
-          languages.typescript.javascriptDefaults.setCompilerOptions({
-            noLib: true,
-            allowNonTsExtensions: true
-          })
-
           // install any custom languages we might have
           /* kuiLanguages(languages).forEach(({ language, provider }) => {
             languages.registerCompletionItemProvider(language, provider)
