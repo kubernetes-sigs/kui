@@ -152,6 +152,7 @@ body.still-loading .repl {
 .repl-inner {
   overflow-y: auto;
   flex: 1;
+  padding-right: 0.375em;
 }
 .repl.sidecar-visible .repl-block {
   background: transparent;
@@ -355,7 +356,7 @@ body:not(.subwindow) .repl .repl-prompt-right-element-status-icon.deemphasize {
   display: block;
 }
 .repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle {
-  stroke: var(--color-brand-03);
+  stroke: var(--color-base0E);
 }
 svg.kui--error-icon path[data-icon-path="inner-path"],
 .repl-block .repl-prompt-right-element-status-icon svg path[data-icon-path="inner-path"] {
@@ -380,6 +381,7 @@ svg.kui--error-icon path:not([data-icon-path="inner-path"]),
 .repl-prompt-right-elements .repl-prompt-right-element-status-icon:hover {
   opacity: 1;
 }
+repl.sidecar-visible .repl-prompt-timestamp,
 repl.sidecar-visible .repl-block:not(.processing) .repl-prompt-right-elements,
 .repl-active .repl-prompt-right-elements {
   display: none; /* see the comment for repl-input re: min-height */
