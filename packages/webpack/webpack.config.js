@@ -93,6 +93,10 @@ const buildDir =
   path.join(stageDir, 'dist/webpack')
 console.log('buildDir', buildDir)
 
+/** this is the full path in which will be serving up bundles; it includes contextRoot */
+const outputPath = contextRoot ? path.join(buildDir, contextRoot) : buildDir
+console.log('outputPath', outputPath)
+
 const builderHome =
   process.env.KUI_BUILDER_HOME ||
   (process.env.KUI_MONO_HOME
@@ -219,7 +223,7 @@ plugins.push({
           }
 
           if (!inBrowser || isWatching) {
-            overrides.build.buildDir = buildDir
+            overrides.build.buildDir = outputPath
             overrides.build.configDir = path.join(path.dirname(buildDir), 'settings')
           }
 
@@ -429,6 +433,6 @@ module.exports = {
     globalObject: 'self', // for monaco
     filename: '[name].[hash].bundle.js',
     publicPath: contextRoot || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
-    path: buildDir
+    path: outputPath
   }
 }
