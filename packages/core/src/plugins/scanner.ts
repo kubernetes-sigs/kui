@@ -25,6 +25,7 @@ import * as commandTree from '../core/command-tree'
 import { Command, CommandHandler, CommandOptions, KResponse, ParsedOptions } from '../models/command'
 import { isCodedError } from '../models/errors'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
+import { apiVersion as defaultThemeApiVersion, ThemeSet } from '../webapp/themes/Theme'
 
 import { getModel } from '../commands/tree'
 
@@ -236,6 +237,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
   try {
     const plugins: Record<string, string> = {}
     const preloads: Record<string, string> = {}
+    const themeSets: ThemeSet[] = []
 
     const doScan = ({
       modules,
@@ -255,6 +257,31 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
       modules.forEach(module => {
         const modulePath = path.join(moduleDir, module)
         const name = (parentPath ? `${parentPath}/` : '') + module
+
+        try {
+          const themePath = path.join(modulePath, 'theme.json')
+          if (fs.existsSync(themePath)) {
+            const themeSet: ThemeSet = require(themePath)
+            const nThemes = !themeSet || !themeSet.themes ? 0 : themeSet.themes.length
+            if (nThemes > 0) {
+              // set these to have the latest apiVersion unless otherwise stated
+              // this decision will be serialized out to the prescan persisted model
+              themeSet.themes.forEach(_ => {
+                if (!_.apiVersion) {
+                  _.apiVersion = defaultThemeApiVersion
+                }
+              })
+
+              const msg = colors.bold(colors.rainbow('themes')) + colors.dim(` x${nThemes}`)
+              console.log(colors.green('  \u2713 ') + msg + '\t' + path.basename(module))
+
+              // add this plugin's themes onto the full list, across all plugins
+              themeSets.push({ themes: themeSet.themes, plugin: module })
+            }
+          }
+        } catch (err) {
+          console.error('Error registering theme', err)
+        }
 
         if (module.charAt(0) === '@') {
           // support for @owner/repo style modules; see shell issue #260
@@ -357,7 +384,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     debug('moduleDir', moduleDir)
     doScan({ modules: fs.readdirSync(moduleDir).filter(filter), moduleDir })
 
-    return { plugins, preloads }
+    return { plugins, preloads, themeSets }
   } catch (err) {
     if (isCodedError<string>(err) && err.code !== 'ENOENT') {
       console.error('Error scanning for external plugins', err)
@@ -382,10 +409,11 @@ const resolveFromLocalFilesystem = async (scanCache: ScanCache, opts: PrescanOpt
 
   let plugins: Record<string, string> = clientHosted.plugins || {}
   let preloads: Record<string, string> = clientHosted.preloads || {}
+  let themeSets: ThemeSet[] = clientHosted.themeSets || []
 
   // this scan looks for plugins npm install'd by the client
   if (!opts.externalOnly) {
-    let clientRequired: { plugins?: Record<string, string>; preloads?: Record<string, string> }
+    let clientRequired: { plugins?: Record<string, string>; preloads?: Record<string, string>; themeSets?: ThemeSet[] }
     try {
       const secondary = dirname(dirname(require.resolve('@kui-shell/core/package.json')))
       clientRequired = await scanForModules(secondary, false, (filename: string) => !!filename.match(/^plugin-/))
@@ -403,6 +431,7 @@ const resolveFromLocalFilesystem = async (scanCache: ScanCache, opts: PrescanOpt
     // https://github.com/IBM/kui/issues/3191
     plugins = Object.assign({}, clientRequired.plugins, clientHosted.plugins)
     preloads = Object.assign({}, clientRequired.preloads, clientHosted.preloads)
+    themeSets = clientRequired.themeSets.concat(clientHosted.themeSets || [])
   }
 
   debug('availablePlugins %s', JSON.stringify(plugins))
@@ -410,7 +439,7 @@ const resolveFromLocalFilesystem = async (scanCache: ScanCache, opts: PrescanOpt
   // then, we load the plugins
   await topologicalSortForScan(scanCache, plugins, 0)
 
-  return preloads
+  return { preloads, themeSets }
 }
 
 /**
@@ -427,7 +456,7 @@ export const generatePrescanModel = async (
   const scanCache = new ScanCache(registrar)
 
   // do the scan, which will populate that StateCache instance
-  const preloads = await resolveFromLocalFilesystem(scanCache, opts)
+  const { preloads, themeSets } = await resolveFromLocalFilesystem(scanCache, opts)
 
   const disambiguator: Record<string, string | true> = {}
   for (const route in scanCache.commandToPlugin) {
@@ -464,6 +493,7 @@ export const generatePrescanModel = async (
       route,
       path: preloads[route]
     })),
+    themeSets,
     commandToPlugin: scanCache.commandToPlugin,
     topological: scanCache.topological,
     flat: scanCache.flat,

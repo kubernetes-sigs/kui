@@ -22,31 +22,6 @@ STAGING="${TOPDIR}"/node_modules/@kui-shell/build
 
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/core/web/css)
 
-# (darwin doesn't support uname -o, but linux and git bash on windows both do)
-if [ "$(uname)" != "Darwin" ] && [ "$(uname -o)" = "Msys" ]; then
-    # a bit of a hack for windows, given that clients/default/theme is
-    # a symlink
-    THEME=$(cd "$TOPDIR"/packages/builder/examples/build-configs/default/theme && pwd)
-else
-    THEME=$(cd "$CLIENT_HOME"/theme && pwd)
-fi
-if [ ! -d "$THEME" ]; then
-    echo "Cannot find THEME"
-    exit 1
-fi
-
-# remove and relink any client css symlinks
-find packages/core/web/css -maxdepth 1 -type l -exec rm {} \;
-for i in "$THEME"/css/*.css; do
-    echo "linking in client css file `basename $i`"
-    (cd "$STAGING"/css && ln -s $i)
-done
-
-if [ -d "$THEME"/css/themes ]; then
-    echo "linking in client themes"
-    rm -f "$STAGING"/css/themes && \
-        (cd "$STAGING"/css && ln -s "$THEME"/css/themes)
-fi
 if [ -d "$THEME"/icons ]; then
     echo "linking in client icons"
     rm -f "$STAGING"/icons && \

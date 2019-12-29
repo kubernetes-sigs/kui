@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ThemeSet } from '../webapp/themes/Theme'
 import { UsageModel } from '../core/usage-error'
 import { Disambiguator, CapabilityRequirements, CatchAllHandler, KResponse, ParsedOptions } from '../models/command'
 
@@ -42,6 +43,7 @@ export interface PrescanDocs {
 export interface PrescanModel {
   docs: PrescanDocs
   preloads: PrescanCommandDefinitions
+  themeSets: ThemeSet[]
   commandToPlugin: { [key: string]: string }
   topological: { [key: string]: string[] }
   flat: PrescanCommandDefinitions
@@ -60,6 +62,7 @@ export function unify(modelA: PrescanModel, modelB: PrescanModel): PrescanModel 
   return {
     docs: Object.assign({}, modelA.docs, modelB.docs),
     preloads: modelA.preloads.concat(modelB.preloads),
+    themeSets: modelA.themeSets.concat(modelB.themeSets),
     commandToPlugin: Object.assign({}, modelA.commandToPlugin, modelB.commandToPlugin),
     topological: Object.assign({}, modelA.topological, modelB.topological),
     flat: modelA.flat.concat(modelB.flat),

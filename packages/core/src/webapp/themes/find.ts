@@ -15,14 +15,17 @@
  */
 
 import Theme from './Theme'
-import { theme } from '../../core/settings'
+import { flatten } from '../../core/utility'
+import { uiThemes } from '../../core/settings'
 
 /**
  * @return the Theme model associated with the given theme name
  *
  */
-export function findByName(name: string): Theme {
-  return (theme.themes || []).find(_ => _.name === name)
+export function findByName(name: string): { theme: Theme; plugin: string } {
+  const flat = flatten(uiThemes().map(({ plugin, themes }) => themes.map(theme => ({ plugin, theme }))))
+
+  return flat.find(_ => _.theme.name === name)
 }
 
 export default findByName

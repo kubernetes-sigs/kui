@@ -19,6 +19,7 @@
   "Tab": "Tab",
   "New Tab": "New Tab",
   "Theme": "Theme",
+  "Provider": "Provider",
   "Style": "Style",
   "theme.currentTheme": "You are using the default theme",
   "theme.usageDocs": "List available themes",

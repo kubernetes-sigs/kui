@@ -140,7 +140,7 @@ body[kui-theme="Carbon Gray10"] .kui--input-stripe .repl-input {
   background-color: var(--color-base04);
 }
 body[kui-theme="Carbon Gray10"] .repl,
-body[kui-theme="Carbon Gray10"] .left-tab-stripe-button-selected{
+body[kui-theme="Carbon Gray10"] .left-tab-stripe-button-selected {
   background-color: var(--color-base01);
 }
 body[kui-theme="Carbon Gray10"] .kui--input-stripe {
