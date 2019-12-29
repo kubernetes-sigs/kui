@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
+/** the latest apiVersion */
+export const apiVersion = 'v2'
+
+/** all known Theme apiVersions */
+export type ThemeApiVersion = 'v1' | 'v2'
+
 export default interface Theme {
+  apiVersion?: ThemeApiVersion
   name: string
   description?: string
   css: string | string[]
   attrs?: string[]
   style: string
+}
+
+export interface ThemeSet {
+  /** import path prefix for all themes */
+  plugin: string
+
+  /** theme definitions */
+  themes: Theme[]
 }

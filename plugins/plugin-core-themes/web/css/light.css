@@ -10,7 +10,7 @@ body[kui-theme="Light"] {
   --color-base07: #fff;
   --color-base08: #e71d32;
   --color-base09: #bf5b17;
-  --color-base0A: #FDD13A;
+  --color-base0A: #fdd13a;
   --color-base0B: #1dbd5a;
   --color-base0C: #399cd6;
   --color-base0D: #0072c3;
@@ -23,7 +23,7 @@ body[kui-theme="Light"] {
   --color-background-inverted01: #272c30;
   --color-background-inverted02: #373d42;
   --color-text-inverted01: #f2f4f8;
-  
+
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);
 
@@ -35,12 +35,12 @@ body[kui-theme="Light"] {
   --color-sidecar-background: var(--color-base01);
   --color-sidecar-border: #e4e4e4;
 
-  --color-brand-03: #008FFF;
+  --color-brand-03: #008fff;
   --color-selection-background: #b3e6ff;
 
-  --color-screenshot-background: #0062FF;
-  --color-confirm-background:var(--color-base00);
-  --color-confirm-foreground:var(--color-base05);
+  --color-screenshot-background: #0062ff;
+  --color-confirm-background: var(--color-base00);
+  --color-confirm-foreground: var(--color-base05);
 
   --color-processing: var(--color-base02);
   --color-ui-02: var(--color-base03);
@@ -48,9 +48,59 @@ body[kui-theme="Light"] {
   --color-text-02: var(--color-base05);
   --color-stripe-01: var(--color-base03);
   --color-stripe-02: var(--color-base04);
-  --color-sidecar-toolbar-background: #D7DCE3;
+  --color-sidecar-toolbar-background: #d7dce3;
   --color-sidecar-toolbar-foreground: var(--color-base06);
 }
 
 /* mono-blue hightlightjs theme */
-.hljs{display:block;overflow-x:auto;padding:0.5em;background:#eaeef3}.hljs{color:#00193a}.hljs-keyword,.hljs-selector-tag,.hljs-title,.hljs-section,.hljs-doctag,.hljs-name,.hljs-strong{font-weight:bold}.hljs-comment{color:#738191}.hljs-string,.hljs-title,.hljs-section,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-type,.hljs-addition,.hljs-tag,.hljs-quote,.hljs-name,.hljs-selector-id,.hljs-selector-class{color:#0048ab}.hljs-meta,.hljs-subst,.hljs-symbol,.hljs-regexp,.hljs-attribute,.hljs-deletion,.hljs-variable,.hljs-template-variable,.hljs-link,.hljs-bullet{color:#4c81c9}.hljs-emphasis{font-style:italic}
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #eaeef3;
+}
+.hljs {
+  color: #00193a;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-title,
+.hljs-section,
+.hljs-doctag,
+.hljs-name,
+.hljs-strong {
+  font-weight: bold;
+}
+.hljs-comment {
+  color: #738191;
+}
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-built_in,
+.hljs-literal,
+.hljs-params,
+.hljs-type,
+.hljs-addition,
+.hljs-tag,
+.hljs-quote,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #0048ab;
+}
+.hljs-meta,
+.hljs-subst,
+.hljs-symbol,
+.hljs-regexp,
+.hljs-attribute,
+.hljs-deletion,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-bullet {
+  color: #4c81c9;
+}
+.hljs-emphasis {
+  font-style: italic;
+}

@@ -1,0 +1,46 @@
+{
+  "themes": [
+    {
+      "name": "Light",
+      "css": "light.css",
+      "description": "Default Light",
+      "style": "light"
+    },
+    {
+      "name": "Dark",
+      "css": "dark.css",
+      "description": "Default Dark",
+      "style": "dark"
+    },
+    { "name": "Atelier", "css": "atelier-seaside.css", "style": "dark" },
+    {
+      "name": "Carbon Gray10",
+      "css": ["carbon-gray10.css", "top-tab-stripe-alt.css"],
+      "attrs": ["kui--alternate", "kui--sidecar-inverted"],
+      "style": "light"
+    },
+    {
+      "name": "Carbon Gray90",
+      "css": ["carbon-gray90.css", "top-tab-stripe-alt.css"],
+      "attrs": ["kui--alternate"],
+      "style": "dark"
+    },
+    { "name": "Dracula", "css": "dracula.css", "style": "dark" },
+    {
+      "name": "Gruvbox",
+      "css": "gruvbox-dark-medium.css",
+      "style": "dark"
+    },
+    { "name": "Lucario", "css": "lucario.css", "style": "dark" },
+    { "name": "Monokai", "css": "monokai.css", "style": "dark" },
+    { "name": "Nord", "css": "nord.css", "style": "dark" },
+    { "name": "Paraiso", "css": "paraiso.css", "style": "dark" },
+    { "name": "Solarized", "css": "solarized-dark.css", "style": "dark" },
+    {
+      "name": "tomorrow-night",
+      "css": "tomorrow-night.css",
+      "description": "Tomorrow Night",
+      "style": "dark"
+    }
+  ]
+}

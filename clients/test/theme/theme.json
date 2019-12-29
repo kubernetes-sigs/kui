@@ -24,7 +24,7 @@
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Light",
-  "defaultTheme": "Dark",
+  "defaultTheme": "Test Theme",
   "appIcon": "icons/png/kui.png",
   "largeIcon": "icons/svg/kui.svg",
   "wideIcon": "icons/svg/kui-wide.svg",
@@ -33,5 +33,13 @@
     "darwin": "icons/icns/kui.icns",
     "win32": "icons/ico/kui.ico",
     "linux": "icons/png/kui.png"
-  }
+  },
+  "themes": [
+    {
+      "name": "Test Theme",
+      "css": "themes/test-theme.css",
+      "description": "Test Theme",
+      "style": "light"
+    }
+  ]
 }
