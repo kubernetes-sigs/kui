@@ -29,9 +29,9 @@ export function getDefault(isDarkMode = false) {
   let defaultTheme = theme.defaultTheme
 
   if (isDarkMode) {
-    const darkTheme = findThemeByName('Dark')
-    if (darkTheme) {
-      defaultTheme = darkTheme.name
+    const darkThemeModel = findThemeByName('Dark')
+    if (darkThemeModel) {
+      defaultTheme = darkThemeModel.theme.name
     }
   }
 

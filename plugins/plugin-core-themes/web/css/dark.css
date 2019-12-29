@@ -34,7 +34,7 @@ body[kui-theme="Dark"] {
   --color-sidecar-border: #1a2024;
 
   --color-stripe-01: #4f565c;
-  --color-sidecar-toolbar-background: #D7DCE3;
+  --color-sidecar-toolbar-background: #d7dce3;
   --color-sidecar-toolbar-foreground: var(--color-base02);
 
   --color-selection-background: var(--color-base05);
@@ -45,8 +45,8 @@ body[kui-theme="Dark"] {
   --color-text-02: #b3bac1;
 
   --color-screenshot-background: var(--color-selection-background);
-  --color-confirm-background:#272c30;
-  --color-confirm-foreground:var(--color-base05);
+  --color-confirm-background: #272c30;
+  --color-confirm-foreground: var(--color-base05);
 
   /* table header row */
   --color-ui-06: #1a2024;
@@ -57,4 +57,57 @@ body[kui-theme="Dark"] .header-cell {
 }
 
 /* tomorrow-night hightlightjs theme */
-.hljs-comment,.hljs-quote{color:#969896}.hljs-variable,.hljs-template-variable,.hljs-tag,.hljs-name,.hljs-selector-id,.hljs-selector-class,.hljs-regexp,.hljs-deletion{color:#cc6666}.hljs-number,.hljs-built_in,.hljs-builtin-name,.hljs-literal,.hljs-type,.hljs-params,.hljs-meta,.hljs-link{color:#de935f}.hljs-attribute{color:var(--color-support-03)}.hljs-string,.hljs-symbol,.hljs-bullet,.hljs-addition{color:#b5bd68}.hljs-title,.hljs-section{color:#81a2be}.hljs-keyword,.hljs-selector-tag{color:#b294bb}.hljs{display:block;overflow-x:auto;background:transparent;color:#c5c8c6;padding:0.5em}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
+.hljs-comment,
+.hljs-quote {
+  color: #969896;
+}
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+  color: #cc6666;
+}
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: #de935f;
+}
+.hljs-attribute {
+  color: var(--color-support-03);
+}
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #b5bd68;
+}
+.hljs-title,
+.hljs-section {
+  color: #81a2be;
+}
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #b294bb;
+}
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: transparent;
+  color: #c5c8c6;
+  padding: 0.5em;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: bold;
+}

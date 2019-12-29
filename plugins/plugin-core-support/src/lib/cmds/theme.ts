@@ -28,7 +28,8 @@ import {
   resetToDefaultTheme,
   getDefaultTheme,
   Theme,
-  theme
+  uiThemes,
+  flatten
 } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
@@ -76,7 +77,11 @@ const list = async ({ REPL }: Arguments) => {
     type: 'theme',
     name: '',
     outerCSS: 'not-a-name',
-    attributes: [{ value: strings('Theme') }, { value: strings('Style') }]
+    attributes: [
+      { value: strings('Theme') },
+      { value: strings('Style') },
+      { value: strings('Provider'), outerCSS: 'hide-with-sidecar' }
+    ]
   }
 
   // careful: the user's chosen theme might not be available in the
@@ -85,39 +90,46 @@ const list = async ({ REPL }: Arguments) => {
   const chosenTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
   const currentTheme = findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
   debug('currentTheme', currentTheme)
-  debug('theme list', theme.themes)
+  debug('theme list', uiThemes())
 
-  const body: Row[] = (theme.themes || []).map(
-    (theme: Theme): Row => {
-      const row: Row = {
-        type: 'theme',
-        name: theme.name,
-        fontawesome: 'fas fa-check',
-        outerCSS: 'not-a-name',
-        css: 'selected-entity',
-        rowCSS: theme.name === currentTheme && 'selected-row',
-        attributes: [
-          {
-            value: strings(theme.description) || strings(theme.name),
-            css: 'not-too-wide',
-            onclick: undefined
-          },
-          { value: strings(theme.style), css: 'pretty-narrow' }
-        ],
-        onclick: undefined,
-        setSelected: undefined
-      }
+  const body: Row[] = flatten(
+    uiThemes().map(({ plugin, themes }) =>
+      themes.map(
+        (theme: Theme): Row => {
+          const row: Row = {
+            type: 'theme',
+            name: theme.name,
+            fontawesome: 'fas fa-check',
+            outerCSS: 'not-a-name',
+            css: 'selected-entity',
+            rowCSS: theme.name === currentTheme && 'selected-row',
+            attributes: [
+              {
+                key: 'NAME',
+                value: strings(theme.description) || strings(theme.name),
+                css: 'not-too-wide entity-name',
+                outerCSS: 'entity-name-group',
+                onclick: undefined
+              },
+              { value: strings(theme.style), outerCSS: 'pretty-narrow' },
+              { value: plugin, css: 'sub-text', outerCSS: 'hide-with-sidecar' }
+            ],
+            onclick: undefined,
+            setSelected: undefined
+          }
 
-      const onclick = async () => {
-        await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
-        row.setSelected()
-      }
+          const onclick = async () => {
+            await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
+            row.setSelected()
+          }
 
-      row.onclick = onclick // <-- clicks on the "check mark"
-      row.attributes[0].onclick = onclick // <-- clicks on the theme name
+          row.onclick = onclick // <-- clicks on the "check mark"
+          row.attributes[0].onclick = onclick // <-- clicks on the theme name
 
-      return row
-    }
+          return row
+        }
+      )
+    )
   )
 
   return new Table({

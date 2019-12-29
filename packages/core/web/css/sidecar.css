@@ -159,8 +159,8 @@ sidecar .sidecar-content-container {
   /* radio buttons in tables */
   fill: var(--color-text-inverted03) !important;
 }
-[data-presentation="SidecarThin"] sidecar th:nth-child(n + 3),
-[data-presentation="SidecarThin"] sidecar td:nth-child(n + 3) {
+[data-presentation="SidecarThin"] sidecar th:nth-child(n + 4),
+[data-presentation="SidecarThin"] sidecar td:nth-child(n + 4) {
   display: none !important;
 }
 [data-presentation="SidecarThin"] .result-table-title-outer {

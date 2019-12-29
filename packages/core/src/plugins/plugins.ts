@@ -46,6 +46,9 @@ export const registrar: Record<string, KuiPlugin> = {}
 let basePrescan: PrescanModel // without any user-installed plugins
 let prescan: PrescanModel // the result of unify(basePrescan, userPrescan)
 export function prescanModel(): PrescanModel {
+  if (!prescan) {
+    return require('@kui-shell/prescan.json') as PrescanModel
+  }
   return prescan
 }
 

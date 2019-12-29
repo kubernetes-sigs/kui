@@ -16,6 +16,8 @@
 
 import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
+import { ThemeSet } from '../webapp/themes/Theme'
+import { prescanModel } from '../plugins/plugins'
 import { TableStyle } from '../webapp/models/table'
 import { SidecarMode } from '../webapp/bottom-stripe'
 
@@ -67,7 +69,7 @@ export interface Theme {
   defaultContext?: string[]
 
   defaultTheme: string
-  themes: { name: string; css: string; description?: string; style: string }[]
+  themes?: { name: string; css: string; description?: string; style: string }[]
 }
 
 export const inBottomInputMode =
@@ -76,6 +78,21 @@ export const inBottomInputMode =
 export const theme: Theme = t as Theme
 export const env = e
 export const config = Object.assign({}, c, devOverrides)
+
+export function uiThemes(): ThemeSet[] {
+  // the filter part is there only to be overly defensive
+  const pluginProvidedThemes = prescanModel().themeSets.filter(_ => _)
+  const clientProvidedThemes = !theme.themes
+    ? []
+    : [
+        {
+          plugin: 'built-in',
+          themes: theme.themes
+        }
+      ]
+
+  return pluginProvidedThemes.concat(clientProvidedThemes)
+}
 
 /**
  * export the theme to a given directory

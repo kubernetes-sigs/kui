@@ -22,11 +22,13 @@ import { env } from '../../core/settings'
 import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
+import { webpackPath } from '../../plugins/path'
 import { injectCSS, uninjectCSS } from '../util/inject'
 import { clearPreference, getPreference, setPreference } from '../../core/userdata'
 
 import findThemeByName from './find'
 import getDefaultTheme from './default'
+import { ThemeApiVersion } from './Theme'
 
 const strings = i18n('core')
 
@@ -46,13 +48,35 @@ export const getPersistedThemeChoice = (): Promise<string> => {
   return getPreference(persistedThemePreferenceKey)
 }
 
+function getCssFilepath(addon: string, plugin: string, apiVersion: ThemeApiVersion): string {
+  const base = dirname(require.resolve('@kui-shell/settings/package.json'))
+
+  if (!apiVersion || apiVersion === 'v1') {
+    return join(base, '../build', env.cssHome, addon)
+  } else {
+    return join(base, '..', plugin, 'web/css', addon)
+  }
+}
+
 /**
  * @return the path to the given theme's css
  *
  */
-const getCssFilepathForGivenTheme = (addon: string): string => {
+const getCss = async (addon: string, addonKey: string, plugin: string, apiVersion: ThemeApiVersion) => {
   // const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
-  return join(env.cssHome, addon)
+  if (!apiVersion || apiVersion === 'v1') {
+    return {
+      key: addonKey,
+      path: join(env.cssHome, addon)
+    }
+  } else {
+    return {
+      key: addonKey,
+      css: (
+        await import('@kui-shell/plugin-' + webpackPath(plugin) + '/web/css/' + addon.replace(/\.css$/, '') + '.css')
+      ).default
+    }
+  }
 }
 
 /**
@@ -68,17 +92,20 @@ function id(theme: string) {
  *
  */
 export const switchTo = async (theme: string, webContents?: WebContents, saveNotNeeded = false): Promise<void> => {
-  const themeModel = findThemeByName(theme)
-  if (!themeModel) {
-    debug('could not find theme', theme, theme)
+  const themeWithPlugin = findThemeByName(theme)
+  if (!themeWithPlugin) {
+    debug('could not find theme', theme)
     const error = new Error(strings('theme.unknown')) as CodedError
     error.code = 404
     throw error
   }
 
+  const { theme: themeModel, plugin } = themeWithPlugin
+
   debug('switching to theme', theme)
 
   // css addons defined by the theme
+  const { apiVersion } = themeModel
   const addons = typeof themeModel.css === 'string' ? [themeModel.css] : themeModel.css
 
   const themeKey = id(theme)
@@ -93,16 +120,19 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
       // is happening in the main loading process; see the comments
       // below for more info.
       //
-      const previousThemeModel = findThemeByName(previousTheme)
-      const previousKey = id(previousTheme)
-      const previousNumAddons = typeof previousThemeModel.css === 'string' ? 1 : previousThemeModel.css.length
-      for (let idx = 0; idx < previousNumAddons; idx++) {
-        const addonKey = `${previousKey}-${idx}`
-        await uninjectCSS({ key: addonKey })
-      }
+      const previous = findThemeByName(previousTheme)
+      if (previous) {
+        const { theme: previousThemeModel } = previous
+        const previousKey = id(previousTheme)
+        const previousNumAddons = typeof previousThemeModel.css === 'string' ? 1 : previousThemeModel.css.length
+        for (let idx = 0; idx < previousNumAddons; idx++) {
+          const addonKey = `${previousKey}-${idx}`
+          await uninjectCSS({ key: addonKey })
+        }
 
-      if (previousThemeModel.attrs) {
-        previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
+        if (previousThemeModel.attrs) {
+          previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
+        }
       }
     }
   }
@@ -121,23 +151,14 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
           // before the window opens
           //
           const { readFile } = await import('fs-extra')
-          const pathToThemeCss = join(
-            dirname(require.resolve('@kui-shell/settings/package.json')),
-            '../build',
-            getCssFilepathForGivenTheme(addon)
-          )
+          const pathToThemeCss = getCssFilepath(addon, plugin, apiVersion)
           const css = (await readFile(pathToThemeCss)).toString()
           debug('using electron to pre-inject CSS before the application loads, from the main process')
           return webContents.insertCSS(css)
         } else {
-          const css = {
-            key: addonKey,
-            path: getCssFilepathForGivenTheme(addon)
-          }
-
           // inject the new css
-          debug('injecting CSS', css)
-          return injectCSS(css)
+          debug('injecting CSS', addon, plugin, apiVersion)
+          return injectCSS(await getCss(addon, addonKey, plugin, apiVersion))
         }
       })
     )
@@ -194,18 +215,22 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
   // Notes: the "true" passed to switchTo means indicates that we know
   // that we don't need to re-save the theme choice (after all, we
   // just read it in)
-  const theme = await getPersistedThemeChoice()
-  if (theme) {
-    debug('switching to persisted theme choice')
-    try {
-      await switchTo(theme, webContents, true)
-    } catch (err) {
-      debug('error switching to persisted theme choice, using default')
-      await switchTo(getDefaultTheme(isDarkMode), webContents, true)
+  try {
+    const theme = await getPersistedThemeChoice()
+    if (theme) {
+      debug('switching to persisted theme choice')
+      try {
+        await switchTo(theme, webContents, true)
+      } catch (err) {
+        debug('error switching to persisted theme choice, using default')
+        await switchTo(getDefaultTheme(isDarkMode), webContents, true)
+      }
+    } else {
+      debug('no persisted theme choice')
+      await switchTo(getDefaultTheme(), webContents, true)
     }
-  } else {
-    debug('no persisted theme choice')
-    await switchTo(getDefaultTheme(), webContents, true)
+  } catch (err) {
+    console.error('cannot find a theme', err)
   }
 }
 
