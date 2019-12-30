@@ -25,11 +25,11 @@ const debug = Debug('core/webapp/themes/default')
  * @return the name of the default theme
  *
  */
-export function getDefault(isDarkMode = false) {
+export async function getDefault(isDarkMode = false) {
   let defaultTheme = theme.defaultTheme
 
   if (isDarkMode) {
-    const darkThemeModel = findThemeByName('Dark')
+    const darkThemeModel = await findThemeByName('Dark')
     if (darkThemeModel) {
       defaultTheme = darkThemeModel.theme.name
     }

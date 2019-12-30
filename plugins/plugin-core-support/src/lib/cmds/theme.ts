@@ -87,13 +87,13 @@ const list = async ({ REPL }: Arguments) => {
   // careful: the user's chosen theme might not be available in the
   // settings.themes model; e.g. they previously selected a theme that
   // has since been eliminated
-  const chosenTheme = (await getPersistedThemeChoice()) || getDefaultTheme()
+  const chosenTheme = (await getPersistedThemeChoice()) || (await getDefaultTheme())
   const currentTheme = findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
   debug('currentTheme', currentTheme)
-  debug('theme list', uiThemes())
+  // debug('theme list', uiThemes())
 
   const body: Row[] = flatten(
-    uiThemes().map(({ plugin, themes }) =>
+    (await uiThemes()).map(({ plugin, themes }) =>
       themes.map(
         (theme: Theme): Row => {
           const row: Row = {

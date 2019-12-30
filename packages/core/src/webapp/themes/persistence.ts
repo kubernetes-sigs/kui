@@ -92,7 +92,7 @@ function id(theme: string) {
  *
  */
 export const switchTo = async (theme: string, webContents?: WebContents, saveNotNeeded = false): Promise<void> => {
-  const themeWithPlugin = findThemeByName(theme)
+  const themeWithPlugin = await findThemeByName(theme)
   if (!themeWithPlugin) {
     debug('could not find theme', theme)
     const error = new Error(strings('theme.unknown')) as CodedError
@@ -120,7 +120,7 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
       // is happening in the main loading process; see the comments
       // below for more info.
       //
-      const previous = findThemeByName(previousTheme)
+      const previous = await findThemeByName(previousTheme)
       if (previous) {
         const { theme: previousThemeModel } = previous
         const previousKey = id(previousTheme)
@@ -223,11 +223,11 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
         await switchTo(theme, webContents, true)
       } catch (err) {
         debug('error switching to persisted theme choice, using default')
-        await switchTo(getDefaultTheme(isDarkMode), webContents, true)
+        await switchTo(await getDefaultTheme(isDarkMode), webContents, true)
       }
     } else {
       debug('no persisted theme choice')
-      await switchTo(getDefaultTheme(), webContents, true)
+      await switchTo(await getDefaultTheme(), webContents, true)
     }
   } catch (err) {
     console.error('cannot find a theme', err)
@@ -241,6 +241,6 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
 export const resetToDefault = async () => {
   debug('reset')
   await clearPreference(persistedThemePreferenceKey)
-  await switchTo(getDefaultTheme())
+  await switchTo(await getDefaultTheme())
   return true
 }

@@ -17,7 +17,6 @@
 import { theme as t, env as e, config as c } from '@kui-shell/settings/config.json'
 
 import { ThemeSet } from '../webapp/themes/Theme'
-import { prescanModel } from '../plugins/plugins'
 import { TableStyle } from '../webapp/models/table'
 import { SidecarMode } from '../webapp/bottom-stripe'
 
@@ -79,7 +78,13 @@ export const theme: Theme = t as Theme
 export const env = e
 export const config = Object.assign({}, c, devOverrides)
 
-export function uiThemes(): ThemeSet[] {
+export async function uiThemes(): Promise<ThemeSet[]> {
+  // it is ipmortant to delay the loading here. otherwise,
+  // plugins/plugins will load command-tree, which will load
+  // context.ts, which will establish the context prior to settings --
+  // dependence cycle
+  const { prescanModel } = await import('../plugins/plugins')
+
   // the filter part is there only to be overly defensive
   const pluginProvidedThemes = prescanModel().themeSets.filter(_ => _)
   const clientProvidedThemes = !theme.themes

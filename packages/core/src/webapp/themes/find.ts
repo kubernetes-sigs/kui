@@ -22,8 +22,8 @@ import { uiThemes } from '../../core/settings'
  * @return the Theme model associated with the given theme name
  *
  */
-export function findByName(name: string): { theme: Theme; plugin: string } {
-  const flat = flatten(uiThemes().map(({ plugin, themes }) => themes.map(theme => ({ plugin, theme }))))
+export async function findByName(name: string): Promise<{ theme: Theme; plugin: string }> {
+  const flat = flatten((await uiThemes()).map(({ plugin, themes }) => themes.map(theme => ({ plugin, theme }))))
 
   return flat.find(_ => _.theme.name === name)
 }
