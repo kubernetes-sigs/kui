@@ -18,10 +18,12 @@ import Debug from 'debug'
 const debug = Debug('core/plugins/scanner')
 debug('loading')
 
+import { dirname, join } from 'path'
+
 import { pluginRoot } from './plugins'
 import { PrescanModel, PrescanUsage } from './prescan'
 
-import * as commandTree from '../core/command-tree'
+import { ImplForPlugins } from '../core/command-tree'
 import { Command, CommandHandler, CommandOptions, KResponse, ParsedOptions } from '../models/command'
 import { isCodedError } from '../models/errors'
 import { KuiPlugin, PluginRegistration } from '../models/plugin'
@@ -63,7 +65,7 @@ class ScanCache {
  * need for scanning.
  *
  */
-class CommandRegistrarForScan extends commandTree.ImplForPlugins {
+class CommandRegistrarForScan extends ImplForPlugins {
   /** map to plugin *name* */
   public readonly cmdToPlugin: Record<string, string> = {}
 
@@ -394,46 +396,37 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
 }
 
 /**
+ * Scan for plugins hosted by the client itself, rather than npm
+ * installed from somewhere else
+ *
+ */
+async function clientHosted(opts: PrescanOptions) {
+  const pluginRootAbsolute = process.env.PLUGIN_ROOT || opts.pluginRoot || join(__dirname, pluginRoot) // filesystem path for the plugins
+  debug('pluginRootAbsolute', pluginRootAbsolute)
+
+  const topOfScan = opts.pluginRoot || pluginRootAbsolute
+  debug('using clientHosted scan', topOfScan)
+  return scanForModules(topOfScan)
+}
+
+/**
+ * Scan for plugins that clients incorporate via `npm install`
+ *
+ */
+async function clientRequired() {
+  const topOfScan = dirname(require.resolve('@kui-shell/prescan.json'))
+  debug('using clientRequired scan', topOfScan)
+  return scanForModules(topOfScan, false, (filename: string) => !!filename.match(/^plugin-/))
+}
+
+/**
  * Look for plugins by scanning the local filesystem
  *
  */
 const resolveFromLocalFilesystem = async (scanCache: ScanCache, opts: PrescanOptions = {}) => {
   debug('resolveFromLocalFilesystem')
 
-  const { dirname, join } = await import('path')
-  const pluginRootAbsolute = process.env.PLUGIN_ROOT || opts.pluginRoot || join(__dirname, pluginRoot) // filesystem path for the plugins
-  debug('pluginRootAbsolute', pluginRootAbsolute)
-
-  // this scan looks for plugins offered by the client
-  const clientHosted = await scanForModules(opts.pluginRoot || pluginRootAbsolute)
-
-  let plugins: Record<string, string> = clientHosted.plugins || {}
-  let preloads: Record<string, string> = clientHosted.preloads || {}
-  let themeSets: ThemeSet[] = clientHosted.themeSets || []
-
-  // this scan looks for plugins npm install'd by the client
-  if (!opts.externalOnly) {
-    let clientRequired: { plugins?: Record<string, string>; preloads?: Record<string, string>; themeSets?: ThemeSet[] }
-    try {
-      const secondary = dirname(dirname(require.resolve('@kui-shell/core/package.json')))
-      clientRequired = await scanForModules(secondary, false, (filename: string) => !!filename.match(/^plugin-/))
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        console.error('error scanning for client-required plugins', err)
-      }
-    }
-
-    // we take the union of the client-provided plugins and the
-    // client-required plugins note: place clientRequired first, so
-    // that we process the registrations in clientRequired plugins
-    // first (this processing occurs in topologicalSortForScan);
-    // nodejs guarantees FIFO iteration order for object properties
-    // https://github.com/IBM/kui/issues/3191
-    plugins = Object.assign({}, clientRequired.plugins, clientHosted.plugins)
-    preloads = Object.assign({}, clientRequired.preloads, clientHosted.preloads)
-    themeSets = clientRequired.themeSets.concat(clientHosted.themeSets || [])
-  }
-
+  const { plugins, preloads, themeSets } = opts.externalOnly ? await clientHosted(opts) : await clientRequired()
   debug('availablePlugins %s', JSON.stringify(plugins))
 
   // then, we load the plugins
