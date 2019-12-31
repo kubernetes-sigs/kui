@@ -104,17 +104,39 @@ const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) =>
 
 const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
 
+function okIf404(err: CodedError) {
+  if (err.code === 404) {
+    return false
+  } else {
+    throw err
+  }
+}
 async function lookupCommandEvaluator<T extends KResponse, O extends ParsedOptions>(
   argv: string[],
   execOptions: ExecOptions
 ): Promise<CommandTreeResolution<T, O>> {
+  // first try treating options as binary
+  const tryCatchalls = false
   const argvNoOptions = argv.filter((_, idx, A) => _.charAt(0) !== '-' && (idx === 0 || A[idx - 1].charAt(0) !== '-'))
-  const evaluator = await getModel().read<T, O>(argvNoOptions, execOptions)
+  const evaluator = await getModel()
+    .read<T, O>(argvNoOptions, execOptions, tryCatchalls)
+    .catch(okIf404)
+
   if (!isSuccessfulCommandResolution(evaluator)) {
+    // then try treating options as unary
+    const tryCatchalls2 = false
     const argvNoOptions2 = argv.filter(_ => _.charAt(0) !== '-')
-    const evaluator2 = await getModel().read<T, O>(argvNoOptions2, execOptions)
+    const evaluator2 = await getModel()
+      .read<T, O>(argvNoOptions2, execOptions, tryCatchalls2)
+      .catch(okIf404)
     if (isSuccessfulCommandResolution(evaluator2)) {
       return evaluator2
+    } else {
+      const tryCatchalls3 = true
+      const evaluator3 = await getModel().read<T, O>(argvNoOptions, execOptions, tryCatchalls3)
+      if (isSuccessfulCommandResolution(evaluator3)) {
+        return evaluator3
+      }
     }
   }
 
