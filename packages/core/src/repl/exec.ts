@@ -27,7 +27,14 @@ import encodeComponent from './encode'
 import { split, patterns } from './split'
 import { Executor, ReplEval, DirectReplEval } from './types'
 
-import { ExecType, EvaluatorArgs, KResponse, ParsedOptions, YargsParserFlags } from '../models/command'
+import {
+  CommandTreeResolution,
+  ExecType,
+  EvaluatorArgs,
+  KResponse,
+  ParsedOptions,
+  YargsParserFlags
+} from '../models/command'
 
 import REPL from '../models/repl'
 import isFakeDom from '../util/is-fake-dom'
@@ -96,6 +103,23 @@ const oops = (command?: string, block?: HTMLElement, nextBlock?: HTMLElement) =>
 }
 
 const emptyExecOptions = (): ExecOptions => new DefaultExecOptions()
+
+async function lookupCommandEvaluator<T extends KResponse, O extends ParsedOptions>(
+  argv: string[],
+  execOptions: ExecOptions
+): Promise<CommandTreeResolution<T, O>> {
+  const argvNoOptions = argv.filter((_, idx, A) => _.charAt(0) !== '-' && (idx === 0 || A[idx - 1].charAt(0) !== '-'))
+  const evaluator = await getModel().read<T, O>(argvNoOptions, execOptions)
+  if (!isSuccessfulCommandResolution(evaluator)) {
+    const argvNoOptions2 = argv.filter(_ => _.charAt(0) !== '-')
+    const evaluator2 = await getModel().read<T, O>(argvNoOptions2, execOptions)
+    if (isSuccessfulCommandResolution(evaluator2)) {
+      return evaluator2
+    }
+  }
+
+  return evaluator
+}
 
 /**
  * Execute the given command-line directly in this process
@@ -210,9 +234,7 @@ class InProcessExecutor implements Executor {
       }
 
       // the Read part of REPL
-      const argvNoOptions = argv.filter(_ => _.charAt(0) !== '-')
-      const evaluator = await getModel().read<T, O>(argvNoOptions, execOptions)
-
+      const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
       if (isSuccessfulCommandResolution(evaluator)) {
         //
         // fetch the usage model for the command
