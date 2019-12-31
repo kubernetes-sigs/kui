@@ -423,7 +423,8 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
   model: CommandTree,
   argv: string[],
   contextRetry: string[],
-  originalArgv: string[]
+  originalArgv: string[],
+  tryCatchalls: boolean
 ): Promise<false | CommandHandlerWithEvents<T, O>> => {
   let leaf = treeMatch<T, O>(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
   let evaluator: CommandHandler<T, O> = (leaf && leaf.$) as CommandHandler<T, O>
@@ -434,7 +435,7 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
     // loaded, yet; so: invoke the plugin resolver and retry
     //
     const route = `/${argv.join('/')}`
-    await resolver.resolve(route, { tryCatchalls: !contextRetry || contextRetry.length === 0 })
+    await resolver.resolve(route, { tryCatchalls: tryCatchalls && (!contextRetry || contextRetry.length === 0) })
     leaf = treeMatch(getModelInternal().root, argv, true) // true means read-only, don't modify the context model please
     evaluator = (leaf && leaf.$) as CommandHandler<T, O>
   }
@@ -443,7 +444,7 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
     if (!contextRetry) {
       return false
     } else if (contextRetry.length === 0) {
-      return _read(getModelInternal().root, originalArgv, undefined, originalArgv)
+      return _read(getModelInternal().root, originalArgv, undefined, originalArgv, tryCatchalls)
     } else if (
       contextRetry.length > 0 &&
       contextRetry[contextRetry.length - 1] !== originalArgv[originalArgv.length - 1]
@@ -453,7 +454,8 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
         getModelInternal().root,
         contextRetry.concat(originalArgv),
         contextRetry.slice(0, contextRetry.length - 1),
-        originalArgv
+        originalArgv,
+        tryCatchalls
       )
 
       if (maybeInContextRetry) {
@@ -468,7 +470,8 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
         getModelInternal().root,
         newContext,
         contextRetry.slice(0, contextRetry.length - 1),
-        originalArgv
+        originalArgv,
+        tryCatchalls
       )
       return maybeInDefaultContext
     } else {
@@ -485,7 +488,7 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
         if (argv.length === originalArgv.length && argv.every((elt, idx) => elt === originalArgv[idx])) {
           return false
         } else {
-          return _read(getModelInternal().root, originalArgv, undefined, originalArgv)
+          return _read(getModelInternal().root, originalArgv, undefined, originalArgv, tryCatchalls)
         }
       }
     }
@@ -497,23 +500,31 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
 /** read, with retries based on the current context */
 const internalRead = <T extends KResponse, O extends ParsedOptions>(
   model: CommandTree,
-  argv: string[]
+  argv: string[],
+  tryCatchalls: boolean
 ): Promise<false | CommandHandlerWithEvents<T, O>> => {
   if (argv[0] === 'kui') argv.shift()
-  return _read(getModelInternal().root, argv, Context.current, argv)
+  return _read(getModelInternal().root, argv, Context.current, argv, tryCatchalls)
 }
 
 /**
  * We could not find a registered command handler for the given `argv`.
  *
  */
-const commandNotFound = (argv: string[], partialMatches?: PartialMatch[], execOptions?: ExecOptions) => {
+const commandNotFound = (
+  argv: string[],
+  partialMatches?: PartialMatch[],
+  execOptions?: ExecOptions,
+  tryCatchalls = true
+) => {
   // first, see if we have any catchall handlers; offer the argv, and
   // choose the highest priority handler that accepts the argv
   if (!execOptions || !execOptions.failWithUsage) {
-    const catchallHandler = getModelInternal()
-      .catchalls.filter(({ offer }) => offer(argv))
-      .sort(({ prio: prio1 }, { prio: prio2 }) => prio2 - prio1)[0]
+    const catchallHandler =
+      tryCatchalls &&
+      getModelInternal()
+        .catchalls.filter(({ offer }) => offer(argv))
+        .sort(({ prio: prio1 }, { prio: prio2 }) => prio2 - prio1)[0]
     if (catchallHandler) {
       return withEvents(catchallHandler.eval, catchallHandler, partialMatches)
     }
@@ -567,13 +578,14 @@ export const read = async <T extends KResponse, O extends ParsedOptions>(
   root: CommandTree,
   argv: string[],
   noRetry = false,
-  execOptions: ExecOptions
+  execOptions: ExecOptions,
+  tryCatchalls = true
 ): Promise<CommandTreeResolution<T, O>> => {
   let cmd: false | CodedError | CommandHandlerWithEvents<T, O>
 
   if (!noRetry) {
     await resolver.resolve(`/${argv.join('/')}`, { tryCatchalls: false })
-    cmd = await internalRead(root, argv)
+    cmd = await internalRead(root, argv, tryCatchalls)
   }
 
   if (!cmd) {
@@ -587,7 +599,7 @@ export const read = async <T extends KResponse, O extends ParsedOptions>(
       const allButLast = argv.slice(0, argv.length - 1)
       const last = argv[argv.length - 1]
 
-      const parent = await internalRead(root, allButLast)
+      const parent = await internalRead(root, allButLast, tryCatchalls)
       if (parent) {
         matches = await findPartialMatchesAt(prescanModel().usage, last)
       }
@@ -600,7 +612,7 @@ export const read = async <T extends KResponse, O extends ParsedOptions>(
       matches = undefined
     }
 
-    return commandNotFound(argv, matches, execOptions) as CommandTreeResolution<T, O>
+    return commandNotFound(argv, matches, execOptions, tryCatchalls) as CommandTreeResolution<T, O>
   } else {
     return cmd
   }

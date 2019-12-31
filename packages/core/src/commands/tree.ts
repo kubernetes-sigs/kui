@@ -41,7 +41,8 @@ interface CommandModel {
    */
   read<T extends KResponse, O extends ParsedOptions>(
     argv: string[],
-    execOptions: ExecOptions
+    execOptions: ExecOptions,
+    tryCatchalls?: boolean
   ): Promise<CommandTreeResolution<T, O>>
 
   /**
@@ -81,10 +82,11 @@ export class CommandModelImpl implements CommandModel {
    */
   public async read<T extends KResponse, O extends ParsedOptions>(
     argv: string[],
-    execOptions: ExecOptions
+    execOptions: ExecOptions,
+    tryCatchalls = true
   ): Promise<CommandTreeResolution<T, O>> {
     const { read: readImpl } = await import('../core/command-tree')
-    return readImpl(this.root, argv, undefined, execOptions)
+    return readImpl(this.root, argv, undefined, execOptions, tryCatchalls)
   }
 
   /**
