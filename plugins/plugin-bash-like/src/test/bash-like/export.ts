@@ -34,6 +34,12 @@ describe('export command', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
+  Common.pit(`should fail with export without args`, () =>
+    CLI.command(`export`, this.app)
+      .then(ReplExpect.error(497))
+      .catch(Common.oops(this, true))
+  )
+
   Common.pit(`should export foo=${value1}`, () =>
     CLI.command(`export foo=${value1}`, this.app)
       .then(ReplExpect.justOK)
