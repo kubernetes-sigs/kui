@@ -18,41 +18,20 @@ import { Entity } from '../../models/entity'
 import { Row } from '../../webapp/models/table'
 
 export interface Watchable {
-  watch: Poller | Pusher
-}
-
-export type Poller = Partial<Toggleable> & {
-  refreshCommand: string
-  watchInterval?: number
-  watchLimit?: number
-}
-
-/** NOTE: Toggleable is not implemented */
-interface Toggleable {
-  watchByDefault: boolean
-}
-
-export interface Pusher {
-  /**
-   * Contract: the table renderer will call this function when the DOM
-   * is ready to accept updates. when you have updates, please call
-   * one or the other of the provided functions
-   */
-  init: (update: WatchedRowHasUpdate, offline: WactchedRowisOffline) => void
+  watch: {
+    /**
+     * the table renderer will call this function when the DOM
+     * is ready to accept updates. when you have updates, please call
+     * one or the other of the provided functions
+     */
+    init: (update: WatchedRowHasUpdate, offline: WactchedRowisOffline) => void
+  }
 }
 
 /** callbacks to indicate state changes */
 type WatchedRowHasUpdate = (response: Row) => void
 type WactchedRowisOffline = (rowKey: string) => void
 
-function isPoller(model: Poller | Pusher): model is Poller {
-  return (model as Poller).refreshCommand !== undefined
-}
-
-export function isPusher(model: Poller | Pusher): model is Pusher {
-  return (model as Pusher).init !== undefined
-}
-
 export function isWatchable(model: Entity & Partial<Watchable>): model is Entity & Watchable {
-  return model && model.watch && (isPoller(model.watch) || isPusher(model.watch))
+  return model && model.watch && model.watch.init !== undefined
 }

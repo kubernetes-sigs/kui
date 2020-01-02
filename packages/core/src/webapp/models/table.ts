@@ -16,7 +16,6 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { Watchable, Poller } from '../../core/jobs/watchable'
 import { MetadataBearing, Entity } from '../../models/entity'
 import { SidecarMode } from '../bottom-stripe'
 
@@ -165,16 +164,6 @@ export function isTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): mo
   )
 }
 
-export function formatWatchableTable<T extends Table>(model: T, poller: Poller): T & Watchable {
-  const watch: Watchable = { watch: poller }
-  if (isTable(model)) {
-    return Object.assign(model, watch)
-  } else {
-    // TODO: we might need to consider the variance of model, throw error for now
-    throw new Error('models other than table(s) are not supported in watch mode yet')
-  }
-}
-
 /**
  * sort the body of table
  *
@@ -202,59 +191,4 @@ export class Icon {
   constructor(icon: Icon) {
     Object.assign(this, icon)
   }
-}
-
-interface RowUpdate {
-  model: Row
-  updateIndex: number
-}
-
-interface RowInsertion {
-  model: Row
-  insertBeforeIndex: number
-}
-
-interface RowDeletion {
-  model: Row
-  deleteIndex: number
-}
-
-interface RowDiff {
-  rowUpdate: RowUpdate[]
-  rowDeletion: RowDeletion[]
-  rowInsertion: RowInsertion[]
-}
-
-/**
- * diff two rows model
- * @param refreshRows is the rows model returned by refreshing
- */
-export function diffTableRows(existingRows: Row[], refreshRows: Row[]): RowDiff {
-  // find rows in the existing rows but not in the refreshed rows
-  const rowDeletion: RowDeletion[] = existingRows
-    .map((row, index) => {
-      return { deleteIndex: index, model: row }
-    })
-    .filter(_ => !refreshRows.find(row => row.name === _.model.name))
-
-  // find the rows whose name appear in both the existing and refreshed rows, but are different in nature
-  const rowUpdate: RowUpdate[] = refreshRows
-    .filter(row => existingRows.some(_ => _.name === row.name))
-    .map(row => {
-      const index = existingRows.findIndex(_ => _.name === row.name)
-      const doUpdate = JSON.stringify(row) !== JSON.stringify(existingRows[index])
-      if (doUpdate) return { updateIndex: index, model: row }
-    })
-    .filter(x => x)
-
-  // find the rows which are not in the existing rows, to get the insertion index, first concat with the existing rows, then sort
-  const rowInsertion: RowInsertion[] = sortBody(
-    refreshRows.filter(row => !existingRows.some(_ => _.name === row.name)).concat(existingRows)
-  )
-    .map((row, index) => {
-      return { insertBeforeIndex: index + 1, model: row }
-    })
-    .filter(row => !existingRows.some(_ => _.name === row.model.name))
-
-  return { rowUpdate, rowDeletion, rowInsertion }
 }

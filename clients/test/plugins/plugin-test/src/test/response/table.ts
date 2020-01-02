@@ -74,35 +74,6 @@ new TestTable('should test table with dilldown', {
   }
 }).run()
 
-/** test table with poll watcher that doesn't have termination state */
-new TestTable('should test table with poller', {
-  exec: {
-    command: 'test table --watch=poll',
-    expectTable: {
-      header: expectHeaderText,
-      body: expectRow.slice(0, 1)
-    }
-  },
-  drilldown: {
-    expectTable: {
-      header: expectHeaderText,
-      body: expectRow.slice(0, 1)
-    }
-  },
-  job: { finalJobCount: 1 }
-}).run()
-
-/** test table with poll watcher with final state, and the job will be collected in final state */
-new TestTable('should test table with status, poller and final-state', {
-  status: {
-    command: 'test table --watch=poll --final-state=2',
-    expectRow: [
-      { name: 'foo1', badgeCss: 'green-background', badgeText: 'Running', message: 'should create a new row' }
-    ],
-    statusDescription: 'should poll for a deleted Row'
-  }
-}).run()
-
 /** test table with push watcher, and the final status badge and message are correct */
 new TestTable('should test table with status and pusher', {
   status: {

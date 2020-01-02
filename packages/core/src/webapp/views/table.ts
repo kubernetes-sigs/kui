@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-import * as minimist from 'yargs-parser'
 import * as prettyPrintDuration from 'pretty-ms'
 
 import { Tab } from '../tab'
 import { isPopup } from '../popup-core'
 import { getCurrentPrompt } from '../prompt'
-import { _split as split, Split } from '../../repl/split'
 import { isMetadataBearing } from '../../models/entity'
-import { Table, Row, Cell, Icon, sortBody, TableStyle, diffTableRows, isTable } from '../models/table'
-import { isWatchable, isPusher, Watchable } from '../../core/jobs/watchable'
+import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
+import { isWatchable, Watchable } from '../../core/jobs/watchable'
 import { theme } from '../../core/settings'
 
-import { WatchableJob } from '../../core/jobs/job'
 import { isHTML } from '../../util/types'
-
-const debug = Debug('webapp/views/table')
 
 /** ExistingTableSpec helps the watcher update the existing `Table` and view */
 interface ExistingTableSpec {
@@ -46,20 +40,6 @@ export interface RowFormatOptions {
   useRepeatingEffect?: boolean
   usePip?: boolean
 }
-
-/** groups of States that mark desired final outcomes */
-// NOTE: This is a copy from kubectl plguin, and we should port models/states in kubectl plugin to the core
-enum FinalState {
-  NotPendingLike,
-  OnlineLike,
-  OfflineLike
-}
-
-const fastPolling = 500 // initial polling rate for watching OnlineLike or OfflineLike state
-const mediumPolling = 3000 // initial polling rate for watching a steady state
-const finalPolling = (theme && theme.tablePollingInterval) || 5000 // final polling rate (do not increase the interval beyond this!)
-
-debug('table polling intervals', fastPolling, mediumPolling, finalPolling)
 
 /**
  * get an array of row models
@@ -98,42 +78,6 @@ const hasReachedFinalState = (response: Table): boolean => {
   }
 
   return reachedFinalState
-}
-
-/**
- * find the final state from refresh command
- *
- */
-const findFinalStateFromCommand = (command: string): string => {
-  // parse the refresh command
-  const { A: argv } = split(command, true, true) as Split
-  const options = minimist(argv)
-
-  return options['final-state'] ? FinalState[options['finalState']] : ''
-}
-
-/**
- * calcuate the polling ladder
- *
- */
-const calculateLadder = (initial: number): number[] => {
-  const ladder = [initial]
-  let current = initial
-
-  // increment the polling interval
-  while (current < finalPolling) {
-    if (current < 1000) {
-      current = current + 250 < 1000 ? current + 250 : 1000
-      ladder.push(current)
-    } else {
-      ladder.push(current)
-      current = current + 2000 < finalPolling ? current + 2000 : finalPolling
-      ladder.push(current)
-    }
-  }
-
-  debug('ladder', ladder)
-  return ladder
 }
 
 /**
@@ -579,139 +523,6 @@ const deleteTheRow = (deleteRow: Row, deleteIndex: number, existingTable: Existi
 }
 
 /**
- * register a watchable job
- *
- */
-const registerWatcher = (
-  tab: Tab,
-  watchLimit = 100000,
-  command: string,
-  resultDom: HTMLElement,
-  existingTable: ExistingTableSpec,
-  formatRowOption?: RowFormatOptions
-) => {
-  let job: WatchableJob // eslint-disable-line prefer-const
-
-  // the final state we want to reach to
-  const expectedFinalState = findFinalStateFromCommand(command)
-
-  // establish the initial watch interval,
-  // if we're on resource creation/deletion, do fast polling, otherwise we do steady polling
-  const initalPollingInterval =
-    expectedFinalState === 'OfflineLike' || expectedFinalState === 'OnlineLike' ? fastPolling : mediumPolling
-
-  // increase the table polling interval until it reaches the steady polling interval, store the ladder in an array
-  const ladder = calculateLadder(initalPollingInterval)
-
-  /**
-   * process the refreshed result
-   * @return processed Table info: { table: Row[], reachedFinalState: boolean }
-   *
-   */
-  const processRefreshResponse = (response: Table) => {
-    if (!isTable(response)) {
-      console.error('refresh result is not a table', response)
-      throw new Error('refresh result is not a table')
-    }
-
-    const reachedFinalState = hasReachedFinalState(response)
-
-    return { table: prepareTable(tab, response), reachedFinalState }
-  }
-
-  // execute the refresh command and apply the result
-  const refreshTable = async () => {
-    debug(`refresh with ${command}`)
-    let processedTableRow: Row[] = []
-
-    try {
-      const { qexec } = await import('../../repl/exec')
-      const response = await qexec<Table>(command)
-
-      const processedResponse = processRefreshResponse(response)
-
-      processedTableRow = processedResponse.table
-
-      // stop watching if all resources in the table reached to the finial state
-      if (processedResponse.reachedFinalState) {
-        job.abort()
-      } else {
-        // if the refreshed result doesn't reach the expected state,
-        // then we increment the table polling interval by ladder until it reaches the steady polling interval
-        const newTimer = ladder.shift()
-        if (newTimer) {
-          // reshedule the job using new polling interval
-          job.abort()
-          job = new WatchableJob(tab, watchIt, newTimer + ~~(100 * Math.random())) // eslint-disable-line @typescript-eslint/no-use-before-define
-          job.start()
-        }
-      }
-    } catch (err) {
-      if (err.code === 404) {
-        if (expectedFinalState === 'OfflineLike') {
-          debug('resource not found after status check, but that is ok because that is what we wanted')
-          job.abort()
-        }
-      } else {
-        while (resultDom.firstChild) {
-          resultDom.removeChild(resultDom.firstChild)
-        }
-        job.abort()
-        throw err
-      }
-    }
-
-    // diff the refreshed model from the existing one and apply the change
-    const applyRefreshResult = (newRowModel: Row[], existingTable: ExistingTableSpec) => {
-      const diff = diffTableRows(existingTable.rowsModel, newRowModel)
-      if (diff.rowUpdate && diff.rowUpdate.length > 0) {
-        debug('update rows', diff.rowUpdate)
-        diff.rowUpdate.map(update => {
-          udpateTheRow(update.model, update.updateIndex, existingTable)(tab, formatRowOption)
-        })
-      }
-
-      if (diff.rowDeletion && diff.rowDeletion.length > 0) {
-        debug('delete rows', diff.rowDeletion)
-        diff.rowDeletion
-          .filter(_ => _.model.name !== 'NAME')
-          .map(rowDeletion => {
-            deleteTheRow(rowDeletion.model, rowDeletion.deleteIndex, existingTable)
-          })
-      }
-
-      if (diff.rowInsertion && diff.rowInsertion.length > 0) {
-        debug('insert rows', diff.rowInsertion)
-        diff.rowInsertion.map(insert => {
-          insertTheRow(insert.model, insert.insertBeforeIndex, existingTable)(tab, formatRowOption)
-        })
-      }
-    }
-
-    applyRefreshResult(processedTableRow, existingTable)
-  }
-
-  // timer handler
-  const watchIt = () => {
-    if (--watchLimit < 0) {
-      console.error('watchLimit exceeded')
-      job.abort()
-    } else {
-      try {
-        Promise.resolve(refreshTable())
-      } catch (err) {
-        console.error('Error refreshing table', err)
-        job.abort()
-      }
-    }
-  }
-
-  // establish the inital watchable job
-  job = new WatchableJob(tab, watchIt, ladder.shift() + ~~(100 * Math.random()))
-  job.start()
-}
-
-/**
  * Carbon Components has its own classes of table compactness
  *
  */
@@ -844,38 +655,29 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
 
   if (isWatchable(response)) {
     const watch = response.watch
-    if (isPusher(watch)) {
-      if (!Array.isArray(existingTable)) {
-        /** offline takes the rowKey of the row to be deleted and applies this to the table view */
-        const offline = (rowKey: string) => {
-          const existingRows = existingTable.rowsModel
-          const foundIndex = existingRows.findIndex(_ => _.name === rowKey)
-          deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
-        }
+    /** offline takes the rowKey of the row to be deleted and applies this to the table view */
+    const offline = (rowKey: string) => {
+      const existingRows = existingTable.rowsModel
+      const foundIndex = existingRows.findIndex(_ => _.name === rowKey)
+      deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+    }
 
-        /** update consumes the update notification and apply it to the table view */
-        const update = (newRow: Row) => {
-          const existingRows = existingTable.rowsModel
-          const foundIndex = existingRows.findIndex(_ => _.name === newRow.name)
+    /** update consumes the update notification and apply it to the table view */
+    const update = (newRow: Row) => {
+      const existingRows = existingTable.rowsModel
+      const foundIndex = existingRows.findIndex(_ => _.name === newRow.name)
 
-          if (foundIndex === -1) {
-            // To get the insertion index, first concat the new row with the existing rows, then sort the rows
-            const index = sortBody([newRow].concat(existingRows)).findIndex(_ => _.name === newRow.name)
-            insertTheRow(newRow, index + 1, existingTable)(tab, formatRowOption)
-          } else {
-            const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
-            if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
-          }
-        }
-
-        // initiate the pusher watch
-        watch.init(update, offline)
-      }
-    } else {
-      if (!hasReachedFinalState(response)) {
-        // initiate the poller watch
-        registerWatcher(tab, watch.watchLimit, watch.refreshCommand, resultDom, existingTable, formatRowOption)
+      if (foundIndex === -1) {
+        // To get the insertion index, first concat the new row with the existing rows, then sort the rows
+        const index = sortBody([newRow].concat(existingRows)).findIndex(_ => _.name === newRow.name)
+        insertTheRow(newRow, index + 1, existingTable)(tab, formatRowOption)
+      } else {
+        const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
+        if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
       }
     }
+
+    // initiate the pusher watch
+    watch.init(update, offline)
   }
 }

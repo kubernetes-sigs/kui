@@ -192,7 +192,7 @@ export { default as Store } from './models/store'
 export { default as SymbolTable } from './core/symbol-table'
 
 // Tables
-export { TableStyle, Table, Row, Cell, isTable, formatWatchableTable } from './webapp/models/table'
+export { TableStyle, Table, Row, Cell, isTable } from './webapp/models/table'
 
 // Util
 export { findFileWithViewer, findFile, isSpecialDirectory, addPath as augmentModuleLoadPath } from './core/find-file'

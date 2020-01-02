@@ -25,7 +25,7 @@ import { Watchable, Table, Row, Arguments, ParsedOptions, Registrar, CodedError 
 import tableContent from './content/table-with-drilldown'
 
 interface Options extends ParsedOptions {
-  watch: 'push' | 'poll'
+  watch: 'push'
   sequence: string // help generate a sequence of changes
   'final-state': FinalState
 }
@@ -66,7 +66,7 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
     const finalState = args.parsedOptions['final-state']
     const sequence = args.parsedOptions['sequence'] // help generate a sequence of changes
 
-    if (watch && watch === 'push' && sequence) {
+    if (watch && sequence) {
       // the command is looking for a table with push watcher
       const watch: Watchable = {
         watch: {
@@ -106,22 +106,6 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
 
       // return an empty table with watch
       return Object.assign({}, statusTableWithoutRows, watch)
-    } else if (watch && watch === 'poll') {
-      // command is looking for a table with poll watcher
-      if (finalState && finalState === FinalState.OfflineLike) {
-        // return a table and then poll for the table to be deleted
-        return {
-          header: statusTableWithoutRows.header,
-          body: [row('foo1', FinalState.OnlineLike, 'should create a new row', args)],
-          noSort: true,
-          watch: {
-            refreshCommand: `test table --final-state=${FinalState.OfflineLike}`
-          }
-        }
-      } else {
-        // return a plain poll watch table without a poll termination
-        return Object.assign({}, statusTableWithoutRows, { watch: { refreshCommand: 'test table' } })
-      }
     } else {
       // command is looking for a plain table
       if (finalState && finalState === FinalState.OfflineLike) {
