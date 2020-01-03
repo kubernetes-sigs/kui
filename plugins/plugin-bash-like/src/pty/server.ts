@@ -148,20 +148,22 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  * Determine, and cache, the user's login shell
  *
  */
-let cachedLoginShell: string
-export const getLoginShell = (): Promise<string> => {
+const shellOpts = process.platform === 'win32' ? [] : ['-l', '-i', '-c', '--']
+type Shell = { shellExe: string; shellOpts: string[] }
+let cachedLoginShell: Shell
+export const getLoginShell = (): Promise<Shell> => {
   return new Promise((resolve, reject) => {
     if (cachedLoginShell) {
       debug('returning cached login shell', cachedLoginShell)
       resolve(cachedLoginShell)
     } else if (process.env.SHELL) {
-      resolve(process.env.SHELL)
+      resolve({ shellExe: process.env.SHELL, shellOpts })
     } else {
-      const defaultShell = process.platform === 'win32' ? 'cmd' : '/bin/bash'
+      const defaultShell = process.platform === 'win32' ? 'powershell.exe' : '/bin/bash'
 
       if (process.env.TRAVIS_JOB_ID !== undefined || process.platform === 'win32') {
         debug('using defaultShell for travis')
-        cachedLoginShell = defaultShell
+        cachedLoginShell = { shellExe: defaultShell, shellOpts }
         resolve(cachedLoginShell)
       } else {
         try {
@@ -173,14 +175,14 @@ export const getLoginShell = (): Promise<string> => {
               }
               reject(err)
             } else {
-              cachedLoginShell = stdout.trim() || defaultShell
+              cachedLoginShell = { shellExe: stdout.trim() || defaultShell, shellOpts }
               debug('login shell', cachedLoginShell)
               resolve(cachedLoginShell)
             }
           })
         } catch (err) {
           console.error('error in exec of getLoginShell subroutine', err)
-          resolve(defaultShell)
+          resolve({ shellExe: defaultShell, shellOpts })
         }
       }
     }
@@ -290,7 +292,8 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             const aliasedCmd = shellAliases[cmd]
             const cmdline = aliasedCmd ? msg.cmdline.replace(new RegExp(`^${cmd}`), aliasedCmd) : msg.cmdline
 
-            shell = spawn(await getLoginShell(), ['-l', '-i', '-c', '--', cmdline], {
+            const { shellExe, shellOpts } = await getLoginShell()
+            shell = spawn(shellExe, shellOpts.concat([cmdline]), {
               uid,
               gid,
               name: 'xterm-color',
