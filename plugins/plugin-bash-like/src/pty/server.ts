@@ -148,7 +148,8 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  * Determine, and cache, the user's login shell
  *
  */
-const shellOpts = process.platform === 'win32' ? [] : ['-l', '-i', '-c', '--']
+const bashShellOpts = ['-l', '-i', '-c', '--']
+const shellOpts = process.platform === 'win32' ? [] : bashShellOpts
 type Shell = { shellExe: string; shellOpts: string[] }
 let cachedLoginShell: Shell
 export const getLoginShell = (): Promise<Shell> => {
@@ -157,7 +158,8 @@ export const getLoginShell = (): Promise<Shell> => {
       debug('returning cached login shell', cachedLoginShell)
       resolve(cachedLoginShell)
     } else if (process.env.SHELL) {
-      resolve({ shellExe: process.env.SHELL, shellOpts })
+      // Note how we intentionally assume bash here, even on windows
+      resolve({ shellExe: process.env.SHELL, shellOpts: bashShellOpts })
     } else {
       const defaultShell = process.platform === 'win32' ? 'powershell.exe' : '/bin/bash'
 
