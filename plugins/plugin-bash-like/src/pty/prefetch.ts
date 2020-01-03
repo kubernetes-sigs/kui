@@ -35,7 +35,7 @@ function prefetchEnv() {
 
     debug('prefetchEnv')
     const { getLoginShell } = await import('./server')
-    const shell = await getLoginShell()
+    const { shellExe: shell } = await getLoginShell()
     debug('prefetchEnv got shell', shell)
 
     exec(`${shell} -l -c printenv`, (err, stdout, stderr) => {
