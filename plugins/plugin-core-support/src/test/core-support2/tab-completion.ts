@@ -30,9 +30,11 @@ describe('Tab completion core', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
+  const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/'].map(_ =>
+    join(ROOT, 'data/core', _)
+  )
 
-  const fileOptions = ['empty1.js', 'empty2.js']
+  const fileOptions = ['empty1.js', 'empty2.js'].map(_ => join(ROOT, 'data/core/core_test_directory_1', _))
 
   const tmp1 = tmpDirSync()
   touch(join(tmp1.name, 'foo bar'))
@@ -53,12 +55,12 @@ describe('Tab completion core', function(this: Common.ISuite) {
     return tabby(this.app, `ls ${join(tmp1.name, 'foo\\ ')}`, `ls ${join(tmp1.name, 'foo bar')}`)
   })
 
-  Common.localIt('should tab complete file with spaces non-unique', () => {
+  Common.localIt('should tab complete file with spaces non-unique yoyoyoyo', () => {
     return tabbyWithOptions(
       this.app,
       `ls ${join(tmp2.name, 'foo')}`,
-      ['foo bar1', 'foo bar2'],
-      `ls ${join(tmp2.name, 'foo bar1')}`,
+      [join(tmp2.name, 'foo bar1'), join(tmp2.name, 'foo bar2')],
+      `ls ${join(tmp2.name, 'foo\\ bar1')}`,
       { click: 0 }
     )
   })
@@ -67,8 +69,8 @@ describe('Tab completion core', function(this: Common.ISuite) {
     return tabbyWithOptions(
       this.app,
       `ls -l ${join(tmp2.name, 'foo')}`,
-      ['foo bar1', 'foo bar2'],
-      `ls -l ${join(tmp2.name, 'foo bar1')}`,
+      [join(tmp2.name, 'foo bar1'), join(tmp2.name, 'foo bar2')],
+      `ls -l ${join(tmp2.name, 'foo\\ bar1')}`,
       { click: 0 }
     )
   })
@@ -77,8 +79,8 @@ describe('Tab completion core', function(this: Common.ISuite) {
     return tabbyWithOptions(
       this.app,
       `ls ${join(tmp2.name, 'foo\\ ')}`,
-      ['foo bar1', 'foo bar2'],
-      `ls ${join(tmp2.name, 'foo bar2')}`,
+      [join(tmp2.name, 'foo\\ bar1'), join(tmp2.name, 'foo\\ bar2')],
+      `ls ${join(tmp2.name, 'foo\\ bar2')}`,
       { click: 1 }
     )
   })
@@ -107,7 +109,7 @@ describe('Tab completion core', function(this: Common.ISuite) {
   )
 
   // tab completion with options, then click on the second (idx=1) entry of the expected cmpletion list
-  Common.localIt('should tab complete local file path with options', () =>
+  Common.localIt('should tab complete local file path with options then click on second', () =>
     tabbyWithOptions(this.app, `lls ${ROOT}/data/core/core_`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
       click: 1
     })
@@ -121,7 +123,7 @@ describe('Tab completion core', function(this: Common.ISuite) {
   )
 
   // tab completion with file options, then click on the first (idx=0) entry of the expected cmpletion list
-  Common.localIt('should tab complete local file path with options', () =>
+  Common.localIt('should tab complete local file path with options then click on first', () =>
     tabbyWithOptions(
       this.app,
       `lls ${ROOT}/data/core/core_test_directory_1/em`,

@@ -21,6 +21,10 @@
   transition: all 300ms ease-in-out;
 }
 
+.tab-completion-option {
+  direction: rtl;
+}
+
 .tab-completion-temporary .tab-completion-scroll-container > div:nth-last-child(2):first-child,
 .tab-completion-temporary
   .tab-completion-scroll-container
