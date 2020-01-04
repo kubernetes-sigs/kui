@@ -34,7 +34,16 @@ export interface TabCompletionSpec {
   toBeCompletedIdx: number
 }
 
-type Enumerator = (tab: Tab, commandLine: CommandLine, spec: TabCompletionSpec) => string[] | Promise<string[]>
+export type CompletionResponse = string | { completion: string; addSpace: boolean; docs?: string; label?: string }
+export function isStringResponse(response: CompletionResponse): response is string {
+  return response === undefined || typeof response === 'string'
+}
+
+type Enumerator = (
+  tab: Tab,
+  commandLine: CommandLine,
+  spec: TabCompletionSpec
+) => CompletionResponse[] | Promise<CompletionResponse[]>
 
 const enumerators: Enumerator[] = []
 
@@ -42,7 +51,11 @@ export function registerEnumerator(enumerator: Enumerator) {
   enumerators.push(enumerator)
 }
 
-export async function applyEnumerator(tab: Tab, commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
+export async function applyEnumerator(
+  tab: Tab,
+  commandLine: CommandLine,
+  spec: TabCompletionSpec
+): Promise<CompletionResponse[]> {
   const lists = await Promise.all(enumerators.map(_ => _(tab, commandLine, spec)))
   return flatten(lists.map(x => x)).filter(x => x)
 }
