@@ -19,9 +19,9 @@ import { basename, dirname } from 'path'
 
 import { isHeadless, findFile, expandHomeDir, i18n, Arguments, Registrar, KResponse } from '@kui-shell/core'
 
-import markdownify from '../util/markdown'
-import { localFilepath } from '../util/usage-helpers'
-import { FStat } from './ls'
+import { FStat } from './fstat'
+import markdownify from './markdown'
+import { localFilepath } from './usage-helpers'
 
 const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/cmds/open')

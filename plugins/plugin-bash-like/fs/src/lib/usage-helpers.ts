@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 IBM Corporation
+ * Copyright 2018 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import bash from './lib/cmds/bash-like'
-import ptyServer from './pty/server'
-import exportCommand from './lib/cmds/export'
-import { registerCommands as sessionReady } from './pty/session'
-
-import { Registrar } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core'
+const strings = i18n('plugin-bash-like')
 
 /**
- * This is the module
+ * A parameter that is a local file
  *
  */
-export default (registrar: Registrar) => {
-  return Promise.all([bash(registrar), ptyServer(registrar), sessionReady(registrar), exportCommand(registrar)])
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const localFilepath: any[] = [{ name: 'path', docs: strings('localFilePath'), file: true, positional: true }]

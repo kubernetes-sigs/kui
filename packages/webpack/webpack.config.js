@@ -275,6 +275,8 @@ const externals = !inBrowser
       './es6/crc17_modbus', // k8s, openwhisk
       './es6/crc17_kermit', // k8s, openwhisk
       './es6/crc17_ccitt', // k8s, openwhisk
+      'globby',
+      'fast-glob',
       'ws',
       'readline',
       'chokidar',
