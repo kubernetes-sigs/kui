@@ -16,14 +16,17 @@
 
 import Debug from 'debug'
 import * as minimist from 'yargs-parser'
-import { lstat, readdir, realpath } from 'fs'
-import { basename, dirname as pathDirname, join } from 'path'
+import { lstat, realpath } from 'fs'
+import { basename, join } from 'path'
 
-import { applyEnumerator } from './registrar'
-export { registerEnumerator as registerTabCompletionEnumerator, TabCompletionSpec } from './registrar'
+import { CompletionResponse, isStringResponse, applyEnumerator } from './registrar'
+export {
+  CompletionResponse,
+  registerEnumerator as registerTabCompletionEnumerator,
+  TabCompletionSpec
+} from './registrar'
 
 import {
-  inBrowser,
   injectCSS,
   UsageError,
   Table,
@@ -214,7 +217,7 @@ const makeCompletionContainer = (
  * Escape the given string for bash happiness
  *
  */
-const shellescape = (str: string): string => {
+export const shellescape = (str: string): string => {
   return str.replace(/ /g, '\\ ')
 }
 
@@ -234,8 +237,8 @@ const completeWith = (partial: string, match: string, doEscape = false, addSpace
  * Is the given filepath a directory?
  *
  */
-const isDirectory = (filepath: string): Promise<boolean> =>
-  new Promise((resolve, reject) => {
+export const isDirectory = (filepath: string): Promise<boolean> =>
+  new Promise<boolean>((resolve, reject) => {
     lstat(filepath, (err, stats) => {
       if (err) {
         reject(err)
@@ -247,7 +250,7 @@ const isDirectory = (filepath: string): Promise<boolean> =>
             if (err) {
               reject(err)
             } else {
-              return isDirectory(realpath)
+              isDirectory(realpath)
                 .then(resolve)
                 .catch(reject)
             }
@@ -257,6 +260,12 @@ const isDirectory = (filepath: string): Promise<boolean> =>
         resolve(stats.isDirectory())
       }
     })
+  }).catch(err => {
+    if (err.code === 'ENOENT') {
+      return false
+    } else {
+      throw err
+    }
   })
 
 /**
@@ -334,9 +343,10 @@ const addSuggestion = (
   dirname: string,
   prompt: HTMLInputElement,
   doEscape = false
-) => (match, idx: number) => {
-  const matchLabel = match.label || match
-  const matchCompletion = match.completion || matchLabel
+) => (match: CompletionResponse, idx: number) => {
+  const matchLabel = isStringResponse(match) ? match : match.label || match.completion
+  const matchCompletion = isStringResponse(match) ? match : match.completion || match.label
+  const addSpace = !isStringResponse(match) && match.addSpace
 
   const option = document.createElement('div')
   const optionInnerFill = document.createElement('span')
@@ -358,7 +368,7 @@ const addSuggestion = (
   innerPost.innerText = matchLabel.replace(new RegExp(`^${prefix}`), '')
 
   // maybe we have a doc string for the match?
-  if (match.docs) {
+  if (!isStringResponse(match) && match.docs) {
     const optionDocs = document.createElement('span')
     optionDocs.className = 'deemphasize deemphasize-partial left-pad'
     option.appendChild(optionDocs)
@@ -381,13 +391,13 @@ const addSuggestion = (
       temporaryContainer,
       dirname,
       doEscape,
-      addSpace: match.addSpace
+      addSpace
     })
   })
 
   option.setAttribute('data-match', matchLabel)
   option.setAttribute('data-completion', matchCompletion)
-  if (match.addSpace) option.setAttribute('data-add-space', match.addSpace)
+  if (addSpace) option.setAttribute('data-add-space', addSpace.toString())
   if (doEscape) option.setAttribute('data-do-escape', 'true')
   option.setAttribute('data-value', optionInner.innerText)
 
@@ -465,10 +475,13 @@ const presentEnumeratorSuggestions = (
   temporaryContainer: TemporaryContainer,
   lastIdx: number,
   last: string
-) => (filteredList: string[]): void => {
+) => (filteredList: CompletionResponse[]): void => {
   debug('presentEnumeratorSuggestions', filteredList)
   if (filteredList.length === 1) {
-    complete(filteredList[0], prompt, { partial: last, dirname: false })
+    const { completion, addSpace } = !isStringResponse(filteredList[0])
+      ? filteredList[0]
+      : { completion: filteredList[0], addSpace: false }
+    complete(completion, prompt, { partial: last, dirname: false, addSpace, doEscape: true })
   } else if (filteredList.length > 0) {
     const partial = last
     const dirname = undefined
@@ -476,8 +489,10 @@ const presentEnumeratorSuggestions = (
       temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
     }
 
-    updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
-    filteredList.forEach(addSuggestion(temporaryContainer, last, dirname, prompt))
+    const stringList = filteredList.map(_ => (isStringResponse(_) ? _ : _.completion))
+
+    updateReplToReflectLongestPrefix(prompt, stringList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, last, dirname, prompt, true))
   }
 }
 
@@ -495,94 +510,6 @@ interface TemporaryContainer extends HTMLDivElement {
   dirname?: string
   cleanup?: () => void
   currentMatches?: Match[]
-}
-
-/**
- * Suggest completions for a local file
- *
- */
-const suggestLocalFile = (
-  last: string,
-  block: HTMLElement,
-  prompt: HTMLInputElement,
-  temporaryContainer: TemporaryContainer,
-  lastIdx: number
-) => {
-  // dirname will "foo" in the above example; it
-  // could also be that last is itself the name
-  // of a directory
-  const lastIsDir = last.charAt(last.length - 1) === '/'
-  const dirname = lastIsDir ? last : pathDirname(last)
-
-  debug('suggest local file', dirname, last)
-
-  if (dirname) {
-    // then dirname exists! now scan the directory so we can find matches
-    readdir(expandHomeDir(dirname), (err, files) => {
-      if (err) {
-        debug('fs.readdir error', err)
-      } else {
-        const partial = basename(last) + (lastIsDir ? '/' : '')
-        const matches: string[] = files.filter(_f => {
-          const f = shellescape(_f)
-          return (lastIsDir || f.indexOf(partial) === 0) && !f.endsWith('~') && f !== '.' && f !== '..'
-        })
-
-        debug('fs.readdir success', partial, matches)
-
-        if (matches.length === 1) {
-          //
-          // then there is one unique match, so autofill it now;
-          // completion will be the bit we have to append to the current prompt.value
-          //
-          debug('singleton file completion', matches[0])
-          complete(matches[0], prompt, {
-            temporaryContainer,
-            doEscape: true,
-            partial,
-            dirname
-          })
-        } else if (matches.length > 1) {
-          //
-          // then there are multiple matches, present the choices
-          //
-          debug('multi file completion')
-
-          // make a temporary div to house the completion options,
-          // and attach it to the block that encloses the current prompt
-          if (!temporaryContainer) {
-            temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
-          }
-
-          updateReplToReflectLongestPrefix(prompt, matches, temporaryContainer)
-
-          // add each match to that temporary div
-          matches.forEach((match, idx) => {
-            const { option, optionInner, innerPost } = addSuggestion(
-              temporaryContainer,
-              '',
-              dirname,
-              prompt,
-              true
-            )(match, idx)
-
-            // see if the match is a directory, so that we add a trailing slash
-            const filepath = join(dirname, match)
-            isDirectory(filepath)
-              .then(isDir => {
-                if (isDir) {
-                  innerPost.innerText = innerPost.innerText + '/'
-                }
-                option.setAttribute('data-value', optionInner.innerText)
-              })
-              .catch(err => {
-                console.error(err)
-              })
-          })
-        }
-      }
-    })
-  }
 }
 
 /**
@@ -673,7 +600,7 @@ const suggestCommandCompletions = (
 
   if (matches.length === 1) {
     debug('singleton command completion', matches[0])
-    complete(matches[0].completion, prompt, { partial, dirname: false })
+    complete(matches[0].completion, prompt, { partial, dirname: false, addSpace: matches[0].addSpace })
   } else if (matches.length > 0) {
     debug('suggesting command completions', matches, partial)
 
@@ -698,11 +625,7 @@ const suggest = (
   temporaryContainer: TemporaryContainer,
   lastIdx: number
 ) => {
-  if (param.file) {
-    // then the expected parameter is a file; we can auto-complete
-    // based on the contents of the local filesystem
-    return suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
-  } else if (param.entity) {
+  if (param.entity) {
     // then the expected parameter is an existing entity; so we
     // can enumerate the entities of the specified type
     const tab = getTabFromTarget(block)
@@ -847,19 +770,6 @@ export default () => {
                   } catch (err) {
                     console.error(err)
                   }
-                }
-              }
-            } else if (!inBrowser()) {
-              const { A: args, endIndices } = _split(prompt.value, true, true) as Split
-              const lastIdx = prompt.selectionStart
-              debug('falling back on local file completion', args, lastIdx)
-
-              for (let ii = 0; ii < endIndices.length; ii++) {
-                if (endIndices[ii] >= lastIdx) {
-                  // trim beginning only; e.g. `ls /tmp/mo\ ` <-- we need that trailing space
-                  const last = prompt.value.substring(endIndices[ii - 1], lastIdx).replace(/^\s+/, '')
-                  suggestLocalFile(last, block, prompt, temporaryContainer, lastIdx)
-                  break
                 }
               }
             }
