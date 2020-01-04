@@ -1,11 +1,13 @@
 {
   "rawMode": "raw",
+  "No such file or directory": "No such file or directory",
   "cdUsageTitle": "change working directory",
   "cdUsageHeader": "Update the current working directory for local filesystem manipulations",
   "lsUsageTitle": "local file list",
   "lsUsageHeader": "Directory listing of your local filesystem",
   "lsDashAUsageDocs": "List all entries except for . and ..",
   "lsDashaUsageDocs": "Include directory entries whose names begin with a dot (.)",
+  "lsDashdUsageDocs": "Directories are listed as plain files",
   "lsDashcUsageDocs": "Use time when file status was last changed for sorting",
   "lsDashtUsageDocs": "Sort by time modified (most recently modified first)",
   "lsDashrUsageDocs": "Reverse the natural sort order",
