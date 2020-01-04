@@ -1351,6 +1351,12 @@ sidecar .present-as-quotation {
 .text-center {
   text-align: center;
 }
+.text-right,
+td.text-right,
+th.text-right,
+th.text-right > span {
+  text-align: right !important;
+}
 pre,
 code {
   font-family: var(--font-monospace);

@@ -82,11 +82,12 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
       .then(ReplExpect.okWithAny)
       .catch(Common.oops(this, true))
   )
-  pit(`should execute 'ls /tmp/"kui ${bar}"/'`, () =>
+
+  // not supported right now
+  xit(`should execute 'ls /tmp/"kui ${bar}"/'`, () =>
     CLI.command(`ls /tmp/"kui ${bar}"/`, this.app)
       .then(ReplExpect.okWithAny)
-      .catch(Common.oops(this, true))
-  )
+      .catch(Common.oops(this, true)))
 
   previous()
 
