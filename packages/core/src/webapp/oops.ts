@@ -70,6 +70,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
   if (isHideError(err)) {
     // we were instructed not to show any message
     debug('we were instructed to hide this error', err)
+    oopsDom.classList.add('hidden')
   } else if (UsageError.isUsageError(err)) {
     oopsDom.appendChild(await UsageError.getFormattedMessage(err))
     /* } else if (isHTML(err.message)) {

@@ -224,7 +224,7 @@ export function expectSuggestionsFor(
   }: { click?: number; expectedBreadcrumb?: string; sidecar?: string; expectedString?: string } = {}
 ) {
   return CLI.command(cmd, this.app)
-    .then(ReplExpect.errorWithPassthrough(404, 'Command not found'))
+    .then(ReplExpect.errorWithPassthrough(404))
     .then(N => {
       const base = `${Selectors.OUTPUT_N(N)} .user-error-available-commands .log-line`
       const availableItems = `${base} .clickable`

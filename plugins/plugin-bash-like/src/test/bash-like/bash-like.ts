@@ -71,9 +71,9 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   before(Common.before(this))
   after(Common.after(this))
 
-  Common.pit('should give 404 for unknown outer command', () =>
+  Common.pit('should give 127 for unknown outer command', () =>
     CLI.command(`ibmcloudo target`, this.app)
-      .then(ReplExpect.error(404))
+      .then(ReplExpect.error(127))
       .catch(Common.oops(this, true))
   )
 

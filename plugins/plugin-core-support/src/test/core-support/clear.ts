@@ -94,7 +94,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   // hit enter, and expect that JUNK to fail
   it(`should fail with command not found`, () => {
     return CLI.command('nope', this.app)
-      .then(ReplExpect.error(404))
+      .then(ReplExpect.error(127))
       .catch(Common.oops(this, true))
   })
 

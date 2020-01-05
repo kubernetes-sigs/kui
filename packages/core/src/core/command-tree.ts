@@ -305,10 +305,10 @@ type PartialMatch = { route: string; usage?: UsageModel }
  * command completions to what they typed.
  *
  */
-const formatPartialMatches = (partialMatches: PartialMatch[]): UsageError => {
+const formatPartialMatches = (partialMatches: PartialMatch[], hide: boolean): UsageError => {
   return new UsageError(
     {
-      message: commandNotFoundMessage,
+      message: hide ? '' : commandNotFoundMessage,
       usage: {
         header: commandNotFoundMessageWithPartialMatches,
         available: partialMatches.map(_ => _.usage)
@@ -328,7 +328,7 @@ const suggestPartialMatches = (
   const anyPartials = availablePartials && availablePartials.length > 0
 
   const error: CodedError = anyPartials
-    ? formatPartialMatches(availablePartials)
+    ? formatPartialMatches(availablePartials, hide)
     : new Error(`${commandNotFoundMessage}: ${command}`)
   error.code = 404
 
@@ -402,7 +402,7 @@ const withEvents = <T extends KResponse, O extends ParsedOptions>(
       event.error = oopsMessage(err)
       if (leaf && eventBus) eventBus.emit('/command/complete', event)
 
-      if (err.code === 127) {
+      if (err.code === 127 && partialMatches) {
         // command not found
         const suggestions = suggestPartialMatches(command, partialMatches, true, err.hide) // true: don't throw an exception
         return suggestions

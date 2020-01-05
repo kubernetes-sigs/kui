@@ -25,15 +25,15 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
   // 2 matches test
   it('should add grumble to the repl', () =>
     CLI.command('grumble', this.app)
-      .then(ReplExpect.error(404))
+      .then(ReplExpect.error(127))
       .catch(Common.oops(this)))
   it('should add another grumble to the repl', () =>
     CLI.command('grumble', this.app)
-      .then(ReplExpect.error(404))
+      .then(ReplExpect.error(127))
       .catch(Common.oops(this)))
   it('should add bojangles to the repl', () =>
     CLI.command('bojangles', this.app)
-      .then(ReplExpect.error(404))
+      .then(ReplExpect.error(127))
       .catch(Common.oops(this)))
 
   it('should open the search bar when cmd+f is pressed', async () => {

@@ -758,6 +758,11 @@ async function initOnMessage(
       }
     } else if (msg.type === 'exit') {
       // server told us that it is done with msg.exitCode
+
+      if (msg.exitCode !== 0 && bytesWereWritten) {
+        xtermContainer.classList.add('error')
+      }
+
       if (pendingTable && !pendingTable.some(_ => isTable(_) && _.body.length > 0)) {
         if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
           bytesWereWritten = true
@@ -822,11 +827,10 @@ async function initOnMessage(
           // re: i18n, this is for tests
           else error['code'] = msg.exitCode
 
-          if (msg.exitCode === 127) {
-            xtermContainer.classList.add('hide')
-          } else {
-            error['hide'] = true
-          }
+          // we want whatever the PTY emitted to by the "message" part
+          // of the error; Kui core can add whatever it wants, but we
+          // want to be in charge of the error message
+          error['hide'] = true
 
           reject(error)
         } else {
