@@ -217,6 +217,9 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.repl-block.error .repl-result {
+  flex-direction: column;
+}
 .repl-result[data-stream] {
   /* streaming output of stdout; make sure stderr occurs below */
   flex-direction: column;
@@ -2652,7 +2655,6 @@ sidecar.minimized [data-balloon]:after {
 .usage-error-wrapper {
   color: var(--color-text-01);
   font-weight: normal;
-  margin: 0 1em;
 }
 .usage-error-wrapper .marked-content {
   /* marked markdown renderer section */
