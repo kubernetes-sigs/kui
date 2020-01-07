@@ -20,6 +20,7 @@ import { ExecType } from './command'
 import { Tab } from '../webapp/cli'
 import { Streamable, StreamableFactory } from './streamable'
 import { Block } from '../webapp/models/block'
+import { Abortable } from '../core/jobs/job'
 
 export interface ExecOptions {
   // force execution in a given tab?
@@ -77,6 +78,9 @@ export interface ExecOptions {
   createOutputStream?: StreamableFactory
   stdout?: (str: Streamable) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  /** on job init, pass the job, and get back a stdout */
+  onInit?: (job: Abortable) => (str: Streamable) => void
 
   parameters?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any

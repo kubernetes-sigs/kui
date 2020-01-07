@@ -31,6 +31,7 @@ const doModes = (): (() => MultiModalResponse) => {
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/kind', doModes(), {
+    inBrowserOk: true,
     usage: {
       docs: 'A showcase of MultiModalResponse kind'
     }

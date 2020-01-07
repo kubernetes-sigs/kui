@@ -77,23 +77,29 @@ const sayTime3 = async () => {
 }
 
 const options: CommandOptions = {
-  usage: {
-    command: 'string',
-    strict: 'string',
-    optional: [{ name: '--grumble', numeric: true }],
-    docs: 'The obligatory hello world'
-  }
+  inBrowserOk: true
 }
+const options2: CommandOptions = Object.assign(
+  {
+    usage: {
+      command: 'string',
+      strict: 'string',
+      optional: [{ name: '--grumble', numeric: true }],
+      docs: 'The obligatory hello world'
+    }
+  },
+  options
+)
 
 export default (commandTree: Registrar) => {
-  commandTree.listen('/test/string', sayHello, options)
-  commandTree.listen('/test/html/dom', sayHtmlDom)
-  commandTree.listen('/test/markdown', sayMarkdown)
-  commandTree.listen('/test/mixed', sayMixed)
-  commandTree.listen('/test/ansi1', sayAnsi1)
-  commandTree.listen('/test/ansi2', sayAnsi2)
-  commandTree.listen('/test/ansi3', sayAnsi3)
-  commandTree.listen('/test/time1', sayTime1)
-  commandTree.listen('/test/time2', sayTime2)
-  commandTree.listen('/test/time3', sayTime3)
+  commandTree.listen('/test/string', sayHello, options2)
+  commandTree.listen('/test/html/dom', sayHtmlDom, options)
+  commandTree.listen('/test/markdown', sayMarkdown, options)
+  commandTree.listen('/test/mixed', sayMixed, options)
+  commandTree.listen('/test/ansi1', sayAnsi1, options)
+  commandTree.listen('/test/ansi2', sayAnsi2, options)
+  commandTree.listen('/test/ansi3', sayAnsi3, options)
+  commandTree.listen('/test/time1', sayTime1, options)
+  commandTree.listen('/test/time2', sayTime2, options)
+  commandTree.listen('/test/time3', sayTime3, options)
 }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Arguments, CommandOptions, Registrar, ParsedOptions } from '@kui-shell/core'
+import { Abortable, Arguments, CommandOptions, ParsedOptions, Registrar, Streamable } from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   grumble?: number
+  prefix?: string
 }
 
 function hello(parsedOptions: Options) {
@@ -46,17 +47,88 @@ const sayMixed = async ({ parsedOptions, createOutputStream }: Arguments<Options
   return true
 }
 
-const options: CommandOptions = {
-  usage: {
-    command: 'string',
-    strict: 'string',
-    optional: [{ name: '--grumble', numeric: true }],
-    docs: 'The obligatory hello world'
-  }
+/**
+ * Use the pty's onInit function to consume the streaming output of an
+ * underlying command.
+ *
+ */
+const sayPty = async ({ block, parsedOptions, REPL, createOutputStream }: Arguments<Options>) => {
+  // abort after nLinesDesired
+  const nLinesDesired = parsedOptions.grumble || 10
+
+  // prefix the pty output with this string
+  const prefix = parsedOptions.prefix || 'XXX'
+
+  // we will use this output stream to stream output to the console
+  const stdout = await createOutputStream()
+
+  return new Promise((resolve, reject) => {
+    const onInit = (job: Abortable) => {
+      let done = false
+      const abort = () => {
+        try {
+          done = true
+          job.abort()
+          resolve(true) // this should return control to the REPL
+        } catch (err) {
+          reject(err)
+        }
+      }
+
+      let nLines = 0
+
+      return (line: Streamable) => {
+        if (typeof block !== 'boolean' && block.isCancelled) {
+          abort()
+        }
+        if (done) {
+          return
+        }
+
+        if (typeof line === 'string') {
+          // prefix a string to the "echo hi" output; we should expect
+          // output where each line is "${prefix} hi"
+          stdout(`${prefix} ${line}`)
+
+          if (++nLines === nLinesDesired) {
+            abort()
+          }
+        } else {
+          reject(new Error('unexpected output'))
+        }
+      }
+    }
+
+    // spawn a PTY that emits lines with "hi"; consume this output in
+    // our onInit, which will prefix each line with XXX and emit
+    // *that* to the console
+    REPL.qexec('sendtopty while true; do echo hi; sleep 1; done', block, undefined, {
+      onInit,
+      quiet: true,
+      replSilence: true,
+      echo: false
+    }).catch(reject)
+  })
 }
 
+const options: CommandOptions = {
+  inBrowserOk: true
+}
+const options2: CommandOptions = Object.assign(
+  {
+    usage: {
+      command: 'string',
+      strict: 'string',
+      optional: [{ name: '--grumble', numeric: true }],
+      docs: 'The obligatory hello world'
+    }
+  },
+  options
+)
+
 export default (commandTree: Registrar) => {
-  commandTree.listen('/test/stream/string', sayHello, options)
-  commandTree.listen('/test/stream/html/dom', sayHtmlDom)
-  commandTree.listen('/test/stream/mixed', sayMixed)
+  commandTree.listen('/test/stream/string', sayHello, options2)
+  commandTree.listen('/test/stream/html/dom', sayHtmlDom, options)
+  commandTree.listen('/test/stream/mixed', sayMixed, options)
+  commandTree.listen('/test/stream/pty', sayPty, options)
 }

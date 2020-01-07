@@ -48,13 +48,19 @@ jobs:
     - if: os = windows AND env(NO_WINDOWS) IS present
     
   include:
-    # API Tests | os=Linux | targets=webpack-watch,electron-watch
+    # API Tests | os=Linux | targets=webpack-watch
     - env: N="API" CLIENT="test" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
       install:
         - npm ci && ./tools/codecov/instrument.sh
         - TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile # codecov of prescan
         - cd clients/$CLIENT && npm install
-      script: npm run test:parallel
+      script: npm run test:webpack
+    # API Tests | os=Linux | targets=electron-watch
+    - env: N="API" CLIENT="test" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
+      install:
+        - npm ci && ./tools/codecov/instrument.sh
+        - cd clients/$CLIENT && npm install
+      script: npm run test:electron
 
     # Core Tests | os=Darwin | targets=electron-build
     - os: osx
