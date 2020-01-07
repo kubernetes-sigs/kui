@@ -75,15 +75,19 @@ export class TestMMR {
 
       const { nameHash, onclick } = opt
 
-      it(`should show name ${nameHash ? 'and namehash' : ''} in sidecar header`, () =>
+      let cmdIdx = 0 // keep track of the command execution number
+
+      it(`should show name ${metadata.name} ${nameHash ? ' and namehash ' + nameHash : ''} in sidecar header`, () =>
         CLI.command(command, this.app)
+          .then(res => {
+            cmdIdx = res.count
+            return res
+          })
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.name(metadata.name))
           .then(app => (nameHash ? SidecarExpect.namehash(nameHash) : app))
           .catch(Common.oops(this, true)))
-
-      let cmdIdx = 0 // keep track of the command execution number
 
       if (onclick.name) {
         it('should click the name part of sidecar and expect the command shows in repl', async () => {
@@ -124,9 +128,14 @@ export class TestMMR {
       after(Common.after(this))
 
       const onclick = opt && opt.onclick
+      let cmdIdx = 0 // keep track of the command execution number
 
       it(`should show namespace ${metadata.namespace} in sidecar`, () =>
         CLI.command(command, this.app)
+          .then(res => {
+            cmdIdx = res.count
+            return res
+          })
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.namespace(metadata.namespace))
@@ -136,7 +145,7 @@ export class TestMMR {
         it(`should click the namespace part of sidecar and expect the command shows in repl`, async () => {
           try {
             await this.app.client.click(Selectors.SIDECAR_PACKAGE_NAME_TITLE)
-            await testClickResult(1, onclick.command, onclick.expect)(this.app)
+            await testClickResult(++cmdIdx, onclick.command, onclick.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
           }
@@ -386,7 +395,7 @@ export class TestMMR {
       command: string | Function
       kind: 'drilldown' | 'view'
       confirm?: boolean
-      expectError?: 404
+      expectError?: 127
     }[]
   ) {
     const { command, testName } = this.param
@@ -414,6 +423,7 @@ export class TestMMR {
             await promiseEach(drilldownButtons, async (button, index) => {
               // the button should be clickable
               const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode)
+              await CLI.waitForRepl(this.app)
               await app.client.waitForVisible(buttonSelector)
               await app.client.click(buttonSelector)
 

@@ -123,7 +123,7 @@ const buttons = [
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     command: (tab: Tab, resource: MyResource) => `some non-existant command`,
     kind: 'drilldown' as const,
-    expectError: 404 as const
+    expectError: 127 as const
   },
   { mode: 'hi', command: 'test string', kind: 'drilldown' as const }
 ]

@@ -658,18 +658,26 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
     /** offline takes the rowKey of the row to be deleted and applies this to the table view */
     const offline = (rowKey: string) => {
       const existingRows = existingTable.rowsModel
-      const foundIndex = existingRows.findIndex(_ => _.name === rowKey)
+      const foundIndex = existingRows.findIndex(_ => (_.rowKey || _.name) === rowKey)
       deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+    }
+
+    /** allOffline allows pollers to indicate that all resources are not to be found */
+    const allOffline = () => {
+      const existingRows = existingTable.rowsModel
+      existingRows.forEach((existingRow, foundIndex) => {
+        deleteTheRow(existingRow, foundIndex, existingTable)
+      })
     }
 
     /** update consumes the update notification and apply it to the table view */
     const update = (newRow: Row) => {
       const existingRows = existingTable.rowsModel
-      const foundIndex = existingRows.findIndex(_ => _.name === newRow.name)
+      const foundIndex = existingRows.findIndex(_ => (_.rowKey || _.name) === newRow.name)
 
       if (foundIndex === -1) {
         // To get the insertion index, first concat the new row with the existing rows, then sort the rows
-        const index = sortBody([newRow].concat(existingRows)).findIndex(_ => _.name === newRow.name)
+        const index = sortBody([newRow].concat(existingRows)).findIndex(_ => (_.rowKey || _.name) === newRow.name)
         insertTheRow(newRow, index + 1, existingTable)(tab, formatRowOption)
       } else {
         const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
@@ -678,6 +686,6 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
     }
 
     // initiate the pusher watch
-    watch.init(update, offline)
+    watch.init(update, offline, allOffline)
   }
 }

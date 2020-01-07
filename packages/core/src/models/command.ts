@@ -20,6 +20,7 @@ import { CodedError } from './errors'
 import { ExecOptions } from './execOptions'
 import { UsageModel } from '../core/usage-error'
 import { Tab } from '../webapp/cli'
+import { Block } from '../webapp/models/block'
 import { StreamableFactory } from './streamable'
 
 /**
@@ -161,7 +162,7 @@ export interface EvaluatorArgs<Options = ParsedOptions> extends CommandLine<Opti
    * EXPERT MODE: The REPL block in which this command was initiated
    * (rarely used, but useful for more complex UI extensions)
    */
-  block: HTMLElement | boolean
+  block: Block | boolean
 
   /**
    * EXPERT MODE: The REPL block that will house the *subsequent*

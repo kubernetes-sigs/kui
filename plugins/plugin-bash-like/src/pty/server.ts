@@ -238,7 +238,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
       switch (msg.type) {
         case 'exit':
-          return exitNow(msg.exitCode)
+          return exitNow(msg.exitCode || 0)
 
         case 'request': {
           const { internalBeCarefulExec: exec } = await import('@kui-shell/core')

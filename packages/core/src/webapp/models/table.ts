@@ -22,6 +22,11 @@ import { SidecarMode } from '../bottom-stripe'
 export class Row {
   attributes?: Cell[]
 
+  /** uniquely identifies this row in a given table; if not defined, we will use the name field as the row key */
+  rowKey?: string
+
+  /** the key-value pair for the first column */
+  key?: string
   name: string
 
   nameDom?: Element
@@ -41,8 +46,6 @@ export class Row {
   setUnselected?: () => void
 
   nameCss?: string | string[]
-
-  key?: string
 
   prettyName?: string
 

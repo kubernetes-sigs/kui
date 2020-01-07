@@ -8,17 +8,19 @@
     "build:electron": "build() { npx --no-install kui-build-electron /tmp $1; }; build",
     "compile": "kui-compile && kui-compile tsconfig-es6.json",
     "postinstall": "npm run compile",
-    "test:electron": "export PORT_OFFSET=0; npm run watch:electron && kui-testv2; EC=$?; npm run kill; exit $EC",
-    "test:webpack": "export PORT_OFFSET=1; npm run watch:webpack && MOCHA_RUN_TARGET=webpack kui-testv2; EC=$?; npm run kill; exit $EC",
-    "test:parallel": "KUI_TEST_PARALLEL=true concurrently -n ELECTRON,WEBPACK 'npm run test:electron' 'npm run test:webpack'",
+    "test:electron": "npm run watch:electron && kui-testv2; EC=$?; npm run kill; exit $EC",
+    "test:webpack": "export KUI_USE_PROXY=true; export MOCHA_RUN_TARGET=webpack; (npm run proxy &); npm run watch:webpack && MOCHA_RUN_TARGET=webpack kui-testv2; EC=$?; npm run kill; npm run kill:proxy; exit $EC",
     "test": "npm run test:electron && npm run test:webpack",
     "watch": "tsc --build . --watch",
-    "watch:webpack": "npm run kill; rm -rf node_modules/node_modules; npx kui-watch-webpack",
-    "watch:electron": "TARGET=electron-renderer npm run watch:webpack",
+    "_watch": "npm run kill; rm -rf node_modules/node_modules; npx kui-watch-webpack",
+    "watch:webpack": "npm run pty:nodejs && npm run _watch",
+    "watch:electron": "npm run pty:electron && TARGET=electron-renderer npm run _watch",
+    "proxy": "if [ -z \"$TRAVIS_JOB_ID\" ]; then npm run -s pty:nodejs; fi; kui-run-proxy",
+    "kill:proxy": "kill $(lsof -t -i:8081) > /dev/null 2> /dev/null || true",
     "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
-    "pty:rebuild": "if [ -d node_modules/node-pty-prebuilt-multiarch ]; then cd node_modules/node-pty-prebuilt-multiarch && npm run install; fi",
-    "pty:electron": "if [ -d node_modules/node-pty-prebuilt-multiarch ]; then if [ ! -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then cp node_modules/@kui-shell/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild; fi; fi",
-    "pty:nodejs": "if [ -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild; fi",
+    "pty:rebuild": "kui-pty-rebuild",
+    "pty:electron": "npm run pty:rebuild electron",
+    "pty:nodejs": "npm run pty:rebuild node",
     "start:web": "OPEN=true npm run watch:webpack",
     "start": "npm run watch:electron && electron . shell"
   },
@@ -33,6 +35,7 @@
     "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz",
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/webpack": "file:/tmp/kui-packs/kui-shell-webpack.tgz",
+    "@kui-shell/proxy": "file:/tmp/kui-packs/kui-shell-proxy.tgz",
     "@kui-shell/test": "file:/tmp/kui-packs/kui-shell-test.tgz",
     "@types/mocha": "5.2.7",
     "@types/node": "12.12.14",
@@ -44,8 +47,10 @@
     "typescript": "3.7.3"
   },
   "dependencies": {
+    "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-core-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-themes.tgz",
+    "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/plugin-test": "file:plugins/plugin-test"
   }
 }

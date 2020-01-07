@@ -662,7 +662,7 @@ class InProcessExecutor implements Executor {
               ((execOptions && execOptions.replSilence) || nested || isLowLevelLoop(response) || isFakeDom(block))
             ) {
               // the parent exec will deal with the repl
-              debug('passing control back to prompt processor or headless')
+              // debug('passing control back to prompt processor or headless')
               return Promise.resolve(response)
             } else {
               // we're the top-most exec, so deal with the repl!

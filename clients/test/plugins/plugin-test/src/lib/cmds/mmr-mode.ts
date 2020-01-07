@@ -84,6 +84,7 @@ const doModes = (idx: number): ((args: Arguments<Options>) => MultiModalResponse
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/mode', doModes(0), {
+    inBrowserOk: true,
     usage: {
       docs: 'A test of MultiModalResponse mode'
     }
@@ -91,6 +92,8 @@ export default (commandTree: Registrar) => {
 
   modeOrderVariants.slice(1).forEach((_, idx) => {
     // `test mmr mode2/3/4/5` which uses modeOrderVariants[1/2/3/4]
-    commandTree.listen(`/test/mmr/mode${idx + 2}`, doModes(idx + 1))
+    commandTree.listen(`/test/mmr/mode${idx + 2}`, doModes(idx + 1), {
+      inBrowserOk: true
+    })
   })
 }

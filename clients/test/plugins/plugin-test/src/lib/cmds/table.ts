@@ -70,6 +70,9 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
       // the command is looking for a table with push watcher
       const watch: Watchable = {
         watch: {
+          abort: () => {
+            console.log('abort')
+          },
           init: (updated, deleted) => {
             const name1 = 'foo1'
             const name2 = 'foo2'
@@ -125,6 +128,7 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
  */
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/table', doTable(), {
+    inBrowserOk: true,
     usage: {
       docs: 'A showcase of the Table view'
     }

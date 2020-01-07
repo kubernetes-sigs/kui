@@ -49,6 +49,7 @@ export {
 } from './models/entity'
 export { isCommandHandlerWithEvents } from './models/command'
 export { ExecOptions, withLanguage } from './models/execOptions'
+export { Streamable } from './models/streamable'
 
 /** @deprecated */
 export { CustomSpec as CustomResponse } from './webapp/views/sidecar-core'
@@ -72,6 +73,7 @@ export { injectCSS, injectScript, loadHTML } from './webapp/util/inject'
 // models
 export { MetadataBearing as ResourceWithMetadata } from './models/entity'
 export { Watchable } from './core/jobs/watchable'
+export { Abortable } from './core/jobs/job'
 import { Tab } from './webapp/tab'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function History(tab: Tab) {
