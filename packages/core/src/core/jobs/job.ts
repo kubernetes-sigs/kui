@@ -19,7 +19,11 @@ import { Tab } from '../../webapp/cli'
 
 const debug = Debug('webapp/views/jobs')
 
-export class WatchableJob {
+export interface Abortable {
+  abort(): void
+}
+
+export class WatchableJob implements Abortable {
   private _id: number
 
   public get id() {

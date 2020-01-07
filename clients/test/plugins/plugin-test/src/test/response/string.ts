@@ -24,7 +24,38 @@
 
 import { TestStringResponse } from '@kui-shell/test'
 
-// string response with no arguments
+/**
+ * pty streaming
+ *
+ */
+const pty = (prefix = 'XXX') => `${prefix} hi`
+const repeat = (str: string, n: number, joiner = '\n') =>
+  Array(n)
+    .fill(str)
+    .join(joiner)
+new TestStringResponse({
+  command: 'test stream pty --grumble 1',
+  expect: pty(),
+  exact: true,
+  streaming: true
+}).string()
+new TestStringResponse({
+  command: 'test stream pty --grumble 5',
+  expect: repeat(pty(), 5),
+  exact: true,
+  streaming: true
+}).string()
+new TestStringResponse({
+  command: 'test stream pty --grumble 8 --prefix MMM',
+  expect: repeat(pty('MMM'), 8),
+  exact: true,
+  streaming: true
+}).string()
+
+/**
+ * string response with no arguments
+ *
+ */
 new TestStringResponse({
   command: 'test string',
   expect: 'hello world',
@@ -37,7 +68,10 @@ new TestStringResponse({
   streaming: true
 }).string()
 
-// string response with pass-through of command line option
+/**
+ * string response with pass-through of command line option
+ *
+ */
 new TestStringResponse({
   command: 'test string --grumble 3',
   expect: 'hello world 3',
@@ -50,7 +84,10 @@ new TestStringResponse({
   streaming: true
 }).string()
 
-// HTMLElement response
+/**
+ * HTMLElement response
+ *
+ */
 new TestStringResponse({
   command: 'test html dom',
   expect: 'yyyyy',
@@ -63,7 +100,10 @@ new TestStringResponse({
   streaming: true
 }).string()
 
-// MixedResponse
+/**
+ * MixedResponse; i.e. a mix of HTML and string output
+ *
+ */
 new TestStringResponse({
   command: 'test mixed',
   expect: 'yyyyy',
@@ -98,7 +138,10 @@ new TestStringResponse({
   streaming: true
 }).string()
 
-// ansi pretty printing
+/**
+ * ANSI pretty printing
+ *
+ */
 new TestStringResponse({
   command: 'test ansi1',
   expect: 'hello world',
@@ -135,7 +178,10 @@ new TestStringResponse({
   exact: false
 }).string()
 
-// time pretty printing
+/**
+ * Time pretty printing
+ *
+ */
 new TestStringResponse({
   command: 'test time1',
   expect: 'Today at',

@@ -24,7 +24,8 @@ export interface Watchable {
      * is ready to accept updates. when you have updates, please call
      * one or the other of the provided functions
      */
-    init: (update: WatchedRowHasUpdate, offline: WactchedRowisOffline) => void
+    init: (update: WatchedRowHasUpdate, offline: WactchedRowisOffline, allOffline: () => void) => void
+    abort: () => void
   }
 }
 

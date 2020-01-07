@@ -756,6 +756,8 @@ async function initOnMessage(
           raw = ''
         }
       }
+    } else if (msg.type === 'data' && execOptions.stdout && execOptions.onInit) {
+      execOptions.stdout(msg.data)
     } else if (msg.type === 'exit') {
       // server told us that it is done with msg.exitCode
 
@@ -771,6 +773,8 @@ async function initOnMessage(
             terminal.write(raw)
           }
           raw = ''
+        } else if (execOptions.stdout && execOptions.onInit) {
+          execOptions.stdout(msg.data)
         }
         pendingTable = undefined
       }
@@ -1228,8 +1232,8 @@ export const doExec = (
 
         // this function will be called just prior to executing the
         // command against the websocket/channel
-        const init = (ws: Channel) =>
-          initOnMessage(
+        const init = async (ws: Channel) => {
+          await initOnMessage(
             terminal,
             xtermContainer,
             ourUUID,
@@ -1245,6 +1249,16 @@ export const doExec = (
             resolve,
             reject
           )
+
+          if (execOptions.onInit) {
+            const job = {
+              abort: () => {
+                ws.send(JSON.stringify({ type: 'data', data: '\x03' }))
+              }
+            }
+            execOptions.stdout = execOptions.onInit(job)
+          }
+        }
 
         //
         // create a channel to the underlying node-pty

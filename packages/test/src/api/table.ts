@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { promiseEach, Table, Tab } from '@kui-shell/core'
+import { promiseEach, Table, Tab, Row } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -46,6 +46,7 @@ export class TestTable {
   private outputCount: number
   private ctx: Common.ISuite
   private tests: Tests
+  private cmdIdx: number
 
   public constructor(testName?: string, tests?: Tests) {
     this.testName = testName || 'should test table'
@@ -142,9 +143,14 @@ export class TestTable {
    */
   private executeAndValidate(command: string, expectTable: Table, validation?: TableValidation, _ctx?: Common.ISuite) {
     const ctx = this.ctx || _ctx
+    const self = this // eslint-disable-line @typescript-eslint/no-this-alias
 
     it(`should execute command from test table: ${command}`, () =>
       CLI.command(command, ctx.app)
+        .then(res => {
+          self.cmdIdx = res.count
+          return res
+        })
         .then(
           ReplExpect.okWithCustom({
             selector: Selectors.TABLE_HEADER_CELL(expectTable.header.name)
@@ -183,24 +189,25 @@ export class TestTable {
    */
   public drilldownFromTable(expectTable: Table, _ctx?: Common.ISuite) {
     const ctx = _ctx || this.ctx
-    let count = 0
+    const self = this // eslint-disable-line @typescript-eslint/no-this-alias
 
-    const clickCell = (cell: string, command: string, prompt: string) => {
+    const clickCell = (row: Row, command: string, prompt: string) => {
       it(`should click to execute from test table: ${command}`, async () => {
         try {
+          const cell = `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
           await ctx.app.client.waitForExist(cell)
           await ctx.app.client.click(cell)
           await CLI.expectInput(prompt, command)(ctx.app)
-          count++
         } catch (err) {
           await Common.oops(ctx, true)(err)
         }
       })
     }
 
-    const clickCellSilently = (cell: string, command: string, prompt: string) => {
+    const clickCellSilently = (row: Row, command: string, prompt: string) => {
       it(`should click to silently execute from test table: ${command}`, async () => {
         try {
+          const cell = `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
           await ctx.app.client.waitForExist(cell)
           await new Promise(resolve => setTimeout(resolve, 300))
           await ctx.app.client.click(cell)
@@ -213,11 +220,10 @@ export class TestTable {
 
     // For each row, check the first cell
     expectTable.body.forEach(row => {
-      const cellSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
       if (!row.onclickSilence) {
-        clickCell(cellSelector, row.onclick, `${Selectors.PROMPT_BLOCK_LAST} input`)
+        clickCell(row, row.onclick, `${Selectors.PROMPT_BLOCK_LAST} input`)
       } else {
-        clickCellSilently(cellSelector, row.onclick, Selectors.PROMPT_FINAL)
+        clickCellSilently(row, row.onclick, Selectors.PROMPT_FINAL)
       }
     })
   }
