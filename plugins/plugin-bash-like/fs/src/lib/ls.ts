@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as speedDate from 'speed-date'
 import {
   i18n,
   Arguments,
@@ -21,14 +22,15 @@ import {
   MixedResponse,
   Registrar,
   Table,
-  TableStyle,
-  withLanguage
+  TableStyle
+  // withLanguage
 } from '@kui-shell/core'
 
 import { FStat } from './fstat'
 import { GlobStats } from './glob'
 import { localFilepath } from './usage-helpers'
 
+const dateFormatter = speedDate('MMM DD HH:mm')
 const strings = i18n('plugin-bash-like')
 
 /**
@@ -71,21 +73,16 @@ function prettyBytes(size: number): string {
  * Mimic ls -l for date
  *
  */
-function prettyTime(ms: number, language: string): string {
-  const date = new Date(ms)
+function prettyTime(ms: number): string {
+  // if we ever want to re-introduce i18n of ls dates; this will be
+  // about 100x slower; see https://github.com/IBM/kui/issues/3461
+  /* return new Date(ms).toLocaleString(navigator.language, {
+    month: 'short', day: '2-digit', hour: '2-digit', 'minute': '2-digit', hour12: false
+    }).replace(/(\s)0/g, '$1 ').replace(/,/g, '') */
 
-  const datePart = date.toLocaleDateString(language, {
-    month: 'short',
-    day: '2-digit'
-  })
-
-  const timePart = date.toLocaleTimeString(language, {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  })
-
-  return `${datePart} ${timePart}`.replace(/(\s)0/g, '$1 ')
+  // warning: this will generate (very quickly) not-internationalized
+  // ls dates
+  return dateFormatter(new Date(ms)).replace(/(\s)0/g, '$1 ')
 }
 
 interface LsOptions extends ParsedOptions {
@@ -165,7 +162,7 @@ function formatGid(entry: GlobStats) {
 }
 
 function attrs(entry: GlobStats, args: Arguments<LsOptions>) {
-  const language = withLanguage(args.execOptions).language
+  // const language = withLanguage(args.execOptions).language
 
   const wide = args.parsedOptions.l
   const perms = wide ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
@@ -174,9 +171,7 @@ function attrs(entry: GlobStats, args: Arguments<LsOptions>) {
   const size = [
     { value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: `${outerCSSSecondary} text-right` }
   ]
-  const lastMod = [
-    { value: prettyTime(entry.stats.mtimeMs, language), outerCSS: 'badge-width', css: `${cssSecondary} pre-wrap` }
-  ]
+  const lastMod = [{ value: prettyTime(entry.stats.mtimeMs), outerCSS: 'badge-width', css: `${cssSecondary} pre-wrap` }]
 
   return perms
     .concat(uid)
