@@ -42,6 +42,23 @@ export interface RowFormatOptions {
 }
 
 /**
+ * The table renderer treats the header as a Row with some special
+ * CSS.
+ *
+ */
+function prepareHeader(header: Row) {
+  header.outerCSS = `${header.outerCSS || ''} header-cell`
+
+  if (header.attributes) {
+    header.attributes.forEach(cell => {
+      cell.outerCSS = `${cell.outerCSS || ''} header-cell`
+    })
+  }
+
+  return header
+}
+
+/**
  * get an array of row models
  *
  */
@@ -49,14 +66,9 @@ const prepareTable = (tab: Tab, response: Table & Partial<Watchable>): Row[] => 
   const { header, body, noSort } = response
 
   if (header) {
-    header.outerCSS = `${header.outerCSS || ''} header-cell`
-
-    if (header.attributes) {
-      header.attributes.forEach(cell => {
-        cell.outerCSS = `${cell.outerCSS || ''} header-cell`
-      })
-    }
+    prepareHeader(header)
   }
+
   // sort the list, then format each element, then add the results to the resultDom
   // (don't sort lists of activations. i wish there were a better way to do this)
   return [header].concat(noSort ? body : sortBody(body)).filter(x => x)
@@ -659,7 +671,9 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
     const offline = (rowKey: string) => {
       const existingRows = existingTable.rowsModel
       const foundIndex = existingRows.findIndex(_ => (_.rowKey || _.name) === rowKey)
-      deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+      if (foundIndex >= 0) {
+        deleteTheRow(existingRows[foundIndex], foundIndex, existingTable)
+      }
     }
 
     /** allOffline allows pollers to indicate that all resources are not to be found */
@@ -685,7 +699,20 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
       }
     }
 
+    /** new header */
+    const header = (header: Row) => {
+      const existingRows = existingTable.rowsModel
+      const foundIndex = existingRows.findIndex(_ => /header-cell/.test(_.outerCSS))
+
+      const newHeader = prepareHeader(header)
+      if (foundIndex) {
+        insertTheRow(newHeader, 0, existingTable)(tab, formatRowOption)
+      } else {
+        udpateTheRow(newHeader, 0, existingTable)(tab, formatRowOption)
+      }
+    }
+
     // initiate the pusher watch
-    watch.init(update, offline, allOffline)
+    watch.init(update, offline, allOffline, header)
   }
 }
