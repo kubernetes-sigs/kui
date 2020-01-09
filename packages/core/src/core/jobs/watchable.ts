@@ -24,12 +24,18 @@ export interface Watchable {
      * is ready to accept updates. when you have updates, please call
      * one or the other of the provided functions
      */
-    init: (update: WatchedRowHasUpdate, offline: WactchedRowisOffline, allOffline: () => void) => void
+    init: (
+      update: WatchedRowHasUpdate,
+      offline: WactchedRowisOffline,
+      allOffline: () => void,
+      header: WatchHasHeader
+    ) => void
     abort: () => void
   }
 }
 
 /** callbacks to indicate state changes */
+type WatchHasHeader = (response: Row) => void
 type WatchedRowHasUpdate = (response: Row) => void
 type WactchedRowisOffline = (rowKey: string) => void
 
