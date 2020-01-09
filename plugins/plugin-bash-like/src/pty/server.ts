@@ -217,7 +217,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
   // doesn't support module imports for dynamic imports, and node-pty
   // exports IPty under a module of its creation
   // @see https://github.com/microsoft/TypeScript/issues/22445
-  let shell: import('node-pty-prebuilt-multiarch').IPty
+  const shells: Record<string, import('node-pty-prebuilt-multiarch').IPty> = {}
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
@@ -226,6 +226,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         type: string
         data?: string
         cmdline?: string
+        signal?: string
         exitCode?: number
         env?: Record<string, string>
         cwd?: string
@@ -237,6 +238,15 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
       } = JSON.parse(data)
 
       switch (msg.type) {
+        case 'kill': {
+          const shell = msg.uuid && shells[msg.uuid]
+          if (shell) {
+            shell.kill(msg.signal || 'SIGHUP')
+            return exitNow(msg.exitCode || 0)
+          }
+          break
+        }
+
         case 'exit':
           return exitNow(msg.exitCode || 0)
 
@@ -295,7 +305,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             const cmdline = aliasedCmd ? msg.cmdline.replace(new RegExp(`^${cmd}`), aliasedCmd) : msg.cmdline
 
             const { shellExe, shellOpts } = await getLoginShell()
-            shell = spawn(shellExe, shellOpts.concat([cmdline]), {
+            let shell = spawn(shellExe, shellOpts.concat([cmdline]), {
               uid,
               gid,
               name: 'xterm-color',
@@ -304,6 +314,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
               cwd: msg.cwd || process.cwd(),
               env
             })
+            if (msg.uuid) shells[msg.uuid] = shell
             // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
             // send all PTY data out to the websocket client
@@ -313,6 +324,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
             shell.on('exit', (exitCode: number) => {
               shell = undefined
+              if (msg.uuid) delete shells[msg.uuid]
               ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
               // exitNow(exitCode)
             })
@@ -326,8 +338,11 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
         case 'data':
           try {
+            const shell = msg.uuid && shells[msg.uuid]
             if (shell) {
               return shell.write(msg.data)
+            } else {
+              console.error('could not write to the shell, as we had no uuid, or no matching shell instance', msg.uuid)
             }
           } catch (err) {
             console.error('could not write to the shell', err)
@@ -336,8 +351,11 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
         case 'resize':
           try {
+            const shell = msg.uuid && shells[msg.uuid]
             if (shell) {
               return shell.resize(msg.cols, msg.rows)
+            } else {
+              console.error('could not resize pty, as we had no uuid, or no matching shell instance', msg.uuid)
             }
           } catch (err) {
             console.error(`error in resize ${msg.cols} ${msg.rows}`)
