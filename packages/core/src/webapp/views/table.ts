@@ -713,6 +713,6 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
     }
 
     // initiate the pusher watch
-    watch.init(update, offline, allOffline, header)
+    watch.init({ update, offline, allOffline, header })
   }
 }
