@@ -733,7 +733,7 @@ async function initOnMessage(
         }
       }
 
-      if (pendingTable || expectingSemiStructuredOutput) {
+      if (pendingTable || (expectingSemiStructuredOutput && !resizer.wasEverInAltBufferMode())) {
         // the above is taking care of this
       } else if (maybeUsage) {
         debug('pending usage')
@@ -794,7 +794,7 @@ async function initOnMessage(
         } else if (pendingTable) {
           const response = pendingTable
           execOptions.stdout(response.length === 1 ? response[0] : response)
-        } else if (expectingSemiStructuredOutput) {
+        } else if (expectingSemiStructuredOutput && !resizer.wasEverInAltBufferMode()) {
           try {
             const resource =
               contentType === 'yaml' ? await safeLoadWithCatch(stripClean(raw)) : JSON.parse(stripClean(raw))
