@@ -72,7 +72,7 @@ export { injectCSS, injectScript, loadHTML } from './webapp/util/inject'
 
 // models
 export { MetadataBearing as ResourceWithMetadata } from './models/entity'
-export { Watchable } from './core/jobs/watchable'
+export { Watchable, Watcher, WatchPusher } from './core/jobs/watchable'
 export { Abortable } from './core/jobs/job'
 import { Tab } from './webapp/tab'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

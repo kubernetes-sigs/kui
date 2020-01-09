@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
+import { Abortable } from './job'
 import { Entity } from '../../models/entity'
 import { Row } from '../../webapp/models/table'
 
+export interface Watcher {
+  /**
+   * the table renderer will call this function when the DOM
+   * is ready to accept updates. when you have updates, please call
+   * one or the other of the provided functions
+   */
+  init: (pusher: WatchPusher) => void
+}
+
 export interface Watchable {
-  watch: {
-    /**
-     * the table renderer will call this function when the DOM
-     * is ready to accept updates. when you have updates, please call
-     * one or the other of the provided functions
-     */
-    init: (
-      update: WatchedRowHasUpdate,
-      offline: WactchedRowisOffline,
-      allOffline: () => void,
-      header: WatchHasHeader
-    ) => void
-    abort: () => void
-  }
+  watch: Watcher & Abortable
 }
 
 /** callbacks to indicate state changes */
-type WatchHasHeader = (response: Row) => void
-type WatchedRowHasUpdate = (response: Row) => void
-type WactchedRowisOffline = (rowKey: string) => void
+export interface WatchPusher {
+  update: (response: Row) => void
+  offline: (rowKey: string) => void
+  allOffline: () => void
+  header: (response: Row) => void
+}
 
 export function isWatchable(model: Entity & Partial<Watchable>): model is Entity & Watchable {
   return model && model.watch && model.watch.init !== undefined

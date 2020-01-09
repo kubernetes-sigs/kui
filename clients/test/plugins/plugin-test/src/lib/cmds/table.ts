@@ -73,7 +73,7 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
           abort: () => {
             console.log('abort')
           },
-          init: (updated, deleted) => {
+          init: ({ update: updated, offline: deleted }) => {
             const name1 = 'foo1'
             const name2 = 'foo2'
 
