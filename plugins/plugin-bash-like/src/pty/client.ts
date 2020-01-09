@@ -143,15 +143,18 @@ class Resizer {
 
   private _ws: Channel
 
+  private readonly uuid: string
+
   // remember any global event handlers that we registered in the
   // constructor, so that we can remove them in destroy()
   private readonly resizeNow: () => void
   private readonly clearXtermSelectionNow: () => void
 
-  constructor(terminal: XTerminal, tab: Tab, execOptions: ExecOptions) {
+  constructor(terminal: XTerminal, tab: Tab, execOptions: ExecOptions, uuid: string) {
     this.tab = tab
     this.execOptions = execOptions
     this.terminal = terminal as HTerminal
+    this.uuid = uuid
 
     // window resize; WARNING: since this is a global event, make sure
     // to remove the event listener in the destroy() method
@@ -350,7 +353,7 @@ class Resizer {
           this.terminal.resize(cols, rows)
 
           if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            this.ws.send(JSON.stringify({ type: 'resize', cols, rows }))
+            this.ws.send(JSON.stringify({ type: 'resize', cols, rows, uuid: this.uuid }))
           }
         }
       } catch (err) {
@@ -397,9 +400,9 @@ class Resizer {
     if (this.execOptions['pty/force-resize']) {
       const { rows, cols } = this.getSize(false)
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows + 1 }))
+        this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows + 1, uuid: this.uuid }))
         setTimeout(() => {
-          this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows }))
+          this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows, uuid: this.uuid }))
           this.tab.classList.add('xterm-alt-buffer-mode')
         }, 1)
       }
@@ -569,7 +572,7 @@ async function initOnMessage(
           if (queuedInput && ws.readyState === WebSocket.OPEN) {
             const data = queuedInput
             queuedInput = ''
-            ws.send(JSON.stringify({ type: 'data', data, uid: ourUUID }))
+            ws.send(JSON.stringify({ type: 'data', data, uuid: ourUUID }))
           }
         }, 20)
       }
@@ -601,7 +604,7 @@ async function initOnMessage(
     const queuedInput = disableInputQueueing()
     if (queuedInput.length > 0) {
       debug('queued input up front', queuedInput)
-      setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput })), 50)
+      setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput, uuid: ourUUID })), 50)
     }
 
     // now that we've grabbed queued input, focus on the terminal,
@@ -936,7 +939,7 @@ async function initOnMessage(
     terminal.on('focus', maybeClearSelection)
     terminal.on('blur', maybeClearSelection)
     terminal.on('paste', (data: string) => {
-      ws.send(JSON.stringify({ type: 'data', data }))
+      ws.send(JSON.stringify({ type: 'data', data, uuid: ourUUID }))
     })
     terminal.on('selection', () => {
       // debug('xterm selection', terminal.getSelection())
@@ -1157,6 +1160,9 @@ export const doExec = (
       let xtermContainer: HTMLElement
       let cleanUpTerminal: () => void
 
+      // we will use this to uniquely identify this PTY in this tab
+      const ourUUID = uuid()
+
       try {
         if (!execOptions.quiet && !execOptions.replSilence) {
           const parent = block.querySelector('.repl-result')
@@ -1195,7 +1201,7 @@ export const doExec = (
           const doInjectTheme = () => injectFont(terminal, true)
           eventBus.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
-          resizer = new Resizer(terminal, tab, execOptions)
+          resizer = new Resizer(terminal, tab, execOptions, ourUUID)
 
           // respond to font zooming
           const doZoom = () => {
@@ -1228,8 +1234,6 @@ export const doExec = (
           }
         }
 
-        const ourUUID = uuid()
-
         // this function will be called just prior to executing the
         // command against the websocket/channel
         const init = async (ws: Channel) => {
@@ -1253,7 +1257,7 @@ export const doExec = (
           if (execOptions.onInit) {
             const job = {
               abort: () => {
-                ws.send(JSON.stringify({ type: 'data', data: '\x03' }))
+                ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID }))
               }
             }
             execOptions.stdout = execOptions.onInit(job)
