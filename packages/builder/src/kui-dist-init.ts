@@ -95,7 +95,6 @@ export const main = async (argv: string[]) => {
   }
 
   copyDirectory('@kui-shell/builder/examples/plugin-sample/package.json', 'plugins/plugin-sample', force)
-  copyDirectory('@kui-shell/builder/examples/build-configs/default/theme/theme.json', 'theme', force)
 
   creating('reconfiguring package.json')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
