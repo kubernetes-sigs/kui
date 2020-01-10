@@ -26,6 +26,30 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(theme.productName))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .then(async () => {
+        if (process.env.MOCHA_RUN_TARGET === 'electron') {
+          return this.app.client.execute(() => {
+            const imageSrc = document
+              .querySelector('.about-window .logo')
+              .querySelector('img')
+              .getAttribute('src')
+            const fs = require('fs')
+            return fs.statSync(`${__dirname}/${imageSrc}`)
+          })
+        }
+
+        if (process.env.MOCHA_RUN_TARGET === 'webpack') {
+          return this.app.client.execute(() => {
+            const imageSrc = document
+              .querySelector('.about-window .logo')
+              .querySelector('img')
+              .getAttribute('src')
+            const image = new Image()
+            image.src = `${window.location.origin}/${imageSrc}`
+            if (image.height === 0) throw new Error(`image not found: ${window.location.origin}/${imageSrc}`)
+          })
+        }
+      })
       .catch(Common.oops(this, true)))
 
   it('should open the about window via command execution with comment', () =>
