@@ -35,6 +35,8 @@ export interface Watchable {
 export interface WatchPusher {
   update: (response: Row) => void
   offline: (rowKey: string) => void
+
+  done: () => void
   allOffline: () => void
   header: (response: Row) => void
 }
