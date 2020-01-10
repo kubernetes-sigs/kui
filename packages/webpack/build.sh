@@ -48,6 +48,7 @@ BUILDDIR="$CLIENT_HOME"/dist/webpack
 
 APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
+THEME="$CLIENT_HOME"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
 
 echo "build-webpack CLIENT_HOME=$CLIENT_HOME"
 echo "build-webpack BUILDDIR=$BUILDDIR"
@@ -130,8 +131,8 @@ function configure {
 
 # check for prerequisites
 function prereq {
-    if [ ! -d theme ]; then
-        echo "Your client directory does not define a theme/ subdirectory"
+    if [ ! -d "$THEME" ]; then
+        echo "Your do not provide client definition"
         exit 1
     fi
 }
@@ -175,7 +176,6 @@ function assembleHTMLPieces {
     cp -a "$CORE_HOME"/web/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
 
     # if we are using a build config override, then copy in its assets
-    THEME="$CLIENT_HOME"/theme
     if [ -d "$THEME"/css ]; then
         cp -a "$THEME"/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
     fi

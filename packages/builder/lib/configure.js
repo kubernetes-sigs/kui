@@ -251,16 +251,8 @@ const main = (env, overrides = {}) => {
 const loadOverrides = (programmaticOverrides = {}) => {
   let overrideDirectory = process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
   if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
-    overrideDirectory = process.env.CLIENT_HOME && path.resolve(path.join(process.env.CLIENT_HOME, 'theme'))
-    if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
-      overrideDirectory = path.resolve(path.join(process.cwd(), 'theme'))
-    }
-  }
-  const stats = overrideDirectory && fs.statSync(overrideDirectory)
-  if ((!stats || !stats.isDirectory()) && process.platform === 'win32') {
-    // a bit of a hack for windows, given that clients/default/theme
-    // is a symlink
-    overrideDirectory = path.resolve('./node_modules/@kui-shell/builder/examples/build-configs/default/theme')
+    const packageJson = process.env.CLIENT_HOME && path.resolve(path.join(process.env.CLIENT_HOME, 'package.json'))
+    overrideDirectory = path.resolve('./node_modules/@kui-shell', require(packageJson).kui.client)
   }
   info('theme directory', overrideDirectory)
 
@@ -278,7 +270,7 @@ const loadOverrides = (programmaticOverrides = {}) => {
     }
   }
   const userEnv = loadOverride('env')
-  const userTheme = loadOverride('theme')
+  const userTheme = loadOverride('client')
   const userConfig = loadOverride('config')
 
   const overrides = {

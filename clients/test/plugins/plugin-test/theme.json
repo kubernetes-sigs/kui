@@ -1,0 +1,10 @@
+{
+  "themes": [
+    {
+      "name": "Test Theme",
+      "css": "test-theme.css",
+      "description": "Test Theme",
+      "style": "light"
+    }
+  ]
+}

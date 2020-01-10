@@ -19,8 +19,8 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../.."
 CONFDIR="$TOPDIR"/node_modules/@kui-shell/settings
+THEME="${TOPDIR}"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
 
-CLIENT_HOME="$(pwd)/$CLIENT_HOME"
 echo "Using CLIENT_HOME=$CLIENT_HOME"
 
 # TODO this only handles MacOS right now
@@ -33,7 +33,7 @@ else
         (cd "$SCRIPTDIR"/.. && npm install --no-save fileicon)
     fi
 
-    ICON="$CLIENT_HOME"/theme/`cat "$CONFDIR"/config.json | jq --raw-output .theme.appIcon`
+    ICON="$THEME"/`cat "$CONFDIR"/config.json | jq --raw-output .theme.appIcon`
     APPNAME=`cat "$CONFDIR"/config.json | jq --raw-output .theme.productName`
     echo "Using appName=${APPNAME} and appIcon=${ICON}"
 

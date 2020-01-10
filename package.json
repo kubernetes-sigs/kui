@@ -50,6 +50,7 @@
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-tutorials": "file:plugins/plugin-tutorials",
+    "@kui-shell/plugin-client-default": "file:plugins/plugin-client-default",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
   },
   "devDependencies": {

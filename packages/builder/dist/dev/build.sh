@@ -19,6 +19,7 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../../.."
 STAGING="${TOPDIR}"/node_modules/@kui-shell/build
+THEME="${TOPDIR}"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
 
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/core/web/css)
 

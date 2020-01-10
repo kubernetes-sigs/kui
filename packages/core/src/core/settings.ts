@@ -68,7 +68,6 @@ export interface Theme {
   defaultContext?: string[]
 
   defaultTheme: string
-  themes?: { name: string; css: string; description?: string; style: string }[]
 }
 
 export const inBottomInputMode =
@@ -86,17 +85,7 @@ export async function uiThemes(): Promise<ThemeSet[]> {
   const { prescanModel } = await import('../plugins/plugins')
 
   // the filter part is there only to be overly defensive
-  const pluginProvidedThemes = prescanModel().themeSets.filter(_ => _)
-  const clientProvidedThemes = !theme.themes
-    ? []
-    : [
-        {
-          plugin: 'built-in',
-          themes: theme.themes
-        }
-      ]
-
-  return pluginProvidedThemes.concat(clientProvidedThemes)
+  return prescanModel().themeSets.filter(_ => _)
 }
 
 /**

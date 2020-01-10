@@ -34,6 +34,7 @@ echo "staging directory: $STAGING"
 CLIENT_HOME="$(pwd)"
 APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
+THEME="$CLIENT_HOME"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
 export BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
 
@@ -63,7 +64,6 @@ function tarCopy {
     # to come before the --exclude rules!
     "$TAR" -C "$CLIENT_HOME" -h -cf - \
            --exclude "./npm-packs" \
-           --exclude "./theme" \
            --exclude "./kui" \
            --exclude "./kui-*-tmp" \
            --exclude "./bin" \
@@ -138,8 +138,8 @@ function initStage {
 
 # check for prerequisites
 function prereq {
-    if [ ! -d theme ]; then
-        echo "Your client directory does not define a theme/ subdirectory"
+    if [ ! -d "$THEME" ]; then
+        echo "You do not provide a client definition"
         exit 1
     fi
 }
@@ -153,8 +153,6 @@ function es6 {
 
 # copy over the theme bits
 function theme {
-    THEME="$CLIENT_HOME"/theme
-
     # filesystem icons
     ICON_MAC="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.darwin`
     ICON_WIN32="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.win32`
@@ -360,18 +358,6 @@ function native {
     (cd "$STAGING" && npx --no-install kui-pty-rebuild electron)
 }
 
-# windows-specific bits
-function windows {
-    if [ "$(uname)" != "Darwin" ] && [ "$(uname -o)" = "Msys" ]; then
-        echo "handling windows idiosyncracies"
-        if [ ! -d theme ]; then
-            echo "handling symlink issues for windows"
-            rm -f theme
-            cp -a node_modules/@kui-shell/builder/examples/build-configs/default/theme theme
-        fi
-    fi
-}
-
 # install the webpackery bits
 function initWebpack {
     pushd "$STAGING" > /dev/null
@@ -404,7 +390,6 @@ function builddeps {
 
 # this is the main routine
 function build {
-    echo "windows" && windows
     echo "prereq" && prereq
     echo "es6" && es6
     echo "initStage" && initStage

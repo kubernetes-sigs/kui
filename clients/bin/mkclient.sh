@@ -38,7 +38,6 @@ npm run -s pack
 cd "$tmpdir"
 
 mkdir plugins
-cp -a -L ../clients/default/theme .
 
 echo "$(tput setaf 1)building from scratch$(tput sgr0)"
 

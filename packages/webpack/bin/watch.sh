@@ -26,6 +26,8 @@ BUILDER_HOME="$MODULE_HOME"/builder
 
 CONFIG="$MODULE_HOME"/webpack/webpack.config.js
 
+THEME="${MODULE_HOME}"/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
+
 # let the caller take care of building; see https://github.com/IBM/kui/issues/3377
 # npx --no-install kui-compile
 # KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
@@ -37,18 +39,18 @@ pushd "$CLIENT_HOME"
     for i in "$MODULE_HOME"/core/web/css/*; do
         ln -s $i
     done
-    for i in "$CLIENT_HOME"/theme/css/*; do
+    for i in "$THEME"/css/*; do
         ln -s $i
     done
-    ln -s "$CLIENT_HOME"/theme/icons
-    ln -s "$CLIENT_HOME"/theme/images
+    ln -s "$THEME"/icons
+    ln -s "$THEME"/images
   popd
 
-  if [ -f theme/config.json ]; then
+  if [ -f  "$THEME"/config.json ]; then
       echo "linking config-dev.json"
       pushd "$MODULE_HOME"/settings
         rm -f config-dev.json
-        cp "$CLIENT_HOME"/theme/config.json config-dev.json
+        cp  "$THEME"/config.json config-dev.json
       popd
   fi
 popd

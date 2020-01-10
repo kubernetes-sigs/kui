@@ -11,6 +11,8 @@ set -e
 set -o pipefail
 
 export CLIENT=${CLIENT-default}
+CLIENT_DEFN_PLUGIN=`cat clients/"$CLIENT"/package.json | jq --raw-output .kui.client`
+THEME=$(cd node_modules/@kui-shell/"$CLIENT_DEFN_PLUGIN" && pwd)
 
 # rebuild the html in case the user has changed CLIENT
 npm run build:html
@@ -40,17 +42,18 @@ fi
 # link in the CLIENT theming into the dist/webpack staging area
 rm -rf clients/$CLIENT/$TARGETDIR
 mkdir -p clients/$CLIENT/$TARGETDIR/css
+
 (cd clients/$CLIENT/$TARGETDIR && \
-     ln -sf ../../../theme/icons && \
-     ln -sf ../../../theme/images && \
+     ln -sf "$THEME"/icons && \
+     ln -sf "$THEME"/images && \
      cd css && \
      for i in ../../../../../../packages/core/web/css/*; do ln -sf $i; done && \
-     for i in ../../../../theme/css/*; do ln -sf $i; done \
+     for i in "$THEME"/css/*; do ln -sf $i; done \
     )
 
 # link in any config.json settings that the CLIENT definition may specify
 (cd node_modules/@kui-shell/settings && \
-     rm -f config-dev.json; if [ -f ../../../clients/$CLIENT/theme/config.json ]; then echo "linking config-dev.json"; cp ../../../clients/$CLIENT/theme/config.json config-dev.json; fi)
+     rm -f config-dev.json; if [ -f "$THEME"/config.json ]; then echo "linking config-dev.json"; cp "$THEME"/config.json config-dev.json; fi)
 
 # display extra build progress?
 if [ -z "$TRAVIS_JOB_ID" ]; then
