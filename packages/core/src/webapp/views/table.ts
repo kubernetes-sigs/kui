@@ -712,7 +712,14 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
       }
     }
 
+    /** done watching? */
+    const done = () => {
+      if (isWatchable(existingTable.tableModel)) {
+        delete existingTable.tableModel.watch
+      }
+    }
+
     // initiate the pusher watch
-    watch.init({ update, offline, allOffline, header })
+    watch.init({ update, offline, done, allOffline, header })
   }
 }
