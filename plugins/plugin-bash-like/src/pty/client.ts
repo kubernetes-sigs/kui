@@ -849,6 +849,7 @@ async function initOnMessage(
         }
       }
       if (!terminal) {
+        ws.removeEventListener('message', onMessage)
         respondToRepl()
         return
       }
