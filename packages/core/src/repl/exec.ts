@@ -315,7 +315,12 @@ class InProcessExecutor implements Executor {
           [key: string]: number
         }
         const allFlags = {
-          configuration: Object.assign({ 'camel-case-expansion': false }, (usage && usage.configuration) || {}),
+          configuration: Object.assign(
+            { 'camel-case-expansion': false },
+            (evaluator.options && evaluator.options.flags && evaluator.options.flags.configuration) ||
+              (usage && usage.configuration) ||
+              {}
+          ),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
           alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
           narg:
