@@ -22,6 +22,7 @@ import { UsageModel } from '../core/usage-error'
 import { Tab } from '../webapp/cli'
 import { Block } from '../webapp/models/block'
 import { StreamableFactory } from './streamable'
+import * as Yargs from 'yargs-parser'
 
 /**
  * A command `KResponse` can be any supported `Entity` type
@@ -254,6 +255,7 @@ export type CommandTreeResolution<T extends KResponse, O extends ParsedOptions> 
   | CodedError
 
 export interface YargsParserFlags {
+  configuration?: Yargs.Configuration
   boolean?: string[]
   alias?: Record<string, string[]>
 }
