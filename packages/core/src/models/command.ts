@@ -257,6 +257,7 @@ export type CommandTreeResolution<T extends KResponse, O extends ParsedOptions> 
 export interface YargsParserFlags {
   configuration?: Yargs.Configuration
   boolean?: string[]
+  narg?: Record<string, number>
   alias?: Record<string, string[]>
 }
 
