@@ -323,15 +323,20 @@ class InProcessExecutor implements Executor {
           ),
           boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
           alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
-          narg:
-            optional &&
-            optional.reduce((N: ArgCount, { name, alias, narg }) => {
-              if (narg) {
-                N[unflag(name)] = narg
-                N[unflag(alias)] = narg
-              }
-              return N
-            }, {})
+          narg: Object.assign(
+            {},
+            commandFlags.narg || {}, // narg from registrar.listen(route, handler, { flags: { narg: ... }})
+            (optional &&
+              optional.reduce((N, { name, alias, narg }) => {
+                // narg from listen(route, handler, { usage: { optional: [...] }})
+                if (narg) {
+                  N[unflag(name)] = narg
+                  N[unflag(alias)] = narg
+                }
+                return N
+              }, {} as Record<string, number>)) ||
+              {}
+          )
         }
 
         // now use minimist to parse the command line options
