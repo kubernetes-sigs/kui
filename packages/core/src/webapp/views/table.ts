@@ -299,6 +299,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     }
   }
 
+  const rowFrag = document.createDocumentFragment()
+
   /** add a cell to the current row of the table view we are generating. "entityName" is the current row */
   const addCellToRow = (theCell: Cell) => {
     const {
@@ -306,7 +308,6 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       value,
       valueDom,
       innerClassName = '',
-      parent = entityName,
       onclick,
       key,
       fontawesome,
@@ -315,6 +316,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       tagClass
     } = theCell
 
+    const parent = rowFrag
     const cell = document.createElement(isHeaderCell ? 'th' : 'td')
     const inner = document.createElement(tag)
 
@@ -406,11 +408,6 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     cell.appendChild(inner)
     parent.appendChild(cell)
 
-    if (cell.classList.contains('header-cell')) {
-      parent.classList.add('header-row')
-      ;(parent.parentNode as HTMLElement).classList.add('header-row')
-    }
-
     if (onclick) {
       cell.classList.add('clickable')
       cell.onclick = async (evt: MouseEvent) => {
@@ -473,6 +470,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     })
   }
 
+  entityName.appendChild(rowFrag)
   return dom
 }
 
@@ -574,7 +572,26 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
     tableDom.classList.add('result-table')
     tableDom.classList.add('bx--data-table')
 
+    const prepareRows = prepareTable(tab, table)
+
+    const rows = prepareRows.map(formatOneRowResult(tab, formatRowOption))
+    const rowFrag = document.createDocumentFragment()
+    rows.map(row => rowFrag.appendChild(row))
+    tableDom.appendChild(rowFrag)
+
+    setStyle(tableDom, table)
+
+    const rowSelection = tableDom.querySelector('.selected-row')
+    if (rowSelection) {
+      tableDom.classList.add('has-row-selection')
+    }
+
+    // depending on whether or not we have a title, we may introduce a
+    // wrapper around the table; we want to defer attaching this to
+    // the live DOM, in hopes that this will help with createElement,
+    // ec. performance
     let container: HTMLElement
+
     if (table.title) {
       const tableOuterWrapper = document.createElement('div')
       const tableOuter = document.createElement('div')
@@ -585,7 +602,6 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
       tableOuter.appendChild(titleOuter)
       titleOuter.appendChild(titleInner)
       tableOuterWrapper.appendChild(tableOuter)
-      resultDom.appendChild(tableOuterWrapper)
 
       if (table.flexWrap) {
         const tableScroll = document.createElement('div')
@@ -637,23 +653,14 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
 
       container = tableOuterWrapper
     } else {
-      resultDom.appendChild(tableDom)
       container = tableDom
     }
 
+    // we deferred attaching the table (or, rather, the container we
+    // may have created around the table) to help with DOM insertion
+    // performance
     container.classList.add('big-top-pad')
-
-    const prepareRows = prepareTable(tab, table)
-
-    const rows = prepareRows.map(formatOneRowResult(tab, formatRowOption))
-    rows.map(row => tableDom.appendChild(row))
-
-    setStyle(tableDom, table)
-
-    const rowSelection = tableDom.querySelector('.selected-row')
-    if (rowSelection) {
-      tableDom.classList.add('has-row-selection')
-    }
+    resultDom.appendChild(container)
 
     return {
       renderedRows: rows,

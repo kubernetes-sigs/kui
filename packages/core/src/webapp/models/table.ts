@@ -105,8 +105,6 @@ export class Cell {
 
   className?: string
 
-  parent?: HTMLElement
-
   constructor(cell: Cell) {
     Object.assign(this, cell)
   }

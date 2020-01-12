@@ -26,7 +26,7 @@ describe('command history', function(this: Common.ISuite) {
       .catch(Common.oops(this, true))
   )
 
-  const listCommand = 'ls ../..'
+  const listCommand = 'lls ../..'
   it('should list local files', () =>
     CLI.command(listCommand, this.app)
       .then(ReplExpect.okWith('README.md'))
@@ -34,7 +34,7 @@ describe('command history', function(this: Common.ISuite) {
 
   // 1 says it better be the last command we executed
   it(`should list history with filter 1`, () =>
-    CLI.command(`history 1 ls`, this.app)
+    CLI.command(`history 1 lls`, this.app)
       .then(ReplExpect.okWithOnly(listCommand))
       .catch(Common.oops(this)))
 
@@ -51,7 +51,7 @@ describe('command history', function(this: Common.ISuite) {
 
   it('should re-execte from history via mouse click', async () => {
     try {
-      const res = await CLI.command('history 5 ls', this.app)
+      const res = await CLI.command('history 5 lls', this.app)
       const N = await ReplExpect.okWithCustom({ passthrough: true })(res)
       const selector = `${Selectors.LIST_RESULTS_N(N)}:first-child .entity-name`
       await this.app.client.click(selector)
@@ -90,7 +90,7 @@ describe('command history', function(this: Common.ISuite) {
       .catch(Common.oops(this)))
 
   it(`should list history with idx and filter args after delete and expect nothing`, () =>
-    CLI.command(`history 10 ls`, this.app)
+    CLI.command(`history 10 lls`, this.app)
       .then(ReplExpect.justOK) // some random string that won't be in the command history
       .catch(Common.oops(this)))
 })

@@ -157,18 +157,18 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   )
 
   Common.localIt('should list core/', () =>
-    CLI.command(`ls`, this.app)
+    CLI.command(`ls -l`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'runTest.sh' }))
       .catch(Common.oops(this, true))
   )
 
-  /* it('should list directory properly that contains prefix matches', () => CLI.command(`ls @demos`, this.app)
+  /* it('should list directory properly that contains prefix matches', () => CLI.command(`ls -l @demos`, this.app)
     .then(ReplExpect.okWithCustom({ expect: 'try-retain.js' }))
     .catch(Common.oops(this, true)))
-  it('should list directory properly that contains prefix matches', () => CLI.command(`ls @demos`, this.app)
+  it('should list directory properly that contains prefix matches', () => CLI.command(`ls -l @demos`, this.app)
     .then(ReplExpect.okWithCustom({ expect: 'retain.js' }))
     .catch(Common.oops(this, true)))
-  it('should list directory properly that contains prefix matches', () => CLI.command(`ls @demos`, this.app)
+  it('should list directory properly that contains prefix matches', () => CLI.command(`ls -l @demos`, this.app)
     .then(ReplExpect.okWithCustom({ expect: 'try.js' }))
     .catch(Common.oops(this, true))) */
 
@@ -212,7 +212,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
   Common.pit('should list the new directory with spaces', () =>
-    CLI.command(`ls "${dirname}"`, this.app)
+    CLI.command(`ls -l "${dirname}"`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'foo2 bar2' }))
       .catch(Common.oops(this, true))
   )
