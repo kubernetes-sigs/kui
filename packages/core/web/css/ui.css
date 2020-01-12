@@ -482,7 +482,7 @@ sidecar.rule-enabled-false .sidecar-header-icon,
 .repl-block.processing .repl-output,
 .repl-block.valid-response .repl-output {
   display: flex;
-  align-items: flex-start;
+  /* align-items: flex-start; */
 }
 .sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.processing .repl-output,
 .sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.valid-response .repl-output {
@@ -1388,6 +1388,18 @@ code.fancy-code.hljs {
 }
 .flex-align-top {
   align-items: flex-start;
+}
+.grid-layout {
+  display: grid;
+  grid-column-gap: 1em;
+  grid-template-columns: repeat(auto-fit, minmax(15em, auto));
+  flex: 1;
+}
+.grid-layout > div {
+  margin-right: 0.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .normal-text {
   color: var(--color-text-01);
