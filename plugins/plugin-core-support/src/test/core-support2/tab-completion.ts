@@ -44,23 +44,23 @@ describe('Tab completion core', function(this: Common.ISuite) {
   touch(join(tmp2.name, 'foo bar2'))
 
   Common.localIt('should tab complete file with spaces unique', () => {
-    return tabby(this.app, `ls ${join(tmp1.name, 'foo')}`, `ls ${join(tmp1.name, 'foo bar')}`)
+    return tabby(this.app, `lls ${join(tmp1.name, 'foo')}`, `lls ${join(tmp1.name, 'foo bar')}`)
   })
 
   Common.localIt('should tab complete file with spaces unique with dash option', () => {
-    return tabby(this.app, `ls -l ${join(tmp1.name, 'foo')}`, `ls -l ${join(tmp1.name, 'foo bar')}`)
+    return tabby(this.app, `lls -l ${join(tmp1.name, 'foo')}`, `lls -l ${join(tmp1.name, 'foo bar')}`)
   })
 
   Common.localIt('should tab complete file with spaces unique with backslash escape', () => {
-    return tabby(this.app, `ls ${join(tmp1.name, 'foo\\ ')}`, `ls ${join(tmp1.name, 'foo bar')}`)
+    return tabby(this.app, `lls ${join(tmp1.name, 'foo\\ ')}`, `lls ${join(tmp1.name, 'foo bar')}`)
   })
 
   Common.localIt('should tab complete file with spaces non-unique yoyoyoyo', () => {
     return tabbyWithOptions(
       this.app,
-      `ls ${join(tmp2.name, 'foo')}`,
+      `lls ${join(tmp2.name, 'foo')}`,
       [join(tmp2.name, 'foo bar1'), join(tmp2.name, 'foo bar2')],
-      `ls ${join(tmp2.name, 'foo\\ bar1')}`,
+      `lls ${join(tmp2.name, 'foo\\ bar1')}`,
       { click: 0 }
     )
   })
@@ -68,9 +68,9 @@ describe('Tab completion core', function(this: Common.ISuite) {
   Common.localIt('should tab complete file with spaces non-unique with dash option', () => {
     return tabbyWithOptions(
       this.app,
-      `ls -l ${join(tmp2.name, 'foo')}`,
+      `lls -l ${join(tmp2.name, 'foo')}`,
       [join(tmp2.name, 'foo bar1'), join(tmp2.name, 'foo bar2')],
-      `ls -l ${join(tmp2.name, 'foo\\ bar1')}`,
+      `lls -l ${join(tmp2.name, 'foo\\ bar1')}`,
       { click: 0 }
     )
   })
@@ -78,34 +78,34 @@ describe('Tab completion core', function(this: Common.ISuite) {
   Common.localIt('should tab complete file with spaces non-unique with backslash escape', () => {
     return tabbyWithOptions(
       this.app,
-      `ls ${join(tmp2.name, 'foo\\ ')}`,
+      `lls ${join(tmp2.name, 'foo\\ ')}`,
       [join(tmp2.name, 'foo\\ bar1'), join(tmp2.name, 'foo\\ bar2')],
-      `ls ${join(tmp2.name, 'foo\\ bar2')}`,
+      `lls ${join(tmp2.name, 'foo\\ bar2')}`,
       { click: 1 }
     )
   })
 
   Common.localIt('should tab complete file with spaces unique with backslash escape variant 2', () => {
-    return tabby(this.app, `ls ${join(tmp2.name, 'foo\\ bar1')}`, `ls ${join(tmp2.name, 'foo bar1')}`)
+    return tabby(this.app, `lls ${join(tmp2.name, 'foo\\ bar1')}`, `lls ${join(tmp2.name, 'foo bar1')}`)
   })
 
   // tab completion of directories
   Common.localIt('should complete on the single-entry directory', () =>
-    tabby(this.app, `ls ${ROOT}/data/core/core_single_entry_dir`, `ls ${ROOT}/data/core/core_single_entry_directory/`)
+    tabby(this.app, `lls ${ROOT}/data/core/core_single_entry_dir`, `lls ${ROOT}/data/core/core_single_entry_directory/`)
   )
 
   // tab completion of a directory, auto-completing the single entry in the directory
   Common.localIt('should complete on the single-entry directory', () =>
     tabby(
       this.app,
-      `ls ${ROOT}/data/core/core_single_entry_directory/`,
-      `ls ${ROOT}/data/core/core_single_entry_directory/only_one_file_here_please.js`
+      `lls ${ROOT}/data/core/core_single_entry_directory/`,
+      `lls ${ROOT}/data/core/core_single_entry_directory/only_one_file_here_please.js`
     )
   )
 
   // tab completion of a dot file
   Common.localIt('should complete on a dot file', () =>
-    tabby(this.app, `ls ${ROOT}/data/core/.dot-file-for-`, `ls ${ROOT}/data/core/.dot-file-for-tests`)
+    tabby(this.app, `lls ${ROOT}/data/core/.dot-file-for-`, `lls ${ROOT}/data/core/.dot-file-for-tests`)
   )
 
   // tab completion with options, then click on the second (idx=1) entry of the expected cmpletion list

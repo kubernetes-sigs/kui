@@ -30,54 +30,59 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
   it('should use ls ../../', () =>
     CLI.command(`ls ../../`, this.app)
+      .then(ReplExpect.okWithString('package.json'))
+      .catch(Common.oops(this)))
+
+  it('should use ls -l ../../', () =>
+    CLI.command(`ls -l ../../`, this.app)
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
 
   it('should ls with semicolons 1', () =>
-    CLI.command(`ls ../../ ; echo ${echoString}`, this.app)
+    CLI.command(`ls -l ../../ ; echo ${echoString}`, this.app)
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
 
   it('should ls with semicolons 2', () =>
-    CLI.command(`ls ../../ ; echo ${echoString}`, this.app)
+    CLI.command(`ls -l ../../ ; echo ${echoString}`, this.app)
       .then(ReplExpect.okWithString(echoString))
       .catch(Common.oops(this)))
 
   it('should ls with semicolons 3', () =>
-    CLI.command(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
+    CLI.command(`ls -l ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
 
   it('should ls with semicolons 4', () =>
-    CLI.command(`ls ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
+    CLI.command(`ls -l ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
       .then(ReplExpect.okWithString(echoString))
       .catch(Common.oops(this)))
 
-  it('should use ls ../../README.md', () =>
-    CLI.command(`ls ../../README.md`, this.app)
+  it('should use ls -l ../../README.md', () =>
+    CLI.command(`ls -l ../../README.md`, this.app)
       .then(ReplExpect.okWith('README.md'))
       .catch(Common.oops(this)))
 
   const Cs = ['CONTRIBUTING.md']
   Cs.forEach(expect => {
-    it(`should use ls ../../C* and expect ${expect}`, () =>
-      CLI.command(`ls ../../C*`, this.app)
+    it(`should use ls -l ../../C* and expect ${expect}`, () =>
+      CLI.command(`ls -l ../../C*`, this.app)
         .then(ReplExpect.okWith(expect))
         .catch(Common.oops(this)))
   })
 
   const CsandP = Cs.concat(['package.json'])
   CsandP.forEach(expect => {
-    it('should use ls ../../C* ../package.json', () =>
-      CLI.command(`ls ../../C* ../../package.json`, this.app)
+    it('should use ls -l ../../C* ../package.json', () =>
+      CLI.command(`ls -l ../../C* ../../package.json`, this.app)
         .then(ReplExpect.okWith(expect))
         .catch(Common.oops(this)))
   })
 
   const CsandT = Cs.concat(['tools'])
   CsandT.forEach(expect => {
-    it('should use ls -d ../../C* ../tool*', () =>
-      CLI.command(`ls -d ../../C* ../../tool*`, this.app)
+    it('should use ls -d -l ../../C* ../tool*', () =>
+      CLI.command(`ls -d -l ../../C* ../../tool*`, this.app)
         .then(ReplExpect.okWith(expect))
         .catch(Common.oops(this)))
   })

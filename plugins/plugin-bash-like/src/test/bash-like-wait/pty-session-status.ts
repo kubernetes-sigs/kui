@@ -106,7 +106,7 @@ describe('pty session status offline at start', function(this: Common.ISuite) {
   )
 
   pit('should ls now that the proxy is online', () =>
-    CLI.command('ls ../..', this.app)
+    CLI.command('ls -l ../..', this.app)
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this, true))
   )

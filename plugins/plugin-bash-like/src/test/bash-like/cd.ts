@@ -77,8 +77,8 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
   )
 
   // ls with space and trailing slash; see https://github.com/IBM/kui/issues/1389
-  pit(`should execute 'ls /tmp/kui ${bar}/'`, () =>
-    CLI.command(`ls /tmp/kui\\ ${bar}/`, this.app)
+  pit(`should execute 'ls -l /tmp/kui ${bar}/'`, () =>
+    CLI.command(`ls -l /tmp/kui\\ ${bar}/`, this.app)
       .then(ReplExpect.okWithAny)
       .catch(Common.oops(this, true))
   )

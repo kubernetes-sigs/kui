@@ -63,6 +63,7 @@ interface KuiGlobOptions extends ParsedOptions {
   all: boolean
   d: boolean
   l: boolean
+  C: boolean
 }
 
 function formatPermissions(stats: Stats, isFile: boolean, isDirectory: boolean, isSymbolicLink: boolean) {
@@ -155,6 +156,8 @@ async function kuiglob({ argvNoOptions, parsedOptions }: Arguments<KuiGlobOption
       return A
     }, [])
 
+  const needStats = parsedOptions.l || parsedOptions.C
+
   const globbedEntries =
     toGlob.length === 0 && inputs.length > 0
       ? []
@@ -162,7 +165,8 @@ async function kuiglob({ argvNoOptions, parsedOptions }: Arguments<KuiGlobOption
           followSymbolicLinks: false,
           onlyFiles: false,
           dot: parsedOptions.a || parsedOptions.all,
-          stats: true,
+          stats: needStats,
+          objectMode: !needStats,
           cwd: process.env.PWD || process.cwd()
         })) as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
@@ -211,7 +215,7 @@ async function kuiglob({ argvNoOptions, parsedOptions }: Arguments<KuiGlobOption
       const isDirectory = dirent.isDirectory()
       const isSymbolicLink = dirent.isSymbolicLink()
 
-      const isExecutable = !!(stats.mode & (constants.S_IXUSR | constants.S_IXGRP | constants.S_IXOTH))
+      const isExecutable = stats && !!(stats.mode & (constants.S_IXUSR | constants.S_IXGRP | constants.S_IXOTH))
 
       const isSpecial = !isFile && !isDirectory && !isSymbolicLink
       // dirent.isBlockDevice() || dirent.isCharacterDevice() || dirent.isFIFO() || dirent.isSocket()
@@ -231,7 +235,7 @@ async function kuiglob({ argvNoOptions, parsedOptions }: Arguments<KuiGlobOption
           isExecutable,
           isSpecial,
           permissions: parsedOptions.l ? formatPermissions(stats, isFile, isDirectory, isSymbolicLink) : '',
-          username: user.uid === stats.uid ? user.username : ''
+          username: stats && user.uid === stats.uid ? user.username : ''
         }
       }
     })
@@ -247,7 +251,7 @@ export default (commandTree: Registrar) => {
     hidden: true,
     requiresLocal: true,
     flags: {
-      boolean: ['a', 'all', 'd']
+      boolean: ['a', 'all', 'd', 'l', 'C']
     }
   })
 }
