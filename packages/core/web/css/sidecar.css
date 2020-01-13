@@ -1,4 +1,4 @@
-body[data-presentation="SidecarThin"] {
+body {
   --color-background-inverted01: var(--color-base05);
   --color-background-inverted02: var(--color-base03);
   --color-text-inverted01: var(--color-ui-06);
