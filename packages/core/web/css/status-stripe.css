@@ -1,0 +1,73 @@
+.kui--status-stripe {
+  display: flex;
+  flex-basis: 1.75em;
+  background-color: var(--color-ui-04);
+
+  --color-fg: var(--color-text-01);
+}
+
+.kui--status-stripe .kui--status-stripe-element a.clickable {
+  /* wrappers around clickable svgs */
+  display: flex;
+  align-items: center;
+}
+
+.kui--status-stripe .kui--status-stripe-element {
+  color: var(--color-fg);
+}
+.kui--status-stripe .kui--status-stripe-element svg {
+  fill: var(--color-fg);
+}
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] {
+  color: var(--color-text-02);
+}
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg {
+  fill: var(--color-text-02);
+}
+/*.kui--status-stripe .kui--status-stripe-element[data-view="dirty"] {
+  color: var(--color-yellow);
+}*/
+.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg {
+  fill: var(--color-green);
+}
+.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
+  fill: var(--color-yellow);
+}
+.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg {
+  fill: var(--color-error);
+}
+.kui--status-stripe .kui--status-stripe-element[data-view="hidden"] {
+  display: none;
+}
+
+.kui--status-stripe > div {
+  display: flex;
+}
+.kui--status-stripe .kui--status-stripe-context {
+  flex: 1;
+  font-size: 0.6875em;
+}
+
+.kui--status-stripe .kui--status-stripe-right {
+  justify-content: flex-end;
+}
+
+.kui--status-stripe .kui--status-stripe-element {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 0 1em;
+}
+
+.kui--status-stripe .clickable {
+  color: var(--color-fg);
+  text-decoration: none;
+}
+
+.kui--status-stripe .kui--status-stripe-element .clickable:hover {
+  color: var(--color-support-04) !important;
+  text-decoration: none;
+}
+.kui--status-stripe .kui--status-stripe-element .clickable:hover svg {
+  fill: var(--color-support-04) !important;
+}

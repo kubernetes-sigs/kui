@@ -27,6 +27,7 @@ import { ImplForPlugins } from '../core/command-tree'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
 import { registerSidecarMode as registerMode, ModeRegistration } from '../webapp/views/registrar/modes'
 import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
+import { StatusStripeContribution, Fragment as StatusStripeFragment } from '../webapp/status-stripe'
 
 class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar {
   // why does eslint consider this to be a useless constructor??
@@ -49,6 +50,20 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
 
   public registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void {
     registrations.forEach(_ => this.registerBadge(_))
+  }
+
+  /** status stripe context */
+  public async registerContext<F extends StatusStripeFragment>({
+    fragment,
+    listener
+  }: StatusStripeContribution<F>): Promise<void> {
+    const { default: StatusStripe } = await import('../webapp/status-stripe')
+
+    // decorate status stripe with the UI Fragment
+    const controller = StatusStripe.addTo('context', fragment)
+
+    // then wire it up to standard events
+    controller.listen(listener)
   }
 }
 
@@ -76,7 +91,7 @@ export default async (prescan: PrescanModel) => {
         debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration = registrationRef.registerCapability
         if (registration) {
-          await registration()
+          await registration(new PreloaderRegistrarImpl(module.route))
           debug('registered capabilities %s', module.path)
         } else {
           debug('no registered capabilities %s', module.path)

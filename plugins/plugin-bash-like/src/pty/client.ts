@@ -540,7 +540,7 @@ async function initOnMessage(
   let raw = ''
   let nLinesRaw = 0
 
-  let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack u ntil we fix up ascii-to-usage
+  let definitelyNotUsage = argvNoOptions[0] === 'git' || execOptions.rawResponse // short-term hack until we fix up ascii-to-usage
   let definitelyNotTable = expectingSemiStructuredOutput || argvNoOptions[0] === 'grep' || execOptions.rawResponse // short-term hack until we fix up ascii-to-table
 
   //
@@ -760,11 +760,12 @@ async function initOnMessage(
         }
       }
     } else if (msg.type === 'data' && execOptions.stdout && execOptions.onInit) {
+      bytesWereWritten = true
       execOptions.stdout(msg.data)
     } else if (msg.type === 'exit') {
       // server told us that it is done with msg.exitCode
 
-      if (msg.exitCode !== 0 && bytesWereWritten) {
+      if (msg.exitCode !== 0 && bytesWereWritten && xtermContainer !== undefined) {
         xtermContainer.classList.add('error')
       }
 
@@ -1165,7 +1166,12 @@ export const doExec = (
       const ourUUID = uuid()
 
       try {
-        if (!execOptions.quiet && !execOptions.replSilence) {
+        const hasBlock = block !== undefined && typeof block !== 'boolean'
+        if ((execOptions.quiet || execOptions.replSilence) && !hasBlock) {
+          debug('Warning: non-headless PTY exec without a head')
+        }
+
+        if (!execOptions.quiet && !execOptions.replSilence && hasBlock) {
           const parent = block.querySelector('.repl-result')
           xtermContainer = document.createElement('xterm')
           xtermContainer.classList.add('xterm-container')
