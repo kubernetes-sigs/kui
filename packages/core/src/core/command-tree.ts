@@ -393,14 +393,24 @@ const withEvents = <T extends KResponse, O extends ParsedOptions>(
         }
       }
 
-      if (leaf && eventBus) eventBus.emit('/command/complete', event)
+      if (leaf && eventBus) {
+        eventBus.emit('/command/complete', event)
+        if (event.execType !== ExecType.Nested) {
+          eventBus.emit('/command/complete/fromuser', tab)
+        }
+      }
     },
     error: (command: string, tab: Tab, execType: ExecType, err: CodedError): CodedError => {
       event.tab = tab
       event.execType = execType
       event.command = command
       event.error = oopsMessage(err)
-      if (leaf && eventBus) eventBus.emit('/command/complete', event)
+      if (leaf && eventBus) {
+        eventBus.emit('/command/complete', event)
+        if (event.execType !== ExecType.Nested) {
+          eventBus.emit('/command/complete/fromuser', tab)
+        }
+      }
 
       if (err.code === 127 && partialMatches) {
         // command not found

@@ -136,6 +136,8 @@ const switchTab = (tabId: string, activateOnly = false) => {
     promptToFocus.focus()
   }
 
+  eventBus.emit('/tab/switch', nextTab)
+
   return true
 }
 

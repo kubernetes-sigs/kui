@@ -208,3 +208,6 @@ export { tellMain } from './webapp/electron-events'
 // main
 export { main } from './main/main'
 export { default as boot } from './webapp/bootstrap/boot'
+
+// StatusStripe types
+export { TextWithIcon as StatusTextWithIcon, StatusStripeController } from './webapp/status-stripe'

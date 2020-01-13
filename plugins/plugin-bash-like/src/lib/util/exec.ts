@@ -33,11 +33,13 @@ export const handleNonZeroExitCode = (
 
   // note for below: 127 means command not found in POSIX land
   if (execOptions && execOptions.nested && exitCode !== 127) {
-    throw new Error(stderr)
+    const error = new Error(stderr)
+    error['code'] = exitCode
+    throw error
   } else {
     const error = new Error(stderr)
 
-    if (reallyLong(stderr)) {
+    if ((!execOptions || !execOptions.raw) && reallyLong(stderr)) {
       // a lot of output? render in sidecar
       return asSidecarEntity(command, parentNode || stderr)
     } else {

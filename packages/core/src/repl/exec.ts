@@ -41,6 +41,7 @@ import isFakeDom from '../util/is-fake-dom'
 import {
   RawContent,
   RawResponse,
+  isRawResponse,
   isResourceModification,
   isLowLevelLoop,
   MixedResponse,
@@ -861,11 +862,26 @@ export const qfexec = (
  * "raw" exec, where we want the data model back directly
  *
  */
-export const rexec = <Raw extends RawContent>(
+export const rexec = async <Raw extends RawContent>(
   command: string,
   execOptions = emptyExecOptions()
 ): Promise<RawResponse<Raw>> => {
-  return qexec<RawResponse<Raw>>(command, undefined, undefined, Object.assign({ raw: true }, execOptions))
+  const content = await qexec<Raw | RawResponse<Raw>>(
+    command,
+    undefined,
+    undefined,
+    Object.assign({ raw: true }, execOptions)
+  )
+
+  if (isRawResponse(content)) {
+    return content
+  } else {
+    // bad actors may return a string; adapt this to RawResponse
+    return {
+      mode: 'raw',
+      content
+    }
+  }
 }
 
 /**

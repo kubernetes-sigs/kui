@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { isHeadless, inBrowser, hasProxy, Arguments, Registrar } from '@kui-shell/core'
+import { Streamable, isHeadless, inBrowser, hasProxy, Arguments, Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -58,14 +58,33 @@ export const dispatchToShell = async ({
     return response
   } else {
     const { doExec } = await import(/* webpackMode: "lazy" */ '../../pty/client')
-    return doExec(
-      tab,
-      block as HTMLElement,
-      command.replace(/^(!|sendtopty)\s+/, ''),
-      argvNoOptions,
-      parsedOptions,
-      eOptions
-    ).catch(cleanUpError)
+    const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
+
+    const exec = () => doExec(tab, block as HTMLElement, actualCommand, argvNoOptions, parsedOptions, eOptions)
+
+    if (
+      execOptions.raw &&
+      execOptions.quiet === undefined &&
+      execOptions.echo === undefined &&
+      execOptions.replSilence === undefined
+    ) {
+      execOptions.quiet = true
+      execOptions.echo = false
+      execOptions.replSilence = true
+
+      let response = ''
+      execOptions.onInit = () => (_: Streamable) => {
+        if (typeof _ === 'string') {
+          response += _
+        }
+      }
+
+      return exec()
+        .then(() => response)
+        .catch(cleanUpError)
+    }
+
+    return exec().catch(cleanUpError)
   }
 }
 

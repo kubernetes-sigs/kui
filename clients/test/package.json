@@ -21,8 +21,9 @@
     "pty:rebuild": "kui-pty-rebuild",
     "pty:electron": "npm run pty:rebuild electron",
     "pty:nodejs": "npm run pty:rebuild node",
+    "open": "electron . shell",
     "start:web": "OPEN=true npm run watch:webpack",
-    "start": "npm run watch:electron && electron . shell"
+    "start": "npm run watch:electron && npm run open"
   },
   "repository": {
     "type": "git",
