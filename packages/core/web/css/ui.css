@@ -1571,7 +1571,7 @@ sidecar .result-as-table .big-top-pad:first-child {
   margin-left: 1em;
 }
 .small-right-pad {
-  margin-right: 1ex;
+  margin-right: 0.375em;
 }
 .right-pad {
   margin-right: 1em;

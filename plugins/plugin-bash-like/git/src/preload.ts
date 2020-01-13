@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import { CapabilityRegistration, PreloadRegistrar, isHeadless } from '@kui-shell/core'
+import { isHeadless, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
 
-import { mode1, mode2, mode3, button, badge1, badge2 } from './lib/modes'
-import testContext from './lib/status-stripe'
-
-export const registerCapability: CapabilityRegistration = (registrar: PreloadRegistrar) => {
+export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
-    registrar.registerContext(testContext())
+    return import('./status-stripe').then(_ => _.default(registrar))
   }
 }
 
-export default async (registrar: PreloadRegistrar) => {
+export default () => {
   if (!isHeadless()) {
-    registrar.registerModes(mode1, mode2, mode3, button)
-    registrar.registerBadges(badge1, badge2)
+    return import('./tab-completion').then(_ => _.default())
   }
 }

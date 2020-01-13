@@ -74,6 +74,7 @@ npm run compile:source:es6
 tsc --build tsconfig-es6.json --watch &
 WATCH=$!
 trap ctrl_c INT
+trap ctrl_c EXIT
 function ctrl_c() {
     kill $WATCH
 }

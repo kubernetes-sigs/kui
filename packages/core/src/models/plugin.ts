@@ -19,19 +19,25 @@ import { PrescanUsage } from '../plugins/prescan'
 import { MetadataBearing } from '../models/entity'
 import { BadgeRegistration } from '../webapp/views/registrar/badges'
 import { ModeRegistration } from '../webapp/views/registrar/modes'
+import { StatusStripeContribution, Fragment as StatusStripeFragment } from '../webapp/status-stripe'
 
 export type KuiPlugin = void | Promise<void>
 
 export type PluginRegistration = (commandTree: CommandRegistrar, options?: { usage: PrescanUsage }) => KuiPlugin
 
 export interface PreloadRegistrar extends CommandRegistrar {
+  /** sidecar modes */
   registerMode<Resource extends MetadataBearing>(registration: ModeRegistration<Resource>): void
   registerModes<Resource extends MetadataBearing>(...registrations: ModeRegistration<Resource>[]): void
 
+  /** sidecar badges */
   registerBadge<Resource extends MetadataBearing>(registration: BadgeRegistration<Resource>): void
   registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void
+
+  /** status stripe context */
+  registerContext<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void>
 }
 
 export type PreloadRegistration = (registrar: PreloadRegistrar) => Promise<void | void[]>
 
-export type CapabilityRegistration = () => Promise<void>
+export type CapabilityRegistration = (registrar: PreloadRegistrar) => void | Promise<void>

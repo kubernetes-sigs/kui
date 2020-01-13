@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { isHeadless, inBrowser, CapabilityRegistration, Registrar } from '@kui-shell/core'
+import { inBrowser, CapabilityRegistration, Registrar } from '@kui-shell/core'
 
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
@@ -33,10 +33,6 @@ export const registerCapability: CapabilityRegistration = async () => {
  *
  */
 export default async (commandTree: Registrar) => {
-  if (!isHeadless()) {
-    import('./lib/tab-completion/git').then(_ => _.default())
-  }
-
   if (!inBrowser()) {
     try {
       const prefetchShellState = (await import('./pty/prefetch')).default

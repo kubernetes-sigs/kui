@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
+import { ok } from 'assert'
 import { Common, CLI, Keys, Selectors } from '@kui-shell/test'
 import { tabButtonSelector } from '../../lib/new-tab'
 
 describe('tab navigation', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+
+  const waitForFocus = (selector: string, timeout?: number) => {
+    return this.app.client.waitUntil(async () => {
+      try {
+        return await this.app.client.hasFocus(selector)
+      } catch (err) {
+        console.error(err)
+        throw err
+      }
+    }, timeout || CLI.waitTimeout)
+  }
 
   const testPromptIsSelected = (hitTab = false, waitForSessionInit = false) => {
     it('should focus on repl input since we just hit Enter', async () => {
@@ -28,23 +40,23 @@ describe('tab navigation', function(this: Common.ISuite) {
           await CLI.waitForSession(this)
         }
         if (hitTab) {
-          await this.app.client.keys(Keys.TAB)
+          // hit tab until the prompt is enabled
+          while (true) {
+            await this.app.client.keys(Keys.TAB)
+
+            try {
+              await waitForFocus(Selectors.CURRENT_PROMPT, 1000)
+              break
+            } catch (err) {
+              console.error('we may need to tab again to restore prompt focus')
+            }
+          }
         }
-        await this.app.client.waitForEnabled(Selectors.CURRENT_PROMPT_BLOCK)
+        await waitForFocus(Selectors.CURRENT_PROMPT)
       } catch (err) {
         await Common.oops(this)(err)
       }
     })
-  }
-  const waitForFocus = (selector: string) => {
-    return this.app.client.waitUntil(async () => {
-      try {
-        return this.app.client.hasFocus(selector)
-      } catch (err) {
-        console.error(err)
-        throw err
-      }
-    }, 20000)
   }
 
   const testSelector = (selector: string, hitEnter = false, selectedSelector?: string) => {
@@ -91,13 +103,19 @@ describe('tab navigation', function(this: Common.ISuite) {
 
   const TAB_BUTTON_N = (N: number) => `.kui-tab:nth-child(${N})`
 
+  const promptBetterBeFocused = async () => {
+    const promptIsFocused = await this.app.client.hasFocus(Selectors.CURRENT_PROMPT)
+    ok(promptIsFocused)
+  }
+
   const testFullCycle = () => {
+    it('should be the beginning of a full cycle', promptBetterBeFocused)
     testSelector(TAB_BUTTON_N(1))
     testSelector(TAB_BUTTON_N(2))
     testSelector(tabButtonSelector)
     testSelector('#help-button')
     testPromptIsSelected(true) // <-- true means we hit tab first
-    it('should be the end of the full cycle', () => true)
+    it('should be the end of the full cycle', promptBetterBeFocused)
   }
 
   // when repl has content, tab navigation should not occur
