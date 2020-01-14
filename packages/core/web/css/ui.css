@@ -1391,8 +1391,8 @@ code.fancy-code.hljs {
 }
 .grid-layout {
   display: grid;
-  grid-column-gap: 1em;
-  grid-template-columns: repeat(auto-fit, minmax(15em, auto));
+  grid-column-gap: 0.375em;
+  grid-template-columns: repeat(auto-fill, minmax(10em, auto));
   flex: 1;
 }
 .grid-layout > div {
