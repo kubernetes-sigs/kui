@@ -416,7 +416,7 @@ async function clientHosted(opts: PrescanOptions) {
 async function clientRequired() {
   const topOfScan = dirname(require.resolve('@kui-shell/prescan.json'))
   debug('using clientRequired scan', topOfScan)
-  return scanForModules(topOfScan, false, (filename: string) => !!filename.match(/^plugin-/))
+  return scanForModules(topOfScan, false, (filename: string) => /^plugin-/.test(filename) || /^client$/.test(filename))
 }
 
 /**
