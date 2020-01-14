@@ -14,54 +14,9 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-import { Tab } from '../../webapp/cli'
-
-const debug = Debug('webapp/views/jobs')
-
 export interface Abortable {
   abort(): void
 }
 
-export class WatchableJob implements Abortable {
-  private _id: number
-
-  public get id() {
-    return this._id
-  }
-
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(private tab: Tab, private handler: TimerHandler, private timeout: number) {}
-
-  /**
-   * Start the watchable job
-   */
-  private startWatching(handler: TimerHandler, timeout: number) {
-    this._id = setInterval(handler, timeout)
-  }
-
-  /**
-   * Start the watchable job and store it in the associated tab
-   */
-  public start() {
-    this.startWatching(this.handler, this.timeout)
-    this.tab.state.captureJob(this)
-    debug(`start job ${this._id} with timeout ${this.timeout}`)
-  }
-
-  /**
-   * Stop the running job
-   */
-  private stopWatching(id: number) {
-    clearInterval(id)
-  }
-
-  /**
-   * Abort the running job and remove it from the associated tab
-   */
-  public abort() {
-    this.stopWatching(this._id)
-    this.tab.state.removeJob(this)
-    debug(`stop job ${this._id}`)
-  }
-}
+/** in the future, a WatchableJob may be more than Abortable, e.g. Suspendable */
+export type WatchableJob = Abortable
