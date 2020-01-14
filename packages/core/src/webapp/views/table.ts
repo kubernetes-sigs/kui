@@ -674,6 +674,8 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
 
   if (isWatchable(response)) {
     const watch = response.watch
+    tab.state.captureJob(watch)
+
     /** offline takes the rowKey of the row to be deleted and applies this to the table view */
     const offline = (rowKey: string) => {
       const existingRows = existingTable.rowsModel

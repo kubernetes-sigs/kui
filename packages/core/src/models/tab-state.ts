@@ -142,17 +142,9 @@ export default class TabState {
   }
 
   /**
-   * Clear any references to the given job. It is assumed that the
-   * caller is responsible for aborting the job.
+   * Restore tab state
    *
    */
-  public removeJob(job: WatchableJob) {
-    if (this._jobs) {
-      const idx = this._jobs.findIndex(existingJob => existingJob && existingJob.id === job.id)
-      this.clearAt(idx)
-    }
-  }
-
   public restore() {
     process.env = this._env
 
