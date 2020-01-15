@@ -17,7 +17,16 @@
 import { userInfo } from 'os'
 import { stat, Stats, constants } from 'fs'
 
-import { i18n, expandHomeDir, CodedError, RawResponse, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
+import {
+  i18n,
+  isHeadless,
+  expandHomeDir,
+  CodedError,
+  RawResponse,
+  Arguments,
+  ParsedOptions,
+  Registrar
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 
@@ -110,7 +119,11 @@ const yup = () => true
  * Kui command for globbing readdir
  *
  */
-async function kuiglob({ argvNoOptions, parsedOptions }: Arguments<KuiGlobOptions>): Promise<RawResponse<GlobStats[]>> {
+async function kuiglob({
+  tab,
+  argvNoOptions,
+  parsedOptions
+}: Arguments<KuiGlobOptions>): Promise<RawResponse<GlobStats[]>> {
   // Intentional require versus import... some typing issues right
   // now. Also intentionally lazy here, to avoid complications with
   // webpack bundling with browser targets.
@@ -167,7 +180,7 @@ async function kuiglob({ argvNoOptions, parsedOptions }: Arguments<KuiGlobOption
           dot: parsedOptions.a || parsedOptions.all,
           stats: needStats,
           objectMode: !needStats,
-          cwd: process.env.PWD || process.cwd()
+          cwd: isHeadless() ? process.cwd() : tab.state.cwd
         })) as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
 
