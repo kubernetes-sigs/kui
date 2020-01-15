@@ -48,7 +48,7 @@ BUILDDIR="$CLIENT_HOME"/dist/webpack
 
 APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
-THEME="$CLIENT_HOME"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
+THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 
 echo "build-webpack CLIENT_HOME=$CLIENT_HOME"
 echo "build-webpack BUILDDIR=$BUILDDIR"

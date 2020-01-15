@@ -34,7 +34,7 @@ echo "staging directory: $STAGING"
 CLIENT_HOME="$(pwd)"
 APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
-THEME="$CLIENT_HOME"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
+THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 export BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
 
@@ -154,9 +154,9 @@ function es6 {
 # copy over the theme bits
 function theme {
     # filesystem icons
-    ICON_MAC="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.darwin`
-    ICON_WIN32="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.win32`
-    ICON_LINUX="$THEME"/`cat $APPDIR/settings/config.json | jq --raw-output .theme.filesystemIcons.linux`
+    ICON_MAC="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.darwin)')
+    ICON_WIN32="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.win32)')
+    ICON_LINUX="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.linux)')
 
     # copy over theme css and icons
     if [ -d "$THEME"/css ]; then
@@ -382,7 +382,8 @@ function builddeps {
     echo "ELECTRON_VERSION=$ELECTRON_VERSION"
 
     # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat $APPDIR/settings/config.json | jq --raw-output .theme.productName`}"
+    CONIFG_PRODUCT_NAME=$(cd "$THEME" && node -e 'console.log(require("./config.d/name").productName)')
+    export PRODUCT_NAME="${PRODUCT_NAME-$CONIFG_PRODUCT_NAME}"
     [[ -z ${CLIENT_NAME} ]] && export CLIENT_NAME="${PRODUCT_NAME}"
     echo "PRODUCT_NAME=$PRODUCT_NAME"
     echo "Using CLIENT_NAME=$CLIENT_NAME"

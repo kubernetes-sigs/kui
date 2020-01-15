@@ -28,8 +28,6 @@ import {
   Registrar,
   Event,
   ExecType,
-  config,
-  theme,
   Tab,
   getCurrentPrompt,
   empty,
@@ -44,16 +42,13 @@ import {
   isSidecarVisible,
   sidecarSelector
 } from '@kui-shell/core'
+import { productName } from '@kui-shell/client/config.d/name.json'
+import { topTabs } from '@kui-shell/client/config.d/style.json'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/new-tab')
 
 export const tabButtonSelector = '#new-tab-button'
-
-interface TabConfig {
-  topTabs?: { names: 'fixed' | 'command' }
-}
-const { topTabs = { names: 'command' } } = config as TabConfig
 
 /** cheapo uuid; we only need single-threaded uniqueness */
 let _uuidCounter = 1
@@ -76,7 +71,7 @@ function element(id: string, parent: ParentNode = document): HTMLElement {
 }
 
 function isUsingCommandName() {
-  return topTabs.names !== 'fixed' && !document.body.classList.contains('kui--alternate')
+  return topTabs.names === 'command' && !document.body.classList.contains('kui--alternate')
 }
 
 /**
@@ -193,7 +188,7 @@ const addCommandEvaluationListeners = (): void => {
           // command
           if (!isSidecarVisible(tab)) {
             if (isUsingCommandName()) {
-              getTabButtonLabel(tab).innerText = theme.productName
+              getTabButtonLabel(tab).innerText = productName
             }
           }
         } else {
@@ -416,7 +411,7 @@ const oneTimeInit = (): void => {
   // initialize the first tab
   perTabInit(initialTab, initialTabButton, false)
 
-  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : theme.productName
+  getTabButtonLabel(getCurrentTab()).innerText = !isUsingCommandName() ? strings('Tab') : productName
 
   // focus the current prompt no matter where the user clicks in the left tab stripe
   ;(document.querySelector('.main > .left-tab-stripe') as HTMLElement).onclick = () => {

@@ -97,18 +97,16 @@ export function createWindow(
   // but this doesn't render the inset window buttons
   // see https://github.com/electron/electron/issues/10243
   promise.then(async () => {
-    const {
-      theme,
-      env
-    }: {
-      theme: { productName: string; filesystemIcons: { linux: string; win32: string } }
-      env: { imageHome: string }
-    } = await import('@kui-shell/settings/config.json')
+    const { env }: { env: { imageHome: string } } = await import('@kui-shell/settings/config.json')
+    const { productName }: { productName: string } = await import('@kui-shell/client/config.d/name.json')
+    const { filesystem }: { filesystem: { linux: string; win32: string } } = await import(
+      '@kui-shell/client/config.d/icons.json'
+    )
 
     const Electron = await import('electron')
     const opts: Electron.BrowserWindowConstructorOptions = Object.assign(
       {
-        title: theme.productName,
+        title: productName,
         width,
         height,
         webPreferences: {
@@ -124,10 +122,10 @@ export function createWindow(
     const { dirname, join } = await import('path')
     const root = dirname(require.resolve('@kui-shell/settings/package.json'))
     if (process.platform === 'linux') {
-      const icon = join(root, env.imageHome, '/../../../build', theme.filesystemIcons.linux)
+      const icon = join(root, env.imageHome, '/../../../build', filesystem.linux)
       opts.icon = icon
     } else if (process.platform === 'win32') {
-      const icon = join(root, env.imageHome, '/../../../build', theme.filesystemIcons.win32)
+      const icon = join(root, env.imageHome, '/../../../build', filesystem.win32)
       opts.icon = icon
     }
     if (process.platform === 'linux' || process.platform === 'win32') {

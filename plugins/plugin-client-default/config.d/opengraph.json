@@ -1,0 +1,11 @@
+{
+  "ogSiteName": "Kui",
+  "ogTitle": "Kui: The CLI with a GUI twist",
+  "ogUrl": "http://kui.tools",
+  "ogDescription": "Kui is a platform for enhancing the terminal experience with visualizations. It provides users a modern alternative to ASCII terminals and web-based consoles. It provides tool developers an opportunity to unify these experiences.",
+  "ogImage": "http://content.kui-shell.org/images/ogImage.jpg",
+  "ogLabel1": "Clone on GitHub",
+  "ogData1": "https://github.com/IBM/kui",
+  "ogLabel2": "Download Now",
+  "ogData2": "https://tarball.kui-shell.org"
+}

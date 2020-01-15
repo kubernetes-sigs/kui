@@ -12,7 +12,7 @@ set -o pipefail
 
 export CLIENT=${CLIENT-default}
 CLIENT_DEFN_PLUGIN=`cat clients/"$CLIENT"/package.json | jq --raw-output .kui.client`
-THEME=$(cd node_modules/@kui-shell/"$CLIENT_DEFN_PLUGIN" && pwd)
+THEME=$(cd node_modules/@kui-shell/client && pwd)
 
 # rebuild the html in case the user has changed CLIENT
 npm run build:html
@@ -53,7 +53,7 @@ mkdir -p clients/$CLIENT/$TARGETDIR/css
 
 # link in any config.json settings that the CLIENT definition may specify
 (cd node_modules/@kui-shell/settings && \
-     rm -f config-dev.json; if [ -f "$THEME"/config.json ]; then echo "linking config-dev.json"; cp "$THEME"/config.json config-dev.json; fi)
+     rm -f config-dev.json; if [ -f "$THEME"/config.d/config.json ]; then echo "linking config-dev.json"; cp "$THEME"/config.d/config.json config-dev.json; fi)
 
 # display extra build progress?
 if [ -z "$TRAVIS_JOB_ID" ]; then

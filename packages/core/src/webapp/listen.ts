@@ -18,6 +18,8 @@ import Debug from 'debug'
 const debug = Debug('webapp/cli/listen')
 debug('loading')
 
+import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
+
 import { inBrowser, inElectron } from '../core/capabilities'
 
 import { keys } from './keys'
@@ -27,7 +29,7 @@ import { getCurrentTab } from './tab'
 import { isPopup } from './popup-core'
 import { getCurrentPrompt, getBottomPrompt, isUsingCustomPrompt } from './prompt'
 
-import { theme as settings, inBottomInputMode } from '../core/settings'
+import { inBottomInputMode } from '../core/settings'
 
 import { getSidecar } from './views/sidecar-core'
 
@@ -92,7 +94,7 @@ export const listen = (prompt: HTMLInputElement) => {
     bottomPrompt.tabIndex = 1
   }
   prompt.readOnly = false
-  prompt.placeholder = settings.placeholder || ''
+  prompt.placeholder = promptPlaceholder
   prompt.tabIndex = 1
 
   const grandparent = prompt.parentNode.parentNode as Element

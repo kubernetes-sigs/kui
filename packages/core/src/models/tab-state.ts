@@ -19,7 +19,8 @@ import Debug from 'debug'
 import { WatchableJob } from '../core/jobs/job'
 import { inBrowser } from '../core/capabilities'
 import { getCurrentPrompt } from '../webapp/prompt'
-import { theme, inBottomInputMode } from '../core/settings'
+import { inBottomInputMode } from '../core/settings'
+import { maxWatchersPerTab } from '@kui-shell/client/config.d/limits.json'
 
 const debug = Debug('core/models/TabState')
 
@@ -108,7 +109,7 @@ export default class TabState {
   /** attach a job to this tab */
   public captureJob(job: WatchableJob) {
     if (!this._jobs) {
-      const maxJobs = theme.maxWatchersPerTab || 6
+      const maxJobs = maxWatchersPerTab
       this._jobs = new Array<WatchableJob>(maxJobs)
       this._age = new Array<number>(maxJobs)
     }

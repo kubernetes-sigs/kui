@@ -16,11 +16,10 @@
 
 // require('electron-is-dev');
 
-import { theme } from '../core/settings'
+import { productName } from '@kui-shell/client/config.d/name.json'
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
 const isDev = false
-const { productName } = theme
 
 /**
  * Tell the renderer to execute a command

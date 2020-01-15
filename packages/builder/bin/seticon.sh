@@ -19,7 +19,7 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../.."
 CONFDIR="$TOPDIR"/node_modules/@kui-shell/settings
-THEME="${TOPDIR}"/node_modules/@kui-shell/`cat "$CLIENT_HOME"/package.json | jq --raw-output .kui.client`
+THEME="${TOPDIR}"/node_modules/@kui-shell/client
 
 echo "Using CLIENT_HOME=$CLIENT_HOME"
 
@@ -33,8 +33,8 @@ else
         (cd "$SCRIPTDIR"/.. && npm install --no-save fileicon)
     fi
 
-    ICON="$THEME"/`cat "$CONFDIR"/config.json | jq --raw-output .theme.appIcon`
-    APPNAME=`cat "$CONFDIR"/config.json | jq --raw-output .theme.productName`
+    ICON="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").app)')
+    APPNAME=$(cd $THEME && node -e 'console.log(require("./config.d/name").productName)')
     echo "Using appName=${APPNAME} and appIcon=${ICON}"
 
     npx fileicon set "$TOPDIR"/node_modules/electron/dist/Electron.app/ "$ICON"

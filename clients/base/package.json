@@ -10,14 +10,13 @@
   "license": "Apache-2.0",
   "main": "node_modules/@kui-shell/core/dist/main/main.js",
   "kui": {
-    "client": "plugin-client-default",
     "readme": "../../README.md"
   },
   "dependencies": {
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/plugin-manager": "file:/tmp/kui-packs/kui-shell-plugin-manager.tgz",
     "@kui-shell/plugin-tutorials": "file:/tmp/kui-packs/kui-shell-plugin-tutorials.tgz",
-    "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
+    "@kui-shell/client": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz"
   },
   "devDependencies": {
