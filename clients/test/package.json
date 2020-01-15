@@ -32,9 +32,6 @@
   "keywords": [],
   "author": "Mengting Yan",
   "license": "Apache-2.0",
-  "kui": {
-    "client": "plugin-client-default"
-  },
   "devDependencies": {
     "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz",
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
@@ -54,7 +51,7 @@
     "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-core-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-themes.tgz",
-    "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
+    "@kui-shell/client": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
     "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/plugin-test": "file:plugins/plugin-test"
   }

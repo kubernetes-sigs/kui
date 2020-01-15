@@ -16,10 +16,11 @@
   "bugs": {
     "url": "https://github.com/IBM/kui/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@kui-shell/client": "file:../../plugins/plugin-client-default"
+  },
   "main": "node_modules/@kui-shell/core/dist/main/main.js",
   "kui": {
-    "client": "plugin-client-default",
     "readme": "../../README.md"
   }
 }

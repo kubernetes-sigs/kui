@@ -33,9 +33,9 @@ import {
   CodedError,
   ReplEval,
   DirectReplEval,
-  config,
   ElementMimic
 } from '@kui-shell/core'
+import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
 
 import { isDisabled, ProxyServerConfig } from './config'
 
@@ -50,7 +50,7 @@ const debug = Debug('plugins/proxy-support/executor')
  *
  */
 import defaultProxyServerConfig from './defaultProxyServerConfig'
-const proxyServerConfig: ProxyServerConfig = config['proxyServer'] || defaultProxyServerConfig
+const proxyServerConfig: ProxyServerConfig = proxyServer || defaultProxyServerConfig
 debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */

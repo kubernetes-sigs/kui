@@ -22,8 +22,6 @@ import {
   Registrar,
   CodedError,
   i18n,
-  theme,
-  config,
   Tab,
   getCurrentBlock,
   getCurrentPrompt,
@@ -32,6 +30,8 @@ import {
   setStatus,
   Status
 } from '@kui-shell/core'
+import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
+import { proxyServer, millisBeforeProxyConnectionWarning } from '@kui-shell/client/config.d/proxy.json'
 
 import { Channel, InProcessChannel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -103,7 +103,7 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
             if (placeholderChanged) {
               const prompt = getPrompt(block)
               prompt.readOnly = false
-              prompt.placeholder = theme.placeholder || ''
+              prompt.placeholder = promptPlaceholder || ''
               setStatus(block, Status.replActive)
 
               if (previousText) {
@@ -157,7 +157,7 @@ function newSessionForTab(tab: Tab) {
         prompt.placeholder = strings('Please wait while we connect to your cloud')
         setStatus(block, Status.processing)
         placeholderChanged = true
-      }, theme.millisBeforeProxyConnectionWarning || 250)
+      }, millisBeforeProxyConnectionWarning)
 
       await sessionInitialization
 
@@ -165,7 +165,7 @@ function newSessionForTab(tab: Tab) {
       prompt.readOnly = false
       if (placeholderChanged) {
         setStatus(block, Status.replActive)
-        prompt.placeholder = theme.placeholder || ''
+        prompt.placeholder = promptPlaceholder || ''
         await tab.REPL.pexec('ready', { tab })
       }
 
@@ -205,7 +205,7 @@ export function registerCommands(commandTree: Registrar) {
  *
  */
 export async function init() {
-  if (inBrowser() && config['proxyServer'] && config['proxyServer']['enabled'] !== false) {
+  if (inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
     debug('initializing pty sessions')
 
     const { eventBus } = await import('@kui-shell/core')

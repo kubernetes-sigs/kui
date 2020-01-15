@@ -23,19 +23,17 @@ import {
   ParsedOptions,
   Registrar,
   i18n,
-  i18nFromMap,
-  theme,
-  config,
   inBrowser,
   injectCSS,
   Mode,
   Presentation
 } from '@kui-shell/core'
 import { version } from '@kui-shell/settings/package.json'
+import { productName } from '@kui-shell/client/config.d/name.json'
 
 import usage from './usage'
 
-const strings = i18n('plugin-core-support')
+const clientStrings = i18n('client', 'about')
 const debug = Debug('plugins/core-support/about')
 
 /**
@@ -46,83 +44,10 @@ async function markdown(): Promise<(raw: string) => string> {
   const renderer = new marked.Renderer()
 
   renderer.link = (href: string, title: string, text: string) => {
-    return `<a href="${href}" title="${title}" class="bx--link">${text}</a>`
+    return `<a href="${href}" title="${title}" target="_blank" class="bx--link">${text}</a>`
   }
 
   return (raw: string) => marked(raw, { renderer })
-}
-
-async function renderAbout() {
-  const flexContent = document.createElement('div')
-  flexContent.classList.add('page-content')
-
-  const topContent = document.createElement('div')
-  topContent.classList.add('about-window-top-content')
-  flexContent.appendChild(topContent)
-
-  const badges = []
-
-  // intentionally require, to handle optionals
-  const { homepage, license } = require('@kui-shell/settings/package.json')
-
-  const home = theme.ogUrl || homepage
-  const openHome = async () =>
-    inBrowser()
-      ? window.open(home)
-      : (await import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ './electron-helpers')).openExternal(
-          home
-        )
-
-  if (license) {
-    badges.push(license)
-  }
-
-  // const subtext = theme.byline || description
-  /* subtext.appendChild(document.createTextNode('Distributed under an '))
-  const licenseDom = document.createElement('strong')
-  licenseDom.innerText = license
-  subtext.appendChild(licenseDom)
-  subtext.appendChild(document.createTextNode(' license')) */
-
-  const logo = document.createElement('div')
-  topContent.appendChild(logo)
-  logo.classList.add('logo')
-
-  const aboutImage = theme.wideIcon || theme.largeIcon
-  if (aboutImage) {
-    const iconP = document.createElement('div')
-    const icon = document.createElement('img')
-    icon.addEventListener('click', openHome)
-    icon.classList.add('clickable')
-    iconP.appendChild(icon)
-    logo.appendChild(iconP)
-    icon.src = aboutImage
-    icon.alt = theme.productName
-    if (theme.wideIcon) {
-      icon.classList.add('kui--wide-icon')
-    }
-  }
-
-  const description = theme.description || theme.ogDescription
-  if (description) {
-    const marked = await markdown()
-    const longDescription = document.createElement('div')
-    longDescription.classList.add('about-window-long-description')
-    logo.appendChild(longDescription)
-
-    if (typeof description === 'string') {
-      try {
-        longDescription.innerHTML = marked(description)
-      } catch (err) {
-        console.error('error rendering markdown', err)
-        longDescription.innerText = description
-      }
-    } else {
-      longDescription.innerHTML = marked(i18nFromMap(description))
-    }
-  }
-
-  return flexContent
 }
 
 function renderVersion(name: string) {
@@ -141,7 +66,6 @@ function renderVersion(name: string) {
 
   const versionModel = process.versions
   versionModel[name] = version
-  versionModel['build'] = config['build-info']
 
   const thead = document.createElement('thead')
   thead.classList.add('entity')
@@ -205,17 +129,11 @@ function renderVersion(name: string) {
   return bottomContent
 }
 
-async function renderGettingStarted({ REPL }: Arguments) {
-  if (theme.gettingStarted && typeof theme.gettingStarted !== 'string') {
-    const marked = await markdown()
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('page-content')
-    wrapper.innerHTML = marked(i18nFromMap(theme.gettingStarted))
-    return wrapper
-  } else if (typeof theme.gettingStarted === 'string' && theme.gettingStarted !== 'getting started') {
-    return REPL.qexec<HTMLElement>(theme.gettingStarted)
-  } else {
-    console.error('no getting started content defined by client')
+async function renderTutorial(args: Arguments<Options>) {
+  try {
+    return args.REPL.qexec<HTMLElement>('tutorial play @tutorials/getting-started')
+  } catch (err) {
+    console.error(err)
     const empty = document.createElement('div')
     return empty
   }
@@ -223,7 +141,59 @@ async function renderGettingStarted({ REPL }: Arguments) {
 
 interface Options extends ParsedOptions {
   mode: string
+  contentFrom: string
   content: string
+}
+
+async function renderContentFromCommand(command: string, args: Arguments<Options>) {
+  try {
+    const response = await args.REPL.qexec<HTMLElement>(command, undefined, undefined, { render: true })
+    debug('rendering content', command, response)
+
+    const container = document.createElement('div')
+    const innerContainer = document.createElement('div')
+    container.classList.add('about-window-bottom-content')
+    innerContainer.style.display = 'flex'
+    innerContainer.style.flex = '1'
+    response.style.flex = '1'
+    container.appendChild(innerContainer)
+    innerContainer.appendChild(response)
+    return container
+  } catch (err) {
+    console.error(err)
+    const empty = document.createElement('div')
+    return empty
+  }
+}
+
+async function renderMarkdownContent(content: string) {
+  try {
+    const marked = await markdown()
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('page-content')
+    wrapper.innerHTML = marked(content)
+    return wrapper
+  } catch (err) {
+    console.error(err)
+    const empty = document.createElement('div')
+    return empty
+  }
+}
+
+/**
+ * find command to execute from the command option, or the given `Mode`
+ *
+ */
+function findCommand(mode: Mode, args?: Arguments<Options>) {
+  return (args && args.parsedOptions.contentFrom) || (mode as { contentFrom?: string }).contentFrom
+}
+
+/**
+ * find content to render from the command option, or the given ` Mode`
+ *
+ */
+function findContent(mode: Mode, args?: Arguments<Options>) {
+  return (args && args.parsedOptions.content) || (mode as { content?: string }).content
 }
 
 /**
@@ -235,63 +205,60 @@ interface Options extends ParsedOptions {
 const aboutWindow = async (args: Arguments<Options>): Promise<KResponse> => {
   debug('aboutWindow')
 
-  const { parsedOptions, REPL } = args
-
   injectCSS({
     css: require('@kui-shell/plugin-core-support/web/css/about.css'),
     key: 'about-window-css'
   })
 
   const name =
-    theme.productName ||
+    productName ||
     (!inBrowser() &&
       (await import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ './electron-helpers')).getAppName())
 
   // this is the main container for the dom
-  const content = document.createElement('div')
-  content.classList.add('about-window')
+  const contentDom = document.createElement('div')
+  contentDom.classList.add('about-window')
 
-  const defaultMode = parsedOptions.mode || 'about'
-  debug('defaultMode', defaultMode)
+  const modesFromAbout: Mode[] = await import('@kui-shell/client/config.d/about.json').then(_ => _.modes)
 
-  if (parsedOptions.content) {
-    const response = await REPL.qexec<HTMLElement>(parsedOptions.content, undefined, undefined, { render: true })
-    debug('rendering content', parsedOptions.content, response)
+  const modeCurrent =
+    modesFromAbout.find(_ => _.mode === args.parsedOptions.mode) ||
+    modesFromAbout.find(_ => _.defaultMode) ||
+    modesFromAbout[0]
 
-    const container = document.createElement('div')
-    const innerContainer = document.createElement('div')
-    container.classList.add('about-window-bottom-content')
-    innerContainer.style.display = 'flex'
-    innerContainer.style.flex = '1'
-    response.style.flex = '1'
-    container.appendChild(innerContainer)
-    innerContainer.appendChild(response)
-    content.appendChild(container)
-  } else if (defaultMode === 'gettingStarted') {
-    content.appendChild(await renderGettingStarted(args))
-  } else if (defaultMode === 'version') {
-    content.appendChild(await renderVersion(name))
-  } else if (defaultMode === 'about') {
-    content.appendChild(await renderAbout())
+  const command = findCommand(modeCurrent, args)
+  const content = clientStrings(findContent(modeCurrent, args))
+
+  if (command) {
+    if (command === 'about --mode version') {
+      contentDom.appendChild(renderVersion(name))
+    } else if (command === 'about --mode tutorial') {
+      contentDom.appendChild(await renderTutorial(args))
+    } else {
+      contentDom.appendChild(await renderContentFromCommand(command, args))
+    }
+  } else {
+    contentDom.appendChild(await renderMarkdownContent(content))
   }
 
-  const standardModes: Mode[] = [
-    { mode: 'about', label: strings('About'), contentFrom: 'about' },
-    {
-      mode: 'gettingStarted',
-      label: strings('Getting Started'),
-      contentFrom: 'about --mode gettingStarted'
-    },
-    {
-      mode: 'configure',
-      label: strings('Configure'),
-      contentFrom: 'about --mode configure --content themes'
-    },
-    { mode: 'version', label: strings('Version'), contentFrom: 'about --mode version' }
-  ]
-  const modes: Mode[] = standardModes.concat(theme.about || [])
+  const modes = modesFromAbout.map(
+    (modeFromAbout): Mode => {
+      const mode = modeFromAbout.mode
+      const content = findContent(modeFromAbout)
+      const contentFrom = findCommand(modeFromAbout)
+      const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
 
-  modes.find(_ => _.mode === defaultMode).defaultMode = true
+      return {
+        mode,
+        label,
+        contentFrom: contentFrom
+          ? `about --mode ${mode} --contentFrom "${contentFrom}"`
+          : `about --mode ${mode} --content "${content}"`
+      }
+    }
+  )
+
+  modes.find(_ => _.mode === modeCurrent.mode).defaultMode = true
 
   return {
     type: 'custom',
@@ -302,9 +269,7 @@ const aboutWindow = async (args: Arguments<Options>): Promise<KResponse> => {
     metadata: {
       name
     },
-    // badges,
-    // version,
-    content
+    content: contentDom
   }
 }
 
@@ -326,10 +291,6 @@ const reportVersion = () => {
 
   const version = getVersion()
 
-  // we were asked only to report the installed version
-  if (config['build-info']) {
-    return `${version} (build ${config['build-info']})`
-  }
   return version
 }
 
@@ -366,7 +327,7 @@ export default (commandTree: Registrar) => {
   })
 
   // getting started shortcut
-  commandTree.listen('/getting/started', ({ REPL }) => REPL.qexec('about --mode gettingStarted'), {
+  commandTree.listen('/getting/started', ({ REPL }) => REPL.qexec('about --mode tutorial'), {
     needsUI: true,
     inBrowserOk: true
   })

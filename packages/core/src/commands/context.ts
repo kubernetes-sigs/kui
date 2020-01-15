@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { theme } from '../core/settings'
+import { defaultContext } from '@kui-shell/client/config.d/exec.json'
 
 /**
  * Parse a serialized command context
@@ -46,8 +46,7 @@ function parseCommandContext(str: string): string[] {
  * by calling `setDefaultCommandContext`.
  *
  */
-let _defaultContext: string[] =
-  parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || (theme && theme.defaultContext) || []
+let _defaultContext: string[] = parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || defaultContext || []
 
 /**
  * The command context model, defaulting to the _defaultContext, which

@@ -251,8 +251,7 @@ const main = (env, overrides = {}) => {
 const loadOverrides = (programmaticOverrides = {}) => {
   let overrideDirectory = process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
   if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
-    const packageJson = process.env.CLIENT_HOME && path.resolve(path.join(process.env.CLIENT_HOME, 'package.json'))
-    overrideDirectory = path.resolve('./node_modules/@kui-shell', require(packageJson).kui.client)
+    overrideDirectory = path.resolve('./node_modules/@kui-shell/client/config.d')
   }
   info('theme directory', overrideDirectory)
 
@@ -270,14 +269,18 @@ const loadOverrides = (programmaticOverrides = {}) => {
     }
   }
   const userEnv = loadOverride('env')
-  const userTheme = loadOverride('client')
-  const userConfig = loadOverride('config')
+  const userTheme = loadOverride('name')
+  const userClient = loadOverride('client')
+  const userStyle = loadOverride('style')
+  const userIcons = loadOverride('icons')
+  const userOpenGraph = loadOverride('opengraph')
+  const userProxy = loadOverride('proxy')
 
   const overrides = {
     build: programmaticOverrides.build || {},
     env: Object.assign({}, userEnv, programmaticOverrides.env),
-    theme: Object.assign({}, userTheme, programmaticOverrides.theme),
-    config: Object.assign({}, userConfig, programmaticOverrides.config)
+    theme: Object.assign({}, userTheme, userClient, userStyle, userIcons, userOpenGraph, programmaticOverrides.theme),
+    config: Object.assign({}, userProxy, programmaticOverrides.config)
   }
 
   if (
