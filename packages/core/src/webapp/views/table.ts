@@ -15,6 +15,7 @@
  */
 
 import * as prettyPrintDuration from 'pretty-ms'
+import { tableStyle } from '@kui-shell/client/config.d/style.json'
 
 import { Tab } from '../tab'
 import { isPopup } from '../popup-core'
@@ -22,7 +23,6 @@ import { getCurrentPrompt } from '../prompt'
 import { isMetadataBearing } from '../../models/entity'
 import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
 import { isWatchable, Watchable } from '../../core/jobs/watchable'
-import { theme } from '../../core/settings'
 
 import { isHTML } from '../../util/types'
 
@@ -551,8 +551,8 @@ function adoptCarbonTableStyle(tableDom: HTMLElement) {
 function setStyle(tableDom: HTMLElement, table: Table) {
   if (table.style !== undefined && TableStyle[table.style] !== undefined) {
     tableDom.setAttribute('kui-table-style', TableStyle[table.style].toString())
-  } else if (theme.tableStyle) {
-    tableDom.setAttribute('kui-table-style', theme.tableStyle)
+  } else if (tableStyle) {
+    tableDom.setAttribute('kui-table-style', tableStyle)
   }
 
   adoptCarbonTableStyle(tableDom)

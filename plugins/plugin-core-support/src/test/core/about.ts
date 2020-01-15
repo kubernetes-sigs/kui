@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-import { theme } from '@kui-shell/core'
+import { productName } from '@kui-shell/client/config.d/name.json'
 
 describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -24,13 +24,13 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     CLI.command('about', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(theme.productName))
+      .then(SidecarExpect.showing(productName))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
       .then(async () => {
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
           return this.app.client.execute(() => {
             const imageSrc = document
-              .querySelector('.about-window .logo')
+              .querySelector('.about-window')
               .querySelector('img')
               .getAttribute('src')
             const fs = require('fs')
@@ -41,7 +41,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
         if (process.env.MOCHA_RUN_TARGET === 'webpack') {
           return this.app.client.execute(() => {
             const imageSrc = document
-              .querySelector('.about-window .logo')
+              .querySelector('.about-window')
               .querySelector('img')
               .getAttribute('src')
             const image = new Image()
@@ -56,7 +56,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     CLI.command('about #About Kui', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(theme.productName))
+      .then(SidecarExpect.showing(productName))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
       .catch(Common.oops(this, true)))
 
@@ -82,8 +82,8 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     return CLI.command('getting started', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(theme.productName))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('gettingStarted')))
+      .then(SidecarExpect.showing(productName))
+      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('tutorial')))
       .catch(Common.oops(this, true))
   })
 })

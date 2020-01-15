@@ -88,11 +88,11 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
       await ctx.app.client.waitForVisible('#help-button')
       await ctx.app.client.click('#help-button')
       await ctx.app.client.waitForVisible(Selectors.SIDECAR)
-      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('configure'))
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('theme'))
       console.error('1')
-      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON('configure'))
-      console.error('2', Selectors.SIDECAR_MODE_BUTTON('configure'))
-      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('configure'))
+      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON('theme'))
+      console.error('2', Selectors.SIDECAR_MODE_BUTTON('theme'))
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('theme'))
       await new Promise(resolve => setTimeout(resolve, 300))
 
       const checkMarkCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`

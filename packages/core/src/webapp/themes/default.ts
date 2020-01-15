@@ -16,8 +16,10 @@
 
 import Debug from 'debug'
 
+import { defaultTheme as _defaultTheme } from '@kui-shell/client/config.d/style.json'
+
 import findThemeByName from './find'
-import { theme, uiThemes } from '../../core/settings'
+import { uiThemes } from '../../core/settings'
 
 const debug = Debug('core/webapp/themes/default')
 
@@ -26,7 +28,7 @@ const debug = Debug('core/webapp/themes/default')
  *
  */
 export async function getDefault(isDarkMode = false) {
-  let defaultTheme = theme.defaultTheme
+  let defaultTheme = _defaultTheme
 
   if (isDarkMode) {
     const darkThemeModel = await findThemeByName('Dark')

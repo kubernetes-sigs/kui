@@ -73,9 +73,9 @@ export interface Theme {
 export const inBottomInputMode =
   typeof document !== 'undefined' && document.body.classList.contains('kui--bottom-input')
 
-export const theme: Theme = t as Theme
+const theme: Theme = t as Theme
 export const env = e
-export const config = Object.assign({}, c, devOverrides)
+const config = Object.assign({}, c, devOverrides)
 
 export async function uiThemes(): Promise<ThemeSet[]> {
   // it is ipmortant to delay the loading here. otherwise,
