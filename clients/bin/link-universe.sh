@@ -25,7 +25,9 @@ mkdir -p "$target"
 rm -rf "$target"/*.tgz
 target=$(cd "$target" && pwd)
 
-rm -rf node_modules
+rm -rf node_modules && rm -f package-lock.json
+
+npm install --no-package-lock
 
 cp package.json bak.json
 
@@ -47,7 +49,8 @@ done
 wait
 
 # npm install those npm packs
-npm install --production --save --ignore-scripts --no-package-lock "$target"/!(*builder*|*webpack*)
+npm install --production --save --ignore-scripts --no-package-lock "$target"/!(*builder*|*webpack*|*plugin-client-default*)
+
 if [ "$1" = "proxy" ] || [ "$1" = "headless" ]; then
     npm install --production --save-dev --ignore-scripts --no-package-lock "$target"/*builder*
 else
