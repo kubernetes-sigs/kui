@@ -35,6 +35,9 @@ export type TextWithIcon = {
   /** The `icon` is assumed to be html represented as text */
   icon: string
 
+  /** for narrower icons */
+  iconIsNarrow?: boolean
+
   /** The `text` is an HTML element */
   text: HTMLElement
 
@@ -123,7 +126,7 @@ class StatusStripe {
 
       const icon = document.createElement('a')
       icon.href = '#' //
-      icon.classList.add('small-right-pad', 'kui--status-stripe-icon')
+      icon.classList.add(fragment.iconIsNarrow ? 'tiny-right-pad' : 'small-right-pad', 'kui--status-stripe-icon')
       icon.innerHTML = fragment.icon
 
       if (fragment.onclick) {

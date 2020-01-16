@@ -15,25 +15,40 @@
 .kui--status-stripe .kui--status-stripe-element {
   color: var(--color-fg);
 }
-.kui--status-stripe .kui--status-stripe-element svg {
+.kui--status-stripe .kui--status-stripe-element svg,
+.kui--status-stripe .kui--status-stripe-element svg path,
+.kui--status-stripe .kui--status-stripe-element svg rect,
+.kui--status-stripe .kui--status-stripe-element svg circle {
   fill: var(--color-fg);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="obscured"] {
   color: var(--color-text-02);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg {
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg,
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg path,
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg rect,
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg circle {
   fill: var(--color-text-02);
 }
 /*.kui--status-stripe .kui--status-stripe-element[data-view="dirty"] {
   color: var(--color-yellow);
 }*/
-.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg {
+.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg,
+.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg path,
+.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg rect,
+.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg circle {
   fill: var(--color-green);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
+.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg,
+.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg path,
+.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg rect,
+.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg circle {
   fill: var(--color-yellow);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg {
+.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg,
+.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg path,
+.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg circle,
+.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg rect {
   fill: var(--color-error);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="hidden"] {
@@ -59,6 +74,12 @@
   padding: 0 1em;
 }
 
+.kui--status-stripe-element > a {
+  /* see https://github.com/IBM/kui/issues/3489 */
+  display: flex;
+  align-items: center;
+}
+
 .kui--status-stripe .clickable {
   color: var(--color-fg);
   text-decoration: none;
@@ -68,6 +89,13 @@
   color: var(--color-support-04) !important;
   text-decoration: none;
 }
-.kui--status-stripe .kui--status-stripe-element .clickable:hover svg {
+.kui--status-stripe .kui--status-stripe-element .clickable:hover svg,
+.kui--status-stripe .kui--status-stripe-element .clickable:hover svg path,
+.kui--status-stripe .kui--status-stripe-element .clickable:hover svg rect,
+.kui--status-stripe .kui--status-stripe-element .clickable:hover svg circle {
   fill: var(--color-support-04) !important;
+}
+
+.kui--status-stripe-icon {
+  opacity: 0.875;
 }
