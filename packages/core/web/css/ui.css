@@ -1570,6 +1570,9 @@ sidecar .result-as-table .big-top-pad:first-child {
 .left-pad {
   margin-left: 1em;
 }
+.tiny-right-pad {
+  margin-right: 0.1875em;
+}
 .small-right-pad {
   margin-right: 0.375em;
 }
@@ -3273,16 +3276,6 @@ body {
 
   /* "is processing" color */
   --color-processing: var(--color-ui-05);
-
-  /* tab colors */
-  --color-tab-01: var(--color-base0D);
-  --color-tab-02: var(--color-base09);
-  --color-tab-03: var(--color-base0C);
-  --color-tab-04: var(--color-base0B);
-  --color-tab-05: var(--color-base0A);
-  --color-tab-06: var(--color-base0E);
-  --color-tab-07: var(--color-base08);
-  --color-tab-08: var(--color-base04);
 }
 
 .color-base08 {
