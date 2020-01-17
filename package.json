@@ -45,6 +45,7 @@
     "@kui-shell/core": "file:packages/core",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
     "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
+    "@kui-shell/plugin-carbon-themes": "file:plugins/plugin-carbon-themes",
     "@kui-shell/plugin-core-themes": "file:plugins/plugin-core-themes",
     "@kui-shell/plugin-editor": "file:plugins/plugin-editor",
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
