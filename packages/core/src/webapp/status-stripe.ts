@@ -17,7 +17,7 @@
 import { Tab, getCurrentTab } from './tab'
 import { isHTML } from '../util/types'
 
-type StripePosition = 'context' | 'button'
+export type StripePosition = 'context' | 'meter' | 'button'
 
 function stripe() {
   return document.querySelector('#kui--status-stripe')

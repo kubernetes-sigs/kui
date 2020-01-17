@@ -33,7 +33,7 @@ function render(fragment: MyFragment) {
 export const colors = ['ok' as const, 'warn' as const, 'error' as const, 'normal' as const]
 
 /** an id we want to attach to our fragment, to help with tests */
-export const id = 'test-client-counter-fragment'
+export const id = (idx: number) => `test-client-counter-fragment-${idx}`
 
 /**
  * On default events (new tab, tab switch, command execution), we
@@ -48,11 +48,11 @@ async function listener(tab: Tab, controller: StatusStripeController<MyFragment>
   fragment.text.innerText = render(fragment)
 }
 
-export default function() {
+export default function(idx: number) {
   const text = document.createElement('div')
 
   const fragment = {
-    id,
+    id: id(idx),
     counter: 0,
     icon,
     text,
