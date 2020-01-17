@@ -20,7 +20,7 @@ import { Common } from '@kui-shell/test'
 import { id as rawId, colors } from '../../lib/status-stripe'
 
 /** turn id into a selector */
-const id = `.${rawId}`
+const id = `.${rawId(0)}`
 
 describe('status stripe', function(this: Common.ISuite) {
   before(Common.before(this))

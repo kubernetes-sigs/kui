@@ -21,7 +21,9 @@ import testContext from './lib/status-stripe'
 
 export const registerCapability: CapabilityRegistration = (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
-    registrar.registerContext(testContext())
+    // intentionally placing the same widget as both a meter and context
+    registrar.registerMeter(testContext(0))
+    registrar.registerContext(testContext(1))
   }
 }
 

@@ -27,7 +27,11 @@ import { ImplForPlugins } from '../core/command-tree'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
 import { registerSidecarMode as registerMode, ModeRegistration } from '../webapp/views/registrar/modes'
 import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
-import { StatusStripeContribution, Fragment as StatusStripeFragment } from '../webapp/status-stripe'
+import {
+  StripePosition as StatusStripePosition,
+  StatusStripeContribution,
+  Fragment as StatusStripeFragment
+} from '../webapp/status-stripe'
 
 class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar {
   // why does eslint consider this to be a useless constructor??
@@ -52,18 +56,32 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
     registrations.forEach(_ => this.registerBadge(_))
   }
 
-  /** status stripe context */
-  public async registerContext<F extends StatusStripeFragment>({
-    fragment,
-    listener
-  }: StatusStripeContribution<F>): Promise<void> {
+  /** status stripe context and meters (private) */
+  public async registerStatusStripeContribution<F extends StatusStripeFragment>(
+    { fragment, listener }: StatusStripeContribution<F>,
+    position: StatusStripePosition
+  ): Promise<void> {
     const { default: StatusStripe } = await import('../webapp/status-stripe')
 
     // decorate status stripe with the UI Fragment
-    const controller = StatusStripe.addTo('context', fragment)
+    const controller = StatusStripe.addTo(position, fragment)
 
     // then wire it up to standard events
     controller.listen(listener)
+  }
+
+  /** status stripe context */
+  public registerContext<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void> {
+    return this.registerStatusStripeContribution(contrib, 'context')
+  }
+
+  /** status stripe meter */
+  public async registerMeter<F extends StatusStripeFragment>(
+    contrib: StatusStripeContribution<F>,
+    updateFrequency = 60 * 1000
+  ): Promise<void> {
+    await this.registerStatusStripeContribution(contrib, 'meter')
+    setTimeout(contrib.listener, updateFrequency)
   }
 }
 

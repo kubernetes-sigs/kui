@@ -36,6 +36,9 @@ export interface PreloadRegistrar extends CommandRegistrar {
 
   /** status stripe context */
   registerContext<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void>
+
+  /** status stripe meter */
+  registerMeter<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void>
 }
 
 export type PreloadRegistration = (registrar: PreloadRegistrar) => Promise<void | void[]>

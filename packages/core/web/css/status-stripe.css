@@ -62,6 +62,9 @@
   flex: 1;
   font-size: 0.6875em;
 }
+.kui--status-stripe .kui--status-stripe-meter {
+  font-size: 0.6875em;
+}
 
 .kui--status-stripe .kui--status-stripe-right {
   justify-content: flex-end;
