@@ -60,9 +60,11 @@ export const dispatchToShell = async ({
       ? execOptions
       : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
+  const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
+
   if (isHeadless() || (!inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
-    const response = await doExec(command.replace(/^! /, ''), eOptions).catch(cleanUpError)
+    const response = await doExec(actualCommand, eOptions).catch(cleanUpError)
     if (useRaw && typeof response === 'string') {
       try {
         return JSON.parse(response)
@@ -73,8 +75,6 @@ export const dispatchToShell = async ({
     return response
   } else {
     const { doExec } = await import(/* webpackMode: "lazy" */ '../../pty/client')
-    const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
-
     const exec = () => doExec(tab, block as HTMLElement, actualCommand, argvNoOptions, parsedOptions, eOptions)
 
     if (useRaw) {
