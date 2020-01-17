@@ -239,7 +239,6 @@ const specialHandler = (args: Arguments) => {
   if (args.execOptions.type === ExecType.TopLevel) {
     throw new Error('this command is intended for internal consumption only')
   }
-  args.execOptions.quiet = false
   return dispatchToShell(args)
 }
 

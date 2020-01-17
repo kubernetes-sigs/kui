@@ -827,7 +827,7 @@ async function initOnMessage(
         // vi, then :wq, then :q, you will get an exit code of
         // 1, but with no output (!bytesWereWritten); note how
         // we treat this as "ok", i.e. no error thrown
-        if (msg.exitCode !== 0 && bytesWereWritten) {
+        if (msg.exitCode !== 0 && (bytesWereWritten || execOptions.onInit)) {
           const error = new Error('')
           if (sawCode === 409) error['code'] = 409
           // re: i18n, this is for tests
