@@ -133,7 +133,6 @@ const list = async ({ REPL }: Arguments) => {
   )
 
   return new Table({
-    noSort: true,
     header,
     body
   })
