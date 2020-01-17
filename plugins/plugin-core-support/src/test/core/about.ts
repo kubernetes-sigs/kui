@@ -30,7 +30,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
           return this.app.client.execute(() => {
             const imageSrc = document
-              .querySelector('.about-window .logo')
+              .querySelector('.about-window')
               .querySelector('img')
               .getAttribute('src')
             const fs = require('fs')
@@ -41,7 +41,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
         if (process.env.MOCHA_RUN_TARGET === 'webpack') {
           return this.app.client.execute(() => {
             const imageSrc = document
-              .querySelector('.about-window .logo')
+              .querySelector('.about-window')
               .querySelector('img')
               .getAttribute('src')
             const image = new Image()
@@ -83,7 +83,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(theme.productName))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('gettingStarted')))
+      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('tutorial')))
       .catch(Common.oops(this, true))
   })
 })

@@ -146,8 +146,8 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(tabButtonSelector)
   testSelector('#help-button')
   testAboutMode('about')
-  testAboutMode('gettingStarted')
-  testAboutMode('configure')
+  testAboutMode('tutorial')
+  testAboutMode('theme')
   testAboutMode('version', true) // hit enter on the Version tab
   testPromptIsSelected() // because we just hit enter
 })
