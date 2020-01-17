@@ -15,7 +15,16 @@
  */
 
 import Debug from 'debug'
-import { Streamable, isHeadless, inBrowser, hasProxy, Arguments, Registrar } from '@kui-shell/core'
+import {
+  CodedError,
+  ExecType,
+  Streamable,
+  isHeadless,
+  inBrowser,
+  hasProxy,
+  Arguments,
+  Registrar
+} from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -33,22 +42,28 @@ export const dispatchToShell = async ({
   createOutputStream
 }: Arguments) => {
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
-  const cleanUpError = (err: Error) => {
+  const cleanUpError = (err: CodedError) => {
     if (err.message && typeof err.message === 'string') {
       err.message = err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim()
     }
     throw err
   }
 
+  const useRaw =
+    (execOptions.raw || execOptions.type === ExecType.Nested) &&
+    execOptions.quiet === undefined &&
+    execOptions.echo === undefined &&
+    execOptions.replSilence === undefined
+
   const eOptions =
-    execOptions.raw || execOptions.isProxied
+    useRaw || execOptions.isProxied
       ? execOptions
       : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
-  if (isHeadless() || (!inBrowser() && execOptions.raw)) {
+  if (isHeadless() || (!inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
     const response = await doExec(command.replace(/^! /, ''), eOptions).catch(cleanUpError)
-    if (execOptions.raw && typeof response === 'string') {
+    if (useRaw && typeof response === 'string') {
       try {
         return JSON.parse(response)
       } catch (err) {
@@ -62,18 +77,13 @@ export const dispatchToShell = async ({
 
     const exec = () => doExec(tab, block as HTMLElement, actualCommand, argvNoOptions, parsedOptions, eOptions)
 
-    if (
-      execOptions.raw &&
-      execOptions.quiet === undefined &&
-      execOptions.echo === undefined &&
-      execOptions.replSilence === undefined
-    ) {
-      execOptions.quiet = true
-      execOptions.echo = false
-      execOptions.replSilence = true
+    if (useRaw) {
+      eOptions.quiet = true
+      eOptions.echo = false
+      eOptions.replSilence = true
 
       let response = ''
-      execOptions.onInit = () => (_: Streamable) => {
+      eOptions.onInit = () => (_: Streamable) => {
         if (typeof _ === 'string') {
           response += _
         }
