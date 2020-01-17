@@ -29,14 +29,14 @@ const icon =
  */
 async function reportCurrentBranch(tab: Tab, controller: StatusStripeController, { text }: StatusTextWithIcon) {
   try {
-    const [isDirty, { content: branch }] = await Promise.all([
+    const [isDirty, branch] = await Promise.all([
       // exit 0/1 indicates clean/dirty
-      tab.REPL.rexec('git diff-index --quiet HEAD --')
+      tab.REPL.qexec('git diff-index --quiet HEAD --')
         .then(() => false)
         .catch(() => true),
 
       // exits with branch name
-      tab.REPL.rexec<string>('git rev-parse --abbrev-ref HEAD')
+      tab.REPL.qexec<string>('git rev-parse --abbrev-ref HEAD')
     ])
 
     if (branch) {
