@@ -255,7 +255,7 @@ export type CommandTreeResolution<T extends KResponse, O extends ParsedOptions> 
   | CodedError
 
 export interface YargsParserFlags {
-  configuration?: Yargs.Configuration
+  configuration?: Partial<Yargs.Configuration>
   boolean?: string[]
   narg?: Record<string, number>
   alias?: Record<string, string[]>
