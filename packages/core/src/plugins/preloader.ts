@@ -107,7 +107,7 @@ export default async (prescan: PrescanModel) => {
               )
         debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration = registrationRef.registerCapability
-        if (registration) {
+        if (registration && typeof registration === 'function') {
           await registration(new PreloaderRegistrarImpl(module.route))
           debug('registered capabilities %s', module.path)
         } else {
@@ -137,7 +137,7 @@ export default async (prescan: PrescanModel) => {
                   /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload'
                 )
           const registration: PreloadRegistration = registrationRef.default || registrationRef
-          if (registration) {
+          if (registration && typeof registration === 'function') {
             await registration(new PreloaderRegistrarImpl(module.route))
           }
           debug('done preloading %s', module.path)
