@@ -76,12 +76,11 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
   }
 
   /** status stripe meter */
-  public async registerMeter<F extends StatusStripeFragment>(
-    contrib: StatusStripeContribution<F>,
-    updateFrequency = 60 * 1000
-  ): Promise<void> {
+  public async registerMeter<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void> {
     await this.registerStatusStripeContribution(contrib, 'meter')
-    setTimeout(contrib.listener, updateFrequency)
+
+    // disabled for now: https://github.com/IBM/kui/issues/3503
+    // setTimeout(contrib.listener, updateFrequency)
   }
 }
 
@@ -138,7 +137,9 @@ export default async (prescan: PrescanModel) => {
                   /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload'
                 )
           const registration: PreloadRegistration = registrationRef.default || registrationRef
-          await registration(new PreloaderRegistrarImpl(module.route))
+          if (registration) {
+            await registration(new PreloaderRegistrarImpl(module.route))
+          }
           debug('done preloading %s', module.path)
         } catch (err) {
           debug('error invoking preload', module.path, err)
