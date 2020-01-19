@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.41](https://github.com/IBM/kui/compare/v4.5.0...v5.7.41) (2020-01-19)
+
+### Bug Fixes
+
+- status stripe UI fixes to work better across themes ([2aa107f](https://github.com/IBM/kui/commit/2aa107f)), closes [#3507](https://github.com/IBM/kui/issues/3507)
+
 ## [5.7.40](https://github.com/IBM/kui/compare/v4.5.0...v5.7.40) (2020-01-18)
 
 **Note:** Version bump only for package @kui-shell/plugin-carbon-themes
