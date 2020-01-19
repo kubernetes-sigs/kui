@@ -22,7 +22,8 @@ body[kui-theme="Light"] {
   /* SidecarThin */
   --color-background-inverted01: #272c30;
   --color-background-inverted02: #373d42;
-  --color-text-inverted01: #f2f4f8;
+  --color-text-inverted01: var(--color-base04);
+  --color-text-inverted02: var(--color-base03);
 
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);

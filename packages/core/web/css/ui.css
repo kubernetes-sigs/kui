@@ -1075,7 +1075,7 @@ sidecar .sidecar-header-name .package-prefix {
 sidecar .sidecar-header-name .entity-name-hash {
   font-family: var(--font-monospace);
   font-size: 75%;
-  color: var(--color-text-02);
+  color: var(--color-text-inverted02);
   font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3228,7 +3228,9 @@ body {
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
+  --color-text-inverted01: var(--color-text-01);
   --color-text-inverted02: var(--color-text-02);
+  --color-text-inverted03: var(--color-text-inverted01);
 
   --color-sidecar-background: var(--color-ui-02);
   --color-sidecar-border: var(--color-ui-04);
