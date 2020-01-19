@@ -23,12 +23,20 @@ body[kui-theme="Dracula"] {
   --color-green: var(--color-base0A);
   --color-yellow: var(--color-base0B);
 
+  /* old
   --color-latency-0: #4d4d4d;
   --color-latency-1: #999999;
   --color-latency-2: #e0e0e0;
   --color-latency-3: #fddbc7;
   --color-latency-4: #ef8a62;
   --color-latency-5: #b2182b;
+ */
+  --color-latency-0: #1b7837;
+  --color-latency-1: #7fbf7b;
+  --color-latency-2: #d9f0d3;
+  --color-latency-3: #e7d4e8;
+  --color-latency-4: #af8dc3;
+  --color-latency-5: #762a83;
 }
 
 /* dracula highlightjs theme */

@@ -1,9 +1,9 @@
 .kui--status-stripe {
   display: flex;
   flex-basis: 1.75em;
-  background-color: var(--color-ui-04);
+  background-color: var(--color-background-inverted02);
 
-  --color-fg: var(--color-text-01);
+  --color-fg: var(--color-text-inverted01);
 }
 
 .kui--status-stripe .kui--status-stripe-element a.clickable {
@@ -31,7 +31,7 @@
   fill: var(--color-text-02);
 }
 /*.kui--status-stripe .kui--status-stripe-element[data-view="dirty"] {
-  color: var(--color-yellow);
+  color: var(--color-yellow-sidecar);
 }*/
 .kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg,
 .kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg path,
@@ -43,7 +43,7 @@
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg path,
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg rect,
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg circle {
-  fill: var(--color-yellow);
+  fill: var(--color-yellow-sidecar);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="error"] svg,
 .kui--status-stripe .kui--status-stripe-element[data-view="error"] svg path,

@@ -1,9 +1,6 @@
 body {
-  --color-background-inverted01: var(--color-base05);
+  --color-background-inverted01: var(--color-sidecar-header);
   --color-background-inverted02: var(--color-base03);
-  --color-text-inverted01: var(--color-ui-06);
-  --color-text-inverted02: var(--color-ui-05);
-  --color-text-inverted03: var(--color-text-inverted01);
   --color-tab-selected-inverted: var(--color-brand-03);
 }
 
