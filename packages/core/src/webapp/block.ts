@@ -93,6 +93,10 @@ export function subblock() {
   return block
 }
 
+function getCount(block: Block) {
+  return parseInt(block.getAttribute('data-input-count'))
+}
+
 /**
  * Reset input count for the given block
  *
@@ -107,4 +111,19 @@ export const resetCount = (block: HTMLElement) => {
  */
 export const setCustomCaret = (block: HTMLElement) => {
   block.classList.add('custom-caret')
+}
+
+/**
+ * Is the given `block` either the current active block in the given
+ * `tab`, or the output of the previous command execution?
+ *
+ */
+export function isMostRecentBlock(tab: Tab, block: Block) {
+  const lastBlock = tab.querySelector('.repl .repl-block:last-child') as Block
+  const lastCount = getCount(lastBlock)
+  const ourCount = getCount(block)
+
+  // either the given block is the last block, or it is the
+  // penultimate block, and the last block isn't executing a command
+  return lastCount === ourCount || (lastBlock.classList.contains('repl-active') && lastCount === ourCount + 1)
 }

@@ -19,6 +19,8 @@ import { tableStyle } from '@kui-shell/client/config.d/style.json'
 
 import { Tab } from '../tab'
 import { isPopup } from '../popup-core'
+import { Block } from '../models/block'
+import { isMostRecentBlock } from '../block'
 import { getCurrentPrompt } from '../prompt'
 import { isMetadataBearing } from '../../models/entity'
 import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
@@ -494,7 +496,7 @@ const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingT
  * Insert a new row to the existing table
  *
  */
-const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: ExistingTableSpec) => (
+const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: ExistingTableSpec, block?: Block) => (
   tab: Tab,
   option?: RowFormatOptions
 ) => {
@@ -502,6 +504,15 @@ const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: Exi
   existingTable.renderedTable.insertBefore(newRowView, existingTable.renderedRows[insertBeforeIndex])
   existingTable.renderedRows.splice(insertBeforeIndex, 0, newRowView)
   existingTable.rowsModel.splice(insertBeforeIndex, 0, newRow)
+
+  // watched tables should (sometimes) scroll into view; the heuristic
+  // here is to scroll into view updates only for tables that are
+  // either 1) for an active command, or 2) for the previous command,
+  // but only then so long as there is no *other* active command in
+  // progress; see https://github.com/IBM/kui/issues/3510
+  if (!block || isMostRecentBlock(tab, block)) {
+    newRowView.scrollIntoView()
+  }
 }
 
 /**
@@ -562,7 +573,12 @@ function setStyle(tableDom: HTMLElement, table: Table) {
  * Format the table view
  *
  */
-export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, options: { usePip?: boolean } = {}) => {
+export const formatTable = (
+  tab: Tab,
+  response: Table,
+  resultDom: HTMLElement,
+  options: { block?: Block; usePip?: boolean } = {}
+) => {
   const formatRowOption = Object.assign(options, {
     useRepeatingEffect: !hasReachedFinalState(response) && isWatchable(response)
   })
@@ -701,7 +717,7 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
       if (foundIndex === -1) {
         // To get the insertion index, first concat the new row with the existing rows, then sort the rows
         const index = sortBody([newRow].concat(existingRows)).findIndex(_ => (_.rowKey || _.name) === newRow.name)
-        insertTheRow(newRow, index + 1, existingTable)(tab, formatRowOption)
+        insertTheRow(newRow, index + 1, existingTable, options.block)(tab, formatRowOption)
       } else {
         const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
         if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
@@ -715,7 +731,7 @@ export const formatTable = (tab: Tab, response: Table, resultDom: HTMLElement, o
 
       const newHeader = prepareHeader(header)
       if (foundIndex) {
-        insertTheRow(newHeader, 0, existingTable)(tab, formatRowOption)
+        insertTheRow(newHeader, 0, existingTable, options.block)(tab, formatRowOption)
       } else {
         udpateTheRow(newHeader, 0, existingTable)(tab, formatRowOption)
       }
