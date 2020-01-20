@@ -20,6 +20,9 @@
       "path": "plugins/plugin-editor"
     },
     {
+      "path": "plugins/plugin-git"
+    },
+    {
       "path": "plugins/plugin-manager"
     },
     {

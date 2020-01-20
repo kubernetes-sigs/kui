@@ -10,5 +10,5 @@
       "@kui-shell/plugin-bash-like/web/*": ["web/*"]
     }
   },
-  "references": [{ "path": "./fs" }, { "path": "./git" }]
+  "references": [{ "path": "./fs" }]
 }

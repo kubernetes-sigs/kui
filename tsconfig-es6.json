@@ -20,6 +20,9 @@
       "path": "plugins/plugin-editor/tsconfig-es6.json"
     },
     {
+      "path": "plugins/plugin-git/tsconfig-es6.json"
+    },
+    {
       "path": "plugins/plugin-manager/tsconfig-es6.json"
     },
     {
