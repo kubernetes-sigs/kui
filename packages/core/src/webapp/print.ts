@@ -19,6 +19,7 @@ const debug = Debug('webapp/cli/print')
 debug('loading')
 
 import { Tab } from './tab'
+import { Block } from './models/block'
 import { setStatus, Status } from './status'
 import { popupListen } from './listen'
 import { SidecarMode as Mode } from './bottom-stripe'
@@ -54,7 +55,7 @@ import UsageError from '../core/usage-error'
  * Standard handling of Table responses
  *
  */
-const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement) => {
+const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, block: Block) => {
   ;(resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
 
   if (response.noEntityColors) {
@@ -63,14 +64,14 @@ const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement) => 
   }
 
   const { formatTable } = await import('./views/table')
-  formatTable(tab, response, resultDom)
+  formatTable(tab, response, resultDom, { block })
 }
 
 /**
  * Stream output to the given block
  *
  */
-export const streamTo = (tab: Tab, block: Element): Stream => {
+export const streamTo = (tab: Tab, block: Block): Stream => {
   const container = block.querySelector('.repl-output') as HTMLElement
   const resultDom = container ? document.createElement('div') : (block.querySelector('.repl-result') as HTMLElement)
   if (container) {
@@ -110,7 +111,7 @@ export const streamTo = (tab: Tab, block: Element): Stream => {
         const wrapper = document.createElement('div')
         wrapper.classList.add('repl-result')
         resultDom.appendChild(wrapper)
-        await printTable(tab, response, wrapper)
+        await printTable(tab, response, wrapper, block)
       } else if (isCustomSpec(response)) {
         const { showCustom } = await import('./views/sidecar')
         showCustom(tab, response, {})
@@ -160,9 +161,16 @@ export const ok = (parentNode: Element, suffix?: string | Element, css?: string)
   return okLine
 }
 
-export async function renderResult(response: Entity, tab: Tab, resultDom: HTMLElement, echo = true, attach = echo) {
+async function renderResult(
+  response: Entity,
+  tab: Tab,
+  resultDom: HTMLElement,
+  block: Block,
+  echo = true,
+  attach = echo
+) {
   if (isTable(response)) {
-    await printTable(tab, response, resultDom)
+    await printTable(tab, response, resultDom, block)
     return true
   } else if (isHTML(response)) {
     // TODO is this the best way to detect response is a dom??
@@ -230,7 +238,7 @@ export const printResults = (
 
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
-      if (await renderResult(response, tab, resultDom, echo)) {
+      if (await renderResult(response, tab, resultDom, block, echo)) {
         // then renderResult took care of things
       } else if (
         typeof response === 'number' ||
