@@ -5,5 +5,5 @@
     "outDir": "mdist",
     "module": "esnext"
   },
-  "references": [{ "path": "./fs/tsconfig-es6.json" }, { "path": "./git/tsconfig-es6.json" }]
+  "references": [{ "path": "./fs/tsconfig-es6.json" }]
 }
