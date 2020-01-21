@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.44](https://github.com/IBM/kui/compare/v4.5.0...v5.7.44) (2020-01-21)
+
+### Bug Fixes
+
+- propagate statusCode back from the proxy ([275240a](https://github.com/IBM/kui/commit/275240a)), closes [#3318](https://github.com/IBM/kui/issues/3318)
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+
+### Features
+
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
+### BREAKING CHANGES
+
+- **packages/core:** remove old EntitySpec support
+
 ## [5.7.43](https://github.com/IBM/kui/compare/v4.5.0...v5.7.43) (2020-01-20)
 
 ### Bug Fixes
