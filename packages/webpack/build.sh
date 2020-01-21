@@ -80,7 +80,6 @@ function tarCopy {
     # to come before the --exclude rules!
     "$TAR" -C "$CLIENT_HOME" -cf - \
            --exclude "./npm-packs" \
-           --exclude "./theme" \
            --exclude "./dist" \
            --exclude "./kui" \
            --exclude "./kui-*-tmp" \
