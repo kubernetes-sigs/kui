@@ -55,7 +55,7 @@ fi
 CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$CLIENT_HOME" node node_modules/@kui-shell/builder/lib/configure.js
 
 # link in the theme bits
-(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -sf $i; done && for i in ../../../../theme/css/*; do ln -sf $i; done)
+(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -sf $i; done && for i in ../../client/css/*; do ln -sf $i; done)
 
 # generate the plugin registry
 if [ -z "$NO_PRESCAN" ]; then
