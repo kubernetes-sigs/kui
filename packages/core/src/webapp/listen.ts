@@ -92,10 +92,12 @@ export const listen = (prompt: HTMLInputElement) => {
     const bottomPrompt = getBottomPrompt()
     bottomPrompt.readOnly = false
     bottomPrompt.tabIndex = 1
+    prompt.readOnly = true
+  } else {
+    prompt.readOnly = false
+    prompt.placeholder = promptPlaceholder
+    prompt.tabIndex = 1
   }
-  prompt.readOnly = false
-  prompt.placeholder = promptPlaceholder
-  prompt.tabIndex = 1
 
   const grandparent = prompt.parentNode.parentNode as Element
   grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
