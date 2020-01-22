@@ -411,8 +411,8 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     parent.appendChild(cell)
 
     if (onclick) {
-      cell.classList.add('clickable')
-      cell.onclick = async (evt: MouseEvent) => {
+      inner.classList.add('clickable')
+      inner.onclick = async (evt: MouseEvent) => {
         evt.stopPropagation() // don't trickle up to the row click handler
         if (isPopup() || options.usePip) {
           const { drilldown } = await import('../picture-in-picture')
