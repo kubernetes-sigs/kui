@@ -251,7 +251,12 @@ const main = (env, overrides = {}) => {
 const loadOverrides = (programmaticOverrides = {}) => {
   let overrideDirectory = process.env.KUI_BUILD_CONFIG && path.resolve(process.env.KUI_BUILD_CONFIG)
   if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
-    overrideDirectory = path.resolve('./node_modules/@kui-shell/client/config.d')
+    overrideDirectory =
+      process.env.CLIENT_HOME &&
+      path.resolve(path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/client/config.d'))
+    if (!overrideDirectory || !fs.existsSync(overrideDirectory)) {
+      overrideDirectory = path.resolve(path.join(process.cwd(), 'node_modules/@kui-shell/client/config.d'))
+    }
   }
   info('theme directory', overrideDirectory)
 
