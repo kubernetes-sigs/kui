@@ -96,7 +96,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
       await new Promise(resolve => setTimeout(resolve, 300))
 
       const checkMarkCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
-      const nameCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] > tr > .clickable`
+      const nameCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] > tr > td:not(.not-a-name) > .clickable`
 
       console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
