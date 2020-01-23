@@ -28,7 +28,7 @@ import {
   Mode,
   Presentation
 } from '@kui-shell/core'
-import { version } from '@kui-shell/settings/package.json'
+import { version } from '@kui-shell/client/config.d/version.json'
 import { productName } from '@kui-shell/client/config.d/name.json'
 
 import usage from './usage'
@@ -51,9 +51,6 @@ async function markdown(): Promise<(raw: string) => string> {
 }
 
 function renderVersion(name: string) {
-  // intentionally require, to handle optionals
-  const { version } = require('@kui-shell/settings/package.json')
-
   const bottomContent = document.createElement('div')
   bottomContent.classList.add('about-window-bottom-content')
 

@@ -19,7 +19,7 @@ import { ensureDir, symlink, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'
 
-import { userDataDir, exportSettingsTo, i18n, Arguments, Registrar, UsageModel } from '@kui-shell/core'
+import { userDataDir, i18n, Arguments, Registrar, UsageModel } from '@kui-shell/core'
 
 import Ora from '../util/ora'
 import locateNpm from '../util/locate-npm'
@@ -61,8 +61,6 @@ const doInstall = async (args: Arguments) => {
   await ensureDir(targetDir)
 
   debug(`installing ${nameWithoutVersion} into pluginHome=${pluginHome} targetDir=${targetDir}`)
-
-  await exportSettingsTo(pluginHome)
 
   const resolved = await locateNpm()
   if (!resolved) {
