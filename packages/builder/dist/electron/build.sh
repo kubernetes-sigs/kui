@@ -112,16 +112,6 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they are identical
 function configure {
-    # so that electron's prune doesn't eliminate @kui-shell/settings
-    mkdir "$STAGING"/settings
-    echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/settings/package.json
-    npm install --save --no-package-lock --ignore-scripts ./settings
-
-    if [ "$(uname)" != "Darwin" ] && [ "$(uname -o)" = "Msys" ]; then
-        echo "for some reason, npm install to a relative path creates absolute-path symlinks on windows. fixing"
-	(cd node_modules/@kui-shell && rm settings && ln -s ../../settings)
-    fi
-
     CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
     UGLIFY=true npx --no-install kui-prescan
 }

@@ -45,14 +45,6 @@ pushd "$CLIENT_HOME"
     ln -s "$THEME"/icons
     ln -s "$THEME"/images
   popd
-
-  if [ -f  "$THEME"/config.d/config.json ]; then
-      echo "linking config-dev.json"
-      pushd "$MODULE_HOME"/settings
-        rm -f config-dev.json
-        cp  "$THEME"/config.d/config.json config-dev.json
-      popd
-  fi
 popd
 
 if [ -n "$OPEN" ]; then

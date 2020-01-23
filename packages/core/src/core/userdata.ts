@@ -36,8 +36,7 @@ export const userDataDir = (): string => {
     throw new Error('Unsupported operation')
   } else {
     // headless
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { name } = require('@kui-shell/settings/package.json')
+    const name = '@kui-shell/settings'
 
     switch (process.platform) {
       case 'darwin':

@@ -185,7 +185,7 @@ export { prompt } from './webapp/prompt-for-input'
 export { commandsOffered as commandsOfferedByPlugin, userHome as pluginUserHome } from './api/plugins'
 
 // Settings
-export { inBottomInputMode, userDataDir, exportTo as exportSettingsTo, uiThemes } from './core/settings'
+export { inBottomInputMode, userDataDir, uiThemes } from './core/settings'
 
 // Storage for user data
 export { default as Store } from './models/store'

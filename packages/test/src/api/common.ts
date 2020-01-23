@@ -19,6 +19,8 @@ import * as colors from 'colors'
 import { Func, Suite, HookFunction, after as mochaAfter } from 'mocha'
 import { Application } from 'spectron'
 
+import { version } from '@kui-shell/client/config.d/version.json'
+
 import * as CLI from './cli'
 import * as Selectors from './selectors'
 
@@ -461,8 +463,4 @@ export const pit = (msg: string, func: Func) => {
 }
 
 /** non-headless targets in travis use the clients/default version */
-export const expectedVersion =
-  process.env.TRAVIS_JOB_ID &&
-  (process.env.MOCHA_RUN_TARGET === 'electron' || process.env.MOCHA_RUN_TARGET === 'webpack')
-    ? '0.0.1'
-    : require('@kui-shell/settings/package.json').version
+export const expectedVersion = version

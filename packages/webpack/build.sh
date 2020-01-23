@@ -106,11 +106,6 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they should eventually be identical
 function configure {
-    # so that electron's prune doesn't eliminate @kui-shell/settings
-    mkdir "$STAGING"/settings
-    echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/settings/package.json
-    npm install --save --no-package-lock --ignore-scripts ./settings
-
     # note that we will do this again in webpack.config.js; we need to
     # wait until we have the webpack build hash but, for now, we need
     # to do it here, too, at least so that the next line (npm install

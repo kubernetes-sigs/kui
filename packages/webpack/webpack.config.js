@@ -227,7 +227,6 @@ plugins.push({
 
           if (!inBrowser || isWatching) {
             overrides.build.buildDir = outputPath
-            overrides.build.configDir = path.join(path.dirname(buildDir), 'settings')
           }
 
           // and this will inject it

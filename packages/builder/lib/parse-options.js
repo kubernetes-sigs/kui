@@ -47,8 +47,7 @@ module.exports = (env, overrides) =>
       // build settings
       build: {
         templateDir,
-        buildDir: path.join(__dirname, '../../../node_modules/@kui-shell/build'), // target for index.html
-        configDir: path.join(__dirname, '../../../node_modules/@kui-shell/settings') // target for config.json and package.json
+        buildDir: path.join(__dirname, '../../../node_modules/@kui-shell/build') // target for index.html
       }
     }
     debug('defaultOptions', defaultOptions)
