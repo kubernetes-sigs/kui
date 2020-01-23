@@ -18,7 +18,6 @@
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 TOPDIR="${SCRIPTDIR}/../../.."
-CONFDIR="$TOPDIR"/node_modules/@kui-shell/settings
 THEME="${TOPDIR}"/node_modules/@kui-shell/client
 
 echo "Using CLIENT_HOME=$CLIENT_HOME"

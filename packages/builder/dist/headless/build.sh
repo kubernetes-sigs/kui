@@ -157,7 +157,6 @@ function tarCopy {
 
 function configure {
     UGLIFY=true npx --no-install kui-prescan
-    CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING"/kui node "$BUILDER_HOME"/lib/configure.js
     echo "nothing to do"
 }
 

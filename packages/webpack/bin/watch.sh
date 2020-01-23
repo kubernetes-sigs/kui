@@ -28,10 +28,6 @@ CONFIG="$MODULE_HOME"/webpack/webpack.config.js
 
 THEME="${MODULE_HOME}"/client
 
-# let the caller take care of building; see https://github.com/IBM/kui/issues/3377
-# npx --no-install kui-compile
-# KUI_STAGE="$CLIENT_HOME" node "$BUILDER_HOME"/lib/configure.js webpack-watch
-
 pushd "$CLIENT_HOME"
   rm -rf dist/webpack
   if [ ! -d dist/webpack/css ]; then mkdir -p dist/webpack/css; fi
