@@ -106,12 +106,6 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they should eventually be identical
 function configure {
-    # note that we will do this again in webpack.config.js; we need to
-    # wait until we have the webpack build hash but, for now, we need
-    # to do it here, too, at least so that the next line (npm install
-    # --save) works
-    CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js webpack
-
     # generate prescan.json
     UGLIFY=true npx --no-install kui-prescan
 
@@ -166,7 +160,6 @@ function docker {
 # some of the assets are in sibling directories; let's copy them here
 # to our BUILDDIR directory:
 function assembleHTMLPieces {
-    cp "$APPDIR"/build/index-webpack.html "$BUILDDIR"/index.html
     cp -a "$CORE_HOME"/web/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
 
     # if we are using a build config override, then copy in its assets

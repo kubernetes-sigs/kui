@@ -51,8 +51,9 @@ else
   npx tsc -b ${1-.}
 fi
 
-# initialize the html bits
-CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$CLIENT_HOME" node node_modules/@kui-shell/builder/lib/configure.js
+if [ ! -d node_modules/@kui-shell/build ]; then
+  mkdir -p node_modules/@kui-shell/build
+fi
 
 # link in the theme bits
 (cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -sf $i; done && for i in ../../client/css/*; do ln -sf $i; done)

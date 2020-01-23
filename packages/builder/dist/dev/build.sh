@@ -21,6 +21,10 @@ TOPDIR="${SCRIPTDIR}/../../../.."
 STAGING="${TOPDIR}"/node_modules/@kui-shell/build
 THEME="${TOPDIR}"/node_modules/@kui-shell/client
 
+if [ ! -d "$STAGING" ]; then
+  mkdir -p "$STAGING"
+fi
+
 (cd "$STAGING" && rm -f css && ln -s "$TOPDIR"/packages/core/web/css)
 
 if [ -d "$THEME"/icons ]; then

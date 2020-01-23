@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/camelcase,no-const-assign,prefer-const */
+
+declare let _kuiNonce: string
+declare let __webpack_nonce__: string
+__webpack_nonce__ = _kuiNonce
+
 import('./boot').then(_ => _.default())
