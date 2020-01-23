@@ -24,6 +24,7 @@ const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-se
 const webCompress = process.env.WEB_COMPRESS || 'none'
 const noCompression = !inBrowser || webCompress === 'none' || isWatching
 const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
+const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
 
 const optimization = {}
 if (process.env.NO_OPT) {
@@ -119,7 +120,7 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * Note: these are _webpack plugins_ not Kui plugins; we will assemble
  * this list of webpack plugins as we go.
  */
-const plugins = []
+const plugins = [new FontConfigWebpackPlugin()]
 
 // any compression plugins?
 if (CompressionPlugin) {
@@ -345,7 +346,7 @@ module.exports = {
   optimization,
   module: {
     rules: kuiPluginRules.concat([
-      {
+      /* {
         test: /\.tsx?$/,
         use: [
           {
@@ -357,7 +358,7 @@ module.exports = {
           }
         ],
         exclude: /node_modules/
-      },
+      }, */
 
       // native binaries for node-pty; commented out for now. !!!!
       // !!! Please do not remove this (commented out) rule !!!!!!
