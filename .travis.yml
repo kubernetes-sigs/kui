@@ -40,13 +40,11 @@ install:
 
 stages:
   - test
-  - name: npm
-    if: branch = master AND type = push
 
 jobs:
   allow_failures:
     - if: os = windows AND env(NO_WINDOWS) IS present
-    
+
   include:
     # API Tests | os=Linux | targets=webpack-watch
     - env: N="API" CLIENT="test" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
@@ -89,39 +87,3 @@ jobs:
     - env: N="Webpack bash" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
       before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
       script: npm run test1 bash-like-wait && npm run test1 bash-like
-
-    # Npm release stage
-    #
-    # re: on the `npm ci` and `npm install -g` below: here, we are
-    # trying to avoid contamination of package-lock.json, because
-    # lerna will refuse to publish if it finds uncommitted changes
-    #
-    # re: git fetch --depth=1000 see https://github.com/IBM/kui/issues/2924
-    #
-    - stage: npm
-      env: ""
-      node_js: "8"
-      script:
-        - echo "NPM Deploying Started ..."
-        - echo "Repo name:$TRAVIS_REPO_SLUG"
-        - echo "Branch name:$TRAVIS_BRANCH"
-        - echo "TRAVIS EVENT TYPE:$TRAVIS_EVENT_TYPE"
-      before_deploy:
-        - echo "//registry.npmjs.org/:_authToken=${NPMJS_API_KEY}" > ~/.npmrc
-      deploy:
-          - provider: script
-            script: npm ci && npm install -g lerna && git fetch --depth=1000 && git status && git diff && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag dev --preid dev.$TRAVIS_BUILD_NUMBER
-            skip_cleanup: true
-            keep_history: true
-            on:
-              branch: master
-              repo: IBM/kui
-              condition: $TRAVIS_EVENT_TYPE = push
-          - provider: script
-            script: npm ci && npm install -g lerna && git fetch --depth=1000 && git status && git diff && lerna publish prepatch --no-git-tag-version --no-push --canary --yes --dist-tag nightly --preid nightly.$TRAVIS_BUILD_NUMBER
-            skip_cleanup: true
-            keep_history: true
-            on:
-              branch: master
-              repo: IBM/kui
-              condition: $TRAVIS_EVENT_TYPE = cron
