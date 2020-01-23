@@ -25,6 +25,7 @@ const webCompress = process.env.WEB_COMPRESS || 'none'
 const noCompression = !inBrowser || webCompress === 'none' || isWatching
 const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
 const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const optimization = {}
 if (process.env.NO_OPT) {
@@ -190,59 +191,59 @@ console.log('entry', entry)
 
 console.log('webpack plugins', plugins)
 
+const clientBase = path.join(stageDir, 'node_modules/@kui-shell/client/config.d')
+const loadOverride = file => {
+  try {
+    return require(path.join(clientBase, file))
+  } catch (err) {
+    // debug('error in loadOverride', err)
+    return {}
+  }
+}
+
+const clientOptions = {
+  name: loadOverride('name'),
+  client: loadOverride('client'),
+  style: loadOverride('style'),
+  icons: loadOverride('icons'),
+  opengraph: loadOverride('opengraph')
+}
+
+clientOptions.style.bodyCss = (inBrowser ? ['not-electron'] : ['in-electron']).concat(clientOptions.style.bodyCss)
+
+if (contentSecurityPolicyForDevServer) {
+  // only override the CSP when running webpack-dev-server;
+  // otherwise, we will inherit the settings from theme.json
+  // https://github.com/IBM/kui/pull/2395
+  clientOptions.client.contentSecurityPolicy = contentSecurityPolicyForDevServer
+}
+
+const htmlBuildOptions = Object.assign(
+  {
+    inject: false
+  },
+  clientOptions,
+  {
+    filename: path.join(outputPath, 'index.html'),
+    template: path.join(stageDir, 'node_modules/@kui-shell/core/templates/index.ejs')
+  }
+)
+
+plugins.push(new HtmlWebpackPlugin(htmlBuildOptions))
+
 // the Kui builder plugin
 plugins.push({
   apply: compiler => {
-    let hash
-    compiler.hooks.compilation.tap('KuiHtmlBuilder', compilation => {
-      compilation.hooks.afterHash.tap('KuiHtmlBuilder', () => {
-        // we need to inject the name of the main bundle into the configuration
-        hash = compilation.hash
-      })
-    })
-    compiler.hooks.done.tapPromise('KuiHtmlBuilder', () => {
-      // eslint-disable-next-line no-async-promise-executor
-      return new Promise(async (resolve, reject) => {
-        try {
-          const main = contextRoot + `main.${hash}.bundle.js` // <-- this is the name of the main bundle
-          console.log('KuiHtmlBuilder using this build hash', hash)
-
-          const overrides = {
-            build: { writeConfig: false },
-            env: { main, hash, bodyCss: inBrowser ? ['not-electron'] : ['in-electron'] }
-          }
-
-          if (PORT_OFFSET !== undefined) {
-            overrides.env.nameSuffix = PORT_OFFSET
-          }
-
-          if (contentSecurityPolicyForDevServer) {
-            overrides.theme = {
-              // only override the CSP when running webpack-dev-server;
-              // otherwise, we will inherit the settings from theme.json
-              // https://github.com/IBM/kui/pull/2395
-              contentSecurityPolicy: contentSecurityPolicyForDevServer
-            }
-          }
-
-          if (!inBrowser || isWatching) {
-            overrides.build.buildDir = outputPath
-          }
-
-          // and this will inject it
-          const Builder = require(path.join(builderHome, 'lib/configure'))
-          await new Builder().build(!inBrowser || isWatching ? 'webpack-watch' : 'webpack', overrides)
-
-          // touch the lockfile to indicate that we are done
-          if (process.env.LOCKFILE) {
-            fs.closeSync(fs.openSync(process.env.LOCKFILE, 'w'))
-          }
-
-          resolve()
-        } catch (err) {
-          reject(err)
+    compiler.hooks.done.tap('done', () => {
+      // touch the lockfile to indicate that we are done
+      try {
+        if (process.env.LOCKFILE) {
+          fs.closeSync(fs.openSync(process.env.LOCKFILE, 'w'))
         }
-      })
+      } catch (err) {
+        console.error(err)
+        throw err
+      }
     })
   }
 })

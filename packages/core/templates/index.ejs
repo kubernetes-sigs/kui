@@ -2,53 +2,58 @@
 <html lang="en-US">
   <head>
     <meta charset="UTF-8" />
-    <title>${productTitle}</title>
+    <title><%= htmlWebpackPlugin.options.name.productTitle %></title>
 
-    <link href="${cssHome}carbon-components.min.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="${cssHome}carbon-overrides-common.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <%for (var css of htmlWebpackPlugin.options.style.css){%>
+    <link href=<%= htmlWebpackPlugin.options.client.cssHome %><%=css%> rel="stylesheet" nonce="kuiDefaultNonce">
+    <%}%>
 
-    <link href="${cssHome}not-electron.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="${cssHome}kui-tables-common.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="${cssHome}ui.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="${cssHome}sidecar.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="${cssHome}status-stripe.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="${cssHome}${tabStripe}" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>carbon-components.min.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>carbon-overrides-common.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>not-electron.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>kui-tables-common.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>ui.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>sidecar.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>status-stripe.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %><%= htmlWebpackPlugin.options.style.tabStripe %>" rel="stylesheet" nonce="kuiDefaultNonce" />
     <!-- css overrides go here -->
-    <link href="${cssHome}vendor/balloon-css/balloon.min.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>vendor/balloon-css/balloon.min.css" rel="stylesheet" nonce="kuiDefaultNonce" />
 
-    <link rel="shortcut icon" href="${imageHome}${favicon}" />
+    <link rel="shortcut icon" href="<%= htmlWebpackPlugin.options.client.imageHome %><%= htmlWebpackPlugin.options.icons.favicon %>" />
 
     <!-- opengraph properties -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="${ogUrl}" />
-    <meta property="og:site_name" content="${ogSiteName}" />
-    <meta property="og:title" content="${ogTitle}" />
-    <meta property="og:description" content="${ogDescription}" />
-    <meta property="og:image" content="${ogImage}" />
+    <meta property="og:url" content="<%= htmlWebpackPlugin.options.opengraph.ogUrl %>" />
+    <meta property="og:site_name" content="<%= htmlWebpackPlugin.options.opengraph.ogSiteName %>" />
+    <meta property="og:title" content="<%= htmlWebpackPlugin.options.opengraph.ogTitle %>" />
+    <meta property="og:description" content="<%= htmlWebpackPlugin.options.opengraph.ogDescription %>" />
+    <meta property="og:image" content="<%= htmlWebpackPlugin.options.opengraph.ogImage %>" />
 
     <!-- twitter card properties -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="${ogUrl}" />
-    <meta name="twitter:description" content="${ogDescription}" />
-    <meta name="twitter:image" content="${ogImage}" />
-    <meta name="twitter:label1" value="${ogLabel1}" />
-    <meta name="twitter:data1" value="${ogData1}" />
-    <meta name="twitter:label2" value="${ogLabel2}" />
-    <meta name="twitter:data2" value="${ogData2}" />
+    <meta name="twitter:url" content="<%= htmlWebpackPlugin.options.opengraph.ogUrl %>" />
+    <meta name="twitter:description" content="<%= htmlWebpackPlugin.options.opengraph.ogDescription %>" />
+    <meta name="twitter:image" content="<%= htmlWebpackPlugin.options.opengraph.ogImage %>" />
+    <meta name="twitter:label1" value="<%= htmlWebpackPlugin.options.opengraph.ogLabel1 %>" />
+    <meta name="twitter:data1" value="<%= htmlWebpackPlugin.options.opengraph.ogData1 %>" />
+    <meta name="twitter:label2" value="<%= htmlWebpackPlugin.options.opengraph.ogLabel2 %>" />
+    <meta name="twitter:data2" value="<%= htmlWebpackPlugin.options.opengraph.ogData2 %>" />
 
-    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />
+    <meta http-equiv="Content-Security-Policy" content="<%= htmlWebpackPlugin.options.client.contentSecurityPolicy %>" />
 
     <script nonce="kuiDefaultNonce">
+      window['_kuiNonce'] = 'kuiDefaultNonce'
       window['_kuiWebpackHash'] = '${hash}'
       window['_kuiWebpackResourceRoot'] = '${resourceRoot}'
     </script>
   </head>
 
-  <body class="still-loading ${bodyCss}">
+  <body class="still-loading <%= htmlWebpackPlugin.options.style.bodyCss.join(" ") %>">
     <div class="page">
       <main class="main">
         <div class="left-tab-stripe kui-header">
-          <div class="kui-header__title">${productName}</div>
+          <div class="kui-header__title"><%= htmlWebpackPlugin.options.name.productName %></div>
           <div class="application-icon" id="about-button"></div>
 
           <div class="offscreen hidden">
@@ -171,7 +176,6 @@
                             </div>
 
                             <div class="header-right-bits">
-                              <!--<span class="activation-content activation-status" data-title-base="Activation status: {status}"></span>-->
                               <div class="action-content">
                                 <a class="entity-web-export-url" target="_blank">&#x1F310;</a>
                               </div>
@@ -427,5 +431,5 @@
     </div>
   </body>
 
-  <script src="${jsHome}${main}" nonce="kuiDefaultNonce"></script>
+  <%= htmlWebpackPlugin.tags.bodyTags.map(_ => { _.attributes.nonce="kuiDefaultNonce"; return _ }).join('') %>
 </html>

@@ -35,6 +35,7 @@
     "css-loader": "3.3.0",
     "file-loader": "5.0.2",
     "font-config-webpack-plugin": "1.4.0",
+    "html-webpack-plugin": "^4.0.0-beta.11",
     "ibm-cos-sdk": "1.5.4",
     "ignore-loader": "0.1.2",
     "node-loader": "0.6.0",

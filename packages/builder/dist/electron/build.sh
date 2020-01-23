@@ -112,7 +112,6 @@ function tarCopy {
 
 # TODO share this with headless/build.sh, as they are identical
 function configure {
-    CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" node "$BUILDER_HOME"/lib/configure.js
     UGLIFY=true npx --no-install kui-prescan
 }
 

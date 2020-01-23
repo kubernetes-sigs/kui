@@ -38,7 +38,8 @@ fi
 
 # this directory will contain the webpack bundles, CSS, images,
 # index.html, etc.
-cp -a "$BUILDDIR" build
+mkdir build
+tar -C "$BUILDDIR" -Lcf - . | tar -C build -xf -
 
 # finally, build the docker image
 if [ "$KUI_USE_HTTP" == "true" ]; then
