@@ -18,7 +18,8 @@ import Debug from 'debug'
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
-import { env } from '../../core/settings'
+import { cssHome } from '@kui-shell/client/config.d/client.json'
+
 import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
@@ -49,12 +50,12 @@ export const getPersistedThemeChoice = (): Promise<string> => {
 }
 
 function getCssFilepath(addon: string, plugin: string, apiVersion: ThemeApiVersion): string {
-  const base = dirname(require.resolve('@kui-shell/settings/package.json'))
+  const base = dirname(require.resolve('@kui-shell/prescan.json'))
 
   if (!apiVersion || apiVersion === 'v1') {
-    return join(base, '../build', env.cssHome, addon)
+    return join(base, 'build', cssHome, addon)
   } else {
-    return join(base, '..', plugin, 'web/css', addon)
+    return join(base, plugin, 'web/css', addon)
   }
 }
 
@@ -63,11 +64,10 @@ function getCssFilepath(addon: string, plugin: string, apiVersion: ThemeApiVersi
  *
  */
 const getCss = async (addon: string, addonKey: string, plugin: string, apiVersion: ThemeApiVersion) => {
-  // const prefix = inBrowser() ? '' : join(dirname(require.resolve('@kui-shell/settings/package.json')), '../build')
   if (!apiVersion || apiVersion === 'v1') {
     return {
       key: addonKey,
-      path: join(env.cssHome, addon)
+      path: join(cssHome, addon)
     }
   } else {
     return {

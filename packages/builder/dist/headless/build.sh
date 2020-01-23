@@ -27,6 +27,7 @@ echo "staging directory $STAGING"
 PRESCAN_OVERRIDE="$2"
 
 CLIENT_HOME="$(pwd)"
+THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 APPDIR="$STAGING"/kui/node_modules/@kui-shell
 BUILDER_HOME="$STAGING"/kui/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME/dist/headless"
@@ -95,7 +96,6 @@ function tarCopy {
     (cd "$STAGING" && \
          "$TAR" -C "$CLIENT_HOME" -cf - \
                 --exclude "./npm-packs" \
-                --exclude "./theme" \
                 --exclude "./kui" \
                 --exclude "./kui-*-tmp" \
                 --exclude "./bin" \
@@ -116,7 +116,6 @@ function tarCopy {
                 --exclude "**/*.png" \
                 --exclude "**/*.icns" \
                 --exclude "**/*.ico" \
-                --exclude "./theme" \
                 --exclude "**/tests/node_modules/*" \
                 --exclude "node_modules/@types" \
                 --exclude "node_modules/*.bak/*" \
@@ -157,12 +156,6 @@ function tarCopy {
 }
 
 function configure {
-    # so that npm prune --production doesn't eliminate @kui-shell/settings
-    mkdir "$STAGING"/kui/settings
-    echo '{ "name": "@kui-shell/settings", "version": "0.0.1" }' > "$STAGING"/kui/settings/package.json
-    (cd "$STAGING"/kui && npm install --save --no-package-lock --ignore-scripts ./settings)
-    echo '{}' > "$STAGING"/kui/settings/config.json
-
     UGLIFY=true npx --no-install kui-prescan
     CLIENT_HOME=$CLIENT_HOME KUI_STAGE="$STAGING"/kui node "$BUILDER_HOME"/lib/configure.js
     echo "nothing to do"
@@ -186,7 +179,8 @@ function build {
     fi
 
     # product name
-    export PRODUCT_NAME="${PRODUCT_NAME-`cat "$APPDIR"/settings/config.json | jq --raw-output .theme.productName`}"
+    CONIFG_PRODUCT_NAME=$(cd "$THEME" && node -e 'console.log(require("./config.d/name").productName)')
+    export PRODUCT_NAME="${PRODUCT_NAME-$CONIFG_PRODUCT_NAME}"
     if [ -z "$PRODUCT_NAME" ] || [ "$PRODUCT_NAME" == "null" ]; then
         # choose some default product name
         PRODUCT_NAME="Kui"

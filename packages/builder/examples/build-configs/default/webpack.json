@@ -2,7 +2,5 @@
   "nameSuffix": "-webpack",
   "main": "main.bundle.js",
   "bodyCss": ["not-electron"],
-  "cssHome": "",
-  "imageHome": "",
   "jsHome": ""
 }

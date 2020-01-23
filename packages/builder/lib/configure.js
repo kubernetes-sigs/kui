@@ -152,63 +152,15 @@ const writeIndex = settings => str =>
   })
 
 /**
- * Stash the chosen configuration settings to the buildDir, and update
- * the app/package.json so that the productName field reflects the
- * chosen setting
- *
- */
-const writeConfig = settings =>
-  new Promise((resolve, reject) => {
-    if (settings.build.writeConfig === false) {
-      return resolve()
-    }
-
-    const { configDir } = settings.build
-
-    task(`write config to ${configDir}`)
-
-    const config = Object.assign({}, settings)
-    delete config.build
-    debug('writeConfig', configDir, config)
-
-    fs.writeFile(path.join(configDir, 'config.json'), JSON.stringify(config, undefined, 4), err => {
-      if (err) {
-        reject(err)
-      } else {
-        task('write package.json')
-
-        const packageAppPjson = path.join(configDir, '../package.json')
-        const topLevel = moduleExists(packageAppPjson)
-          ? require(packageAppPjson)
-          : require(path.join(process.env.CLIENT_HOME, 'package.json'))
-        const packageJson = Object.assign({}, topLevel, config, {
-          name: '@kui-shell/settings'
-        })
-
-        fs.writeFile(path.join(configDir, 'package.json'), JSON.stringify(packageJson, undefined, 4), err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        })
-      }
-    })
-  })
-
-/**
  * Do a build
  *
  */
 const doBuild = settings => () =>
-  Promise.all([
-    writeConfig(settings),
-    readIndex(settings)
-      .then(evaluateMacros(unify(settings.env, settings.theme)))
-      .then(injectCSS(settings.env, settings.theme.css))
-      .then(injectCSS(settings.env, settings.theme.cssOverrides, '<!-- css overrides go here -->'))
-      .then(writeIndex(settings))
-  ])
+  readIndex(settings)
+    .then(evaluateMacros(unify(settings.env, settings.theme)))
+    .then(injectCSS(settings.env, settings.theme.css))
+    .then(injectCSS(settings.env, settings.theme.cssOverrides, '<!-- css overrides go here -->'))
+    .then(writeIndex(settings))
 
 /**
  * Either project out a field of the configuration settings, or do a build
@@ -216,12 +168,12 @@ const doBuild = settings => () =>
  */
 const doWork = settings => {
   info('env.main', settings.env.main)
-  info('env.cssHome', settings.env.cssHome)
-  info('env.imageHome', settings.env.imageHome)
-  info('theme', settings.theme.cssTheme)
+  info('theme.cssHome', settings.theme.cssHome)
+  info('theme.imageHome', settings.theme.imageHome)
   info('buildDir', settings.build.buildDir)
 
-  return Promise.all([fs.mkdirp(settings.build.buildDir), fs.mkdirp(settings.build.configDir)])
+  return fs
+    .mkdirp(settings.build.buildDir)
     .then(doBuild(settings))
     .then(() => colors.green('ok:') + ' build successful')
 }
@@ -293,7 +245,6 @@ const loadOverrides = (programmaticOverrides = {}) => {
     (!programmaticOverrides || !programmaticOverrides.build || !programmaticOverrides.build.buildDir)
   ) {
     overrides.build.buildDir = path.join(process.env.KUI_STAGE, 'node_modules/@kui-shell/build')
-    overrides.build.configDir = path.join(process.env.KUI_STAGE, 'node_modules/@kui-shell/settings')
   }
 
   debug('overrides', overrides)
