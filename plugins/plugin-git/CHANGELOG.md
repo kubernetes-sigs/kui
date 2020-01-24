@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.50](https://github.com/IBM/kui/compare/v4.5.0...v5.7.50) (2020-01-24)
+
+**Note:** Version bump only for package @kui-shell/plugin-git
+
 ## [5.7.49](https://github.com/IBM/kui/compare/v4.5.0...v5.7.49) (2020-01-23)
 
 **Note:** Version bump only for package @kui-shell/plugin-git
