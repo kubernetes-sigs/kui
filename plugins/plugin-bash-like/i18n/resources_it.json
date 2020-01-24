@@ -1,11 +1,13 @@
 {
   "rawMode": "raw",
+  "No such file or directory": "File o directory non esistente",
   "cdUsageTitle": "modifica directory di lavoro",
   "cdUsageHeader": "Aggiorna la directory di lavoro corrente per le operazioni del file system locale",
   "lsUsageTitle": "elenco file locale",
   "lsUsageHeader": "Elenco di directory del file system locale",
   "lsDashAUsageDocs": "Elenca tutte le voci tranne . e ..",
   "lsDashaUsageDocs": "Includi le voci di directory in cui nomi iniziano con un punto (.)",
+  "lsDashdUsageDocs": "Le directory sono elencate come file semplici",
   "lsDashcUsageDocs": "Utilizza l'orario dell'ultima modifica di stato del file per l'ordinamento",
   "lsDashtUsageDocs": "Ordina per orario di modifica (prima la modifica più recente)",
   "lsDashrUsageDocs": "Inverti il criterio di ordinamento naturale",
@@ -13,6 +15,7 @@
   "openUsageTitle": "apri file",
   "openUsageHeader": "Visualizza il contenuto di un file",
   "localFilePath": "percorso file locale",
+  "not a repo": "non è un repository",
   "Please wait while we connect to your cloud": "Attendere che la connessione al cloud sia completata",
   "Could not establish a new session": "Impossibile stabilire una nuova sessione",
   "Successfully connected to your cloud. For next steps, try this command: ": "Connessione al cloud eseguita correttamente. Per i passi successivi, provare questo comando: "
