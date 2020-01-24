@@ -1,11 +1,13 @@
 {
   "rawMode": "bruto",
+  "No such file or directory": "Não há esse arquivo ou diretório",
   "cdUsageTitle": "mudar diretório ativo",
   "cdUsageHeader": "Atualize o diretório atualmente em funcionamento para manipulações do sistema de arquivos locais",
   "lsUsageTitle": "lista de arquivos locais",
   "lsUsageHeader": "Listagem de diretórios de seu sistema de arquivos locais",
   "lsDashAUsageDocs": "Listar todas as entradas, exceto para . e ..",
   "lsDashaUsageDocs": "Incluir entradas de diretório cujos nomes comecem com um ponto (.)",
+  "lsDashdUsageDocs": "Os diretórios estão listados como arquivos simples",
   "lsDashcUsageDocs": "Usar horário em que o status do arquivo foi mudado pela última vez para classificação",
   "lsDashtUsageDocs": "Classificar por horário da modificação (modificação mais recente primeiro)",
   "lsDashrUsageDocs": "Inverter a ordem de classificação natural",
@@ -13,6 +15,7 @@
   "openUsageTitle": "abrir o arquivo",
   "openUsageHeader": "Visualizar os conteúdos de um arquivo",
   "localFilePath": "caminho do arquivo local",
+  "not a repo": "não é um repositório",
   "Please wait while we connect to your cloud": "Aguarde enquanto nos conectamos com sua nuvem.",
   "Could not establish a new session": "Não foi possível estabelecer uma nova sessão",
   "Successfully connected to your cloud. For next steps, try this command: ": "Conectado com êxito à sua nuvem. Para as próximas etapas, experimente este comando: "
