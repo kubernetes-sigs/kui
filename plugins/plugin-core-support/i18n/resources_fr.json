@@ -19,6 +19,7 @@
   "Tab": "Onglet",
   "New Tab": "Nouvel onglet",
   "Theme": "Thème",
+  "Provider": "Fournisseur",
   "Style": "Style",
   "theme.currentTheme": "Vous utilisez le thème par défaut",
   "theme.usageDocs": "Répertorier les thèmes disponibles",
@@ -48,5 +49,5 @@
   "Closing in {0} seconds": "Fermeture dans {0} secondes",
   "Save to desktop": "Sauvegarder sur le bureau",
   "Screenshot copied to clipboard": "Capture d'écran copiée dans le presse-papiers",
-  "Successfully captured a screenshot to the clipboard": "Une capture d'écran a été capturée dans le presse-papiers "
+  "Successfully captured a screenshot to the clipboard": "Une capture d'écran a été capturée dans le presse-papiers"
 }

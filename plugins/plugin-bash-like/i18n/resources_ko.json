@@ -1,11 +1,13 @@
 {
   "rawMode": "원시",
+  "No such file or directory": "해당 파일 또는 디렉토리가 없음",
   "cdUsageTitle": "작업 디렉토리 변경",
   "cdUsageHeader": "로컬 파일 시스템 조작을 위한 현재 작업 디렉토리 업데이트",
   "lsUsageTitle": "로컬 파일 목록",
   "lsUsageHeader": "로컬 파일 시스템의 디렉토리 목록",
   "lsDashAUsageDocs": "모든 항목 나열(. 및 .. 제외)",
   "lsDashaUsageDocs": "이름이 점(.)으로 시작하는 디렉토리 항목 포함",
+  "lsDashdUsageDocs": "디렉토리가 일반 파일로 나열됨",
   "lsDashcUsageDocs": "정렬을 위해 파일 상태가 마지막으로 변경된 시간 사용",
   "lsDashtUsageDocs": "수정된 시간 기준 정렬(가장 최근에 수정된 사항이 처음에 옴)",
   "lsDashrUsageDocs": "자연 정렬 순서 반전",
@@ -13,6 +15,7 @@
   "openUsageTitle": "파일 열기",
   "openUsageHeader": "파일의 컨텐츠 보기",
   "localFilePath": "로컬 파일 경로",
+  "not a repo": "저장소 아님",
   "Please wait while we connect to your cloud": "클라우드에 연결하는 동안 기다려 주십시오.",
   "Could not establish a new session": "새 세션을 설정할 수 없음",
   "Successfully connected to your cloud. For next steps, try this command: ": "클라우드에 연결되었습니다. 다음 단계를 위해 다음 명령을 실행해 보십시오. "

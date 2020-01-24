@@ -19,6 +19,7 @@
   "Tab": "Separador",
   "New Tab": "Nuevo separador",
   "Theme": "Tema",
+  "Provider": "Proveedor",
   "Style": "Estilo",
   "theme.currentTheme": "Está utilizando el tema predeterminado",
   "theme.usageDocs": "Listar temas disponibles",
