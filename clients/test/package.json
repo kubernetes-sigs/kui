@@ -42,10 +42,10 @@
     "@types/node": "12.12.14",
     "@types/uuid": "3.4.6",
     "@types/webdriverio": "4.13.3",
-    "electron": "6.1.5",
+    "electron": "6.1.7",
     "mocha": "6.2.2",
     "spectron": "8.0.0",
-    "typescript": "3.7.3"
+    "typescript": "3.7.4"
   },
   "dependencies": {
     "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
