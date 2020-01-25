@@ -66,8 +66,13 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
     // decorate status stripe with the UI Fragment
     const controller = StatusStripe.addTo(position, fragment)
 
-    // then wire it up to standard events
-    controller.listen(listener)
+    // invoke once onload
+    import('../webapp/tab').then(({ getCurrentTab }) => {
+      listener(getCurrentTab(), controller, fragment)
+
+      // then wire it up to standard events
+      controller.listen(listener)
+    })
   }
 
   /** status stripe context */

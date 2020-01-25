@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { isHeadless, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
+import { isHeadless, PreloadRegistrar } from '@kui-shell/core'
 
-export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
+export default (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
-    return import('./status-stripe').then(_ => _.default(registrar))
-  }
-}
+    import('./status-stripe').then(_ => _.default(registrar))
 
-export default () => {
-  if (!isHeadless()) {
     return import('./tab-completion').then(_ => _.default())
   }
 }

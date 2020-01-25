@@ -60,7 +60,7 @@ async function reportCurrentBranch(tab: Tab, controller: StatusStripeController,
 
 export default async function(registrar: PreloadRegistrar) {
   const fragment = {
-    id: 'kui--plugin-bash-like--current-git-branch',
+    id: 'kui--plugin-git--current-git-branch',
     icon,
 
     // this will contain the current branch name
