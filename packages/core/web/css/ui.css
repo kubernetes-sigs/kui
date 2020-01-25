@@ -419,7 +419,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   caret-color: var(--color-caret);
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
+  /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
 }
 .kui--prompt-like:empty {
   border-right: 1ex solid var(--color-caret);
