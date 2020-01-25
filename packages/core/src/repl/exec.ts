@@ -773,7 +773,11 @@ class InProcessExecutor implements Executor {
       if (execOptions.nested) {
         // for nested/qexecs, we don't want to report anything to the
         // repl
-        return
+        if (e.code === 404) {
+          throw e
+        } else {
+          return
+        }
       }
 
       const blockForError = block || getCurrentProcessingBlock(tab)
