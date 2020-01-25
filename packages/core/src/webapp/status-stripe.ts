@@ -48,6 +48,7 @@ export type TextWithIcon = {
   }
 }
 
+/** Supported impls of Fragment */
 type FragmentTypes = TextWithIcon
 
 interface WithId {
@@ -71,23 +72,36 @@ type ViewLevel = 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error'
 
 /** event listener, e.g. new type, switch tab */
 type MyListener = (tab: Tab) => void
-type Listener<F extends Fragment> = (tab: Tab, hideable: StatusStripeController<F>, fragment: F) => void
+type Listener<F extends Fragment> = (tab: Tab, hideable: StatusStripeController<F>, fragment: F) => void | Promise<void>
 
 /** a `Contribution` is a UI `Fragment` along with an event `Listener` */
 export type StatusStripeContribution<F extends Fragment> = { fragment: F; listener: Listener<F> }
 
 export interface StatusStripeController<F extends Fragment = TextWithIcon> {
-  showAs(level: ViewLevel): void
+  /**
+   * Change the ViewLevel of the fragment
+   *
+   * @return this controller
+   */
+  showAs(level: ViewLevel): StatusStripeController<F>
+
   listen(cb: Listener<F>): Promise<MyListener>
   unlisten(cb: MyListener): Promise<void>
 }
 
-class HideableElement<F extends Fragment> implements StatusStripeController<F> {
+/**
+ * Implementation of StatusStripeController which uses a DOM Element
+ * to wrap the fragment. It also listens to a set of default events:
+ * new tab, tab switch, and command completion.
+ *
+ */
+class ElementController<F extends Fragment> implements StatusStripeController<F> {
   // eslint-disable-next-line no-useless-constructor
   public constructor(private readonly element: Element, private readonly fragment: F) {}
 
   public showAs(level: ViewLevel) {
     this.element.setAttribute('data-view', level)
+    return this
   }
 
   public async unlisten(myListener: MyListener) {
@@ -99,13 +113,16 @@ class HideableElement<F extends Fragment> implements StatusStripeController<F> {
   }
 
   public async listen(listener: Listener<F>) {
-    const myListener = (tab: Tab) => {
+    const myListener: MyListener = (tab: Tab) => {
       // since we have a single-global status, make sure that the
       // event pertains to the current tab; we also listen to
       // /tab/switch (just below), so we will reflect any events that
       // we drop (here) when the user switches to that other tab
       if (tab === getCurrentTab()) {
-        listener(tab, this, this.fragment)
+        Promise.resolve(listener(tab, this, this.fragment)).catch(err => {
+          console.error('error refreshing status stripe fragment', err)
+          this.showAs('hidden')
+        })
       }
     }
 
@@ -119,7 +136,11 @@ class HideableElement<F extends Fragment> implements StatusStripeController<F> {
   }
 }
 
-class StatusStripe {
+/**
+ * The StatusStripe API.
+ *
+ */
+class StatusStripeAPI {
   private render(fragment: Fragment) {
     if (isTextWithIcon(fragment)) {
       const frag = document.createDocumentFragment()
@@ -164,10 +185,23 @@ class StatusStripe {
     return wrapper
   }
 
+  /**
+   * Append the given `fragment` at the given position `pos`. Note:
+   * that the fragment will be hidden by default. This is to avoid the
+   * fragment showing in a partial form prior to the first
+   * availability of data.
+   *
+   * @return a controller that can be used e.g. to change whether or
+   * not the fragment is visible
+   *
+   */
   public addTo<F extends Fragment>(pos: StripePosition, fragment: F): StatusStripeController<F> {
     const element = this.wrap(fragment)
     region(pos).appendChild(element)
-    return new HideableElement<F>(element, fragment)
+
+    // re: initial invisibility, see
+    // https://github.com/IBM/kui/issues/3538
+    return new ElementController<F>(element, fragment).showAs('hidden')
   }
 
   public remove(pos: StripePosition, fragment: DocumentFragment | HTMLElement) {
@@ -179,4 +213,4 @@ class StatusStripe {
  * Export the API impl
  *
  */
-export default new StatusStripe()
+export default new StatusStripeAPI()
