@@ -72,23 +72,26 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
     // invoke once onload
     Promise.all([import('../core/events'), import('../webapp/tab')]).then(
       ([{ default: eventBus }, { getCurrentTab }]) => {
-        const tab = getCurrentTab()
-        if (!tab._kui_session) {
-          eventBus.once('/tab/new', (tab: Tab) => {
+        const doRegister = (tab: Tab) => {
+          if (!tab._kui_session) {
+            console.error(
+              'bug in plugin: you probably registered your status stripe contribution in the registerCapability phase, rather than preload phase'
+            )
+          } else {
             tab._kui_session.then(() => {
               listener(tab, controller, fragment)
 
               // and wire it up to standard events
               controller.listen(listener)
             })
-          })
-        } else {
-          tab._kui_session.then(() => {
-            listener(tab, controller, fragment)
+          }
+        }
 
-            // and wire it up to standard events
-            controller.listen(listener)
-          })
+        const tab = getCurrentTab()
+        if (!tab._kui_session) {
+          eventBus.once('/tab/new', doRegister)
+        } else {
+          doRegister(tab)
         }
       }
     )
