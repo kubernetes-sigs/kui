@@ -18,8 +18,11 @@ import Debug from 'debug'
 const debug = Debug('core/plugins/preloader')
 debug('loading')
 
+/* eslint-disable @typescript-eslint/camelcase */
+
 import { PrescanModel } from './prescan'
 
+import { Tab } from '../webapp/tab'
 import { mainPath, webpackPath } from './path'
 import { isHeadless } from '../core/capabilities'
 import { MetadataBearing } from '../models/entity'
@@ -67,12 +70,28 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
     const controller = StatusStripe.addTo(position, fragment)
 
     // invoke once onload
-    import('../webapp/tab').then(({ getCurrentTab }) => {
-      listener(getCurrentTab(), controller, fragment)
+    Promise.all([import('../core/events'), import('../webapp/tab')]).then(
+      ([{ default: eventBus }, { getCurrentTab }]) => {
+        const tab = getCurrentTab()
+        if (!tab._kui_session) {
+          eventBus.once('/tab/new', (tab: Tab) => {
+            tab._kui_session.then(() => {
+              listener(tab, controller, fragment)
 
-      // then wire it up to standard events
-      controller.listen(listener)
-    })
+              // and wire it up to standard events
+              controller.listen(listener)
+            })
+          })
+        } else {
+          tab._kui_session.then(() => {
+            listener(tab, controller, fragment)
+
+            // and wire it up to standard events
+            controller.listen(listener)
+          })
+        }
+      }
+    )
   }
 
   /** status stripe context */
@@ -123,36 +142,46 @@ export default async (prescan: PrescanModel) => {
         console.error(err)
       }
     })
-  ).then(() =>
-    Promise.all(
-      prescan.preloads.map(async module => {
-        // FIXME to support field-installed plugin paths
-        try {
-          debug('preloading misc %s', module.path)
-          // NOTE ON @kui-shell relativization: this is important so that
-          // webpack can be isntructed to pull in the plugins into the
-          // build see the corresponding NOTE in ./assembler.ts and
-          // ./plugins.ts
-          const registrationRef =
-            module.path.charAt(0) === '/'
-              ? await import(/* webpackIgnore: true */ module.path)
-              : isHeadless()
-              ? await import(/* webpackIgnore: true */ mainPath(module.path))
-              : await import(
-                  /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload'
-                )
-          const registration: PreloadRegistration = registrationRef.default || registrationRef
-          if (registration && typeof registration === 'function') {
-            await registration(new PreloaderRegistrarImpl(module.route))
-          }
-          debug('done preloading %s', module.path)
-        } catch (err) {
-          debug('error invoking preload', module.path, err)
-          console.error(err)
-        }
-      })
-    )
   )
+    .then(async () => {
+      await import('../core/events').then(({ default: eventBus }) => {
+        eventBus.once('/tab/new', (tab: Tab) => {
+          if (tab._kui_session === undefined) {
+            tab._kui_session = Promise.resolve()
+          }
+        })
+      })
+    })
+    .then(() =>
+      Promise.all(
+        prescan.preloads.map(async module => {
+          // FIXME to support field-installed plugin paths
+          try {
+            debug('preloading misc %s', module.path)
+            // NOTE ON @kui-shell relativization: this is important so that
+            // webpack can be isntructed to pull in the plugins into the
+            // build see the corresponding NOTE in ./assembler.ts and
+            // ./plugins.ts
+            const registrationRef =
+              module.path.charAt(0) === '/'
+                ? await import(/* webpackIgnore: true */ module.path)
+                : isHeadless()
+                ? await import(/* webpackIgnore: true */ mainPath(module.path))
+                : await import(
+                    /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload'
+                  )
+            const registration: PreloadRegistration = registrationRef.default || registrationRef
+            if (registration && typeof registration === 'function') {
+              await registration(new PreloaderRegistrarImpl(module.route))
+            }
+            debug('done preloading %s', module.path)
+          } catch (err) {
+            debug('error invoking preload', module.path, err)
+            console.error(err)
+          }
+        })
+      )
+    )
 
   try {
     await jobs

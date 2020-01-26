@@ -20,6 +20,7 @@ import TabState from '../models/tab-state'
 export interface Tab extends HTMLElement {
   REPL: REPL
   state: TabState
+  _kui_session: Promise<any>
 }
 
 const tabTagPattern = /^tab$/i
