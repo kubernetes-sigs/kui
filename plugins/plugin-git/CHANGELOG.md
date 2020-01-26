@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.54](https://github.com/IBM/kui/compare/v4.5.0...v5.7.54) (2020-01-26)
+
+### Bug Fixes
+
+- **packages/core:** status stripe fragments should be hidden until data arrives ([5792746](https://github.com/IBM/kui/commit/5792746)), closes [#3538](https://github.com/IBM/kui/issues/3538)
+
 ## [5.7.53](https://github.com/IBM/kui/compare/v4.5.0...v5.7.53) (2020-01-25)
 
 ### Bug Fixes
