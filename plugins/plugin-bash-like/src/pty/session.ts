@@ -55,7 +55,7 @@ export async function getSessionForTab(tab: Tab): Promise<Channel> {
   if (tab['_kui_session'] === undefined && inElectron()) {
     const channel = new InProcessChannel()
     await channel.init()
-    tab['_kui_session'] = channel
+    tab['_kui_session'] = Promise.resolve(channel)
 
     return tab['_kui_session']
   } else {
