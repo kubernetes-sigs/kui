@@ -229,8 +229,6 @@ const htmlBuildOptions = Object.assign(
   }
 )
 
-console.error('htmlBuildOptions!!!', htmlBuildOptions)
-
 plugins.push(new HtmlWebpackPlugin(htmlBuildOptions))
 
 // the Kui builder plugin

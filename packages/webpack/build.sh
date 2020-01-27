@@ -160,7 +160,6 @@ function docker {
 # some of the assets are in sibling directories; let's copy them here
 # to our BUILDDIR directory:
 function assembleHTMLPieces {
-    cp "$APPDIR"/build/index-webpack.html "$BUILDDIR"/index.html
     cp -a "$CORE_HOME"/web/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
 
     # if we are using a build config override, then copy in its assets
