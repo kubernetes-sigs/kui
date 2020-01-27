@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/camelcase,no-const-assign,prefer-const */
-
-declare let _kuiNonce: string
-declare let __webpack_nonce__: string
-__webpack_nonce__ = _kuiNonce
-
-require('@kui-shell/client')
-import('./boot').then(_ => _.default())
+/**
+ * Here we arrange the CSS for base functionality of Kui. Order is
+ * preserved in the resulting <link> tags.
+ *
+ */
+import './web/css/static/carbon-components.min.css'
+import './web/css/static/carbon-overrides-common.css'
+import './web/css/static/kui-tables-common.css'
+import './web/css/static/ui.css'
+import './web/css/static/sidecar.css'
+import './web/css/static/status-stripe.css'
+import './web/css/static/top-tab-stripe.css'
+import './web/css/static/vendor/balloon-css/balloon.min.css'

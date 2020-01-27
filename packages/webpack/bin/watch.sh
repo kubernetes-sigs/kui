@@ -30,17 +30,6 @@ THEME="${MODULE_HOME}"/client
 
 pushd "$CLIENT_HOME"
   rm -rf dist/webpack
-  if [ ! -d dist/webpack/css ]; then mkdir -p dist/webpack/css; fi
-  pushd dist/webpack/css
-    for i in "$MODULE_HOME"/core/web/css/*; do
-        ln -s $i
-    done
-    for i in "$THEME"/css/*; do
-        ln -s $i
-    done
-    ln -s "$THEME"/icons
-    ln -s "$THEME"/images
-  popd
 popd
 
 if [ -n "$OPEN" ]; then
