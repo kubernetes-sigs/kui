@@ -32,7 +32,7 @@
     "pty:rebuild": "kui-pty-rebuild",
     "pty:electron": "npm run pty:rebuild electron",
     "pty:nodejs": "npm run pty:rebuild node",
-    "link": "CLIENT=${CLIENT-default}; CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/dist/dev/build.sh; CLIENT=${CLIENT-default}; CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/bin/seticon.js",
+    "link": "CLIENT=${CLIENT-default}; CLIENT_HOME=\"$(cd ./clients/$CLIENT && pwd)\" ./packages/builder/bin/seticon.js",
     "postinstall": "npm run compile",
     "open": "electron . shell",
     "start": "npm run watch:electron && npm run open"
@@ -52,6 +52,7 @@
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-tutorials": "file:plugins/plugin-tutorials",
+    "@kui-shell/plugin-client-common": "file:plugins/plugin-client-common",
     "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
   },

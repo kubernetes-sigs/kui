@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const requireAll = require('require-all')
 
 const mode = process.env.MODE || 'development'
 const target = process.env.TARGET || 'web'
@@ -24,13 +25,19 @@ const isWatching = !!process.argv.find(_ => /--watch/.test(_) || /webpack-dev-se
 const webCompress = process.env.WEB_COMPRESS || 'none'
 const noCompression = !inBrowser || webCompress === 'none' || isWatching
 const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
+const CopyPlugin = require('copy-webpack-plugin')
 const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const TerserJSPlugin = require('terser-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const optimization = {}
 if (process.env.NO_OPT) {
   console.log('optimization? disabled')
   optimization.minimize = false
+} else {
+  optimization.minimizer = [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
 }
 
 const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
@@ -129,6 +136,13 @@ if (CompressionPlugin) {
 }
 
 /**
+ * Convenience function that makes a regexp out of a path; this helps with avoiding windows path.sep issues
+ */
+function thisPath(aPath /* : string */) {
+  return new RegExp(path.join(aPath))
+}
+
+/**
  * Define the set of bundle entry points; there is one default entry
  * point (the main: entry below). On top of this, we scan the plugins,
  * looking to see if they define a `webpack.entry` field in their
@@ -191,23 +205,16 @@ console.log('entry', entry)
 
 console.log('webpack plugins', plugins)
 
-const clientBase = path.join(stageDir, 'node_modules/@kui-shell/client/config.d')
-const loadOverride = file => {
-  try {
-    return require(path.join(clientBase, file))
-  } catch (err) {
-    // debug('error in loadOverride', err)
-    return {}
-  }
-}
+const clientBase = path.join(stageDir, 'node_modules/@kui-shell/client')
 
-const clientOptions = {
-  name: loadOverride('name'),
-  client: loadOverride('client'),
-  style: loadOverride('style'),
-  icons: loadOverride('icons'),
-  opengraph: loadOverride('opengraph')
-}
+plugins.push(
+  new CopyPlugin([
+    { from: path.join(clientBase, 'icons'), to: 'icons/' },
+    { from: path.join(clientBase, 'images'), to: 'images/' }
+  ])
+)
+
+const clientOptions = requireAll(path.resolve(path.join(clientBase, 'config.d')))
 
 clientOptions.style.bodyCss = (inBrowser ? ['not-electron'] : ['in-electron']).concat(clientOptions.style.bodyCss)
 
@@ -230,6 +237,7 @@ const htmlBuildOptions = Object.assign(
 )
 
 plugins.push(new HtmlWebpackPlugin(htmlBuildOptions))
+plugins.push(new MiniCssExtractPlugin())
 
 // the Kui builder plugin
 plugins.push({
@@ -377,6 +385,21 @@ module.exports = {
         use: 'ignore-loader'
       },
 
+      {
+        test: /\.css$/i,
+        include: thisPath('web/css/static'),
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              esModule: true
+            }
+          },
+          'css-loader'
+        ]
+      },
+      { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
+
       //
       // typescript exclusion rules
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },
@@ -423,7 +446,6 @@ module.exports = {
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
       { test: /\.svg$/, use: 'svg-inline-loader' },
-      { test: /\.css$/i, use: ['to-string-loader', 'css-loader'] },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },

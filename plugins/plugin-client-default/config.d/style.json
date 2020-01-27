@@ -1,5 +1,4 @@
 {
-  "css": ["kui-ui.css", "kui-tables.css", "carbon-overrides.css"],
   "bodyCss": ["kui"],
   "tabStripe": "top-tab-stripe.css",
   "tableStyle": "Light",
