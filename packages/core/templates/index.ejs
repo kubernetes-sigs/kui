@@ -3,22 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <title><%= htmlWebpackPlugin.options.name.productTitle %></title>
-
-    <%for (var css of htmlWebpackPlugin.options.style.css){%>
-    <link href=<%= htmlWebpackPlugin.options.client.cssHome %><%=css%> rel="stylesheet" nonce="kuiDefaultNonce">
-    <%}%>
-
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>carbon-components.min.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>carbon-overrides-common.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>not-electron.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>kui-tables-common.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>ui.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>sidecar.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>status-stripe.css" rel="stylesheet" nonce="kuiDefaultNonce" />
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %><%= htmlWebpackPlugin.options.style.tabStripe %>" rel="stylesheet" nonce="kuiDefaultNonce" />
+    
     <!-- css overrides go here -->
-    <link href="<%= htmlWebpackPlugin.options.client.cssHome %>vendor/balloon-css/balloon.min.css" rel="stylesheet" nonce="kuiDefaultNonce" />
+    <%= htmlWebpackPlugin.tags.headTags.map(_ => { _.attributes.nonce="kuiDefaultNonce"; return _ }).join('\n') %>
 
     <link rel="shortcut icon" href="<%= htmlWebpackPlugin.options.client.imageHome %><%= htmlWebpackPlugin.options.icons.favicon %>" />
 

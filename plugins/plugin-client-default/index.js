@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/camelcase,no-const-assign,prefer-const */
-
-declare let _kuiNonce: string
-declare let __webpack_nonce__: string
-__webpack_nonce__ = _kuiNonce
-
-require('@kui-shell/client')
-import('./boot').then(_ => _.default())
+/**
+ * Here we arrange the CSS for base functionality of Kui. Order is
+ * preserved in the resulting <link> tags.
+ *
+ */
+import './web/css/static/carbon-overrides.css'
+import './web/css/static/kui-tables.css'
+import './web/css/static/kui-ui.css'
+require('@kui-shell/plugin-client-common') /* <-- we prepend override everything here */

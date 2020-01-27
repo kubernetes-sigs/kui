@@ -157,23 +157,6 @@ function docker {
     fi
 }
 
-# some of the assets are in sibling directories; let's copy them here
-# to our BUILDDIR directory:
-function assembleHTMLPieces {
-    cp -a "$CORE_HOME"/web/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
-
-    # if we are using a build config override, then copy in its assets
-    if [ -d "$THEME"/css ]; then
-        cp -a "$THEME"/css/* "$BUILDDIR" # Note: we want to copy the directory contents here
-    fi
-    if [ -d "$THEME"/icons ]; then
-        cp -a "$THEME"/icons "$BUILDDIR" # Note: we want to copy the entire directory here, not just the contents
-    fi
-    if [ -d "$THEME"/images ]; then
-        cp -a "$THEME"/images "$BUILDDIR" # Note: we want to copy the entire directory here, not just the contents
-    fi
-}
-
 # remove the staging area
 function clean {
     if [ -z "$NO_CLEAN" ]; then
@@ -189,7 +172,6 @@ function build {
     initWebpack
     configure
     webpack
-    assembleHTMLPieces
     docker
     clean
 }

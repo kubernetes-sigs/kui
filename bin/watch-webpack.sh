@@ -40,14 +40,6 @@ fi
 rm -rf clients/$CLIENT/$TARGETDIR
 mkdir -p clients/$CLIENT/$TARGETDIR/css
 
-(cd clients/$CLIENT/$TARGETDIR && \
-     ln -sf "$THEME"/icons && \
-     ln -sf "$THEME"/images && \
-     cd css && \
-     for i in ../../../../../../packages/core/web/css/*; do ln -sf $i; done && \
-     for i in "$THEME"/css/*; do ln -sf $i; done \
-    )
-
 # display extra build progress?
 if [ -z "$TRAVIS_JOB_ID" ]; then
     PROGRESS="--progress"

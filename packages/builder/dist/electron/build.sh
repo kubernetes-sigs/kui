@@ -147,35 +147,6 @@ function theme {
     ICON_WIN32="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.win32)')
     ICON_LINUX="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.linux)')
 
-    # copy over theme css and icons
-    if [ -d "$THEME"/css ]; then
-        echo "copying in theme css"
-        cp -r "$THEME"/css/ "$STAGING"/node_modules/@kui-shell/build/css
-    fi
-    if [ -d "$THEME"/icons ]; then
-        echo "copying in theme icons"
-        cp -r "$THEME"/icons "$STAGING"/node_modules/@kui-shell/build
-    fi
-    if [ -d "$THEME"/images ]; then
-        echo "copying in theme images"
-        cp -r "$THEME"/images "$STAGING"/node_modules/@kui-shell/build
-    fi
-
-    # copy over the core css
-    (cd "$BUILDER_HOME/dist/electron" && npm install) # to pick up `minify`
-    CSS_SOURCE="$CORE_HOME"/web/css
-    CSS_TARGET="$APPDIR"/build/css
-    mkdir -p "$CSS_TARGET"
-    echo "copying core CSS to this directory: $CSS_TARGET"
-    for i in "$CSS_SOURCE"/*.css; do
-        css=`basename $i`
-        echo -n "copying $css... "
-        cp "$i" "$CSS_TARGET"/"$css"
-    done
-    if [ -d "$CSS_SOURCE"/vendor ]; then
-        echo -n "copying vendor css"
-        cp -a "$CSS_SOURCE"/vendor "$CSS_TARGET"
-    fi
 }
 
 function cleanup {
