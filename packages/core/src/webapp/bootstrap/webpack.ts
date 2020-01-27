@@ -20,4 +20,5 @@ declare let _kuiNonce: string
 declare let __webpack_nonce__: string
 __webpack_nonce__ = _kuiNonce
 
+require('@kui-shell/client')
 import('./boot').then(_ => _.default())

@@ -26,6 +26,7 @@ const noCompression = !inBrowser || webCompress === 'none' || isWatching
 const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
 const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const optimization = {}
 if (process.env.NO_OPT) {
@@ -230,6 +231,7 @@ const htmlBuildOptions = Object.assign(
 )
 
 plugins.push(new HtmlWebpackPlugin(htmlBuildOptions))
+plugins.push(new MiniCssExtractPlugin())
 
 // the Kui builder plugin
 plugins.push({
@@ -423,7 +425,19 @@ module.exports = {
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
       { test: /\.svg$/, use: 'svg-inline-loader' },
-      { test: /\.css$/i, use: ['to-string-loader', 'css-loader'] },
+      {
+        test: /plugins\/.*\/web\/css\/static\/.*\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              esModule: true
+            }
+          },
+          'css-loader'
+        ]
+      },
+      { test: /\.css$/i, exclude: /plugins\/.*\/web\/css\/static\/.*\.css$/, use: ['to-string-loader', 'css-loader'] },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },

@@ -1,0 +1,6 @@
+import './web/css/carbon-components.min.css'
+import './web/css/carbon-overrides-common.css'
+import './web/css/kui-tables-common.css'
+import './web/css/ui.css'
+import './web/css/sidecar.css'
+import './web/css/status-stripe.css'
