@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-git",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "Kui plugin that offers git integrations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -22,7 +22,6 @@
   "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
-  "dependencies": {},
   "publishConfig": {
     "access": "public"
   },
