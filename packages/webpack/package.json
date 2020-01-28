@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/webpack",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "description": "Kui support for webpack clients",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -60,5 +60,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "17e1fc33791d1622c7835c89e9034afc7c04c987"
 }
