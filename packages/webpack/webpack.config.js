@@ -134,6 +134,13 @@ if (CompressionPlugin) {
 }
 
 /**
+ * Convenience function that makes a regexp out of a path; this helps with avoiding windows path.sep issues
+ */
+function thisPath(aPath /* : string */) {
+  return new RegExp(path.join(aPath))
+}
+
+/**
  * Define the set of bundle entry points; there is one default entry
  * point (the main: entry below). On top of this, we scan the plugins,
  * looking to see if they define a `webpack.entry` field in their
@@ -384,7 +391,8 @@ module.exports = {
       },
 
       {
-        test: /web\/css\/static\/.*\.css$/,
+        test: /\.css$/i,
+        include: thisPath('web/css/static'),
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -395,7 +403,7 @@ module.exports = {
           'css-loader'
         ]
       },
-      { test: /\.css$/i, exclude: /web\/css\/static\/.*\.css$/, use: ['to-string-loader', 'css-loader'] },
+      { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
 
       //
       // typescript exclusion rules
@@ -443,12 +451,13 @@ module.exports = {
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
       {
-        test: /(plugin-client-default|@kui-shell\/client)\/icons\/.*\.(jpe?g|png|gif|svg)$/,
+        test: /\.(jpe?g|png|gif|svg)$/,
+        include: [thisPath('plugin-client-default/icons'), thisPath('@kui-shell/client/icons')],
         use: 'file-loader?name=icons/[ext]/[name].[ext]'
       },
       {
         test: /\.svg$/,
-        exclude: /(plugin-client-default|@kui-shell\/client)\/icons\/.*\.svg$/,
+        exclude: [thisPath('plugin-client-default/icons'), thisPath('@kui-shell/client/icons')],
         use: 'svg-inline-loader'
       },
       { test: /\.sh$/, use: 'raw-loader' },
