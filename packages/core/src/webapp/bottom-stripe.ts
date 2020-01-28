@@ -305,7 +305,7 @@ const _addModeButton = (
         dom2.classList.add('result-as-table', 'repl-result')
         dom1.appendChild(dom2)
         const { formatTable } = await import('./views/table')
-        formatTable(tab, view, dom2, { usePip: true })
+        formatTable(tab, view, dom2)
         const { insertCustomContent } = await import('./views/sidecar')
         insertCustomContent(tab, dom1)
       }
