@@ -1,5 +1,0 @@
-{
-  "main": "electron.js",
-  "bodyCss": ["in-electron"],
-  "jsHome": "../../../node_modules/@kui-shell/core/dist/webapp/bootstrap/"
-}

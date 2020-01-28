@@ -1,6 +1,0 @@
-{
-  "nameSuffix": "",
-  "main": "main.bundle.js",
-  "bodyCss": ["not-electron"],
-  "jsHome": ""
-}
