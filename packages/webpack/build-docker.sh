@@ -39,7 +39,13 @@ fi
 # this directory will contain the webpack bundles, CSS, images,
 # index.html, etc.
 mkdir build
-tar -C "$BUILDDIR" -Lcf - . | tar -C build -xf -
+  if [[ `uname` == Darwin ]]; then
+      which gtar || brew install gnu-tar
+      TAR=gtar
+  else
+      TAR=tar
+  fi
+$TAR -C "$BUILDDIR" -hcf - . | $TAR -C build -xf -
 
 # finally, build the docker image
 if [ "$KUI_USE_HTTP" == "true" ]; then
