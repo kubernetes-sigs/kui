@@ -55,9 +55,6 @@ if [ ! -d node_modules/@kui-shell/build ]; then
   mkdir -p node_modules/@kui-shell/build
 fi
 
-# link in the theme bits
-(cd node_modules/@kui-shell/build && rm -rf css && mkdir css && cd css && for i in ../../../../node_modules/@kui-shell/core/web/css/*; do ln -sf $i; done && for i in ../../client/css/*; do ln -sf $i; done)
-
 # generate the plugin registry
 if [ -z "$NO_PRESCAN" ]; then
     npx --no-install kui-prescan

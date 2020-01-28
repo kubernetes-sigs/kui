@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,15 @@ const CompressionPlugin = !noCompression && require('compression-webpack-plugin'
 const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const TerserJSPlugin = require('terser-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const optimization = {}
 if (process.env.NO_OPT) {
   console.log('optimization? disabled')
   optimization.minimize = false
+} else {
+  optimization.minimizer = [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
 }
 
 const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
@@ -379,6 +383,20 @@ module.exports = {
         use: 'ignore-loader'
       },
 
+      {
+        test: /web\/css\/static\/.*\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              esModule: true
+            }
+          },
+          'css-loader'
+        ]
+      },
+      { test: /\.css$/i, exclude: /web\/css\/static\/.*\.css$/, use: ['to-string-loader', 'css-loader'] },
+
       //
       // typescript exclusion rules
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },
@@ -424,20 +442,15 @@ module.exports = {
       { test: /\.ico$/, use: 'file-loader' },
       { test: /\.jpg$/, use: 'file-loader' },
       { test: /\.png$/, use: 'file-loader' },
-      { test: /\.svg$/, use: 'svg-inline-loader' },
       {
-        test: /plugins\/.*\/web\/css\/static\/.*\.css$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              esModule: true
-            }
-          },
-          'css-loader'
-        ]
+        test: /(plugin-client-default|@kui-shell\/client)\/icons\/.*\.(jpe?g|png|gif|svg)$/,
+        use: 'file-loader?name=icons/[ext]/[name].[ext]'
       },
-      { test: /\.css$/i, exclude: /plugins\/.*\/web\/css\/static\/.*\.css$/, use: ['to-string-loader', 'css-loader'] },
+      {
+        test: /\.svg$/,
+        exclude: /(plugin-client-default|@kui-shell\/client)\/icons\/.*\.svg$/,
+        use: 'svg-inline-loader'
+      },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
