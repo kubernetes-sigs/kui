@@ -32,12 +32,22 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
+// in case the client has some oddities that require classnames to be preserved
+const terserOptions = process.env.KEEP_CLASSNAMES
+  ? {
+      terserOptions: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        keep_classnames: true
+      }
+    }
+  : {}
+
 const optimization = {}
 if (process.env.NO_OPT) {
   console.log('optimization? disabled')
   optimization.minimize = false
 } else {
-  optimization.minimizer = [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
+  optimization.minimizer = [new TerserJSPlugin(terserOptions), new OptimizeCSSAssetsPlugin({})]
 }
 
 const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
