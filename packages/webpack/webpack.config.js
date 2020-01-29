@@ -394,18 +394,19 @@ module.exports = {
         test: new RegExp(`\\${path.sep}node_modules\\${path.sep}@kui-shell\\${path.sep}\\.*\\${path.sep}dist`),
         use: 'ignore-loader'
       },
-
       {
-        test: /\.css$/i,
+        test: /\.(sa|sc|c)ss$/i,
         include: thisPath('web/css/static'),
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
+              hmr: mode === 'development',
               esModule: true
             }
           },
-          'css-loader'
+          'css-loader',
+          'sass-loader'
         ]
       },
       { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
