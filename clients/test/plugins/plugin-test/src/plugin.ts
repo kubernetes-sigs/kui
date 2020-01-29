@@ -18,6 +18,7 @@ import { Registrar } from '@kui-shell/core'
 
 import sayHello from './lib/cmds/say-hello'
 import streamHello from './lib/cmds/stream-hello'
+import style from './lib/cmds/style'
 import mmrName from './lib/cmds/mmr-name'
 import mmrNamespace from './lib/cmds/mmr-namespace'
 import mmrKind from './lib/cmds/mmr-kind'
@@ -30,6 +31,7 @@ export default async (commandTree: Registrar) => {
   await Promise.all([
     sayHello(commandTree),
     streamHello(commandTree),
+    style(commandTree),
     mmrName(commandTree),
     mmrNamespace(commandTree),
     mmrKind(commandTree),
