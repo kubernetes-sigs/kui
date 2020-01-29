@@ -83,10 +83,6 @@ body[kui-theme="Carbon Gray10"] {
   --color-latency-13: #d4bbff;
 }
 
-body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td,
-body[kui-theme="Carbon Gray10"] sidecar .bx--data-table th {
-  color: var(--color-text-inverted03);
-}
 body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td .slightly-deemphasize {
   color: var(--color-base02);
 }
