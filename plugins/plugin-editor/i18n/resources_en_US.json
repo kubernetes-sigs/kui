@@ -1,0 +1,19 @@
+{
+  "save": "Deploy",
+  "saveLocalFile": "Save",
+  "Edit": "Edit",
+  "revert": "Revert",
+  "readonly": "Done Editing",
+  "isNew": "You are in edit mode, viewing <strong>undeployed code</strong>",
+  "isNewReadOnly": "You are in readonly mode, viewing <strong>undeployed code</strong>",
+  "isUpToDate": "You are in edit mode, viewing the <strong>currently saved version</strong>",
+  "isModified": "You are in edit mode, with <strong>unsaved edits</strong>",
+  "isModifiedIndicator": "You have unsaved edits",
+  "header:edit": "Open a given file or entity for editing.",
+  "docs:edit": "Open the code for a local file or existing entity in a text editor",
+  "docs:edit:filepath": "The local file path or entity name to edit",
+  "docs:edit:create": "Indicates that you want to create a local file (and parent directories as needed",
+  "docs:edit:language": "For internal use, specify a language for coloring and IntelliSense",
+  "docs:edit:name": "For internal use, specify a name to show up in the sidecar header",
+  "docs:edit:type": "For internal use, specify a type to show up in the sidecar header"
+}
