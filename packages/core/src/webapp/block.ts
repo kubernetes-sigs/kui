@@ -39,13 +39,21 @@ export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement =>
  * Remove any .repl-temporary structures from the given dom
  *
  */
-export const removeAnyTemps = (block: Block): Block => {
+export const removeAnyTemps = (block: Block, fullClean = false): Block => {
   const temps = block.querySelectorAll('.repl-temporary')
-
   for (let idx = 0; idx < temps.length; idx++) {
     const temp = temps[idx]
     if (temp.parentNode) {
       temp.parentNode.removeChild(temp)
+    }
+  }
+
+  if (fullClean) {
+    const streamingOutput = block.querySelector('[data-stream="data-stream"]')
+    if (streamingOutput) {
+      if (streamingOutput.parentNode) {
+        streamingOutput.parentNode.removeChild(streamingOutput)
+      }
     }
   }
 

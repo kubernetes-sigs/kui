@@ -601,7 +601,7 @@ async function initOnMessage(
   const scrollPoll = terminal && setInterval(doScroll, 200)
 
   const onFirstMessage = () => {
-    const queuedInput = disableInputQueueing()
+    const queuedInput = disableInputQueueing(tab)
     if (queuedInput.length > 0) {
       debug('queued input up front', queuedInput)
       setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput, uuid: ourUUID })), 50)

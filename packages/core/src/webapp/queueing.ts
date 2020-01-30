@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { keys } from './keys'
 import doCancel from './cancel'
 import { doPaste } from './paste'
 import { getCurrentBlock } from './block'
+import { Tab, getTabFromTarget } from './tab'
 import { getPrompt, getCurrentPrompt } from './prompt'
 
 import { isHeadless } from '../core/capabilities'
@@ -25,10 +27,19 @@ import { isHeadless } from '../core/capabilities'
  * Initiate input queueing
  *
  */
-export const startInputQueueing = () => {
+export const startInputQueueing = (tab: Tab) => {
   if (!isHeadless()) {
     const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
     invisibleHand.focus()
+
+    tab.queueListener = (event: KeyboardEvent) => {
+      const char = event.keyCode
+      if (char === keys.C && event.ctrlKey) {
+        // Ctrl+C, cancel
+        doCancel()
+      }
+    }
+    document.body.addEventListener('keydown', tab.queueListener)
   }
 }
 
@@ -40,13 +51,17 @@ export const startInputQueueing = () => {
  *
  */
 let _invisibleHand: HTMLInputElement
-export const disableInputQueueing = (): string => {
+export const disableInputQueueing = (tab: Tab): string => {
   if (isHeadless()) {
     return
   }
 
   const invisibleHand =
     _invisibleHand || (_invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement)
+
+  if (tab.queueListener) {
+    document.body.removeEventListener('keydown', tab.queueListener)
+  }
 
   // here is what might have queued up
   const queuedInput = invisibleHand.value
@@ -65,7 +80,7 @@ export const disableInputQueueing = (): string => {
  *
  */
 export const handleQueuedInput = async (nextBlock: HTMLElement) => {
-  const queuedInput = disableInputQueueing()
+  const queuedInput = disableInputQueueing(getTabFromTarget(nextBlock))
 
   if (nextBlock && queuedInput && queuedInput.length > 0) {
     // adding queued input to nextBlock
@@ -79,7 +94,7 @@ export const handleQueuedInput = async (nextBlock: HTMLElement) => {
 
       // handle prefix newlines
       for (let idx = 0; idx < nPrefixNewlines; idx++) {
-        await doCancel() // eslint-disable-line @typescript-eslint/no-use-before-define
+        await doCancel()
 
         nextBlock = getCurrentBlock()
         nextPrompt = getCurrentPrompt()
