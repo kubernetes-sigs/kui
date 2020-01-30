@@ -209,7 +209,7 @@ class InProcessExecutor implements Executor {
     if (nextBlock) {
       // remove any .repl-temporary that might've come along for the
       // ride when we cloned the current block
-      removeAnyTemps(nextBlock)
+      removeAnyTemps(nextBlock, true)
     }
 
     // blank line, after removing comments?
@@ -642,7 +642,7 @@ class InProcessExecutor implements Executor {
             if (block && block.isCancelled) {
               // user cancelled the command
               debug('squashing output of cancelled command')
-              return
+              return response
             }
 
             if (isResourceModification(response) && response.verb === 'delete') {

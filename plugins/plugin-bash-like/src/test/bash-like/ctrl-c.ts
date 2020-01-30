@@ -37,10 +37,29 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(() => app.client.getValue(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
           .then(input => assert.strictEqual(input, cmd))
       )
-      .catch(Common.oops(this))
+      .catch(Common.oops(this, true))
 
   it('should hit ctrl+c', () => cancel(this.app))
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
+
+  it('should cancel a non-pty command via ctrl+c', async () => {
+    try {
+      // if the ctrl+c doesn't work, this large sleep should time out
+      // (and thus fail) the test
+      const res = await CLI.command('sleep 100000', this.app)
+
+      // wait for the sleep command to commence
+      await this.app.client.waitForExist(Selectors.PROCESSING_N(res.count))
+
+      // then issue the ctrl+c
+      await this.app.client.keys(Keys.ctrlC)
+
+      // then issue some other command, and expect success
+      await CLI.command('echo hi', this.app).then(ReplExpect.okWithString('hi'))
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 
   const echoThisString = 'hi'
   Common.localIt('should initiate a command that completes with some delay', async () => {
@@ -59,7 +78,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         return /\^C/.test(actualText)
       })
     } catch (err) {
-      Common.oops(this)(err)
+      Common.oops(this, true)(err)
     }
   })
 })
