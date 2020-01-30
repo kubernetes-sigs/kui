@@ -39,6 +39,7 @@ export default () => {
   // Note: clone after restorePrompt
   const nextBlock = block.cloneNode(true) as HTMLElement
   const nextBlockPrompt = getPrompt(nextBlock)
+  removeAnyTemps(nextBlock, true)
 
   block.className = `${block.getAttribute('data-base-class')} cancelled`
   block.isCancelled = true

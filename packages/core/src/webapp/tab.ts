@@ -20,6 +20,7 @@ import TabState from '../models/tab-state'
 export interface Tab extends HTMLElement {
   REPL: REPL
   state: TabState
+  queueListener: EventListener // for input queueing, see queueing.ts
   _kui_session: Promise<any>
 }
 

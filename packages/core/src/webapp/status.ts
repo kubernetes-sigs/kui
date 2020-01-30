@@ -21,6 +21,7 @@ debug('loading')
 import { getBottomPrompt, getPrompt } from './prompt'
 import { scrollIntoView } from './scroll'
 import { startInputQueueing } from './queueing'
+import { getTabFromTarget } from './tab'
 
 import { element } from './util/dom'
 
@@ -49,7 +50,7 @@ export const setStatus = (block: HTMLElement, status: Status) => {
     block.classList.add(status)
 
     if (status === Status.processing) {
-      startInputQueueing()
+      startInputQueueing(getTabFromTarget(block))
       if (!isHeadless()) {
         const spinner = element('.repl-result-spinner', block)
         scrollIntoView({ when: 0, element: spinner })
