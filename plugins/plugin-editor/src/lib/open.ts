@@ -18,15 +18,15 @@ import Debug from 'debug'
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Tab, ToolbarText, injectCSS, ExecOptions, currentSelection } from '@kui-shell/core'
+import { Tab, ToolbarText, injectCSS, ExecOptions, currentSelection, i18n } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './entity'
 import { Editor, EditorResponse } from './response'
-import strings from './strings'
 import injectTheme from './theme'
 import { language } from './file-types'
 
 const debug = Debug('plugins/editor/open')
+const strings = i18n('plugin-editor')
 
 /** optimization: avoid calling injectTheme more than once for each
  * `edit` command execution */
@@ -175,10 +175,10 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions: E
       status.appendChild(isNewReadOnly)
       status.appendChild(upToDate)
       status.appendChild(modified)
-      isNew.innerHTML = strings.isNew
-      isNewReadOnly.innerHTML = strings.isNewReadOnly
-      upToDate.innerHTML = strings.isUpToDate
-      modified.innerHTML = strings.isModified
+      isNew.innerHTML = strings('isNew')
+      isNewReadOnly.innerHTML = strings('isNewReadOnly')
+      upToDate.innerHTML = strings('isUpToDate')
+      modified.innerHTML = strings('isModified')
       status.className = 'editor-status'
 
       if (options.readOnly) {

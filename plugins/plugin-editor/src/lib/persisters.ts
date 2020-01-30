@@ -17,13 +17,13 @@
 import Debug from 'debug'
 import { readFile, writeFile } from 'fs'
 
-import { eventBus as globalEventBus, Button } from '@kui-shell/core'
+import { eventBus as globalEventBus, Button, i18n } from '@kui-shell/core'
 
-import strings from './strings'
 import EditorEntity from './entity'
 import { EditorResource, EditorState, Editor } from './response'
 
 const debug = Debug('plugins/editor/persisters')
+const strings = i18n('plugin-editor')
 
 export interface Persister {
   getCode: (entity: EditorEntity) => EditorEntity
@@ -34,7 +34,7 @@ export interface Persister {
 
 const FilePersister: Persister = {
   getCode: (entity: EditorEntity) => entity,
-  saveString: strings.saveLocalFile,
+  saveString: strings('saveLocalFile'),
   save: (entity: EditorEntity, editor: Editor): Promise<EditorEntity> =>
     new Promise((resolve, reject) => {
       const rawText = editor.getValue()
@@ -84,7 +84,7 @@ export const save = (state: EditorState): Button<EditorResource> => {
   const { getEntity, editor, eventBus } = state
 
   const entityRightNow = getEntity()
-  const mode: string = (entityRightNow.persister && entityRightNow.persister.saveString) || strings.save
+  const mode: string = (entityRightNow.persister && entityRightNow.persister.saveString) || strings('save')
   return {
     mode,
     kind: 'view',
@@ -112,7 +112,7 @@ export const save = (state: EditorState): Button<EditorResource> => {
  *
  */
 export const revert = (state: EditorState): Button<EditorResource> => ({
-  mode: strings.revert,
+  mode: strings('revert'),
   kind: 'view',
   command: () => {
     const entity = state.getEntity()

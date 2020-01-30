@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Button } from '@kui-shell/core'
+import { Button, i18n } from '@kui-shell/core'
 
-// import { language } from './file-types'
 import { save, revert } from './persisters'
 import { EditorResource, EditorResponse, EditorState, CommandResponse } from './response'
+
+const strings = i18n('plugin-editor')
 
 type ModeFunction = (state: EditorState) => Button<EditorResource>
 
@@ -55,6 +56,7 @@ export const respondToRepl = (extraModes: ModeFunction[] = [] /*, displayOptions
     modes: [
       {
         mode: 'edit',
+        label: strings('Edit'),
         content: response.content
       }
     ],

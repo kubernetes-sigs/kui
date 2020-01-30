@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { UsageModel } from '@kui-shell/core'
+import { UsageModel, i18n } from '@kui-shell/core'
+
+const strings = i18n('plugin-editor')
 
 /** list of related commands */
 const all = ['compose', 'new', 'edit']
@@ -35,13 +37,14 @@ export const toplevelUsage: UsageModel = {
 export const editUsage = (command: string): UsageModel => ({
   command,
   strict: command,
-  title: 'Editor',
-  header: 'Open a given file or entity for editing.',
+  title: strings('Edit'),
+  header: strings('header:edit'),
+  docs: strings('docs:edit'),
   example: `${command} <filepath>`,
   required: [
     {
       name: '<filepath>',
-      docs: 'The local file path or entity name to edit',
+      docs: strings('docs:edit:filepath'),
       file: true,
       implicitOK: ['actions', 'activations']
     }
@@ -50,22 +53,22 @@ export const editUsage = (command: string): UsageModel => ({
     {
       name: '--create',
       boolean: true,
-      docs: 'Indicates that you want to create a local file (and parent directories as needed)'
+      docs: strings('docs:edit:create')
     },
     {
       name: '--language',
       hidden: true,
-      docs: 'For internal use, specify a language for coloring and IntelliSense'
+      docs: strings('docs:edit:language')
     },
     {
       name: '--name',
       hidden: true,
-      docs: 'For internal use, specify a name to show up in the sidecar header'
+      docs: strings('docs:edit:name')
     },
     {
       name: '--type',
       hidden: true,
-      docs: 'For internal use, specify a type to show up in the sidecar header'
+      docs: strings('docs:edit:type')
     }
   ],
   parents: [{ command: 'editor' }],
