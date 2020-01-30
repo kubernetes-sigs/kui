@@ -2,6 +2,9 @@
   "name": "@kui-shell/plugin-client-default",
   "version": "6.0.0",
   "description": "Kui plugin that offers client defintion",
+  "dependencies": {
+    "@kui-shell/plugin-client-common": "*"
+  },
   "license": "Apache-2.0",
   "author": "Mengting Yan",
   "homepage": "https://github.com/IBM/kui#readme",

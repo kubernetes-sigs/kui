@@ -52,7 +52,6 @@
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-core-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-themes.tgz",
     "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
-    "@kui-shell/plugin-client-common": "file:/tmp/kui-packs/kui-shell-plugin-client-common.tgz",
     "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/client": "file:plugins/plugin-test-client",
     "@kui-shell/plugin-test": "file:plugins/plugin-test"
