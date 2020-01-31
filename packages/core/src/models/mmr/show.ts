@@ -168,7 +168,7 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
       await renderContent(tab, mmr, content)
     )
 
-    const { showCustom } = await import('../../webapp/views/sidecar')
+    const { showCustom } = await import('../../webapp/views/registrar/sidecars')
     return showCustom(tab, custom, { leaveBottomStripeAlone: true })
   } else {
     console.error('empty content')

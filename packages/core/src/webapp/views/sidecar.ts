@@ -54,6 +54,7 @@ import {
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 import { hasEditor, tryOpenWithEditor } from './registrar/editors'
+import { SidecarProvider, registerSidecar } from './registrar/sidecars'
 import { isPromise } from '../../util/types'
 
 /** @deprecated */
@@ -352,276 +353,282 @@ export const addNameToSidecarHeader = async (
   return nameDom
 }
 
-export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
-  if (!custom || custom.content === undefined) return
-  debug('showCustom', custom, options, resultDom)
+class DefaultSidecarProvider implements SidecarProvider {
+  public async showCustom(tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) {
+    if (!custom || custom.content === undefined) return
+    debug('showCustom', custom, options, resultDom)
 
-  const sidecar = getSidecar(tab)
-  enableTabIndex(sidecar)
+    const sidecar = getSidecar(tab)
+    enableTabIndex(sidecar)
 
-  // tell the current view that they're outta here
-  if (sidecar.entity || sidecar.uuid) {
-    eventBus.emit('/sidecar/replace', sidecar.uuid || sidecar.entity)
-  }
-  sidecar.uuid = custom.uuid || uuid()
+    // tell the current view that they're outta here
+    if (sidecar.entity || sidecar.uuid) {
+      eventBus.emit('/sidecar/replace', sidecar.uuid || sidecar.entity)
+    }
+    sidecar.uuid = custom.uuid || uuid()
 
-  const hashDom = element('.sidecar-header-name .entity-name-hash', sidecar)
-  hashDom.innerText = ''
+    const hashDom = element('.sidecar-header-name .entity-name-hash', sidecar)
+    hashDom.innerText = ''
 
-  // if the view hints that it wants to occupy the full screen and we
-  // are not currenlty in fullscreen, OR if the view does not want to
-  // occupy full screen and we *are*... in either case (this is an
-  // XOR, does as best one can in NodeJS), toggle maximization
-  const viewProviderDesiresFullscreen =
-    custom.presentation === Presentation.SidecarFullscreen ||
-    (isPopup() &&
-      (custom.presentation === Presentation.SidecarFullscreenForPopups ||
-        custom.presentation === Presentation.FixedSize))
+    // if the view hints that it wants to occupy the full screen and we
+    // are not currenlty in fullscreen, OR if the view does not want to
+    // occupy full screen and we *are*... in either case (this is an
+    // XOR, does as best one can in NodeJS), toggle maximization
+    const viewProviderDesiresFullscreen =
+      custom.presentation === Presentation.SidecarFullscreen ||
+      (isPopup() &&
+        (custom.presentation === Presentation.SidecarFullscreenForPopups ||
+          custom.presentation === Presentation.FixedSize))
 
-  if (!custom.presentation && !isPopup()) {
-    presentAs(tab, Presentation.Default)
-  } else if (
-    custom.presentation ||
-    isPopup() ||
-    (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))
-  ) {
-    const presentation =
+    if (!custom.presentation && !isPopup()) {
+      presentAs(tab, Presentation.Default)
+    } else if (
       custom.presentation ||
-      (viewProviderDesiresFullscreen
-        ? Presentation.SidecarFullscreenForPopups
-        : custom.presentation !== undefined
-        ? custom.presentation
-        : Presentation.SidecarFullscreen)
-    presentAs(tab, presentation)
+      isPopup() ||
+      (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))
+    ) {
+      const presentation =
+        custom.presentation ||
+        (viewProviderDesiresFullscreen
+          ? Presentation.SidecarFullscreenForPopups
+          : custom.presentation !== undefined
+          ? custom.presentation
+          : Presentation.SidecarFullscreen)
+      presentAs(tab, presentation)
 
-    if (viewProviderDesiresFullscreen) {
-      setMaximization(tab)
+      if (viewProviderDesiresFullscreen) {
+        setMaximization(tab)
+      }
+    } else {
+      // otherwise, reset to default presentation mode
+      presentAs(tab, Presentation.Default)
     }
-  } else {
-    // otherwise, reset to default presentation mode
-    presentAs(tab, Presentation.Default)
-  }
 
-  if (custom.controlHeaders === true) {
-    // plugin will control all headers
-  } else if (!custom.controlHeaders) {
-    // plugin will control no headers
-    const customHeaders = sidecar.querySelectorAll('.custom-header-content')
-    for (let idx = 0; idx < customHeaders.length; idx++) {
-      removeAllDomChildren(customHeaders[idx])
-    }
-  } else {
-    // plugin will control some headers; it tell us which it wants us to control
-    custom.controlHeaders.forEach((_: string) => {
-      const customHeaders = sidecar.querySelectorAll(`${_} .custom-header-content`)
+    if (custom.controlHeaders === true) {
+      // plugin will control all headers
+    } else if (!custom.controlHeaders) {
+      // plugin will control no headers
+      const customHeaders = sidecar.querySelectorAll('.custom-header-content')
       for (let idx = 0; idx < customHeaders.length; idx++) {
         removeAllDomChildren(customHeaders[idx])
       }
-    })
-  }
-
-  const customContent = sidecar.querySelector('.custom-content')
-
-  if (custom.noZoom) {
-    // custom content will control the zoom handler, e.g. monaco-editor
-    customContent.classList.remove('zoomable')
-  } else {
-    // revert the change if previous custom content controls the zoom handler
-    customContent.classList.add('zoomable')
-  }
-
-  // which viewer is currently active?
-  sidecar.setAttribute('data-active-view', '.custom-content > div')
-
-  // add mode buttons, if requested
-  const modes = custom.modes
-  if (!options || !options.leaveBottomStripeAlone) {
-    addModeButtons(tab, modes, custom, options)
-    sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
-  } else {
-    sidecar.classList.add('custom-content')
-  }
-  setVisibleClass(sidecar)
-
-  if (custom.sidecarHeader === false) {
-    // view doesn't want a sidecar header
-    sidecar.classList.add('no-sidecar-header')
-  }
-
-  if (custom.displayOptions) {
-    custom.displayOptions.forEach(option => {
-      sidecar.classList.add(option.replace(/\s/g, '-'))
-    })
-  }
-
-  const { badgesDom } = getBadgesDomContainer(sidecar)
-
-  let addVersion: () => void
-  if (custom && (isMetadataBearing(custom) || isMetadataBearingByReference(custom))) {
-    const entity = isMetadataBearingByReference(custom) ? custom.resource : custom
-    sidecar.entity = entity
-    /* if (sidecar.entity.viewName) {
-      sidecar.entity.type = sidecar.entity.viewName
-    } */
-
-    const prettyName =
-      (isCustomSpec(custom) && custom.prettyName) ||
-      (custom.prettyName || entity.prettyName || isMetadataBearingByReference(custom)
-        ? custom.resource.prettyName
-        : undefined) ||
-      entity.metadata.name
-    const nameHash = entity.nameHash || custom.nameHash
-    hashDom.innerText =
-      (nameHash !== undefined
-        ? nameHash
-        : isMetadataBearingByReference(custom)
-        ? custom.resource.nameHash
-        : undefined) || ''
-    const header = sidecar.querySelector('.sidecar-header')
-    const nameDom = header.querySelector('.sidecar-header-name-content')
-    if (hashDom.innerText.length > 0) {
-      nameDom.setAttribute('data-has-name-hash', 'data-has-name-hash')
     } else {
-      nameDom.removeAttribute('data-has-name-hash')
+      // plugin will control some headers; it tell us which it wants us to control
+      custom.controlHeaders.forEach((_: string) => {
+        const customHeaders = sidecar.querySelectorAll(`${_} .custom-header-content`)
+        for (let idx = 0; idx < customHeaders.length; idx++) {
+          removeAllDomChildren(customHeaders[idx])
+        }
+      })
     }
 
-    addNameToSidecarHeader(
-      sidecar,
-      prettyName,
-      undefined,
-      undefined,
-      entity.kind,
-      isCustomSpec(entity) && entity.subtext,
-      entity
-    )
+    const customContent = sidecar.querySelector('.custom-content')
 
-    // render badges
-    clearBadges(tab)
-    addVersion = () => addVersionBadge(tab, entity, { badgesDom })
-
-    /* if (custom.duration) {
-      const duration = document.createElement('div')
-      duration.classList.add('activation-duration')
-      duration.innerText = prettyPrintDuration(custom.duration)
-      badgesDomContainer.appendChild(duration)
-    } */
-  }
-
-  // badges
-  if (custom && custom.badges) {
-    custom.badges.forEach(badge => addBadge(tab, badge, { badgesDom }))
-  }
-  if (isMetadataBearing(custom) || isMetadataBearingByReference(custom)) {
-    const badgeOptions: BadgeOptions = {
-      badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
-    }
-    addRelevantBadges(tab, isMetadataBearingByReference(custom) ? custom : { resource: custom }, badgeOptions)
-  }
-
-  if (addVersion) addVersion()
-
-  const replView = tab.querySelector('.repl')
-  replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
-
-  const container = resultDom || sidecar.querySelector('.custom-content')
-  removeAllDomChildren(container)
-
-  if (isPromise(custom.content)) {
-    container.appendChild(await custom.content)
-  } else if (custom.contentType) {
-    // we were asked ot project out one specific field
-    const projection = custom.content
-
-    if (isHTML(projection)) {
-      // then its already a DOM
-      container.appendChild(projection)
-    } else if (custom.contentType === 'text/html') {
-      // for html-formatted text, wrap it in a container with padding and scrolling
-      if (typeof projection === 'string') {
-        const padding = document.createElement('div')
-        padding.classList.add('padding-content', 'scrollable', 'page-content')
-        const inner = document.createElement('div')
-        padding.appendChild(inner)
-        inner.innerHTML = projection
-        container.appendChild(padding)
-      } else {
-        debug('WARNING: you said you were giving me html-formatted text, but instead gave me an object')
-        container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
-      }
-    } else if (custom.contentType === 'text/markdown') {
-      if (typeof projection === 'string') {
-        const renderer = new Marked.Renderer()
-        const marked = (_: string): string => Marked(_, { renderer })
-        renderer.link = (href: string, title: string, text: string) => {
-          return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
-        }
-        const markdownContainer = document.createElement('div')
-        markdownContainer.classList.add('padding-content', 'scrollable', 'marked-content', 'page-content')
-        markdownContainer.innerHTML = marked(projection)
-        container.appendChild(markdownContainer)
-      } else {
-        debug('WARNING: you said you were giving me markdown-formatted text, but instead gave me an object')
-        container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
-      }
+    if (custom.noZoom) {
+      // custom content will control the zoom handler, e.g. monaco-editor
+      customContent.classList.remove('zoomable')
     } else {
-      const tryToUseEditor = hasEditor()
-      if (tryToUseEditor) {
-        try {
-          const { content, presentation } = await tryOpenWithEditor(tab, custom, options)
-          customContent.classList.remove('zoomable')
-          container.appendChild(content)
-          presentAs(tab, Presentation.FixedSize)
-          return presentation
-        } catch (err) {
-          console.error('error loading editor', err)
-          // intentional fall-through
-        }
+      // revert the change if previous custom content controls the zoom handler
+      customContent.classList.add('zoomable')
+    }
+
+    // which viewer is currently active?
+    sidecar.setAttribute('data-active-view', '.custom-content > div')
+
+    // add mode buttons, if requested
+    const modes = custom.modes
+    if (!options || !options.leaveBottomStripeAlone) {
+      addModeButtons(tab, modes, custom, options)
+      sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
+    } else {
+      sidecar.classList.add('custom-content')
+    }
+    setVisibleClass(sidecar)
+
+    if (custom.sidecarHeader === false) {
+      // view doesn't want a sidecar header
+      sidecar.classList.add('no-sidecar-header')
+    }
+
+    if (custom.displayOptions) {
+      custom.displayOptions.forEach(option => {
+        sidecar.classList.add(option.replace(/\s/g, '-'))
+      })
+    }
+
+    const { badgesDom } = getBadgesDomContainer(sidecar)
+
+    let addVersion: () => void
+    if (custom && (isMetadataBearing(custom) || isMetadataBearingByReference(custom))) {
+      const entity = isMetadataBearingByReference(custom) ? custom.resource : custom
+      sidecar.entity = entity
+      /* if (sidecar.entity.viewName) {
+        sidecar.entity.type = sidecar.entity.viewName
+      } */
+
+      const prettyName =
+        (isCustomSpec(custom) && custom.prettyName) ||
+        (custom.prettyName || entity.prettyName || isMetadataBearingByReference(custom)
+          ? custom.resource.prettyName
+          : undefined) ||
+        entity.metadata.name
+      const nameHash = entity.nameHash || custom.nameHash
+      hashDom.innerText =
+        (nameHash !== undefined
+          ? nameHash
+          : isMetadataBearingByReference(custom)
+          ? custom.resource.nameHash
+          : undefined) || ''
+      const header = sidecar.querySelector('.sidecar-header')
+      const nameDom = header.querySelector('.sidecar-header-name-content')
+      if (hashDom.innerText.length > 0) {
+        nameDom.setAttribute('data-has-name-hash', 'data-has-name-hash')
+      } else {
+        nameDom.removeAttribute('data-has-name-hash')
       }
 
-      const scrollWrapper = document.createElement('div')
+      addNameToSidecarHeader(
+        sidecar,
+        prettyName,
+        undefined,
+        undefined,
+        entity.kind,
+        isCustomSpec(entity) && entity.subtext,
+        entity
+      )
+
+      // render badges
+      clearBadges(tab)
+      addVersion = () => addVersionBadge(tab, entity, { badgesDom })
+
+      /* if (custom.duration) {
+        const duration = document.createElement('div')
+        duration.classList.add('activation-duration')
+        duration.innerText = prettyPrintDuration(custom.duration)
+        badgesDomContainer.appendChild(duration)
+      } */
+    }
+
+    // badges
+    if (custom && custom.badges) {
+      custom.badges.forEach(badge => addBadge(tab, badge, { badgesDom }))
+    }
+    if (isMetadataBearing(custom) || isMetadataBearingByReference(custom)) {
+      const badgeOptions: BadgeOptions = {
+        badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
+      }
+      addRelevantBadges(tab, isMetadataBearingByReference(custom) ? custom : { resource: custom }, badgeOptions)
+    }
+
+    if (addVersion) addVersion()
+
+    const replView = tab.querySelector('.repl')
+    replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
+
+    const container = resultDom || sidecar.querySelector('.custom-content')
+    removeAllDomChildren(container)
+
+    if (isPromise(custom.content)) {
+      container.appendChild(await custom.content)
+    } else if (custom.contentType) {
+      // we were asked ot project out one specific field
+      const projection = custom.content
+
+      if (isHTML(projection)) {
+        // then its already a DOM
+        container.appendChild(projection)
+      } else if (custom.contentType === 'text/html') {
+        // for html-formatted text, wrap it in a container with padding and scrolling
+        if (typeof projection === 'string') {
+          const padding = document.createElement('div')
+          padding.classList.add('padding-content', 'scrollable', 'page-content')
+          const inner = document.createElement('div')
+          padding.appendChild(inner)
+          inner.innerHTML = projection
+          container.appendChild(padding)
+        } else {
+          debug('WARNING: you said you were giving me html-formatted text, but instead gave me an object')
+          container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
+        }
+      } else if (custom.contentType === 'text/markdown') {
+        if (typeof projection === 'string') {
+          const renderer = new Marked.Renderer()
+          const marked = (_: string): string => Marked(_, { renderer })
+          renderer.link = (href: string, title: string, text: string) => {
+            return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
+          }
+          const markdownContainer = document.createElement('div')
+          markdownContainer.classList.add('padding-content', 'scrollable', 'marked-content', 'page-content')
+          markdownContainer.innerHTML = marked(projection)
+          container.appendChild(markdownContainer)
+        } else {
+          debug('WARNING: you said you were giving me markdown-formatted text, but instead gave me an object')
+          container.appendChild(document.createTextNode(JSON.stringify(projection, undefined, 2)))
+        }
+      } else {
+        const tryToUseEditor = hasEditor()
+        if (tryToUseEditor) {
+          try {
+            const { content, presentation } = await tryOpenWithEditor(tab, custom, options)
+            customContent.classList.remove('zoomable')
+            container.appendChild(content)
+            presentAs(tab, Presentation.FixedSize)
+            return presentation
+          } catch (err) {
+            console.error('error loading editor', err)
+            // intentional fall-through
+          }
+        }
+
+        const scrollWrapper = document.createElement('div')
+        const pre = document.createElement('pre')
+        const code = document.createElement('code')
+
+        container.appendChild(scrollWrapper)
+        scrollWrapper.appendChild(pre)
+        pre.appendChild(code)
+
+        if (typeof projection === 'string') {
+          code.innerText = projection
+        } else {
+          code.innerText = JSON.stringify(projection, undefined, 2)
+        }
+
+        scrollWrapper.style.flex = '1'
+        scrollWrapper.classList.add('scrollable')
+        scrollWrapper.classList.add('scrollable-auto')
+
+        if (custom.contentType) {
+          // caller gave us a content type. attempt to decorate
+          const contentType = `language-${custom.contentType}`
+          code.classList.add(contentType)
+          code.classList.remove('json')
+          code.classList.remove(code.getAttribute('data-content-type')) // remove previous
+          code.setAttribute('data-content-type', contentType)
+        }
+      }
+    } else if (isHTML(custom.content)) {
+      container.appendChild(custom.content)
+    } else if (typeof custom.content === 'string') {
+      // for plain text, wrap it in a `pre` container with padding and scrolling
+      const padding = document.createElement('div')
+      padding.classList.add('padding-content', 'scrollable')
+
       const pre = document.createElement('pre')
-      const code = document.createElement('code')
+      pre.classList.add('pre-wrap', 'sans-serif')
+      pre.appendChild(document.createTextNode(custom.content))
 
-      container.appendChild(scrollWrapper)
-      scrollWrapper.appendChild(pre)
-      pre.appendChild(code)
-
-      if (typeof projection === 'string') {
-        code.innerText = projection
-      } else {
-        code.innerText = JSON.stringify(projection, undefined, 2)
-      }
-
-      scrollWrapper.style.flex = '1'
-      scrollWrapper.classList.add('scrollable')
-      scrollWrapper.classList.add('scrollable-auto')
-
-      if (custom.contentType) {
-        // caller gave us a content type. attempt to decorate
-        const contentType = `language-${custom.contentType}`
-        code.classList.add(contentType)
-        code.classList.remove('json')
-        code.classList.remove(code.getAttribute('data-content-type')) // remove previous
-        code.setAttribute('data-content-type', contentType)
-      }
+      padding.appendChild(pre)
+      container.appendChild(padding)
+    } else {
+      console.error('content type not specified for custom content', custom)
     }
-  } else if (isHTML(custom.content)) {
-    container.appendChild(custom.content)
-  } else if (typeof custom.content === 'string') {
-    // for plain text, wrap it in a `pre` container with padding and scrolling
-    const padding = document.createElement('div')
-    padding.classList.add('padding-content', 'scrollable')
+  } /* showCustom */
+}
 
-    const pre = document.createElement('pre')
-    pre.classList.add('pre-wrap', 'sans-serif')
-    pre.appendChild(document.createTextNode(custom.content))
-
-    padding.appendChild(pre)
-    container.appendChild(padding)
-  } else {
-    console.error('content type not specified for custom content', custom)
-  }
-} /* showCustom */
+export default function register() {
+  registerSidecar(new DefaultSidecarProvider())
+}
 
 /**
  * Register a renderer for a given <kind>

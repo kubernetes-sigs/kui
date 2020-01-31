@@ -109,7 +109,7 @@ export const renderPopupContent = async (
       content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
     }
 
-    const { showCustom } = await import('./views/sidecar')
+    const { showCustom } = await import('./views/registrar/sidecars')
     showCustom(getCurrentTab(), Object.assign({}, custom, entity, { prettyType }), execOptions)
   }
 }

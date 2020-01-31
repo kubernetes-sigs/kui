@@ -63,6 +63,8 @@ const registerWindowButtonsListeners = (tab: Tab) => {
  *
  */
 export default async () => {
+  import('./sidecar').then(_ => _.default())
+
   // command-left go back
   document.addEventListener('keydown', async (event: KeyboardEvent) => {
     if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {

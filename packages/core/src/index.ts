@@ -57,6 +57,9 @@ export { CustomSpec as CustomResponse } from './webapp/views/sidecar-core'
 // Editor registration
 export { EditorProvider, registerEditor } from './webapp/views/registrar/editors'
 
+// Sidecar registration
+export { SidecarProvider, registerSidecar } from './webapp/views/registrar/sidecars'
+
 // Errors
 export { CodedError } from './models/errors'
 export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-error'

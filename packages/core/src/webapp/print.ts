@@ -113,7 +113,7 @@ export const streamTo = (tab: Tab, block: Block): Stream => {
         resultDom.appendChild(wrapper)
         await printTable(tab, response, wrapper, block)
       } else if (isCustomSpec(response)) {
-        const { showCustom } = await import('./views/sidecar')
+        const { showCustom } = await import('./views/registrar/sidecars')
         showCustom(tab, response, {})
       } else {
         previousLine = document.createElement('pre')
@@ -258,7 +258,7 @@ export const printResults = (
       } else if (isCustomSpec(response)) {
         const echoOk = echo || (execOptions && execOptions.replSilence)
         if (echoOk || (execOptions && execOptions.type === ExecType.ClickHandler)) {
-          const { showCustom } = await import('./views/sidecar')
+          const { showCustom } = await import('./views/registrar/sidecars')
           await showCustom(
             tab,
             response,

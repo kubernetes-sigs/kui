@@ -278,7 +278,7 @@ const _addModeButton = (
         const { insertCustomContent } = await import('./views/sidecar')
         insertCustomContent(tab, dom)
       } else if (isStringWithOptionalContentType(view) && isMetadataBearing(entity)) {
-        const { showCustom } = await import('./views/sidecar')
+        const { showCustom } = await import('./views/registrar/sidecars')
         showCustom(
           tab,
           {
@@ -296,7 +296,7 @@ const _addModeButton = (
         const { insertCustomContent } = await import('./views/sidecar')
         insertCustomContent(tab, dom)
       } else if (isCustomSpec(view)) {
-        const { showCustom } = await import('./views/sidecar')
+        const { showCustom } = await import('./views/registrar/sidecars')
         showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
       } else if (isTable(view)) {
         const dom1 = document.createElement('div')
