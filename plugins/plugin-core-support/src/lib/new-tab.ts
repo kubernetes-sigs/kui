@@ -29,6 +29,7 @@ import {
   Event,
   ExecType,
   Tab,
+  KeyCodes,
   getCurrentPrompt,
   empty,
   getReplImpl,
@@ -68,6 +69,14 @@ const usage = {
  */
 function element(id: string, parent: ParentNode = document): HTMLElement {
   return parent.querySelector(id) as HTMLElement
+}
+
+/**
+ * @return current number of tabs
+ *
+ */
+function numTabs() {
+  return document.querySelectorAll('.main .left-tab-stripe .left-tab-stripe-button[data-tab-id]').length
 }
 
 function isUsingCommandName() {
@@ -149,7 +158,54 @@ const addKeyboardListeners = (): void => {
       newTab(true)
     }
   })
-*/
+  */
+
+  // switch tabs based on keyboard events
+  if (inElectron) {
+    document.addEventListener('keydown', event => {
+      if (event.metaKey && event.shiftKey) {
+        // shift-command+[]: switch to previous or next
+        const whichDir = event.key
+        if (whichDir === '[' || whichDir === ']') {
+          const curTab = getCurrentTab()
+          const switchToThisTab = whichDir === '[' ? curTab.previousElementSibling : curTab.nextElementSibling
+          if (switchToThisTab) {
+            switchTab(getTabId(switchToThisTab as Tab))
+          }
+        }
+        event.stopPropagation()
+        return
+      }
+
+      if (event.ctrlKey) {
+        // ctrl+PgUp/PgDown: switch to previous or next
+        const whichDir = event.keyCode
+        if (whichDir === KeyCodes.PAGEUP || whichDir === KeyCodes.PAGEDOWN) {
+          const curTab = getCurrentTab()
+          const switchToThisTab =
+            whichDir === KeyCodes.PAGEUP ? curTab.previousElementSibling : curTab.nextElementSibling
+          if (switchToThisTab) {
+            switchTab(getTabId(switchToThisTab as Tab))
+          }
+        }
+        event.stopPropagation()
+        return
+      }
+
+      if (event.metaKey) {
+        // meta+number: switch to tab by index
+        const whichTabStr = event.key
+        if (/\d/.test(whichTabStr)) {
+          event.stopPropagation()
+          const nTabs = numTabs()
+          const whichTab = parseInt(whichTabStr, 10)
+          if (whichTab <= nTabs) {
+            switchTab(getTabId(getTabFromIndex(whichTab)))
+          }
+        }
+      }
+    })
+  }
 }
 
 /**
