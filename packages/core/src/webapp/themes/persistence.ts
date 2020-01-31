@@ -188,7 +188,7 @@ document.body.setAttribute('kui-theme-style', '${themeModel.style}');`
 
     if (themeModel.attrs) {
       themeModel.attrs.forEach(attr => {
-        script = `${script}document.body.classList.add('${attr}')`
+        script = `${script};document.body.classList.add('${attr}')`
       })
     }
 
