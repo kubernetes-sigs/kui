@@ -48,6 +48,9 @@ export function isSidecarMode(entity: string | HTMLElement | Table | SidecarMode
 interface BottomStripOptions {
   show?: string
   preserveBackButton?: boolean
+
+  /** only generate model, do not update view? */
+  modelOnly?: boolean
 }
 
 export const rawCSS = {
@@ -351,12 +354,16 @@ export const addModeButtons = (
     addRelevantModes(tab, modesUnsorted, command, entity)
   }
 
-  if (options.show && modesUnsorted.find(_ => _.mode === options.show)) {
+  if (options && options.show && modesUnsorted.find(_ => _.mode === options.show)) {
     modesUnsorted = modesUnsorted.map(_ => Object.assign({}, _))
 
     modesUnsorted.filter(_ => _.defaultMode && _.mode !== options.show).forEach(_ => (_.defaultMode = false))
 
     modesUnsorted.find(_ => _.mode === options.show).defaultMode = true
+  }
+
+  if (options && options.modelOnly) {
+    return modesUnsorted
   }
 
   // obey the `order` constraints of the modes
