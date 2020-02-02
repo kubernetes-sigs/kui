@@ -140,9 +140,12 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
   // const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
   const ourModesWithButtons = modes.concat(mmr.buttons || [])
 
+  // first, do a "modelOnly" pass, to get the full list of modes
+  // see https://github.com/IBM/kui/issues/3589
   const modesWithButtons = addModeButtons(tab, ourModesWithButtons, mmr, {
     preserveBackButton: true,
-    show: mmr.defaultMode
+    show: mmr.defaultMode,
+    modelOnly: true
   })
 
   const defaultMode =
@@ -153,7 +156,15 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
     throw new Error('default mode is a button')
   }
 
-  const content = hasContent(defaultMode) ? defaultMode : undefined
+  const content = hasContent(defaultMode) ? await renderContent(tab, mmr, defaultMode) : undefined
+
+  // now that we've rendered the initial/default content, do a pass
+  // over the modes and add them to the UI; see
+  // https://github.com/IBM/kui/issues/3589
+  addModeButtons(tab, ourModesWithButtons, mmr, {
+    preserveBackButton: true,
+    show: mmr.defaultMode
+  })
 
   if (content) {
     const custom: CustomSpec = Object.assign(
@@ -165,7 +176,7 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
         prettyName: mmr.prettyName,
         nameHash: mmr.nameHash
       },
-      await renderContent(tab, mmr, content)
+      content
     )
 
     const { showCustom } = await import('../../webapp/views/sidecar')
