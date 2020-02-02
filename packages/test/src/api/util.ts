@@ -195,8 +195,12 @@ export const waitForXtermInput = (app: Application, N: number) => {
 }
 
 export const expectText = (app: Application, expectedText: string) => async (selector: string) => {
+  let idx = 0
   await app.client.waitUntil(async () => {
     const actualText = await app.client.getText(selector)
+    if (++idx > 5) {
+      console.error(`still waiting for text; actualText=${actualText} expectedText=${expectedText}`)
+    }
     return actualText === expectedText
   })
   return app

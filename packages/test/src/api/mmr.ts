@@ -233,7 +233,7 @@ export class TestMMR {
                 await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(expectMode.mode))
               }
             } catch (err) {
-              return Common.oops(this)(err)
+              return Common.oops(this, true)(err)
             }
           })
 
@@ -244,7 +244,7 @@ export class TestMMR {
                   await SidecarExpect.textPlainContent(expectMode.content)(this.app)
                 }
               } catch (err) {
-                return Common.oops(this)(err)
+                return Common.oops(this, true)(err)
               }
             })
           } else if (expectMode.contentType === 'table') {
@@ -255,7 +255,7 @@ export class TestMMR {
                   assert.strictEqual(rows.value.length, expectMode.nRows)
                 }
               } catch (err) {
-                return Common.oops(this)(err)
+                return Common.oops(this, true)(err)
               }
             })
             it(`should show ${expectMode.nCells} table cells in the ${expectMode.mode} tab`, async () => {
@@ -265,7 +265,7 @@ export class TestMMR {
                   assert.strictEqual(cells.value.length, expectMode.nCells)
                 }
               } catch (err) {
-                return Common.oops(this)(err)
+                return Common.oops(this, true)(err)
               }
             })
           } else if (expectMode.contentType === 'yaml') {
@@ -276,7 +276,7 @@ export class TestMMR {
                     await SidecarExpect.yaml(expectMode.content)(this.app)
                   }
                 } catch (err) {
-                  return Common.oops(this)(err)
+                  return Common.oops(this, true)(err)
                 }
               })
             } else {
@@ -286,7 +286,7 @@ export class TestMMR {
                     await SidecarExpect.textPlainContent(expectMode.content)(this.app)
                   }
                 } catch (err) {
-                  return Common.oops(this)(err)
+                  return Common.oops(this, true)(err)
                 }
               })
             }
