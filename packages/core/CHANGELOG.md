@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.11](https://github.com/IBM/kui/compare/v6.0.10...v6.0.11) (2020-02-03)
+
+### Bug Fixes
+
+- **packages/core:** MMR rendering is glitchy ([d314439](https://github.com/IBM/kui/commit/d314439)), closes [#3589](https://github.com/IBM/kui/issues/3589)
+
 ## [6.0.10](https://github.com/IBM/kui/compare/v6.0.9...v6.0.10) (2020-02-01)
 
 **Note:** Version bump only for package @kui-shell/core
