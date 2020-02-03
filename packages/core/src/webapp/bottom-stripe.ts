@@ -362,14 +362,15 @@ export const addModeButtons = (
     modesUnsorted.find(_ => _.mode === options.show).defaultMode = true
   }
 
-  if (options && options.modelOnly) {
-    return modesUnsorted
-  }
-
   // obey the `order` constraints of the modes
   const modes = modesUnsorted.sort((a, b) => {
     return (a.order || 0) - (b.order || 0)
   })
+
+  // note: this must occur after the sort; see https://github.com/IBM/kui/issues/3589#issuecomment-581430878
+  if (options && options.modelOnly) {
+    return modesUnsorted
+  }
 
   // for going back
   const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: MetadataBearing | CustomSpec, show: string) => {
