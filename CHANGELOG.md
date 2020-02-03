@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.12](https://github.com/IBM/kui/compare/v6.0.11...v6.0.12) (2020-02-03)
+
+### Bug Fixes
+
+- **packages/core:** incorrect sidecar content may be presented ([869cdc9](https://github.com/IBM/kui/commit/869cdc9)), closes [#3589](https://github.com/IBM/kui/issues/3589)
+
 ## [6.0.11](https://github.com/IBM/kui/compare/v6.0.10...v6.0.11) (2020-02-03)
 
 ### Bug Fixes
