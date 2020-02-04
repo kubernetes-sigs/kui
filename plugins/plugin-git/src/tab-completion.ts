@@ -40,7 +40,7 @@ async function completeGitBranches(tab: Tab, commandLine: CommandLine, spec: Tab
       return completions
         .split(/[\n\r]/)
         .filter(_ => _)
-        .map(_ => _.trim())
+        .map(_ => _.replace(/^\s*\*?\s*/, '').substring(toBeCompleted.length))
     } catch (err) {
       debug('squashing error from attempted git tab completion', err)
       return []

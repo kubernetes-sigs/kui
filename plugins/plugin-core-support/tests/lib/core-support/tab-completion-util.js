@@ -54,7 +54,7 @@ exports.tabby = (app, partial, full, expectOK = true) =>
         return app
       }
     })
-    .catch(Common.oops(app))
+    .catch(Common.oops(app, true))
 
 exports.tabbyWithOptions = (
   app,
@@ -156,4 +156,4 @@ exports.tabbyWithOptionsThenCancel = (app, partial, expected) =>
         )
     ) // wait for non-existence of the temporary
     .then(() => app.client.keys(Keys.ctrlC)) // clear the line
-    .catch(Common.oops(app))
+    .catch(Common.oops(app, true))
