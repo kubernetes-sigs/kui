@@ -1,8 +1,0 @@
-{
-  "topTabs": {
-    "names": "fixed"
-  },
-  "proxyServer": {
-    "url": "http://localhost:8081/exec"
-  }
-}
