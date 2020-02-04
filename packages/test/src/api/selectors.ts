@@ -5,6 +5,8 @@ export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 export const SIDECAR_BASE = `${CURRENT_TAB} sidecar`
 export const SIDECAR_FULLSCREEN = `${CURRENT_TAB}.sidecar-full-screen sidecar.visible:not(.minimized)`
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
+export const BOTTOM_PROMPT_BLOCK = `.kui--input-stripe .repl-block`
+export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
 export const OOPS = `${CURRENT_TAB} .repl .repl-block .oops`
 export const SIDECAR = `${SIDECAR_BASE}.visible:not(.minimized)`
 export const SIDECAR_WITH_FAILURE = `${SIDECAR_BASE}.visible.activation-success-false`

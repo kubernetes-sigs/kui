@@ -1,24 +1,68 @@
 {
-  "name": "@kui-shell/client",
+  "name": "client-alternate",
   "version": "0.0.1",
   "description": "An alternate Kui client definition",
+  "main": "node_modules/@kui-shell/core/dist/main/main.js",
   "scripts": {
-    "link:init": "../bin/link-universe.sh",
-    "link:done": "mv bak.json package.json; rm -f tests",
-    "build:headless": "npm run link:init -- headless && npx --no-install kui-build-headless /tmp ../../node_modules/@kui-shell/prescan.json; npm run link:done",
-    "build:electron": "build() { npm run link:init -- electron && npx --no-install kui-build-electron /tmp $1; npm run link:done; }; build",
-    "build:proxy": "npm run link:init -- proxy headless && npx --no-install kui-build-proxy /tmp; npm run link:done",
-    "build:webpack": "npm run link:init -- webpack && KUI_MONO_HOME=$(cd ../../ && pwd) npx --no-install kui-build-webpack /tmp; npm run link:done"
+    "preinstall": "(cd ../../ && npm run pack)",
+    "build:electron": "build() { npx --no-install kui-build-electron /tmp $1; }; build",
+    "compile": "kui-compile && kui-compile tsconfig-es6.json",
+    "postinstall": "npm run compile",
+    "test:electron": "export MOCHA_RUN_TARGET=electron; export BOTTOM_INPUT_MODE=true; npm run watch:electron && kui-testv2 bottom-input; EC=$?; npm run kill; exit $EC",
+    "test:webpack": "export BOTTOM_INPUT_MODE=true; export KUI_USE_PROXY=true; export MOCHA_RUN_TARGET=webpack; (npm run proxy &); npm run watch:webpack && MOCHA_RUN_TARGET=webpack kui-testv2 bottom-input; EC=$?; npm run kill; npm run kill:proxy; exit $EC",
+    "test": "npm run test:electron && npm run test:webpack",
+    "watch": "tsc --build . --watch",
+    "_watch": "npm run kill; rm -rf node_modules/node_modules; npx kui-watch-webpack",
+    "watch:webpack": "npm run pty:nodejs && npm run _watch",
+    "watch:electron": "npm run pty:electron && TARGET=electron-renderer npm run _watch",
+    "proxy": "if [ -z \"$TRAVIS_JOB_ID\" ]; then npm run -s pty:nodejs; fi; kui-run-proxy",
+    "kill:proxy": "kill $(lsof -t -i:8081) > /dev/null 2> /dev/null || true",
+    "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
+    "pty:rebuild": "kui-pty-rebuild",
+    "pty:electron": "npm run pty:rebuild electron",
+    "pty:nodejs": "npm run pty:rebuild node",
+    "open": "electron . shell",
+    "start:web": "OPEN=true npm run watch:webpack",
+    "start": "npm run watch:electron && npm run open"
   },
+  "engines": {
+    "node": ">=8.15.0",
+    "npm": ">=6.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kui-shell/plugin-sample.git"
+  },
+  "keywords": [],
   "author": "Nick Mitchell",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/IBM/kui#readme",
-  "bugs": {
-    "url": "https://github.com/IBM/kui/issues"
+  "devDependencies": {
+    "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz",
+    "@kui-shell/test": "file:/tmp/kui-packs/kui-shell-test.tgz",
+    "@types/mocha": "5.2.7",
+    "@types/node": "12.12.14",
+    "@types/uuid": "3.4.6",
+    "@types/webdriverio": "4.13.3",
+    "electron": "6.1.7",
+    "mocha": "6.2.2",
+    "spectron": "8.0.0",
+    "typescript": "3.7.4"
   },
-  "dependencies": {},
-  "main": "node_modules/@kui-shell/core/main/main.js",
-  "kui": {
-    "readme": "../../README.md"
+  "dependencies": {
+    "@kui-shell/client": "file:plugins/plugin-client-alternate",
+    "@kui-shell/plugin-test": "file:plugins/plugin-test",
+    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
+    "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
+    "@kui-shell/plugin-carbon-themes": "file:/tmp/kui-packs/kui-shell-plugin-carbon-themes.tgz",
+    "@kui-shell/plugin-client-common": "file:/tmp/kui-packs/kui-shell-plugin-client-common.tgz",
+    "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
+    "@kui-shell/plugin-editor": "file:/tmp/kui-packs/kui-shell-plugin-editor.tgz",
+    "@kui-shell/plugin-helmui": "^1.0.2",
+    "@kui-shell/plugin-kubeui": "^1.0.2",
+    "@kui-shell/plugin-logui": "^1.0.2",
+    "@kui-shell/plugin-openshift": "^1.0.2",
+    "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
+    "@kui-shell/proxy": "file:/tmp/kui-packs/kui-shell-proxy.tgz",
+    "@kui-shell/webpack": "file:/tmp/kui-packs/kui-shell-webpack.tgz"
   }
 }

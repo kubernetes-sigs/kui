@@ -53,18 +53,20 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
   const app = appAndCount.app
   const N = appAndCount.count + 1
 
+  const nextPrompt = !process.env.BOTTOM_INPUT_MODE ? Selectors.PROMPT_N(N) : Selectors.BOTTOM_PROMPT
+
   return app.client
-    .waitForVisible(Selectors.PROMPT_N(N), waitTimeout) // wait for the next prompt to appear
-    .then(() => app.client.getAttribute(Selectors.PROMPT_N(N), 'placeholder')) // it should have a placeholder text
-    .then(() => app.client.getValue(Selectors.PROMPT_N(N))) // it should have an empty value
+    .waitForVisible(nextPrompt, waitTimeout) // wait for the next prompt to appear
+    .then(() => app.client.getAttribute(nextPrompt, 'placeholder')) // it should have a placeholder text
+    .then(() => app.client.getValue(nextPrompt)) // it should have an empty value
     .then(promptValue => {
-      if ((!opt || !opt.nonBlankPromptOk) && promptValue.length !== 0) {
+      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk) && promptValue.length !== 0) {
         console.error(`Expected prompt value to be empty: ${promptValue}`)
       }
       return promptValue
     })
     .then(promptValue => {
-      if (!opt || !opt.nonBlankPromptOk) assert.strictEqual(promptValue.length, 0)
+      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk)) assert.strictEqual(promptValue.length, 0)
     }) //      ... verify that
     .then(async () => {
       if (opt && opt.expectError) return false
@@ -191,7 +193,10 @@ export const okWithString = (expect: string, exact = false, streaming = false) =
   // first try innerText
   return okWithCustom({ expect, exact, streaming })(res).catch(async err1 => {
     // use .textContent as a backup plan
-    return okWithTextContent(expect, exact)(res).catch(() => {
+    return okWithTextContent(
+      expect,
+      exact
+    )(res).catch(() => {
       throw err1
     })
   })

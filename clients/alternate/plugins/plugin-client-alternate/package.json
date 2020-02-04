@@ -1,5 +1,5 @@
 {
-  "name": "empty",
+  "name": "@kui-shell/plugin-client-alternate",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -25,9 +25,14 @@ export const waitTimeout = timeout - 5000
 
 /** grab focus for the repl */
 const grabFocus = async (app: Application) => {
+  const currentPrompt = !process.env.BOTTOM_INPUT_MODE ? Selectors.CURRENT_PROMPT : Selectors.BOTTOM_PROMPT
+  const currentPromptBlock = !process.env.BOTTOM_INPUT_MODE
+    ? Selectors.CURRENT_PROMPT_BLOCK
+    : Selectors.BOTTOM_PROMPT_BLOCK
+
   return app.client
-    .click(Selectors.CURRENT_PROMPT)
-    .then(() => app.client.waitForEnabled(Selectors.CURRENT_PROMPT_BLOCK))
+    .click(currentPrompt)
+    .then(() => app.client.waitForEnabled(currentPromptBlock))
     .catch(err => {
       console.error(err)
       // probably ok, we are doing this is just in case it helps
@@ -47,7 +52,8 @@ export const command = async (
 ) => {
   return app.client
     .waitForExist(Selectors.CURRENT_PROMPT_BLOCK, timeout - 5000)
-    .then(() => {
+    .then(async () => {
+      if (process.env.BOTTOM_INPUT_MODE) await app.client.waitForExist(Selectors.BOTTOM_PROMPT_BLOCK, timeout - 5000)
       if (!noFocus) return grabFocus(app)
     })
     .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
@@ -59,10 +65,11 @@ export const command = async (
           cmd
         )
       } else {
+        const currenPrompt = !process.env.BOTTOM_INPUT_MODE ? Selectors.CURRENT_PROMPT : Selectors.BOTTOM_PROMPT
         // slow path
-        const currentValue = await app.client.getValue(Selectors.CURRENT_PROMPT)
+        const currentValue = await app.client.getValue(currenPrompt)
         const doThis = `${currentValue}${cmd}`
-        await app.client.setValue(Selectors.CURRENT_PROMPT, doThis)
+        await app.client.setValue(currenPrompt, doThis)
       }
       if (noNewline !== true) await app.client.keys(keys.ENTER)
       return { app: app, count: parseInt(count) }
