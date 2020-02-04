@@ -91,7 +91,7 @@ const selectors = {
   default: 'body > .page', // everything but header
   sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
   repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
-  nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output .repl-result`), // this will include only the non-ok region
+  nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output`),
   'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
   last: (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2) .repl-output .repl-result') // this will include only the non-ok region
 }
