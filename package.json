@@ -16,7 +16,7 @@
     "watch:webpack": "npm run compile:prescan && npm run link && npm run kill; ./bin/watch-webpack.sh",
     "watch:electron": "TARGET=electron-renderer npm run watch:webpack",
     "proxy": "npm run pty:nodejs && cd packages/proxy/app && npm install && PORT=8081 KUI_USE_HTTP=true ../../../tools/travis/proxy.sh ..",
-    "watch": "tsc --build . --watch",
+    "watch": "tsc --build tsconfig-es6.json --watch",
     "compile:prep": "touch node_modules/@kui-shell/prescan.json",
     "compile:source:cjs": "tsc --build .",
     "compile:source:es6": "tsc --build tsconfig-es6.json",
