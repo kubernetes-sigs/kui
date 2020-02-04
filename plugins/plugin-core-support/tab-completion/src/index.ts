@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import * as minimist from 'yargs-parser'
 import { lstat, realpath } from 'fs'
-import { basename, join } from 'path'
+import { join } from 'path'
 
 import { CompletionResponse, isStringResponse, applyEnumerator } from './registrar'
 export {
@@ -29,7 +29,6 @@ export {
 import {
   injectCSS,
   UsageError,
-  Table,
   getCurrentBlock,
   getCurrentPrompt,
   getTabFromTarget,
@@ -38,7 +37,6 @@ import {
   _split,
   Split,
   expandHomeDir,
-  findFile,
   doCancel,
   isUsingCustomPrompt
 } from '@kui-shell/core'
@@ -222,18 +220,6 @@ export const shellescape = (str: string): string => {
 }
 
 /**
- * Return partial updated with the given match; there may be some
- * overlap at the beginning.
- *
- */
-const completeWith = (partial: string, match: string, doEscape = false, addSpace = false): string => {
-  const escapedMatch = !doEscape ? match : shellescape(match) // partial is escaped already, so escape the match, too
-  const partialIdx = escapedMatch.indexOf(partial)
-  const remainder = partialIdx >= 0 ? escapedMatch.substring(partialIdx + partial.length) : escapedMatch
-  return remainder + (addSpace ? ' ' : '')
-}
-
-/**
  * Is the given filepath a directory?
  *
  */
@@ -277,6 +263,7 @@ export const isDirectory = (filepath: string): Promise<boolean> =>
 const complete = (
   match: string,
   prompt: HTMLInputElement,
+  lastIdx: number,
   options: {
     temporaryContainer?: TemporaryContainer
     partial?: string
@@ -286,22 +273,32 @@ const complete = (
   }
 ) => {
   const temporaryContainer = options.temporaryContainer
-  const partial = options.partial || (temporaryContainer && temporaryContainer.partial)
   const dirname = options.dirname || (temporaryContainer && temporaryContainer.dirname)
-  const doEscape = options.doEscape || false
-  const addSpace = options.addSpace || false
-
-  debug('completion', match, partial, dirname)
+  const addSpace = (lastIdx === undefined || lastIdx >= prompt.value.length - 1) && (options.addSpace || false)
 
   // in case match includes partial as a prefix
-  const completion = completeWith(partial, match, doEscape, addSpace)
+  const completion =
+    shellescape(match.slice((options.temporaryContainer && options.temporaryContainer.already) || 0)) +
+    (addSpace ? ' ' : '')
+
+  debug(
+    'completion',
+    lastIdx,
+    prompt.value.length,
+    addSpace,
+    match,
+    completion,
+    options.temporaryContainer && options.temporaryContainer.already
+  )
 
   if (temporaryContainer) {
     temporaryContainer.cleanup()
   }
 
   const addToPrompt = (extra: string): void => {
-    prompt.value = prompt.value + extra
+    prompt.value = prompt.value.slice(0, lastIdx) + extra + prompt.value.slice(lastIdx)
+    prompt.selectionStart = lastIdx + extra.length
+    prompt.selectionEnd = prompt.selectionStart
 
     // make sure the new text is visible
     // see https://github.com/IBM/kui/issues/1367
@@ -340,6 +337,7 @@ const complete = (
 const addSuggestion = (
   temporaryContainer: TemporaryContainer,
   prefix: string,
+  lastIdx: number,
   dirname: string,
   prompt: HTMLInputElement,
   doEscape = false
@@ -386,8 +384,11 @@ const addSuggestion = (
   }
 
   // onclick, use this match as the completion
-  option.addEventListener('click', () => {
-    complete(matchCompletion, prompt, {
+  option.addEventListener('click', function() {
+    const completion = this.getAttribute('data-completion')
+    const doEscape = this.hasAttribute('data-do-escape')
+    const addSpace = this.hasAttribute('data-add-space')
+    complete(completion, prompt, prompt.selectionStart, {
       temporaryContainer,
       dirname,
       doEscape,
@@ -396,7 +397,7 @@ const addSuggestion = (
   })
 
   option.setAttribute('data-match', matchLabel)
-  option.setAttribute('data-completion', matchCompletion)
+  option.setAttribute('data-completion', doEscape ? shellescape(matchCompletion) : matchCompletion)
   if (addSpace) option.setAttribute('data-add-space', addSpace.toString())
   if (doEscape) option.setAttribute('data-do-escape', 'true')
   option.setAttribute('data-value', optionInner.innerText)
@@ -419,6 +420,7 @@ const addSuggestion = (
  */
 const updateReplToReflectLongestPrefix = (
   prompt: HTMLInputElement,
+  lastIdx: number,
   matches: string[],
   temporaryContainer: TemporaryContainer,
   partial = temporaryContainer.partial
@@ -432,11 +434,14 @@ const updateReplToReflectLongestPrefix = (
 
     const partialComplete = (idx: number) => {
       // debug('partial complete', idx)
-      const completion = completeWith(partial, matches[0].substring(0, idx), true)
-      if (completion.length > 0) {
-        temporaryContainer.partial = completion
-        prompt.value = prompt.value + completion
-      }
+      const extra = shellescape(matches[0].substring(0, idx))
+      const completion = partial + extra
+      temporaryContainer.partial = completion
+      temporaryContainer.lastIdx = lastIdx + extra.length
+      temporaryContainer.already = extra.length
+      prompt.value = prompt.value.slice(0, lastIdx) + extra + prompt.value.slice(lastIdx)
+      prompt.selectionStart = lastIdx + extra.length
+      prompt.selectionEnd = prompt.selectionStart
       return temporaryContainer.partial
     }
 
@@ -481,7 +486,7 @@ const presentEnumeratorSuggestions = (
     const { completion, addSpace } = !isStringResponse(filteredList[0])
       ? filteredList[0]
       : { completion: filteredList[0], addSpace: false }
-    complete(completion, prompt, { partial: last, dirname: false, addSpace, doEscape: true })
+    complete(completion, prompt, prompt.selectionStart, { partial: last, dirname: false, addSpace, doEscape: true })
   } else if (filteredList.length > 0) {
     const partial = last
     const dirname = undefined
@@ -491,8 +496,8 @@ const presentEnumeratorSuggestions = (
 
     const stringList = filteredList.map(_ => (isStringResponse(_) ? _ : _.completion))
 
-    updateReplToReflectLongestPrefix(prompt, stringList, temporaryContainer)
-    filteredList.forEach(addSuggestion(temporaryContainer, last, dirname, prompt, true))
+    updateReplToReflectLongestPrefix(prompt, lastIdx, stringList, temporaryContainer)
+    filteredList.forEach(addSuggestion(temporaryContainer, last, lastIdx, dirname, prompt, true))
   }
 }
 
@@ -506,62 +511,11 @@ interface Match {
 interface TemporaryContainer extends HTMLDivElement {
   scrollContainer: HTMLElement
   lastIdx?: number
+  already?: number
   partial?: string
   dirname?: string
   cleanup?: () => void
   currentMatches?: Match[]
-}
-
-/**
- * Given a list of entities, filter them and present options
- *
- */
-const filterAndPresentEntitySuggestions = (
-  last: string,
-  block: HTMLElement,
-  prompt: HTMLInputElement,
-  temporaryContainer: TemporaryContainer,
-  lastIdx: number
-) => entities => {
-  debug('filtering these entities', entities)
-  debug('against this filter', last)
-
-  // find matches, given the current prompt contents
-  const filteredList = entities
-    .map(({ name, packageName, namespace }) => {
-      const packageNamePart = packageName ? `${packageName}/` : ''
-      const actionWithPackage = `${packageNamePart}${name}`
-      const fqn = `/${namespace}/${actionWithPackage}`
-
-      return (
-        (name.indexOf(last) === 0 && actionWithPackage) ||
-        (actionWithPackage.indexOf(last) === 0 && actionWithPackage) ||
-        (fqn.indexOf(last) === 0 && fqn)
-      )
-    })
-    .filter(x => x)
-
-  debug('filtered list', filteredList)
-
-  if (filteredList.length === 1) {
-    // then we found just one match; we can complete it now,
-    // without bothering with a completion popup
-    debug('singleton entity match', filteredList[0])
-    complete(filteredList[0], prompt, { partial: last, dirname: false })
-  } else if (filteredList.length > 0) {
-    // then we found multiple matches; we need to render them as
-    // a tab completion popup
-    const partial = last
-    const dirname = undefined
-
-    if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
-    }
-
-    updateReplToReflectLongestPrefix(prompt, filteredList, temporaryContainer)
-
-    filteredList.forEach(addSuggestion(temporaryContainer, last, dirname, prompt))
-  }
 }
 
 /**
@@ -571,6 +525,7 @@ const filterAndPresentEntitySuggestions = (
 const suggestCommandCompletions = (
   _matches,
   partial: string,
+  lastIdx: number,
   block: HTMLElement,
   prompt: HTMLInputElement,
   temporaryContainer: TemporaryContainer
@@ -592,7 +547,7 @@ const suggestCommandCompletions = (
         }
       }) => ({
         label: command,
-        completion: command,
+        completion: command.substring(partial.length),
         addSpace: true,
         docs: usage.title || usage.header || usage.docs // favoring shortest first
       })
@@ -600,7 +555,11 @@ const suggestCommandCompletions = (
 
   if (matches.length === 1) {
     debug('singleton command completion', matches[0])
-    complete(matches[0].completion, prompt, { partial, dirname: false, addSpace: matches[0].addSpace })
+    complete(matches[0].completion, prompt, prompt.selectionStart, {
+      partial,
+      dirname: false,
+      addSpace: matches[0].addSpace
+    })
   } else if (matches.length > 0) {
     debug('suggesting command completions', matches, partial)
 
@@ -609,29 +568,7 @@ const suggestCommandCompletions = (
     }
 
     // add suggestions to the container
-    matches.forEach(addSuggestion(temporaryContainer, partial, undefined, prompt))
-  }
-}
-
-/**
- * Suggest options
- *
- */
-const suggest = (
-  param,
-  last: string,
-  block: HTMLElement,
-  prompt: HTMLInputElement,
-  temporaryContainer: TemporaryContainer,
-  lastIdx: number
-) => {
-  if (param.entity) {
-    // then the expected parameter is an existing entity; so we
-    // can enumerate the entities of the specified type
-    const tab = getTabFromTarget(block)
-    return tab.REPL.qexec<Table>(`${param.entity} list --limit 200`)
-      .then(response => response.body)
-      .then(filterAndPresentEntitySuggestions(basename(last), block, prompt, temporaryContainer, lastIdx))
+    matches.forEach(addSuggestion(temporaryContainer, partial, lastIdx, undefined, prompt))
   }
 }
 
@@ -668,7 +605,7 @@ export default () => {
           const addSpace = current.hasAttribute('data-add-space')
           const prompt = getCurrentPrompt()
 
-          complete(completion, prompt, {
+          complete(completion, prompt, prompt.selectionStart, {
             temporaryContainer,
             doEscape,
             addSpace
@@ -729,6 +666,7 @@ export default () => {
               suggestCommandCompletions(
                 usageError.partialMatches || usageError.available,
                 prompt.value,
+                prompt.value.length - 1,
                 block,
                 prompt,
                 temporaryContainer
@@ -755,21 +693,6 @@ export default () => {
 
                 if (commandIdx === args.length - 1 && !prompt.value.match(/\s+$/)) {
                   // then the prompt has e.g. "wsk package" with no terminal whitespace; nothing to do yet
-                } else if (param) {
-                  // great, there is a positional we can help with
-                  try {
-                    // we found a required positional parameter, now suggest values for this parameter
-                    suggest(
-                      param,
-                      findFile(args[commandIdx + lastIdx + 1], { safe: true }),
-                      block,
-                      prompt,
-                      temporaryContainer,
-                      commandIdx + lastIdx
-                    )
-                  } catch (err) {
-                    console.error(err)
-                  }
                 }
               }
             }
