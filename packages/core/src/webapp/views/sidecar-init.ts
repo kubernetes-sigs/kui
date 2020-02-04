@@ -22,6 +22,7 @@ import { getTabFromTarget, Tab, getCurrentTab } from '../tab'
 import { scrollIntoView } from '../scroll'
 import sidecarSelector from './sidecar-selector'
 import eventBus from '../../core/events'
+import { injectHTML } from '../../webapp/util/inject'
 
 import { isVisible, toggle, toggleMaximization, clearSelection } from './sidecar-visibility'
 
@@ -58,11 +59,23 @@ const registerWindowButtonsListeners = (tab: Tab) => {
     }
   }
 }
+
+/**
+ * inject the sidecar template
+ *
+ */
+const injectSidecar = async (tab: Tab) => {
+  const template = require('@kui-shell/core/templates/sidecar.html').default
+  await injectHTML(template, '.tab-container .kui--columns', 'sidecar', tab)
+}
+
 /**
  * One-time initialization of sidecar view
  *
  */
 export default async () => {
+  await injectSidecar(getCurrentTab())
+
   // command-left go back
   document.addEventListener('keydown', async (event: KeyboardEvent) => {
     if (event.keyCode === keys.LEFT_ARROW && (event.ctrlKey || (process.platform === 'darwin' && event.metaKey))) {

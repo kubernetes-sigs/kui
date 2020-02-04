@@ -17,6 +17,8 @@
 import Debug from 'debug'
 
 import { isHeadless } from '../../core/capabilities'
+import { Tab, getTabId } from '../tab'
+
 const debug = Debug('webapp/util/inject')
 debug('loading')
 
@@ -38,6 +40,41 @@ function isAStylesheetFile(object: StylesheetSpec): object is StylesheetFile {
 type StylesheetSpec = StylesheetDirect | StylesheetFile | string
 
 declare const mediaUri: string
+
+/**
+ * Inject an HTML template
+ *
+ */
+export const injectHTML = (html: string, position: string, id: string, tab?: Tab): Promise<void> => {
+  if (isHeadless() || typeof document === 'undefined' || !document.getElementById) {
+    return
+  }
+
+  return new Promise(resolve => {
+    // NOTE: Since tab id is initialized in plugin-core-support preload,
+    //      `getTabId` could be null if `injectHTML` happened before plugin-core-support preloads.
+    //       In such cases, the tab id guaurd will have no effect.
+    //       e.g. call injectHTML in kui-core
+
+    const elementId = tab && getTabId(tab) ? `${id}-${getTabId(tab)}` : id
+
+    if (!document.getElementById(elementId)) {
+      // we haven't yet injected the template
+      debug('injectHTML', position, elementId)
+
+      const wrapper = document.createElement('div')
+      wrapper.innerHTML = html
+      const child = wrapper.children[0]
+      child.id = elementId
+
+      document.querySelector(position).appendChild(child)
+      resolve()
+    } else {
+      // otherwise, we've already injected the template
+      resolve()
+    }
+  })
+}
 
 /**
  * Inject a stylesheet
@@ -138,28 +175,3 @@ export const injectScript = (url: string | { key: string; src: string }): Promis
     }
   })
 }
-
-/**
- * Inject HTML stored in the given local file
- *
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const loadHTML = (file: any): Promise<string> =>
-  // eslint-disable-next-line no-async-promise-executor
-  new Promise(async (resolve, reject) => {
-    if (file.html) {
-      // then we have the raw content already
-      // debug('loadHTML from string')
-      resolve(file.html)
-    } else {
-      // debug('loadHTML from file', file)
-      const { readFile } = await import('fs')
-      return readFile(file, (err, data) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(data.toString())
-        }
-      })
-    }
-  })

@@ -68,7 +68,7 @@ export { default as eventBus } from './core/events'
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
 
 // content injection
-export { injectCSS, injectScript, loadHTML } from './webapp/util/inject'
+export { injectCSS, injectScript, injectHTML } from './webapp/util/inject'
 
 // models
 export { MetadataBearing as ResourceWithMetadata } from './models/entity'
