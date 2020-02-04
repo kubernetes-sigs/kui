@@ -1,0 +1,11 @@
+{
+  "modes": [
+    {
+      "mode": "about",
+      "content": "about:content",
+      "contentType": "text/markdown"
+    },
+    { "mode": "tutorial", "label": "Getting Started", "contentFrom": "about --mode tutorial" },
+    { "mode": "theme", "contentFrom": "themes" }
+  ]
+}
