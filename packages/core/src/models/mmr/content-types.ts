@@ -17,10 +17,8 @@
 import { Tab } from '../../webapp/tab'
 import { Table, isTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
-import { CustomSpec } from '../../webapp/views/sidecar-core'
-import { isCustomSpec } from '../../webapp/views/custom-content'
-import { SidecarMode } from '../../webapp/bottom-stripe'
 import { isHTML } from '../../util/types'
+import { ModeOrButton } from './types'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -28,33 +26,31 @@ import { isHTML } from '../../util/types'
  * function call.
  *
  */
-export type ScalarResource = CustomSpec | string | HTMLElement | Table
+export type ScalarResource = string | HTMLElement | Table
 export interface ScalarContent<T = ScalarResource> {
   content: T
 }
 
 export function isScalarContent<T extends MetadataBearing>(
-  entity: Entity | ScalarResource | ScalarContent | Content<T> | MetadataBearing | SidecarMode
+  entity: Entity | ScalarResource | ScalarContent | Content<T> | MetadataBearing | ModeOrButton<T>
 ): entity is ScalarContent {
   const content = (entity as ScalarContent).content
-  return (
-    content !== undefined &&
-    (typeof content === 'string' ||
-      isTable(content) ||
-      isHTML(content) ||
-      isCustomSpec(content))
-  )
+  return content !== undefined && (typeof content === 'string' || isTable(content) || isHTML(content))
 }
 
 /**
  * Supported String content types
  *
  */
-type SupportedStringContent = 'yaml' | 'text/markdown' | 'text/html' | 'json'
+type SupportedStringContent = 'yaml' | 'text/markdown' | 'text/html' | 'json' | 'shell' | 'text/plain'
 
 function isSupportedContentType(contentType: string) {
   return (
-    contentType === 'yaml' || contentType === 'text/markdown' || contentType === 'text/html' || contentType === 'json'
+    contentType === 'yaml' ||
+    contentType === 'text/markdown' ||
+    contentType === 'text/html' ||
+    contentType === 'json' ||
+    contentType === 'shell'
   )
 }
 
@@ -75,11 +71,13 @@ export type StringContent<ContentType = SupportedStringContent> = ScalarContent<
   WithOptionalContentType<ContentType>
 
 export function isStringWithOptionalContentType<T extends MetadataBearing>(
-  entity: Entity | Content<T> | MetadataBearing | SidecarMode
+  entity: Entity | Content<T> | MetadataBearing | ModeOrButton<T>
 ): entity is StringContent {
   const str = entity as StringContent
-  return (
-    str && typeof str.content === 'string' && (str.contentType === undefined || typeof str.contentType === 'string')
+  return !!(
+    str &&
+    typeof str.content === 'string' &&
+    (str.contentType === undefined || typeof str.contentType === 'string')
   )
 }
 
@@ -97,7 +95,7 @@ export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
 export function isFunctionContent<T extends MetadataBearing>(
-  content: Entity | Content<T> | MetadataBearing | SidecarMode
+  content: Entity | Content<T> | MetadataBearing | ModeOrButton<T>
 ): content is FunctionContent<T> {
   const func = content as FunctionContent<T>
   return !!func && !!func.content && typeof func.content === 'function'
@@ -109,12 +107,12 @@ export function isFunctionContent<T extends MetadataBearing>(
  * `ScalarRersource` or `ScalarContent`.
  *
  */
-type CommandStringContent = WithOptionalContentType<SupportedStringContent> & {
+export type CommandStringContent = WithOptionalContentType<SupportedStringContent> & {
   contentFrom: string
 }
 
 export function isCommandStringContent<T extends MetadataBearing>(
-  content: ScalarResource | Content<T> | MetadataBearing | SidecarMode
+  content: ScalarResource | Content<T> | MetadataBearing | ModeOrButton<T>
 ): content is CommandStringContent {
   const command = content as CommandStringContent
   return (
@@ -139,7 +137,7 @@ export type Content<T extends MetadataBearing> =
   | CommandStringContent
 
 export function hasContent<T extends MetadataBearing>(
-  resource: ScalarResource | Content<T> | SidecarMode
+  resource: ScalarResource | Content<T> | ModeOrButton<T>
 ): resource is Content<T> {
   return Object.prototype.hasOwnProperty.call(resource, 'content') || isCommandStringContent(resource)
 }

@@ -1,0 +1,14 @@
+body {
+  /* define theme bindings; mapping color names to the base16 scheme */
+  --color-red-sidecar: var(--color-red);
+  --color-yellow-sidecar: var(--color-yellow);
+  --color-green-sidecar: var(--color-green);
+  --color-sidecar-toolbar-background: #bebebe;
+  --color-sidecar-toolbar-foreground: var(--color-base01);
+  --color-sidecar-background: var(--color-ui-02);
+  --color-sidecar-border: var(--color-ui-04);
+  --color-sidecar-header: var(--color-ui-01);
+
+  /* entity names and kinds */
+  --color-name-sidecar: var(--color-name);
+}

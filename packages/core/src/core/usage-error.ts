@@ -237,7 +237,6 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
       commandPrefix,
       commandPrefixNotNeeded,
       commandSuffix = '',
-      drilldownWithPip = false,
       preserveCase = false, // in breadcrumbs
       available,
       related,
@@ -610,24 +609,12 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
             cmdPart.classList.add('clickable')
             cmdPart.classList.add('clickable-blatant')
             cmdPart.setAttribute('tabindex', '0')
-            cmdPart.onclick = async event => {
+            cmdPart.onclick = async () => {
               const Prompt = await import('../webapp/prompt')
-              const { getCurrentTab } = await import('../webapp/tab')
               if (partial) {
                 return Prompt.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
               } else {
-                if (drilldownWithPip) {
-                  const { drilldown } = await import('../webapp/picture-in-picture')
-                  return drilldown(
-                    getCurrentTab(), // FIXME; i don't think this is right; tab needs to be passed through
-                    commandForExec(command, name !== command ? name : undefined),
-                    undefined,
-                    resultWrapper.parentNode.parentNode as Element,
-                    'Previous Usage'
-                  )(event)
-                } else {
-                  return pexec(commandForExec(command, name !== command ? name : undefined))()
-                }
+                return pexec(commandForExec(command, name !== command ? name : undefined))()
               }
             }
           }
@@ -867,7 +854,6 @@ export interface UsageModel extends CapabilityRequirements {
   commandPrefix?: string
   commandPrefixNotNeeded?: boolean
   commandSuffix?: string
-  drilldownWithPip?: boolean
   preserveCase?: boolean // in breadcrumbs
   parents?: BreadcrumbLabel[]
   related?: string[]

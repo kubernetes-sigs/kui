@@ -87,7 +87,7 @@ const defaultConnectCSP = `http://localhost:8081 http://localhost:9953 ws://loca
 
 const contentSecurityPolicyForDevServer =
   process.env.WEBPACK_DEV_SERVER &&
-  `default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
+  `default-src 'none'; frame-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data: http: https:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
     .env.CSP_ALLOWED_HOSTS || defaultConnectCSP}`
 if (contentSecurityPolicyForDevServer) {
   console.log('ContentSecurityPolicy: dev-server', contentSecurityPolicyForDevServer)

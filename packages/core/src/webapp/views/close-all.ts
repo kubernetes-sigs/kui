@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-export interface ShowOptions {
-  show?: string
-  echo?: boolean
-  leaveBottomStripeAlone?: boolean
-  preserveBackButton?: boolean
-  modes?: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
-}
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-export class DefaultShowOptions implements ShowOptions {}
+import { Tab } from '../tab'
+import eventBus from '../../core/events'
+
+export default function(tab: Tab) {
+  eventBus.emit('/close/views/in/tab', tab)
+}

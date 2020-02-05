@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { Tab } from '../../webapp/tab'
-import { MetadataBearing } from '../entity'
-import { CustomSpec } from '../../webapp/views/sidecar-core'
-import { isCustomSpec } from '../../webapp/views/custom-content'
-import { SidecarMode, addModeButtons } from '../../webapp/bottom-stripe'
-import { isTable, Table } from '../../webapp/models/table'
-
-import { MultiModalResponse, isButton } from './types'
 import {
+  isButton,
+  ResourceByReferenceWithContent,
+  MultiModalResponse,
+  isTable,
+  Table,
+  Tab,
+  REPL,
+  ResourceWithMetadata as MetadataBearing,
+  Mode as SidecarMode,
   Content,
   hasContent,
   ScalarResource,
@@ -32,9 +33,15 @@ import {
   StringContent,
   isStringWithOptionalContentType,
   isFunctionContent
-} from './content-types'
+} from '@kui-shell/core'
 
-type TabPresentableContent = CustomSpec | HTMLElement | Table
+import { Sidecar } from '../../model/sidecar'
+import { addModeButtons } from './bottom-stripe'
+
+import '../../../web/css/static/sidecar-main.css'
+import '../../../web/css/static/sidecar.css'
+
+type TabPresentableContent = ResourceByReferenceWithContent | HTMLElement | Table | ScalarResource
 
 /**
  * Turn a Resource into content that can be presented in a sidecar tab
@@ -48,7 +55,11 @@ export async function formatForTab<T extends MetadataBearing>(
   if (!hasContent(resource)) {
     // then we have a plain resource. the rest of this function
     // assumes a Content structure, so wrap it up as such
-    return formatForTab(tab, mmr, { content: resource })
+    if (isScalarContent({ content: resource })) {
+      return resource
+    } else {
+      return formatForTab(tab, mmr, { content: resource })
+    }
   } else if (isFunctionContent(resource)) {
     // then resource.content is a function that will provide the information
     return formatForTab(tab, mmr, await resource.content(tab, mmr))
@@ -62,28 +73,38 @@ export async function formatForTab<T extends MetadataBearing>(
     } else {
       return formatForTab(tab, mmr, content)
     }
-  } else if (isCustomSpec(resource.content)) {
-    return resource.content
   } else if (isTable(resource.content)) {
     return resource.content
   } else {
     // otherwise, we have string or HTMLElement content
     return Object.assign(
-      { resource: mmr, toolbarText: mmr.toolbarText, kind: mmr.kind, metadata: mmr.metadata, type: 'custom' as const },
+      {
+        presentation: mmr.presentation,
+        resource: mmr,
+        toolbarText: mmr.toolbarText,
+        kind: mmr.kind,
+        metadata: mmr.metadata
+      },
       resource
     )
   }
 }
 
-async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
+export async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
   const dom1 = document.createElement('div')
   const dom2 = document.createElement('div')
   dom1.classList.add('scrollable', 'scrollable-auto')
   dom2.classList.add('result-as-table', 'repl-result')
   dom1.appendChild(dom2)
 
-  const { formatTable } = await import('../../webapp/views/table')
-  formatTable(tab, table, dom2)
+  const { findComponentProviders } = await import('@kui-shell/core')
+  const providers = findComponentProviders(table)
+  if (providers.length > 0) {
+    const component = await providers[0].render(table, tab, tab.REPL)
+    dom2.appendChild(component.spec.content)
+  } else {
+    console.error('No registered viewer for tables')
+  }
 
   return dom1
 }
@@ -134,7 +155,12 @@ async function renderContent<T extends MetadataBearing>(
  * Render a MultiModalResponse to the sidecar
  *
  */
-export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalResponse<T>) {
+export default async function show<T extends MetadataBearing>(
+  tab: Tab,
+  mmr: MultiModalResponse<T>,
+  sidecar: Sidecar,
+  repl: REPL
+) {
   const modes = mmr.modes as SidecarMode<T>[]
 
   // const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
@@ -142,7 +168,7 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
 
   // first, do a "modelOnly" pass, to get the full list of modes
   // see https://github.com/IBM/kui/issues/3589
-  const modesWithButtons = addModeButtons(tab, ourModesWithButtons, mmr, {
+  const modesWithButtons = addModeButtons(tab, repl, ourModesWithButtons, mmr, sidecar, {
     preserveBackButton: true,
     show: mmr.defaultMode,
     modelOnly: true
@@ -161,26 +187,26 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
   // now that we've rendered the initial/default content, do a pass
   // over the modes and add them to the UI; see
   // https://github.com/IBM/kui/issues/3589
-  addModeButtons(tab, ourModesWithButtons, mmr, {
+  addModeButtons(tab, repl, ourModesWithButtons, mmr, sidecar, {
     preserveBackButton: true,
     show: mmr.defaultMode
   })
 
   if (content) {
-    const custom: CustomSpec = Object.assign(
+    const custom: ResourceByReferenceWithContent = Object.assign(
       {
-        type: 'custom' as const,
         resource: mmr,
         modes: modesWithButtons,
         toolbarText: mmr.toolbarText,
         prettyName: mmr.prettyName,
-        nameHash: mmr.nameHash
+        nameHash: mmr.nameHash,
+        presentation: mmr.presentation
       },
       content
     )
 
-    const { showCustom } = await import('../../webapp/views/sidecar')
-    return showCustom(tab, custom, { leaveBottomStripeAlone: true })
+    const { showCustom } = await import('./populate-dom')
+    return showCustom(tab, repl, custom, sidecar, { leaveBottomStripeAlone: true })
   } else {
     console.error('empty content')
   }

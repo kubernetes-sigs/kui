@@ -16,9 +16,8 @@
 
 import { Entity, isMetadataBearing } from '../entity'
 import { MultiModalResponse } from './types'
-import { CustomSpec } from '../../webapp/views/sidecar-core'
 
 export function isMultiModalResponse(entity: Entity): entity is MultiModalResponse {
   const mmr = entity as MultiModalResponse
-  return isMetadataBearing(mmr) && mmr.modes && Array.isArray(mmr.modes) && (entity as CustomSpec).type !== 'custom'
+  return isMetadataBearing(mmr) && mmr.modes && Array.isArray(mmr.modes)
 }

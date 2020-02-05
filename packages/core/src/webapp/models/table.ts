@@ -17,7 +17,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { MetadataBearing, Entity } from '../../models/entity'
-import { SidecarMode } from '../bottom-stripe'
 
 export class Row {
   attributes?: Cell[]
@@ -159,22 +158,9 @@ export class Table<RowType extends Row = Row> {
   }
 }
 
-export function isTable<C>(model: SidecarMode | MetadataBearing<C> | Entity): model is Table {
+export function isTable<C>(model: MetadataBearing<C> | Entity): model is Table {
   return (
     model !== undefined && (model instanceof Table || ((model as Table).body && Array.isArray((model as Table).body)))
-  )
-}
-
-/**
- * sort the body of table
- *
- */
-export const sortBody = (rows: Row[]): Row[] => {
-  return rows.sort(
-    (a, b) =>
-      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
-      (a.packageName || '').localeCompare(b.packageName || '') ||
-      a.name.localeCompare(b.name)
   )
 }
 

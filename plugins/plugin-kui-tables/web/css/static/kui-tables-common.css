@@ -1,3 +1,67 @@
+body.subwindow[data-presentation="FixedSize"] .result-table {
+  table-layout: fixed;
+  width: 100%;
+}
+body.subwindow[data-presentation="FixedSize"] .result-table-title-outer {
+  display: none;
+}
+body.subwindow .result-table {
+  margin: 0;
+}
+body.subwindow .result-as-table {
+  display: initial;
+}
+body.subwindow:not([data-presentation="FixedSize"]) .result-as-table {
+  padding-bottom: 4vh;
+}
+body.subwindow .result-as-multi-table:not(.scrollable) {
+  display: flex;
+  flex-direction: column;
+}
+body.subwindow .result-as-table.result-as-multi-table-flex-wrap {
+  display: initial;
+}
+
+body[kui-theme-style="dark"] .result-as-table .result-table,
+body[kui-theme-style="dark"] .result-as-table.result-table {
+  border-color: var(--color-ui-03);
+}
+
+.result-table badge:not(.badge-as-image):not(.badge-as-fontawesome) {
+  color: var(--color-text-02);
+  background-color: transparent !important;
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+  font-family: var(--font-monospace);
+  letter-spacing: 0.16px;
+}
+.result-table badge:not(.badge-as-image):not(.badge-as-fontawesome):before {
+  content: "";
+  margin-right: 1ex;
+  width: 0.75em;
+  height: 0.75em;
+  background-color: var(--color-ui-05);
+  border-radius: 50%;
+}
+.result-table badge.green-background:not(.badge-as-image):before {
+  background-color: var(--color-green);
+  color: var(--color-ui-01);
+}
+.result-table badge.yellow-background:not(.badge-as-image):before,
+button.yellow-background {
+  background: var(--color-yellow);
+  color: var(--color-ui-01);
+}
+.result-table badge.red-background:not(.badge-as-image):before {
+  background: var(--color-red);
+  color: var(--color-ui-01);
+}
+.result-table badge.gray-background:not(.badge-as-image):before {
+  background: var(--color-processing);
+  color: var(--color-ui-02);
+}
+
 [kui-theme-style] .bx--data-table thead,
 [kui-theme-style] .bx--data-table tbody {
   font-size: unset;
@@ -76,7 +140,7 @@ body.subwindow .repl .log-lines {
 .result-as-table-full-width .log-lines {
   width: 100%;
 }
-.repl.sidecar-visible .result-as-table .repl-result,
+.repl.sidecar-visible .result-as-table .repl-result:not(:empty),
 .repl.sidecar-visible .result-as-table.repl-result {
   /* repl multi-table when sidecar is visible */
   /* the second rule covers MixedResponse that contains a table; e.g. `ibmcloud ks clusters` */

@@ -46,7 +46,6 @@ const domReady = () => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
   const cli = import('../../webapp/cli-init')
-  const sidecarInit = import('../views/sidecar-init')
   const events = import('../../core/events')
   // const query = import('../query')
 
@@ -71,8 +70,6 @@ const domReady = () => async () => {
         .then(() => cli)
         .then(_ => _.default())
     )
-
-    sidecarInit.then(_ => _.default())
 
     waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init()))
 

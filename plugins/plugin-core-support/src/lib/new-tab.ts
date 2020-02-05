@@ -19,7 +19,7 @@
 import Debug from 'debug'
 
 import {
-  clearSelection,
+  closeAllViews as clearSelection,
   TabState,
   eventBus,
   i18n,
@@ -37,11 +37,11 @@ import {
   Status,
   getCurrentTab,
   getTabId,
-  internalBeCarefulListen as listen,
+  internalBeCarefulListen as listen
 
   // deprecated
-  isSidecarVisible,
-  sidecarSelector
+  // isSidecarVisible,
+  // sidecarSelector
 } from '@kui-shell/core'
 import { productName } from '@kui-shell/client/config.d/name.json'
 import { topTabs } from '@kui-shell/client/config.d/style.json'
@@ -242,11 +242,11 @@ const addCommandEvaluationListeners = (): void => {
           // produced the sidecar; TODO this isn't quite right; we
           // need to find a way to capture that sidecar-producing
           // command
-          if (!isSidecarVisible(tab)) {
+          /* if (!isSidecarVisible(tab)) {
             if (isUsingCommandName()) {
               getTabButtonLabel(tab).innerText = productName
             }
-          }
+          } */
         } else {
           if (isUsingCommandName()) {
             getTabButtonLabel(tab).innerText = event.command
@@ -363,19 +363,13 @@ const perTabInit = (tab: Tab, tabButton: HTMLElement, doListen = true) => {
       }, 0)
     }
   }
-  tab.querySelector('sidecar').addEventListener('click', grabFocus(false))
+  // tab.querySelector('sidecar').addEventListener('click', grabFocus(false))
   tab.querySelector('.repl-inner').addEventListener('click', grabFocus(true))
 
   // tab close button
   getTabCloser(tab).onclick = (event: MouseEvent) => {
     event.stopPropagation()
     return closeTab(tab)
-  }
-
-  // screenshot button
-  sidecarSelector(tab, '.sidecar-screenshot-button').onclick = () => {
-    debug('sidecar screenshot')
-    tab.REPL.pexec('screenshot sidecar')
   }
 }
 

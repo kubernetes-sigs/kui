@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { Tab } from '../cli'
+import { ResourceWithMetadata as MetadataBearing } from '@kui-shell/core'
 
 /**
- * Select a given element in the currently visible sidecar
+ * Return the sidecar model
  *
  */
-export default (tab: Tab, subselect = ''): HTMLElement => tab.querySelector(`sidecar ${subselect}`)
+export interface Sidecar extends HTMLElement {
+  entity: MetadataBearing
+  uuid?: string
+}
+
+export default Sidecar

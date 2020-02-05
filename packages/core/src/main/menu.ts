@@ -103,7 +103,7 @@ export const install = (createWindow: () => void) => {
         label: `Getting Started with ${productName}`,
         click: () => {
           try {
-            tellRendererToExecute('about --mode gettingStarted')
+            tellRendererToExecute('getting started', 'pexec')
           } catch (err) {
             console.log(err)
           }

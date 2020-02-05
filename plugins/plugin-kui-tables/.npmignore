@@ -1,0 +1,6 @@
+build
+src
+tests
+dist/test
+tsconfig*
+/*.tgz

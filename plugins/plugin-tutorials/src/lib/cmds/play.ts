@@ -30,13 +30,13 @@ import {
   getCurrentPrompt,
   injectCSS,
   partialInput,
-  clearSelection,
+  closeAllViews as clearSelection
 
   // deprecated
-  isSidecarFullscreen,
-  hideSidecar,
-  showSidecar,
-  toggleMaximization
+  // isSidecarFullscreen,
+  // hideSidecar,
+  // showSidecar,
+  // toggleMaximization
 } from '@kui-shell/core'
 
 const debug = Debug('plugins/tutorials/play')
@@ -126,14 +126,14 @@ const cancelAsyncs = obj => {
 
 /** Sidecar management. TODO extract this */
 const sidecarManager = {
-  enterFullscreen: (tab: Tab) => {
-    showSidecar(tab)
-    toggleMaximization(tab)
+  enterFullscreen: () => {
+    // showSidecar(tab)
+    // toggleMaximization(tab)
   },
 
   exitFullscreen: (tab: Tab) => {
     clearSelection(tab)
-    toggleMaximization(tab)
+    // toggleMaximization(tab)
   }
 }
 
@@ -401,11 +401,11 @@ const transitionSteps = (tab: Tab, stepNum: number, obj: TutorialDefinition, pan
 
   // full-width sidecar?
   if (sidecar === 'fullscreen') {
-    if (!isSidecarFullscreen(tab)) {
+    /* if (!isSidecarFullscreen(tab)) {
       pane.setAttribute('remember-to-remove-sidecar-fullscreen', true.toString())
-    }
+    } */
 
-    sidecarManager.enterFullscreen(tab)
+    sidecarManager.enterFullscreen()
   }
 
   // render the extras
@@ -756,7 +756,7 @@ const showTutorial = (tab: Tab, tutorialName: string, obj: TutorialDefinition) =
       }
     }
 
-    hideSidecar(tab)
+    // hideSidecar(tab)
     pane.classList.remove('minimized')
   }
 

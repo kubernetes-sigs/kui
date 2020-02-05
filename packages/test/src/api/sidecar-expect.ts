@@ -28,23 +28,23 @@ export const open = async (app: Application) => {
 }
 
 export const openWithFailure = async (app: Application) => {
-  return app.client.waitForVisible(Selectors.SIDECAR_WITH_FAILURE, timeout).then(() => app)
+  return app.client.waitForVisible(Selectors.SIDECAR_WITH_FAILURE, waitTimeout).then(() => app)
 }
 
 /** expect open fullscreen */
 export const fullscreen = async (app: Application) => {
-  return app.client.waitForVisible(Selectors.SIDECAR_FULLSCREEN, timeout).then(() => app)
+  return app.client.waitForVisible(Selectors.SIDECAR_FULLSCREEN, waitTimeout).then(() => app)
 }
 
 /** either minimized or fully closed */
 export const closed = async (app: Application) => {
-  await app.client.waitForExist(Selectors.SIDECAR_HIDDEN, timeout).then(() => app)
+  await app.client.waitForExist(Selectors.SIDECAR_HIDDEN, waitTimeout).then(() => app)
   await new Promise(resolve => setTimeout(resolve, 600)) // wait for the transition effect
 }
 
 /** fully closed, not just minimized */
 export const fullyClosed = async (app: Application) => {
-  return app.client.waitForExist(Selectors.SIDECAR_FULLY_HIDDEN, timeout).then(() => app)
+  return app.client.waitForExist(Selectors.SIDECAR_BASE, waitTimeout, true).then(() => app)
 }
 
 /** close the sidecar by ESCAPE key */
@@ -214,9 +214,10 @@ export const yaml = (content: object) => async (app: Application) => {
 }
 
 export async function popupTitle(app: Application, expectedTitle: string) {
-  await app.client.waitForValue(Selectors.SIDECAR_POPUP_TITLE)
-  const actualTitle = await app.client.getValue(Selectors.SIDECAR_POPUP_TITLE)
-  assert.strictEqual(actualTitle, expectedTitle)
+  return app.client.waitUntil(async () => {
+    const actualTitle = await app.client.getText(Selectors.SIDECAR_POPUP_TITLE)
+    return actualTitle === expectedTitle
+  }, waitTimeout)
 }
 
 export const showing = (

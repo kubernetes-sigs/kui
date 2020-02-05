@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2017-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,67 @@
  * limitations under the License.
  */
 
-import { Tab } from './cli'
-import { removeAllDomChildren } from './util/dom'
-import { isTable, Table } from './models/table'
-import { Capturable } from './models/capturable'
-import { CustomSpec, getSidecar } from './views/sidecar-core'
-import { isCustomSpec } from './views/custom-content'
-import sidecarSelector from './views/sidecar-selector'
-import { apply as addRelevantModes } from './views/registrar/modes'
-import { isHTML } from '../util/types'
-import { Entity, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
-import { Mode, Button, isButton } from '../models/mmr/types'
-import { onclick as buttonOnclick } from '../models/mmr/button'
-import { hasContent, isStringWithOptionalContentType } from '../models/mmr/content-types'
+import {
+  Mode as SidecarMode,
+  Button,
+  ResourceWithMetadata as MetadataBearing,
+  ResourceByReferenceWithContent,
+  isTable,
+  Table,
+  Tab,
+  REPL,
+  empty as removeAllDomChildren,
+  addRelevantModes,
+  isHTML,
+  isResourceWithMetadata as isMetadataBearing,
+  isResourceByReference as isMetadataBearingByReference,
+  KResponse,
+  isButton,
+  isViewButton,
+  hasContent,
+  isStringWithOptionalContentType
+} from '@kui-shell/core'
+
+import { Capturable } from './capturable'
+import { Sidecar } from '../../model/sidecar'
+
+function getCommand<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
+  if (isViewButton(button)) {
+    return button.command
+  } else {
+    const cmd = typeof button.command === 'string' ? button.command : button.command(tab, resource)
+    if (button.confirm) {
+      return `confirm "${cmd}"`
+    } else {
+      return cmd
+    }
+  }
+}
+function buttonOnclick<T extends MetadataBearing>(tab: Tab, repl: REPL, resource: T, button: Button<T>) {
+  const cmd = getCommand(tab, resource, button)
+
+  if (typeof cmd === 'string') {
+    if (isViewButton(button) || button.confirm) {
+      return repl.qexec(cmd, undefined, undefined, { rethrowErrors: true })
+    } else {
+      return repl.pexec(cmd)
+    }
+  } else {
+    cmd(tab, resource)
+  }
+}
 
 /** clicking on a button can toggle other buttons */
 /* interface Toggle {
   toggle: { mode: string; disabled: boolean }[]
 } */
 
-export type SelectionController = { on: (evt: 'change', cb: (selected: boolean) => void) => void }
+// export type SelectionController = { on: (evt: 'change', cb: (selected: boolean) => void) => void }
 
 /**
  * Bottom stripe button specification
  *
  */
-export type SidecarMode<T extends MetadataBearing = MetadataBearing> = Mode<T> | Button<T>
 export function isSidecarMode(entity: string | HTMLElement | Table | SidecarMode): entity is SidecarMode {
   const mode = entity as SidecarMode
   return mode.mode !== undefined && (isButton(mode) || hasContent(mode))
@@ -57,23 +92,25 @@ export const rawCSS = {
   buttons: '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits'
 }
 export const css = {
-  buttons: (tab: Tab) => sidecarSelector(tab, rawCSS.buttons),
-  backContainer: (tab: Tab) =>
-    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'), // houses the back button text and <<
-  backButton: (tab: Tab) =>
-    sidecarSelector(tab, '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'), // houses the back button text
+  backContainer: (sidecar: Sidecar) =>
+    sidecar.querySelector(
+      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-bits'
+    ) as HTMLElement, // houses the back button text and <<
+  backButton: (sidecar: Sidecar) =>
+    sidecar.querySelector(
+      '.sidecar-bottom-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-back-button'
+    ) as HTMLElement, // houses the back button text
   button: 'sidecar-bottom-stripe-button',
   tab: ['bx--tabs__nav-item', 'sidecar-bottom-stripe-button'],
   buttonAction: 'bx--tabs__nav-link',
   buttonActingAsButton: 'sidecar-bottom-stripe-button-as-button',
   buttonActingAsRadioButton: 'sidecar-bottom-stripe-button-as-radio-button',
-  modeContainer: (tab: Tab) =>
-    sidecarSelector(
-      tab,
+  modeContainer: (sidecar: Sidecar) =>
+    sidecar.querySelector(
       '.sidecar-top-stripe .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-mode-bits .bx--tabs__nav'
-    ),
-  bottomContainer: (tab: Tab) =>
-    sidecarSelector(tab, '.sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits'),
+    ) as HTMLElement,
+  bottomContainer: (sidecar: Sidecar) =>
+    sidecar.querySelector('.sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits') as HTMLElement,
   active: 'bx--tabs__nav-item--selected',
   selected: 'selected',
   hidden: 'hidden'
@@ -81,10 +118,12 @@ export const css = {
 
 const _addModeButton = (
   tab: Tab,
+  repl: REPL,
   modeStripe: Element,
   bottomStripe: Element,
   opts: SidecarMode,
-  entity: MetadataBearing | CustomSpec,
+  entity: MetadataBearing,
+  sidecar: Sidecar,
   show: string
 ) => {
   const { mode, label, defaultMode } = opts
@@ -227,16 +266,15 @@ const _addModeButton = (
 
   // back button does not modify sidecar entity, causing the mode buttons to have the wrong behavior (using the previous entity)
   // set sidecar entity to the current entity every time when mode buttons are regenerated
-  if (isCustomSpec(entity) && entity.type !== 'custom') {
+  /* if (isCustomSpec(entity) && entity.type !== 'custom') {
     getSidecar(tab).entity = entity
-  }
+  } */
 
   //
   // insert the command handler
   //
   button.onclick = async () => {
     // change the active button
-    const leaveBottomStripeAlone = true
     const actAsButton = isButton(opts)
 
     const changeActiveButton = () => {
@@ -273,52 +311,52 @@ const _addModeButton = (
       }
     }
 
-    const present = async (view: Entity) => {
+    const present = async (view: KResponse) => {
       if (typeof view === 'string') {
         const dom = document.createElement('div')
         dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
         dom.innerText = view
-        const { insertCustomContent } = await import('./views/sidecar')
-        insertCustomContent(tab, dom)
+        const { insertCustomContent } = await import('./populate-dom')
+        insertCustomContent(sidecar, dom)
       } else if (isStringWithOptionalContentType(view) && isMetadataBearing(entity)) {
-        const { showCustom } = await import('./views/sidecar')
-        showCustom(
-          tab,
-          {
-            type: 'custom',
-            resource: entity,
-            content: view.content,
-            contentType: view.contentType
-          },
-          { leaveBottomStripeAlone: true }
-        )
+        const { showCustom } = await import('./populate-dom')
+        const custom: ResourceByReferenceWithContent = {
+          resource: entity,
+          content: view.content,
+          contentType: view.contentType,
+          presentation: entity.presentation
+        }
+        showCustom(tab, repl, custom, sidecar, { leaveBottomStripeAlone: true })
       } else if (isHTML(view)) {
         const dom = document.createElement('div')
         dom.classList.add('padding-content', 'scrollable', 'scrollable-auto')
         dom.appendChild(view)
-        const { insertCustomContent } = await import('./views/sidecar')
-        insertCustomContent(tab, dom)
-      } else if (isCustomSpec(view)) {
-        const { showCustom } = await import('./views/sidecar')
-        showCustom(tab, view, { leaveBottomStripeAlone: leaveBottomStripeAlone })
+        const { insertCustomContent } = await import('./populate-dom')
+        insertCustomContent(sidecar, dom)
       } else if (isTable(view)) {
         const dom1 = document.createElement('div')
         const dom2 = document.createElement('div')
         dom1.classList.add('scrollable', 'scrollable-auto')
         dom2.classList.add('result-as-table', 'repl-result')
         dom1.appendChild(dom2)
-        const { formatTable } = await import('./views/table')
-        formatTable(tab, view, dom2)
-        const { insertCustomContent } = await import('./views/sidecar')
-        insertCustomContent(tab, dom1)
+        const { findComponentProviders } = await import('@kui-shell/core')
+        const providers = findComponentProviders(view)
+        if (providers.length > 0) {
+          const component = await providers[0].render(view, tab, tab.REPL)
+          dom2.appendChild(component.spec.content)
+          const { insertCustomContent } = await import('./populate-dom')
+          insertCustomContent(sidecar, dom1)
+        } else {
+          console.error('No registered viewer for tables')
+        }
       }
     }
 
     // execute the actual onclick handler
     if (isButton(opts)) {
-      buttonOnclick(tab, entity as MetadataBearing, opts)
+      buttonOnclick(tab, repl, entity as MetadataBearing, opts)
     } else if (hasContent(opts)) {
-      const { formatForTab } = await import('../models/mmr/show')
+      const { formatForTab } = await import('./show')
       const view = await formatForTab(tab, entity as MetadataBearing, opts)
       changeActiveButton()
       await present(view)
@@ -328,21 +366,12 @@ const _addModeButton = (
   return button
 }
 
-export const addModeButton = (
-  tab: Tab,
-  mode: SidecarMode,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  entity: Record<string, any>
-) => {
-  const modeStripe = css.modeContainer(tab)
-  const bottomStripe = css.bottomContainer(tab)
-  return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
-}
-
 export const addModeButtons = (
   tab: Tab,
+  repl: REPL,
   modesUnsorted: SidecarMode[] = [],
-  entity: MetadataBearing | CustomSpec,
+  entity: MetadataBearing,
+  sidecar: Sidecar,
   options?: BottomStripOptions
 ): SidecarMode[] => {
   // consult the view registrar for registered view modes
@@ -373,15 +402,15 @@ export const addModeButtons = (
   }
 
   // for going back
-  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: MetadataBearing | CustomSpec, show: string) => {
-    const modeStripe = css.modeContainer(tab)
-    const bottomStripe = css.bottomContainer(tab) as Capturable
+  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: MetadataBearing, show: string) => {
+    const modeStripe = css.modeContainer(sidecar)
+    const bottomStripe = css.bottomContainer(sidecar) as Capturable
     removeAllDomChildren(modeStripe)
     removeAllDomChildren(bottomStripe)
 
     if (modes) {
       modes.forEach(mode => {
-        _addModeButton(tab, modeStripe, bottomStripe, mode, entity, show)
+        _addModeButton(tab, repl, modeStripe, bottomStripe, mode, entity, sidecar, show)
       })
     }
 
@@ -404,7 +433,7 @@ export const addModeButtons = (
   addModeButtons(tab, modes, entity, show)
 
   if (!options || !options.preserveBackButton) {
-    const backContainer = css.backContainer(tab)
+    const backContainer = css.backContainer(sidecar)
     backContainer.classList.remove('has-back-button')
   }
 

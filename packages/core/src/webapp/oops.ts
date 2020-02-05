@@ -20,10 +20,10 @@ debug('loading')
 
 import { getPrompt } from './prompt'
 import { setStatus, Status } from './status'
-import { popupListen } from './listen'
+// import { popupListen } from './listen'
 import { installBlock } from './block'
-import { isPopup } from './popup-core'
-import { PopupEntity, renderPopupContent, createPopupContentContainer } from './popup'
+// import { isPopup } from './popup-core'
+// import { PopupEntity, renderPopupContent, createPopupContentContainer } from './popup'
 
 import { isHTML } from '../util/types'
 
@@ -32,21 +32,21 @@ import UsageError from '../core/usage-error'
 
 import { HideError, isHideError, CodedError, isCodedError } from '../models/errors'
 
-interface PopupError extends Error {
+/* interface PopupError extends Error {
   content?: Element
   modes?: PopupEntity
 }
 
 function isPopupError(err: Error): err is PopupError {
   return (err as PopupError).content !== undefined
-}
+} */
 
 /**
  * Handle command execution errors
  *
  */
 export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLElement) => async (
-  err: Error | CodedError | UsageError | HideError | PopupError
+  err: Error | CodedError | UsageError | HideError // | PopupError
 ) => {
   if (!block) return // we're not attached to a prompt right now
 
@@ -62,7 +62,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
 
   setStatus(block, Status.error)
 
-  const resultDom = isPopup() ? createPopupContentContainer(['error']) : block.querySelector('.repl-result')
+  const resultDom = /* isPopup() ? createPopupContentContainer(['error']) : */ block.querySelector('.repl-result')
   const oopsDom = document.createElement('div')
   oopsDom.className = 'oops'
   resultDom.appendChild(oopsDom)
@@ -114,7 +114,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
     }
   }
 
-  if (isPopup()) {
+  /* if (isPopup()) {
     await renderPopupContent(
       command,
       (isPopupError(err) && err.content) || resultDom,
@@ -122,7 +122,7 @@ export const oops = (command: string, block?: HTMLElement, nextBlock?: HTMLEleme
       isPopupError(err) && err.modes
     )
     popupListen(undefined, command)
-  }
+  } */
 
   installBlock(block.parentNode, block, nextBlock)()
 

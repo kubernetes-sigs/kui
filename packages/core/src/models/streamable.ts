@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { SimpleEntity, MixedResponse } from './entity'
 import { Table } from '../webapp/models/table'
-import { CustomSpec } from '../webapp/views/sidecar'
+import { MultiModalResponse } from './mmr/types'
+import { SimpleEntity, MixedResponse } from './entity'
 
-export type Streamable = SimpleEntity | Table | CustomSpec | MixedResponse
+export type Streamable = SimpleEntity | Table | MixedResponse | MultiModalResponse
 export default Streamable
 
 export type Stream = (response: Streamable, killLine?: boolean) => Promise<void>

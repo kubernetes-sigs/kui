@@ -18,7 +18,7 @@ import Debug from 'debug'
 import { EventEmitter } from 'events'
 import { editor as MonacoEditor } from 'monaco-editor'
 
-import { Tab, ToolbarText, injectCSS, ExecOptions, currentSelection, i18n } from '@kui-shell/core'
+import { Tab, ToolbarText, injectCSS, ExecOptions, i18n } from '@kui-shell/core'
 
 import { Entity as EditorEntity } from './entity'
 import { Editor, EditorResponse } from './response'
@@ -88,7 +88,7 @@ export const openEditor = async (tab: Tab, name: string, options, execOptions: E
   /** returns the current entity */
   const custom = execOptions.custom
 
-  const getEntityFn = (custom && custom.getEntity) || currentSelection
+  const getEntityFn = (custom && custom.getEntity) || (() => undefined)
   let currentEntity = getEntityFn(tab)
   const getEntity = () => currentEntity
 

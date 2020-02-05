@@ -36,7 +36,7 @@ const takeScreenshot = function(ctx, which = '') {
           })
         )
     )
-    .catch(Common.oops(ctx))
+    .catch(Common.oops(ctx, true))
 }
 
 Common.localDescribe('screenshot', function(this: Common.ISuite) {
@@ -53,10 +53,11 @@ Common.localDescribe('screenshot', function(this: Common.ISuite) {
 
   it('should take screenshot with no arguments', () => takeScreenshot(this))
   it('should take screenshot full', () => takeScreenshot(this, 'full'))
-  it('should fail to screenshot sidecar', () =>
-    CLI.command('screenshot sidecar', this.app).then(
-      ReplExpect.error(0, 'You requested to screenshot the sidecar, but it is not currently open')
-    ))
+  it('should fail to screenshot sidecar', () => {
+    return CLI.command('screenshot sidecar', this.app)
+      .then(ReplExpect.error(0, 'You requested to screenshot the sidecar, but it is not currently open'))
+      .catch(Common.oops(this, true))
+  })
   it('should take screenshot repl', () => takeScreenshot(this, 'repl'))
   it('should take screenshot last', () => takeScreenshot(this, 'last'))
   it('should take screenshot last-full', () => takeScreenshot(this, 'last-full'))
@@ -66,8 +67,8 @@ Common.localDescribe('screenshot', function(this: Common.ISuite) {
     CLI.command(`open ../../README.md`, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('The Kui Framework for Graphical Terminals', undefined, undefined, 'README.md'))
-      .catch(Common.oops(this)))
+      .then(SidecarExpect.showing('README.md'))
+      .catch(Common.oops(this, true)))
 
   // now screenshot sidecar should work
   it('should take screenshot sidecar', () => takeScreenshot(this, 'sidecar'))

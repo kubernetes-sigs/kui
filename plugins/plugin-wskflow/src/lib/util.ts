@@ -95,7 +95,7 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
         label: strings['1:1'],
         balloon: 'Use a fixed-size canvas',
         selected: controller.is1to1(),
-        selectionController: zoom1to1Bus,
+        // selectionController: zoom1to1Bus,
         visibleWhen: visibleWhenShowing,
         kind: 'view',
         command: () => {
@@ -107,7 +107,7 @@ export const zoomToFitButtons = (controller, { visibleWhenShowing = 'visualizati
         label: strings['Fit'],
         balloon: 'Use a zoom to fit canvas',
         selected: !controller.is1to1(),
-        selectionController: zoomToFitBus,
+        // selectionController: zoomToFitBus,
         visibleWhen: visibleWhenShowing,
         kind: 'view',
         command: () => {

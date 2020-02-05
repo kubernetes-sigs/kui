@@ -15,10 +15,10 @@
  */
 
 import { Table, Row, isTable } from '../webapp/models/table'
-import { CustomSpec } from '../webapp/views/sidecar'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
 import { MultiModalResponse } from './mmr/types'
+import Presentation from '../webapp/views/presentation'
 
 export interface MessageBearingEntity {
   message: string
@@ -32,7 +32,7 @@ export function isMessageBearingEntity(entity: Entity): entity is MessageBearing
  * The name part of a metadata bearing resource.
  *
  */
-interface MetadataNamedResource {
+export interface MetadataNamedResource {
   kind?: string
 
   metadata?: {
@@ -68,7 +68,10 @@ export interface MetadataBearing<Content = void> extends MetadataNamedResource {
   content?: Content
   contentType?: string
   toolbarText?: ToolbarText
+  presentation?: Presentation
 }
+
+export type MetadataBearingWithContent<T extends any = any> = MetadataBearing<T>
 
 export function isMetadataBearing(spec: MetadataBearing | Entity): spec is MetadataBearing {
   const meta = spec as MetadataBearing
@@ -90,13 +93,14 @@ export function hasDisplayName(resource: MetadataBearing): resource is WithDispl
  * Entity with a "resource" field that is MetadataBearing
  *
  */
-export interface MetadataBearingByReference<Content = void> extends CustomSpec<Content> {
+export interface MetadataBearingByReference<Content = void> extends MetadataBearing<Content> {
   resource: MetadataBearing<Content>
 }
-export function isMetadataBearingByReference(
-  spec: MetadataBearing | MetadataBearingByReference | Entity
-): spec is MetadataBearingByReference {
-  const ref = spec as MetadataBearingByReference
+export type MetadataBearingByReferenceWithContent<T extends any = any> = MetadataBearingByReference<T>
+export function isMetadataBearingByReference<T extends MetadataBearingByReference>(
+  spec: MetadataBearing | Entity | MetadataBearingWithContent | T
+): spec is T {
+  const ref = spec as T
   return ref !== undefined && ref.resource !== undefined && isMetadataBearing(ref.resource)
 }
 
@@ -116,11 +120,7 @@ export type MixedResponsePart = string | Table | HTMLElement
 export type MixedResponse = MixedResponsePart[]
 
 export function isMixedResponse(response: Entity): response is MixedResponse {
-  return (
-    Array.isArray(response) &&
-    response.length > 0 &&
-    (typeof response[0] === 'string' || isTable(response[0]))
-  )
+  return Array.isArray(response) && response.length > 0 && (typeof response[0] === 'string' || isTable(response[0]))
 }
 
 /**
@@ -141,7 +141,7 @@ export function isLowLevelLoop(entity: Entity): entity is LowLevelLoop {
  *
  */
 type Complete<T> = {
-  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined)
+  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : T[P] | undefined
 }
 
 /**
@@ -189,7 +189,6 @@ export type Entity<
   | SimpleEntity
   | Table<RowType>
   | ResourceModification
-  | CustomSpec
   | MixedResponse
   | MultiModalResponse
   | LowLevelLoop
