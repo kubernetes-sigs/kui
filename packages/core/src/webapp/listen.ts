@@ -92,7 +92,9 @@ export const listen = (prompt: HTMLInputElement) => {
     const bottomPrompt = getBottomPrompt()
     bottomPrompt.readOnly = false
     bottomPrompt.tabIndex = 1
-    prompt.readOnly = true
+    if (prompt !== bottomPrompt) {
+      prompt.readOnly = true
+    }
   } else {
     prompt.readOnly = false
     prompt.placeholder = promptPlaceholder
