@@ -146,9 +146,6 @@ sidecar .sidecar-content-container {
 [data-presentation="SidecarThin"][kui-theme-style] sidecar .bx--data-table {
   width: 100%;
 }
-[data-presentation="SidecarThin"][kui-theme-style] sidecar .bx--data-table td {
-  color: var(--color-text-inverted03);
-}
 [data-presentation="SidecarThin"] sidecar .bx--data-table.result-table[kui-table-style] th.header-cell {
   color: var(--color-text-01);
 }
