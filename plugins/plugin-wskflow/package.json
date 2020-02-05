@@ -34,7 +34,6 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "chokidar": "2.1.5",
     "d3": "3.5.17",
     "debug": "4.1.1",
     "elkjs": "0.3.0",
@@ -44,12 +43,7 @@
   },
   "kui": {
     "headless": false,
-    "proxy": false,
-    "exclude": {
-      "webpack": [
-        "chokidar"
-      ]
-    }
+    "proxy": false
   },
   "publishConfig": {
     "access": "public"

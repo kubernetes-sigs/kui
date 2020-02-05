@@ -67,10 +67,10 @@ jobs:
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
     # Core Tests | os=Windows | targets=electron-build [INCOMPLETE]
-    - os: windows
-      env: N="Windows core" CLIENT="default" TEST_FILTER="about" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-win32-x64/Kui.exe"
-      before_install: npm config set script-shell C:\\Program\ Files\\git\\bin\\bash.exe
-      script: npm run test1 core
+#    - os: windows
+#      env: N="Windows core" CLIENT="default" TEST_FILTER="about" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-win32-x64/Kui.exe"
+#      before_install: npm config set script-shell C:\\Program\ Files\\git\\bin\\bash.exe
+#      script: npm run test1 core
 
       # - env: N="Linux core" LAYERS="core core-support editor"
 
