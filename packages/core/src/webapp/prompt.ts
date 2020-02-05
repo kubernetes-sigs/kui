@@ -16,11 +16,8 @@
 
 import { basename } from 'path'
 
-import { isPopup } from './popup-core'
 import { getInitialBlock, getCurrentBlock } from './block'
 import { Tab, getCurrentTab, getTabFromTarget } from './tab'
-
-import { getSidecar } from './views/sidecar-core'
 
 import { ExecOptions, DefaultExecOptions } from '../models/execOptions'
 import { inElectron } from '../core/capabilities'
@@ -47,9 +44,7 @@ export const getInitialPrompt = (tab: Tab): HTMLInputElement => {
 }
 
 export const getCurrentPrompt = (tab = getCurrentTab()): Prompt => {
-  if (isPopup()) {
-    return getSidecar(tab).querySelector('input')
-  } else if (inBottomInputMode) {
+  if (inBottomInputMode) {
     return getPrompt(document.querySelector('.kui--input-stripe'))
   } else {
     return getPrompt(getCurrentBlock(tab))

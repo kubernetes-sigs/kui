@@ -19,10 +19,11 @@
  *
  */
 
-import { Tab } from '../tab'
-import { Sidecar, getSidecar } from './sidecar-core'
+import Debug from 'debug'
+import { Badge, badgeRegistrar, Tab, empty as removeAllDomChildren, ResourceWithMetadata } from '@kui-shell/core'
+import { Sidecar } from '../../model/sidecar'
 
-import { removeAllDomChildren } from '../util/dom'
+const debug = Debug('plugin-sidecar/badge')
 
 /**
  * Return the DOM elements housing the sidecar badges
@@ -42,22 +43,6 @@ export function getBadgesDomContainer(sidecar: Sidecar) {
   return { badgesDomContainer, badgesDom }
 }
 
-/**
- * This is the most complete form of a badge specification, allowing
- * the caller to provide a title, an onclick handler, and an optional
- * fontawesome icon representation.
- *
- */
-export interface BadgeSpec {
-  title: string
-  fontawesome?: string
-  image?: HTMLImageElement | SVGElement
-  css?: string
-  onclick?: (evt: MouseEvent) => boolean
-}
-
-export type Badge = string | BadgeSpec | Element
-
 export interface BadgeOptions {
   css?: string
   onclick?: () => void
@@ -67,8 +52,8 @@ export interface BadgeOptions {
 export class DefaultBadgeOptions implements BadgeOptions {
   public readonly badgesDom: HTMLElement
 
-  public constructor(tab: Tab) {
-    const { badgesDom } = getBadgesDomContainer(getSidecar(tab))
+  public constructor(sidecar: Sidecar) {
+    const { badgesDom } = getBadgesDomContainer(sidecar)
     this.badgesDom = badgesDom
   }
 }
@@ -78,9 +63,11 @@ function isHTMLImage(img: HTMLImageElement | SVGElement): img is HTMLImageElemen
 }
 
 export const addBadge = (
-  tab: Tab,
+  sidecar: Sidecar,
   badgeText: Badge,
-  { css, onclick, badgesDom = new DefaultBadgeOptions(tab).badgesDom }: BadgeOptions = new DefaultBadgeOptions(tab)
+  { css, onclick, badgesDom = new DefaultBadgeOptions(sidecar).badgesDom }: BadgeOptions = new DefaultBadgeOptions(
+    sidecar
+  )
 ) => {
   // debug('addBadge', badgeText, badgesDom)
 
@@ -133,14 +120,42 @@ export const addBadge = (
   return badge
 }
 
-export const clearBadges = (tab: Tab) => {
-  const sidecar = getSidecar(tab)
+export const clearBadges = (sidecar: Sidecar) => {
   const header = sidecar.querySelector('.sidecar-header')
   removeAllDomChildren(header.querySelector('.badges'))
 }
 
-export function hasBadge(tab: Tab, cls: string) {
-  const sidecar = getSidecar(tab)
+export function hasBadge(sidecar: Sidecar, cls: string) {
   const header = sidecar.querySelector('.sidecar-header')
   return !!header.querySelector(`.badges ${cls}`)
+}
+
+/**
+ * Add all registered badges that are relevant to the given resource
+ *
+ */
+export function apply<Resource extends ResourceWithMetadata>(
+  tab: Tab,
+  sidecar: Sidecar,
+  entity: { resource: Resource },
+  badgeOptions: BadgeOptions
+) {
+  badgeRegistrar
+    .filter(({ when }) => {
+      // filter out any irrelevant badges (for this resource)
+      try {
+        return when(entity.resource)
+      } catch (err) {
+        debug('warning: registered badge threw an exception during filter', err)
+        return false
+      }
+    })
+    .forEach(({ badge }) => {
+      // now add the badge
+      if (typeof badge === 'function') {
+        addBadge(sidecar, badge(entity.resource, tab), badgeOptions)
+      } else {
+        addBadge(sidecar, badge, badgeOptions)
+      }
+    })
 }

@@ -21,9 +21,8 @@
  */
 import './web/css/static/carbon-components.min.css'
 import './web/css/static/carbon-overrides-common.css'
-import './web/css/static/kui-tables-common.css'
+import './web/css/static/inverted-colors.css'
 import './web/css/static/ui.css'
-import './web/css/static/sidecar.css'
 import './web/css/static/status-stripe.css'
 import './web/css/static/top-tab-stripe.css'
 import './web/css/static/vendor/balloon-css/balloon.min.css'

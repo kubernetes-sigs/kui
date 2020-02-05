@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2017-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,25 @@
 import * as prettyPrintDuration from 'pretty-ms'
 import { tableStyle } from '@kui-shell/client/config.d/style.json'
 
-import { Tab } from '../tab'
-import { isPopup } from '../popup-core'
-import { Block } from '../models/block'
-import { isMostRecentBlock } from '../block'
-import { getCurrentPrompt } from '../prompt'
-import { isMetadataBearing } from '../../models/entity'
-import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
-import { isWatchable, Watchable } from '../../core/jobs/watchable'
+import {
+  isMostRecentBlock,
+  isHTML,
+  isWatchable,
+  Watchable,
+  Table,
+  Row,
+  Cell,
+  Icon,
+  TableStyle,
+  isTable,
+  getCurrentPrompt,
+  Block,
+  Tab,
+  REPL
+} from '@kui-shell/core'
 
-import { isHTML } from '../../util/types'
+/** import the base styling */
+import '../../web/css/static/kui-tables-common.css'
 
 /** ExistingTableSpec helps the watcher update the existing `Table` and view */
 interface ExistingTableSpec {
@@ -41,6 +50,19 @@ export interface RowFormatOptions {
   excludePackageName?: boolean
   useRepeatingEffect?: boolean
   usePip?: boolean
+}
+
+/**
+ * sort the body of table
+ *
+ */
+const sortBody = (rows: Row[]): Row[] => {
+  return rows.sort(
+    (a, b) =>
+      (a.prettyType || a.type || '').localeCompare(b.prettyType || b.type || '') ||
+      (a.packageName || '').localeCompare(b.packageName || '') ||
+      a.name.localeCompare(b.name)
+  )
 }
 
 /**
@@ -167,7 +189,9 @@ const formatCellValue = (key: string, value: string) => {
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (tab: Tab, repl: REPL, options: RowFormatOptions = {}) => (
+  entity: Row
+): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const isHeaderCell = /header-cell/.test(entity.outerCSS)
 
@@ -276,26 +300,26 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
   } else {
-    if (isPopup() || options.usePip) {
+    /* if (isPopup() || options.usePip) {
       entityNameClickable.onclick = async (evt: MouseEvent) => {
         const { drilldown } = await import('../picture-in-picture')
         return drilldown(tab, entity.onclick, undefined, undefined, 'previous view')(evt)
       }
-    } else if (typeof entity.onclick === 'string') {
+    } else */ if (
+      typeof entity.onclick === 'string'
+    ) {
       entityNameClickable.onclick = async () => {
         if (!entity.onclickExec || entity.onclickExec === 'pexec') {
-          const { pexec } = await import('../../repl/exec')
-          pexec(entity.onclick, { tab, echo: !entity.onclickSilence })
+          repl.pexec(entity.onclick, { tab, echo: !entity.onclickSilence })
         } else {
-          const { qexec } = await import('../../repl/exec')
-          qexec(entity.onclick, undefined, undefined, { tab })
+          repl.qexec(entity.onclick, undefined, undefined, { tab })
         }
       }
-    } else if (isMetadataBearing(entity.onclick)) {
+      /* } else if (isMetadataBearing(entity.onclick)) {
       entityNameClickable.onclick = async () => {
         const { show } = await import('../../models/mmr/show')
         return show(tab, entity.onclick)
-      }
+      } */
     } else {
       entityNameClickable.onclick = entity.onclick
     }
@@ -414,13 +438,13 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       inner.classList.add('clickable')
       inner.onclick = async (evt: MouseEvent) => {
         evt.stopPropagation() // don't trickle up to the row click handler
-        if (isPopup() || options.usePip) {
+        /* if (isPopup() || options.usePip) {
           const { drilldown } = await import('../picture-in-picture')
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
-        } else if (typeof onclick === 'string') {
-          // TODO: define types here carefully
-          const { pexec } = await import('../../repl/exec')
-          pexec(onclick, { tab })
+        } else */ if (
+          typeof onclick === 'string'
+        ) {
+          repl.pexec(onclick, { tab })
         } else {
           onclick(evt)
         }
@@ -482,9 +506,10 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
  */
 const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingTableSpec) => (
   tab: Tab,
+  repl: REPL,
   option?: RowFormatOptions
 ) => {
-  const newRowView = formatOneRowResult(tab, option)(newRow)
+  const newRowView = formatOneRowResult(tab, repl, option)(newRow)
   existingTable.renderedTable.replaceChild(newRowView, existingTable.renderedRows[updateIndex])
   existingTable.renderedRows[updateIndex] = newRowView
 
@@ -498,9 +523,10 @@ const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingT
  */
 const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: ExistingTableSpec, block?: Block) => (
   tab: Tab,
+  repl: REPL,
   option?: RowFormatOptions
 ) => {
-  const newRowView = formatOneRowResult(tab, option)(newRow)
+  const newRowView = formatOneRowResult(tab, repl, option)(newRow)
   existingTable.renderedTable.insertBefore(newRowView, existingTable.renderedRows[insertBeforeIndex])
   existingTable.renderedRows.splice(insertBeforeIndex, 0, newRowView)
   existingTable.rowsModel.splice(insertBeforeIndex, 0, newRow)
@@ -575,6 +601,7 @@ function setStyle(tableDom: HTMLElement, table: Table) {
  */
 export const formatTable = (
   tab: Tab,
+  repl: REPL,
   response: Table,
   resultDom: HTMLElement,
   options: { block?: Block; usePip?: boolean } = {}
@@ -590,7 +617,7 @@ export const formatTable = (
 
     const prepareRows = prepareTable(tab, table)
 
-    const rows = prepareRows.map(formatOneRowResult(tab, formatRowOption))
+    const rows = prepareRows.map(formatOneRowResult(tab, repl, formatRowOption))
     const rowFrag = document.createDocumentFragment()
     rows.map(row => rowFrag.appendChild(row))
     tableDom.appendChild(rowFrag)
@@ -688,6 +715,11 @@ export const formatTable = (
 
   const existingTable = format(response)
 
+  if (response.noEntityColors) {
+    // client wants control over entity-cell coloring
+    resultDom.classList.add('result-table-with-custom-entity-colors')
+  }
+
   if (isWatchable(response)) {
     const watch = response.watch
     tab.state.captureJob(watch)
@@ -717,10 +749,10 @@ export const formatTable = (
       if (foundIndex === -1) {
         // To get the insertion index, first concat the new row with the existing rows, then sort the rows
         const index = sortBody([newRow].concat(existingRows)).findIndex(_ => (_.rowKey || _.name) === newRow.name)
-        insertTheRow(newRow, index + 1, existingTable, options.block)(tab, formatRowOption)
+        insertTheRow(newRow, index + 1, existingTable, options.block)(tab, repl, formatRowOption)
       } else {
         const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
-        if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
+        if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, repl, formatRowOption)
       }
     }
 
@@ -731,9 +763,9 @@ export const formatTable = (
 
       const newHeader = prepareHeader(header)
       if (foundIndex) {
-        insertTheRow(newHeader, 0, existingTable, options.block)(tab, formatRowOption)
+        insertTheRow(newHeader, 0, existingTable, options.block)(tab, repl, formatRowOption)
       } else {
-        udpateTheRow(newHeader, 0, existingTable)(tab, formatRowOption)
+        udpateTheRow(newHeader, 0, existingTable)(tab, repl, formatRowOption)
       }
     }
 
@@ -746,5 +778,21 @@ export const formatTable = (
 
     // initiate the pusher watch
     watch.init({ update, offline, done, allOffline, header })
+  }
+}
+
+export default function render(entity: Table, tab: Tab, repl: REPL) {
+  const wrapper = document.createElement('div')
+
+  formatTable(tab, repl, entity, wrapper)
+
+  const content = document.createDocumentFragment()
+  content.appendChild(wrapper)
+
+  return {
+    apiVersion: 'kui-shell/component/v1' as const,
+    spec: {
+      content
+    }
   }
 }

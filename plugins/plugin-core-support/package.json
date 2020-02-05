@@ -25,7 +25,6 @@
   "dependencies": {
     "colors": "1.4.0",
     "debug": "4.1.1",
-    "marked": "0.7.0",
     "tmp": "0.1.0",
     "yargs-parser": "16.1.0"
   },

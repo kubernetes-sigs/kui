@@ -20,6 +20,12 @@
       "path": "plugins/plugin-editor"
     },
     {
+      "path": "plugins/plugin-sidecar"
+    },
+    {
+      "path": "plugins/plugin-kui-tables"
+    },
+    {
       "path": "plugins/plugin-git"
     },
     {
