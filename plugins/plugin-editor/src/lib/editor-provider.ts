@@ -19,15 +19,20 @@ import {
   EditorProvider,
   registerEditor,
   Presentation,
-  CustomResponse,
   ExecOptions,
+  ResourceWithMetadataWithContent,
+  ResourceByReferenceWithContent,
   isResourceByReference
 } from '@kui-shell/core'
 
 import EditorEntity from './entity'
 
 class MonacoEditorProvider implements EditorProvider {
-  public async tryOpen(tab: Tab, custom: CustomResponse, options: ExecOptions) {
+  public async tryOpen(
+    tab: Tab,
+    custom: ResourceWithMetadataWithContent | ResourceByReferenceWithContent,
+    options: ExecOptions
+  ) {
     const { edit } = await import(/* webpackMode: "lazy" */ './cmds/edit')
 
     const projection = custom.content
@@ -36,11 +41,11 @@ class MonacoEditorProvider implements EditorProvider {
 
     const entity: EditorEntity = {
       // EditorEntity
-      type: custom.prettyType,
+      type: custom.kind,
       name: metadataBearer.metadata.name,
       kind: metadataBearer.kind,
       metadata: metadataBearer.metadata,
-      noZoom: custom.noZoom,
+      // noZoom: custom.noZoom,
       //      persister: () => true,
       annotations: [],
       exec: {

@@ -20,7 +20,7 @@ import { Tab } from '../../tab'
 import { MetadataBearing } from '../../../models/entity'
 // import { Button } from '../../../models/mmr/types'
 // import { formatButton } from '../../../models/mmr/button'
-import { SidecarMode } from '../../bottom-stripe'
+import { ModeOrButton as SidecarMode } from '../../../models/mmr/types'
 
 const debug = Debug('webapp/views/registrar/modes')
 

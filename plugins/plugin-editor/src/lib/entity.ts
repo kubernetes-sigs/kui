@@ -32,7 +32,7 @@ interface Getter {
   getEntity: () => object
 }
 
-export interface Entity extends ResourceWithMetadata {
+export interface Entity extends ResourceWithMetadata<string | Record<string, any>> {
   type: string
   name: string
   version?: string

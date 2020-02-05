@@ -23,6 +23,7 @@ export default {
     command: 'version',
     title: strings('versionUsageTitle'),
     header: strings('versionUsageHeader'),
-    example: 'version'
+    example: 'version',
+    optional: [{ name: '--full', boolean: true, docs: strings('Report full version') }]
   }
 }
