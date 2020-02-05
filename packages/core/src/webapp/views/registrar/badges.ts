@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
 import { Tab } from '../../tab'
 import { SidecarModeFilter } from './modes'
 import { MetadataBearing } from '../../../models/entity'
-import { addBadge, BadgeSpec, BadgeOptions } from '../badge'
 
-const debug = Debug('webapp/views/registrar/badges')
+/**
+ * This is the most complete form of a badge specification, allowing
+ * the caller to provide a title, an onclick handler, and an optional
+ * fontawesome icon representation.
+ *
+ */
+export interface BadgeSpec {
+  title: string
+  fontawesome?: string
+  image?: HTMLImageElement | SVGElement
+  css?: string
+  onclick?: (evt: MouseEvent) => boolean
+}
+
+export type Badge = string | BadgeSpec | Element
 
 /**
  * Interpretation: if the resource passes the given "when" filter,
@@ -34,7 +45,7 @@ export interface BadgeRegistration<Resource extends MetadataBearing> {
 }
 
 /** registered badge handlers */
-const registrar: BadgeRegistration<MetadataBearing>[] = []
+export const registrar: BadgeRegistration<MetadataBearing>[] = []
 
 /**
  * Register a new badge
@@ -44,32 +55,3 @@ export function registerSidecarBadge<Resource extends MetadataBearing>(registrat
   registrar.push(registration)
 }
 export default registerSidecarBadge
-
-/**
- * Add all registered badges that are relevant to the given resource
- *
- */
-export function apply<Resource extends MetadataBearing>(
-  tab: Tab,
-  entity: { resource: Resource },
-  badgeOptions: BadgeOptions
-) {
-  registrar
-    .filter(({ when }) => {
-      // filter out any irrelevant badges (for this resource)
-      try {
-        return when(entity.resource)
-      } catch (err) {
-        debug('warning: registered badge threw an exception during filter', err)
-        return false
-      }
-    })
-    .forEach(({ badge }) => {
-      // now add the badge
-      if (typeof badge === 'function') {
-        addBadge(tab, badge(entity.resource, tab), badgeOptions)
-      } else {
-        addBadge(tab, badge, badgeOptions)
-      }
-    })
-}

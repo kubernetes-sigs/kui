@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,7 @@ import {
   KeyCodes,
   Tab,
   injectCSS,
-  getCurrentPrompt,
-
-  // TODO deprecated:
-  isSidecarVisible,
-  sidecarSelector
+  getCurrentPrompt
 } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
@@ -70,10 +66,27 @@ const usage: UsageModel = {
       name: 'which',
       positional: true,
       docs: strings('screenshotWhichUsageDocs'),
-      allowed: ['sidecar', 'repl', 'full', 'last', 'nth']
+      allowed: ['selector', 'repl', 'full', 'last', 'nth']
     },
-    { name: '--nth', docs: strings('screenshotNUsageDocs'), numeric: true }
+    { name: '--nth', docs: strings('screenshotNUsageDocs'), numeric: true },
+
+    // hidden so i18n not needed
+    { name: '--selector', hidden: true, docs: 'capture a given selector' },
+    { name: '--context', allowed: ['tab'], hidden: true, docs: 'for --selector, capture context' },
+    { name: '--squish-selector', hidden: true, docs: 'for --selector, also squish' },
+    { name: '--squish-css', hidden: true, docs: 'for --squish-selector, add this css class' }
   ]
+}
+
+/**
+ * Dash options for the screenshot command
+ *
+ */
+interface Options extends ParsedOptions {
+  offset?: string
+  context?: string
+  'squish-selector': string | string[]
+  'squish-css': string
 }
 
 /**
@@ -89,7 +102,6 @@ const round = Math.round
 const selectors = {
   full: 'body', // everything
   default: 'body > .page', // everything but header
-  sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
   repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
   nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output`),
   'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
@@ -108,22 +120,28 @@ const hideCurrentReplBlock = [
   }
 ]
 const squishers = {
-  sidecar: [
-    { selector: 'body.subwindow', css: 'screenshot-squish' },
-    { selector: 'body.subwindow .page', css: 'screenshot-squish' },
-    { selector: 'body.subwindow .main', css: 'screenshot-squish' },
-    { selector: 'tab.visible', css: 'screenshot-squish' }
-  ],
-
   // screenshot full and repl should remove the last command from the screenshot, so that "screenshot full" doesn't show
   full: hideCurrentReplBlock,
   repl: hideCurrentReplBlock
 }
-const _squish = (tab: Tab, which: string, selector: string, op) => {
+const _squish = (tab: Tab, which: string, selector: string, parsedOptions: Options, op) => {
   let squisher = squishers[which]
 
   if (typeof squisher === 'function') {
     squisher = squisher(selector)
+  }
+
+  // caller specified squish specification on the command line, via
+  // --squish-selecteor and --squish-css
+  if (!squisher && parsedOptions['squish-selector'] && parsedOptions['squish-css']) {
+    if (!Array.isArray(parsedOptions['squish-selector'])) {
+      parsedOptions['squish-selector'] = [parsedOptions['squish-selector']]
+    }
+    const css = parsedOptions['squish-css']
+    squisher = parsedOptions['squish-selector'].map(selector => ({
+      selector,
+      css
+    }))
   }
 
   if (squisher) {
@@ -153,8 +171,8 @@ const _squish = (tab: Tab, which: string, selector: string, op) => {
     return doNotSquish
   }
 }
-const squish = (tab: Tab, which: string, selector: string) =>
-  _squish(tab, which, selector, (dryRun: boolean, element: HTMLElement, property, value, css) => {
+const squish = (tab: Tab, which: string, selector: string, parsedOptions: Options) =>
+  _squish(tab, which, selector, parsedOptions, (dryRun: boolean, element: HTMLElement, property, value, css) => {
     if (dryRun) {
       const scrollers = element.querySelectorAll('.overflow-auto')
       for (let idx = 0; idx < scrollers.length; idx++) {
@@ -168,11 +186,17 @@ const squish = (tab: Tab, which: string, selector: string) =>
       if (property) element.style[property] = value
     }
   })
-const unsquish = (tab: Tab, which: string, selector: string) =>
-  _squish(tab, which, selector, (_, element: HTMLElement, property: string, value: string, css: string) => {
-    if (css) element.classList.remove(css)
-    if (property) element.style[property] = null
-  })
+const unsquish = (tab: Tab, which: string, selector: string, parsedOptions: Options) =>
+  _squish(
+    tab,
+    which,
+    selector,
+    parsedOptions,
+    (_, element: HTMLElement, property: string, value: string, css: string) => {
+      if (css) element.classList.remove(css)
+      if (property) element.style[property] = null
+    }
+  )
 
 /** fill to two digits */
 const fill = (n: number) => (n < 10 ? `0${n}` : n)
@@ -185,10 +209,6 @@ const timeString = (ts: Date) => ts.toLocaleTimeString('en-us').replace(/:/g, '.
 
 interface SnapDom extends HTMLElement {
   kuiSnapshotTimer?: NodeJS.Timer
-}
-
-interface Options extends ParsedOptions {
-  offset: string
 }
 
 /** this is the handler body */
@@ -219,7 +239,8 @@ export default async (commandTree: Registrar) => {
           const which = (argvNoOptions[1] && argvNoOptions[1].toLowerCase()) || (options['nth'] && 'nth') || 'default'
 
           // the selector which will snap the dom
-          let selector = selectors[which]
+          let selector = which === 'selector' ? argvNoOptions[2] : selectors[which]
+          const context = parsedOptions.context === 'tab' ? tab : document
 
           const N = options['nth']
           if (typeof selector === 'function') {
@@ -232,16 +253,13 @@ export default async (commandTree: Registrar) => {
           } else if (!selector) {
             // either we couldn't find the area to
             return reject(new UsageError({ usage }))
-          } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
-            // sanity check the sidecar option
-            return reject(new Error(strings('screenshotSidecarNotOpen')))
           } else if (which === 'nth') {
             if (N === undefined) {
               return reject(new Error('You must provide a numeric value for the "nth" argument'))
             }
           }
 
-          const dom: Element = selector && typeof selector === 'string' ? document.querySelector(selector) : selector
+          const dom: Element = selector && typeof selector === 'string' ? context.querySelector(selector) : selector
           if (!dom) {
             // either we couldn't find the area to capture :(
             console.error('bad selector', selector)
@@ -249,11 +267,13 @@ export default async (commandTree: Registrar) => {
           }
 
           // remove any hover effects on the capture screenshot button
-          const screenshotButton = sidecarSelector(tab, '.sidecar-screenshot-button')
-          screenshotButton.classList.add('force-no-hover')
+          const screenshotButtons = tab.querySelectorAll('sidecar .sidecar-screenshot-button')
+          for (let idx = 0; idx < screenshotButtons.length; idx++) {
+            screenshotButtons[idx].classList.add('force-no-hover')
+          }
 
           // squish down the element to be copied, sizing it to fit
-          const doNotSquish = squish(tab, which, selector)
+          const doNotSquish = squish(tab, which, selector, parsedOptions)
 
           // which rectangle to snap; electron's rect schema differs
           // from the underlying dom's schema. sigh
@@ -281,7 +301,9 @@ export default async (commandTree: Registrar) => {
 
               if (!buf) {
                 // some sort of internal error in the main process
-                screenshotButton.classList.remove('force-no-hover')
+                for (let idx = 0; idx < screenshotButtons.length; idx++) {
+                  screenshotButtons[idx].classList.remove('force-no-hover')
+                }
                 return reject(new Error('Internal Error'))
               }
 
@@ -446,10 +468,12 @@ export default async (commandTree: Registrar) => {
 
               // undo any squishing
               if (!doNotSquish) {
-                unsquish(tab, which, selector)
+                unsquish(tab, which, selector, parsedOptions)
               }
 
-              screenshotButton.classList.remove('force-no-hover')
+              for (let idx = 0; idx < screenshotButtons.length; idx++) {
+                screenshotButtons[idx].classList.remove('force-no-hover')
+              }
               resolve(strings('Successfully captured a screenshot to the clipboard'))
             }
 
@@ -468,6 +492,6 @@ export default async (commandTree: Registrar) => {
           reject(new Error('Internal Error'))
         }
       }),
-    { usage, noAuthOk: true, incognito: ['popup'], requiresLocal: true }
+    { usage, incognito: ['popup'], requiresLocal: true }
   ) // currently screenshot does not support browser mode
 }

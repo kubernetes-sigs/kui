@@ -17,6 +17,8 @@
 import { CommandRegistrar } from './command'
 import { PrescanUsage } from '../plugins/prescan'
 import { MetadataBearing } from '../models/entity'
+import { MultiModalResponse } from '../models/mmr/types'
+import KuiComponentProivder from '../webapp/component/provider'
 import { BadgeRegistration } from '../webapp/views/registrar/badges'
 import { ModeRegistration } from '../webapp/views/registrar/modes'
 import { StatusStripeContribution, Fragment as StatusStripeFragment } from '../webapp/status-stripe'
@@ -39,6 +41,9 @@ export interface PreloadRegistrar extends CommandRegistrar {
 
   /** status stripe meter */
   registerMeter<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void>
+
+  /** components */
+  registerComponent<Entity extends MultiModalResponse>(provider: KuiComponentProivder<Entity>): void
 }
 
 export type PreloadRegistration = (registrar: PreloadRegistrar) => Promise<void | void[]>
