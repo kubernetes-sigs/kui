@@ -25,8 +25,10 @@ import { PrescanModel } from './prescan'
 import { Tab } from '../webapp/tab'
 import { mainPath, webpackPath } from './path'
 import { isHeadless } from '../core/capabilities'
-import { MetadataBearing } from '../models/entity'
+import { Entity, MetadataBearing } from '../models/entity'
 import { ImplForPlugins } from '../core/command-tree'
+import registerComponent from '../webapp/component/registrar'
+import KuiComponentProivder from '../webapp/component/provider'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
 import { registerSidecarMode as registerMode, ModeRegistration } from '../webapp/views/registrar/modes'
 import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
@@ -108,6 +110,11 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
 
     // disabled for now: https://github.com/IBM/kui/issues/3503
     // setTimeout(contrib.listener, updateFrequency)
+  }
+
+  /** components */
+  public registerComponent<T extends Entity>(provider: KuiComponentProivder<T>): void {
+    registerComponent(provider)
   }
 }
 

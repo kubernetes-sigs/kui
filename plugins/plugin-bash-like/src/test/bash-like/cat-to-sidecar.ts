@@ -26,10 +26,6 @@ import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
 const input = join(ROOT, 'tests/data/small.json')
 
-/** metadata to expect */
-const name = 'couchbase-operator.v1.1.0'
-const ns = 'openshift-operators'
-
 describe('cat json to sidecar', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -38,7 +34,7 @@ describe('cat json to sidecar', function(this: Common.ISuite) {
     CLI.command(`cat "${input}"`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(name, undefined, undefined, ns))
+      .then(SidecarExpect.showing('small.json'))
       .catch(Common.oops(this))
   )
 
@@ -46,7 +42,7 @@ describe('cat json to sidecar', function(this: Common.ISuite) {
     CLI.command(`cat "${input}" | jq`, this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(name, undefined, undefined, ns))
+      .then(SidecarExpect.showing('small.json'))
       .catch(Common.oops(this))
   )
 })
