@@ -149,7 +149,7 @@ if (CompressionPlugin) {
  * Convenience function that makes a regexp out of a path; this helps with avoiding windows path.sep issues
  */
 function thisPath(aPath /* : string */) {
-  return new RegExp(path.join(aPath))
+  return new RegExp(aPath.replace(/\//g, '\\' + path.sep))
 }
 
 /**
