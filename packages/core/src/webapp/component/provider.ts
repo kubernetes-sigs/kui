@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Tab } from '../cli'
+import { Tab } from '../tab'
+import REPL from '../../models/repl'
+import { Entity } from '../../models/entity'
 
-/**
- * Select a given element in the currently visible sidecar
- *
- */
-export default (tab: Tab, subselect = ''): HTMLElement => tab.querySelector(`sidecar ${subselect}`)
+import KuiComponent from './component'
+
+export default interface KuiComponentProvider<T extends Entity> {
+  when: (entity: T) => boolean
+  render: (entity: T, tab: Tab, repl: REPL, command?: string) => KuiComponent | Promise<KuiComponent>
+}

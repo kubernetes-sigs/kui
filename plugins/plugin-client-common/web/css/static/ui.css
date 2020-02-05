@@ -1389,6 +1389,7 @@ code.fancy-code.hljs {
   display: grid;
   grid-column-gap: 0.375em;
   grid-template-columns: repeat(auto-fill, minmax(10em, auto));
+  grid-template-rows: repeat(auto-fill, minmax(1.25em, auto));
   flex: 1;
 }
 .grid-layout > div {

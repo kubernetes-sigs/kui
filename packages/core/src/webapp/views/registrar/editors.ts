@@ -15,14 +15,14 @@
  */
 
 import { Tab } from '../../tab'
-import { CustomSpec } from '../sidecar-core'
 import Presentation from '../presentation'
+import { MetadataBearingWithContent, MetadataBearingByReferenceWithContent } from '../../../models/entity'
 import { ExecOptions } from '../../../models/execOptions'
 
 export interface EditorProvider {
   tryOpen: (
     tab: Tab,
-    spec: CustomSpec,
+    spec: MetadataBearingWithContent | MetadataBearingByReferenceWithContent,
     options: ExecOptions
   ) => Promise<{ content: Element; presentation: Presentation }>
 }
@@ -52,6 +52,10 @@ export function hasEditor() {
  * to the given modes model
  *
  */
-export function tryOpenWithEditor(tab: Tab, spec: CustomSpec, options: ExecOptions) {
+export function tryOpenWithEditor(
+  tab: Tab,
+  spec: MetadataBearingWithContent | MetadataBearingByReferenceWithContent,
+  options: ExecOptions
+) {
   return primaryProvider.tryOpen(tab, spec, options)
 }
