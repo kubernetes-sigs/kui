@@ -19,7 +19,7 @@
  *
  */
 
-import { CustomSpec } from './sidecar-core'
+/* import { CustomSpec } from './sidecar-core'
 
 import { isMultiModalResponse } from '../../models/mmr/is'
 import { MetadataBearing, isMetadataBearing, Entity } from '../../models/entity'
@@ -33,3 +33,4 @@ export function isCustomSpec(entity: MetadataBearing | CustomSpec | Entity): ent
       (custom.kind !== undefined && custom.content !== undefined && isMetadataBearing(custom)))
   )
 }
+*/

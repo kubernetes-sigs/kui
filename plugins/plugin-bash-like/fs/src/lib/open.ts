@@ -17,10 +17,9 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { isHeadless, findFile, expandHomeDir, i18n, Arguments, Registrar, KResponse } from '@kui-shell/core'
+import { MultiModalMode as Mode, findFile, expandHomeDir, i18n, Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import { FStat } from './fstat'
-import markdownify from './markdown'
 import { localFilepath } from './usage-helpers'
 
 const strings = i18n('plugin-bash-like')
@@ -30,7 +29,7 @@ const debug = Debug('plugins/bash-like/cmds/open')
  * Decide how to display a given filepath
  *
  */
-async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<KResponse> {
+async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
@@ -80,32 +79,40 @@ async function open({ tab, argvNoOptions, REPL }: Arguments): Promise<KResponse>
     } else {
       const enclosingDirectory = dirname(filepath)
 
-      let data: string | Element = stats.data
-      let name = basename(filepath)
-      let packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
+      const data: string | Element = stats.data
+      const name = basename(filepath)
+      const packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
-      if ((suffix === 'adoc' || suffix === 'md') && !isHeadless()) {
-        const { title, body } = await markdownify(tab, suffix, data, fullpath)
-
-        data = body
-
-        if (title) {
-          // use the first <h1> as the sidecar title
-          // and use the filename as the "packageName" subtitle
-          packageName = name
-          name = title.innerText
-        }
-      }
+      const mode: Mode =
+        typeof data === 'string'
+          ? {
+              mode: 'view',
+              label: strings('View'),
+              contentType:
+                suffix === 'sh'
+                  ? 'shell'
+                  : suffix === 'md'
+                  ? 'text/markdown'
+                  : suffix === 'html'
+                  ? 'text/html'
+                  : suffix === 'yaml' || suffix === 'json'
+                  ? suffix
+                  : 'text/plain',
+              content: data
+            }
+          : {
+              mode: 'view',
+              label: strings('View'),
+              content: data
+            }
 
       return {
-        type: 'custom',
         kind: 'file',
         metadata: {
           name,
           namespace: packageName
         },
-        contentType: suffix === 'sh' ? 'shell' : suffix,
-        content: data
+        modes: [mode]
       }
     }
   }
