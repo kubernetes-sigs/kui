@@ -18,11 +18,9 @@ import * as prettyPrintDuration from 'pretty-ms'
 import { tableStyle } from '@kui-shell/client/config.d/style.json'
 
 import { Tab } from '../tab'
-import { isPopup } from '../popup-core'
 import { Block } from '../models/block'
 import { isMostRecentBlock } from '../block'
 import { getCurrentPrompt } from '../prompt'
-import { isMetadataBearing } from '../../models/entity'
 import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
 import { isWatchable, Watchable } from '../../core/jobs/watchable'
 
@@ -276,12 +274,14 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     // the provider has told us the entity name is not clickable
     entityNameClickable.classList.remove('clickable')
   } else {
-    if (isPopup() || options.usePip) {
+    /* if (isPopup() || options.usePip) {
       entityNameClickable.onclick = async (evt: MouseEvent) => {
         const { drilldown } = await import('../picture-in-picture')
         return drilldown(tab, entity.onclick, undefined, undefined, 'previous view')(evt)
       }
-    } else if (typeof entity.onclick === 'string') {
+    } else */ if (
+      typeof entity.onclick === 'string'
+    ) {
       entityNameClickable.onclick = async () => {
         if (!entity.onclickExec || entity.onclickExec === 'pexec') {
           const { pexec } = await import('../../repl/exec')
@@ -291,11 +291,11 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
           qexec(entity.onclick, undefined, undefined, { tab })
         }
       }
-    } else if (isMetadataBearing(entity.onclick)) {
+      /* } else if (isMetadataBearing(entity.onclick)) {
       entityNameClickable.onclick = async () => {
         const { show } = await import('../../models/mmr/show')
         return show(tab, entity.onclick)
-      }
+      } */
     } else {
       entityNameClickable.onclick = entity.onclick
     }
@@ -414,10 +414,12 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
       inner.classList.add('clickable')
       inner.onclick = async (evt: MouseEvent) => {
         evt.stopPropagation() // don't trickle up to the row click handler
-        if (isPopup() || options.usePip) {
+        /* if (isPopup() || options.usePip) {
           const { drilldown } = await import('../picture-in-picture')
           return drilldown(tab, onclick, undefined, '.custom-content .padding-content', 'previous view')(evt)
-        } else if (typeof onclick === 'string') {
+        } else */ if (
+          typeof onclick === 'string'
+        ) {
           // TODO: define types here carefully
           const { pexec } = await import('../../repl/exec')
           pexec(onclick, { tab })

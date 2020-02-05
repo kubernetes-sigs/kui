@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { Tab } from '../tab'
-import { isPopup } from '../popup-core'
-import Presentation from './presentation'
-import { setMaximization, remove } from './sidecar-visibility'
+import { Presentation, isPopup, Tab } from '@kui-shell/core'
+import { setMaximization, remove } from './visibility'
 
 export default (tab: Tab, presentation?: Presentation) => {
   if (presentation || presentation === Presentation.Default) {

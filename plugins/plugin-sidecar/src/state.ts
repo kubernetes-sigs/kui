@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Tab } from '../tab'
-import { getSidecar } from './sidecar-core'
+import { Tab } from '@kui-shell/core'
+import { getSidecar } from './sidecar'
 
 /**
  * View State of the sidecar of a tab

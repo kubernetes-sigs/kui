@@ -17,7 +17,8 @@
 import { Tab } from '../../webapp/tab'
 import { Content } from './content-types'
 import { MetadataBearing } from '../entity'
-import { SelectionController, SidecarMode } from '../../webapp/bottom-stripe'
+import Presentation from '../../webapp/views/presentation'
+// import { SelectionController } from '../../webapp/bottom-stripe'
 
 /**
  * A `MultiModalResponse` has all the fields of a class of `Resource`
@@ -60,7 +61,11 @@ interface View<Resource extends MetadataBearing> {
    *
    */
   defaultMode?: string
+
+  presentation?: Presentation
 }
+
+export type ModeOrButton<T = MetadataBearing> = Mode<T> | Button<T>
 
 /**
  * A `Mode` is a `Label` plus some `Content` and `ModeTraits`
@@ -112,7 +117,7 @@ export function isViewButton<T = MetadataBearing>(button: Button<T>): button is 
 
 export type Button<T = MetadataBearing> = DrilldownButton<T> | ViewButton<T>
 
-export function isButton<T extends MetadataBearing>(mode: Button<T> | Content<T> | SidecarMode): mode is Button<T> {
+export function isButton<T extends MetadataBearing>(mode: Button<T> | Content<T> | Mode<T>): mode is Button<T> {
   const button = mode as Button
   return button !== undefined && (button.kind === 'drilldown' || button.kind === 'view') && button.command !== undefined
 }
@@ -139,5 +144,5 @@ export interface Label {
 export interface VisibilityTraits {
   visibleWhen?: string
   selected?: boolean
-  selectionController?: SelectionController
+  // selectionController?: SelectionController
 }

@@ -27,11 +27,11 @@ import {
   KeyCodes,
   Tab,
   injectCSS,
-  getCurrentPrompt,
+  getCurrentPrompt
 
   // TODO deprecated:
-  isSidecarVisible,
-  sidecarSelector
+  // isSidecarVisible,
+  // sidecarSelector
 } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
@@ -89,7 +89,7 @@ const round = Math.round
 const selectors = {
   full: 'body', // everything
   default: 'body > .page', // everything but header
-  sidecar: (tab: Tab) => sidecarSelector(tab), // entire sidecar region
+  sidecar: (tab: Tab) => tab.querySelector('sidecar'), // entire sidecar region
   repl: (tab: Tab) => tab.querySelector('.repl'), // entire REPL region
   nth: (tab: Tab, n: number) => tab.querySelector(`.repl .repl-block:nth-child(${n}) .repl-output`),
   'last-full': (tab: Tab) => tab.querySelector('.repl .repl-block:nth-last-child(2)'), // this will include the 'ok' part
@@ -232,9 +232,9 @@ export default async (commandTree: Registrar) => {
           } else if (!selector) {
             // either we couldn't find the area to
             return reject(new UsageError({ usage }))
-          } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
+            /* } else if (which === 'sidecar' && !isSidecarVisible(tab)) {
             // sanity check the sidecar option
-            return reject(new Error(strings('screenshotSidecarNotOpen')))
+            return reject(new Error(strings('screenshotSidecarNotOpen'))) */
           } else if (which === 'nth') {
             if (N === undefined) {
               return reject(new Error('You must provide a numeric value for the "nth" argument'))
@@ -249,7 +249,7 @@ export default async (commandTree: Registrar) => {
           }
 
           // remove any hover effects on the capture screenshot button
-          const screenshotButton = sidecarSelector(tab, '.sidecar-screenshot-button')
+          const screenshotButton = tab.querySelector('sidecar .sidecar-screenshot-button')
           screenshotButton.classList.add('force-no-hover')
 
           // squish down the element to be copied, sizing it to fit

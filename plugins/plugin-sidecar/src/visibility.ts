@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { getSidecar, Sidecar, CustomSpec } from './sidecar-core'
+import {
+  eventBus,
+  ResourceWithMetadata as MetadataBearing,
+  isResourceWithMetadata as isMetadataBearing,
+  KResponse as Entity,
+  scrollIntoView,
+  Presentation,
+  Tab,
+  getTabFromTarget
+} from '@kui-shell/core'
 
-import { Tab, getTabFromTarget } from '../tab'
-import Presentation from './presentation'
-import { scrollIntoView } from '../scroll'
-
-import { MetadataBearing } from '../../models/entity'
-
-import eventBus from '../../core/events'
+import { getSidecar, Sidecar } from './sidecar'
 
 export const enableTabIndex = (sidecar: Sidecar, tabbable = true) => {
   const notabElements = document.querySelectorAll('.kui--notab-when-sidecar-hidden')
@@ -63,7 +66,7 @@ const setVisible = (sidecar: Sidecar) => {
   setTimeout(() => eventBus.emit('/sidecar/toggle', { sidecar, tab }), 0)
 }
 
-export const currentSelection = (tab: Tab): MetadataBearing | CustomSpec => {
+export const currentSelection = (tab: Tab): MetadataBearing => {
   const sidecar = getSidecar(tab)
   return sidecar && sidecar.entity
 }
@@ -75,8 +78,9 @@ export const show = async (tab: Tab, block?: HTMLElement, nextBlock?: HTMLElemen
     enableTabIndex(sidecar)
     return true
   } else if (block && nextBlock) {
-    const { oops } = await import('../oops')
-    oops(undefined, block, nextBlock)(new Error('You have no entity to show'))
+    // const { oops } = await import('../oops')
+    // oops(undefined, block, nextBlock)(new Error('You have no entity to show'))
+    console.error('You have no entity to show')
   }
 }
 
@@ -176,4 +180,18 @@ export const toggleMaximization = (tab: Tab, cause?: MaximizationCause) => {
  */
 export const isFullscreen = (tab: Tab) => {
   return tab.classList.contains('sidecar-full-screen')
+}
+
+export const maybeHideEntity = (tab: Tab, sidecar: Sidecar, entity: Entity): boolean => {
+  const entityMatchesSelection =
+    sidecar.entity &&
+    isMetadataBearing(entity) &&
+    isMetadataBearing(sidecar.entity) &&
+    sidecar.entity.metadata.name === entity.metadata.name &&
+    sidecar.entity.metadata.namespace === entity.metadata.namespace
+
+  if (entityMatchesSelection) {
+    clearSelection(tab)
+    return true
+  }
 }

@@ -178,17 +178,6 @@ class InProcessExecutor implements Executor {
 
     // maybe execOptions has been attached to the prompt dom (e.g. see repl.partial)
     if (!execOptions) execOptions = prompt.execOptions
-    if (execOptions && execOptions.pip) {
-      const { container, returnTo } = execOptions.pip
-      try {
-        const { drilldown } = await import('../webapp/picture-in-picture') // FIXME
-        await drilldown(tab, commandUntrimmed, undefined, document.querySelector(container), returnTo)()
-        return
-      } catch (err) {
-        console.error(err as Error)
-        // fall through to normal execution, if pip fails
-      }
-    }
 
     // clone the current block so that we have one for the next
     // prompt, when we're done evaluating the current command
@@ -373,8 +362,6 @@ class InProcessExecutor implements Executor {
               consumesPositional && (parsedOptions[unflag(name)] || parsedOptions[unflag(alias)])
           )
           const optional = builtInOptions.concat(_optional).concat(optLikeOneOfs)
-          const positionalOptionals = optional.filter(({ positional }) => positional)
-          const nPositionalOptionals = positionalOptionals.length
 
           // just introducing a shorter variable name, here
           const args = argvNoOptions
@@ -495,61 +482,6 @@ class InProcessExecutor implements Executor {
           //
           if (!onlyEnforceOptions && nActualArgs !== nRequiredArgs) {
             // it's ok if we have nActualArgs in the range [nRequiredArgs, nRequiredArgs + nPositionalOptionals]
-            if (!(nActualArgs >= nRequiredArgs && nActualArgs <= nRequiredArgs + nPositionalOptionals)) {
-              // yup, scan for implicitOK
-              const implicitIdx = required.findIndex(({ implicitOK }) => implicitOK !== undefined)
-              const { currentSelection } = await import('../webapp/views/sidecar-visibility') // FIXME
-              const selection = currentSelection(tab)
-
-              let nActualArgsWithImplicit = nActualArgs
-
-              if (implicitIdx >= 0 && selection && required[implicitIdx].implicitOK.find(_ => _ === selection.kind)) {
-                nActualArgsWithImplicit++
-
-                // if implicit, maybe other required parameters aren't needed
-                const notNeededIfImplicit = required.filter(({ notNeededIfImplicit }) => notNeededIfImplicit)
-                nActualArgsWithImplicit += notNeededIfImplicit.length
-              }
-
-              if (nActualArgsWithImplicit !== nRequiredArgs) {
-                // then either the command didn't specify
-                // implicitOK, or the current selection
-                // (or lack thereof) didn't match with the
-                // command's typing requirement
-                const message =
-                  nRequiredArgs === 0 && nPositionalOptionals === 0
-                    ? 'This command accepts no positional arguments'
-                    : nPositionalOptionals > 0
-                    ? 'This command does not accept this number of arguments'
-                    : `This command requires ${nRequiredArgs} parameter${
-                        nRequiredArgs === 1 ? '' : 's'
-                      }, but you provided ${nActualArgsWithImplicit === 0 ? 'none' : nActualArgsWithImplicit}`
-                const err = new UsageError({ message, usage })
-                err.code = 497
-                debug(message, cmd, nActualArgs, nRequiredArgs, args, optLikeActuals)
-
-                if (execOptions && execOptions.nested) {
-                  debug('returning usage error')
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  return (err as any) as T
-                } else {
-                  debug('broadcasting usage error')
-                  oops(command, block, nextBlock)(err)
-                  return
-                }
-              } else {
-                debug('repl selection', selection)
-                // splice in the implicit parameter
-                args.splice(
-                  implicitIdx,
-                  cmdArgsStart + 1,
-                  selection.metadata.namespace
-                    ? `/${selection.metadata.namespace}/${selection.metadata.name}`
-                    : selection.metadata.name
-                )
-                debug('spliced in implicit argument', cmdArgsStart, implicitIdx, args)
-              }
-            }
           }
         } /* strict usage model conformance checking */
 
@@ -646,10 +578,7 @@ class InProcessExecutor implements Executor {
             }
 
             if (isResourceModification(response) && response.verb === 'delete') {
-              const { maybeHideEntity } = await import('../webapp/views/sidecar') // FIXME
-              if (maybeHideEntity(tab, response) && nextBlock) {
-                // cli.setContextUI(commandTree.currentContext(), nextBlock)
-              }
+              eventBus.emit('/resource/deleted', response)
             }
 
             if (UsageError.isUsageError(response)) {
@@ -900,10 +829,11 @@ export const pexec = <T extends KResponse>(command: string, execOptions?: ExecOp
  * Execute a command in response to an in-view click
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const click = async (command: string | (() => Promise<string>), evt: MouseEvent): Promise<void> => {
-  const { drilldown } = await import('../webapp/picture-in-picture')
-  const tab = getTabFromTarget(evt.currentTarget)
-  await drilldown(tab, command)(evt)
+  // const { drilldown } = await import('../webapp/picture-in-picture')
+  // const tab = getTabFromTarget(evt.currentTarget)
+  // await drilldown(tab, command)(evt)
 }
 
 /**

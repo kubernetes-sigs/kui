@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { keys } from './keys'
+// import { keys } from './keys'
 import { paste } from './paste'
 import { listen } from './listen'
 import { getCurrentTab } from './tab'
-import { isPopup } from './popup-core'
+// import { isPopup } from './popup-core'
 import { getInitialBlock } from './block'
 import { installContext, getCurrentPrompt, getInitialPrompt } from './prompt'
 
-import { inElectron } from '../core/capabilities'
+// import { inElectron } from '../core/capabilities'
 import { inBottomInputMode } from '../core/settings'
 
 export default async () => {
@@ -31,7 +31,7 @@ export default async () => {
   listen(getInitialPrompt(tab))
 
   // in popup mode, cmd/ctrl+L should focus the repl input
-  if (isPopup()) {
+  /* if (isPopup()) {
     document.body.addEventListener('keydown', async (event: KeyboardEvent) => {
       const char = event.keyCode
       if (char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) {
@@ -41,7 +41,7 @@ export default async () => {
         input.setSelectionRange(0, input.value.length)
       }
     })
-  }
+  } */
 
   if (inBottomInputMode) {
     getCurrentPrompt(tab).onpaste = paste

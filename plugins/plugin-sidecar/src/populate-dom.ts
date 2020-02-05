@@ -15,74 +15,56 @@
  */
 
 import Debug from 'debug'
-const debug = Debug('webapp/views/sidecar')
-debug('loading')
-
 import * as Marked from 'marked'
 
-import { Sidecar, getSidecar, CustomSpec, CustomContent } from './sidecar-core'
-export { Sidecar, getSidecar, CustomSpec, CustomContent }
+import presentAs from './present-as'
+import { Sidecar, getSidecar } from './sidecar'
 
-import presentAs from './sidecar-present'
-
-import { isCustomSpec } from './custom-content'
-
-import { BadgeSpec, Badge, BadgeOptions, getBadgesDomContainer, addBadge, clearBadges, hasBadge } from './badge'
-export { BadgeSpec, Badge, BadgeOptions }
-
-import { isPopup } from '../popup-core'
-import { Tab, getTabFromTarget } from '../tab'
-
-import { clearSelection, setVisibleClass, setMaximization, enableTabIndex, isFullscreen } from './sidecar-visibility'
-
-import eventBus from '../../core/events'
-import { element, removeAllDomChildren } from '../util/dom'
-import { prettyPrintTime } from '../util/time'
-import { addModeButtons } from '../bottom-stripe'
-import { ShowOptions } from './show-options'
-import Formattable from './formattable'
-import { ToolbarText, ToolbarTextImpl, isToolbarText, isRefreshableToolbarText } from './toolbar-text'
-import Presentation from './presentation'
 import {
-  MetadataBearing,
-  isMetadataBearing,
+  BadgeOptions,
+  getBadgesDomContainer,
+  addBadge,
+  clearBadges,
+  hasBadge,
+  apply as addRelevantBadges
+} from './badge'
+
+import {
+  isHTML,
+  ResourceWithMetadataWithContent,
+  ResourceByReferenceWithContent,
+  MultiModalResponse,
+  hasEditor,
+  tryOpenWithEditor,
+  isPromise,
+  ResourceByReference as MetadataBearingByReference,
+  isResourceByReference as isMetadataBearingByReference,
   hasDisplayName,
-  MetadataBearingByReference,
-  isMetadataBearingByReference,
-  Entity
-} from '../../models/entity'
-import { ExecOptions } from '../../models/execOptions'
-import { apply as addRelevantBadges } from './registrar/badges'
-import { hasEditor, tryOpenWithEditor } from './registrar/editors'
-import { isPromise } from '../../util/types'
+  isResourceWithMetadata as isMetadataBearing,
+  ResourceWithMetadata as MetadataBearing,
+  ToolbarText,
+  empty as removeAllDomChildren,
+  prettyPrintTime,
+  ExecOptions,
+  Presentation,
+  eventBus,
+  Tab,
+  getTabFromTarget,
+  isPopup
+} from '@kui-shell/core'
 
-/** @deprecated */
-export { MetadataBearingByReference }
-export { isMetadataBearingByReference }
+import { ShowOptions } from './show-options'
+import { addModeButtons } from './bottom-stripe'
+import { setVisibleClass, setMaximization, enableTabIndex, isFullscreen } from './visibility'
 
-debug('finished loading modules')
+const debug = Debug('webapp/views/sidecar')
+
+type Formattable = string | Promise<string> | HTMLElement | Promise<HTMLElement>
 
 /** cheapo uuid; we only need single-threaded uniqueness */
 let _uuidCounter = 1
 function uuid() {
   return (_uuidCounter++).toString()
-}
-
-export const maybeHideEntity = (tab: Tab, entity: Entity): boolean => {
-  const sidecar = getSidecar(tab)
-
-  const entityMatchesSelection =
-    sidecar.entity &&
-    isMetadataBearing(entity) &&
-    isMetadataBearing(sidecar.entity) &&
-    sidecar.entity.metadata.name === entity.metadata.name &&
-    sidecar.entity.metadata.namespace === entity.metadata.namespace
-
-  debug('maybeHideEntity', entityMatchesSelection, entity, sidecar.entity)
-  if (entityMatchesSelection) {
-    clearSelection(tab)
-    return true
-  }
 }
 
 /**
@@ -97,34 +79,28 @@ export const getActiveView = (tab: Tab) => {
   return container
 }
 
-function isHTML(content: CustomContent): content is HTMLElement {
-  return typeof content !== 'string' && (content as HTMLElement).nodeName !== undefined
-}
-
 /**
  * If the entity has a version attribute, then render it
  *
  */
 export const addVersionBadge = (
-  tab: Tab,
-  entity: MetadataBearing | CustomSpec,
+  sidecar: Sidecar,
+  entity: MetadataBearing | MetadataBearingByReference,
   { clear = false, badgesDom = undefined }: { clear?: boolean; badgesDom?: HTMLElement } = {}
 ) => {
-  if (hasBadge(tab, '.version')) {
+  if (hasBadge(sidecar, '.version')) {
     return
   }
 
   if (clear) {
-    clearBadges(tab)
+    clearBadges(sidecar)
   }
 
-  const version = isMetadataBearing(entity)
-    ? entity.metadata.generation
-    : isMetadataBearingByReference(entity)
+  const version = isMetadataBearingByReference(entity)
     ? entity.resource.metadata.generation
-    : undefined
+    : entity.metadata.generation
   if (version) {
-    addBadge(tab, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
+    addBadge(sidecar, /^v/.test(version) ? version : `v${version}`, { badgesDom }).classList.add('version')
   }
 }
 
@@ -134,7 +110,7 @@ export const addVersionBadge = (
  */
 export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement) => {
   debug('addSidecarHeaderIconText', viewName)
-  const iconDom = element('.sidecar-header-icon', sidecar)
+  const iconDom = sidecar.querySelector('.sidecar-header-icon') as HTMLElement
 
   if (viewName) {
     let iconText = viewName.replace(/s$/, '')
@@ -152,12 +128,9 @@ export const addSidecarHeaderIconText = (viewName: string, sidecar: HTMLElement)
 }
 
 /** format the creation time of a resource */
-const createdOn = (resource: MetadataBearing, entity: MetadataBearing | CustomSpec): HTMLElement => {
-  const startTime = /* resource.status && resource.status.startTime || */ resource.metadata.creationTimestamp
-  const prefixText =
-    /* resource.status && resource.status.startTime ? 'Started on ' : */ isCustomSpec(entity) && entity.createdOnString
-      ? `${entity.createdOnString} `
-      : 'Created on '
+const createdOn = (resource: MetadataBearing): HTMLElement => {
+  const startTime = resource.metadata.creationTimestamp
+  const prefixText = 'Created on '
 
   if (!startTime) {
     return
@@ -197,8 +170,7 @@ export const addNameToSidecarHeader = async (
   packageName = '',
   onclick?: () => void,
   viewName?: string,
-  subtext?: Formattable | ToolbarText,
-  entity?: MetadataBearing | MetadataBearingByReference | CustomSpec
+  entity?: MetadataBearing | MetadataBearingByReference
 ) => {
   debug('addNameToSidecarHeader', name, isMetadataBearingByReference(entity), entity)
 
@@ -220,29 +192,19 @@ export const addNameToSidecarHeader = async (
   }
 
   const header = sidecar.querySelector('.sidecar-header')
-  const footer = sidecar.querySelector('.sidecar-bottom-stripe')
+  const footer = sidecar.querySelector('.sidecar-bottom-stripe') as HTMLElement
   const nameDom = header.querySelector('.sidecar-header-name-content')
   nameDom.className = nameDom.getAttribute('data-base-class')
 
   if (packageName) {
-    element('.package-prefix', footer).innerText = packageName
+    ;(footer.querySelector('.package-prefix') as HTMLElement).innerText = packageName
   }
 
-  if (isCustomSpec(entity) && entity.isREPL) {
-    header.querySelector('.sidecar-header-text').classList.add('is-repl-like')
-  } else {
-    header.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
-  }
+  header.querySelector('.sidecar-header-text').classList.remove('is-repl-like')
 
   if (typeof name === 'string') {
-    if (isCustomSpec(entity) && entity.isREPL) {
-      /* const nameContainer = nameDom.querySelector('.sidecar-header-input') as HTMLInputElement
-      nameContainer.value = name
-      cli.listen(nameContainer) */
-    } else {
-      const nameContainer = element('.entity-name', nameDom)
-      nameContainer.innerText = name
-    }
+    const nameContainer = nameDom.querySelector('.entity-name') as HTMLElement
+    nameContainer.innerText = name
   } else if (name) {
     const nameContainer = nameDom.querySelector('.entity-name')
     removeAllDomChildren(nameContainer)
@@ -250,45 +212,45 @@ export const addNameToSidecarHeader = async (
   }
 
   if (onclick) {
-    const clickable = element('.entity-name', nameDom)
+    const clickable = nameDom.querySelector('.entity-name') as HTMLElement
     clickable.classList.add('clickable')
     clickable.onclick = onclick
   }
 
   if (isMetadataBearing(entity) && entity.onclick) {
     if (entity.onclick.name) {
-      const clickable = element('.entity-name', nameDom)
+      const clickable = nameDom.querySelector('.entity-name') as HTMLElement
       clickable.classList.add('clickable')
       clickable.onclick = () => {
         const tab = getEnclosingTab(sidecar)
         tab.REPL.pexec(entity.onclick.name, { tab })
       }
     } else {
-      const clickable = element('.entity-name', nameDom)
+      const clickable = nameDom.querySelector('.entity-name') as HTMLElement
       clickable.classList.remove('clickable')
       clickable.onclick = undefined
     }
     if (entity.onclick.namespace) {
-      const clickable = element('.sidecar-header-icon-wrapper .package-prefix', sidecar)
+      const clickable = sidecar.querySelector('.sidecar-header-icon-wrapper .package-prefix') as HTMLElement
       clickable.classList.add('clickable')
       clickable.onclick = () => {
         const tab = getEnclosingTab(sidecar)
         tab.REPL.pexec(entity.onclick.namespace, { tab })
       }
     } else {
-      const clickable = element('.sidecar-header-icon-wrapper .package-prefix', sidecar)
+      const clickable = sidecar.querySelector('.sidecar-header-icon-wrapper .package-prefix') as HTMLElement
       clickable.classList.remove('clickable')
       clickable.onclick = undefined
     }
     if (entity.onclick.nameHash) {
-      const clickable = element('.entity-name-hash', nameDom)
+      const clickable = nameDom.querySelector('.entity-name-hash') as HTMLElement
       clickable.classList.add('clickable')
       clickable.onclick = () => {
         const tab = getEnclosingTab(sidecar)
         tab.REPL.pexec(entity.onclick.nameHash, { tab })
       }
     } else {
-      const clickable = element('.entity-name-hash', nameDom)
+      const clickable = nameDom.querySelector('.entity-name-hash') as HTMLElement
       clickable.classList.remove('clickable')
       clickable.onclick = undefined
     }
@@ -296,54 +258,30 @@ export const addNameToSidecarHeader = async (
 
   addSidecarHeaderIconText(viewName, sidecar)
 
-  // if we weren't given a "subtext", and we find legitimate "created
-  // on" metadata, then show that as the subtext
-  if (!subtext && !entity.toolbarText && metadataBearer) {
-    const maybe = createdOn(metadataBearer, isCustomSpec(entity) && entity)
+  // if we weren't given a toolbarText, but we can infer a createdOn
+  // message, then show that as the toolbarText
+  if (!entity.toolbarText && metadataBearer) {
+    const maybe = createdOn(metadataBearer)
     if (maybe) {
-      subtext = maybe
-    }
-  }
-
-  if (subtext && !isToolbarText(subtext) && (isMetadataBearing(entity) || isCustomSpec(entity)) && entity.toolbarText) {
-    // both subtext and toolbarText?
-    const subtextContainer = sidecar.querySelector(
-      '.sidecar-header-secondary-content .custom-header-content'
-    ) as HTMLElement
-    removeAllDomChildren(subtextContainer)
-    Promise.resolve(subtext).then(subtext => {
-      if (typeof subtext === 'string') {
-        subtextContainer.innerText = subtext
-      } else {
-        subtextContainer.appendChild(subtext)
+      entity.toolbarText = {
+        type: 'info',
+        text: maybe
       }
-    })
+    }
   }
 
   // handle ToolbarText
-  const toolbarTextSpec = isToolbarText(subtext)
-    ? subtext
-    : (isMetadataBearing(entity) || isCustomSpec(entity)) &&
-      (entity.toolbarText || (isMetadataBearingByReference(entity) && entity.resource.toolbarText))
-  const toolbarTextContainer = element('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text', sidecar)
-  const toolbarTextContent = element('.sidecar-toolbar-text-content', toolbarTextContainer)
+  const toolbarTextSpec =
+    isMetadataBearing(entity) &&
+    (entity.toolbarText || (isMetadataBearingByReference(entity) && entity.resource.toolbarText))
+  const toolbarTextContainer = sidecar.querySelector('.sidecar-bottom-stripe-toolbar .sidecar-toolbar-text')
+  const toolbarTextContent = toolbarTextContainer.querySelector('.sidecar-toolbar-text-content') as HTMLElement
   removeAllDomChildren(toolbarTextContent)
   if (toolbarTextSpec) {
-    if (isRefreshableToolbarText(toolbarTextSpec)) {
+    /* if (isRefreshableToolbarText(toolbarTextSpec)) {
       toolbarTextSpec.attach(sidecar).refresh()
-    } else {
-      new ToolbarTextImpl(toolbarTextSpec.type, toolbarTextSpec.text).attach(sidecar).refresh()
-    }
-  } else if (subtext && !isToolbarText(subtext)) {
-    // handle "subtext", which is now treated as a special case of a
-    // ToolbarText where the type is 'info'
-    const text = await Promise.resolve(subtext)
-    toolbarTextContainer.setAttribute('data-type', 'info')
-    if (text instanceof Element) {
-      toolbarTextContent.appendChild(text)
-    } else {
-      toolbarTextContent.innerText = text
-    }
+    } else */
+    new ToolbarText(toolbarTextSpec.type, toolbarTextSpec.text).attach(sidecar).refresh()
   } else {
     toolbarTextContent.innerText = ''
     toolbarTextContainer.removeAttribute('data-type')
@@ -352,45 +290,50 @@ export const addNameToSidecarHeader = async (
   return nameDom
 }
 
-export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
-  if (!custom || custom.content === undefined) return
+export const showCustom = async (
+  tab: Tab,
+  _custom: MultiModalResponse | MetadataBearingByReference,
+  sidecar: Sidecar,
+  options?: ExecOptions,
+  resultDom?: Element
+) => {
+  if (!_custom || _custom.content === undefined) return
+
+  const custom: MultiModalResponse<ResourceWithMetadataWithContent> | ResourceByReferenceWithContent = _custom
   debug('showCustom', custom, options, resultDom)
 
-  const sidecar = getSidecar(tab)
   enableTabIndex(sidecar)
 
   // tell the current view that they're outta here
   if (sidecar.entity || sidecar.uuid) {
     eventBus.emit('/sidecar/replace', sidecar.uuid || sidecar.entity)
   }
-  sidecar.uuid = custom.uuid || uuid()
+  sidecar.uuid = /* custom.uuid || */ uuid()
 
-  const hashDom = element('.sidecar-header-name .entity-name-hash', sidecar)
+  const hashDom = sidecar.querySelector('.sidecar-header-name .entity-name-hash') as HTMLElement
   hashDom.innerText = ''
 
   // if the view hints that it wants to occupy the full screen and we
   // are not currenlty in fullscreen, OR if the view does not want to
   // occupy full screen and we *are*... in either case (this is an
   // XOR, does as best one can in NodeJS), toggle maximization
+  const _presentation = isMetadataBearingByReference(custom)
+    ? Presentation.Default
+    : custom.presentation || Presentation.Default
   const viewProviderDesiresFullscreen =
-    custom.presentation === Presentation.SidecarFullscreen ||
+    _presentation === Presentation.SidecarFullscreen ||
     (isPopup() &&
-      (custom.presentation === Presentation.SidecarFullscreenForPopups ||
-        custom.presentation === Presentation.FixedSize))
+      (_presentation === Presentation.SidecarFullscreenForPopups || _presentation === Presentation.FixedSize))
 
-  if (!custom.presentation && !isPopup()) {
+  if (!_presentation && !isPopup()) {
     presentAs(tab, Presentation.Default)
-  } else if (
-    custom.presentation ||
-    isPopup() ||
-    (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))
-  ) {
+  } else if (_presentation || isPopup() || (viewProviderDesiresFullscreen ? !isFullscreen(tab) : isFullscreen(tab))) {
     const presentation =
-      custom.presentation ||
+      _presentation ||
       (viewProviderDesiresFullscreen
         ? Presentation.SidecarFullscreenForPopups
-        : custom.presentation !== undefined
-        ? custom.presentation
+        : _presentation !== undefined
+        ? _presentation
         : Presentation.SidecarFullscreen)
     presentAs(tab, presentation)
 
@@ -402,57 +345,32 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     presentAs(tab, Presentation.Default)
   }
 
-  if (custom.controlHeaders === true) {
-    // plugin will control all headers
-  } else if (!custom.controlHeaders) {
-    // plugin will control no headers
-    const customHeaders = sidecar.querySelectorAll('.custom-header-content')
-    for (let idx = 0; idx < customHeaders.length; idx++) {
-      removeAllDomChildren(customHeaders[idx])
-    }
-  } else {
-    // plugin will control some headers; it tell us which it wants us to control
-    custom.controlHeaders.forEach((_: string) => {
-      const customHeaders = sidecar.querySelectorAll(`${_} .custom-header-content`)
-      for (let idx = 0; idx < customHeaders.length; idx++) {
-        removeAllDomChildren(customHeaders[idx])
-      }
-    })
+  const customHeaders = sidecar.querySelectorAll('.custom-header-content')
+  for (let idx = 0; idx < customHeaders.length; idx++) {
+    removeAllDomChildren(customHeaders[idx])
   }
 
   const customContent = sidecar.querySelector('.custom-content')
 
-  if (custom.noZoom) {
+  /* if (custom.noZoom) {
     // custom content will control the zoom handler, e.g. monaco-editor
     customContent.classList.remove('zoomable')
-  } else {
-    // revert the change if previous custom content controls the zoom handler
-    customContent.classList.add('zoomable')
-  }
+  } else */
+  // revert the change if previous custom content controls the zoom handler
+  customContent.classList.add('zoomable')
 
   // which viewer is currently active?
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 
   // add mode buttons, if requested
-  const modes = custom.modes
+  const modes = isMetadataBearingByReference(custom) ? [] : custom.modes
   if (!options || !options.leaveBottomStripeAlone) {
-    addModeButtons(tab, modes, custom, options)
+    addModeButtons(tab, modes, custom, sidecar, options)
     sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
   } else {
     sidecar.classList.add('custom-content')
   }
   setVisibleClass(sidecar)
-
-  if (custom.sidecarHeader === false) {
-    // view doesn't want a sidecar header
-    sidecar.classList.add('no-sidecar-header')
-  }
-
-  if (custom.displayOptions) {
-    custom.displayOptions.forEach(option => {
-      sidecar.classList.add(option.replace(/\s/g, '-'))
-    })
-  }
 
   const { badgesDom } = getBadgesDomContainer(sidecar)
 
@@ -465,11 +383,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
     } */
 
     const prettyName =
-      (isCustomSpec(custom) && custom.prettyName) ||
-      (custom.prettyName || entity.prettyName || isMetadataBearingByReference(custom)
-        ? custom.resource.prettyName
-        : undefined) ||
-      entity.metadata.name
+      (isMetadataBearingByReference(custom) ? custom.resource.prettyName : undefined) || entity.metadata.name
     const nameHash = entity.nameHash || custom.nameHash
     hashDom.innerText =
       (nameHash !== undefined
@@ -485,19 +399,11 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
       nameDom.removeAttribute('data-has-name-hash')
     }
 
-    addNameToSidecarHeader(
-      sidecar,
-      prettyName,
-      undefined,
-      undefined,
-      entity.kind,
-      isCustomSpec(entity) && entity.subtext,
-      entity
-    )
+    addNameToSidecarHeader(sidecar, prettyName, undefined, undefined, entity.kind, entity)
 
     // render badges
-    clearBadges(tab)
-    addVersion = () => addVersionBadge(tab, entity, { badgesDom })
+    clearBadges(sidecar)
+    addVersion = () => addVersionBadge(sidecar, entity, { badgesDom })
 
     /* if (custom.duration) {
       const duration = document.createElement('div')
@@ -508,26 +414,24 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   }
 
   // badges
-  if (custom && custom.badges) {
-    custom.badges.forEach(badge => addBadge(tab, badge, { badgesDom }))
+  const badgeOptions: BadgeOptions = {
+    badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
   }
-  if (isMetadataBearing(custom) || isMetadataBearingByReference(custom)) {
-    const badgeOptions: BadgeOptions = {
-      badgesDom: sidecar.querySelector('.sidecar-header .custom-header-content .badges')
-    }
-    addRelevantBadges(tab, isMetadataBearingByReference(custom) ? custom : { resource: custom }, badgeOptions)
-  }
+  addRelevantBadges(tab, sidecar, isMetadataBearingByReference(custom) ? custom : { resource: custom }, badgeOptions)
 
   if (addVersion) addVersion()
 
   const replView = tab.querySelector('.repl')
   replView.className = `sidecar-visible ${(replView.getAttribute('class') || '').replace(/sidecar-visible/g, '')}`
 
-  const container = resultDom || sidecar.querySelector('.custom-content')
+  const container = (resultDom || sidecar.querySelector('.custom-content')) as HTMLElement
   removeAllDomChildren(container)
 
   if (isPromise(custom.content)) {
-    container.appendChild(await custom.content)
+    const content = await custom.content
+    if (content !== undefined && isHTML(content)) {
+      container.appendChild(await content)
+    }
   } else if (custom.contentType) {
     // we were asked ot project out one specific field
     const projection = custom.content

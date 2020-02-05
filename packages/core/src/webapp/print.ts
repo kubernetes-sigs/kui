@@ -21,22 +21,25 @@ debug('loading')
 import { Tab } from './tab'
 import { Block } from './models/block'
 import { setStatus, Status } from './status'
-import { popupListen } from './listen'
-import { SidecarMode as Mode } from './bottom-stripe'
-import { isPopup } from './popup-core'
+// import { popupListen } from './listen'
+// import { ModeOrButton as Mode } from '../models/mmr/types'
+// import { isPopup } from './popup-core'
 import { scrollIntoView } from './scroll'
-import { renderPopupContent, createPopupContentContainer } from './popup'
-import { isCustomSpec } from './views/custom-content'
+// import { renderPopupContent, createPopupContentContainer } from './popup'
+// import { isCustomSpec } from './views/custom-content'
 
-import Presentation from './views/presentation'
-import presentAs from './views/sidecar-present'
+// import Presentation from './views/presentation'
+// import presentAs from './views/sidecar-present'
 
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
 
+import KuiFrame from './component/KuiFrame'
+import { findComponentProviders } from './component/registrar'
+
 import { isWatchable } from '../core/jobs/watchable'
 import { Streamable, Stream } from '../models/streamable'
-import { CommandHandlerWithEvents, ExecType, KResponse, ParsedOptions } from '../models/command'
+import { CommandHandlerWithEvents, KResponse, ParsedOptions } from '../models/command'
 import { Table, isTable } from './models/table'
 import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
@@ -45,8 +48,7 @@ import {
   isResourceModification,
   isMessageBearingEntity,
   MixedResponsePart,
-  isMixedResponse,
-  isMetadataBearing
+  isMixedResponse
 } from '../models/entity'
 
 import UsageError from '../core/usage-error'
@@ -112,9 +114,9 @@ export const streamTo = (tab: Tab, block: Block): Stream => {
         wrapper.classList.add('repl-result')
         resultDom.appendChild(wrapper)
         await printTable(tab, response, wrapper, block)
-      } else if (isCustomSpec(response)) {
+        /* } else if (isCustomSpec(response)) {
         const { showCustom } = await import('./views/sidecar')
-        showCustom(tab, response, {})
+        showCustom(tab, response, {}) */
       } else {
         previousLine = document.createElement('pre')
         previousLine.classList.add('streaming-output', 'repl-result-like')
@@ -213,18 +215,18 @@ export const printResults = (
   debug('printResults', response)
 
   // does the command handler want to be incognito in the UI?
-  const incognitoHint = evaluator && evaluator.options && evaluator.options.incognito && evaluator.options.incognito
-  const incognito = incognitoHint && isPopup() && incognitoHint.indexOf('popup') >= 0
+  // const incognitoHint = evaluator && evaluator.options && evaluator.options.incognito && evaluator.options.incognito
+  // const incognito = incognitoHint && isPopup() && incognitoHint.indexOf('popup') >= 0
 
-  const presentation = isCustomSpec(response) && response.presentation
+  // const presentation: Presentation = undefined // isCustomSpec(response) && response.presentation
 
-  let customContainer: HTMLElement
-  if (isPopup() && !incognito) {
+  // let customContainer: HTMLElement
+  /* if (isPopup() && !incognito) {
     resultDom = customContainer = createPopupContentContainer(
       ['valid-response'],
       presentation || (!Array.isArray(response) && Presentation.SidecarFullscreenForPopups)
     )
-  }
+  } */
 
   if (process.env.KUI_TEE_TO_FILE) {
     // we were asked to tee the output to the system console
@@ -255,27 +257,6 @@ export const printResults = (
           ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
           ok(resultDom.parentElement).classList.add('ok-for-list')
         }
-      } else if (isCustomSpec(response)) {
-        const echoOk = echo || (execOptions && execOptions.replSilence)
-        if (echoOk || (execOptions && execOptions.type === ExecType.ClickHandler)) {
-          const { showCustom } = await import('./views/sidecar')
-          await showCustom(
-            tab,
-            response,
-            isPopup() ? Object.assign({}, execOptions, { leaveBottomStripeAlone: true }) : execOptions,
-            customContainer
-          )
-
-          if (echoOk && !isPopup()) {
-            ok(resultDom.parentElement)
-          }
-
-          /* if (typeof presentation !== undefined) {
-            response.presentation = presentation
-          } */
-
-          return !customContainer || customContainer.children.length === 0
-        }
       } else if (isResourceModification(response) && response.verb === 'delete') {
         if (echo) {
           // we want the 'ok:' part to appear even in popup mode
@@ -286,10 +267,20 @@ export const printResults = (
           }
         }
       } else if (isMultiModalResponse(response)) {
+        const providers = findComponentProviders(response)
+        if (providers.length === 0) {
+          console.error('no registered components', response)
+          // TODO report to user
+        } else {
+          providers.forEach(async _ => {
+            const component = await _.render(response, tab, tab.REPL)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const frame = new KuiFrame(component, tab)
+          })
+        }
+
         const echoOk = echo || (execOptions && execOptions.replSilence)
-        const { show: showMultiModalResponse } = await import('../models/mmr/show')
-        await showMultiModalResponse(tab, response)
-        if (echoOk && !isPopup()) {
+        if (echoOk /* && !isPopup() */) {
           ok(resultDom.parentElement)
         }
       } else if (isMixedResponse(response)) {
@@ -319,6 +310,8 @@ export const printResults = (
       }
     } else if (response) {
       if (echo) ok(resultDom.parentElement)
+    } else {
+      return false
     }
   }
 
@@ -330,9 +323,9 @@ export const printResults = (
   const promise = render(response, { echo, resultDom })
 
   if (isTable(response)) {
-    if (isPopup()) {
+    /* if (isPopup()) {
       presentAs(tab, Presentation.FixedSize)
-    }
+    } */
     // say "ok"
     if (echo) {
       promise.then(() => {
@@ -341,7 +334,7 @@ export const printResults = (
     }
   }
 
-  await promise.then(async (alreadyRendered: boolean) => {
+  /* await promise.then(async (alreadyRendered: boolean) => {
     if (
       isPopup() &&
       (Array.isArray(response) ||
@@ -397,8 +390,9 @@ export const printResults = (
         popupListen(undefined, command)
       }
     }
-  })
+  }) */
 
   // did we print something to the repl?
-  return !isCustomSpec(response)
+  // return !isCustomSpec(response)
+  return true
 }

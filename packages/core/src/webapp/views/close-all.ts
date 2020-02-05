@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Tab } from '../cli'
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-/**
- * Select a given element in the currently visible sidecar
- *
- */
-export default (tab: Tab, subselect = ''): HTMLElement => tab.querySelector(`sidecar ${subselect}`)
+import { Tab } from '../tab'
+import eventBus from '../../core/events'
+
+export default function(tab: Tab) {
+  eventBus.emit('/close/views/in/tab', tab)
+}

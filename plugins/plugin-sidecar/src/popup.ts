@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import Debug from 'debug'
 const debug = Debug('webapp/popup')
 debug('loading')
 
-import { getCurrentTab } from './tab'
-import { SidecarMode } from './bottom-stripe'
+import {
+  Badge,
+  Presentation,
+  Mode as ModeOrButton,
+  ExecOptions,
+  empty as removeAllDomChildren,
+  getCurrentTab
+} from '@kui-shell/core'
 
-import { removeAllDomChildren } from './util/dom'
-import { Badge } from './views/badge'
-import Presentation from './views/presentation'
-import Formattable from './views/formattable'
-import presentAs from './views/sidecar-present'
-import { CustomSpec } from './views/sidecar-core'
-
-import { ExecOptions } from '../models/execOptions'
+// import Formattable from './views/formattable'
+import presentAs from './present-as'
 
 export interface PopupEntity {
   prettyType?: string
-  modes?: SidecarMode[]
+  modes?: ModeOrButton[]
   badges?: Badge[]
   controlHeaders?: boolean | string[]
   presentation?: Presentation
-  subtext?: Formattable
+  // subtext?: Formattable
 }
 
 /**
@@ -61,7 +63,7 @@ export const renderPopupContent = async (
     !_prettyType || _prettyType === 'custom' ? process.env.KUI_DEFAULT_PRETTY_TYPE || command : _prettyType
   debug('renderPopupContent', command, entity, prettyType)
 
-  const { prettyPrintTime } = await import('./util/time')
+  const { prettyPrintTime } = await import('@kui-shell/core')
 
   // Last updated... text
   const subtext = document.createElement('div')
@@ -94,7 +96,7 @@ export const renderPopupContent = async (
       ;(container.parentNode.parentNode as HTMLElement).classList.add('overflow-auto')
     }
 
-    const custom: CustomSpec = {
+    const custom = {
       type: 'custom',
       metadata: {
         name: command
@@ -109,8 +111,8 @@ export const renderPopupContent = async (
       content: container.parentNode.parentNode // dom -> scrollRegion -> paddingContent
     }
 
-    const { showCustom } = await import('./views/sidecar')
-    showCustom(getCurrentTab(), Object.assign({}, custom, entity, { prettyType }), execOptions)
+    // const { showCustom } = await import('./sidecar')
+    // showCustom(getCurrentTab(), Object.assign({}, custom, entity, { prettyType }), execOptions)
   }
 }
 

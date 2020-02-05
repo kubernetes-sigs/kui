@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Table } from '../webapp/models/table'
-import { MultiModalResponse } from './mmr/types'
-import { SimpleEntity, MixedResponse } from './entity'
+import { Tab } from '../tab'
+import REPL from '../../models/repl'
+import { MultiModalResponse } from '../../models/mmr/types'
 
-export type Streamable = SimpleEntity | Table | MixedResponse | MultiModalResponse
-export default Streamable
+import KuiComponent from './component'
 
-export type Stream = (response: Streamable, killLine?: boolean) => Promise<void>
-
-export type StreamableFactory = () => Promise<Stream>
+export default interface KuiComponentProvider<Entity extends MultiModalResponse> {
+  when: (entity: Entity) => boolean
+  render: (entity: Entity, tab: Tab, repl: REPL) => KuiComponent | Promise<KuiComponent>
+}

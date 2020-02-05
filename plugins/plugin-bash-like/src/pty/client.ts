@@ -45,10 +45,11 @@ import {
   setPendingTextSelection,
   clearTextSelection,
   stripAnsi as stripClean,
+  MultiModalResponse
 
   // deprecated
-  SidecarState,
-  getSidecarState
+  //  SidecarState,
+  //  getSidecarState
 } from '@kui-shell/core'
 
 import * as ui from './ui'
@@ -68,7 +69,7 @@ const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
 interface Size {
   resizeGeneration: number
-  sidecarState: SidecarState
+  //  sidecarState: SidecarState
   rows: number
   cols: number
 }
@@ -82,7 +83,7 @@ function getCachedSize(tab: Tab): Size {
   const cachedSize: Size = tab['_kui_pty_cachedSize']
   if (
     cachedSize &&
-    cachedSize.sidecarState === getSidecarState(tab) &&
+    // cachedSize.sidecarState === getSidecarState(tab) &&
     cachedSize.resizeGeneration === resizeGeneration
   ) {
     return cachedSize
@@ -92,7 +93,7 @@ function setCachedSize(tab: Tab, { rows, cols }: { rows: number; cols: number })
   tab['_kui_pty_cachedSize'] = {
     rows,
     cols,
-    sidecarState: getSidecarState(tab),
+    // sidecarState: getSidecarState(tab),
     resizeGeneration
   }
 }
@@ -518,7 +519,7 @@ async function initOnMessage(
   cmdline: string,
   argvNoOptions: string[],
   execOptions: ExecOptions,
-  contentType: string,
+  contentType: 'yaml' | 'json',
   expectingSemiStructuredOutput: boolean,
   cleanUpTerminal: () => void,
   resolve: (val: boolean) => void,
@@ -804,18 +805,19 @@ async function initOnMessage(
               // degenerate case e.g. cat foo.json | jq .something.something => string rather than struct
               execOptions.stdout(resource)
             } else {
-              execOptions.stdout({
-                type: 'custom',
+              const mmr: MultiModalResponse = {
                 metadata: {
                   name: argvNoOptions[0] === 'cat' ? basename(argvNoOptions[1]) : argvNoOptions.slice(3).join(' '),
                   namespace: argvNoOptions[0] === 'cat' && dirname(argvNoOptions[1])
                 },
                 kind: argvNoOptions[0] === 'cat' ? contentType : argvNoOptions[2],
-                contentType,
-                content: stripClean(raw),
-                resource,
-                modes: [{ mode: 'raw', contentFrom: cmdline, defaultMode: true }]
-              })
+                // resource,
+                modes: [
+                  { mode: 'file', contentType, content: stripClean(raw) },
+                  { mode: 'raw', contentFrom: cmdline, defaultMode: true }
+                ]
+              }
+              execOptions.stdout(mmr)
             }
           } catch (err) {
             console.error('error parsing as semi structured output')
@@ -1254,7 +1256,7 @@ export const doExec = (
             cmdline,
             argvNoOptions,
             execOptions,
-            contentType,
+            contentType as 'json' | 'yaml',
             expectingSemiStructuredOutput,
             cleanUpTerminal,
             resolve,

@@ -42,9 +42,12 @@ export {
 } from './models/command'
 export { optionsToString as unparse } from './core/utility'
 export {
+  MetadataNamedResource,
   MixedResponse,
   RawResponse,
   ResourceModification,
+  MetadataBearingByReference as ResourceByReference,
+  MetadataBearingByReferenceWithContent as ResourceByReferenceWithContent,
   isMetadataBearingByReference as isResourceByReference
 } from './models/entity'
 export { isCommandHandlerWithEvents } from './models/command'
@@ -52,10 +55,10 @@ export { ExecOptions, withLanguage } from './models/execOptions'
 export { Streamable } from './models/streamable'
 
 /** @deprecated */
-export { CustomSpec as CustomResponse } from './webapp/views/sidecar-core'
+// export { CustomSpec as CustomResponse } from './webapp/views/sidecar-core'
 
 // Editor registration
-export { EditorProvider, registerEditor } from './webapp/views/registrar/editors'
+export { hasEditor, tryOpenWithEditor, EditorProvider, registerEditor } from './webapp/views/registrar/editors'
 
 // Errors
 export { CodedError } from './models/errors'
@@ -71,7 +74,12 @@ export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
 export { injectCSS, injectScript, loadHTML } from './webapp/util/inject'
 
 // models
-export { MetadataBearing as ResourceWithMetadata } from './models/entity'
+export {
+  hasDisplayName,
+  MetadataBearing as ResourceWithMetadata,
+  MetadataBearingWithContent as ResourceWithMetadataWithContent,
+  isMetadataBearing as isResourceWithMetadata
+} from './models/entity'
 export { Watchable, Watcher, WatchPusher } from './core/jobs/watchable'
 export { Abortable } from './core/jobs/job'
 import { Tab } from './webapp/tab'
@@ -94,18 +102,25 @@ export async function AsciiFormatters() {
 }
 
 // registrars
-export { SidecarMode as Mode } from './webapp/bottom-stripe'
+// export { SidecarMode as Mode } from './webapp/bottom-stripe'
 export {
   SidecarModeFilter as ModeFilter,
   ModeRegistration,
   registerModeWhen,
-  registerSidecarMode as registerMode
+  registerSidecarMode as registerMode,
+  apply as addRelevantModes
 } from './webapp/views/registrar/modes'
-export { BadgeRegistration, registerSidecarBadge as registerBadge } from './webapp/views/registrar/badges'
-export { Badge, BadgeSpec } from './webapp/views/badge'
+export {
+  Badge,
+  BadgeSpec,
+  BadgeRegistration,
+  registerSidecarBadge as registerBadge,
+  registrar as badgeRegistrar
+} from './webapp/views/registrar/badges'
 export { PluginRegistration, PreloadRegistration, PreloadRegistrar } from './models/plugin'
 
 // REPL utils
+export { default as REPL } from './models/repl'
 export { split, _split, Split } from './repl/split'
 export { ReplEval, DirectReplEval } from './repl/types'
 export { default as encodeComponent } from './repl/encode'
@@ -117,18 +132,20 @@ export {
 } from './repl/exec'
 
 // Selection
-export {
-  /** @deprecated */ isVisible as isSidecarVisible,
-  /** @deprecated */ isFullscreen as isSidecarFullscreen,
-  /** @deprecated */ hide as hideSidecar,
-  /** @deprecated */ show as showSidecar,
-  /** @deprecated */ toggleMaximization,
-  clearSelection,
-  currentSelection
-} from './webapp/views/sidecar-visibility'
-export { /** @deprecated */ SidecarState, /** @deprecated */ getSidecarState } from './webapp/views/sidecar-state'
-export { clearSelection as closeAllViews } from './webapp/views/sidecar-visibility'
-export { /** @deprecated */ default as sidecarSelector } from './webapp/views/sidecar-selector'
+// export {
+//  /** @deprecated */ isVisible as isSidecarVisible,
+//  /** @deprecated */ isFullscreen as isSidecarFullscreen,
+//  /** @deprecated */ hide as hideSidecar,
+//  /** @deprecated */ show as showSidecar,
+//  /** @deprecated */ toggleMaximization,
+//  clearSelection,
+//  currentSelection
+// } from './webapp/views/sidecar-visibility'
+// export { /** @deprecated */ SidecarState, /** @deprecated */ getSidecarState } from './webapp/views/sidecar-state'
+// export { clearSelection as closeAllViews } from './webapp/views/sidecar-visibility'
+// export { /** @deprecated */ default as sidecarSelector } from './webapp/views/sidecar-selector'
+
+export { default as closeAllViews } from './webapp/views/close-all'
 
 // Tabs
 export { Tab, getTabFromTarget, getCurrentTab, getTabId, sameTab } from './webapp/tab'
@@ -163,7 +180,25 @@ export { clearPendingTextSelection, setPendingTextSelection, clearTextSelection 
 export { isPopup } from './webapp/popup-core'
 export { removeAllDomChildren as empty } from './webapp/util/dom'
 export { default as Presentation } from './webapp/views/presentation'
-export { Button, Mode as MultiModalMode, MultiModalResponse } from './models/mmr/types'
+export {
+  ModeOrButton as Mode,
+  Button,
+  isButton,
+  isViewButton,
+  Mode as MultiModalMode,
+  MultiModalResponse
+} from './models/mmr/types'
+export {
+  Content,
+  hasContent,
+  ScalarResource,
+  ScalarContent,
+  isScalarContent,
+  isCommandStringContent,
+  StringContent,
+  isStringWithOptionalContentType,
+  isFunctionContent
+} from './models/mmr/content-types'
 export { ToolbarTextImpl as ToolbarText } from './webapp/views/toolbar-text'
 
 // low-level UI
@@ -201,6 +236,7 @@ export { findFileWithViewer, findFile, isSpecialDirectory, addPath as augmentMod
 export { expandHomeDir } from './util/home'
 export { flatten } from './core/utility'
 export { promiseEach } from './util/async'
+export { isHTML, isPromise } from './util/types'
 
 // Electron
 export { tellMain } from './webapp/electron-events'
@@ -211,3 +247,6 @@ export { default as boot } from './webapp/bootstrap/boot'
 
 // StatusStripe types
 export { TextWithIcon as StatusTextWithIcon, StatusStripeController } from './webapp/status-stripe'
+
+// Table formatting
+export { formatTable } from './webapp/views/table'

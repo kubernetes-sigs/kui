@@ -25,13 +25,10 @@ import { inBrowser, inElectron } from '../core/capabilities'
 import { keys } from './keys'
 import doCancel from './cancel'
 import { paste } from './paste'
-import { getCurrentTab } from './tab'
 import { isPopup } from './popup-core'
 import { getCurrentPrompt, getBottomPrompt, isUsingCustomPrompt } from './prompt'
 
 import { inBottomInputMode } from '../core/settings'
-
-import { getSidecar } from './views/sidecar-core'
 
 interface MSIETextRange {
   collapse: (val: boolean) => void
@@ -211,7 +208,7 @@ export const listen = (prompt: HTMLInputElement) => {
 
   prompt.onpaste = paste
 }
-export const popupListen = (
+/* export const popupListen = (
   text = getSidecar(getCurrentTab()).querySelector('.sidecar-header-text'),
   previousCommand?: string
 ) => {
@@ -223,4 +220,4 @@ export const popupListen = (
 
   const input = text.querySelector('.sidecar-header-input') as HTMLInputElement
   listen(input)
-}
+} */

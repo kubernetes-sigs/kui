@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2017-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { Table } from '../webapp/models/table'
-import { MultiModalResponse } from './mmr/types'
-import { SimpleEntity, MixedResponse } from './entity'
+import { ResourceWithMetadata as MetadataBearing, Tab } from '@kui-shell/core'
 
-export type Streamable = SimpleEntity | Table | MixedResponse | MultiModalResponse
-export default Streamable
+/**
+ * Return the sidecar model
+ *
+ */
+export interface Sidecar extends HTMLElement {
+  entity: MetadataBearing
+  uuid?: string
+}
 
-export type Stream = (response: Streamable, killLine?: boolean) => Promise<void>
+export default Sidecar
 
-export type StreamableFactory = () => Promise<Stream>
+export const getSidecar = (tab: Tab): Sidecar => {
+  return tab.querySelector('sidecar') as Sidecar
+}

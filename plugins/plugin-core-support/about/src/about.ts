@@ -25,7 +25,7 @@ import {
   i18n,
   inBrowser,
   injectCSS,
-  Mode,
+  MultiModalMode as Mode,
   Presentation
 } from '@kui-shell/core'
 import { version } from '@kui-shell/client/config.d/version.json'
@@ -258,15 +258,14 @@ const aboutWindow = async (args: Arguments<Options>): Promise<KResponse> => {
   modes.find(_ => _.mode === modeCurrent.mode).defaultMode = true
 
   return {
-    type: 'custom',
-    prettyType: 'about',
+    kind: 'about',
     presentation:
       (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
     modes,
     metadata: {
       name
-    },
-    content: contentDom
+    }
+    // content: contentDom
   }
 }
 
