@@ -17,57 +17,31 @@
 import { Table } from '@kui-shell/core'
 
 export const firstSeen = 'FIRST SEEN'
-const icon1 = 'fa-network'
-const icon2 = 'fa-times-circle'
-const icon3 = 'fa-question-circle'
-const icon4 = 'fa-check-circle'
-
-/**
- * @return a string-formed Date from a gien `minusMillis` milliseconds
- * in the past
- *
- */
-function deltaOf(minusMillis = 0) {
-  const now = new Date().getTime()
-  return new Date(now - minusMillis).toLocaleString()
-}
 
 export default (): Table => ({
   noSort: true,
-  header: { name: 'name', attributes: [{ value: 'foo' }, { value: firstSeen }] },
+  header: { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen }] },
   body: [
     {
       name: 'TestString',
       onclick: `test string`,
-      attributes: [
-        { value: 'foo', fontawesome: icon1 },
-        { key: firstSeen, value: deltaOf(100) }
-      ]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
     },
     {
       name: 'TestTable',
       onclick: `test table`,
-      attributes: [
-        { value: 'foo', fontawesome: icon2 },
-        { key: firstSeen, value: deltaOf(5000) }
-      ]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
     },
     {
       name: 'TestMMRName',
       onclick: `test mmr name`,
-      attributes: [
-        { value: 'foo', fontawesome: icon3 },
-        { key: firstSeen, value: deltaOf(10000) }
-      ]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
     },
     {
       name: 'TestMMRModeSilence',
       onclick: `test mmr mode`,
       onclickSilence: true,
-      attributes: [
-        { value: 'foo', fontawesome: icon4 },
-        { key: firstSeen, value: deltaOf(30000) }
-      ]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
     }
   ]
 })

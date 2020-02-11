@@ -133,6 +133,7 @@ const list = async ({ REPL }: Arguments) => {
   )
 
   return new Table({
+    title: strings('theme.Available Themes'),
     header,
     body
   })

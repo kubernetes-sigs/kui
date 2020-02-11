@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017,2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,16 +143,14 @@ const showHistory = async ({ tab, argv, parsedOptions: options }) => {
       }
 
       return new Row({
-        beforeAttributes: [
+        attributes: [
           {
             key: 'N',
-            value: `${startIdx + idx}`,
-            css: 'deemphasize'
+            value: `${startIdx + idx}`
           }
         ],
         fullName: line.raw,
         name: line.raw,
-        type: 'history',
         onclick: line.raw
       })
     })

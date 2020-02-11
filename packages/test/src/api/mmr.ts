@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
 import { Application } from 'spectron'
 
 import { promiseEach, BadgeSpec } from '@kui-shell/core'
@@ -251,8 +250,10 @@ export class TestMMR {
             it(`should show ${expectMode.nRows} table rows in the ${expectMode.mode} tab`, async () => {
               try {
                 if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                  const rows = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr`)
-                  assert.strictEqual(rows.value.length, expectMode.nRows)
+                  await this.app.client.waitUntil(async () => {
+                    const rows = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} tbody tr`)
+                    return rows.value.length === expectMode.nRows
+                  }, CLI.waitTimeout)
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
@@ -261,8 +262,10 @@ export class TestMMR {
             it(`should show ${expectMode.nCells} table cells in the ${expectMode.mode} tab`, async () => {
               try {
                 if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                  const cells = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} td`)
-                  assert.strictEqual(cells.value.length, expectMode.nCells)
+                  await this.app.client.waitUntil(async () => {
+                    const cells = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} td`)
+                    return cells.value.length === expectMode.nCells
+                  }, CLI.waitTimeout)
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
