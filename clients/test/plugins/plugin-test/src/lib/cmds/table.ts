@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
 
     const statusTableWithoutRows: Table = {
       noSort: true,
-      header: { name: 'name', attributes: [{ value: 'status' }, { value: 'message' }] },
+      header: { name: 'NAME', attributes: [{ value: 'STATUS' }, { value: 'MESSAGE' }] },
       body: emptyRows
     }
 

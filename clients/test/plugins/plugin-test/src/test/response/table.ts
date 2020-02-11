@@ -25,22 +25,18 @@ import * as assert from 'assert'
 import { TestTable } from '@kui-shell/test'
 import { firstSeen } from '../../lib/cmds/content/table-with-drilldown'
 
-/** is millisecond delta, e.g. "100ms" */
-const deltaPlaceholder = '' // <-- the test rig doesn't care about this value
-const isDelta = /^\d+(.\d+)?[m]?s$/
-
 const expectHeaderText = { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen.toUpperCase() }] }
 
 const firstCol = ['TestString', 'TestTable', 'TestMMRName', 'TestMMRModeSilence']
 const expectRow = [
-  { name: firstCol[0], onclick: `test string`, attributes: [{ value: 'foo' }, { value: deltaPlaceholder }] },
-  { name: firstCol[1], onclick: `test table`, attributes: [{ value: 'foo' }, { value: deltaPlaceholder }] },
-  { name: firstCol[2], onclick: `test mmr name`, attributes: [{ value: 'foo' }, { value: deltaPlaceholder }] },
+  { name: firstCol[0], onclick: `test string`, attributes: [{ value: 'foo' }, { value: '5' }] },
+  { name: firstCol[1], onclick: `test table`, attributes: [{ value: 'foo' }, { value: '5' }] },
+  { name: firstCol[2], onclick: `test mmr name`, attributes: [{ value: 'foo' }, { value: '5' }] },
   {
     name: firstCol[3],
     onclick: `test mmr mode`,
     onclickSilence: true,
-    attributes: [{ value: 'foo' }, { value: deltaPlaceholder }]
+    attributes: [{ value: 'foo' }, { value: '5' }]
   }
 ]
 
@@ -58,10 +54,10 @@ new TestTable('should test table with dilldown', {
           assert.strictEqual(value, firstCol[rowIdx])
         },
         (value: string) => {
-          assert.strictEqual(value, '') // we expect an icon, no text
+          assert.strictEqual(value, expectRow[0].attributes[0].value)
         },
         (value: string) => {
-          assert.ok(isDelta.test(value), `value should have [nnn]ms pattern ${value}`)
+          assert.strictEqual(value, expectRow[0].attributes[1].value)
         }
       ]
     }

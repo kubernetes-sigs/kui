@@ -127,7 +127,7 @@ export class TestTable {
           await Utils.expectText(ctx.app, row.message)(messageSelector)
 
           // wait for badge
-          const badge = `${rowSelector} badge.${row.badgeCss}`
+          const badge = `${rowSelector} [data-tag="badge"].${row.badgeCss}`
           await ctx.app.client.waitForExist(badge)
           await Utils.expectText(ctx.app, row.badgeText)(badge)
         })
@@ -162,7 +162,7 @@ export class TestTable {
       if (validation.cells) {
         expectTable.body.forEach((_, rowIdx) => {
           it(`should validate cells of row ${rowIdx} in test table output: ${command}`, async () => {
-            const cellSelector = `${Selectors.OUTPUT_LAST} tbody:nth-child(${rowIdx + 2}) td > .cell-inner`
+            const cellSelector = `${Selectors.OUTPUT_LAST} tbody tr:nth-child(${rowIdx + 1}) td > .cell-inner`
             const actualCellValues = await ctx.app.client.getText(cellSelector)
             if (Array.isArray(actualCellValues)) {
               actualCellValues.forEach((_, cellIdx) => validation.cells[cellIdx](_, rowIdx))

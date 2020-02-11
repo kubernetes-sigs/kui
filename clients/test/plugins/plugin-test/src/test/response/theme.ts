@@ -24,7 +24,7 @@ describe('theme switching', function(this: Common.ISuite) {
     CLI.command('theme list', this.app)
       .then(
         ReplExpect.okWithCustom({
-          selector: `.entity-name[data-value="Light"]`
+          selector: `[data-value="Default Light"]`
         })
       )
       .catch(Common.oops(this, true)))
@@ -33,7 +33,7 @@ describe('theme switching', function(this: Common.ISuite) {
     CLI.command('theme list', this.app)
       .then(
         ReplExpect.okWithCustom({
-          selector: `.entity-name[data-value="Test Theme"]`
+          selector: `[data-value="Test Theme"]`
         })
       )
       .catch(Common.oops(this, true)))
