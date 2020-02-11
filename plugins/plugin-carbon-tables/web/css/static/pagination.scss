@@ -1,0 +1,37 @@
+body[kui-theme-style] .bx--pagination {
+  background-color: var(--color-ui-04);
+  height: 2.375em;
+  font-size: 0.875em;
+
+  .bx--select__item-count .bx--select-input,
+  span.bx--pagination__text,
+  .bx--select--inline .bx--select-input {
+    color: var(--color-text-02);
+  }
+
+  .bx--select-input__wrapper:hover .bx--select-input,
+  .bx--select-input:hover {
+    background-color: var(--color-ui-03);
+  }
+
+  .bx--select__arrow {
+    fill: var(--color-text-02);
+  }
+
+  .bx--pagination__button {
+    fill: var(--color-text-01);
+  }
+
+  .bx--pagination__button--no-index {
+    fill: var(--color-base04);
+  }
+
+  .bx--select-input,
+  .bx--pagination__button {
+    border-color: var(--color-table-border3);
+  }
+
+  .bx--pagination__button:hover {
+    background-color: var(--color-ui-03);
+  }
+}

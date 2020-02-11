@@ -95,8 +95,8 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
       await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('theme'))
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      const checkMarkCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] .entity-name.clickable`
-      const nameCell = `${Selectors.SIDECAR} .entity.theme[data-name="${clickOn.name}"] > tr > td:not(.not-a-name) > .clickable`
+      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] .clickable`
+      const nameCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] > td:not(.not-a-name) > .clickable`
 
       console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
@@ -152,7 +152,7 @@ describe('theme switching', function(this: Common.ISuite) {
     CLI.command('theme list', this.app)
       .then(
         ReplExpect.okWithCustom({
-          selector: `.entity-name[data-value="${Light.name}"]`
+          selector: `.entity-name[data-value="${Light.display}"]`
         })
       )
       .catch(Common.oops(this)))
@@ -161,7 +161,7 @@ describe('theme switching', function(this: Common.ISuite) {
     CLI.command('theme list', this.app)
       .then(
         ReplExpect.okWithCustom({
-          selector: `.entity-name[data-value="${Dark.name}"]`
+          selector: `.entity-name[data-value="${Dark.display}"]`
         })
       )
       .catch(Common.oops(this)))

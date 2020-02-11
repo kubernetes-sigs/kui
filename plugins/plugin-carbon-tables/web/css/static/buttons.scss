@@ -1,0 +1,11 @@
+body[kui-theme-style] .bx--radio-button-wrapper {
+  .bx--radio-button:checked + .bx--radio-button__label .bx--radio-button__appearance {
+    border-color: var(--color-text-01);
+  }
+  .bx--radio-button:checked + .bx--radio-button__label .bx--radio-button__appearance:before {
+    background-color: var(--color-text-01);
+  }
+  .bx--radio-button__appearance {
+    border-color: var(--color-text-02);
+  }
+}

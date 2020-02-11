@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * Here we arrange the CSS for base functionality of Kui. Order is
- * preserved in the resulting <link> tags.
- *
- */
-import './web/css/static/carbon-overrides.css'
-import './web/css/static/kui-ui.css'
-require('@kui-shell/plugin-client-common') /* <-- we prepend override everything here */
+import { Tab, isHeadless, PreloadRegistration, PreloadRegistrar, isTable, Table, REPL } from '@kui-shell/core'
+
+const registration: PreloadRegistration = async (registrar: PreloadRegistrar) => {
+  if (!isHeadless()) {
+    registrar.registerComponent<Table>({
+      when: isTable,
+      render: (entity: Table, tab: Tab, repl: REPL) => {
+        return import(/* webpackMode: "lazy" */ './view/render').then(_ => _.default(entity, tab, repl))
+      },
+      priority: 10
+    })
+  }
+}
+
+export default registration

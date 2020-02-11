@@ -1,0 +1,42 @@
+.bx--data-table {
+  [data-tag='badge']:not(.badge-as-image):not(.badge-as-fontawesome) {
+    color: var(--color-text-02);
+    background-color: transparent !important;
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    font-family: var(--font-monospace);
+    letter-spacing: 0.16px;
+  }
+  [data-tag='badge']:not(.badge-as-image):not(.badge-as-fontawesome):before {
+    content: '';
+    margin-right: 1ex;
+    width: 0.75em;
+    height: 0.75em;
+    background-color: var(--color-ui-05);
+    border-radius: 50%;
+  }
+  [data-tag='badge'].green-background:not(.badge-as-image):before {
+    background-color: var(--color-green);
+    color: var(--color-ui-01);
+  }
+  [data-tag='badge'].yellow-background:not(.badge-as-image):before,
+  button.yellow-background {
+    background: var(--color-yellow);
+    color: var(--color-ui-01);
+  }
+  [data-tag='badge'].red-background:not(.badge-as-image):before {
+    background: var(--color-red);
+    color: var(--color-ui-01);
+  }
+  [data-tag='badge'].gray-background:not(.badge-as-image):before {
+    background: var(--color-processing);
+    color: var(--color-ui-02);
+  }
+}
+
+[data-table-watching='true'] .bx--data-table {
+  [data-tag='badge'].yellow-background:not(.badge-as-image) {
+    animation: var(--animation-repeating-pulse);
+  }
+}

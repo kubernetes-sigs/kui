@@ -23,6 +23,9 @@
       "path": "plugins/plugin-sidecar/tsconfig-es6.json"
     },
     {
+      "path": "plugins/plugin-carbon-tables/tsconfig-es6.json"
+    },
+    {
       "path": "plugins/plugin-kui-tables/tsconfig-es6.json"
     },
     {

@@ -20,6 +20,7 @@
   "Theme": "Theme",
   "Provider": "Provider",
   "Style": "Style",
+  "theme.Available Themes": "Available Themes",
   "theme.currentTheme": "You are using the default theme",
   "theme.usageDocs": "List available themes",
   "theme.resetUsageDocs": "Reset to default theme",

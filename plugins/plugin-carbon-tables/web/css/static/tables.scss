@@ -1,0 +1,118 @@
+body[kui-theme-style] {
+  .bx--select--inline .bx--select-input {
+    fill: var(--color-text-01);
+  }
+  .bx--select__arrow {
+    fill: var(--color-text-01);
+  }
+}
+
+body[data-presentation='SidecarThin'] sidecar .bx--data-table-container {
+  .bx--data-table {
+    td,
+    th,
+    .bx--table-sort {
+      color: var(--color-text-inverted01);
+    }
+  }
+}
+
+body .bx--data-table-container {
+  min-width: unset;
+
+  .bx--data-table-header {
+    background-color: var(--color-stripe-02);
+    .bx--data-table-header__title {
+      color: var(--color-text-02);
+    }
+  }
+
+  .bx--data-table {
+    tbody,
+    thead {
+      font-size: 1em;
+    }
+
+    tbody,
+    td {
+      background-color: transparent; /* var(--color-ui-02) */
+    }
+
+    tbody tr:hover,
+    tbody tr.bx--data-table--selected:hover {
+      &,
+      td {
+        background-color: var(--color-ui-03);
+        color: var(--color-text-01);
+        border-color: var(--color-table-border2);
+      }
+    }
+
+    th,
+    .bx--table-sort {
+      background-color: var(--color-stripe-01);
+    }
+
+    .bx--table-sort {
+      padding: 0;
+    }
+
+    td {
+      border-color: var(--color-table-border3);
+    }
+
+    td,
+    th,
+    .bx--table-sort {
+      color: var(--color-text-01);
+    }
+
+    .bx--table-sort__icon {
+      fill: var(--color-text-02);
+    }
+    .bx--table-sort__icon-unsorted {
+      fill: var(--color-text-01);
+    }
+
+    tbody {
+      .bx--data-table--selected {
+        td {
+          color: var(--color-text-01);
+          background-color: var(--color-ui-02);
+          border-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+body[kui-theme-style='light'] .bx--data-table {
+  th,
+  .bx--table-sort {
+    background-color: var(--color-ui-04);
+  }
+
+  tr:hover,
+  tbody tr:hover td,
+  tbody tr.bx--data-table--selected:hover,
+  tbody tr.bx--data-table--selected:hover td {
+    background-color: var(--color-ui-04);
+  }
+}
+
+body[kui-theme-style] .repl.sidecar-visible {
+  .repl-result {
+    width: 100%;
+
+    .bx--data-table-container {
+      width: 100%;
+      .bx--data-table {
+        width: 100%;
+
+        .hide-with-sidecar {
+          display: none;
+        }
+      }
+    }
+  }
+}

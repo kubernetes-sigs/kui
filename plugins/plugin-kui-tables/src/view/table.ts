@@ -35,6 +35,7 @@ import {
 } from '@kui-shell/core'
 
 /** import the base styling */
+import '../../web/css/static/kui-tables.css'
 import '../../web/css/static/kui-tables-common.css'
 
 /** ExistingTableSpec helps the watcher update the existing `Table` and view */

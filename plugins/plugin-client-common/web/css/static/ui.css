@@ -612,13 +612,8 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   justify-content: center;
   align-items: center;
 }
-badge:only-child {
-  /* we only need margins around badges if there is more than one badge */
-  margin: 0;
-}
-i.clickable:hover,
-badge.clickable:hover {
-  /* no underline effect for icons (i) and badges */
+i.clickable:hover {
+  /* no underline effect for icons (i) */
   text-decoration: none;
 }
 
@@ -1152,6 +1147,7 @@ body[kui-theme-style="dark"] .repl .log-lines .log-line .log-field {
 .repl.sidecar-visible .log-lines .log-line .log-line-bar-field,
 .repl.sidecar-visible .log-lines .log-line .log-field.start-time-field,
 .repl.sidecar-visible .log-lines .log-line .hide-with-sidecar:not(.keep-with-sidecar),
+.repl.sidecar-visible table .hide-with-sidecar:not(.keep-with-sidecar),
 .repl.sidecar-visible .entity-attributes .hide-with-sidecar:not(.keep-with-sidecar) {
   /* hide bar chart when the sidecar is visible */
   max-width: 0;
@@ -1557,8 +1553,11 @@ input.repl-partial,
 .pulse {
   animation: pulse 1000ms 1;
 }
+body {
+  --animation-repeating-pulse: pulse 1000ms infinite alternate-reverse;
+}
 .repeating-pulse {
-  animation: pulse 1000ms infinite alternate-reverse;
+  animation: var(--animation-repeating-pulse);
 }
 @keyframes pulse {
   0% {
@@ -1929,34 +1928,50 @@ body a:hover:not(.plain-anchor) {
   fill: var(--color-ok);
 }
 
-badge {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 600;
-  background-color: var(--color-tag-beta-fill);
-  color: var(--color-tag-beta-text);
+badge,
+[data-tag="badge"] {
+  & {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    background-color: var(--color-tag-beta-fill);
+    color: var(--color-tag-beta-text);
+  }
+  &.clickable:hover {
+    /* no underline effect for icons (i) and badges */
+    text-decoration: none;
+  }
+  &:only-child {
+    /* we only need margins around badges if there is more than one badge */
+    margin: 0;
+  }
+  &.badge-as-image {
+    background-color: transparent;
+  }
+  &.badge-as-image img {
+    width: 5em;
+    height: auto;
+  }
+  &.badge-as-fontawesome {
+    padding: 0;
+    font-size: 1.5em;
+    color: var(--color-name);
+  }
+  &.is-title-like,
+  &.is-kind-like {
+    background: var(--color-base0D);
+  }
+  &.clickable:not(.badge-as-fontawesome):hover {
+    background: hsl(203, 43%, 25%);
+    text-decoration: none;
+    /*var(--color-ui-01);*/
+  }
 }
-badge.badge-as-image {
-  background-color: transparent;
-}
-badge.badge-as-image img {
-  width: 5em;
-  height: auto;
-}
-badge.badge-as-fontawesome {
-  padding: 0;
-  font-size: 1.5em;
-  color: var(--color-name);
-}
+
 .repl-result-prefix,
 badge:not(.badge-as-fontawesome):not(.badge-as-image) {
   font-family: var(--font-sans-serif);
-}
-
-badge.is-title-like,
-badge.is-kind-like {
-  background: var(--color-base0D);
 }
 
 .oops.oops-as-html {
@@ -1996,12 +2011,6 @@ span[data-extra-decoration="application error"] {
 
 .repl-block.processing .repl-input input {
   color: var(--color-name);
-}
-
-badge.clickable:not(.badge-as-fontawesome):hover {
-  background: hsl(203, 43%, 25%);
-  text-decoration: none;
-  /*var(--color-ui-01);*/
 }
 
 .entity.actions.app .repl-result-prefix {

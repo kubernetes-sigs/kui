@@ -11,7 +11,7 @@
     "test:electron": "npm run watch:electron && kui-testv2; EC=$?; npm run kill; exit $EC",
     "test:webpack": "export KUI_USE_PROXY=true; export MOCHA_RUN_TARGET=webpack; (npm run proxy &); npm run watch:webpack && MOCHA_RUN_TARGET=webpack kui-testv2; EC=$?; npm run kill; npm run kill:proxy; exit $EC",
     "test": "npm run test:electron && npm run test:webpack",
-    "watch": "tsc --build . --watch",
+    "watch": "tsc --build tsconfig-es6.json --watch",
     "_watch": "npm run kill; rm -rf node_modules/node_modules; npx kui-watch-webpack",
     "watch:webpack": "npm run pty:nodejs && npm run _watch",
     "watch:electron": "npm run pty:electron && TARGET=electron-renderer npm run _watch",
@@ -55,7 +55,7 @@
     "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
     "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/plugin-sidecar": "file:/tmp/kui-packs/kui-shell-plugin-sidecar.tgz",
-    "@kui-shell/plugin-kui-tables": "file:/tmp/kui-packs/kui-shell-plugin-kui-tables.tgz",
+    "@kui-shell/plugin-carbon-tables": "file:/tmp/kui-packs/kui-shell-plugin-carbon-tables.tgz",
     "@kui-shell/client": "file:plugins/plugin-test-client",
     "@kui-shell/plugin-test": "file:plugins/plugin-test"
   }

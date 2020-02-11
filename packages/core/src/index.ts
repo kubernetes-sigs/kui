@@ -240,4 +240,5 @@ export { default as boot } from './webapp/bootstrap/boot'
 export { TextWithIcon as StatusTextWithIcon, StatusStripeController } from './webapp/status-stripe'
 
 // View Components
+export { KuiComponent } from './webapp/component/component'
 export { findComponentProviders } from './webapp/component/registrar'

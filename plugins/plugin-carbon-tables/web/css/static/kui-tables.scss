@@ -1,0 +1,16 @@
+body[kui-theme-style] .bx--data-table-container {
+  .bx--data-table {
+    tbody tr:hover,
+    tbody tr.bx--data-table--selected:hover {
+      &,
+      td {
+        background-color: rgba(255, 255, 255, 0.0375);
+        border-color: transparent;
+      }
+    }
+
+    td {
+      border-color: transparent;
+    }
+  }
+}

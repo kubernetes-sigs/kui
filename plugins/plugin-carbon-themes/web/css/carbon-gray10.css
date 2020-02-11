@@ -165,6 +165,6 @@ body[kui-theme="Carbon Gray10"] .kui--input-stripe input {
 body[kui-theme="Carbon Gray10"] .bx--data-table {
   font-family: var(--font-sans-serif);
 }
-body[kui-theme="Carbon Gray10"] .bx--data-table td {
+body[kui-theme="Carbon Gray10"] repl .bx--data-table td {
   background-color: var(--color-base00);
 }
