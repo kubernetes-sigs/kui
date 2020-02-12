@@ -168,8 +168,9 @@ const doShell = (argv: string[], args: Arguments) =>
 
         const output = shell[cmd](args)
         if (cmd === 'cd') {
+          const newDir = shell.pwd().toString()
           process.env.OLDPWD = OLDPWD
-          process.env.PWD = output
+          process.env.PWD = newDir
 
           if (output.code === 0) {
             // special case: if the user asked to change working
@@ -222,10 +223,17 @@ const usage = {
 const cd = (args: Arguments) => {
   const dir = args.REPL.split(args.command, true, true)[1] || ''
   debug('cd dir', dir)
-  return doShell(['!', 'cd', dir], args).catch(err => {
-    err['code'] = 500
-    throw err
-  })
+  return doShell(['!', 'cd', dir], args)
+    .then(newDir => {
+      if (args.tab.state) {
+        args.tab.state.capture()
+      }
+      return newDir
+    })
+    .catch(err => {
+      err['code'] = 500
+      throw err
+    })
 }
 
 const bcd = async ({ command, execOptions, REPL }: Arguments) => {

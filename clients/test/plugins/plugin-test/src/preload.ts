@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-import { CapabilityRegistration, PreloadRegistrar, isHeadless } from '@kui-shell/core'
+import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
 
 import { mode1, mode2, mode3, button, badge1, badge2 } from './lib/modes'
-import testContext from './lib/status-stripe'
-
-export const registerCapability: CapabilityRegistration = (registrar: PreloadRegistrar) => {
-  if (!isHeadless()) {
-    // intentionally placing the same widget as both a meter and context
-    registrar.registerMeter(testContext(0))
-    registrar.registerContext(testContext(1))
-  }
-}
 
 export default async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {

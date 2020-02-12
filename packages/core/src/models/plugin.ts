@@ -20,7 +20,6 @@ import { Entity, MetadataBearing } from '../models/entity'
 import KuiComponentProivder from '../webapp/component/provider'
 import { BadgeRegistration } from '../webapp/views/registrar/badges'
 import { ModeRegistration } from '../webapp/views/registrar/modes'
-import { StatusStripeContribution, Fragment as StatusStripeFragment } from '../webapp/status-stripe'
 
 export type KuiPlugin = void | Promise<void>
 
@@ -35,13 +34,7 @@ export interface PreloadRegistrar extends CommandRegistrar {
   registerBadge<Resource extends MetadataBearing>(registration: BadgeRegistration<Resource>): void
   registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void
 
-  /** status stripe context */
-  registerContext<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void>
-
-  /** status stripe meter */
-  registerMeter<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void>
-
-  /** components */
+  /** view components */
   registerComponent<T extends Entity>(provider: KuiComponentProivder<T>): void
 }
 

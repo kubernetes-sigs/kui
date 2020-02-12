@@ -16,7 +16,7 @@
 
 import { ok } from 'assert'
 import { Common, CLI, Keys, Selectors } from '@kui-shell/test'
-import { tabButtonSelector } from '../../lib/new-tab'
+import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
 describe('tab navigation', function(this: Common.ISuite) {
   before(Common.before(this))

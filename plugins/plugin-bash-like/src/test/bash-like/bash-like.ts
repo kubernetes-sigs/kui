@@ -158,7 +158,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   Common.localIt('should list core/', () =>
     CLI.command(`ls -l`, this.app)
-      .then(ReplExpect.okWithCustom({ expect: 'runTest.sh' }))
+      .then(ReplExpect.okWith('runTest.sh'))
       .catch(Common.oops(this, true))
   )
 

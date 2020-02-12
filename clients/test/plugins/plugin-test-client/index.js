@@ -16,4 +16,5 @@
 
 import './web/css/static/test.scss'
 
-require('@kui-shell/plugin-client-default')
+const { default: defaultClient } = require('@kui-shell/plugin-client-default')
+export default defaultClient
