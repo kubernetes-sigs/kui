@@ -16,6 +16,9 @@
     "kui",
     "plugin"
   ],
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
   "publishConfig": {
     "access": "public"
   }

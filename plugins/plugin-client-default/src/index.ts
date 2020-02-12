@@ -19,6 +19,24 @@
  * preserved in the resulting <link> tags.
  *
  */
-import './web/css/static/carbon-overrides.css'
-import './web/css/static/kui-ui.css'
-require('@kui-shell/plugin-client-common') /* <-- we prepend override everything here */
+import '../web/css/static/carbon-overrides.css'
+import '../web/css/static/kui-ui.css'
+import '@kui-shell/plugin-client-common'
+
+import { render as ReactDomRender } from 'react-dom'
+import renderBody from './Body'
+
+/**
+ * Format the body view
+ *
+ */
+export function render() {
+  // Note: the wrapper is needed to get React events to work; it seems
+  // not to work with a DocumentFragment
+  const wrapper = document.createElement('div') // <-- temporarily wrap for React
+  ReactDomRender(renderBody(), wrapper)
+
+  const content = document.createDocumentFragment()
+  content.appendChild(wrapper.firstElementChild) // <-- then unwrap
+  return content
+}

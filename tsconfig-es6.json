@@ -2,6 +2,12 @@
   "extends": "./packages/builder/tsconfig-base.json",
   "references": [
     {
+      "path": "plugins/plugin-client-common/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-client-default/tsconfig-es6.json"
+    },
+    {
       "path": "packages/core/tsconfig-es6.json"
     },
     {

@@ -87,6 +87,7 @@ const domReady = () => async () => {
 export default async () => {
   // rels()
   import('./init').then(_ => _.preinit())
+  import('@kui-shell/client').then(_ => document.body.appendChild(_.render()))
 
   window.addEventListener('load', domReady(), { once: true })
 }
