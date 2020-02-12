@@ -62,7 +62,7 @@ export { CodedError } from './models/errors'
 export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-error'
 
 // eventBus
-export { default as eventBus } from './core/events'
+export { default as eventBus, wireToStandardEvents } from './core/events'
 
 // i18n
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
@@ -235,9 +235,6 @@ export { tellMain } from './webapp/electron-events'
 // main
 export { main } from './main/main'
 export { default as boot } from './webapp/bootstrap/boot'
-
-// StatusStripe types
-export { TextWithIcon as StatusTextWithIcon, StatusStripeController } from './webapp/status-stripe'
 
 // View Components
 export { KuiComponent } from './webapp/component/component'

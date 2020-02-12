@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { ExecType } from './command'
-import { Tab } from '../webapp/cli'
+import { Tab } from '../webapp/tab'
 import { Streamable, StreamableFactory } from './streamable'
 import { Block } from '../webapp/models/block'
 import { Abortable } from '../core/jobs/job'

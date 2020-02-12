@@ -50,6 +50,9 @@ export default class TabState {
   /** is there a drilldown in progress for this tab? */
   public drilldownInProgress: Promise<void>
 
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(public readonly uuid: string) {}
+
   public get env() {
     return this._env
   }
@@ -66,7 +69,7 @@ export default class TabState {
     this._env = Object.assign({}, process.env)
     this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
-    if (inBottomInputMode) {
+    if (inBottomInputMode && getCurrentPrompt()) {
       this._currentBottomInputValue = getCurrentPrompt().value
     }
 
@@ -157,7 +160,7 @@ export default class TabState {
       process.chdir(this._cwd)
     }
 
-    if (inBottomInputMode) {
+    if (inBottomInputMode && getCurrentPrompt()) {
       getCurrentPrompt().value = this.currentBottomInputValue
     }
   }

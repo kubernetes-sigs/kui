@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { isHeadless, PreloadRegistrar } from '@kui-shell/core'
+import { isHeadless } from '@kui-shell/core'
 
-export default (registrar: PreloadRegistrar) => {
+export default () => {
   if (!isHeadless()) {
-    import('./status-stripe').then(_ => _.default(registrar))
-
     return import('./tab-completion').then(_ => _.default())
   }
 }
