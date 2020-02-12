@@ -32,11 +32,6 @@ import KuiComponentProivder from '../webapp/component/provider'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
 import { registerSidecarMode as registerMode, ModeRegistration } from '../webapp/views/registrar/modes'
 import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
-import {
-  StripePosition as StatusStripePosition,
-  StatusStripeContribution,
-  Fragment as StatusStripeFragment
-} from '../webapp/status-stripe'
 
 class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar {
   // why does eslint consider this to be a useless constructor??
@@ -59,57 +54,6 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
 
   public registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void {
     registrations.forEach(_ => this.registerBadge(_))
-  }
-
-  /** status stripe context and meters (private) */
-  public async registerStatusStripeContribution<F extends StatusStripeFragment>(
-    { fragment, listener }: StatusStripeContribution<F>,
-    position: StatusStripePosition
-  ): Promise<void> {
-    const { default: StatusStripe } = await import('../webapp/status-stripe')
-
-    // decorate status stripe with the UI Fragment
-    const controller = StatusStripe.addTo(position, fragment)
-
-    // invoke once onload
-    Promise.all([import('../core/events'), import('../webapp/tab')]).then(
-      ([{ default: eventBus }, { getCurrentTab }]) => {
-        const doRegister = (tab: Tab) => {
-          if (!tab._kui_session) {
-            console.error(
-              'bug in plugin: you probably registered your status stripe contribution in the registerCapability phase, rather than preload phase'
-            )
-          } else {
-            tab._kui_session.then(() => {
-              listener(tab, controller, fragment)
-
-              // and wire it up to standard events
-              controller.listen(listener)
-            })
-          }
-        }
-
-        const tab = getCurrentTab()
-        if (!tab._kui_session) {
-          eventBus.once('/tab/new', doRegister)
-        } else {
-          doRegister(tab)
-        }
-      }
-    )
-  }
-
-  /** status stripe context */
-  public registerContext<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void> {
-    return this.registerStatusStripeContribution(contrib, 'context')
-  }
-
-  /** status stripe meter */
-  public async registerMeter<F extends StatusStripeFragment>(contrib: StatusStripeContribution<F>): Promise<void> {
-    await this.registerStatusStripeContribution(contrib, 'meter')
-
-    // disabled for now: https://github.com/IBM/kui/issues/3503
-    // setTimeout(contrib.listener, updateFrequency)
   }
 
   /** components */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '../webapp/cli'
+import { Tab } from '../webapp/tab'
 import { MixedResponse, RawContent, RawResponse } from './entity'
 import { EvaluatorArgs, KResponse } from './command'
 import { ExecOptions } from './execOptions'

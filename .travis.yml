@@ -36,7 +36,7 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 install:
   - npm ci
   - ./tools/codecov/instrument.sh
-  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then (npm run proxy &) && npm run watch:webpack; else (cd clients/$CLIENT && npm run build:electron -- $TRAVIS_OS_NAME); fi
+  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then (npm run proxy &) && npm run watch:webpack; else (cd clients/$CLIENT && npm install && npm run build:electron -- $TRAVIS_OS_NAME); fi
 
 stages:
   - test

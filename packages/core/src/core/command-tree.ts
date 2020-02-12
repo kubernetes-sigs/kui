@@ -40,7 +40,7 @@ import { UsageError, UsageModel } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
-import { Tab } from '../webapp/cli'
+import { Tab } from '../webapp/tab'
 
 import { prescanModel } from '../plugins/plugins'
 import { PrescanUsage } from '../plugins/prescan'

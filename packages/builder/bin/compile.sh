@@ -33,10 +33,10 @@ set -o pipefail
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
 
-if [ ! -d plugins ] ; then
-    echo "Error: no plugins provided in the plugins/ directory"
-    exit 1
-fi
+#if [ ! -d plugins ] ; then
+#    echo "Error: no plugins provided in the plugins/ directory"
+#    exit 1
+#fi
 
 if [ ! -f tsconfig.json ]; then
     echo "Warning: skipped compiling Typescript because of missing tsconfig.json"

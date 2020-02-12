@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-// we don't want to treat this file as a script;
-// adding this bit tells tsc to treat this source as a module, rather than a script
-// otherwise, we'd get conflicts with electron.ts, which *is* a script, rather than a module
-// https://stackoverflow.com/questions/40900791/cannot-redeclare-block-scoped-variable-in-unrelated-files
+/** client-provided renderer of the main content */
+type ClientRender = (container: Element) => void
 
 function catastrophe(err: Error) {
   console.error('restart needed')
@@ -30,22 +28,15 @@ async function initCommandRegistrar() {
   await init()
 }
 
-/* function rels() {
-  const links = document.querySelectorAll('link')
-  for (let idx = 0; idx < links.length; idx++) {
-    const link = links[idx]
-    const rel = link.getAttribute('rel')
-    if (rel === 'preload' || rel === 'prefetch') {
-      link.rel = 'stylesheet'
-    }
-  }
-} */
-
-// note: the q npm doesn't like functions called "bootstrap"!
-const domReady = () => async () => {
+/**
+ * Invoked on the domReady event.
+ *
+ * @param { ClientRender } clientMain client-provided renderer of main content
+ *
+ */
+const domReady = (renderMain: ClientRender) => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
-  const cli = import('../../webapp/cli-init')
   const events = import('../../core/events')
   // const query = import('../query')
 
@@ -63,12 +54,9 @@ const domReady = () => async () => {
     )
 
     waitForThese.push(
-      (document.body.classList.contains('in-electron')
+      document.body.classList.contains('in-electron')
         ? import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ '../electron-events').then(_ => _.init())
         : Promise.resolve()
-      )
-        .then(() => cli)
-        .then(_ => _.default())
     )
 
     waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init()))
@@ -78,15 +66,27 @@ const domReady = () => async () => {
     await Promise.all(waitForThese)
 
     document.body.classList.remove('still-loading')
-    events.then(eventBus => eventBus.default.emit('/init/done'))
+    events.then(eventBus => {
+      eventBus.default.emit('/init/done')
+      renderMain(document.body.querySelector('main'))
+    })
   } catch (err) {
     catastrophe(err)
   }
 }
 
-export default async () => {
-  // rels()
+/**
+ * Usage: clients will invoke this with their main renderer.
+ *
+ * For reference, the HTML template is to be found in
+ * ../../../templates/index.ejs. This template is in turn managed by
+ * packages/webpack/webpack.config.js.
+ *
+ * @param renderer a function that injects its content into the given
+ * container
+ *
+ */
+export default async (renderMain: ClientRender) => {
   import('./init').then(_ => _.preinit())
-
-  window.addEventListener('load', domReady(), { once: true })
+  window.addEventListener('load', domReady(renderMain), { once: true })
 }

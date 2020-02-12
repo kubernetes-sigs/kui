@@ -63,7 +63,7 @@ export function _useUpdatedUserPrescan(userPrescan: PrescanModel) {
 }
 
 export const preload = () => {
-  preloader(prescan)
+  return preloader(prescan)
 }
 
 /**

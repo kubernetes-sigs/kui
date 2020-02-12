@@ -18,18 +18,17 @@ import Debug from 'debug'
 const debug = Debug('plugins/core-support/preload')
 debug('loading')
 
-import { isHeadless, inBrowser, PreloadRegistration, PreloadRegistrar } from '@kui-shell/core'
+import { isHeadless, inBrowser, PreloadRegistration } from '@kui-shell/core'
 
 /**
  * This is the module
  *
  */
-const registration: PreloadRegistration = async (commandTree: PreloadRegistrar) => {
+const registration: PreloadRegistration = () => {
   const asyncs = []
 
   if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
-    asyncs.push(import('./lib/new-tab').then(_ => _.default(commandTree)))
     asyncs.push(import('./lib/cmds/history/reverse-i-search').then(_ => _.default()))
   }
 

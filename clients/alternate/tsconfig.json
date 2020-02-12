@@ -1,4 +1,4 @@
 {
   "extends": "./node_modules/@kui-shell/builder/tsconfig-base.json",
-  "references": [{ "path": "./plugins/plugin-test" }]
+  "references": [{ "path": "./plugins/plugin-test" }, { "path": "./plugins/plugin-client-alternate" }]
 }

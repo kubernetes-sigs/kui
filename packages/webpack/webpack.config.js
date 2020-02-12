@@ -160,7 +160,7 @@ function thisPath(aPath /* : string */) {
  * an example of this.
  *
  */
-const main = path.join(stageDir, 'node_modules/@kui-shell/core/mdist/webapp/bootstrap/webpack.js')
+const main = path.join(stageDir, 'node_modules/@kui-shell/client')
 const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)

@@ -20,3 +20,14 @@ const eventBus = new EventEmitter()
 eventBus.setMaxListeners(100)
 
 export default eventBus
+
+/**
+ * Hook an event listener up to the family of standard user
+ * interaction events.
+ *
+ */
+export function wireToStandardEvents(listener: () => void) {
+  eventBus.on('/tab/new', listener)
+  eventBus.on('/tab/switch', listener)
+  eventBus.on('/command/complete/fromuser', listener)
+}
