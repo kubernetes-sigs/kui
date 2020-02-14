@@ -19,9 +19,6 @@ import { Tab, REPL, Table as KuiTable, KuiComponent } from '@kui-shell/core'
 
 import renderTable from './LivePaginatedTable'
 
-/** import the kui theme alignment */
-import '../../web/css/static/carbon-kui-theme-alignment.css'
-
 /**
  * Format the table view
  *

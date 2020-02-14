@@ -1302,6 +1302,20 @@ body[kui-theme-style="dark"] .repl .log-lines .log-line .log-field {
   color: inherit;
 }
 
+/* fade-in animation */
+.fade-in {
+  animation: 1s fadeIn;
+  animation-fill-mode: forwards;
+}
+@keyframes fadeIn {
+  99% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
+}
+
 /* spin animation */
 @-moz-keyframes spin {
   100% {

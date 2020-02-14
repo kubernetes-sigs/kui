@@ -89,8 +89,12 @@ export default class KuiFrame {
       }
     }
 
-    this.initEvents(tab)
-    this.presentAs(tab, component.frame.presentation)
+    try {
+      this.initEvents(tab)
+      this.presentAs(tab, component.frame.presentation || Presentation.Default)
+    } catch (err) {
+      console.error(err)
+    }
 
     // FIXME; the custom-content part we can fix, once we unlock sidecar.css
     this.setVisible(tab)

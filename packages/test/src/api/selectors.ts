@@ -35,10 +35,18 @@ export const SIDECAR_TOOLBAR_TEXT = (type: string) =>
 export const SIDECAR_TOOLBAR_BUTTON = (mode: string) =>
   `${SIDECAR_TOOLBAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button[data-mode="${mode}"] [role="tab"]`
 export const SIDECAR_CUSTOM_CONTENT = `${SIDECAR} .custom-content`
+
 export const SIDECAR_MODE_BUTTONS = `${SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 export const SIDECAR_MODE_BUTTON = (mode: string) => `${SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
 export const SIDECAR_MODE_BUTTON_SELECTED = (mode: string) =>
   `${SIDECAR_MODE_BUTTON(mode)}.bx--tabs__nav-item--selected`
+
+// left nav sidecar
+export const SIDECAR_MODE_BUTTONS_V2 = `${SIDECAR} .bx--side-nav__menu .bx--side-nav__link` // all mode buttons in the left nav
+export const SIDECAR_MODE_BUTTON_V2 = (mode: string) => `${SIDECAR_MODE_BUTTONS_V2}[data-mode="${mode}"]` // specific mode button in the left nav
+export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (mode: string) =>
+  `${SIDECAR_MODE_BUTTON_V2(mode)}.bx--side-nav__link--current`
+
 export const SIDECAR_BACK_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
 export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe

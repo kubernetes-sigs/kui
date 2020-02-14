@@ -26,6 +26,9 @@ import kui2carbon, { NamedDataTableRow } from '../model/kui2carbon'
 
 import { pageSize } from '@kui-shell/client/config.d/tables.json'
 
+/** import the kui theme alignment */
+import '../../web/css/static/carbon-kui-theme-alignment.css'
+
 /** refocus the current prompt */
 function focusRepl() {
   const prompt = getCurrentPrompt()
@@ -59,6 +62,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
   public constructor(props: P) {
     super(props)
 
+    console.error('!!!!!PT', props)
     try {
       // assemble the data model
       const { headers, rows, radio } = kui2carbon(this.props.response)
@@ -82,6 +86,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
 
     const { tab, repl, response } = this.props
     const { headers, rows, radio, page } = this.state
+    console.error('!!!!!TABLE', rows)
 
     // note the comparison versus the default pageSize; we want to
     // know if this row set will every need pagination, not whether it
@@ -140,5 +145,6 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
 }
 
 export default function renderTable(tab: Tab, repl: REPL, response: KuiTable) {
+  console.error('!!!!!RTABLE', response)
   return <PaginatedTable tab={tab} repl={repl} response={response} />
 }

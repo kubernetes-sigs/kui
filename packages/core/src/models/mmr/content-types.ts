@@ -42,7 +42,7 @@ export function isScalarContent<T extends MetadataBearing>(
  * Supported String content types
  *
  */
-type SupportedStringContent = 'yaml' | 'text/markdown' | 'text/html' | 'json' | 'shell' | 'text/plain'
+export type SupportedStringContent = 'yaml' | 'text/markdown' | 'text/html' | 'json' | 'shell' | 'text/plain'
 
 function isSupportedContentType(contentType: string) {
   return (
@@ -130,7 +130,7 @@ export function isCommandStringContent<T extends MetadataBearing>(
  * - `CommandStringContent`: a string to be executed as a Kui command, and producing `ScalarContent`
  *
  */
-export type Content<T extends MetadataBearing> =
+export type Content<T extends MetadataBearing = MetadataBearing> =
   | ScalarContent
   | StringContent
   | FunctionContent<T>

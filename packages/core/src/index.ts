@@ -188,6 +188,7 @@ export {
   isCommandStringContent,
   StringContent,
   isStringWithOptionalContentType,
+  SupportedStringContent,
   isFunctionContent
 } from './models/mmr/content-types'
 export { ToolbarTextImpl as ToolbarText } from './webapp/views/toolbar-text'
