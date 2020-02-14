@@ -25,13 +25,13 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(productName))
-      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
       .then(async () => {
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
           return this.app.client.execute(() => {
             const imageSrc = document
               .querySelector('sidecar')
-              .querySelector('.custom-content')
+              .querySelector('.marked-content')
               .querySelector('img')
               .getAttribute('src')
             const fs = require('fs')
@@ -43,7 +43,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
           return this.app.client.execute(() => {
             const imageSrc = document
               .querySelector('sidecar')
-              .querySelector('.custom-content')
+              .querySelector('.marked-content')
               .querySelector('img')
               .getAttribute('src')
             const image = new Image()
@@ -59,7 +59,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(productName))
-      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED('about')}`))
+      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
       .catch(Common.oops(this, true)))
 
   it('should open the about via button click', async () => {
@@ -72,7 +72,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       await this.app.client.click('#help-button')
 
       await this.app.client.waitForVisible(Selectors.SIDECAR)
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -85,7 +85,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(productName))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('tutorial')))
+      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('tutorial')))
       .catch(Common.oops(this, true))
   })
 })
