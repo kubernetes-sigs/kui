@@ -86,9 +86,9 @@ describe('tab navigation', function(this: Common.ISuite) {
 
   const testAboutMode = (mode: string, hitEnter = false, tabUntil = false) => {
     testSelector(
-      `${Selectors.SIDECAR_MODE_BUTTON(mode)} .kui--tab-navigatable`,
+      `${Selectors.SIDECAR_MODE_BUTTON_V2(mode)}`,
       hitEnter,
-      Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode),
+      Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2(mode),
       tabUntil
     )
   }
@@ -147,7 +147,7 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(TAB_BUTTON_N(1))
   testSelector(TAB_BUTTON_N(2))
   testSelector(tabButtonSelector)
-  testSelector('#help-button', true, Selectors.SIDECAR_MODE_BUTTON_SELECTED('about'))
+  testSelector('#help-button', true, Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
   testPromptIsSelected()
 
   // now the sidecar is open, so cycle through the sidecar tabs
@@ -157,7 +157,7 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector('#help-button')
   testAboutMode('about', false, true)
   testAboutMode('tutorial')
-  testAboutMode('theme')
   testAboutMode('version', true) // hit enter on the Version tab
+  testAboutMode('theme', false, true)
   // testPromptIsSelected() // because we just hit enter
 })

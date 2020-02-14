@@ -26,10 +26,13 @@
       "path": "plugins/plugin-editor"
     },
     {
+      "path": "plugins/plugin-carbon-tables"
+    },
+    {
       "path": "plugins/plugin-sidecar"
     },
     {
-      "path": "plugins/plugin-carbon-tables"
+      "path": "plugins/plugin-leftnav-sidecar"
     },
     {
       "path": "plugins/plugin-kui-tables"

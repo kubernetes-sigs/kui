@@ -53,6 +53,7 @@
     "@kui-shell/plugin-test": "file:plugins/plugin-test",
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
+    "@kui-shell/plugin-carbon-tables": "file:/tmp/kui-packs/kui-shell-plugin-carbon-tables.tgz",
     "@kui-shell/plugin-carbon-themes": "file:/tmp/kui-packs/kui-shell-plugin-carbon-themes.tgz",
     "@kui-shell/plugin-client-common": "file:/tmp/kui-packs/kui-shell-plugin-client-common.tgz",
     "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",

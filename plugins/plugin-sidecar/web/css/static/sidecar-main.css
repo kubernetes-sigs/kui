@@ -488,7 +488,7 @@ sidecar .sidecar-content {
 sidecar .sidecar-content > div,
 sidecar .sidecar-content .activation-content > pre > code,
 sidecar .custom-content pre > code,
-sidecar .custom-content .padding-content {
+sidecar .padding-content {
   display: block;
   padding: 1.5em 1em;
 }
@@ -1061,4 +1061,22 @@ sidecar .custom-content .log-field pre > code {
 .bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
   a.bx--tabs__nav-link:active {
   color: var(--color-text-inverted02);
+}
+
+sidecar.visible .kui--sidecar-header-and-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: hidden;
+}
+
+sidecar .sidecar-content-container {
+  flex-direction: column;
+}
+
+.kui--sidecar-header-and-toolbar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

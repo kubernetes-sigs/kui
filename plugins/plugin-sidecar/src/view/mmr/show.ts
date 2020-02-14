@@ -39,7 +39,6 @@ import { Sidecar } from '../../model/sidecar'
 import { addModeButtons } from './bottom-stripe'
 
 import '../../../web/css/static/sidecar-main.css'
-import '../../../web/css/static/sidecar.css'
 
 type TabPresentableContent = ResourceByReferenceWithContent | HTMLElement | Table | ScalarResource
 
@@ -109,7 +108,7 @@ export async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
   return dom1
 }
 
-async function renderContent<T extends MetadataBearing>(
+export async function renderContent<T extends MetadataBearing>(
   tab: Tab,
   bearer: T,
   content: Content<T> | MetadataBearing | SidecarMode
