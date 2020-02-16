@@ -35,9 +35,6 @@
       "path": "plugins/plugin-leftnav-sidecar"
     },
     {
-      "path": "plugins/plugin-kui-tables"
-    },
-    {
       "path": "plugins/plugin-git"
     },
     {
