@@ -114,7 +114,9 @@ export function isViewButton<T = MetadataBearing>(button: Button<T>): button is 
 
 export type Button<T = MetadataBearing> = DrilldownButton<T> | ViewButton<T>
 
-export function isButton<T extends MetadataBearing>(mode: Button<T> | Content<T> | Mode<T>): mode is Button<T> {
+export function isButton<T extends MetadataBearing = MetadataBearing>(
+  mode: Button<T> | Content<T> | Mode<T>
+): mode is Button<T> {
   const button = mode as Button
   return button !== undefined && (button.kind === 'drilldown' || button.kind === 'view') && button.command !== undefined
 }

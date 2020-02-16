@@ -21,7 +21,7 @@ const debug = Debug('plugins/editor/file-types')
  * What is the monaco "language" for the given kind?
  *    only nodejs and compositions diverge from monaco's notation
  */
-export const language = kind => {
+export const language = (kind: string) => {
   const base = kind.substring(0, kind.indexOf(':')) || kind
   debug('language', kind, base)
 
@@ -44,7 +44,7 @@ export const language = kind => {
  * What is the filename extension for the given kind?
  *
  */
-export const extension = kind => {
+export const extension = (kind: string) => {
   const lang = language(kind)
   debug('extension', kind, lang)
 

@@ -32,5 +32,4 @@ describe('Help command', function(this: Common.ISuite) {
   //
 
   doHelp.call(this, 'help', { expect: header('Getting Started') })
-  doHelp.call(this, 'editor')
 })

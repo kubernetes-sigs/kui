@@ -68,7 +68,7 @@ export { default as eventBus, wireToStandardEvents } from './core/events'
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
 
 // content injection
-export { injectCSS, injectScript, loadHTML } from './webapp/util/inject'
+export { injectScript, loadHTML } from './webapp/util/inject'
 
 // models
 export {
@@ -188,10 +188,12 @@ export {
   isCommandStringContent,
   StringContent,
   isStringWithOptionalContentType,
+  isSupportedContentType,
   SupportedStringContent,
-  isFunctionContent
+  isFunctionContent,
+  FunctionThatProducesContent
 } from './models/mmr/content-types'
-export { ToolbarTextImpl as ToolbarText } from './webapp/views/toolbar-text'
+export { ToolbarTextImpl as ToolbarText, ToolbarText as ToolbarTextState } from './webapp/views/toolbar-text'
 
 // low-level UI
 export { partial as partialInput, isUsingCustomPrompt } from './webapp/prompt'

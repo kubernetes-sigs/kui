@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { strictEqual } from 'assert'
 import { Application } from 'spectron'
 import { dirname, join } from 'path'
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-editor/tests/package.json'))
 
@@ -29,17 +30,26 @@ const grabFocus = async (app: Application) => {
 
 /** set the monaco editor text */
 const setValue = async (app: Application, text: string): Promise<void> => {
-  await app.client.execute(text => {
-    document.querySelector('.monaco-editor-wrapper')['editor'].setValue(text)
-  }, text)
+  await app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('Clear'))
+  await app.client.click(Selectors.SIDECAR_MODE_BUTTON('Clear'))
+
+  const txt = await Util.getValueFromMonaco(app)
+  strictEqual(txt, '')
 
   await grabFocus(app)
+  await app.client.keys(text)
+
+  const txt2 = await Util.getValueFromMonaco(app)
+  strictEqual(txt2, text)
 }
 
 /** click the save buttom */
 const save = (app: Application) => async (): Promise<void> => {
+  await app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('Save'))
   await app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
-  await app.client.waitForExist(`${Selectors.SIDECAR} .editor-status.is-up-to-date`)
+
+  // save button had better be gone after clicking Save
+  await app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON('Save'), 10000, true)
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */

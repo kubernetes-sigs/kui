@@ -28,7 +28,7 @@ Common.localDescribe('popup say hello', function(this: Common.ISuite) {
   before(Common.before(this, { popup: ['test', 'string'] }))
   after(Common.after(this))
 
-  it('should show command name', async () => {
+  xit('should show command name', async () => {
     await SidecarExpect.popupTitle(this.app, 'test string')
     await SidecarExpect.textPlainContent('hello world')
   })
@@ -38,7 +38,7 @@ Common.localDescribe('popup table', function(this: Common.ISuite) {
   before(Common.before(this, { popup: ['test', 'table'] }))
   after(Common.after(this))
 
-  it('should show command name', async () => {
+  xit('should show command name', async () => {
     await SidecarExpect.popupTitle(this.app, 'test table')
     await SidecarExpect.tableContent(this.app, 5, 12)
   })

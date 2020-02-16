@@ -1,0 +1,1048 @@
+/* Duplicate rule with line 13-15 in ui.css */
+sidecar {
+  height: 100%;
+  max-height: 100%;
+  overflow-x: hidden;
+}
+sidecar .header-top-bits {
+  display: flex;
+  padding-left: 1em;
+  margin: 0.75em 0 0;
+}
+/* Duplicate rule with line 435, 436, 2025 in ui.css */
+sidecar.rule-enabled-false .sidecar-header-icon {
+  opacity: 1 !important;
+  white-space: pre-wrap;
+  color: var(--color-error);
+}
+/* Duplicate rule with line 522-523 in ui.css */
+tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
+  max-width: unset;
+  margin-right: unset;
+}
+/* Duplicate rule with line 604-613 in ui.css */
+.sidecar-header [data-tag="badge"]:not(.badge-as-image) {
+  font-weight: 500;
+  font-size: 0.825em;
+  border-radius: 0.9375em;
+  margin: 0.1875em;
+  padding: 0 0.825em;
+  height: 1.925em;
+  line-height: 1.925em;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+sidecar {
+  flex: 0 0 0%;
+  min-width: 0;
+  transition-property: background-color, color, border-color;
+  transition-duration: calc(var(--transition-duration) * 2); /* twice the normal duration */
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  background: var(--color-sidecar-background);
+}
+sidecar.visible {
+  flex: 6;
+  z-index: 1; /* float above the repl */
+  border-left: 1px solid var(--color-sidecar-border);
+}
+body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
+  border-left-color: var(--color-ui-04);
+}
+.sidecar-bottom-stripe {
+  flex-basis: 2.5em;
+  min-height: 2.5rem; /* important for screenshot, which tries to maximally squish the sidecar height */
+  display: flex;
+  z-index: 5;
+  background-color: var(--color-stripe-02);
+  border-bottom: 1px inset var(--color-ui-02);
+  order: -1;
+}
+/* sidecar .sidecar-bottom-stripe {
+    order: -1;
+} */
+sidecar .sidecar-bottom-stripe > div {
+  font-size: 0.875em;
+}
+sidecar .sidecar-bottom-stripe-left-bits,
+sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
+  /* button container in sidecar bottom stripe */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
+  /* back button container in sidecar bottom stripe */
+  flex: 0 0 0%;
+  min-width: 0;
+}
+sidecar
+  .sidecar-bottom-stripe-left-bits
+  .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
+  flex: initial;
+  margin-right: 0;
+  padding: 0 calc(1em - 0.375em); /* the button inside has 0.375em padding left-right */
+}
+sidecar .sidecar-bottom-stripe-close-icon {
+  letter-spacing: -1ex;
+  opacity: 0.6;
+  transition-property: all;
+}
+body.os-win32 sidecar .sidecar-bottom-stripe-close-icon {
+  /* dunno why windows is weird here */
+  letter-spacing: 0px;
+}
+
+sidecar .sidecar-bottom-stripe .package-prefix {
+  /* kubectl namespace and openwhisk package name, etc. */
+  display: block;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+sidecar .sidecar-header .limits {
+  /* don't show limits in header for now */
+  display: none;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover,
+sidecar .sidecar-bottom-stripe-button.hover {
+  cursor: pointer;
+  opacity: 1;
+}
+sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover,
+sidecar .sidecar-bottom-stripe-button.force-no-hover.hover {
+  /* e.g. the screenshot plugin wants to disallow tooltips on the
+   "capture screenshot" button while capturing a screenshot! */
+  color: inherit !important;
+  transition: none !important;
+}
+.sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon,
+.sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon,
+.sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
+  /* on hover, squeeze the >> a bit closer together */
+  letter-spacing: -1.25ex;
+}
+body.os-win32 sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon,
+body.os-win32 sidecar .sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon,
+body.os-win32 sidecar .sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
+  letter-spacing: -1px; /* windows is different here */
+}
+sidecar .sidecar-bottom-stripe-back-bits,
+.sidecar-bottom-stripe .fill-container {
+  /* back button in sidecar bottom stripe */
+  border-right: 1px solid var(--color-table-border2);
+  padding-right: 0.475rem;
+  margin-right: 0.475rem;
+}
+sidecar .sidecar-bottom-stripe-back-bits > div {
+  display: flex;
+  align-items: center;
+}
+sidecar .sidecar-bottom-stripe-back-bits > div:hover {
+  opacity: 1;
+}
+sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
+  display: none;
+}
+body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
+  font-size: 3vmin;
+}
+
+/* sidecar view-button "flush right" toolbar */
+sidecar .sidecar-bottom-stripe-toolbar {
+  display: flex;
+}
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar {
+  font-size: 1.5vw;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
+  background-color: var(--color-sidecar-toolbar-background);
+  color: var(--color-sidecar-toolbar-foreground);
+  height: 1.5em;
+  line-height: 1.5em;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  overflow: hidden;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
+  fill: var(--color-sidecar-toolbar-foreground);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path {
+  fill: var(--color-warning);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path[data-icon-path="inner-path"],
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path[data-icon-path="inner-path"] {
+  fill: var(--color-white);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path {
+  fill: var(--color-error);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
+  display: none !important;
+}
+sidecar
+  .sidecar-bottom-stripe-toolbar
+  .sidecar-toolbar-text:not([data-type])
+  + .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:not(:empty) {
+  flex: 1;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
+  opacity: 0.875;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
+  margin-right: 0.375em;
+  margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
+  padding-left: 1em;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon > svg {
+  display: none;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type] svg {
+  display: block;
+}
+body.subwindow sidecar .sidecar-bottom-stripe svg {
+  width: 2.5vmin;
+  height: 2.5vmin;
+}
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar svg {
+  width: 1.5vmin;
+  height: 1.5vmin;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+  font-size: 0.75em;
+  display: block;
+  letter-spacing: 0.32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+  font-size: 1.375vmin;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
+  display: flex;
+  line-height: 1.5em;
+  padding: 0 0.5em;
+  color: inherit;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
+  cursor: pointer;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
+  font-size: 0.875em;
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
+  color: var(--color-base03);
+}
+sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
+  fill: var(--color-sidecar-toolbar-foreground);
+}
+sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
+  padding: 0 1em;
+  display: flex;
+  flex: initial;
+}
+
+sidecar .sidecar-content-container,
+sidecar .custom-content {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* without this, in firefox wskflow pushes the bottom stripe off the bottom of the viewport */
+}
+sidecar .sidecar-header {
+  display: flex;
+  background-color: var(--color-sidecar-header);
+  flex-basis: 5.5rem;
+  min-height: 5.5rem; /* see shell issue #712 */
+}
+body.subwindow sidecar .sidecar-header {
+  flex-basis: 15vh;
+  min-height: 15vh;
+}
+sidecar .sidecar-header .header-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  /* this is needed, as we rotate the "sidecar-header-icon", which confuses chrome in terms of width occupancy;
+       see sidecar .sidecar-header-icon-wrapper; the 4em parts must match! */
+  /* width: calc(100% - 4em); */
+
+  /* this is needed to work around firefox's odd behavior with nested
+   flex boxes versus text-overflow; see
+   https://github.com/IBM/kui/issues/1334 */
+  min-width: 0;
+}
+sidecar .header-right-bits {
+  white-space: nowrap;
+  margin: 0 1em;
+}
+.sidecar-header .kind {
+  font-variant: small-caps;
+  flex: 1;
+  margin-top: 1ex;
+}
+.sidecar-header .action-content .kind {
+  font-size: 0.875rem;
+  font-variant: normal;
+  font-weight: 300;
+  font-family: inherit;
+  margin: 0;
+}
+.header-right-bits .action-content,
+.header-right-bits .custom-header-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: space-evenly;
+}
+.sidecar-header .badges:not(:empty) + .activation-duration {
+  margin-top: 0.1em;
+  font-size: 1.5em;
+}
+.sidecar-header .activation-duration,
+.sidecar-header .kind {
+  font-weight: bold;
+  font-size: 2.5em;
+}
+sidecar .sidecar-header-text {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+sidecar .sidecar-header-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+}
+sidecar .sidecar-toolbar-text a,
+sidecar .sidecar-toolbar-text a:hover {
+  color: inherit !important;
+}
+sidecar .sidecar-header-icon-wrapper > span {
+  padding: 0 1em;
+}
+sidecar .sidecar-header-icon-wrapper + .sidecar-header-icon-wrapper > span:not(:empty) {
+  border-left: 1px solid var(--color-table-border2);
+}
+sidecar .sidecar-header-icon-wrapper {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+sidecar .header-left-bits {
+  align-items: stretch;
+  overflow: hidden;
+}
+sidecar .sidecar-header-icon {
+  font-weight: 600;
+  letter-spacing: 1px;
+  pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
+}
+sidecar .sidecar-header-name {
+  flex: 1;
+  font-weight: 400;
+  font-size: 2em;
+  display: flex;
+  align-items: center;
+
+  /* the bit of padding allows for space to initiate a drag-select of
+   the header name text */
+  padding-right: 1rem;
+  -webkit-app-region: no-drag !important;
+}
+body.subwindow sidecar .sidecar-header-name {
+  font-size: 4vh;
+}
+sidecar .sidecar-header .entity-name-line {
+  display: flex;
+  align-items: center;
+}
+sidecar.entity-has-badges .sidecar-header .header-right-bits .action-content {
+  display: flex;
+}
+sidecar .sidecar-header .badges {
+  margin-left: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+sidecar .sidecar-header .badges:first-child {
+  margin-left: 0;
+}
+sidecar .sidecar-header badge.clickable:hover {
+  filter: brightness(1.1);
+}
+sidecar .sidecar-header-name-content {
+  overflow-x: hidden;
+}
+sidecar .sidecar-header-name-content .entity-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
+  max-height: 2.35em;
+
+  /* these two rules help us to simulate left-ellision */
+  /* direction: rtl;
+    text-align: left; */
+}
+sidecar .sidecar-header-name-content[data-has-name-hash] .entity-name {
+  white-space: nowrap;
+}
+sidecar .sidecar-header-name-content > span {
+  display: block;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+sidecar .sidecar-header-name .package-prefix {
+  font-size: 0.875rem;
+  max-width: none;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+}
+sidecar .sidecar-header-name .entity-name-hash {
+  font-family: var(--font-monospace);
+  font-size: 75%;
+  color: var(--color-text-inverted02);
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+sidecar.entity-is-activations .sidecar-header-name .package-prefix {
+  /* don't display package name for activations? hmm */
+  display: none;
+}
+sidecar.entity-is-activations .sidecar-header-name .sidecar-header-name-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+sidecar .sidecar-header-secondary-content {
+  padding-left: 1rem;
+  font-size: 0.875em;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-02);
+  letter-spacing: 0.32px;
+  line-height: 1.25em;
+}
+sidecar .sidecar-header-secondary-content .kind-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+sidecar .sidecar-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+sidecar .sidecar-content > div,
+sidecar .sidecar-content .activation-content > pre > code,
+sidecar .custom-content pre > code,
+sidecar .padding-content {
+  display: block;
+  padding: 1.5em 1em;
+}
+sidecar .custom-content > .scrollable {
+  /* for scrollable padding-content, we want the scrollbar to be flush-right */
+  flex: 1;
+}
+sidecar .sidecar-content .hook-for-third-party-content.no-content {
+  display: none;
+}
+sidecar .sidecar-header .activation-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+sidecar .sidecar-content .activation-content {
+  padding: 0;
+}
+sidecar .sidecar-content .activation-content,
+sidecar .sidecar-content .hook-for-third-party-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.entity-web-export-url:not(.has-url) {
+  display: none;
+}
+sidecar .activation-status {
+  color: white;
+  font-size: 2.5rem;
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.5ex;
+}
+sidecar pre {
+  /* no margin for action source code */
+  margin: 0;
+}
+sidecar .action-content > pre {
+  /* some odd issue here; pre > code will give us the pre-wrap */
+  white-space: normal;
+}
+sidecar:not(.entity-is-actions):not(.entity-is-apps):not(.entity-is-compositions) .action-content {
+  display: none;
+}
+sidecar:not(.entity-is-activations) .activation-content {
+  display: none;
+}
+sidecar.no-activation-timing-data .sidecar-header-secondary-content {
+  /* no timing information for activations */
+  display: none;
+}
+sidecar:not(.entity-is-packages) .package-content {
+  display: none;
+}
+sidecar.entity-is-packages:not(entity-is-package-binding) .package-binding-signifier {
+  display: none;
+}
+sidecar:not(.entity-is-rules) .rule-content {
+  display: none;
+}
+sidecar:not(.entity-is-triggers) .trigger-content {
+  display: none;
+}
+/* Duplicate rule with line 654-658 in ui.css */
+sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
+sidecar .activation-result {
+  font-family: var(--font-monospace);
+  font-weight: 400;
+  font-size: 0.875em;
+  white-space: pre-wrap;
+  background: transparent;
+}
+.package-content-count {
+  font-weight: bold;
+}
+.rule-components {
+  display: flex;
+  justify-content: center;
+}
+sidecar:not(.entity-is-sequence) .sequence-components {
+  display: none;
+}
+.sequence-components {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sequence-component {
+  border: 3px solid;
+  margin: 1em;
+  height: 5em;
+  width: 5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  position: relative;
+}
+.sequence-component:before {
+  content: " ";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  border: 3px solid rgba(0, 0, 0, 0.075);
+}
+.sequence-component:hover:before {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.sequence-component.trigger-node {
+  border-radius: 0;
+}
+.sequence-component.trigger-node:before {
+  border-radius: 0;
+}
+.sequence-component:hover {
+  cursor: pointer;
+  height: 11.25em; /* 25% larger */
+  width: 20em; /* 25% larger */
+}
+.sequence-component-inner .emphasize {
+  font-size: 1.4375rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.sequence-component-inner .deemphasize {
+  opacity: 1;
+  margin: 1ex;
+}
+.sequence-component {
+  height: 9em;
+  width: 16em;
+}
+.sequence-component:not(:last-child):after {
+  /* edge */
+  content: "";
+  border: 1px solid #333;
+  outline: 1px solid #999;
+  position: absolute;
+  height: 2em;
+  top: calc(100% + 4px);
+  left: 50%;
+}
+.horizontal-canvas .sequence-component:not(:last-child):after {
+  height: 0px;
+  width: calc(2em - 2px);
+  top: 50%;
+  left: calc(100% + 3px);
+}
+.sequence-component .sequence-component-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /*white-space: nowrap;*/
+  font-variant: small-caps;
+  font-weight: 400;
+  word-break: break-all;
+}
+
+/* sidecar cost */
+.activation-estimated-cost-container {
+  display: none;
+}
+
+/* generic */
+sidecar .present-as-quotation {
+  border-left-color: var(--color-base02);
+}
+.kui--sidecar-inverted sidecar .normal-text {
+  color: var(--color-text-inverted01);
+}
+.kui--sidecar-inverted sidecar .normal-text svg path {
+  fill: var(--color-text-inverted01);
+}
+.kui--sidecar-inverted sidecar .sub-text {
+  color: var(--color-text-inverted03);
+}
+sidecar .result-as-table .big-top-pad:first-child {
+  margin-top: 0;
+}
+.code-highlighting.scrollable {
+  /* sidecar custom entity container */
+  flex: 1;
+}
+sidecar .activation-result .log-line .log-field code {
+  font-size: 1em;
+  margin: 0.375em 0.375em 0 0;
+  padding: 1em;
+  background: var(--color-ui-01);
+  border: 1px solid var(--color-ui-04);
+  box-shadow: 0 0 2px var(--color-ui-04);
+}
+sidecar .activation-result .log-line .log-field > div > div:first-child code {
+  margin-top: 0;
+}
+sidecar .log-lines:not(.log-lines-loose) .log-line {
+  height: auto;
+}
+sidecar .log-lines .log-line:nth-child(2n) .log-field {
+  background: var(--color-ui-03); /* <-- zebra */
+}
+
+body.subwindow sidecar .sidecar-bottom-stripe-close {
+  /* no close button if in subwindow/popup mode */
+  display: none;
+}
+body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
+  /* in subwindow mode, no maximize or unmaximize buttons */
+  display: none;
+}
+/*body.subwindow sidecar .activation-result .log-line .log-field code {
+    background: var(--color-ui-02);
+}*/
+body.subwindow sidecar .log-lines .log-line:nth-child(2n + 1) .log-field {
+  background: var(--color-ui-02);
+}
+body.subwindow sidecar {
+  border-left: none;
+  box-shadow: none;
+}
+body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-header {
+  border-bottom-color: var(--color-base01);
+}
+body.subwindow:not(.sidecar-visible) sidecar {
+  width: 0;
+}
+body.subwindow sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
+  display: none;
+}
+body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
+  display: flex;
+}
+body.subwindow sidecar .sidecar-header-name-content,
+body.subwindow sidecar .sidecar-header-text,
+body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
+  /* make sidecar-header-input occupy full width */
+  flex: 1;
+}
+body.subwindow sidecar .padding-content {
+  flex: 1;
+  padding: 4vh 6vh 0;
+  display: flex;
+  flex-direction: column;
+}
+body.subwindow sidecar .padding-content .padding-content {
+  /* this rule protects against nested padding-content; we don't want to pad twice */
+  padding: 0;
+}
+body.subwindow[data-presentation="FixedSize"] sidecar .padding-content {
+  /* content takes care of layout, e.g. monaco-editor */
+  padding: 0;
+}
+body.subwindow sidecar .padding-content {
+  overflow: auto;
+}
+body.subwindow sidecar .sidecar-header-secondary-content {
+  font-size: 1em;
+}
+body.subwindow:not([data-presentation="FixedSize"]) .custom-content {
+  font-size: 2.5vmin;
+}
+/* Duplicate rule with line 1451 in ui.css */
+body.subwindow sidecar .repl-input,
+body.subwindow sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
+  display: none;
+}
+body.subwindow sidecar .sidecar-bottom-stripe {
+  font-size: 2vmin;
+  min-height: unset;
+}
+body.subwindow sidecar .usage-error-wrapper .page-content {
+  display: flex;
+  flex-direction: column;
+}
+sidecar .repl-input {
+  display: none;
+}
+body.subwindow sidecar .repl-input input {
+  -webkit-app-region: no-drag;
+  font-family: var(--font-sans-serif);
+  font-size: unset;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
+  display: none;
+}
+.subwindow sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
+  border-spacing: 0;
+}
+body.subwindow sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
+sidecar .activation-result {
+  padding: inherit;
+}
+sidecar .activation-result {
+  padding: 0;
+}
+body.subwindow .sidecar-full-screen sidecar .sidecar-header .entity-name-line {
+  flex-wrap: wrap;
+}
+body.subwindow .sidecar-full-screen sidecar .sidecar-header .action-content #version {
+  min-height: 20px;
+}
+
+/*
+ if we want to hide the close button in the sidecar bottom stripe when in sidecar-full-screen mode
+body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
+    display: none;
+}*/
+
+/* used by bottom-stripe to flush-right buttons */
+.fill-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.fill-container.flush-right {
+  justify-content: flex-end;
+}
+
+sidecar [data-balloon]:before,
+sidecar [data-balloon]:after {
+  transition-delay: 750ms;
+}
+
+/* sidecar minimize to stripe */
+sidecar.minimized {
+  flex: 0 0 calc(0.375rem * 2 + 0.75rem); /* designed to match the ? in the header */
+  align-items: stretch;
+}
+sidecar.minimized header.sidecar-header {
+  display: none;
+}
+sidecar.minimized .header-left-bits {
+  overflow: visible;
+}
+sidecar .sidecar-header-icon-wrapper > span {
+  padding: 0 0.5em;
+}
+sidecar.minimized .sidecar-header-icon-wrapper {
+  width: calc(0.375rem * 2 + 0.75rem); /* match sidecar.minimized flex-basis */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0.375em 0;
+  overflow: unset; /* see overflow:hidden for sidecar .sidecar-header-icon-wrapper */
+  border: none;
+  padding: 0;
+}
+sidecar.minimized .sidecar-header-icon {
+  width: 0;
+  height: calc(0.375rem * 2 + 0.75rem); /* match sidecar.minimized flex-basis */
+  flex: 1;
+  transform-origin: 0% 0%;
+  justify-content: flex-start;
+}
+sidecar.minimized .sidecar-bottom-stripe-left-bits {
+  align-items: unset;
+}
+sidecar.minimized .sidecar-bottom-stripe-left-bits .sidecar-header-icon-wrapper {
+  padding: 0;
+  margin: 0;
+}
+sidecar.minimized header.sidecar-header .sidecar-header-secondary-content,
+sidecar.minimized header.sidecar-header .sidecar-header-right-bits,
+sidecar.minimized .sidecar-header-name,
+sidecar.minimized .sidecar-content-container,
+sidecar.minimized .sidecar-header-icon-wrapper-for-namespace,
+sidecar.minimized .sidecar-bottom-stripe-left-bits > div:not(.sidecar-header-icon-wrapper),
+sidecar.minimized .sidecar-bottom-stripe-toolbar,
+sidecar.minimized .header-right-bits {
+  display: none;
+  flex: 0;
+  opacity: 0;
+  margin: 0;
+  width: 0;
+  height: 0;
+}
+sidecar.minimized .sidecar-header-icon-wrapper .sidecar-header-icon {
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+sidecar.minimized .sidecar-bottom-stripe {
+  align-items: center;
+  padding: 0 0.375em;
+  box-shadow: none;
+  flex: 1;
+  flex-direction: column;
+  border-left: 1px solid var(--color-base03);
+  border-bottom: none;
+}
+sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
+  /*flex: 0;*/
+  display: none;
+}
+sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
+  padding: 1ex 0;
+  margin: 0;
+  text-align: center;
+}
+sidecar.minimized .graphical-icon {
+  justify-content: center;
+  transform: scaleX(-1);
+  height: unset !important;
+  padding: 0 !important;
+}
+sidecar.minimized [data-balloon]:before,
+sidecar.minimized [data-balloon]:after {
+  opacity: 0;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fadein 1s ease-in-out;
+}
+
+/* grabbable elements */
+.grabbable {
+  cursor: -webkit-grab;
+}
+.grabbable:active {
+  cursor: -webkit-grabbing;
+}
+
+/* usage */
+sidecar .usage-error-wrapper .hideable {
+  background: transparent;
+}
+sidecar .page-content pre > code {
+  display: inline-block;
+  white-space: pre-wrap;
+  padding: 0;
+  color: var(--color-base0E);
+}
+sidecar .result-table [data-tag="badge"].green-background:not(.badge-as-image):before {
+  background-color: var(--color-green-sidecar);
+}
+sidecar [data-tag="badge"].yellow-background:not(.badge-as-image):before {
+  background: var(--color-yellow-sidecar);
+}
+sidecar .result-table [data-tag="badge"].red-background:not(.badge-as-image):before {
+  background: var(--color-red-sidecar);
+}
+/* Duplicate rule with line 2049 in ui.css */
+sidecar.activation-success-false .sidecar-header-icon {
+  color: var(--color-red);
+}
+sidecar .sidecar-header [data-tag="badge"].version {
+  /* badge for resource version */
+  background-color: var(--color-tag-ibm-fill);
+  color: var(--color-tag-ibm-text);
+}
+sidecar .sidecar-header [data-tag="badge"].red-background {
+  background-color: var(--color-red);
+  color: var(--color-base00);
+}
+sidecar .sidecar-header [data-tag="badge"].yellow-background {
+  background-color: var(--color-yellow);
+  color: var(--color-base01);
+}
+sidecar .sidecar-header [data-tag="badge"].green-background {
+  background-color: var(--color-green);
+}
+sidecar .sidecar-header [data-tag="badge"].scope {
+  background-color: var(--color-base0E);
+  color: var(--color-base01);
+}
+
+/* sidecar bottom stripe */
+.sidecar-bottom-stripe {
+  color: var(--color-text-01);
+  background: var(--color-stripe-02);
+}
+body:not(.subwindow) .sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
+  border-right: 1px solid var(--color-table-border1);
+}
+.sidecar-bottom-stripe-right-bits,
+.sidecar-non-window-buttons,
+.sidecar-window-buttons {
+  display: flex;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button > span[role="tab"] {
+  /* not-graphical stripe buttons */
+  padding: 0 0.375em;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
+  padding-left: 1em;
+}
+body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
+  padding-left: 0.875vw;
+}
+body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
+  padding-right: 0.875vw;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
+  padding-right: 1em;
+  height: 1.5em;
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button.sidecar-bottom-stripe-button-active {
+  border-bottom-color: var(--color-base-03);
+}
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover,
+.sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover,
+.sidecar-bottom-stripe-button-as-button.selected {
+  color: var(--color-base0D);
+}
+.sidecar-bottom-stripe-button-as-button.selected svg path {
+  fill: var(--color-brand-02);
+}
+body:not(.no-tooltips-anywhere)
+  .sidecar-bottom-stripe
+  .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover
+  svg
+  path {
+  fill: var(--color-support-04);
+}
+.sidecar-bottom-stripe
+  .sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button:not(.sidecar-bottom-stripe-button-active):hover,
+.sidecar-bottom-stripe-button-as-button.sidecar-bottom-stripe-button-as-radio-button.selected {
+  color: var(--color-support-03);
+  color: #e31a1c;
+}
+
+sidecar .sidecar-header-icon {
+  color: var(--color-name-sidecar);
+}
+
+.package-prefix {
+  font-weight: 300;
+}
+
+.sequence-component {
+  background-color: var(--color-ui-05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.header .clickable:hover {
+  color: var(--color-support-04);
+}
+
+sidecar .custom-content .log-field pre > code {
+  padding: 1em;
+}
+
+/* override the carbon color when tabbing through sidecar tabs*/
+.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
+  .bx--tabs__nav-link:focus,
+.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
+  a.bx--tabs__nav-link:active {
+  color: var(--color-text-inverted02);
+}
+
+sidecar.visible .kui--sidecar-header-and-body {
+  display: flex;
+  flex: 1;
+  overflow-y: hidden;
+}
+
+sidecar .sidecar-content-container {
+  flex-direction: column;
+}
+
+.kui--sidecar-header-and-toolbar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

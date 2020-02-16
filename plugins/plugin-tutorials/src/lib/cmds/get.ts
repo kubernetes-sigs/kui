@@ -15,9 +15,8 @@
  */
 
 import Debug from 'debug'
-import { join } from 'path'
 
-import { Arguments, KResponse, Registrar, injectCSS } from '@kui-shell/core'
+import { Arguments, KResponse, Registrar } from '@kui-shell/core'
 
 import { entities, usage } from '../usage'
 import { modes } from './modes'
@@ -63,8 +62,6 @@ const enclosingContainer = () => {
 const setup = (args: string[]) => {
   const projectName = args[args.indexOf('get') + 1]
   const projectHome = projectHomeDir(projectName)
-
-  injectCSS(join(__dirname, '../../../web/css/main.css'))
 
   //    return checkIfAlreadyImported(projectHome, { failIf: 'not-exists' })
   return readProject(projectHome)
@@ -149,6 +146,9 @@ const fetchProjectData = () => info => {
  */
 const doGet = async (command: Arguments): Promise<KResponse> => {
   debug(`tutorial get impl`)
+
+  // temporary hack until we port this to compnentry
+  import('./inject').then(_ => _.default())
 
   const args: string[] = command.argvNoOptions
   return setup(args)

@@ -27,7 +27,6 @@ export {
 } from './registrar'
 
 import {
-  injectCSS,
   UsageError,
   getCurrentBlock,
   getCurrentPrompt,
@@ -140,6 +139,8 @@ const makeCompletionContainer = (
   dirname?: string,
   lastIdx?: number
 ) => {
+  import('./inject').then(_ => _.default())
+
   const temporaryContainer = document.createElement('div') as TemporaryContainer
   temporaryContainer.className = 'tab-completion-temporary repl-temporary'
 
@@ -578,11 +579,6 @@ const suggestCommandCompletions = (
  */
 export default () => {
   if (typeof document === 'undefined') return
-
-  injectCSS({
-    css: require('@kui-shell/plugin-core-support/web/css/tab-completion.css'),
-    key: 'plugin-core-support.kui-shell.org/tab-completion.css'
-  })
 
   // keydown is necessary for evt.preventDefault() to work; keyup would otherwise also work
   let currentEnumeratorAsync: number

@@ -17,7 +17,6 @@
 // this file defines the external API
 
 export { FlowNode, Edge } from './lib/graph'
-export { default as injectCSS } from './/lib/inject'
 export { default as ActivationLike, ActivationLikeFull } from './lib/activation'
 export { default as visualize } from './lib/visualize'
 export { default as graph2doms } from './lib/graph2doms'

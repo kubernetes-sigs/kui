@@ -68,8 +68,7 @@ export const button = {
     mode: 'mode4',
     label: 'mode4 label',
     command: 'test string',
-    kind: 'drilldown' as const,
-    defaultMode: true // set defaultMode true to test error handling
+    kind: 'drilldown' as const
   }
 }
 

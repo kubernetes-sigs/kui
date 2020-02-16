@@ -27,7 +27,6 @@ import {
   Tab,
   flatten,
   eventBus,
-  injectCSS,
   CodedError,
   inBrowser,
   prettyPrintAnsi,
@@ -68,6 +67,9 @@ const exitApplicationModePattern = /\x1b\[\?1l/
 const enterAltBufferPattern = /\x1b\[\??(47|1047|1049)h/
 const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 /* eslint-enable no-control-regex */
+
+import 'xterm/lib/xterm.css'
+import '../../web/css/static/xterm.css'
 
 interface Size {
   resizeGeneration: number
@@ -1104,28 +1106,6 @@ const getOrCreateChannel = async (
   }
 }
 
-/**
- * Inject xterm.css if we haven't already
- *
- */
-let alreadyInjectedCSS: boolean
-function injectXtermCSS() {
-  if (!alreadyInjectedCSS) {
-    injectCSS({ css: require('xterm/lib/xterm.css'), key: 'xtermjs' })
-    injectCSS({
-      css: require('@kui-shell/plugin-bash-like/web/css/xterm.css'),
-      key: 'kui-xtermjs'
-    })
-    alreadyInjectedCSS = true
-
-    // we did indeed inject the css this time around
-    return true
-  } else {
-    // we didn't inject the css this time around
-    return false
-  }
-}
-
 interface Options extends ParsedOptions {
   o?: string
   out?: string
@@ -1152,8 +1132,6 @@ export const doExec = (
       (argvNoOptions[0] === 'cat' && /json$/.test(argvNoOptions[1]) && 'json') ||
       (argvNoOptions[0] === 'cat' && (/yaml$/.test(argvNoOptions[1]) || /yml$/.test(argvNoOptions[1])) && 'yaml')
     const expectingSemiStructuredOutput = /yaml|json/.test(contentType)
-
-    const injectingCSS = injectXtermCSS()
 
     // this is the main work
     const exec = async () => {
@@ -1310,11 +1288,5 @@ export const doExec = (
       }
     }
 
-    if (injectingCSS) {
-      // do the main work after injectCSS
-      setTimeout(exec, 0)
-    } else {
-      // otherwise, we are good to go
-      exec()
-    }
+    exec()
   })
