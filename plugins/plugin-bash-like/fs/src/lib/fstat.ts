@@ -16,7 +16,15 @@
 
 import { readFile, stat } from 'fs'
 
-import { Arguments, RawResponse, Registrar, CodedError, findFileWithViewer, expandHomeDir } from '@kui-shell/core'
+import {
+  Arguments,
+  ParsedOptions,
+  RawResponse,
+  Registrar,
+  CodedError,
+  findFileWithViewer,
+  expandHomeDir
+} from '@kui-shell/core'
 
 export interface FStat {
   viewer: string
@@ -26,11 +34,16 @@ export interface FStat {
   data?: string
 }
 
+interface Options extends ParsedOptions {
+  'enoent-ok': boolean
+  'with-data': boolean
+}
+
 /**
  * Kui command for fs.stat
  *
  */
-const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
+const fstat = ({ argvNoOptions, parsedOptions }: Arguments<Options>) => {
   return new Promise<RawResponse<FStat>>((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
@@ -42,6 +55,20 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
     stat(fullpath, (err, stats) => {
       if (err) {
         if (err.code === 'ENOENT') {
+          if (parsedOptions['enoent-ok']) {
+            // file does not exist; caller told us that's ok
+            resolve({
+              mode: 'raw',
+              content: {
+                viewer,
+                filepath,
+                fullpath: prettyFullPath,
+                isDirectory: false,
+                data: ''
+              }
+            })
+          }
+
           const error: CodedError = new Error(err.message)
           error.stack = err.stack
           error.code = 404
@@ -88,6 +115,9 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments) => {
 export default (commandTree: Registrar) => {
   commandTree.listen('/fstat', fstat, {
     hidden: true,
-    requiresLocal: true
+    requiresLocal: true,
+    flags: {
+      boolean: ['with-data', 'enoent-ok']
+    }
   })
 }

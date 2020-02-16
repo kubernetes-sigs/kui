@@ -56,14 +56,15 @@ const modes: MMRExpectMode[] = [
   { mode: 'text', label: 'T1', content: 'test plain text 5', contentType: 'text/plain' },
   { mode: 'text2', label: 'T2', content: 'plain as day', contentType: 'text/plain' },
   { mode: 'text3', label: 'T3', content: 'hello world', contentType: 'text/plain' },
-  { mode: 'text4', label: 'T4', content: expectedMarkdownContent, contentType: 'text/plain' },
+  { mode: 'text4', label: 'T4', content: expectedMarkdownContent, contentType: 'text/markdown' },
   { mode: 'table', label: 'Tbl1', nRows: 2, nCells: 4, contentType: 'table' },
   { mode: 'html', label: 'H', contentType: 'text/html' },
   { mode: 'm', contentType: 'text/markdown' },
   {
     mode: 'yaml',
     label: 'R',
-    content: 'apiVersion: this is the api version field\nkind: this is the kind field',
+    editor: true,
+    content: { apiVersion: 'this is the api version field', kind: 'this is the kind field' },
     contentType: 'yaml'
   }
 ]

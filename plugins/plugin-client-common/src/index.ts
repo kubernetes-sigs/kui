@@ -40,6 +40,7 @@ declare global {
   }
 }
 
+export { default as Loading } from './components/Loading'
 export { default as InputStripe } from './components/InputStripe'
 export { default as TabContainer } from './components/TabContainer'
 export { default as StatusStripe } from './components/StatusStripe'

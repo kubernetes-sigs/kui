@@ -409,7 +409,8 @@ module.exports = {
           'sass-loader'
         ]
       },
-      { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
+      // { test: /\.css$/i, include: thisPath('@kui-shell/plugin-'), exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
+      { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['style-loader', 'css-loader'] },
 
       //
       // typescript exclusion rules

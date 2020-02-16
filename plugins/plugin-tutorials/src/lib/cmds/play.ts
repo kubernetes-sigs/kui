@@ -28,7 +28,6 @@ import {
   Tab,
   findFile,
   getCurrentPrompt,
-  injectCSS,
   partialInput,
   closeAllViews as clearSelection
 
@@ -84,25 +83,13 @@ const rowFilters = {
 }
 
 /**
- * Inject our CSS
- *
- */
-const injectOurCSS = () => {
-  injectCSS({
-    css: require('@kui-shell/plugin-tutorials/web/css/main.css').toString(),
-    key: 'tutorial.main'
-  })
-  injectCSS({
-    css: require('@kui-shell/plugin-tutorials/web/css/tutorials.css').toString(),
-    key: 'tutorial.tutorials'
-  })
-}
-
-/**
  * Inject our HTML content
  *
  */
 const injectHTML = () => {
+  // temporary hack until we port this to compnentry
+  import('./inject').then(_ => _.default())
+
   const loader = Promise.resolve(require('@kui-shell/plugin-tutorials/web/html/index.html').default)
 
   return loader.then(html => {
@@ -853,8 +840,6 @@ const showTutorial = (tab: Tab, tutorialName: string, obj: TutorialDefinition) =
  *
  */
 const use = (cmd: string) => async ({ argvNoOptions, tab, execOptions, parsedOptions }: Arguments) => {
-  injectOurCSS()
-
   // inject the HTML if needed
   const ready: Promise<void | boolean> = document.querySelector('#tutorialPane') ? Promise.resolve() : injectHTML()
 

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { injectCSS } from '@kui-shell/core'
+import '../../web/css/static/wskflow.css'
 
-export default () => {
-  injectCSS({
-    css: require('@kui-shell/plugin-wskflow/web/css/wskflow.css').toString(),
-    key: 'wskflow'
-  })
+export default function() {
+  // no-op
 }

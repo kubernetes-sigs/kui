@@ -57,7 +57,6 @@
     "@kui-shell/plugin-editor": "file:/tmp/kui-packs/kui-shell-plugin-editor.tgz",
     "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/plugin-git": "file:/tmp/kui-packs/kui-shell-plugin-git.tgz",
-    "@kui-shell/plugin-sidecar": "file:/tmp/kui-packs/kui-shell-plugin-sidecar.tgz",
     "@kui-shell/plugin-leftnav-sidecar": "file:/tmp/kui-packs/kui-shell-plugin-leftnav-sidecar.tgz",
     "@kui-shell/plugin-carbon-tables": "file:/tmp/kui-packs/kui-shell-plugin-carbon-tables.tgz",
     "@kui-shell/plugin-carbon-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",

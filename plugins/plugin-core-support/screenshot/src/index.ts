@@ -16,78 +16,16 @@
 
 import { join } from 'path'
 
-import {
-  inBrowser,
-  Arguments,
-  ParsedOptions,
-  Registrar,
-  UsageModel,
-  UsageError,
-  i18n,
-  KeyCodes,
-  Tab,
-  injectCSS,
-  getCurrentPrompt
-} from '@kui-shell/core'
+import { inBrowser, Arguments, UsageError, i18n, KeyCodes, Tab, getCurrentPrompt } from '@kui-shell/core'
+
+import usage from './usage'
+import Options from './options'
+import '../../web/css/static/screenshot.css'
 
 const strings = i18n('plugin-core-support')
 
 /** number of seconds before the screenshot-captured UI disappears automatically */
 const SECONDS_TILL_AUTO_CLOSE = 10
-
-/**
- * Usage message
- *
- */
-const usage: UsageModel = {
-  strict: 'screenshot',
-  command: 'screenshot',
-  title: strings('screenshotUsageTitle'),
-  header: strings('screenshotUsageHeader'),
-  example: 'screenshot [which]',
-  detailedExample: [
-    { command: 'screenshot sidecar', docs: strings('screenshotSidecarUsageDocs') },
-    { command: 'screenshot repl', docs: strings('screenshotReplUsageDocs') },
-    {
-      command: 'screenshot last',
-      docs: strings('screenshotLastUsageDocs')
-    },
-    {
-      command: 'screenshot full',
-      docs: strings('screenshotFullUsageDocs')
-    },
-    {
-      command: 'screenshot',
-      docs: strings('screenshotUsageDocs')
-    }
-  ],
-  optional: [
-    {
-      name: 'which',
-      positional: true,
-      docs: strings('screenshotWhichUsageDocs'),
-      allowed: ['selector', 'repl', 'full', 'last', 'nth']
-    },
-    { name: '--nth', docs: strings('screenshotNUsageDocs'), numeric: true },
-
-    // hidden so i18n not needed
-    { name: '--selector', hidden: true, docs: 'capture a given selector' },
-    { name: '--context', allowed: ['tab'], hidden: true, docs: 'for --selector, capture context' },
-    { name: '--squish-selector', hidden: true, docs: 'for --selector, also squish' },
-    { name: '--squish-css', hidden: true, docs: 'for --squish-selector, add this css class' }
-  ]
-}
-
-/**
- * Dash options for the screenshot command
- *
- */
-interface Options extends ParsedOptions {
-  offset?: string
-  context?: string
-  'squish-selector': string | string[]
-  'squish-css': string
-}
 
 /**
  * Round a dom coordinate to make the electron API happy.
@@ -212,286 +150,275 @@ interface SnapDom extends HTMLElement {
 }
 
 /** this is the handler body */
-export default async (commandTree: Registrar) => {
-  commandTree.listen(
-    '/screenshot',
-    ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>) =>
-      // eslint-disable-next-line no-async-promise-executor
-      new Promise(async (resolve, reject) => {
-        if (inBrowser()) {
-          const error = new Error(strings('notSupportedInBrowser'))
-          error['code'] = 500
-          reject(error)
+export default async ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>) =>
+  // eslint-disable-next-line no-async-promise-executor
+  new Promise(async (resolve, reject) => {
+    if (inBrowser()) {
+      const error = new Error(strings('notSupportedInBrowser'))
+      error['code'] = 500
+      reject(error)
+    }
+
+    const options = parsedOptions
+
+    try {
+      const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
+      const { app } = remote
+
+      // which dom to snap?
+      const which = (argvNoOptions[1] && argvNoOptions[1].toLowerCase()) || (options['nth'] && 'nth') || 'default'
+
+      // the selector which will snap the dom
+      let selector = which === 'selector' ? argvNoOptions[2] : selectors[which]
+      const context = parsedOptions.context === 'tab' ? tab : document
+
+      const N = options['nth']
+      if (typeof selector === 'function') {
+        selector = selector(tab, N)
+      }
+
+      if (which === 'last' && !selector) {
+        // sanity check the last option
+        return reject(new Error(strings('screenshotREPLError')))
+      } else if (!selector) {
+        // either we couldn't find the area to
+        return reject(new UsageError({ usage }))
+      } else if (which === 'nth') {
+        if (N === undefined) {
+          return reject(new Error('You must provide a numeric value for the "nth" argument'))
+        }
+      }
+
+      const dom: Element = selector && typeof selector === 'string' ? context.querySelector(selector) : selector
+      if (!dom) {
+        // either we couldn't find the area to capture :(
+        console.error('bad selector', selector)
+        return reject(new Error(strings('screenshotInternalError')))
+      }
+
+      // remove any hover effects on the capture screenshot button
+      const screenshotButtons = tab.querySelectorAll('sidecar .sidecar-screenshot-button')
+      for (let idx = 0; idx < screenshotButtons.length; idx++) {
+        screenshotButtons[idx].classList.add('force-no-hover')
+      }
+
+      // squish down the element to be copied, sizing it to fit
+      const doNotSquish = squish(tab, which, selector, parsedOptions)
+
+      // which rectangle to snap; electron's rect schema differs
+      // from the underlying dom's schema. sigh
+      // https://github.com/electron/electron/blob/master/docs/api/structures/rectangle.md
+      // note that all four values must be integral, hence the rounding bits
+      const snap = () => {
+        const domRect = dom.getBoundingClientRect()
+        const rect = {
+          x: round(domRect.left) + (options.offset ? parseInt(options.offset, 10) : 0), // see #346 for options.offset
+          y: round(domRect.top),
+          width: round(domRect.width),
+          height: round(domRect.height)
         }
 
-        const options = parsedOptions
+        if (which === 'sidecar') {
+          // bump up by 1 pixel, we don't care about the left border
+          rect.x += 1
+          rect.width -= 1
+        }
 
-        try {
-          injectCSS({
-            css: require('@kui-shell/plugin-core-support/web/css/screenshot.css'),
-            key: 'plugin-core-support.kui-shell.org/screenshot.css'
-          })
+        // capture a screenshot
+        const listener = (event, buf) => {
+          document.body.classList.remove('no-tooltips-anywhere')
+          const page = document.querySelector('body > .page')
 
-          const { ipcRenderer, nativeImage, remote, shell } = await import('electron')
-          const { app } = remote
-
-          // which dom to snap?
-          const which = (argvNoOptions[1] && argvNoOptions[1].toLowerCase()) || (options['nth'] && 'nth') || 'default'
-
-          // the selector which will snap the dom
-          let selector = which === 'selector' ? argvNoOptions[2] : selectors[which]
-          const context = parsedOptions.context === 'tab' ? tab : document
-
-          const N = options['nth']
-          if (typeof selector === 'function') {
-            selector = selector(tab, N)
-          }
-
-          if (which === 'last' && !selector) {
-            // sanity check the last option
-            return reject(new Error(strings('screenshotREPLError')))
-          } else if (!selector) {
-            // either we couldn't find the area to
-            return reject(new UsageError({ usage }))
-          } else if (which === 'nth') {
-            if (N === undefined) {
-              return reject(new Error('You must provide a numeric value for the "nth" argument'))
+          if (!buf) {
+            // some sort of internal error in the main process
+            for (let idx = 0; idx < screenshotButtons.length; idx++) {
+              screenshotButtons[idx].classList.remove('force-no-hover')
             }
+            return reject(new Error('Internal Error'))
           }
 
-          const dom: Element = selector && typeof selector === 'string' ? context.querySelector(selector) : selector
-          if (!dom) {
-            // either we couldn't find the area to capture :(
-            console.error('bad selector', selector)
-            return reject(new Error(strings('screenshotInternalError')))
+          if (document.getElementById('screenshot-captured') !== null) {
+            // if a notification widget already exists, remove it
+            const prevSnapDom = document.getElementById('screenshot-captured') as SnapDom
+            if (prevSnapDom.kuiSnapshotTimer) {
+              clearInterval(prevSnapDom.kuiSnapshotTimer)
+            }
+            prevSnapDom.remove()
           }
 
-          // remove any hover effects on the capture screenshot button
-          const screenshotButtons = tab.querySelectorAll('sidecar .sidecar-screenshot-button')
+          const img = nativeImage.createFromBuffer(buf)
+          const snapDom: SnapDom = document.createElement('div')
+
+          const snapImg = document.createElement('img')
+          const message = document.createElement('div')
+          const messageContent = document.createElement('div')
+          const snapContent = document.createElement('div')
+          const close = document.createElement('div')
+
+          page.appendChild(snapDom)
+
+          // when we're done, re-enable the things we messed with and hide the snapDom
+          const finish = () => {
+            snapDom.classList.add('screenshot-hide')
+            setTimeout(() => snapDom.classList.remove('screenshot-active'), 0)
+
+            setTimeout(() => {
+              page.removeChild(snapDom)
+              getCurrentPrompt(tab).readOnly = false
+              getCurrentPrompt(tab).focus()
+            }, 1000) // match go-away-able transition-duration; see ui.css
+          }
+
+          const windowSize = document.body.getBoundingClientRect()
+          const imgSize = img.getSize()
+
+          // pixel dimensions of the screenshot popup
+          let widthPx = windowSize.width * 0.65
+          let heightPx = (imgSize.height / imgSize.width) * widthPx
+          if (heightPx > windowSize.height) {
+            // oops, too tall
+            heightPx = windowSize.height * 0.65
+            widthPx = (imgSize.width / imgSize.height) * heightPx
+          }
+
+          // viewport width dimensions of the screenshot popup
+          // const widthVw = `${(75 * widthPx) / windowSize.width}vw`
+          // const heightVw = `${(75 * heightPx) / windowSize.width}vw`
+
+          snapDom.appendChild(snapImg)
+          snapDom.appendChild(snapContent)
+          snapDom.appendChild(close)
+
+          snapDom.setAttribute('data-notification', '')
+          snapDom.setAttribute('role', 'polite')
+          snapDom.setAttribute('data-notification', '')
+          snapDom.classList.add('bx--toast-notification')
+          snapDom.classList.add('bx--toast-notification--warning')
+          snapDom.classList.add('zoomable')
+
+          snapDom.id = 'screenshot-captured'
+          snapDom.classList.add('screenshot-hide')
+          snapDom.classList.add('screenshot-active')
+          setTimeout(() => snapDom.classList.remove('screenshot-hide'), 0)
+
+          // save screenshot to disk
+          const saveButton = document.createElement('div')
+
+          const ts = new Date()
+          const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
+          const location = join(app.getPath('desktop'), filename)
+
+          saveButton.className = 'screenshot-save-button'
+          saveButton.innerHTML = strings('Save to desktop')
+
+          saveButton.onclick = () => {
+            remote.require('fs').writeFile(location, img.toPNG(), async () => {
+              console.log(`screenshot saved to ${location}`)
+
+              try {
+                shell.showItemInFolder(location)
+              } catch (err) {
+                console.error('error opening screenshot file')
+              }
+            })
+          }
+
+          // the image; chrome bug: if we use width and height,
+          // there is a white border that is not defeatible; if
+          // we trick chrome into thinking the image has no
+          // width and height (but fake it with padding), the
+          // border goes away: https://stackoverflow.com/a/14709695
+
+          snapImg.setAttribute('src', img.toDataURL())
+          snapImg.classList.add('screenshot-image')
+
+          snapContent.classList.add('screenshot-content')
+          message.classList.add('screenshot-success-message')
+          message.innerText = strings('Screenshot copied to clipboard')
+          messageContent.classList.add('screenshot-message')
+          messageContent.appendChild(message)
+          const closeMessage = document.createElement('div')
+          closeMessage.classList.add('screenshot-closing-message')
+          closeMessage.setAttribute('id', 'close-msg')
+          messageContent.appendChild(closeMessage)
+          snapContent.append(messageContent)
+          snapContent.appendChild(saveButton)
+
+          const closeButton = document.createElement('div')
+
+          close.classList.add('screenshot-close')
+          close.appendChild(closeButton)
+
+          closeButton.innerHTML =
+            '<div style="display: flex;justify-content:flex-end;align-items:baseline"><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform; cursor:pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z" stroke="white" fill="white"></path></svg></div>'
+          closeButton.classList.add('screenshot-close-botton')
+
+          // go away after SECONDS_TILL_AUTO_CLOSE seconds
+          let timeleft = SECONDS_TILL_AUTO_CLOSE
+          snapDom.kuiSnapshotTimer = setInterval(() => {
+            if (timeleft <= 0) {
+              clearInterval(snapDom.kuiSnapshotTimer)
+              finish()
+            }
+
+            ;(snapDom.querySelector('.screenshot-closing-message') as HTMLElement).innerText = strings(
+              'Closing in {0} seconds',
+              timeleft.toString()
+            )
+
+            timeleft -= 1
+          }, 1000)
+
+          // to capture the Escape key event
+          const hiddenInput = document.createElement('input')
+          hiddenInput.classList.add('hidden')
+          hiddenInput.classList.add('grab-focus') // so that the repl doesn't grab it back on `listen`
+          snapDom.appendChild(hiddenInput)
+          hiddenInput.focus()
+
+          // we'll do a finish when the user hits escape
+          hiddenInput.addEventListener(
+            'keyup',
+            (evt: KeyboardEvent) => {
+              if (evt.keyCode === KeyCodes.ESCAPE) {
+                evt.preventDefault()
+                finish()
+              }
+            },
+            { capture: true, once: true }
+          )
+
+          // also, if the user clicks on the close button, finish up
+          closeButton.onclick = finish
+
+          // we can no unregister our listener; this is
+          // important as subsequent listener registrations
+          // stack, rather than replace
+          ipcRenderer.removeListener('capture-page-to-clipboard-done', listener)
+
+          // undo any squishing
+          if (!doNotSquish) {
+            unsquish(tab, which, selector, parsedOptions)
+          }
+
           for (let idx = 0; idx < screenshotButtons.length; idx++) {
-            screenshotButtons[idx].classList.add('force-no-hover')
+            screenshotButtons[idx].classList.remove('force-no-hover')
           }
-
-          // squish down the element to be copied, sizing it to fit
-          const doNotSquish = squish(tab, which, selector, parsedOptions)
-
-          // which rectangle to snap; electron's rect schema differs
-          // from the underlying dom's schema. sigh
-          // https://github.com/electron/electron/blob/master/docs/api/structures/rectangle.md
-          // note that all four values must be integral, hence the rounding bits
-          const snap = () => {
-            const domRect = dom.getBoundingClientRect()
-            const rect = {
-              x: round(domRect.left) + (options.offset ? parseInt(options.offset, 10) : 0), // see #346 for options.offset
-              y: round(domRect.top),
-              width: round(domRect.width),
-              height: round(domRect.height)
-            }
-
-            if (which === 'sidecar') {
-              // bump up by 1 pixel, we don't care about the left border
-              rect.x += 1
-              rect.width -= 1
-            }
-
-            // capture a screenshot
-            const listener = (event, buf) => {
-              document.body.classList.remove('no-tooltips-anywhere')
-              const page = document.querySelector('body > .page')
-
-              if (!buf) {
-                // some sort of internal error in the main process
-                for (let idx = 0; idx < screenshotButtons.length; idx++) {
-                  screenshotButtons[idx].classList.remove('force-no-hover')
-                }
-                return reject(new Error('Internal Error'))
-              }
-
-              if (document.getElementById('screenshot-captured') !== null) {
-                // if a notification widget already exists, remove it
-                const prevSnapDom = document.getElementById('screenshot-captured') as SnapDom
-                if (prevSnapDom.kuiSnapshotTimer) {
-                  clearInterval(prevSnapDom.kuiSnapshotTimer)
-                }
-                prevSnapDom.remove()
-              }
-
-              const img = nativeImage.createFromBuffer(buf)
-              const snapDom: SnapDom = document.createElement('div')
-
-              const snapImg = document.createElement('img')
-              const message = document.createElement('div')
-              const messageContent = document.createElement('div')
-              const snapContent = document.createElement('div')
-              const close = document.createElement('div')
-
-              page.appendChild(snapDom)
-
-              // when we're done, re-enable the things we messed with and hide the snapDom
-              const finish = () => {
-                snapDom.classList.add('screenshot-hide')
-                setTimeout(() => snapDom.classList.remove('screenshot-active'), 0)
-
-                setTimeout(() => {
-                  page.removeChild(snapDom)
-                  getCurrentPrompt(tab).readOnly = false
-                  getCurrentPrompt(tab).focus()
-                }, 1000) // match go-away-able transition-duration; see ui.css
-              }
-
-              const windowSize = document.body.getBoundingClientRect()
-              const imgSize = img.getSize()
-
-              // pixel dimensions of the screenshot popup
-              let widthPx = windowSize.width * 0.65
-              let heightPx = (imgSize.height / imgSize.width) * widthPx
-              if (heightPx > windowSize.height) {
-                // oops, too tall
-                heightPx = windowSize.height * 0.65
-                widthPx = (imgSize.width / imgSize.height) * heightPx
-              }
-
-              // viewport width dimensions of the screenshot popup
-              // const widthVw = `${(75 * widthPx) / windowSize.width}vw`
-              // const heightVw = `${(75 * heightPx) / windowSize.width}vw`
-
-              snapDom.appendChild(snapImg)
-              snapDom.appendChild(snapContent)
-              snapDom.appendChild(close)
-
-              snapDom.setAttribute('data-notification', '')
-              snapDom.setAttribute('role', 'polite')
-              snapDom.setAttribute('data-notification', '')
-              snapDom.classList.add('bx--toast-notification')
-              snapDom.classList.add('bx--toast-notification--warning')
-              snapDom.classList.add('zoomable')
-
-              snapDom.id = 'screenshot-captured'
-              snapDom.classList.add('screenshot-hide')
-              snapDom.classList.add('screenshot-active')
-              setTimeout(() => snapDom.classList.remove('screenshot-hide'), 0)
-
-              // save screenshot to disk
-              const saveButton = document.createElement('div')
-
-              const ts = new Date()
-              const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`
-              const location = join(app.getPath('desktop'), filename)
-
-              saveButton.className = 'screenshot-save-button'
-              saveButton.innerHTML = strings('Save to desktop')
-
-              saveButton.onclick = () => {
-                remote.require('fs').writeFile(location, img.toPNG(), async () => {
-                  console.log(`screenshot saved to ${location}`)
-
-                  try {
-                    shell.showItemInFolder(location)
-                  } catch (err) {
-                    console.error('error opening screenshot file')
-                  }
-                })
-              }
-
-              // the image; chrome bug: if we use width and height,
-              // there is a white border that is not defeatible; if
-              // we trick chrome into thinking the image has no
-              // width and height (but fake it with padding), the
-              // border goes away: https://stackoverflow.com/a/14709695
-
-              snapImg.setAttribute('src', img.toDataURL())
-              snapImg.classList.add('screenshot-image')
-
-              snapContent.classList.add('screenshot-content')
-              message.classList.add('screenshot-success-message')
-              message.innerText = strings('Screenshot copied to clipboard')
-              messageContent.classList.add('screenshot-message')
-              messageContent.appendChild(message)
-              const closeMessage = document.createElement('div')
-              closeMessage.classList.add('screenshot-closing-message')
-              closeMessage.setAttribute('id', 'close-msg')
-              messageContent.appendChild(closeMessage)
-              snapContent.append(messageContent)
-              snapContent.appendChild(saveButton)
-
-              const closeButton = document.createElement('div')
-
-              close.classList.add('screenshot-close')
-              close.appendChild(closeButton)
-
-              closeButton.innerHTML =
-                '<div style="display: flex;justify-content:flex-end;align-items:baseline"><svg focusable="false" preserveAspectRatio="xMidYMid meet" style="will-change: transform; cursor:pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4l6.6 6.6L8 22.6 9.4 24l6.6-6.6 6.6 6.6 1.4-1.4-6.6-6.6L24 9.4z" stroke="white" fill="white"></path></svg></div>'
-              closeButton.classList.add('screenshot-close-botton')
-
-              // go away after SECONDS_TILL_AUTO_CLOSE seconds
-              let timeleft = SECONDS_TILL_AUTO_CLOSE
-              snapDom.kuiSnapshotTimer = setInterval(() => {
-                if (timeleft <= 0) {
-                  clearInterval(snapDom.kuiSnapshotTimer)
-                  finish()
-                }
-
-                ;(snapDom.querySelector('.screenshot-closing-message') as HTMLElement).innerText = strings(
-                  'Closing in {0} seconds',
-                  timeleft.toString()
-                )
-
-                timeleft -= 1
-              }, 1000)
-
-              // to capture the Escape key event
-              const hiddenInput = document.createElement('input')
-              hiddenInput.classList.add('hidden')
-              hiddenInput.classList.add('grab-focus') // so that the repl doesn't grab it back on `listen`
-              snapDom.appendChild(hiddenInput)
-              hiddenInput.focus()
-
-              // we'll do a finish when the user hits escape
-              hiddenInput.addEventListener(
-                'keyup',
-                (evt: KeyboardEvent) => {
-                  if (evt.keyCode === KeyCodes.ESCAPE) {
-                    evt.preventDefault()
-                    finish()
-                  }
-                },
-                { capture: true, once: true }
-              )
-
-              // also, if the user clicks on the close button, finish up
-              closeButton.onclick = finish
-
-              // we can no unregister our listener; this is
-              // important as subsequent listener registrations
-              // stack, rather than replace
-              ipcRenderer.removeListener('capture-page-to-clipboard-done', listener)
-
-              // undo any squishing
-              if (!doNotSquish) {
-                unsquish(tab, which, selector, parsedOptions)
-              }
-
-              for (let idx = 0; idx < screenshotButtons.length; idx++) {
-                screenshotButtons[idx].classList.remove('force-no-hover')
-              }
-              resolve(strings('Successfully captured a screenshot to the clipboard'))
-            }
-
-            //
-            // register our listener, and tell the main process to get
-            // started (in that order!)
-            //
-            ipcRenderer.on('capture-page-to-clipboard-done', listener)
-            ipcRenderer.send('capture-page-to-clipboard', remote.getCurrentWebContents().id, rect)
-          }
-
-          document.body.classList.add('no-tooltips-anywhere')
-          setTimeout(snap, 100)
-        } catch (e) {
-          console.error(e)
-          reject(new Error('Internal Error'))
+          resolve(strings('Successfully captured a screenshot to the clipboard'))
         }
-      }),
-    { usage, incognito: ['popup'], requiresLocal: true }
-  ) // currently screenshot does not support browser mode
-}
+
+        //
+        // register our listener, and tell the main process to get
+        // started (in that order!)
+        //
+        ipcRenderer.on('capture-page-to-clipboard-done', listener)
+        ipcRenderer.send('capture-page-to-clipboard', remote.getCurrentWebContents().id, rect)
+      }
+
+      document.body.classList.add('no-tooltips-anywhere')
+      setTimeout(snap, 100)
+    } catch (e) {
+      console.error(e)
+      reject(new Error('Internal Error'))
+    }
+  })

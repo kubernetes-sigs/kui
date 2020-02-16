@@ -44,7 +44,7 @@ export function isScalarContent<T extends MetadataBearing>(
  */
 export type SupportedStringContent = 'yaml' | 'text/markdown' | 'text/html' | 'json' | 'shell' | 'text/plain'
 
-function isSupportedContentType(contentType: string) {
+export function isSupportedContentType(contentType: string) {
   return (
     contentType === 'yaml' ||
     contentType === 'text/markdown' ||
@@ -87,14 +87,14 @@ export function isStringWithOptionalContentType<T extends MetadataBearing>(
  * contentType } wrapper.
  *
  */
-export type FunctionThatProducesContent<T extends MetadataBearing> = (
+export type FunctionThatProducesContent<T extends MetadataBearing = MetadataBearing> = (
   tab: Tab,
   entity: T
-) => ScalarResource | ScalarContent | CommandStringContent | Promise<ScalarResource> | Promise<ScalarContent>
+) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent>
 export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
-export function isFunctionContent<T extends MetadataBearing>(
+export function isFunctionContent<T extends MetadataBearing = MetadataBearing>(
   content: Entity | Content<T> | MetadataBearing | ModeOrButton<T>
 ): content is FunctionContent<T> {
   const func = content as FunctionContent<T>

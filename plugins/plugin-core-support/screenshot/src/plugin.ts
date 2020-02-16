@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { isHeadless, Registrar } from '@kui-shell/core'
+import { isHeadless, Arguments, Registrar } from '@kui-shell/core'
+
+import usage from './usage'
+import Options from './options'
 
 export default async (registrar: Registrar) => {
   if (!isHeadless()) {
-    await import('.').then(_ => _.default(registrar))
+    // currently screenshot does not support browser mode
+    registrar.listen(
+      '/screenshot',
+      (args: Arguments<Options>) => {
+        return import('.').then(_ => _.default(args))
+      },
+      { usage, incognito: ['popup'], requiresLocal: true }
+    )
   }
 }

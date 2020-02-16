@@ -29,7 +29,7 @@ export interface BadgeSpec {
   fontawesome?: string
   image?: HTMLImageElement | SVGElement
   css?: string
-  onclick?: (evt: MouseEvent) => boolean
+  onclick?: () => void
 }
 
 export type Badge = string | BadgeSpec | Element

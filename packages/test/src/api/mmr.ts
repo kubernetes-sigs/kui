@@ -237,10 +237,10 @@ export class TestMMR {
           })
 
           if (expectMode.contentType === 'text/plain') {
-            it(`should show plain text content in the ${expectMode.mode} tab`, async () => {
+            it(`should show plain text content via monaco in the ${expectMode.mode} tab`, async () => {
               try {
                 if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                  await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                  await SidecarExpect.textPlainContentFromMonaco(expectMode.content)(this.app)
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
@@ -250,9 +250,18 @@ export class TestMMR {
             it(`should show ${expectMode.nRows} table rows in the ${expectMode.mode} tab`, async () => {
               try {
                 if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                  let idx = 0
                   await this.app.client.waitUntil(async () => {
-                    const rows = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} tbody tr`)
-                    return rows.value.length === expectMode.nRows
+                    const rows = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT} tbody tr`)
+                    const actualRows = rows.value.length
+                    const expectedRows = expectMode.nRows
+                    if (++idx > 5) {
+                      console.error(
+                        `still waiting for table rows actualRows=${actualRows} expectedRows=${expectedRows}`,
+                        `${Selectors.SIDECAR_TAB_CONTENT} tbody tr`
+                      )
+                    }
+                    return actualRows === expectedRows
                   }, CLI.waitTimeout)
                 }
               } catch (err) {
@@ -263,7 +272,7 @@ export class TestMMR {
               try {
                 if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
                   await this.app.client.waitUntil(async () => {
-                    const cells = await this.app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} td`)
+                    const cells = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT} td`)
                     return cells.value.length === expectMode.nCells
                   }, CLI.waitTimeout)
                 }
@@ -273,7 +282,7 @@ export class TestMMR {
             })
           } else if (expectMode.contentType === 'yaml') {
             if (expectMode.editor === true) {
-              it(`should open editor and show yaml content in the ${expectMode.mode} tab`, async () => {
+              it(`should open editor and show yaml content via monaco in the ${expectMode.mode} tab`, async () => {
                 try {
                   if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
                     await SidecarExpect.yaml(expectMode.content)(this.app)
@@ -283,7 +292,7 @@ export class TestMMR {
                 }
               })
             } else {
-              it(`should show plain yaml content in the ${expectMode.mode} tab`, async () => {
+              it(`should show random content in the ${expectMode.mode} tab`, async () => {
                 try {
                   if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
                     await SidecarExpect.textPlainContent(expectMode.content)(this.app)

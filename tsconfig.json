@@ -29,9 +29,6 @@
       "path": "plugins/plugin-carbon-tables"
     },
     {
-      "path": "plugins/plugin-sidecar"
-    },
-    {
       "path": "plugins/plugin-leftnav-sidecar"
     },
     {

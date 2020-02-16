@@ -17,8 +17,18 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import { MultiModalMode as Mode, findFile, expandHomeDir, i18n, Arguments, Registrar, KResponse } from '@kui-shell/core'
+import {
+  MultiModalResponse,
+  MultiModalMode as Mode,
+  findFile,
+  expandHomeDir,
+  i18n,
+  Arguments,
+  Registrar,
+  KResponse
+} from '@kui-shell/core'
 
+import File from './File'
 import { FStat } from './fstat'
 import { localFilepath } from './usage-helpers'
 
@@ -37,18 +47,6 @@ async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
   const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
 
   if (
-    suffix === 'js' ||
-    suffix === 'ts' ||
-    suffix === 'go' ||
-    suffix === 'txt' ||
-    suffix === 'swift' ||
-    suffix === 'py' ||
-    suffix === 'json' ||
-    suffix === 'yaml'
-  ) {
-    // open json and javascript files in the editor
-    return REPL.qexec(`edit "${filepath}"`)
-  } else if (
     suffix === 'png' ||
     suffix === 'jpg' ||
     suffix === 'jpeg' ||
@@ -71,7 +69,10 @@ async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
   } else if (suffix === 'pkl' || suffix === 'sab') {
     throw new Error('Opening of binary files not supported')
   } else {
-    const stats = (await REPL.rexec<FStat>(`fstat ${REPL.encodeComponent(filepath)} --with-data`)).content
+    // fetch the data:
+    //   --with-data says give us the file contents
+    //   --enoent-ok says don't fail if the file does not exist
+    const stats = (await REPL.rexec<FStat>(`fstat ${REPL.encodeComponent(filepath)} --with-data --enoent-ok`)).content
 
     if (stats.isDirectory) {
       debug('trying to open a directory; delegating to ls')
@@ -87,7 +88,7 @@ async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
         typeof data === 'string'
           ? {
               mode: 'view',
-              label: strings('View'),
+              label: strings('Edit'),
               contentType:
                 suffix === 'sh'
                   ? 'shell'
@@ -106,14 +107,20 @@ async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
               content: data
             }
 
-      return {
-        kind: 'file',
+      const response: MultiModalResponse<File> = {
+        apiVersion: 'kui-shell/v1',
+        kind: 'File',
         metadata: {
           name,
           namespace: packageName
         },
-        modes: [mode]
+        modes: [mode],
+        spec: {
+          filepath,
+          fullpath
+        }
       }
+      return response
     }
   }
 }
