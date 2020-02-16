@@ -18,6 +18,7 @@ import ls from './lib/ls'
 import glob from './lib/glob'
 import open from './lib/open'
 import fstat from './lib/fstat'
+import fwrite from './lib/fwrite'
 import { plugin as tabCompletion } from './lib/tab-completion'
 
 import { Registrar } from '@kui-shell/core'
@@ -30,6 +31,7 @@ export default async (registrar: Registrar) => {
   ls(registrar)
   open(registrar)
   fstat(registrar)
+  fwrite(registrar)
   glob(registrar)
   tabCompletion(registrar)
 }

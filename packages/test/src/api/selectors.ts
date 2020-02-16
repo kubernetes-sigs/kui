@@ -29,13 +29,19 @@ export const SIDECAR_SEQUENCE_CANVAS_NODES = `${SIDECAR_SEQUENCE_CANVAS} .node.a
 export const SIDECAR_SEQUENCE_CANVAS_NODE_N = (N: number) => `${SIDECAR_SEQUENCE_CANVAS_NODES}[data-task-index="${N}"]`
 export const SIDECAR_LIMIT = (type: string) => `${SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 export const SIDECAR_BADGES = `${SIDECAR} .sidecar-header .badges`
-export const SIDECAR_TOOLBAR = `${SIDECAR} .sidecar-bottom-stripe-toolbar`
+
+// sidecar toolbar
+export const SIDECAR_TOOLBAR = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
 export const SIDECAR_TOOLBAR_TEXT = (type: string) =>
   `${SIDECAR_TOOLBAR} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
 export const SIDECAR_TOOLBAR_BUTTON = (mode: string) =>
   `${SIDECAR_TOOLBAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button[data-mode="${mode}"] [role="tab"]`
-export const SIDECAR_CUSTOM_CONTENT = `${SIDECAR} .custom-content`
 
+// sidecar tab content, for visible tab
+export const SIDECAR_TAB_CONTENT = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .custom-content`
+export const SIDECAR_CUSTOM_CONTENT = `${SIDECAR_TAB_CONTENT} .code-highlighting`
+
+// top nav sidecar
 export const SIDECAR_MODE_BUTTONS = `${SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 export const SIDECAR_MODE_BUTTON = (mode: string) => `${SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
 export const SIDECAR_MODE_BUTTON_SELECTED = (mode: string) =>
@@ -48,10 +54,10 @@ export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (mode: string) =>
   `${SIDECAR_MODE_BUTTON_V2(mode)}.bx--side-nav__link--current`
 
 export const SIDECAR_BACK_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
-export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-button` // maximize button in the bottom stripe
-export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close` // close button in the bottom stripe
-export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close` // resume button in minimized mode
-export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit` // fully close button in the bottom stripe
+export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-button a` // maximize button in the bottom stripe
+export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
+export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close a` // resume button in minimized mode
+export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
 export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`

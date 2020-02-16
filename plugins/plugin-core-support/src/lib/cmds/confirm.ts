@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Registrar,
-  ExecType,
-  UsageModel,
-  eventBus,
-  i18n,
-  getCurrentPrompt,
-  injectCSS,
-  KeyCodes,
-  Tab
-} from '@kui-shell/core'
+import { Registrar, ExecType, UsageModel, eventBus, i18n, getCurrentPrompt, KeyCodes, Tab } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -57,13 +47,10 @@ export default async (commandTree: Registrar) => {
     ({ tab, argvNoOptions, parsedOptions, execOptions, REPL }) =>
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
+        await import('./confirmCSS').then(_ => _.default())
+
         const message = parsedOptions.asking || strings('areYouSure')
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
-
-        injectCSS({
-          css: require('@kui-shell/plugin-core-support/web/css/confirm.css'),
-          key: 'plugin-core-support.kui-shell.org/confirm.css'
-        })
 
         const confirm = () => {
           const modal = document.createElement('div')
@@ -227,6 +214,6 @@ export default async (commandTree: Registrar) => {
 
         setTimeout(confirm, 0)
       }),
-    { usage, noAuthOk: true, inBrowserOk: true, incognito: ['popup'] }
+    { usage, inBrowserOk: true, incognito: ['popup'] }
   )
 }

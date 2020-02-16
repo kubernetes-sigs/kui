@@ -196,6 +196,19 @@ export const textPlainContent = (content: string) => async (app: Application) =>
   return app
 }
 
+export const textPlainContentFromMonaco = (expectedText: string) => async (app: Application) => {
+  let idx = 0
+  await app.client.waitUntil(async () => {
+    const actualText = await getValueFromMonaco(app)
+    if (++idx > 5) {
+      console.error(`still waiting for plain text from monaco actualText=${actualText} expectedText=${expectedText}`)
+    }
+    return actualText === expectedText
+  }, waitTimeout)
+
+  return app
+}
+
 export async function tableContent(app: Application, nRows: number, nCells: number) {
   const rows = (await app.client.elements(`${Selectors.SIDECAR_CUSTOM_CONTENT} tr`)).value
   assert.strictEqual(nRows, rows.length, 'nRows must match')

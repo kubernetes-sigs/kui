@@ -16,6 +16,8 @@
 
 import { inElectron } from '@kui-shell/core'
 
+import '../../web/css/static/text-search.css'
+
 function addVisibilityStatusToDocument() {
   document.body.classList.add('search-bar-is-visible')
 }
@@ -28,17 +30,9 @@ function removeVisibilityStatusFromDocument() {
  *
  */
 async function injectContent() {
-  const { injectCSS } = await import('@kui-shell/core')
-
-  injectCSS({
-    css: require('@kui-shell/plugin-core-support/web/css/text-search.css'),
-    key: 'plugin-core-support.kui-shell.org/text-search.css'
-  })
-
   // insert html
   const searchBar = document.createElement('div')
   searchBar.setAttribute('id', 'search-bar')
-  searchBar.style.opacity = '0' // we need the initial opacity:0 due to injectCSS's asynchronicity
 
   searchBar.innerHTML = `<div id='search-container'><div id='search-input-container'><input id='search-input' type='text' aria-label='Search' placeholder='search term'/><span id='search-found-text' class='no-search-yet'></span></div><span id='search-close-button'><svg focusable="false" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path></svg></span></div>`
 
@@ -180,7 +174,6 @@ async function registerListener() {
       const { searchBar, searchFoundText, searchInput } = barBits
       searchBar.classList.add('visible')
       addVisibilityStatusToDocument()
-      searchBar.style.opacity = '' // see above "we need the initial opacity:0"
       searchFoundText.innerText = 'hit enter to search' // guide the user a bit
       searchFoundText.classList.add('no-search-yet') // to render the hit enter to search text a bit specially
       searchInput.focus() // searchInpus focused when opened

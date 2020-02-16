@@ -26,6 +26,9 @@ export interface ExecOptions {
   // force execution in a given tab?
   tab?: Tab
 
+  /** pass through uninterpreted data */
+  data?: string | Buffer
+
   /** environment variable map */
   env?: Record<string, string>
 

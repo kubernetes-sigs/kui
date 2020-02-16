@@ -163,9 +163,8 @@ export const expectArray = (expected: Array<string>, failFast = true, subset = f
 }
 
 /** get the monaco editor text */
-export const getValueFromMonaco = async (app: Application, prefix = '') => {
-  const editor = '.monaco-editor-wrapper'
-  const selector = prefix ? `${prefix} ${editor}` : editor
+export const getValueFromMonaco = async (app: Application) => {
+  const selector = '.bx--tab-content[aria-hidden="false"] .monaco-editor-wrapper'
   try {
     await app.client.waitForExist(selector, CLI.waitTimeout)
   } catch (err) {
@@ -180,7 +179,7 @@ export const getValueFromMonaco = async (app: Application, prefix = '') => {
   return app.client
     .execute(selector => {
       try {
-        return document.querySelector(selector)['editor'].getValue()
+        return document.querySelector(selector)['getValueForTests']()
       } catch (err) {
         console.error('error in getValueFromMonaco1', err)
         // intentionally returning undefined
@@ -199,7 +198,9 @@ export const expectText = (app: Application, expectedText: string) => async (sel
   await app.client.waitUntil(async () => {
     const actualText = await app.client.getText(selector)
     if (++idx > 5) {
-      console.error(`still waiting for text; actualText=${actualText} expectedText=${expectedText}`)
+      console.error(
+        `still waiting for text; actualText=${actualText} expectedText=${expectedText} selector=${selector}`
+      )
     }
     return actualText === expectedText
   })

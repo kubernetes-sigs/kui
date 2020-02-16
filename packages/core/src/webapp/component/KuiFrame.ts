@@ -29,6 +29,9 @@ const remove: Op = (elt: Element, cls: string) => elt.classList.remove(cls)
 // const add: Op = (elt: Element, cls: string) => elt.classList.add(cls)
 const toggle: Op = (elt: Element, cls: string) => elt.classList.toggle(cls)
 
+// temporary until we make this React
+const tabFrames: Record<string, KuiFrame> = {}
+
 export default class KuiFrame {
   /**
    * Cleaners for any global handlers we might have registered
@@ -40,19 +43,11 @@ export default class KuiFrame {
    * The internal DOM representation
    *
    */
-  private readonly dom: HTMLElement
-
-  public constructor() {
-    // some song and dance to get the html into a live dom
-    const { default: frameSrc } = require('@kui-shell/core/web/html/KuiFrame.html')
-    const tmp = document.createElement('div')
-    tmp.innerHTML = frameSrc
-
-    // now we have a live dom for the frame
-    this.dom = tmp.querySelector('sidecar') as HTMLElement
-  }
+  private dom: HTMLElement
 
   public attach(component: KuiFramedComponent, tab: Tab) {
+    this.dom = document.createElement('sidecar')
+
     // the container for the frame
     const container =
       component.frame.position === 'TabColumn' ? tab.querySelector('tabcolumn') : tab.querySelector('tabrow')
@@ -60,33 +55,13 @@ export default class KuiFrame {
     if (isSingleton(component)) {
       const { viewId } = component.frame
 
-      const existing = container.querySelector(`[data-view-id=${viewId}]`)
+      const existing = tabFrames[getTabId(tab)]
       if (existing) {
-        existing.remove()
+        existing.destroy()
       }
 
+      tabFrames[getTabId(tab)] = this
       this.dom.setAttribute('data-view-id', viewId)
-    }
-
-    if (component.frame.kind) {
-      let iconText = component.frame.kind.replace(/s$/, '')
-      const A = iconText.split(/(?=[A-Z])/).filter(x => x)
-      if (iconText.length > 12 && A.length > 1) {
-        iconText = A.map(_ => _.charAt(0)).join('')
-      }
-
-      const kind = this.dom.querySelector('.sidecar-header-icon') as HTMLElement
-      kind.innerText = iconText
-    }
-
-    if (component.frame.metadata.namespace) {
-      const ns = this.dom.querySelector('.package-prefix') as HTMLElement
-      ns.innerText = component.frame.metadata.namespace
-
-      if (component.spec.onclick && component.spec.onclick.namespace) {
-        ns.classList.add('clickable')
-        ns.onclick = () => tab.REPL.pexec(component.spec.onclick.namespace)
-      }
     }
 
     try {
@@ -98,12 +73,9 @@ export default class KuiFrame {
 
     // FIXME; the custom-content part we can fix, once we unlock sidecar.css
     this.setVisible(tab)
-    this.dom.classList.add('visible', 'custom-content')
+    this.dom.classList.add('visible')
 
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('kui--sidecar-header-and-body')
-    wrapper.appendChild(component.spec.content)
-    this.dom.appendChild(wrapper)
+    this.dom.appendChild(component.spec.content)
     container.appendChild(this.dom)
   }
 
@@ -316,25 +288,22 @@ export default class KuiFrame {
     this.initEscapeKeyHandler(tab)
     this.initCloseAllHandler(tab)
 
-    // maximize button
-    ;(this.dom.querySelector('.toggle-sidecar-maximization-button') as HTMLElement).onclick = () => {
-      // indicate that the user requested maximization
-      this.toggleMaximization(tab)
-    }
-
-    // close button
-    ;(this.dom.querySelector('.toggle-sidecar-button') as HTMLElement).onclick = () => {
-      this.toggle(tab)
-    }
-
-    // quit button
-    ;(this.dom.querySelector('.sidecar-bottom-stripe-quit') as HTMLElement).onclick = () => {
-      this.close(tab)
-    }
-
-    // screenshot button
-    ;(this.dom.querySelector('.sidecar-screenshot-button') as HTMLElement).onclick = () => {
-      tab.REPL.pexec('screenshot sidecar')
-    }
+    const onMaximize = this.toggleMaximization.bind(this)
+    const onRestore = this.toggleMaximization.bind(this)
+    const onMinimize = this.toggle.bind(this)
+    const onClose = this.close.bind(this)
+    const tabId = getTabId(tab)
+    const e1 = `/sidecar/maximize/${tabId}`
+    const e2 = `/sidecar/restore/${tabId}`
+    const e3 = `/sidecar/minimize/${tabId}`
+    const e4 = `/sidecar/close/${tabId}`
+    eventBus.on(e1, onMaximize)
+    eventBus.on(e2, onRestore)
+    eventBus.on(e3, onMinimize)
+    eventBus.on(e4, onClose)
+    this.cleaners.push(() => eventBus.off(e1, onMaximize))
+    this.cleaners.push(() => eventBus.off(e2, onRestore))
+    this.cleaners.push(() => eventBus.off(e3, onMinimize))
+    this.cleaners.push(() => eventBus.off(e4, onClose))
   }
 }

@@ -63,14 +63,6 @@ const usage = {
  */
 function injectContent() {
   if (!document.querySelector('#kui-zoom-overlay')) {
-    setTimeout(async () => {
-      const { injectCSS } = await import('@kui-shell/core')
-      injectCSS({
-        css: require('@kui-shell/plugin-core-support/web/css/zoom.css').toString(),
-        key: 'zoom.css'
-      })
-    }, 0)
-
     const overlay = document.createElement('div')
     overlay.className = 'zoom-overlay hidden'
     overlay.id = 'kui-zoom-overlay'
@@ -83,6 +75,8 @@ function injectContent() {
  *
  */
 const _set = newZoom => {
+  import('./zoomCSS').then(_ => _.default())
+
   const main = document.querySelector('body > .page')
 
   if (newZoom <= 10 && newZoom >= -2) {

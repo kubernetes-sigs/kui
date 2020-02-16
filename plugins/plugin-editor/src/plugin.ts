@@ -16,17 +16,18 @@
 
 import { Registrar } from '@kui-shell/core'
 
-import { toplevelUsage as usage } from './usage'
-import editCmd from './lib/cmds/edit'
-
 /**
  * This is the module
  *
  */
-export default (commandTree: Registrar) => {
-  // register usage handler
-  commandTree.subtree('/editor', { usage })
-
-  // register editing commands
-  return editCmd(commandTree)
+export default (registrar: Registrar) => {
+  registrar.listen(
+    '/edit',
+    ({ command, REPL }) => {
+      // re: the stripping of --create; this is no longer needed, but
+      // some users might expect it to be
+      return REPL.qexec(command.replace(/\s*edit/, 'open').replace(/--create/, ''))
+    },
+    { inBrowserOk: true }
+  )
 }

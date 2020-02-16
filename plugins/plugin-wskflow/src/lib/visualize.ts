@@ -18,7 +18,6 @@ import Debug from 'debug'
 
 import { isHeadless, Tab } from '@kui-shell/core'
 
-import injectCSS from './inject'
 import Response from './response'
 import fsm2graph from './fsm2graph'
 import { ASTNode, ComponentBearing } from './ast'
@@ -48,12 +47,13 @@ export default async (
 
   debug('visualize', passedFsm, options, rule)
 
-  injectCSS()
-
   // create a copy - all annotations make by wskflow will not affect the original object.
   const ir = JSON.parse(JSON.stringify(passedFsm))
   debug('passfsm', JSON.stringify(passedFsm))
   debug('ir', ir)
+
+  // temporary hack until we port this to compnentry
+  import('./inject').then(_ => _.default())
 
   return fsm2graph(tab, ir, container, activations, options, rule)
 }
