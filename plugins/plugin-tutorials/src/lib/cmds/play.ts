@@ -28,8 +28,8 @@ import {
   Tab,
   findFile,
   getCurrentPrompt,
-  partialInput,
-  closeAllViews as clearSelection
+  partialInput
+  // closeAllViews as clearSelection
 
   // deprecated
   // isSidecarFullscreen,
@@ -118,8 +118,8 @@ const sidecarManager = {
     // toggleMaximization(tab)
   },
 
-  exitFullscreen: (tab: Tab) => {
-    clearSelection(tab)
+  exitFullscreen: () => {
+    // clearSelection(tab)
     // toggleMaximization(tab)
   }
 }
@@ -150,7 +150,7 @@ const close = (tab: Tab, pane: TutorialPane, obj: TutorialDefinition, delay = 50
     // if we were resopnsible for having the sidecar fullscreen, remove that
     if (pane.hasAttribute('remember-to-remove-sidecar-fullscreen')) {
       pane.removeAttribute('remember-to-remove-sidecar-fullscreen')
-      sidecarManager.exitFullscreen(tab)
+      sidecarManager.exitFullscreen()
     }
 
     // remove pane
@@ -687,7 +687,7 @@ const showTutorial = (tab: Tab, tutorialName: string, obj: TutorialDefinition) =
   debug('showTutorial', obj)
 
   // remove the sidecar, if it's open
-  clearSelection(tab)
+  // clearSelection(tab)
 
   const pane = document.querySelector('#tutorialPane') as TutorialPane
   pane.classList.remove('minimized')

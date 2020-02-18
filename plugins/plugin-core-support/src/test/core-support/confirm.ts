@@ -24,7 +24,7 @@ describe('Confirm dialog', function(this: Common.ISuite) {
     CLI.command(`confirm`, this.app).then(ReplExpect.error(497)))
 
   it('should not do anything if user cancels', () => {
-    return CLI.command(`confirm "echo hello"`, this.app)
+    return CLI.command('confirm "echo hello"', this.app)
       .then(() => this.app.client.waitForExist('#confirm-dialog'))
       .then(() => this.app.client.click('#confirm-dialog .close-button'))
       .then(() =>
@@ -35,7 +35,7 @@ describe('Confirm dialog', function(this: Common.ISuite) {
   })
 
   it('should execute if user confirms', () => {
-    return CLI.command(`confirm "echo hello"`, this.app)
+    return CLI.command('confirm "echo hello"', this.app)
       .then(() => this.app.client.waitForExist('#confirm-dialog'))
       .then(() => this.app.client.click('#confirm-dialog .bx--btn--danger'))
       .then(() => this.app.client.waitForExist(`${Selectors.OUTPUT_LAST}`))

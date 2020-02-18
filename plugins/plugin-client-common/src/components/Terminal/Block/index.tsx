@@ -15,26 +15,55 @@
  */
 
 import * as React from 'react'
+import { Tab as KuiTab } from '@kui-shell/core'
 
 import Input from './Input'
 import Output from './Output'
-import { BlockState } from './BlockModel'
+import { BlockModel, isFinished, isProcessing, hasUUID } from './BlockModel'
 
 interface Props {
   idx: number
-  state: BlockState
+  tab: KuiTab
+  model: BlockModel
+
+  onOutputRender: (idx: number) => void
 }
 
-export default class Block extends React.PureComponent<Props> {
+interface State {
+  // needed temporarily to make pty/client happy
+  _block?: HTMLElement
+}
+
+export default class Block extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+
+    this.state = {}
+  }
+
+  private output() {
+    if (isFinished(this.props.model) || isProcessing(this.props.model)) {
+      return (
+        <Output
+          tab={this.props.tab}
+          model={this.props.model}
+          onRender={() => this.props.onOutputRender(this.props.idx)}
+        />
+      )
+    }
+  }
+
   public render() {
     return (
       <div
-        className={'repl-block ' + this.props.state.toString()}
+        className={'repl-block ' + this.props.model.state.toString()}
         data-base-class="repl-block"
+        data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
         data-input-count={this.props.idx}
+        ref={c => this.setState({ _block: c })}
       >
-        <Input state={this.props.state} readOnly={false} />
-        <Output />
+        {this.state._block && <Input tab={this.props.tab} model={this.props.model} _block={this.state._block} />}
+        {this.output()}
       </div>
     )
   }

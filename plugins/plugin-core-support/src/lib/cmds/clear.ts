@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,53 +14,16 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
+import { isHeadless, eventBus, getTabId, Arguments, Registrar } from '@kui-shell/core'
 
-import { isHeadless, Arguments, Registrar, empty, closeAllViews, resetCount } from '@kui-shell/core'
-
-const debug = Debug('plugins/core-support/clear')
-
-const usage = {
-  command: 'clear',
-  strict: 'clear',
-  example: 'clear',
-  docs: 'Clear the console',
-  optional: [{ name: '--keep-current-active', alias: '-k', boolean: true, hidden: true }]
-}
-
-const clear = ({ parsedOptions, tab }: Arguments) => {
+const clear = ({ tab }: Arguments) => {
   if (!isHeadless()) {
-    if (!parsedOptions.k) {
-      // don't keep the current active prompt
-      debug('clearing everything, the repl loop will set up the next prompt for us')
-      empty(tab.querySelector('.repl-inner'))
-
-      // abort the jobs for the current tab
-      const tabState = tab.state
-      tabState.abortAllJobs()
-    } else {
-      // keep the current active prompt
-      debug('preserving the current active prompt')
-      const selector = '.repl-inner .repl-block:not(.repl-active):not(.processing)'
-
-      const blocks = tab.querySelectorAll(selector)
-      for (let idx = 0; idx < blocks.length; idx++) {
-        blocks[idx].parentNode.removeChild(blocks[idx])
-      }
-
-      const remainingBlock = tab.querySelector('.repl-block') as HTMLElement
-      resetCount(remainingBlock)
-
-      // return the current processing block, if there is one
-      const processing = '.repl-inner .repl-block.processing'
-      return (tab.querySelector(processing) as HTMLElement) || true
-    }
+    setTimeout(() => {
+      eventBus.emit(`/terminal/clear/${getTabId(tab)}`)
+      eventBus.emit(`/close/views/${getTabId(tab)}`)
+    })
   }
 
-  // close the sidecar on clear
-  closeAllViews(tab)
-
-  // tell the repl we're all good
   return true
 }
 
@@ -68,10 +31,8 @@ const clear = ({ parsedOptions, tab }: Arguments) => {
  * This plugin introduces the /clear command, which clear the consoles
  *
  */
-export default (commandTree: Registrar) => {
-  commandTree.listen('/clear', clear, {
-    usage,
-    noAuthOk: true,
+export default (registrar: Registrar) => {
+  registrar.listen('/clear', clear, {
     inBrowserOk: true
   })
 }

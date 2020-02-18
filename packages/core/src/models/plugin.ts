@@ -20,6 +20,7 @@ import { Entity, MetadataBearing } from '../models/entity'
 import KuiComponentProivder from '../webapp/component/provider'
 import { BadgeRegistration } from '../webapp/views/registrar/badges'
 import { ModeRegistration } from '../webapp/views/registrar/modes'
+import { SessionInitializer } from '../session/registrar'
 
 export type KuiPlugin = void | Promise<void>
 
@@ -36,6 +37,9 @@ export interface PreloadRegistrar extends CommandRegistrar {
 
   /** view components */
   registerComponent<T extends Entity>(provider: KuiComponentProivder<T>): void
+
+  /** session initializers */
+  registerSessionInitializer(init: SessionInitializer): void
 }
 
 export type PreloadRegistration = (registrar: PreloadRegistrar) => Promise<void | void[]>

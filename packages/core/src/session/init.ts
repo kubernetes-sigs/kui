@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
+import { Tab } from '../webapp/tab'
+import { getImpl as getReplImpl } from '../repl/exec'
+import { startInputQueueing } from '../webapp/queueing'
+
+import mapTo from './registrar'
+
 /**
- * Text to be displayed in the sidecar toolbar
+ * Initialize the session for the given `Tab`. Await the response if
+ * you need to block until all session initializers have completed.
  *
  */
+export async function initializeSession(tab: Tab): Promise<void> {
+  tab.state.ready = false
 
-type ToolbarTextType = 'info' | 'warning' | 'error'
+  getReplImpl(tab)
+  const promise = mapTo(tab)
+  startInputQueueing(tab)
+  await promise
 
-type ToolbarTextValue = string | Element
-
-export interface ToolbarText {
-  type: ToolbarTextType
-  text: ToolbarTextValue
+  tab.state.ready = true
 }

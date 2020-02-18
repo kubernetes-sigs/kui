@@ -393,12 +393,12 @@ const withEvents = <T extends KResponse, O extends ParsedOptions>(
         }
       }
 
-      if (leaf && eventBus) {
+      /* if (leaf && eventBus) {
         eventBus.emit('/command/complete', event)
         if (event.execType !== ExecType.Nested) {
           eventBus.emit('/command/complete/fromuser', tab)
         }
-      }
+      } */
     },
     error: (command: string, tab: Tab, execType: ExecType, err: CodedError): CodedError => {
       event.tab = tab

@@ -15,12 +15,11 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { basename } from 'path'
 import { exec } from 'child_process'
 import { fileSync as tmpFile } from 'tmp'
 import { writeFileSync } from 'fs'
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** expect the given folder within the help tree */
 export const header = (folder: string) => folder
@@ -77,27 +76,18 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
 
-  Common.pit('should cat a json file', () =>
+  it('should cat a json file', () =>
     CLI.command(`cat ${jsonFile.name}`, this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(basename(jsonFile.name)))
-      .catch(Common.oops(this, true))
-  )
-  Common.pit('should cat a yml file', () =>
+      .then(ReplExpect.okWithString('"x"'))
+      .catch(Common.oops(this, true)))
+  it('should cat a yml file', () =>
     CLI.command(`cat ${ymlFile.name}`, this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(basename(ymlFile.name)))
-      .catch(Common.oops(this, true))
-  )
-  Common.pit('should cat a yaml file', () =>
+      .then(ReplExpect.okWithString('notes:'))
+      .catch(Common.oops(this, true)))
+  it('should cat a yaml file', () =>
     CLI.command(`cat ${yamlFile.name}`, this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(basename(yamlFile.name)))
-      .catch(Common.oops(this, true))
-  )
+      .then(ReplExpect.okWithString('notes:'))
+      .catch(Common.oops(this, true)))
 
   // these two are useful as a pair; git usage responds with exit code
   // 1, whereas ibmcloud responds with exit code 0

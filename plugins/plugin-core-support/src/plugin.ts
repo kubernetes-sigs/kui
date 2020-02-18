@@ -16,7 +16,7 @@
 
 import { isHeadless, Registrar } from '@kui-shell/core'
 
-import help from './lib/cmds/help'
+// import help from './lib/cmds/help'
 import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
 import base64 from './lib/cmds/base64'
@@ -33,9 +33,9 @@ import confirm from './lib/cmds/confirm'
  * This is the module
  *
  */
-export default async (commandTree: Registrar, options?) => {
+export default async (commandTree: Registrar) => {
   await Promise.all([
-    help(commandTree, options),
+    // help(commandTree, options),
     openui(commandTree),
     quit(commandTree),
     clear(commandTree),

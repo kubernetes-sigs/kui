@@ -20,7 +20,7 @@ import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
 
-Common.dockerDescribe('xterm auto-table', function(this: Common.ISuite) {
+/* Common.dockerD */ xdescribe('xterm auto-table', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

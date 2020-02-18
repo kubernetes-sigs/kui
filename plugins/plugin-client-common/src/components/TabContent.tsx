@@ -15,49 +15,112 @@
  */
 
 import * as React from 'react'
-import { eventBus, getReplImpl, Tab as KuiTabModel, TabState } from '@kui-shell/core'
+import { eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
 
+import Cleaner from './cleaner'
+import Loading from './Loading'
 import ScrollableTerminal from './Terminal/ScrollableTerminal'
 
+const strings = i18n('client')
+
 interface Props {
-  idx: number
   uuid: string
   active: boolean
   state: TabState
 }
 
-export default class TabContent extends React.PureComponent<Props> {
-  private _tab: KuiTabModel
+interface State {
+  tab?: KuiTab
+  sessionInit: 'NotYet' | 'InProgress' | 'Done'
+}
 
-  public componentDidMount() {
-    try {
-      this.tab.state = this.props.state
-      getReplImpl(this.tab)
-      eventBus.emit('/tab/new', this.tab)
-    } catch (err) {
-      console.error(err)
+/**
+ *
+ * TabContent
+ * ----------------  <Tab/> from here down
+ * | ST  |        |
+ * |     |        |
+ * |     |        |
+ * |     |        |
+ * |     |        |
+ * |     |        |
+ * ----------------
+ *  ST: <ScrollableTerminal/>
+ *
+ */
+export default class TabContent extends React.PureComponent<Props, State> {
+  private readonly cleaners: Cleaner[] = []
+
+  public constructor(props: Props) {
+    super(props)
+
+    eventBus.once(`/tab/new/${props.uuid}`, () => this.setState({ sessionInit: 'Done' }))
+
+    const onOffline = this.onOffline.bind(this)
+    eventBus.on(`/tab/offline/${props.uuid}`, onOffline)
+    this.cleaners.push(() => eventBus.off(`/tab/offline/${props.uuid}`, onOffline))
+
+    this.state = {
+      tab: undefined,
+      sessionInit: 'NotYet'
+    }
+  }
+
+  private onOffline() {
+    this.setState({
+      sessionInit: 'InProgress'
+    })
+
+    initializeSession(this.state.tab).then(() => {
+      this.setState({
+        sessionInit: 'Done'
+      })
+    })
+  }
+
+  /** emit /tab/new event, if we have now a tab, but have not yet
+   * emitted the event */
+  public static getDerivedStateFromProps(props: Props, state: State) {
+    if (state.tab && state.sessionInit === 'NotYet') {
+      try {
+        state.tab.state = props.state
+        initializeSession(state.tab).then(() => {
+          eventBus.emit('/tab/new', state.tab)
+          eventBus.emit(`/tab/new/${props.uuid}`)
+        })
+
+        return {
+          sessionInit: 'InProgress'
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    } else {
+      return state
     }
   }
 
   public componentWillUnmount() {
-    eventBus.emit('/tab/close', this.tab)
+    eventBus.emit('/tab/close', this.state.tab)
   }
 
-  private get tab() {
-    return this._tab
+  private terminal() {
+    if (this.state.sessionInit !== 'Done') {
+      return <Loading description={strings('Please wait while we connect to your cloud')} />
+    } else {
+      return <ScrollableTerminal uuid={this.props.uuid} tab={this.state.tab} />
+    }
   }
 
   public render() {
     return (
       <tab
-        ref={c => (this._tab = c as KuiTabModel)}
+        ref={c => this.setState({ tab: c as KuiTab })}
         className={this.props.active ? 'visible' : ''}
-        data-tab-id={this.props.idx + 1}
+        data-tab-id={this.props.uuid}
       >
         <tabrow className="kui--rows">
-          <tabcolumn className="kui--columns">
-            <ScrollableTerminal active={this.props.active} />
-          </tabcolumn>
+          <tabcolumn className="kui--columns">{this.terminal()}</tabcolumn>
         </tabrow>
       </tab>
     )

@@ -15,12 +15,15 @@
  */
 
 import * as React from 'react'
+import { eventBus, KResponse, Tab as KuiTab } from '@kui-shell/core'
 
 import Block from './Block'
-import { BlockModel, BlockState } from './Block/BlockModel'
+import Cleaner from '../cleaner'
+import { Active, Finished, Cancelled, Processing, isProcessing, BlockModel } from './Block/BlockModel'
 
 interface Props {
-  active: boolean
+  uuid: string
+  tab: KuiTab
 }
 
 interface State {
@@ -28,20 +31,130 @@ interface State {
 }
 
 export default class ScrollableTerminal extends React.PureComponent<Props, State> {
+  private readonly cleaners: Cleaner[] = []
+  private _scrollRegion: HTMLDivElement
+
   public constructor(props: Props) {
     super(props)
 
+    this.initEvents()
+
     this.state = {
-      blocks: [{ state: BlockState.Uninitialized }]
+      blocks: [Active()] // <-- TODO: restore from localStorage for a given tab UUID?
     }
+  }
+
+  /** Clear Terminal; TODO: also clear persisted state, when we have it */
+  private clear() {
+    console.error('!!!!')
+    this.setState({
+      blocks: [Active()]
+    })
+  }
+
+  /** Output.tsx finished rendering something */
+  private onOutputRender() {
+    setTimeout(() => {
+      if (this._scrollRegion) {
+        this._scrollRegion.scrollTop = this._scrollRegion.scrollHeight
+      }
+    }, 0)
+  }
+
+  /** the REPL started executing a command */
+  private onExecStart({ execUUID, command }: { execUUID: string; command: string }) {
+    this.setState(curState => {
+      const idx = curState.blocks.length - 1
+
+      // Transform the last block to Processing
+      return {
+        blocks: curState.blocks.slice(0, idx).concat([Processing(curState.blocks[idx], command, execUUID)])
+      }
+    })
+  }
+
+  /** the REPL finished executing a command */
+  private onExecEnd({ execUUID, response, cancelled }: { execUUID: string; response: KResponse; cancelled: boolean }) {
+    this.setState(curState => {
+      const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === execUUID)
+
+      if (inProcessIdx >= 0) {
+        const inProcess = curState.blocks[inProcessIdx]
+        if (isProcessing(inProcess)) {
+          try {
+            const blocks = curState.blocks
+              .slice(0, inProcessIdx) // everything before
+              .concat([Finished(inProcess, response, cancelled)]) // mark as finished
+              .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
+              .concat([Active()]) // plus a new block!
+            return {
+              blocks
+            }
+          } catch (err) {
+            console.error('error updating state', err)
+          }
+        } else {
+          console.error('invalid state: got a command completion event for a block that is not processing')
+        }
+      } else if (cancelled) {
+        // we get here if the user just types ctrl+c without having executed any command. add a new block!
+        const inProcessIdx = curState.blocks.length - 1
+        const inProcess = curState.blocks[inProcessIdx]
+        const blocks = curState.blocks
+          .slice(0, inProcessIdx)
+          .concat([Cancelled(inProcess)]) // mark as cancelled
+          .concat([Active()]) // plus a new block!
+        return {
+          blocks
+        }
+      } else {
+        console.error('invalid state: got a command completion event, but never got command start event')
+      }
+    })
+  }
+
+  /** Hook into the core's read-eval-print loop */
+  private hookIntoREPL() {
+    const channel1 = `/command/start/fromuser/${this.props.uuid}`
+    const onExecStart = this.onExecStart.bind(this)
+    this.cleaners.push(() => {
+      eventBus.off(channel1, onExecStart)
+    })
+    eventBus.on(channel1, onExecStart)
+
+    const channel2 = `/command/complete/fromuser/${this.props.uuid}`
+    const onExecEnd = this.onExecEnd.bind(this)
+    this.cleaners.push(() => {
+      eventBus.off(channel2, onExecEnd)
+    })
+    eventBus.on(channel2, onExecEnd)
+  }
+
+  private initEvents() {
+    this.hookIntoREPL()
+
+    const clear = this.clear.bind(this)
+    eventBus.on(`/terminal/clear/${this.props.uuid}`, clear)
+    this.cleaners.push(() => {
+      eventBus.off(`/terminal/clear/${this.props.uuid}`, clear)
+    })
+  }
+
+  /** Detach hooks the core's eventBus */
+  private uninitEvents() {
+    this.cleaners.forEach(cleaner => cleaner())
+  }
+
+  public componentWillUnmount() {
+    this.uninitEvents()
   }
 
   public render() {
     return (
       <repl className="repl" id="main-repl">
-        <div className="repl-inner zoomable">
+        <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)}>
           {this.state.blocks.map((_, idx) => (
-            <Block key={idx} idx={idx} state={_.state} />
+            <Block key={idx} idx={idx} model={_} tab={this.props.tab} onOutputRender={this.onOutputRender.bind(this)} />
           ))}
         </div>
       </repl>

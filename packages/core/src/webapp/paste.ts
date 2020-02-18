@@ -32,7 +32,7 @@ export const doPaste = (text: string, tab = getCurrentTab()) => {
       // then this is a command line with a trailing newline
       const prompt = getCurrentPrompt(tab)
       const { pexec } = await import('../repl/exec')
-      await pexec(prompt.value + lines[idx])
+      await pexec(prompt.value + lines[idx], { tab })
       pasteLooper(idx + 1)
     } else {
       // then this is the last line, but without a trailing newline.
@@ -68,10 +68,13 @@ export const doPaste = (text: string, tab = getCurrentTab()) => {
 }
 
 /**
- * User has requested that we paste something from the clipboard
+ * User has requested that we paste something from the
+ * clipboard.
+ *
+ * @return a Promise of when we will be done.
  *
  */
-export const paste = (event: ClipboardEvent) => {
+export function onPasteAsync(event: ClipboardEvent): Promise<void> {
   const text = event.clipboardData.getData('text')
   if (text) {
     // we'll handle it from here!
@@ -79,4 +82,12 @@ export const paste = (event: ClipboardEvent) => {
 
     return doPaste(text)
   }
+}
+
+/**
+ * User has requested that we paste something from the clipboard
+ *
+ */
+export function onPaste(event: ClipboardEvent) {
+  onPasteAsync(event)
 }

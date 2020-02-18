@@ -17,7 +17,6 @@
 import bash from './lib/cmds/bash-like'
 import ptyServer from './pty/server'
 import exportCommand from './lib/cmds/export'
-import { registerCommands as sessionReady } from './pty/session'
 
 import { Registrar } from '@kui-shell/core'
 
@@ -26,5 +25,5 @@ import { Registrar } from '@kui-shell/core'
  *
  */
 export default (registrar: Registrar) => {
-  return Promise.all([bash(registrar), ptyServer(registrar), sessionReady(registrar), exportCommand(registrar)])
+  return Promise.all([bash(registrar), ptyServer(registrar), exportCommand(registrar)])
 }

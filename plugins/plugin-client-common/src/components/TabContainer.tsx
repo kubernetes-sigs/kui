@@ -152,7 +152,7 @@ export default class TabContainer extends React.PureComponent<{}, State> {
         />
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
-            <TabContent key={idx} idx={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} />
+            <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} />
           ))}
         </div>
       </div>

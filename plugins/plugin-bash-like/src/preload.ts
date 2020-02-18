@@ -18,13 +18,13 @@ import Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { inBrowser, CapabilityRegistration, Registrar } from '@kui-shell/core'
+import { inBrowser, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
 
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
-export const registerCapability: CapabilityRegistration = async () => {
+export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
   if (inBrowser()) {
-    await import('./pty/session').then(({ init }) => init())
+    await import('./pty/session').then(({ init }) => init(registrar))
   } else {
     try {
       const prefetchShellState = (await import('./pty/prefetch')).default
@@ -40,8 +40,8 @@ export const registerCapability: CapabilityRegistration = async () => {
  * This is the module
  *
  */
-export default async (commandTree: Registrar) => {
-  return registerCatchAll(commandTree)
+export default async (registrar: PreloadRegistrar) => {
+  return registerCatchAll(registrar)
 }
 
 debug('finished loading')
