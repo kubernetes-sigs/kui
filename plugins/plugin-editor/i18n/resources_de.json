@@ -1,0 +1,19 @@
+{
+  "save": "Bereitstellen",
+  "saveLocalFile": "Speichern",
+  "Edit": "Bearbeiten",
+  "revert": "Zurücksetzen",
+  "readonly": "Bearbeitung beendet",
+  "isNew": "Sie verwenden den Bearbeitungsmodus und zeigen <strong>nicht bereitgestellten Code</strong> an",
+  "isNewReadOnly": "Sie verwenden den schreibgeschützten Modus und zeigen <strong>nicht bereitgestellten Code</strong> an",
+  "isUpToDate": "Sie verwenden den Bearbeitungsmodus und zeigen die <strong>momentan gespeicherte Version</strong> an",
+  "isModified": "Sie verwenden den Bearbeitungsmodus und es sind <strong>nicht gespeicherte Bearbeitungen</strong> vorhanden",
+  "isModifiedIndicator": "Es sind nicht gespeicherte Bearbeitungen vorhanden",
+  "header:edit": "Öffnet eine bestimmte Datei oder Entität zum Bearbeiten.",
+  "docs:edit": "Öffnet den Code für eine lokale Datei oder eine vorhandene Entität in einem Texteditor",
+  "docs:edit:filepath": "Der Pfad für die lokale Datei oder der Name der Entität, die bearbeitet werden soll",
+  "docs:edit:create": "Gib an, dass Sie eine lokale Datei (und gegebenenfalls übergeordnete Verzeichnisse) erstellen wollen",
+  "docs:edit:language": "Zur internen Verwendung; geben Sie eine Sprache zur Farbgestaltung und für IntelliSense an",
+  "docs:edit:name": "Zur internen Verwendung; geben Sie einen Namen an, der im Sidecar-Header angezeigt wird",
+  "docs:edit:type": "Zur internen Verwendung; geben Sie einen Typ an, der im Sidecar-Header angezeigt wird"
+}

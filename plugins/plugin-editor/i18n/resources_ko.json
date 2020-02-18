@@ -1,0 +1,19 @@
+{
+  "save": "배치",
+  "saveLocalFile": "저장",
+  "Edit": "편집",
+  "revert": "되돌리기",
+  "readonly": "편집 완료",
+  "isNew": "편집 모드에 있으며, <strong>코드를 배치하지 않음</strong>이 표시됨",
+  "isNewReadOnly": "읽기 전용 모드에 있으며, <strong>코드를 배치하지 않음</strong>이 표시됨",
+  "isUpToDate": "편집 모드에 있으며, <strong>현재 버전을 저장함</strong>이 표시됨",
+  "isModified": "편집 모드에 있으며, <strong>편집 항목을 저장하지 않음</strong>이 표시됨",
+  "isModifiedIndicator": "편집 항목을 저장하지 않음",
+  "header:edit": "편집을 위해 제공된 파일 또는 엔티티를 여십시오.",
+  "docs:edit": "텍스트 편집기에서 로컬 파일 또는 기존 엔티티에 대한 코드 열기",
+  "docs:edit:filepath": "편집할 로컬 파일 경로 또는 엔티티 이름",
+  "docs:edit:create": "로컬 파일(및 필요에 따라 상위 디렉토리)을 작성하려고 함을 표시함",
+  "docs:edit:language": "내부 사용을 위해 색상 및 IntelliSense의 언어를 지정함",
+  "docs:edit:name": "내부 사용을 위해 사이드카 헤더에 표시할 이름을 지정함",
+  "docs:edit:type": "내부 사용을 위해 사이드카 헤더에 표시할 유형을 지정함"
+}

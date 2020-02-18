@@ -1,0 +1,19 @@
+{
+  "save": "部署",
+  "saveLocalFile": "保存",
+  "Edit": "编辑",
+  "revert": "还原",
+  "readonly": "完成编辑",
+  "isNew": "您处于编辑方式，正在查看<strong>取消部署的代码</strong>",
+  "isNewReadOnly": "您处于只读方式，正在查看<strong>取消部署的代码</strong>",
+  "isUpToDate": "您处于编辑方式，正在查看<strong>当前已保存的版本</strong>",
+  "isModified": "您处于编辑方式，具有<strong>未保存的编辑</strong>",
+  "isModifiedIndicator": "您具有未保存的编辑",
+  "header:edit": "打开给定的文件或实体以进行编辑。",
+  "docs:edit": "在文本编辑器中打开本地文件或现有实体的代码",
+  "docs:edit:filepath": "要编辑的本地文件路径或实体名称",
+  "docs:edit:create": "指示是否想要创建本地文件（和父目录，根据需要）",
+  "docs:edit:language": "对于内部使用，指定用于着色和智能感知的语言",
+  "docs:edit:name": "对于内部使用，指定要在 Sidecar 标题中显示的名称。",
+  "docs:edit:type": "对于内部使用，指定要在 Sidecar 标题中显示的类型。"
+}

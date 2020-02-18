@@ -1,0 +1,19 @@
+{
+  "save": "部署",
+  "saveLocalFile": "儲存",
+  "Edit": "編輯",
+  "revert": "回復",
+  "readonly": "完成編輯",
+  "isNew": "您正處於編輯模式，正在檢視<strong>未部署的程式碼</strong>",
+  "isNewReadOnly": "您正處於唯讀模式，正在檢視<strong>未部署的程式碼</strong>",
+  "isUpToDate": "您正處於編輯模式，正在檢視<strong>目前已儲存的版本</strong>",
+  "isModified": "您正處於編輯模式，具有<strong>未儲存的編輯</strong>",
+  "isModifiedIndicator": "您具有未儲存的編輯",
+  "header:edit": "開啟給定的檔案或實體以進行編輯。",
+  "docs:edit": "在文字編輯器中開啟本端檔案或現有實體的程式碼",
+  "docs:edit:filepath": "要編輯的本端檔案路徑或實體名稱",
+  "docs:edit:create": "指出您想要建立本端檔案（以及上層目錄，視需要）",
+  "docs:edit:language": "若為內部使用，請指定著色及 IntelliSense 的語言",
+  "docs:edit:name": "若為內部使用，請指定要在 Sidecar 標頭中顯示的名稱",
+  "docs:edit:type": "若為內部使用，請指定要在 Sidecar 標頭中顯示的類型"
+}
