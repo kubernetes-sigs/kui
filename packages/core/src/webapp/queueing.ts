@@ -17,7 +17,7 @@
 import { keys } from './keys'
 import doCancel from './cancel'
 import { doPaste } from './paste'
-import { getCurrentBlock } from './block'
+import { getCurrentBlock, getCurrentProcessingBlock } from './block'
 import { Tab, getTabFromTarget } from './tab'
 import { getPrompt, getCurrentPrompt } from './prompt'
 
@@ -27,19 +27,27 @@ import { isHeadless } from '../core/capabilities'
  * Initiate input queueing
  *
  */
-export const startInputQueueing = (tab: Tab) => {
+export function startInputQueueing(tab: Tab) {
   if (!isHeadless()) {
-    const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
-    invisibleHand.focus()
+    // const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
+    // invisibleHand.focus()
 
     tab.queueListener = (event: KeyboardEvent) => {
       const char = event.keyCode
       if (char === keys.C && event.ctrlKey) {
         // Ctrl+C, cancel
-        doCancel()
+        try {
+          const block = getCurrentProcessingBlock(tab)
+          if (block) {
+            doCancel(tab, block)
+          }
+        } catch (err) {
+          console.error(err)
+        }
       }
     }
-    document.body.addEventListener('keydown', tab.queueListener)
+
+    tab.addEventListener('keydown', tab.queueListener)
   }
 }
 
@@ -94,7 +102,7 @@ export const handleQueuedInput = async (nextBlock: HTMLElement) => {
 
       // handle prefix newlines
       for (let idx = 0; idx < nPrefixNewlines; idx++) {
-        await doCancel()
+        // await doCancel()
 
         nextBlock = getCurrentBlock()
         nextPrompt = getCurrentPrompt()
@@ -108,7 +116,7 @@ export const handleQueuedInput = async (nextBlock: HTMLElement) => {
         // if the user also hit a trailing newline, make sure to trigger a doEval
         if (lines.length - firstNonBlank > 1) {
           const { doEval } = await import('../repl/exec')
-          await doEval({ block: nextBlock, prompt: nextPrompt })
+          await doEval(getTabFromTarget(nextBlock), nextBlock, nextPrompt)
 
           // lastly, if the user typed more than one newline, handle
           // the rest via a doPaste

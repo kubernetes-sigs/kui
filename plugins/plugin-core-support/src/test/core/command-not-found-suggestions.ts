@@ -20,7 +20,7 @@ describe('Suggestions for command not found core-support', function(this: Common
   before(Common.before(this))
   after(Common.after(this))
 
-  it('should present suggestions for "versio" -> version', () => {
+  xit('should present suggestions for "versio" -> version', () => {
     return Util.expectSuggestionsFor.call(
       this,
       'versio', // type this

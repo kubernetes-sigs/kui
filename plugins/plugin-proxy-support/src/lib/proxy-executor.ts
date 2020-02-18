@@ -108,6 +108,8 @@ class ProxyEvaluator implements ReplEval {
     } else {
       const execOptionsForInvoke = withLanguage(
         Object.assign({}, execOptions, {
+          block: undefined,
+          nextBlock: undefined,
           isProxied: true,
           cwd: process.env.PWD,
           env: process.env,
@@ -132,11 +134,12 @@ class ProxyEvaluator implements ReplEval {
             cwd: process.env.PWD,
             execOptions: execOptionsForInvoke
           }
+
           channel.send(JSON.stringify(msg))
 
           const MARKER = '\n'
           let raw = ''
-          const onMessage = (data: string) => {
+          const onMessage = ({ data }: { data: string }) => {
             // debug('raw', uuid, data)
             raw += data
 
@@ -251,7 +254,7 @@ class ProxyEvaluator implements ReplEval {
           ? window['webview-proxy'](body)
           : invokeRemote())
 
-        debug('response', response)
+        // debug('response', response)
 
         if (response.statusCode !== 200) {
           debug('rethrowing non-200 response', response)

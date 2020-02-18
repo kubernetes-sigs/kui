@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-
 import { ExecType } from './command'
 import { Tab } from '../webapp/tab'
 import { Streamable, StreamableFactory } from './streamable'
@@ -23,7 +21,7 @@ import { Block } from '../webapp/models/block'
 import { Abortable } from '../core/jobs/job'
 
 export interface ExecOptions {
-  // force execution in a given tab?
+  /** force execution in a given tab? */
   tab?: Tab
 
   /** pass through uninterpreted data */
@@ -107,21 +105,22 @@ export function withLanguage(execOptions: ExecOptions): LanguageBearing {
 }
 
 export class DefaultExecOptions implements ExecOptions {
-  readonly type: ExecType
+  public readonly type: ExecType
+  public readonly language: string
 
-  readonly language: string
-
-  constructor(type: ExecType = ExecType.TopLevel) {
+  public constructor(type: ExecType = ExecType.TopLevel) {
     this.type = type
     this.language = typeof navigator !== 'undefined' && navigator.language
   }
 }
 
 export class DefaultExecOptionsForTab extends DefaultExecOptions {
-  readonly tab: Tab
+  public readonly tab: Tab
+  public readonly block: Block
 
-  constructor(tab: Tab) {
+  public constructor(tab: Tab, block: Block) {
     super()
     this.tab = tab
+    this.block = block
   }
 }

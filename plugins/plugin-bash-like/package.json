@@ -36,7 +36,7 @@
     "speed-date": "1.0.0",
     "strip-ansi": "5.2.0",
     "ws": "7.2.0",
-    "xterm": "3.14.5"
+    "xterm": "4.4.0"
   },
   "kui": {
     "exclude": {

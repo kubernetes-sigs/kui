@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
-import { Registrar, prompt } from '@kui-shell/core'
-
-const debug = Debug('plugins/core-support/prompt')
+import { Registrar } from '@kui-shell/core'
 
 /**
  * The command usage model
@@ -38,24 +34,9 @@ const usage = {
 export default (commandTree: Registrar) => {
   commandTree.listen(
     '/prompt',
-    ({ argvNoOptions, block, nextBlock, tab }) => {
-      const placeholder = argvNoOptions[1] || 'Test prompt'
-      debug('placeholder', placeholder, argvNoOptions)
-
-      return prompt(
-        'Prompt',
-        block as HTMLElement,
-        nextBlock,
-        tab,
-        {
-          placeholder
-        },
-        options => {
-          debug('response', options.field)
-          return Promise.resolve(options.field)
-        }
-      )
+    () => {
+      throw new Error('Unsupported at the moment')
     },
-    { usage, noAuthOk: true, inBrowserOk: true }
+    { usage, inBrowserOk: true }
   )
 }

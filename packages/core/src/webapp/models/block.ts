@@ -15,7 +15,5 @@
  */
 
 export interface Block extends HTMLElement {
-  restorePrompt?: () => void
   isCancelled?: boolean
-  completion?: (result: string) => void
 }

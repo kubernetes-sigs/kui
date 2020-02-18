@@ -217,7 +217,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
   // doesn't support module imports for dynamic imports, and node-pty
   // exports IPty under a module of its creation
   // @see https://github.com/microsoft/TypeScript/issues/22445
-  const shells: Record<string, import('node-pty-prebuilt-multiarch').IPty> = {}
+  const shells: Record<string, Promise<import('node-pty-prebuilt-multiarch').IPty>> = {}
 
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
@@ -239,7 +239,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
       switch (msg.type) {
         case 'kill': {
-          const shell = msg.uuid && shells[msg.uuid]
+          const shell = msg.uuid && (await shells[msg.uuid])
           if (shell) {
             shell.kill(msg.signal || 'SIGHUP')
             return exitNow(msg.exitCode || 0)
@@ -291,58 +291,67 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         }
 
         case 'exec': {
-          const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
+          // eslint-disable-next-line no-async-promise-executor
+          shells[msg.uuid] = new Promise(async (resolve, reject) => {
+            try {
+              const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
+              if (process.env.DEBUG && (!msg.env || !msg.env.DEBUG)) {
+                // don't pass DEBUG unless the user asked for it!
+                delete env.DEBUG
+              }
 
-          if (process.env.DEBUG && (!msg.env || !msg.env.DEBUG)) {
-            // don't pass DEBUG unless the user asked for it!
-            delete env.DEBUG
-          }
+              const end = msg.cmdline.indexOf(' ')
+              const cmd = msg.cmdline.slice(0, end < 0 ? msg.cmdline.length : end) // FIXME quoted first arg
+              const aliasedCmd = shellAliases[cmd]
+              const cmdline = aliasedCmd ? msg.cmdline.replace(new RegExp(`^${cmd}`), aliasedCmd) : msg.cmdline
 
-          try {
-            const end = msg.cmdline.indexOf(' ')
-            const cmd = msg.cmdline.slice(0, end < 0 ? msg.cmdline.length : end) // FIXME quoted first arg
-            const aliasedCmd = shellAliases[cmd]
-            const cmdline = aliasedCmd ? msg.cmdline.replace(new RegExp(`^${cmd}`), aliasedCmd) : msg.cmdline
+              const { shellExe, shellOpts } = await getLoginShell()
+              let shell = spawn(shellExe, shellOpts.concat([cmdline]), {
+                uid,
+                gid,
+                name: 'xterm-color',
+                rows: msg.rows,
+                cols: msg.cols,
+                cwd: msg.cwd || process.cwd(),
+                env
+              })
 
-            const { shellExe, shellOpts } = await getLoginShell()
-            let shell = spawn(shellExe, shellOpts.concat([cmdline]), {
-              uid,
-              gid,
-              name: 'xterm-color',
-              rows: msg.rows,
-              cols: msg.cols,
-              cwd: msg.cwd || process.cwd(),
-              env
-            })
-            if (msg.uuid) shells[msg.uuid] = shell
-            // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
+              // termios.setattr(shell['_fd'], { lflag: { ECHO: false } })
 
-            // send all PTY data out to the websocket client
-            shell.on('data', (data: string) => {
-              ws.send(JSON.stringify({ type: 'data', data, uuid: msg.uuid }))
-            })
+              // send all PTY data out to the websocket client
+              shell.on('data', (data: string) => {
+                ws.send(JSON.stringify({ type: 'data', data, uuid: msg.uuid }))
+              })
 
-            shell.on('exit', (exitCode: number) => {
-              shell = undefined
-              if (msg.uuid) delete shells[msg.uuid]
-              ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
-              // exitNow(exitCode)
-            })
+              shell.on('exit', (exitCode: number) => {
+                shell = undefined
+                if (msg.uuid) delete shells[msg.uuid]
+                ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
+                // exitNow(exitCode)
+              })
 
-            ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))
-          } catch (err) {
-            console.error('could not exec', err)
-          }
+              ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))
+              resolve(shell)
+            } catch (err) {
+              console.error('could not exec', err)
+              reject(err)
+            }
+          })
+
           break
         }
 
         case 'data':
           try {
-            const shell = msg.uuid && shells[msg.uuid]
+            const shell = msg.uuid && (await shells[msg.uuid])
             if (shell) {
               return shell.write(msg.data)
             } else {
-              console.error('could not write to the shell, as we had no uuid, or no matching shell instance', msg.uuid)
+              console.error(
+                'could not write to the shell, as we had no uuid, or no matching shell instance',
+                msg.uuid,
+                msg.data
+              )
             }
           } catch (err) {
             console.error('could not write to the shell', err)
@@ -351,7 +360,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
         case 'resize':
           try {
-            const shell = msg.uuid && shells[msg.uuid]
+            const shell = msg.uuid && (await shells[msg.uuid])
             if (shell) {
               return shell.resize(msg.cols, msg.rows)
             } else {

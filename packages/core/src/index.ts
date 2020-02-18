@@ -52,13 +52,13 @@ export {
 } from './models/entity'
 export { isCommandHandlerWithEvents } from './models/command'
 export { ExecOptions, withLanguage } from './models/execOptions'
-export { Streamable } from './models/streamable'
+export { Streamable, Stream } from './models/streamable'
 
 // Editor registration
 export { hasEditor, tryOpenWithEditor, EditorProvider, registerEditor } from './webapp/views/registrar/editors'
 
 // Errors
-export { CodedError } from './models/errors'
+export { isCodedError, CodedError } from './models/errors'
 export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-error'
 
 // eventBus
@@ -87,16 +87,8 @@ export async function History(tab: Tab) {
 }
 
 // pretty printing
+export { formatPart as internalFormat, printResults as internalRender } from './webapp/print'
 export { prettyPrintTime } from './webapp/util/time'
-export { default as stripAnsi } from './webapp/util/strip-ansi'
-export { default as prettyPrintAnsi } from './webapp/util/pretty-print'
-export async function AsciiFormatters() {
-  const [{ formatUsage }, { preprocessTable, formatTable }] = await Promise.all([
-    import(/* webpackMode: "lazy" */ './webapp/util/ascii-to-usage'),
-    import(/* webpackMode: "lazy" */ './webapp/util/ascii-to-table')
-  ])
-  return { formatUsage, preprocessTable, formatTable }
-}
 
 // registrars
 export {
@@ -120,14 +112,7 @@ export { default as REPL } from './models/repl'
 export { split, _split, Split } from './repl/split'
 export { ReplEval, DirectReplEval } from './repl/types'
 export { default as encodeComponent } from './repl/encode'
-export {
-  getImpl as getReplImpl,
-  exec as internalBeCarefulExec,
-  pexec as internalBeCarefulPExec,
-  setEvaluatorImpl
-} from './repl/exec'
-
-export { default as closeAllViews } from './webapp/views/close-all'
+export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl } from './repl/exec'
 
 // Tabs
 export { Tab, getTabFromTarget, getCurrentTab, getTabId, sameTab } from './webapp/tab'
@@ -160,10 +145,9 @@ export {
   setCustomCaret
 } from './webapp/block'
 export { Block } from './webapp/models/block'
-export { setStatus, Status } from './webapp/status'
-export { listen as internalBeCarefulListen } from './webapp/listen'
+export { onKeyPress, onKeyDown } from './webapp/listen'
+export { onPaste } from './webapp/paste'
 export { disableInputQueueing, pasteQueuedInput } from './webapp/queueing'
-export { clearPendingTextSelection, setPendingTextSelection, clearTextSelection } from './webapp/text-selection'
 
 // generic UI
 export { isPopup } from './webapp/popup-core'
@@ -194,7 +178,7 @@ export {
   isFunctionContent,
   FunctionThatProducesContent
 } from './models/mmr/content-types'
-export { ToolbarTextImpl as ToolbarText, ToolbarText as ToolbarTextState } from './webapp/views/toolbar-text'
+export { ToolbarText } from './webapp/views/toolbar-text'
 
 // low-level UI
 export { partial as partialInput, isUsingCustomPrompt } from './webapp/prompt'
@@ -207,9 +191,6 @@ export {
   addIcon as topTabAddIcon,
   removeIcon as topTabRemoveIcon
 } from './webapp/views/top-tabs'
-
-// Prompt
-export { prompt } from './webapp/prompt-for-input'
 
 // Plugins
 export { commandsOffered as commandsOfferedByPlugin, userHome as pluginUserHome } from './api/plugins'
@@ -243,3 +224,6 @@ export { default as boot } from './webapp/bootstrap/boot'
 // View Components
 export { KuiComponent } from './webapp/component/component'
 export { findComponentProviders } from './webapp/component/registrar'
+
+// Sessions
+export { initializeSession } from './session/init'

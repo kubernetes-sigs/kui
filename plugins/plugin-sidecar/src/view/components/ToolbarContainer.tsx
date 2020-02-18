@@ -15,12 +15,12 @@
  */
 
 import * as React from 'react'
-import { ToolbarTextState, Button } from '@kui-shell/core'
+import { ToolbarText, Button } from '@kui-shell/core'
 
 import Toolbar, { Props } from './Toolbar'
 
 interface State {
-  toolbarText: ToolbarTextState
+  toolbarText: ToolbarText
   extraButtons?: Button[]
 }
 
@@ -34,7 +34,7 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   }
 
   /** Called by children if they desire an update to the Toolbar */
-  private onToolbarUpdate(toolbarText: ToolbarTextState, extraButtons?: Button[]) {
+  private onToolbarUpdate(toolbarText: ToolbarText, extraButtons?: Button[]) {
     this.setState({ toolbarText, extraButtons })
   }
 

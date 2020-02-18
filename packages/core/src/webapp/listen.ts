@@ -18,17 +18,14 @@ import Debug from 'debug'
 const debug = Debug('webapp/cli/listen')
 debug('loading')
 
-import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
-
 import { inBrowser, inElectron } from '../core/capabilities'
 
 import { keys } from './keys'
 import doCancel from './cancel'
-import { paste } from './paste'
-import { isPopup } from './popup-core'
-import { getCurrentPrompt, getBottomPrompt, isUsingCustomPrompt } from './prompt'
-
-import { inBottomInputMode } from '../core/settings'
+import eventBus from '../core/events'
+import { Tab, getTabId } from './tab'
+import { Block } from './models/block'
+import { Prompt, isUsingCustomPrompt } from './prompt'
 
 interface MSIETextRange {
   collapse: (val: boolean) => void
@@ -67,63 +64,19 @@ const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string)
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
 
-export const unlisten = (prompt: HTMLInputElement) => {
-  if (inBottomInputMode) {
-    prompt = getBottomPrompt()
-  }
-
-  if (prompt) {
-    prompt.readOnly = true
-    prompt.onkeypress = null
-    prompt.onkeydown = null
-    prompt.onpaste = null
-  }
-
-  if (prompt && !prompt.classList.contains('sidecar-header-input')) {
-    prompt.onkeypress = null
-    prompt.tabIndex = -1 // don't tab through old inputs
-  }
-}
-export const listen = (prompt: HTMLInputElement) => {
-  if (inBottomInputMode) {
-    const bottomPrompt = getBottomPrompt()
-    bottomPrompt.readOnly = false
-    bottomPrompt.tabIndex = 1
-    if (prompt !== bottomPrompt) {
-      prompt.readOnly = true
-    }
-  } else {
-    prompt.readOnly = false
-    prompt.placeholder = promptPlaceholder
-    prompt.tabIndex = 1
-  }
-
-  const grandparent = prompt.parentNode.parentNode as Element
-  grandparent.className = `${grandparent.getAttribute('data-base-class')} repl-active`
-
-  if (inBottomInputMode) {
-    prompt = getBottomPrompt()
-    prompt.value = ''
-  }
-
-  if (
-    !prompt.classList.contains('sidecar-header-input') &&
-    !document.activeElement.classList.contains('grab-focus') &&
-    document.activeElement !== prompt
-  ) {
-    prompt.focus()
-  }
-
-  prompt.onkeypress = async (event: KeyboardEvent) => {
+export function onKeyPress(tab: Tab, block: Block, prompt: Prompt) {
+  return async (event: KeyboardEvent) => {
     const char = event.keyCode
     if (char === keys.ENTER) {
       // user typed Enter; we've finished Reading, now Evalute
       const { doEval } = await import('../repl/exec')
-      doEval({ prompt })
+      doEval(tab, block, prompt)
     }
   }
+}
 
-  prompt.onkeydown = async (event: KeyboardEvent) => {
+export function onKeyDown(tab: Tab, block: Block, prompt: Prompt) {
+  return async (event: KeyboardEvent) => {
     const char = event.keyCode
 
     if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
@@ -139,6 +92,13 @@ export const listen = (prompt: HTMLInputElement) => {
         // otherwise, e.g. the browser may change the caret position
         event.preventDefault()
       }
+    } else if (char === keys.D && event.ctrlKey) {
+      if (prompt.value === '') {
+        // <-- only if the line is blank
+        debug('exit via ctrl+D')
+        const { pexec } = await import('../repl/exec')
+        pexec('exit')
+      }
     } else if (char === keys.PAGEUP) {
       if (inBrowser()) {
         debug('pageup')
@@ -153,7 +113,7 @@ export const listen = (prompt: HTMLInputElement) => {
       }
     } else if (char === keys.C && event.ctrlKey) {
       // Ctrl+C, cancel
-      doCancel() // eslint-disable-line @typescript-eslint/no-use-before-define
+      doCancel(tab, block) // eslint-disable-line @typescript-eslint/no-use-before-define
     } else if (char === keys.U && event.ctrlKey) {
       // clear line
       prompt.value = ''
@@ -164,22 +124,11 @@ export const listen = (prompt: HTMLInputElement) => {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior
-      if (isPopup()) {
-        // see init() below; in popup mode, cmd/ctrl+L does something different
-      } else {
-        const current = getCurrentPrompt().value
-        const { pexec } = await import('../repl/exec')
-        const currentCursorPosition = getCurrentPrompt().selectionStart // also restore the cursor position
-        await pexec('clear')
-        if (current) {
-          // restore the prompt value
-          getCurrentPrompt().value = current
-
-          // restore the prompt cursor position
-          debug('restoring cursor position', currentCursorPosition)
-          getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-        }
-      }
+      eventBus.emit(`/terminal/clear/${getTabId(tab)}`)
+      eventBus.emit(`/close/views/${getTabId(tab)}`)
+      // restore the prompt cursor position
+      // debug('restoring cursor position', currentCursorPosition)
+      // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
     } else if (char === keys.HOME) {
       // go to first command in history
       const historyModel = (await import('../models/history')).default
@@ -205,6 +154,4 @@ export const listen = (prompt: HTMLInputElement) => {
       }
     }
   }
-
-  prompt.onpaste = paste
 }

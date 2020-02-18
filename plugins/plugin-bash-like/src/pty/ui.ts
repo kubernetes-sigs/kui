@@ -58,6 +58,10 @@ export function setOffline() {
  *
  */
 export function setOnline() {
-  debug('setOnline')
-  topTabRemoveIcon(buttonDesignation)
+  try {
+    debug('setOnline')
+    topTabRemoveIcon(buttonDesignation)
+  } catch (err) {
+    console.error(err)
+  }
 }

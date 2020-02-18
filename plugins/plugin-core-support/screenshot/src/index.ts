@@ -16,9 +16,8 @@
 
 import { join } from 'path'
 
-import { inBrowser, Arguments, UsageError, i18n, KeyCodes, Tab, getCurrentPrompt } from '@kui-shell/core'
+import { inBrowser, Arguments, i18n, KeyCodes, Tab, getCurrentPrompt } from '@kui-shell/core'
 
-import usage from './usage'
 import Options from './options'
 import '../../web/css/static/screenshot.css'
 
@@ -182,7 +181,7 @@ export default async ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>)
         return reject(new Error(strings('screenshotREPLError')))
       } else if (!selector) {
         // either we couldn't find the area to
-        return reject(new UsageError({ usage }))
+        return reject(new Error(strings('screenshotInternalError')))
       } else if (which === 'nth') {
         if (N === undefined) {
           return reject(new Error('You must provide a numeric value for the "nth" argument'))

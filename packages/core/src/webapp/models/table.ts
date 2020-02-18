@@ -160,7 +160,8 @@ export class Table<RowType extends Row = Row> {
 
 export function isTable<C>(model: MetadataBearing<C> | Entity): model is Table {
   return (
-    model !== undefined && (model instanceof Table || ((model as Table).body && Array.isArray((model as Table).body)))
+    model !== undefined &&
+    (model instanceof Table || ((model as Table).body !== undefined && Array.isArray((model as Table).body)))
   )
 }
 

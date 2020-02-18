@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { eventBus, Arguments, Registrar } from '@kui-shell/core'
+import { eventBus, Registrar } from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -38,26 +38,9 @@ function closeTab() {
  * Create and initialize a new tab
  *
  */
-function newTab() {
+const newTabAsync = () => {
   eventBus.emit('/tab/new/request')
   return true
-}
-
-/**
- * Same as newTab, but done asynchronously
- *
- */
-const newTabAsync = ({ execOptions }: Arguments) => {
-  if (execOptions.nested) {
-    newTab()
-    return true
-  } else {
-    // we can't proceed until the repl is done installing the next block
-    eventBus.once('/core/cli/install-block', () => newTab())
-
-    // tell the REPL we're done, so it can get busy installing the next block!
-    return true
-  }
 }
 
 /**

@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { basename } from 'path'
-
 import { getInitialBlock, getCurrentBlock } from './block'
 import { Tab, getCurrentTab, getTabFromTarget } from './tab'
 
 import { ExecOptions, DefaultExecOptions } from '../models/execOptions'
-import { inElectron } from '../core/capabilities'
 import { inBottomInputMode } from '../core/settings'
 
 export interface Prompt extends HTMLInputElement {
@@ -64,14 +61,6 @@ export const getCurrentPromptLeft = (tab: Tab) => {
     return getPromptLeft(document.querySelector('.kui--input-stripe'))
   } else {
     return getPromptLeft(getCurrentBlock(tab))
-  }
-}
-
-export function installContext(block: HTMLElement) {
-  if (inElectron()) {
-    const cwd = process.cwd() === process.env.HOME ? '~' : basename(process.cwd())
-    const promptContextContainer = block.querySelector('.repl-context') as HTMLElement
-    promptContextContainer.innerText = cwd
   }
 }
 

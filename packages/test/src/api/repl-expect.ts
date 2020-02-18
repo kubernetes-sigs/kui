@@ -41,6 +41,7 @@ interface Options {
   expect?: string
   nonBlankPromptOk?: boolean
   passthrough?: boolean
+  selfSelector?: string
   selector?: string
   expectJustOK?: boolean
   expectString?: string
@@ -91,23 +92,35 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
         // more custom, look for expect text under given selector
         const selector = `${
           opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1) : Selectors.OUTPUT_N(N - 1)
-        } ${opt.selector || ''}`
+        }${opt.selfSelector || ''} ${opt.selector || ''}`
         if (opt.elements) {
-          return app.client.elements(selector)
+          return app.client.waitForExist(selector, waitTimeout).then(() => app.client.elements(selector))
         } else {
-          return app.client.getText(selector).then(txt => {
-            if (opt.exact) assert.strictEqual(txt, opt.expect)
-            else if (opt.expect) {
-              if (txt.indexOf(opt.expect) < 0) {
-                console.error(
-                  `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
-                )
-                assert.ok(txt.indexOf(opt.expect) >= 0)
-              }
-            }
+          let idx = 0
+          return app.client
+            .waitUntil(async () => {
+              await app.client.waitForExist(selector, waitTimeout)
+              const txt = await app.client.getText(selector)
 
-            return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
-          })
+              if (++idx > 5) {
+                console.error(`still waiting for expected text actualText=${txt} expectedText=${opt.expect}`)
+              }
+
+              if (opt.exact) return txt === opt.expect
+              else if (opt.expect) {
+                if (txt.indexOf(opt.expect) < 0) {
+                  console.error(
+                    `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
+                  )
+                  return txt.indexOf(opt.expect) >= 0
+                }
+              }
+
+              return true
+            }, waitTimeout)
+            .then(() => {
+              return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
+            })
         }
       } else if (opt && opt.expectJustOK === true) {
         // ensure that there is nothing other than "ok"
@@ -133,7 +146,7 @@ export const ok = async (res: AppAndCount) =>
 
 export const error = (statusCode: number | string, expect?: string) => async (res: AppAndCount) =>
   expectOK(res, {
-    selector: `.oops[data-status-code="${statusCode || 0}"]`,
+    selfSelector: `.oops[data-status-code="${statusCode || 0}"]`,
     expectError: true,
     expect: expect
   }).then(() => res.app)

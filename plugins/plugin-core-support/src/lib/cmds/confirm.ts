@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar, ExecType, UsageModel, eventBus, i18n, getCurrentPrompt, KeyCodes, Tab } from '@kui-shell/core'
+import { Registrar, ExecType, UsageModel, i18n, getCurrentPrompt, KeyCodes } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -73,7 +73,9 @@ export default async (commandTree: Registrar) => {
             }, 0)
 
             if (success) {
-              resolve(strings('operationConfirmed'))
+              if (execOptions.type === ExecType.Nested) {
+                resolve(strings('operationConfirmed'))
+              }
             } else {
               reject(strings('operationCancelled'))
             }
@@ -117,20 +119,12 @@ export default async (commandTree: Registrar) => {
           }
           initMouseEvents()
 
-          const executeCommandForReal = () => REPL.pexec(command, { tab })
-          const executeCommand = (thatTab: Tab) => {
-            if (thatTab === tab) {
-              executeCommandForReal()
-              eventBus.off('/core/cli/install-block', executeCommand)
-            }
-          }
           const exec = () => {
             success()
-
-            if (execOptions.type === ExecType.TopLevel) {
-              eventBus.on('/core/cli/install-block', executeCommand)
+            if (execOptions.type === ExecType.Nested) {
+              REPL.pexec(command, { tab })
             } else {
-              executeCommandForReal()
+              REPL.qexec(command, undefined, undefined, { tab }).then(resolve)
             }
           }
 

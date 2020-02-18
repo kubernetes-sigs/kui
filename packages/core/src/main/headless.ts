@@ -21,7 +21,7 @@ const debug = Debug('main/headless')
 debug('loading')
 
 import { Entity } from '../models/entity'
-import { installOopsHandler, exec } from '../repl/exec'
+import { exec } from '../repl/exec'
 import mimicDom from '../util/mimic-dom'
 import { preload, init as pluginsInit } from '../plugins/plugins'
 import { CodedError } from '../models/errors'
@@ -255,7 +255,7 @@ export const main = async (
   debug('argv', argv)
 
   const { quit } = app
-  installOopsHandler(() => failure(quit, execOptions)) // TODO should be repl.installOopsHandler
+  // installOopsHandler(() => failure(quit, execOptions)) // TODO should be repl.installOopsHandler
 
   electronCreateWindowFn = mainFunctions.createWindow
 

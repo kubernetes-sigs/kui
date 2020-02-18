@@ -136,37 +136,6 @@ header .header-nav-list {
 body.still-loading .repl {
   opacity: 0;
 }
-.repl {
-  opacity: 1;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding-top: 1rem;
-  flex: 4;
-  background-color: var(--color-ui-01);
-}
-.repl-inner {
-  overflow-y: auto;
-  flex: 1;
-  padding-right: 0.375em;
-}
-.repl.sidecar-visible .repl-block {
-  background: transparent;
-}
-.repl-block {
-  padding: 0.5em 0 0;
-  display: flex;
-  flex-direction: column;
-}
-body:not(.subwindow) repl.sidecar-visible .repl-block,
-.sidecar-full-screen repl .repl-block {
-  border-color: transparent;
-  box-shadow: none;
-}
-.repl,
-.repl-input input {
-  font-family: var(--font-monospace);
-}
 .scrollable[data-table-max-rows="4"],
 .scrollable-auto[data-table-max-rows="4"] {
   max-height: calc(4 * 3em + 2px);
@@ -316,53 +285,6 @@ body.subwindow .kui--repl-prompt-buttons {
   opacity: 1;
   transition-property: all;
 }
-body:not(.subwindow) .repl .repl-prompt-right-element-status-icon.deemphasize {
-  margin-left: 0.5em;
-}
-.repl-prompt-right-element-status-icon.deemphasize .bx--loading {
-  width: unset;
-  height: unset;
-}
-.repl-prompt-right-element-status-icon.deemphasize .bx--loading__svg circle {
-  /* scaling from 16 to 20 circle; default 240, and 300 = 240*20/16; also see index.html for 46.875=37.5*20/16 */
-  stroke-dasharray: 300;
-}
-.repl-block:hover .repl-prompt-right-element-status-icon.deemphasize svg {
-  filter: opacity(0.75) grayscale(0.125);
-}
-.repl-prompt-right-element-status-icon.deemphasize svg {
-  display: none;
-  filter: opacity(0.75) grayscale(0.5);
-}
-.repl-block:hover .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
-  filter: grayscale(0.25);
-}
-.repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
-  filter: grayscale(0.5);
-}
-.repl-block.processing .repl-prompt-right-element-status-icon.deemphasize {
-  opacity: 1;
-}
-.repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg {
-  filter: none;
-}
-.repl-block:not(.processing) .kui--icon-processing {
-  display: none;
-}
-.repl-block.processing .repl-prompt-right-element-status-icon.deemphasize .kui--icon-processing svg,
-.repl-block.valid-response .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-ok,
-.repl-block.error .repl-prompt-right-element-status-icon.deemphasize svg.kui--icon-error {
-  display: block;
-}
-.repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle {
-  stroke: var(--color-base0E);
-}
-svg.kui--error-icon path[data-icon-path="inner-path"],
-.repl-block .repl-prompt-right-element-status-icon svg path[data-icon-path="inner-path"] {
-  opacity: 1;
-  stroke: var(--color-ui-01);
-  fill: var(--color-ui-01);
-}
 .repl-block.valid-response
   .repl-prompt-right-element-status-icon
   svg.kui--icon-ok
@@ -379,11 +301,6 @@ svg.kui--error-icon path:not([data-icon-path="inner-path"]),
 }
 .repl-prompt-right-elements .repl-prompt-right-element-status-icon:hover {
   opacity: 1;
-}
-repl.sidecar-visible .repl-prompt-timestamp,
-repl.sidecar-visible .repl-block:not(.processing) .repl-prompt-right-elements,
-.repl-active .repl-prompt-right-elements {
-  display: none; /* see the comment for repl-input re: min-height */
 }
 
 body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
@@ -424,7 +341,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl-input-like:focus {
   outline: none;
 }
-.repl-block.valid-response .ok,
 .green-text,
 .dragover .ok-text-on-dragover {
   opacity: 1 !important;
@@ -439,26 +355,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 }
 .header .clickable.oops {
   font-weight: 900;
-}
-.repl-block.valid-response div:not(.repl-result) > .ok-line,
-.repl-block.valid-response > .oops {
-  font-size: 0.875em;
-}
-.repl-block.valid-response .ok,
-.repl-block.valid-response > .oops {
-  display: block;
-}
-.repl-block.valid-response .ok.inline-ok {
-  display: inline;
-}
-.repl-block.valid-response .repl-result .ok {
-  /* oof, sometimes the .ok is nested under a repl-result, which would
-   result in a double 0.875em reduction */
-  font-size: 1em;
-}
-.repl-block.valid-response .oops {
-  /* oops output often times doesn't word wrap nicely on its own, e.g. help/usage; issue #396 */
-  word-break: break-all;
 }
 .repl-input {
   align-items: center;
@@ -750,6 +646,9 @@ code.fancy-code.hljs {
 .flex-layout {
   display: flex;
   align-items: center;
+}
+.as-column {
+  display: grid;
 }
 .flex-align-top {
   align-items: flex-start;
@@ -1308,7 +1207,7 @@ body[kui-theme-style="dark"] .repl .log-lines .log-line .log-field {
   color: inherit;
 }
 
-/* fade-in animation */
+/* delayed appearance animation */
 .fade-in {
   animation: 1s fadeIn;
   animation-fill-mode: forwards;
@@ -1319,6 +1218,23 @@ body[kui-theme-style="dark"] .repl .log-lines .log-line .log-field {
   }
   100% {
     visibility: visible;
+  }
+}
+
+/* fade-in animation */
+.fade-in2 {
+  animation: 750ms fadeIn2;
+  animation-fill-mode: forwards;
+}
+@keyframes fadeIn2 {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -1442,8 +1358,7 @@ body.subwindow .repl-prompt svg {
 }
 body.subwindow .repl .repl-input .repl-prompt,
 body.subwindow .repl-result-spinner,
-body.subwindow .repl .repl-input input,
-body.subwindow .repl .repl-prompt-timestamp {
+body.subwindow .repl .repl-input input {
   display: none;
 }
 body.subwindow .repl-inner {
@@ -1937,11 +1852,6 @@ body a:hover:not(.plain-anchor) {
   color: var(--color-support-04);
 }
 
-.repl-block.valid-response .repl-output.repl-result-has-content .ok {
-  /* for now, let's not show the "ok" after every command, if the result block has content */
-  display: none;
-}
-.repl-block.valid-response .ok,
 .green-text,
 .dragover .ok-text-on-dragover {
   color: var(--color-ok);

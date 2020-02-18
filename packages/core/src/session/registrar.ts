@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Tab } from '../webapp/tab'
 
-import { Tab } from '../tab'
-import eventBus from '../../core/events'
+/** Initialize the session for a given `Tab` */
+export type SessionInitializer = (tab: Tab) => void | Promise<void>
 
-export default function(tab: Tab) {
-  eventBus.emit('/close/views/in/tab', tab)
+/** Session initializer registrants */
+const registrar: SessionInitializer[] = []
+
+/** Register one SessionInitializer */
+export function registerSessionInitializer(init: SessionInitializer) {
+  registrar.push(init)
+}
+
+/** Invoke each registered session initializer on the given tab */
+export default async function MapTo(tab: Tab): Promise<void> {
+  await Promise.all(registrar.map(_ => _(tab)))
 }

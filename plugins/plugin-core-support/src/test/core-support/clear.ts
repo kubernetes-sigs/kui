@@ -50,8 +50,8 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   }
   const enteredString = 'does this work?'
   const enteredString2 = 'does this also work?'
-  it(`quick test of prompt`, doPrompt({ enteredString }))
-  it(
+  xit(`quick test of prompt`, doPrompt({ enteredString }))
+  xit(
     `another quick test of prompt`,
     doPrompt({
       enteredString: enteredString2,
@@ -59,7 +59,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       expectedPlaceholder: 'foo'
     })
   )
-  it(
+  xit(
     `cancel test of prompt`,
     doPrompt({
       enteredPlaceholder: 'foo3',

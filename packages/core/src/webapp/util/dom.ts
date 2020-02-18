@@ -25,11 +25,3 @@ export const removeAllDomChildren = (node: Node) => {
     }
   }
 }
-
-/**
- * Look up an HTML element
- *   note: ParentNode is a common parent of Element and Document
- */
-export const element = (id: string, parent: ParentNode = document): HTMLElement => {
-  return parent.querySelector(id) as HTMLElement
-}

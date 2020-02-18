@@ -15,13 +15,7 @@
  */
 
 import Debug from 'debug'
-const debug = Debug('webapp/cli/print')
-debug('loading')
-
 import { Tab } from './tab'
-import { Block } from './models/block'
-import { setStatus, Status } from './status'
-import { scrollIntoView } from './scroll'
 
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
@@ -30,7 +24,7 @@ import KuiFrame from './component/KuiFrame'
 import { isKuiFramedComponent } from './component/component'
 import { findComponentProviders } from './component/registrar'
 
-import { Streamable, Stream } from '../models/streamable'
+import { Streamable } from '../models/streamable'
 import { CommandHandlerWithEvents, KResponse, ParsedOptions } from '../models/command'
 import { ExecOptions } from '../models/execOptions'
 import { isMultiModalResponse } from '../models/mmr/is'
@@ -42,39 +36,9 @@ import {
   isMixedResponse
 } from '../models/entity'
 
-import UsageError from '../core/usage-error'
+import { isUsageError, isMessageWithUsageModel, isMessageWithCode, UsageError } from '../core/usage-error'
 
-/**
- * Emit a green "ok"
- *
- */
-export const ok = (parentNode: Element, suffix?: string | Element, css?: string) => {
-  const okLine = document.createElement('div')
-  okLine.classList.add('ok-line')
-
-  const replResultBlock = parentNode.parentNode.querySelector('.repl-result')
-  const resultHasContent = replResultBlock.children.length > 0
-  if (resultHasContent) {
-    ;(replResultBlock.parentNode as Element).classList.add('repl-result-has-content')
-  }
-
-  const ok = document.createElement('span')
-  okLine.appendChild(ok)
-  ok.classList.add('ok')
-  ok.appendChild(document.createTextNode(suffix ? 'ok:' : 'ok'))
-
-  if (suffix) {
-    ok.classList.add('inline-ok')
-    okLine.appendChild(typeof suffix === 'string' ? document.createTextNode(` ${suffix}`) : suffix)
-  }
-
-  if (css) {
-    okLine.classList.add(css)
-  }
-
-  parentNode.appendChild(okLine)
-  return okLine
-}
+const debug = Debug('webapp/print')
 
 /**
  * See if we have any registered component providers for the given
@@ -107,115 +71,65 @@ async function printViaProvider(
       )
     }
     ;[providers[0]].forEach(async _ => {
-      const component = await _.render(response, tab, tab.REPL, command)
+      try {
+        const component = await _.render(response, tab, tab.REPL, command)
 
-      if (component.spec.content.children.length > 0) {
-        resultDom.parentElement.classList.add('repl-result-has-content')
-      }
+        // if (component.spec.content.children.length > 0) {
+        // resultDom.parentElement.classList.add('repl-result-has-content')
+        // }
 
-      // does the view provider need us to wrap the content in a frame?
-      if (isKuiFramedComponent(component)) {
-        new KuiFrame().attach(component, tab)
-        if (echoOk) {
-          ok(resultDom.parentElement)
+        // does the view provider need us to wrap the content in a frame?
+        if (isKuiFramedComponent(component)) {
+          new KuiFrame().attach(component, tab)
+          // if (echoOk) {
+          // ok(resultDom.parentElement)
+          // }
+        } else {
+          // if not, then append its content to the REPL output
+
+          // TODO these two should go away once we consolidate the table styling in plugin-kui-tables
+          resultDom.parentElement.classList.add('result-as-table', 'result-as-vertical')
+          resultDom.classList.add('repl-result')
+
+          resultDom.appendChild(component.spec.content)
+          if (echoOk) {
+            // ok(resultDom.parentElement).classList.add('ok-for-list')
+          }
         }
-      } else {
-        // if not, then append its content to the REPL output
-
-        // TODO these two should go away once we consolidate the table styling in plugin-kui-tables
-        resultDom.parentElement.classList.add('result-as-table', 'result-as-vertical')
-        resultDom.classList.add('repl-result')
-
-        resultDom.appendChild(component.spec.content)
-        if (echoOk) {
-          ok(resultDom.parentElement).classList.add('ok-for-list')
-        }
+      } catch (err) {
+        console.error('error rendering via provider', err)
       }
     })
     return true
   }
 }
 
-/**
- * Stream output to the given block
- *
- */
-export const streamTo = (tab: Tab, block: Block): Stream => {
-  const container = block.querySelector('.repl-output') as HTMLElement
-  const resultDom = container ? document.createElement('div') : (block.querySelector('.repl-result') as HTMLElement)
-  if (container) {
-    container.classList.add('repl-result-has-content')
-    container.insertBefore(resultDom, container.childNodes[0])
+export async function formatPart(tab: Tab, response: Streamable, resultDom: HTMLElement) {
+  if (await printViaProvider(tab, response, resultDom)) {
+    // then a provider handled the rendering for us. we're done here
+    return
   }
 
-  let previousLine: HTMLElement
-  return (response: Streamable, killLine = false): Promise<void> => {
-    // debug('stream', response, killLine)
-    resultDom.setAttribute('data-stream', 'data-stream')
-    ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-
-    if (killLine && previousLine) {
-      previousLine.parentNode.removeChild(previousLine)
-      previousLine = undefined
-    }
-
-    const formatPart = async (response: Streamable, resultDom: HTMLElement) => {
-      if (await printViaProvider(tab, response, resultDom)) {
-        // then a provider handled the rendering for us. we're done here
-        return
-      }
-
-      if (UsageError.isUsageError(response)) {
-        previousLine = await UsageError.getFormattedMessage(response)
-        resultDom.appendChild(previousLine)
-        resultDom.classList.add('oops')
-        resultDom.setAttribute('data-status-code', response.code.toString())
-      } else if (isMixedResponse(response)) {
-        promiseEach(response, _ => {
-          const para = document.createElement('p')
-          para.classList.add('kui--mixed-response--text')
-          resultDom.appendChild(para)
-          return formatPart(_, para)
-        })
-      } else if (isHTML(response)) {
-        response.classList.add('repl-result-like')
-        previousLine = response
-        resultDom.appendChild(previousLine)
-      } else {
-        previousLine = document.createElement('pre')
-        previousLine.classList.add('streaming-output', 'repl-result-like')
-        previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
-        resultDom.appendChild(previousLine)
-      }
-    }
-
-    return formatPart(response, resultDom).then(() => {
-      scrollIntoView({ element: resultDom, when: 0 })
+  if (UsageError.isUsageError(response)) {
+    const previousLine = await UsageError.getFormattedMessage(response)
+    resultDom.appendChild(previousLine)
+    resultDom.classList.add('oops')
+    resultDom.setAttribute('data-status-code', response.code.toString())
+  } else if (isMixedResponse(response)) {
+    promiseEach(response, _ => {
+      const para = document.createElement('p')
+      para.classList.add('kui--mixed-response--text')
+      resultDom.appendChild(para)
+      return formatPart(tab, _, para)
     })
-  }
-}
-
-async function renderResult(
-  response: Entity,
-  tab: Tab,
-  resultDom: HTMLElement,
-  block: Block,
-  echo = true,
-  attach = echo
-) {
-  if (isHTML(response)) {
-    // TODO is this the best way to detect response is a dom??
-    // pre-formatted DOM element
-    if (attach) {
-      resultDom.appendChild(response)
-    }
-    if (echo) {
-      ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-      ok(resultDom.parentElement).classList.add('ok-for-list')
-    }
-    return true
+  } else if (isHTML(response)) {
+    response.classList.add('repl-result-like')
+    resultDom.appendChild(response)
   } else {
-    return false
+    const previousLine = document.createElement('pre')
+    previousLine.classList.add('streaming-output', 'repl-result-like')
+    previousLine.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
+    resultDom.appendChild(previousLine)
   }
 }
 
@@ -232,15 +146,13 @@ export function replResult() {
  *
  */
 export const printResults = (
-  block: HTMLElement,
-  nextBlock: HTMLElement,
   tab: Tab,
   resultDom: HTMLElement,
   echo = true,
   execOptions?: ExecOptions,
   command?: string,
   evaluator?: CommandHandlerWithEvents<KResponse, ParsedOptions>
-) => async (response: Entity): Promise<boolean> => {
+) => async (response: Entity): Promise<void> => {
   debug('printResults', response)
 
   if (process.env.KUI_TEE_TO_FILE) {
@@ -249,18 +161,27 @@ export const printResults = (
     import('../util/tee').then(_ => _.default(response))
   }
 
-  if (echo) {
-    setStatus(block, response === false ? Status.error : Status.validResponse)
-  }
-
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
       const echoOk = echo || (execOptions && execOptions.replSilence)
       if (await printViaProvider(tab, response, resultDom, command, echoOk)) {
         // then we found at least one provider willing to do the
         // rendering for us!
-      } else if (await renderResult(response, tab, resultDom, block, echo)) {
-        // then renderResult took care of things
+      } else if (isHTML(response)) {
+        // pre-formatted DOM element
+        resultDom.appendChild(response)
+      } else if (isUsageError(response)) {
+        if (typeof response.raw === 'string') {
+          const span = document.createElement('pre')
+          span.innerText = response.raw
+          resultDom.appendChild(span)
+        } else if (isMessageWithUsageModel(response.raw) || isMessageWithCode(response.raw)) {
+          const span = document.createElement('pre')
+          span.innerText = response.raw.message
+          resultDom.appendChild(span)
+        } else {
+          resultDom.appendChild(response.raw)
+        }
       } else if (
         typeof response === 'number' ||
         typeof response === 'string' ||
@@ -273,16 +194,14 @@ export const printResults = (
           const span = document.createElement('pre')
           span.innerText = isMessageBearingEntity(response) ? response.message : response.toString()
           resultDom.appendChild(span)
-          ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-          ok(resultDom.parentElement).classList.add('ok-for-list')
         }
       } else if (isResourceModification(response) && response.verb === 'delete') {
         if (echo) {
           // we want the 'ok:' part to appear even in popup mode
           if (response.kind) {
-            ok(resultDom, `deleted ${response.kind.replace(/s$/, '')} ${response.metadata.name}`, 'show-in-popup')
+            // ok(resultDom, `deleted ${response.kind.replace(/s$/, '')} ${response.metadata.name}`, 'show-in-popup')
           } else {
-            ok(resultDom)
+            // ok(resultDom)
           }
         }
       } else if (isMixedResponse(response)) {
@@ -298,8 +217,9 @@ export const printResults = (
           }
         }
 
+        resultDom.classList.add('as-column')
         response.forEach(part => {
-          printResults(block, nextBlock, tab, resultDom, echo, execOptions, command, evaluator)(paragraph(part))
+          printResults(tab, resultDom, echo, execOptions, command, evaluator)(paragraph(part))
         })
       } else if (typeof response === 'object') {
         // render random json in the REPL directly
@@ -308,18 +228,14 @@ export const printResults = (
         resultDom.appendChild(code)
         code.classList.add('hljs', 'json') // we have some CSS rules that trigger off these
         ;(resultDom.parentNode as HTMLElement).classList.add('result-vertical')
-        ok(resultDom.parentElement).classList.add('ok-for-list')
+        // ok(resultDom.parentElement).classList.add('ok-for-list')
       }
     } else if (response) {
-      if (echo) ok(resultDom.parentElement)
+      // if (echo) ok(resultDom.parentElement)
     } else {
       return false
     }
   }
 
   await render(response, { echo, resultDom })
-
-  // did we print something to the repl?
-  // return !isCustomSpec(response)
-  return true
 }

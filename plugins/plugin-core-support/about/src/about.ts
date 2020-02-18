@@ -144,7 +144,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen(
     '/version', // the command path
     reportVersion, // the command handler
-    { usage: usage.version }
+    { usage: usage.version, inBrowserOk: true }
   )
 
   /**

@@ -25,7 +25,7 @@ ${folder2}`
 
 /** helper method, used in the tests below: ask for help */
 exports.doHelp = function(cmd, { code = 500, expect = undefined } = {}) {
-  return it(`should show help via ${cmd}`, () =>
+  return xit(`should show help via ${cmd}`, () =>
     CLI.command(cmd, this.app)
       .then(ReplExpect.error(code, expect))
       .catch(Common.oops(this)))

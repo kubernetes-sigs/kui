@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import { listen } from './listen'
-import { scrollIntoView } from './scroll'
-import { handleQueuedInput } from './queueing'
-import { installContext, getPrompt } from './prompt'
-import { Tab, getCurrentTab, getTabFromTarget } from './tab'
-
-import eventBus from '../core/events'
+import { Tab, getCurrentTab } from './tab'
 import { Block } from './models/block'
 
 export const getInitialBlock = (tab: Tab): HTMLElement => {
@@ -60,29 +54,6 @@ export const removeAnyTemps = (block: Block, fullClean = false): Block => {
   block.classList.remove('using-custom-prompt')
 
   return block
-}
-
-export const installBlock = (parentNode: Node, currentBlock: HTMLElement, nextBlock: HTMLElement) => async () => {
-  if (!nextBlock) return // error cases
-
-  parentNode.appendChild(nextBlock)
-  listen(getPrompt(nextBlock))
-
-  if (!document.activeElement.classList.contains('grab-focus')) {
-    nextBlock.querySelector('input').focus()
-  }
-
-  // the currentBlock might've been detached; if so, re-start from 0
-  const currentIndex = currentBlock.parentNode ? parseInt(currentBlock.getAttribute('data-input-count'), 10) : -1
-  nextBlock.setAttribute('data-input-count', (currentIndex + 1).toString())
-
-  installContext(nextBlock)
-
-  scrollIntoView({ when: 100 })
-
-  eventBus.emit('/core/cli/install-block', getTabFromTarget(currentBlock))
-
-  await handleQueuedInput(nextBlock)
 }
 
 /**

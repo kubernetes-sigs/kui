@@ -139,46 +139,6 @@ new TestStringResponse({
 }).string()
 
 /**
- * ANSI pretty printing
- *
- */
-new TestStringResponse({
-  command: 'test ansi1',
-  expect: 'hello world',
-  exact: true
-}).string()
-new TestStringResponse({
-  command: 'test ansi1',
-  expect: 'hello world',
-  exact: true
-}).string()
-new TestStringResponse({
-  command: 'test ansi2',
-  expect: 'xxxxxx',
-  exact: false
-}).string()
-new TestStringResponse({
-  command: 'test ansi2',
-  expect: 'hello world',
-  exact: false
-}).string()
-new TestStringResponse({
-  command: 'test ansi3',
-  expect: 'xxxxxx',
-  exact: false
-}).string()
-new TestStringResponse({
-  command: 'test ansi3',
-  expect: 'hello world',
-  exact: false
-}).string()
-new TestStringResponse({
-  command: 'test ansi3',
-  expect: 'yyyy',
-  exact: false
-}).string()
-
-/**
  * Time pretty printing
  *
  */

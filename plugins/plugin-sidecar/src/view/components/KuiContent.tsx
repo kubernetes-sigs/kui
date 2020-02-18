@@ -27,7 +27,7 @@ import {
   isFunctionContent,
   isScalarContent,
   MultiModalResponse,
-  ToolbarTextState
+  ToolbarText
 } from '@kui-shell/core'
 
 import { KEditor as Editor } from '@kui-shell/plugin-editor'
@@ -42,7 +42,7 @@ interface KuiMMRProps {
   tab: KuiTab
   mode: Content
   response: MultiModalResponse
-  willUpdateToolbar?: (toolbarText: ToolbarTextState, buttons?: Button[]) => void
+  willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void
 }
 
 export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {

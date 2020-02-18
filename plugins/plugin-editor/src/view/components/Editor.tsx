@@ -18,7 +18,7 @@ import * as React from 'react'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
-import { Button, REPL, StringContent, ToolbarTextState, MultiModalResponse, i18n } from '@kui-shell/core'
+import { Button, REPL, StringContent, ToolbarText, MultiModalResponse, i18n } from '@kui-shell/core'
 
 import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
@@ -37,14 +37,14 @@ interface Props extends MonacoOptions {
   repl: REPL
   content: StringContent
   response: File | MultiModalResponse
-  willUpdateToolbar?: (toolbarText: ToolbarTextState, buttons?: Button[]) => void
+  willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void
 }
 
 interface State {
   editor: Monaco.ICodeEditor
   wrapper: HTMLDivElement
   subscription?: IDisposable
-  toolbarText?: ToolbarTextState
+  toolbarText?: ToolbarText
 }
 
 export default class Editor extends React.PureComponent<Props, State> {
@@ -59,11 +59,11 @@ export default class Editor extends React.PureComponent<Props, State> {
   }
 
   /**
-   * ToolbarTextState for a clean editor, i.e. no changes have been made
+   * ToolbarText for a clean editor, i.e. no changes have been made
    * since last save.
    *
    */
-  private static allClean(props: Props): ToolbarTextState {
+  private static allClean(props: Props): ToolbarText {
     return {
       type: 'info',
       text: strings(!props.readOnly ? 'isUpToDate' : 'isUpToDateReadonly')
@@ -71,10 +71,10 @@ export default class Editor extends React.PureComponent<Props, State> {
   }
 
   /**
-   * ToolbarTextState to indicate error saving.
+   * ToolbarText to indicate error saving.
    *
    */
-  private static error(props: Props, msg: string): ToolbarTextState {
+  private static error(props: Props, msg: string): ToolbarText {
     return {
       type: 'error',
       text: strings(msg)

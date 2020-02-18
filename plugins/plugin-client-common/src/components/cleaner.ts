@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-import { Table } from '../webapp/models/table'
-import { MultiModalResponse } from './mmr/types'
-import { SimpleEntity, MixedResponse } from './entity'
+type Cleaner = () => void
 
-export type Streamable = SimpleEntity | Table | MixedResponse | MultiModalResponse
-export default Streamable
-
-export type Stream = (response: Streamable) => Promise<void>
-
-export type StreamableFactory = () => Promise<Stream>
+export default Cleaner
