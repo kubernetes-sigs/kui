@@ -1,0 +1,19 @@
+{
+  "save": "Desplegar",
+  "saveLocalFile": "Guardar",
+  "Edit": "Editar",
+  "revert": "Revertir",
+  "readonly": "Edición realizada",
+  "isNew": "Está en modalidad de edición, visualizando <strong>código no implementado</strong>",
+  "isNewReadOnly": "Está en modalidad de solo lectura, visualizando <strong>código no implementado</strong>",
+  "isUpToDate": "Está en modalidad de edición, visualizando la <strong>versión actual guardada</strong>",
+  "isModified": "Está en modalidad de edición, con <strong>ediciones no guardadas</strong>",
+  "isModifiedIndicator": "Hay ediciones sin guardar",
+  "header:edit": "Abra un archivo determinado o entidad para editar.",
+  "docs:edit": "Abra el código para un archivo local o una entidad existente en un editor de texto",
+  "docs:edit:filepath": "El nombre de entidad o vía de acceso del archivo local que va a editar ",
+  "docs:edit:create": "Indica que desea crear un archivo local (y directorios padre según sea necesario) ",
+  "docs:edit:language": "Para uso interno, especifique el idioma para colorear e IntelliSense",
+  "docs:edit:name": "Para uso interno, especifique el nombre que desea muestrar en la cabecera de sidecar",
+  "docs:edit:type": "Para uso interno, especifique el tipo que desea mostrar en la cabecera de sidecar"
+}
