@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventBus, KeyCodes, inElectron } from '@kui-shell/core'
+import { KeyCodes, inElectron } from '@kui-shell/core'
 
 import Tab from './Tab'
 import TabModel from '../TabModel'
@@ -54,9 +54,7 @@ interface Props {
 
 export default class TopTabStripe extends React.PureComponent<Props> {
   public componentDidMount() {
-    eventBus.once('/init/done', () => {
-      this.addKeyboardListeners()
-    })
+    this.addKeyboardListeners()
   }
 
   /**

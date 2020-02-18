@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys } from '@kui-shell/test'
 
 import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
@@ -35,6 +35,50 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
 
   it(`switch back to second tab via command`, () =>
     CLI.command('tab switch 2', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this)))
+
+  it('should close tab via "tab close" command', () =>
+    CLI.command('tab close', this.app)
+      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+      .catch(Common.oops(this)))
+})
+
+Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('new tab via command', () =>
+    CLI.command('tab new', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this)))
+
+  if (process.platform === 'darwin') {
+    it(`switch back to first tab via keyboard shortcut: meta+1`, () =>
+      this.app.client
+        .keys([Keys.META, Keys.Numpad1, 'NULL'])
+        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+        .catch(Common.oops(this)))
+
+    it(`switch back to second tab via keyboard shortcut: meta+2`, () =>
+      this.app.client
+        .keys([Keys.META, Keys.Numpad2, 'NULL'])
+        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+        .catch(Common.oops(this)))
+  }
+
+  it(`switch back to first tab via keyboard shortcut: control+pageUp`, () =>
+    this.app.client
+      .keys([Keys.CONTROL, Keys.PageUp, 'NULL'])
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this)))
+
+  it(`switch back to second tab via keyboard shortcut: control+pageDown`, () =>
+    this.app.client
+      .keys([Keys.CONTROL, Keys.PageDown, 'NULL'])
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this)))
 
