@@ -1,0 +1,19 @@
+{
+  "save": "Distribuisci",
+  "saveLocalFile": "Salva",
+  "Edit": "Modifica",
+  "revert": "Ripristina",
+  "readonly": "Modifica effettuata",
+  "isNew": "L'utente è in modalità di modifica, viene visualizzato il <strong>codice non distribuito</strong>",
+  "isNewReadOnly": "L'utente è in modalità di sola lettura, viene visualizzato il <strong>codice non distribuito</strong>",
+  "isUpToDate": "L'utente è in modalità di modifica, viene visualizzata la <strong>versione attualmente salvata</strong>",
+  "isModified": "L'utente è in modalità di modifica, con <strong>modifiche non salvate</strong>",
+  "isModifiedIndicator": "Sono presenti modifiche non salvate",
+  "header:edit": "Aprire un file o entità indicato per la modifica.",
+  "docs:edit": "Aprire il codice per un file locale o entità esistente in un editor di testo",
+  "docs:edit:filepath": "Il percorso del file locale o il nome entità da modificare",
+  "docs:edit:create": "Indica se si desidera creare un file locale (e le directory relative, se necessario)",
+  "docs:edit:language": "Per uso interno, specificare una lingua per colorazione e IntelliSense",
+  "docs:edit:name": "Per uso interno, specificare un nome da mostrare nell'intestazione sidecar",
+  "docs:edit:type": "Per uso interno, specificare un tipo da mostrare nell'intestazione sidecar"
+}

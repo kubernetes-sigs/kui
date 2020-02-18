@@ -1,0 +1,19 @@
+{
+  "save": "デプロイ",
+  "saveLocalFile": "保存",
+  "Edit": "編集",
+  "revert": "前回の状態に戻す",
+  "readonly": "編集の完了",
+  "isNew": "編集モードです。<strong>アンデプロイされたコード</strong>を表示します",
+  "isNewReadOnly": "読み取り専用モードです。<strong>アンデプロイされたコード</strong>を表示します",
+  "isUpToDate": "編集モードです。<strong>現在保存されているバージョン</strong>を表示します",
+  "isModified": "編集モードです。<strong>保存されていない編集</strong>があります",
+  "isModifiedIndicator": "保存されていない編集があります",
+  "header:edit": "指定されたファイルまたはエンティティーを編集用に開きます",
+  "docs:edit": "ローカル・ファイルまたは既存のエンティティーのコードをテキスト・エディターで開きます",
+  "docs:edit:filepath": "編集するローカル・ファイル・パスまたはエンティティー名",
+  "docs:edit:create": "ローカル・ファイル (および必要に応じて親ディレクトリー) を作成することを示します",
+  "docs:edit:language": "内部使用のために、色の指定と IntelliSense 用の言語を指定します",
+  "docs:edit:name": "内部使用のために、サイドカー・ヘッダーに表示する名前を指定します",
+  "docs:edit:type": "内部使用のために、サイドカー・ヘッダーに表示するタイプを指定します"
+}
