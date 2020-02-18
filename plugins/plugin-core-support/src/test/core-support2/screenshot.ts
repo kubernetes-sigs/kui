@@ -45,17 +45,17 @@ Common.localDescribe('screenshot', function(this: Common.ISuite) {
 
   it('should fail take screenshot last as the first command', () =>
     CLI.command(`screenshot last`, this.app).then(
-      ReplExpect.error(0, 'You requested to screenshot the last command line output, but this is the first command')
+      ReplExpect.error(500, 'You requested to screenshot the last command line output, but this is the first command')
     ))
 
   it('should fail to take screenshot with bogus arg', () =>
-    CLI.command(`screenshot goober`, this.app).then(ReplExpect.error(500, 'Capture a screenshot'))) // part of the usage message
+    CLI.command(`screenshot goober`, this.app).then(ReplExpect.error(500))) // part of the usage message
 
   it('should take screenshot with no arguments', () => takeScreenshot(this))
   it('should take screenshot full', () => takeScreenshot(this, 'full'))
   it('should fail to screenshot sidecar', () => {
     return CLI.command('screenshot sidecar', this.app)
-      .then(ReplExpect.error(0, 'You requested to screenshot the sidecar, but it is not currently open'))
+      .then(ReplExpect.error(500, 'You requested to screenshot the sidecar, but it is not currently open'))
       .catch(Common.oops(this, true))
   })
   it('should take screenshot repl', () => takeScreenshot(this, 'repl'))

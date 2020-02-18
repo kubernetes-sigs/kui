@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isHTML } from '../util/types'
 import { Table, Row, isTable } from '../webapp/models/table'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
@@ -121,7 +122,11 @@ export type MixedResponsePart = string | Table | HTMLElement
 export type MixedResponse = MixedResponsePart[]
 
 export function isMixedResponse(response: Entity): response is MixedResponse {
-  return Array.isArray(response) && response.length > 0 && (typeof response[0] === 'string' || isTable(response[0]))
+  return (
+    Array.isArray(response) &&
+    response.length > 0 &&
+    (typeof response[0] === 'string' || isTable(response[0]) || isHTML(response[0]))
+  )
 }
 
 /**

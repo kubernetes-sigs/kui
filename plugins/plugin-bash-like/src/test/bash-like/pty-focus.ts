@@ -19,13 +19,26 @@ import { v4 as uuid } from 'uuid'
 import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** helpful selectors */
-const rows = (N: number) => Selectors.xtermRows(N)
+function xtermInput(N: number) {
+  return `${Selectors.OUTPUT_N(N)} .xterm-helper-textarea`
+}
 
 describe('xterm focus', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   const tmpFile = `/tmp/kui-${uuid()}`
+
+  const waitForFocus = (selector: string, timeout?: number) => {
+    return this.app.client.waitUntil(async () => {
+      try {
+        return await this.app.client.hasFocus(selector)
+      } catch (err) {
+        console.error(err)
+        throw err
+      }
+    }, timeout || CLI.waitTimeout)
+  }
 
   it(`should touch ${tmpFile}`, () =>
     CLI.command(`touch ${tmpFile}`, this.app)
@@ -37,7 +50,7 @@ describe('xterm focus', function(this: Common.ISuite) {
       const res = await CLI.command(`rm -i ${tmpFile}`, this.app)
 
       // wait for the output to appear
-      await this.app.client.waitForExist(rows(res.count))
+      await waitForFocus(xtermInput(res.count))
 
       // type "y" to confirm the rm
       await this.app.client.keys(`y${Keys.ENTER}`)

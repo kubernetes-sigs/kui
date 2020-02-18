@@ -16,22 +16,8 @@
 
 import Debug from 'debug'
 
-import {
-  inBrowser,
-  inElectron,
-  Registrar,
-  CodedError,
-  i18n,
-  Tab,
-  getCurrentBlock,
-  getCurrentPrompt,
-  getPrompt,
-  getCurrentProcessingBlock,
-  setStatus,
-  Status
-} from '@kui-shell/core'
-import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
-import { proxyServer, millisBeforeProxyConnectionWarning } from '@kui-shell/client/config.d/proxy.json'
+import { inBrowser, inElectron, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
+import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
 
 import { Channel, InProcessChannel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -67,55 +53,17 @@ export async function getSessionForTab(tab: Tab): Promise<Channel> {
  * Keep trying until we can establish a session
  *
  */
-export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
-  const sessionInitialization = new Promise(resolve => {
-    let placeholderChanged = false
-    let previousText: string
-
+export function pollUntilOnline(tab: Tab) {
+  return new Promise(resolve => {
     const once = (iter = 0) => {
       debug('trying to establish session', tab)
 
-      if (!block) {
-        block = getCurrentBlock(tab) || getCurrentProcessingBlock(tab)
-        const prompt = getPrompt(block)
-        prompt.readOnly = true
-        prompt.placeholder = strings('Please wait while we connect to your cloud')
-
-        placeholderChanged = true
-        previousText = prompt.value
-        prompt.value = '' // to make the placeholder visible
-
-        setStatus(block, Status.processing)
-      }
-
-      return tab.REPL.qexec('echo initializing session', block, undefined, {
-        tab,
-        quiet: true,
-        noHistory: true,
-        replSilence: true,
-        rethrowErrors: true,
-        echo: false
+      return tab.REPL.qexec('echo initializing session', undefined, undefined, {
+        tab
       })
         .then(() => {
-          try {
-            setOnline()
-
-            if (placeholderChanged) {
-              const prompt = getPrompt(block)
-              prompt.readOnly = false
-              prompt.placeholder = promptPlaceholder || ''
-              setStatus(block, Status.replActive)
-
-              if (previousText) {
-                prompt.value = previousText
-                previousText = undefined
-              }
-              prompt.focus()
-            }
-          } catch (err) {
-            console.error('error updating UI to indicate that we are online', err)
-          }
-          resolve(getChannelForTab(tab))
+          setOnline()
+          resolve()
         })
         .catch(error => {
           const err = error as CodedError
@@ -131,9 +79,6 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
 
     once()
   })
-
-  tab['_kui_session'] = sessionInitialization
-  return sessionInitialization
 }
 
 /**
@@ -141,34 +86,11 @@ export function pollUntilOnline(tab: Tab, block?: HTMLElement) {
  * given tab
  *
  */
-function newSessionForTab(tab: Tab) {
+async function newSessionForTab(tab: Tab) {
   // eslint-disable-next-line no-async-promise-executor
   tab['_kui_session'] = new Promise(async (resolve, reject) => {
     try {
-      const block = getCurrentBlock(tab)
-      const prompt = getCurrentPrompt(tab)
-      prompt.readOnly = true
-      let placeholderChanged = false
-
-      const sessionInitialization = pollUntilOnline(tab, block)
-
-      // change the placeholder if sessionInitialization is slow
-      const placeholderAsync = setTimeout(() => {
-        prompt.placeholder = strings('Please wait while we connect to your cloud')
-        setStatus(block, Status.processing)
-        placeholderChanged = true
-      }, millisBeforeProxyConnectionWarning)
-
-      await sessionInitialization
-
-      clearTimeout(placeholderAsync)
-      prompt.readOnly = false
-      if (placeholderChanged) {
-        setStatus(block, Status.replActive)
-        prompt.placeholder = promptPlaceholder || ''
-        await tab.REPL.pexec('ready', { tab })
-      }
-
+      await pollUntilOnline(tab)
       tab.classList.add('kui--session-init-done')
 
       resolve(getChannelForTab(tab))
@@ -176,44 +98,21 @@ function newSessionForTab(tab: Tab) {
       reject(err)
     }
   })
-}
 
-export function registerCommands(commandTree: Registrar) {
-  // this is the default "session is ready" command handler
-  commandTree.listen(
-    '/ready',
-    ({ REPL }) => {
-      const message = document.createElement('pre')
-      message.appendChild(
-        document.createTextNode(strings('Successfully connected to your cloud. For next steps, try this command: '))
-      )
-
-      const clicky = document.createElement('span')
-      clicky.className = 'clickable clickable-blatant'
-      clicky.innerText = 'getting started'
-      clicky.onclick = () => REPL.pexec('getting started')
-      message.appendChild(clicky)
-
-      return message
-    },
-    { inBrowserOk: true, noAuthOk: true, hidden: true }
-  )
+  await tab['_kui_session']
 }
 
 /**
  * Initialize per-tab websocket session management
  *
  */
-export async function init() {
+export async function init(registrar: PreloadRegistrar) {
   if (inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
     debug('initializing pty sessions')
 
     const { eventBus } = await import('@kui-shell/core')
 
-    // listen for new tabs
-    eventBus.on('/tab/new', (tab: Tab) => {
-      newSessionForTab(tab)
-    })
+    registrar.registerSessionInitializer(newSessionForTab)
 
     // listen for closed tabs
     eventBus.on('/tab/close', async (tab: Tab) => {

@@ -74,7 +74,7 @@ class WebSocketChannel implements Channel {
       case 'message':
         debug('WebSocketChannel: installing onmessage handler')
         // this.onmessage = message => handler(message.data)
-        this.ws.addEventListener(eventType, message => handler(message.data))
+        this.ws.addEventListener(eventType, handler)
         break
 
       case 'error':

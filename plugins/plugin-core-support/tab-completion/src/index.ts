@@ -27,6 +27,8 @@ export {
 } from './registrar'
 
 import {
+  Tab,
+  Block,
   UsageError,
   getCurrentBlock,
   getCurrentPrompt,
@@ -48,7 +50,7 @@ const debug = Debug('plugins/core-support/tab completion')
  * the equivalent handlers in the prompt as well.
  *
  */
-const listenForUpDown = (prompt: HTMLInputElement) => {
+const listenForUpDown = (tab: Tab, block: Block, prompt: HTMLInputElement) => {
   const moveTo = (nextOp: string, evt: Event) => {
     const block = getCurrentBlock()
     const temporaryContainer = block && block.querySelector('.tab-completion-temporary')
@@ -79,7 +81,7 @@ const listenForUpDown = (prompt: HTMLInputElement) => {
       moveTo('previousSibling', evt)
     } else if (char === KeyCodes.C && evt.ctrlKey) {
       // Ctrl+C, cancel
-      doCancel()
+      doCancel(tab, block)
     }
   }
 
@@ -120,9 +122,9 @@ const listenForEscape = () => {
  * Install keyboard event handlers into the given REPL prompt.
  *
  */
-const installKeyHandlers = (prompt: HTMLInputElement) => {
+const installKeyHandlers = (tab: Tab, block: Block, prompt: HTMLInputElement) => {
   if (prompt) {
-    return [listenForUpDown(prompt), listenForEscape()]
+    return [listenForUpDown(tab, block, prompt), listenForEscape()]
   } else {
     return []
   }
@@ -133,6 +135,7 @@ const installKeyHandlers = (prompt: HTMLInputElement) => {
  *
  */
 const makeCompletionContainer = (
+  tab: Tab,
   block: HTMLElement,
   prompt: HTMLInputElement,
   partial: string,
@@ -162,7 +165,7 @@ const makeCompletionContainer = (
   temporaryContainer.currentMatches = []
 
   block.appendChild(temporaryContainer)
-  const handlers = installKeyHandlers(prompt)
+  const handlers = installKeyHandlers(tab, block, prompt)
 
   /** respond to change of prompt value */
   const onChange = () => {
@@ -476,6 +479,7 @@ const updateReplToReflectLongestPrefix = (
  *
  */
 const presentEnumeratorSuggestions = (
+  tab: Tab,
   block: HTMLElement,
   prompt: HTMLInputElement,
   temporaryContainer: TemporaryContainer,
@@ -492,7 +496,7 @@ const presentEnumeratorSuggestions = (
     const partial = last
     const dirname = undefined
     if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial, dirname, lastIdx)
+      temporaryContainer = makeCompletionContainer(tab, block, prompt, partial, dirname, lastIdx)
     }
 
     const stringList = filteredList.map(_ => (isStringResponse(_) ? _ : _.completion))
@@ -527,6 +531,7 @@ const suggestCommandCompletions = (
   _matches,
   partial: string,
   lastIdx: number,
+  tab: Tab,
   block: HTMLElement,
   prompt: HTMLInputElement,
   temporaryContainer: TemporaryContainer
@@ -565,7 +570,7 @@ const suggestCommandCompletions = (
     debug('suggesting command completions', matches, partial)
 
     if (!temporaryContainer) {
-      temporaryContainer = makeCompletionContainer(block, prompt, partial)
+      temporaryContainer = makeCompletionContainer(tab, block, prompt, partial)
     }
 
     // add suggestions to the container
@@ -663,6 +668,7 @@ export default () => {
                 usageError.partialMatches || usageError.available,
                 prompt.value,
                 prompt.value.length - 1,
+                tab,
                 block,
                 prompt,
                 temporaryContainer
@@ -751,7 +757,7 @@ export default () => {
                 }
 
                 if (completions && completions.length > 0) {
-                  presentEnumeratorSuggestions(block, prompt, temporaryContainer, lastIdx, last)(completions)
+                  presentEnumeratorSuggestions(tab, block, prompt, temporaryContainer, lastIdx, last)(completions)
                   currentEnumeratorAsync = undefined
                   resolve(true)
                 } else {

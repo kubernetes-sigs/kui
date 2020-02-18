@@ -1,0 +1,96 @@
+/* when sidecar is visible */
+repl.sidecar-visible .repl-block {
+  .bx--inline-loading__text,
+  &:not(.processing) .bx--inline-loading svg {
+    /* hide repl timestamp (except when processing), and any svgs (always) */
+    display: none;
+  }
+}
+
+.repl {
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding-top: 1rem;
+  flex: 4;
+  background-color: var(--color-ui-01);
+}
+.repl-inner {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 0.375em;
+}
+.repl.sidecar-visible .repl-block {
+  background: transparent;
+}
+.repl-block {
+  padding: 0.5em 0 0;
+  display: flex;
+  flex-direction: column;
+}
+body:not(.subwindow) repl.sidecar-visible .repl-block,
+.sidecar-full-screen repl .repl-block {
+  border-color: transparent;
+  box-shadow: none;
+}
+.repl,
+.repl-input input {
+  font-family: var(--font-monospace);
+}
+
+.repl-block {
+  .repl-output {
+    .ok {
+      font-size: 0.875em;
+      color: var(--color-ok);
+    }
+
+    &.valid-response .oops {
+      /* oops output often times doesn't word wrap nicely on its own, e.g. help/usage; issue #396 */
+      word-break: break-all;
+    }
+  }
+
+  .bx--inline-loading__animation {
+    width: 20px;
+    height: 20px;
+  }
+  .bx--inline-loading__text {
+    color: var(--color-text-02);
+    font-size: 0.75em;
+    opacity: 0.75;
+    order: -1;
+    margin-right: 0.875em;
+  }
+
+  &.processing .repl-prompt-right-element-status-icon {
+    .bx--loading.bx--loading--small {
+      width: 20px;
+      height: 20px;
+      .bx--loading__svg {
+        .bx--loading__background {
+          transform: scale(1.6875);
+          stroke: var(--color-text-02);
+        }
+        .bx--loading__stroke {
+          transform: scale(1.6875);
+          stroke: var(--color-brand-03);
+        }
+      }
+    }
+  }
+
+  &.valid-response svg {
+    position: unset;
+    fill: var(--color-ok);
+    width: 20px;
+    height: 20px;
+  }
+  &.error svg {
+    position: unset;
+    fill: var(--color-error);
+    width: 20px;
+    height: 20px;
+  }
+}

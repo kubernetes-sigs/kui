@@ -24,28 +24,16 @@
  *
  */
 
-import { unlisten } from './listen'
-import { getPrompt } from './prompt'
-import { installBlock, removeAnyTemps, getCurrentProcessingBlock, getCurrentBlock } from './block'
+import eventBus from '../core/events'
+import { Tab, getTabId } from './tab'
+import { Block } from './models/block'
+import { ExecType } from '../models/command'
 
-export default () => {
-  const block = removeAnyTemps(getCurrentProcessingBlock() || getCurrentBlock())
-
-  if (block.restorePrompt) {
-    // cancelling in-progress "prompt"
-    block.restorePrompt()
-  }
-
-  // Note: clone after restorePrompt
-  const nextBlock = block.cloneNode(true) as HTMLElement
-  const nextBlockPrompt = getPrompt(nextBlock)
-  removeAnyTemps(nextBlock, true)
-
+export default function doCancel(tab: Tab, block: Block) {
   block.className = `${block.getAttribute('data-base-class')} cancelled`
   block.isCancelled = true
-  nextBlockPrompt.value = ''
-  nextBlockPrompt.readOnly = false // in case we cancelled a block in-progress - the cloneNode will pick up the readonly attribute, which we need to remove
 
-  unlisten(getPrompt(block))
-  installBlock(block.parentNode, block, nextBlock)()
+  const execUUID = block.getAttribute('data-uuid')
+  const endEvent = { tab, execType: ExecType.TopLevel, cancelled: true, execUUID }
+  eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
 }

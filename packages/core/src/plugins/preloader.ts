@@ -32,6 +32,7 @@ import KuiComponentProivder from '../webapp/component/provider'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
 import { registerSidecarMode as registerMode, ModeRegistration } from '../webapp/views/registrar/modes'
 import { PreloadRegistration, PreloadRegistrar, CapabilityRegistration } from '../models/plugin'
+import { SessionInitializer, registerSessionInitializer } from '../session/registrar'
 
 class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar {
   // why does eslint consider this to be a useless constructor??
@@ -56,9 +57,14 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
     registrations.forEach(_ => this.registerBadge(_))
   }
 
-  /** components */
+  /** view components */
   public registerComponent<T extends Entity>(provider: KuiComponentProivder<T>): void {
     registerComponent(provider)
+  }
+
+  /** session initializers */
+  public registerSessionInitializer(init: SessionInitializer): void {
+    registerSessionInitializer(init)
   }
 }
 

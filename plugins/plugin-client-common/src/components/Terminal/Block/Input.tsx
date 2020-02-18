@@ -15,117 +15,187 @@
  */
 
 import * as React from 'react'
-import { internalBeCarefulListen as listen } from '@kui-shell/core'
+import { Tab as KuiTab, onPaste, onKeyDown, onKeyPress } from '@kui-shell/core'
+import { InlineLoading as Loading } from 'carbon-components-react'
 
-import { BlockState } from './BlockModel'
+import { BlockModel, isActive, isOk, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
+
+import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
 
 interface Props {
-  state: BlockState
-  readOnly: boolean
+  // needed temporarily to make pty/client happy
+  _block: HTMLElement
+
+  // for listen, which may go away soon
+  tab: KuiTab
+
+  model: BlockModel
 }
 
-export default class Input extends React.PureComponent<Props> {
-  private _prompt: HTMLInputElement
+interface State {
+  onKeyPress: (evt: KeyboardEvent) => void
+  onKeyDown: (evt: KeyboardEvent) => void
+  execUUID: string
+  prompt?: HTMLInputElement
+}
 
-  public componentDidMount() {
-    listen(this.prompt)
+export default class Input extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      onKeyPress: undefined,
+      onKeyDown: undefined,
+      execUUID: hasUUID(props.model) && props.model.execUUID,
+      prompt: undefined
+    }
   }
 
-  public get prompt() {
-    return this._prompt
+  public static getDerivedStateFromProps(props: Props, state: State) {
+    if (state.prompt && isActive(props.model) && !state.onKeyPress) {
+      return {
+        onKeyPress: onKeyPress(props.tab, props._block, state.prompt),
+        onKeyDown: onKeyDown(props.tab, props._block, state.prompt)
+      }
+    } else if (hasUUID(props.model)) {
+      return {
+        execUUID: props.model.execUUID
+      }
+    } else if (state.prompt && isActive(props.model) && state.execUUID !== undefined) {
+      // e.g. terminal has been cleared; we need to excise the current
+      // <input/> because react aggressively caches these
+      return {
+        prompt: undefined,
+        onKeyPress: undefined,
+        onKeyDown: undefined,
+        execUUID: undefined
+      }
+    }
+
+    return state
+  }
+
+  /** the "xxx" part of "xxx >" of the prompt */
+  private promptLeft() {
+    return <span className="repl-context">{this.props.model.cwd}</span>
+  }
+
+  /** the ">" part of "xxx >" of the prompt */
+  private promptRight() {
+    return (
+      <span className="repl-prompt-righty">
+        {/* a right chevron */}
+        <i>&#x276f;</i>
+      </span>
+    )
+  }
+
+  /** the "xxx >" prompt part of the input section */
+  private prompt() {
+    return (
+      <div className="repl-prompt">
+        {this.promptLeft()}
+        {this.promptRight()}
+      </div>
+    )
+  }
+
+  /** the element that represents the command being/having been/going to be executed */
+  private input() {
+    const active = this.state.prompt !== undefined && isActive(this.props.model)
+
+    if (active) {
+      setTimeout(() => this.state.prompt.focus())
+
+      return (
+        <input
+          type="text"
+          autoFocus
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          autoCapitalize="off"
+          className="repl-input-element"
+          aria-label="Command Input"
+          tabIndex={1}
+          placeholder={promptPlaceholder}
+          onKeyPress={active ? evt => this.state.onKeyPress(evt.nativeEvent) : undefined}
+          onKeyDown={active ? evt => this.state.onKeyDown(evt.nativeEvent) : undefined}
+          onPaste={active ? evt => onPaste(evt.nativeEvent) : undefined}
+          ref={c => {
+            if (c && !this.state.prompt) {
+              c.value = ''
+              this.setState({ prompt: c })
+            }
+          }}
+        />
+      )
+    } else {
+      return (
+        <input
+          type="text"
+          autoFocus
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          autoCapitalize="off"
+          className="repl-input-element"
+          aria-label="Command Input"
+          readOnly
+          value={hasCommand(this.props.model) ? this.props.model.command : ''}
+          tabIndex={-1}
+          placeholder={promptPlaceholder}
+          ref={c => {
+            if (c && !this.state.prompt) {
+              this.setState({ prompt: c })
+            }
+          }}
+        />
+      )
+    }
+  }
+
+  /** a status icon, e.g. spinner, "ok" check mark, etc. */
+  private statusIcon() {
+    try {
+      if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
+        // "true" means a blank response; don't display any statusIcon bits in this case
+        // also don't display statusIcon bits for "active" blocks, i.e. those accepting Input
+        return (
+          <div className={isProcessing(this.props.model) ? 'fade-in2' : undefined}>
+            <Loading
+              status={isProcessing(this.props.model) ? 'active' : isOk(this.props.model) ? 'finished' : 'error'}
+              successDelay={1000}
+              description={this.props.model.startTime && this.props.model.startTime.toLocaleTimeString()}
+            />
+          </div>
+        )
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  /**
+   * Status elements associated with the block; even though these
+   * pertain to the Output part of a Block, these are currently placed
+   * in the Input area.
+   *
+   */
+  private status() {
+    return (
+      <span className="repl-prompt-right-elements">
+        <div className="repl-prompt-right-element-status-icon deemphasize">{this.statusIcon()}</div>
+      </span>
+    )
   }
 
   public render() {
     return (
       <div className="repl-input">
-        <div className="repl-prompt">
-          <span className="repl-prompt-lefty"></span>
-          <span className="repl-context"></span>
-          <span className="repl-selection clickable" title="The current selection"></span>
-          <span className="repl-prompt-righty">
-            {/* a right chevron */}
-            <i>&#x276f;</i>
-          </span>
-        </div>
-        <input
-          type="text"
-          ref={c => (this._prompt = c)}
-          className="repl-input-element"
-          aria-label="Command Input"
-          autoFocus
-          readOnly={this.props.readOnly}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck="false"
-        />
-        <span className="repl-prompt-right-elements">
-          <div className="kui--repl-prompt-buttons">
-            <div className="graphical-icon kui--repl-prompt-buttons--screenshot kui--hide-in-webpack">
-              <svg
-                focusable="false"
-                preserveAspectRatio="xMidYMid meet"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 32 32"
-                aria-hidden="true"
-              >
-                <path d="M29 26H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h6.46l1.71-2.55A1 1 0 0 1 12 4h8a1 1 0 0 1 .83.45L22.54 7H29a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1zM4 24h24V9h-6a1 1 0 0 1-.83-.45L19.46 6h-6.92l-1.71 2.55A1 1 0 0 1 10 9H4z"></path>
-                <path d="M16 22a6 6 0 1 1 6-6 6 6 0 0 1-6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0-4-4z"></path>
-              </svg>
-            </div>
-          </div>
-
-          <span className="repl-prompt-timestamp even-smaller-text slightly-deemphasize"></span>
-          <div className="repl-prompt-right-element-status-icon deemphasize">
-            <svg
-              className="kui--icon-error"
-              focusable="false"
-              preserveAspectRatio="xMidYMid meet"
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-            >
-              <path d="M10 1c-5 0-9 4-9 9s4 9 9 9 9-4 9-9-4-9-9-9zm3.5 13.5l-8-8 1-1 8 8-1 1z"></path>
-              <path d="M13.5 14.5l-8-8 1-1 8 8-1 1z" data-icon-path="inner-path" opacity="0"></path>
-            </svg>
-            <svg
-              className="kui--icon-ok"
-              focusable="false"
-              preserveAspectRatio="xMidYMid meet"
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-            >
-              <path d="M10 1c-4.9 0-9 4.1-9 9s4.1 9 9 9 9-4 9-9-4-9-9-9zM8.7 13.5l-3.2-3.2 1-1 2.2 2.2 4.8-4.8 1 1-5.8 5.8z"></path>
-              <path
-                d="M8.7 13.5l-3.2-3.2 1-1 2.2 2.2 4.8-4.8 1 1-5.8 5.8z"
-                data-icon-path="inner-path"
-                opacity="0"
-              ></path>
-            </svg>
-            <div data-loading className="bx--loading kui--icon-processing">
-              <svg
-                className="bx--loading__svg"
-                focusable="false"
-                preserveAspectRatio="xMidYMid meet"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="-75 -75 150 150"
-                aria-hidden="true"
-              >
-                <circle className="bx--loading__stroke-kui" cx="0" cy="0" r="48.875" />
-                <circle className="bx--loading__stroke" cx="0" cy="0" r="46.875" />
-              </svg>
-            </div>
-          </div>
-        </span>
+        {this.prompt()}
+        {this.input()}
+        {this.status()}
       </div>
     )
   }

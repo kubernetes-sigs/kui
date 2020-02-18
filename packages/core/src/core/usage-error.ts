@@ -132,7 +132,7 @@ function isBreadcrumbWithClickCommand(crumb: BreadcrumbLabel): crumb is Breadcru
   return !!(breadcrumb.label && breadcrumb.command)
 }
 
-function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
+export function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
   const message = msg as MessageWithUsageModel
   return !!message.usage
 }
@@ -882,7 +882,7 @@ export interface MessageWithUsageModel extends MessageWithCode {
   extra?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
+export function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
   const message = msg as MessageWithCode
   return !!(message.message && (message.code || message.statusCode || message.exitCode))
 }

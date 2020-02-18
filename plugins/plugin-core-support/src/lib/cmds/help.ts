@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
+/* import Debug from 'debug'
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
 import { isHeadless, inBrowser, Arguments, Registrar, CodedError, UsageError, i18n } from '@kui-shell/core'
 
-const strings = i18n('plugin-core-support')
+const strings = i18n('plugin-core-support') */
 
 /**
  * Respond with a top-level usage document
  *
  */
-const help = usage => ({ argvNoOptions: args, REPL }: Arguments) => {
+/* const help = usage => ({ argvNoOptions: args, REPL }: Arguments) => {
   const rest = args.slice(args.indexOf('help') + 1)
-  debug('help command', rest)
+  debug('help command', rest, usage)
 
   if (rest.length > 0) {
     // then the user asked e.g. "help foo"; interpret this as "foo help"
@@ -81,13 +81,13 @@ const help = usage => ({ argvNoOptions: args, REPL }: Arguments) => {
     error.code = 404
     throw error
   }
-}
+} */
 
 /**
  * The module. Here, we register as a listener for commands.
  *
  */
-export default async (commandTree: Registrar, { usage }) => {
+/* export default async (commandTree: Registrar, { usage }) => {
   commandTree.listen('/help', help(usage), {
     noAuthOk: true,
     inBrowserOk: true
@@ -95,5 +95,5 @@ export default async (commandTree: Registrar, { usage }) => {
   commandTree.listen('/?', help(usage), {
     noAuthOk: true,
     inBrowserOk: true
-  })
-}
+  }) 
+} */

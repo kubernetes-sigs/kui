@@ -17,13 +17,17 @@
 import { Registrar } from '@kui-shell/core'
 
 export default (commandTree: Registrar) => {
-  commandTree.listen('/test/sassy', () => {
-    const sassy = document.createElement('div')
-    sassy.classList.add('sassy')
-    const hide = document.createElement('div')
-    hide.classList.add('hide')
-    hide.innerText = 'hi'
-    sassy.appendChild(hide)
-    return sassy
-  })
+  commandTree.listen(
+    '/test/sassy',
+    () => {
+      const sassy = document.createElement('div')
+      sassy.classList.add('sassy')
+      const hide = document.createElement('div')
+      hide.classList.add('hide')
+      hide.innerText = 'hi'
+      sassy.appendChild(hide)
+      return sassy
+    },
+    { inBrowserOk: true }
+  )
 }

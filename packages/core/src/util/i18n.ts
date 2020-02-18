@@ -35,39 +35,43 @@ export default (
   plugin: string,
   namespace = 'resources'
 ): ((key: string, ...parameters: (string | number)[]) => string) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/${namespace}_en_US.json`)
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const defaultStrings: Record<string, string> = require(`@kui-shell/${plugin}/i18n/${namespace}_en_US.json`)
 
-  const locale = getLocale()
+    const locale = getLocale()
 
-  const i18n = (locale: string): Record<string, string> => {
-    try {
-      return locale && require(`@kui-shell/${plugin}/i18n/${namespace}_${locale.replace(/-/, '_')}.json`)
-    } catch (err) {
+    const i18n = (locale: string): Record<string, string> => {
       try {
-        return (
-          (locale && require(`@kui-shell/${plugin}/i18n/${namespace}_${locale.replace(/-.*$/, '')}.json`)) ||
-          defaultStrings
-        )
+        return locale && require(`@kui-shell/${plugin}/i18n/${namespace}_${locale.replace(/-/, '_')}.json`)
       } catch (err) {
-        console.error('Could not find translation for given locale', plugin, locale)
-        return defaultStrings
+        try {
+          return (
+            (locale && require(`@kui-shell/${plugin}/i18n/${namespace}_${locale.replace(/-.*$/, '')}.json`)) ||
+            defaultStrings
+          )
+        } catch (err) {
+          console.error('Could not find translation for given locale', plugin, locale)
+          return defaultStrings
+        }
       }
     }
-  }
 
-  const _strings = i18n(locale)
+    const _strings = i18n(locale)
 
-  return function(key: string, ...parameters: (string | number)[]): string {
-    const str: string = _strings[key] || defaultStrings[key] || key
+    return function(key: string, ...parameters: (string | number)[]): string {
+      const str: string = _strings[key] || defaultStrings[key] || key
 
-    if (!parameters) return str
-    else
-      return parameters
-        .map(_ => _.toString()) // only needed due to https://github.com/microsoft/TypeScript/issues/7014
-        .reduce((str: string, param, idx) => {
-          // e.g. replace all occurrences of {0} in the str
-          return str.replace(new RegExp(`\\{${idx}\\}`, 'g'), param.toString())
-        }, str)
+      if (!parameters) return str
+      else
+        return parameters
+          .map(_ => _.toString()) // only needed due to https://github.com/microsoft/TypeScript/issues/7014
+          .reduce((str: string, param, idx) => {
+            // e.g. replace all occurrences of {0} in the str
+            return str.replace(new RegExp(`\\{${idx}\\}`, 'g'), param.toString())
+          }, str)
+    }
+  } catch (err) {
+    return (x: string) => x
   }
 }

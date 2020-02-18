@@ -89,7 +89,7 @@ export default class Tab extends React.PureComponent<Props, State> {
             !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
           ) {
             if (isUsingCommandName()) {
-              this.setState({ processing: true, title: event.command })
+              this.setState({ processing: true, title: event.command || this.state.title })
               return
             }
           }

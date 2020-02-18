@@ -16,14 +16,8 @@
 
 import { UsageError, UsageRow } from '../core/usage-error'
 
-export interface HideError extends Error {
+export interface CodedError<Code = number> extends Error {
   hide?: boolean
-}
-export function isHideError(err: Error): err is HideError {
-  return (err as HideError).hide
-}
-
-export interface CodedError<Code = number> extends HideError {
   code?: Code
   statusCode?: number
   partialMatches?: UsageRow[]

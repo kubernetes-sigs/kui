@@ -121,15 +121,13 @@ export default class KuiFrame {
    *
    */
   private initCloseAllHandler(tab: Tab) {
-    const handler = async (otab: Tab) => {
-      if (getTabId(tab) === getTabId(otab)) {
-        this.close(tab)
-      }
+    const handler = () => {
+      this.close(tab)
     }
 
-    eventBus.on('/close/views/in/tab', handler)
+    eventBus.on(`/close/views/${getTabId(tab)}`, handler)
     this.cleaners.push(() => {
-      eventBus.off('/close/views/in/tab', handler)
+      eventBus.off(`/close/views/${getTabId(tab)}`, handler)
     })
   }
 

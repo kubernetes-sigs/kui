@@ -18,8 +18,6 @@ import Debug from 'debug'
 
 import { WatchableJob } from '../core/jobs/job'
 import { inBrowser } from '../core/capabilities'
-import { getCurrentPrompt } from '../webapp/prompt'
-import { inBottomInputMode } from '../core/settings'
 import { maxWatchersPerTab } from '@kui-shell/client/config.d/limits.json'
 
 const debug = Debug('core/models/TabState')
@@ -29,6 +27,9 @@ const debug = Debug('core/models/TabState')
  *
  */
 export default class TabState {
+  /** is the tab ready for command execution? */
+  public ready = false
+
   /** is the tab closed? */
   public closed: boolean
 
@@ -45,8 +46,6 @@ export default class TabState {
 
   private _ageCounter = 0
 
-  private _currentBottomInputValue = ''
-
   /** is there a drilldown in progress for this tab? */
   public drilldownInProgress: Promise<void>
 
@@ -61,17 +60,9 @@ export default class TabState {
     return this._cwd
   }
 
-  public get currentBottomInputValue() {
-    return this._currentBottomInputValue
-  }
-
   public capture() {
     this._env = Object.assign({}, process.env)
     this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
-
-    if (inBottomInputMode && getCurrentPrompt()) {
-      this._currentBottomInputValue = getCurrentPrompt().value
-    }
 
     debug('captured tab state', this.cwd)
   }
@@ -158,10 +149,6 @@ export default class TabState {
     } else {
       debug('changing cwd', process.cwd(), this._cwd)
       process.chdir(this._cwd)
-    }
-
-    if (inBottomInputMode && getCurrentPrompt()) {
-      getCurrentPrompt().value = this.currentBottomInputValue
     }
   }
 }
