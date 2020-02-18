@@ -16,7 +16,7 @@
 
 import { i18n, UsageModel, Arguments, Tab } from '@kui-shell/core'
 
-const strings = i18n('plugin-leftnav-sidecar')
+const strings = i18n('plugin-sidecar')
 
 export const screenshotUsage: UsageModel = {
   strict: 'sidecar',

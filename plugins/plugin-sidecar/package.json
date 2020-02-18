@@ -1,5 +1,5 @@
 {
-  "name": "@kui-shell/plugin-leftnav-sidecar",
+  "name": "@kui-shell/plugin-sidecar",
   "version": "6.0.0",
   "description": "Kui plugin that offers the default sidecar view component",
   "license": "Apache-2.0",

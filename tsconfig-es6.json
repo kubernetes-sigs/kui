@@ -29,7 +29,7 @@
       "path": "plugins/plugin-carbon-tables/tsconfig-es6.json"
     },
     {
-      "path": "plugins/plugin-leftnav-sidecar/tsconfig-es6.json"
+      "path": "plugins/plugin-sidecar/tsconfig-es6.json"
     },
     {
       "path": "plugins/plugin-git/tsconfig-es6.json"
