@@ -29,7 +29,7 @@
       "path": "plugins/plugin-carbon-tables"
     },
     {
-      "path": "plugins/plugin-leftnav-sidecar"
+      "path": "plugins/plugin-sidecar"
     },
     {
       "path": "plugins/plugin-git"

@@ -48,7 +48,7 @@
     "@kui-shell/plugin-carbon-themes": "file:plugins/plugin-carbon-themes",
     "@kui-shell/plugin-core-themes": "file:plugins/plugin-core-themes",
     "@kui-shell/plugin-editor": "file:plugins/plugin-editor",
-    "@kui-shell/plugin-leftnav-sidecar": "file:plugins/plugin-leftnav-sidecar",
+    "@kui-shell/plugin-sidecar": "file:plugins/plugin-sidecar",
     "@kui-shell/plugin-carbon-tables": "file:plugins/plugin-carbon-tables",
     "@kui-shell/plugin-git": "file:plugins/plugin-git",
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
