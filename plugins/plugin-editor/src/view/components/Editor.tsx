@@ -165,7 +165,7 @@ export default class Editor extends React.PureComponent<Props, State> {
       // here we instantiate an editor widget
       const providedOptions = {
         value: props.content.content,
-        readOnly: props.readOnly || false,
+        readOnly: props.readOnly || !isFile(props.response) || false,
         language: props.content.contentType ? language(props.content.contentType) : undefined
       }
       const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)
