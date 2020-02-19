@@ -17,14 +17,74 @@
 import Debug from 'debug'
 import * as React from 'react'
 import { Tabs, Tab } from 'carbon-components-react'
-import { Tab as KuiTab, REPL, MultiModalResponse, MultiModalMode, badgeRegistrar } from '@kui-shell/core'
+import {
+  eventBus,
+  getTabId,
+  Tab as KuiTab,
+  REPL,
+  MultiModalMode,
+  MultiModalResponse,
+  isResourceWithMetadata,
+  addRelevantModes,
+  isResourceByReference,
+  badgeRegistrar,
+  isButton,
+  Button
+} from '@kui-shell/core'
+import KuiContent from './KuiContent'
 
 import Badge from './Badge'
-import { LeftNavSidecar } from './LeftNavSidecar'
+import TitleBar from './TitleBar'
 import ToolbarContainer from './ToolbarContainer'
 
 const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 
+interface Props {
+  repl: REPL
+  tab: KuiTab
+  response: MultiModalResponse
+}
+
+interface State {
+  currentTabIndex: number
+  buttons: Button[]
+  tabs: MultiModalMode[]
+}
+
+export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): State {
+  const allModes = response.modes.slice(0)
+
+  // consult the view registrar for registered view modes
+  // relevant to this resource
+  const command = ''
+  if (isResourceWithMetadata(response)) {
+    addRelevantModes(tab, allModes, command, { resource: response })
+  } else if (isResourceByReference(response)) {
+    addRelevantModes(tab, allModes, command, response)
+  }
+
+  // defaultMode: if the response specified one, then look for it;
+  // otherwise, use the mode that considers itself default;
+  // otherwise use the first
+  const defaultModeFromResponse = response.defaultMode ? allModes.findIndex(_ => _.mode === response.defaultMode) : -1
+  const defaultModeFromModel =
+    defaultModeFromResponse === -1 ? allModes.findIndex(_ => _.defaultMode) : defaultModeFromResponse
+  const defaultMode = defaultModeFromModel === -1 ? 0 : defaultModeFromModel
+
+  const tabs = allModes.filter(_ => !isButton(_))
+
+  // re: as any: yay tsc, there are several open issue for this;
+  // it's related to isButton using generics
+  const buttonsFromRegistrar: Button[] = (allModes.filter(isButton) as any) as Button[]
+  const buttonsFromResponse = response.buttons || []
+  const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
+
+  return {
+    currentTabIndex: defaultMode,
+    tabs,
+    buttons
+  }
+}
 /**
  *
  * TopNavSidecar
@@ -43,17 +103,18 @@ const debug = Debug('plugin-sidecar/components/TopNavSidecar')
  * -----------------------
  *
  */
-class TopNavSidecar extends LeftNavSidecar {
+class TopNavSidecar extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+    this.state = getStateFromMMR(props.tab, props.response)
+  }
+
   protected headerBodyStyle() {
     return { 'flex-direction': 'column' }
   }
 
   protected isFixedWidth() {
     return false
-  }
-
-  protected addExtraModes(tabs: MultiModalMode[]) {
-    return tabs
   }
 
   private nameHash() {
@@ -134,6 +195,10 @@ class TopNavSidecar extends LeftNavSidecar {
     )
   }
 
+  protected bodyContent(idx: number) {
+    return <KuiContent tab={this.props.tab} mode={this.state.tabs[idx]} response={this.props.response} />
+  }
+
   private tabContent(idx: number) {
     const { toolbarText } = this.props.response
 
@@ -146,21 +211,11 @@ class TopNavSidecar extends LeftNavSidecar {
             toolbarText={toolbarText}
             buttons={this.state.buttons}
           >
-            {super.bodyContent(idx)}
+            {this.bodyContent(idx)}
           </ToolbarContainer>
         </div>{' '}
       </div>
     )
-  }
-
-  /**
-   * The carbon Tabs structure places the content under the Tabs;
-   * whereas the LeftNav structure places the content at the top
-   * level.
-   *
-   */
-  protected bodyContainer() {
-    return <span />
   }
 
   /** Return a collection of badge elements */
@@ -202,9 +257,54 @@ class TopNavSidecar extends LeftNavSidecar {
     )
   }
 
-  protected nav() {
+  protected containerStyle() {
+    return { display: 'flex', flex: 1, 'overflow-y': 'hidden', 'flex-direction': 'column' }
+  }
+
+  protected onMaximize() {
+    eventBus.emit(`/sidecar/maximize/${getTabId(this.props.tab)}`, this.props.tab)
+  }
+
+  protected onRestore() {
+    eventBus.emit(`/sidecar/restore/${getTabId(this.props.tab)}`, this.props.tab)
+  }
+
+  protected onMinimize() {
+    eventBus.emit(`/sidecar/minimize/${getTabId(this.props.tab)}`, this.props.tab)
+  }
+
+  protected onClose() {
+    eventBus.emit(`/sidecar/close/${getTabId(this.props.tab)}`, this.props.tab)
+  }
+
+  protected title() {
+    return (
+      <TitleBar
+        fixedWidth={this.isFixedWidth()}
+        kind={this.props.response.kind}
+        namespace={this.props.response.metadata.namespace}
+        onClickNamespace={
+          this.props.response.onclick &&
+          this.props.response.onclick.namespace &&
+          (() => this.props.repl.pexec(this.props.response.onclick.namespace))
+        }
+        onScreenshot={() => this.props.repl.pexec('screenshot sidecar')}
+        onMaximize={this.onMaximize.bind(this)}
+        onRestore={this.onRestore.bind(this)}
+        onMinimize={this.onMinimize.bind(this)}
+        onClose={this.onClose.bind(this)}
+      />
+    )
+  }
+
+  protected viewId() {
+    return 'kui-default-sidecar'
+  }
+
+  public render() {
     return (
       <div style={this.containerStyle()}>
+        {this.title()}
         <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
           {this.header()}
           {this.tabs()}
