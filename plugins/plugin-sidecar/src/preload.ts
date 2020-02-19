@@ -20,9 +20,10 @@ import {
   isHeadless,
   PreloadRegistration,
   PreloadRegistrar,
-  Presentation,
   isMultiModalResponse,
   MultiModalResponse,
+  NavResponse,
+  isNavResponse,
   REPL
 } from '@kui-shell/core'
 
@@ -37,8 +38,8 @@ const registration: PreloadRegistration = async (registrar: PreloadRegistrar) =>
 
     if (!isPopup()) {
       registrar.registerComponent({
-        when: response => isMultiModalResponse(response) && response.presentation === Presentation.SidecarThin,
-        render: async (entity: MultiModalResponse, tab: Tab, repl: REPL) => {
+        when: isNavResponse,
+        render: async (entity: NavResponse, tab: Tab, repl: REPL) => {
           return import(/* webpackMode: "lazy" */ './view/react2kui').then(_ => _.leftnav(entity, tab, repl))
         },
         priority: 10

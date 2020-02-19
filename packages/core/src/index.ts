@@ -177,6 +177,7 @@ export {
   Mode as MultiModalMode,
   MultiModalResponse
 } from './models/mmr/types'
+export { NavResponse, isNavResponse } from './models/NavResponse'
 export { isMultiModalResponse } from './models/mmr/is'
 export {
   Content,

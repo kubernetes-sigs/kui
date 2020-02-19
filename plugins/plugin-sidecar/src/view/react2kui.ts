@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, MultiModalResponse, KuiComponent } from '@kui-shell/core'
+import { Tab, REPL, MultiModalResponse, NavResponse, isNavResponse, KuiComponent } from '@kui-shell/core'
 
 import { Renderer, doReact } from './react'
 import renderTopNavSidecar from './components/TopNavSidecar'
@@ -24,30 +24,33 @@ import renderLeftNavSidecar from './components/LeftNavSidecar'
  * The job of this function is to adapt a ReactElement to the KuiComponent world
  *
  */
-function render(entity: MultiModalResponse, tab: Tab, repl: REPL, renderer: Renderer): KuiComponent {
-  return {
-    apiVersion: 'kui-shell/component/v1' as const,
-    frame: {
-      viewId: 'kui-default-sidecar',
-      singleton: true as const,
-      position: 'TabColumn' as const,
-      presentation: entity.presentation,
-      kind: entity.kind,
-      metadata: {
-        namespace: entity.metadata.namespace
-      }
-    },
-    spec: {
-      content: doReact(tab, repl, entity, renderer), // <-- here is the ReactElement
-      onclick: {
-        namespace: entity.onclick ? entity.onclick.namespace : undefined
+function render(response: NavResponse | MultiModalResponse, tab: Tab, repl: REPL, renderer: Renderer): KuiComponent {
+  const entity = isNavResponse(response) ? response[Object.keys(response)[0]] : response
+  if (entity) {
+    return {
+      apiVersion: 'kui-shell/component/v1' as const,
+      frame: {
+        viewId: 'kui-default-sidecar',
+        singleton: true as const,
+        position: 'TabColumn' as const,
+        presentation: entity.presentation,
+        kind: entity.kind,
+        metadata: {
+          namespace: entity.metadata.namespace
+        }
+      },
+      spec: {
+        content: doReact(tab, repl, response, renderer), // <-- here is the ReactElement
+        onclick: {
+          namespace: entity.onclick ? entity.onclick.namespace : undefined
+        }
       }
     }
   }
 }
 
 /** thin veneer for leftnav rendering */
-export function leftnav(entity: MultiModalResponse, tab: Tab, repl: REPL): KuiComponent {
+export function leftnav(entity: NavResponse, tab: Tab, repl: REPL): KuiComponent {
   return render(entity, tab, repl, renderLeftNavSidecar)
 }
 

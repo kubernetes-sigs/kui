@@ -21,7 +21,7 @@ import {
   i18n,
   inElectron,
   MultiModalMode as Mode,
-  MultiModalResponse,
+  NavResponse,
   Presentation,
   Table,
   isStringWithOptionalContentType
@@ -45,39 +45,43 @@ async function getName(): Promise<string> {
  * @return a MultiModalResponse for `about`
  *
  */
-const aboutWindow = async (): Promise<MultiModalResponse> => {
-  const [name, modesFromAbout] = await Promise.all([
-    getName(),
-    import('@kui-shell/client/config.d/about.json').then(_ => _.modes as Mode[])
-  ])
+const aboutWindow = async (): Promise<NavResponse> => {
+  const [name, about] = await Promise.all([getName(), import('@kui-shell/client/config.d/about.json').then(_ => _.nav)])
 
-  const modes = modesFromAbout.map(
-    (modeFromAbout): Mode => {
-      // translate the label
-      const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
+  const fullAbout = {}
 
-      if (isStringWithOptionalContentType(modeFromAbout)) {
-        return Object.assign({}, modeFromAbout, {
-          label,
-          content: clientStrings(modeFromAbout.content) // translate content string
-        })
-      } else {
-        return Object.assign({}, modeFromAbout, {
-          label
-        })
+  for (const [title, mmr] of Object.entries(about)) {
+    const modesFromAbout = mmr.modes
+    const modes = modesFromAbout.map(
+      (modeFromAbout): Mode => {
+        // translate the label
+        const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
+
+        if (isStringWithOptionalContentType(modeFromAbout)) {
+          return Object.assign({}, modeFromAbout, {
+            label,
+            content: clientStrings(modeFromAbout.content) // translate content string
+          })
+        } else {
+          return Object.assign({}, modeFromAbout, {
+            label
+          })
+        }
       }
-    }
-  )
+    )
 
-  return {
-    kind: 'about',
-    presentation:
-      (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
-    modes,
-    metadata: {
-      name
-    }
+    Object.assign(fullAbout, {
+      [title]: {
+        kind: 'about',
+        modes,
+        presentation:
+          (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
+        metadata: { name }
+      }
+    })
   }
+
+  return fullAbout
 }
 
 interface VersionOptions extends ParsedOptions {

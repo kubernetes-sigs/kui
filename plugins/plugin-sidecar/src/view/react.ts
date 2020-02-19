@@ -16,12 +16,12 @@
 
 import { ReactElement } from 'react'
 import { render as ReactDomRender } from 'react-dom'
-import { Tab, REPL, MultiModalResponse } from '@kui-shell/core'
+import { Tab, REPL, MultiModalResponse, NavResponse } from '@kui-shell/core'
 
 import hackForTests from './hacks'
 
 /** `renderer`: turns a MultiModalResponse into a ReactElement */
-export type Renderer = (tab: Tab, repl: REPL, response: MultiModalResponse) => ReactElement
+export type Renderer = (tab: Tab, repl: REPL, response: NavResponse | MultiModalResponse) => ReactElement
 
 /**
  * Format a sidecar view for the given `response`, using the given
@@ -29,7 +29,12 @@ export type Renderer = (tab: Tab, repl: REPL, response: MultiModalResponse) => R
  * to smash the ReactElement into an DOM DocumentFragment.
  *
  */
-export function doReact(tab: Tab, repl: REPL, response: MultiModalResponse, renderer: Renderer): DocumentFragment {
+export function doReact(
+  tab: Tab,
+  repl: REPL,
+  response: NavResponse | MultiModalResponse,
+  renderer: Renderer
+): DocumentFragment {
   // render the view
   const view = renderer(tab, repl, response)
 

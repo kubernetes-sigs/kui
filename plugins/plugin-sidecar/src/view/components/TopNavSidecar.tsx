@@ -17,14 +17,66 @@
 import Debug from 'debug'
 import * as React from 'react'
 import { Tabs, Tab } from 'carbon-components-react'
-import { Tab as KuiTab, REPL, MultiModalResponse, MultiModalMode, badgeRegistrar } from '@kui-shell/core'
+import {
+  Tab as KuiTab,
+  REPL,
+  MultiModalMode,
+  MultiModalResponse,
+  isResourceWithMetadata,
+  addRelevantModes,
+  isResourceByReference,
+  badgeRegistrar,
+  isButton,
+  Button
+} from '@kui-shell/core'
+import KuiContent from './KuiContent'
 
 import Badge from './Badge'
-import { LeftNavSidecar } from './LeftNavSidecar'
 import ToolbarContainer from './ToolbarContainer'
+import { Props, BaseSidecar } from './BaseSidecar'
 
 const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 
+interface State {
+  currentTabIndex: number
+  buttons: Button[]
+  tabs: MultiModalMode[]
+}
+
+export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): State {
+  const allModes = response.modes.slice(0)
+
+  // consult the view registrar for registered view modes
+  // relevant to this resource
+  const command = ''
+  if (isResourceWithMetadata(response)) {
+    addRelevantModes(tab, allModes, command, { resource: response })
+  } else if (isResourceByReference(response)) {
+    addRelevantModes(tab, allModes, command, response)
+  }
+
+  // defaultMode: if the response specified one, then look for it;
+  // otherwise, use the mode that considers itself default;
+  // otherwise use the first
+  const defaultModeFromResponse = response.defaultMode ? allModes.findIndex(_ => _.mode === response.defaultMode) : -1
+  const defaultModeFromModel =
+    defaultModeFromResponse === -1 ? allModes.findIndex(_ => _.defaultMode) : defaultModeFromResponse
+  const defaultMode = defaultModeFromModel === -1 ? 0 : defaultModeFromModel
+
+  const tabs = allModes.filter(_ => !isButton(_))
+
+  // re: as any: yay tsc, there are several open issue for this;
+  // it's related to isButton using generics
+  const buttonsFromRegistrar: Button[] = (allModes.filter(isButton) as any) as Button[]
+  const buttonsFromResponse = response.buttons || []
+  const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
+
+  return {
+    currentTabIndex: defaultMode,
+    tabs,
+    buttons
+  }
+}
 /**
  *
  * TopNavSidecar
@@ -43,17 +95,14 @@ const debug = Debug('plugin-sidecar/components/TopNavSidecar')
  * -----------------------
  *
  */
-class TopNavSidecar extends LeftNavSidecar {
+class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
+  public constructor(props: Props<MultiModalResponse>) {
+    super(props)
+    this.state = getStateFromMMR(props.tab, props.response)
+  }
+
   protected headerBodyStyle() {
     return { 'flex-direction': 'column' }
-  }
-
-  protected isFixedWidth() {
-    return false
-  }
-
-  protected addExtraModes(tabs: MultiModalMode[]) {
-    return tabs
   }
 
   private nameHash() {
@@ -134,6 +183,10 @@ class TopNavSidecar extends LeftNavSidecar {
     )
   }
 
+  protected bodyContent(idx: number) {
+    return <KuiContent tab={this.props.tab} mode={this.state.tabs[idx]} response={this.props.response} />
+  }
+
   private tabContent(idx: number) {
     const { toolbarText } = this.props.response
 
@@ -146,21 +199,11 @@ class TopNavSidecar extends LeftNavSidecar {
             toolbarText={toolbarText}
             buttons={this.state.buttons}
           >
-            {super.bodyContent(idx)}
+            {this.bodyContent(idx)}
           </ToolbarContainer>
         </div>{' '}
       </div>
     )
-  }
-
-  /**
-   * The carbon Tabs structure places the content under the Tabs;
-   * whereas the LeftNav structure places the content at the top
-   * level.
-   *
-   */
-  protected bodyContainer() {
-    return <span />
   }
 
   /** Return a collection of badge elements */
@@ -202,15 +245,27 @@ class TopNavSidecar extends LeftNavSidecar {
     )
   }
 
-  protected nav() {
-    return (
-      <div style={this.containerStyle()}>
-        <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
-          {this.header()}
-          {this.tabs()}
+  public render() {
+    try {
+      const {
+        kind,
+        metadata: { namespace },
+        onclick
+      } = this.props.response
+      const onClickNamespace = onclick && onclick.namespace && (() => this.props.repl.pexec(onclick.namespace))
+
+      return (
+        <div style={this.containerStyle()}>
+          {this.title(kind, namespace, false, onClickNamespace)}
+          <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
+            {this.header()}
+            {this.tabs()}
+          </div>
         </div>
-      </div>
-    )
+      )
+    } catch (err) {
+      console.error(err)
+    }
   }
 }
 
