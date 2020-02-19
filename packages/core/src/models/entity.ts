@@ -18,6 +18,7 @@ import { Table, Row, isTable } from '../webapp/models/table'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
 import { MultiModalResponse } from './mmr/types'
+import { NavResponse } from './NavResponse'
 import Presentation from '../webapp/views/presentation'
 
 export interface MessageBearingEntity {
@@ -191,6 +192,7 @@ export type Entity<
   | ResourceModification
   | MixedResponse
   | MultiModalResponse
+  | NavResponse
   | LowLevelLoop
   | UsageModel
   | Meta
