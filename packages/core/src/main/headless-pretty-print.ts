@@ -25,6 +25,7 @@ import ElementMimic from '../util/element-mimic'
 import { isTable, Row } from '../webapp/models/table'
 import { isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
 import { isMultiModalResponse } from '../models/mmr/is'
+import { isNavResponse } from '../models/NavResponse'
 import { isHTML, isPromise } from '../util/types'
 
 const log = console.log
@@ -398,7 +399,7 @@ export const print = (
           stream.write('\n')
         })
         return logger(colors.green(ok))
-      } else if (isMultiModalResponse(msg)) {
+      } else if (isMultiModalResponse(msg) || isNavResponse(msg)) {
         throw new Error('cannot format this response in headless mode')
       } else if (Array.isArray(msg)) {
         // msg is an array of stuff

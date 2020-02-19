@@ -1,11 +1,15 @@
 {
-  "modes": [
-    {
-      "mode": "about",
-      "content": "about:content",
-      "contentType": "text/markdown"
-    },
-    { "mode": "tutorial", "label": "Getting Started", "contentFrom": "tutorial play @tutorials/getting-started" },
-    { "mode": "version", "contentFrom": "version --full" }
-  ]
+  "nav": {
+    "Kui": {
+      "modes": [
+        {
+          "mode": "about",
+          "content": "about:content",
+          "contentType": "text/markdown"
+        },
+        { "mode": "tutorial", "label": "Getting Started", "contentFrom": "tutorial play @tutorials/getting-started" },
+        { "mode": "version", "contentFrom": "version --full" }
+      ]
+    }
+  }
 }
