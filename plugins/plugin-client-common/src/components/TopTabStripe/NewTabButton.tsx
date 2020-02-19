@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { Add20 } from '@carbon/icons-react'
 
 interface Props {
   onNewTab: () => void
@@ -34,18 +35,7 @@ export default class NewTabButton extends React.PureComponent<Props> {
         tabIndex={2}
         onClick={() => this.props.onNewTab()}
       >
-        <svg
-          className="kui-new-tab__plus"
-          focusable="false"
-          preserveAspectRatio="xMidYMid meet"
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 32 32"
-          aria-hidden="true"
-        >
-          <path d="M17 15V7h-2v8H7v2h8v8h2v-8h8v-2h-8z"></path>
-        </svg>
+        <Add20 className="kui-new-tab__plus" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
       </a>
     )
   }
