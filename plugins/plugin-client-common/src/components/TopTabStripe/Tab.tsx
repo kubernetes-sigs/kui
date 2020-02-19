@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { Close16 } from '@carbon/icons-react'
 import { i18n, eventBus, Event, ExecType } from '@kui-shell/core'
 
 import { topTabs } from '@kui-shell/client/config.d/style.json'
@@ -136,17 +137,7 @@ export default class Tab extends React.PureComponent<Props, State> {
               this.props.onCloseTab(this.props.idx)
             }}
           >
-            <svg
-              focusable="false"
-              preserveAspectRatio="xMidYMid meet"
-              xmlns="http://www.w3.org/2000/svg"
-              width="12"
-              height="16"
-              viewBox="0 0 16 16"
-              aria-hidden="true"
-            >
-              <path d="M12 4.7l-.7-.7L8 7.3 4.7 4l-.7.7L7.3 8 4 11.3l.7.7L8 8.7l3.3 3.3.7-.7L8.7 8z"></path>
-            </svg>
+            <Close16 focusable="false" width="12" height="16" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
           </div>
         )}
       </a>
