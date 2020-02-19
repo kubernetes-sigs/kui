@@ -109,7 +109,8 @@ export default class Tab extends React.PureComponent<Props, State> {
         href="#"
         className={
           'kui-tab left-tab-stripe-button kui--tab-navigatable' +
-          (this.props.active ? ' kui-tab--active left-tab-stripe-button-selected' : '')
+          (this.props.active ? ' kui-tab--active left-tab-stripe-button-selected' : '') +
+          (this.state.processing ? ' processing' : '')
         }
         data-tab-button-index={this.props.idx + 1}
         aria-label="tab"
