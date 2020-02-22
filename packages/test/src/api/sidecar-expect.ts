@@ -244,10 +244,16 @@ export const showing = (
   await app.client.waitUntil(
     async () => {
       // check selected name in sidecar
+      const sidecarSelector = `${Selectors.SIDECAR}${!expectType ? '' : '.entity-is-' + expectType}`
+      await app.client.waitForVisible(sidecarSelector)
+
+      // either 'leftnav' or 'topnav'
+      const which = await app.client.getAttribute(sidecarSelector, 'data-view')
+      const titleSelector = which === 'topnav' ? Selectors.SIDECAR_TITLE : Selectors.SIDECAR_LEFTNAV_TITLE
+
       return app.client
-        .waitForVisible(`${Selectors.SIDECAR}${!expectType ? '' : '.entity-is-' + expectType}`)
-        .then(() => app.client.waitForText(Selectors.SIDECAR_TITLE, timeout))
-        .then(() => app.client.getText(Selectors.SIDECAR_TITLE))
+        .waitForText(titleSelector, timeout)
+        .then(() => app.client.getText(titleSelector))
         .then(name => {
           const nameMatches = expectSubstringMatchOnName
             ? name.indexOf(expectedName) >= 0 || expectedName.indexOf(name) >= 0

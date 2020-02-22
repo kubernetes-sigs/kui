@@ -3,7 +3,7 @@ export const TAB_N = (N: number) => `tab:nth-child(${N})`
 export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
 export const SIDECAR_BASE = `${CURRENT_TAB} sidecar`
-export const SIDECAR_FULLSCREEN = `${CURRENT_TAB}.sidecar-full-screen sidecar.visible:not(.minimized)`
+export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} sidecar.visible.maximized:not(.minimized)`
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
 export const BOTTOM_PROMPT_BLOCK = `.kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
@@ -13,6 +13,7 @@ export const SIDECAR_WITH_FAILURE = `${SIDECAR_BASE}.visible.activation-success-
 export const SIDECAR_HIDDEN = `${SIDECAR_BASE}:not(.visible)`
 export const SIDECAR_ACTIVATION_TITLE = `${SIDECAR} .sidecar-header-name .entity-name-hash`
 export const SIDECAR_TITLE = `${SIDECAR} .sidecar-header-name-content .entity-name`
+export const SIDECAR_LEFTNAV_TITLE = `${SIDECAR} .sidecar-header-name-content .bx--side-nav__submenu-title`
 export const SIDECAR_PACKAGE_NAME_TITLE = `${SIDECAR} .sidecar-bottom-stripe .package-prefix`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
 export const SIDECAR_KIND = `${SIDECAR} .sidecar-bottom-stripe .sidecar-header-icon`
