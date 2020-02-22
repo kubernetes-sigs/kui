@@ -24,11 +24,7 @@ import {
   Close20 as QuitIcon
 } from '@carbon/icons-react'
 
-const enum Width {
-  Default,
-  Minimized,
-  Maximized
-}
+import Width from './width'
 
 interface Props {
   kind: string

@@ -20,7 +20,6 @@ import { Tab } from './tab'
 import { isHTML } from '../util/types'
 import { promiseEach } from '../util/async'
 
-import KuiFrame from './component/KuiFrame'
 import { isKuiFramedComponent } from './component/component'
 import { findComponentProviders } from './component/registrar'
 
@@ -80,7 +79,6 @@ async function printViaProvider(
 
         // does the view provider need us to wrap the content in a frame?
         if (isKuiFramedComponent(component)) {
-          new KuiFrame().attach(component, tab)
           // if (echoOk) {
           // ok(resultDom.parentElement)
           // }

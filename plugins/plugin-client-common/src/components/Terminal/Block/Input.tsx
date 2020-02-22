@@ -51,6 +51,13 @@ export default class Input extends React.PureComponent<Props, State> {
     }
   }
 
+  /** Owner wants us to focus on the current prompt */
+  public doFocus() {
+    if (this.state.prompt) {
+      this.state.prompt.focus()
+    }
+  }
+
   public static getDerivedStateFromProps(props: Props, state: State) {
     if (state.prompt && isActive(props.model) && !state.onKeyPress) {
       return {
