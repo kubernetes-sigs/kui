@@ -51,6 +51,9 @@ interface State {
 export default class TabContent extends React.PureComponent<Props, State> {
   private readonly cleaners: Cleaner[] = []
 
+  /** grab a ref (below) so that we can maintain focus */
+  private _terminal: ScrollableTerminal
+
   public constructor(props: Props) {
     super(props)
 
@@ -108,7 +111,32 @@ export default class TabContent extends React.PureComponent<Props, State> {
     if (this.state.sessionInit !== 'Done') {
       return <Loading description={strings('Please wait while we connect to your cloud')} />
     } else {
-      return <ScrollableTerminal uuid={this.props.uuid} tab={this.state.tab} />
+      return (
+        <ScrollableTerminal
+          uuid={this.props.uuid}
+          tab={this.state.tab}
+          ref={c => {
+            // so that we can refocus/blur
+            this._terminal = c
+          }}
+        />
+      )
+    }
+  }
+
+  private onWillLoseFocus() {
+    if (this._terminal) {
+      this._terminal.doFocus()
+    }
+  }
+
+  /** Graft on the REPL focus management */
+  private children() {
+    if (React.isValidElement(this.props.children)) {
+      // ^^^ this check avoids tsc errors
+      return React.cloneElement(this.props.children, { willLoseFocus: this.onWillLoseFocus.bind(this) })
+    } else {
+      return this.props.children
     }
   }
 
@@ -119,9 +147,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
         className={this.props.active ? 'visible' : ''}
         data-tab-id={this.props.uuid}
       >
-        <tabrow className="kui--rows">
-          <tabcolumn className="kui--columns">{this.terminal()}</tabcolumn>
-        </tabrow>
+        <div className="kui--rows">
+          <div className="kui--columns">
+            {this.terminal()}
+            {this.children()}
+          </div>
+        </div>
       </tab>
     )
   }

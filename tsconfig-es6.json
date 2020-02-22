@@ -8,13 +8,7 @@
       "path": "plugins/plugin-client-common/tsconfig-es6.json"
     },
     {
-      "path": "plugins/plugin-client-default/tsconfig-es6.json"
-    },
-    {
       "path": "packages/test/tsconfig-es6.json"
-    },
-    {
-      "path": "packages/builder/tsconfig-es6.json"
     },
     {
       "path": "plugins/plugin-core-support/tsconfig-es6.json"
@@ -30,6 +24,12 @@
     },
     {
       "path": "plugins/plugin-sidecar/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-client-default/tsconfig-es6.json"
+    },
+    {
+      "path": "packages/builder/tsconfig-es6.json"
     },
     {
       "path": "plugins/plugin-git/tsconfig-es6.json"

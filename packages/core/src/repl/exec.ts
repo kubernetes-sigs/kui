@@ -29,6 +29,8 @@ import { v4 as uuid } from 'uuid'
 import encodeComponent from './encode'
 import { split, patterns } from './split'
 import { Executor, ReplEval, DirectReplEval } from './types'
+import { isMultiModalResponse } from '../models/mmr/is'
+import { isNavResponse } from '../models/NavResponse'
 
 import {
   CommandTreeResolution,
@@ -296,7 +298,7 @@ class InProcessExecutor implements Executor {
         const endEvent = { tab, execType, command: commandUntrimmed, response: true, execUUID, cancelled: true }
         eventBus.emit('/command/complete', endEvent)
         if (execType !== ExecType.Nested) {
-          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
+          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
         }
         return
       }
@@ -307,11 +309,13 @@ class InProcessExecutor implements Executor {
         enforceUsage(argv, evaluator, execOptions)
       } catch (err) {
         debug('usage enforcement failure', err, execType === ExecType.Nested)
-        const endEvent = { tab, execType, command: commandUntrimmed, response: err, execUUID }
-        eventBus.emit('/command/complete', endEvent)
+
+        const endEvent = { tab, execType, command: commandUntrimmed, response: err }
+        eventBus.emit('/command/complete', endEvent, execUUID, 'ScalarResponse')
         if (execType !== ExecType.Nested) {
-          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
+          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
         }
+
         if (execOptions.type === ExecType.Nested) {
           throw err
         } else {
@@ -366,9 +370,26 @@ class InProcessExecutor implements Executor {
       const endEvent = { tab, execType, command: commandUntrimmed, response: response || true, execUUID }
       eventBus.emit(`/command/complete`, endEvent)
       eventBus.emit(`/command/complete/${getTabId(tab)}`, endEvent)
+
       if (execType !== ExecType.Nested) {
-        eventBus.emit(`/command/complete/fromuser`, endEvent)
-        eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
+        Promise.resolve(response).then(_ => {
+          const responseType = isMultiModalResponse(_)
+            ? 'MultiModalResponse'
+            : isNavResponse(_)
+            ? 'NavResponse'
+            : 'ScalarResponse'
+
+          eventBus.emit(`/command/complete/fromuser`, endEvent, responseType)
+          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, responseType)
+          eventBus.emit(`/command/complete/fromuser/${responseType}`, tab, response, execUUID, responseType)
+          eventBus.emit(
+            `/command/complete/fromuser/${responseType}/${getTabId(tab)}`,
+            tab,
+            response,
+            execUUID,
+            responseType
+          )
+        })
       }
 
       return response

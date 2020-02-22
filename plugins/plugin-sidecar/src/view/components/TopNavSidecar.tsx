@@ -18,8 +18,8 @@ import Debug from 'debug'
 import * as React from 'react'
 import { Tabs, Tab } from 'carbon-components-react'
 import {
+  eventBus,
   Tab as KuiTab,
-  REPL,
   MultiModalMode,
   MultiModalResponse,
   isResourceWithMetadata,
@@ -31,16 +31,19 @@ import {
 } from '@kui-shell/core'
 import KuiContent from './KuiContent'
 
+import Width from './width'
 import Badge from './Badge'
 import ToolbarContainer from './ToolbarContainer'
-import { Props, BaseSidecar } from './BaseSidecar'
+import { BaseState, BaseSidecar, Props } from './BaseSidecar'
 
 const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 
-interface State {
+interface State extends BaseState {
   currentTabIndex: number
+
   buttons: Button[]
   tabs: MultiModalMode[]
+  response: MultiModalResponse
 }
 
 export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): State {
@@ -72,9 +75,13 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Stat
   const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
 
   return {
+    tab,
+    repl: tab.REPL,
+    width: Width.Default,
     currentTabIndex: defaultMode,
     tabs,
-    buttons
+    buttons,
+    response
   }
 }
 /**
@@ -95,10 +102,33 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Stat
  * -----------------------
  *
  */
-class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
+export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
   public constructor(props: Props<MultiModalResponse>) {
     super(props)
-    this.state = getStateFromMMR(props.tab, props.response)
+
+    if (!this.isManaged()) {
+      const channel = '/command/complete/fromuser/MultiModalResponse'
+      const onResponse = this.onResponse.bind(this)
+      eventBus.on(channel, onResponse)
+      this.cleaners.push(() => eventBus.off(channel, onResponse))
+
+      this.state = {
+        repl: undefined,
+        tab: undefined,
+        width: Width.Default,
+
+        currentTabIndex: undefined,
+        tabs: undefined,
+        buttons: undefined,
+        response: undefined
+      }
+    } else {
+      this.state = getStateFromMMR(props.tab, props.response)
+    }
+  }
+
+  private onResponse(tab: KuiTab, response: MultiModalResponse) {
+    this.setState(getStateFromMMR(tab, response))
   }
 
   protected headerBodyStyle() {
@@ -106,14 +136,14 @@ class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
   }
 
   private nameHash() {
-    const { nameHash } = this.props.response
+    const { nameHash } = this.state.response
 
     if (nameHash) {
-      const onclick = this.props.response.onclick && this.props.response.onclick.nameHash
+      const onclick = this.state.response.onclick && this.state.response.onclick.nameHash
       return (
         <span
           className={'entity-name-hash' + (onclick ? ' clickable' : '')}
-          onClick={onclick && (() => this.props.repl.pexec(onclick))}
+          onClick={onclick && (() => this.state.repl.pexec(onclick))}
         >
           {nameHash}
         </span>
@@ -122,14 +152,14 @@ class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
   }
 
   private name() {
-    const onclick = this.props.response.onclick && this.props.response.onclick.name
+    const onclick = this.state.response.onclick && this.state.response.onclick.name
     return (
       <div className="entity-name-line">
         <span
           className={'entity-name' + (onclick ? ' clickable' : '')}
-          onClick={onclick && (() => this.props.repl.pexec(onclick))}
+          onClick={onclick && (() => this.state.repl.pexec(onclick))}
         >
-          {this.props.response.metadata.name}
+          {this.state.response.metadata.name}
         </span>
       </div>
     )
@@ -184,18 +214,18 @@ class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
   }
 
   protected bodyContent(idx: number) {
-    return <KuiContent tab={this.props.tab} mode={this.state.tabs[idx]} response={this.props.response} />
+    return <KuiContent tab={this.state.tab} mode={this.state.tabs[idx]} response={this.state.response} />
   }
 
   private tabContent(idx: number) {
-    const { toolbarText } = this.props.response
+    const { toolbarText } = this.state.response
 
     return (
       <div className="sidecar-content-container">
         <div className="custom-content zoomable">
           <ToolbarContainer
-            tab={this.props.tab}
-            response={this.props.response}
+            tab={this.state.tab}
+            response={this.state.response}
             toolbarText={toolbarText}
             buttons={this.state.buttons}
           >
@@ -211,7 +241,7 @@ class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
     const badges = badgeRegistrar.filter(({ when }) => {
       // filter out any irrelevant badges (for this resource)
       try {
-        return when(this.props.response)
+        return when(this.state.response)
       } catch (err) {
         debug('warning: registered badge threw an exception during filter', err)
         return false
@@ -246,22 +276,27 @@ class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
   }
 
   public render() {
+    if (!this.state.response) {
+      return <div />
+    }
     try {
       const {
         kind,
         metadata: { namespace },
         onclick
-      } = this.props.response
-      const onClickNamespace = onclick && onclick.namespace && (() => this.props.repl.pexec(onclick.namespace))
+      } = this.state.response
+      const onClickNamespace = onclick && onclick.namespace && (() => this.state.repl.pexec(onclick.namespace))
 
       return (
-        <div style={this.containerStyle()}>
+        <sidecar className={this.width()} data-view="topnav">
+          {' '}
+          {/* data-view helps with tests */}
           {this.title(kind, namespace, false, onClickNamespace)}
           <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
             {this.header()}
             {this.tabs()}
           </div>
-        </div>
+        </sidecar>
       )
     } catch (err) {
       console.error(err)
@@ -269,6 +304,6 @@ class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
   }
 }
 
-export default function renderTopNavSidecar(tab: KuiTab, repl: REPL, response: MultiModalResponse): React.ReactElement {
+/* export default function renderTopNavSidecar(tab: KuiTab, repl: REPL, response: MultiModalResponse): React.ReactElement {
   return <TopNavSidecar tab={tab} repl={repl} response={response} />
-}
+} */

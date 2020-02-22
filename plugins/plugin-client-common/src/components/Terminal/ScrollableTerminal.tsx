@@ -19,7 +19,7 @@ import { eventBus, KResponse, Tab as KuiTab } from '@kui-shell/core'
 
 import Block from './Block'
 import Cleaner from '../cleaner'
-import { Active, Finished, Cancelled, Processing, isProcessing, BlockModel } from './Block/BlockModel'
+import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
 
 interface Props {
   uuid: string
@@ -34,6 +34,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private readonly cleaners: Cleaner[] = []
   private _scrollRegion: HTMLDivElement
 
+  /** grab a ref to the active block, to help us maintain focus */
+  private _activeBlock: Block
+
   public constructor(props: Props) {
     super(props)
 
@@ -46,7 +49,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Clear Terminal; TODO: also clear persisted state, when we have it */
   private clear() {
-    console.error('!!!!')
     this.setState({
       blocks: [Active()]
     })
@@ -74,7 +76,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL finished executing a command */
-  private onExecEnd({ execUUID, response, cancelled }: { execUUID: string; response: KResponse; cancelled: boolean }) {
+  private onExecEnd(
+    { response, cancelled }: { response: KResponse; cancelled: boolean },
+    execUUID: string,
+    responseType: string
+  ) {
     this.setState(curState => {
       const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === execUUID)
 
@@ -84,7 +90,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           try {
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([Finished(inProcess, response, cancelled)]) // mark as finished
+              .concat([Finished(inProcess, responseType === 'ScalarResponse' ? response : true, cancelled)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat([Active()]) // plus a new block!
             return {
@@ -94,7 +100,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             console.error('error updating state', err)
           }
         } else {
-          console.error('invalid state: got a command completion event for a block that is not processing')
+          console.error('invalid state: got a command completion event for a block that is not processing', execUUID)
         }
       } else if (cancelled) {
         // we get here if the user just types ctrl+c without having executed any command. add a new block!
@@ -108,9 +114,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           blocks
         }
       } else {
-        console.error('invalid state: got a command completion event, but never got command start event')
+        console.error('invalid state: got a command completion event, but never got command start event', execUUID)
       }
     })
+  }
+
+  /** Owner wants us to focus on the current prompt */
+  public doFocus() {
+    if (this._activeBlock) {
+      this._activeBlock.doFocus()
+    }
   }
 
   /** Hook into the core's read-eval-print loop */
@@ -154,7 +167,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       <repl className="repl" id="main-repl">
         <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)}>
           {this.state.blocks.map((_, idx) => (
-            <Block key={idx} idx={idx} model={_} tab={this.props.tab} onOutputRender={this.onOutputRender.bind(this)} />
+            <Block
+              key={idx}
+              idx={idx}
+              model={_}
+              tab={this.props.tab}
+              onOutputRender={this.onOutputRender.bind(this)}
+              ref={c => {
+                if (isActive(_)) {
+                  // grab a ref to the active block, to help us maintain focus
+                  this._activeBlock = c
+                }
+              }}
+            />
           ))}
         </div>
       </repl>

@@ -34,8 +34,6 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       tab: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      tabrow: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      tabcolumn: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       repl: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
     }
   }

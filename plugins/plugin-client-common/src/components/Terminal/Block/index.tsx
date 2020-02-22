@@ -35,10 +35,19 @@ interface State {
 }
 
 export default class Block extends React.PureComponent<Props, State> {
+  /** grab a ref to the Input to help with maintaining focus */
+  private _input: Input
+
   public constructor(props: Props) {
     super(props)
-
     this.state = {}
+  }
+
+  /** Owner wants us to focus on the current prompt */
+  public doFocus() {
+    if (this._input) {
+      this._input.doFocus()
+    }
   }
 
   private output() {
@@ -62,7 +71,14 @@ export default class Block extends React.PureComponent<Props, State> {
         data-input-count={this.props.idx}
         ref={c => this.setState({ _block: c })}
       >
-        {this.state._block && <Input tab={this.props.tab} model={this.props.model} _block={this.state._block} />}
+        {this.state._block && (
+          <Input
+            tab={this.props.tab}
+            model={this.props.model}
+            _block={this.state._block}
+            ref={c => (this._input = c)}
+          />
+        )}
         {this.output()}
       </div>
     )

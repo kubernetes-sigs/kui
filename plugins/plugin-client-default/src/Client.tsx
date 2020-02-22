@@ -19,6 +19,7 @@
 
 import * as React from 'react'
 import { render as ReactDomRender } from 'react-dom'
+import { ComboSidecar } from '@kui-shell/plugin-sidecar'
 import { TabContainer, StatusStripe } from '@kui-shell/plugin-client-common'
 
 /**
@@ -37,7 +38,9 @@ export class DefaultClient extends React.PureComponent {
   public render() {
     return (
       <div className="kui--full-height">
-        <TabContainer />
+        <TabContainer>
+          <ComboSidecar />
+        </TabContainer>
 
         <StatusStripe>{this.props.children}</StatusStripe>
       </div>

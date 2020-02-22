@@ -8,13 +8,7 @@
       "path": "plugins/plugin-client-common"
     },
     {
-      "path": "plugins/plugin-client-default"
-    },
-    {
       "path": "packages/test"
-    },
-    {
-      "path": "packages/builder"
     },
     {
       "path": "plugins/plugin-core-support"
@@ -30,6 +24,12 @@
     },
     {
       "path": "plugins/plugin-sidecar"
+    },
+    {
+      "path": "plugins/plugin-client-default"
+    },
+    {
+      "path": "packages/builder"
     },
     {
       "path": "plugins/plugin-git"
