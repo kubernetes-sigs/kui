@@ -15,9 +15,8 @@
  */
 
 import * as React from 'react'
+import { HTMLDom } from '@kui-shell/plugin-client-common'
 import { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
-
-import HTMLDom from './HTMLDom'
 
 interface Props {
   spec: KuiBadge | ((resource: MultiModalResponse, tab: Tab) => KuiBadge)

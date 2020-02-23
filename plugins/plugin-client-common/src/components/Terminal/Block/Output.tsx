@@ -22,8 +22,6 @@ import {
   isHTML,
   isTable,
   eventBus,
-  internalFormat,
-  internalRender,
   getTabId,
   Tab as KuiTab,
   Stream,
@@ -34,6 +32,7 @@ import {
   BlockModel,
   ProcessingBlock,
   FinishedBlock,
+  hasUUID,
   isFinished,
   isProcessing,
   isOk,
@@ -41,6 +40,8 @@ import {
   isEmpty,
   isOops
 } from './BlockModel'
+
+import Scalar from '../../Scalar'
 
 const okString = i18n('plugin-client-common')('ok')
 
@@ -51,9 +52,9 @@ interface Props {
 }
 
 interface State {
-  streamDom: HTMLDivElement
-  resultDom: HTMLDivElement
   isResultRendered: boolean
+
+  streamingOutput: Streamable[]
   streamingConsumer: Stream
 }
 
@@ -69,30 +70,32 @@ export default class Output extends React.PureComponent<Props, State> {
     }
 
     this.state = {
-      streamDom: undefined,
-      resultDom: undefined,
       isResultRendered: false,
+      streamingOutput: [],
       streamingConsumer
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private async streamingConsumer(response: Streamable) {
-    if (this.state.streamDom) {
-      await internalFormat(this.props.tab, response, this.state.streamDom)
+  private async streamingConsumer(part: Streamable) {
+    if (hasUUID(this.props.model)) {
+      this.setState(curState => ({
+        streamingOutput: curState.streamingOutput.concat([part])
+      }))
+      eventBus.emit(`/command/stdout/done/${getTabId(this.props.tab)}/${this.props.model.execUUID}`)
     }
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if (isFinished(props.model) && state.resultDom && !state.isResultRendered) {
+    if (isFinished(props.model) && !state.isResultRendered) {
       const tabUUID = getTabId(props.tab)
 
-      if (isProcessing(props.model)) {
+      if (!isEmpty(props.model)) {
         eventBus.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       }
 
       if (!isEmpty(props.model) && !isCancelled(props.model)) {
-        internalRender(props.tab, state.resultDom)(props.model.response).then(() => props.onRender())
+        props.onRender()
       }
 
       return {
@@ -105,25 +108,42 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private stream() {
-    return <div className="repl-result-like" data-stream ref={c => this.setState({ streamDom: c })} />
+    if (this.state.streamingOutput.length > 0) {
+      return (
+        <div className="repl-result-like result-vertical" data-stream>
+          {this.state.streamingOutput.map((part, idx) => (
+            <Scalar key={idx} tab={this.props.tab} response={part} />
+          ))}
+        </div>
+      )
+    }
   }
 
   private result() {
-    const statusCode = isOops(this.props.model)
-      ? isCodedError(this.props.model.response)
-        ? this.props.model.response.code || this.props.model.response.statusCode
-        : 500
-      : isFinished(this.props.model)
-      ? 0
-      : undefined
+    if (isProcessing(this.props.model)) {
+      return <div className="repl-result" />
+    } else if (isEmpty(this.props.model)) {
+      // no result to display for these cases
+      return <React.Fragment />
+    } else {
+      const statusCode = isOops(this.props.model)
+        ? isCodedError(this.props.model.response)
+          ? this.props.model.response.code || this.props.model.response.statusCode
+          : 500
+        : isFinished(this.props.model)
+        ? 0
+        : undefined
 
-    return (
-      <div
-        className={'repl-result' + (isOops(this.props.model) ? ' oops' : '')}
-        data-status-code={statusCode}
-        ref={c => this.setState({ resultDom: c })}
-      />
-    )
+      return (
+        <div className={'repl-result' + (isOops(this.props.model) ? ' oops' : '')} data-status-code={statusCode}>
+          {isCancelled(this.props.model) ? (
+            <React.Fragment />
+          ) : (
+            <Scalar tab={this.props.tab} response={this.props.model.response} />
+          )}
+        </div>
+      )
+    }
   }
 
   private cursor() {
@@ -140,11 +160,10 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isFinished(block) && !isCancelled(block) && !isEmpty(block)) {
       const { response } = block
       return (
-        this.state.streamDom.children.length > 0 ||
-        this.state.resultDom.children.length > 0 ||
         isHTML(response) ||
         (typeof response === 'string' && response.length > 0) ||
-        (isTable(response) && response.body.length > 0)
+        (isTable(response) && response.body.length > 0) ||
+        this.state.streamingOutput.length > 0
       )
     } else {
       return false

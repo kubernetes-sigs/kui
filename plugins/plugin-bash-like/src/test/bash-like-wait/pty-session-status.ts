@@ -32,7 +32,7 @@ describe('pty session status offline after start', function(this: Common.ISuite)
 
   pit('should echo hi', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this))
   )
 
@@ -113,7 +113,7 @@ describe('pty session status offline at start', function(this: Common.ISuite) {
 
   pit('should echo hi now that the proxy is online', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this, true))
   )
 })

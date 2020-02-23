@@ -5,6 +5,9 @@
       "path": "packages/core/tsconfig-es6.json"
     },
     {
+      "path": "plugins/plugin-carbon-tables/tsconfig-es6.json"
+    },
+    {
       "path": "plugins/plugin-client-common/tsconfig-es6.json"
     },
     {
@@ -18,9 +21,6 @@
     },
     {
       "path": "plugins/plugin-editor/tsconfig-es6.json"
-    },
-    {
-      "path": "plugins/plugin-carbon-tables/tsconfig-es6.json"
     },
     {
       "path": "plugins/plugin-sidecar/tsconfig-es6.json"

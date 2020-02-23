@@ -78,15 +78,15 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   it('should cat a json file', () =>
     CLI.command(`cat ${jsonFile.name}`, this.app)
-      .then(ReplExpect.okWithString('"x"'))
+      .then(ReplExpect.okWithPtyOutput('"x"'))
       .catch(Common.oops(this, true)))
   it('should cat a yml file', () =>
     CLI.command(`cat ${ymlFile.name}`, this.app)
-      .then(ReplExpect.okWithString('notes:'))
+      .then(ReplExpect.okWithPtyOutput('notes:'))
       .catch(Common.oops(this, true)))
   it('should cat a yaml file', () =>
     CLI.command(`cat ${yamlFile.name}`, this.app)
-      .then(ReplExpect.okWithString('notes:'))
+      .then(ReplExpect.okWithPtyOutput('notes:'))
       .catch(Common.oops(this, true)))
 
   // these two are useful as a pair; git usage responds with exit code
@@ -130,13 +130,13 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   Common.pit('should answer which ls with /bin/ls', () =>
     CLI.command(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G
-      .then(ReplExpect.okWithCustom({ expect: '/bin/ls', exact: false }))
+      .then(ReplExpect.okWithPtyOutput('/bin/ls'))
       .catch(Common.oops(this, true))
   )
 
   Common.pit('should echo hi', () =>
     CLI.command(`echo hi`, this.app)
-      .then(ReplExpect.okWithCustom({ expect: 'hi' }))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this, true))
   )
 
@@ -187,7 +187,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   )
   Common.pit('should cat that file', () =>
     CLI.command(`cat "${dirname}"/testTmp`, this.app)
-      .then(ReplExpect.okWithCustom({ expect: 'ho' }))
+      .then(ReplExpect.okWithPtyOutput('ho'))
       .catch(Common.oops(this, true))
   )
   Common.pit('should rm that file', () =>

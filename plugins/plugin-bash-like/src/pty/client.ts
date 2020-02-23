@@ -838,12 +838,11 @@ export const doExec = (
         }
 
         if (!execOptions.quiet && !execOptions.replSilence && hasBlock) {
-          const parent = (execOptions.block || block).querySelector('.repl-result')
           xtermContainer = document.createElement('xterm')
           xtermContainer.classList.add('xterm-container')
-          xtermContainer.classList.add('repl-output-like')
-          // xtermContainer.classList.add('zoomable')
-          parent.appendChild(xtermContainer)
+
+          // add xtermContainer to the current Output
+          await execOptions.stdout(xtermContainer)
 
           if (execOptions.replSilence) {
             debug('repl silence')

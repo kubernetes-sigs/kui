@@ -15,7 +15,7 @@
  */
 
 import { basename } from 'path'
-import { KResponse, UsageError, inBrowser } from '@kui-shell/core'
+import { ScalarResponse, UsageError, inBrowser } from '@kui-shell/core'
 
 const enum BlockState {
   Active = 'repl-active',
@@ -32,13 +32,13 @@ type WithUUID = { execUUID: string }
 type WithCommand = { command: string } & WithCWD
 type WithStartTime = { startTime: Date }
 type WithState<S extends BlockState> = { state: S }
-type WithResponse<R extends KResponse> = { response: R } & WithStartTime
+type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD
 type EmptyBlock = WithState<BlockState.Empty> & WithCWD
 type ErrorBlock = WithState<BlockState.Error> & WithCommand & WithResponse<Error> & WithUUID
-type OkBlock = WithState<BlockState.ValidResponse> & WithCommand & WithResponse<KResponse> & WithUUID
+type OkBlock = WithState<BlockState.ValidResponse> & WithCommand & WithResponse<ScalarResponse> & WithUUID
 export type ProcessingBlock = WithState<BlockState.Processing> & WithCommand & WithUUID & WithStartTime
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 
@@ -58,16 +58,12 @@ function cwd() {
   }
 }
 
-function isError(response: KResponse): response is Error {
+export function isError(response: ScalarResponse): response is Error {
   return response.constructor === Error || response.constructor === UsageError
 }
 
 export function isProcessing(block: BlockModel): block is ProcessingBlock {
   return block.state === BlockState.Processing
-}
-
-export function isFinished(block: BlockModel): block is FinishedBlock {
-  return block.state === BlockState.Error || block.state === BlockState.ValidResponse
 }
 
 export function isActive(block: BlockModel): block is ActiveBlock {
@@ -88,6 +84,10 @@ export function isOk(block: BlockModel): block is OkBlock {
 
 export function isOops(block: BlockModel): block is ErrorBlock {
   return block.state === BlockState.Error
+}
+
+export function isFinished(block: BlockModel): block is FinishedBlock {
+  return isOops(block) || isCancelled(block) || isOk(block) || isEmpty(block)
 }
 
 export function hasCommand(block: BlockModel & Partial<WithCommand>): block is BlockModel & Required<WithCommand> {
@@ -141,7 +141,7 @@ export function Cancelled(block: BlockModel): CancelledBlock | EmptyBlock {
 }
 
 /** Transform to Finished */
-export function Finished(block: ProcessingBlock, response: KResponse, cancelled: boolean): FinishedBlock {
+export function Finished(block: ProcessingBlock, response: ScalarResponse, cancelled: boolean): FinishedBlock {
   if (cancelled) {
     return Cancelled(block)
   } else if (isError(response)) {
