@@ -175,7 +175,8 @@ body.still-loading .repl {
   font-size: inherit;
   padding: 0 !important;
 }
-.repl-result {
+.repl-result,
+.repl-result-like {
   display: flex;
   flex-wrap: wrap;
   overflow: hidden;
@@ -364,7 +365,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl-output {
   display: flex;
 }
-.repl-output.result-vertical {
+.repl-block .result-vertical {
   flex-direction: column;
 }
 .repl-block .whitespace {

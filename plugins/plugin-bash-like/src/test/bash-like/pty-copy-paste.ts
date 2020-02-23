@@ -139,7 +139,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await ReplExpect.blank(res)
 
       console.error('CP17')
-      await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithStringEventually(text))
+      await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithPtyOutputEventually(text))
 
       const contents = readFileSync(file.name).toString()
       assert.strictEqual(contents.replace(/[\n\r]$/, ''), text)

@@ -16,8 +16,7 @@
 
 import { CommandRegistrar } from './command'
 import { PrescanUsage } from '../plugins/prescan'
-import { Entity, MetadataBearing } from '../models/entity'
-import KuiComponentProivder from '../webapp/component/provider'
+import { MetadataBearing } from '../models/entity'
 import { BadgeRegistration } from '../webapp/views/registrar/badges'
 import { ModeRegistration } from '../webapp/views/registrar/modes'
 import { SessionInitializer } from '../session/registrar'
@@ -34,9 +33,6 @@ export interface PreloadRegistrar extends CommandRegistrar {
   /** sidecar badges */
   registerBadge<Resource extends MetadataBearing>(registration: BadgeRegistration<Resource>): void
   registerBadges<Resource extends MetadataBearing>(...registrations: BadgeRegistration<Resource>[]): void
-
-  /** view components */
-  registerComponent<T extends Entity>(provider: KuiComponentProivder<T>): void
 
   /** session initializers */
   registerSessionInitializer(init: SessionInitializer): void

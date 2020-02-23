@@ -43,14 +43,14 @@ describe('export command', function(this: Common.ISuite) {
   Common.pit(`should export foo=${value1}`, () =>
     CLI.command(`export foo=${value1}`, this.app)
       .then(ReplExpect.justOK)
-      .then(() => CLI.command('printenv foo', this.app).then(ReplExpect.okWithString(value1)))
+      .then(() => CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(value1)))
       .catch(Common.oops(this))
   )
 
   Common.pit('should export foo bar baz with space in string', () =>
     CLI.command(`export foo="${value2}"`, this.app)
       .then(ReplExpect.justOK)
-      .then(() => CLI.command('printenv foo', this.app).then(ReplExpect.okWithString(value2)))
+      .then(() => CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(value2)))
       .catch(Common.oops(this))
   )
 
@@ -74,7 +74,7 @@ describe('export command', function(this: Common.ISuite) {
 
   Common.pit('should printenv the new value for foo in the second tab', () =>
     CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithString(value3))
+      .then(ReplExpect.okWithPtyOutput(value3))
       .catch(Common.oops(this))
   )
 
@@ -86,7 +86,7 @@ describe('export command', function(this: Common.ISuite) {
 
   Common.pit('should show the first-tab value for foo in the first tab', () =>
     CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithString(value2))
+      .then(ReplExpect.okWithPtyOutput(value2))
       .catch(Common.oops(this))
   )
 
@@ -98,7 +98,7 @@ describe('export command', function(this: Common.ISuite) {
 
   Common.pit('should show the second-tab value for foo in the second tab', () =>
     CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithString(value3))
+      .then(ReplExpect.okWithPtyOutput(value3))
       .catch(Common.oops(this))
   )
 })
