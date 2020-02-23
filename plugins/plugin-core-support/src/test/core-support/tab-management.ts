@@ -111,7 +111,7 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
     try {
       const res = await CLI.command('less ../../README.md', this.app)
 
-      const selector = `${Selectors.OUTPUT_N(res.count)} .xterm`
+      const selector = `${Selectors.OUTPUT_N_PTY(res.count)} .xterm`
       await this.app.client.waitForExist(selector)
     } catch (err) {
       return Common.oops(this, true)(err)
@@ -150,13 +150,13 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} in tab2`, () =>
     CLI.command(`pwd`, this.app)
-      .then(ReplExpect.okWithString(CWD1))
+      .then(ReplExpect.okWithPtyOutput(CWD1))
       .catch(Common.oops(this, true)))
 
   it(`cd to ${CWD2} in tab2`, () =>
@@ -166,7 +166,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD2 ${CWD2} in tab2`, () =>
     CLI.command(`pwd`, this.app)
-      .then(ReplExpect.okWithString(CWD2))
+      .then(ReplExpect.okWithPtyOutput(CWD2))
       .catch(Common.oops(this, true)))
 
   it('should close tab via "exit" command', () =>
@@ -178,7 +178,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     CLI.command(`pwd`, this.app)
-      .then(ReplExpect.okWithString(CWD1))
+      .then(ReplExpect.okWithPtyOutput(CWD1))
       .catch(Common.oops(this, true)))
 
   it('new tab via command', () =>
@@ -199,7 +199,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString(CWD1))
+      .then(ReplExpect.okWithPtyOutput(CWD1))
       .catch(Common.oops(this, true)))
 
   it(`switch back to second tab via command`, () =>
@@ -209,7 +209,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
     CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString(CWD2))
+      .then(ReplExpect.okWithPtyOutput(CWD2))
       .catch(Common.oops(this, true)))
 
   it(`switch back to first tab via command`, () =>
@@ -219,7 +219,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString(CWD1))
+      .then(ReplExpect.okWithPtyOutput(CWD1))
       .catch(Common.oops(this, true)))
 })
 
@@ -236,7 +236,7 @@ describe('core new tab from quiescent tab via button click', function(this: Comm
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this, true)))
 
@@ -249,7 +249,7 @@ describe('core new tab from quiescent tab via button click', function(this: Comm
 
   it('should execute echo in first tab', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
       .catch(Common.oops(this, true)))
 })
@@ -267,7 +267,7 @@ describe('core new tab from active tab via button click', function(this: Common.
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this, true)))
 })
@@ -286,7 +286,7 @@ describe('core new tab from pty active tab via button click', function(this: Com
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this, true)))
 })
@@ -306,7 +306,7 @@ describe('core new tab from active tab that is emitting output via button click'
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this, true)))
 

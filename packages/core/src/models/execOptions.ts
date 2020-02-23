@@ -24,6 +24,9 @@ export interface ExecOptions {
   /** force execution in a given tab? */
   tab?: Tab
 
+  /** execution UUID */
+  execUUID?: string
+
   /** pass through uninterpreted data */
   data?: string | Buffer
 

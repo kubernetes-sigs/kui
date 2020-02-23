@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { default as renderTable, default as PaginatedTable } from './view/PaginatedTable'
+export { default as PaginatedTable } from './view/PaginatedTable'
+export { default as renderTable, default as LivePaginatedTable } from './view/LivePaginatedTable'

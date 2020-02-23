@@ -279,7 +279,9 @@ class InProcessExecutor implements Executor {
         return err
       }
 
-      const execUUID = uuid()
+      const execUUID = execOptions.execUUID || uuid()
+      execOptions.execUUID = execUUID
+
       const startEvent = {
         tab,
         route: evaluator.route,
@@ -422,9 +424,13 @@ class InProcessExecutor implements Executor {
       const { streamTo: headlessStreamTo } = await import('../main/headless-support')
       return headlessStreamTo()
     } else {
-      const stream = async (response: Streamable) => {
-        eventBus.emit(`/command/stdout/${tabUUID}/${execUUID}`, response)
-      }
+      const stream = (response: Streamable) =>
+        new Promise<void>(resolve => {
+          eventBus.once(`/command/stdout/done/${tabUUID}/${execUUID}`, () => {
+            resolve()
+          })
+          eventBus.emit(`/command/stdout/${tabUUID}/${execUUID}`, response)
+        })
       return Promise.resolve(stream)
     }
   }
@@ -571,8 +577,9 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
         command,
         block,
         undefined,
-        Object.assign({}, opts.execOptions, { quiet: false, block })
+        Object.assign({}, opts.execOptions, { quiet: false, block, execUUID: opts.execOptions.execUUID })
       )
+
       if (entity === true) {
         // pty output
         return block
@@ -582,6 +589,7 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
         return entity
       }
     })
+
     return result
   }
 }

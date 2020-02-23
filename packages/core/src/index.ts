@@ -42,10 +42,12 @@ export {
 } from './models/command'
 export { optionsToString as unparse } from './core/utility'
 export {
+  ScalarResponse,
   MetadataNamedResource,
   MixedResponse,
+  isMixedResponse,
   RawResponse,
-  ResourceModification,
+  //  ResourceModification,
   MetadataBearingByReference as ResourceByReference,
   MetadataBearingByReferenceWithContent as ResourceByReferenceWithContent,
   isMetadataBearingByReference as isResourceByReference
@@ -60,6 +62,9 @@ export { hasEditor, tryOpenWithEditor, EditorProvider, registerEditor } from './
 // Errors
 export { isCodedError, CodedError } from './models/errors'
 export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-error'
+
+// TODO remove these soon; see plugin-client-common/src/components/Scalar/index.ts
+export { isMessageWithUsageModel, isMessageWithCode } from './core/usage-error'
 
 // eventBus
 export { default as eventBus, wireToStandardEvents } from './core/events'
@@ -87,7 +92,6 @@ export async function History(tab: Tab) {
 }
 
 // pretty printing
-export { formatPart as internalFormat, printResults as internalRender } from './webapp/print'
 export { prettyPrintTime } from './webapp/util/time'
 
 // registrars
@@ -220,10 +224,6 @@ export { tellMain } from './webapp/electron-events'
 // main
 export { main } from './main/main'
 export { default as boot } from './webapp/bootstrap/boot'
-
-// View Components
-export { KuiComponent } from './webapp/component/component'
-export { findComponentProviders } from './webapp/component/registrar'
 
 // Sessions
 export { initializeSession } from './session/init'

@@ -55,7 +55,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       await this.app.client.keys(Keys.ctrlC)
 
       // then issue some other command, and expect success
-      await CLI.command('echo hi', this.app).then(ReplExpect.okWithString('hi'))
+      await CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi'))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -74,7 +74,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
       await this.app.client.keys(Keys.ctrlC)
       return this.app.client.waitUntil(async () => {
-        const actualText = await this.app.client.getText(Selectors.OUTPUT_N(res.count))
+        const actualText = await this.app.client.getText(Selectors.OUTPUT_N_PTY(res.count))
         return /\^C/.test(actualText)
       })
     } catch (err) {

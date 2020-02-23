@@ -40,25 +40,25 @@ describe('pty output with many lines', function(this: Common.ISuite) {
   // webpack-only clients)
   Common.pit('should cat a long file and show the first line', () =>
     CLI.command('cat ../../README.md', this.app)
-      .then(ReplExpect.okWithStringEventually(readmeLines[0]))
+      .then(ReplExpect.okWithPtyOutputEventually(readmeLines[0]))
       .catch(Common.oops(this, true))
   )
 
   Common.pit('should cat a long file and show the last line', () =>
     CLI.command('cat ../../README.md', this.app)
-      .then(ReplExpect.okWithStringEventually(readmeLines[readmeLines.length - 1]))
+      .then(ReplExpect.okWithPtyOutputEventually(readmeLines[readmeLines.length - 1]))
       .catch(Common.oops(this, true))
   )
 
   Common.pit('should execute a recursive grep that emits many lines', () =>
     CLI.command(`grep -r describe\\( "${ROOT}/../../../plugins"`, this.app)
-      .then(ReplExpect.okWithStringEventually('describe'))
+      .then(ReplExpect.okWithPtyOutputEventually('describe'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should still have a prompt that works', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this))
   )
 })

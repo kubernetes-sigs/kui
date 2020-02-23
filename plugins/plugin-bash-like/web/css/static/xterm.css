@@ -22,7 +22,7 @@
   white-space: pre;
 }
 
-.repl-result > div.xterm-container {
+.repl-result-like > div.xterm-container {
   padding-right: 0;
 }
 
@@ -36,26 +36,50 @@ tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
 }
 
 /* alt buffer mode */
-tab.xterm-alt-buffer-mode .repl-inner {
-  overflow: hidden;
-  display: flex;
-  align-items: flex-start;
-  -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
-}
-tab.xterm-alt-buffer-mode .repl-inner .repl-block.processing {
-  padding: 0;
-  -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
-}
-tab.xterm-alt-buffer-mode .repl-inner .repl-block {
-  flex: 1;
-}
-tab.xterm-alt-buffer-mode .repl-inner .repl-block .repl-output {
-  align-items: unset;
-}
-tab.xterm-alt-buffer-mode .repl-block:not(.processing),
-tab.xterm-alt-buffer-mode .repl-input,
-tab.xterm-alt-buffer-mode .repl-result-spinner {
-  display: none;
+tab.xterm-alt-buffer-mode {
+  .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+    background-color: var(--color-support-01) !important;
+  }
+
+  .repl-inner {
+    overflow: hidden;
+    display: flex;
+    /* align-items: flex-start; */
+    -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
+
+    /* when in alt-buffer mode, hide anything in the REPL not related to the current output */
+    .repl-block:not(.processing),
+    .repl-input,
+    .repl-result,
+    .repl-result-spinner {
+      display: none;
+    }
+
+    .repl-block {
+      & {
+        flex: 1;
+      }
+      &.processing {
+        padding: 0;
+        -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
+      }
+      .repl-output {
+        &,
+        .repl-result-like {
+          flex: 1;
+          display: flex;
+
+          .xterm-container {
+            &,
+            .xterm {
+              flex: 1;
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
@@ -80,9 +104,6 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
   outline-color: transparent !important;
   transition-property: background-color, outline-color;
   transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
-}
-tab.xterm-alt-buffer-mode .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
-  background-color: var(--color-support-01) !important;
 }
 .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
   background-color: var(--color-processing) !important;

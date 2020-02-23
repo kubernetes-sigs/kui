@@ -26,7 +26,7 @@ export interface MessageBearingEntity {
   message: string
 }
 
-export function isMessageBearingEntity(entity: Entity): entity is MessageBearingEntity {
+export function isMessageBearingEntity(entity: Entity | MessageBearingEntity): entity is MessageBearingEntity {
   return (entity as MessageBearingEntity).message !== undefined
 }
 
@@ -110,7 +110,7 @@ export function isMetadataBearingByReference<T extends MetadataBearingByReferenc
  * A mostly scalar entity
  *
  */
-export type SimpleEntity = boolean | string | number | HTMLElement | MessageBearingEntity | Error
+export type SimpleEntity = boolean | string | number | HTMLElement | /* MessageBearingEntity | */ Error
 
 /**
  * The plugin returns a mix of types; e.g. `helm status` returns
@@ -130,42 +130,11 @@ export function isMixedResponse(response: Entity): response is MixedResponse {
 }
 
 /**
- * We will do away with this at some point; but, for now, the
- * cli.prompt takes over the REPL temporarily.
- *
- */
-export interface LowLevelLoop {
-  mode: 'prompt'
-}
-export function isLowLevelLoop(entity: Entity): entity is LowLevelLoop {
-  const looper = entity as LowLevelLoop
-  return looper.mode === 'prompt'
-}
-
-/**
  * Transforms optional fields to required fields
  *
  */
 type Complete<T> = {
   [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : T[P] | undefined
-}
-
-/**
- * A `ResourceModification` command response allows a plugin to inform
- * the core that a CRUD action has been performed against a named
- * resource.
- *
- */
-export type ResourceModification = Complete<MetadataNamedResource> & {
-  /** for now, we only support deletion modifications */
-  verb: 'delete'
-}
-
-export function isResourceModification(entity: Entity): entity is ResourceModification {
-  const mod = entity as ResourceModification
-  return (
-    mod !== undefined && mod.verb === 'delete' && typeof mod.kind === 'string' && typeof mod.metadata.name === 'string'
-  )
 }
 
 /**
@@ -184,21 +153,23 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
 }
 
 /**
+ * This type covers all responses with no complex internal structure
+ * that views may wish to interpret into fancier views.
+ *
+ */
+export type ScalarResponse<RowType extends Row = Row> = SimpleEntity | Table<RowType> | MixedResponse
+
+export type StructuredResponse<
+  Content = void,
+  SomeSortOfResource extends MetadataBearing<Content> = MetadataBearing<Content>
+> = MultiModalResponse | NavResponse | UsageModel | SomeSortOfResource | RawResponse<Content>
+
+/**
  * A potentially more complex entity with a "spec"
  *
  */
 export type Entity<
   Content = void,
   RowType extends Row = Row,
-  Meta extends MetadataBearing<Content> = MetadataBearing<Content>
-> =
-  | SimpleEntity
-  | Table<RowType>
-  | ResourceModification
-  | MixedResponse
-  | MultiModalResponse
-  | NavResponse
-  | LowLevelLoop
-  | UsageModel
-  | Meta
-  | RawResponse<Content>
+  SomeSortOfResource extends MetadataBearing<Content> = MetadataBearing<Content>
+> = ScalarResponse | StructuredResponse<Content, SomeSortOfResource>

@@ -72,7 +72,7 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
 
       await ReplExpect.blank(res)
 
-      await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithString('hello there'))
+      await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithPtyOutput('hello there'))
     } catch (err) {
       return Common.oops(this)(err)
     }
@@ -80,7 +80,7 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
 
   Common.pit('should cat the file contents', () =>
     CLI.command(`cat "${file.name}"`, this.app)
-      .then(ReplExpect.okWithString('hello there'))
+      .then(ReplExpect.okWithPtyOutput('hello there'))
       .catch(Common.oops(this))
   )
 

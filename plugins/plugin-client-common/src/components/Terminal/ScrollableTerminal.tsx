@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventBus, KResponse, Tab as KuiTab } from '@kui-shell/core'
+import { eventBus, ScalarResponse, Tab as KuiTab } from '@kui-shell/core'
 
 import Block from './Block'
 import Cleaner from '../cleaner'
@@ -77,7 +77,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL finished executing a command */
   private onExecEnd(
-    { response, cancelled }: { response: KResponse; cancelled: boolean },
+    { response, cancelled }: { response: ScalarResponse; cancelled: boolean },
     execUUID: string,
     responseType: string
   ) {

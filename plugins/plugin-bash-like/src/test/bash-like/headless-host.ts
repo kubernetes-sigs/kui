@@ -35,7 +35,7 @@ describe('bash-like host catchall', function(this: Common.ISuite) {
     it('should show some output for host google.com in non-headless mode', () =>
       headfullCLI
         .command('host google.com', this.app)
-        .then(ReplExpect.okWithString('has address'))
+        .then(ReplExpect.okWithPtyOutput('has address'))
         .catch(Common.oops(this)))
   }
 })

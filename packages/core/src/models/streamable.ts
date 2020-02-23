@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Table } from '../webapp/models/table'
-import { MultiModalResponse } from './mmr/types'
-import { SimpleEntity, MixedResponse } from './entity'
+import { ScalarResponse } from './entity'
 
-export type Streamable = SimpleEntity | Table | MixedResponse | MultiModalResponse
+export type Streamable = ScalarResponse // SimpleEntity | Table | MixedResponse | MultiModalResponse
 export default Streamable
 
 export type Stream = (response: Streamable) => Promise<void>

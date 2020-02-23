@@ -5,6 +5,9 @@
       "path": "packages/core"
     },
     {
+      "path": "plugins/plugin-carbon-tables"
+    },
+    {
       "path": "plugins/plugin-client-common"
     },
     {
@@ -18,9 +21,6 @@
     },
     {
       "path": "plugins/plugin-editor"
-    },
-    {
-      "path": "plugins/plugin-carbon-tables"
     },
     {
       "path": "plugins/plugin-sidecar"

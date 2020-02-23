@@ -215,10 +215,23 @@ export const okWithString = (expect: string, exact = false, streaming = false) =
   })
 }
 
+export const okWithStreamingOutput = (expect: string, exact = false) => okWithString(expect, exact, true)
+export const okWithPtyOutput = okWithStreamingOutput
+
 export const okWithStringEventually = (expect: string, exact = false) => (res: AppAndCount) => {
   return res.app.client.waitUntil(() => {
     try {
       return okWithString(expect, exact)(res)
+    } catch (err) {
+      // swallow
+    }
+  }, waitTimeout)
+}
+
+export const okWithPtyOutputEventually = (expect: string, exact = false) => (res: AppAndCount) => {
+  return res.app.client.waitUntil(() => {
+    try {
+      return okWithPtyOutput(expect, exact)(res)
     } catch (err) {
       // swallow
     }

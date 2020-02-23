@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018, 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,43 +40,43 @@ describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
 
   Common.pit('should echo hi', () =>
     CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should echo hi with surrounding whitespace', () =>
     CLI.command('echo   hi               ', this.app)
-      .then(ReplExpect.okWithString('hi'))
+      .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should echo hi hi with surrounding whitespace', () =>
     CLI.command('echo   hi hi               ', this.app)
-      .then(ReplExpect.okWithString('hi hi'))
+      .then(ReplExpect.okWithPtyOutput('hi hi'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should echo hi hi with intra-whitespaces', () =>
     CLI.command('echo   hi  hi               ', this.app)
-      .then(ReplExpect.okWithString('hi hi'))
+      .then(ReplExpect.okWithPtyOutput('hi hi'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should echo "hi  hi"', () =>
     CLI.command('echo "hi  hi"', this.app)
-      .then(ReplExpect.okWithString('hi  hi'))
+      .then(ReplExpect.okWithPtyOutput('hi  hi'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should echo "hi  hi" with surrounding whitespace', () =>
     CLI.command('echo   "hi  hi"               ', this.app)
-      .then(ReplExpect.okWithString('hi  hi'))
+      .then(ReplExpect.okWithPtyOutput('hi  hi'))
       .catch(Common.oops(this))
   )
 
   Common.pit('should echo multi', () =>
     CLI.command('echo   "hi  hi" hi        "hi   hi"               ', this.app)
-      .then(ReplExpect.okWithString('hi  hi hi hi   hi'))
+      .then(ReplExpect.okWithPtyOutput('hi  hi hi hi   hi'))
       .catch(Common.oops(this))
   )
 })
