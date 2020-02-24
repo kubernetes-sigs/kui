@@ -22,6 +22,8 @@ import { BlockModel, isActive, isOk, isProcessing, isFinished, hasCommand, isEmp
 
 import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
 
+import ActiveISearch, { onKeyUp } from './ActiveISearch'
+
 interface Props {
   // needed temporarily to make pty/client happy
   _block: HTMLElement
@@ -33,10 +35,18 @@ interface Props {
 }
 
 interface State {
-  onKeyPress: (evt: KeyboardEvent) => void
   onKeyDown: (evt: KeyboardEvent) => void
-  execUUID: string
+  onKeyPress: (evt: KeyboardEvent) => void
+  onKeyUp: (evt: KeyboardEvent) => void
+
+  /** the execution ID for this prompt, if any */
+  execUUID?: string
+
+  /** DOM element for prompt; set via `ref` in render() below */
   prompt?: HTMLInputElement
+
+  /** state of active reverse-i-search */
+  isearch?: ActiveISearch
 }
 
 export default class Input extends React.PureComponent<Props, State> {
@@ -44,8 +54,9 @@ export default class Input extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      onKeyPress: undefined,
       onKeyDown: undefined,
+      onKeyPress: undefined,
+      onKeyUp: onKeyUp(this),
       execUUID: hasUUID(props.model) && props.model.execUUID,
       prompt: undefined
     }
@@ -68,13 +79,13 @@ export default class Input extends React.PureComponent<Props, State> {
       return {
         execUUID: props.model.execUUID
       }
-    } else if (state.prompt && isActive(props.model) && state.execUUID !== undefined) {
+    } else if (state.prompt && isActive(props.model) && state.execUUID !== undefined && !state.isearch) {
       // e.g. terminal has been cleared; we need to excise the current
       // <input/> because react aggressively caches these
       return {
         prompt: undefined,
-        onKeyPress: undefined,
         onKeyDown: undefined,
+        onKeyPress: undefined,
         execUUID: undefined
       }
     }
@@ -97,14 +108,31 @@ export default class Input extends React.PureComponent<Props, State> {
     )
   }
 
-  /** the "xxx >" prompt part of the input section */
-  private prompt() {
+  private isearchPrompt() {
+    return <div className="repl-prompt">{this.state.isearch.render()}</div>
+  }
+
+  private normalPrompt() {
     return (
       <div className="repl-prompt">
         {this.promptLeft()}
         {this.promptRight()}
       </div>
     )
+  }
+
+  /** the "xxx >" prompt part of the input section */
+  private prompt() {
+    if (this.state.isearch && this.state.prompt) {
+      try {
+        return this.isearchPrompt()
+      } catch (err) {
+        console.error('error rendering i-search', err)
+        return this.normalPrompt()
+      }
+    } else {
+      return this.normalPrompt()
+    }
   }
 
   /** the element that represents the command being/having been/going to be executed */
@@ -114,6 +142,11 @@ export default class Input extends React.PureComponent<Props, State> {
     if (active) {
       setTimeout(() => this.state.prompt.focus())
 
+      const kp = active && !this.state.isearch ? evt => this.state.onKeyPress(evt.nativeEvent) : undefined
+      const kd = active && !this.state.isearch ? evt => this.state.onKeyDown(evt.nativeEvent) : undefined
+      const ku = active ? evt => this.state.onKeyUp(evt.nativeEvent) : undefined
+      const op = active && !this.state.isearch ? evt => onPaste(evt.nativeEvent) : undefined
+
       return (
         <input
           type="text"
@@ -122,13 +155,14 @@ export default class Input extends React.PureComponent<Props, State> {
           autoComplete="off"
           spellCheck="false"
           autoCapitalize="off"
-          className="repl-input-element"
+          className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
           aria-label="Command Input"
           tabIndex={1}
           placeholder={promptPlaceholder}
-          onKeyPress={active ? evt => this.state.onKeyPress(evt.nativeEvent) : undefined}
-          onKeyDown={active ? evt => this.state.onKeyDown(evt.nativeEvent) : undefined}
-          onPaste={active ? evt => onPaste(evt.nativeEvent) : undefined}
+          onKeyPress={kp}
+          onKeyDown={kd}
+          onKeyUp={ku}
+          onPaste={op}
           ref={c => {
             if (c && !this.state.prompt) {
               c.value = ''

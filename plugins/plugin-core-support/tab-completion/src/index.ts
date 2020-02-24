@@ -38,8 +38,7 @@ import {
   _split,
   Split,
   expandHomeDir,
-  doCancel,
-  isUsingCustomPrompt
+  doCancel
 } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/tab completion')
@@ -627,13 +626,6 @@ export default () => {
       const prompt = getCurrentPrompt()
 
       if (prompt) {
-        if (isUsingCustomPrompt(prompt)) {
-          // there is a custom prompt, we want to swallow the tab, to
-          // maintain focus on the prompt
-          evt.preventDefault()
-          return true
-        }
-
         const value = prompt.value
         if (value) {
           evt.preventDefault() // for now at least, we want to keep the focus on the current <input>
