@@ -22,6 +22,7 @@ import LeftNavSidecar from './LeftNavSidecar'
 
 interface Props {
   willLoseFocus?: () => void
+  willChangeSize?: (desiredWidth: string) => void
 }
 
 interface State {
@@ -77,6 +78,7 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
           response={this.state.response}
           onClose={this.onClose.bind(this)}
           willLoseFocus={this.props.willLoseFocus}
+          willChangeSize={this.props.willChangeSize}
         />
       )
     } else {
@@ -88,6 +90,7 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
           response={this.state.response}
           onClose={this.onClose.bind(this)}
           willLoseFocus={this.props.willLoseFocus}
+          willChangeSize={this.props.willChangeSize}
         />
       )
     }

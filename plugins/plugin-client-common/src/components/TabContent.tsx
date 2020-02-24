@@ -16,10 +16,13 @@
 
 import * as React from 'react'
 import { eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
+import SplitPane from 'react-split-pane'
 
 import Cleaner from './cleaner'
 import Loading from './Loading'
 import ScrollableTerminal from './Terminal/ScrollableTerminal'
+
+import '../../web/css/static/split-pane.scss'
 
 const strings = i18n('client')
 
@@ -32,6 +35,10 @@ interface Props {
 interface State {
   tab?: KuiTab
   sessionInit: 'NotYet' | 'InProgress' | 'Done'
+  secondaryWidth: string
+
+  splitPaneImpl?: SplitPane
+  splitPaneImplHacked?: boolean
 }
 
 /**
@@ -65,9 +72,13 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
     this.state = {
       tab: undefined,
-      sessionInit: 'NotYet'
+      sessionInit: 'NotYet',
+      secondaryWidth: '0%'
     }
   }
+
+  /* public static getDerivedStateFromProps(props: Props, state: State) {
+  } */
 
   private onOffline() {
     this.setState({
@@ -92,6 +103,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
           eventBus.emit(`/tab/new/${props.uuid}`)
         })
 
+        TabContent.hackResizer(state)
+
         return {
           sessionInit: 'InProgress'
         }
@@ -101,6 +114,20 @@ export default class TabContent extends React.PureComponent<Props, State> {
     } else {
       return state
     }
+  }
+
+  /** Hmm, SplitPane doesn't yet allow for styling of the Resizer */
+  private static hackResizer(state: State) {
+    const resizer = state.splitPaneImpl['splitPane'].querySelector('.Resizer')
+    const a = document.createElement('span')
+    const b = document.createElement('span')
+    const c = document.createElement('span')
+    resizer.appendChild(a)
+    resizer.appendChild(b)
+    resizer.appendChild(c)
+    a.classList.add('resizer-thumb-fill')
+    c.classList.add('resizer-thumb-fill')
+    b.classList.add('resizer-thumb')
   }
 
   public componentWillUnmount() {
@@ -124,6 +151,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
+  private onWillChangeSize(secondaryWidth: string) {
+    this.setState({
+      secondaryWidth
+    })
+  }
+
   private onWillLoseFocus() {
     if (this._terminal) {
       this._terminal.doFocus()
@@ -134,7 +167,10 @@ export default class TabContent extends React.PureComponent<Props, State> {
   private children() {
     if (React.isValidElement(this.props.children)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(this.props.children, { willLoseFocus: this.onWillLoseFocus.bind(this) })
+      return React.cloneElement(this.props.children, {
+        willChangeSize: this.onWillChangeSize.bind(this),
+        willLoseFocus: this.onWillLoseFocus.bind(this)
+      })
     } else {
       return this.props.children
     }
@@ -148,9 +184,26 @@ export default class TabContent extends React.PureComponent<Props, State> {
         data-tab-id={this.props.uuid}
       >
         <div className="kui--rows">
-          <div className="kui--columns">
-            {this.terminal()}
-            {this.children()}
+          <div className="kui--columns" style={{ position: 'relative' }}>
+            <SplitPane
+              ref={c => {
+                this.setState({ splitPaneImpl: c })
+              }}
+              split="vertical"
+              minSize={0}
+              className={
+                this.state.secondaryWidth === '0%'
+                  ? 'kui--secondary-closed'
+                  : this.state.secondaryWidth === '2em'
+                  ? 'kui--secondary-minimized'
+                  : undefined
+              }
+              size={this.state.secondaryWidth}
+              primary="second"
+            >
+              {this.terminal()}
+              {this.children()}
+            </SplitPane>
           </div>
         </div>
       </tab>
