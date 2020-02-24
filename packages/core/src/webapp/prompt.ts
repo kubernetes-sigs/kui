@@ -15,7 +15,7 @@
  */
 
 import { getCurrentBlock } from './block'
-import { Tab, getCurrentTab, getTabFromTarget } from './tab'
+import { getCurrentTab, getTabFromTarget } from './tab'
 
 import { ExecOptions, DefaultExecOptions } from '../models/execOptions'
 
@@ -37,22 +37,6 @@ export const getCurrentPrompt = (tab = getCurrentTab()): Prompt => {
 
 export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
   return getCurrentPrompt(getTabFromTarget(target))
-}
-
-export const getPromptLeft = (block: Element) => {
-  return block.querySelector('.repl-prompt-righty')
-}
-
-export const getCurrentPromptLeft = (tab: Tab) => {
-  return getPromptLeft(getCurrentBlock(tab))
-}
-
-/**
- * Has a plugin taken ownership of the prompt?
- *
- */
-export function isUsingCustomPrompt(prompt: HTMLInputElement) {
-  return getBlockOfPrompt(prompt).classList.contains('using-custom-prompt')
 }
 
 /**

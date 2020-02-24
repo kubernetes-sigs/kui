@@ -7,6 +7,12 @@ repl.sidecar-visible .repl-block {
   }
 }
 
+/* e.g. reverse-i-search; see Input.tsx */
+.repl-input-element.repl-input-hidden {
+  opacity: 0;
+  width: 0;
+}
+
 .repl {
   opacity: 1;
   display: flex;

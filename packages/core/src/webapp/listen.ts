@@ -25,7 +25,7 @@ import doCancel from './cancel'
 import eventBus from '../core/events'
 import { Tab, getTabId } from './tab'
 import { Block } from './models/block'
-import { Prompt, isUsingCustomPrompt } from './prompt'
+import { Prompt } from './prompt'
 
 interface MSIETextRange {
   collapse: (val: boolean) => void
@@ -81,16 +81,10 @@ export function onKeyDown(tab: Tab, block: Block, prompt: Prompt) {
 
     if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
       // go to previous command in history
-      if (!isUsingCustomPrompt(prompt)) {
-        const historyModel = (await import('../models/history')).default
-        const newValue = (historyModel.previous() || { raw: '' }).raw
-        if (newValue) {
-          updateInputAndMoveCaretToEOL(prompt, newValue)
-        }
-      } else {
-        // squash the up arrow if we are in custom prompt mode;
-        // otherwise, e.g. the browser may change the caret position
-        event.preventDefault()
+      const historyModel = (await import('../models/history')).default
+      const newValue = (historyModel.previous() || { raw: '' }).raw
+      if (newValue) {
+        updateInputAndMoveCaretToEOL(prompt, newValue)
       }
     } else if (char === keys.D && event.ctrlKey) {
       if (prompt.value === '') {
@@ -143,15 +137,9 @@ export function onKeyDown(tab: Tab, block: Block, prompt: Prompt) {
       updateInputAndMoveCaretToEOL(prompt, newValue)
     } else if (char === keys.DOWN || (char === keys.N && event.ctrlKey)) {
       // going DOWN past the last history item will result in '', i.e. a blank line
-      if (!isUsingCustomPrompt(prompt)) {
-        const historyModel = (await import('../models/history')).default
-        const newValue = (historyModel.next() || { raw: '' }).raw
-        updateInputAndMoveCaretToEOL(prompt, newValue)
-      } else {
-        // squash the up arrow if we are in custom prompt mode;
-        // otherwise, e.g. the browser may change the caret position
-        event.preventDefault()
-      }
+      const historyModel = (await import('../models/history')).default
+      const newValue = (historyModel.next() || { raw: '' }).raw
+      updateInputAndMoveCaretToEOL(prompt, newValue)
     }
   }
 }

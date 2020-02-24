@@ -84,6 +84,7 @@ export async function History(tab: Tab) {
   const model = (await import('./models/history')).default
   return model
 }
+export { HistoryModel } from './models/history'
 
 // pretty printing
 export { prettyPrintTime } from './webapp/util/time'
@@ -127,13 +128,7 @@ export {
 } from './webapp/themes/persistence'
 
 // CLI
-export {
-  getCurrentPrompt,
-  getCurrentPromptLeft,
-  getBlockOfPrompt,
-  setUsingCustomPrompt,
-  unsetUsingCustomPrompt
-} from './webapp/prompt'
+export { getPrompt, getCurrentPrompt } from './webapp/prompt'
 export { getCurrentBlock } from './webapp/block'
 export { Block } from './webapp/models/block'
 export { onKeyPress, onKeyDown } from './webapp/listen'
@@ -172,7 +167,7 @@ export {
 export { ToolbarText } from './webapp/views/toolbar-text'
 
 // low-level UI
-export { partial as partialInput, isUsingCustomPrompt } from './webapp/prompt'
+export { partial as partialInput } from './webapp/prompt'
 export { default as doCancel } from './webapp/cancel'
 export { default as ElementMimic } from './util/element-mimic'
 export { keys as KeyCodes, isCursorMovement } from './webapp/keys'
