@@ -24,19 +24,3 @@ export const getCurrentBlock = (tab = getCurrentTab()): Block => {
 export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
   return tab.querySelector('.repl .repl-block.processing')
 }
-
-/**
- * Install a sub-block of output in the given block
- *
- */
-export function subblock() {
-  const block = document.createElement('div')
-  const blockResult = document.createElement('div')
-
-  blockResult.classList.add('repl-result')
-  block.classList.add('processing')
-  block.classList.add('kui--repl-subblock')
-  block.appendChild(blockResult)
-
-  return block
-}

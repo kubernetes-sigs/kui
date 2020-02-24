@@ -128,14 +128,13 @@ export {
 
 // CLI
 export {
-  getPrompt,
   getCurrentPrompt,
   getCurrentPromptLeft,
   getBlockOfPrompt,
   setUsingCustomPrompt,
   unsetUsingCustomPrompt
 } from './webapp/prompt'
-export { getCurrentBlock, getCurrentProcessingBlock } from './webapp/block'
+export { getCurrentBlock } from './webapp/block'
 export { Block } from './webapp/models/block'
 export { onKeyPress, onKeyDown } from './webapp/listen'
 export { onPaste } from './webapp/paste'
