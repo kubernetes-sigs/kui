@@ -59,7 +59,6 @@ import { isSuccessfulCommandResolution } from '../commands/resolution'
 import { Tab, getCurrentTab, getTabId } from '../webapp/tab'
 import { Prompt } from '../webapp/prompt'
 import { Block } from '../webapp/models/block'
-import { getCurrentBlock, subblock } from '../webapp/block'
 
 import * as minimist from 'yargs-parser'
 
@@ -526,10 +525,7 @@ export const rexec = async <Raw extends RawContent>(
  *
  */
 export const pexec = <T extends KResponse>(command: string, execOptions?: ExecOptions): Promise<T> => {
-  return exec(
-    command,
-    Object.assign({ echo: true, type: ExecType.ClickHandler, block: getCurrentBlock() }, execOptions)
-  ) as Promise<T>
+  return exec(command, Object.assign({ echo: true, type: ExecType.ClickHandler }, execOptions)) as Promise<T>
 }
 
 /**
@@ -564,28 +560,17 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
     const nonEmptyCommands = commands.filter(_ => _)
 
     const result: MixedResponse = await promiseEach(nonEmptyCommands, async command => {
-      const block = subblock()
-
-      // note: xterm.js 3.14 requires that this subblock be attached
-      // somewhere; it'll be reattached in the right place by
-      // cli.printResults, when the commands are all done
-      if (typeof opts.block !== 'boolean') {
-        opts.block.querySelector('.repl-result').appendChild(block)
-      }
-
       const entity = await qexec<MixedResponsePart | true>(
         command,
-        block,
         undefined,
-        Object.assign({}, opts.execOptions, { quiet: false, block, execUUID: opts.execOptions.execUUID })
+        undefined,
+        Object.assign({}, opts.execOptions, { quiet: false, /* block, */ execUUID: opts.execOptions.execUUID })
       )
 
       if (entity === true) {
         // pty output
-        return block
+        return ''
       } else {
-        // not a pty, so remove that subblock, as we have an entity response
-        block.remove()
         return entity
       }
     })
