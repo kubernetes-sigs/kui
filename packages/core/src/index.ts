@@ -135,13 +135,7 @@ export {
   setUsingCustomPrompt,
   unsetUsingCustomPrompt
 } from './webapp/prompt'
-export {
-  isMostRecentBlock,
-  getCurrentBlock,
-  getCurrentProcessingBlock,
-  resetCount,
-  setCustomCaret
-} from './webapp/block'
+export { getCurrentBlock, getCurrentProcessingBlock } from './webapp/block'
 export { Block } from './webapp/models/block'
 export { onKeyPress, onKeyDown } from './webapp/listen'
 export { onPaste } from './webapp/paste'
@@ -183,17 +177,12 @@ export { partial as partialInput, isUsingCustomPrompt } from './webapp/prompt'
 export { default as doCancel } from './webapp/cancel'
 export { default as ElementMimic } from './util/element-mimic'
 export { keys as KeyCodes, isCursorMovement } from './webapp/keys'
-export {
-  buttonExists as topTabButtonExists,
-  addIcon as topTabAddIcon,
-  removeIcon as topTabRemoveIcon
-} from './webapp/views/top-tabs'
 
 // Plugins
 export { commandsOffered as commandsOfferedByPlugin, userHome as pluginUserHome } from './api/plugins'
 
 // Settings
-export { inBottomInputMode, userDataDir, uiThemes } from './core/settings'
+export { userDataDir, uiThemes } from './core/settings'
 
 // Storage for user data
 export { default as Store } from './models/store'

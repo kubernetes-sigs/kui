@@ -383,8 +383,8 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl-result-spinner {
   font-size: 0.875em;
 }
-.repl-block.custom-caret .repl-result-spinner {
-  /* for commands with self-managed carets */
+.repl-block .repl-output [data-stream] ~ .repl-result-spinner {
+  /* probably not 100% right, but: for pty output, don't show kui's "caret", since xtermjs has its own */
   display: none;
 }
 .repl-block.processing .repl-result-spinner-inner {

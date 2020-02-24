@@ -55,6 +55,13 @@ export async function getSessionForTab(tab: Tab): Promise<Channel> {
  */
 export function pollUntilOnline(tab: Tab) {
   return new Promise(resolve => {
+    let isOnline = false
+    const initialSetOffline = setTimeout(() => {
+      if (!isOnline) {
+        setOffline()
+      }
+    }, 5000)
+
     const once = (iter = 0) => {
       debug('trying to establish session', tab)
 
@@ -62,6 +69,8 @@ export function pollUntilOnline(tab: Tab) {
         tab
       })
         .then(() => {
+          isOnline = true
+          clearTimeout(initialSetOffline)
           setOnline()
           resolve()
         })
@@ -71,7 +80,6 @@ export function pollUntilOnline(tab: Tab) {
             // don't bother complaining too much about connection refused
             console.error('error establishing session', err.code, err.statusCode, err)
           }
-          setOffline()
           setTimeout(() => once(iter + 1), iter < 10 ? 2000 : iter < 100 ? 4000 : 10000)
           return strings('Could not establish a new session')
         })

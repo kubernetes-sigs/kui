@@ -30,7 +30,6 @@ import {
   ExecType,
   ExecOptions,
   ParsedOptions,
-  setCustomCaret,
   sameTab,
   disableInputQueueing,
   pasteQueuedInput
@@ -849,9 +848,6 @@ export const doExec = (
             xtermContainer.style.display = 'none'
             xtermContainer.classList.add('repl-temporary')
           }
-
-          // xtermjs will handle the "block"
-          setCustomCaret(block)
 
           const cachedSize = getCachedSize(tab)
           const { fontFamily, fontSize } = getFontProperties(false)
