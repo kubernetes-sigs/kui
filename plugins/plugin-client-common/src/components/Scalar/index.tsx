@@ -53,7 +53,13 @@ export default class Scalar extends React.PureComponent<Props> {
       // "is not assignable to type IntrinsicAttributes..."
       // <PaginatedTable {...props} />
     } else if (isMixedResponse(response)) {
-      return response.map((part, idx) => <Scalar key={idx} tab={this.props.tab} response={part} />)
+      return (
+        <div className="result-vertical flex-layout" style={{ flex: 1, alignItems: 'unset' }}>
+          {response.map((part, idx) => (
+            <Scalar key={idx} tab={this.props.tab} response={part} />
+          ))}
+        </div>
+      )
     } else if (isUsageError(response)) {
       // hopefully we can do away with this shortly
       if (typeof response.raw === 'string') {
