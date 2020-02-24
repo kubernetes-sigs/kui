@@ -24,7 +24,6 @@ import {
   ExecType,
   Registrar,
   empty,
-  scrollIntoView,
   Tab,
   findFile,
   getCurrentPrompt,
@@ -825,7 +824,7 @@ const showTutorial = (tab: Tab, tutorialName: string, obj: TutorialDefinition) =
     transitionSteps(tab, 0, obj, pane)
 
     // we'll be bumping up from the bottom; make sure the active repl prompt is visible
-    scrollIntoView({ when: 800 })
+    // scrollIntoView({ when: 800 })
 
     // so that the user can immediately arrow and pageup/pagedown in the biggest scrollable
     setTimeout(focusOnBiggestScrollable, 800)
