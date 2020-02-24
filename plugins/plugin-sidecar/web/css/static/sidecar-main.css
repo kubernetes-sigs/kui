@@ -46,10 +46,6 @@ sidecar {
 sidecar.visible {
   flex: 6;
   z-index: 1; /* float above the repl */
-  border-left: 1px solid var(--color-sidecar-border);
-}
-body:not(.subwindow) .sidecar-full-screen sidecar.visible:not(.minimized) {
-  border-left-color: var(--color-ui-04);
 }
 .sidecar-bottom-stripe {
   flex-basis: 2.5em;

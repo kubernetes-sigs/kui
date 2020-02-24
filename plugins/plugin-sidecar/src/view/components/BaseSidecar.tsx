@@ -44,7 +44,9 @@ export interface Props<R extends KResponse> {
   managed?: boolean
   onClose?: () => void
   response?: R
+
   willLoseFocus?: () => void
+  willChangeSize?: (desiredWidth: string) => void
 }
 
 /** Mostly, this State deals with the current "width" of the view. */
@@ -80,6 +82,10 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     const onEscape = this.onEscape.bind(this)
     document.addEventListener('keyup', onEscape)
     this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
+
+    if (this.props.willChangeSize) {
+      this.props.willChangeSize('60%')
+    }
   }
 
   /** We are about to go away; invoke the register cleaners. */
@@ -92,11 +98,19 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     if (evt.keyCode === KeyCodes.ESCAPE) {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
+          if (this.props.willChangeSize) {
+            this.props.willChangeSize(priorWidth === Width.Default ? '60%' : '100%')
+          }
+
           return {
             width: priorWidth,
             priorWidth: undefined
           }
         } else {
+          if (this.props.willChangeSize) {
+            this.props.willChangeSize('2em')
+          }
+
           return {
             width: Width.Minimized,
             priorWidth: currentWidth
@@ -113,10 +127,18 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
 
   protected onMaximize() {
     this.setState({ width: Width.Maximized })
+
+    if (this.props.willChangeSize) {
+      this.props.willChangeSize('100%')
+    }
   }
 
   protected onRestore() {
     this.setState({ width: Width.Default })
+
+    if (this.props.willChangeSize) {
+      this.props.willChangeSize('60%')
+    }
   }
 
   protected onMinimize() {
@@ -125,14 +147,24 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
         this.props.willLoseFocus()
       }
 
+      const newWidth = width === Width.Minimized ? Width.Default : Width.Minimized
+
+      if (this.props.willChangeSize) {
+        this.props.willChangeSize(newWidth === Width.Default ? '60%' : '2em')
+      }
+
       return {
-        width: width === Width.Minimized ? Width.Default : Width.Minimized
+        width: newWidth
       }
     })
   }
 
   protected onClose() {
     this.props.onClose()
+
+    if (this.props.willChangeSize) {
+      this.props.willChangeSize('0%')
+    }
   }
 
   protected isFixedWidth() {
