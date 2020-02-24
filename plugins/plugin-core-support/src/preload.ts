@@ -29,7 +29,6 @@ const registration: PreloadRegistration = () => {
 
   if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
-    asyncs.push(import('./lib/cmds/history/reverse-i-search').then(_ => _.default()))
   }
 
   if (!isHeadless() && !inBrowser()) {

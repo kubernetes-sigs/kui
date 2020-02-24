@@ -207,9 +207,6 @@ body.still-loading .repl {
   --color-prompt-text: var(--color-brand-01);
   --color-prompt-background: transparent;
 }
-.repl-block:not(.using-custom-prompt) .repl-prompt {
-  font-family: var(--font-sans-serif);
-}
 .repl-prompt .repl-selection {
   font-size: 80%;
   opacity: 0.6;
@@ -229,15 +226,11 @@ body.still-loading .repl {
   letter-spacing: 0.32px;
   filter: opacity(87.5%) grayscale(50%);
 }
-.repl-block.using-custom-prompt .repl-prompt-righty > svg,
+/*.repl-block.using-custom-prompt .repl-prompt-righty > svg,
 .repl-block.using-custom-prompt .repl-prompt-righty > i,
 .repl-block.using-custom-prompt .repl-context {
   display: none;
-}
-.repl-block.using-custom-prompt .repl-input input {
-  opacity: 0;
-  width: 0;
-}
+}*/
 .repl-prompt-righty {
   color: var(--color-brand-01);
 }
