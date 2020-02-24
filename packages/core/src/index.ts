@@ -56,9 +56,6 @@ export { isCommandHandlerWithEvents } from './models/command'
 export { ExecOptions, withLanguage } from './models/execOptions'
 export { Streamable, Stream } from './models/streamable'
 
-// Editor registration
-export { hasEditor, tryOpenWithEditor, EditorProvider, registerEditor } from './webapp/views/registrar/editors'
-
 // Errors
 export { isCodedError, CodedError } from './models/errors'
 export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-error'
@@ -71,9 +68,6 @@ export { default as eventBus, wireToStandardEvents } from './core/events'
 
 // i18n
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
-
-// content injection
-export { injectScript, loadHTML } from './webapp/util/inject'
 
 // models
 export {
@@ -186,7 +180,6 @@ export { ToolbarText } from './webapp/views/toolbar-text'
 
 // low-level UI
 export { partial as partialInput, isUsingCustomPrompt } from './webapp/prompt'
-export { scrollIntoView } from './webapp/scroll'
 export { default as doCancel } from './webapp/cancel'
 export { default as ElementMimic } from './util/element-mimic'
 export { keys as KeyCodes, isCursorMovement } from './webapp/keys'
