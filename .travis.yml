@@ -36,7 +36,7 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 install:
   - npm ci
   - ./tools/codecov/instrument.sh
-  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then (npm run proxy &) && npm run watch:webpack; else (cd clients/$CLIENT && npm install && npm run build:electron -- $TRAVIS_OS_NAME); fi
+  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then (npm run proxy &) && (cd clients/$CLIENT && npm install && npm run watch:webpack); else (cd clients/$CLIENT && npm install && npm run build:electron -- $TRAVIS_OS_NAME); fi
 
 stages:
   - test
@@ -76,7 +76,7 @@ jobs:
       # - env: N="Linux core" LAYERS="core core-support editor"
 
     # Core Tests | os=Linux | targets=webpack-watch
-    - env: N="Webpack core" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
+    - env: N="Webpack core" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
     # Bash Tests | os=Linux | targets=electron-build
@@ -85,6 +85,6 @@ jobs:
       script: npm run test1 bash-like
 
     # Bash Tests | os=Linux | targets=webpack-watch
-    - env: N="Webpack bash" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
+    - env: N="Webpack bash" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
       before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
       script: npm run test1 bash-like-wait && npm run test1 bash-like

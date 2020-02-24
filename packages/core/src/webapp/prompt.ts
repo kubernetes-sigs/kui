@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { getInitialBlock, getCurrentBlock } from './block'
+import { getCurrentBlock } from './block'
 import { Tab, getCurrentTab, getTabFromTarget } from './tab'
 
 import { ExecOptions, DefaultExecOptions } from '../models/execOptions'
-import { inBottomInputMode } from '../core/settings'
 
 export interface Prompt extends HTMLInputElement {
   execOptions?: ExecOptions
@@ -32,20 +31,8 @@ export const getPrompt = (block: HTMLElement): Prompt => {
   return block && block.querySelector && block.querySelector('input')
 }
 
-export const getBottomPrompt = (): HTMLInputElement => {
-  return getPrompt(document.querySelector('.kui--input-stripe .repl-block'))
-}
-
-export const getInitialPrompt = (tab: Tab): HTMLInputElement => {
-  return getPrompt(getInitialBlock(tab))
-}
-
 export const getCurrentPrompt = (tab = getCurrentTab()): Prompt => {
-  if (inBottomInputMode) {
-    return getPrompt(document.querySelector('.kui--input-stripe'))
-  } else {
-    return getPrompt(getCurrentBlock(tab))
-  }
+  return getPrompt(getCurrentBlock(tab))
 }
 
 export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
@@ -57,11 +44,7 @@ export const getPromptLeft = (block: Element) => {
 }
 
 export const getCurrentPromptLeft = (tab: Tab) => {
-  if (inBottomInputMode) {
-    return getPromptLeft(document.querySelector('.kui--input-stripe'))
-  } else {
-    return getPromptLeft(getCurrentBlock(tab))
-  }
+  return getPromptLeft(getCurrentBlock(tab))
 }
 
 /**

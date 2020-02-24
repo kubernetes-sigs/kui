@@ -21,8 +21,6 @@ import Debug from 'debug'
 import {
   Tab,
   inBrowser,
-  eventBus,
-  inBottomInputMode,
   getCurrentPrompt,
   getBlockOfPrompt,
   getCurrentPromptLeft,
@@ -126,7 +124,7 @@ class ActiveISearch {
     if (this.isSearchActive) {
       this.isSearchActive = false
 
-      if (!isCtrlC || inBottomInputMode) {
+      if (!isCtrlC /* || inBottomInputMode */) {
         unsetUsingCustomPrompt(getBlockOfPrompt(this.prompt))
         if (this.placeholder.parentNode) {
           this.placeholder.parentNode.removeChild(this.placeholder)
@@ -228,14 +226,14 @@ function registerListener() {
     return
   }
 
-  if (inBottomInputMode) {
+  /* if (inBottomInputMode) {
     eventBus.on('/core/cli/install-block', (tab: Tab) => {
       const activeSearch: ActiveISearch = tab['_kui_active_i_search']
       if (activeSearch) {
         activeSearch.cancelISearch()
       }
     })
-  }
+  } */
 
   /**
    * Listen for ctrl+r

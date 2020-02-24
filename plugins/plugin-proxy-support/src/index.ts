@@ -15,3 +15,4 @@
  */
 
 // this file defines the external API
+export { default as ProxyOfflineIndicator } from './view/ProxyOfflineIndicator'
