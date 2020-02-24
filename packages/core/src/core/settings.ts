@@ -18,9 +18,6 @@ import { ThemeSet } from '../webapp/themes/Theme'
 
 export { clearPreference, getPreference, setPreference, userDataDir } from './userdata'
 
-export const inBottomInputMode =
-  typeof document !== 'undefined' && document.body.classList.contains('kui--bottom-input')
-
 export async function uiThemes(): Promise<ThemeSet[]> {
   // it is ipmortant to delay the loading here. otherwise,
   // plugins/plugins will load command-tree, which will load

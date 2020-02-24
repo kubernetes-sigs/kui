@@ -17,9 +17,10 @@
 import * as React from 'react'
 
 import { DefaultClient } from '@kui-shell/plugin-client-default/mdist/Client'
-import { ContextWidgets } from '@kui-shell/plugin-client-common'
+import { ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
+import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 
 /**
  * Format our body, with extra status stripe widgets
@@ -32,6 +33,9 @@ export default function renderMain() {
       <ContextWidgets>
         <CurrentGitBranch />
       </ContextWidgets>
+      <MeterWidgets>
+        <ProxyOfflineIndicator />
+      </MeterWidgets>
     </DefaultClient>
   )
 }
