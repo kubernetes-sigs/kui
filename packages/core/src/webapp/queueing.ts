@@ -16,7 +16,6 @@
 
 import { keys } from './keys'
 import doCancel from './cancel'
-import { doPaste } from './paste'
 import { getCurrentBlock, getCurrentProcessingBlock } from './block'
 import { Tab, getTabFromTarget } from './tab'
 import { getPrompt, getCurrentPrompt } from './prompt'
@@ -120,10 +119,10 @@ export const handleQueuedInput = async (nextBlock: HTMLElement) => {
 
           // lastly, if the user typed more than one newline, handle
           // the rest via a doPaste
-          const remainingLines = lines.slice(firstNonBlank + 1).join('\n')
+          /* const remainingLines = lines.slice(firstNonBlank + 1).join('\n')
           if (remainingLines.length > 0) {
             doPaste(remainingLines)
-          }
+          } */
         }
       }
     }
@@ -134,7 +133,7 @@ export const handleQueuedInput = async (nextBlock: HTMLElement) => {
  * Set the queued input model to the given value
  *
  */
-export const pasteQueuedInput = (value: string) => {
+/* export const pasteQueuedInput = (value: string) => {
   const invisibleHand = document.getElementById('invisible-global-input') as HTMLInputElement
   invisibleHand.value = value
-}
+} */

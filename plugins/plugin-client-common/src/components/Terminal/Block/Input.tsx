@@ -15,9 +15,10 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab, onPaste } from '@kui-shell/core'
+import { Tab as KuiTab } from '@kui-shell/core'
 import { InlineLoading as Loading } from 'carbon-components-react'
 
+import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
 import { BlockModel, isActive, isOk, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
@@ -147,7 +148,8 @@ export default class Input extends React.PureComponent<Props, State> {
       const kp = active && !this.state.isearch ? evt => this.state.onKeyPress(evt.nativeEvent) : undefined
       const kd = active && !this.state.isearch ? evt => this.state.onKeyDown(evt.nativeEvent) : undefined
       const ku = active ? evt => this.state.onKeyUp(evt.nativeEvent) : undefined
-      const op = active && !this.state.isearch ? evt => onPaste(evt.nativeEvent) : undefined
+      const op =
+        active && !this.state.isearch ? evt => onPaste(evt.nativeEvent, this.props.tab, this.state.prompt) : undefined
 
       return (
         <input
