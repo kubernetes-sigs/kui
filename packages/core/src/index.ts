@@ -111,7 +111,7 @@ export { default as REPL } from './models/repl'
 export { split, _split, Split } from './repl/split'
 export { ReplEval, DirectReplEval } from './repl/types'
 export { default as encodeComponent } from './repl/encode'
-export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl } from './repl/exec'
+export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl, doEval } from './repl/exec'
 
 // Tabs
 export { Tab, getTabFromTarget, getCurrentTab, getTabId, sameTab } from './webapp/tab'
@@ -131,7 +131,6 @@ export {
 export { getPrompt, getCurrentPrompt } from './webapp/prompt'
 export { getCurrentBlock } from './webapp/block'
 export { Block } from './webapp/models/block'
-export { onKeyPress, onKeyDown } from './webapp/listen'
 export { onPaste } from './webapp/paste'
 export { disableInputQueueing, pasteQueuedInput } from './webapp/queueing'
 
