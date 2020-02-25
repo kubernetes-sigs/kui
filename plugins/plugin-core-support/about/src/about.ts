@@ -46,7 +46,10 @@ async function getName(): Promise<string> {
  *
  */
 const aboutWindow = async (): Promise<NavResponse> => {
-  const [name, about] = await Promise.all([getName(), import('@kui-shell/client/config.d/about.json').then(_ => _.nav)])
+  const [name, about] = await Promise.all([
+    getName(),
+    import('@kui-shell/client/config.d/about.json').then(_ => _.nav as NavResponse)
+  ])
 
   const fullAbout = {}
 

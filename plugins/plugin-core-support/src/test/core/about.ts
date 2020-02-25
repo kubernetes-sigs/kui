@@ -81,11 +81,13 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   xit('should open the getting started via command execution', async () => {
     await Common.refresh(this)
 
-    return CLI.command('getting started', this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(productName))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('tutorial')))
-      .catch(Common.oops(this, true))
+    return (
+      CLI.command('getting started', this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(productName))
+        // .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('tutorial')))
+        .catch(Common.oops(this, true))
+    )
   })
 })

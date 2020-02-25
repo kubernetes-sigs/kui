@@ -41,9 +41,6 @@
       "path": "plugins/plugin-wskflow/tsconfig-es6.json"
     },
     {
-      "path": "plugins/plugin-tutorials/tsconfig-es6.json"
-    },
-    {
       "path": "plugins/plugin-proxy-support/tsconfig-es6.json"
     }
   ]

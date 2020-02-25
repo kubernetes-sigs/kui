@@ -156,7 +156,7 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(tabButtonSelector)
   testSelector('#help-button')
   testAboutMode('about', false, true)
-  testAboutMode('tutorial')
+  //  testAboutMode('tutorial')
   testAboutMode('version', true) // hit enter on the Version tab
   testAboutMode('theme', false, true)
   // testPromptIsSelected() // because we just hit enter

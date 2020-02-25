@@ -60,7 +60,6 @@
     "@kui-shell/plugin-sidecar": "file:/tmp/kui-packs/kui-shell-plugin-sidecar.tgz",
     "@kui-shell/plugin-carbon-tables": "file:/tmp/kui-packs/kui-shell-plugin-carbon-tables.tgz",
     "@kui-shell/plugin-carbon-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
-    "@kui-shell/plugin-tutorials": "file:/tmp/kui-packs/kui-shell-plugin-tutorials.tgz",
     "@kui-shell/plugin-wskflow": "file:/tmp/kui-packs/kui-shell-plugin-wskflow.tgz"
   }
 }
