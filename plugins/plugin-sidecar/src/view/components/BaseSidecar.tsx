@@ -209,13 +209,3 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     )
   }
 }
-
-// we use customized tags since the body view doesn't use a React Component lifecycle for now
-declare global {
-  /* eslint-disable @typescript-eslint/no-namespace */
-  namespace JSX {
-    interface IntrinsicElements {
-      sidecar: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-    }
-  }
-}

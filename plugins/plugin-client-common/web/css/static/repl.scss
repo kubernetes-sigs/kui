@@ -1,5 +1,5 @@
 /* when sidecar is visible */
-repl.sidecar-visible .repl-block {
+.repl.sidecar-visible .repl-block {
   .bx--inline-loading__text,
   &:not(.processing) .bx--inline-loading svg {
     /* hide repl timestamp (except when processing), and any svgs (always) */
@@ -36,8 +36,8 @@ repl.sidecar-visible .repl-block {
   display: flex;
   flex-direction: column;
 }
-body:not(.subwindow) repl.sidecar-visible .repl-block,
-.sidecar-full-screen repl .repl-block {
+body:not(.subwindow) .repl.sidecar-visible .repl-block,
+.sidecar-full-screen .repl .repl-block {
   border-color: transparent;
   box-shadow: none;
 }

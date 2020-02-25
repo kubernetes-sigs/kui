@@ -106,29 +106,29 @@ body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe,
 body[kui-theme="Carbon Gray10"] sidecar .monaco-editor,
 body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .mtk5,
 body[kui-theme="Carbon Gray10"]
-  sidecar
+  .kui--sidecar
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-base07);
 }
 body[kui-theme="Carbon Gray10"]
-  sidecar
+  .kui--sidecar
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   border-bottom-color: var(--color-map-key);
 }
 body[kui-theme="Carbon Gray10"]
-  sidecar
+  .kui--sidecar
   .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
   .bx--tabs__nav-link {
   color: var(--color-base01);
 }
 
-body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe svg path {
+body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-bottom-stripe svg path {
   fill: var(--color-base07);
 }
-body[kui-theme="Carbon Gray10"] sidecar a.bx--tabs__nav-link,
-body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe {
+body[kui-theme="Carbon Gray10"] .kui--sidecar a.bx--tabs__nav-link,
+body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-bottom-stripe {
   background-color: var(--color-sidecar-header);
   border-bottom-color: #6f6f6f;
   color: var(--color-sidecar-toolbar-background);
@@ -137,9 +137,9 @@ body[kui-theme="Carbon Gray10"] .monaco-editor .margin-view-overlays .current-li
 body[kui-theme="Carbon Gray10"] .monaco-editor .view-overlays .current-line {
   border-color: #565656;
 }
-body[kui-theme="Carbon Gray10"] sidecar .sidecar-header-secondary-content,
-body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .mtk7,
-body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .line-numbers {
+body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-header-secondary-content,
+body[kui-theme="Carbon Gray10"] .kui--sidecar .monaco-editor .mtk7,
+body[kui-theme="Carbon Gray10"] .kui--sidecar .monaco-editor .line-numbers {
   color: var(--color-sidecar-toolbar-background);
 }
 body[kui-theme="Carbon Gray10"] .monaco-editor .current-line ~ .line-numbers {

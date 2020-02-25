@@ -29,7 +29,7 @@ export const screenshotUsage: UsageModel = {
  *
  */
 const isVisible = (tab: Tab): boolean => {
-  const sidecar = tab.querySelector('sidecar')
+  const sidecar = tab.querySelector('.kui--sidecar')
   return !!(sidecar && sidecar.classList.contains('visible'))
 }
 
