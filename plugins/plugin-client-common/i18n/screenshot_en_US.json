@@ -1,0 +1,18 @@
+{
+  "Screenshot": "Screenshot",
+  "Hover over a region to capture": "Hover over a region, then click to capture it",
+  "screenshotUsageTitle": "Capture screenshot",
+  "screenshotUsageHeader": "Capture a screenshot, optionally specifying which region of the window to capture.",
+  "screenshotReplUsageDocs": "capture the command line contents",
+  "screenshotLastUsageDocs": "capture the output of the last command",
+  "screenshotFullUsageDocs": "capture the entire page, including header",
+  "screenshotUsageDocs": "capture the entire page, except for header",
+  "screenshotWhichUsageDocs": "the region to capture",
+  "screenshotNUsageDocs": "the nth region to capture",
+  "screenshotREPLError": "You requested to screenshot the last command line output, but this is the first command",
+  "screenshotInternalError": "Could not identify the screen region to capture",
+  "Screenshot copied to clipboard": "Screenshot copied to clipboard",
+  "Successfully captured a screenshot to the clipboard": "Successfully captured a screenshot to the clipboard",
+  "Closing in {0} seconds": "Closing in {0} seconds",
+  "Save to desktop": "Save to desktop"
+}

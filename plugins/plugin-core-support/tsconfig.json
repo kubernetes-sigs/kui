@@ -12,5 +12,5 @@
       "@kui-shell/plugin-core-support/*": ["src/*"]
     }
   },
-  "references": [{ "path": "./about" }, { "path": "./screenshot" }, { "path": "./tab-completion" }]
+  "references": [{ "path": "./about" }, { "path": "./tab-completion" }]
 }

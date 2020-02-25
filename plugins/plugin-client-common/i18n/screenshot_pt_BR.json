@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "Fazer captura de tela",
+  "screenshotUsageHeader": "Faça uma captura de tela, especificando, opcionalmente, qual região da janela será capturada.",
+  "screenshotSidecarUsageDocs": "capturar os conteúdos do sidecar",
+  "screenshotReplUsageDocs": "capturar o conteúdo da linha de comandos",
+  "screenshotLastUsageDocs": "capturar a saída do último comando",
+  "screenshotFullUsageDocs": "capturar a página inteira, incluindo o cabeçalho",
+  "screenshotUsageDocs": "capturar a página inteira, exceto o cabeçalho",
+  "screenshotWhichUsageDocs": "a região a ser capturada",
+  "screenshotNUsageDocs": "a enésima região a ser capturada",
+  "screenshotREPLError": "Você solicitou a captura de tela da última saída da linha de comandos, mas este é o primeiro comando",
+  "screenshotSidecarNotOpen": "Você solicitou a captura de tela do sidecar, mas ele não está aberto no momento.",
+  "screenshotInternalError": "Não foi possível identificar a região da tela a ser capturada",
+  "Closing in {0} seconds": "Fechando em {0} segundos",
+  "Save to desktop": "Salvar na área de trabalho",
+  "Screenshot copied to clipboard": "Captura de tela copiada para a área de transferência",
+  "Successfully captured a screenshot to the clipboard": "Uma captura de tela realizada foi enviada com sucesso para a área de transferência"
+}

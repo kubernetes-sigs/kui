@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "捕获屏幕快照",
+  "screenshotUsageHeader": "捕获屏幕快照，可选择指定要捕获的窗口区域。",
+  "screenshotSidecarUsageDocs": "捕获 Sidecar 内容",
+  "screenshotReplUsageDocs": "捕获命令行内容",
+  "screenshotLastUsageDocs": "捕获最后一条命令的输出",
+  "screenshotFullUsageDocs": "捕获整个页面，包括标题",
+  "screenshotUsageDocs": "捕获整个页面，不包含标题",
+  "screenshotWhichUsageDocs": "要捕获的区域",
+  "screenshotNUsageDocs": "要捕获的第 n 个区域",
+  "screenshotREPLError": "您已请求生成最后一条命令行输出的屏幕快照，但是这是第一条命令",
+  "screenshotSidecarNotOpen": "您已请求生成 Sidecar 的屏幕快照，但是其当前未打开",
+  "screenshotInternalError": "无法标识要捕获的屏幕区域",
+  "Closing in {0} seconds": "将在 {0} 秒内关闭",
+  "Save to desktop": "保存到桌面",
+  "Screenshot copied to clipboard": "屏幕快照已复制到剪贴板",
+  "Successfully captured a screenshot to the clipboard": "已成功将屏幕快照捕获到剪贴板"
+}

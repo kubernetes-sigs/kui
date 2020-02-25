@@ -15,11 +15,9 @@
  */
 
 import * as React from 'react'
-import { inElectron } from '@kui-shell/core'
 import {
-  Camera20 as CameraIcon,
-  Maximize20 as MaximizeIcon,
-  Minimize20 as MinimizeIcon,
+  Maximize16 as MaximizeIcon,
+  Minimize16 as MinimizeIcon,
   ChevronRight20 as CloseIcon,
   Close20 as QuitIcon
 } from '@carbon/icons-react'
@@ -32,7 +30,6 @@ interface Props {
   fixedWidth: boolean
 
   onClickNamespace?: () => void
-  onScreenshot: () => void
   onMaximize: () => void
   onRestore: () => void
   onMinimize: () => void
@@ -82,22 +79,24 @@ export default class Window extends React.PureComponent<Props, State> {
 
   private closeButton() {
     return (
-      <div
-        className="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button"
-        data-balloon="Minimize"
-        data-balloon-length="small"
-        data-balloon-pos="down-right"
-      >
-        <a
-          href="#"
-          className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
-          tabIndex={-1}
-          aria-label="Minimize"
-          onClick={() => this.props.onMinimize()}
+      !this.props.fixedWidth && (
+        <div
+          className="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button"
+          data-balloon="Minimize"
+          data-balloon-length="small"
+          data-balloon-pos="down-right"
         >
-          <CloseIcon />
-        </a>
-      </div>
+          <a
+            href="#"
+            className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
+            tabIndex={-1}
+            aria-label="Minimize"
+            onClick={() => this.props.onMinimize()}
+          >
+            <CloseIcon />
+          </a>
+        </div>
+      )
     )
   }
 
@@ -169,29 +168,6 @@ export default class Window extends React.PureComponent<Props, State> {
     }
   }
 
-  private screenshotButton() {
-    return (
-      inElectron() && (
-        <div
-          className="kui--hide-in-webpack sidecar-screenshot-button sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize screenshot-button"
-          data-balloon="Capture Screenshot"
-          data-balloon-length="medium"
-          data-balloon-pos="down-right"
-        >
-          <a
-            href="#"
-            className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
-            tabIndex={-1}
-            aria-label="Capture Screenshot"
-            onClick={() => this.props.onScreenshot()}
-          >
-            <CameraIcon />
-          </a>
-        </div>
-      )
-    )
-  }
-
   public render() {
     return (
       <div className="sidecar-bottom-stripe zoomable">
@@ -201,8 +177,6 @@ export default class Window extends React.PureComponent<Props, State> {
         </div>
 
         <div className="sidecar-bottom-stripe-right-bits">
-          <div className="sidecar-non-window-buttons">{this.screenshotButton()}</div>
-
           <div className="sidecar-window-buttons">
             {this.maximizeButton()}
             {this.closeButton()}

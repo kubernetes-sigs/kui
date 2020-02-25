@@ -1,0 +1,7 @@
+.bx--tooltip {
+  &,
+  .bx--tooltip__caret {
+    background: var(--color-screenshot-background);
+    color: var(--color-screenshot-foreground);
+  }
+}

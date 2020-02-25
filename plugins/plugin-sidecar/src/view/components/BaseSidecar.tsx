@@ -201,7 +201,6 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
         kind={kind}
         namespace={namespace}
         onClickNamespace={onClickNamespace}
-        onScreenshot={this.state.repl ? () => this.state.repl.pexec('screenshot sidecar') : undefined}
         onMaximize={this.onMaximize.bind(this)}
         onRestore={this.onRestore.bind(this)}
         onMinimize={this.onMinimize.bind(this)}
