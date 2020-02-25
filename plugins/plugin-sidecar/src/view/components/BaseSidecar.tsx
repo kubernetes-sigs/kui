@@ -84,7 +84,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
 
     if (this.props.willChangeSize) {
-      this.props.willChangeSize('60%')
+      this.props.willChangeSize(this.defaultWidth())
     }
   }
 
@@ -93,13 +93,25 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     this.cleaners.forEach(_ => _())
   }
 
+  protected maximizedWidth() {
+    return '100%'
+  }
+
+  protected defaultWidth() {
+    return '60%'
+  }
+
+  protected minimizedWidth() {
+    return '2em'
+  }
+
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
     if (evt.keyCode === KeyCodes.ESCAPE) {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
           if (this.props.willChangeSize) {
-            this.props.willChangeSize(priorWidth === Width.Default ? '60%' : '100%')
+            this.props.willChangeSize(priorWidth === Width.Default ? this.defaultWidth() : this.maximizedWidth())
           }
 
           return {
@@ -108,7 +120,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
           }
         } else {
           if (this.props.willChangeSize) {
-            this.props.willChangeSize('2em')
+            this.props.willChangeSize(this.minimizedWidth())
           }
 
           return {
@@ -129,7 +141,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     this.setState({ width: Width.Maximized })
 
     if (this.props.willChangeSize) {
-      this.props.willChangeSize('100%')
+      this.props.willChangeSize(this.maximizedWidth())
     }
   }
 
@@ -137,7 +149,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     this.setState({ width: Width.Default })
 
     if (this.props.willChangeSize) {
-      this.props.willChangeSize('60%')
+      this.props.willChangeSize(this.defaultWidth())
     }
   }
 
@@ -150,7 +162,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
       const newWidth = width === Width.Minimized ? Width.Default : Width.Minimized
 
       if (this.props.willChangeSize) {
-        this.props.willChangeSize(newWidth === Width.Default ? '60%' : '2em')
+        this.props.willChangeSize(newWidth === Width.Default ? this.defaultWidth() : this.minimizedWidth())
       }
 
       return {
