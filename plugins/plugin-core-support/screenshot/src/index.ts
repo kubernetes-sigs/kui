@@ -16,7 +16,7 @@
 
 import { join } from 'path'
 
-import { inBrowser, Arguments, i18n, KeyCodes, Tab, getCurrentPrompt } from '@kui-shell/core'
+import { inBrowser, Arguments, i18n, KeyCodes, Tab } from '@kui-shell/core'
 
 import Options from './options'
 import '../../web/css/static/screenshot.css'
@@ -70,7 +70,7 @@ const _squish = (tab: Tab, which: string, selector: string, parsedOptions: Optio
 
   // caller specified squish specification on the command line, via
   // --squish-selecteor and --squish-css
-  if (!squisher && parsedOptions['squish-selector'] && parsedOptions['squish-css']) {
+  /* if (!squisher && parsedOptions['squish-selector'] && parsedOptions['squish-css']) {
     if (!Array.isArray(parsedOptions['squish-selector'])) {
       parsedOptions['squish-selector'] = [parsedOptions['squish-selector']]
     }
@@ -79,7 +79,7 @@ const _squish = (tab: Tab, which: string, selector: string, parsedOptions: Optio
       selector,
       css
     }))
-  }
+  } */
 
   if (squisher) {
     const impl = (dryRun: boolean) =>
@@ -263,8 +263,6 @@ export default async ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>)
 
             setTimeout(() => {
               page.removeChild(snapDom)
-              getCurrentPrompt(tab).readOnly = false
-              getCurrentPrompt(tab).focus()
             }, 1000) // match go-away-able transition-duration; see ui.css
           }
 
