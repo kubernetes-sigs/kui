@@ -20,7 +20,7 @@
 import * as React from 'react'
 import { render as ReactDomRender } from 'react-dom'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
-import { TabContainer, StatusStripe } from '@kui-shell/plugin-client-common'
+import { StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
 
 /**
  * Here we arrange the CSS for base functionality of Kui. Order is
