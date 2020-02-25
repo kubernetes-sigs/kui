@@ -41,9 +41,6 @@
       "path": "plugins/plugin-wskflow"
     },
     {
-      "path": "plugins/plugin-tutorials"
-    },
-    {
       "path": "plugins/plugin-proxy-support"
     }
   ]

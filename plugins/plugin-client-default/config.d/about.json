@@ -7,7 +7,6 @@
           "content": "about:content",
           "contentType": "text/markdown"
         },
-        { "mode": "tutorial", "label": "Getting Started", "contentFrom": "tutorial play @tutorials/getting-started" },
         { "mode": "version", "contentFrom": "version --full" }
       ]
     }
