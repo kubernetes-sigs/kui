@@ -40,8 +40,5 @@ export function doScreenshot({ tab, REPL }: Arguments) {
     throw new Error(strings('screenshotSidecarNotOpen'))
   }
 
-  const squish =
-    '--squish-selector body.subwindow --squish-selector body.subwindow .page --squish-selector body.subwindow .main --squish-selector tab.visible --squish-css screenshot-squish'
-
-  return REPL.qexec(`screenshot selector sidecar --context tab ${squish}`)
+  return REPL.qexec(`screenshot selector sidecar --context tab`)
 }
