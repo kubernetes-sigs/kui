@@ -49,6 +49,7 @@ export function isSupportedContentType(contentType: string) {
     contentType === 'yaml' ||
     contentType === 'text/markdown' ||
     contentType === 'text/html' ||
+    contentType === 'text/plain' ||
     contentType === 'json' ||
     contentType === 'shell'
   )
@@ -90,10 +91,12 @@ export function isStringWithOptionalContentType<T extends MetadataBearing>(
 export type FunctionThatProducesContent<T extends MetadataBearing = MetadataBearing> = (
   tab: Tab,
   entity: T
-) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent>
+) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent> | CommandStringContent
+
 export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
 }
+
 export function isFunctionContent<T extends MetadataBearing = MetadataBearing>(
   content: Entity | Content<T> | MetadataBearing | ModeOrButton<T>
 ): content is FunctionContent<T> {

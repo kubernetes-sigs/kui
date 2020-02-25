@@ -73,7 +73,8 @@ const modes: MMRExpectMode[] = [
 const modesFromRegistration: MMRExpectMode[] = [
   { mode: 'mode1', content: 'yo: this is mode1', contentType: 'text/plain' },
   { mode: 'mode2', content: 'this is mode2', contentType: 'text/plain' },
-  { mode: 'mode3', label: 'mode3 label', contentType: 'text/markdown' }
+  { mode: 'mode3', label: 'mode3 label', contentType: 'text/markdown' },
+  { mode: 'mode5', label: 'mode5 label', content: 'hello world', contentType: 'text/plain' }
 ]
 
 const buttonFromRegistration = [
