@@ -288,7 +288,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
       const onClickNamespace = onclick && onclick.namespace && (() => this.state.repl.pexec(onclick.namespace))
 
       return (
-        <sidecar className={this.width()} data-view="topnav">
+        <div className={'kui--sidecar ' + this.width()} data-view="topnav">
           {' '}
           {/* data-view helps with tests */}
           {this.title(kind, namespace, false, onClickNamespace)}
@@ -296,7 +296,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
             {this.header()}
             {this.tabs()}
           </div>
-        </sidecar>
+        </div>
       )
     } catch (err) {
       console.error(err)
