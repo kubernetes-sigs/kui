@@ -1,0 +1,73 @@
+body {
+  /* provide default values for these color classes */
+  --color-screenshot-background: var(--color-base0D);
+  --color-screenshot-foreground: var(--color-base07);
+}
+
+.kui--screenshot-button[data-active='true'] svg path {
+  fill: var(--color-base0C);
+}
+
+.screenshot-save-button {
+  color: var(--color-text-01) !important;
+}
+
+.kui--screenshot-tooltip {
+  /* so that the tooltip isn't captured as part of a screenshot, only keep it visible while we're waiting for the user to choose a region to capture */
+  display: none;
+}
+
+.kui--screenshot-active {
+  .kui--screenshot-tooltip {
+    display: initial;
+    top: unset !important;
+    bottom: 2em;
+
+    .kui--screenshot-tooltip-text {
+      font-size: 0.875em;
+    }
+  }
+}
+
+.kui--screenshotable {
+  /** accommodate the on-hover outline: 2px below */
+  margin: 2px;
+}
+sidecar.kui--screenshotable {
+  /** special case to make the sidecar appear flush mounted */
+  outline: 2px solid var(--color-sidecar-header);
+  height: calc(100% - 4px);
+}
+
+.kui--screenshot-active {
+  .kui--screenshotable:hover {
+    cursor: copy !important;
+    outline: 2px dashed var(--color-base05);
+    background-color: var(--color-base04);
+    filter: sepia(0.25);
+
+    /* occlude everything else */
+    box-shadow: 0 0 0 1000px rgba(20, 20, 20, 0.7);
+    z-index: 10;
+  }
+}
+
+.bx--toast-notification--info {
+  position: absolute;
+  bottom: 2em;
+  right: 1em;
+  width: 32em;
+  height: auto;
+  z-index: 5;
+
+  background: var(--color-screenshot-background);
+  color: var(--color-screenshot-foreground);
+
+  .screenshot-image {
+    width: 100%;
+    height: auto;
+    max-height: 17em;
+    object-fit: cover;
+    object-position: top left;
+  }
+}

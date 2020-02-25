@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "擷取畫面",
+  "screenshotUsageHeader": "擷取畫面，選擇性地指定要擷取的視窗區域。",
+  "screenshotSidecarUsageDocs": "擷取 Sidecar 內容",
+  "screenshotReplUsageDocs": "擷取指令行內容",
+  "screenshotLastUsageDocs": "擷取前一指令的輸出",
+  "screenshotFullUsageDocs": "擷取整個頁面，其中包括標頭",
+  "screenshotUsageDocs": "擷取整個頁面，但標頭除外",
+  "screenshotWhichUsageDocs": "要擷取的區域",
+  "screenshotNUsageDocs": "要擷取的第 N 個區域",
+  "screenshotREPLError": "您已要求對前一指令行輸出進行擷取畫面，但這是第一個指令",
+  "screenshotSidecarNotOpen": "您已要求對 Sidecar 進行擷取畫面，但它目前未開啟",
+  "screenshotInternalError": "無法識別要擷取的畫面區域",
+  "Closing in {0} seconds": "將在 {0} 秒後關閉",
+  "Save to desktop": "儲存至桌面",
+  "Screenshot copied to clipboard": "擷取畫面已複製到剪貼簿",
+  "Successfully captured a screenshot to the clipboard": "已順利將擷取畫面擷取至剪貼簿"
+}

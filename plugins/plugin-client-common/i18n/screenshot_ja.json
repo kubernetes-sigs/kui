@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "スクリーン・ショットの取り込み",
+  "screenshotUsageHeader": "スクリーン・ショットを取り込みます。必要に応じて、取り込むウィンドウの領域を指定します。",
+  "screenshotSidecarUsageDocs": "サイドカーの内容を取り込みます",
+  "screenshotReplUsageDocs": "コマンド・ラインの内容を取り込みます",
+  "screenshotLastUsageDocs": "最後のコマンドの出力を取り込みます",
+  "screenshotFullUsageDocs": "ヘッダーを含むページ全体を取り込みます",
+  "screenshotUsageDocs": "ヘッダーを除くページ全体を取り込みます",
+  "screenshotWhichUsageDocs": "取り込む領域",
+  "screenshotNUsageDocs": "取り込む n 番目の領域",
+  "screenshotREPLError": "最後のコマンド・ライン出力のスクリーン・ショットを要求していますが、これは最初のコマンドです",
+  "screenshotSidecarNotOpen": "サイドカーのスクリーン・ショットを要求していますが、それは現在開いていません",
+  "screenshotInternalError": "取り込むスクリーン領域を識別できませんでした",
+  "Closing in {0} seconds": "{0} 秒で閉じます",
+  "Save to desktop": "デスクトップに保存",
+  "Screenshot copied to clipboard": "スクリーン・ショットはクリップボードにコピーされました",
+  "Successfully captured a screenshot to the clipboard": "スクリーン・ショットをクリップボードに正常にキャプチャーしました"
+}

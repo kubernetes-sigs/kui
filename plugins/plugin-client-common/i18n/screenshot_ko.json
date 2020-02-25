@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "스크린샷 캡처",
+  "screenshotUsageHeader": "필요에 따라 캡처할 창의 구역을 지정하여 스크린샷을 캡처하십시오.",
+  "screenshotSidecarUsageDocs": "사이드카 컨텐츠 캡처",
+  "screenshotReplUsageDocs": "명령행 컨텐츠 캡처",
+  "screenshotLastUsageDocs": "마지막 명령의 출력 캡처",
+  "screenshotFullUsageDocs": "헤더를 포함하여 전체 페이지 캡처",
+  "screenshotUsageDocs": "헤더를 제외하고 전체 페이지 캡처",
+  "screenshotWhichUsageDocs": "캡처할 구역",
+  "screenshotNUsageDocs": "캡처할 n번째 구역",
+  "screenshotREPLError": "마지막 명령행 출력의 스크린샷을 요청했지만 이는 첫 번째 명령임",
+  "screenshotSidecarNotOpen": "사이드카의 스크린샷을 요청했지만 이는 현재 열려 있지 않음",
+  "screenshotInternalError": "캡처할 화면 영역을 식별할 수 없음",
+  "Closing in {0} seconds": "{0}초 후에 닫음",
+  "Save to desktop": "데스크탑에 저장",
+  "Screenshot copied to clipboard": "클립보드에 복사된 스크린샷",
+  "Successfully captured a screenshot to the clipboard": "스크린샷을 클립보드에 캡처함"
+}
