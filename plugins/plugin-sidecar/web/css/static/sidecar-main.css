@@ -1,22 +1,22 @@
 /* Duplicate rule with line 13-15 in ui.css */
-sidecar {
+.kui--sidecar {
   height: 100%;
   max-height: 100%;
   overflow-x: hidden;
 }
-sidecar .header-top-bits {
+.kui--sidecar .header-top-bits {
   display: flex;
   padding-left: 1em;
   margin: 0.75em 0 0;
 }
 /* Duplicate rule with line 435, 436, 2025 in ui.css */
-sidecar.rule-enabled-false .sidecar-header-icon {
+.kui--sidecar.rule-enabled-false .sidecar-header-icon {
   opacity: 1 !important;
   white-space: pre-wrap;
   color: var(--color-error);
 }
 /* Duplicate rule with line 522-523 in ui.css */
-tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
+tab:not(.sidecar-full-screen) .kui--sidecar .fifty-fifty {
   max-width: unset;
   margin-right: unset;
 }
@@ -33,7 +33,7 @@ tab:not(.sidecar-full-screen) sidecar .fifty-fifty {
   justify-content: center;
   align-items: center;
 }
-sidecar {
+.kui--sidecar {
   flex: 0 0 0%;
   min-width: 0;
   transition-property: background-color, color, border-color;
@@ -43,7 +43,7 @@ sidecar {
   overflow-y: hidden;
   background: var(--color-sidecar-background);
 }
-sidecar.visible {
+.kui--sidecar.visible {
   flex: 6;
   z-index: 1; /* float above the repl */
 }
@@ -56,43 +56,43 @@ sidecar.visible {
   border-bottom: 1px inset var(--color-ui-02);
   order: -1;
 }
-/* sidecar .sidecar-bottom-stripe {
+/* .kui--sidecar .sidecar-bottom-stripe {
     order: -1;
 } */
-sidecar .sidecar-bottom-stripe > div {
+.kui--sidecar .sidecar-bottom-stripe > div {
   font-size: 0.875em;
 }
-sidecar .sidecar-bottom-stripe-left-bits,
-sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
+.kui--sidecar .sidecar-bottom-stripe-left-bits,
+.kui--sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
   /* button container in sidecar bottom stripe */
   flex: 1;
   display: flex;
   align-items: center;
   overflow: hidden;
 }
-sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
+.kui--sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
   /* back button container in sidecar bottom stripe */
   flex: 0 0 0%;
   min-width: 0;
 }
-sidecar
+.kui--sidecar
   .sidecar-bottom-stripe-left-bits
   .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
   flex: initial;
   margin-right: 0;
   padding: 0 calc(1em - 0.375em); /* the button inside has 0.375em padding left-right */
 }
-sidecar .sidecar-bottom-stripe-close-icon {
+.kui--sidecar .sidecar-bottom-stripe-close-icon {
   letter-spacing: -1ex;
   opacity: 0.6;
   transition-property: all;
 }
-body.os-win32 sidecar .sidecar-bottom-stripe-close-icon {
+body.os-win32 .kui--sidecar .sidecar-bottom-stripe-close-icon {
   /* dunno why windows is weird here */
   letter-spacing: 0px;
 }
 
-sidecar .sidecar-bottom-stripe .package-prefix {
+.kui--sidecar .sidecar-bottom-stripe .package-prefix {
   /* kubectl namespace and openwhisk package name, etc. */
   display: block;
   font-weight: 400;
@@ -100,17 +100,17 @@ sidecar .sidecar-bottom-stripe .package-prefix {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-sidecar .sidecar-header .limits {
+.kui--sidecar .sidecar-header .limits {
   /* don't show limits in header for now */
   display: none;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover,
-sidecar .sidecar-bottom-stripe-button.hover {
+.kui--sidecar .sidecar-bottom-stripe-button.hover {
   cursor: pointer;
   opacity: 1;
 }
-sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover,
-sidecar .sidecar-bottom-stripe-button.force-no-hover.hover {
+.kui--sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover,
+.kui--sidecar .sidecar-bottom-stripe-button.force-no-hover.hover {
   /* e.g. the screenshot plugin wants to disallow tooltips on the
    "capture screenshot" button while capturing a screenshot! */
   color: inherit !important;
@@ -122,41 +122,41 @@ sidecar .sidecar-bottom-stripe-button.force-no-hover.hover {
   /* on hover, squeeze the >> a bit closer together */
   letter-spacing: -1.25ex;
 }
-body.os-win32 sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon,
-body.os-win32 sidecar .sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon,
-body.os-win32 sidecar .sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
+body.os-win32 .kui--sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon,
+body.os-win32 .kui--sidecar .sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon,
+body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
   letter-spacing: -1px; /* windows is different here */
 }
-sidecar .sidecar-bottom-stripe-back-bits,
+.kui--sidecar .sidecar-bottom-stripe-back-bits,
 .sidecar-bottom-stripe .fill-container {
   /* back button in sidecar bottom stripe */
   border-right: 1px solid var(--color-table-border2);
   padding-right: 0.475rem;
   margin-right: 0.475rem;
 }
-sidecar .sidecar-bottom-stripe-back-bits > div {
+.kui--sidecar .sidecar-bottom-stripe-back-bits > div {
   display: flex;
   align-items: center;
 }
-sidecar .sidecar-bottom-stripe-back-bits > div:hover {
+.kui--sidecar .sidecar-bottom-stripe-back-bits > div:hover {
   opacity: 1;
 }
-sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
+.kui--sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
   display: none;
 }
-body.subwindow sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
   font-size: 3vmin;
 }
 
 /* sidecar view-button "flush right" toolbar */
-sidecar .sidecar-bottom-stripe-toolbar {
+.kui--sidecar .sidecar-bottom-stripe-toolbar {
   display: flex;
 }
-body.subwindow sidecar .sidecar-bottom-stripe-toolbar {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar {
   font-size: 1.5vw;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   background-color: var(--color-sidecar-toolbar-background);
   color: var(--color-sidecar-toolbar-foreground);
   height: 1.5em;
@@ -166,53 +166,63 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
   flex: 1;
   overflow: hidden;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path {
   fill: var(--color-warning);
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path[data-icon-path="inner-path"],
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path[data-icon-path="inner-path"] {
+.kui--sidecar
+  .sidecar-bottom-stripe-toolbar
+  .sidecar-toolbar-text[data-type="warning"]
+  svg
+  path[data-icon-path="inner-path"],
+.kui--sidecar
+  .sidecar-bottom-stripe-toolbar
+  .sidecar-toolbar-text[data-type="error"]
+  svg
+  path[data-icon-path="inner-path"] {
   fill: var(--color-white);
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path {
   fill: var(--color-error);
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
+.kui--sidecar
+  .sidecar-bottom-stripe-toolbar
+  .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
   display: none !important;
 }
-sidecar
+.kui--sidecar
   .sidecar-bottom-stripe-toolbar
   .sidecar-toolbar-text:not([data-type])
   + .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:not(:empty) {
   flex: 1;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
   opacity: 0.875;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
   margin-right: 0.375em;
   margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
   padding-left: 1em;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon > svg {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon > svg {
   display: none;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type] svg {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type] svg {
   display: block;
 }
-body.subwindow sidecar .sidecar-bottom-stripe svg {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe svg {
   width: 2.5vmin;
   height: 2.5vmin;
 }
-body.subwindow sidecar .sidecar-bottom-stripe-toolbar svg {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar svg {
   width: 1.5vmin;
   height: 1.5vmin;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
   font-size: 0.75em;
   display: block;
   letter-spacing: 0.32px;
@@ -220,50 +230,50 @@ sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-te
   overflow: hidden;
   text-overflow: ellipsis;
 }
-body.subwindow sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
   font-size: 1.375vmin;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
   display: flex;
   line-height: 1.5em;
   padding: 0 0.5em;
   color: inherit;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
   cursor: pointer;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
   font-size: 0.875em;
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
   color: var(--color-base03);
 }
-sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
   fill: var(--color-sidecar-toolbar-foreground);
 }
-sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
   padding: 0 1em;
   display: flex;
   flex: initial;
 }
 
-sidecar .sidecar-content-container,
-sidecar .custom-content {
+.kui--sidecar .sidecar-content-container,
+.kui--sidecar .custom-content {
   display: flex;
   flex: 1;
   min-height: 0; /* without this, in firefox wskflow pushes the bottom stripe off the bottom of the viewport */
 }
-sidecar .sidecar-header {
+.kui--sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
   flex-basis: 5.5rem;
   min-height: 5.5rem; /* see shell issue #712 */
 }
-body.subwindow sidecar .sidecar-header {
+body.subwindow .kui--sidecar .sidecar-header {
   flex-basis: 15vh;
   min-height: 15vh;
 }
-sidecar .sidecar-header .header-main-content {
+.kui--sidecar .sidecar-header .header-main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -277,7 +287,7 @@ sidecar .sidecar-header .header-main-content {
    https://github.com/IBM/kui/issues/1334 */
   min-width: 0;
 }
-sidecar .header-right-bits {
+.kui--sidecar .header-right-bits {
   white-space: nowrap;
   margin: 0 1em;
 }
@@ -310,43 +320,43 @@ sidecar .header-right-bits {
   font-weight: bold;
   font-size: 2.5em;
 }
-sidecar .sidecar-header-text {
+.kui--sidecar .sidecar-header-text {
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-sidecar .sidecar-header-icon {
+.kui--sidecar .sidecar-header-icon {
   display: flex;
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
 }
-sidecar .sidecar-toolbar-text a,
-sidecar .sidecar-toolbar-text a:hover {
+.kui--sidecar .sidecar-toolbar-text a,
+.kui--sidecar .sidecar-toolbar-text a:hover {
   color: inherit !important;
 }
-sidecar .sidecar-header-icon-wrapper > span {
+.kui--sidecar .sidecar-header-icon-wrapper > span {
   padding: 0 1em;
 }
-sidecar .sidecar-header-icon-wrapper + .sidecar-header-icon-wrapper > span:not(:empty) {
+.kui--sidecar .sidecar-header-icon-wrapper + .sidecar-header-icon-wrapper > span:not(:empty) {
   border-left: 1px solid var(--color-table-border2);
 }
-sidecar .sidecar-header-icon-wrapper {
+.kui--sidecar .sidecar-header-icon-wrapper {
   display: flex;
   align-items: center;
   overflow: hidden;
 }
-sidecar .header-left-bits {
+.kui--sidecar .header-left-bits {
   align-items: stretch;
   overflow: hidden;
 }
-sidecar .sidecar-header-icon {
+.kui--sidecar .sidecar-header-icon {
   font-weight: 600;
   letter-spacing: 1px;
   pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
 }
-sidecar .sidecar-header-name {
+.kui--sidecar .sidecar-header-name {
   flex: 1;
   font-weight: 400;
   font-size: 2em;
@@ -358,32 +368,32 @@ sidecar .sidecar-header-name {
   padding-right: 1rem;
   -webkit-app-region: no-drag !important;
 }
-body.subwindow sidecar .sidecar-header-name {
+body.subwindow .kui--sidecar .sidecar-header-name {
   font-size: 4vh;
 }
-sidecar .sidecar-header .entity-name-line {
+.kui--sidecar .sidecar-header .entity-name-line {
   display: flex;
   align-items: center;
 }
-sidecar.entity-has-badges .sidecar-header .header-right-bits .action-content {
+.kui--sidecar.entity-has-badges .sidecar-header .header-right-bits .action-content {
   display: flex;
 }
-sidecar .sidecar-header .badges {
+.kui--sidecar .sidecar-header .badges {
   margin-left: 1rem;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
 }
-sidecar .sidecar-header .badges:first-child {
+.kui--sidecar .sidecar-header .badges:first-child {
   margin-left: 0;
 }
-sidecar .sidecar-header badge.clickable:hover {
+.kui--sidecar .sidecar-header badge.clickable:hover {
   filter: brightness(1.1);
 }
-sidecar .sidecar-header-name-content {
+.kui--sidecar .sidecar-header-name-content {
   overflow-x: hidden;
 }
-sidecar .sidecar-header-name-content .entity-name {
+.kui--sidecar .sidecar-header-name-content .entity-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
@@ -394,23 +404,23 @@ sidecar .sidecar-header-name-content .entity-name {
   /* direction: rtl;
     text-align: left; */
 }
-sidecar .sidecar-header-name-content[data-has-name-hash] .entity-name {
+.kui--sidecar .sidecar-header-name-content[data-has-name-hash] .entity-name {
   white-space: nowrap;
 }
-sidecar .sidecar-header-name-content > span {
+.kui--sidecar .sidecar-header-name-content > span {
   display: block;
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-sidecar .sidecar-header-name .package-prefix {
+.kui--sidecar .sidecar-header-name .package-prefix {
   font-size: 0.875rem;
   max-width: none;
   text-transform: uppercase;
   letter-spacing: 1.6px;
 }
-sidecar .sidecar-header-name .entity-name-hash {
+.kui--sidecar .sidecar-header-name .entity-name-hash {
   font-family: var(--font-monospace);
   font-size: 75%;
   color: var(--color-text-inverted02);
@@ -419,16 +429,16 @@ sidecar .sidecar-header-name .entity-name-hash {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-sidecar.entity-is-activations .sidecar-header-name .package-prefix {
+.kui--sidecar.entity-is-activations .sidecar-header-name .package-prefix {
   /* don't display package name for activations? hmm */
   display: none;
 }
-sidecar.entity-is-activations .sidecar-header-name .sidecar-header-name-content {
+.kui--sidecar.entity-is-activations .sidecar-header-name .sidecar-header-name-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-sidecar .sidecar-header-secondary-content {
+.kui--sidecar .sidecar-header-secondary-content {
   padding-left: 1rem;
   font-size: 0.875em;
   display: flex;
@@ -437,41 +447,41 @@ sidecar .sidecar-header-secondary-content {
   letter-spacing: 0.32px;
   line-height: 1.25em;
 }
-sidecar .sidecar-header-secondary-content .kind-content {
+.kui--sidecar .sidecar-header-secondary-content .kind-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-sidecar .sidecar-content {
+.kui--sidecar .sidecar-content {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
-sidecar .sidecar-content > div,
-sidecar .sidecar-content .activation-content > pre > code,
-sidecar .custom-content pre > code,
-sidecar .padding-content {
+.kui--sidecar .sidecar-content > div,
+.kui--sidecar .sidecar-content .activation-content > pre > code,
+.kui--sidecar .custom-content pre > code,
+.kui--sidecar .padding-content {
   display: block;
   padding: 1.5em 1em;
 }
-sidecar .custom-content > .scrollable {
+.kui--sidecar .custom-content > .scrollable {
   /* for scrollable padding-content, we want the scrollbar to be flush-right */
   flex: 1;
 }
-sidecar .sidecar-content .hook-for-third-party-content.no-content {
+.kui--sidecar .sidecar-content .hook-for-third-party-content.no-content {
   display: none;
 }
-sidecar .sidecar-header .activation-content {
+.kui--sidecar .sidecar-header .activation-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-sidecar .sidecar-content .activation-content {
+.kui--sidecar .sidecar-content .activation-content {
   padding: 0;
 }
-sidecar .sidecar-content .activation-content,
-sidecar .sidecar-content .hook-for-third-party-content {
+.kui--sidecar .sidecar-content .activation-content,
+.kui--sidecar .sidecar-content .hook-for-third-party-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -479,7 +489,7 @@ sidecar .sidecar-content .hook-for-third-party-content {
 .entity-web-export-url:not(.has-url) {
   display: none;
 }
-sidecar .activation-status {
+.kui--sidecar .activation-status {
   color: white;
   font-size: 2.5rem;
   border-radius: 50%;
@@ -490,39 +500,39 @@ sidecar .activation-status {
   align-items: center;
   margin: 0 0.5ex;
 }
-sidecar pre {
+.kui--sidecar pre {
   /* no margin for action source code */
   margin: 0;
 }
-sidecar .action-content > pre {
+.kui--sidecar .action-content > pre {
   /* some odd issue here; pre > code will give us the pre-wrap */
   white-space: normal;
 }
-sidecar:not(.entity-is-actions):not(.entity-is-apps):not(.entity-is-compositions) .action-content {
+.kui--sidecar:not(.entity-is-actions):not(.entity-is-apps):not(.entity-is-compositions) .action-content {
   display: none;
 }
-sidecar:not(.entity-is-activations) .activation-content {
+.kui--sidecar:not(.entity-is-activations) .activation-content {
   display: none;
 }
-sidecar.no-activation-timing-data .sidecar-header-secondary-content {
+.kui--sidecar.no-activation-timing-data .sidecar-header-secondary-content {
   /* no timing information for activations */
   display: none;
 }
-sidecar:not(.entity-is-packages) .package-content {
+.kui--sidecar:not(.entity-is-packages) .package-content {
   display: none;
 }
-sidecar.entity-is-packages:not(entity-is-package-binding) .package-binding-signifier {
+.kui--sidecar.entity-is-packages:not(entity-is-package-binding) .package-binding-signifier {
   display: none;
 }
-sidecar:not(.entity-is-rules) .rule-content {
+.kui--sidecar:not(.entity-is-rules) .rule-content {
   display: none;
 }
-sidecar:not(.entity-is-triggers) .trigger-content {
+.kui--sidecar:not(.entity-is-triggers) .trigger-content {
   display: none;
 }
 /* Duplicate rule with line 654-658 in ui.css */
-sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
-sidecar .activation-result {
+.kui--sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
+.kui--sidecar .activation-result {
   font-family: var(--font-monospace);
   font-weight: 400;
   font-size: 0.875em;
@@ -536,7 +546,7 @@ sidecar .activation-result {
   display: flex;
   justify-content: center;
 }
-sidecar:not(.entity-is-sequence) .sequence-components {
+.kui--sidecar:not(.entity-is-sequence) .sequence-components {
   display: none;
 }
 .sequence-components {
@@ -626,26 +636,26 @@ sidecar:not(.entity-is-sequence) .sequence-components {
 }
 
 /* generic */
-sidecar .present-as-quotation {
+.kui--sidecar .present-as-quotation {
   border-left-color: var(--color-base02);
 }
-.kui--sidecar-inverted sidecar .normal-text {
+.kui--sidecar-inverted .kui--sidecar .normal-text {
   color: var(--color-text-inverted01);
 }
-.kui--sidecar-inverted sidecar .normal-text svg path {
+.kui--sidecar-inverted .kui--sidecar .normal-text svg path {
   fill: var(--color-text-inverted01);
 }
-.kui--sidecar-inverted sidecar .sub-text {
+.kui--sidecar-inverted .kui--sidecar .sub-text {
   color: var(--color-text-inverted03);
 }
-sidecar .result-as-table .big-top-pad:first-child {
+.kui--sidecar .result-as-table .big-top-pad:first-child {
   margin-top: 0;
 }
 .code-highlighting.scrollable {
   /* sidecar custom entity container */
   flex: 1;
 }
-sidecar .activation-result .log-line .log-field code {
+.kui--sidecar .activation-result .log-line .log-field code {
   font-size: 1em;
   margin: 0.375em 0.375em 0 0;
   padding: 1em;
@@ -653,17 +663,17 @@ sidecar .activation-result .log-line .log-field code {
   border: 1px solid var(--color-ui-04);
   box-shadow: 0 0 2px var(--color-ui-04);
 }
-sidecar .activation-result .log-line .log-field > div > div:first-child code {
+.kui--sidecar .activation-result .log-line .log-field > div > div:first-child code {
   margin-top: 0;
 }
-sidecar .log-lines:not(.log-lines-loose) .log-line {
+.kui--sidecar .log-lines:not(.log-lines-loose) .log-line {
   height: auto;
 }
-sidecar .log-lines .log-line:nth-child(2n) .log-field {
+.kui--sidecar .log-lines .log-line:nth-child(2n) .log-field {
   background: var(--color-ui-03); /* <-- zebra */
 }
 
-body.subwindow sidecar .sidecar-bottom-stripe-close {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe-close {
   /* no close button if in subwindow/popup mode */
   display: none;
 }
@@ -671,74 +681,74 @@ body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screensh
   /* in subwindow mode, no maximize or unmaximize buttons */
   display: none;
 }
-/*body.subwindow sidecar .activation-result .log-line .log-field code {
+/*body.subwindow .kui--sidecar .activation-result .log-line .log-field code {
     background: var(--color-ui-02);
 }*/
-body.subwindow sidecar .log-lines .log-line:nth-child(2n + 1) .log-field {
+body.subwindow .kui--sidecar .log-lines .log-line:nth-child(2n + 1) .log-field {
   background: var(--color-ui-02);
 }
-body.subwindow sidecar {
+body.subwindow .kui--sidecar {
   border-left: none;
   box-shadow: none;
 }
-body.subwindow[data-presentation="FixedSize"] sidecar .sidecar-header {
+body.subwindow[data-presentation="FixedSize"] .kui--sidecar .sidecar-header {
   border-bottom-color: var(--color-base01);
 }
-body.subwindow:not(.sidecar-visible) sidecar {
+body.subwindow:not(.sidecar-visible) .kui--sidecar {
   width: 0;
 }
-body.subwindow sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
+body.subwindow .kui--sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
   display: none;
 }
-body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
+body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
   display: flex;
 }
-body.subwindow sidecar .sidecar-header-name-content,
-body.subwindow sidecar .sidecar-header-text,
-body.subwindow sidecar .sidecar-header-text.is-repl-like .repl-input {
+body.subwindow .kui--sidecar .sidecar-header-name-content,
+body.subwindow .kui--sidecar .sidecar-header-text,
+body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
   /* make sidecar-header-input occupy full width */
   flex: 1;
 }
-body.subwindow sidecar .padding-content {
+body.subwindow .kui--sidecar .padding-content {
   flex: 1;
   padding: 4vh 6vh 0;
   display: flex;
   flex-direction: column;
 }
-body.subwindow sidecar .padding-content .padding-content {
+body.subwindow .kui--sidecar .padding-content .padding-content {
   /* this rule protects against nested padding-content; we don't want to pad twice */
   padding: 0;
 }
-body.subwindow[data-presentation="FixedSize"] sidecar .padding-content {
+body.subwindow[data-presentation="FixedSize"] .kui--sidecar .padding-content {
   /* content takes care of layout, e.g. monaco-editor */
   padding: 0;
 }
-body.subwindow sidecar .padding-content {
+body.subwindow .kui--sidecar .padding-content {
   overflow: auto;
 }
-body.subwindow sidecar .sidecar-header-secondary-content {
+body.subwindow .kui--sidecar .sidecar-header-secondary-content {
   font-size: 1em;
 }
 body.subwindow:not([data-presentation="FixedSize"]) .custom-content {
   font-size: 2.5vmin;
 }
 /* Duplicate rule with line 1451 in ui.css */
-body.subwindow sidecar .repl-input,
-body.subwindow sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
+body.subwindow .kui--sidecar .repl-input,
+body.subwindow .kui--sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
   display: none;
 }
-body.subwindow sidecar .sidecar-bottom-stripe {
+body.subwindow .kui--sidecar .sidecar-bottom-stripe {
   font-size: 2vmin;
   min-height: unset;
 }
-body.subwindow sidecar .usage-error-wrapper .page-content {
+body.subwindow .kui--sidecar .usage-error-wrapper .page-content {
   display: flex;
   flex-direction: column;
 }
-sidecar .repl-input {
+.kui--sidecar .repl-input {
   display: none;
 }
-body.subwindow sidecar .repl-input input {
+body.subwindow .kui--sidecar .repl-input input {
   -webkit-app-region: no-drag;
   font-family: var(--font-sans-serif);
   font-size: unset;
@@ -746,23 +756,23 @@ body.subwindow sidecar .repl-input input {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
+.kui--sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
   display: none;
 }
-.subwindow sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
+.subwindow .kui--sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
   border-spacing: 0;
 }
-body.subwindow sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
-sidecar .activation-result {
+body.subwindow .kui--sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
+.kui--sidecar .activation-result {
   padding: inherit;
 }
-sidecar .activation-result {
+.kui--sidecar .activation-result {
   padding: 0;
 }
-body.subwindow .sidecar-full-screen sidecar .sidecar-header .entity-name-line {
+body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .entity-name-line {
   flex-wrap: wrap;
 }
-body.subwindow .sidecar-full-screen sidecar .sidecar-header .action-content #version {
+body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .action-content #version {
   min-height: 20px;
 }
 
@@ -782,26 +792,26 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
   justify-content: flex-end;
 }
 
-sidecar [data-balloon]:before,
-sidecar [data-balloon]:after {
+.kui--sidecar [data-balloon]:before,
+.kui--sidecar [data-balloon]:after {
   transition-delay: 750ms;
 }
 
 /* sidecar minimize to stripe */
-sidecar.minimized {
+.kui--sidecar.minimized {
   flex: 0 0 calc(0.375rem * 2 + 0.75rem); /* designed to match the ? in the header */
   align-items: stretch;
 }
-sidecar.minimized header.sidecar-header {
+.kui--sidecar.minimized header.sidecar-header {
   display: none;
 }
-sidecar.minimized .header-left-bits {
+.kui--sidecar.minimized .header-left-bits {
   overflow: visible;
 }
-sidecar .sidecar-header-icon-wrapper > span {
+.kui--sidecar .sidecar-header-icon-wrapper > span {
   padding: 0 0.5em;
 }
-sidecar.minimized .sidecar-header-icon-wrapper {
+.kui--sidecar.minimized .sidecar-header-icon-wrapper {
   width: calc(0.375rem * 2 + 0.75rem); /* match sidecar.minimized flex-basis */
   display: flex;
   align-items: flex-end;
@@ -811,28 +821,28 @@ sidecar.minimized .sidecar-header-icon-wrapper {
   border: none;
   padding: 0;
 }
-sidecar.minimized .sidecar-header-icon {
+.kui--sidecar.minimized .sidecar-header-icon {
   width: 0;
   height: calc(0.375rem * 2 + 0.75rem); /* match sidecar.minimized flex-basis */
   flex: 1;
   transform-origin: 0% 0%;
   justify-content: flex-start;
 }
-sidecar.minimized .sidecar-bottom-stripe-left-bits {
+.kui--sidecar.minimized .sidecar-bottom-stripe-left-bits {
   align-items: unset;
 }
-sidecar.minimized .sidecar-bottom-stripe-left-bits .sidecar-header-icon-wrapper {
+.kui--sidecar.minimized .sidecar-bottom-stripe-left-bits .sidecar-header-icon-wrapper {
   padding: 0;
   margin: 0;
 }
-sidecar.minimized header.sidecar-header .sidecar-header-secondary-content,
-sidecar.minimized header.sidecar-header .sidecar-header-right-bits,
-sidecar.minimized .sidecar-header-name,
-sidecar.minimized .sidecar-content-container,
-sidecar.minimized .sidecar-header-icon-wrapper-for-namespace,
-sidecar.minimized .sidecar-bottom-stripe-left-bits > div:not(.sidecar-header-icon-wrapper),
-sidecar.minimized .sidecar-bottom-stripe-toolbar,
-sidecar.minimized .header-right-bits {
+.kui--sidecar.minimized header.sidecar-header .sidecar-header-secondary-content,
+.kui--sidecar.minimized header.sidecar-header .sidecar-header-right-bits,
+.kui--sidecar.minimized .sidecar-header-name,
+.kui--sidecar.minimized .sidecar-content-container,
+.kui--sidecar.minimized .sidecar-header-icon-wrapper-for-namespace,
+.kui--sidecar.minimized .sidecar-bottom-stripe-left-bits > div:not(.sidecar-header-icon-wrapper),
+.kui--sidecar.minimized .sidecar-bottom-stripe-toolbar,
+.kui--sidecar.minimized .header-right-bits {
   display: none;
   flex: 0;
   opacity: 0;
@@ -840,11 +850,11 @@ sidecar.minimized .header-right-bits {
   width: 0;
   height: 0;
 }
-sidecar.minimized .sidecar-header-icon-wrapper .sidecar-header-icon {
+.kui--sidecar.minimized .sidecar-header-icon-wrapper .sidecar-header-icon {
   transform: rotate(-90deg);
   transform-origin: center;
 }
-sidecar.minimized .sidecar-bottom-stripe {
+.kui--sidecar.minimized .sidecar-bottom-stripe {
   align-items: center;
   padding: 0 0.375em;
   box-shadow: none;
@@ -853,23 +863,23 @@ sidecar.minimized .sidecar-bottom-stripe {
   border-left: 1px solid var(--color-base03);
   border-bottom: none;
 }
-sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
+.kui--sidecar.minimized .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-close) {
   /*flex: 0;*/
   display: none;
 }
-sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
+.kui--sidecar.minimized .sidecar-bottom-stripe-button.sidecar-bottom-stripe-close {
   padding: 1ex 0;
   margin: 0;
   text-align: center;
 }
-sidecar.minimized .graphical-icon {
+.kui--sidecar.minimized .graphical-icon {
   justify-content: center;
   transform: scaleX(-1);
   height: unset !important;
   padding: 0 !important;
 }
-sidecar.minimized [data-balloon]:before,
-sidecar.minimized [data-balloon]:after {
+.kui--sidecar.minimized [data-balloon]:before,
+.kui--sidecar.minimized [data-balloon]:after {
   opacity: 0;
 }
 
@@ -894,45 +904,45 @@ sidecar.minimized [data-balloon]:after {
 }
 
 /* usage */
-sidecar .usage-error-wrapper .hideable {
+.kui--sidecar .usage-error-wrapper .hideable {
   background: transparent;
 }
-sidecar .page-content pre > code {
+.kui--sidecar .page-content pre > code {
   display: inline-block;
   white-space: pre-wrap;
   padding: 0;
   color: var(--color-base0E);
 }
-sidecar .result-table [data-tag="badge"].green-background:not(.badge-as-image):before {
+.kui--sidecar .result-table [data-tag="badge"].green-background:not(.badge-as-image):before {
   background-color: var(--color-green-sidecar);
 }
-sidecar [data-tag="badge"].yellow-background:not(.badge-as-image):before {
+.kui--sidecar [data-tag="badge"].yellow-background:not(.badge-as-image):before {
   background: var(--color-yellow-sidecar);
 }
-sidecar .result-table [data-tag="badge"].red-background:not(.badge-as-image):before {
+.kui--sidecar .result-table [data-tag="badge"].red-background:not(.badge-as-image):before {
   background: var(--color-red-sidecar);
 }
 /* Duplicate rule with line 2049 in ui.css */
-sidecar.activation-success-false .sidecar-header-icon {
+.kui--sidecar.activation-success-false .sidecar-header-icon {
   color: var(--color-red);
 }
-sidecar .sidecar-header [data-tag="badge"].version {
+.kui--sidecar .sidecar-header [data-tag="badge"].version {
   /* badge for resource version */
   background-color: var(--color-tag-ibm-fill);
   color: var(--color-tag-ibm-text);
 }
-sidecar .sidecar-header [data-tag="badge"].red-background {
+.kui--sidecar .sidecar-header [data-tag="badge"].red-background {
   background-color: var(--color-red);
   color: var(--color-base00);
 }
-sidecar .sidecar-header [data-tag="badge"].yellow-background {
+.kui--sidecar .sidecar-header [data-tag="badge"].yellow-background {
   background-color: var(--color-yellow);
   color: var(--color-base01);
 }
-sidecar .sidecar-header [data-tag="badge"].green-background {
+.kui--sidecar .sidecar-header [data-tag="badge"].green-background {
   background-color: var(--color-green);
 }
-sidecar .sidecar-header [data-tag="badge"].scope {
+.kui--sidecar .sidecar-header [data-tag="badge"].scope {
   background-color: var(--color-base0E);
   color: var(--color-base01);
 }
@@ -997,7 +1007,7 @@ body:not(.no-tooltips-anywhere)
   color: #e31a1c;
 }
 
-sidecar .sidecar-header-icon {
+.kui--sidecar .sidecar-header-icon {
   color: var(--color-name-sidecar);
 }
 
@@ -1014,7 +1024,7 @@ sidecar .sidecar-header-icon {
   color: var(--color-support-04);
 }
 
-sidecar .custom-content .log-field pre > code {
+.kui--sidecar .custom-content .log-field pre > code {
   padding: 1em;
 }
 
@@ -1026,13 +1036,13 @@ sidecar .custom-content .log-field pre > code {
   color: var(--color-text-inverted02);
 }
 
-sidecar.visible .kui--sidecar-header-and-body {
+.kui--sidecar.visible .kui--sidecar-header-and-body {
   display: flex;
   flex: 1;
   overflow-y: hidden;
 }
 
-sidecar .sidecar-content-container {
+.kui--sidecar .sidecar-content-container {
   flex-direction: column;
 }
 

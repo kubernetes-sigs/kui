@@ -2,8 +2,8 @@ export const CURRENT_TAB = 'tab.visible'
 export const TAB_N = (N: number) => `tab:nth-child(${N})`
 export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
-export const SIDECAR_BASE = `${CURRENT_TAB} sidecar`
-export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} sidecar.visible.maximized:not(.minimized)`
+export const SIDECAR_BASE = `${CURRENT_TAB} .kui--sidecar`
+export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} .kui--sidecar.visible.maximized:not(.minimized)`
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
 export const BOTTOM_PROMPT_BLOCK = `.kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`

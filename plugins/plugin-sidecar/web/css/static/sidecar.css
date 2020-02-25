@@ -4,7 +4,7 @@ body {
   --color-tab-selected-inverted: var(--color-brand-03);
 }
 
-sidecar.visible.kui--nav-view {
+.kui--sidecar.visible.kui--nav-view {
   flex: 3.5;
   font-size: 0.875em;
 
@@ -33,11 +33,11 @@ sidecar.visible.kui--nav-view {
   }
 }
 
-sidecar .bx--data-table {
+.kui--sidecar .bx--data-table {
   white-space: normal;
 }
 
-.kui--sidecar-inverted sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
+.kui--sidecar-inverted .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
   color: var(--color-text-inverted02);
 }
 
@@ -171,6 +171,6 @@ sidecar .bx--data-table {
   display: none !important;
 }
 
-sidecar.visible.maximized {
+.kui--sidecar.visible.maximized {
   flex-basis: 100%;
 }

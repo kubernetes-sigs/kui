@@ -28,28 +28,28 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
       .then(async () => {
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
-          return this.app.client.execute(() => {
+          return this.app.client.execute(sidecarSelector => {
             const imageSrc = document
-              .querySelector('sidecar')
+              .querySelector(sidecarSelector)
               .querySelector('.marked-content')
               .querySelector('img')
               .getAttribute('src')
             const fs = require('fs')
             return fs.statSync(`${__dirname}/${imageSrc}`)
-          })
+          }, Selectors.SIDECAR)
         }
 
         if (process.env.MOCHA_RUN_TARGET === 'webpack') {
-          return this.app.client.execute(() => {
+          return this.app.client.execute(sidecarSelector => {
             const imageSrc = document
-              .querySelector('sidecar')
+              .querySelector(sidecarSelector)
               .querySelector('.marked-content')
               .querySelector('img')
               .getAttribute('src')
             const image = new Image()
             image.src = `${window.location.origin}/${imageSrc}`
             if (image.height === 0) throw new Error(`image not found: ${window.location.origin}/${imageSrc}`)
-          })
+          }, Selectors.SIDECAR)
         }
       })
       .catch(Common.oops(this, true)))

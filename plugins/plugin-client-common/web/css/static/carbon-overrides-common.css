@@ -14,7 +14,7 @@ body a {
 }
 body div:not(:empty),
 repl,
-sidecar,
+.kui--sidecar,
 body th,
 body td {
   transition-property: background-color, border-color, opacity, filter;
@@ -22,15 +22,15 @@ body td {
   transition-timing-function: var(--transition-timing-function);
 }
 
-sidecar .bx--tabs,
-sidecar .bx--tabs .bx--tabs__nav,
-sidecar .bx--tabs .bx--tabs__nav li {
+.kui--sidecar .bx--tabs,
+.kui--sidecar .bx--tabs .bx--tabs__nav,
+.kui--sidecar .bx--tabs .bx--tabs__nav li {
   width: unset;
   min-height: unset;
   position: unset;
 }
-sidecar a.bx--tabs__nav-link,
-sidecar a.bx--tabs__nav-link:active {
+.kui--sidecar a.bx--tabs__nav-link,
+.kui--sidecar a.bx--tabs__nav-link:active {
   outline: none;
   width: unset;
   min-width: 8em;
@@ -40,12 +40,15 @@ li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {
   flex: 1;
 }
 
-body[kui-theme-style] sidecar .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
+body[kui-theme-style]
+  .kui--sidecar
+  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
+  .bx--tabs__nav-link {
   color: var(--color-text-01);
   border-color: var(--color-brand-03);
   opacity: 1;
 }
-body.subwindow[kui-theme-style] sidecar .bx--tabs__nav-item .bx--tabs__nav-link {
+body.subwindow[kui-theme-style] .kui--sidecar .bx--tabs__nav-item .bx--tabs__nav-link {
   font-size: 1.125vw;
   line-height: unset;
   height: unset;
@@ -70,8 +73,8 @@ a.kui--tab-navigatable:focus {
 
 a.kui-new-tab__plus:focus,
 a.kui-new-tab__plus:active,
-sidecar a.graphical-icon:focus,
-sidecar a.graphical-icon:active,
+.kui--sidecar a.graphical-icon:focus,
+.kui--sidecar a.graphical-icon:active,
 .sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:focus,
 .sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:active {
   outline: 2px solid var(--color-brand-03);

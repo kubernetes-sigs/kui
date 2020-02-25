@@ -165,7 +165,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <repl className="repl" id="main-repl">
+      <div className="repl" id="main-repl">
         <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)}>
           <Accordion>
             {this.state.blocks.map((_, idx) => (
@@ -185,7 +185,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             ))}
           </Accordion>
         </div>
-      </repl>
+      </div>
     )
   }
 }
