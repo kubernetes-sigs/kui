@@ -31,7 +31,8 @@ repl.sidecar-visible .repl-block {
   background: transparent;
 }
 .repl-block {
-  padding: 0.5em 0 0;
+  margin: 0.5em 0 0; /* margin vs padding to help with screenshot rubber banding */
+  padding: 0;
   display: flex;
   flex-direction: column;
 }

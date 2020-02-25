@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "Capturar instantánea",
+  "screenshotUsageHeader": "Capturar una instantánea, especificando opcionalmente qué zona de la ventana debe capturarse.",
+  "screenshotSidecarUsageDocs": "capturar la sección lateral de contenido",
+  "screenshotReplUsageDocs": "capturar el contenido de la línea de mandatos",
+  "screenshotLastUsageDocs": "capturar la salida del último mandato",
+  "screenshotFullUsageDocs": "capturar toda la página, incluyendo la cabecera",
+  "screenshotUsageDocs": "capturar toda la página, excepto la cabecera",
+  "screenshotWhichUsageDocs": "la zona que debe capturarse",
+  "screenshotNUsageDocs": "la zona n que debe capturarse",
+  "screenshotREPLError": "Ha solicitado la captura de pantalla de la salida de la última línea de mandatos, pero este es el primer mandato",
+  "screenshotSidecarNotOpen": "Ha solicitado la captura de pantalla de la sección lateral de contenido, pero no está abierta actualmente",
+  "screenshotInternalError": "No se ha podido identificar la región de pantalla que debe capturarse",
+  "Closing in {0} seconds": "Cerrando en {0} segundos",
+  "Save to desktop": "Guardar en escritorio",
+  "Screenshot copied to clipboard": "Captura de pantalla copiada en portapapeles",
+  "Successfully captured a screenshot to the clipboard": "Se ha capturado correctamente la captura de pantalla en el portapapeles"
+}

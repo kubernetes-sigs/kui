@@ -5,9 +5,5 @@
     "outDir": "mdist",
     "module": "esnext"
   },
-  "references": [
-    { "path": "./about/tsconfig-es6.json" },
-    { "path": "./screenshot/tsconfig-es6.json" },
-    { "path": "./tab-completion/tsconfig-es6.json" }
-  ]
+  "references": [{ "path": "./about/tsconfig-es6.json" }, { "path": "./tab-completion/tsconfig-es6.json" }]
 }

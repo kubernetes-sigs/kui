@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "Effectuer une capture d'écran",
+  "screenshotUsageHeader": "Effectuer une capture d'écran, éventuellement en indiquant la région de la fenêtre à capturer.",
+  "screenshotSidecarUsageDocs": "capturer le contenu du composant sidecar",
+  "screenshotReplUsageDocs": "capturer le contenu de la ligne de commande",
+  "screenshotLastUsageDocs": "capturer la sortie de la dernière commande",
+  "screenshotFullUsageDocs": "capturer la page entière, en-tête inclus",
+  "screenshotUsageDocs": "capturer la page entière, à l'exception de l'en-tête",
+  "screenshotWhichUsageDocs": "région à capturer",
+  "screenshotNUsageDocs": "énième région à capturer",
+  "screenshotREPLError": "Vous avez demandé la capture d'écran de la dernière sortie de la ligne de commande, or il s'agit de la première commande",
+  "screenshotSidecarNotOpen": "Vous avez demandé la capture d'écran du composant sidecar, mais celui-ci n'est pas ouvert actuellement",
+  "screenshotInternalError": "Impossible d'identifier la région d'écran à capturer",
+  "Closing in {0} seconds": "Fermeture dans {0} secondes",
+  "Save to desktop": "Sauvegarder sur le bureau",
+  "Screenshot copied to clipboard": "Capture d'écran copiée dans le presse-papiers",
+  "Successfully captured a screenshot to the clipboard": "Une capture d'écran a été capturée dans le presse-papiers"
+}

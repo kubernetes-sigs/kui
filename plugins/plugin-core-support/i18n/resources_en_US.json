@@ -5,16 +5,6 @@
   "Report full version": "Report full version",
   "helpUsageTitle": "Getting Started",
   "helpUsageHeader": "A summary of the top-level command structure",
-  "screenshotUsageTitle": "Capture screenshot",
-  "screenshotUsageHeader": "Capture a screenshot, optionally specifying which region of the window to capture.",
-  "screenshotReplUsageDocs": "capture the command line contents",
-  "screenshotLastUsageDocs": "capture the output of the last command",
-  "screenshotFullUsageDocs": "capture the entire page, including header",
-  "screenshotUsageDocs": "capture the entire page, except for header",
-  "screenshotWhichUsageDocs": "the region to capture",
-  "screenshotNUsageDocs": "the nth region to capture",
-  "screenshotREPLError": "You requested to screenshot the last command line output, but this is the first command",
-  "screenshotInternalError": "Could not identify the screen region to capture",
   "Tab": "Tab",
   "New Tab": "New Tab",
   "Theme": "Theme",
@@ -45,9 +35,5 @@
   "About": "About",
   "Getting Started": "Getting Started",
   "Configure": "Configure",
-  "Version": "Version",
-  "Closing in {0} seconds": "Closing in {0} seconds",
-  "Save to desktop": "Save to desktop",
-  "Screenshot copied to clipboard": "Screenshot copied to clipboard",
-  "Successfully captured a screenshot to the clipboard": "Successfully captured a screenshot to the clipboard"
+  "Version": "Version"
 }

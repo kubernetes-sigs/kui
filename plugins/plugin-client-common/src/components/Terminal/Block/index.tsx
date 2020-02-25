@@ -65,7 +65,7 @@ export default class Block extends React.PureComponent<Props, State> {
   public render() {
     return (
       <div
-        className={'repl-block ' + this.props.model.state.toString()}
+        className={'repl-block kui--screenshotable ' + this.props.model.state.toString()}
         data-base-class="repl-block"
         data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
         data-input-count={this.props.idx}

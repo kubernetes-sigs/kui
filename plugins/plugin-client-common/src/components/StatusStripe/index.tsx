@@ -20,6 +20,8 @@
 import * as React from 'react'
 import { SettingsAdjust16 as SettingsIcon } from '@carbon/icons-react'
 
+import Screenshot from '../Screenshot'
+
 export default class StatusStripe extends React.PureComponent {
   /**
    * User has clicked on the Settings icon.
@@ -55,6 +57,12 @@ export default class StatusStripe extends React.PureComponent {
     return (
       <div className="kui--status-stripe" id="kui--status-stripe">
         {this.widgets()}
+        <div className="kui--status-stripe-button">
+          <div className="kui--status-stripe-element">
+            <Screenshot />
+          </div>
+        </div>
+
         <div className="kui--status-stripe-button">
           <div className="kui--status-stripe-element">
             <a

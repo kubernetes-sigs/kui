@@ -1,0 +1,18 @@
+{
+  "screenshotUsageTitle": "Cattura schermata",
+  "screenshotUsageHeader": "Catturare una schermata, specificando facoltativamente l'area della finestra da catturare.",
+  "screenshotSidecarUsageDocs": "cattura i contenuti collaterali",
+  "screenshotReplUsageDocs": "cattura i contenuti di riga comandi",
+  "screenshotLastUsageDocs": "cattura l'output dell'ultimo comando",
+  "screenshotFullUsageDocs": "cattura l'intera pagina, inclusa l'intestazione",
+  "screenshotUsageDocs": "cattura l'intera pagina, tranne l'intestazione",
+  "screenshotWhichUsageDocs": "l'area da catturare",
+  "screenshotNUsageDocs": "l'ennesima area da catturare",
+  "screenshotREPLError": "È stato richiesto di catturare la schermata dell'ultimo output di riga comandi, ma questo è il primo comando",
+  "screenshotSidecarNotOpen": "È stato richiesto di catturare la schermata del sidecar, ma attualmente non è aperto",
+  "screenshotInternalError": "Impossibile identificare l'area della schermata da catturare",
+  "Closing in {0} seconds": "Chiusura tra {0} secondi",
+  "Save to desktop": "Salva sul desktop",
+  "Screenshot copied to clipboard": "Schermata copiata negli appunti",
+  "Successfully captured a screenshot to the clipboard": "Una schermata è stata catturata correttamente negli appunti"
+}
