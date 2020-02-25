@@ -15,18 +15,24 @@
  */
 
 import * as React from 'react'
+import * as Debug from 'debug'
+
 import { Loading } from '@kui-shell/plugin-client-common'
 import {
   Tab as KuiTab,
   ScalarResource,
   SupportedStringContent,
   MultiModalResponse,
+  isCommandStringContent,
   FunctionThatProducesContent,
   isScalarContent,
+  ScalarContent,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
 
 import KuiMMRContent from './KuiContent'
+
+const debug = Debug('plugins/sidecar/Eval')
 
 interface EvalProps {
   tab: KuiTab
@@ -84,7 +90,7 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
         this.setState({ isLoading: true })
 
         const done = (content: ScalarResource) => {
-          console.error('eval done', content)
+          debug('eval done', content)
           this.setState({ isLoading: false, content })
         }
 
@@ -92,16 +98,23 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
           // command string
           this.props.tab.REPL.qexec<ScalarResource>(this.props.command).then(done)
         } else {
-          // command function
-          Promise.resolve(this.props.command(this.props.tab, this.props.response)).then(content => {
-            if (isStringWithOptionalContentType(content)) {
-              this.setState({ isLoading: false, content: content.content, contentType: content.contentType })
-            } else if (isScalarContent(content)) {
-              done(content.content)
-            } else {
-              done(content)
-            }
-          })
+          Promise.resolve(this.props.command(this.props.tab, this.props.response))
+            .then(content => {
+              if (isCommandStringContent(content)) {
+                return this.props.tab.REPL.qexec<ScalarResource | ScalarContent>(content.contentFrom)
+              } else {
+                return content
+              }
+            })
+            .then(content => {
+              if (isStringWithOptionalContentType(content)) {
+                this.setState({ isLoading: false, content: content.content, contentType: content.contentType })
+              } else if (isScalarContent(content)) {
+                done(content.content)
+              } else {
+                done(content)
+              }
+            })
         }
       }
 
@@ -110,7 +123,7 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
 
     const mode = {
       content: this.state.content,
-      contentType: this.props.contentType
+      contentType: this.state.contentType
     }
 
     return <KuiMMRContent tab={this.props.tab} mode={mode} response={this.props.response} />
