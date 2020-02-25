@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { getCurrentTab } from './tab'
-import { getCurrentPrompt } from './prompt'
+import { Tab as KuiTab } from '@kui-shell/core'
 
-export const doPaste = (text: string, tab = getCurrentTab()) => {
+export const doPaste = (text: string, tab: KuiTab, prompt: HTMLInputElement) => {
   // const prompt = event.currentTarget
   const lines = text.split(/[\n\r]/)
 
@@ -30,8 +29,7 @@ export const doPaste = (text: string, tab = getCurrentTab()) => {
       return pasteLooper(idx + 1) */
     } else if (idx <= lines.length - 2) {
       // then this is a command line with a trailing newline
-      const prompt = getCurrentPrompt(tab)
-      const { pexec } = await import('../repl/exec')
+      const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
       await pexec(prompt.value + lines[idx], { tab })
       pasteLooper(idx + 1)
     } else {
@@ -48,7 +46,6 @@ export const doPaste = (text: string, tab = getCurrentTab()) => {
 
       // and, then, when we are done, will position the caret just
       // after the pasted text:
-      const prompt = getCurrentPrompt(tab)
       const newCaretPosition = prompt.selectionStart + lines[idx].length
 
       // note how this will either place the new text at the caret
@@ -74,13 +71,13 @@ export const doPaste = (text: string, tab = getCurrentTab()) => {
  * @return a Promise of when we will be done.
  *
  */
-export function onPasteAsync(event: ClipboardEvent): Promise<void> {
+export function onPasteAsync(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInputElement): Promise<void> {
   const text = event.clipboardData.getData('text')
   if (text) {
     // we'll handle it from here!
     event.preventDefault()
 
-    return doPaste(text)
+    return doPaste(text, tab, prompt)
   }
 }
 
@@ -88,6 +85,6 @@ export function onPasteAsync(event: ClipboardEvent): Promise<void> {
  * User has requested that we paste something from the clipboard
  *
  */
-export function onPaste(event: ClipboardEvent) {
-  onPasteAsync(event)
+export default function onPaste(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInputElement) {
+  onPasteAsync(event, tab, prompt)
 }

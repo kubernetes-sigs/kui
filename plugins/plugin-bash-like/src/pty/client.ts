@@ -31,8 +31,7 @@ import {
   ExecOptions,
   ParsedOptions,
   sameTab,
-  disableInputQueueing,
-  pasteQueuedInput
+  disableInputQueueing
 } from '@kui-shell/core'
 
 import ChannelId from './channel-id'
@@ -596,9 +595,9 @@ async function initOnMessage(
 
           reject(error)
         } else {
-          if (queuedInput && queuedInput.length > 0) {
-            pasteQueuedInput(queuedInput)
-          }
+          /* if (queuedInput && queuedInput.length > 0) {
+            p_nope_asteQueuedInput(queuedInput)
+          } */
 
           resolve(true)
         }

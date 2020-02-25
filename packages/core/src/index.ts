@@ -128,11 +128,10 @@ export {
 } from './webapp/themes/persistence'
 
 // CLI
-export { getPrompt, getCurrentPrompt } from './webapp/prompt'
+export { getCurrentPrompt } from './webapp/prompt'
 export { getCurrentBlock } from './webapp/block'
 export { Block } from './webapp/models/block'
-export { onPaste } from './webapp/paste'
-export { disableInputQueueing, pasteQueuedInput } from './webapp/queueing'
+export { disableInputQueueing } from './webapp/queueing'
 
 // generic UI
 export { isPopup } from './webapp/popup-core'
