@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/core-support/preload')
 debug('loading')
 
-import { isHeadless, inBrowser, PreloadRegistration } from '@kui-shell/core'
+import { isHeadless, PreloadRegistration } from '@kui-shell/core'
 
 /**
  * This is the module
@@ -29,11 +29,6 @@ const registration: PreloadRegistration = () => {
 
   if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
-  }
-
-  if (!isHeadless() && !inBrowser()) {
-    // in webpack, use the default text-search bar of browser
-    asyncs.push(import('./lib/text-search').then(_ => _.default()))
   }
 
   return Promise.all(asyncs)

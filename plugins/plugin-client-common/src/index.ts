@@ -39,6 +39,7 @@ declare global {
   }
 }
 
+export { default as Search } from './components/Search'
 export { default as Loading } from './components/Loading'
 export { default as HTMLDom } from './components/Scalar/HTMLDom'
 export { default as InputStripe } from './components/InputStripe'

@@ -26,28 +26,32 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
   it('should add grumble to the repl', () =>
     CLI.command('grumble', this.app)
       .then(ReplExpect.error(127))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
   it('should add another grumble to the repl', () =>
     CLI.command('grumble', this.app)
       .then(ReplExpect.error(127))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
   it('should add bojangles to the repl', () =>
     CLI.command('bojangles', this.app)
       .then(ReplExpect.error(127))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it('should open the search bar when cmd+f is pressed', async () => {
     await this.app.client.keys([Keys.ctrlOrMeta, 'f'])
     await this.app.client.waitForVisible('#search-bar')
+
+    await this.app.client.waitUntil(async () => {
+      return this.app.client.hasFocus('#search-input')
+    }, CLI.waitTimeout)
   })
 
-  it('should not close the search bar if pressing esc outside of search input', async () => {
+  xit('should not close the search bar if pressing esc outside of search input', async () => {
     await this.app.client.click(Selectors.CURRENT_PROMPT_BLOCK)
     await this.app.client.keys(Keys.ESCAPE)
     await this.app.client.waitForVisible('#search-bar')
   })
 
-  it('should focus on search input when search input is pressed', async () => {
+  xit('should focus on search input when search input is pressed', async () => {
     await this.app.client.waitUntil(async () => {
       await this.app.client.click('#search-input')
       const hasFocus = await this.app.client.hasFocus('#search-input')
@@ -55,9 +59,9 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
     })
   })
 
-  it('should close the search bar if pressing esc in search input', async () => {
-    await this.app.client.setValue('#search-input', Keys.ESCAPE)
-    await this.app.client.waitForVisible('#search-bar', 2000, true) // reverse: true
+  it('should close the search bar via ctrl+f', async () => {
+    await this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
+    await this.app.client.waitForVisible('#search-bar', 20000, true) // reverse: true
   })
 
   // re-open, so that we can test the close button
@@ -82,7 +86,7 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
 
   it('should find 4 matches for grumble', async () => {
     try {
-      this.app.client.keys([Keys.ctrlOrMeta, 'f'])
+      this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
       await this.app.client.waitForVisible('#search-bar')
       await this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'))
       await this.app.client.waitUntil(async () => {
@@ -91,19 +95,19 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
         return txt === '4 matches' // two executions plus two 'Command not found: grumble' matches, and no tab title match!
       })
     } catch (err) {
-      await Common.oops(this)(err)
+      await Common.oops(this, true)(err)
     }
   })
 
   // 1 match test
-  it('should close the search bar if clicking the close button', () =>
+  it('should close the search bar via ctrl+f', () =>
     this.app.client
-      .click('#search-close-button')
+      .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
   it('should find 3 matches for bojangles', () =>
     this.app.client
-      .keys([Keys.ctrlOrMeta, 'f'])
+      .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
       .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() =>
@@ -113,28 +117,29 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
           return txt === '3 matches' // one execution, plus one "Command not found: bojangles" match, plus one tab title match
         })
       )
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   // no matches test
-  it('should close the search bar if clicking the close button', () =>
-    this.app.client
-      .click('#search-close-button')
+  it('should close the search bar via ctrl+f', async () => {
+    return this.app.client
+      .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true))
+  })
   // re-open, so that we can test entering text and hitting enter
   it('should find nothing when searching for waldo', () =>
     this.app.client
-      .keys([Keys.ctrlOrMeta, 'f'])
+      .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
       .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
       .then(() =>
         this.app.client.waitUntil(async () => {
           await this.app.client.setValue('#search-input', `waldo${Keys.ENTER}`)
           const txt = await this.app.client.getText('#search-found-text')
-          return txt === 'no matches'
+          return txt === 'No matches'
         })
       )
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   // paste test; reload first to start with a clean slate in the text search box
   it('should reload the app', () => Common.refresh(this))

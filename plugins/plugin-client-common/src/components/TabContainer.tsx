@@ -17,6 +17,7 @@
 import * as React from 'react'
 import { eventBus } from '@kui-shell/core'
 
+import Search from './Search'
 import TabModel from './TabModel'
 import TabContent from './TabContent'
 import TopTabStripe from './TopTabStripe'
@@ -150,6 +151,7 @@ export default class TabContainer extends React.PureComponent<{}, State> {
           onCloseTab={(idx: number) => this.onCloseTab(idx)}
           onSwitchTab={(idx: number) => this.onSwitchTab(idx)}
         />
+        <Search />
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
             <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state}>
