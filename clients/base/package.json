@@ -15,7 +15,6 @@
   "dependencies": {
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/plugin-manager": "file:/tmp/kui-packs/kui-shell-plugin-manager.tgz",
-    "@kui-shell/plugin-tutorials": "file:/tmp/kui-packs/kui-shell-plugin-tutorials.tgz",
     "@kui-shell/client": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz"
   },
