@@ -15,17 +15,10 @@
  */
 
 import Debug from 'debug'
-const debug = Debug('webapp/cli/listen')
-debug('loading')
 
-import { inBrowser, inElectron } from '../core/capabilities'
+import { inBrowser, inElectron, KeyCodes, eventBus, doCancel, Tab, getTabId, Block } from '@kui-shell/core'
 
-import { keys } from './keys'
-import doCancel from './cancel'
-import eventBus from '../core/events'
-import { Tab, getTabId } from './tab'
-import { Block } from './models/block'
-import { Prompt } from './prompt'
+const debug = Debug('Terminal/Block/OnKeyDown')
 
 interface MSIETextRange {
   collapse: (val: boolean) => void
@@ -64,56 +57,45 @@ const updateInputAndMoveCaretToEOL = (input: HTMLInputElement, newValue: string)
   setTimeout(() => setCaretPositionToEnd(input), 0)
 }
 
-export function onKeyPress(tab: Tab, block: Block, prompt: Prompt) {
-  return async (event: KeyboardEvent) => {
-    const char = event.keyCode
-    if (char === keys.ENTER) {
-      // user typed Enter; we've finished Reading, now Evalute
-      const { doEval } = await import('../repl/exec')
-      doEval(tab, block, prompt)
-    }
-  }
-}
-
-export function onKeyDown(tab: Tab, block: Block, prompt: Prompt) {
+export default function onKeyDown(tab: Tab, block: Block, prompt: HTMLInputElement) {
   return async (event: KeyboardEvent) => {
     const char = event.keyCode
 
-    if (char === keys.UP || (char === keys.P && event.ctrlKey)) {
+    if (char === KeyCodes.UP || (char === KeyCodes.P && event.ctrlKey)) {
       // go to previous command in history
-      const historyModel = (await import('../models/history')).default
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
       const newValue = (historyModel.previous() || { raw: '' }).raw
       if (newValue) {
         updateInputAndMoveCaretToEOL(prompt, newValue)
       }
-    } else if (char === keys.D && event.ctrlKey) {
+    } else if (char === KeyCodes.D && event.ctrlKey) {
       if (prompt.value === '') {
         // <-- only if the line is blank
         debug('exit via ctrl+D')
-        const { pexec } = await import('../repl/exec')
+        const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
         pexec('exit')
       }
-    } else if (char === keys.PAGEUP) {
+    } else if (char === KeyCodes.PAGEUP) {
       if (inBrowser()) {
         debug('pageup')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
       }
-    } else if (char === keys.PAGEDOWN) {
+    } else if (char === KeyCodes.PAGEDOWN) {
       if (inBrowser()) {
         debug('pagedown')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
       }
-    } else if (char === keys.C && event.ctrlKey) {
+    } else if (char === KeyCodes.C && event.ctrlKey) {
       // Ctrl+C, cancel
       doCancel(tab, block) // eslint-disable-line @typescript-eslint/no-use-before-define
-    } else if (char === keys.U && event.ctrlKey) {
+    } else if (char === KeyCodes.U && event.ctrlKey) {
       // clear line
       prompt.value = ''
     } else if (
-      (char === keys.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
-      (process.platform === 'darwin' && char === keys.K && event.metaKey)
+      (char === KeyCodes.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
+      (process.platform === 'darwin' && char === KeyCodes.K && event.metaKey)
     ) {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
@@ -123,21 +105,21 @@ export function onKeyDown(tab: Tab, block: Block, prompt: Prompt) {
       // restore the prompt cursor position
       // debug('restoring cursor position', currentCursorPosition)
       // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-    } else if (char === keys.HOME) {
+    } else if (char === KeyCodes.HOME) {
       // go to first command in history
-      const historyModel = (await import('../models/history')).default
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
       const newValue = historyModel.first().raw
       if (newValue) {
         updateInputAndMoveCaretToEOL(prompt, newValue)
       }
-    } else if (char === keys.END) {
+    } else if (char === KeyCodes.END) {
       // go to last command in history
-      const historyModel = (await import('../models/history')).default
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
       const newValue = (historyModel.last() || { raw: '' }).raw
       updateInputAndMoveCaretToEOL(prompt, newValue)
-    } else if (char === keys.DOWN || (char === keys.N && event.ctrlKey)) {
+    } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
       // going DOWN past the last history item will result in '', i.e. a blank line
-      const historyModel = (await import('../models/history')).default
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
       const newValue = (historyModel.next() || { raw: '' }).raw
       updateInputAndMoveCaretToEOL(prompt, newValue)
     }

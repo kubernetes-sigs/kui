@@ -116,7 +116,7 @@ export const handleQueuedInput = async (nextBlock: HTMLElement) => {
         // if the user also hit a trailing newline, make sure to trigger a doEval
         if (lines.length - firstNonBlank > 1) {
           const { doEval } = await import('../repl/exec')
-          await doEval(getTabFromTarget(nextBlock), nextBlock, nextPrompt)
+          await doEval(getTabFromTarget(nextBlock), nextBlock, nextPrompt.value.trim())
 
           // lastly, if the user typed more than one newline, handle
           // the rest via a doPaste

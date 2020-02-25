@@ -15,9 +15,11 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab, onPaste, onKeyDown, onKeyPress } from '@kui-shell/core'
+import { Tab as KuiTab, onPaste } from '@kui-shell/core'
 import { InlineLoading as Loading } from 'carbon-components-react'
 
+import onKeyDown from './OnKeyDown'
+import onKeyPress from './OnKeyPress'
 import { BlockModel, isActive, isOk, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
 
 import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'

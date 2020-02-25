@@ -57,7 +57,6 @@ import { getModel } from '../commands/tree'
 import { isSuccessfulCommandResolution } from '../commands/resolution'
 
 import { Tab, getCurrentTab, getTabId } from '../webapp/tab'
-import { Prompt } from '../webapp/prompt'
 import { Block } from '../webapp/models/block'
 
 import * as minimist from 'yargs-parser'
@@ -449,8 +448,8 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
  * User hit enter in the REPL
  *
  */
-export const doEval = (tab: Tab, block: Block, prompt: Prompt) => {
-  const command = prompt.value.trim()
+export const doEval = (tab: Tab, block: Block, command: string) => {
+  //  const command = prompt.value.trim()
 
   // otherwise, this is a plain old eval, resulting from the user hitting Enter
   return exec(command, new DefaultExecOptionsForTab(tab, block))
