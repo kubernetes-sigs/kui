@@ -85,6 +85,11 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     }
   }
 
+  /** matching the old `flex: 3.5` compared to `flex: 4` for the Terminal */
+  protected defaultWidth() {
+    return '46.67%'
+  }
+
   private getState(tab: Tab, response: NavResponse): State {
     // get state from each of the left navigation
     const navigations = Object.entries(response).map(([title, mmr]) => {
