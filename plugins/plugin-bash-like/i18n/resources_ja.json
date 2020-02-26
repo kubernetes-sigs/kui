@@ -14,6 +14,8 @@
   "lsDashSUsageDocs": "サイズでファイルをソート",
   "openUsageTitle": "ファイルを開く",
   "openUsageHeader": "ファイルの内容を表示",
+  "Edit": "編集",
+  "View": "表示",
   "localFilePath": "ローカル・ファイル・パス",
   "not a repo": "レポではありません",
   "Please wait while we connect to your cloud": "クラウドに接続しています。お待ちください",
