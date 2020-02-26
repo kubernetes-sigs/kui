@@ -49,6 +49,7 @@ sidecar .bx--data-table {
   }
 
   .bx--side-nav {
+    z-index: unset;
     position: unset;
     background-color: var(--color-background-inverted02);
     color: var(--color-text-inverted02);
@@ -132,6 +133,9 @@ sidecar .bx--data-table {
     display: flex;
     flex-direction: column;
     overflow-y: hidden;
+
+    /* carbon override */
+    padding: 0;
 
     &[aria-hidden="true"] {
       display: none;

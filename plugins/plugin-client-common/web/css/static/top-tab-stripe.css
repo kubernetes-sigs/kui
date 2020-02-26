@@ -119,9 +119,6 @@ body.subwindow:not(.sidecar-is-minimized) .left-tab-stripe {
 body.not-electron .repl-input {
   padding-left: 0.375rem;
 }
-body:not(.subwindow) .repl-prompt-right-elements {
-  padding-right: 0.375rem;
-}
 
 .left-tab-stripe-button svg circle,
 .left-tab-stripe-button svg path {

@@ -6,7 +6,7 @@
   color: var(--color-selection-foreground);
 }
 html,
-body,
+body[kui-theme-style],
 .page,
 .main,
 .kui--full-height,
@@ -15,7 +15,7 @@ body,
   max-height: 100%;
   overflow-x: hidden;
 }
-body {
+body[kui-theme-style] {
   font-size: 1em;
   font-weight: 400;
   margin: 0;
@@ -27,18 +27,18 @@ body {
   flex-direction: column;
   user-select: text;
 }
-body a.plain-anchor {
+body[kui-theme-style] a.plain-anchor {
   color: inherit;
   text-decoration: none;
   transition: none;
 }
-body a {
+body[kui-theme-style] a {
   transition-property: color;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-body a:hover:not(.plain-anchor) {
+body[kui-theme-style] a:hover:not(.plain-anchor) {
   cursor: pointer;
 }
 
@@ -46,7 +46,7 @@ body a:hover:not(.plain-anchor) {
 body.still-loading .left-tab-stripe {
   display: none;
 }
-body .page > .header {
+body[kui-theme-style] .page > .header {
   /* only allow mouse dragging on top-most header */
   -webkit-app-region: drag;
 }
@@ -1825,16 +1825,16 @@ body.oops-total-catastrophe #restart-needed-warning {
   margin-top: 0.5ex;
 }
 
-body {
+body[kui-theme-style] {
   font-family: var(--font-sans-serif);
   background-color: var(--color-ui-01);
   color: var(--color-text-01);
 }
 
-body a {
+body[kui-theme-style] a {
   color: var(--color-brand-01);
 }
-body a:hover:not(.plain-anchor) {
+body[kui-theme-style] a:hover:not(.plain-anchor) {
   color: var(--color-support-04);
 }
 
