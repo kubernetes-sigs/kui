@@ -26,7 +26,7 @@ describe('Confirm dialog', function(this: Common.ISuite) {
   it('should not do anything if user cancels', () => {
     return CLI.command('confirm "echo hello"', this.app)
       .then(() => this.app.client.waitForExist('#confirm-dialog'))
-      .then(() => this.app.client.click('#confirm-dialog .close-button'))
+      .then(() => this.app.client.click('#confirm-dialog .bx--btn--secondary'))
       .then(() =>
         ReplExpect.okWithCustom({
           expect: 'Confirmation modal pop up'

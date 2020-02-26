@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,6 @@ export {
 export { ToolbarText } from './webapp/views/toolbar-text'
 
 // low-level UI
-export { partial as partialInput } from './webapp/prompt'
 export { default as doCancel } from './webapp/cancel'
 export { default as ElementMimic } from './util/element-mimic'
 export { keys as KeyCodes, isCursorMovement } from './webapp/keys'
