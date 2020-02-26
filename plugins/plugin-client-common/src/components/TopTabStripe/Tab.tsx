@@ -76,6 +76,8 @@ export default class Tab extends React.PureComponent<Props, State> {
           // ignore nested, which means one plugin calling another
           this.setState({ processing: false })
         }
+
+        this.setState({ processing: false })
       }
     }
 
