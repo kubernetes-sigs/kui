@@ -15,16 +15,12 @@
  */
 
 import { getCurrentBlock } from './block'
-import { getCurrentTab, getTabFromTarget } from './tab'
+import { getCurrentTab } from './tab'
 
-import { ExecOptions, DefaultExecOptions } from '../models/execOptions'
+import { ExecOptions } from '../models/execOptions'
 
 export interface Prompt extends HTMLInputElement {
   execOptions?: ExecOptions
-}
-
-export const getBlockOfPrompt = (prompt: HTMLInputElement): HTMLElement => {
-  return prompt.parentElement.parentElement
 }
 
 export const getPrompt = (block: HTMLElement): Prompt => {
@@ -33,43 +29,4 @@ export const getPrompt = (block: HTMLElement): Prompt => {
 
 export const getCurrentPrompt = (tab = getCurrentTab()): Prompt => {
   return getPrompt(getCurrentBlock(tab))
-}
-
-export const getPromptFromTarget = (target: EventTarget): HTMLInputElement => {
-  return getCurrentPrompt(getTabFromTarget(target))
-}
-
-/**
- * Paste a command, but do not eval it
- *
- */
-export const partial = (cmd: string, execOptions: ExecOptions = new DefaultExecOptions()) => {
-  const prompt = getCurrentPrompt()
-  if (prompt) {
-    // debug('applying partial', cmd)
-    prompt.value = cmd
-    prompt.execOptions = execOptions
-    prompt.classList.add('repl-partial')
-    prompt.focus()
-    setTimeout(() => prompt.classList.remove('repl-partial'), 1000)
-  } else {
-    // debug('retrying partial', cmd)
-    setTimeout(() => partial(cmd, execOptions), 100)
-  }
-}
-
-/**
- * A plugin temporary wishes to manage the prompt, e.g. reverse-i-search
- *
- */
-export function setUsingCustomPrompt(block: HTMLElement) {
-  block.classList.add('using-custom-prompt')
-}
-
-/**
- * A plugin temporary wishes to relinquish management of the prompt
- *
- */
-export function unsetUsingCustomPrompt(block: HTMLElement) {
-  block.classList.remove('using-custom-prompt')
 }

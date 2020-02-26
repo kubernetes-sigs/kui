@@ -533,7 +533,6 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
           title,
           header,
           docs = header || title,
-          partial = false,
           allowed,
           defaultValue
         } = rowData
@@ -610,12 +609,7 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
             cmdPart.classList.add('clickable-blatant')
             cmdPart.setAttribute('tabindex', '0')
             cmdPart.onclick = async () => {
-              const Prompt = await import('../webapp/prompt')
-              if (partial) {
-                return Prompt.partial(commandForExec(alias, command) + `${partial === true ? '' : ' ' + partial}`)
-              } else {
-                return pexec(commandForExec(command, name !== command ? name : undefined))()
-              }
+              return pexec(commandForExec(command, name !== command ? name : undefined))()
             }
           }
         }

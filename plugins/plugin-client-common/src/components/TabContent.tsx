@@ -19,6 +19,7 @@ import { eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui
 import SplitPane from 'react-split-pane'
 
 import Cleaner from './cleaner'
+import Confirm from './Confirm'
 import Loading from './Loading'
 import ScrollableTerminal from './Terminal/ScrollableTerminal'
 
@@ -206,6 +207,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
             </SplitPane>
           </div>
         </div>
+        {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
       </tab>
     )
   }

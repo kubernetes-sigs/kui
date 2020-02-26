@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import '../../../web/css/static/confirm.css'
+import { isHeadless, Registrar } from '@kui-shell/core'
 
-export default function() {
-  // no-op
+import confirm from './controller/confirm'
+
+export default (registrar: Registrar) => {
+  if (!isHeadless()) {
+    confirm(registrar)
+  }
 }

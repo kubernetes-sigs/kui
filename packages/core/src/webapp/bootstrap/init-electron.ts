@@ -103,8 +103,9 @@ export function init() {
 
       if (prefs && prefs.partialExec) {
         // document.body.classList.add('repl-lite')
-        const { partial } = await import('../prompt')
-        partial(command)
+        // const { partial } = await import('../prompt')
+        // partial(command)
+        console.error('partial input unsupported', command)
       } else {
         const { pexec } = await import('../../repl/exec')
         const noEcho = prefs && prefs.noEcho // don't echo the command, just do it
