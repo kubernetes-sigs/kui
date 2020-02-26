@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
+import { Tab } from './tab'
 import { getCurrentBlock } from './block'
-import { getCurrentTab } from './tab'
 
-import { ExecOptions } from '../models/execOptions'
+type Prompt = HTMLInputElement
 
-export interface Prompt extends HTMLInputElement {
-  execOptions?: ExecOptions
-}
-
-export const getPrompt = (block: HTMLElement): Prompt => {
+const getPrompt = (block: HTMLElement): Prompt => {
   return block && block.querySelector && block.querySelector('input')
 }
 
-export const getCurrentPrompt = (tab = getCurrentTab()): Prompt => {
+export const getCurrentPrompt = (tab: Tab): Prompt => {
   return getPrompt(getCurrentBlock(tab))
 }

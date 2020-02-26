@@ -14,18 +14,54 @@
  * limitations under the License.
  */
 
-import { readdir } from 'fs'
+import { lstat, realpath, readdir } from 'fs'
 import { basename, join, dirname as pathDirname } from 'path'
 
-import { Tab, Arguments, CommandLine, Registrar, expandHomeDir } from '@kui-shell/core'
-
 import {
-  shellescape,
-  isDirectory,
+  Tab,
+  Arguments,
+  CommandLine,
+  Registrar,
+  expandHomeDir,
   registerTabCompletionEnumerator,
   TabCompletionSpec,
   CompletionResponse
-} from '@kui-shell/plugin-core-support/tab-completion'
+} from '@kui-shell/core'
+
+/**
+ * Is the given filepath a directory?
+ *
+ */
+const isDirectory = (filepath: string): Promise<boolean> =>
+  new Promise<boolean>((resolve, reject) => {
+    lstat(filepath, (err, stats) => {
+      if (err) {
+        reject(err)
+      } else {
+        if (stats.isSymbolicLink()) {
+          // debug('following symlink')
+          // TODO: consider turning these into the better async calls?
+          return realpath(filepath, (err, realpath) => {
+            if (err) {
+              reject(err)
+            } else {
+              isDirectory(realpath)
+                .then(resolve)
+                .catch(reject)
+            }
+          })
+        }
+
+        resolve(stats.isDirectory())
+      }
+    })
+  }).catch(err => {
+    if (err.code === 'ENOENT') {
+      return false
+    } else {
+      throw err
+    }
+  })
 
 /**
  * Tab completion handler for local files
@@ -36,11 +72,11 @@ async function completeLocalFiles(
   commandLine: CommandLine,
   { toBeCompleted }: TabCompletionSpec
 ): Promise<CompletionResponse[]> {
-  return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete ${toBeCompleted}`)).content
+  return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete -- "${toBeCompleted}"`)).content
 }
 
 function doComplete(args: Arguments) {
-  const last = args.command.substring(args.command.indexOf('fscomplete ') + 'fscomplete '.length)
+  const last = args.command.substring(args.command.indexOf('-- ') + '-- '.length).replace(/^"(.*)"$/, '$1')
 
   // dirname will "foo" in the above example; it
   // could also be that last is itself the name
@@ -59,11 +95,11 @@ function doComplete(args: Arguments) {
           console.error('fs.readdir error', err)
           reject(err)
         } else {
-          const partial = shellescape(basename(last) + (lastIsDir ? '/' : ''))
+          const partial = basename(last) + (lastIsDir ? '/' : '')
           const partialHasADot = partial.startsWith('.')
 
           const matches: string[] = files.filter(_f => {
-            const f = shellescape(_f)
+            const f = _f
 
             // exclude dot files from tab completion, also emacs ~ temp files just for fun
             return (
@@ -76,16 +112,20 @@ function doComplete(args: Arguments) {
           })
 
           // add a trailing slash to any matched directory names
+          const lastHasPath = /\//.test(last)
           resolve({
             mode: 'raw',
             content: await Promise.all(
               matches.map(async match => {
                 const completion = lastIsDir ? match : match.substring(partial.length)
 
+                // show a special label only if we have a dirname prefix
+                const label = lastHasPath ? basename(match) : undefined
+
                 if (await isDirectory(join(dirToScan, match))) {
-                  return `${completion}/`
+                  return { completion: `${completion}/`, label: label ? `${label}/` : undefined }
                 } else {
-                  return { completion, addSpace: true }
+                  return { completion, addSpace: true, label }
                 }
               })
             )

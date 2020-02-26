@@ -1,6 +1,6 @@
 {
   "rawMode": "raw",
-  "No such file or directory": "No such file or directory",
+  "No such file or directory": "No such file or directory: {0}",
   "cdUsageTitle": "change working directory",
   "cdUsageHeader": "Update the current working directory for local filesystem manipulations",
   "lsUsageTitle": "local file list",

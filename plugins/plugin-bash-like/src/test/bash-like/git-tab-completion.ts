@@ -125,13 +125,15 @@ describe(suiteName, function(this: Common.ISuite) {
 
   pit(`should tab complete ${branch3} without any options`, () => {
     // since branch3 is distinctly named
-    return tabby(this.app, `git checkout ${branch3.charAt(0)}`, `git checkout ${branch3}`)
+    return tabby(this, `git checkout ${branch3.charAt(0)}`, `git checkout ${branch3}`)
   })
 
   pit(`should tab complete branch names with options`, () => {
+    const prefix = commonBranchNamePrefix.charAt(0)
+
     return tabbyWithOptions(
-      this.app,
-      `git checkout ${commonBranchNamePrefix.charAt(0)}`, // e.g. git checkout b<tab>
+      this,
+      `git checkout ${prefix}`, // e.g. git checkout b<tab>
       [branch1, branch2],
       `git checkout ${branch1}`,
       {

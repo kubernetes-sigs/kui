@@ -53,11 +53,11 @@ describe('command history', function(this: Common.ISuite) {
     try {
       const res = await CLI.command('history 5 lls', this.app)
       const N = await ReplExpect.okWithCustom({ passthrough: true })(res)
-      const selector = `${Selectors.LIST_RESULTS_N(N)}:first-child .entity-name`
+      const selector = `${Selectors.LIST_RESULTS_N(N)}:last-child .entity-name`
       await this.app.client.click(selector)
       return ReplExpect.okWith('README.md')({ app: this.app, count: N + 1 })
     } catch (err) {
-      Common.oops(this)(err)
+      Common.oops(this, true)(err)
     }
   })
 

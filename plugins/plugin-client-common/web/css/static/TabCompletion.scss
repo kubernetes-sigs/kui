@@ -1,0 +1,39 @@
+.kui--tab-completions {
+  .kui--tab-completions--option {
+    .bx--btn--primary {
+      background-color: transparent;
+      color: var(--color-text-01);
+      padding: 0.1875em 0.5em;
+      border: none;
+      max-width: unset;
+      min-height: unset;
+
+      &:hover {
+        /* overriding some bits from the common bx-btn-primary css */
+        filter: none;
+        background: none;
+
+        text-decoration: underline;
+      }
+
+      &:focus {
+        border: none;
+        box-shadow: none;
+        color: var(--color-brand-02);
+        background-color: var(--color-base03);
+      }
+    }
+
+    a {
+      white-space: pre;
+    }
+
+    .kui--tab-completions--option-partial {
+      color: var(--var-text-02);
+    }
+
+    .kui--tab-completions--option-completion {
+      color: var(--color-name);
+    }
+  }
+}

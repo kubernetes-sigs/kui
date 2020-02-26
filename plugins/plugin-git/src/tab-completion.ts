@@ -15,8 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Tab, CommandLine } from '@kui-shell/core'
-import { registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/plugin-core-support/tab-completion'
+import { Tab, CommandLine, registerTabCompletionEnumerator, TabCompletionSpec } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/tab-completion/git')
 
