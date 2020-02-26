@@ -20,7 +20,7 @@ import { mode1, mode2, mode3, button, mode5, badge1, badge2 } from './lib/modes'
 
 export default async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
-    registrar.registerModes(mode1, mode2, mode3, button, mode5)
+    registrar.registerModes(button, mode1, mode2, mode5, mode3)
     registrar.registerBadges(badge1, badge2)
   }
 }
