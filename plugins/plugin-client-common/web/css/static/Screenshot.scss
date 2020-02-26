@@ -19,14 +19,22 @@ body {
 }
 
 .kui--screenshot-active {
-  .kui--screenshot-tooltip {
+  .bx--tooltip.kui--screenshot-tooltip {
     display: initial;
     top: unset !important;
-    bottom: 2em;
+    bottom: 2.25em;
+  }
+}
+.bx--tooltip.kui--screenshot-tooltip {
+  background: var(--color-ui-03);
 
-    .kui--screenshot-tooltip-text {
-      font-size: 0.875em;
-    }
+  .bx--tooltip__caret {
+    border-bottom-color: var(--color-ui-03);
+    border-left-color: var(--color-base01);
+    border-right-color: var(--color-base01);
+  }
+  .kui--screenshot-tooltip-text {
+    font-size: 0.875em;
   }
 }
 
@@ -45,7 +53,7 @@ sidecar.kui--screenshotable {
     cursor: copy !important;
     outline: 2px dashed var(--color-base05);
     background-color: var(--color-base04);
-    filter: sepia(0.25);
+    filter: sepia(0.875);
 
     /* occlude everything else */
     box-shadow: 0 0 0 1000px rgba(20, 20, 20, 0.7);
@@ -53,42 +61,44 @@ sidecar.kui--screenshotable {
   }
 }
 
-.bx--toast-notification--success {
-  border-color: var(--color-ok);
+[kui-theme-style] {
+  .bx--toast-notification--success {
+    border-color: var(--color-ok);
 
-  svg.bx--toast-notification__icon {
-    & {
-      stroke: var(--color-ok);
-    }
-    path {
-      fill: unset;
+    svg.bx--toast-notification__icon {
+      & {
+        stroke: var(--color-ok);
+      }
+      path {
+        fill: unset;
+      }
     }
   }
-}
 
-.bx--toast-notification--info,
-.bx--toast-notification--success {
-  position: absolute;
-  bottom: 2em;
-  right: 0em;
-  width: 28em;
-  height: auto;
-  z-index: 5;
-
-  background: var(--color-screenshot-background);
-  color: var(--color-screenshot-foreground);
-
-  .kui--screenshot-captured-bottom-message {
-    /* bookend the spacing with the top text */
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .screenshot-image {
-    width: 100%;
+  .bx--toast-notification--info,
+  .bx--toast-notification--success {
+    position: absolute;
+    bottom: 2em;
+    right: 0em;
+    width: 28em;
     height: auto;
-    max-height: 17em;
-    object-fit: contain;
-    object-position: top left;
+    z-index: 5;
+
+    background: var(--color-screenshot-background);
+    color: var(--color-screenshot-foreground);
+
+    .kui--screenshot-captured-bottom-message {
+      /* bookend the spacing with the top text */
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .screenshot-image {
+      width: 100%;
+      height: auto;
+      max-height: 17em;
+      object-fit: contain;
+      object-position: top left;
+    }
   }
 }

@@ -47,6 +47,11 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 
 .repl-block {
+  .bx--inline-loading {
+    /* carbon override */
+    min-height: unset;
+  }
+
   .repl-output {
     .ok {
       font-size: 0.875em;
