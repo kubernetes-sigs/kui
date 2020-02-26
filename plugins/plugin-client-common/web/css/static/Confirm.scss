@@ -1,0 +1,26 @@
+body[kui-theme-style] {
+  /* provide default values for these color classes */
+  --color-confirm-background: var(--color-base01);
+  --color-confirm-foreground: var(--color-base06);
+}
+
+#confirm-dialog {
+  .bx--modal-container {
+    background-color: var(--color-confirm-background);
+    color: var(--color-confirm-foreground);
+  }
+
+  .bx--modal-close:focus {
+    border-color: var(--color-brand-01);
+  }
+
+  .bx--modal-container {
+    border-top-color: var(--color-red);
+  }
+
+  .bx--btn--danger {
+    background-color: var(--color-red);
+    border-color: var(--color-red);
+    color: var(--color-text-01);
+  }
+}

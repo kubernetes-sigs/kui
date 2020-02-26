@@ -25,7 +25,6 @@ import prompt from './lib/cmds/prompt'
 import sleep from './lib/cmds/sleep'
 import history from './lib/cmds/history/history'
 import tabManagement from './lib/cmds/tab-management'
-import confirm from './lib/cmds/confirm'
 
 // import updater from './lib/admin/updater'
 
@@ -43,8 +42,7 @@ export default async (commandTree: Registrar) => {
     prompt(commandTree),
     sleep(commandTree),
     history(commandTree),
-    tabManagement(commandTree),
-    confirm(commandTree)
+    tabManagement(commandTree)
   ])
 
   if (!isHeadless()) {
