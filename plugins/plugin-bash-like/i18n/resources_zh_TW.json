@@ -14,6 +14,8 @@
   "lsDashSUsageDocs": "依大小排序檔案",
   "openUsageTitle": "開啟舊檔",
   "openUsageHeader": "檢視檔案內容",
+  "Edit": "編輯",
+  "View": "檢視",
   "localFilePath": "本端檔案路徑",
   "not a repo": "不是儲存庫",
   "Please wait while we connect to your cloud": "我們正在連接至您的雲端，請稍候",
