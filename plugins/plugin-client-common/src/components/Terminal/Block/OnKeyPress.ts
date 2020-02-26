@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { Tab, Block, KeyCodes } from '@kui-shell/core'
+import Input from './Input'
 
-export default function onKeyPress(tab: Tab, block: Block, prompt: HTMLInputElement) {
-  return async (event: KeyboardEvent) => {
-    const char = event.keyCode
-    if (char === KeyCodes.ENTER) {
-      // user typed Enter; we've finished Reading, now Evalute
-      const { doEval } = await import('@kui-shell/core')
-      doEval(tab, block, prompt.value.trim())
-    }
+export default async function onKeyPress(this: Input, event: KeyboardEvent) {
+  const char = event.key
+  if (char === 'Enter') {
+    // user typed Enter; we've finished Reading, now Evalute
+    const { doEval } = await import('@kui-shell/core')
+    doEval(this.props.tab, this.props._block, this.state.prompt.value.trim())
   }
 }

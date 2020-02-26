@@ -128,8 +128,6 @@ export {
 } from './webapp/themes/persistence'
 
 // CLI
-export { getCurrentPrompt } from './webapp/prompt'
-export { getCurrentBlock } from './webapp/block'
 export { Block } from './webapp/models/block'
 export { disableInputQueueing } from './webapp/queueing'
 
@@ -200,3 +198,13 @@ export { default as boot } from './webapp/bootstrap/boot'
 
 // Sessions
 export { initializeSession } from './session/init'
+
+// Tab Completion
+
+export {
+  registerEnumerator as registerTabCompletionEnumerator,
+  TabCompletionSpec,
+  CompletionResponse,
+  isStringResponse,
+  applyEnumerator as findCompletions
+} from './repl/tab-completion'

@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import * as React from 'react'
 
-import { inBrowser, KeyCodes, isCursorMovement, HistoryModel, History } from '@kui-shell/core'
+import { inBrowser, isCursorMovement, HistoryModel, History } from '@kui-shell/core'
 
 import Input from './Input'
 
@@ -146,48 +146,46 @@ export default class ActiveISearch {
  * Listen for ctrl+R
  *
  */
-export function onKeyUp(input: Input) {
-  return async (evt: KeyboardEvent) => {
-    //
-    // we want ctrl+R; but if we're in a browser and on linux or
-    // windows, then ctrl+R will result in a browser reload :(
-    //
-    // Note: even if not in a browser (i.e. running in electron mode),
-    // on linux and windows we have to be careful not to use the
-    // default reload keyboard shortcut; see app/src/main/menu.js
-    //
-    // re: RUNNING_SHELL_TEST; there seems to be some weird bug here; on linux, the ctrlKey modifier becomes sticky
-    if (
-      evt.ctrlKey &&
-      (process.platform === 'darwin' ||
-        /Macintosh/.test(navigator.userAgent) ||
-        (!inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
-        evt.metaKey)
-    ) {
-      const activeSearch = input.state.isearch
+export async function onKeyUp(this: Input, evt: KeyboardEvent) {
+  //
+  // we want ctrl+R; but if we're in a browser and on linux or
+  // windows, then ctrl+R will result in a browser reload :(
+  //
+  // Note: even if not in a browser (i.e. running in electron mode),
+  // on linux and windows we have to be careful not to use the
+  // default reload keyboard shortcut; see app/src/main/menu.js
+  //
+  // re: RUNNING_SHELL_TEST; there seems to be some weird bug here; on linux, the ctrlKey modifier becomes sticky
+  if (
+    evt.ctrlKey &&
+    (process.platform === 'darwin' ||
+      /Macintosh/.test(navigator.userAgent) ||
+      (!inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
+      evt.metaKey)
+  ) {
+    const activeSearch = this.state.isearch
 
-      if (evt.keyCode === KeyCodes.R) {
-        debug('got ctrl+r')
-        if (activeSearch) {
-          debug('continuation of existing reverse-i-search')
-          activeSearch.doSearch(evt)
-        } else {
-          debug('new reverse-i-search')
-          input.setState({ isearch: new ActiveISearch(input, await History(input.props.tab)) })
-        }
-      } else if (activeSearch && isCursorMovement(evt)) {
-        activeSearch.completeSearch()
-      } else if (activeSearch) {
-        // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
-        debug('cancel', evt.keyCode)
-        activeSearch.cancelISearch()
+    if (evt.key === 'r') {
+      debug('got ctrl+r')
+      if (activeSearch) {
+        debug('continuation of existing reverse-i-search')
+        activeSearch.doSearch(evt)
+      } else {
+        debug('new reverse-i-search')
+        this.setState({ isearch: new ActiveISearch(this, await History(this.props.tab)) })
       }
-    } else if (evt.keyCode === KeyCodes.ENTER && input.state.isearch) {
-      input.state.isearch.completeSearch()
-      input.props.tab.REPL.pexec(input.state.isearch.currentMatch() || input.state.prompt.value)
-    } else if (input.state.isearch && evt.key !== 'Control') {
-      evt.preventDefault()
-      input.state.isearch.doSearch(evt)
+    } else if (activeSearch && isCursorMovement(evt)) {
+      activeSearch.completeSearch()
+    } else if (activeSearch) {
+      // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
+      debug('cancel', evt.keyCode)
+      activeSearch.cancelISearch()
     }
+  } else if (evt.key === 'Enter' && this.state.isearch) {
+    this.state.isearch.completeSearch()
+    this.props.tab.REPL.pexec(this.state.isearch.currentMatch() || this.state.prompt.value)
+  } else if (this.state.isearch && evt.key !== 'Control') {
+    evt.preventDefault()
+    this.state.isearch.doSearch(evt)
   }
 }

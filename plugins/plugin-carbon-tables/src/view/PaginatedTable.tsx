@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable, getCurrentPrompt } from '@kui-shell/core'
+import { Tab, REPL, Table as KuiTable } from '@kui-shell/core'
 
 import * as React from 'react'
 import { DataTable, DataTableHeader, TableContainer, Table, Pagination } from 'carbon-components-react'
@@ -28,14 +28,6 @@ import { pageSize } from '@kui-shell/client/config.d/tables.json'
 
 /** import the kui theme alignment */
 import '../../web/css/static/carbon-kui-theme-alignment.css'
-
-/** refocus the current prompt */
-function focusRepl() {
-  const prompt = getCurrentPrompt()
-  if (prompt) {
-    prompt.focus()
-  }
-}
 
 /** parameters to PaginatedTable component */
 export interface Props<T extends KuiTable = KuiTable> {
@@ -123,7 +115,6 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
           .concat([rows.length])}
         onChange={pagination => {
           this.setState(pagination)
-          focusRepl()
         }}
       />
     )

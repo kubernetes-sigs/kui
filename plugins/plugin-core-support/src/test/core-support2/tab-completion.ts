@@ -30,11 +30,9 @@ describe('Tab completion core', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/'].map(_ =>
-    join(ROOT, 'data/core', _)
-  )
+  const options = ['core_empty.js', 'core_single_entry_directory/', 'core_test_directory_1/']
 
-  const fileOptions = ['empty1.js', 'empty2.js'].map(_ => join(ROOT, 'data/core/core_test_directory_1', _))
+  const fileOptions = ['empty1.js', 'empty2.js']
 
   const tmp1 = tmpDirSync()
   touch(join(tmp1.name, 'foo bar'))
@@ -43,23 +41,27 @@ describe('Tab completion core', function(this: Common.ISuite) {
   touch(join(tmp2.name, 'foo bar1'))
   touch(join(tmp2.name, 'foo bar2'))
 
-  Common.localIt('should tab complete file with spaces unique', () => {
-    return tabby(this.app, `lls ${join(tmp1.name, 'foo')}`, `lls ${join(tmp1.name, 'foo bar')}`)
+  Common.localIt('should tab complete the ../../packages/core directory', () =>
+    tabby(this, `lls ${ROOT}/../../../packages/co`, `lls ${ROOT}/../../../packages/core/`)
+  )
+
+  Common.localIt(`should tab complete file with spaces unique ${tmp1.name}`, () => {
+    return tabby(this, `lls ${join(tmp1.name, 'foo')}`, `lls ${join(tmp1.name, 'foo bar')}`)
   })
 
   Common.localIt('should tab complete file with spaces unique with dash option', () => {
-    return tabby(this.app, `lls -l ${join(tmp1.name, 'foo')}`, `lls -l ${join(tmp1.name, 'foo bar')}`)
+    return tabby(this, `lls -l ${join(tmp1.name, 'foo')}`, `lls -l ${join(tmp1.name, 'foo bar')}`)
   })
 
   Common.localIt('should tab complete file with spaces unique with backslash escape', () => {
-    return tabby(this.app, `lls ${join(tmp1.name, 'foo\\ ')}`, `lls ${join(tmp1.name, 'foo bar')}`)
+    return tabby(this, `lls ${join(tmp1.name, 'foo\\ ')}`, `lls ${join(tmp1.name, 'foo bar')}`)
   })
 
-  Common.localIt('should tab complete file with spaces non-unique yoyoyoyo', () => {
+  Common.localIt('should tab complete file with spaces non-unique', () => {
     return tabbyWithOptions(
-      this.app,
+      this,
       `lls ${join(tmp2.name, 'foo')}`,
-      [join(tmp2.name, 'foo bar1'), join(tmp2.name, 'foo bar2')],
+      ['foo bar1', 'foo bar2'],
       `lls ${join(tmp2.name, 'foo\\ bar1')}`,
       { click: 0 }
     )
@@ -67,9 +69,9 @@ describe('Tab completion core', function(this: Common.ISuite) {
 
   Common.localIt('should tab complete file with spaces non-unique with dash option', () => {
     return tabbyWithOptions(
-      this.app,
+      this,
       `lls -l ${join(tmp2.name, 'foo')}`,
-      [join(tmp2.name, 'foo bar1'), join(tmp2.name, 'foo bar2')],
+      ['foo bar1', 'foo bar2'],
       `lls -l ${join(tmp2.name, 'foo\\ bar1')}`,
       { click: 0 }
     )
@@ -77,27 +79,27 @@ describe('Tab completion core', function(this: Common.ISuite) {
 
   Common.localIt('should tab complete file with spaces non-unique with backslash escape', () => {
     return tabbyWithOptions(
-      this.app,
+      this,
       `lls ${join(tmp2.name, 'foo\\ ')}`,
-      [join(tmp2.name, 'foo\\ bar1'), join(tmp2.name, 'foo\\ bar2')],
+      ['foo bar1', 'foo bar2'],
       `lls ${join(tmp2.name, 'foo\\ bar2')}`,
       { click: 1 }
     )
   })
 
   Common.localIt('should tab complete file with spaces unique with backslash escape variant 2', () => {
-    return tabby(this.app, `lls ${join(tmp2.name, 'foo\\ bar1')}`, `lls ${join(tmp2.name, 'foo bar1')}`)
+    return tabby(this, `lls ${join(tmp2.name, 'foo\\ bar1')}`, `lls ${join(tmp2.name, 'foo bar1')}`)
   })
 
   // tab completion of directories
   Common.localIt('should complete on the single-entry directory', () =>
-    tabby(this.app, `lls ${ROOT}/data/core/core_single_entry_dir`, `lls ${ROOT}/data/core/core_single_entry_directory/`)
+    tabby(this, `lls ${ROOT}/data/core/core_single_entry_dir`, `lls ${ROOT}/data/core/core_single_entry_directory/`)
   )
 
   // tab completion of a directory, auto-completing the single entry in the directory
   Common.localIt('should complete on the single-entry directory', () =>
     tabby(
-      this.app,
+      this,
       `lls ${ROOT}/data/core/core_single_entry_directory/`,
       `lls ${ROOT}/data/core/core_single_entry_directory/only_one_file_here_please.js`
     )
@@ -105,18 +107,18 @@ describe('Tab completion core', function(this: Common.ISuite) {
 
   // tab completion of a dot file
   Common.localIt('should complete on a dot file', () =>
-    tabby(this.app, `lls ${ROOT}/data/core/.dot-file-for-`, `lls ${ROOT}/data/core/.dot-file-for-tests`)
+    tabby(this, `lls ${ROOT}/data/core/.dot-file-for-`, `lls ${ROOT}/data/core/.dot-file-for-tests`)
   )
 
   // tab completion with options, then click on the second (idx=1) entry of the expected cmpletion list
   Common.localIt('should tab complete local file path with options then click on second', () =>
-    tabbyWithOptions(this.app, `lls ${ROOT}/data/core/core_`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
+    tabbyWithOptions(this, `lls ${ROOT}/data/core/core_`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
       click: 1
     })
   )
 
   Common.localIt('should tab complete local file path with options, expect prompt update', () =>
-    tabbyWithOptions(this.app, `lls ${ROOT}/data/core/co`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
+    tabbyWithOptions(this, `lls ${ROOT}/data/core/co`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
       click: 1,
       expectedPromptAfterTab: `lls ${ROOT}/data/core_`
     })
@@ -125,7 +127,7 @@ describe('Tab completion core', function(this: Common.ISuite) {
   // tab completion with file options, then click on the first (idx=0) entry of the expected cmpletion list
   Common.localIt('should tab complete local file path with options then click on first', () =>
     tabbyWithOptions(
-      this.app,
+      this,
       `lls ${ROOT}/data/core/core_test_directory_1/em`,
       fileOptions,
       `lls ${ROOT}/data/core/core_test_directory_1/empty1.js`,
@@ -133,24 +135,22 @@ describe('Tab completion core', function(this: Common.ISuite) {
     )
   )
 
-  Common.localIt('should tab complete the data directory', () => tabby(this.app, `lls ${ROOT}/da`, `lls ${ROOT}/data/`))
+  Common.localIt('should tab complete the data directory', () => tabby(this, `lls ${ROOT}/da`, `lls ${ROOT}/data/`))
   Common.localIt('should tab complete the data/core/empty.js file', () =>
-    tabby(this.app, `lls ${ROOT}/data/core/empty.js`, `lls ${ROOT}/data/core/empty.json`)
-  )
-  Common.localIt('should tab complete the ../../packages/core directory', () =>
-    tabby(this.app, `lls ${ROOT}/../../../packages/co`, `lls ${ROOT}/../../../packages/core/`)
+    tabby(this, `lls ${ROOT}/data/core/empty.js`, `lls ${ROOT}/data/core/empty.json`)
   )
 
   // same, but this time tab to cycle through the options
   Common.localIt('should tab complete local file path', () =>
-    tabbyWithOptions(this.app, `lls ${ROOT}/data/core/core_`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
+    tabbyWithOptions(this, `lls ${ROOT}/data/core/core_`, options, `lls ${ROOT}/data/core/core_single_entry_dir/`, {
       nTabs: 1
     })
   )
 
   Common.localIt('should tab complete local file path, then options go away on edit', () =>
-    tabbyWithOptionsThenCancel(this.app, `lls ${ROOT}/data/core/core_`, options)
+    tabbyWithOptionsThenCancel(this, `lls ${ROOT}/data/core/core_`, options)
   )
 
-  Common.remoteIt('should tab complete version command', () => tabby(this.app, 'vers', 'version'))
+  // not supported right now. see https://github.com/IBM/kui/pull/3717
+  // Common.remoteIt('should tab complete version command', () => tabby(this, 'vers', 'version'))
 })

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2017-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
  * If there is nothing happening, then terminate the current prompt
  * and start a new one
  *
- * TODO cancel the actual command?
- *
  */
 
 import eventBus from '../core/events'
@@ -30,7 +28,6 @@ import { Block } from './models/block'
 import { ExecType } from '../models/command'
 
 export default function doCancel(tab: Tab, block: Block) {
-  block.className = `${block.getAttribute('data-base-class')} cancelled`
   block.isCancelled = true
 
   const execUUID = block.getAttribute('data-uuid')

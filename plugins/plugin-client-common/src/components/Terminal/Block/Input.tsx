@@ -21,27 +21,24 @@ import { InlineLoading as Loading } from 'carbon-components-react'
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
+import { TabCompletionState } from './TabCompletion'
+import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import { BlockModel, isActive, isOk, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
 
 import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
 
-import ActiveISearch, { onKeyUp } from './ActiveISearch'
-
 interface Props {
-  // needed temporarily to make pty/client happy
+  /** needed temporarily to make pty/client happy */
   _block: HTMLElement
 
-  // for listen, which may go away soon
+  /** for key handlers, which may go away soon */
   tab: KuiTab
 
+  /** state of the Block, e.g. Processing? Active/accepting input? */
   model: BlockModel
 }
 
 interface State {
-  onKeyDown: (evt: KeyboardEvent) => void
-  onKeyPress: (evt: KeyboardEvent) => void
-  onKeyUp: (evt: KeyboardEvent) => void
-
   /** the execution ID for this prompt, if any */
   execUUID?: string
 
@@ -50,6 +47,9 @@ interface State {
 
   /** state of active reverse-i-search */
   isearch?: ActiveISearch
+
+  /** state of tab completion */
+  tabCompletion?: TabCompletionState
 }
 
 export default class Input extends React.PureComponent<Props, State> {
@@ -57,9 +57,6 @@ export default class Input extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      onKeyDown: undefined,
-      onKeyPress: undefined,
-      onKeyUp: onKeyUp(this),
       execUUID: hasUUID(props.model) && props.model.execUUID,
       prompt: undefined
     }
@@ -73,12 +70,7 @@ export default class Input extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if (state.prompt && isActive(props.model) && !state.onKeyPress) {
-      return {
-        onKeyPress: onKeyPress(props.tab, props._block, state.prompt),
-        onKeyDown: onKeyDown(props.tab, props._block, state.prompt)
-      }
-    } else if (hasUUID(props.model)) {
+    if (hasUUID(props.model)) {
       return {
         execUUID: props.model.execUUID
       }
@@ -87,8 +79,6 @@ export default class Input extends React.PureComponent<Props, State> {
       // <input/> because react aggressively caches these
       return {
         prompt: undefined,
-        onKeyDown: undefined,
-        onKeyPress: undefined,
         execUUID: undefined
       }
     }
@@ -145,9 +135,9 @@ export default class Input extends React.PureComponent<Props, State> {
     if (active) {
       setTimeout(() => this.state.prompt.focus())
 
-      const kp = active && !this.state.isearch ? evt => this.state.onKeyPress(evt.nativeEvent) : undefined
-      const kd = active && !this.state.isearch ? evt => this.state.onKeyDown(evt.nativeEvent) : undefined
-      const ku = active ? evt => this.state.onKeyUp(evt.nativeEvent) : undefined
+      const kp = active && !this.state.isearch ? onKeyPress.bind(this) : undefined
+      const kd = active && !this.state.isearch ? onKeyDown.bind(this) : undefined
+      const ku = active ? onKeyUp.bind(this) : undefined
       const op =
         active && !this.state.isearch ? evt => onPaste(evt.nativeEvent, this.props.tab, this.state.prompt) : undefined
 
@@ -238,9 +228,19 @@ export default class Input extends React.PureComponent<Props, State> {
   public render() {
     return (
       <div className="repl-input">
-        {this.prompt()}
-        {this.input()}
-        {this.status()}
+        <div style={{ flex: 1 }}>
+          <div
+            className="flex-layout"
+            style={{
+              flex: 1
+            }}
+          >
+            {this.prompt()}
+            {this.input()}
+            {this.status()}
+          </div>
+          {this.state.tabCompletion && this.state.tabCompletion.render()}
+        </div>
       </div>
     )
   }

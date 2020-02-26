@@ -214,7 +214,7 @@ async function kuiglob({
     // we found nothing; be careful only to report a 404 if: a) user
     // specified no wildcards b) none of the inputs were directories;
     // e.g. `ls emptyDir` will glob nothing, but shouldn't be a 404
-    const error: CodedError = new Error(strings('No such file or directory'))
+    const error: CodedError = new Error(strings('No such file or directory', inputs.join(' ')))
     error.code = 404
     throw error
   }

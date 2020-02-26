@@ -47,12 +47,27 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
 }
 
 .repl-block {
+  .repl-input {
+    align-items: center;
+
+    input {
+      /* make equal to height after right-elements, including inline-loading */
+      height: 20px;
+    }
+  }
+
   .bx--inline-loading {
     /* carbon override */
     min-height: unset;
   }
 
   .repl-output {
+    .repl-result {
+      pre:empty {
+        display: none;
+      }
+    }
+
     .ok {
       font-size: 0.875em;
       color: var(--color-ok);
@@ -96,13 +111,13 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
   &.valid-response .repl-input svg {
     position: unset;
     fill: var(--color-ok);
-    width: 20px;
-    height: 20px;
+    /*    width: 20px;
+    height: 20px;*/
   }
   &.error .repl-input svg {
     position: unset;
     fill: var(--color-error);
-    width: 20px;
-    height: 20px;
+    /*    width: 20px;
+    height: 20px;*/
   }
 }

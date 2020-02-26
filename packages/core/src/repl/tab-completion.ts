@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Tab, CommandLine, flatten } from '@kui-shell/core'
+import { Tab } from '../webapp/tab'
+import { flatten } from '../core/utility'
+import { CommandLine } from '../models/command'
 
 /**
  * A registrar for enumerators
