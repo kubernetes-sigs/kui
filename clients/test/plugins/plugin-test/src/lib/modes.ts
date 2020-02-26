@@ -82,6 +82,7 @@ export const mode5 = {
     label: 'mode5 label',
     content: () => ({
       contentFrom: 'test string',
+      order: 999,
       contentType: 'text/plain' as const
     })
   }
