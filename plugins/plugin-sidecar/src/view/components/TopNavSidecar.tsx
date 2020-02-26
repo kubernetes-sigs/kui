@@ -47,7 +47,7 @@ interface State extends BaseState {
 }
 
 export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): State {
-  const allModes = response.modes.slice(0)
+  let allModes = response.modes.slice(0)
 
   // consult the view registrar for registered view modes
   // relevant to this resource
@@ -58,15 +58,19 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Stat
     addRelevantModes(tab, allModes, command, response)
   }
 
+  // obey the `order` constraints of the modes
+  allModes = allModes.sort((a, b) => {
+    return (a.order || 0) - (b.order || 0)
+  })
+
   // defaultMode: if the response specified one, then look for it;
   // otherwise, use the mode that considers itself default;
   // otherwise use the first
-  const defaultModeFromResponse = response.defaultMode ? allModes.findIndex(_ => _.mode === response.defaultMode) : -1
-  const defaultModeFromModel =
-    defaultModeFromResponse === -1 ? allModes.findIndex(_ => _.defaultMode) : defaultModeFromResponse
-  const defaultMode = defaultModeFromModel === -1 ? 0 : defaultModeFromModel
-
   const tabs = allModes.filter(_ => !isButton(_))
+  const defaultModeFromResponse = response.defaultMode ? tabs.findIndex(_ => _.mode === response.defaultMode) : -1
+  const defaultModeFromModel =
+    defaultModeFromResponse === -1 ? tabs.findIndex(_ => _.defaultMode) : defaultModeFromResponse
+  const defaultMode = defaultModeFromModel === -1 ? 0 : defaultModeFromModel
 
   // re: as any: yay tsc, there are several open issue for this;
   // it's related to isButton using generics
