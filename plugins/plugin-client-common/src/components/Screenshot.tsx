@@ -159,15 +159,16 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         <ToastNotification
           id="screenshot-captured"
           timeout={timeout}
-          kind="info"
+          kind="success"
           title={strings('Screenshot')}
-          caption={strings('Successfully captured a screenshot to the clipboard')}
+          subtitle={strings('Successfully captured a screenshot to the clipboard')}
+          caption=""
           onCloseButtonClick={() => this.setState({ isActive: false, captured: undefined })}
         >
           <div className="flex-layout">
             <img src={this.state.captured.toDataURL()} className="screenshot-image" />
           </div>
-          <div className="small-top-pad">{this.saveToDiskButton()}</div>
+          <div className="kui--screenshot-captured-bottom-message">{this.saveToDiskButton()}</div>
         </ToastNotification>
       )
     }
@@ -186,7 +187,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         this.activate()
       }
 
-      return { isActive }
+      return { isActive, captured: undefined }
     })
   }
 
