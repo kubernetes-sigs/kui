@@ -350,10 +350,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .header .clickable.oops {
   font-weight: 900;
 }
-.repl-input {
-  align-items: center;
-  min-height: 1.25em; /* so that when the sidecar is open (and the right-elements are display:none) we don't get a height adjustment */
-}
 .repl-input,
 .repl-output {
   display: flex;
