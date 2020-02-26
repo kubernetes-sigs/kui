@@ -14,6 +14,8 @@
   "lsDashSUsageDocs": "按大小对文件进行排序",
   "openUsageTitle": "打开文件",
   "openUsageHeader": "查看文件的内容",
+  "Edit": "编辑",
+  "View": "查看",
   "localFilePath": "本地文件路径",
   "not a repo": "不是存储库",
   "Please wait while we connect to your cloud": "正在连接到云，请稍候",

@@ -14,6 +14,8 @@
   "lsDashSUsageDocs": "크기별 파일 정렬",
   "openUsageTitle": "파일 열기",
   "openUsageHeader": "파일의 컨텐츠 보기",
+  "Edit": "편집",
+  "View": "보기",
   "localFilePath": "로컬 파일 경로",
   "not a repo": "저장소 아님",
   "Please wait while we connect to your cloud": "클라우드에 연결하는 동안 기다려 주십시오.",

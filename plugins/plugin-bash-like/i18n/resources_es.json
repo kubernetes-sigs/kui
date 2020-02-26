@@ -14,6 +14,8 @@
   "lsDashSUsageDocs": "Ordenar archivos por tamaño",
   "openUsageTitle": "abrir archivo",
   "openUsageHeader": "Ver el contenido de un archivo",
+  "Edit": "Editar",
+  "View": "Ver",
   "localFilePath": "vía de acceso de archivo local",
   "not a repo": "no es un repositorio",
   "Please wait while we connect to your cloud": "Espere mientras se conecta a su nube",
