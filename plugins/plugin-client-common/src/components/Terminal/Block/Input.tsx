@@ -16,14 +16,13 @@
 
 import * as React from 'react'
 import { Tab as KuiTab } from '@kui-shell/core'
-import { InlineLoading as Loading } from 'carbon-components-react'
 
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
-import { BlockModel, isActive, isOk, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
+import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
 
 import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
 
@@ -197,6 +196,11 @@ export default class Input extends React.PureComponent<Props, State> {
         // "true" means a blank response; don't display any statusIcon bits in this case
         // also don't display statusIcon bits for "active" blocks, i.e. those accepting Input
         return (
+          <span className="bx--inline-loading__text">
+            {this.props.model.startTime && this.props.model.startTime.toLocaleTimeString()}
+          </span>
+        )
+        /*        return (
           <div className={isProcessing(this.props.model) ? 'fade-in2' : undefined}>
             <Loading
               status={isProcessing(this.props.model) ? 'active' : isOk(this.props.model) ? 'finished' : 'error'}
@@ -204,7 +208,7 @@ export default class Input extends React.PureComponent<Props, State> {
               description={this.props.model.startTime && this.props.model.startTime.toLocaleTimeString()}
             />
           </div>
-        )
+        ) */
       }
     } catch (err) {
       console.error(err)
