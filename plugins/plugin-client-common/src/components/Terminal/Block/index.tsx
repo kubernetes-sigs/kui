@@ -15,11 +15,12 @@
  */
 
 import * as React from 'react'
+import { AccordionItem } from 'carbon-components-react'
 import { Tab as KuiTab } from '@kui-shell/core'
 
 import Input from './Input'
 import Output from './Output'
-import { BlockModel, isFinished, isProcessing, hasUUID } from './BlockModel'
+import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from './BlockModel'
 
 interface Props {
   idx: number
@@ -62,24 +63,51 @@ export default class Block extends React.PureComponent<Props, State> {
     }
   }
 
+  private input() {
+    return (
+      <Input tab={this.props.tab} model={this.props.model} _block={this.state._block} ref={c => (this._input = c)} />
+    )
+  }
+
+  /**
+   * For Active or Empty blocks, just show the <Input/>, otherwise
+   * wrap the <Input/>-<Output/> pair around an <AccordionItem/>
+   *
+   * Notes: if you attempt to use an <AccordionItem/> for the Active
+   * state, you may find that hitting return for command execution
+   * percolates till a click on the accordion, thus collapsing it; the
+   * net result is all valid, except that the accordion is closed when
+   * the command execution completes. I can't replicate this at human
+   * speed, but the tests trigger it. Furtheermore, it is important to
+   * do this for Empty as well as Active, so that e.g. typing
+   * "foo<Ctrl+c>" results in preservation of the aborted "foo" text;
+   * i.e. we need to keep the same <Input/> instance for this
+   * Active-to-Empty state transition, otherwise React will re-render
+   * a new <Input/> element, thus losing the input.value of the
+   * <input> element that underlies <Input/>.
+   *
+   */
   public render() {
     return (
       <div
         className={'repl-block kui--screenshotable ' + this.props.model.state.toString()}
-        data-base-class="repl-block"
         data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
         data-input-count={this.props.idx}
         ref={c => this.setState({ _block: c })}
       >
-        {this.state._block && (
-          <Input
-            tab={this.props.tab}
-            model={this.props.model}
-            _block={this.state._block}
-            ref={c => (this._input = c)}
-          />
+        {isActive(this.props.model) || isEmpty(this.props.model) ? (
+          this.input()
+        ) : (
+          <AccordionItem
+            open
+            onKeyDown={event => event.stopPropagation()}
+            onMouseDown={event => event.preventDefault()}
+            iconDescription=""
+            title={this.input()}
+          >
+            {this.output()}
+          </AccordionItem>
         )}
-        {this.output()}
       </div>
     )
   }

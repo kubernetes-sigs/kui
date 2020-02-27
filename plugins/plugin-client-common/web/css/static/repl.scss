@@ -121,3 +121,62 @@ body:not(.subwindow) repl.sidecar-visible .repl-block,
     height: 20px;*/
   }
 }
+
+.repl-block {
+  &.repl-active .bx--accordion__arrow {
+    display: none;
+  }
+  &.error .bx--accordion__arrow {
+    fill: var(--color-error);
+  }
+  &.valid-response .bx--accordion__arrow {
+    fill: var(--color-ok);
+  }
+  &.processing .bx--accordion__arrow {
+    fill: var(--color-processing);
+    animation: spin 2s infinite linear;
+  }
+
+  .bx--accordion__item {
+    &,
+    &:last-child {
+      border: none;
+    }
+
+    .bx--accordion__heading {
+      color: var(--color-text-01);
+      padding: 0;
+      font-size: inherit;
+
+      &:hover::before {
+        background-color: unset;
+      }
+
+      .bx--accordion__title {
+        font-size: unset;
+        line-height: unset;
+        letter-spacing: unset;
+        margin: 0;
+      }
+
+      .bx--accordion__arrow {
+        margin: 2px 0 0;
+      }
+    }
+
+    .bx--accordion__content {
+      padding: 0;
+    }
+
+    &:not(.bx--accordion__item--active) {
+      /* collapsed accordion */
+      .repl-prompt-right-elements {
+        display: none;
+      }
+      .bx--accordion__arrow:not(:hover) {
+        opacity: 1;
+        fill: var(--color-text-01);
+      }
+    }
+  }
+}
