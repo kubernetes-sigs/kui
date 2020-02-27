@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { i18n } from '@kui-shell/core'
-import { Camera20, CameraAction20 } from '@carbon/icons-react'
+import { Camera16 as Camera, CameraAction16 as CameraAction } from '@carbon/icons-react'
 import { ToastNotification, Tooltip } from 'carbon-components-react'
 import { Event, NativeImage } from 'electron'
 
@@ -210,7 +210,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
               onClick={onClick}
               data-active={active}
             >
-              {active ? <CameraAction20 ref={ref} /> : <Camera20 ref={ref} />}
+              {active ? <CameraAction ref={ref} /> : <Camera ref={ref} />}
             </a>
           )
         })}
