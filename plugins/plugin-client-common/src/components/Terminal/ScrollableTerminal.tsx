@@ -22,7 +22,11 @@ import Block from './Block'
 import Cleaner from '../cleaner'
 import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
 
-interface Props {
+export interface TerminalOptions {
+  noActiveInput?: boolean
+}
+
+type Props = TerminalOptions & {
   uuid: string
   tab: KuiTab
 }
@@ -174,6 +178,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 idx={idx}
                 model={_}
                 tab={this.props.tab}
+                noActiveInput={this.props.noActiveInput}
                 onOutputRender={this.onOutputRender.bind(this)}
                 ref={c => {
                   if (isActive(_)) {

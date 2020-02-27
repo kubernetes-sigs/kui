@@ -57,12 +57,9 @@
     "@kui-shell/plugin-carbon-themes": "file:/tmp/kui-packs/kui-shell-plugin-carbon-themes.tgz",
     "@kui-shell/plugin-client-common": "file:/tmp/kui-packs/kui-shell-plugin-client-common.tgz",
     "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
+    "@kui-shell/plugin-sidecar": "file:/tmp/kui-packs/kui-shell-plugin-sidecar.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-editor": "file:/tmp/kui-packs/kui-shell-plugin-editor.tgz",
-    "@kui-shell/plugin-helmui": "^1.0.2",
-    "@kui-shell/plugin-kubeui": "^1.0.2",
-    "@kui-shell/plugin-logui": "^1.0.2",
-    "@kui-shell/plugin-openshift": "^1.0.2",
     "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/proxy": "file:/tmp/kui-packs/kui-shell-proxy.tgz",
     "@kui-shell/webpack": "file:/tmp/kui-packs/kui-shell-webpack.tgz"

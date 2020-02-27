@@ -67,11 +67,11 @@ jobs:
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
     # bottom-input Tests | os=Linux | targets=webpack-watch
-#    - env: N="bottom-input" CLIENT="alternate" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
-#      install:
-#        - npm ci && ./tools/codecov/instrument.sh
-#        - cd clients/$CLIENT && npm install
-#      script: npm run test:webpack
+    - env: N="bottom-input" CLIENT="alternate" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
+      install:
+        - npm ci && ./tools/codecov/instrument.sh
+        - cd clients/$CLIENT && npm install
+      script: npm run test:webpack
 
       # - env: N="Linux core" LAYERS="core core-support editor"
 

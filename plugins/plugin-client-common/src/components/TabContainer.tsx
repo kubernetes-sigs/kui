@@ -19,8 +19,8 @@ import { eventBus } from '@kui-shell/core'
 
 import Search from './Search'
 import TabModel from './TabModel'
-import TabContent from './TabContent'
 import TopTabStripe from './TopTabStripe'
+import TabContent, { TabContentOptions } from './TabContent'
 
 /**
  *
@@ -35,6 +35,9 @@ import TopTabStripe from './TopTabStripe'
  *
  */
 
+type TabContainerOptions = TabContentOptions
+type Props = TabContainerOptions
+
 interface State {
   /** list of current tabs; one TabContent for each */
   tabs: TabModel[]
@@ -43,8 +46,8 @@ interface State {
   activeIdx: number
 }
 
-export default class TabContainer extends React.PureComponent<{}, State> {
-  public constructor(props = {}) {
+export default class TabContainer extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
     super(props)
 
     this.state = {
@@ -154,7 +157,7 @@ export default class TabContainer extends React.PureComponent<{}, State> {
         <Search />
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
-            <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state}>
+            <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} {...this.props}>
               {this.props.children}
             </TabContent>
           ))}

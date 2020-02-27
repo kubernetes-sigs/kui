@@ -1,0 +1,55 @@
+.kui--input-stripe {
+  display: flex;
+  flex-grow: 0;
+  flex-basis: 90px;
+  padding: 1.5em 1em 1.5em 1em;
+  background-color: var(--color-stripe-01);
+  box-shadow: 0 -3px 10px 0 rgba(60, 60, 60, 0.1);
+
+  .repl-block {
+    flex: 1;
+    padding: 0;
+
+    .repl-input .kui--input-and-context {
+      font-size: 0.875em;
+      flex: 1;
+      background-color: var(--color-base03);
+      padding: 0.5em 0.375em;
+
+      input {
+        background-color: transparent;
+      }
+    }
+
+    .repl-prompt {
+      border: none;
+      .repl-prompt-righty {
+        /* make the > chevron a bit bigger */
+        font-size: 1.125em;
+      }
+    }
+
+    .kui--tab-completions {
+      /* position tab completions in a way that doesn't result in a reflow of the input stripe */
+      position: absolute;
+      width: 100%;
+      display: flex;
+      overflow-x: auto;
+
+      /* make the completion options a bit smaller, since they nest within a small space */
+      font-size: 0.75em;
+
+      .kui--tab-completions--option {
+        overflow: unset;
+        .bx--btn--primary:focus {
+          /* make a tab completion option appear attached to the <input> element */
+          border-radius: 0 0 4px 4px;
+        }
+      }
+    }
+  }
+}
+
+/* not sure what this is for .kui--input-stripe .repl-input-like {
+  overflow: unset;
+} */

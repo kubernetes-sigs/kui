@@ -15,46 +15,48 @@
  */
 
 import * as React from 'react'
+import { Tab as KuiTab, eventBus } from '@kui-shell/core'
 
-// eslint-disable-next-line react/display-name
-export default function() {
-  return (
-    <div className="kui--input-stripe">
-      <div className="repl-block" data-base-class="repl-block">
-        <div className="repl-input">
-          <div className="repl-prompt">
-            <span className="repl-prompt-lefty"></span>
-            <span className="repl-context"></span>
-            <span className="repl-selection clickable" title="The current selection"></span>
-            <span className="repl-prompt-righty">
-              {/* ChevronRight20 */}
-              <svg
-                focusable="false"
-                preserveAspectRatio="xMidYMid meet"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 32 32"
-                aria-hidden="true"
-              >
-                <path d="M22 16L12 26l-1.4-1.4 8.6-8.6-8.6-8.6L12 6z"></path>
-              </svg>
-            </span>
-          </div>
-          <input
-            type="text"
-            aria-label="Command Input"
-            tabIndex={1}
-            className="repl-input-element kui--tab-navigatable "
-            autoFocus
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-            placeholder="enter your command"
-          />
-        </div>
+import Block from './Terminal/Block'
+import BlockModel, { Active } from './Terminal/Block/BlockModel'
+
+import '../../web/css/static/InputStripe.scss'
+
+interface Props {
+  tab?: KuiTab
+
+  /** tab uuid; this is grafted in for you, by TabContent */
+  uuid?: string
+}
+
+interface State {
+  idx: number
+  model: BlockModel
+}
+
+export default class InputStripe extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+
+    const channel = `/command/complete/fromuser/${this.props.uuid}`
+    eventBus.on(channel, this.onOutputRender.bind(this))
+
+    this.state = {
+      idx: 0,
+      model: Active()
+    }
+  }
+
+  /** Command has completed in our tab */
+  private onOutputRender() {
+    this.setState(curState => ({ idx: curState.idx + 1, model: Active() }))
+  }
+
+  public render() {
+    return (
+      <div className="kui--input-stripe repl">
+        <Block idx={this.state.idx} tab={this.props.tab} model={this.state.model} noOutput noPromptContext />
       </div>
-    </div>
-  )
+    )
+  }
 }

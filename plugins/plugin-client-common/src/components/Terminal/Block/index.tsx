@@ -27,7 +27,11 @@ interface Props {
   tab: KuiTab
   model: BlockModel
 
-  onOutputRender: (idx: number) => void
+  noActiveInput?: boolean
+  noPromptContext?: boolean
+
+  noOutput?: boolean
+  onOutputRender?: (idx: number) => void
 }
 
 interface State {
@@ -57,7 +61,7 @@ export default class Block extends React.PureComponent<Props, State> {
         <Output
           tab={this.props.tab}
           model={this.props.model}
-          onRender={() => this.props.onOutputRender(this.props.idx)}
+          onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
         />
       )
     }
@@ -65,7 +69,16 @@ export default class Block extends React.PureComponent<Props, State> {
 
   private input() {
     return (
-      <Input tab={this.props.tab} model={this.props.model} _block={this.state._block} ref={c => (this._input = c)} />
+      this.state._block && (
+        <Input
+          key={this.props.idx}
+          tab={this.props.tab}
+          model={this.props.model}
+          noPromptContext={this.props.noPromptContext}
+          _block={this.state._block}
+          ref={c => (this._input = c)}
+        />
+      )
     )
   }
 
@@ -89,26 +102,28 @@ export default class Block extends React.PureComponent<Props, State> {
    */
   public render() {
     return (
-      <div
-        className={'repl-block kui--screenshotable ' + this.props.model.state.toString()}
-        data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
-        data-input-count={this.props.idx}
-        ref={c => this.setState({ _block: c })}
-      >
-        {isActive(this.props.model) || isEmpty(this.props.model) ? (
-          this.input()
-        ) : (
-          <AccordionItem
-            open
-            onKeyDown={event => event.stopPropagation()}
-            onMouseDown={event => event.preventDefault()}
-            iconDescription=""
-            title={this.input()}
-          >
-            {this.output()}
-          </AccordionItem>
-        )}
-      </div>
+      (!this.props.noActiveInput || !isActive(this.props.model)) && (
+        <div
+          className={'repl-block kui--screenshotable ' + this.props.model.state.toString()}
+          data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
+          data-input-count={this.props.idx}
+          ref={c => this.setState({ _block: c })}
+        >
+          {isActive(this.props.model) || isEmpty(this.props.model) ? (
+            this.input()
+          ) : (
+            <AccordionItem
+              open
+              onKeyDown={event => event.stopPropagation()}
+              onMouseDown={event => event.preventDefault()}
+              iconDescription=""
+              title={this.input()}
+            >
+              {this.output()}
+            </AccordionItem>
+          )}
+        </div>
+      )
     )
   }
 }
