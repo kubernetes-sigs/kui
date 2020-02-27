@@ -62,6 +62,11 @@ tab.xterm-alt-buffer-mode {
       &.processing {
         padding: 0;
         -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
+
+        .bx--accordion__heading {
+          /** accordion around input */
+          display: none;
+        }
       }
       .repl-output {
         &,

@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { Accordion } from 'carbon-components-react'
 import { eventBus, ScalarResponse, Tab as KuiTab } from '@kui-shell/core'
 
 import Block from './Block'
@@ -166,21 +167,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return (
       <repl className="repl" id="main-repl">
         <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)}>
-          {this.state.blocks.map((_, idx) => (
-            <Block
-              key={idx}
-              idx={idx}
-              model={_}
-              tab={this.props.tab}
-              onOutputRender={this.onOutputRender.bind(this)}
-              ref={c => {
-                if (isActive(_)) {
-                  // grab a ref to the active block, to help us maintain focus
-                  this._activeBlock = c
-                }
-              }}
-            />
-          ))}
+          <Accordion>
+            {this.state.blocks.map((_, idx) => (
+              <Block
+                key={idx}
+                idx={idx}
+                model={_}
+                tab={this.props.tab}
+                onOutputRender={this.onOutputRender.bind(this)}
+                ref={c => {
+                  if (isActive(_)) {
+                    // grab a ref to the active block, to help us maintain focus
+                    this._activeBlock = c
+                  }
+                }}
+              />
+            ))}
+          </Accordion>
         </div>
       </repl>
     )

@@ -56,13 +56,17 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.click(Selectors.CURRENT_PROMPT_BLOCK)
       await this.app.client.execute(() => document.execCommand('paste'))
 
+      idx = 0
       await this.app.client.waitUntil(async () => {
         const [actualValue, expectedValue] = await Promise.all([
           this.app.client.getValue(Selectors.CURRENT_PROMPT),
           this.app.client.getText(rows(res.count))
         ])
+        if (++idx > 5) {
+          console.error(`still waiting for text actualValue=${actualValue} expectedValue=${expectedValue}`)
+        }
 
-        return expectedValue === actualValue
+        return `echo ${expectedValue}` === actualValue
       }, CLI.waitTimeout)
     } catch (err) {
       return Common.oops(this, true)(err)
@@ -125,8 +129,12 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       console.error('CP12')
       await this.app.client.keys(Keys.ESCAPE)
       console.error('CP13')
+      let idx = 0
       await this.app.client.waitUntil(async () => {
         const txt = await this.app.client.getText(lastRow(res.count))
+        if (++idx > 5) {
+          console.error(`still waiting for text actualValue=${txt} whereas length should be zero`)
+        }
         return txt.length === 0
       }, CLI.waitTimeout)
 
