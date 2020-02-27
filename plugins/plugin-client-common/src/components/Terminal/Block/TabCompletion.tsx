@@ -278,7 +278,7 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
     const postText = optLabel ? '' : completionText
 
     return (
-      <div className="kui--tab-completions--option" key={idx} style={{ fontSize: '0.875em' }} data-value={value}>
+      <div className="kui--tab-completions--option" key={idx} data-value={value}>
         <Button href="#" size="small" tabIndex={1} onClick={() => this.completeWith(idx)}>
           <React.Fragment>
             <span className="kui--tab-completions--option-partial">{preText}</span>

@@ -1,4 +1,6 @@
 .kui--tab-completions {
+  font-size: 0.875em;
+
   .kui--tab-completions--option {
     .bx--btn--primary {
       background-color: transparent;
@@ -21,10 +23,12 @@
         box-shadow: none;
         color: var(--color-brand-02);
         background-color: var(--color-base03);
+        border-radius: 4px;
       }
     }
 
     a {
+      font-size: unset;
       white-space: pre;
     }
 

@@ -50,9 +50,15 @@ body:not(.subwindow) .repl.sidecar-visible .repl-block,
   .repl-input {
     align-items: center;
 
-    input {
-      /* make equal to height after right-elements, including inline-loading */
-      height: 20px;
+    .kui--input-and-context {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      input {
+        /* make equal to height after right-elements, including inline-loading */
+        height: 20px;
+      }
     }
   }
 

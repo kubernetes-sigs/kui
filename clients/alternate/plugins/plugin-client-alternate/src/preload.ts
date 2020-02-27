@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { isHeadless } from '@kui-shell/core'
 
-import * as React from 'react'
-import { render as ReactDomRender } from 'react-dom'
-import { DefaultClient } from '@kui-shell/plugin-client-default/mdist/Client'
-
-/**
- * Use DefaultClient configured to run in bottomInput mode.
- *
- */
-export default function(container: Element) {
-  ReactDomRender(<DefaultClient bottomInput />, container)
+export default async () => {
+  if (!isHeadless()) {
+    import('./lib/tab-completion').then(_ => _.preload())
+  }
 }

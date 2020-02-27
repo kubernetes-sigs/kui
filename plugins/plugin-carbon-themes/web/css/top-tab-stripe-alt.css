@@ -91,17 +91,9 @@ body.kui-alternate .left-tab-stripe-buttons .left-tab-stripe-button-closer {
   color: var(--tab-gray-text-color);
 }
 
-body.kui-alternate .kui--input-stripe {
-  flex-basis: 90px;
-  box-shadow: 0 -3px 10px 0 rgba(60, 60, 60, 0.1);
-}
-body.kui-alternate .repl .repl-input {
+body.kui-alternate .repl:not(.kui--input-stripe) .repl-block {
   padding-left: 2em;
   padding-right: 2em;
-}
-
-body.kui-alternate .repl-output {
-  padding: 0 2em;
 }
 
 body.kui-alternate .repl-prompt {
