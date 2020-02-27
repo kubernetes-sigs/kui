@@ -207,6 +207,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
                 handleTabKeyDown={() => false}
                 handleTabAnchorFocus={() => false}
                 handleTabClick={() => false}
+                onMouseDown={event => event.preventDefault()}
               >
                 {this.tabContent(idx)}
               </Tab>
