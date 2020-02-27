@@ -76,6 +76,9 @@
   font-weight: bold;
   padding-right: 1em;
 }
+.kui--status-stripe .kui--status-stripe-element:first-child {
+  padding-left: 1em;
+}
 
 .kui--status-stripe-element > a {
   /* see https://github.com/IBM/kui/issues/3489 */
