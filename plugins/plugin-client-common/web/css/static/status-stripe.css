@@ -61,9 +61,11 @@
 .kui--status-stripe .kui--status-stripe-context {
   flex: 1;
   font-size: 0.6875em;
+  padding-left: 1em;
 }
 .kui--status-stripe .kui--status-stripe-meter {
   font-size: 0.6875em;
+  padding-left: 1em;
 }
 
 .kui--status-stripe .kui--status-stripe-right {
@@ -75,9 +77,6 @@
   align-items: center;
   font-weight: bold;
   padding-right: 1em;
-}
-.kui--status-stripe .kui--status-stripe-element:first-child {
-  padding-left: 1em;
 }
 
 .kui--status-stripe-element > a {
