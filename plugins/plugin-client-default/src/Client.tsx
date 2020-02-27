@@ -20,7 +20,7 @@
 import * as React from 'react'
 import { render as ReactDomRender } from 'react-dom'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
-import { StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
+import { InputStripe, StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
 
 /**
  * Here we arrange the CSS for base functionality of Kui. Order is
@@ -30,18 +30,21 @@ import { StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
 import '../web/css/static/kui-ui.css'
 import '../web/css/static/carbon-overrides.css'
 
+interface Props {
+  bottomInput?: boolean
+}
+
 /**
  * Render the main body of our client
  *
  */
-export class DefaultClient extends React.PureComponent {
+export class DefaultClient extends React.PureComponent<Props> {
   public render() {
     return (
       <div className="kui--full-height">
-        <TabContainer>
+        <TabContainer noActiveInput={this.props.bottomInput} bottom={this.props.bottomInput && <InputStripe />}>
           <ComboSidecar />
         </TabContainer>
-
         <StatusStripe>{this.props.children}</StatusStripe>
       </div>
     )

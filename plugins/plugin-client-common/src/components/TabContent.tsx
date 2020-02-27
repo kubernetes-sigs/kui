@@ -21,20 +21,32 @@ import SplitPane from 'react-split-pane'
 import Cleaner from './cleaner'
 import Confirm from './Confirm'
 import Loading from './Loading'
-import ScrollableTerminal from './Terminal/ScrollableTerminal'
+import ScrollableTerminal, { TerminalOptions } from './Terminal/ScrollableTerminal'
 
 import '../../web/css/static/split-pane.scss'
 
 const strings = i18n('client')
 
-interface Props {
+interface WithTabUUID {
   uuid: string
-  active: boolean
-  state: TabState
 }
 
-interface State {
-  tab?: KuiTab
+interface WithTab {
+  tab: KuiTab
+}
+
+export type TabContentOptions = TerminalOptions & {
+  /** Optional: elements to be placed below the Terminal */
+  bottom?: React.ReactElement<WithTabUUID & WithTab>
+}
+
+type Props = TabContentOptions &
+  WithTabUUID & {
+    active: boolean
+    state: TabState
+  }
+
+type State = Partial<WithTab> & {
   sessionInit: 'NotYet' | 'InProgress' | 'Done'
   secondaryWidth: string
 
@@ -141,7 +153,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
     } else {
       return (
         <ScrollableTerminal
-          uuid={this.props.uuid}
+          {...this.props}
           tab={this.state.tab}
           ref={c => {
             // so that we can refocus/blur
@@ -169,11 +181,25 @@ export default class TabContent extends React.PureComponent<Props, State> {
     if (React.isValidElement(this.props.children)) {
       // ^^^ this check avoids tsc errors
       return React.cloneElement(this.props.children, {
+        uuid: this.props.uuid,
         willChangeSize: this.onWillChangeSize.bind(this),
         willLoseFocus: this.onWillLoseFocus.bind(this)
       })
     } else {
       return this.props.children
+    }
+  }
+
+  /** Graft on the tab uuid */
+  private bottom() {
+    if (React.isValidElement(this.props.bottom)) {
+      // ^^^ this check avoids tsc errors
+      return React.cloneElement(this.props.bottom, {
+        uuid: this.props.uuid,
+        tab: this.state.tab
+      })
+    } else {
+      return this.props.bottom
     }
   }
 
@@ -206,6 +232,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
               {this.children()}
             </SplitPane>
           </div>
+
+          {this.bottom()}
         </div>
         {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
       </tab>

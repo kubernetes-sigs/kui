@@ -35,6 +35,9 @@ interface Props {
 
   /** state of the Block, e.g. Processing? Active/accepting input? */
   model: BlockModel
+
+  /** do not display prompt context, e.g. current working directory */
+  noPromptContext?: boolean
 }
 
 interface State {
@@ -87,7 +90,7 @@ export default class Input extends React.PureComponent<Props, State> {
 
   /** the "xxx" part of "xxx >" of the prompt */
   private promptLeft() {
-    return <span className="repl-context">{this.props.model.cwd}</span>
+    return !this.props.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>
   }
 
   /** the ">" part of "xxx >" of the prompt */
@@ -233,12 +236,7 @@ export default class Input extends React.PureComponent<Props, State> {
     return (
       <div className="repl-input">
         <div style={{ flex: 1 }}>
-          <div
-            className="flex-layout"
-            style={{
-              flex: 1
-            }}
-          >
+          <div className="kui--input-and-context">
             {this.prompt()}
             {this.input()}
             {this.status()}
