@@ -17,9 +17,9 @@
 import * as React from 'react'
 import { KeyCodes, inElectron } from '@kui-shell/core'
 
-import Tab from './Tab'
 import TabModel from '../TabModel'
 import NewTabButton from './NewTabButton'
+import Tab, { TabConfiguration } from './Tab'
 
 /**
  *
@@ -44,7 +44,9 @@ import NewTabButton from './NewTabButton'
  *   | activeIdx
  */
 
-interface Props {
+export type TopTabStripeConfiguration = TabConfiguration
+
+type Props = TopTabStripeConfiguration & {
   tabs: TabModel[]
   activeIdx: number
   onNewTab: () => void
@@ -110,6 +112,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
         <div className="left-tab-stripe-buttons">
           {this.props.tabs.map((tab, idx) => (
             <Tab
+              {...this.props}
               key={idx}
               idx={idx}
               uuid={tab.uuid}

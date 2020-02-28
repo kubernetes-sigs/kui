@@ -16,18 +16,16 @@
 
 import * as React from 'react'
 import { Close16 } from '@carbon/icons-react'
-import { i18n, eventBus, Event, ExecType } from '@kui-shell/core'
-
-import { topTabs } from '@kui-shell/client/config.d/style.json'
-import { productName } from '@kui-shell/client/config.d/name.json'
+import { i18n, eventBus, Event, ExecType, Theme } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
-function isUsingCommandName() {
-  return topTabs.names === 'command' && !document.body.classList.contains('kui--alternate')
+export interface TabConfiguration {
+  topTabNames?: 'command' | 'fixed' // was { topTabs } from '@kui-shell/client/config.d/style.json'
+  productName?: string
 }
 
-interface Props {
+type Props = TabConfiguration & {
   idx: number
   uuid: string
   active: boolean
@@ -39,18 +37,21 @@ interface Props {
 interface State {
   title: string
   processing: boolean
+  topTabNames: 'command' | 'fixed'
 }
 
 export default class Tab extends React.PureComponent<Props, State> {
   private onCommandStart: (evt: Event) => void
   private onCommandComplete: (evt: Event) => void
+  private onThemeChange: ({ themeModel: Theme }) => void
 
   public constructor(props: Props) {
     super(props)
 
     this.state = {
-      title: productName,
-      processing: false
+      title: this.props.productName,
+      processing: false,
+      topTabNames: props.topTabNames || 'command'
     }
 
     this.addCommandEvaluationListeners()
@@ -63,6 +64,7 @@ export default class Tab extends React.PureComponent<Props, State> {
   private removeCommandEvaluationListeners() {
     eventBus.off('/command/start', this.onCommandStart)
     eventBus.off('/command/complete', this.onCommandComplete)
+    eventBus.off('/theme/change', this.onThemeChange)
   }
 
   /**
@@ -90,7 +92,7 @@ export default class Tab extends React.PureComponent<Props, State> {
             event.route !== undefined &&
             !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
           ) {
-            if (isUsingCommandName()) {
+            if (this.isUsingCommandName()) {
               this.setState({ processing: true, title: event.command || this.state.title })
               return
             }
@@ -101,8 +103,19 @@ export default class Tab extends React.PureComponent<Props, State> {
       }
     }
 
+    this.onThemeChange = ({ themeModel }: { themeModel: Theme }) => {
+      this.setState({
+        topTabNames: themeModel.topTabNames || 'command'
+      })
+    }
+
     eventBus.on('/command/start', this.onCommandStart)
     eventBus.on('/command/complete', this.onCommandComplete)
+    eventBus.on('/theme/change', this.onThemeChange)
+  }
+
+  private isUsingCommandName() {
+    return this.state.topTabNames === 'command' // && !document.body.classList.contains('kui--alternate')
   }
 
   public render() {
@@ -126,9 +139,9 @@ export default class Tab extends React.PureComponent<Props, State> {
         }}
       >
         <div className="kui-tab--label left-tab-stripe-button-label">
-          {isUsingCommandName() && this.state.title}
-          {!isUsingCommandName() && <span className="kui-tab--label-text">{strings('Tab')} </span>}
-          {!isUsingCommandName() && <span className="kui-tab--label-index"></span>}
+          {this.isUsingCommandName() && this.state.title}
+          {!this.isUsingCommandName() && <span className="kui-tab--label-text">{strings('Tab')} </span>}
+          {!this.isUsingCommandName() && <span className="kui-tab--label-index"></span>}
         </div>
 
         {this.props.closeable && (
