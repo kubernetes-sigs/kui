@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0](https://github.com/IBM/kui/compare/v4.5.0...v7.0.0) (2020-02-28)
+
+### Bug Fixes
+
+- **packages/core:** status stripe fragments should be hidden until data arrives ([5792746](https://github.com/IBM/kui/commit/5792746)), closes [#3538](https://github.com/IBM/kui/issues/3538)
+- **plugins/plugin-core-support:** tab completion of "interior" text is buggy ([b13cdb7](https://github.com/IBM/kui/commit/b13cdb7)), closes [#3605](https://github.com/IBM/kui/issues/3605)
+
 ## [6.0.12](https://github.com/IBM/kui/compare/v6.0.11...v6.0.12) (2020-02-03)
 
 **Note:** Version bump only for package @kui-shell/plugin-git
