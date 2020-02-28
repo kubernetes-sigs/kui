@@ -194,15 +194,36 @@ class TabCompletionInitialState extends TabCompletionState {
 }
 
 /**
+ * Update the prompt value. Note that `prompt.value = newValue` will
+ * not trigger onChange events, so a bit of round-about is needed.
+ *
+ */
+function setPromptValue(prompt: HTMLInputElement, newValue: string, selectionStart: number) {
+  prompt.selectionStart = selectionStart
+  prompt.selectionEnd = selectionStart
+
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+  nativeInputValueSetter.call(prompt, newValue)
+  setTimeout(() => prompt.dispatchEvent(new Event('change', { bubbles: true })))
+}
+
+/**
  * TabCompletion in a state where we have exactly one completion to offer the user.
  *
  */
 class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
+  private _rendered = false
+
   public constructor(input: Input, private readonly completion: CompletionResponse) {
     super(input)
   }
 
   public render() {
+    if (this._rendered) {
+      return false as const
+    }
+
+    this._rendered = true
     const lastIdx = this.lastIdx
     const prompt = this.input.state.prompt
 
@@ -214,10 +235,9 @@ class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
         ? shellescapeIfNeeded(this.completion, prefix)
         : shellescapeIfNeeded(this.completion.completion, prefix) + (this.completion.addSpace ? ' ' : '')
 
-    // update the prompt directly; is this dangerous? to sidestep react?
-    prompt.value = prefix + extra + suffix
-    prompt.selectionStart = lastIdx + extra.length
-    prompt.selectionEnd = prompt.selectionStart
+    const newValue = prefix + extra + suffix
+    const selectionStart = lastIdx + extra.length
+    setPromptValue(prompt, newValue, selectionStart)
 
     // nothing to render in the tab completion portion of the UI.
     return false as const
@@ -242,9 +262,10 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
       const prefix = prompt.value.slice(0, lastIdx)
       const suffix = prompt.value.slice(lastIdx)
       const extra = shellescape(longestPrefix)
-      prompt.value = prefix + extra + suffix
-      prompt.selectionStart = lastIdx + extra.length
-      prompt.selectionEnd = prompt.selectionStart
+
+      const newValue = prefix + extra + suffix
+      const selectionStart = lastIdx + extra.length
+      setPromptValue(prompt, newValue, selectionStart)
 
       const prefixed = completions.completions.map(_ => {
         if (typeof _ === 'string') {

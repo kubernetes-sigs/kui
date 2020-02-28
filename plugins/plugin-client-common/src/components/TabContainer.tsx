@@ -19,7 +19,7 @@ import { eventBus } from '@kui-shell/core'
 
 import Search from './Search'
 import TabModel from './TabModel'
-import TopTabStripe from './TopTabStripe'
+import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 import TabContent, { TabContentOptions } from './TabContent'
 
 /**
@@ -36,7 +36,7 @@ import TabContent, { TabContentOptions } from './TabContent'
  */
 
 type TabContainerOptions = TabContentOptions
-type Props = TabContainerOptions
+type Props = TabContainerOptions & TopTabStripeConfiguration
 
 interface State {
   /** list of current tabs; one TabContent for each */
@@ -151,6 +151,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     return (
       <div className="kui--full-height">
         <TopTabStripe
+          {...this.props}
           activeIdx={this.state.activeIdx}
           tabs={this.state.tabs}
           onNewTab={() => this.onNewTab()}

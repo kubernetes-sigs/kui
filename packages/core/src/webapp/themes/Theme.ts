@@ -27,6 +27,7 @@ export default interface Theme {
   css: string | string[]
   attrs?: string[]
   style: string
+  topTabNames: 'command' | 'fixed'
 }
 
 export interface ThemeSet {

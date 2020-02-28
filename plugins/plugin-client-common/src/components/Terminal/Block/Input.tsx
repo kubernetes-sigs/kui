@@ -24,9 +24,42 @@ import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
 
-import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
+export interface InputOptions {
+  /** Optional: placeholder value for prompt */
+  promptPlaceholder?: string // was: from '@kui-shell/client/config.d/style.json'
 
-interface Props {
+  /** Optional: do not display prompt context, e.g. current working directory */
+  noPromptContext?: boolean
+
+  /** Optional: onChange handler */
+  onInputChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+
+  /** Optional: onClick handler */
+  onInputClick?: (event: React.MouseEvent<HTMLInputElement>) => void
+
+  /** Optional: onKeyDown handler */
+  onInputKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+
+  /** Optional: onKeyPress handler */
+  onInputKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+
+  /** Optional: onKeyUp handler */
+  onInputKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+
+  /** Optional: onMouseDown handler */
+  onInputMouseDown?: (event: React.MouseEvent<HTMLInputElement>) => void
+
+  /** Optional: onMouseMove handler */
+  onInputMouseMove?: (event: React.MouseEvent<HTMLInputElement>) => void
+
+  /** Optional: onBlur handler */
+  onInputBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+
+  /** Optional: onFocus handler */
+  onInputFocus?: (event: React.FocusEvent<HTMLInputElement>) => void
+}
+
+type Props = InputOptions & {
   /** needed temporarily to make pty/client happy */
   _block: HTMLElement
 
@@ -35,9 +68,6 @@ interface Props {
 
   /** state of the Block, e.g. Processing? Active/accepting input? */
   model: BlockModel
-
-  /** do not display prompt context, e.g. current working directory */
-  noPromptContext?: boolean
 }
 
 interface State {
@@ -159,10 +189,25 @@ export default class Input extends React.PureComponent<Props, State> {
           className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
           aria-label="Command Input"
           tabIndex={1}
-          placeholder={promptPlaceholder}
-          onKeyPress={kp}
-          onKeyDown={kd}
-          onKeyUp={ku}
+          placeholder={this.props.promptPlaceholder}
+          onBlur={this.props.onInputBlur}
+          onFocus={this.props.onInputFocus}
+          onMouseDown={this.props.onInputMouseDown}
+          onMouseMove={this.props.onInputMouseMove}
+          onChange={this.props.onInputChange}
+          onClick={this.props.onInputClick}
+          onKeyPress={evt => {
+            kp(evt)
+            this.props.onInputKeyPress && this.props.onInputKeyPress(evt)
+          }}
+          onKeyDown={evt => {
+            kd(evt)
+            this.props.onInputKeyDown && this.props.onInputKeyDown(evt)
+          }}
+          onKeyUp={evt => {
+            ku(evt)
+            this.props.onInputKeyUp && this.props.onInputKeyUp(evt)
+          }}
           onPaste={op}
           ref={c => {
             if (c && !this.state.prompt) {
@@ -185,7 +230,6 @@ export default class Input extends React.PureComponent<Props, State> {
           aria-label="Command Input"
           readOnly
           tabIndex={-1}
-          placeholder={promptPlaceholder}
           onClick={evt => evt.stopPropagation() /* accordion... */}
           ref={c => {
             if (c && !this.state.prompt) {
@@ -248,6 +292,7 @@ export default class Input extends React.PureComponent<Props, State> {
         <div style={{ flex: 1 }}>
           <div className="kui--input-and-context">
             {this.prompt()}
+            {this.props.children}
             {this.input()}
             {this.status()}
           </div>

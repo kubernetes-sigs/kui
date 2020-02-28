@@ -18,19 +18,18 @@ import * as React from 'react'
 import { AccordionItem } from 'carbon-components-react'
 import { Tab as KuiTab } from '@kui-shell/core'
 
-import Input from './Input'
+import Input, { InputOptions } from './Input'
 import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from './BlockModel'
 
 import 'carbon-components/scss/components/accordion/_accordion.scss'
 
-interface Props {
+type Props = InputOptions & {
   idx: number
   tab: KuiTab
   model: BlockModel
 
   noActiveInput?: boolean
-  noPromptContext?: boolean
 
   noOutput?: boolean
   onOutputRender?: (idx: number) => void
@@ -80,10 +79,12 @@ export default class Block extends React.PureComponent<Props, State> {
           key={this.props.idx}
           tab={this.props.tab}
           model={this.props.model}
-          noPromptContext={this.props.noPromptContext}
+          {...this.props}
           _block={this.state._block}
           ref={c => (this._input = c)}
-        />
+        >
+          {this.props.children}
+        </Input>
       )
     )
   }

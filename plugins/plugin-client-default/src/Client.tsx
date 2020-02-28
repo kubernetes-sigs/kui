@@ -34,15 +34,38 @@ interface Props {
   bottomInput?: boolean
 }
 
+interface State {
+  productName: string
+}
+
 /**
  * Render the main body of our client
  *
  */
-export class DefaultClient extends React.PureComponent<Props> {
+export class DefaultClient extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+
+    try {
+      this.state = {
+        productName: require('@kui-shell/client/config.d/name.json').productName
+      }
+    } catch (err) {
+      console.log('using default configuration')
+      this.state = {
+        productName: 'Kui Demo'
+      }
+    }
+  }
+
   public render() {
     return (
       <div className="kui--full-height">
-        <TabContainer noActiveInput={this.props.bottomInput} bottom={this.props.bottomInput && <InputStripe />}>
+        <TabContainer
+          productName={this.state.productName}
+          noActiveInput={this.props.bottomInput}
+          bottom={this.props.bottomInput && <InputStripe />}
+        >
           <ComboSidecar />
         </TabContainer>
         <StatusStripe>{this.props.children}</StatusStripe>

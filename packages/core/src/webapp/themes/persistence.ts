@@ -18,8 +18,6 @@ import Debug from 'debug'
 import { dirname, join } from 'path'
 import { WebContents } from 'electron'
 
-import { cssHome } from '@kui-shell/client/config.d/client.json'
-
 import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
@@ -28,7 +26,6 @@ import { clearPreference, getPreference, setPreference } from '../../core/userda
 
 import findThemeByName from './find'
 import getDefaultTheme from './default'
-import { ThemeApiVersion } from './Theme'
 
 const strings = i18n('core')
 
@@ -48,33 +45,20 @@ export const getPersistedThemeChoice = (): Promise<string> => {
   return getPreference(persistedThemePreferenceKey)
 }
 
-function getCssFilepath(addon: string, plugin: string, apiVersion: ThemeApiVersion): string {
+function getCssFilepath(addon: string, plugin: string): string {
   const base = dirname(require.resolve('@kui-shell/prescan.json'))
-
-  if (!apiVersion || apiVersion === 'v1') {
-    return join(base, 'build', cssHome, addon)
-  } else {
-    return join(base, plugin, 'web/css', addon)
-  }
+  return join(base, plugin, 'web/css', addon)
 }
 
 /**
  * @return the path to the given theme's css
  *
  */
-const getCss = async (addon: string, addonKey: string, plugin: string, apiVersion: ThemeApiVersion) => {
-  if (!apiVersion || apiVersion === 'v1') {
-    return {
-      key: addonKey,
-      path: join(cssHome, addon)
-    }
-  } else {
-    return {
-      key: addonKey,
-      css: (
-        await import('@kui-shell/plugin-' + webpackPath(plugin) + '/web/css/' + addon.replace(/\.css$/, '') + '.css')
-      ).default
-    }
+const getCss = async (addon: string, addonKey: string, plugin: string) => {
+  return {
+    key: addonKey,
+    css: (await import('@kui-shell/plugin-' + webpackPath(plugin) + '/web/css/' + addon.replace(/\.css$/, '') + '.css'))
+      .default
   }
 }
 
@@ -104,7 +88,6 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
   debug('switching to theme', theme)
 
   // css addons defined by the theme
-  const { apiVersion } = themeModel
   const addons = typeof themeModel.css === 'string' ? [themeModel.css] : themeModel.css
 
   const themeKey = id(theme)
@@ -143,14 +126,14 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
           // before the window opens
           //
           const { readFile } = await import('fs-extra')
-          const pathToThemeCss = getCssFilepath(addon, plugin, apiVersion)
+          const pathToThemeCss = getCssFilepath(addon, plugin)
           const css = (await readFile(pathToThemeCss)).toString()
           debug('using electron to pre-inject CSS before the application loads, from the main process')
           return webContents.insertCSS(css)
         } else {
           // inject the new css
-          debug('injecting CSS', addon, plugin, apiVersion)
-          await getCss(addon, addonKey, plugin, apiVersion)
+          debug('injecting CSS', addon, plugin)
+          await getCss(addon, addonKey, plugin)
         }
       })
     )
@@ -195,7 +178,7 @@ document.body.setAttribute('kui-theme-style', '${themeModel.style}');`
     }
 
     // let others know that the theme has changed
-    setTimeout(() => eventBus.emit('/theme/change', { theme }))
+    setTimeout(() => eventBus.emit('/theme/change', { theme, themeModel }))
   }
 }
 

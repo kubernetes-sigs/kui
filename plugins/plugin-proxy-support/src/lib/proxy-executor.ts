@@ -35,23 +35,12 @@ import {
   DirectReplEval,
   ElementMimic
 } from '@kui-shell/core'
-import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
 
-import { isDisabled, ProxyServerConfig } from './config'
+import { isDisabled, config } from './config'
 
 import { getSessionForTab } from '@kui-shell/plugin-bash-like'
 
 const debug = Debug('plugins/proxy-support/executor')
-
-/**
- * The proxy server configuration.
- *
- * TODO: allow for non-default configs
- *
- */
-import defaultProxyServerConfig from './defaultProxyServerConfig'
-const proxyServerConfig: ProxyServerConfig = proxyServer || defaultProxyServerConfig
-debug('proxyServerConfig', proxyServerConfig)
 
 /** we may want to directly evaluate certain commands in the browser */
 const directEvaluator = new DirectReplEval()
@@ -87,6 +76,12 @@ function renderDom(content: ElementMimic): HTMLElement {
 class ProxyEvaluator implements ReplEval {
   name = 'ProxyEvaluator'
 
+  /**
+   * The proxy server configuration.
+   *
+   */
+  private readonly proxyServerConfig = config().then(_ => _.proxyServer)
+
   async apply<T extends KResponse, O extends ParsedOptions>(
     command: string,
     execOptions: ExecOptions,
@@ -96,6 +91,7 @@ class ProxyEvaluator implements ReplEval {
     debug('apply', evaluator)
     debug('execOptions', execOptions)
 
+    const proxyServerConfig = await this.proxyServerConfig
     if (
       isDisabled(proxyServerConfig) ||
       (isCommandHandlerWithEvents(evaluator) &&
@@ -215,9 +211,10 @@ class ProxyEvaluator implements ReplEval {
       debug('sending body', body)
 
       try {
+        const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
+
         const invokeRemote = () =>
           new Promise(resolve => {
-            const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
             const xhr = new XMLHttpRequest()
             xhr.open('POST', proxyURL.href)
             xhr.responseType = 'json'

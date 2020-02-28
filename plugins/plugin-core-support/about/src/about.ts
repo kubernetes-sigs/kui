@@ -31,6 +31,29 @@ import usage from './usage'
 
 const clientStrings = i18n('client', 'about')
 
+/** The About configuration is just a NavResponse for now */
+type AboutConfig = NavResponse
+
+/** I would love to place this in a separate file. see https://github.com/microsoft/TypeScript/issues/25636 */
+function defaultConfig() {
+  return {
+    productName: 'Kui Demo',
+    version: '0.0.1',
+    nav: {
+      Kui: {
+        modes: [
+          {
+            mode: 'about',
+            content: 'Welcome to Kui. This is a sample About configuration',
+            contentType: 'text/markdown'
+          },
+          { mode: 'version', contentFrom: 'version --full' }
+        ]
+      }
+    }
+  }
+}
+
 /**
  * Here, we consult the client/config.d/name.json model.
  *
@@ -38,7 +61,12 @@ const clientStrings = i18n('client', 'about')
  *
  */
 async function getName(): Promise<string> {
-  return import('@kui-shell/client/config.d/name.json').then(_ => _.productName)
+  return import('@kui-shell/client/config.d/name.json')
+    .catch(() => {
+      console.log('using default product name')
+      return defaultConfig()
+    })
+    .then(_ => _.productName)
 }
 
 /**
@@ -48,7 +76,12 @@ async function getName(): Promise<string> {
 const aboutWindow = async (): Promise<NavResponse> => {
   const [name, about] = await Promise.all([
     getName(),
-    import('@kui-shell/client/config.d/about.json').then(_ => _.nav as NavResponse)
+    import('@kui-shell/client/config.d/about.json')
+      .catch(() => {
+        console.log('Using default About configuration')
+        return defaultConfig()
+      })
+      .then(_ => _.nav as AboutConfig)
   ])
 
   const fullAbout = {}
@@ -120,7 +153,10 @@ function renderFullVersion(name: string, version: string): Table {
  *
  */
 const reportVersion = async ({ parsedOptions }: Arguments<VersionOptions>) => {
-  const { version } = await import('@kui-shell/client/config.d/version.json')
+  const { version } = await import('@kui-shell/client/config.d/version.json').catch(() => {
+    console.log('using default version')
+    return defaultConfig()
+  })
 
   if (inElectron() && parsedOptions.full) {
     return renderFullVersion(await getName(), version)
