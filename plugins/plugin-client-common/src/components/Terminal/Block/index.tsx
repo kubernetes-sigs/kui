@@ -112,13 +112,7 @@ export default class Block extends React.PureComponent<Props, State> {
           {isActive(this.props.model) || isEmpty(this.props.model) ? (
             this.input()
           ) : (
-            <AccordionItem
-              open
-              onKeyDown={event => event.stopPropagation()}
-              onMouseDown={event => event.preventDefault()}
-              iconDescription=""
-              title={this.input()}
-            >
+            <AccordionItem open iconDescription="" title={this.input()}>
               {this.output()}
             </AccordionItem>
           )}
