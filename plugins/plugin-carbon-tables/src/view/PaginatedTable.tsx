@@ -24,8 +24,6 @@ import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import kui2carbon, { NamedDataTableRow } from '../model/kui2carbon'
 
-import { pageSize } from '@kui-shell/client/config.d/tables.json'
-
 /** carbon styling */
 import 'carbon-components/scss/components/pagination/_pagination.scss'
 import 'carbon-components/scss/components/data-table/_data-table.scss'
@@ -36,8 +34,12 @@ import '../../web/css/static/hack-select.scss'
 /** import the kui theme alignment */
 import '../../web/css/static/carbon-kui-theme-alignment.css'
 
+interface PaginationConfiguration {
+  pageSize?: number
+}
+
 /** parameters to PaginatedTable component */
-export interface Props<T extends KuiTable = KuiTable> {
+export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   tab: Tab
   repl: REPL
   response: T
@@ -58,8 +60,11 @@ export interface State {
  *
  */
 export class PaginatedTable<P extends Props, S extends State> extends React.PureComponent<P, S> {
+  private readonly defaultPageSize: number
+
   public constructor(props: P) {
     super(props)
+    this.defaultPageSize = props.pageSize || 20
 
     try {
       // assemble the data model
@@ -70,7 +75,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
         rows,
         radio,
         page: 1,
-        pageSize
+        pageSize: this.defaultPageSize
       } as S
     } catch (err) {
       console.error('Internal error preparing PaginatedTable', err)
@@ -88,7 +93,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
     // note the comparison versus the default pageSize; we want to
     // know if this row set will every need pagination, not whether it
     // does based on the user's current this.state.pageSize selection
-    const needsPagination = rows.length > pageSize
+    const needsPagination = rows.length > this.defaultPageSize
 
     const visibleRows = rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize)
 
@@ -116,9 +121,9 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
         page={page}
         totalItems={rows.length}
         pageSize={this.state.pageSize}
-        pageSizes={new Array(Math.min(5, ~~(rows.length / pageSize)))
+        pageSizes={new Array(Math.min(5, ~~(rows.length / this.defaultPageSize)))
           .fill(0)
-          .map((_, idx) => (idx + 1) * pageSize)
+          .map((_, idx) => (idx + 1) * this.defaultPageSize)
           .concat([rows.length])}
         onChange={pagination => {
           this.setState(pagination)

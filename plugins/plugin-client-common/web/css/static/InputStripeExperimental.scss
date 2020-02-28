@@ -1,0 +1,49 @@
+.kui--input-stripe {
+  .repl-block {
+    .repl-input .kui--input-and-context {
+      font-size: inherit;
+      position: relative;
+
+      input {
+        opacity: 0;
+        width: 100%;
+        position: absolute;
+        left: 1.5em;
+      }
+
+      .kui--input-stripe-dash-region-key {
+        color: var(--color-text-02);
+      }
+      .kui--input-stripe-dash-region-value {
+        color: var(--color-base0E);
+      }
+
+      .kui--input-stripe-custom-input,
+      .kui--input-stripe-custom-underlay {
+        position: absolute;
+        left: 1.5em;
+        height: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .kui--input-stripe-custom-underlay {
+        opacity: 0.75;
+
+        .kui--input-stripe-underlay-filler {
+          opacity: 0;
+        }
+        .kui--input-stripe-selection-range {
+          background-color: var(--color-selection-background);
+          color: var(--color-selection-foreground);
+        }
+        .kui--input-stripe-caret {
+          background-color: transparent;
+          &.kui--input-stripe-caret-on {
+            background-color: var(--color-caret);
+          }
+        }
+      }
+    }
+  }
+}

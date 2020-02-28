@@ -29,3 +29,18 @@ export function isDisabled(_config: ProxyServerConfig): _config is DisabledProxy
   const config = _config as DisabledProxyServerConfig
   return config && config.enabled === false
 }
+
+export function defaultConfig(): { proxyServer: ProxyServerConfig } {
+  return {
+    proxyServer: {
+      enabled: false
+    }
+  }
+}
+
+export function config(): Promise<{ proxyServer: ProxyServerConfig }> {
+  return import('@kui-shell/client/config.d/proxy.json').catch(() => {
+    console.log('using default proxy configuration')
+    return defaultConfig()
+  })
+}

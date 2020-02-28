@@ -17,7 +17,6 @@
 import Debug from 'debug'
 
 import { inBrowser, inElectron, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
-import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
 
 import { Channel, InProcessChannel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -115,6 +114,11 @@ async function newSessionForTab(tab: Tab) {
  *
  */
 export async function init(registrar: PreloadRegistrar) {
+  const { proxyServer } = await import('@kui-shell/client/config.d/proxy.json').catch(() => {
+    console.log('using default proxy configuration')
+    return { proxyServer: { enabled: false } }
+  })
+
   if (inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
     debug('initializing pty sessions')
 
