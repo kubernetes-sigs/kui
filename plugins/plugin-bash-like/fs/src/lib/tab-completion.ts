@@ -72,7 +72,10 @@ async function completeLocalFiles(
   commandLine: CommandLine,
   { toBeCompleted }: TabCompletionSpec
 ): Promise<CompletionResponse[]> {
-  return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete -- "${toBeCompleted}"`)).content
+  const commandCompletable = ['ls', 'lls', 'open', 'edit']
+  if (commandCompletable.some(cmd => commandLine.argvNoOptions[0] === cmd)) {
+    return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete -- "${toBeCompleted}"`)).content
+  }
 }
 
 function doComplete(args: Arguments) {
