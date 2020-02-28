@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { getCurrentTab } from './tab'
+import { Tab } from './tab'
 import { Block } from './models/block'
 
-export const getCurrentBlock = (tab = getCurrentTab()): Block => {
-  return tab.querySelector('.repl .repl-active')
-}
-
-export const getCurrentProcessingBlock = (tab = getCurrentTab()): HTMLElement => {
+export const getCurrentProcessingBlock = (tab: Tab): Block => {
   return tab.querySelector('.repl .repl-block.processing')
 }
