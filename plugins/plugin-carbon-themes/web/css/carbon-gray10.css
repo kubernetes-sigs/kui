@@ -1,3 +1,30 @@
+@import "ibm-plex.css";
+@import "kui--alternate.css";
+
+/* inverted sidecar */
+body[kui-theme="Carbon Gray10"] .kui--sidecar {
+  --color-base00: #262626;
+  --color-base01: #171717;
+  --color-base02: #565656;
+  --color-base03: #565656;
+  --color-base04: #8c8c8c;
+  --color-base05: #adadad;
+  --color-base06: #f3f3f3;
+  --color-base07: #fff;
+  --color-base08: #fa4d56;
+  --color-base09: #bf5b17;
+  --color-base0A: #fdd13a;
+  --color-base0B: #56d679;
+  --color-base0C: #30b0ff;
+  --color-base0D: #0353e9;
+  --color-base0E: #fa75a6;
+  --color-base0F: #bb8eff;
+
+  --color-text-01: var(--color-base06);
+  --color-text-02: var(--color-base04);
+  color: var(--color-text-01);
+}
+
 /* color variables */
 body[kui-theme="Carbon Gray10"] {
   --color-base00: #ffffff;
@@ -16,14 +43,6 @@ body[kui-theme="Carbon Gray10"] {
   --color-base0D: #054ada;
   --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
-
-  /* SidecarThin */
-  --color-background-inverted01: var(--color-sidecar-background);
-  --color-background-inverted02: var(--color-sidecar-header);
-  --color-text-inverted01: var(--color-base00);
-  --color-text-inverted02: var(--color-base01);
-  --color-text-inverted03: var(--color-base01);
-  --color-tab-selected-inverted: var(--color-name);
 
   --color-name-sidecar: #30b0ff;
   --color-red-sidecar: #fb4b53;
@@ -48,7 +67,7 @@ body[kui-theme="Carbon Gray10"] {
   --color-sidecar-toolbar-foreground: var(--color-text-01);
 
   --color-sidecar-header: #282828;
-  --color-sidecar-background: var(--color-base06);
+  --color-sidecar-background-01: var(--color-base06);
   --color-sidecar-border: #e4e4e4;
 
   --color-brand-03: #008fff;
