@@ -115,7 +115,7 @@ export default class Block extends React.PureComponent<Props, State> {
             <AccordionItem
               open
               onKeyDown={event => event.stopPropagation()}
-              onMouseDown={event => event.preventDefault()}
+              onClick={event => event.stopPropagation()}
               iconDescription=""
               title={this.input()}
             >
