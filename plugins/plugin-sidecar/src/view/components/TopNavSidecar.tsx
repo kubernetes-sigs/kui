@@ -36,6 +36,8 @@ import Badge from './Badge'
 import ToolbarContainer from './ToolbarContainer'
 import { BaseState, BaseSidecar, Props } from './BaseSidecar'
 
+import 'carbon-components/scss/components/tabs/_tabs.scss'
+
 const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 
 interface State extends BaseState {

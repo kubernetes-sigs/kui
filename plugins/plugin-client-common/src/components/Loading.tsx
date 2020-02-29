@@ -18,6 +18,7 @@ import * as React from 'react'
 import { InlineLoading } from 'carbon-components-react'
 
 import '../../web/css/static/loading.scss'
+import 'carbon-components/scss/components/inline-loading/_inline-loading.scss'
 
 interface Props {
   description?: string

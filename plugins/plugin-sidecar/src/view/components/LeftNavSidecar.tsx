@@ -25,6 +25,9 @@ import KuiContent from './KuiContent'
 import { getStateFromMMR } from './TopNavSidecar'
 import { BaseState, BaseSidecar, Props } from './BaseSidecar'
 
+import 'carbon-components/scss/components/ui-shell/_content.scss'
+import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
+
 const strings = i18n('client', 'about')
 // const strings2 = i18n('core-support')
 const strings2 = strings
