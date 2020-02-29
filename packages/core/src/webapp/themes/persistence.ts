@@ -24,7 +24,6 @@ import { CodedError } from '../../models/errors'
 import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
 import { webpackPath } from '../../plugins/path'
-import { injectCSS, uninjectCSS } from '../util/inject'
 import { clearPreference, getPreference, setPreference } from '../../core/userdata'
 
 import findThemeByName from './find'
@@ -123,13 +122,6 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
       const previous = await findThemeByName(previousTheme)
       if (previous) {
         const { theme: previousThemeModel } = previous
-        const previousKey = id(previousTheme)
-        const previousNumAddons = typeof previousThemeModel.css === 'string' ? 1 : previousThemeModel.css.length
-        for (let idx = 0; idx < previousNumAddons; idx++) {
-          const addonKey = `${previousKey}-${idx}`
-          await uninjectCSS({ key: addonKey })
-        }
-
         if (previousThemeModel.attrs) {
           previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
         }
@@ -158,7 +150,7 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
         } else {
           // inject the new css
           debug('injecting CSS', addon, plugin, apiVersion)
-          return injectCSS(await getCss(addon, addonKey, plugin, apiVersion))
+          await getCss(addon, addonKey, plugin, apiVersion)
         }
       })
     )

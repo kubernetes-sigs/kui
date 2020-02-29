@@ -1,3 +1,30 @@
+/* inverted sidecar */
+body[kui-theme="Light"] .kui--sidecar {
+  --color-base00: #13171a; /* Default Background */
+  --color-base01: #202529; /* Lighter Background (Used for status bars) */
+  --color-base02: #272c30; /* Selection Background */
+  --color-base03: #373d42;
+  --color-base04: #565656; /* Dark Foreground (Used for status bars) */
+  --color-base05: #9fa5ad; /* Default Foreground, Caret, Delimiters, Operators */
+  --color-base06: #f2f4f8; /* Light Foreground (Not often used) */
+  --color-base07: #ffffff; /* Light Background (Not often used) */
+  --color-base08: #fb4b53; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+  --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+  --color-base0A: #fdd13a; /* YELLOW: Classes, Markup Bold, Search Text Background */
+  --color-base0B: #3dbb61; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+  --color-base0C: #6ccaff; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+  --color-base0D: #97c1ff; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+  --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+  --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+  --color-text-01: var(--color-base06);
+  --color-text-02: var(--color-base05);
+  color: var(--color-text-01);
+  --color-sidecar-header: var(--color-base03);
+  --color-sidecar-background-01: var(--color-base01);
+  --color-sidecar-background-02: var(--color-base03);
+}
+
 /* color variables */
 body[kui-theme="Light"] {
   --color-base00: #ffffff;
@@ -19,12 +46,6 @@ body[kui-theme="Light"] {
 
   --color-yellow-text: hsl(46, 87%, 37%);
 
-  /* SidecarThin */
-  --color-background-inverted01: #272c30;
-  --color-background-inverted02: #373d42;
-  --color-text-inverted01: var(--color-base04);
-  --color-text-inverted02: var(--color-base03);
-
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);
 
@@ -33,7 +54,7 @@ body[kui-theme="Light"] {
   --color-table-border3: #a5adb4;
 
   --color-sidecar-header: var(--color-base04);
-  --color-sidecar-background: var(--color-base01);
+  --color-sidecar-background-01: var(--color-base01);
   --color-sidecar-border: #e4e4e4;
 
   --color-brand-03: #008fff;

@@ -20,12 +20,6 @@ body[kui-theme="Dark"] {
   --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
   --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
-  /* SidecarThin */
-  --color-background-inverted01: var(--color-sidecar-background);
-  --color-background-inverted02: var(--color-sidecar-header);
-  --color-text-inverted01: var(--color-text-01);
-  --color-text-inverted02: var(--color-text-02);
-
   --color-table-border1: #616466;
   --color-table-border2: #a5a9ad;
   --color-table-border3: #383d40;

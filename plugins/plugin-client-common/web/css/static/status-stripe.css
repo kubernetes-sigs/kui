@@ -1,9 +1,9 @@
 .kui--status-stripe {
   display: flex;
   flex-basis: 1.75em;
-  background-color: var(--color-background-inverted02);
+  background-color: var(--color-sidecar-background-02);
 
-  --color-fg: var(--color-text-inverted01);
+  --color-fg: var(--color-text-01);
 }
 
 .kui--status-stripe .kui--status-stripe-element a.clickable {

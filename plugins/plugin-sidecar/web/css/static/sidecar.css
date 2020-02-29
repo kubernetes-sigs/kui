@@ -1,12 +1,23 @@
-body {
-  --color-background-inverted01: var(--color-sidecar-header);
-  --color-background-inverted02: var(--color-base03);
-  --color-tab-selected-inverted: var(--color-brand-03);
-}
+@import "common.css";
 
 .kui--sidecar.visible.kui--nav-view {
   flex: 3.5;
   font-size: 0.875em;
+
+  .sidecar-bottom-stripe-left-bits {
+    /* filler in the window stripe to fill with the sidenav column */
+    flex: 2.5;
+    background-color: var(--color-sidecar-header);
+  }
+  .sidecar-bottom-stripe-right-bits {
+    /* filler in the window stripe to fill with the content column */
+    flex: 6;
+    justify-content: flex-end;
+  }
+  .sidecar-bottom-stripe {
+    border: none;
+    background: transparent;
+  }
 
   .kui--sidecar-header-and-body .bx--side-nav {
     /* title */
@@ -25,7 +36,7 @@ body {
   }
   .row-selection-context:not(.selected-row) .selected-entity svg path {
     /* radio buttons in tables */
-    fill: var(--color-text-inverted03) !important;
+    fill: var(--color-text-01) !important;
   }
   .result-table-title-outer {
     /* table titles */
@@ -35,10 +46,6 @@ body {
 
 .kui--sidecar .bx--data-table {
   white-space: normal;
-}
-
-.kui--sidecar-inverted .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
-  color: var(--color-text-inverted02);
 }
 
 .kui--sidecar-header-and-body {
@@ -51,39 +58,38 @@ body {
   .bx--side-nav {
     z-index: unset;
     position: unset;
-    background-color: var(--color-background-inverted02);
-    color: var(--color-text-inverted02);
     font-family: var(--font-sans-serif);
+    background-color: var(--color-sidecar-header);
 
     .bx--side-nav__items {
       padding-top: 1em;
 
       a.bx--side-nav__link {
         .bx--side-nav__link-text {
-          color: var(--color-text-inverted02);
+          color: var(--color-text-02);
         }
       }
 
       .bx--side-nav__icon > svg {
-        fill: var(--color-text-inverted02);
+        fill: var(--color-text-02);
       }
 
       .bx--side-nav__menu[role="menu"] a.bx--side-nav__link--current,
       .bx--side-nav__menu[role="menu"] a.bx--side-nav__link[aria-current="page"],
       a.bx--side-nav__link--current {
-        background-color: var(--color-background-inverted01);
+        background-color: var(--color-sidecar-background-01);
       }
 
       .bx--side-nav__item--active .bx--side-nav__submenu[aria-expanded="false"] {
-        background-color: var(--color-background-inverted02);
+        background-color: var(--color-sidecar-background-02);
       }
 
       .bx--side-nav__item:not(.bx--side-nav__item--active) > .bx--side-nav__link:hover,
       .bx--side-nav__menu[role="menu"]
         a.bx--side-nav__link[role="menuitem"]:not(.bx--side-nav__link--current):not([aria-current="page"]):hover,
       .bx--side-nav__item--active .bx--side-nav__submenu:hover {
-        background-color: var(--color-background-inverted01);
-        color: var(--color-text-inverted01);
+        background-color: var(--color-background-01);
+        color: var(--color-text-01);
       }
     }
 
@@ -118,12 +124,13 @@ body {
   .bx--content {
     display: flex;
     flex: 1;
-    background-color: var(--color-background-inverted01);
-    color: var(--color-text-inverted01);
+    background-color: var(--color-background);
+    color: var(--color-text-01);
     padding: 0;
 
     .bx--data-table-container {
       flex: 1;
+      padding: 0;
     }
   }
 
@@ -152,9 +159,9 @@ body {
 
   .bx--snippet {
     & {
-      background: var(--color-background-inverted02);
+      background: var(--color-background-02);
       border-color: transparent;
-      color: var(--color-text-inverted01);
+      color: var(--color-text-01);
       font-size: 0.75em;
       line-height: 1em;
       padding: 1em;

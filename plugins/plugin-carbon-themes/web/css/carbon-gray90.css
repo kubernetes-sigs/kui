@@ -1,3 +1,6 @@
+@import "ibm-plex.css";
+@import "kui--alternate.css";
+
 /* color variables */
 body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-base00: #262626;
@@ -17,14 +20,6 @@ body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-base0E: #fa75a6;
   --color-base0F: #bb8eff;
 
-  /* SidecarThin */
-  --color-background-inverted01: var(--color-sidecar-background);
-  --color-background-inverted02: var(--color-sidecar-header);
-  --color-text-inverted01: #fff;
-  --color-text-inverted02: var(--color-text-inverted01);
-  --color-text-inverted03: var(--color-text-01);
-  --color-tab-selected-inverted: var(--active-tab-color);
-
   --color-confirm-background: var(--color-sidecar-header);
   --color-confirm-foreground: var(--color-base06);
 
@@ -36,7 +31,7 @@ body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-text-02: #bebebe; /**/
 
   --color-sidecar-header: #3d3d3d;
-  --color-sidecar-background: #171717;
+  --color-sidecar-background-01: #171717;
   --color-sidecar-border: transparent;
 
   --color-brand-03: #408bfc;
