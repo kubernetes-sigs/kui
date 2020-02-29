@@ -19,11 +19,6 @@
  *
  */
 
-/* zoom overlay */
-.zoom-overlay {
-  position: absolute;
-}
-
 /* when sidecar is minimized, don't listen to data-zoom */
 [data-zoom] #sidecar.minimized .sidecar-bottom-stripe {
   font-size: 0.875em;

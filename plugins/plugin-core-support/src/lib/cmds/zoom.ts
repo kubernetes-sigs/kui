@@ -58,19 +58,6 @@ const usage = {
 }
 
 /**
- * Inject CSS
- *
- */
-function injectContent() {
-  if (!document.querySelector('#kui-zoom-overlay')) {
-    const overlay = document.createElement('div')
-    overlay.className = 'zoom-overlay hidden'
-    overlay.id = 'kui-zoom-overlay'
-    document.body.appendChild(overlay)
-  }
-}
-
-/**
  * Command handler for zoom set
  *
  */
@@ -106,7 +93,6 @@ const _set = newZoom => {
   return true
 }
 async function set({ argvNoOptions }: Arguments) {
-  await injectContent()
   const newZoom = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   return _set(newZoom)
 }
@@ -139,7 +125,6 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     }, 100)
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
-    await injectContent()
     event.preventDefault()
     const main = document.querySelector('body > .page')
     const factor = char === keys.ZOOM_IN ? 1 : -1
