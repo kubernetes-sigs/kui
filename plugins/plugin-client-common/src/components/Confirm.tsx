@@ -19,6 +19,7 @@ import { i18n, eventBus, Tab as KuiTab } from '@kui-shell/core'
 import { Modal } from 'carbon-components-react'
 
 import '../../web/css/static/Confirm.scss'
+import 'carbon-components/scss/components/modal/_modal.scss'
 
 const strings = i18n('plugin-core-support')
 

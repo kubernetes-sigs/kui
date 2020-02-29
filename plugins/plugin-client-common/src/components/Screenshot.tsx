@@ -22,6 +22,8 @@ import { Event, NativeImage } from 'electron'
 
 import '../../web/css/static/Tooltip.scss'
 import '../../web/css/static/Screenshot.scss'
+import 'carbon-components/scss/components/tooltip/_tooltip.scss'
+import 'carbon-components/scss/components/notification/_toast-notification.scss'
 
 const strings = i18n('plugin-client-common', 'screenshot')
 

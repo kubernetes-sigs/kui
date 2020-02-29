@@ -20,6 +20,7 @@ import { Event, FoundInPageResult } from 'electron'
 import { Search as CarbonSearch } from 'carbon-components-react'
 
 import '../../web/css/static/Search.scss'
+import 'carbon-components/scss/components/search/_search.scss'
 
 const strings = i18n('plugin-client-common', 'search')
 

@@ -18,6 +18,9 @@ import * as React from 'react'
 import * as ReactMarkdown from 'react-markdown'
 import { CodeSnippet, Link } from 'carbon-components-react'
 
+import 'carbon-components/scss/components/link/_link.scss'
+import 'carbon-components/scss/components/code-snippet/_code-snippet.scss'
+
 interface Props {
   source: string
 }

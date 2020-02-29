@@ -42,6 +42,18 @@ const terserOptions = process.env.KEEP_CLASSNAMES
     }
   : {}
 
+const sassLoaderChain = [
+  {
+    loader: MiniCssExtractPlugin.loader,
+    options: {
+      hmr: mode === 'development',
+      esModule: true
+    }
+  },
+  'css-loader',
+  'sass-loader'
+]
+
 const optimization = {}
 if (process.env.NO_OPT) {
   console.log('optimization? disabled')
@@ -395,19 +407,13 @@ module.exports = {
         use: 'ignore-loader'
       },
       {
-        test: /\.(sa|sc|c)ss$/i,
+        test: /\.css$/i,
         include: thisPath('web/css/static'),
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: mode === 'development',
-              esModule: true
-            }
-          },
-          'css-loader',
-          'sass-loader'
-        ]
+        use: sassLoaderChain
+      },
+      {
+        test: /\.scss$/i,
+        use: sassLoaderChain
       },
       // { test: /\.css$/i, include: thisPath('@kui-shell/plugin-'), exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
       { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['style-loader', 'css-loader'] },
