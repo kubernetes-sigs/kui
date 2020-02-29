@@ -329,9 +329,9 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
         { max: 0, str: '' }
       )
 
-    // add two ex-sized spaces for good measure
-    let ex = 2
-    let em = 0
+    // add some em-sized spaces for good measure
+    let ex = 0
+    let em = 2 // <-- for good measure
     for (let idx = 0; idx < longest.str.length; idx++) {
       const char = longest.str.charAt(idx)
       if (char === 'm') em++

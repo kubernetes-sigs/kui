@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ async function completeGitBranches(tab: Tab, commandLine: CommandLine, spec: Tab
   if (args[0] === 'git' && (args[1] === 'checkout' || args[1] === 'branch')) {
     try {
       const completions = await tab.REPL.qexec<string>(
-        `! git branch --list ${toBeCompleted ? toBeCompleted + '*' : ''} --sort=refname --sort=committerdate`,
+        `! git branch --list '${toBeCompleted ? toBeCompleted + '*' : ''}' --sort=refname --sort=committerdate`,
         undefined,
         undefined,
         { raw: true }
