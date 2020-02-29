@@ -15,7 +15,6 @@
  */
 
 import { Tab } from '../webapp/tab'
-import { flatten } from '../core/utility'
 import { CommandLine } from '../models/command'
 
 /**
@@ -41,23 +40,66 @@ export function isStringResponse(response: CompletionResponse): response is stri
   return response === undefined || typeof response === 'string'
 }
 
+/**
+ * Plugins may register enumerators. A tab completion Enumerator takes
+ * a CommandLine and a TabCompletionSpec and produceds an array of
+ * CompletionResponse.
+ *
+ */
 type Enumerator = (
   tab: Tab,
   commandLine: CommandLine,
   spec: TabCompletionSpec
 ) => CompletionResponse[] | Promise<CompletionResponse[]>
 
-const enumerators: Enumerator[] = []
+/** An Enumerator paired with a priority to help with tie breakers */
+type PrioritizedEnumerator = { enumerator: Enumerator; priority: number }
+const enumerators: PrioritizedEnumerator[] = []
 
-export function registerEnumerator(enumerator: Enumerator) {
-  enumerators.push(enumerator)
+/** A plugin has offered a tab completion Enumerator */
+export function registerEnumerator(enumerator: Enumerator, priority = 0) {
+  enumerators.push({ enumerator, priority })
 }
 
+/**
+ * Consult each registered enumerator to see what it has to offer in
+ * the way of completions. Pick the one with highest priority, or the
+ * first to register in the case of a tie-breaker.
+ *
+ */
 export async function applyEnumerator(
   tab: Tab,
   commandLine: CommandLine,
   spec: TabCompletionSpec
 ): Promise<CompletionResponse[]> {
-  const lists = await Promise.all(enumerators.map(_ => _(tab, commandLine, spec)))
-  return flatten(lists.map(x => x)).filter(x => x)
+  // this is a list of all offered completions, paired with the
+  // priority of the registered enumerator
+  const lists = (
+    await Promise.all(
+      enumerators.map(async _ => ({
+        response: await _.enumerator(tab, commandLine, spec),
+        priority: _.priority
+      }))
+    )
+  ).filter(_ => _.response && _.response.length > 0)
+
+  if (lists.length === 0) {
+    // no enumerators had anything to suggest
+  } else if (lists.length === 1) {
+    // exactly one enumerator had something to suggest
+    return lists[0].response
+  } else {
+    // in this case, more than one enumerator had something to
+    // suggest. pick the one with highest priority, or the first to
+    // register
+    const bestList = lists.slice(1).reduce((best, list) => {
+      if (best.priority < list.priority) {
+        return list
+      } else {
+        return best
+      }
+    }, lists[0])
+
+    return bestList.response
+  }
 }
