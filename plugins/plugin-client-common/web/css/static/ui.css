@@ -2094,9 +2094,6 @@ body {
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
-  --color-text-inverted01: var(--color-text-01);
-  --color-text-inverted02: var(--color-text-02);
-  --color-text-inverted03: var(--color-text-inverted01);
 
   --color-selection-background: var(--color-base04);
   --color-selection-foreground: var(--color-text-01);

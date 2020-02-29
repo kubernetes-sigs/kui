@@ -1,3 +1,5 @@
+@import "common.css";
+
 /* Duplicate rule with line 13-15 in ui.css */
 .kui--sidecar {
   height: 100%;
@@ -41,7 +43,7 @@ tab:not(.sidecar-full-screen) .kui--sidecar .fifty-fifty {
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
-  background: var(--color-sidecar-background);
+  background: var(--color-sidecar-background-01);
 }
 .kui--sidecar.visible {
   flex: 6;
@@ -423,7 +425,7 @@ body.subwindow .kui--sidecar .sidecar-header-name {
 .kui--sidecar .sidecar-header-name .entity-name-hash {
   font-family: var(--font-monospace);
   font-size: 75%;
-  color: var(--color-text-inverted02);
+  color: var(--color-text-02);
   font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -638,15 +640,6 @@ body.subwindow .kui--sidecar .sidecar-header-name {
 /* generic */
 .kui--sidecar .present-as-quotation {
   border-left-color: var(--color-base02);
-}
-.kui--sidecar-inverted .kui--sidecar .normal-text {
-  color: var(--color-text-inverted01);
-}
-.kui--sidecar-inverted .kui--sidecar .normal-text svg path {
-  fill: var(--color-text-inverted01);
-}
-.kui--sidecar-inverted .kui--sidecar .sub-text {
-  color: var(--color-text-inverted03);
 }
 .kui--sidecar .result-as-table .big-top-pad:first-child {
   margin-top: 0;
@@ -1033,7 +1026,7 @@ body:not(.no-tooltips-anywhere)
   .bx--tabs__nav-link:focus,
 .bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
   a.bx--tabs__nav-link:active {
-  color: var(--color-text-inverted02);
+  color: var(--color-text-02);
 }
 
 .kui--sidecar.visible .kui--sidecar-header-and-body {
