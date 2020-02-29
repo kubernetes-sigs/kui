@@ -66,7 +66,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
           console.error(`still waiting for text actualValue=${actualValue} expectedValue=${expectedValue}`)
         }
 
-        return `echo ${expectedValue}` === actualValue
+        return expectedValue === actualValue
       }, CLI.waitTimeout)
     } catch (err) {
       return Common.oops(this, true)(err)

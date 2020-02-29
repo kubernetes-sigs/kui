@@ -182,6 +182,7 @@ export default class Input extends React.PureComponent<Props, State> {
           value={hasCommand(this.props.model) ? this.props.model.command : ''}
           tabIndex={-1}
           placeholder={promptPlaceholder}
+          onClick={evt => evt.stopPropagation() /* accordion... */}
           ref={c => {
             if (c && !this.state.prompt) {
               this.setState({ prompt: c })
