@@ -22,6 +22,8 @@ import Input from './Input'
 import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from './BlockModel'
 
+import 'carbon-components/scss/components/accordion/_accordion.scss'
+
 interface Props {
   idx: number
   tab: KuiTab

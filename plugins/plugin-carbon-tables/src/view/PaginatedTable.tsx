@@ -26,6 +26,13 @@ import kui2carbon, { NamedDataTableRow } from '../model/kui2carbon'
 
 import { pageSize } from '@kui-shell/client/config.d/tables.json'
 
+/** carbon styling */
+import 'carbon-components/scss/components/pagination/_pagination.scss'
+import 'carbon-components/scss/components/data-table/_data-table.scss'
+
+/** hack (see comments in file) */
+import '../../web/css/static/hack-select.scss'
+
 /** import the kui theme alignment */
 import '../../web/css/static/carbon-kui-theme-alignment.css'
 

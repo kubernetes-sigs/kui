@@ -22,6 +22,8 @@ import Block from './Block'
 import Cleaner from '../cleaner'
 import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
 
+import 'carbon-components/scss/components/accordion/_accordion.scss'
+
 export interface TerminalOptions {
   noActiveInput?: boolean
 }

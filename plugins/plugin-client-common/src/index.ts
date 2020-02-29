@@ -19,7 +19,7 @@
  * preserved in the resulting <link> tags.
  *
  */
-import 'carbon-components/css/carbon-components.min.css'
+// import 'carbon-components/css/carbon-components.min.css'
 import '../web/css/static/carbon-overrides-common.css'
 import '../web/css/static/inverted-colors.css'
 import '../web/css/static/ui.css'

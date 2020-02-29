@@ -24,6 +24,7 @@ import { CompletionResponse, findCompletions as findCompletionsFromRegistrar, _s
 
 import Input from './Input'
 import '../../../../web/css/static/TabCompletion.scss'
+import 'carbon-components/scss/components/button/_button.scss'
 
 const debug = Debug('Terminal/Input/TabCompletion')
 

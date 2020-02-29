@@ -1,0 +1,8 @@
+.bx--pagination .bx--select-input {
+  /* these rules seem to be included if you import the entire huge
+   carbon-components.min.css, but not if you pick just the pagination
+   or select or form scss parts; without these, chrome at least does
+   not obey adding padding that carbon's scss specifies for selects */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
