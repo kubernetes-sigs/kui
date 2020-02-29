@@ -137,11 +137,13 @@ function doComplete(args: Arguments) {
 }
 
 /**
- * Entry point to register tab completion handlers
+ * Entry point to register tab completion handlers. Register this as a
+ * very low priority enumerator. We don't want e.g. to enumerate files
+ * when the user is doing a `git checkout myBran<tab>`.
  *
  */
 export function preload() {
-  registerTabCompletionEnumerator(completeLocalFiles)
+  registerTabCompletionEnumerator(completeLocalFiles, -100)
 }
 
 export function plugin(registrar: Registrar) {

@@ -41,9 +41,6 @@ const expectArray = (expected /*: string[] */) => (actual /*: string | string[] 
 exports.tabby = (ctx, partial, full, expectOK = true) =>
   ctx.app.client
     .waitForExist(Selectors.CURRENT_PROMPT_BLOCK, CLI.waitTimeout)
-    .then(() => {
-      console.error('000000000000000000000')
-    })
     .then(() => ctx.app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
@@ -54,12 +51,8 @@ exports.tabby = (ctx, partial, full, expectOK = true) =>
         .then(() => ctx.app.client.waitForValue(Selectors.PROMPT_N(count), full))
     )
     .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
-    .then(() => {
-      console.error('111111111111111111111')
-    })
     .then(() => CLI.command('', ctx.app)) // "enter" to complete the repl
     .then(data => {
-      console.error('222222222222222222')
       if (expectOK) {
         return ReplExpect.okWithAny(data)
       } else {

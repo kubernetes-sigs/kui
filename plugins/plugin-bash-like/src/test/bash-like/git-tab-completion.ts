@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,9 +89,25 @@ describe(suiteName, function(this: Common.ISuite) {
   // we will make two branches in a temporary directory, to test tab
   // completion of branch names
   const commonBranchNamePrefix = 'branch'
+  const prefix = commonBranchNamePrefix.charAt(0)
   const branch1 = `${commonBranchNamePrefix}111`
   const branch2 = `${commonBranchNamePrefix}222` // should have a common prefix with branch1
   const branch3 = 'zzz' // should be fully distinct from branch1 and branch2
+
+  const testTabCompletion = () => {
+    pit(`should tab complete branch names with options`, () => {
+      return tabbyWithOptions(
+        this,
+        `git checkout ${prefix}`, // e.g. git checkout b<tab>
+        [branch1, branch2],
+        `git checkout ${branch1}`,
+        {
+          click: 0,
+          expectedPromptAfterTab: `git checkout ${commonBranchNamePrefix}` // e.g. git checkout b[ranch]
+        }
+      ).catch(Common.oops(this, true))
+    })
+  }
 
   let tmpdir: string
   pit(
@@ -128,20 +144,16 @@ describe(suiteName, function(this: Common.ISuite) {
     return tabby(this, `git checkout ${branch3.charAt(0)}`, `git checkout ${branch3}`)
   })
 
-  pit(`should tab complete branch names with options`, () => {
-    const prefix = commonBranchNamePrefix.charAt(0)
+  testTabCompletion()
 
-    return tabbyWithOptions(
-      this,
-      `git checkout ${prefix}`, // e.g. git checkout b<tab>
-      [branch1, branch2],
-      `git checkout ${branch1}`,
-      {
-        click: 0,
-        expectedPromptAfterTab: `git checkout ${commonBranchNamePrefix}` // e.g. git checkout b[ranch]
-      }
-    ).catch(Common.oops(this, true))
+  /** make sure we don't tab complete a file name with the common prefix */
+  const tempFile = `${prefix}temporaryfile`
+  pit(`should touch temporary file ${tempFile}`, () => {
+    return CLI.command(`touch ${tempFile}`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
   })
+  testTabCompletion() // <-- we still had better complete only the branch names
 
   pit('should clean up temporary directory', () => remove(tmpdir))
 })
