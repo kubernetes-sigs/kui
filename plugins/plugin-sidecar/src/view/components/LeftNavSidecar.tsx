@@ -21,12 +21,14 @@ import { eventBus, i18n, Tab, Button, NavResponse, MultiModalMode } from '@kui-s
 import { Content, SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
 
 import Width from './width'
-import KuiContent from './KuiContent'
 import { getStateFromMMR } from './TopNavSidecar'
 import { BaseState, BaseSidecar, Props } from './BaseSidecar'
 
 import 'carbon-components/scss/components/ui-shell/_content.scss'
 import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
+
+/** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
+const KuiContent = React.lazy(() => import('./KuiContent'))
 
 const strings = i18n('client', 'about')
 // const strings2 = i18n('core-support')
@@ -164,11 +166,13 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
 
   protected bodyContent(tabIdx: number, navIdx = 0) {
     return (
-      <KuiContent
-        tab={this.state.tab}
-        mode={this.state.allNavs[navIdx].tabs[tabIdx]}
-        response={this.state.response[navIdx]}
-      />
+      <React.Suspense fallback={<div />}>
+        <KuiContent
+          tab={this.state.tab}
+          mode={this.state.allNavs[navIdx].tabs[tabIdx]}
+          response={this.state.response[navIdx]}
+        />
+      </React.Suspense>
     )
   }
 
@@ -194,7 +198,3 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     )
   }
 }
-
-/* export default function renderLeftNavSidecar(tab: Tab, repl: REPL, response: NavResponse): React.ReactElement {
-  return <LeftNavSidecar tab={tab} repl={repl} response={response} />
-} */

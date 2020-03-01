@@ -57,7 +57,7 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
           toolbarText={this.state.toolbarText}
           buttons={this.props.buttons.concat(this.state.extraButtons || [])}
         />
-        {this.children()}
+        <React.Suspense fallback={<div />}>{this.children()}</React.Suspense>
       </div>
     )
   }

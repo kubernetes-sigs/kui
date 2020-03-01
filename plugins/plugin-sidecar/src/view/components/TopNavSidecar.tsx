@@ -29,7 +29,6 @@ import {
   isButton,
   Button
 } from '@kui-shell/core'
-import KuiContent from './KuiContent'
 
 import Width from './width'
 import Badge from './Badge'
@@ -37,6 +36,9 @@ import ToolbarContainer from './ToolbarContainer'
 import { BaseState, BaseSidecar, Props } from './BaseSidecar'
 
 import 'carbon-components/scss/components/tabs/_tabs.scss'
+
+/** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
+const KuiContent = React.lazy(() => import('./KuiContent'))
 
 const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 
@@ -310,7 +312,3 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
     }
   }
 }
-
-/* export default function renderTopNavSidecar(tab: KuiTab, repl: REPL, response: MultiModalResponse): React.ReactElement {
-  return <TopNavSidecar tab={tab} repl={repl} response={response} />
-} */
