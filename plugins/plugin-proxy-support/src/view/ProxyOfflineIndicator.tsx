@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventBus } from '@kui-shell/core'
+import { eventBus, inBrowser } from '@kui-shell/core'
 import { FlashOffFilled20 as OfflineIcon } from '@carbon/icons-react'
 import { TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
@@ -47,7 +47,7 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
 
   /** If the proxy is enabled, and we are offline, then render a widget indicating such. */
   public render() {
-    if (!this.state.proxyEnabled || !this.state.offline) {
+    if (!this.state.proxyEnabled || !this.state.offline || !inBrowser()) {
       return <React.Fragment />
     } else {
       return (
