@@ -166,7 +166,8 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
       }
 
       return {
-        width: newWidth
+        width: newWidth,
+        priorWidth: width
       }
     })
   }
