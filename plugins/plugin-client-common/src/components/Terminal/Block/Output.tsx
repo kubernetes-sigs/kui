@@ -82,6 +82,7 @@ export default class Output extends React.PureComponent<Props, State> {
       this.setState(curState => ({
         streamingOutput: curState.streamingOutput.concat([part])
       }))
+      this.props.onRender()
       eventBus.emit(`/command/stdout/done/${getTabId(this.props.tab)}/${this.props.model.execUUID}`)
     }
   }
