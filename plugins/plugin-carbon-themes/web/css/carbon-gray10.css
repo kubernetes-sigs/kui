@@ -23,6 +23,12 @@ body[kui-theme="Carbon Gray10"] .kui--sidecar {
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
   color: var(--color-text-01);
+
+  --color-map-value: var(--color-text-01);
+  --color-map-key: var(--color-base0C);
+
+  --color-brand-01: #97c1ff;
+  --color-brand-03: #0062ff;
 }
 
 /* color variables */
