@@ -140,7 +140,7 @@ export default class Tab extends React.PureComponent<Props, State> {
               this.props.onCloseTab(this.props.idx)
             }}
           >
-            <Close16 focusable="false" width="12" height="16" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+            <Close16 focusable="false" width={12} height={16} preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
           </div>
         )}
       </a>
