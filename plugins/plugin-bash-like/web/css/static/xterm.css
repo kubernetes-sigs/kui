@@ -31,12 +31,12 @@
   transition: width 10ms ease-in-out, height 10ms ease-in-out;
 }
 
-tab:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
+.kui--tab-content:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
   height: auto !important;
 }
 
 /* alt buffer mode */
-tab.xterm-alt-buffer-mode {
+.kui--tab-content.xterm-alt-buffer-mode {
   .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
     background-color: var(--color-support-01) !important;
   }
@@ -87,7 +87,7 @@ tab.xterm-alt-buffer-mode {
   }
 }
 
-tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
+.kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
   display: none;
 }
 
@@ -240,7 +240,7 @@ tab:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > d
  * only for line wrapping, so that we can reflow them
  * naturally. Please see `reflowLineWraps()` in `src/pty/client.ts`
  * for the logic that establishes the `.xterm-is-wrapped` property.
- * 
+ *
  */
 .xterm-terminated .xterm-rows > div {
   white-space: pre-wrap;

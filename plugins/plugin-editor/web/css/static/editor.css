@@ -96,14 +96,14 @@
   flex-direction: column;
 }
 /* wskflow container in editor while sidecar is maximized */
-tab.sidecar-full-screen #sidecar .code-highlighting {
+.kui--tab-content.sidecar-full-screen #sidecar .code-highlighting {
   flex-direction: row;
 }
-tab.sidecar-full-screen #sidecar .monaco-editor-wrapper.half-height {
+.kui--tab-content.sidecar-full-screen #sidecar .monaco-editor-wrapper.half-height {
   max-height: none;
   max-width: 50%;
 }
-tab.sidecar-full-screen #sidecar .wskflow-container.visible {
+.kui--tab-content.sidecar-full-screen #sidecar .wskflow-container.visible {
   max-height: none;
   max-width: 50%;
 }

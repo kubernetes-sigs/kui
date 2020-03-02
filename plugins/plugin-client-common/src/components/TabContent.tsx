@@ -205,9 +205,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <tab
+      <div
         ref={c => this.setState({ tab: c as KuiTab })}
-        className={this.props.active ? 'visible' : ''}
+        className={'kui--tab-content' + (this.props.active ? ' visible' : '')}
         data-tab-id={this.props.uuid}
       >
         <div className="kui--rows">
@@ -236,7 +236,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
           {this.bottom()}
         </div>
         {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
-      </tab>
+      </div>
     )
   }
 }
