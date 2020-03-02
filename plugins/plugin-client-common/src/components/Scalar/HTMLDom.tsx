@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 interface Props {
-  content: Element
+  content: Node | Node[]
   className?: string
 }
 
@@ -39,7 +39,11 @@ export default class HTMLDom extends React.PureComponent<Props> {
 
   public static getDerivedStateFromProps(props: Props, state: State) {
     if (state.dom && !state.isRendered) {
-      state.dom.appendChild(props.content)
+      if (Array.isArray(props.content)) {
+        props.content.forEach(_ => state.dom.appendChild(_))
+      } else {
+        state.dom.appendChild(props.content)
+      }
       return {
         isRendered: true
       }

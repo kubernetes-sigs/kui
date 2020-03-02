@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { HTMLDom } from '@kui-shell/plugin-client-common'
 import { Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
 
 import * as React from 'react'
@@ -99,7 +100,11 @@ export default function renderCell(
                 : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
             }
           >
-            {cell.value}
+            {kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom ? (
+              <HTMLDom content={kuiRow.attributes[cidx - 1].valueDom} />
+            ) : (
+              cell.value
+            )}
           </span>
         </TableCell>
       )
