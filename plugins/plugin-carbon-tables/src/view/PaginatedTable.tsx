@@ -129,7 +129,14 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
     if (!needsPagination) {
       return dataTable
     } else {
-      const style = { flex: 1, flexDirection: 'column' as const, alignItems: 'stretch' as const }
+      // overflow-x: auto so that the pagination parts don't overflow offscreen!
+      // see https://github.com/IBM/kui/issues/3773
+      const style = {
+        flex: 1,
+        flexDirection: 'column' as const,
+        alignItems: 'stretch' as const,
+        overflowX: 'auto' as const
+      }
       return (
         <div className="flex-layout" style={style}>
           {dataTable}
