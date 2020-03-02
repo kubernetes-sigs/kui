@@ -35,6 +35,10 @@ interface Props {
   response: ScalarResponse | Error
 }
 
+interface State {
+  catastrophicError: Error
+}
+
 /**
  * Component that renders a "ScalarResponse", which is a command
  * response that doesn't require any particularly special
@@ -42,8 +46,28 @@ interface Props {
  * response that is suitable for rendering directly in the Terminal.
  *
  */
-export default class Scalar extends React.PureComponent<Props> {
+export default class Scalar extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      catastrophicError: undefined
+    }
+  }
+
+  public static getDerivedStateFromError(error) {
+    return { catastrophicError: error }
+  }
+
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('catastrophic error in Scalar', error, errorInfo)
+  }
+
   public render() {
+    if (this.state.catastrophicError) {
+      return <div className="oops">{this.state.catastrophicError.toString()}</div>
+    }
+
     const { tab, response } = this.props
 
     try {
@@ -80,7 +104,10 @@ export default class Scalar extends React.PureComponent<Props> {
       }
     } catch (err) {
       console.error('catastrophic error rendering Scalar', err)
-      return <pre>{response.toString()}</pre>
+      return <pre>{err.toString()}</pre>
     }
+
+    console.error('unexpected null return from Scalar')
+    return <pre className="oops">Internal Error in command execution</pre>
   }
 }
