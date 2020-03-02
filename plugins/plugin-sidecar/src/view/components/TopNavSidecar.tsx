@@ -260,7 +260,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
     return (
       <div className="badges">
         {badges.map(({ badge }, idx) => (
-          <Badge key={idx} spec={badge} />
+          <Badge key={idx} spec={badge} tab={this.props.tab} response={this.props.response} />
         ))}
       </div>
     )
