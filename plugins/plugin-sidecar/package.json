@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-sidecar",
-  "version": "7.0.4",
+  "version": "7.0.5",
   "description": "Kui plugin that offers the default sidecar view component",
   "license": "Apache-2.0",
   "author": "Mengting Yab",
