@@ -70,9 +70,12 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   private hackFocus() {
     setTimeout(() => {
       try {
-        ;(document.querySelector(
+        const input = document.querySelector(
           `tab[data-tab-id="${this.state.activeIdx + 1}"] .repl-active input`
-        ) as HTMLElement).focus()
+        ) as HTMLElement
+        if (input) {
+          input.focus()
+        }
       } catch (err) {
         console.error(err)
       }
