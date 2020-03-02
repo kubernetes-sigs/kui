@@ -394,19 +394,6 @@ pre.monospace {
 .timestamp-like {
   width: 16em;
 }
-.min-width-date-like {
-  width: 15em;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.max-width-id-like {
-  max-width: 8em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .not-very-wide {
   display: block; /* spans don't respond */
   max-width: 18em;
