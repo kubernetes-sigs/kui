@@ -78,10 +78,12 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
   protected constructor(props: Props<R>) {
     super(props)
 
-    // interpret Escape key as a toggle of the view's width */
-    const onEscape = this.onEscape.bind(this)
-    document.addEventListener('keyup', onEscape)
-    this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
+    // interpret Escape key as a toggle of the view's width
+    if (!this.isFixedWidth()) {
+      const onEscape = this.onEscape.bind(this)
+      document.addEventListener('keyup', onEscape)
+      this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
+    }
 
     if (this.props.willChangeSize) {
       this.props.willChangeSize(this.defaultWidth())
