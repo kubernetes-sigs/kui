@@ -113,6 +113,10 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     }
   }
 
+  protected isFixedWidth() {
+    return true
+  }
+
   private onResponse(tab: Tab, response: NavResponse) {
     this.setState(this.getState(tab, response))
   }
