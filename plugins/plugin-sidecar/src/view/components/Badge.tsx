@@ -19,7 +19,9 @@ import { HTMLDom } from '@kui-shell/plugin-client-common'
 import { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
 
 interface Props {
+  tab: Tab
   spec: KuiBadge | ((resource: MultiModalResponse, tab: Tab) => KuiBadge)
+  response: MultiModalResponse
 }
 
 interface State {
@@ -74,7 +76,7 @@ export default class Badge extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      cache: oneTimeRender(typeof props.spec === 'function' ? undefined : props.spec)
+      cache: oneTimeRender(typeof props.spec === 'function' ? props.spec(props.response, props.tab) : props.spec)
     }
   }
 
