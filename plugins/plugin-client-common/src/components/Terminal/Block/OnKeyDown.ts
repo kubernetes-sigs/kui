@@ -92,13 +92,13 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     if (inBrowser()) {
       debug('pageup')
       const { height } = document.body.getBoundingClientRect()
-      document.querySelector('tab.visible .repl-inner').scrollBy(0, -height)
+      document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
     }
   } else if (char === KeyCodes.PAGEDOWN) {
     if (inBrowser()) {
       debug('pagedown')
       const { height } = document.body.getBoundingClientRect()
-      document.querySelector('tab.visible .repl-inner').scrollBy(0, +height)
+      document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
     }
   } else if (char === KeyCodes.C && event.ctrlKey) {
     // Ctrl+C, cancel

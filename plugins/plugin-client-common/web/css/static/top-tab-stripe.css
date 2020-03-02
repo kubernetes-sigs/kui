@@ -5,15 +5,15 @@
   flex-direction: column;
   overflow: hidden; /* inner scrolling */
 }
-tab {
+.kui--tab-content {
   flex: 1;
   display: none;
   overflow: hidden; /* inner scrolling */
 }
-tab.visible {
+.kui--tab-content.visible {
   display: flex;
 }
-tab.split-tab:not(:first-child).visible {
+.kui--tab-content.split-tab:not(:first-child).visible {
   /* split screen separator */
   border-top: 2px solid var(--color-base03);
 }

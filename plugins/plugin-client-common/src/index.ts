@@ -28,16 +28,6 @@ import '../web/css/static/status-stripe.css'
 import '../web/css/static/top-tab-stripe.css'
 import '../web/css/static/vendor/balloon-css/balloon.min.css'
 
-// we use customized tags since the body view doesn't use a React Component lifecycle for now
-declare global {
-  /* eslint-disable @typescript-eslint/no-namespace */
-  namespace JSX {
-    interface IntrinsicElements {
-      tab: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-    }
-  }
-}
-
 export { default as Search } from './components/Search'
 export { default as Loading } from './components/Loading'
 export { default as HTMLDom } from './components/Scalar/HTMLDom'

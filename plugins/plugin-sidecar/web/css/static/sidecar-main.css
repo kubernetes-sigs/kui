@@ -18,7 +18,7 @@
   color: var(--color-error);
 }
 /* Duplicate rule with line 522-523 in ui.css */
-tab:not(.sidecar-full-screen) .kui--sidecar .fifty-fifty {
+.kui--tab-content:not(.sidecar-full-screen) .kui--sidecar .fifty-fifty {
   max-width: unset;
   margin-right: unset;
 }
