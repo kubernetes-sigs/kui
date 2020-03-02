@@ -1021,12 +1021,23 @@ body:not(.no-tooltips-anywhere)
   padding: 1em;
 }
 
-/* override the carbon color when tabbing through sidecar tabs*/
+/* override the carbon color when tabbing through sidecar tabs */
 .bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
   .bx--tabs__nav-link:focus,
 .bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
   a.bx--tabs__nav-link:active {
   color: var(--color-text-02);
+}
+
+body[kui-theme-style] a.bx--tabs__nav-link {
+  color: var(--color-text-02);
+  border-color: var(--color-text-02);
+}
+
+/* override carbon color when hovering over tab */
+.bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
+  color: var(--color-text-01) !important;
+  border-color: var(--color-base05) !important;
 }
 
 .kui--sidecar.visible .kui--sidecar-header-and-body {
