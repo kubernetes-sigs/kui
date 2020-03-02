@@ -40,7 +40,7 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
       await this.app.client.waitForExist(rows(res.count))
 
       // wait for vi to come up in alt buffer mode
-      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
+      await this.app.client.waitForExist(`${Selectors.CURRENT_TAB}.xterm-alt-buffer-mode`)
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       let iter = 0
@@ -102,7 +102,7 @@ describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
       await this.app.client.waitForExist(rows(res.count))
 
       // wait for vi to come up in alt buffer mode
-      await this.app.client.waitForExist(`tab.visible.xterm-alt-buffer-mode`)
+      await this.app.client.waitForExist(`${Selectors.CURRENT_TAB}.xterm-alt-buffer-mode`)
 
       // :wq
       await this.app.client.keys(':wq')

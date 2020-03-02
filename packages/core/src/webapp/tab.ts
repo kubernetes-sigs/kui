@@ -17,17 +17,15 @@
 import REPL from '../models/repl'
 import TabState from '../models/tab-state'
 
-export interface Tab extends HTMLElement {
+export interface Tab extends HTMLDivElement {
   REPL: REPL
   state: TabState
   queueListener: EventListener // for input queueing, see queueing.ts
   _kui_session: Promise<any>
 }
 
-const tabTagPattern = /^tab$/i
-
 export function isTab(node: Element): node is Tab {
-  return tabTagPattern.test(node.tagName)
+  return node.classList.contains('kui--tab-content')
 }
 
 /**
@@ -58,7 +56,7 @@ export const getTabFromTarget = (target: EventTarget): Tab => {
   }
 
   // fallthrough
-  return document.querySelector('tab.visible')
+  return document.querySelector('.kui--tab-content.visible')
 }
 
 export const getCurrentTab = (): Tab => {

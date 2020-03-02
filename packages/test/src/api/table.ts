@@ -92,7 +92,7 @@ export class TestTable {
       try {
         await ctx.app.client.waitUntil(async () => {
           const watchableJobsRaw = await ctx.app.client.execute(() => {
-            const tab = document.querySelector('tab.visible') as Tab
+            const tab = document.querySelector('.kui--tab-content.visible') as Tab
             return tab && tab.state && tab.state.jobs
           })
           const actualJobCount = watchableJobsRaw.value
