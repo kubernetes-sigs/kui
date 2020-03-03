@@ -147,6 +147,7 @@ class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
    *
    */
   private header(newKuiHeader: KuiRow) {
+    this.props.response.header = newKuiHeader
     this.setState({ headers: kuiHeader2carbonHeader(newKuiHeader) })
   }
 

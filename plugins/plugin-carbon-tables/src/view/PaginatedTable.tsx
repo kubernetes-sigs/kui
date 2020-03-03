@@ -103,7 +103,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
         render={renderOpts => (
           <TableContainer title={response.title}>
             <Table size="compact">
-              {renderHeader(response.header, renderOpts)}
+              {response.header && renderHeader(response.header, renderOpts)}
               {renderBody(response.body, renderOpts, tab, repl)}
             </Table>
           </TableContainer>
