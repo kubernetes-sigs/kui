@@ -35,6 +35,13 @@ bbbb
 sub
 hi`
 
+const expectReact: MMRExpectMode = {
+  mode: 'react',
+  selector: '.kui--test-react-mode-content',
+  innerText: 'Hello world',
+  contentType: 'react'
+}
+
 // this is the expected modes result showing in the sidecar
 const expectModes: MMRExpectMode[] = [
   { mode: 'text', label: 'T1', content: 'test plain text 5', contentType: 'text/plain' },
@@ -96,6 +103,12 @@ const testDefault5 = new TestMMR({
   command: 'test mmr mode5'
 })
 
+const testReact = new TestMMR({
+  metadata,
+  testName: 'test mmr react',
+  command: 'test mmr react'
+})
+
 const testOrder = new TestMMR({
   testName: 'change order',
   metadata,
@@ -129,6 +142,7 @@ const buttons = [
   { mode: 'hi', command: 'test string', kind: 'drilldown' as const }
 ]
 
+testReact.modes([expectReact], expectReact)
 testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello world' } } })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault2.modes(expectModes2, expectModes2[0])

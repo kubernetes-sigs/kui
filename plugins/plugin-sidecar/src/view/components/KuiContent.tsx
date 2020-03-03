@@ -21,6 +21,7 @@ import {
   Button,
   Content,
   isHTML,
+  isReactProvider,
   isStringWithOptionalContentType,
   isTable,
   isCommandStringContent,
@@ -70,7 +71,9 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
     } else if (isFunctionContent(mode)) {
       return <Eval tab={tab} command={mode.content} response={response} />
     } else if (isScalarContent(mode)) {
-      if (isTable(mode.content)) {
+      if (isReactProvider(mode)) {
+        return mode.react({ willUpdateToolbar })
+      } else if (isTable(mode.content)) {
         return renderTable(tab, tab.REPL, mode.content)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."

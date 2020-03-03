@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import * as React from 'react'
 import { Tab } from '../../webapp/tab'
 import { Table, isTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
 import { isHTML } from '../../util/types'
-import { ModeOrButton } from './types'
+import { ModeOrButton, Button } from './types'
+import { ToolbarText } from '../../webapp/views/toolbar-text'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -31,11 +33,27 @@ export interface ScalarContent<T = ScalarResource> {
   content: T
 }
 
-export function isScalarContent<T extends MetadataBearing>(
-  entity: Entity | ScalarResource | ScalarContent | Content<T> | MetadataBearing | ModeOrButton<T>
-): entity is ScalarContent {
+export type ToolbarProps = { willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void }
+type ReactProvider = { react: (props: ToolbarProps) => React.ReactElement<any> }
+export function isReactProvider(entity: ScalarLike<MetadataBearing>): entity is ReactProvider {
+  const provider = entity as ReactProvider
+  return typeof provider.react === 'function'
+}
+
+type ScalarLike<T extends MetadataBearing> =
+  | Entity
+  | ScalarResource
+  | ScalarContent
+  | Content<T>
+  | MetadataBearing
+  | ModeOrButton<T>
+  | ReactProvider
+export function isScalarContent<T extends MetadataBearing>(entity: ScalarLike<T>): entity is ScalarContent {
   const content = (entity as ScalarContent).content
-  return content !== undefined && (typeof content === 'string' || isTable(content) || isHTML(content))
+  return (
+    isReactProvider(entity) ||
+    (content !== undefined && (typeof content === 'string' || isTable(content) || isHTML(content)))
+  )
 }
 
 /**
@@ -142,5 +160,9 @@ export type Content<T extends MetadataBearing = MetadataBearing> =
 export function hasContent<T extends MetadataBearing>(
   resource: ScalarResource | Content<T> | ModeOrButton<T>
 ): resource is Content<T> {
-  return Object.prototype.hasOwnProperty.call(resource, 'content') || isCommandStringContent(resource)
+  return (
+    Object.prototype.hasOwnProperty.call(resource, 'content') ||
+    Object.prototype.hasOwnProperty.call(resource, 'react') ||
+    isCommandStringContent(resource)
+  )
 }
