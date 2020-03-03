@@ -106,12 +106,12 @@ export default class ActiveISearch {
    * Attempt to initiate or extend a search
    *
    */
-  public doSearch(evt: KeyboardEvent) {
+  public doSearch(evt: React.KeyboardEvent) {
     debug('doSearch', evt)
     // where do we want to start the search? if the user is just
     // typing, then start from the end of history; if the user hit
     // ctrl+r, then they want to search for the next match
-    const userHitCtrlR = evt.ctrlKey && evt.code === 'KeyR'
+    const userHitCtrlR = evt.ctrlKey && evt.key === 'KeyR'
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
 
     const { prompt } = this.input.state
@@ -137,7 +137,7 @@ export default class ActiveISearch {
   /** fill in the result of a search */
   public completeSearch() {
     debug('completing search')
-    // TODO: this.prompt.value = this.placeholderContentPart.getAttribute('data-full-match')
+    this.input.state.prompt.value = this.currentMatch()
     this.cancelISearch()
   }
 }
@@ -146,7 +146,9 @@ export default class ActiveISearch {
  * Listen for ctrl+R
  *
  */
-export async function onKeyUp(this: Input, evt: KeyboardEvent) {
+export async function onKeyUp(this: Input, evt: React.KeyboardEvent) {
+  const activeSearch = this.state.isearch
+
   //
   // we want ctrl+R; but if we're in a browser and on linux or
   // windows, then ctrl+R will result in a browser reload :(
@@ -163,8 +165,6 @@ export async function onKeyUp(this: Input, evt: KeyboardEvent) {
       (!inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
       evt.metaKey)
   ) {
-    const activeSearch = this.state.isearch
-
     if (evt.key === 'r') {
       debug('got ctrl+r')
       if (activeSearch) {
@@ -174,13 +174,15 @@ export async function onKeyUp(this: Input, evt: KeyboardEvent) {
         debug('new reverse-i-search')
         this.setState({ isearch: new ActiveISearch(this, await History(this.props.tab)) })
       }
-    } else if (activeSearch && isCursorMovement(evt)) {
+    } else if (activeSearch && isCursorMovement(evt.nativeEvent)) {
       activeSearch.completeSearch()
     } else if (activeSearch) {
       // with ctrl key down, let any other keycode result in cancelling the outstanding i-search
       debug('cancel', evt.keyCode)
       activeSearch.cancelISearch()
     }
+  } else if (activeSearch && isCursorMovement(evt.nativeEvent)) {
+    activeSearch.completeSearch()
   } else if (evt.key === 'Enter' && this.state.isearch) {
     this.state.isearch.completeSearch()
     this.props.tab.REPL.pexec(this.state.isearch.currentMatch() || this.state.prompt.value)

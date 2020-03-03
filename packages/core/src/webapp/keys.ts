@@ -20,6 +20,7 @@ export const keys = {
   ESCAPE: 27,
   TAB: 9,
   LEFT_ARROW: 37,
+  RIGHT_ARROW: 39,
   A: 65,
   B: 66,
   C: 67,
@@ -45,7 +46,10 @@ export { keys as Codes }
 
 /** does the given keycode correspond to a cursor movement? */
 export const isCursorMovement = (evt: KeyboardEvent): boolean => {
-  const code = evt.keyCode
-
-  return evt.ctrlKey && (code === keys.A || code === keys.E || code === keys.F || code === keys.B)
+  const code = evt.key
+  return (
+    (evt.ctrlKey && (code === 'a' || code === 'e' || code === 'f' || code === 'b')) ||
+    code === 'ArrowLeft' ||
+    code === 'ArrowRight'
+  )
 }
