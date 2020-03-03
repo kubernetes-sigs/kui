@@ -24,7 +24,6 @@
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
 import { metadata as _meta } from '../../lib/cmds/mmr-mode-via-registration'
-import { badgesWeWillRegister as badges } from '../../lib/modes'
 
 const { metadata } = _meta
 
@@ -81,7 +80,12 @@ const buttonFromRegistration = [
   { mode: 'mode4', label: 'mode4 label', command: 'test string', kind: 'drilldown' as const }
 ]
 
-testRegistrationWithModes.badges(badges)
+// see implementation in src/lib/modes
+testRegistrationWithModes.badges([
+  { title: 'badge1' },
+  { title: 'badge2', css: 'red-background' },
+  { title: 'badge3', css: 'green-background' }
+])
 testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })
 testRegistrationWithModes.toolbarButtons(buttonFromRegistration)
 

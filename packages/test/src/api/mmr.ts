@@ -192,7 +192,7 @@ export class TestMMR {
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(app => Promise.all(badges.map(badge => SidecarExpect.badge(badge.title)(app)))))
+          .then(app => Promise.all(badges.map(badge => SidecarExpect.badge(badge.title, badge.css)(app)))))
     })
   }
 
