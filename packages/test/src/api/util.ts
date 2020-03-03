@@ -193,7 +193,7 @@ export const waitForXtermInput = (app: Application, N: number) => {
   return app.client.waitForExist(selector)
 }
 
-export const expectText = (app: Application, expectedText: string) => async (selector: string) => {
+export const expectText = (app: Application, expectedText: string, exact = true) => async (selector: string) => {
   let idx = 0
   await app.client.waitUntil(async () => {
     const actualText = await app.client.getText(selector)
@@ -202,7 +202,14 @@ export const expectText = (app: Application, expectedText: string) => async (sel
         `still waiting for text; actualText=${actualText} expectedText=${expectedText} selector=${selector}`
       )
     }
-    return actualText === expectedText
+    if (exact) {
+      return actualText === expectedText
+    } else {
+      if (actualText.indexOf(expectedText) < 0) {
+        console.error(`Expected string not found: expected=${expectedText} actual=${actualText}`)
+      }
+      return actualText.indexOf(expectedText) >= 0
+    }
   })
   return app
 }

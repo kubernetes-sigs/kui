@@ -132,8 +132,8 @@ export const mode = (expectedMode: string) => async (app: Application) => {
   return app
 }
 
-export const toolbarText = (expect: { type: string; text: string }) => async (app: Application) => {
-  await expectText(app, expect.text)(Selectors.SIDECAR_TOOLBAR_TEXT(expect.type))
+export const toolbarText = (expect: { type: string; text: string; exact?: boolean }) => async (app: Application) => {
+  await expectText(app, expect.text, expect.exact)(Selectors.SIDECAR_TOOLBAR_TEXT(expect.type))
   return app
 }
 

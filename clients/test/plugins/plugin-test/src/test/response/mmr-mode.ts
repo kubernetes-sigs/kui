@@ -143,6 +143,11 @@ const buttons = [
 ]
 
 testReact.modes([expectReact], expectReact)
+testReact.toolbarText({
+  type: 'info',
+  text: 'hello this is iter',
+  exact: false
+})
 testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello world' } } })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault2.modes(expectModes2, expectModes2[0])
