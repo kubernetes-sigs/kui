@@ -496,7 +496,7 @@ export class TestMMR {
    *
    * @param  toolbarText is the expected text content and type shown in the Sidecar Toolbar
    */
-  public toolbarText(toolbarText: { type: string; text: string }) {
+  public toolbarText(toolbarText: { type: string; text: string; exact?: boolean }) {
     const { command, testName } = this.param
 
     describe(`mmr toolbar text ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
