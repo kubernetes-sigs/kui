@@ -62,8 +62,7 @@ export function kuiHeader2carbonHeader(header: KuiRow): DataTableHeader[] {
  */
 export function kuiRow2carbonRow(headers: DataTableHeader[]) {
   return (row: KuiRow, ridx: number): NamedDataTableRow => {
-    const isSelected =
-      row.rowCSS && (Array.isArray(row.rowCSS) ? row.rowCSS.includes('selected-row') : /selected-row/.test(row.rowCSS))
+    const isSelected = row.rowCSS ? row.rowCSS.includes('selected-row') : false
 
     const rowData = { id: row.rowKey || ridx.toString(), isSelected, NAME: '' }
     rowData[headers[0].key] = row.name
