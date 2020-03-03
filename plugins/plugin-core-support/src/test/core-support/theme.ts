@@ -95,23 +95,14 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
       await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('theme'))
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] .clickable`
-      const nameCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] > td:not(.not-a-name) > .clickable`
+      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] [type="radio"]`
 
       console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
       console.error('2')
-      await ctx.app.client.waitForVisible(nameCell)
-      console.error('3')
 
       for (let idx = 0; idx < nClicks; idx++) {
-        if (idx === 0) {
-          await ctx.app.client.click(checkMarkCell)
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          await ctx.app.client.click(nameCell)
-        }
-
+        await ctx.app.client.click(checkMarkCell)
         await ctx.app.client.waitForExist(`body[kui-theme="${clickOn.name}"]`)
 
         if (idx > 2) {
