@@ -88,10 +88,12 @@ export const resultSubset = (expectedResult: object, failFast?: boolean) => asyn
   return app
 }
 
-export const badge = (badge: string) => async (app: Application) => {
+export const badge = (title: string, css?: string) => async (app: Application) => {
   await app.client.waitUntil(async () => {
-    const badges = await app.client.getText(Selectors.SIDECAR_BADGES)
-    return badges.indexOf(badge) >= 0
+    const badges = css
+      ? await app.client.getText(`${Selectors.SIDECAR_BADGES} .${css}`)
+      : await app.client.getText(Selectors.SIDECAR_BADGES)
+    return badges.indexOf(title) >= 0
   }, waitTimeout)
   return app
 }
