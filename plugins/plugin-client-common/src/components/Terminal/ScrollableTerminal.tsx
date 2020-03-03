@@ -173,10 +173,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.uninitEvents()
   }
 
+  private onClick() {
+    if (document.activeElement === document.body) {
+      this.doFocus()
+    }
+  }
+
   public render() {
     return (
       <div className="repl" id="main-repl">
-        <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)}>
+        <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)} onClick={this.onClick.bind(this)}>
           <Accordion>
             {this.state.blocks.map((_, idx) => (
               <Block
