@@ -71,7 +71,7 @@ export default function renderCell(
             row,
             key: row.id,
             className: kuiRow.outerCSS + ' not-a-name radio-button-width',
-            onClick: onClickForCell(kuiRow, tab, repl)
+            onClick: onClickForCell(kuiRow, tab, repl, undefined, () => selectRow(row.id))
           })}
         />
       )
@@ -80,13 +80,7 @@ export default function renderCell(
         <TableCell
           key={cell.id}
           className={cidx === 0 ? 'entity-name ' + (kuiRow.outerCSS || '') : kuiRow.attributes[cidx - 1].outerCSS}
-          onClick={onClickForCell(
-            kuiRow,
-            tab,
-            repl,
-            kuiRow.attributes[cidx - 1],
-            radio ? () => selectRow(row.id) : undefined
-          )}
+          onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
         >
           <span
             data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
