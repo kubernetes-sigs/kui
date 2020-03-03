@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, ResourceWithMetadata, BadgeSpec, BadgeRegistration, ModeRegistration } from '@kui-shell/core'
+import { Tab, ResourceWithMetadata, BadgeRegistration, ModeRegistration } from '@kui-shell/core'
 
 export interface MyResource extends ResourceWithMetadata {
   foo: boolean
@@ -107,8 +107,19 @@ export const badge2 = {
     css: 'red-background'
   }
 }
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const checkingBadgeType2: BadgeRegistration<MyResource> = badge2
 
-// these are for the tests
-export const badgesWeWillRegister: BadgeSpec[] = [badge1, badge2].map(_ => _.badge)
+export const badge3 = {
+  when: isMyResource,
+  badge: (resource: MyResource) => {
+    return {
+      title: 'badge3',
+      css: resource.foo ? 'red-background' : 'green-background'
+    }
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const checkingBadgeType3: BadgeRegistration<MyResource> = badge3
