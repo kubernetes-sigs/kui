@@ -151,6 +151,8 @@ export {
   ScalarResource,
   ScalarContent,
   isScalarContent,
+  isReactProvider,
+  ToolbarProps,
   CommandStringContent,
   isCommandStringContent,
   StringContent,

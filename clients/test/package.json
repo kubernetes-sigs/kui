@@ -34,7 +34,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@kui-shell/builder": "file:/tmp/kui-packs/kui-shell-builder.tgz",
-    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/webpack": "file:/tmp/kui-packs/kui-shell-webpack.tgz",
     "@kui-shell/proxy": "file:/tmp/kui-packs/kui-shell-proxy.tgz",
     "@kui-shell/test": "file:/tmp/kui-packs/kui-shell-test.tgz",
@@ -48,6 +47,8 @@
     "typescript": "3.7.4"
   },
   "dependencies": {
+    "react": "^16.12.0",
+    "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
     "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-core-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-themes.tgz",

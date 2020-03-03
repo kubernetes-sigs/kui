@@ -34,7 +34,7 @@ interface TestParam {
   }
 }
 
-export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor | TableContent)
+export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor | TableContent | ReactContent)
 
 export class TestMMR {
   /**
@@ -244,6 +244,16 @@ export class TestMMR {
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
+              }
+            })
+          } else if (expectMode.contentType === 'react') {
+            it(`should show react content`, async () => {
+              if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                const selector = `${Selectors.SIDECAR_TAB_CONTENT} ${expectMode.selector}`
+                await this.app.client.waitUntil(async () => {
+                  await this.app.client.waitForVisible(selector)
+                  return expectMode.innerText === (await this.app.client.getText(selector))
+                })
               }
             })
           } else if (expectMode.contentType === 'table') {
@@ -513,6 +523,12 @@ interface PlainTextContent {
   content?: string
   contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
   editor?: false
+}
+
+interface ReactContent {
+  selector: string
+  innerText: string
+  contentType: 'react'
 }
 
 interface TableContent {
