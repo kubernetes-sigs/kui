@@ -114,13 +114,11 @@ const list = async ({ REPL }: Arguments) => {
               { value: strings(theme.style), outerCSS: 'pretty-narrow' },
               { value: plugin, css: 'sub-text', outerCSS: 'hide-with-sidecar' }
             ],
-            onclick: undefined,
-            setSelected: undefined
+            onclick: undefined
           }
 
           const onclick = async () => {
             await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
-            row.setSelected()
           }
 
           row.onclick = onclick // <-- clicks on the "check mark"
