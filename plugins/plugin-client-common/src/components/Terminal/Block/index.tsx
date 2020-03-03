@@ -57,6 +57,10 @@ export default class Block extends React.PureComponent<Props, State> {
     }
   }
 
+  public inputValue() {
+    return this._input && this._input.value()
+  }
+
   private output() {
     if (isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (

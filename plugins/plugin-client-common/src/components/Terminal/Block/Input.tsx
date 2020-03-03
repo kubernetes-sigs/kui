@@ -22,7 +22,7 @@ import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
-import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID } from './BlockModel'
+import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
 
 import { promptPlaceholder } from '@kui-shell/client/config.d/style.json'
 
@@ -62,6 +62,11 @@ export default class Input extends React.PureComponent<Props, State> {
       execUUID: hasUUID(props.model) && props.model.execUUID,
       prompt: undefined
     }
+  }
+
+  /** @return the value of the prompt */
+  public value() {
+    return this.state.prompt && this.state.prompt.value
   }
 
   /** Owner wants us to focus on the current prompt */
@@ -161,7 +166,7 @@ export default class Input extends React.PureComponent<Props, State> {
           onPaste={op}
           ref={c => {
             if (c && !this.state.prompt) {
-              c.value = ''
+              c.value = hasValue(this.props.model) ? this.props.model.value : ''
               this.setState({ prompt: c })
             }
           }}
@@ -185,6 +190,7 @@ export default class Input extends React.PureComponent<Props, State> {
           onClick={evt => evt.stopPropagation() /* accordion... */}
           ref={c => {
             if (c && !this.state.prompt) {
+              c.value = hasValue(this.props.model) ? this.props.model.value : ''
               this.setState({ prompt: c })
             }
           }}

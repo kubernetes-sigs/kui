@@ -33,9 +33,10 @@ type WithCommand = { command: string } & WithCWD
 type WithStartTime = { startTime: Date }
 type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
+type WithValue = { value: string }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
-type ActiveBlock = WithState<BlockState.Active> & WithCWD
+type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
 type EmptyBlock = WithState<BlockState.Empty> & WithCWD
 type ErrorBlock = WithState<BlockState.Error> & WithCommand & WithResponse<Error> & WithUUID
 type OkBlock = WithState<BlockState.ValidResponse> & WithCommand & WithResponse<ScalarResponse> & WithUUID
@@ -98,11 +99,16 @@ export function hasUUID(block: BlockModel & Partial<WithUUID>): block is BlockMo
   return !isActive(block) && !isEmpty(block)
 }
 
+export function hasValue(block: BlockModel): block is BlockModel & Required<WithValue> {
+  return typeof (block as WithValue).value === 'string'
+}
+
 /** Transform to Active */
-export function Active(): ActiveBlock {
+export function Active(initialValue?: string): ActiveBlock {
   return {
     cwd: cwd(),
-    state: BlockState.Active
+    state: BlockState.Active,
+    value: initialValue
   }
 }
 

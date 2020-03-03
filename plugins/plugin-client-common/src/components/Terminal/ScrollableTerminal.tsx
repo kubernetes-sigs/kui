@@ -56,8 +56,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Clear Terminal; TODO: also clear persisted state, when we have it */
   private clear() {
-    this.setState({
-      blocks: [Active()]
+    this.setState(() => {
+      // capture the value of the last input
+      const capturedValue = this._activeBlock ? this._activeBlock.inputValue() : ''
+      return {
+        blocks: [Active(capturedValue)]
+      }
     })
   }
 
