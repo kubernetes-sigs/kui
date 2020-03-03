@@ -122,7 +122,6 @@ const list = async ({ REPL }: Arguments) => {
           }
 
           row.onclick = onclick // <-- clicks on the "check mark"
-          row.attributes[0].onclick = onclick // <-- clicks on the theme name
 
           return row
         }
