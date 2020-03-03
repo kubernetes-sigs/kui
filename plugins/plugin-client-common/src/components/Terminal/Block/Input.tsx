@@ -184,13 +184,16 @@ export default class Input extends React.PureComponent<Props, State> {
           className="repl-input-element"
           aria-label="Command Input"
           readOnly
-          value={hasCommand(this.props.model) ? this.props.model.command : ''}
           tabIndex={-1}
           placeholder={promptPlaceholder}
           onClick={evt => evt.stopPropagation() /* accordion... */}
           ref={c => {
             if (c && !this.state.prompt) {
-              c.value = hasValue(this.props.model) ? this.props.model.value : ''
+              c.value = hasValue(this.props.model)
+                ? this.props.model.value
+                : hasCommand(this.props.model)
+                ? this.props.model.command
+                : ''
               this.setState({ prompt: c })
             }
           }}
