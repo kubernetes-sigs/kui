@@ -12,6 +12,7 @@ body[kui-theme-style],
 .kui--full-height,
 .repl {
   height: 100%;
+  flex: 1;
   max-height: 100%;
   overflow-x: hidden;
 }
@@ -1427,6 +1428,9 @@ body {
 
   /* "is processing" color */
   --color-processing: var(--color-ui-05);
+
+  /* border-bottom for active tab */
+  --active-tab-color: var(--color-base05);
 }
 
 .color-base08 {

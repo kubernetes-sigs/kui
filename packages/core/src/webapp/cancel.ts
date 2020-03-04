@@ -32,5 +32,6 @@ export default function doCancel(tab: Tab, block: Block) {
 
   const execUUID = block.getAttribute('data-uuid')
   const endEvent = { tab, execType: ExecType.TopLevel, cancelled: true, execUUID }
+  eventBus.emit('/command/complete', endEvent)
   eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
 }
