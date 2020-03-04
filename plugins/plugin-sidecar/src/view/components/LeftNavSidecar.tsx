@@ -132,6 +132,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     return (
       <SideNavMenu
         title={thisNav.title}
+        key={menuIdx}
         isActive
         defaultExpanded
         className={menuIdx === 0 ? 'sidecar-header-name-content' : undefined}
