@@ -45,6 +45,7 @@ interface State {
   wrapper: HTMLDivElement
   subscription?: IDisposable
   toolbarText?: ToolbarText
+  catastrophicError: Error
 }
 
 export default class Editor extends React.PureComponent<Props, State> {
@@ -54,8 +55,17 @@ export default class Editor extends React.PureComponent<Props, State> {
     // created below in render() via ref={...} -> initMonaco()
     this.state = {
       editor: undefined,
-      wrapper: undefined
+      wrapper: undefined,
+      catastrophicError: undefined
     }
+  }
+
+  public static getDerivedStateFromError(error: Error) {
+    return { catastrophicError: error }
+  }
+
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('catastrophic error in Editor', error, errorInfo)
   }
 
   /**
@@ -190,16 +200,21 @@ export default class Editor extends React.PureComponent<Props, State> {
         subscription: Editor.subscribeToChanges(props, editor)
       }
     } catch (err) {
-      console.error(err)
+      console.error('Error initing Monaco: ', err)
+      state.catastrophicError = err
       return state
     }
   }
 
   public render() {
-    return (
-      <div className="code-highlighting">
-        <div className="monaco-editor-wrapper" ref={wrapper => this.setState({ wrapper })}></div>
-      </div>
-    )
+    if (this.state.catastrophicError) {
+      return <div className="oops"> {this.state.catastrophicError.toString()}</div>
+    } else {
+      return (
+        <div className="code-highlighting">
+          <div className="monaco-editor-wrapper" ref={wrapper => this.setState({ wrapper })}></div>
+        </div>
+      )
+    }
   }
 }

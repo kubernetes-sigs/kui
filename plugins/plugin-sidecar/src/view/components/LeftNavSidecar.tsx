@@ -175,7 +175,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
         <KuiContent
           tab={this.state.tab}
           mode={this.state.allNavs[navIdx].tabs[tabIdx]}
-          response={this.state.response[navIdx]}
+          response={Object.values(this.state.response)[navIdx]}
         />
       </React.Suspense>
     )
