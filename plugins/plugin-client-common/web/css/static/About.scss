@@ -1,0 +1,79 @@
+.bx--header {
+  .bx--side-nav {
+    background-color: var(--color-sidecar-background-01);
+
+    font-family: var(--font-sans-serif);
+
+    .bx--side-nav__items {
+      padding-top: 1em;
+
+      a.bx--side-nav__link {
+        .bx--side-nav__link-text {
+          color: var(--color-text-02);
+        }
+      }
+
+      .bx--side-nav__icon > svg {
+        fill: var(--color-text-02);
+      }
+
+      .bx--side-nav__menu[role='menu'] a.bx--side-nav__link--current,
+      .bx--side-nav__menu[role='menu'] a.bx--side-nav__link[aria-current='page'],
+      a.bx--side-nav__link--current {
+        background-color: var(--color-sidecar-background-01);
+      }
+
+      .bx--side-nav__item--active .bx--side-nav__submenu[aria-expanded='false'] {
+        background-color: var(--color-sidecar-background-02);
+      }
+
+      .bx--side-nav__item:not(.bx--side-nav__item--active) > .bx--side-nav__link:hover,
+      .bx--side-nav__menu[role='menu']
+        a.bx--side-nav__link[role='menuitem']:not(.bx--side-nav__link--current):not([aria-current='page']):hover,
+      .bx--side-nav__item--active .bx--side-nav__submenu:hover {
+        background-color: var(--color-background-01);
+        color: var(--color-text-01);
+      }
+    }
+
+    &:not(.bx--side-nav--fixed):hover,
+    &.bx--side-nav--expanded {
+      width: auto;
+      flex: 2.5;
+    }
+
+    &.bx--side-nav--expanded ~ .bx--content {
+      flex: 6;
+      margin: unset;
+      padding: 0;
+      overflow: auto;
+      display: flex;
+    }
+
+    .bx--side-nav__item--active .bx--side-nav__submenu {
+      &.entity-name .bx--side-nav__submenu-title {
+        color: var(--color-brand-03);
+      }
+      .bx--side-nav__submenu-title {
+        color: var(--color-text-01);
+      }
+    }
+
+    a.bx--side-nav__link[aria-current='page']::before,
+    a.bx--side-nav__link--current::before {
+      background-color: var(--color-brand-03);
+    }
+  }
+  .bx--content {
+    display: flex;
+    flex: 1;
+    background-color: var(--color-background);
+    color: var(--color-text-01);
+    padding: 0;
+
+    .bx--data-table-container {
+      flex: 1;
+      padding: 0;
+    }
+  }
+}

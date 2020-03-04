@@ -204,6 +204,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         direction="top"
         className="kui--screenshot-tooltip"
         showIcon
+        tabIndex={-1}
         renderIcon={React.forwardRef(function screenshotIcon(props, ref) {
           return (
             <a

@@ -16,10 +16,16 @@
 
 import * as React from 'react'
 import { KeyCodes, inElectron } from '@kui-shell/core'
+import { Header, HeaderName, HeaderMenuButton, HeaderNavigation } from 'carbon-components-react'
 
+import About from '../About'
 import TabModel from '../TabModel'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
+
+import 'carbon-components/scss/components/ui-shell/_header.scss'
+import 'carbon-components/scss/components/ui-shell/_ui-shell.scss'
+import '../../../web/css/static/TopTabStripe.scss'
 
 /**
  *
@@ -53,6 +59,9 @@ type Props = TopTabStripeConfiguration & {
   onCloseTab: (idx: number) => void
   onSwitchTab: (idx: number) => void
 }
+
+/** @types/carbon-react is insufficient here; filling in the gaps for now */
+type CarbonHeaderArgs = { onClickSideNavExpand: React.MouseEventHandler; isSideNavExpanded: boolean }
 
 export default class TopTabStripe extends React.PureComponent<Props> {
   public componentDidMount() {
@@ -102,28 +111,23 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     }
   }
 
-  /**
-   * React render handler
-   *
-   */
-  public render() {
+  /** Render tabs */
+  private tabs() {
     return (
-      <div className="left-tab-stripe kui-header">
-        <div className="left-tab-stripe-buttons">
-          {this.props.tabs.map((tab, idx) => (
-            <Tab
-              {...this.props}
-              key={idx}
-              idx={idx}
-              uuid={tab.uuid}
-              closeable={this.props.tabs.length > 1}
-              active={idx === this.props.activeIdx}
-              onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
-              onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
-            />
-          ))}
-        </div>
-        <div className="left-tab-stripe-bottom-buttons">
+      <HeaderNavigation aria-label="Tabs">
+        {this.props.tabs.map((tab, idx) => (
+          <Tab
+            {...this.props}
+            key={idx}
+            idx={idx}
+            uuid={tab.uuid}
+            closeable={this.props.tabs.length > 1}
+            active={idx === this.props.activeIdx}
+            onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
+            onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
+          />
+        ))}
+        <div className="kui--top-tab-buttons">
           <NewTabButton
             onNewTab={() => {
               this.props.onNewTab()
@@ -132,7 +136,41 @@ export default class TopTabStripe extends React.PureComponent<Props> {
 
           <div id="kui--custom-top-tab-stripe-button-container"></div>
         </div>
-      </div>
+      </HeaderNavigation>
+    )
+  }
+
+  private sidenav(args: CarbonHeaderArgs) {
+    return <About expanded={args.isSideNavExpanded} />
+  }
+
+  private headerMenu(args: CarbonHeaderArgs) {
+    return (
+      <HeaderMenuButton
+        aria-label="Open menu"
+        isCollapsible
+        onClick={args.onClickSideNavExpand}
+        isActive={args.isSideNavExpanded}
+      />
+    )
+  }
+
+  private headerName() {
+    return <HeaderName prefix="">{this.props.productName}</HeaderName>
+  }
+
+  /**
+   * React render handler
+   *
+   */
+  public render() {
+    return (
+      <Header aria-label="Header">
+        {/* this.headerMenu(args) */}
+        {this.headerName()}
+        {this.tabs()}
+        {/* this.sidenav(args) */}
+      </Header>
     )
   }
 }

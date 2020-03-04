@@ -311,7 +311,7 @@ describe('core new tab from active tab that is emitting output via button click'
       .catch(Common.oops(this, true)))
 
   it('should close by clicking on the tab closer button', async () => {
-    await this.app.client.click('.left-tab-stripe-button-selected .left-tab-stripe-button-closer')
+    await this.app.client.click('.kui--tab--active .kui--tab-close')
     await this.app.client
       .waitForExist(Selectors.TAB_N(2), 5000, true)
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))

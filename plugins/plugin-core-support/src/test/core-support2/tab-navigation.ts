@@ -111,7 +111,7 @@ describe('tab navigation', function(this: Common.ISuite) {
     })
   }
 
-  const TAB_BUTTON_N = (N: number) => `.kui-tab:nth-child(${N})`
+  const TAB_BUTTON_N = (N: number) => `.kui--tab:nth-child(${N}) .bx--header__menu-item`
 
   const promptBetterBeFocused = async () => {
     const promptIsFocused = await this.app.client.hasFocus(Selectors.CURRENT_PROMPT)
@@ -123,7 +123,7 @@ describe('tab navigation', function(this: Common.ISuite) {
     testSelector(TAB_BUTTON_N(1))
     testSelector(TAB_BUTTON_N(2))
     testSelector(tabButtonSelector)
-    testSelector('#help-button')
+    testSelector('#help-button', false, undefined, true)
     testPromptIsSelected(true) // <-- true means we hit tab first
     it('should be the end of the full cycle', promptBetterBeFocused)
   }
@@ -147,14 +147,14 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(TAB_BUTTON_N(1))
   testSelector(TAB_BUTTON_N(2))
   testSelector(tabButtonSelector)
-  testSelector('#help-button', true, Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+  testSelector('#help-button', true, Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'), true)
   testPromptIsSelected()
 
   // now the sidecar is open, so cycle through the sidecar tabs
   testSelector(TAB_BUTTON_N(1))
   testSelector(TAB_BUTTON_N(2))
   testSelector(tabButtonSelector)
-  testSelector('#help-button')
+  testSelector('#help-button', false, undefined, true)
   testAboutMode('about', false, true)
   //  testAboutMode('tutorial')
   testAboutMode('version', true) // hit enter on the Version tab

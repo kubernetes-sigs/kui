@@ -26,13 +26,13 @@ export default class NewTabButton extends React.PureComponent<Props> {
     return (
       <a
         href="#"
-        className="kui--tab-navigatable kui-new-tab__plus left-tab-stripe-button smaller-button kui-new-tab"
+        className="kui--tab-navigatable kui--new-tab__plus left-tab-stripe-button smaller-button kui-new-tab"
         id="new-tab-button"
         data-balloon-disabled="Open a new tab"
         data-balloon-pos="right"
         data-balloon-length="fit"
         aria-label="Open a new tab"
-        tabIndex={2}
+        tabIndex={0}
         onClick={() => this.props.onNewTab()}
       >
         <Add20 className="kui-new-tab__plus" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />

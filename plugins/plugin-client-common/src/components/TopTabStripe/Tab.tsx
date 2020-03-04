@@ -17,6 +17,7 @@
 import * as React from 'react'
 import { Close16 } from '@carbon/icons-react'
 import { i18n, eventBus, Event, ExecType, Theme } from '@kui-shell/core'
+import { HeaderMenuItem } from 'carbon-components-react'
 
 const strings = i18n('plugin-core-support')
 
@@ -37,6 +38,7 @@ type Props = TabConfiguration & {
 interface State {
   title: string
   processing: boolean
+  isFreshlyCreated: boolean
   topTabNames: 'command' | 'fixed'
 }
 
@@ -49,8 +51,9 @@ export default class Tab extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      title: this.props.productName,
+      title: strings('Tab'),
       processing: false,
+      isFreshlyCreated: true,
       topTabNames: props.topTabNames || 'command'
     }
 
@@ -93,12 +96,12 @@ export default class Tab extends React.PureComponent<Props, State> {
             !event.route.match(/^\/(tab|getting\/started)/) // ignore our own events and help
           ) {
             if (this.isUsingCommandName()) {
-              this.setState({ processing: true, title: event.command || this.state.title })
+              this.setState({ processing: true, title: event.command || this.state.title, isFreshlyCreated: false })
               return
             }
           }
 
-          this.setState({ processing: true })
+          this.setState({ processing: true, isFreshlyCreated: false })
         }
       }
     }
@@ -120,16 +123,17 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <a
+      <HeaderMenuItem
         href="#"
+        data-tab-names={this.state.topTabNames}
+        data-fresh={this.state.isFreshlyCreated}
         className={
-          'kui-tab left-tab-stripe-button kui--tab-navigatable' +
-          (this.props.active ? ' kui-tab--active left-tab-stripe-button-selected' : '') +
+          'kui--tab kui--tab-navigatable' +
+          (this.props.active ? ' kui--tab--active' : '') +
           (this.state.processing ? ' processing' : '')
         }
         data-tab-button-index={this.props.idx + 1}
         aria-label="tab"
-        tabIndex={2}
         onMouseDown={evt => {
           evt.preventDefault()
           evt.stopPropagation()
@@ -138,25 +142,25 @@ export default class Tab extends React.PureComponent<Props, State> {
           this.props.onSwitchTab(this.props.idx)
         }}
       >
-        <div className="kui-tab--label left-tab-stripe-button-label">
+        <div className="kui--tab--label">
           {this.isUsingCommandName() && this.state.title}
-          {!this.isUsingCommandName() && <span className="kui-tab--label-text">{strings('Tab')} </span>}
-          {!this.isUsingCommandName() && <span className="kui-tab--label-index"></span>}
+          {!this.isUsingCommandName() && <span className="kui--tab--label-text">{strings('Tab')} </span>}
+          {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}
         </div>
 
         {this.props.closeable && (
           <div
-            className="left-tab-stripe-button-closer"
+            className="kui--tab-close"
             onClick={evt => {
               evt.stopPropagation()
               evt.preventDefault()
               this.props.onCloseTab(this.props.idx)
             }}
           >
-            <Close16 focusable="false" width={12} height={16} preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+            <Close16 focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
           </div>
         )}
-      </a>
+      </HeaderMenuItem>
     )
   }
 }

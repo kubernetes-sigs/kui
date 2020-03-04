@@ -15,12 +15,13 @@
  */
 
 import * as React from 'react'
-import { eventBus } from '@kui-shell/core'
+import { inElectron, eventBus } from '@kui-shell/core'
 
-import Search from './Search'
 import TabModel from './TabModel'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 import TabContent, { TabContentOptions } from './TabContent'
+
+import '../../web/css/static/TabContainer.scss'
 
 /**
  *
@@ -148,6 +149,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   public render() {
+    const Search = inElectron && React.lazy(() => import('./Search'))
+
     return (
       <div className="kui--full-height">
         <TopTabStripe
@@ -158,7 +161,9 @@ export default class TabContainer extends React.PureComponent<Props, State> {
           onCloseTab={(idx: number) => this.onCloseTab(idx)}
           onSwitchTab={(idx: number) => this.onSwitchTab(idx)}
         />
-        <Search />
+        <React.Suspense fallback={<div />}>
+          <Search />
+        </React.Suspense>
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
             <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} {...this.props}>

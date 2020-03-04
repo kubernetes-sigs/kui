@@ -2,7 +2,8 @@
 @import "kui--alternate.css";
 
 /* inverted sidecar */
-body[kui-theme="Carbon Gray10"] .kui--sidecar {
+body[kui-theme="Carbon Gray10"] .kui--sidecar,
+body[kui-theme="Carbon Gray10"] .bx--header .bx--side-nav {
   --color-base00: #262626;
   --color-base01: #171717;
   --color-base02: #565656;
