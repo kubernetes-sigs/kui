@@ -18,6 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
+import { inElectron } from '@kui-shell/core'
 import { SettingsAdjust16 as SettingsIcon } from '@carbon/icons-react'
 
 import Screenshot from '../Screenshot'
@@ -58,9 +59,7 @@ export default class StatusStripe extends React.PureComponent {
       <div className="kui--status-stripe" id="kui--status-stripe">
         {this.widgets()}
         <div className="kui--status-stripe-button">
-          <div className="kui--status-stripe-element">
-            <Screenshot />
-          </div>
+          <div className="kui--status-stripe-element">{inElectron() && <Screenshot />}</div>
         </div>
 
         <div className="kui--status-stripe-button">
@@ -70,7 +69,7 @@ export default class StatusStripe extends React.PureComponent {
               className="kui--tab-navigatable clickable"
               id="help-button"
               aria-label="Help"
-              tabIndex={2}
+              tabIndex={0}
               onClick={() => this.doAbout()}
             >
               <SettingsIcon />

@@ -1,0 +1,19 @@
+/* tabs */
+.tab-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* inner scrolling */
+}
+.kui--tab-content {
+  flex: 1;
+  display: none;
+  overflow: hidden; /* inner scrolling */
+}
+.kui--tab-content.visible {
+  display: flex;
+}
+.kui--tab-content.split-tab:not(:first-child).visible {
+  /* split screen separator */
+  border-top: 2px solid var(--color-base03);
+}
