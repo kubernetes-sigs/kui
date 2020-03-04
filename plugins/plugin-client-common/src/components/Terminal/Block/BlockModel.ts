@@ -52,11 +52,8 @@ export default BlockModel
 
 /** Capture the current working directory */
 function cwd() {
-  if (inBrowser()) {
-    return process.env.PWD
-  } else {
-    return process.cwd() === process.env.HOME ? '~' : basename(process.cwd())
-  }
+  const dir = inBrowser() ? process.env.PWD : process.cwd()
+  return dir === process.env.HOME ? '~' : basename(dir)
 }
 
 export function isError(response: ScalarResponse): response is Error {
