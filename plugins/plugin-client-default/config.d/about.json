@@ -9,6 +9,14 @@
         },
         { "mode": "version", "contentFrom": "version --full" }
       ]
+    },
+    "Configure": {
+      "modes": [
+        {
+          "mode": "theme",
+          "contentFrom": "themes"
+        }
+      ]
     }
   }
 }

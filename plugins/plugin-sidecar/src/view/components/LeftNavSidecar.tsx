@@ -32,7 +32,6 @@ const KuiContent = React.lazy(() => import('./KuiContent'))
 
 const strings = i18n('client', 'about')
 // const strings2 = i18n('core-support')
-const strings2 = strings
 
 interface Navigation {
   title: string
@@ -107,7 +106,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
       repl: tab.REPL,
       width: Width.Default,
 
-      allNavs: this.addExtraNav(navigations),
+      allNavs: navigations,
       current: { nav: 0, tab: navigations[0].currentTabIndex },
       response
     }
@@ -119,11 +118,6 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
 
   private onResponse(tab: Tab, response: NavResponse) {
     this.setState(this.getState(tab, response))
-  }
-
-  protected addExtraNav(navs: Navigation[]) {
-    const tabs = [{ mode: 'theme', label: 'Theme', contentFrom: 'themes' }]
-    return navs.concat([{ title: strings2('Configure'), tabs, currentTabIndex: 0 }])
   }
 
   /** render menu options specified by client/config.d/about.json */
@@ -173,6 +167,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     return (
       <React.Suspense fallback={<div />}>
         <KuiContent
+          key={`${navIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
           tab={this.state.tab}
           mode={this.state.allNavs[navIdx].tabs[tabIdx]}
           response={Object.values(this.state.response)[navIdx]}
