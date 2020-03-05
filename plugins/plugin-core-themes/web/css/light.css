@@ -27,6 +27,18 @@ body[kui-theme="Light"] .kui--sidecar {
   --color-map-value: var(--color-text-01);
   --color-map-key: var(--color-base0D);
   --color-brand-03: #418cff;
+
+  --color-stripe-01: #4f565c;
+  --color-stripe-02: var(--color-base03);
+
+  --color-ui-01: var(--color-base00);
+  --color-ui-02: var(--color-base01);
+  --color-ui-03: var(--color-base03);
+  --color-ui-04: var(--color-base02);
+  --color-ui-05: var(--color-base04);
+  --color-ui-06: #1a2024;
+
+  --color-text-against-dark-bg: var(--color-text-01);
 }
 
 /* color variables */

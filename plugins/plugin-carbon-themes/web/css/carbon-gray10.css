@@ -2,8 +2,7 @@
 @import "kui--alternate.css";
 
 /* inverted sidecar */
-body[kui-theme="Carbon Gray10"] .kui--sidecar,
-body[kui-theme="Carbon Gray10"] .bx--header .bx--side-nav {
+body[kui-theme="Carbon Gray10"] .kui--sidecar {
   --color-base00: #262626;
   --color-base01: #171717;
   --color-base02: #565656;
@@ -31,6 +30,16 @@ body[kui-theme="Carbon Gray10"] .bx--header .bx--side-nav {
 
   --color-brand-01: #97c1ff;
   --color-brand-03: var(--color-base0C);
+
+  --color-stripe-01: var(--color-base02);
+  --color-stripe-02: var(--color-sidecar-header);
+
+  --color-ui-01: var(--color-base00);
+  --color-ui-02: var(--color-base01);
+  --color-ui-03: var(--color-base03);
+  --color-ui-04: var(--color-base02);
+  --color-ui-05: var(--color-base04);
+  --color-ui-06: var(--color-base02);
 }
 
 /* color variables */
