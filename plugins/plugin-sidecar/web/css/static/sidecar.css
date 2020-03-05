@@ -132,6 +132,10 @@
       flex: 1;
       padding: 0;
     }
+
+    .hide-with-sidecar {
+      display: none;
+    }
   }
 
   .bx--tab-content {
