@@ -15,21 +15,18 @@
  */
 
 import Debug from 'debug'
-import { dirname, join } from 'path'
-import { WebContents } from 'electron'
 
-import { CodedError } from '../../models/errors'
-import eventBus from '../../core/events'
 import i18n from '../../util/i18n'
+import eventBus from '../../core/events'
 import { webpackPath } from '../../plugins/path'
+import { CodedError } from '../../models/errors'
 import { clearPreference, getPreference, setPreference } from '../../core/userdata'
 
 import findThemeByName from './find'
 import getDefaultTheme from './default'
 
 const strings = i18n('core')
-
-const debug = Debug('core/webapp/themes/persistence')
+const debug = Debug('core/themes/persistence')
 
 /**
  * Key into userdata preference model that indicates that currently selected theme
@@ -43,11 +40,6 @@ const persistedThemePreferenceKey = 'kui.theme.current'
  */
 export const getPersistedThemeChoice = (): Promise<string> => {
   return getPreference(persistedThemePreferenceKey)
-}
-
-function getCssFilepath(addon: string, plugin: string): string {
-  const base = dirname(require.resolve('@kui-shell/prescan.json'))
-  return join(base, plugin, 'web/css', addon)
 }
 
 /**
@@ -74,7 +66,7 @@ function id(theme: string) {
  * Internal logic to switch themes
  *
  */
-export const switchTo = async (theme: string, webContents?: WebContents, saveNotNeeded = false): Promise<void> => {
+export const switchTo = async (theme: string, saveNotNeeded = false): Promise<void> => {
   const themeWithPlugin = await findThemeByName(theme)
   if (!themeWithPlugin) {
     debug('could not find theme', theme)
@@ -92,22 +84,13 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
 
   const themeKey = id(theme)
 
-  if (!webContents) {
-    const previousTheme = document.body.getAttribute('kui-theme')
-    if (previousTheme) {
-      //
-      // Notes:
-      //
-      // This is only for dynamic injection; webContents means this
-      // is happening in the main loading process; see the comments
-      // below for more info.
-      //
-      const previous = await findThemeByName(previousTheme)
-      if (previous) {
-        const { theme: previousThemeModel } = previous
-        if (previousThemeModel.attrs) {
-          previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
-        }
+  const previousTheme = document.body.getAttribute('kui-theme')
+  if (previousTheme) {
+    const previous = await findThemeByName(previousTheme)
+    if (previous) {
+      const { theme: previousThemeModel } = previous
+      if (previousThemeModel.attrs) {
+        previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
       }
     }
   }
@@ -119,22 +102,9 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
 
         const addonKey = `${themeKey}-${idx}`
 
-        if (webContents) {
-          //
-          // see packages/core/src/main/spawn-electron, where we use the
-          // electron API to set inject the theme into the main webview
-          // before the window opens
-          //
-          const { readFile } = await import('fs-extra')
-          const pathToThemeCss = getCssFilepath(addon, plugin)
-          const css = (await readFile(pathToThemeCss)).toString()
-          debug('using electron to pre-inject CSS before the application loads, from the main process')
-          return webContents.insertCSS(css)
-        } else {
-          // inject the new css
-          debug('injecting CSS', addon, plugin)
-          await getCss(addon, addonKey, plugin)
-        }
+        // inject the new css
+        debug('injecting CSS', addon, plugin)
+        await getCss(addon, addonKey, plugin)
       })
     )
   } catch (err) {
@@ -150,43 +120,23 @@ export const switchTo = async (theme: string, webContents?: WebContents, saveNot
   }
 
   // set the theme attributes on document.body
-  if (webContents) {
-    //
-    // see packages/core/src/main/spawn-electron, where we use the
-    // electron API to set inject the theme into the main webview
-    // before the window opens
-    //
-    let script = `
-document.body.setAttribute('kui-theme', '${theme}');
-document.body.setAttribute('kui-theme-key', '${themeKey}');
-document.body.setAttribute('kui-theme-style', '${themeModel.style}');`
+  document.body.setAttribute('kui-theme', theme)
+  document.body.setAttribute('kui-theme-key', themeKey)
+  document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
 
-    if (themeModel.attrs) {
-      themeModel.attrs.forEach(attr => {
-        script = `${script};document.body.classList.add('${attr}')`
-      })
-    }
-
-    webContents.executeJavaScript(script)
-  } else {
-    document.body.setAttribute('kui-theme', theme)
-    document.body.setAttribute('kui-theme-key', themeKey)
-    document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
-
-    if (themeModel.attrs) {
-      themeModel.attrs.forEach(attr => document.body.classList.add(attr))
-    }
-
-    // let others know that the theme has changed
-    setTimeout(() => eventBus.emit('/theme/change', { theme, themeModel }))
+  if (themeModel.attrs) {
+    themeModel.attrs.forEach(attr => document.body.classList.add(attr))
   }
+
+  // let others know that the theme has changed
+  setTimeout(() => eventBus.emit('/theme/change', { theme, themeModel }))
 }
 
 /**
  * Switch to the last user choice, if the user so indicated
  *
  */
-export const switchToPersistedThemeChoice = async (webContents?: WebContents, isDarkMode = false): Promise<void> => {
+export const switchToPersistedThemeChoice = async (): Promise<void> => {
   // Notes: the "true" passed to switchTo means indicates that we know
   // that we don't need to re-save the theme choice (after all, we
   // just read it in)
@@ -195,14 +145,14 @@ export const switchToPersistedThemeChoice = async (webContents?: WebContents, is
     if (theme) {
       debug('switching to persisted theme choice')
       try {
-        await switchTo(theme, webContents, true)
+        await switchTo(theme, true)
       } catch (err) {
         debug('error switching to persisted theme choice, using default')
-        await switchTo(await getDefaultTheme(isDarkMode), webContents, true)
+        await switchTo(await getDefaultTheme(), true)
       }
     } else {
       debug('no persisted theme choice')
-      await switchTo(await getDefaultTheme(), webContents, true)
+      await switchTo(await getDefaultTheme(), true)
     }
   } catch (err) {
     console.error('cannot find a theme', err)

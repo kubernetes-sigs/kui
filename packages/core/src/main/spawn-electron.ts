@@ -208,8 +208,8 @@ export function createWindow(
     mainWindow.webContents.on('did-finish-load', async () => {
       if (mainWindow) {
         try {
-          const { switchToPersistedThemeChoice } = await import('../webapp/themes/persistence')
-          await switchToPersistedThemeChoice(mainWindow.webContents /*, Electron.nativeTheme.shouldUseDarkColors */)
+          // const { switchToPersistedThemeChoice } = await import('../webapp/themes/persistence')
+          // await switchToPersistedThemeChoice(mainWindow.webContents /*, Electron.nativeTheme.shouldUseDarkColors */)
         } catch (err) {
           console.error('error initializing themes', err)
         }

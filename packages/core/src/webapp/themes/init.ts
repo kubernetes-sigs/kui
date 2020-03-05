@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-
 import { switchToPersistedThemeChoice } from './persistence'
-import { isHeadless, inBrowser } from '../../core/capabilities'
-
-const debug = Debug('core/webapp/themes/init')
+import { isHeadless } from '../../core/capabilities'
 
 /**
  * Install the persistence theme choice
@@ -27,9 +23,6 @@ const debug = Debug('core/webapp/themes/init')
  */
 export default () => {
   if (!isHeadless()) {
-    if (inBrowser() || !document.body.hasAttribute('kui-theme')) {
-      debug('loading theme')
-      return switchToPersistedThemeChoice()
-    }
+    return switchToPersistedThemeChoice()
   }
 }
