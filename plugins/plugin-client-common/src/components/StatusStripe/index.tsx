@@ -21,8 +21,6 @@ import * as React from 'react'
 import { inElectron } from '@kui-shell/core'
 import { SettingsAdjust16 as SettingsIcon } from '@carbon/icons-react'
 
-import Screenshot from '../Screenshot'
-
 export default class StatusStripe extends React.PureComponent {
   /**
    * User has clicked on the Settings icon.
@@ -54,12 +52,28 @@ export default class StatusStripe extends React.PureComponent {
     }
   }
 
+  /**
+   * Screenshot button. We only want this live in electron builds,
+   * because the Search.tsx code imports 'electron'. So 1) hide behind
+   * React.lazy; and 2) we still need an empty shim for non-electron
+   * mode.
+   *
+   */
+  private screenshot() {
+    const Screenshot = React.lazy(() => (inElectron() ? import('../Screenshot') : import('../Empty')))
+    return (
+      <React.Suspense fallback={<div />}>
+        <Screenshot />
+      </React.Suspense>
+    )
+  }
+
   public render() {
     return (
       <div className="kui--status-stripe" id="kui--status-stripe">
         {this.widgets()}
         <div className="kui--status-stripe-button">
-          <div className="kui--status-stripe-element">{inElectron() && <Screenshot />}</div>
+          <div className="kui--status-stripe-element">{this.screenshot()}</div>
         </div>
 
         <div className="kui--status-stripe-button">

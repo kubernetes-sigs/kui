@@ -148,9 +148,23 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     }))
   }
 
-  public render() {
-    const Search = inElectron && React.lazy(() => import('./Search'))
+  /**
+   * Search component. We only want this live in electron builds,
+   * because the Search.tsx code imports 'electron'. So 1) hide behind
+   * React.lazy; and 2) we still need an empty shim for non-electron
+   * mode.
+   *
+   */
+  private search() {
+    const Search = React.lazy(() => (inElectron() ? import('./Search') : import('./Empty')))
+    return (
+      <React.Suspense fallback={<div />}>
+        <Search />
+      </React.Suspense>
+    )
+  }
 
+  public render() {
     return (
       <div className="kui--full-height">
         <TopTabStripe
@@ -161,9 +175,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
           onCloseTab={(idx: number) => this.onCloseTab(idx)}
           onSwitchTab={(idx: number) => this.onSwitchTab(idx)}
         />
-        <React.Suspense fallback={<div />}>
-          <Search />
-        </React.Suspense>
+        {this.search()}
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
             <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} {...this.props}>

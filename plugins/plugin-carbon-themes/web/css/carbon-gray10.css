@@ -27,9 +27,10 @@ body[kui-theme="Carbon Gray10"] .bx--header .bx--side-nav {
 
   --color-map-value: var(--color-text-01);
   --color-map-key: var(--color-base0C);
+  --color-name: var(--color-base0C);
 
   --color-brand-01: #97c1ff;
-  --color-brand-03: #0062ff;
+  --color-brand-03: var(--color-base0C);
 }
 
 /* color variables */
