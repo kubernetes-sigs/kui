@@ -34,7 +34,7 @@ async function initCommandRegistrar() {
  * @param { ClientRender } clientMain client-provided renderer of main content
  *
  */
-const domReady = (renderMain: ClientRender) => async () => {
+const domReady = (renderMain?: ClientRender) => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
   const events = import('../../core/events')
@@ -68,7 +68,9 @@ const domReady = (renderMain: ClientRender) => async () => {
     document.body.classList.remove('still-loading')
     events.then(eventBus => {
       eventBus.default.emit('/init/done')
-      renderMain(document.body.querySelector('main'))
+      if (renderMain) {
+        renderMain(document.body.querySelector('main'))
+      }
     })
   } catch (err) {
     catastrophe(err)
@@ -89,4 +91,10 @@ const domReady = (renderMain: ClientRender) => async () => {
 export default async (renderMain: ClientRender) => {
   import('./init').then(_ => _.preinit())
   window.addEventListener('load', domReady(renderMain), { once: true })
+}
+
+/** For booting into an external browser sandbox, such as codesandbox.io */
+export function bootIntoSandbox() {
+  import('./init').then(_ => _.preinit())
+  domReady()
 }

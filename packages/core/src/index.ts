@@ -196,7 +196,7 @@ export { tellMain } from './webapp/electron-events'
 
 // main
 export { main } from './main/main'
-export { default as boot } from './webapp/bootstrap/boot'
+export { default as boot, bootIntoSandbox } from './webapp/bootstrap/boot'
 
 // Sessions
 export { initializeSession } from './session/init'
