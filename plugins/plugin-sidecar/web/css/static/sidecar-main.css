@@ -1028,6 +1028,10 @@ body:not(.no-tooltips-anywhere)
   a.bx--tabs__nav-link:active {
   color: var(--color-text-02);
 }
+.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link:focus,
+.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link:active {
+  outline-color: var(--color-brand-03);
+}
 
 body[kui-theme-style] a.bx--tabs__nav-link {
   color: var(--color-text-02);
