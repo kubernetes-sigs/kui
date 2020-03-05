@@ -31,6 +31,7 @@ export interface TerminalOptions {
 type Props = TerminalOptions & {
   uuid: string
   tab: KuiTab
+  secondaryIsVisible?: boolean
 }
 
 interface State {
@@ -181,7 +182,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <div className="repl" id="main-repl">
+      <div className={'repl' + (this.props.secondaryIsVisible ? ' sidecar-visible' : '')} id="main-repl">
         <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)} onClick={this.onClick.bind(this)}>
           <Accordion>
             {this.state.blocks.map((_, idx) => (
