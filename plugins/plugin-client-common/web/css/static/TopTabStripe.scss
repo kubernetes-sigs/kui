@@ -108,6 +108,7 @@
     &.kui--tab--active {
       .bx--header__menu-item {
         color: var(--color-text-01);
+        font-weight: 600;
         &:hover {
           color: var(--color-text-01);
         }
@@ -123,6 +124,10 @@
       &:hover {
         color: var(--color-text-01);
         background: transparent;
+      }
+
+      &:focus {
+        border-color: var(--color-brand-03);
       }
     }
 
