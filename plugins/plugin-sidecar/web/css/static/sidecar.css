@@ -64,6 +64,11 @@
     .bx--side-nav__items {
       padding-top: 1em;
 
+      a.bx--side-nav__link:focus,
+      .bx--side-nav a.bx--header__menu-item:focus {
+        outline-color: var(--color-brand-03);
+      }
+
       a.bx--side-nav__link {
         .bx--side-nav__link-text {
           color: var(--color-text-02);
