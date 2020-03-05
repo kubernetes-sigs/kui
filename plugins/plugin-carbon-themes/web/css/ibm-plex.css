@@ -1,4 +1,11 @@
-@import url(~@ibm/plex/css/ibm-plex.min.css);
+@import ~@ibm / plex/scss/sans/semibold/index;
+@import ~@ibm / plex/scss/sans/italic/index;
+@import ~@ibm / plex/scss/sans/regular/index;
+
+@import ~@ibm / plex/scss/mono/semibold/index;
+@import ~@ibm / plex/scss/mono/italic/index;
+@import ~@ibm / plex/scss/mono/normal/index;
+@import ~@ibm / plex/scss/mono/medium/index;
 
 body.kui--alternate[kui-theme-style] {
   --font-monospace: "IBM Plex Mono";
