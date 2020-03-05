@@ -63,14 +63,17 @@
     }
 
     &.processing {
-      .bx--header__menu-item {
-        color: var(--color-base0C);
-        .kui--tab--label:after {
-          content: ' \2731';
-          padding-left: 0.375em;
-          font-size: 0.75em;
-          animation: 750ms fadeIn2;
-          animation-fill-mode: forwards;
+      &,
+      &.kui--tab--active {
+        .bx--header__menu-item {
+          color: var(--color-base0C);
+          .kui--tab--label:after {
+            content: ' \2731';
+            padding-left: 0.375em;
+            font-size: 0.75em;
+            animation: 450ms fadeIn2;
+            animation-fill-mode: forwards;
+          }
         }
       }
     }
