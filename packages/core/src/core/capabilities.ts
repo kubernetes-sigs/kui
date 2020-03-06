@@ -43,6 +43,8 @@ interface CredentialsMap {
  *
  */
 class State {
+  inSandbox = false
+
   assertedLocalAccess = false
 
   hasLocalAccess = true
@@ -102,6 +104,22 @@ export const hasProxy = () => state.hasProxy
  */
 export const assertHasProxy = () => {
   state.hasProxy = true
+}
+
+/**
+ * Yes, we are running in a sandbox
+ *
+ */
+export function assertInSandbox() {
+  state.inSandbox = true
+}
+
+/**
+ * Are we running in a sandbox?
+ *
+ */
+export function inSandbox() {
+  return state.inSandbox
 }
 
 /**
