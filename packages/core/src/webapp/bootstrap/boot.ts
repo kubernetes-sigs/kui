@@ -95,7 +95,8 @@ export default async (renderMain: ClientRender) => {
 
 /** For booting into an external browser sandbox, such as codesandbox.io */
 export async function bootIntoSandbox() {
-  const { setMedia, Media } = await import('../../core/capabilities')
+  const { setMedia, Media, assertInSandbox } = await import('../../core/capabilities')
+  assertInSandbox()
   setMedia(Media.Browser)
   await import('./init').then(_ => _.preinit(true))
   await domReady(true)()
