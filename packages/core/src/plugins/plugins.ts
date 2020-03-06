@@ -24,7 +24,7 @@ import { PrescanModel, unify } from './prescan'
 
 import { KuiPlugin } from '../models/plugin'
 import { userDataDir } from '../core/userdata'
-import { isHeadless } from '../core/capabilities'
+import { isHeadless, inSandbox } from '../core/capabilities'
 import { setPluginResolver } from '../core/command-tree'
 
 debug('modules loaded')
@@ -47,7 +47,19 @@ let basePrescan: PrescanModel // without any user-installed plugins
 let prescan: PrescanModel // the result of unify(basePrescan, userPrescan)
 export function prescanModel(): PrescanModel {
   if (!prescan) {
-    return require('@kui-shell/prescan.json') as PrescanModel
+    try {
+      return require('@kui-shell/prescan.json') as PrescanModel
+    } catch (err) {
+      try {
+        if (inSandbox()) {
+          prescan = require('@kui-shell/plugin-sandbox/prescan.json') as PrescanModel
+          basePrescan = prescan
+          console.log('Using sandbox prescan')
+        }
+      } catch (err) {
+        console.error('Could not find prescan model')
+      }
+    }
   }
   return prescan
 }
@@ -92,11 +104,19 @@ export const init = async (): Promise<boolean> => {
 
   // pre-installed pluginds
   try {
-    prescan = (await import('@kui-shell/prescan.json')) as PrescanModel
+    prescan = require('@kui-shell/prescan.json') as PrescanModel
     basePrescan = prescan
     debug('pre-installed prescan loaded')
   } catch (err) {
-    console.error('prescanned does not exist or is not valid JSON', err)
+    try {
+      if (inSandbox()) {
+        prescan = require('@kui-shell/plugin-sandbox/prescan.json') as PrescanModel
+        basePrescan = prescan
+        console.log('Using sandbox prescan')
+      }
+    } catch (err2) {
+      console.error('prescanned does not exist or is not valid JSON', err)
+    }
   }
 
   if (isHeadless() && prescan) {
