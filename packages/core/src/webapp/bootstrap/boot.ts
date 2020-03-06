@@ -98,5 +98,5 @@ export async function bootIntoSandbox() {
   const { setMedia, Media } = await import('../../core/capabilities')
   setMedia(Media.Browser)
   await import('./init').then(_ => _.preinit(true))
-  await domReady(true)
+  await domReady(true)()
 }
