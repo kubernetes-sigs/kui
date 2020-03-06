@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-carbon-themes",
-  "version": "7.0.18",
+  "version": "7.0.19",
   "description": "Kui plugin offering a Carbon Components-inspired set of themes",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -26,7 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "db56406d0654618db635d765c50460138a25f876",
+  "gitHead": "c06617aeb2f577b3e6b541f1f5a022680475cbd3",
   "dependencies": {
     "@ibm/plex": "^4.0.2"
   }
