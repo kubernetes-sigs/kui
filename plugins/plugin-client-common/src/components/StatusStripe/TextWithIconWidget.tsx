@@ -37,14 +37,17 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       (this.props.iconIsNarrow ? 'tiny-right-pad' : 'small-right-pad') +
       (this.props.iconOnclick ? ' clickable' : '')
 
-    const iconPart = (
+    const iconPart = this.props.iconOnclick ? (
       <a
         href="#"
         className={iconClassName}
+        onMouseDown={evt => evt.preventDefault()}
         onClick={this.props.iconOnclick ? () => getCurrentTab().REPL.pexec(this.props.iconOnclick) : undefined}
       >
         {this.props.children}
       </a>
+    ) : (
+      <span className={iconClassName}>{this.props.children}</span>
     )
 
     const textPart = this.props.textOnclick ? (

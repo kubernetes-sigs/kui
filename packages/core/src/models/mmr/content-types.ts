@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import { ReactElement } from 'react'
 import { Tab } from '../../webapp/tab'
 import { Table, isTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
@@ -34,7 +34,7 @@ export interface ScalarContent<T = ScalarResource> {
 }
 
 export type ToolbarProps = { willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void }
-type ReactProvider = { react: (props: ToolbarProps) => React.ReactElement<any> }
+type ReactProvider = { react: (props: ToolbarProps) => ReactElement<any> }
 export function isReactProvider(entity: ScalarLike<MetadataBearing>): entity is ReactProvider {
   const provider = entity as ReactProvider
   return typeof provider.react === 'function'

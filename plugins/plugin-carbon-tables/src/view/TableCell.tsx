@@ -93,7 +93,7 @@ export default function renderCell(
                 : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
             }
           >
-            {cell.value}
+            {(kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value}
           </span>
         </TableCell>
       )

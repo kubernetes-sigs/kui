@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
+import { ReactElement } from 'react'
 import { MetadataBearing, Entity } from '../../models/entity'
 
 export class Row {
@@ -84,7 +85,7 @@ export class Row {
 export class Cell {
   value: string
 
-  valueDom?: Node[] | Node
+  valueDom?: ReactElement
 
   css?: string
 
