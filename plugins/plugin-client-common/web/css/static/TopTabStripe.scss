@@ -37,6 +37,12 @@
 
   .bx--header__nav {
     padding-left: 0;
+
+    /* this rule is important: otherwise the default carbon components
+   styling uses media selectors to hide our Tab buttons for narrower
+   windows */
+    display: block;
+
     &:before {
       background-color: var(--color-table-border2);
       height: 1.5em;
