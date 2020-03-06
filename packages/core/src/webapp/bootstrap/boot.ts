@@ -34,7 +34,7 @@ async function initCommandRegistrar() {
  * @param { ClientRender } clientMain client-provided renderer of main content
  *
  */
-const domReady = (renderMain?: ClientRender) => async () => {
+const domReady = (inSanbox: boolean, renderMain?: ClientRender) => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
   const events = import('../../core/events')
@@ -59,7 +59,7 @@ const domReady = (renderMain?: ClientRender) => async () => {
         : Promise.resolve()
     )
 
-    waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init()))
+    waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init(inSanbox)))
 
     // await query.then(_ => _.init())
 
@@ -89,14 +89,14 @@ const domReady = (renderMain?: ClientRender) => async () => {
  *
  */
 export default async (renderMain: ClientRender) => {
-  import('./init').then(_ => _.preinit())
-  window.addEventListener('load', domReady(renderMain), { once: true })
+  import('./init').then(_ => _.preinit(false))
+  window.addEventListener('load', domReady(false, renderMain), { once: true })
 }
 
 /** For booting into an external browser sandbox, such as codesandbox.io */
 export async function bootIntoSandbox() {
   const { setMedia, Media } = await import('../../core/capabilities')
   setMedia(Media.Browser)
-  await import('./init').then(_ => _.preinit())
-  await domReady()
+  await import('./init').then(_ => _.preinit(true))
+  await domReady(true)
 }

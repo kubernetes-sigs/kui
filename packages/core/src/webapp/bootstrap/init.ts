@@ -59,7 +59,7 @@ function inBrowser() {
   return document.body.classList.contains('not-electron')
 }
 
-export const init = async () => {
+export const init = async (inSandbox: boolean) => {
   // debug('init')
 
   const waitForThese: Promise<void>[] = []
@@ -82,7 +82,7 @@ export const init = async () => {
   //
   // see if we were passed an argv to execute on load
   //
-  if (!inBrowser()) {
+  if (!inSandbox && !inBrowser()) {
     // Notes: sequester the electron bits into their own chunk, to
     // prevent webpack from bunching code that has an
     // `import('electron')` into the main bundle
@@ -92,7 +92,7 @@ export const init = async () => {
   // debug('init done')
 }
 
-export const preinit = async () => {
+export const preinit = async (inSandbox: boolean) => {
   // debug('preinit')
 
   let prefs = {}
@@ -100,7 +100,7 @@ export const preinit = async () => {
   /** add os-xxxx to the body's classname, to allow for os-specific styling, if needed */
   document.body.classList.add(`os-${process.platform}`)
 
-  if (!inBrowser()) {
+  if (!inSandbox && !inBrowser()) {
     // Notes: sequester the electron bits into their own chunk, to
     // prevent webpack from bunching code that has an
     // `import('electron')` into the main bundle
