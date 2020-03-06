@@ -21,6 +21,8 @@ export {
   inBrowser,
   inElectron,
   isHeadless,
+  inSandbox,
+  assertInSandbox,
   assertLocalAccess,
   assertHasProxy,
   setHasAuth,

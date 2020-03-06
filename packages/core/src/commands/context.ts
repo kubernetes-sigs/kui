@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { defaultContext } from '@kui-shell/client/config.d/exec.json'
+function defaultFromClient() {
+  try {
+    return require('@kui-shell/client/config.d/exec.json').defaultContext
+  } catch (err) {
+    console.log('could not find client config')
+  }
+}
 
 /**
  * Parse a serialized command context
@@ -46,7 +52,7 @@ function parseCommandContext(str: string): string[] {
  * by calling `setDefaultCommandContext`.
  *
  */
-let _defaultContext: string[] = parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || defaultContext || []
+let _defaultContext: string[] = parseCommandContext(process.env.KUI_COMMAND_CONTEXT) || defaultFromClient() || []
 
 /**
  * The command context model, defaulting to the _defaultContext, which
