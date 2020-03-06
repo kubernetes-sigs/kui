@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-default",
-  "version": "7.0.17",
+  "version": "7.0.18",
   "description": "Kui plugin that offers client defintion",
   "main": "dist/index.js",
   "module": "mdist/index.js",
@@ -27,5 +27,6 @@
   ],
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "db56406d0654618db635d765c50460138a25f876"
 }
