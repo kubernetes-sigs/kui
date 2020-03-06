@@ -77,17 +77,19 @@ export default class TabContent extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    eventBus.once(`/tab/new/${props.uuid}`, () => this.setState({ sessionInit: 'Done' }))
-
-    const onOffline = this.onOffline.bind(this)
-    eventBus.on(`/tab/offline/${props.uuid}`, onOffline)
-    this.cleaners.push(() => eventBus.off(`/tab/offline/${props.uuid}`, onOffline))
-
     this.state = {
       tab: undefined,
       sessionInit: 'NotYet',
       secondaryWidth: '0%'
     }
+  }
+
+  public componentDidMount() {
+    eventBus.once(`/tab/new/${this.props.uuid}`, () => this.setState({ sessionInit: 'Done' }))
+
+    const onOffline = this.onOffline.bind(this)
+    eventBus.on(`/tab/offline/${this.props.uuid}`, onOffline)
+    this.cleaners.push(() => eventBus.off(`/tab/offline/${this.props.uuid}`, onOffline))
   }
 
   /* public static getDerivedStateFromProps(props: Props, state: State) {
