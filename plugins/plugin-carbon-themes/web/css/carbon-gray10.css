@@ -40,6 +40,9 @@ body[kui-theme="Carbon Gray10"] .kui--sidecar {
   --color-ui-04: var(--color-base02);
   --color-ui-05: var(--color-base04);
   --color-ui-06: var(--color-base02);
+
+  --color-sidecar-background-01: #171717;
+  --color-sidecar-background-02: var(--color-base03);
 }
 
 /* color variables */
