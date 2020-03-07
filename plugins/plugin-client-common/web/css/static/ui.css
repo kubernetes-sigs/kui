@@ -1107,9 +1107,15 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 .page-content li {
   font-weight: 400;
-  list-style-type: disc;
+  list-style-type: none;
   padding-bottom: 0.5em;
   line-height: 1.25em;
+  position: relative;
+}
+.page-content li:before {
+  content: "\002013";
+  left: -1em;
+  position: absolute;
 }
 
 .icon-container,
