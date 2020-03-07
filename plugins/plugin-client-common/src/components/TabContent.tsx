@@ -157,7 +157,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
         <ScrollableTerminal
           {...this.props}
           tab={this.state.tab}
-          secondaryIsVisible={this.state.secondaryWidth !== '0%' && this.state.secondaryWidth !== '2%'}
+          secondaryIsVisible={this.state.secondaryWidth !== '0%' && this.state.secondaryWidth !== '2em'}
           ref={c => {
             // so that we can refocus/blur
             this._terminal = c

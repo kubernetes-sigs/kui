@@ -106,7 +106,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
         isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
         sortRow={sortRow}
         render={renderOpts => (
-          <TableContainer title={response.title}>
+          <TableContainer title={response.title} className="kui--screenshotable">
             <Table size="compact">
               {response.header && renderHeader(response.header, renderOpts)}
               {renderBody(response.body, renderOpts, tab, repl)}
@@ -136,14 +136,8 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
     } else {
       // overflow-x: auto so that the pagination parts don't overflow offscreen!
       // see https://github.com/IBM/kui/issues/3773
-      const style = {
-        flex: 1,
-        flexDirection: 'column' as const,
-        alignItems: 'stretch' as const,
-        overflowX: 'auto' as const
-      }
       return (
-        <div className="flex-layout" style={style}>
+        <div className="kui--paginated-table">
           {dataTable}
           {pagination}
         </div>
