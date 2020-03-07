@@ -4,6 +4,13 @@ body[kui-theme-style] .bx--pagination {
   font-size: 0.875em;
   line-height: 1.125em;
 
+  span.bx--pagination__text {
+    margin-left: 1em;
+  }
+  .bx--pagination__left .bx--pagination__text {
+    margin-right: 0.0625em;
+  }
+
   .bx--select__item-count .bx--select-input,
   span.bx--pagination__text,
   .bx--select--inline .bx--select-input {
@@ -35,5 +42,26 @@ body[kui-theme-style] .bx--pagination {
 
   .bx--pagination__button:hover {
     background-color: var(--color-ui-03);
+  }
+}
+
+body[kui-theme-style] .sidecar-visible {
+  .bx--pagination__left {
+    .bx--form-item,
+    label.bx--pagination__text {
+      /* left: hide the items per page if the sidecar is open */
+      display: none;
+    }
+
+    span.bx--pagination__text {
+      margin: 0;
+    }
+  }
+  .bx--pagination__right {
+    .bx--form-item,
+    .bx--pagination__text {
+      /* hide the "1 of N pages" text if the sidecar is open */
+      display: none;
+    }
   }
 }
