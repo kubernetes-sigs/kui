@@ -39,6 +39,9 @@ body[kui-theme="Light"] .kui--sidecar {
   --color-ui-06: #1a2024;
 
   --color-text-against-dark-bg: var(--color-text-01);
+
+  --color-sidecar-toolbar-background: #d7dce3;
+  --color-sidecar-toolbar-foreground: var(--color-base02);
 }
 
 /* color variables */

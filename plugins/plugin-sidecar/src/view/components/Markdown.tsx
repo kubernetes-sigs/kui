@@ -20,19 +20,31 @@ import { CodeSnippet, Link } from 'carbon-components-react'
 
 import 'carbon-components/scss/components/link/_link.scss'
 import 'carbon-components/scss/components/code-snippet/_code-snippet.scss'
+import 'carbon-components/scss/components/copy-button/_copy-button.scss'
 
 interface Props {
   source: string
 }
 
 export default class Markdown extends React.PureComponent<Props> {
+  private onCopy(value: string) {
+    navigator.clipboard.writeText(value)
+  }
+
   public render() {
     return (
       <ReactMarkdown
         source={this.props.source}
         className="padding-content scrollable scrollable-auto marked-content page-content"
         renderers={{
-          code: props => <CodeSnippet type="inline">{props.value}</CodeSnippet>,
+          code: props => (
+            <CodeSnippet
+              type={/\n/.test(props.value) || props.value.length > 100 ? 'multi' : 'single'}
+              onClick={this.onCopy.bind(this, props.value)}
+            >
+              {props.value}
+            </CodeSnippet>
+          ),
           link: props => <Link {...props} target="_blank" title={props.href} />
         }}
       />
