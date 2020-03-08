@@ -95,7 +95,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
       await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('theme'))
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] [type="radio"]`
+      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] td.bx--table-column-checkbox.not-a-name`
 
       console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
