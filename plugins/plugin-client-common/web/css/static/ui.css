@@ -1443,7 +1443,10 @@ body {
   --color-processing: var(--color-ui-05);
 
   /* border-bottom for active tab */
-  --active-tab-color: var(--color-base05);
+  --active-tab-color: var(--color-brand-03);
+
+  /* repl background */
+  --color-repl-background: var(--color-ui-01);
 }
 
 .color-base08 {

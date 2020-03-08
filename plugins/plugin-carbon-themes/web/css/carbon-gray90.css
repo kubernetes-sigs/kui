@@ -45,6 +45,7 @@ body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-stripe-02: var(--color-sidecar-header);
   --tab-gray-text-color: #b5b5b5;
   --active-tab-color: #6ea6ff;
+  --color-repl-background: var(--color-base00);
 
   --color-prompt-text: #408bfc;
 
@@ -112,9 +113,6 @@ body[kui-theme="Carbon Gray90"] .bx--btn--secondary {
 }
 body[kui-theme="Carbon Gray90"] .bx--btn--danger {
   background-color: #ff3751;
-}
-body[kui-theme="Carbon Gray90"] .repl {
-  background-color: var(--color-base00);
 }
 
 /* input placeholder text */
