@@ -1,6 +1,6 @@
 .bx--header {
-  background-color: var(--color-stripe-01);
-  border-bottom-color: var(--color-table-border1);
+  background-color: var(--color-stripe-02);
+  border-bottom: none;
   transition-property: background-color;
   position: unset;
   width: 100%;
@@ -55,17 +55,16 @@
     display: flex;
     align-items: center;
     position: relative;
-    min-width: 8em;
+    min-width: 10em;
+    max-width: 20em;
 
-    &.kui--tab--active:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -1px;
-      height: 2px;
-      background: var(--active-tab-color);
-      opacity: 0.75;
-      width: 100%;
+    &:only-of-type .bx--header__menu-item {
+      padding-right: 1.125em;
+    }
+
+    &.kui--tab--active {
+      background: var(--color-repl-background);
+      box-shadow: inset 0 2px 0 0 var(--active-tab-color);
     }
 
     &.processing {
@@ -73,18 +72,11 @@
       &.kui--tab--active {
         .bx--header__menu-item {
           color: var(--color-base0C);
-          .kui--tab--label:after {
-            content: ' \2731';
-            padding-left: 0.375em;
-            font-size: 0.75em;
-            animation: 450ms fadeIn2;
-            animation-fill-mode: forwards;
-          }
         }
       }
     }
 
-    &:not(:last-of-type):after {
+    /*    &:not(:last-of-type):after {
       content: '';
       display: block;
       height: 1.25em;
@@ -92,6 +84,12 @@
       background-color: var(--color-table-border3);
       position: absolute;
       right: 0;
+    }*/
+    &:not(.kui--tab--active):not(:first-of-type) {
+      box-shadow: -1px 0 0 0 var(--color-table-border1);
+    }
+    &.kui--tab--active + .kui--tab {
+      box-shadow: none;
     }
 
     [data-tab-names='fixed'],
@@ -143,7 +141,9 @@
 
       .kui--tab--label {
         flex: 1;
-        display: flex;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
@@ -175,6 +175,7 @@
   .kui--top-tab-buttons {
     display: flex;
     align-items: center;
+    margin-left: 0.375em;
 
     .kui--new-tab__plus {
       display: flex;

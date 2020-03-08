@@ -7,8 +7,9 @@ body div:empty,
 body input,
 body textarea,
 body svg *,
+body li,
 body a {
-  transition-property: color, background-color, border-color, opacity, filter, text-decoration-color, fill;
+  transition-property: color, background-color, border-color, opacity, filter, text-decoration-color, fill, box-shadow;
   transition-duration: var(--transition-duration);
   transition-timing-function: var(--transition-timing-function);
 }
