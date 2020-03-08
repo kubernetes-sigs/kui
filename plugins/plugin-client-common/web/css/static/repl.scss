@@ -241,7 +241,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   margin: 0;
   padding-top: 1rem;
   flex: 4;
-  background-color: var(--color-ui-01);
+  background-color: var(--color-repl-background);
 }
 .repl-inner {
   overflow-y: auto;

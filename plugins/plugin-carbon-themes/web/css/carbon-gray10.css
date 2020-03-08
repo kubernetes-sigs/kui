@@ -99,7 +99,8 @@ body[kui-theme="Carbon Gray10"] {
   --color-stripe-01: #f5f7fa;
   --color-stripe-02: var(--color-base03);
   --tab-gray-text-color: var(--color-text-01);
-  --active-tab-color: #0062ff;
+  --active-tab-color: #0f62fe;
+  --color-repl-background: var(--color-base01);
 
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);
@@ -189,10 +190,6 @@ body[kui-theme="Carbon Gray10"] sidecar .repl-input input {
 }
 body[kui-theme="Carbon Gray10"] .kui--input-stripe .repl-input {
   background-color: var(--color-base04);
-}
-body[kui-theme="Carbon Gray10"] .repl,
-body[kui-theme="Carbon Gray10"] .left-tab-stripe-button-selected {
-  background-color: var(--color-base01);
 }
 body[kui-theme="Carbon Gray10"] .kui--input-stripe {
   background-color: var(--color-base00);
