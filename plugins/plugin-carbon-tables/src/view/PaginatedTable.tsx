@@ -26,7 +26,8 @@ import kui2carbon, { NamedDataTableRow } from '../model/kui2carbon'
 
 /** carbon styling */
 import 'carbon-components/scss/components/pagination/_pagination.scss'
-import 'carbon-components/scss/components/data-table/_data-table.scss'
+import 'carbon-components/scss/components/data-table/_data-table-core.scss'
+import 'carbon-components/scss/components/radio-button/_radio-button.scss'
 
 /** hack (see comments in file) */
 import '../../web/css/static/hack-select.scss'
