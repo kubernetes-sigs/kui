@@ -7,12 +7,12 @@ body[kui-theme-style] {
   }
 }
 
-body[data-presentation='SidecarThin'] sidecar .bx--data-table-container {
+.kui--sidecar.kui--nav-view .bx--data-table-container {
   .bx--data-table {
-    td,
-    th,
-    .bx--table-sort {
-      color: var(--color-text-inverted01);
+    .entity-name {
+      span {
+        word-break: break-all;
+      }
     }
   }
 }

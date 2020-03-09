@@ -74,7 +74,7 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
       } else if (isTable(mode.content)) {
-        return renderTable(tab, tab.REPL, mode.content)
+        return renderTable(tab, tab.REPL, mode.content, false)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />
