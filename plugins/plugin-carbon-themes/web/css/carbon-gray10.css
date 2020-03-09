@@ -26,7 +26,7 @@ body[kui-theme="Carbon Gray10"] .kui--sidecar {
 
   --color-map-value: var(--color-text-01);
   --color-map-key: var(--color-base0C);
-  --color-name: var(--color-base0C);
+  --color-name: #30b0ff;
 
   --color-brand-01: #97c1ff;
   --color-brand-03: var(--color-base0C);
@@ -64,7 +64,6 @@ body[kui-theme="Carbon Gray10"] {
   --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
 
-  --color-name-sidecar: #30b0ff;
   --color-red-sidecar: #fb4b53;
   --color-yellow-sidecar: #fdd13a;
   --color-green-sidecar: #56d679;
