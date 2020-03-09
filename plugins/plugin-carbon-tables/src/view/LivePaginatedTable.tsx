@@ -161,10 +161,10 @@ class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
   }
 }
 
-export default function renderTable(tab: Tab, repl: REPL, response: KuiTable) {
+export default function renderTable(tab: Tab, repl: REPL, response: KuiTable, needsPagination = true) {
   if (isWatchable(response)) {
-    return <LivePaginatedTable tab={tab} repl={repl} response={response} />
+    return <LivePaginatedTable tab={tab} repl={repl} response={response} needsPagination={needsPagination} />
   } else {
-    return renderNonLiveTable(tab, repl, response)
+    return renderNonLiveTable(tab, repl, response, needsPagination)
   }
 }

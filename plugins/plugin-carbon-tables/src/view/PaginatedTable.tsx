@@ -44,6 +44,7 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   tab: Tab
   repl: REPL
   response: T
+  needsPagination: boolean
 }
 
 /** state of PaginatedTable component */
@@ -94,7 +95,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
     // note the comparison versus the default pageSize; we want to
     // know if this row set will every need pagination, not whether it
     // does based on the user's current this.state.pageSize selection
-    const needsPagination = rows.length > this.defaultPageSize
+    const needsPagination = this.props.needsPagination && rows.length > this.defaultPageSize
 
     const visibleRows = rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize)
 
@@ -151,6 +152,6 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
   }
 }
 
-export default function renderTable(tab: Tab, repl: REPL, response: KuiTable) {
-  return <PaginatedTable tab={tab} repl={repl} response={response} />
+export default function renderTable(tab: Tab, repl: REPL, response: KuiTable, needsPagination = true) {
+  return <PaginatedTable tab={tab} repl={repl} response={response} needsPagination={needsPagination} />
 }

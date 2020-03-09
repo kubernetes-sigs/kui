@@ -107,7 +107,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
       return <pre>{err.toString()}</pre>
     }
 
-    console.error('unexpected null return from Scalar')
+    console.error('unexpected null return from Scalar:', response)
     return <pre className="oops">Internal Error in command execution</pre>
   }
 }
