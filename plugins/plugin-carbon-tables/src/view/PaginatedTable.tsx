@@ -100,21 +100,25 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
 
     // the view
     const dataTable = (
-      <DataTable
-        rows={visibleRows}
-        headers={headers}
-        radio={radio}
-        isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
-        sortRow={sortRow}
-        render={renderOpts => (
-          <TableContainer title={response.title} className="kui--screenshotable">
-            <Table size="compact">
-              {response.header && renderHeader(response.header, renderOpts)}
-              {renderBody(response.body, renderOpts, tab, repl)}
-            </Table>
-          </TableContainer>
-        )}
-      />
+      // `<form>` prevents the radio button selection reads from the global form of browser.
+      // See issue: https://github.com/IBM/kui/issues/3871
+      <form>
+        <DataTable
+          rows={visibleRows}
+          headers={headers}
+          radio={radio}
+          isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
+          sortRow={sortRow}
+          render={renderOpts => (
+            <TableContainer title={response.title} className="kui--screenshotable">
+              <Table size="compact">
+                {response.header && renderHeader(response.header, renderOpts)}
+                {renderBody(response.body, renderOpts, tab, repl)}
+              </Table>
+            </TableContainer>
+          )}
+        />
+      </form>
     )
 
     const pagination = needsPagination && (
