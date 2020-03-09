@@ -39,7 +39,7 @@ export default class Markdown extends React.PureComponent<Props> {
         renderers={{
           code: props => (
             <CodeSnippet
-              type={/\n/.test(props.value) || props.value.length > 100 ? 'multi' : 'single'}
+              type={/\n/.test(props.value) || props.value.length > 40 ? 'multi' : 'single'}
               onClick={this.onCopy.bind(this, props.value)}
             >
               {props.value}
