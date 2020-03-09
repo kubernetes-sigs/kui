@@ -26,6 +26,19 @@ body[kui-theme="Light"] .kui--sidecar {
 
   --color-map-value: var(--color-text-01);
   --color-map-key: var(--color-base0D);
+
+  --color-black: var(--color-ui-01);
+  --color-red: var(--color-base08);
+  --color-green: var(--color-base0B);
+  --color-yellow: var(--color-base0A);
+  --color-cyan: var(--color-base0C);
+  --color-blue: var(--color-base0D);
+  --color-magenta: var(--color-base0E);
+  --color-white: var(--color-base07);
+  --color-light-gray: var(--color-base04);
+  --color-dark-gray: var(--color-base03);
+
+  --color-brand-01: var(--color-blue);
   --color-brand-03: #418cff;
 
   --color-stripe-01: #4f565c;
@@ -37,6 +50,8 @@ body[kui-theme="Light"] .kui--sidecar {
   --color-ui-04: var(--color-base02);
   --color-ui-05: var(--color-base04);
   --color-ui-06: #1a2024;
+
+  --color-name: var(--color-base0C);
 
   --color-text-against-dark-bg: var(--color-text-01);
 
