@@ -30,6 +30,7 @@ interface Props {
 
 interface State {
   model: TabModel
+  promptPlaceholder: string
 }
 
 export default class Popup extends React.PureComponent<Props, State> {
@@ -41,8 +42,13 @@ export default class Popup extends React.PureComponent<Props, State> {
       tab.REPL.qexec('window close')
     })
 
+    eventBus.on('/command/complete', ({ command }: { command: string }) => {
+      this.setState({ promptPlaceholder: command })
+    })
+
     this.state = {
-      model: new TabModel()
+      model: new TabModel(),
+      promptPlaceholder: ''
     }
   }
 
@@ -61,7 +67,7 @@ export default class Popup extends React.PureComponent<Props, State> {
       <div className="kui--full-height">
         <TabContent
           noActiveInput
-          bottom={<InputStripe />}
+          bottom={<InputStripe promptPlaceholder={this.state.promptPlaceholder} />}
           uuid={this.state.model.uuid}
           active
           state={this.state.model.state}

@@ -18,11 +18,12 @@ import * as React from 'react'
 import { Tab as KuiTab, eventBus } from '@kui-shell/core'
 
 import Block from './Terminal/Block'
+import { InputOptions } from './Terminal/Block/Input'
 import BlockModel, { Active } from './Terminal/Block/BlockModel'
 
 import '../../web/css/static/InputStripe.scss'
 
-interface Props {
+type Props = InputOptions & {
   tab?: KuiTab
 
   /** tab uuid; this is grafted in for you, by TabContent */
@@ -55,7 +56,14 @@ export default class InputStripe extends React.PureComponent<Props, State> {
   public render() {
     return (
       <div className="kui--input-stripe repl">
-        <Block idx={this.state.idx} tab={this.props.tab} model={this.state.model} noOutput noPromptContext />
+        <Block
+          idx={this.state.idx}
+          tab={this.props.tab}
+          model={this.state.model}
+          noOutput
+          noPromptContext
+          promptPlaceholder={this.props.promptPlaceholder}
+        />
       </div>
     )
   }
