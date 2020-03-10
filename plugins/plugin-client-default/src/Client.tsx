@@ -22,6 +22,8 @@ import { render as ReactDomRender } from 'react-dom'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
 import { InputStripe, StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
 
+import Popup from './Popup'
+
 /**
  * Here we arrange the CSS for base functionality of Kui. Order is
  * preserved in the resulting <link> tags.
@@ -32,6 +34,9 @@ import '../web/css/static/carbon-overrides.css'
 
 interface Props {
   bottomInput?: boolean
+
+  isPopup?: boolean
+  commandLine?: string[]
 }
 
 interface State {
@@ -59,18 +64,22 @@ export class DefaultClient extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    return (
-      <div className="kui--full-height">
-        <TabContainer
-          productName={this.state.productName}
-          noActiveInput={this.props.bottomInput}
-          bottom={this.props.bottomInput && <InputStripe />}
-        >
-          <ComboSidecar />
-        </TabContainer>
-        <StatusStripe>{this.props.children}</StatusStripe>
-      </div>
-    )
+    if (this.props.isPopup && this.props.commandLine) {
+      return <Popup commandLine={this.props.commandLine} />
+    } else {
+      return (
+        <div className="kui--full-height">
+          <TabContainer
+            productName={this.state.productName}
+            noActiveInput={this.props.bottomInput}
+            bottom={this.props.bottomInput && <InputStripe />}
+          >
+            <ComboSidecar />
+          </TabContainer>
+          <StatusStripe>{this.props.children}</StatusStripe>
+        </div>
+      )
+    }
   }
 }
 
@@ -78,6 +87,6 @@ export class DefaultClient extends React.PureComponent<Props, State> {
  * Format the body view
  *
  */
-export default function(container: Element) {
-  ReactDomRender(<DefaultClient />, container)
+export default async function(container: Element, isPopup: boolean, commandLine?: string[]) {
+  ReactDomRender(<DefaultClient isPopup commandLine={commandLine} />, container)
 }

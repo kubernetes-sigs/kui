@@ -44,6 +44,7 @@ type Props = TabContentOptions &
   WithTabUUID & {
     active: boolean
     state: TabState
+    onTabReady?: (tab: KuiTab) => void
   }
 
 type State = Partial<WithTab> & {
@@ -85,7 +86,13 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    eventBus.once(`/tab/new/${this.props.uuid}`, () => this.setState({ sessionInit: 'Done' }))
+    eventBus.once(`/tab/new/${this.props.uuid}`, () => {
+      this.setState({ sessionInit: 'Done' })
+
+      if (this.props.onTabReady) {
+        this.props.onTabReady(this.state.tab)
+      }
+    })
 
     const onOffline = this.onOffline.bind(this)
     eventBus.on(`/tab/offline/${this.props.uuid}`, onOffline)

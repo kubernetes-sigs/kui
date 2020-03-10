@@ -13,6 +13,7 @@
     "test3": "PORT_OFFSET=2 npm run testv2",
     "test4": "PORT_OFFSET=3 npm run testv2",
     "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
+    "kill:proxy": "kill $(lsof -t -i:808${PORT_OFFSET-1}) > /dev/null 2> /dev/null || true",
     "watch:webpack": "npm run compile:prescan && npm run link && npm run kill; ./bin/watch-webpack.sh",
     "watch:electron": "TARGET=electron-renderer npm run watch:webpack",
     "proxy": "npm run pty:nodejs && cd packages/proxy/app && npm install && PORT=8081 KUI_USE_HTTP=true ../../../tools/travis/proxy.sh ..",

@@ -22,24 +22,28 @@
  *
  */
 
-import { Common, SidecarExpect } from '@kui-shell/test'
+import { CLI, Common, ReplExpect, SidecarExpect } from '@kui-shell/test'
 
 Common.localDescribe('popup say hello', function(this: Common.ISuite) {
   before(Common.before(this, { popup: ['test', 'string'] }))
   after(Common.after(this))
 
-  xit('should show command name', async () => {
-    await SidecarExpect.popupTitle(this.app, 'test string')
-    await SidecarExpect.textPlainContent('hello world')
+  it('should show command output in REPL', async () => {
+    await ReplExpect.okWithString('hello world')({ app: this.app, count: 0 })
+  })
+
+  it('should execute another command', async () => {
+    return CLI.command('test string --grumble 314159', this.app)
+      .then(ReplExpect.okWithString('hello world 314159'))
+      .catch(Common.oops(this, true))
   })
 })
 
-Common.localDescribe('popup table', function(this: Common.ISuite) {
-  before(Common.before(this, { popup: ['test', 'table'] }))
+Common.localDescribe('popup mmr', function(this: Common.ISuite) {
+  before(Common.before(this, { popup: ['test', 'mmr', 'mode'] }))
   after(Common.after(this))
 
-  xit('should show command name', async () => {
-    await SidecarExpect.popupTitle(this.app, 'test table')
-    await SidecarExpect.tableContent(this.app, 5, 12)
+  it('should show title "this is the name part"', async () => {
+    await SidecarExpect.popupTitle(this.app, 'this is the name part')
   })
 })

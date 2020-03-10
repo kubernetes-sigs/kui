@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-/** client-provided renderer of the main content */
-type ClientRender = (container: Element) => void
+import Client, { inBrowser } from './client'
 
 function catastrophe(err: Error) {
   console.error('restart needed')
@@ -31,10 +30,10 @@ async function initCommandRegistrar() {
 /**
  * Invoked on the domReady event.
  *
- * @param { ClientRender } clientMain client-provided renderer of main content
+ * @param { Client } clientMain client-provided renderer of main content
  *
  */
-const domReady = (inSanbox: boolean, renderMain?: ClientRender) => async () => {
+const domReady = (inSandbox: boolean, client?: Client) => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
   const events = import('../../core/events')
@@ -59,7 +58,7 @@ const domReady = (inSanbox: boolean, renderMain?: ClientRender) => async () => {
         : Promise.resolve()
     )
 
-    waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init(inSanbox)))
+    waitForThese.push(waitForThese[1].then(() => initializer).then(_ => _.init()))
 
     // await query.then(_ => _.init())
 
@@ -68,8 +67,16 @@ const domReady = (inSanbox: boolean, renderMain?: ClientRender) => async () => {
     document.body.classList.remove('still-loading')
     events.then(eventBus => {
       eventBus.default.emit('/init/done')
-      if (renderMain) {
-        renderMain(document.body.querySelector('main'))
+      if (client) {
+        const root = document.body.querySelector('main')
+        if (!inSandbox && !inBrowser()) {
+          // if in Electron, then see if the init-electron code wants to special case things
+          import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ './init-electron').then(_ =>
+            _.render(client, root)
+          )
+        } else {
+          client(root, false)
+        }
       }
     })
   } catch (err) {
@@ -88,9 +95,9 @@ const domReady = (inSanbox: boolean, renderMain?: ClientRender) => async () => {
  * container
  *
  */
-export default async (renderMain: ClientRender) => {
+export default async (client: Client) => {
   import('./init').then(_ => _.preinit(false))
-  window.addEventListener('load', domReady(false, renderMain), { once: true })
+  window.addEventListener('load', domReady(false, client), { once: true })
 }
 
 /** For booting into an external browser sandbox, such as codesandbox.io */

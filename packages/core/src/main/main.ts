@@ -25,10 +25,8 @@ import { ExecOptions } from '../models/execOptions'
  *
  */
 export const main = async (argv: string[], env = process.env, execOptions?: ExecOptions) => {
-  const forceUI = !!argv.find(arg => arg === '--ui') || !!env.KUI_POPUP
-  const isShell = !!argv.find(arg => arg === 'shell')
-  const kuiShell = forceUI || isShell
-  const isRunningHeadless = !!env.KUI_HEADLESS && !kuiShell
+  const N = argv.length
+  const isRunningHeadless = argv[N - 3] === 'bash' && argv[N - 2] === 'websocket'
 
   if (!isRunningHeadless) {
     // then spawn the electron graphics

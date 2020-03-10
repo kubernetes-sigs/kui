@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import Client from './client'
 import { BrowserWindow } from 'electron'
-import eventBus from '../../core/events'
 
 interface KuiWindow extends BrowserWindow {
   subwindow?: {
@@ -85,42 +85,14 @@ export async function preinit() {
   return prefs
 }
 
-export function init() {
-  // debug('setting up /init/done handler')
-  eventBus.once('/init/done', async () => {
-    // debug('got /init/done')
+/** invoke the Client to render its body */
+export async function render(client: Client, root: Element) {
+  const { remote } = await import('electron')
+  const electronWindow = remote.getCurrentWindow() as KuiWindow
+  const prefs = electronWindow.subwindow
+  const argv = electronWindow['executeThisArgvPlease']
+  const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
+  const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
 
-    const { remote } = await import('electron')
-    const electronWindow = remote.getCurrentWindow() as KuiWindow
-    const prefs = electronWindow.subwindow
-    const argv = electronWindow['executeThisArgvPlease']
-    const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
-    const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
-
-    if (maybeExecuteThis && !fullShell) {
-      const command = typeof maybeExecuteThis === 'string' ? maybeExecuteThis : maybeExecuteThis.join(' ')
-      // debug('maybeExecuteThis', maybeExecuteThis, command)
-
-      if (prefs && prefs.partialExec) {
-        // document.body.classList.add('repl-lite')
-        // const { partial } = await import('../prompt')
-        // partial(command)
-        console.error('partial input unsupported', command)
-      } else {
-        const { pexec } = await import('../../repl/exec')
-        const noEcho = prefs && prefs.noEcho // don't echo the command, just do it
-        pexec(
-          command,
-          Object.assign(prefs || {}, {
-            causedByHeadless: true,
-            echo: !noEcho
-          })
-        ).then(() => {
-          /* if (!noEcho && prefs && prefs.clearREPLOnLoad) {
-             setTimeout(() => repl.pexec('clear'), 1000)
-             } */
-        })
-      }
-    }
-  })
+  client(root, !!prefs, !fullShell ? maybeExecuteThis : undefined)
 }
