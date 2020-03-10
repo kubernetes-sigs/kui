@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { eventBus, Registrar } from '@kui-shell/core'
+import { eventBus, Registrar, Tab } from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -29,8 +29,8 @@ const usage = {
  * Close the current tab
  *
  */
-function closeTab() {
-  eventBus.emit('/tab/close/request')
+function closeTab(tab: Tab) {
+  eventBus.emit('/tab/close/request', tab)
   return true
 }
 
@@ -62,7 +62,7 @@ export default function plugin(commandTree: Registrar) {
     needsUI: true
   })
 
-  commandTree.listen('/tab/close', () => closeTab(), {
+  commandTree.listen('/tab/close', ({ tab }) => closeTab(tab), {
     needsUI: true
   })
 }

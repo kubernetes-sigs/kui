@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { inElectron, eventBus } from '@kui-shell/core'
+import { inElectron, eventBus, Tab } from '@kui-shell/core'
 
 import TabModel from './TabModel'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
@@ -59,9 +59,15 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     eventBus.on('/tab/new/request', () => {
       this.onNewTab()
     })
-    eventBus.on('/tab/close/request', () => {
-      this.onCloseTab(this.state.activeIdx)
+
+    eventBus.on('/tab/close/request', async (tab: Tab) => {
+      if (this.state.activeIdx === 0) {
+        tab.REPL.qexec('window close')
+      } else {
+        this.onCloseTab(this.state.activeIdx)
+      }
     })
+
     eventBus.on('/tab/switch/request', (idx: number) => {
       this.onSwitchTab(idx)
     })
