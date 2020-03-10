@@ -72,16 +72,8 @@
   white-space: nowrap;
   margin-left: 1em;
 }
-body.subwindow .repl-prompt-right-elements {
-  margin: 0;
-  flex: 1;
-  justify-content: center;
-}
 .kui--repl-prompt-buttons {
   margin-right: 1em;
-}
-body.subwindow .kui--repl-prompt-buttons {
-  display: none;
 }
 .kui--repl-prompt-buttons .graphical-icon {
   opacity: 0.0375;
@@ -246,21 +238,12 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 .repl-inner {
   overflow-y: auto;
   flex: 1;
-  padding-right: 0.375em;
-}
-.repl.sidecar-visible .repl-block {
-  background: transparent;
 }
 .repl-block {
   margin: 0.5em 0 0; /* margin vs padding to help with screenshot rubber banding */
   padding: 0;
   display: flex;
   flex-direction: column;
-}
-body:not(.subwindow) .repl.sidecar-visible .repl-block,
-.sidecar-full-screen .repl .repl-block {
-  border-color: transparent;
-  box-shadow: none;
 }
 .repl,
 .repl-input input {

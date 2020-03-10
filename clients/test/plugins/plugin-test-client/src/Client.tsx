@@ -29,9 +29,9 @@ import '../web/css/static/test.scss'
  * to be found in `./CounterWidget.tsx`.
  *
  */
-export default function renderMain() {
+export default function renderMain(isPopup: boolean, commandLine?: string[]) {
   return (
-    <DefaultClient>
+    <DefaultClient isPopup commandLine={commandLine}>
       <ContextWidgets>
         <CounterWidget idx={0} />
       </ContextWidgets>

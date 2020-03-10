@@ -39,14 +39,17 @@ import '../../../web/css/static/sidecar-main.css'
  * For self-managed sidecar instances, these will likely be all null.
  *
  */
-export interface Props<R extends KResponse> {
+export interface SidecarOptions {
+  defaultWidth?: string
+  willLoseFocus?: () => void
+  willChangeSize?: (desiredWidth: string) => void
+}
+
+export type Props<R extends KResponse> = SidecarOptions & {
   tab?: KuiTab
   managed?: boolean
   onClose?: () => void
   response?: R
-
-  willLoseFocus?: () => void
-  willChangeSize?: (desiredWidth: string) => void
 }
 
 /** Mostly, this State deals with the current "width" of the view. */
@@ -100,7 +103,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
   }
 
   protected defaultWidth() {
-    return '60%'
+    return this.props.defaultWidth || '60%'
   }
 
   protected minimizedWidth() {

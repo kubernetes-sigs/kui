@@ -146,16 +146,10 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .kui--sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
   display: none;
 }
-body.subwindow .kui--sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
-  font-size: 3vmin;
-}
 
 /* sidecar view-button "flush right" toolbar */
 .kui--sidecar .sidecar-bottom-stripe-toolbar {
   display: flex;
-}
-body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar {
-  font-size: 1.5vw;
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
@@ -216,14 +210,6 @@ body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar {
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type] svg {
   display: block;
 }
-body.subwindow .kui--sidecar .sidecar-bottom-stripe svg {
-  width: 2.5vmin;
-  height: 2.5vmin;
-}
-body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar svg {
-  width: 1.5vmin;
-  height: 1.5vmin;
-}
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
   font-size: 0.75em;
   display: block;
@@ -231,9 +217,6 @@ body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar svg {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
-  font-size: 1.375vmin;
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
   display: flex;
@@ -270,10 +253,6 @@ body.subwindow .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-tex
   background-color: var(--color-sidecar-header);
   flex-basis: 5.5rem;
   min-height: 5.5rem; /* see shell issue #712 */
-}
-body.subwindow .kui--sidecar .sidecar-header {
-  flex-basis: 15vh;
-  min-height: 15vh;
 }
 .kui--sidecar .sidecar-header .header-main-content {
   flex: 1;
@@ -369,9 +348,6 @@ body.subwindow .kui--sidecar .sidecar-header {
    the header name text */
   padding-right: 1rem;
   -webkit-app-region: no-drag !important;
-}
-body.subwindow .kui--sidecar .sidecar-header-name {
-  font-size: 4vh;
 }
 .kui--sidecar .sidecar-header .entity-name-line {
   display: flex;
@@ -666,114 +642,12 @@ body.subwindow .kui--sidecar .sidecar-header-name {
   background: var(--color-ui-03); /* <-- zebra */
 }
 
-body.subwindow .kui--sidecar .sidecar-bottom-stripe-close {
-  /* no close button if in subwindow/popup mode */
-  display: none;
-}
-body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
-  /* in subwindow mode, no maximize or unmaximize buttons */
-  display: none;
-}
-/*body.subwindow .kui--sidecar .activation-result .log-line .log-field code {
-    background: var(--color-ui-02);
-}*/
-body.subwindow .kui--sidecar .log-lines .log-line:nth-child(2n + 1) .log-field {
-  background: var(--color-ui-02);
-}
-body.subwindow .kui--sidecar {
-  border-left: none;
-  box-shadow: none;
-}
-body.subwindow[data-presentation="FixedSize"] .kui--sidecar .sidecar-header {
-  border-bottom-color: var(--color-base01);
-}
-body.subwindow:not(.sidecar-visible) .kui--sidecar {
-  width: 0;
-}
-body.subwindow .kui--sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
-  display: none;
-}
-body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
-  display: flex;
-}
-body.subwindow .kui--sidecar .sidecar-header-name-content,
-body.subwindow .kui--sidecar .sidecar-header-text,
-body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
-  /* make sidecar-header-input occupy full width */
-  flex: 1;
-}
-body.subwindow .kui--sidecar .padding-content {
-  flex: 1;
-  padding: 4vh 6vh 0;
-  display: flex;
-  flex-direction: column;
-}
-body.subwindow .kui--sidecar .padding-content .padding-content {
-  /* this rule protects against nested padding-content; we don't want to pad twice */
-  padding: 0;
-}
-body.subwindow[data-presentation="FixedSize"] .kui--sidecar .padding-content {
-  /* content takes care of layout, e.g. monaco-editor */
-  padding: 0;
-}
-body.subwindow .kui--sidecar .padding-content {
-  overflow: auto;
-}
-body.subwindow .kui--sidecar .sidecar-header-secondary-content {
-  font-size: 1em;
-}
-body.subwindow:not([data-presentation="FixedSize"]) .custom-content {
-  font-size: 2.5vmin;
-}
-/* Duplicate rule with line 1451 in ui.css */
-body.subwindow .kui--sidecar .repl-input,
-body.subwindow .kui--sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
-  display: none;
-}
-body.subwindow .kui--sidecar .sidecar-bottom-stripe {
-  font-size: 2vmin;
-  min-height: unset;
-}
-body.subwindow .kui--sidecar .usage-error-wrapper .page-content {
-  display: flex;
-  flex-direction: column;
-}
-.kui--sidecar .repl-input {
-  display: none;
-}
-body.subwindow .kui--sidecar .repl-input input {
-  -webkit-app-region: no-drag;
-  font-family: var(--font-sans-serif);
-  font-size: unset;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .kui--sidecar.no-icon .sidecar-header-icon-wrapper .sidecar-header-icon {
   display: none;
 }
-.subwindow .kui--sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
-  border-spacing: 0;
-}
-body.subwindow .kui--sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
-.kui--sidecar .activation-result {
-  padding: inherit;
-}
 .kui--sidecar .activation-result {
   padding: 0;
 }
-body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .entity-name-line {
-  flex-wrap: wrap;
-}
-body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .action-content #version {
-  min-height: 20px;
-}
-
-/*
- if we want to hide the close button in the sidecar bottom stripe when in sidecar-full-screen mode
-body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
-    display: none;
-}*/
 
 /* used by bottom-stripe to flush-right buttons */
 .fill-container {
@@ -945,7 +819,7 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
   color: var(--color-text-01);
   background: var(--color-stripe-02);
 }
-body:not(.subwindow) .sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
+.sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
   border-right: 1px solid var(--color-table-border1);
 }
 .sidecar-bottom-stripe-right-bits,
@@ -964,12 +838,6 @@ body:not(.subwindow) .sidecar-non-window-buttons .sidecar-bottom-stripe-button:l
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
   padding-left: 1em;
-}
-body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
-  padding-left: 0.875vw;
-}
-body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
-  padding-right: 0.875vw;
 }
 .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
   padding-right: 1em;

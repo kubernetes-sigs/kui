@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import Client from './Client'
-import { render as ReactDomRender } from 'react-dom'
-
-/**
- * Use react-dom to render the client into the given container
- *
- */
-function renderMain(container: Element, isPopup: boolean, commandLine?: string[]) {
-  ReactDomRender(Client(isPopup, commandLine), container)
+export function inBrowser() {
+  return document.body.classList.contains('not-electron')
 }
 
-/** boot Kui! */
-import('@kui-shell/core').then(_ => _.boot(renderMain))
+/** client-provided renderer of the main content */
+type ClientRender = (root: Element, isPopup: boolean, commandLine?: string[]) => void
+
+export default ClientRender
