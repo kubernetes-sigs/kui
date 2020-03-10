@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { Tab as KuiTab } from '@kui-shell/core'
+import { eventBus, Tab as KuiTab } from '@kui-shell/core'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
 import { InputStripe, TabContent, TabModel } from '@kui-shell/plugin-client-common'
 
@@ -35,6 +35,11 @@ interface State {
 export default class Popup extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
+
+    eventBus.on('/tab/close/request', async (tab: KuiTab) => {
+      // tab close is window close for the popup client
+      tab.REPL.qexec('window close')
+    })
 
     this.state = {
       model: new TabModel()
