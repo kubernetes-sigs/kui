@@ -36,16 +36,21 @@ export const plainTextModeAlt3: MultiModalMode[] = [
   { mode: 'text4', label: 'T4', contentFrom: 'test markdown', contentType: 'text/markdown' }
 ]
 
+const createRows = (length: number) => {
+  const rows = []
+  for (let num = 1; num <= length; num++) {
+    rows.push({ name: `c_${num}_1`, attributes: [{ value: `c_${num}_2` }] })
+  }
+  return rows
+}
+
 // table directly as content
 export const tableMode: MultiModalMode[] = [
   {
     mode: 'table',
     label: 'Tbl1',
     content: {
-      body: [
-        { name: 'c11', attributes: [{ value: 'c12' }] },
-        { name: 'c21', attributes: [{ value: 'c22' }] }
-      ]
+      body: createRows(25)
     }
   }
 ]
