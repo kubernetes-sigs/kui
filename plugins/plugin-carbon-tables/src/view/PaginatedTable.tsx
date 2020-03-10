@@ -44,7 +44,12 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   tab: Tab
   repl: REPL
   response: T
-  needsPagination: boolean
+  /**
+   paginate: true -> always paginate
+   paginate: false -> never paginate
+   paginate: number -> paginate if above the threshold of rows
+   */
+  paginate: boolean | number
 }
 
 /** state of PaginatedTable component */
@@ -92,15 +97,8 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
     const { tab, repl, response } = this.props
     const { headers, rows, radio, page } = this.state
 
-    // note the comparison versus the default pageSize; we want to
-    // know if this row set will every need pagination, not whether it
-    // does based on the user's current this.state.pageSize selection
-    const needsPagination = this.props.needsPagination && rows.length > this.defaultPageSize
-
-    const visibleRows = rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize)
-
     // the view
-    const dataTable = (
+    const dataTable = (visibleRows: NamedDataTableRow[]) => (
       // `<form>` prevents the radio button selection reads from the global form of browser.
       // See issue: https://github.com/IBM/kui/issues/3871
       <form>
@@ -122,7 +120,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
       </form>
     )
 
-    const pagination = needsPagination && (
+    const pagination = (
       <Pagination
         page={page}
         totalItems={rows.length}
@@ -137,14 +135,14 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
       />
     )
 
-    if (!needsPagination) {
-      return dataTable
+    if (this.props.paginate === false || rows.length <= this.props.paginate) {
+      return dataTable(rows)
     } else {
       // overflow-x: auto so that the pagination parts don't overflow offscreen!
       // see https://github.com/IBM/kui/issues/3773
       return (
         <div className="kui--paginated-table">
-          {dataTable}
+          {dataTable(rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize))}
           {pagination}
         </div>
       )
@@ -152,6 +150,6 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
   }
 }
 
-export default function renderTable(tab: Tab, repl: REPL, response: KuiTable, needsPagination = true) {
-  return <PaginatedTable tab={tab} repl={repl} response={response} needsPagination={needsPagination} />
+export default function renderTable(tab: Tab, repl: REPL, response: KuiTable, paginate: boolean | number = true) {
+  return <PaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
 }
