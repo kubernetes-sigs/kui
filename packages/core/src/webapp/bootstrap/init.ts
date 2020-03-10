@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { inBrowser } from './client'
 import eventBus from '../../core/events'
 
 /**
@@ -55,11 +56,7 @@ async function setDefaultCommandContext() {
   }
 }
 
-function inBrowser() {
-  return document.body.classList.contains('not-electron')
-}
-
-export const init = async (inSandbox: boolean) => {
+export const init = async () => {
   // debug('init')
 
   const waitForThese: Promise<void>[] = []
@@ -78,16 +75,6 @@ export const init = async (inSandbox: boolean) => {
   waitForThese.push(import('../themes/init').then(_ => _.default()))
 
   await Promise.all(waitForThese)
-
-  //
-  // see if we were passed an argv to execute on load
-  //
-  if (!inSandbox && !inBrowser()) {
-    // Notes: sequester the electron bits into their own chunk, to
-    // prevent webpack from bunching code that has an
-    // `import('electron')` into the main bundle
-    await import(/* webpackChunkName: "electron" */ /* webpackMode: "lazy" */ './init-electron').then(_ => _.init())
-  }
 
   // debug('init done')
 }

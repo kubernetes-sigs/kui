@@ -17,13 +17,11 @@
 import * as React from 'react'
 import { eventBus, Tab, NavResponse, MultiModalResponse, isMultiModalResponse } from '@kui-shell/core'
 
+import { SidecarOptions } from './BaseSidecar'
 import TopNavSidecar from './TopNavSidecar'
 import LeftNavSidecar from './LeftNavSidecar'
 
-interface Props {
-  willLoseFocus?: () => void
-  willChangeSize?: (desiredWidth: string) => void
-}
+export type Props = SidecarOptions
 
 interface State {
   tab: Tab
@@ -77,8 +75,7 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
           key={this.state.execUUID}
           response={this.state.response}
           onClose={this.onClose.bind(this)}
-          willLoseFocus={this.props.willLoseFocus}
-          willChangeSize={this.props.willChangeSize}
+          {...this.props}
         />
       )
     } else {
@@ -89,8 +86,7 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
           key={this.state.execUUID} // <!-- forces react to render child on execUUID change
           response={this.state.response}
           onClose={this.onClose.bind(this)}
-          willLoseFocus={this.props.willLoseFocus}
-          willChangeSize={this.props.willChangeSize}
+          {...this.props}
         />
       )
     }

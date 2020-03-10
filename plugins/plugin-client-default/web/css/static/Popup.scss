@@ -1,0 +1,168 @@
+body.subwindow {
+  .kui--sidecar {
+    .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
+      font-size: 3vmin;
+    }
+    .sidecar-bottom-stripe-toolbar {
+      font-size: 1.5vw;
+    }
+
+    .sidecar-bottom-stripe svg {
+      width: 2.5vmin;
+      height: 2.5vmin;
+    }
+    .sidecar-bottom-stripe-toolbar svg {
+      width: 1.5vmin;
+      height: 1.5vmin;
+    }
+
+    .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
+      font-size: 1.375vmin;
+    }
+
+    .sidecar-header {
+      flex-basis: 15vh;
+      min-height: 15vh;
+    }
+
+    .sidecar-header-name {
+      font-size: 4vh;
+    }
+  }
+}
+
+body.subwindow .kui--sidecar .sidecar-bottom-stripe-close {
+  /* no close button if in subwindow/popup mode */
+  display: none;
+}
+body.subwindow.sidecar-full-screen .sidecar-bottom-stripe-maximize:not(.screenshot-button) {
+  /* in subwindow mode, no maximize or unmaximize buttons */
+  display: none;
+}
+/*body.subwindow .kui--sidecar .activation-result .log-line .log-field code {
+    background: var(--color-ui-02);
+}*/
+body.subwindow .kui--sidecar .log-lines .log-line:nth-child(2n + 1) .log-field {
+  background: var(--color-ui-02);
+}
+body.subwindow .kui--sidecar {
+  border-left: none;
+  box-shadow: none;
+}
+body.subwindow[data-presentation='FixedSize'] .kui--sidecar .sidecar-header {
+  border-bottom-color: var(--color-base01);
+}
+/* body.subwindow:not(.sidecar-visible) .kui--sidecar {
+  width: 0;
+} */
+body.subwindow .kui--sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
+  display: none;
+}
+body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
+  display: flex;
+}
+body.subwindow .kui--sidecar .sidecar-header-name-content,
+body.subwindow .kui--sidecar .sidecar-header-text,
+body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
+  /* make sidecar-header-input occupy full width */
+  flex: 1;
+}
+body.subwindow .kui--sidecar .padding-content {
+  flex: 1;
+  padding: 4vh 6vh 0;
+  display: flex;
+  flex-direction: column;
+}
+body.subwindow .kui--sidecar .padding-content .padding-content {
+  /* this rule protects against nested padding-content; we don't want to pad twice */
+  padding: 0;
+}
+body.subwindow[data-presentation='FixedSize'] .kui--sidecar .padding-content {
+  /* content takes care of layout, e.g. monaco-editor */
+  padding: 0;
+}
+body.subwindow .kui--sidecar .padding-content {
+  overflow: auto;
+}
+body.subwindow .kui--sidecar .sidecar-header-secondary-content {
+  font-size: 1em;
+}
+body.subwindow:not([data-presentation='FixedSize']) .custom-content {
+  font-size: 2.5vmin;
+}
+/* Duplicate rule with line 1451 in ui.css */
+body.subwindow .kui--sidecar .repl-input,
+body.subwindow .kui--sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
+  display: none;
+}
+body.subwindow .kui--sidecar .sidecar-bottom-stripe {
+  font-size: 2vmin;
+  min-height: unset;
+}
+body.subwindow .kui--sidecar .usage-error-wrapper .page-content {
+  display: flex;
+  flex-direction: column;
+}
+body.subwindow .kui--sidecar .repl-input input {
+  -webkit-app-region: no-drag;
+  font-family: var(--font-sans-serif);
+  font-size: unset;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.subwindow .kui--sidecar .sidecar-header .header-right-bits .activation-viz-plugin.grid-header-key table {
+  border-spacing: 0;
+}
+body.subwindow .kui--sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
+.kui--sidecar .activation-result {
+  padding: inherit;
+}
+body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .entity-name-line {
+  flex-wrap: wrap;
+}
+body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .action-content #version {
+  min-height: 20px;
+}
+
+/*
+ if we want to hide the close button in the sidecar bottom stripe when in sidecar-full-screen mode
+body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
+    display: none;
+}*/
+
+body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
+  padding-left: 0.875vw;
+}
+body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
+  padding-right: 0.875vw;
+}
+
+.repl:not(.kui--input-stripe) {
+  padding-top: 0;
+  .repl-block {
+    margin: 0.5em 2px 2px 2px;
+
+    .repl-prompt {
+      margin-right: 0.1875em;
+      .repl-prompt-righty {
+        color: var(--color-text-02);
+      }
+      .repl-context {
+        /* e.g. cwd displayed in prompt */
+        display: none;
+      }
+    }
+  }
+}
+
+.kui--input-stripe {
+  padding: 0;
+
+  /* 2em plus 0.5em padding top and bottom for the kui--input-and-cojntext */
+  flex-basis: 2.1em;
+
+  .repl-block .repl-input .kui--input-and-context {
+    background-color: var(--color-stripe-02);
+  }
+}
