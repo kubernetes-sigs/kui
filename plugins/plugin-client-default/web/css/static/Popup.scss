@@ -164,5 +164,10 @@ body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-i
 
   .repl-block .repl-input .kui--input-and-context {
     background-color: var(--color-stripe-02);
+
+    input::placeholder {
+      color: var(--color-text-02);
+      opacity: 0.75;
+    }
   }
 }
