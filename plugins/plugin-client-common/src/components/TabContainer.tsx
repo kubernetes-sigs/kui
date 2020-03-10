@@ -61,7 +61,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
 
     eventBus.on('/tab/close/request', async (tab: Tab) => {
-      if (this.state.activeIdx === 0) {
+      if (this.state.tabs.length === 1) {
+        // then we are closing the last tab, so close the window
         tab.REPL.qexec('window close')
       } else {
         this.onCloseTab(this.state.activeIdx)
