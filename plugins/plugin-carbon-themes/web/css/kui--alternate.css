@@ -1,8 +1,8 @@
 /* Alternate look for carbon themes */
 
 body.kui--alternate .repl:not(.kui--input-stripe) .repl-block {
-  padding-left: 2em;
-  padding-right: 2em;
+  padding-left: calc(1em * 0.875);
+  padding-right: calc(1em * 0.875);
 }
 
 body.kui--alternate .repl-prompt {
