@@ -15,20 +15,40 @@
  */
 
 import { Entity } from './entity'
-import { isMultiModalResponse } from './mmr/is'
 import { MultiModalResponse } from './mmr/types'
 
 /**
  * A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
  *
  */
-export type NavResponse = Record<string, MultiModalResponse>
+export type NavResponse = {
+  apiVersion: 'kui-shell/v1'
+  kind: 'NavResponse'
+  menus: Menu[]
+  links?: Link[]
+}
+
+export type Menu = Record<string, MultiModalResponse>
+
+type Label = { label: string }
+type Command = { command: string }
+type Href = { href: string }
+
+export type Link = Label & (Command | Href)
+
+export function isLinkWithCommand(link: Link): link is Label & Command {
+  return (link as Label & Command).command !== undefined
+}
+
+export function isLinkWithHref(link: Link): link is Label & Href {
+  return (link as Label & Href).href !== undefined
+}
+
+export function isLink(link: Link): link is Link {
+  return isLinkWithHref(link) || isLinkWithCommand(link)
+}
 
 export function isNavResponse(entity: Entity): entity is NavResponse {
   const nav = entity as NavResponse
-  return (
-    typeof nav === 'object' &&
-    Object.keys(nav).length !== 0 &&
-    Object.keys(nav).every(menu => isMultiModalResponse(nav[menu]))
-  )
+  return nav.apiVersion === 'kui-shell/v1' && nav.kind === 'NavResponse'
 }

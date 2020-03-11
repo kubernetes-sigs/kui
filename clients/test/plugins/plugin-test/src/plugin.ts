@@ -24,6 +24,7 @@ import mmrNamespace from './lib/cmds/mmr-namespace'
 import mmrKind from './lib/cmds/mmr-kind'
 import mmrMode from './lib/cmds/mmr-mode'
 import mmrModeViaRegistration from './lib/cmds/mmr-mode-via-registration'
+import nav from './lib/cmds/NavResponse'
 import table from './lib/cmds/table'
 
 export default async (commandTree: Registrar) => {
@@ -37,6 +38,7 @@ export default async (commandTree: Registrar) => {
     mmrKind(commandTree),
     mmrMode(commandTree),
     mmrModeViaRegistration(commandTree),
+    nav(commandTree),
     table(commandTree)
   ])
 }

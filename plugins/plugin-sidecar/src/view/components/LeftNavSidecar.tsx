@@ -17,8 +17,18 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import * as React from 'react'
-import { eventBus, i18n, Tab, Button, NavResponse, MultiModalMode } from '@kui-shell/core'
-import { Content, SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
+import {
+  eventBus,
+  i18n,
+  Tab,
+  Button,
+  NavResponse,
+  MultiModalMode,
+  Menu,
+  Link,
+  isLinkWithCommand
+} from '@kui-shell/core'
+import { Content, SideNavLink, SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
 
 import Width from './width'
 import { getStateFromMMR } from './TopNavSidecar'
@@ -31,7 +41,6 @@ import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
 const KuiContent = React.lazy(() => import('./KuiContent'))
 
 const strings = i18n('client', 'about')
-// const strings2 = i18n('core-support')
 
 interface Navigation {
   title: string
@@ -41,8 +50,9 @@ interface Navigation {
 }
 
 interface State extends BaseState {
-  current: { nav: number; tab: number }
+  current: { menuIdx: number; tabIdx: number }
   allNavs: Navigation[]
+  allLinks: Link[]
 
   response: NavResponse
 }
@@ -81,6 +91,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
         width: Width.Default,
 
         allNavs: undefined,
+        allLinks: undefined,
         current: undefined,
         response: undefined
       }
@@ -95,10 +106,13 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
   }
 
   private getState(tab: Tab, response: NavResponse): State {
+    const navigations = []
     // get state from each of the left navigation
-    const navigations = Object.entries(response).map(([title, mmr]) => {
-      const state = getStateFromMMR(tab, mmr)
-      return Object.assign({ title }, state)
+    response.menus.forEach(menu => {
+      Object.entries(menu).forEach(([title, mmr]) => {
+        const state = getStateFromMMR(tab, mmr)
+        navigations.push(Object.assign({ title }, state))
+      })
     })
 
     return {
@@ -107,7 +121,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
       width: Width.Default,
 
       allNavs: navigations,
-      current: { nav: 0, tab: navigations[0].currentTabIndex },
+      allLinks: response.links,
+      current: { menuIdx: 0, tabIdx: navigations[0].currentTabIndex },
       response
     }
   }
@@ -125,7 +140,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     const thisNav = this.state.allNavs[menuIdx]
     return (
       <SideNavMenu
-        title={thisNav.title}
+        title={strings(thisNav.title)}
         key={menuIdx}
         isActive
         defaultExpanded
@@ -136,9 +151,9 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
             href="#" // needed for tab navigation
             key={idx} // if you make this mode.mode, then data-mode doesn't work
             data-mode={mode.mode} // needed for tests
-            isActive={this.state.current.nav === menuIdx && this.state.current.tab === idx}
+            isActive={this.state.current.menuIdx === menuIdx && this.state.current.tabIdx === idx}
             onClick={() => {
-              this.setState({ current: { nav: menuIdx, tab: idx } })
+              this.setState({ current: { menuIdx: menuIdx, tabIdx: idx } })
             }}
           >
             <span className="kui--mode-placeholder" data-mode={mode.mode}>
@@ -150,11 +165,42 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     )
   }
 
+  private renderSideNavLink(idx: number, link: Link) {
+    if (isLinkWithCommand(link)) {
+      return (
+        <SideNavLink
+          className="kui--nav-command-link"
+          data-link={strings(link.label)}
+          key={idx}
+          href="#"
+          onClick={() => this.props.tab.REPL.pexec(link.command)}
+        >
+          {strings(link.label)}
+        </SideNavLink>
+      )
+    } else {
+      return (
+        <SideNavLink
+          className="kui--nav-href-link"
+          data-link={strings(link.label)}
+          key={idx}
+          target="_blank"
+          href={link.href}
+        >
+          {strings(link.label)}
+        </SideNavLink>
+      )
+    }
+  }
+
   /** render the leftnav part */
   protected nav() {
     return (
       <SideNav aria-label="Side navigation" expanded isChildOfHeader={false} isFixedNav>
-        <SideNavItems>{this.state.allNavs.map((nav, idx) => this.renderSideNavMenu(idx))}</SideNavItems>
+        <SideNavItems>
+          {this.state.allNavs.map((nav, idx) => this.renderSideNavMenu(idx))}
+          {this.state.allLinks.map((link, idx) => this.renderSideNavLink(idx, link))}
+        </SideNavItems>
       </SideNav>
     )
   }
@@ -163,14 +209,18 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     return {}
   }
 
-  protected bodyContent(tabIdx: number, navIdx = 0) {
+  private getMMRFromMenu(menu: Menu) {
+    return Object.values(menu)[0]
+  }
+
+  protected bodyContent(tabIdx: number, menuIdx = 0) {
     return (
       <React.Suspense fallback={<div />}>
         <KuiContent
-          key={`${navIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
+          key={`${menuIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
           tab={this.state.tab}
-          mode={this.state.allNavs[navIdx].tabs[tabIdx]}
-          response={Object.values(this.state.response)[navIdx]}
+          mode={this.state.allNavs[menuIdx].tabs[tabIdx]}
+          response={this.getMMRFromMenu(this.state.response.menus[menuIdx])}
         />
       </React.Suspense>
     )
@@ -192,7 +242,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
         {this.title()}
         <div className="kui--sidecar-header-and-body" style={this.headerBodyStyle()}>
           {this.nav()}
-          {this.bodyContainer(this.state.current.tab, this.state.current.nav)}
+          {this.bodyContainer(this.state.current.tabIdx, this.state.current.menuIdx)}
         </div>
       </div>
     )
