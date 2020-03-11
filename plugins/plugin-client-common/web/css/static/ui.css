@@ -1092,10 +1092,10 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content h3,
 .page-h3 {
   color: var(--color-text-02);
-  font-size: 1.125em;
+  font-size: 1.1875em;
   font-weight: 600;
   letter-spacing: 0;
-  padding: 1em 0 1em;
+  padding: 1em 0 0.5em;
   line-height: 1.25em;
 }
 .page-content ol,
