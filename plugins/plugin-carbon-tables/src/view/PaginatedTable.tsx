@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable } from '@kui-shell/core'
+import { Tab, REPL, Table as KuiTable, TableStyle } from '@kui-shell/core'
 
 import * as React from 'react'
 import { DataTable, DataTableHeader, TableContainer, Table, Pagination } from 'carbon-components-react'
@@ -110,7 +110,15 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
           sortRow={sortRow}
           render={renderOpts => (
             <TableContainer title={response.title} className="kui--screenshotable">
-              <Table size="compact">
+              <Table
+                size={
+                  this.props.response.style === TableStyle.Heavy
+                    ? 'tall'
+                    : this.props.response.style === TableStyle.Medium
+                    ? 'short'
+                    : 'compact'
+                }
+              >
                 {response.header && renderHeader(response.header, renderOpts)}
                 {renderBody(response.body, renderOpts, tab, repl)}
               </Table>
