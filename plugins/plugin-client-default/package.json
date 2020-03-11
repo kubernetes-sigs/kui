@@ -1,13 +1,13 @@
 {
   "name": "@kui-shell/plugin-client-default",
-  "version": "7.0.33",
+  "version": "7.0.34",
   "description": "Kui plugin that offers client defintion",
   "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/plugin-client-common": "*",
-    "@kui-shell/plugin-sidecar": "*",
+    "@kui-shell/plugin-client-common": "^7.0.34",
+    "@kui-shell/plugin-sidecar": "^7.0.34",
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
   },
