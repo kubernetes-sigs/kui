@@ -135,7 +135,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
       />
     )
 
-    if (this.props.paginate === false || rows.length <= this.props.paginate) {
+    if (this.props.paginate === false || (this.props.paginate !== true && rows.length <= this.props.paginate)) {
       return dataTable(rows)
     } else {
       // overflow-x: auto so that the pagination parts don't overflow offscreen!
