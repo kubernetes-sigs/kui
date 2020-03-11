@@ -22,7 +22,7 @@ import { render as ReactDomRender } from 'react-dom'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
 import { InputStripe, StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
 
-import Popup from './Popup'
+const Popup = React.lazy(() => import('./Popup'))
 
 /**
  * Here we arrange the CSS for base functionality of Kui. Order is
@@ -65,7 +65,11 @@ export class DefaultClient extends React.PureComponent<Props, State> {
 
   public render() {
     if (this.props.isPopup && this.props.commandLine) {
-      return <Popup commandLine={this.props.commandLine} />
+      return (
+        <React.Suspense fallback={<div />}>
+          <Popup commandLine={this.props.commandLine} />
+        </React.Suspense>
+      )
     } else {
       return (
         <div className="kui--full-height">
