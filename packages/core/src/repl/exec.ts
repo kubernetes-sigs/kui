@@ -285,7 +285,8 @@ class InProcessExecutor implements Executor {
         route: evaluator.route,
         command,
         execType,
-        execUUID
+        execUUID,
+        echo: execOptions.echo
       }
       eventBus.emit('/command/start', startEvent)
       eventBus.emit(`/command/start/${getTabId(tab)}`, startEvent)
@@ -295,7 +296,15 @@ class InProcessExecutor implements Executor {
 
       if (command.length === 0) {
         // blank line (after stripping off comments)
-        const endEvent = { tab, execType, command: commandUntrimmed, response: true, execUUID, cancelled: true }
+        const endEvent = {
+          tab,
+          execType,
+          command: commandUntrimmed,
+          response: true,
+          execUUID,
+          cancelled: true,
+          echo: execOptions.echo
+        }
         eventBus.emit('/command/complete', endEvent)
         if (execType !== ExecType.Nested) {
           eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')

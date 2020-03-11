@@ -76,7 +76,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL started executing a command */
-  private onExecStart({ execUUID, command }: { execUUID: string; command: string }) {
+  private onExecStart({ execUUID, command, echo }: { execUUID: string; command: string; echo: boolean }) {
+    if (echo === false) {
+      // then the command wants to be incognito; e.g. onclickSilence for tables
+      return
+    }
+
     this.setState(curState => {
       const idx = curState.blocks.length - 1
 
@@ -89,10 +94,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL finished executing a command */
   private onExecEnd(
-    { response, cancelled }: { response: ScalarResponse; cancelled: boolean },
+    { response, cancelled, echo }: { response: ScalarResponse; cancelled: boolean; echo: boolean },
     execUUID: string,
     responseType: string
   ) {
+    if (echo === false) {
+      // then the command wants to be incognito; e.g. onclickSilence for tables
+      return
+    }
+
     this.setState(curState => {
       const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === execUUID)
 
