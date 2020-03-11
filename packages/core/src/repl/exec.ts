@@ -376,7 +376,14 @@ class InProcessExecutor implements Executor {
       if (!response) {
         debug('warning: command handler returned nothing', commandUntrimmed)
       }
-      const endEvent = { tab, execType, command: commandUntrimmed, response: response || true, execUUID }
+      const endEvent = {
+        tab,
+        execType,
+        command: commandUntrimmed,
+        response: response || true,
+        execUUID,
+        echo: execOptions.echo
+      }
       eventBus.emit(`/command/complete`, endEvent)
       eventBus.emit(`/command/complete/${getTabId(tab)}`, endEvent)
 
