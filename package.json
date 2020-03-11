@@ -101,8 +101,6 @@
     "prettier": "1.19.1",
     "promise-retry": "1.1.1",
     "properties-parser": "0.3.1",
-    "request": "2.88.2",
-    "request-promise": "4.2.5",
     "spectron": "9.0.0",
     "tmp": "0.1.0",
     "typescript": "3.8.3",
