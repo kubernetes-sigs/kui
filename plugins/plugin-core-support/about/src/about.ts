@@ -22,7 +22,11 @@ import {
   inElectron,
   MultiModalMode as Mode,
   NavResponse,
-  Presentation,
+  isNavResponse,
+  isLink,
+  Menu,
+  isMultiModalResponse,
+  MultiModalResponse,
   Table,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
@@ -30,27 +34,35 @@ import {
 import usage from './usage'
 
 const clientStrings = i18n('client', 'about')
-
-/** The About configuration is just a NavResponse for now */
-type AboutConfig = NavResponse
+const strings = i18n('plugin-core-support')
 
 /** I would love to place this in a separate file. see https://github.com/microsoft/TypeScript/issues/25636 */
 function defaultConfig() {
   return {
     productName: 'Kui Demo',
     version: '0.0.1',
-    nav: {
-      Kui: {
-        modes: [
-          {
-            mode: 'about',
-            content: 'Welcome to Kui. This is a sample About configuration',
-            contentType: 'text/markdown'
-          },
-          { mode: 'version', contentFrom: 'version --full' }
-        ]
+    menus: [
+      {
+        Kui: {
+          modes: [
+            {
+              mode: 'about',
+              content: 'Welcome to Kui. This is a sample About configuration',
+              contentType: 'text/markdown'
+            },
+            { mode: 'version', contentFrom: 'version --full' }
+          ]
+        }
       }
-    }
+    ]
+  }
+}
+
+// check if about's apiVersion and kind suffices NavResponse
+const checkApiVersionAndKind = (apiVersion: string, kind: string) => {
+  if (!isNavResponse({ apiVersion, kind })) {
+    console.error('error in about.json:', apiVersion, kind)
+    throw new Error('apiVersion or kind in about.json is not supported')
   }
 }
 
@@ -70,54 +82,114 @@ async function getName(): Promise<string> {
 }
 
 /**
- * @return a MultiModalResponse for `about`
+ * Here, we consult the client/config.d/about.json model.
+ *
+ * @return a `NavResponse`
  *
  */
-const aboutWindow = async (): Promise<NavResponse> => {
-  const [name, about] = await Promise.all([
-    getName(),
-    import('@kui-shell/client/config.d/about.json')
-      .catch(() => {
-        console.log('Using default About configuration')
-        return defaultConfig()
-      })
-      .then(_ => _.nav as AboutConfig)
-  ])
+const getAbout = async (): Promise<NavResponse> => {
+  return import('@kui-shell/client/config.d/about.json').then(_ => {
+    const _apiVersion = _['apiVersion']
+    const _kind = _['kind']
 
-  const fullAbout = {}
+    // Check apiVersion and kind for users. It's ok if users don't specify them.
+    if (_apiVersion !== undefined || _kind !== undefined) {
+      checkApiVersionAndKind(_apiVersion, _kind)
+    }
 
-  for (const [title, mmr] of Object.entries(about)) {
-    const modesFromAbout = mmr.modes
-    const modes = modesFromAbout.map(
-      (modeFromAbout): Mode => {
-        // translate the label
-        const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
-
-        if (isStringWithOptionalContentType(modeFromAbout)) {
-          return Object.assign({}, modeFromAbout, {
-            label,
-            content: clientStrings(modeFromAbout.content) // translate content string
-          })
-        } else {
-          return Object.assign({}, modeFromAbout, {
-            label
-          })
-        }
-      }
-    )
-
-    Object.assign(fullAbout, {
-      [title]: {
-        kind: 'about',
-        modes,
-        presentation:
-          (document.body.classList.contains('subwindow') && Presentation.SidecarFullscreen) || Presentation.SidecarThin,
-        metadata: { name }
+    // inject Configure Menu
+    const fullMenus = _.menus as Menu[]
+    fullMenus.push({
+      [strings('Configure')]: {
+        modes: [
+          {
+            mode: 'theme',
+            contentFrom: 'themes'
+          }
+        ]
       }
     })
+
+    return {
+      apiVersion: _apiVersion || 'kui-shell/v1',
+      kind: _kind || 'NavResponse',
+      menus: fullMenus,
+      links: _['links'] || []
+    }
+  })
+}
+
+// translate the labels of modes
+const translateModesLabel = (modesFromAbout: Mode[]) => {
+  return modesFromAbout.map(
+    (modeFromAbout): Mode => {
+      // translate the label
+      const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
+
+      if (isStringWithOptionalContentType(modeFromAbout)) {
+        return Object.assign({}, modeFromAbout, {
+          label,
+          content: clientStrings(modeFromAbout.content) // translate content string
+        })
+      } else {
+        return Object.assign({}, modeFromAbout, {
+          label
+        })
+      }
+    }
+  )
+}
+
+// finish the MMR from modes
+const createMMRFromAbout = (modes: Mode[], name: string): MultiModalResponse => {
+  const mmr = {
+    kind: 'about',
+    modes,
+    metadata: { name }
   }
 
-  return fullAbout
+  if (!isMultiModalResponse(mmr)) {
+    throw new Error('Error in modes of about.json')
+  }
+
+  return mmr
+}
+
+const aboutWindow = async (): Promise<NavResponse> => {
+  const name = await getName()
+  const { apiVersion, kind, menus, links } = await getAbout()
+
+  // translated labels and fulfilled MMR details for users
+  const translatedMenusWithMMR = menus.map(menu => {
+    const menuTitle = Object.keys(menu)[0]
+    const mmr = Object.values(menu)[0]
+
+    try {
+      const modesFromAbout = mmr.modes
+      const modes = translateModesLabel(modesFromAbout)
+      const fullMMR = createMMRFromAbout(modes, name)
+      return { [clientStrings(menuTitle)]: fullMMR }
+    } catch (err) {
+      console.error(err)
+      throw new Error('Error in menus of about.json')
+    }
+  })
+
+  const translatedLinks = links.map(link => {
+    if (isLink(link)) {
+      return Object.assign(link, { label: clientStrings(link.label) })
+    } else {
+      console.error('error in about.json', link)
+      throw new Error('links in about.json is not supported')
+    }
+  })
+
+  return {
+    apiVersion,
+    kind,
+    menus: translatedMenusWithMMR,
+    links: translatedLinks
+  }
 }
 
 interface VersionOptions extends ParsedOptions {
