@@ -49,6 +49,10 @@ export const SIDECAR_MODE_BUTTON_SELECTED = (mode: string) =>
   `${SIDECAR_MODE_BUTTON(mode)}.bx--tabs__nav-item--selected`
 
 // left nav sidecar
+export const SIDECAR_NAV_COMMAND_LINKS = (link: string) =>
+  `${SIDECAR} .bx--side-nav__item .bx--side-nav__link.kui--nav-command-link[data-link="${link}"]`
+export const SIDECAR_NAV_HREF_LINKS = (link: string) =>
+  `${SIDECAR} .bx--side-nav__item .bx--side-nav__link.kui--nav-href-link[data-link="${link}"]`
 export const SIDECAR_MODE_BUTTONS_V2 = `${SIDECAR} .bx--side-nav__menu .bx--side-nav__link` // all mode buttons in the left nav
 export const SIDECAR_MODE_BUTTON_V2 = (mode: string) => `${SIDECAR_MODE_BUTTONS_V2}[data-mode="${mode}"]` // specific mode button in the left nav
 export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (mode: string) =>
