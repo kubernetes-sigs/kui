@@ -42,7 +42,7 @@ export default class Popup extends React.PureComponent<Props, State> {
       tab.REPL.qexec('window close')
     })
 
-    eventBus.on('/command/complete', ({ command }: { command: string }) => {
+    eventBus.on('/command/complete/fromuser', ({ command }: { command: string }) => {
       this.setState({ promptPlaceholder: command })
     })
 
