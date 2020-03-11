@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-common",
-  "version": "7.0.33",
+  "version": "7.0.34",
   "description": "Kui plugin that offers stylesheets",
   "license": "Apache-2.0",
   "author": "Mengting Yan",
@@ -20,10 +20,10 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/plugin-carbon-tables": "*",
+    "@carbon/icons-react": "^10.9.1",
+    "@kui-shell/plugin-carbon-tables": "^7.0.34",
     "carbon-components": "^10.10.1",
     "carbon-components-react": "^7.10.1",
-    "@carbon/icons-react": "^10.9.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-split-pane": "^0.1.89"
