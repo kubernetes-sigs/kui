@@ -67,12 +67,6 @@ body.subwindow .kui--sidecar .sidecar-header-text.is-repl-like .repl-input {
   /* make sidecar-header-input occupy full width */
   flex: 1;
 }
-body.subwindow .kui--sidecar .padding-content {
-  flex: 1;
-  padding: 4vh 6vh 0;
-  display: flex;
-  flex-direction: column;
-}
 body.subwindow .kui--sidecar .padding-content .padding-content {
   /* this rule protects against nested padding-content; we don't want to pad twice */
   padding: 0;
