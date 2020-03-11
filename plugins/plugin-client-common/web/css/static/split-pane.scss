@@ -73,6 +73,9 @@
 .SplitPane {
   .Pane {
     min-width: 0;
+
+    /* see https://github.com/IBM/kui/issues/3914 */
+    position: unset !important;
   }
 
   &.kui--secondary-closed,
