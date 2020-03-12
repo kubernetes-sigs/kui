@@ -121,7 +121,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
       width: Width.Default,
 
       allNavs: navigations,
-      allLinks: response.links,
+      allLinks: response.links || [],
       current: { menuIdx: 0, tabIdx: navigations[0].currentTabIndex },
       response
     }

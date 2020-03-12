@@ -24,8 +24,8 @@ interface Param {
   command: string
   showing: string
   modes: string[]
-  commandLinks: { label: string; expect: { type: 'NavResponse'; showing: string } }[]
-  hrefLinks: { label: string; href: string }[]
+  commandLinks?: { label: string; expect: { type: 'NavResponse'; showing: string } }[]
+  hrefLinks?: { label: string; href: string }[]
 }
 
 export class TestNavResponse {
