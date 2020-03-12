@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.39](https://github.com/IBM/kui/compare/v4.5.0...v7.0.39) (2020-03-12)
+
+### Bug Fixes
+
+- a few more color contrast issues with inverted sidecar themes ([f0f36d5](https://github.com/IBM/kui/commit/f0f36d5)), closes [#3874](https://github.com/IBM/kui/issues/3874)
+- a few more color contrast issues with inverted sidecars ([0776df7](https://github.com/IBM/kui/commit/0776df7)), closes [#3835](https://github.com/IBM/kui/issues/3835)
+- improve CodeSnippet rendering in Markdown ([9df43d0](https://github.com/IBM/kui/commit/9df43d0)), closes [#3863](https://github.com/IBM/kui/issues/3863)
+- more inverted sidecar fixes ([5316c66](https://github.com/IBM/kui/commit/5316c66)), closes [#3756](https://github.com/IBM/kui/issues/3756)
+- use more standard TopTabStripe UI ([c390dff](https://github.com/IBM/kui/commit/c390dff)), closes [#3867](https://github.com/IBM/kui/issues/3867)
+- **plugins/plugin-carbon-themes:** carbon themes do not fully apply ([1659157](https://github.com/IBM/kui/commit/1659157)), closes [#3740](https://github.com/IBM/kui/issues/3740)
+- status stripe UI fixes to work better across themes ([2aa107f](https://github.com/IBM/kui/commit/2aa107f)), closes [#3507](https://github.com/IBM/kui/issues/3507)
+
+### Features
+
+- allow plugins to define themes ([216f41c](https://github.com/IBM/kui/commit/216f41c)), closes [#3420](https://github.com/IBM/kui/issues/3420)
+
 ## [7.0.38](https://github.com/IBM/kui/compare/v4.5.0...v7.0.38) (2020-03-12)
 
 ### Bug Fixes
