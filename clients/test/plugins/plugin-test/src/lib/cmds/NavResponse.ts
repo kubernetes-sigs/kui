@@ -26,9 +26,28 @@ import { tableMode } from './content/modes'
 
 interface Options extends ParsedOptions {
   switch?: boolean
+  noLinks?: boolean
 }
 
+const navResponseWithoutLinks = (): NavResponse => ({
+  apiVersion: 'kui-shell/v1',
+  kind: 'NavResponse',
+  menus: [
+    {
+      'Test Nav Without Links': {
+        kind: 'MultiModelResponse',
+        metadata: { name: 'test nav 2' },
+        modes: tableMode
+      }
+    }
+  ]
+})
+
 const doNav = () => (args: Arguments<Options>): NavResponse => {
+  if (args.parsedOptions.noLinks) {
+    return navResponseWithoutLinks()
+  }
+
   if (args.parsedOptions.switch) {
     return {
       apiVersion: 'kui-shell/v1',

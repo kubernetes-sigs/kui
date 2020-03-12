@@ -15,7 +15,7 @@
  */
 import { TestNavResponse } from '@kui-shell/test'
 
-const test = new TestNavResponse({
+const testFullNavResponse = new TestNavResponse({
   command: 'test nav',
   showing: 'Test Nav',
   modes: ['table'],
@@ -23,4 +23,12 @@ const test = new TestNavResponse({
   hrefLinks: [{ label: 'Home Page', href: 'http://kui.tools' }]
 })
 
-test.run()
+testFullNavResponse.run()
+
+const testNavResponseWithoutLinks = new TestNavResponse({
+  command: 'test nav --noLinks',
+  showing: 'Test Nav Without Links',
+  modes: ['table']
+})
+
+testNavResponseWithoutLinks.run()
