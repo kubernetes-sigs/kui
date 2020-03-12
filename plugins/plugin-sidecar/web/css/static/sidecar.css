@@ -69,9 +69,21 @@
         outline-color: var(--color-brand-03);
       }
 
-      a.bx--side-nav__link {
-        .bx--side-nav__link-text {
-          color: var(--color-text-02);
+      .bx--side-nav__menu {
+        a.bx--side-nav__link {
+          &:not(.bx--side-nav__link--current) {
+            .bx--side-nav__link-text {
+              color: var(--color-text-02);
+            }
+          }
+        }
+      }
+      .bx--side-nav__link {
+        &,
+        &:hover {
+          .bx--side-nav__link-text {
+            color: var(--color-text-01);
+          }
         }
       }
 
