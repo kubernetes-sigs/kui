@@ -7,16 +7,6 @@ body[kui-theme-style] {
   }
 }
 
-.kui--sidecar.kui--nav-view .bx--data-table-container {
-  .bx--data-table {
-    .entity-name {
-      span {
-        word-break: break-all;
-      }
-    }
-  }
-}
-
 body .bx--data-table-container {
   min-width: unset;
   padding-top: 0.125em;
@@ -35,8 +25,23 @@ body .bx--data-table-container {
     td:last-of-type {
       padding-right: 1em;
     }
-    td:first-of-type {
+    td:first-of-type,
+    th:first-of-type:not(.bx--table-expand) {
       padding-left: 1em;
+    }
+
+    th,
+    td {
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+
+    &.bx--data-table--short {
+      thead tr,
+      tbody tr,
+      tbody tr th {
+        height: 2em;
+      }
     }
 
     &.bx--data-table--compact {
