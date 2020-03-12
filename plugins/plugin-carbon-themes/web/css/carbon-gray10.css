@@ -105,6 +105,8 @@ body[kui-theme="Carbon Gray10"] {
   --color-light-green: hsla(143, 73%, 43%, 50%);
   --color-light-yellow: hsla(46, 99%, 59%, 50%);
 
+  --color-support-04: var(--color-base0C);
+
   /* from https://www.carbondesignsystem.com/data-visualization/color-palettes */
   --color-latency-0: #8a3ffc;
   --color-latency-1: #33b1ff;
