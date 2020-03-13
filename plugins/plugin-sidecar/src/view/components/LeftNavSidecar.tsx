@@ -236,7 +236,10 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     }
 
     return (
-      <div className={'kui--sidecar kui--nav-view kui--screenshotable ' + this.width()} data-view="leftnav">
+      <div
+        className={'kui--sidecar kui--inverted-color-context kui--nav-view kui--screenshotable ' + this.width()}
+        data-view="leftnav"
+      >
         {' '}
         {/* data-view helps with tests */}
         {this.title()}

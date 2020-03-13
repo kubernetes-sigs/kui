@@ -38,7 +38,6 @@ body[kui-theme="Dark"] {
   --color-tag-beta-text: var(--color-text-01);
   --color-text-02: #b3bac1;
 
-  --color-screenshot-background: var(--color-selection-background);
   --color-confirm-background: #272c30;
   --color-confirm-foreground: var(--color-base05);
 
