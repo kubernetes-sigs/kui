@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { Close16 } from '@carbon/icons-react'
-import { i18n, eventBus, Event, ExecType, Theme } from '@kui-shell/core'
+import { i18n, eventChannelUnsafe, Event, ExecType, Theme } from '@kui-shell/core'
 import { HeaderMenuItem } from 'carbon-components-react'
 
 const strings = i18n('plugin-core-support')
@@ -65,9 +65,9 @@ export default class Tab extends React.PureComponent<Props, State> {
   }
 
   private removeCommandEvaluationListeners() {
-    eventBus.off('/command/start', this.onCommandStart)
-    eventBus.off('/command/complete', this.onCommandComplete)
-    eventBus.off('/theme/change', this.onThemeChange)
+    eventChannelUnsafe.off('/command/start', this.onCommandStart)
+    eventChannelUnsafe.off('/command/complete', this.onCommandComplete)
+    eventChannelUnsafe.off('/theme/change', this.onThemeChange)
   }
 
   /**
@@ -112,9 +112,9 @@ export default class Tab extends React.PureComponent<Props, State> {
       })
     }
 
-    eventBus.on('/command/start', this.onCommandStart)
-    eventBus.on('/command/complete', this.onCommandComplete)
-    eventBus.on('/theme/change', this.onThemeChange)
+    eventChannelUnsafe.on('/command/start', this.onCommandStart)
+    eventChannelUnsafe.on('/command/complete', this.onCommandComplete)
+    eventChannelUnsafe.on('/theme/change', this.onThemeChange)
   }
 
   private isUsingCommandName() {

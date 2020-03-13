@@ -22,7 +22,7 @@
  *
  */
 
-import eventBus from '../core/events'
+import eventChannelUnsafe from '../core/events'
 import { Tab, getTabId } from './tab'
 import { Block } from './models/block'
 import { ExecType } from '../models/command'
@@ -32,6 +32,6 @@ export default function doCancel(tab: Tab, block: Block) {
 
   const execUUID = block.getAttribute('data-uuid')
   const endEvent = { tab, execType: ExecType.TopLevel, cancelled: true, execUUID }
-  eventBus.emit('/command/complete', endEvent)
-  eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
+  eventChannelUnsafe.emit('/command/complete', endEvent)
+  eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
 }

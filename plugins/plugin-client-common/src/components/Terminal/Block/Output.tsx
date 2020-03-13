@@ -21,7 +21,7 @@ import {
   isCodedError,
   isHTML,
   isTable,
-  eventBus,
+  eventChannelUnsafe,
   getTabId,
   Tab as KuiTab,
   Stream,
@@ -66,7 +66,7 @@ export default class Output extends React.PureComponent<Props, State> {
     const tabUUID = getTabId(props.tab)
 
     if (isProcessing(props.model)) {
-      eventBus.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, streamingConsumer)
+      eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, streamingConsumer)
     }
 
     this.state = {
@@ -83,7 +83,7 @@ export default class Output extends React.PureComponent<Props, State> {
         streamingOutput: curState.streamingOutput.concat([part])
       }))
       this.props.onRender()
-      eventBus.emit(`/command/stdout/done/${getTabId(this.props.tab)}/${this.props.model.execUUID}`)
+      eventChannelUnsafe.emit(`/command/stdout/done/${getTabId(this.props.tab)}/${this.props.model.execUUID}`)
     }
   }
 
@@ -92,7 +92,7 @@ export default class Output extends React.PureComponent<Props, State> {
       const tabUUID = getTabId(props.tab)
 
       if (!isEmpty(props.model)) {
-        eventBus.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+        eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       }
 
       if (!isEmpty(props.model) && !isCancelled(props.model)) {

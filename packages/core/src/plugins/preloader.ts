@@ -99,7 +99,7 @@ export default async (prescan: PrescanModel) => {
     })
   )
     .then(async () => {
-      await import('../core/events').then(({ default: eventBus }) => {
+      await import('../core/events').then(({ eventBus }) => {
         eventBus.once('/tab/new', (tab: Tab) => {
           if (tab._kui_session === undefined) {
             tab._kui_session = Promise.resolve()

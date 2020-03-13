@@ -18,7 +18,7 @@
 
 import * as React from 'react'
 import {
-  eventBus,
+  eventChannelUnsafe,
   i18n,
   Tab,
   Button,
@@ -82,8 +82,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
 
     const channel = '/command/complete/fromuser/NavResponse'
     const onResponse = this.onResponse.bind(this)
-    eventBus.on(channel, onResponse)
-    this.cleaners.push(() => eventBus.off(channel, onResponse))
+    eventChannelUnsafe.on(channel, onResponse)
+    this.cleaners.push(() => eventChannelUnsafe.off(channel, onResponse))
 
     this.state = {
       repl: undefined,

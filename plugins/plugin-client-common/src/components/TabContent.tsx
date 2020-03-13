@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
+import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
 import SplitPane from 'react-split-pane'
 
 import Cleaner from './cleaner'
@@ -86,7 +86,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    eventBus.once(`/tab/new/${this.props.uuid}`, () => {
+    eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, () => {
       this.setState({ sessionInit: 'Done' })
 
       if (this.props.onTabReady) {
@@ -95,8 +95,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
     })
 
     const onOffline = this.onOffline.bind(this)
-    eventBus.on(`/tab/offline/${this.props.uuid}`, onOffline)
-    this.cleaners.push(() => eventBus.off(`/tab/offline/${this.props.uuid}`, onOffline))
+    eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
+    this.cleaners.push(() => eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
   }
 
   /* public static getDerivedStateFromProps(props: Props, state: State) {
@@ -122,7 +122,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
         state.tab.state = props.state
         initializeSession(state.tab).then(() => {
           eventBus.emit('/tab/new', state.tab)
-          eventBus.emit(`/tab/new/${props.uuid}`)
+          eventChannelUnsafe.emit(`/tab/new/${props.uuid}`)
         })
 
         TabContent.hackResizer(state)

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import * as React from 'react'
-import { inElectron, eventBus, Tab } from '@kui-shell/core'
+import { inElectron, Tab, eventBus } from '@kui-shell/core'
 
 import TabModel from './TabModel'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'

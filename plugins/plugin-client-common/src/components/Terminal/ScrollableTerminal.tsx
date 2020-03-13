@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { Accordion } from 'carbon-components-react'
-import { eventBus, ScalarResponse, Tab as KuiTab } from '@kui-shell/core'
+import { eventChannelUnsafe, ScalarResponse, Tab as KuiTab } from '@kui-shell/core'
 
 import Block from './Block'
 import Cleaner from '../cleaner'
@@ -160,29 +160,29 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const channel1 = `/command/start/fromuser/${this.props.uuid}`
     const onExecStart = this.onExecStart.bind(this)
     this.cleaners.push(() => {
-      eventBus.off(channel1, onExecStart)
+      eventChannelUnsafe.off(channel1, onExecStart)
     })
-    eventBus.on(channel1, onExecStart)
+    eventChannelUnsafe.on(channel1, onExecStart)
 
     const channel2 = `/command/complete/fromuser/${this.props.uuid}`
     const onExecEnd = this.onExecEnd.bind(this)
     this.cleaners.push(() => {
-      eventBus.off(channel2, onExecEnd)
+      eventChannelUnsafe.off(channel2, onExecEnd)
     })
-    eventBus.on(channel2, onExecEnd)
+    eventChannelUnsafe.on(channel2, onExecEnd)
   }
 
   private initEvents() {
     this.hookIntoREPL()
 
     const clear = this.clear.bind(this)
-    eventBus.on(`/terminal/clear/${this.props.uuid}`, clear)
+    eventChannelUnsafe.on(`/terminal/clear/${this.props.uuid}`, clear)
     this.cleaners.push(() => {
-      eventBus.off(`/terminal/clear/${this.props.uuid}`, clear)
+      eventChannelUnsafe.off(`/terminal/clear/${this.props.uuid}`, clear)
     })
   }
 
-  /** Detach hooks the core's eventBus */
+  /** Detach hooks the core's eventChannelUnsafe */
   private uninitEvents() {
     this.cleaners.forEach(cleaner => cleaner())
   }

@@ -22,7 +22,7 @@ import * as plugins from './plugins'
 import { assemble } from './scanner'
 import { PrescanCommandDefinitions, PrescanDocs, PrescanNode, PrescanModel, PrescanUsage } from './prescan'
 
-import eventBus from '../core/events'
+import eventChannelUnsafe from '../core/events'
 import { initIfNeeded, getModel } from '../commands/tree'
 
 const debug = Debug('core/plugins/assembler')
@@ -204,7 +204,7 @@ export async function compileUserInstalled(pluginToBeRemoved?: string) {
   const home = await plugins.userInstalledHome()
   const pluginRoot = join(home, 'node_modules')
   await compile(pluginRoot, true)
-  eventBus.emit('/plugin/compile/done')
+  eventChannelUnsafe.emit('/plugin/compile/done')
 }
 
 export default compile
