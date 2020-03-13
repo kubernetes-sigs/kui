@@ -163,6 +163,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
           timeout={timeout}
           kind="success"
           title={strings('Screenshot')}
+          className="kui--inverted-color-context"
           subtitle={strings('Successfully captured a screenshot to the clipboard')}
           caption=""
           onCloseButtonClick={() => this.setState({ isActive: false, captured: undefined })}

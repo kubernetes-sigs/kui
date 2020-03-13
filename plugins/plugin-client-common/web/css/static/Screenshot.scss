@@ -1,7 +1,7 @@
-body {
+body .bx--toast-notification {
   /* provide default values for these color classes */
-  --color-screenshot-background: var(--color-base0D);
-  --color-screenshot-foreground: var(--color-base07);
+  --color-screenshot-background: var(--color-base02);
+  --color-screenshot-foreground: var(--color-base06);
 }
 
 .kui--screenshot-button[data-active='true'] svg path {
@@ -9,7 +9,7 @@ body {
 }
 
 .screenshot-save-button {
-  color: var(--color-text-01) !important;
+  color: var(--color-screenshot-foreground) !important;
   font-weight: normal !important;
 }
 
@@ -62,43 +62,79 @@ sidecar.kui--screenshotable {
 }
 
 [kui-theme-style] {
-  .bx--toast-notification--success {
-    border-color: var(--color-ok);
+  .bx--toast-notification {
+    flex-direction: row;
 
-    svg.bx--toast-notification__icon {
-      & {
-        stroke: var(--color-ok);
-      }
-      path {
-        fill: unset;
-      }
+    .bx--toast-notification__title {
+      margin-top: 1em;
     }
-  }
-
-  .bx--toast-notification--info,
-  .bx--toast-notification--success {
-    position: absolute;
-    bottom: 2em;
-    right: 0em;
-    width: 28em;
-    height: auto;
-    z-index: 5;
-
-    background: var(--color-screenshot-background);
-    color: var(--color-screenshot-foreground);
-
-    .kui--screenshot-captured-bottom-message {
-      /* bookend the spacing with the top text */
-      margin-top: 1.5rem;
-      margin-bottom: 1rem;
+    .bx--toast-notification__subtitle {
+      margin-bottom: 1.5em;
+    }
+    .bx--toast-notification__title,
+    .bx--toast-notification__subtitle {
+      color: var(--color-screenshot-foreground);
+      font-size: 0.875em;
+      line-height: 1.125em;
     }
 
-    .screenshot-image {
-      width: 100%;
+    &.bx--toast-notification--success {
+      border-color: var(--color-ok);
+
+      svg.bx--toast-notification__icon {
+        & {
+          stroke: var(--color-ok);
+          fill: var(--color-base07);
+        }
+        path {
+          fill: unset;
+        }
+      }
+    }
+
+    .bx--toast-notification__close-button {
+      height: 3em;
+      width: 3em;
+      min-height: 3em;
+      min-width: 3em;
+
+      &:focus {
+        outline-color: var(--color-screenshot-foreground);
+      }
+
+      .bx--toast-notification__close-icon {
+        &,
+        & path {
+          fill: var(--color-screenshot-foreground);
+        }
+      }
+    }
+
+    &.bx--toast-notification--info,
+    &.bx--toast-notification--success {
+      position: absolute;
+      bottom: 2em;
+      right: 0em;
+      width: 28em;
       height: auto;
-      max-height: 17em;
-      object-fit: contain;
-      object-position: top left;
+      z-index: 5;
+
+      background: var(--color-screenshot-background);
+      color: var(--color-screenshot-foreground);
+
+      .kui--screenshot-captured-bottom-message {
+        /* bookend the spacing with the top text */
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .screenshot-image {
+        width: 100%;
+        height: auto;
+        max-height: 17em;
+        object-fit: contain;
+        object-position: top left;
+      }
     }
   }
 }

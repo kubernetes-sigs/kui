@@ -1,5 +1,5 @@
 /* inverted sidecar */
-body[kui-theme="Light"] .kui--sidecar {
+body[kui-theme="Light"] .kui--inverted-color-context {
   --color-base00: #13171a; /* Default Background */
   --color-base01: #202529; /* Lighter Background (Used for status bars) */
   --color-base02: #272c30; /* Selection Background */
@@ -16,6 +16,10 @@ body[kui-theme="Light"] .kui--sidecar {
   --color-base0D: #97c1ff; /* BLUE: Functions, Methods, Attribute IDs, Headings */
   --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
   --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+  --color-ok: var(--color-green);
+  --color-error: var(--color-red);
+  --color-warning: var(--color-base09);
 
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base05);
@@ -92,7 +96,6 @@ body[kui-theme="Light"] {
   --color-brand-03: #008fff;
   --color-selection-background: #b3e6ff;
 
-  --color-screenshot-background: #0062ff;
   --color-confirm-background: var(--color-base00);
   --color-confirm-foreground: var(--color-base05);
 
