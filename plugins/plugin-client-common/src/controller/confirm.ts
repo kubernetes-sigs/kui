@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { eventBus, getTabId, Registrar, ExecType, UsageModel, i18n } from '@kui-shell/core'
+import { eventChannelUnsafe, getTabId, Registrar, ExecType, UsageModel, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -63,8 +63,8 @@ export default async (commandTree: Registrar) => {
           }
         }
 
-        eventBus.once(responseChannel, onConfirm)
-        eventBus.emit(requestChannel, { command, asking, execUUID })
+        eventChannelUnsafe.once(responseChannel, onConfirm)
+        eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
       }),
     { usage, inBrowserOk: true, incognito: ['popup'] }
   )

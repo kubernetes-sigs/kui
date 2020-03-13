@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventBus, inBrowser } from '@kui-shell/core'
+import { eventChannelUnsafe, inBrowser } from '@kui-shell/core'
 import { FlashOffFilled20 as OfflineIcon } from '@carbon/icons-react'
 import { TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
@@ -41,8 +41,8 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
       offline: true
     }
 
-    eventBus.on('/proxy/online', () => this.setState({ offline: false }))
-    eventBus.on('/proxy/offline', () => this.setState({ offline: true }))
+    eventChannelUnsafe.on('/proxy/online', () => this.setState({ offline: false }))
+    eventChannelUnsafe.on('/proxy/offline', () => this.setState({ offline: true }))
   }
 
   /** If the proxy is enabled, and we are offline, then render a widget indicating such. */

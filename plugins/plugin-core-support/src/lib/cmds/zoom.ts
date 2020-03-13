@@ -120,8 +120,8 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     event.preventDefault()
     reset()
     setTimeout(async () => {
-      const { eventBus } = await import('@kui-shell/core')
-      eventBus.emit('/zoom', 1)
+      const { eventChannelUnsafe } = await import('@kui-shell/core')
+      eventChannelUnsafe.emit('/zoom', 1)
     }, 100)
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
@@ -131,8 +131,8 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
     _set(newZoom)
     setTimeout(async () => {
-      const { eventBus } = await import('@kui-shell/core')
-      eventBus.emit('/zoom', newZoom)
+      const { eventChannelUnsafe } = await import('@kui-shell/core')
+      eventChannelUnsafe.emit('/zoom', newZoom)
     }, 100)
   }
 }

@@ -65,8 +65,8 @@ const domReady = (inSandbox: boolean, client?: Client) => async () => {
     await Promise.all(waitForThese)
 
     document.body.classList.remove('still-loading')
-    events.then(eventBus => {
-      eventBus.default.emit('/init/done')
+    events.then(eventChannelUnsafe => {
+      eventChannelUnsafe.default.emit('/init/done')
       if (client) {
         const root = document.body.querySelector('main')
         if (!inSandbox && !inBrowser()) {

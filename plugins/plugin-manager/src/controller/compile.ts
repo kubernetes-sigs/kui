@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar, UsageModel, eventBus, i18n } from '@kui-shell/core'
+import { Registrar, UsageModel, eventChannelUnsafe, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-manager')
 
@@ -35,8 +35,8 @@ export default (commandTree: Registrar) => {
     '/plugin/compile',
     async ({ argvNoOptions }) =>
       new Promise(resolve => {
-        eventBus.once('/plugin/compile/done', () => resolve(true))
-        eventBus.emit('/plugin/compile/request', argvNoOptions[argvNoOptions.indexOf('compile') + 1])
+        eventChannelUnsafe.once('/plugin/compile/done', () => resolve(true))
+        eventChannelUnsafe.emit('/plugin/compile/request', argvNoOptions[argvNoOptions.indexOf('compile') + 1])
       }),
     { usage }
   )

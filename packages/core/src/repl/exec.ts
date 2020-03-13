@@ -45,7 +45,7 @@ import {
 import REPL from '../models/repl'
 import { RawContent, RawResponse, isRawResponse, MixedResponse, MixedResponsePart } from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
-import eventBus from '../core/events'
+import eventChannelUnsafe from '../core/events'
 import { CodedError } from '../models/errors'
 import { UsageModel, UsageRow } from '../core/usage-error'
 
@@ -288,10 +288,10 @@ class InProcessExecutor implements Executor {
         execUUID,
         echo: execOptions.echo
       }
-      eventBus.emit('/command/start', startEvent)
-      eventBus.emit(`/command/start/${getTabId(tab)}`, startEvent)
+      eventChannelUnsafe.emit('/command/start', startEvent)
+      eventChannelUnsafe.emit(`/command/start/${getTabId(tab)}`, startEvent)
       if (execType !== ExecType.Nested) {
-        eventBus.emit(`/command/start/fromuser/${getTabId(tab)}`, startEvent)
+        eventChannelUnsafe.emit(`/command/start/fromuser/${getTabId(tab)}`, startEvent)
       }
 
       if (command.length === 0) {
@@ -305,9 +305,9 @@ class InProcessExecutor implements Executor {
           cancelled: true,
           echo: execOptions.echo
         }
-        eventBus.emit('/command/complete', endEvent)
+        eventChannelUnsafe.emit('/command/complete', endEvent)
         if (execType !== ExecType.Nested) {
-          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
+          eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
         }
         return
       }
@@ -320,9 +320,9 @@ class InProcessExecutor implements Executor {
         debug('usage enforcement failure', err, execType === ExecType.Nested)
 
         const endEvent = { tab, execType, command: commandUntrimmed, response: err }
-        eventBus.emit('/command/complete', endEvent, execUUID, 'ScalarResponse')
+        eventChannelUnsafe.emit('/command/complete', endEvent, execUUID, 'ScalarResponse')
         if (execType !== ExecType.Nested) {
-          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
+          eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
         }
 
         if (execOptions.type === ExecType.Nested) {
@@ -384,8 +384,8 @@ class InProcessExecutor implements Executor {
         execUUID,
         echo: execOptions.echo
       }
-      eventBus.emit(`/command/complete`, endEvent)
-      eventBus.emit(`/command/complete/${getTabId(tab)}`, endEvent)
+      eventChannelUnsafe.emit(`/command/complete`, endEvent)
+      eventChannelUnsafe.emit(`/command/complete/${getTabId(tab)}`, endEvent)
 
       if (execType !== ExecType.Nested) {
         Promise.resolve(response).then(_ => {
@@ -395,9 +395,9 @@ class InProcessExecutor implements Executor {
             ? 'NavResponse'
             : 'ScalarResponse'
 
-          eventBus.emit(`/command/complete/fromuser`, endEvent, responseType)
-          eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, responseType)
-          eventBus.emit(
+          eventChannelUnsafe.emit(`/command/complete/fromuser`, endEvent, responseType)
+          eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, responseType)
+          eventChannelUnsafe.emit(
             `/command/complete/fromuser/${responseType}`,
             tab,
             response,
@@ -406,7 +406,7 @@ class InProcessExecutor implements Executor {
             parsedOptions,
             responseType
           )
-          eventBus.emit(
+          eventChannelUnsafe.emit(
             `/command/complete/fromuser/${responseType}/${getTabId(tab)}`,
             tab,
             response,
@@ -450,10 +450,10 @@ class InProcessExecutor implements Executor {
     } else {
       const stream = (response: Streamable) =>
         new Promise<void>(resolve => {
-          eventBus.once(`/command/stdout/done/${tabUUID}/${execUUID}`, () => {
+          eventChannelUnsafe.once(`/command/stdout/done/${tabUUID}/${execUUID}`, () => {
             resolve()
           })
-          eventBus.emit(`/command/stdout/${tabUUID}/${execUUID}`, response)
+          eventChannelUnsafe.emit(`/command/stdout/${tabUUID}/${execUUID}`, response)
         })
       return Promise.resolve(stream)
     }

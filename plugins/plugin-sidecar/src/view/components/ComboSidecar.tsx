@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventBus, Tab, NavResponse, MultiModalResponse, isMultiModalResponse } from '@kui-shell/core'
+import { eventChannelUnsafe, Tab, NavResponse, MultiModalResponse, isMultiModalResponse } from '@kui-shell/core'
 
 import { SidecarOptions } from './BaseSidecar'
 import TopNavSidecar from './TopNavSidecar'
@@ -40,9 +40,9 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
     const channel1 = '/command/complete/fromuser/NavResponse'
     const channel2 = '/command/complete/fromuser/MultiModalResponse'
     const onResponse = this.onResponse.bind(this)
-    eventBus.on(channel1, onResponse)
-    eventBus.on(channel2, onResponse)
-    // this.cleaners.push(() => eventBus.off(channel1, onResponse))
+    eventChannelUnsafe.on(channel1, onResponse)
+    eventChannelUnsafe.on(channel2, onResponse)
+    // this.cleaners.push(() => eventChannelUnsafe.off(channel1, onResponse))
   }
 
   private onResponse(tab: Tab, response: MultiModalResponse | NavResponse) {

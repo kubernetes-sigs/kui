@@ -65,8 +65,8 @@ export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-err
 // TODO remove these soon; see plugin-client-common/src/components/Scalar/index.ts
 export { isMessageWithUsageModel, isMessageWithCode } from './core/usage-error'
 
-// eventBus
-export { default as eventBus, wireToStandardEvents } from './core/events'
+// eventChannelUnsafe
+export { default as eventChannelUnsafe, wireToStandardEvents, eventBus } from './core/events'
 
 // i18n
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
