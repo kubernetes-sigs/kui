@@ -17,7 +17,7 @@
 import Debug from 'debug'
 
 import i18n from '../../util/i18n'
-import eventBus from '../../core/events'
+import eventChannelUnsafe from '../../core/events'
 import { webpackPath } from '../../plugins/path'
 import { CodedError } from '../../models/errors'
 import { clearPreference, getPreference, setPreference } from '../../core/userdata'
@@ -129,7 +129,7 @@ export const switchTo = async (theme: string, saveNotNeeded = false): Promise<vo
   }
 
   // let others know that the theme has changed
-  setTimeout(() => eventBus.emit('/theme/change', { theme, themeModel }))
+  setTimeout(() => eventChannelUnsafe.emit('/theme/change', { theme, themeModel }))
 }
 
 /**

@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { eventBus, Tab as KuiTab } from '@kui-shell/core'
+import { eventChannelUnsafe, eventBus, Tab as KuiTab } from '@kui-shell/core'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
 import { ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '@kui-shell/plugin-client-common'
 
@@ -43,7 +43,7 @@ export default class Popup extends React.PureComponent<Props, State> {
       tab.REPL.qexec('window close')
     })
 
-    eventBus.on('/command/complete/fromuser', ({ command }: { command: string }) => {
+    eventChannelUnsafe.on('/command/complete/fromuser', ({ command }: { command: string }) => {
       this.setState({ promptPlaceholder: command })
     })
 

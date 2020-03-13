@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { i18n, eventBus, Tab as KuiTab } from '@kui-shell/core'
+import { i18n, eventChannelUnsafe, Tab as KuiTab } from '@kui-shell/core'
 import { Modal } from 'carbon-components-react'
 
 import '../../web/css/static/Confirm.scss'
@@ -67,7 +67,7 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
 
   private initEvents() {
     const requestChannel = `/kui-shell/Confirm/v1/tab/${this.props.uuid}`
-    eventBus.on(requestChannel, this.onConfirmStart.bind(this))
+    eventChannelUnsafe.on(requestChannel, this.onConfirmStart.bind(this))
   }
 
   private onConfirmStart({ command, asking, execUUID }: { command: string; asking?: string; execUUID: string }) {
@@ -80,7 +80,7 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
       this.setState({ isActive: false })
 
       const responseChannel = `/kui-shell/Confirm/v1/tab/${this.props.uuid}/execUUID/${this.state.execUUID}/confirmed`
-      eventBus.emit(responseChannel, { confirmed })
+      eventChannelUnsafe.emit(responseChannel, { confirmed })
     }
   }
 

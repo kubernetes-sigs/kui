@@ -136,8 +136,8 @@ export const init = async (): Promise<boolean> => {
     }
   }
 
-  /* const { default: eventBus } = await import('../core/events')
-  eventBus.on('/plugin/compile/request', async (pluginToBeRemoved?: string) => {
+  /* const { default: eventChannelUnsafe } = await import('../core/events')
+  eventChannelUnsafe.on('/plugin/compile/request', async (pluginToBeRemoved?: string) => {
     const { compileUserInstalled } = await import('./assembler')
     compileUserInstalled(pluginToBeRemoved)
   }) */

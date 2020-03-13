@@ -35,7 +35,7 @@ import {
   ParsedOptions
 } from '../models/command'
 
-import eventBus from './events'
+import eventChannelUnsafe from './events'
 import { UsageError, UsageModel } from './usage-error'
 import { oopsMessage } from './oops'
 import { CodedError } from '../models/errors'
@@ -393,10 +393,10 @@ const withEvents = <T extends KResponse, O extends ParsedOptions>(
         }
       }
 
-      /* if (leaf && eventBus) {
-        eventBus.emit('/command/complete', event)
+      /* if (leaf && eventChannelUnsafe) {
+        eventChannelUnsafe.emit('/command/complete', event)
         if (event.execType !== ExecType.Nested) {
-          eventBus.emit('/command/complete/fromuser', tab)
+          eventChannelUnsafe.emit('/command/complete/fromuser', tab)
         }
       } */
     },
@@ -405,10 +405,10 @@ const withEvents = <T extends KResponse, O extends ParsedOptions>(
       event.execType = execType
       event.command = command
       event.error = oopsMessage(err)
-      if (leaf && eventBus) {
-        eventBus.emit('/command/complete', event)
+      if (leaf && eventChannelUnsafe) {
+        eventChannelUnsafe.emit('/command/complete', event)
         if (event.execType !== ExecType.Nested) {
-          eventBus.emit('/command/complete/fromuser', tab)
+          eventChannelUnsafe.emit('/command/complete/fromuser', tab)
         }
       }
 
@@ -541,7 +541,7 @@ const commandNotFound = (
 
     // otherwise, give up trying to find a registered command handler,
     // and look for partial matches
-    eventBus.emit('/command/resolved', {
+    eventChannelUnsafe.emit('/command/resolved', {
       // ANONYMIZE: namespace: namespace.current(),
       error: `${commandNotFoundMessage}: ${argv.join(' ')}`,
       command: argv[0]

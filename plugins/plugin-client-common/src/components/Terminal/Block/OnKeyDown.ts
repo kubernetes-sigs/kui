@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { inBrowser, inElectron, KeyCodes, eventBus, doCancel, getTabId } from '@kui-shell/core'
+import { inBrowser, inElectron, KeyCodes, eventChannelUnsafe, doCancel, getTabId } from '@kui-shell/core'
 
 import Input from './Input'
 import startTabCompletion from './TabCompletion'
@@ -113,8 +113,8 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     // clear screen; capture and restore the current
     // prompt value, in keeping with unix terminal
     // behavior
-    eventBus.emit(`/terminal/clear/${getTabId(tab)}`)
-    eventBus.emit(`/close/views/${getTabId(tab)}`)
+    eventChannelUnsafe.emit(`/terminal/clear/${getTabId(tab)}`)
+    eventChannelUnsafe.emit(`/close/views/${getTabId(tab)}`)
     // restore the prompt cursor position
     // debug('restoring cursor position', currentCursorPosition)
     // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)

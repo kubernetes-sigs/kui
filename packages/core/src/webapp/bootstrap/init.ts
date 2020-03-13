@@ -15,7 +15,7 @@
  */
 
 import { inBrowser } from './client'
-import eventBus from '../../core/events'
+import eventChannelUnsafe from '../../core/events'
 
 /**
  * We don't (at least not for now) want to support drag and drop at the global scope
@@ -62,14 +62,14 @@ export const init = async () => {
   const waitForThese: Promise<void>[] = []
 
   // debug('window init')
-  eventBus.emit('/window/init')
+  eventChannelUnsafe.emit('/window/init')
 
   disableDragAndDrop()
 
   waitForThese.push(setDefaultCommandContext())
 
   window.addEventListener('beforeunload', () => {
-    eventBus.emit('/window/reload')
+    eventChannelUnsafe.emit('/window/reload')
   })
 
   waitForThese.push(import('../themes/init').then(_ => _.default()))
