@@ -98,7 +98,7 @@ const getAbout = async (): Promise<NavResponse> => {
     }
 
     // inject Configure Menu
-    const fullMenus = _.menus as Menu[]
+    const fullMenus = (_.menus as Menu[]).slice(0)
     fullMenus.push({
       [strings('Configure')]: {
         modes: [
