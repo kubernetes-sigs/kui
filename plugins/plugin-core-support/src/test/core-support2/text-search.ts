@@ -118,11 +118,17 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
       .catch(Common.oops(this, true)))
-  it('should find 3 matches for bojangles', () =>
-    this.app.client
-      .keys(['NULL', Keys.ctrlOrMeta, 'f'])
-      .then(() => this.app.client.waitForVisible('#search-bar'))
-      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
+  it('should find 3 matches for bojangles', async () => {
+    await this.app.client.waitUntil(async () => {
+      await this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
+      return this.app.client.waitForVisible('#search-bar', 2000).then(
+        () => true,
+        () => false
+      )
+    })
+
+    return this.app.client
+      .waitUntil(() => this.app.client.hasFocus('#search-input'))
       .then(() =>
         this.app.client.waitUntil(async () => {
           await type(`bojangles`)
@@ -131,7 +137,8 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
           return txt === '3 matches' // one execution, plus one "Command not found: bojangles" match, plus one tab title match
         })
       )
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 
   // no matches test
   it('should close the search bar via ctrl+f', async () => {
