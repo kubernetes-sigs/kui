@@ -43,6 +43,9 @@ export default class CurrentGitBranch extends React.PureComponent<{}, State> {
    */
   private async reportCurrentBranch() {
     const tab = getCurrentTab()
+    if (!tab || !tab.REPL) {
+      return
+    }
 
     try {
       const [isDirty, branch] = await Promise.all([
