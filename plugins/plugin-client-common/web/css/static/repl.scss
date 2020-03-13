@@ -344,7 +344,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   }
   &.processing .bx--accordion__arrow {
     fill: var(--color-processing);
-    animation: spin 2s infinite linear;
+    /* nope: see https://github.com/IBM/kui/issues/3937 animation: spin 2s infinite linear; */
   }
 
   .bx--accordion__item {
