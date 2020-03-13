@@ -12,9 +12,10 @@
   height: auto !important; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
   line-height: normal !important; /* ibid */
 }
-.xterm-terminated.error .xterm-rows > div {
+/*.xterm-terminated.error .xterm-rows > div {
+disabled see https://github.com/IBM/kui/issues/3939
   color: var(--color-error);
-}
+}*/
 .xterm-container .xterm-rows > div > span {
   width: auto !important;
 }
