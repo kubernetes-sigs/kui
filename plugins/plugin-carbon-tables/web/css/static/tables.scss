@@ -151,7 +151,6 @@ body[kui-theme-style] .repl.sidecar-visible {
 .kui--paginated-table {
   display: flex;
   flex-direction: column;
-  overflow-x: auto;
 }
 .sidecar-visible .kui--paginated-table {
   flex: 1;
