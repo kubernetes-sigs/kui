@@ -145,6 +145,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   public doFocus() {
     if (this._activeBlock) {
       this._activeBlock.doFocus()
+    } else {
+      // a bit of a data abstraction violation; we should figure out how to solve this better
+      // see https://github.com/IBM/kui/issues/3945
+      const xterm = document.querySelector('textarea.xterm-helper-textarea') as HTMLTextAreaElement
+      if (xterm) {
+        xterm.focus()
+      }
     }
   }
 
