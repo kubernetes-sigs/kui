@@ -25,8 +25,14 @@ export const waitTimeout = timeout - 5000
 
 /** grab focus for the repl */
 const grabFocus = async (app: Application) => {
-  const currentPrompt = !process.env.BOTTOM_INPUT_MODE ? Selectors.CURRENT_PROMPT : Selectors.BOTTOM_PROMPT
-  const currentPromptBlock = !process.env.BOTTOM_INPUT_MODE
+  const currentPrompt = process.env.KUI_POPUP
+    ? Selectors.STATUS_STRIPE_PROMPT
+    : !process.env.BOTTOM_INPUT_MODE
+    ? Selectors.CURRENT_PROMPT
+    : Selectors.BOTTOM_PROMPT
+  const currentPromptBlock = process.env.KUI_POPUP
+    ? Selectors.STATUS_STRIPE_BLOCK
+    : !process.env.BOTTOM_INPUT_MODE
     ? Selectors.CURRENT_PROMPT_BLOCK
     : Selectors.BOTTOM_PROMPT_BLOCK
 
@@ -50,13 +56,20 @@ export const command = async (
   noCopyPaste = false,
   noFocus = false
 ) => {
+  const block = process.env.KUI_POPUP ? Selectors.STATUS_STRIPE_BLOCK : Selectors.CURRENT_PROMPT_BLOCK
+  const currentPrompt = process.env.KUI_POPUP
+    ? Selectors.STATUS_STRIPE_PROMPT
+    : !process.env.BOTTOM_INPUT_MODE
+    ? Selectors.CURRENT_PROMPT
+    : Selectors.BOTTOM_PROMPT
+
   return app.client
-    .waitForExist(Selectors.CURRENT_PROMPT_BLOCK, timeout - 5000)
+    .waitForExist(block, timeout - 5000)
     .then(async () => {
       if (process.env.BOTTOM_INPUT_MODE) await app.client.waitForExist(Selectors.BOTTOM_PROMPT_BLOCK, timeout - 5000)
       if (!noFocus) return grabFocus(app)
     })
-    .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+    .then(() => app.client.getAttribute(block, 'data-input-count'))
     .then(async count => {
       if (!noCopyPaste && cmd.length > 1) {
         // use the clipboard for a fast path
@@ -65,11 +78,10 @@ export const command = async (
           cmd
         )
       } else {
-        const currenPrompt = !process.env.BOTTOM_INPUT_MODE ? Selectors.CURRENT_PROMPT : Selectors.BOTTOM_PROMPT
         // slow path
-        const currentValue = await app.client.getValue(currenPrompt)
+        const currentValue = await app.client.getValue(currentPrompt)
         const doThis = `${currentValue}${cmd}`
-        await app.client.setValue(currenPrompt, doThis)
+        await app.client.setValue(currentPrompt, doThis)
       }
       if (noNewline !== true) await app.client.keys(keys.ENTER)
       return { app: app, count: parseInt(count) }
@@ -88,7 +100,11 @@ export const paste = async (cmd: string, app: Application, nLines = 1) =>
 
 /** wait for the repl to be active */
 export const waitForRepl = async (app: Application) => {
-  await app.client.waitForEnabled(Selectors.CURRENT_PROMPT)
+  if (process.env.KUI_POPUP) {
+    await app.client.waitForEnabled(Selectors.STATUS_STRIPE_PROMPT)
+  } else {
+    await app.client.waitForEnabled(Selectors.CURRENT_PROMPT)
+  }
   return app
 }
 

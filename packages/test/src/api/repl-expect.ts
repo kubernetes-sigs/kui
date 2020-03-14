@@ -54,7 +54,11 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
   const app = appAndCount.app
   const N = appAndCount.count + 1
 
-  const nextPrompt = !process.env.BOTTOM_INPUT_MODE ? Selectors.PROMPT_N(N) : Selectors.BOTTOM_PROMPT
+  const nextPrompt = process.env.KUI_POPUP
+    ? Selectors.STATUS_STRIPE_PROMPT
+    : !process.env.BOTTOM_INPUT_MODE
+    ? Selectors.PROMPT_N(N)
+    : Selectors.BOTTOM_PROMPT
 
   return app.client
     .waitForVisible(nextPrompt, waitTimeout) // wait for the next prompt to appear

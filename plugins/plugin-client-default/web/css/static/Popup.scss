@@ -139,9 +139,6 @@ body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-i
 
     .repl-prompt {
       margin-right: 0.1875em;
-      .repl-prompt-righty {
-        color: var(--color-text-02);
-      }
       .repl-context {
         /* e.g. cwd displayed in prompt */
         display: none;
@@ -150,18 +147,53 @@ body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-i
   }
 }
 
-.kui--input-stripe {
-  padding: 0;
-
-  /* 2em plus 0.5em padding top and bottom for the kui--input-and-cojntext */
-  flex-basis: 2.1em;
-
-  .repl-block .repl-input .kui--input-and-context {
-    background-color: var(--color-stripe-02);
-
-    input::placeholder {
+/* input stripe in status stripe */
+body.subwindow {
+  .repl-block:not(.repl-active) {
+    .repl-prompt-righty {
       color: var(--color-text-02);
-      opacity: 0.75;
+    }
+  }
+
+  .kui--status-stripe {
+    .kui--input-stripe {
+      padding: 0;
+      background-color: transparent;
+      box-shadow: none;
+
+      /* 2em plus 0.5em padding top and bottom for the kui--input-and-cojntext */
+      flex-basis: 2.1em;
+
+      .repl-block .repl-input {
+        &,
+        .kui--input-and-context {
+          background-color: transparent;
+        }
+
+        input::placeholder {
+          color: var(--color-text-02);
+          opacity: 0.75;
+        }
+      }
+    }
+
+    .kui--status-stripe-meter {
+      padding-left: 0.375em;
+    }
+
+    .kui--status-stripe-context {
+      &:not(.kui--input-stripe-in-status-stripe) {
+        flex: initial;
+      }
+
+      .kui--input-stripe {
+        font-size: 0.875rem; /* rem needed, because status stripe has a font-size em */
+        flex: 1;
+
+        .repl-block .repl-input .kui--input-and-context {
+          font-size: 1em;
+        }
+      }
     }
   }
 }

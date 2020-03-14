@@ -19,8 +19,13 @@
 
 import * as React from 'react'
 
-export default class ContextWidgets extends React.PureComponent {
+interface Props {
+  className?: string
+}
+
+export default class ContextWidgets extends React.PureComponent<Props> {
   public render() {
-    return <div className="kui--status-stripe-context">{this.props.children}</div>
+    const className = 'kui--status-stripe-context' + (this.props.className ? ` ${this.props.className}` : '')
+    return <div className={className}>{this.props.children}</div>
   }
 }
