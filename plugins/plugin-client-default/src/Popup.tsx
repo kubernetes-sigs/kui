@@ -20,12 +20,13 @@
 import * as React from 'react'
 import { eventBus, Tab as KuiTab } from '@kui-shell/core'
 import { ComboSidecar } from '@kui-shell/plugin-sidecar'
-import { InputStripe, TabContent, TabModel } from '@kui-shell/plugin-client-common'
+import { ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '@kui-shell/plugin-client-common'
 
 import '../web/css/static/Popup.scss'
 
 interface Props {
   commandLine: string[]
+  children?: React.ReactNode
 }
 
 interface State {
@@ -67,7 +68,6 @@ export default class Popup extends React.PureComponent<Props, State> {
       <div className="kui--full-height">
         <TabContent
           noActiveInput
-          bottom={<InputStripe promptPlaceholder={this.state.promptPlaceholder} />}
           uuid={this.state.model.uuid}
           active
           state={this.state.model.state}
@@ -75,6 +75,12 @@ export default class Popup extends React.PureComponent<Props, State> {
         >
           <ComboSidecar defaultWidth="75%" />
         </TabContent>
+        <StatusStripe>
+          <ContextWidgets className="kui--input-stripe-in-status-stripe">
+            <InputStripe promptPlaceholder={this.state.promptPlaceholder} uuid={this.state.model.uuid} />
+          </ContextWidgets>
+          {this.props.children}
+        </StatusStripe>
       </div>
     )
   }

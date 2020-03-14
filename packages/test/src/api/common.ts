@@ -189,6 +189,7 @@ const prepareElectron = (popup: string[]) => {
   }
 
   if (popup) {
+    // used in spawn-electron.ts
     opts.env['KUI_POPUP'] = JSON.stringify(popup)
   }
 
@@ -246,6 +247,13 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
     // by default, we expect not to have to destroy the app when this
     // describe is done
     ctx['_kuiDestroyAfter'] = false
+
+    if (popup) {
+      // e.g. used in CLI.waitForRepl to find the prompt
+      process.env.KUI_POPUP = 'true'
+    } else {
+      delete process.env.KUI_POPUP
+    }
 
     if (!noApp) {
       if (app && !popup) {

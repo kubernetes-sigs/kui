@@ -30,6 +30,10 @@ body[kui-theme-style] .bx--pagination {
   .bx--pagination__button {
     fill: var(--color-text-01);
     padding: 0 0.875em;
+
+    &:focus {
+      outline-color: var(--color-brand-03);
+    }
   }
 
   .bx--pagination__button--no-index {

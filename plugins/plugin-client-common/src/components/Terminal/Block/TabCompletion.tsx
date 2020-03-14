@@ -20,7 +20,13 @@ import Debug from 'debug'
 import * as React from 'react'
 import * as minimist from 'yargs-parser'
 import { Button } from 'carbon-components-react'
-import { CompletionResponse, findCompletions as findCompletionsFromRegistrar, _split, Split } from '@kui-shell/core'
+import {
+  getCurrentTab,
+  CompletionResponse,
+  findCompletions as findCompletionsFromRegistrar,
+  _split,
+  Split
+} from '@kui-shell/core'
 
 import Input from './Input'
 import '../../../../web/css/static/TabCompletion.scss'
@@ -107,7 +113,7 @@ export abstract class TabCompletionState {
         }
 
         const myEnumeratorAsync = global.setTimeout(async () => {
-          const completions = await findCompletionsFromRegistrar(input.props.tab, commandLine, spec)
+          const completions = await findCompletionsFromRegistrar(input.props.tab || getCurrentTab(), commandLine, spec)
 
           if (myEnumeratorAsync !== this.currentEnumeratorAsync) {
             // overruled case 2: while waiting to fetch the

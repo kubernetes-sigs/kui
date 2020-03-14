@@ -67,7 +67,7 @@ export class DefaultClient extends React.PureComponent<Props, State> {
     if (this.props.isPopup && this.props.commandLine) {
       return (
         <React.Suspense fallback={<div />}>
-          <Popup commandLine={this.props.commandLine} />
+          <Popup commandLine={this.props.commandLine}>{this.props.children}</Popup>
         </React.Suspense>
       )
     } else {
