@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '../webapp/tab'
+import REPL from '../models/repl'
 import { CommandLine } from '../models/command'
 
 /**
@@ -47,7 +47,7 @@ export function isStringResponse(response: CompletionResponse): response is stri
  *
  */
 type Enumerator = (
-  tab: Tab,
+  tab: { REPL: REPL },
   commandLine: CommandLine,
   spec: TabCompletionSpec
 ) => CompletionResponse[] | Promise<CompletionResponse[]>
@@ -68,7 +68,7 @@ export function registerEnumerator(enumerator: Enumerator, priority = 0) {
  *
  */
 export async function applyEnumerator(
-  tab: Tab,
+  tab: { REPL: REPL },
   commandLine: CommandLine,
   spec: TabCompletionSpec
 ): Promise<CompletionResponse[]> {
