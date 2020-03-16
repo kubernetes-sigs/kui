@@ -17,10 +17,9 @@
 import * as React from 'react'
 import { i18n } from '@kui-shell/core'
 import { Camera20 as Camera, CameraAction20 as CameraAction } from '@carbon/icons-react'
-import { ToastNotification } from 'carbon-components-react'
+import { Button, ToastNotification } from 'carbon-components-react'
 import { Event, NativeImage } from 'electron'
 
-import '../../web/css/static/Tooltip.scss'
 import '../../web/css/static/Screenshot.scss'
 import 'carbon-components/scss/components/tooltip/_tooltip.scss'
 import 'carbon-components/scss/components/notification/_toast-notification.scss'
@@ -50,7 +49,8 @@ const dateString = (ts: Date) => `${ts.getUTCFullYear()}-${fill(1 + ts.getUTCMon
 const timeString = (ts: Date) => ts.toLocaleTimeString('en-us').replace(/:/g, '.')
 
 export default class Screenshot extends React.PureComponent<Props, State> {
-  private _onClick: (evt: MouseEvent) => void
+  private overlayCleaner: () => void
+  private cleaners: (() => void)[] = []
 
   public constructor(props: Props) {
     super(props)
@@ -62,30 +62,33 @@ export default class Screenshot extends React.PureComponent<Props, State> {
 
   /** Transition back to a normal state, where are aren't ready to capture a screenshot */
   private deactivate() {
-    document.body.classList.remove('kui--screenshot-active')
+    if (this.cleaners) {
+      this.cleaners.forEach(cleaner => cleaner())
+      this.cleaners = undefined
+    }
 
-    if (this._onClick) {
-      const elements = document.querySelectorAll('.kui--screenshotable')
-      for (let idx = 0; idx < elements.length; idx++) {
-        elements[idx].removeEventListener('click', this._onClick)
-      }
+    if (this.overlayCleaner) {
+      this.overlayCleaner()
+      this.overlayCleaner = undefined
     }
   }
 
   /** User has clicked on a region to be captured */
-  private onScreenshot1(evt: MouseEvent) {
+  private onClickScreenshotRegion(element: Element) {
     this.deactivate()
-
-    const dom = evt.currentTarget as Element
-    setTimeout(() => this.onScreenshot2(dom), 100)
+    setTimeout(() => this.captureRegion(element), 100)
   }
 
-  /** Follow-up to onScreenshot1 */
-  private async onScreenshot2(dom: Element) {
+  /**
+   * This is the actual work to screenshot a given region of the
+   * screen defined by the extent of the given dom.
+   *
+   */
+  private async captureRegion(element: Element) {
     const { ipcRenderer, nativeImage, remote } = await import('electron')
     const { app } = remote
 
-    const domRect = dom.getBoundingClientRect()
+    const domRect = element.getBoundingClientRect()
     const rect = {
       x: Math.round(domRect.left),
       y: Math.round(domRect.top),
@@ -114,13 +117,69 @@ export default class Screenshot extends React.PureComponent<Props, State> {
 
   /** Transition to a state where we are ready to capture a screenshot */
   private activate() {
-    document.body.classList.add('kui--screenshot-active')
-
-    this._onClick = this.onScreenshot1.bind(this)
-
+    this.cleaners = []
     const elements = document.querySelectorAll('.kui--screenshotable')
     for (let idx = 0; idx < elements.length; idx++) {
-      elements[idx].addEventListener('click', this._onClick)
+      this.cleaners.push(this.wrap(elements[idx]))
+    }
+
+    const onKeyUp = (evt: KeyboardEvent) => {
+      if (evt.key === 'Escape') {
+        evt.stopPropagation()
+        this.deactivate()
+        this.setState({ isActive: false })
+      }
+    }
+    document.body.addEventListener('keyup', onKeyUp)
+    this.cleaners.push(() => document.body.removeEventListener('keyup', onKeyUp))
+  }
+
+  /** Number to css "px" */
+  private px(N: number) {
+    return `${N}px`
+  }
+
+  /** Wrap a given dom Element so that it is screenshotable */
+  private wrap(element: Element) {
+    const onMouseOver = (evt: MouseEvent) => {
+      evt.stopPropagation()
+
+      if (this.overlayCleaner) {
+        this.overlayCleaner()
+      }
+
+      const pos = element.getBoundingClientRect()
+      const overlay = document.createElement('div')
+      overlay.id = 'kui--screenshot-overlay'
+      overlay.style.left = this.px(pos.left)
+      overlay.style.top = this.px(pos.top)
+      overlay.style.width = this.px(pos.width)
+      overlay.style.height = this.px(pos.height)
+      document.body.appendChild(overlay)
+      element.classList.add('kui--screenshot-hover')
+
+      const onMouseOut = () => {
+        overlay.remove()
+        element.classList.remove('kui--screenshot-hover')
+      }
+      overlay.addEventListener('mouseout', onMouseOut, { once: true })
+
+      overlay.addEventListener(
+        'click',
+        () => {
+          onMouseOut()
+          this.onClickScreenshotRegion(element)
+        },
+        { once: true }
+      )
+
+      this.overlayCleaner = onMouseOut
+    }
+
+    element.addEventListener('mouseover', onMouseOver)
+
+    return () => {
+      element.removeEventListener('mouseover', onMouseOver)
     }
   }
 
@@ -147,9 +206,19 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   /** Inside of the ToastNotification, render a Save to Desktop button */
   private saveToDiskButton() {
     return (
-      <a href="#" className="bx--link screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
-        {strings('Save to desktop')}
-      </a>
+      <div className="bx--btn-set">
+        <Button
+          href="#"
+          size="small"
+          kind="secondary"
+          onClick={() => this.setState({ isActive: false, captured: undefined })}
+        >
+          {strings('Done')}
+        </Button>
+        <Button href="#" size="small" className="screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
+          {strings('Save to desktop')}
+        </Button>
+      </div>
     )
   }
 
@@ -207,7 +276,11 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         onClick={onClick}
         data-active={active}
       >
-        {active ? <CameraAction width={18} height={18} /> : <Camera width={18} height={18} />}
+        {active ? (
+          <CameraAction width={18} height={18} onMouseDown={evt => evt.preventDefault()} />
+        ) : (
+          <Camera width={18} height={18} onMouseDown={evt => evt.preventDefault()} />
+        )}
       </a>
     )
   }

@@ -47,19 +47,19 @@ body[kui-theme-style] .bx--breadcrumb-item .bx--link {
 
 /* buttons */
 [kui-theme-style] .bx--btn--primary {
-  background-color: var(--color-base0D);
+  background-color: var(--color-brand-03);
   color: var(--color-text-01);
 }
 [kui-theme-style] .bx--btn--primary:hover {
-  background-color: var(--color-base0D);
+  background-color: var(--color-brand-03);
   filter: contrast(1.25);
 }
 [kui-theme-style] .bx--btn--secondary {
-  background-color: var(--color-ui-03);
+  background-color: var(--color-base04);
   color: var(--color-text-01);
 }
 [kui-theme-style] .bx--btn--secondary:hover {
-  background-color: var(--color-ui-03);
+  background-color: var(--color-base04);
   filter: contrast(0.75);
 }
 [kui-theme-style] .bx--btn--danger {

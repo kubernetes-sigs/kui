@@ -24,9 +24,11 @@ import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/te
 async function takeScreenshot(ctx: Common.ISuite, which: string) {
   try {
     await ctx.app.client.click('.kui--screenshot-button')
-    await ctx.app.client.waitForExist('body.kui--screenshot-active')
 
-    await ctx.app.client.click(which)
+    await ctx.app.client.moveToObject(which)
+    await ctx.app.client.waitForExist('#kui--screenshot-overlay')
+
+    await ctx.app.client.click('#kui--screenshot-overlay')
 
     await ctx.app.client.waitForExist('#screenshot-captured')
 
