@@ -101,7 +101,7 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
     const dataTable = (visibleRows: NamedDataTableRow[]) => (
       // `<form>` prevents the radio button selection reads from the global form of browser.
       // See issue: https://github.com/IBM/kui/issues/3871
-      <form>
+      <form className="kui--data-table-wrapper">
         <DataTable
           rows={visibleRows}
           headers={headers}
