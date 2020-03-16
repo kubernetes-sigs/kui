@@ -165,7 +165,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
    */
   public render() {
     return (
-      <Header aria-label="Header">
+      <Header aria-label="Header" className="kui--top-tab-stripe">
         {/* this.headerMenu(args) */}
         {this.headerName()}
         {this.tabs()}

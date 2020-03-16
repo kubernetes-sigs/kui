@@ -85,3 +85,14 @@
     }
   }
 }
+
+@media (max-width: 42rem) {
+  .SplitPane.vertical:not(.kui--secondary-closed) {
+    .Pane1 {
+      flex: 0 !important;
+    }
+    .Pane2 {
+      width: 100% !important;
+    }
+  }
+}

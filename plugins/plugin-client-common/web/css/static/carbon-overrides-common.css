@@ -23,37 +23,11 @@ body td {
   transition-timing-function: var(--transition-timing-function);
 }
 
-.kui--sidecar .bx--tabs,
-.kui--sidecar .bx--tabs .bx--tabs__nav,
-.kui--sidecar .bx--tabs .bx--tabs__nav li {
-  width: unset;
-  min-height: unset;
-  position: unset;
-}
-.kui--sidecar a.bx--tabs__nav-link,
-.kui--sidecar a.bx--tabs__nav-link:active {
-  outline: none;
-  width: unset;
-  min-width: 8em;
-}
 li.bx--tabs__nav-item.sidecar-bottom-stripe-button,
 li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {
   flex: 1;
 }
 
-body[kui-theme-style]
-  .kui--sidecar
-  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
-  .bx--tabs__nav-link {
-  color: var(--color-text-01);
-  border-color: var(--color-brand-03);
-  opacity: 1;
-}
-body.subwindow[kui-theme-style] .kui--sidecar .bx--tabs__nav-item .bx--tabs__nav-link {
-  font-size: 1.125vw;
-  line-height: unset;
-  height: unset;
-}
 a.bx--tabs__nav-link:focus,
 a.bx--tabs__nav-link:active {
   width: 100%;
