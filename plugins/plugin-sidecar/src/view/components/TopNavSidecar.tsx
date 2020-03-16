@@ -303,7 +303,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
         >
           {' '}
           {/* data-view helps with tests */}
-          {this.title(kind, namespace, false, onClickNamespace)}
+          {this.title(
+            kind,
+            namespace,
+            this.state.response && this.state.response.metadata ? this.state.response.metadata.name : undefined,
+            false,
+            onClickNamespace
+          )}
           <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
             {this.header()}
             {this.tabs()}

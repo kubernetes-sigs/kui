@@ -16,9 +16,9 @@
 
 import * as React from 'react'
 import {
-  Maximize16 as MaximizeIcon,
-  Minimize16 as MinimizeIcon,
-  ChevronRight20 as CloseIcon,
+  Maximize20 as MaximizeIcon,
+  Minimize20 as MinimizeIcon,
+  ChevronDown20 as CloseIcon,
   Close20 as QuitIcon
 } from '@carbon/icons-react'
 
@@ -26,18 +26,16 @@ import Width from './width'
 
 interface Props {
   kind: string
+  name?: string
   namespace?: string
   fixedWidth: boolean
+  width: Width
 
   onClickNamespace?: () => void
   onMaximize: () => void
   onRestore: () => void
   onMinimize: () => void
   onClose: () => void
-}
-
-interface State {
-  width: Width
 }
 
 /**
@@ -53,18 +51,10 @@ interface State {
  *  Kind: props.kind
  *  Namespace: props.namespace
  */
-export default class Window extends React.PureComponent<Props, State> {
-  public constructor(props: Props) {
-    super(props)
-
-    this.state = {
-      width: Width.Default
-    }
-  }
-
+export default class Window extends React.PureComponent<Props> {
   private toggleMaximization() {
     try {
-      if (this.state.width === Width.Default) {
+      if (this.props.width === Width.Default) {
         this.props.onMaximize()
       } else {
         this.props.onRestore()
@@ -72,9 +62,17 @@ export default class Window extends React.PureComponent<Props, State> {
     } catch (err) {
       console.error(err)
     }
-    this.setState(({ width }) => ({
+    /* this.setState(({ width }) => ({
       width: width === Width.Maximized ? Width.Default : width === Width.Default ? Width.Maximized : width
-    }))
+    })) */
+  }
+
+  private toggleMinimization() {
+    this.props.onMinimize()
+
+    /* this.setState(({ width }) => ({
+      width: width === Width.Maximized || width === Width.Default ? Width.Minimized : Width.Default
+    })) */
   }
 
   private closeButton() {
@@ -86,7 +84,8 @@ export default class Window extends React.PureComponent<Props, State> {
             className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
             tabIndex={-1}
             aria-label="Minimize"
-            onClick={() => this.props.onMinimize()}
+            onMouseDown={evt => evt.preventDefault()}
+            onClick={() => this.toggleMinimization()}
           >
             <CloseIcon />
           </a>
@@ -96,8 +95,8 @@ export default class Window extends React.PureComponent<Props, State> {
   }
 
   private maximizeButton() {
-    if (this.state.width !== Width.Minimized && !this.props.fixedWidth) {
-      const max = this.state.width === Width.Maximized
+    if (this.props.width !== Width.Minimized && !this.props.fixedWidth) {
+      const max = this.props.width === Width.Maximized
       const className = max ? 'unmaximize-button-label' : 'maximize-button-label'
       const icon = max ? <MinimizeIcon /> : <MaximizeIcon />
       const aria = max ? 'Restore' : 'Maximize'
@@ -110,6 +109,7 @@ export default class Window extends React.PureComponent<Props, State> {
                 href="#"
                 className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
                 tabIndex={-1}
+                onMouseDown={evt => evt.preventDefault()}
                 onClick={() => this.toggleMaximization()}
               >
                 {icon}
@@ -146,12 +146,15 @@ export default class Window extends React.PureComponent<Props, State> {
   }
 
   private namespace() {
-    if (this.props.namespace) {
-      const onclick = this.props.onClickNamespace
+    const isMin = this.props.width === Width.Minimized
+    const ns = isMin ? this.props.name : this.props.namespace
+
+    if (ns) {
+      const onclick = isMin ? undefined : this.props.onClickNamespace
       return (
         <div className="sidecar-header-icon-wrapper sidecar-header-icon-wrapper-for-namespace">
           <span className={'package-prefix' + (onclick ? ' clickable' : '')} onClick={onclick && (() => onclick())}>
-            {this.props.namespace}
+            {ns}
           </span>
         </div>
       )

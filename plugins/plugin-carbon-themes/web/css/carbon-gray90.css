@@ -88,7 +88,6 @@ body[kui-theme="Carbon Gray90"] .bx--data-table th {
 body[kui-theme="Carbon Gray90"] .bx--data-table td {
   color: var(--color-text-02); /* lighter text for body, as specified by design */
   border-color: var(--color-base02);
-  background-color: var(--color-sidecar-header); /* ui-01 */
 }
 body[kui-theme="Carbon Gray90"] .bx--tabs__nav-link {
   color: var(--color-base06);
