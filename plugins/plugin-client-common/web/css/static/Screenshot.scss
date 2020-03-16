@@ -1,7 +1,12 @@
+@import './Button';
+
 body .bx--toast-notification {
   /* provide default values for these color classes */
   --color-screenshot-background: var(--color-base02);
   --color-screenshot-foreground: var(--color-base06);
+  --color-screenshot-primary-button-background: var(--color-brand-03);
+  --color-screenshot-button-foreground: var(--color-text-01);
+  --color-screenshot-secondary-button-background: var(--color-base04);
 }
 
 .kui--screenshot-button[data-active='true'] svg path {
@@ -9,61 +14,28 @@ body .bx--toast-notification {
 }
 
 .screenshot-save-button {
-  color: var(--color-screenshot-foreground) !important;
   font-weight: normal !important;
-}
-
-.kui--screenshot-tooltip {
-  /* so that the tooltip isn't captured as part of a screenshot, only keep it visible while we're waiting for the user to choose a region to capture */
-  display: none;
-}
-
-.kui--screenshot-active {
-  .bx--tooltip.kui--screenshot-tooltip {
-    display: initial;
-    top: unset !important;
-    bottom: 2.25em;
-  }
-}
-.bx--tooltip.kui--screenshot-tooltip {
-  background: var(--color-ui-03);
-
-  .bx--tooltip__caret {
-    border-bottom-color: var(--color-ui-03);
-    border-left-color: var(--color-base01);
-    border-right-color: var(--color-base01);
-  }
-  .kui--screenshot-tooltip-text {
-    font-size: 0.875em;
-  }
-}
-
-.kui--screenshotable {
-  /** accommodate the on-hover outline: 2px below */
-  margin: 2px;
-}
-sidecar.kui--screenshotable {
-  /** special case to make the sidecar appear flush mounted */
-  outline: 2px solid var(--color-sidecar-header);
-  height: calc(100% - 4px);
-}
-
-.kui--screenshot-active {
-  .kui--screenshotable:hover {
-    cursor: copy !important;
-    outline: 2px dashed var(--color-base05);
-    background-color: var(--color-base04);
-    filter: sepia(0.875);
-
-    /* occlude everything else */
-    box-shadow: 0 0 0 1000px rgba(20, 20, 20, 0.7);
-    z-index: 10;
-  }
 }
 
 [kui-theme-style] {
   .bx--toast-notification {
     flex-direction: row;
+
+    &:not(.bx--toast-notification--low-contrast) a {
+      &:hover {
+        text-decoration: none;
+      }
+      &,
+      &:hover {
+        color: var(--color-screenshot-button-foreground);
+      }
+      &.bx--btn--primary {
+        background-color: var(--color-screenshot-primary-button-background);
+      }
+      &.bx--btn--secondary {
+        background-color: var(--color-screenshot-secondary-button-background);
+      }
+    }
 
     .bx--toast-notification__title {
       margin-top: 1em;
@@ -129,12 +101,33 @@ sidecar.kui--screenshotable {
       }
 
       .screenshot-image {
-        width: 100%;
+        max-width: 100%;
         height: auto;
         max-height: 17em;
         object-fit: contain;
         object-position: top left;
+        box-shadow: 0 0 2px var(--color-base05);
       }
     }
   }
+}
+
+#kui--screenshot-overlay {
+  position: absolute;
+  z-index: 10000;
+
+  cursor: copy !important;
+  border: 2px dashed var(--color-base06);
+
+  /* occlude everything else */
+  box-shadow: 0 0 0 1000px rgba(20, 20, 20, 0.5);
+
+  filter: sepia(0.75) opacity(0.5);
+}
+
+[kui-theme-style='light'] #kui--screenshot-overlay {
+  background: var(--color-base02);
+}
+[kui-theme-style='dark'] #kui--screenshot-overlay {
+  background: var(--color-base04);
 }
