@@ -47,6 +47,10 @@ body[kui-theme="Carbon Gray10"] .kui--inverted-color-context {
 
   --color-sidecar-background-01: #171717;
   --color-sidecar-background-02: var(--color-base03);
+
+  --color-screenshot-background: #3d3d3d; /* $ui-01 */
+  --color-screenshot-primary-button-background: #0062ff; /* $interactive-01 */
+  --color-screenshot-secondary-button-background: #6f6f6f; /* $interactive-02 */
 }
 
 /* color variables */
