@@ -47,10 +47,15 @@ body[kui-theme="Carbon Gray10"] .kui--inverted-color-context {
 
   --color-sidecar-background-01: #171717;
   --color-sidecar-background-02: var(--color-base03);
+  --color-name-sidecar: var(--color-name);
 
   --color-screenshot-background: #3d3d3d; /* $ui-01 */
   --color-screenshot-primary-button-background: #0062ff; /* $interactive-01 */
   --color-screenshot-secondary-button-background: #6f6f6f; /* $interactive-02 */
+
+  --color-table-border1: rgba(255, 255, 255, 0.35);
+  --color-table-border2: rgba(255, 255, 255, 0.5);
+  --color-table-border3: var(--color-ui-04);
 }
 
 /* color variables */

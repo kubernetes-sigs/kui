@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { REPL, KResponse, Tab as KuiTab, KeyCodes } from '@kui-shell/core'
+import { REPL, KResponse, Tab as KuiTab } from '@kui-shell/core'
 
 import Width from './width'
 import TitleBar from './TitleBar'
@@ -112,7 +112,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.keyCode === KeyCodes.ESCAPE) {
+    if (evt.key === 'Escape') {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
           if (this.props.willChangeSize) {
@@ -172,7 +172,7 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
 
       return {
         width: newWidth,
-        priorWidth: width
+        priorWidth: width === Width.Minimized ? undefined : width
       }
     })
   }
@@ -200,12 +200,14 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     }
   }
 
-  protected title(kind?: string, namespace?: string, fixedWidth = true, onClickNamespace?: () => void) {
+  protected title(kind?: string, namespace?: string, name?: string, fixedWidth = true, onClickNamespace?: () => void) {
     return (
       <TitleBar
         fixedWidth={fixedWidth}
         kind={kind}
         namespace={namespace}
+        name={name}
+        width={this.state.width}
         onClickNamespace={onClickNamespace}
         onMaximize={this.onMaximize.bind(this)}
         onRestore={this.onRestore.bind(this)}

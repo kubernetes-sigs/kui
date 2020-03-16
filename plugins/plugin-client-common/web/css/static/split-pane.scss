@@ -84,6 +84,13 @@
       display: none;
     }
   }
+
+  &.kui--secondary-minimized {
+    .Pane2 {
+      width: 0% !important;
+      opacity: 0.925;
+    }
+  }
 }
 
 @media (max-width: 42rem) {
