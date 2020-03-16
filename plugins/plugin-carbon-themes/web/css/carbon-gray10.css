@@ -101,8 +101,8 @@ body[kui-theme="Carbon Gray10"] {
   --color-content-divider: #bfc0c2;
   --color-selection-background: #b3e6ff;
 
-  --color-stripe-01: #f5f7fa;
-  --color-stripe-02: var(--color-base03);
+  --color-stripe-01: var(--color-base03);
+  --color-stripe-02: #f5f7fa;
   --tab-gray-text-color: var(--color-text-01);
   --active-tab-color: #0f62fe;
   --color-repl-background: var(--color-base01);

@@ -80,12 +80,7 @@ export default class Window extends React.PureComponent<Props, State> {
   private closeButton() {
     return (
       !this.props.fixedWidth && (
-        <div
-          className="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button"
-          data-balloon="Minimize"
-          data-balloon-length="small"
-          data-balloon-pos="down-right"
-        >
+        <div className="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button">
           <a
             href="#"
             className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
@@ -128,12 +123,7 @@ export default class Window extends React.PureComponent<Props, State> {
 
   private quitButton() {
     return (
-      <div
-        className="sidecar-bottom-stripe-button sidecar-bottom-stripe-quit"
-        data-balloon="Close"
-        data-balloon-length="small"
-        data-balloon-pos="down-right"
-      >
+      <div className="sidecar-bottom-stripe-button sidecar-bottom-stripe-quit">
         <a
           href="#"
           className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
