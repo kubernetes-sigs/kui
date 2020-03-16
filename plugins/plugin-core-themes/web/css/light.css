@@ -61,6 +61,11 @@ body[kui-theme="Light"] .kui--inverted-color-context {
 
   --color-sidecar-toolbar-background: #d7dce3;
   --color-sidecar-toolbar-foreground: var(--color-base02);
+  --color-name-sidecar: var(--color-name);
+
+  --color-table-border1: #616466;
+  --color-table-border2: #a5a9ad;
+  --color-table-border3: #383d40;
 }
 
 /* color variables */

@@ -705,34 +705,6 @@ a.kui--tab-navigatable {
 a.kui--tab-navigatable:hover {
   color: inherit;
 }
-.graphical-icon {
-  /* font awesome icons in the bottom stripe */
-  display: flex;
-  justify-content: center;
-
-  /* these two rules are an attempt to push the tooltips just above the bottom stripe */
-  height: 100%;
-  align-items: center;
-}
-.graphical-icon.disabled {
-  opacity: 0.3;
-}
-.graphical-icon.disabled:hover {
-  opacity: 0.3 !important;
-  color: inherit !important;
-  cursor: default !important;
-}
-.graphical-icon[data-balloon]:after,
-.graphical-icon[data-balloon]:before {
-  text-transform: none;
-  transition-delay: 750ms;
-}
-.graphical-icon svg path {
-  fill: var(--color-text-against-dark-bg);
-}
-body:not(.no-tooltips-anywhere) .graphical-icon:hover svg path {
-  fill: var(--color-brand-01);
-}
 
 /* pulse animation for repl.partial */
 input.repl-partial,
