@@ -195,3 +195,9 @@
     }
   }
 }
+
+@media (max-width: 42rem) {
+  .kui--top-tab-stripe {
+    display: none;
+  }
+}
