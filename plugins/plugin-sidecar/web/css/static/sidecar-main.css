@@ -901,6 +901,59 @@ body:not(.no-tooltips-anywhere)
   outline-color: var(--color-brand-03);
 }
 
+[kui-theme-style] .kui--sidecar {
+  .bx--tabs,
+  .bx--tabs .bx--tabs__nav,
+  .bx--tabs .bx--tabs__nav li,
+  .bx--tabs .bx--tabs__nav li a {
+    width: unset;
+    min-height: unset;
+    position: unset;
+    font-size: unset;
+  }
+  a.bx--tabs__nav-link,
+  a.bx--tabs__nav-link:active {
+    outline: none;
+    width: unset;
+    min-width: 8em;
+  }
+
+  .bx--tabs {
+    font-size: 0.875em;
+    line-height: 1.125em;
+    .bx--tabs__nav {
+      background: none;
+      box-shadow: none;
+    }
+  }
+  .bx--tabs-trigger {
+    display: none;
+  }
+  .bx--tabs__nav--hidden {
+    max-height: unset;
+  }
+  .bx--tabs__nav-item {
+    height: 2.5em;
+  }
+  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) {
+    display: flex;
+    background-color: transparent;
+    .bx--tabs__nav-link {
+      border-bottom-width: 3px;
+      margin: 0;
+      height: 2.5em;
+      padding: 0.5em 1em;
+      line-height: 1.125em;
+    }
+  }
+
+  .bx--tabs__nav-item--selected .bx--tabs__nav-link {
+    color: var(--color-text-01);
+    border-color: var(--color-brand-03);
+    opacity: 1;
+  }
+}
+
 body[kui-theme-style] a.bx--tabs__nav-link {
   color: var(--color-text-02);
   border-color: var(--color-text-02);
