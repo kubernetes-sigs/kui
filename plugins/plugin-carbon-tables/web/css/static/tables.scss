@@ -148,6 +148,11 @@ body[kui-theme-style] .repl.sidecar-visible {
   }
 }
 
+.sidecar-visible .kui--data-table-wrapper {
+  /* render tables full-width when sidecar is open https://github.com/IBM/kui/issues/3952 */
+  flex: 1;
+}
+
 .kui--paginated-table {
   display: flex;
   flex-direction: column;
