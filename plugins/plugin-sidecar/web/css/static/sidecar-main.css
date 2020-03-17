@@ -772,11 +772,10 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 2em;
   margin: 0 0.1875em;
 
   a {
-    padding: 2px;
+    padding: 3px;
     display: flex;
     svg {
       fill: var(--color-text-02);
@@ -864,16 +863,18 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   .bx--tabs__nav-item {
     height: 2.5em;
   }
+
+  a.bx--tabs__nav-link {
+    padding: 0.5em 1em;
+    height: 2.5em;
+    line-height: 1.125em;
+    margin: 0;
+    border-bottom-width: 3px;
+  }
+
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) {
     display: flex;
     background-color: transparent;
-    .bx--tabs__nav-link {
-      border-bottom-width: 3px;
-      margin: 0;
-      height: 2.5em;
-      padding: 0.5em 1em;
-      line-height: 1.125em;
-    }
   }
 
   .bx--tabs__nav-item--selected .bx--tabs__nav-link {
@@ -909,4 +910,18 @@ body[kui-theme-style] a.bx--tabs__nav-link {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.kui--sidecar--titlebar-navigation:not(:empty) {
+  display: flex;
+  align-items: center;
+  margin-right: 0.375em;
+  border-right: 1px solid var(--color-table-border3);
+
+  .sidecar-bottom-stripe-button:first-child {
+    margin-left: 0.5em;
+  }
+  .sidecar-bottom-stripe-button:last-child {
+    margin-right: 0.5em;
+  }
 }

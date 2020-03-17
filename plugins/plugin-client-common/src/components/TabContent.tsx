@@ -186,17 +186,26 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
-  /** Graft on the REPL focus management */
-  private children() {
-    if (React.isValidElement(this.props.children)) {
+  private graft(node: React.ReactNode | {}, key?: number) {
+    if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(this.props.children, {
+      return React.cloneElement(node, {
+        key,
         uuid: this.props.uuid,
         willChangeSize: this.onWillChangeSize.bind(this),
         willLoseFocus: this.onWillLoseFocus.bind(this)
       })
     } else {
-      return this.props.children
+      return node
+    }
+  }
+
+  /** Graft on the REPL focus management */
+  private children() {
+    if (Array.isArray(this.props.children)) {
+      return this.props.children.map((child, idx) => this.graft(child, idx))
+    } else {
+      return this.graft(this.props.children)
     }
   }
 

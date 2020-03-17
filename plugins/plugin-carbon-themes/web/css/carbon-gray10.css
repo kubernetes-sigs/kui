@@ -176,13 +176,17 @@ body[kui-theme="Carbon Gray10"]
   color: var(--color-base01);
 }
 
-body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-bottom-stripe svg path {
-  fill: var(--color-base07);
-}
-body[kui-theme="Carbon Gray10"] .kui--sidecar a.bx--tabs__nav-link,
 body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-bottom-stripe {
+  border-bottom-color: var(--color-base02);
+}
+body[kui-theme="Carbon Gray10"]
+  .kui--sidecar.kui--nav-view
+  .sidecar-bottom-stripe.kui--sidecar--titlebar-has-breadcrumbs {
+  border-bottom-color: var(--color-base01);
+}
+
+body[kui-theme="Carbon Gray10"] .kui--sidecar a.bx--tabs__nav-link {
   background-color: var(--color-sidecar-header);
-  border-bottom-color: #6f6f6f;
   color: var(--color-sidecar-toolbar-background);
 }
 body[kui-theme="Carbon Gray10"] .monaco-editor .margin-view-overlays .current-line-margin,

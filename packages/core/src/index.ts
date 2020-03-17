@@ -145,7 +145,16 @@ export {
   Mode as MultiModalMode,
   MultiModalResponse
 } from './models/mmr/types'
-export { NavResponse, isNavResponse, Link, isLink, isLinkWithHref, isLinkWithCommand, Menu } from './models/NavResponse'
+export {
+  Breadcrumb,
+  NavResponse,
+  isNavResponse,
+  Link,
+  isLink,
+  isLinkWithHref,
+  isLinkWithCommand,
+  Menu
+} from './models/NavResponse'
 export { isMultiModalResponse } from './models/mmr/is'
 export {
   Content,

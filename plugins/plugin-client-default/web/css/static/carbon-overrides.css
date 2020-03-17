@@ -22,23 +22,6 @@ body[kui-theme-style="dark"]
   opacity: 1;
 }
 
-/* breadcrumbs */
-body[kui-theme-style] .bx--breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  font-family: var(--font-sans-serif);
-  margin: 0 0 1em;
-}
-body[kui-theme-style] .bx--breadcrumb-item .bx--link {
-  color: var(--color-brand-01);
-  font-weight: 300;
-  font-size: 1em;
-  text-decoration: none;
-}
-[kui-theme-style] .bx--breadcrumb-item::after {
-  color: var(--color-text-02);
-}
-
 /* structured list */
 [kui-theme-style] .bx--structured-list-row.bx--structured-list-row--header-row,
 [kui-theme-style] .bx--structured-list-row {
