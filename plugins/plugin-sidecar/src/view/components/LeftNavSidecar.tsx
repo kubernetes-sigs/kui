@@ -24,6 +24,7 @@ import {
   Button,
   NavResponse,
   MultiModalMode,
+  ParsedOptions,
   Menu,
   Link,
   isLinkWithCommand
@@ -32,7 +33,7 @@ import { Content, SideNavLink, SideNavMenu, SideNavMenuItem, SideNav, SideNavIte
 
 import Width from './width'
 import { getStateFromMMR } from './TopNavSidecar'
-import { BaseState, BaseSidecar, Props } from './BaseSidecar'
+import { BaseHistoryEntry, BaseSidecar, Props } from './BaseSidecar'
 
 import 'carbon-components/scss/components/ui-shell/_content.scss'
 import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
@@ -49,7 +50,7 @@ interface Navigation {
   buttons?: Button[]
 }
 
-interface State extends BaseState {
+interface HistoryEntry extends BaseHistoryEntry {
   current: { menuIdx: number; tabIdx: number }
   allNavs: Navigation[]
   allLinks: Link[]
@@ -75,29 +76,32 @@ interface State extends BaseState {
  *   a1, b1: <SideNavMenuItem/>
  *
  */
-export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
-  public constructor(props: Props<NavResponse>) {
+export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntry> {
+  public constructor(props: Props) {
     super(props)
 
-    if (!this.isManaged()) {
-      const channel = '/command/complete/fromuser/NavResponse'
-      const onResponse = this.onResponse.bind(this)
-      eventBus.on(channel, onResponse)
-      this.cleaners.push(() => eventBus.off(channel, onResponse))
+    const channel = '/command/complete/fromuser/NavResponse'
+    const onResponse = this.onResponse.bind(this)
+    eventBus.on(channel, onResponse)
+    this.cleaners.push(() => eventBus.off(channel, onResponse))
 
-      this.state = {
-        repl: undefined,
-        tab: undefined,
-        width: Width.Default,
-
-        allNavs: undefined,
-        allLinks: undefined,
-        current: undefined,
-        response: undefined
-      }
-    } else {
-      this.state = this.getState(props.tab, props.response)
+    this.state = {
+      repl: undefined,
+      tab: undefined,
+      width: Width.Default,
+      history: undefined,
+      current: undefined
     }
+  }
+
+  /** Is getState() idempotent? i.e. Will two command executions that satisfy `sameCommand` always produce the same response? */
+  protected idempotent() {
+    return true
+  }
+
+  /** Should we display Back/Forward arrows for history navigation? */
+  protected useArrowNavigation() {
+    return false
   }
 
   /** matching the old `flex: 3.5` compared to `flex: 4` for the Terminal */
@@ -105,21 +109,25 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     return '46.67%'
   }
 
-  private getState(tab: Tab, response: NavResponse): State {
+  /** @return a `HistoryEntry` for the given `Response` */
+  protected getState(
+    tab: Tab,
+    response: NavResponse,
+    argvNoOptions: string[],
+    parsedOptions: ParsedOptions
+  ): HistoryEntry {
     const navigations = []
     // get state from each of the left navigation
     response.menus.forEach(menu => {
       Object.entries(menu).forEach(([title, mmr]) => {
-        const state = getStateFromMMR(tab, mmr)
+        const state = getStateFromMMR(tab, mmr, argvNoOptions, parsedOptions)
         navigations.push(Object.assign({ title }, state))
       })
     })
 
     return {
-      tab,
-      repl: tab.REPL,
-      width: Width.Default,
-
+      argvNoOptions,
+      parsedOptions,
       allNavs: navigations,
       allLinks: response.links || [],
       current: { menuIdx: 0, tabIdx: navigations[0].currentTabIndex },
@@ -131,13 +139,9 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     return true
   }
 
-  private onResponse(tab: Tab, response: NavResponse) {
-    this.setState(this.getState(tab, response))
-  }
-
   /** render menu options specified by client/config.d/about.json */
   private renderSideNavMenu(menuIdx: number) {
-    const thisNav = this.state.allNavs[menuIdx]
+    const thisNav = this.current.allNavs[menuIdx]
     return (
       <SideNavMenu
         title={strings(thisNav.title)}
@@ -151,9 +155,15 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
             href="#" // needed for tab navigation
             key={idx} // if you make this mode.mode, then data-mode doesn't work
             data-mode={mode.mode} // needed for tests
-            isActive={this.state.current.menuIdx === menuIdx && this.state.current.tabIdx === idx}
+            isActive={this.current.current.menuIdx === menuIdx && this.current.current.tabIdx === idx}
             onClick={() => {
-              this.setState({ current: { menuIdx: menuIdx, tabIdx: idx } })
+              this.setState(({ current, history }) => {
+                const newCurrent = Object.assign({}, current, { current: { menuIdx: menuIdx, tabIdx: idx } })
+                history.updateActive(newCurrent)
+                return {
+                  current: newCurrent
+                }
+              })
             }}
           >
             <span className="kui--mode-placeholder" data-mode={mode.mode}>
@@ -173,7 +183,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
           data-link={strings(link.label)}
           key={idx}
           href="#"
-          onClick={() => this.props.tab.REPL.pexec(link.command)}
+          onClick={() => this.state.tab.REPL.pexec(link.command)}
         >
           {strings(link.label)}
         </SideNavLink>
@@ -198,8 +208,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
     return (
       <SideNav aria-label="Side navigation" expanded isChildOfHeader={false} isFixedNav>
         <SideNavItems>
-          {this.state.allNavs.map((nav, idx) => this.renderSideNavMenu(idx))}
-          {this.state.allLinks.map((link, idx) => this.renderSideNavLink(idx, link))}
+          {this.current.allNavs.map((nav, idx) => this.renderSideNavMenu(idx))}
+          {this.current.allLinks.map((link, idx) => this.renderSideNavLink(idx, link))}
         </SideNavItems>
       </SideNav>
     )
@@ -219,8 +229,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
         <KuiContent
           key={`${menuIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
           tab={this.state.tab}
-          mode={this.state.allNavs[menuIdx].tabs[tabIdx]}
-          response={this.getMMRFromMenu(this.state.response.menus[menuIdx])}
+          mode={this.current.allNavs[menuIdx].tabs[tabIdx]}
+          response={this.getMMRFromMenu(this.current.response.menus[menuIdx])}
         />
       </React.Suspense>
     )
@@ -231,7 +241,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
   }
 
   public render() {
-    if (!this.state.response) {
+    if (!this.current || !this.current.response) {
       return <div />
     }
 
@@ -242,10 +252,10 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
       >
         {' '}
         {/* data-view helps with tests */}
-        {this.title()}
+        {this.title({ breadcrumbs: this.current.response.breadcrumbs })}
         <div className="kui--sidecar-header-and-body" style={this.headerBodyStyle()}>
           {this.nav()}
-          {this.bodyContainer(this.state.current.tabIdx, this.state.current.menuIdx)}
+          {this.bodyContainer(this.current.current.tabIdx, this.current.current.menuIdx)}
         </div>
       </div>
     )

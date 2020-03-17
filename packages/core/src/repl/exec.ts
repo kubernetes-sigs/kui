@@ -397,7 +397,15 @@ class InProcessExecutor implements Executor {
 
           eventBus.emit(`/command/complete/fromuser`, endEvent, responseType)
           eventBus.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, responseType)
-          eventBus.emit(`/command/complete/fromuser/${responseType}`, tab, response, execUUID, responseType)
+          eventBus.emit(
+            `/command/complete/fromuser/${responseType}`,
+            tab,
+            response,
+            execUUID,
+            argvNoOptions,
+            parsedOptions,
+            responseType
+          )
           eventBus.emit(
             `/command/complete/fromuser/${responseType}/${getTabId(tab)}`,
             tab,

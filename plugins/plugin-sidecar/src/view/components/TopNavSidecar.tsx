@@ -17,9 +17,11 @@
 import Debug from 'debug'
 import * as React from 'react'
 import { Tabs, Tab } from 'carbon-components-react'
+
 import {
   eventBus,
   Tab as KuiTab,
+  ParsedOptions,
   MultiModalMode,
   MultiModalResponse,
   isResourceWithMetadata,
@@ -33,7 +35,7 @@ import {
 import Width from './width'
 import Badge from './Badge'
 import ToolbarContainer from './ToolbarContainer'
-import { BaseState, BaseSidecar, Props } from './BaseSidecar'
+import { BaseHistoryEntry, BaseSidecar, Props } from './BaseSidecar'
 
 import 'carbon-components/scss/components/tabs/_tabs.scss'
 
@@ -42,15 +44,25 @@ const KuiContent = React.lazy(() => import('./KuiContent'))
 
 const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 
-interface State extends BaseState {
+/**
+ * One history entry, which is a `MultiModalResponse`, further parsed
+ * out into buttons and tabs, and a pointer to the `currentTabIndex`.
+ *
+ */
+interface HistoryEntry extends BaseHistoryEntry {
   currentTabIndex: number
 
   buttons: Button[]
-  tabs: MultiModalMode[]
-  response: MultiModalResponse
+  tabs: Readonly<MultiModalMode[]>
+  response: Readonly<MultiModalResponse>
 }
 
-export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): State {
+export function getStateFromMMR(
+  tab: KuiTab,
+  response: MultiModalResponse,
+  argvNoOptions: string[],
+  parsedOptions: ParsedOptions
+): HistoryEntry {
   let allModes = response.modes.slice(0)
 
   // consult the view registrar for registered view modes
@@ -83,9 +95,8 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Stat
   const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
 
   return {
-    tab,
-    repl: tab.REPL,
-    width: Width.Default,
+    argvNoOptions,
+    parsedOptions,
     currentTabIndex: defaultMode,
     tabs,
     buttons,
@@ -110,33 +121,33 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Stat
  * -----------------------
  *
  */
-export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State> {
-  public constructor(props: Props<MultiModalResponse>) {
+export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, HistoryEntry> {
+  public constructor(props: Props) {
     super(props)
 
-    if (!this.isManaged()) {
-      const channel = '/command/complete/fromuser/MultiModalResponse'
-      const onResponse = this.onResponse.bind(this)
-      eventBus.on(channel, onResponse)
-      this.cleaners.push(() => eventBus.off(channel, onResponse))
+    const channel = '/command/complete/fromuser/MultiModalResponse'
+    const onResponse = this.onResponse.bind(this)
+    eventBus.on(channel, onResponse)
+    this.cleaners.push(() => eventBus.off(channel, onResponse))
 
-      this.state = {
-        repl: undefined,
-        tab: undefined,
-        width: Width.Default,
+    this.state = {
+      repl: undefined,
+      tab: undefined,
+      width: Width.Default,
 
-        currentTabIndex: undefined,
-        tabs: undefined,
-        buttons: undefined,
-        response: undefined
-      }
-    } else {
-      this.state = getStateFromMMR(props.tab, props.response)
+      history: undefined,
+      current: undefined
     }
   }
 
-  private onResponse(tab: KuiTab, response: MultiModalResponse) {
-    this.setState(getStateFromMMR(tab, response))
+  /** @return a `HistoryEntry` for the given `Response` */
+  protected getState(
+    tab: KuiTab,
+    response: MultiModalResponse,
+    argvNoOptions: string[],
+    parsedOptions: ParsedOptions
+  ): HistoryEntry {
+    return getStateFromMMR(tab, response, argvNoOptions, parsedOptions)
   }
 
   protected headerBodyStyle() {
@@ -144,10 +155,10 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
   }
 
   private nameHash() {
-    const { nameHash } = this.state.response
+    const { nameHash } = this.current.response
 
     if (nameHash) {
-      const onclick = this.state.response.onclick && this.state.response.onclick.nameHash
+      const onclick = this.current.response.onclick && this.current.response.onclick.nameHash
       return (
         <span
           className={'entity-name-hash' + (onclick ? ' clickable' : '')}
@@ -160,14 +171,14 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
   }
 
   private name() {
-    const onclick = this.state.response.onclick && this.state.response.onclick.name
+    const onclick = this.current.response.onclick && this.current.response.onclick.name
     return (
       <div className="entity-name-line">
         <span
           className={'entity-name' + (onclick ? ' clickable' : '')}
           onClick={onclick && (() => this.state.repl.pexec(onclick))}
         >
-          {this.state.response.metadata.name}
+          {this.current.response.metadata.name}
         </span>
       </div>
     )
@@ -196,10 +207,14 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
           <Tabs
             className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"
             triggerHref="#"
-            selected={this.state.currentTabIndex}
-            onSelectionChange={(idx: number) => this.setState({ currentTabIndex: idx })}
+            selected={this.current.currentTabIndex}
+            onSelectionChange={(idx: number) =>
+              this.setState(({ current }) => ({
+                current: Object.assign({}, current, { currentTabIndex: idx })
+              }))
+            }
           >
-            {this.state.tabs.map((mode: MultiModalMode, idx: number) => (
+            {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
               <Tab
                 href="#"
                 key={mode.mode}
@@ -223,24 +238,31 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
   }
 
   protected bodyContent(idx: number) {
-    return <KuiContent tab={this.state.tab} mode={this.state.tabs[idx]} response={this.state.response} />
+    return (
+      <KuiContent
+        key={this.state.history.key}
+        tab={this.state.tab}
+        mode={this.current.tabs[idx]}
+        response={this.current.response}
+      />
+    )
   }
 
   private tabContent(idx: number) {
-    const { toolbarText } = this.state.response
+    const { toolbarText } = this.current.response
 
     return (
       <div className="sidecar-content-container">
         <div className="custom-content zoomable">
           <ToolbarContainer
             tab={this.state.tab}
-            response={this.state.response}
+            response={this.current.response}
             toolbarText={toolbarText}
-            buttons={this.state.buttons}
+            buttons={this.current.buttons}
           >
             {this.bodyContent(idx)}
           </ToolbarContainer>
-        </div>{' '}
+        </div>
       </div>
     )
   }
@@ -250,7 +272,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
     const badges = badgeRegistrar.filter(({ when }) => {
       // filter out any irrelevant badges (for this resource)
       try {
-        return when(this.state.response)
+        return when(this.current.response)
       } catch (err) {
         debug('warning: registered badge threw an exception during filter', err)
         return false
@@ -260,7 +282,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
     return (
       <div className="badges">
         {badges.map(({ badge }, idx) => (
-          <Badge key={idx} spec={badge} tab={this.props.tab} response={this.props.response} />
+          <Badge key={idx} spec={badge} tab={this.state.tab} response={this.current.response} />
         ))}
       </div>
     )
@@ -285,7 +307,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
   }
 
   public render() {
-    if (!this.state.response) {
+    if (!this.current || !this.current.response) {
       return <div />
     }
     try {
@@ -293,7 +315,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
         kind,
         metadata: { namespace },
         onclick
-      } = this.state.response
+      } = this.current.response
       const onClickNamespace = onclick && onclick.namespace && (() => this.state.repl.pexec(onclick.namespace))
 
       return (
@@ -301,15 +323,14 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, State
           className={'kui--sidecar kui--inverted-color-context kui--screenshotable ' + this.width()}
           data-view="topnav"
         >
-          {' '}
           {/* data-view helps with tests */}
-          {this.title(
+          {this.title({
             kind,
             namespace,
-            this.state.response && this.state.response.metadata ? this.state.response.metadata.name : undefined,
-            false,
+            name:
+              this.current.response && this.current.response.metadata ? this.current.response.metadata.name : undefined,
             onClickNamespace
-          )}
+          })}
           <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
             {this.header()}
             {this.tabs()}

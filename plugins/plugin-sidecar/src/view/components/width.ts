@@ -17,7 +17,8 @@
 const enum Width {
   Default,
   Minimized,
-  Maximized
+  Maximized,
+  Closed
 }
 
 export default Width

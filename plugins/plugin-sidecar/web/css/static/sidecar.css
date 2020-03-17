@@ -5,29 +5,34 @@
   font-size: 0.875em;
 
   .sidecar-bottom-stripe-left-bits {
-    /* filler in the window stripe to fill with the sidenav column */
-    flex: 2.5;
-    background-color: var(--color-sidecar-header);
-  }
-  .sidecar-bottom-stripe-right-bits {
-    /* filler in the window stripe to fill with the content column */
-    flex: 6;
-    justify-content: flex-end;
-  }
-  .sidecar-bottom-stripe {
-    border: none;
-    background: transparent;
+    display: none;
   }
 
-  .kui--sidecar-header-and-body .bx--side-nav {
-    /* title */
-    .sidecar-header-name-content .bx--side-nav__submenu-title {
-      color: var(--color-name);
+  .sidecar-bottom-stripe {
+    transition: none;
+    &:not(.kui--sidecar--titlebar-has-breadcrumbs) {
+      border: none;
+      background: transparent;
+
+      .sidecar-bottom-stripe-right-bits {
+        /* filler in the window stripe to fill with the content column */
+        flex: 6;
+        justify-content: flex-end;
+      }
+    }
+
+    .kui--sidecar--titlebar-navigation {
+      /* filler in the window stripe to fill with the sidenav column */
+      flex: 2.5;
+      background-color: var(--color-sidecar-header);
+      margin: 0;
+      border: none;
     }
   }
 
   /* tables in sidecar */
   .result-table-outer,
+  .kui--data-table-wrapper,
   .bx--data-table {
     width: 100%;
   }

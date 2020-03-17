@@ -48,9 +48,13 @@ interface Options extends ParsedOptions {
 const doModes = (): ((args: Arguments<Options>) => MultiModalResponse) => {
   return (args: Arguments<Options>) => {
     if (args.parsedOptions.registrationOnly) {
-      return Object.assign(metadata, { foo: !!args.parsedOptions.foo, modes: [], defaultMode: args.parsedOptions.show })
+      return Object.assign({}, metadata, {
+        foo: !!args.parsedOptions.foo,
+        modes: [],
+        defaultMode: args.parsedOptions.show
+      })
     } else {
-      return Object.assign(metadata, {
+      return Object.assign({}, metadata, {
         foo: !!args.parsedOptions.foo,
         modes: textModes,
         defaultMode: args.parsedOptions.show

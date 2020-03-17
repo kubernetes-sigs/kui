@@ -82,14 +82,6 @@ body[kui-theme-style] .bx--structured-list-td {
   color: inherit;
 }
 
-/* breadcrumbs */
-body[kui-theme-style] .bx--breadcrumb-item .bx--link {
-  font-size: inherit;
-}
-body[kui-theme-style] .bx--breadcrumb-item::after {
-  color: inherit;
-}
-
 body[kui-theme-style] {
   /* carbon sets a line-height of "1", which does not work in the REPL */
   line-height: unset;

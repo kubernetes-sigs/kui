@@ -43,7 +43,17 @@ const navResponseWithoutLinks = (): NavResponse => ({
   ]
 })
 
+function navResponseWithBreadcrumbs(): NavResponse {
+  return Object.assign(navResponseWithoutLinks(), {
+    breadcrumbs: [{ label: 'breadcrumb1', command: 'test string' }, { label: 'breadcrumb2' }]
+  })
+}
+
 const doNav = () => (args: Arguments<Options>): NavResponse => {
+  if (args.parsedOptions.breadcrumb) {
+    return navResponseWithBreadcrumbs()
+  }
+
   if (args.parsedOptions.noLinks) {
     return navResponseWithoutLinks()
   }

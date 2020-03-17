@@ -44,7 +44,7 @@ export const closed = async (app: Application) => {
 
 /** fully closed, not just minimized */
 export const fullyClosed = async (app: Application) => {
-  return app.client.waitForExist(Selectors.SIDECAR_BASE, waitTimeout, true).then(() => app)
+  return app.client.waitForExist(Selectors.SIDECAR, waitTimeout, true).then(() => app)
 }
 
 /** close the sidecar by ESCAPE key */
@@ -88,12 +88,14 @@ export const resultSubset = (expectedResult: object, failFast?: boolean) => asyn
   return app
 }
 
-export const badge = (title: string, css?: string) => async (app: Application) => {
+export const badge = (title: string, css?: string, absent = false) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     const badges = css
       ? await app.client.getText(`${Selectors.SIDECAR_BADGES} .${css}`)
       : await app.client.getText(Selectors.SIDECAR_BADGES)
-    return badges.indexOf(title) >= 0
+
+    const idx = badges.indexOf(title)
+    return !absent ? idx >= 0 : idx < 0
   }, waitTimeout)
   return app
 }
@@ -241,7 +243,8 @@ export const showing = (
   expectSubstringMatchOnName?: boolean,
   expectedPackageName?: string,
   expectType?: string,
-  waitThisLong?: number
+  waitThisLong?: number,
+  which?: 'leftnav' | 'topnav'
 ) => async (app: Application) => {
   await app.client.waitUntil(
     async () => {
@@ -250,7 +253,9 @@ export const showing = (
       await app.client.waitForVisible(sidecarSelector)
 
       // either 'leftnav' or 'topnav'
-      const which = await app.client.getAttribute(sidecarSelector, 'data-view')
+      if (!which) {
+        which = await app.client.getAttribute(sidecarSelector, 'data-view')
+      }
       const titleSelector = which === 'topnav' ? Selectors.SIDECAR_TITLE : Selectors.SIDECAR_LEFTNAV_TITLE
 
       return app.client
@@ -300,3 +305,9 @@ export const showing = (
 
   return app
 }
+
+export const showingTopNav = (expectedName: string) =>
+  showing(expectedName, undefined, undefined, undefined, undefined, undefined, 'topnav')
+
+export const showingLeftNav = (expectedName: string) =>
+  showing(expectedName, undefined, undefined, undefined, undefined, undefined, 'leftnav')

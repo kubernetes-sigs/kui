@@ -18,7 +18,8 @@ import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
 import * as SidecarExpect from './sidecar-expect'
 import * as Selectors from './selectors'
-import { promiseEach } from '@kui-shell/core'
+import { expectArray } from './util'
+import { promiseEach, Breadcrumb } from '@kui-shell/core'
 
 interface Param {
   command: string
@@ -26,6 +27,7 @@ interface Param {
   modes: string[]
   commandLinks?: { label: string; expect: { type: 'NavResponse'; showing: string } }[]
   hrefLinks?: { label: string; href: string }[]
+  breadcrumbs?: Breadcrumb[]
 }
 
 export class TestNavResponse {
@@ -33,7 +35,7 @@ export class TestNavResponse {
   public constructor(public readonly param: Param) {}
 
   public run() {
-    const { command, showing, modes, commandLinks, hrefLinks } = this.param
+    const { command, showing, modes, commandLinks, hrefLinks, breadcrumbs } = this.param
     describe(`test NavResponse ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
@@ -45,6 +47,18 @@ export class TestNavResponse {
           .then(SidecarExpect.showing(showing))
           .then(() => Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(_)))))
           .catch(Common.oops(this, true)))
+
+      if (breadcrumbs && breadcrumbs.length > 0) {
+        it(`should open LeftNavSidecar with breadcrumbs for known outer command=${command} showing=${showing}`, () =>
+          CLI.command(command, this.app)
+            .then(ReplExpect.justOK)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.showing(showing))
+            .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS))
+            .then(() => this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS))
+            .then(expectArray(breadcrumbs.map(_ => _.label)))
+            .catch(Common.oops(this, true)))
+      }
 
       if (hrefLinks && hrefLinks.length > 0) {
         it(`should open LeftNavSidecar with href links for known outer command=${command} showing=${showing}`, () =>

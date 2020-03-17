@@ -15,6 +15,16 @@
  */
 import { TestNavResponse } from '@kui-shell/test'
 
+// test nav response with breadcrumbs
+const testNavResponseWithBreadcrumbs = new TestNavResponse({
+  command: 'test nav --breadcrumb',
+  showing: 'Test Nav Without Links',
+  modes: ['table'],
+  breadcrumbs: [{ label: 'breadcrumb1', command: 'test string' }, { label: 'breadcrumb2' }]
+})
+testNavResponseWithBreadcrumbs.run()
+
+// test nav response with links
 const testFullNavResponse = new TestNavResponse({
   command: 'test nav',
   showing: 'Test Nav',
@@ -22,13 +32,12 @@ const testFullNavResponse = new TestNavResponse({
   commandLinks: [{ label: 'switch', expect: { type: 'NavResponse', showing: 'Test Nav 2' } }],
   hrefLinks: [{ label: 'Home Page', href: 'http://kui.tools' }]
 })
-
 testFullNavResponse.run()
 
+// test plain nav response (no links, no breadcrumbs)
 const testNavResponseWithoutLinks = new TestNavResponse({
   command: 'test nav --noLinks',
   showing: 'Test Nav Without Links',
   modes: ['table']
 })
-
 testNavResponseWithoutLinks.run()

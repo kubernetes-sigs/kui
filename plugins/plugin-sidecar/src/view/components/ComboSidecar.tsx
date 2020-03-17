@@ -25,7 +25,6 @@ export type Props = SidecarOptions
 
 interface State {
   tab: Tab
-  execUUID: string
   response: MultiModalResponse | NavResponse
 }
 
@@ -35,7 +34,6 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
 
     this.state = {
       tab: undefined,
-      execUUID: undefined,
       response: undefined
     }
 
@@ -47,10 +45,9 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
     // this.cleaners.push(() => eventBus.off(channel1, onResponse))
   }
 
-  private onResponse(tab: Tab, response: MultiModalResponse | NavResponse, execUUID: string) {
+  private onResponse(tab: Tab, response: MultiModalResponse | NavResponse) {
     this.setState({
       tab,
-      execUUID,
       response
     })
   }
@@ -65,30 +62,18 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (!this.state.response) {
-      return <div />
-    } else if (isMultiModalResponse(this.state.response)) {
-      return (
-        <TopNavSidecar
-          managed
-          tab={this.state.tab}
-          key={this.state.execUUID}
-          response={this.state.response}
-          onClose={this.onClose.bind(this)}
-          {...this.props}
-        />
-      )
-    } else {
-      return (
-        <LeftNavSidecar
-          managed
-          tab={this.state.tab}
-          key={this.state.execUUID} // <!-- forces react to render child on execUUID change
-          response={this.state.response}
-          onClose={this.onClose.bind(this)}
-          {...this.props}
-        />
-      )
-    }
+    const isLeftNav = this.state.response && !isMultiModalResponse(this.state.response)
+
+    return (
+      <div className="kui--full-height">
+        <div className={'kui--full-height' + (isLeftNav || this.state.response === undefined ? ' hide' : '')}>
+          <TopNavSidecar {...this.props} onClose={this.onClose.bind(this)} />
+        </div>
+
+        <div className={'kui--full-height' + (!isLeftNav ? ' hide' : '')}>
+          <LeftNavSidecar {...this.props} onClose={this.onClose.bind(this)} />
+        </div>
+      </div>
+    )
   }
 }
