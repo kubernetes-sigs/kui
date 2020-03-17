@@ -15,19 +15,29 @@
  */
 
 import * as React from 'react'
+import { REPL, Breadcrumb as KuiBreadcrumb } from '@kui-shell/core'
+import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import {
   Maximize20 as MaximizeIcon,
   Minimize20 as MinimizeIcon,
+  ArrowLeft20 as BackIcon,
+  ArrowRight20 as ForwardIcon,
   ChevronDown20 as CloseIcon,
   Close20 as QuitIcon
 } from '@carbon/icons-react'
 
 import Width from './width'
 
-interface Props {
-  kind: string
+import '../../../web/css/static/Breadcrumb.scss'
+import 'carbon-components/scss/components/breadcrumb/_breadcrumb.scss'
+
+export interface Props {
+  kind?: string
   name?: string
   namespace?: string
+  breadcrumbs?: KuiBreadcrumb[]
+
+  repl: REPL
   fixedWidth: boolean
   width: Width
 
@@ -36,6 +46,9 @@ interface Props {
   onRestore: () => void
   onMinimize: () => void
   onClose: () => void
+
+  back?: { enabled: boolean; onClick: () => void }
+  forward?: { enabled?: boolean; onClick: () => void }
 }
 
 /**
@@ -161,9 +174,74 @@ export default class Window extends React.PureComponent<Props> {
     }
   }
 
+  /** back button */
+  private back() {
+    if (this.props.back) {
+      return (
+        <span className="sidecar-bottom-stripe-button">
+          <a href="#" className="graphical-icon kui--tab-navigable">
+            <BackIcon
+              onClick={this.props.back.onClick}
+              onMouseDown={evt => evt.preventDefault()}
+              className="kui--sidecar--titlebar-navigation--back"
+            />
+          </a>
+        </span>
+      )
+    }
+  }
+
+  /** forward button */
+  private forward() {
+    if (this.props.forward) {
+      return (
+        <span className="sidecar-bottom-stripe-button">
+          <a href="#" className="graphical-icon kui--tab-navigable">
+            <ForwardIcon
+              onClick={this.props.forward.onClick}
+              onMouseDown={evt => evt.preventDefault()}
+              className="kui--sidecar--titlebar-navigation--forward"
+            />
+          </a>
+        </span>
+      )
+    }
+  }
+
+  /** render history navigation UI */
+  private history() {
+    return (
+      <div className="kui--sidecar--titlebar-navigation">
+        {this.back()}
+        {this.forward()}
+
+        {this.props.breadcrumbs && (
+          <Breadcrumb noTrailingSlash={this.props.breadcrumbs.length > 1}>
+            {this.props.breadcrumbs.map((_, idx, A) => (
+              <BreadcrumbItem
+                key={idx}
+                isCurrentPage={idx === A.length - 1}
+                href="#"
+                onClick={_.command && (() => this.props.repl.pexec(_.command))}
+              >
+                {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
+              </BreadcrumbItem>
+            ))}
+          </Breadcrumb>
+        )}
+      </div>
+    )
+  }
+
   public render() {
     return (
-      <div className="sidecar-bottom-stripe zoomable">
+      <div
+        className={
+          'sidecar-bottom-stripe zoomable' + (this.props.breadcrumbs ? ' kui--sidecar--titlebar-has-breadcrumbs' : '')
+        }
+      >
+        {this.history()}
+
         <div className="sidecar-bottom-stripe-left-bits">
           {this.kind()}
           {this.namespace()}

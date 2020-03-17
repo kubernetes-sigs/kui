@@ -289,7 +289,7 @@ code.fancy-code.hljs {
   word-break: break-all;
 }
 .hide {
-  display: none;
+  display: none !important;
 }
 .flex-layout {
   display: flex;
@@ -1073,15 +1073,15 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 .page-content h3,
 .page-h3 {
-  color: var(--color-text-02);
-  font-size: 1.1875em;
+  color: var(--color-text-01);
+  font-size: 1.25em;
   font-weight: 600;
   letter-spacing: 0;
   padding: 1em 0 0.5em;
-  line-height: 1.25em;
+  line-height: 1.625em;
 }
 .page-content h4 {
-  color: var(--color-base0D);
+  color: var(--color-brand-01);
   letter-spacing: 0.32px;
   padding-bottom: 0.5em;
   font-size: unset;

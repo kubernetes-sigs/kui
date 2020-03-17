@@ -16,6 +16,8 @@ export const SIDECAR_HIDDEN = `${SIDECAR_BASE}:not(.visible)`
 export const SIDECAR_ACTIVATION_TITLE = `${SIDECAR} .sidecar-header-name .entity-name-hash`
 export const SIDECAR_TITLE = `${SIDECAR} .sidecar-header-name-content .entity-name`
 export const SIDECAR_LEFTNAV_TITLE = `${SIDECAR} .sidecar-header-name-content .bx--side-nav__submenu-title`
+export const SIDECAR_HEADER_NAVIGATION = `${SIDECAR} .kui--sidecar--titlebar-navigation`
+export const SIDECAR_BREADCRUMBS = `${SIDECAR_HEADER_NAVIGATION} .bx--breadcrumb .bx--breadcrumb-item .bx--link`
 export const SIDECAR_PACKAGE_NAME_TITLE = `${SIDECAR} .sidecar-bottom-stripe .package-prefix`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
 export const SIDECAR_KIND = `${SIDECAR} .sidecar-bottom-stripe .sidecar-header-icon`
@@ -60,7 +62,9 @@ export const SIDECAR_MODE_BUTTON_V2 = (mode: string) => `${SIDECAR_MODE_BUTTONS_
 export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (mode: string) =>
   `${SIDECAR_MODE_BUTTON_V2(mode)}.bx--side-nav__link--current`
 
-export const SIDECAR_BACK_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-back-button` // back button in the bottom stripe
+export const SIDECAR_BACK_BUTTON = `${SIDECAR_HEADER_NAVIGATION} .kui--sidecar--titlebar-navigation--back`
+export const SIDECAR_FORWARD_BUTTON = `${SIDECAR_HEADER_NAVIGATION} .kui--sidecar--titlebar-navigation--forward`
+
 export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-button a` // maximize button in the bottom stripe
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
 export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close a` // resume button in minimized mode

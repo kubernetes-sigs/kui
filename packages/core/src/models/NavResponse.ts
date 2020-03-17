@@ -17,6 +17,11 @@
 import { Entity } from './entity'
 import { MultiModalResponse } from './mmr/types'
 
+export interface Breadcrumb {
+  label: string
+  command?: string
+}
+
 /**
  * A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
  *
@@ -26,6 +31,7 @@ export type NavResponse = {
   kind: 'NavResponse'
   menus: Menu[]
   links?: Link[]
+  breadcrumbs?: Breadcrumb[]
 }
 
 export type Menu = Record<string, MultiModalResponse>

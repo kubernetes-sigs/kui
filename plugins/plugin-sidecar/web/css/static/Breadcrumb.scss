@@ -1,0 +1,27 @@
+/* breadcrumbs */
+body[kui-theme-style] .bx--breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-sans-serif);
+  padding: 0 1em;
+
+  .bx--breadcrumb-item {
+    margin-right: 0.5em;
+
+    .bx--link {
+      font-size: inherit;
+      font-size: 1em;
+      font-weight: normal;
+      color: var(--color-base0C);
+    }
+
+    &.bx--breadcrumb-item--current .bx--link:not([href]) {
+      color: var(--color-text-01);
+    }
+
+    &:after {
+      margin-left: 0.5em;
+      color: var(--color-text-02);
+    }
+  }
+}

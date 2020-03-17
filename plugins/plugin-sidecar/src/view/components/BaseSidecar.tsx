@@ -15,28 +15,26 @@
  */
 
 import * as React from 'react'
-import { REPL, KResponse, Tab as KuiTab } from '@kui-shell/core'
+import { REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
-import TitleBar from './TitleBar'
+import sameCommand from './same'
+import TitleBar, { Props as TitleBarProps } from './TitleBar'
+import CircularBuffer from './CircularBuffer'
 
 import '../../../web/css/static/sidecar.css'
 import '../../../web/css/static/sidecar-main.css'
 
 /**
  * In order to support a sidecar being managed from an enclosing
- * context, we offer these Props. By "managed", we mean the answer to
- * the question of which component should direct command execution
- * responses into the view? The Sidecar impls on their own could do
- * so. However, in some cases, it may be helpful to broker multiple
- * sidecar views into a single enclosing view. If so, then that
- * enclosing construct needs to manage the direction of responses into
- * the view. It will then direct that response intot he `response`
- * field here, and set `managed` to true. It may also pass down an
- * `onclose` and `willLoseFocus` event set, so that the enclosing
- * container may also manage those aspects of the view.
+ * context, we offer these Props. This is helpful for those cases
+ * where one wishes to broker multiple sidecar views into a single
+ * enclosing view; e.g. so that the broker can show at most one of the
+ * assorted views at a time.
  *
- * For self-managed sidecar instances, these will likely be all null.
+ * For managed sidecars, may pass down an `onClose` and
+ * `willLoseFocus` event set, so that the enclosing container may also
+ * manage those aspects of the view.
  *
  */
 export interface SidecarOptions {
@@ -45,15 +43,18 @@ export interface SidecarOptions {
   willChangeSize?: (desiredWidth: string) => void
 }
 
-export type Props<R extends KResponse> = SidecarOptions & {
+export type Props = SidecarOptions & {
   tab?: KuiTab
-  managed?: boolean
   onClose?: () => void
-  response?: R
+}
+
+export interface BaseHistoryEntry {
+  argvNoOptions: string[]
+  parsedOptions: ParsedOptions
 }
 
 /** Mostly, this State deals with the current "width" of the view. */
-export interface BaseState {
+export interface BaseState<HistoryEntry extends BaseHistoryEntry> {
   /** Current presentation of the sidecar; e.g. Maximized or Minimized or Default width? */
   width: Width
 
@@ -68,17 +69,20 @@ export interface BaseState {
   /** TODO investigate removing these */
   repl: REPL
   tab: KuiTab
+
+  current: HistoryEntry
+  history: CircularBuffer<HistoryEntry>
 }
 
 type Cleaner = () => void
 
-export abstract class BaseSidecar<R extends KResponse, State extends BaseState> extends React.PureComponent<
-  Props<R>,
-  State
-> {
+export abstract class BaseSidecar<
+  R extends KResponse,
+  HistoryEntry extends BaseHistoryEntry
+> extends React.PureComponent<Props, BaseState<HistoryEntry>> {
   protected cleaners: Cleaner[] = []
 
-  protected constructor(props: Props<R>) {
+  protected constructor(props: Props) {
     super(props)
 
     // interpret Escape key as a toggle of the view's width
@@ -87,15 +91,78 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
       document.addEventListener('keyup', onEscape)
       this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
     }
+  }
 
-    if (this.props.willChangeSize) {
-      this.props.willChangeSize(this.defaultWidth())
-    }
+  /** @return a `HistoryEntry` for the given `Response` */
+  protected abstract getState(
+    tab: KuiTab,
+    response: R,
+    argvNoOptions: string[],
+    parsedOptions: ParsedOptions
+  ): HistoryEntry
+
+  /** Enter a given `response` into the History model */
+  protected onResponse(tab: KuiTab, response: R, _, argvNoOptions: string[], parsedOptions: ParsedOptions) {
+    this.setState(curState => {
+      const existingIdx = curState.history ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions)) : -1
+      const current =
+        this.idempotent() && existingIdx !== -1
+          ? curState.history.peekAt(existingIdx)
+          : this.getState(tab, response, argvNoOptions, parsedOptions)
+
+      if (current) {
+        this.props.willChangeSize(this.defaultWidth())
+
+        if (!curState.history) {
+          return {
+            tab,
+            repl: tab.REPL,
+            current,
+            history: new CircularBuffer(current, this.capacity()),
+            width: Width.Default
+          }
+        } else {
+          if (existingIdx === -1) {
+            curState.history.push(current)
+          } else {
+            curState.history.update(existingIdx, current)
+          }
+
+          return {
+            tab,
+            repl: tab.REPL,
+            current,
+            history: curState.history,
+            width: Width.Default
+          }
+        }
+      }
+    })
+  }
+
+  /** Capacity of the circular buffer; e.g. if 1, then no history */
+  protected capacity() {
+    return 15
+  }
+
+  /** Is getState() idempotent? i.e. Will two command executions that satisfy `sameCommand` always produce the same response? */
+  protected idempotent() {
+    return false
+  }
+
+  /** Should we display Back/Forward arrows for history navigation? */
+  protected useArrowNavigation() {
+    return true
   }
 
   /** We are about to go away; invoke the register cleaners. */
   public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
+  }
+
+  /** @return the current History entry */
+  protected get current(): HistoryEntry {
+    return this.state.current
   }
 
   protected maximizedWidth() {
@@ -137,11 +204,6 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
     }
   }
 
-  /** Is someone above us managing listening for KResponses */
-  protected isManaged(): boolean {
-    return !!this.props.managed
-  }
-
   protected onMaximize() {
     this.setState({ width: Width.Maximized })
 
@@ -178,7 +240,11 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
   }
 
   protected onClose() {
-    this.props.onClose()
+    this.setState({ width: Width.Closed })
+
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
 
     if (this.props.willChangeSize) {
       this.props.willChangeSize('0%')
@@ -195,24 +261,46 @@ export abstract class BaseSidecar<R extends KResponse, State extends BaseState> 
         return 'minimized'
       case Width.Maximized:
         return 'visible maximized'
-      default:
+      case Width.Default:
         return 'visible'
+      default:
+        return ''
     }
   }
 
-  protected title(kind?: string, namespace?: string, name?: string, fixedWidth = true, onClickNamespace?: () => void) {
+  protected title(
+    props?: Omit<TitleBarProps, 'width' | 'fixedWidth' | 'onClose' | 'onRestore' | 'onMaximize' | 'onMinimize' | 'repl'>
+  ) {
     return (
       <TitleBar
-        fixedWidth={fixedWidth}
-        kind={kind}
-        namespace={namespace}
-        name={name}
+        {...props}
+        repl={this.state.tab.REPL}
         width={this.state.width}
-        onClickNamespace={onClickNamespace}
+        fixedWidth={this.isFixedWidth()}
         onMaximize={this.onMaximize.bind(this)}
         onRestore={this.onRestore.bind(this)}
         onMinimize={this.onMinimize.bind(this)}
         onClose={this.onClose.bind(this)}
+        back={
+          this.useArrowNavigation() &&
+          this.state.width !== Width.Minimized &&
+          this.state.history.length > 1 && {
+            enabled: true,
+            onClick: () => {
+              this.setState(curState => ({ current: curState.history.shiftLeft() }))
+            }
+          }
+        }
+        forward={
+          this.useArrowNavigation() &&
+          this.state.width !== Width.Minimized &&
+          this.state.history.length > 1 && {
+            enabled: true,
+            onClick: () => {
+              this.setState(curState => ({ current: curState.history.shiftRight() }))
+            }
+          }
+        }
       />
     )
   }
