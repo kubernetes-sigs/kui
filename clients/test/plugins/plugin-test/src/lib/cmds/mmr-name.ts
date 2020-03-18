@@ -20,25 +20,41 @@
  *
  */
 
-import { MultiModalResponse, Registrar } from '@kui-shell/core'
+import { MultiModalResponse, Registrar, Arguments, ParsedOptions } from '@kui-shell/core'
 
 import { metadataWithNameOnly } from './metadata'
 import { plainTextMode } from './content/modes'
 
-const doModes = (): (() => MultiModalResponse) => {
-  return () =>
-    Object.assign(metadataWithNameOnly, {
-      modes: plainTextMode,
-      nameHash: 'this is the namehash part',
-      onclick: { name: 'test string', nameHash: 'test string --grumble 1' }
-    })
+interface Options extends ParsedOptions {
+  pretty?: boolean
 }
+
+const doModes = () =>
+  function(args: Arguments<Options>): MultiModalResponse {
+    if (args.parsedOptions.pretty) {
+      return Object.assign(metadataWithNameOnly, {
+        modes: plainTextMode,
+        nameHash: 'this is the namehash part',
+        prettyName: 'this is the prettyName part',
+        onclick: { name: 'test string', nameHash: 'test string --grumble 1' }
+      })
+    } else {
+      return Object.assign(metadataWithNameOnly, {
+        modes: plainTextMode,
+        nameHash: 'this is the namehash part',
+        onclick: { name: 'test string', nameHash: 'test string --grumble 1' }
+      })
+    }
+  }
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/name', doModes(), {
     inBrowserOk: true,
     usage: {
-      docs: 'A showcase of MultiModalResponse metadata name'
+      command: 'string',
+      strict: 'string',
+      optional: [{ name: '--pretty', boolean: true }],
+      docs: 'A show case of MultiModalResponse name'
     }
   })
 }

@@ -171,6 +171,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   }
 
   private name() {
+    const { prettyName } = this.current.response // e.g. the de-hashed part of auto-generated names
     const onclick = this.current.response.onclick && this.current.response.onclick.name
     return (
       <div className="entity-name-line">
@@ -178,7 +179,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
           className={'entity-name' + (onclick ? ' clickable' : '')}
           onClick={onclick && (() => this.state.repl.pexec(onclick))}
         >
-          {this.current.response.metadata.name}
+          {prettyName || this.current.response.metadata.name}
         </span>
       </div>
     )
