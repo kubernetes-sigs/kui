@@ -19,6 +19,7 @@ import * as Debug from 'debug'
 
 import { Loading } from '@kui-shell/plugin-client-common'
 import {
+  ParsedOptions,
   Tab as KuiTab,
   ScalarResource,
   SupportedStringContent,
@@ -37,6 +38,10 @@ const debug = Debug('plugins/sidecar/Eval')
 interface EvalProps {
   tab: KuiTab
   command: string | FunctionThatProducesContent
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
   response: MultiModalResponse
   contentType?: SupportedStringContent
 }
@@ -98,7 +103,7 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
           // command string
           this.props.tab.REPL.qexec<ScalarResource>(this.props.command).then(done)
         } else {
-          Promise.resolve(this.props.command(this.props.tab, this.props.response))
+          Promise.resolve(this.props.command(this.props.tab, this.props.response, this.props.args))
             .then(content => {
               if (isCommandStringContent(content)) {
                 return this.props.tab.REPL.qexec<ScalarResource | ScalarContent>(content.contentFrom)
@@ -126,6 +131,6 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
       contentType: this.state.contentType
     }
 
-    return <KuiMMRContent tab={this.props.tab} mode={mode} response={this.props.response} />
+    return <KuiMMRContent tab={this.props.tab} mode={mode} response={this.props.response} args={this.props.args} />
   }
 }

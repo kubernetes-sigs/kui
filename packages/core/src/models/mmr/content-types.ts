@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ParsedOptions } from '../command'
 import { ReactElement } from 'react'
 import { Tab } from '../../webapp/tab'
 import { Table, isTable } from '../../webapp/models/table'
@@ -108,7 +109,11 @@ export function isStringWithOptionalContentType<T extends MetadataBearing>(
  */
 export type FunctionThatProducesContent<T extends MetadataBearing = MetadataBearing> = (
   tab: Tab,
-  entity: T
+  entity: T,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent> | CommandStringContent
 
 export interface FunctionContent<T extends MetadataBearing> {

@@ -411,6 +411,8 @@ class InProcessExecutor implements Executor {
             tab,
             response,
             execUUID,
+            argvNoOptions,
+            parsedOptions,
             responseType
           )
         })

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, ResourceWithMetadata, BadgeRegistration, ModeRegistration } from '@kui-shell/core'
+import { Tab, ResourceWithMetadata, BadgeRegistration, ModeRegistration, ParsedOptions } from '@kui-shell/core'
 
 export interface MyResource extends ResourceWithMetadata {
   foo: boolean
@@ -80,8 +80,8 @@ export const mode5 = {
   mode: {
     mode: 'mode5',
     label: 'mode5 label',
-    content: () => ({
-      contentFrom: 'test string',
+    content: (tab: Tab, MyResource: MyResource, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => ({
+      contentFrom: `${args.argvNoOptions[0]} string`, // => should be 'test string'
       order: 999,
       contentType: 'text/plain' as const
     })

@@ -230,6 +230,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
           key={`${menuIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
           tab={this.state.tab}
           mode={this.current.allNavs[menuIdx].tabs[tabIdx]}
+          args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
           response={this.getMMRFromMenu(this.current.response.menus[menuIdx])}
         />
       </React.Suspense>
