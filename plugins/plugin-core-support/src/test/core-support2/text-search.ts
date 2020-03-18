@@ -96,21 +96,30 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
     await this.app.client.keys(Keys.ENTER)
   }
 
-  it('should find 4 matches for grumble', async () => {
-    try {
-      this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
-      await this.app.client.waitForVisible('#search-bar')
-      await this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'))
+  const findMatch = (typeText: string, searchFoundText: string) => {
+    it(`should find ${searchFoundText} for ${typeText}`, async () => {
       await this.app.client.waitUntil(async () => {
-        await type(`grumble`)
-        // await this.app.client.setValue('#search-input', `grumble${Keys.ENTER}`)
-        const txt = await this.app.client.getText('#search-found-text')
-        return txt === '4 matches' // two executions plus two 'Command not found: grumble' matches, and no tab title match!
+        await this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
+        return this.app.client.waitForVisible('#search-bar', 2000).then(
+          () => true,
+          () => false
+        )
       })
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
+
+      return this.app.client
+        .waitUntil(() => this.app.client.hasFocus('#search-input'))
+        .then(() =>
+          this.app.client.waitUntil(async () => {
+            await type(typeText)
+            const txt = await this.app.client.getText('#search-found-text')
+            return txt === searchFoundText // one execution, plus one "Command not found: bojangles" match, plus one tab title match
+          })
+        )
+        .catch(Common.oops(this, true))
+    })
+  }
+
+  findMatch('grumble', '4 matches') // two executions plus two 'Command not found: grumble' matches, and no tab title match!
 
   // 1 match test
   it('should close the search bar via ctrl+f', () =>
@@ -118,27 +127,8 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
       .catch(Common.oops(this, true)))
-  it('should find 3 matches for bojangles', async () => {
-    await this.app.client.waitUntil(async () => {
-      await this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
-      return this.app.client.waitForVisible('#search-bar', 2000).then(
-        () => true,
-        () => false
-      )
-    })
 
-    return this.app.client
-      .waitUntil(() => this.app.client.hasFocus('#search-input'))
-      .then(() =>
-        this.app.client.waitUntil(async () => {
-          await type(`bojangles`)
-          // await this.app.client.setValue('#search-input', `bojangles${Keys.ENTER}`)
-          const txt = await this.app.client.getText('#search-found-text')
-          return txt === '3 matches' // one execution, plus one "Command not found: bojangles" match, plus one tab title match
-        })
-      )
-      .catch(Common.oops(this, true))
-  })
+  findMatch('bojangles', '3 matches') // one execution, plus one "Command not found: bojangles" match, plus one tab title match
 
   // no matches test
   it('should close the search bar via ctrl+f', async () => {
