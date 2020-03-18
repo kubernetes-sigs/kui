@@ -155,6 +155,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, State> {
             onClick={() => {
               this.setState({ current: { menuIdx: menuIdx, tabIdx: idx } })
             }}
+            onMouseDown={event => event.preventDefault()}
           >
             <span className="kui--mode-placeholder" data-mode={mode.mode}>
               {strings(mode.label || mode.mode)}
