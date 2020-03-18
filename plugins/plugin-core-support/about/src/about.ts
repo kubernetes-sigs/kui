@@ -188,7 +188,6 @@ const aboutWindow = async (): Promise<NavResponse> => {
     apiVersion,
     kind,
     menus: translatedMenusWithMMR,
-    breadcrumbs: [{ label: 'kubectl' }, { label: 'get' }],
     links: translatedLinks
   }
 }
