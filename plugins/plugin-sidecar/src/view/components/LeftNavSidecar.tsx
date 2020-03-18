@@ -165,6 +165,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
                 }
               })
             }}
+            onMouseDown={event => event.preventDefault()}
           >
             <span className="kui--mode-placeholder" data-mode={mode.mode}>
               {strings(mode.label || mode.mode)}
