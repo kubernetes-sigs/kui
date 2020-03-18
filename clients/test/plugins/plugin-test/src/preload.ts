@@ -16,7 +16,7 @@
 
 import { CapabilityRegistration, PreloadRegistrar, isHeadless } from '@kui-shell/core'
 
-import { mode1, mode2, mode3, button, badge1, badge2 } from './lib/modes'
+import { mode1, mode2, mode3, mode5, button, badge1, badge2 } from './lib/modes'
 import testContext from './lib/status-stripe'
 
 export const registerCapability: CapabilityRegistration = (registrar: PreloadRegistrar) => {
@@ -29,7 +29,7 @@ export const registerCapability: CapabilityRegistration = (registrar: PreloadReg
 
 export default async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
-    registrar.registerModes(mode1, mode2, mode3, button)
+    registrar.registerModes(mode1, mode2, mode3, mode5, button)
     registrar.registerBadges(badge1, badge2)
   }
 }

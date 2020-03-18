@@ -55,7 +55,13 @@ import UsageError from '../core/usage-error'
  * Standard handling of Table responses
  *
  */
-const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, block: Block) => {
+const printTable = async (
+  tab: Tab,
+  response: Table,
+  resultDom: HTMLElement,
+  block: Block,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) => {
   ;(resultDom.parentNode as HTMLElement).classList.add('result-as-table', 'result-as-vertical')
 
   if (response.noEntityColors) {
@@ -64,14 +70,14 @@ const printTable = async (tab: Tab, response: Table, resultDom: HTMLElement, blo
   }
 
   const { formatTable } = await import('./views/table')
-  formatTable(tab, response, resultDom, { block })
+  formatTable(tab, response, resultDom, args, { block })
 }
 
 /**
  * Stream output to the given block
  *
  */
-export const streamTo = (tab: Tab, block: Block): Stream => {
+export const streamTo = (tab: Tab, block: Block, argvNoOptions: string[], parsedOptions: ParsedOptions): Stream => {
   const container = block.querySelector('.repl-output') as HTMLElement
   const resultDom = container ? document.createElement('div') : (block.querySelector('.repl-result') as HTMLElement)
   if (container) {
@@ -111,10 +117,10 @@ export const streamTo = (tab: Tab, block: Block): Stream => {
         const wrapper = document.createElement('div')
         wrapper.classList.add('repl-result')
         resultDom.appendChild(wrapper)
-        await printTable(tab, response, wrapper, block)
+        await printTable(tab, response, wrapper, block, { argvNoOptions, parsedOptions })
       } else if (isCustomSpec(response)) {
         const { showCustom } = await import('./views/sidecar')
-        showCustom(tab, response, {})
+        showCustom(tab, response, {}, argvNoOptions, parsedOptions)
       } else {
         previousLine = document.createElement('pre')
         previousLine.classList.add('streaming-output', 'repl-result-like')
@@ -167,10 +173,14 @@ async function renderResult(
   resultDom: HTMLElement,
   block: Block,
   echo = true,
-  attach = echo
+  attach = echo,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ) {
   if (isTable(response)) {
-    await printTable(tab, response, resultDom, block)
+    await printTable(tab, response, resultDom, block, args)
     return true
   } else if (isHTML(response)) {
     // TODO is this the best way to detect response is a dom??
@@ -206,6 +216,8 @@ export const printResults = (
   tab: Tab,
   resultDom: HTMLElement,
   echo = true,
+  argvNoOptions?: string[],
+  parsedOptions?: ParsedOptions,
   execOptions?: ExecOptions,
   command?: string,
   evaluator?: CommandHandlerWithEvents<KResponse, ParsedOptions>
@@ -238,7 +250,7 @@ export const printResults = (
 
   const render = async (response: Entity, { echo, resultDom }: { echo: boolean; resultDom: HTMLElement }) => {
     if (response && response !== true) {
-      if (await renderResult(response, tab, resultDom, block, echo)) {
+      if (await renderResult(response, tab, resultDom, block, echo, undefined, { argvNoOptions, parsedOptions })) {
         // then renderResult took care of things
       } else if (
         typeof response === 'number' ||
@@ -263,6 +275,8 @@ export const printResults = (
             tab,
             response,
             isPopup() ? Object.assign({}, execOptions, { leaveBottomStripeAlone: true }) : execOptions,
+            argvNoOptions,
+            parsedOptions,
             customContainer
           )
 
@@ -288,7 +302,7 @@ export const printResults = (
       } else if (isMultiModalResponse(response)) {
         const echoOk = echo || (execOptions && execOptions.replSilence)
         const { show: showMultiModalResponse } = await import('../models/mmr/show')
-        await showMultiModalResponse(tab, response)
+        await showMultiModalResponse(tab, response, { argvNoOptions, parsedOptions })
         if (echoOk && !isPopup()) {
           ok(resultDom.parentElement)
         }
@@ -306,7 +320,18 @@ export const printResults = (
         }
 
         response.forEach(part => {
-          printResults(block, nextBlock, tab, resultDom, echo, execOptions, command, evaluator)(paragraph(part))
+          printResults(
+            block,
+            nextBlock,
+            tab,
+            resultDom,
+            echo,
+            argvNoOptions,
+            parsedOptions,
+            execOptions,
+            command,
+            evaluator
+          )(paragraph(part))
         })
       } else if (typeof response === 'object') {
         // render random json in the REPL directly

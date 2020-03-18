@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ParsedOptions } from '../command'
 import { Tab } from '../../webapp/tab'
 import { Table, isTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
@@ -39,10 +40,7 @@ export function isScalarContent<T extends MetadataBearing>(
   const content = (entity as ScalarContent).content
   return (
     content !== undefined &&
-    (typeof content === 'string' ||
-      isTable(content) ||
-      isHTML(content) ||
-      isCustomSpec(content))
+    (typeof content === 'string' || isTable(content) || isHTML(content) || isCustomSpec(content))
   )
 }
 
@@ -91,7 +89,11 @@ export function isStringWithOptionalContentType<T extends MetadataBearing>(
  */
 export type FunctionThatProducesContent<T extends MetadataBearing> = (
   tab: Tab,
-  entity: T
+  entity: T,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ) => ScalarResource | ScalarContent | CommandStringContent | Promise<ScalarResource> | Promise<ScalarContent>
 export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
