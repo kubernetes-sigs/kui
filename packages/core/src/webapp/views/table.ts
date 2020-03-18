@@ -23,6 +23,7 @@ import { Block } from '../models/block'
 import { isMostRecentBlock } from '../block'
 import { getCurrentPrompt } from '../prompt'
 import { isMetadataBearing } from '../../models/entity'
+import { ParsedOptions } from '../../models/command'
 import { Table, Row, Cell, Icon, sortBody, TableStyle, isTable } from '../models/table'
 import { isWatchable, Watchable } from '../../core/jobs/watchable'
 
@@ -167,7 +168,11 @@ const formatCellValue = (key: string, value: string) => {
  * Format one row in the table
  *
  */
-export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => (entity: Row): HTMLElement => {
+export const formatOneRowResult = (
+  tab: Tab,
+  options: RowFormatOptions = {},
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) => (entity: Row): HTMLElement => {
   // debug('formatOneRowResult', entity)
   const isHeaderCell = /header-cell/.test(entity.outerCSS)
 
@@ -294,7 +299,7 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
     } else if (isMetadataBearing(entity.onclick)) {
       entityNameClickable.onclick = async () => {
         const { show } = await import('../../models/mmr/show')
-        return show(tab, entity.onclick)
+        return show(tab, entity.onclick, args)
       }
     } else {
       entityNameClickable.onclick = entity.onclick
@@ -480,11 +485,13 @@ export const formatOneRowResult = (tab: Tab, options: RowFormatOptions = {}) => 
  * Update a row in the exiting table
  *
  */
-const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingTableSpec) => (
-  tab: Tab,
-  option?: RowFormatOptions
-) => {
-  const newRowView = formatOneRowResult(tab, option)(newRow)
+const udpateTheRow = (
+  newRow: Row,
+  updateIndex: number,
+  existingTable: ExistingTableSpec,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) => (tab: Tab, option?: RowFormatOptions) => {
+  const newRowView = formatOneRowResult(tab, option, args)(newRow)
   existingTable.renderedTable.replaceChild(newRowView, existingTable.renderedRows[updateIndex])
   existingTable.renderedRows[updateIndex] = newRowView
 
@@ -496,11 +503,14 @@ const udpateTheRow = (newRow: Row, updateIndex: number, existingTable: ExistingT
  * Insert a new row to the existing table
  *
  */
-const insertTheRow = (newRow: Row, insertBeforeIndex: number, existingTable: ExistingTableSpec, block?: Block) => (
-  tab: Tab,
-  option?: RowFormatOptions
-) => {
-  const newRowView = formatOneRowResult(tab, option)(newRow)
+const insertTheRow = (
+  newRow: Row,
+  insertBeforeIndex: number,
+  existingTable: ExistingTableSpec,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions },
+  block?: Block
+) => (tab: Tab, option?: RowFormatOptions) => {
+  const newRowView = formatOneRowResult(tab, option, args)(newRow)
   existingTable.renderedTable.insertBefore(newRowView, existingTable.renderedRows[insertBeforeIndex])
   existingTable.renderedRows.splice(insertBeforeIndex, 0, newRowView)
   existingTable.rowsModel.splice(insertBeforeIndex, 0, newRow)
@@ -577,6 +587,7 @@ export const formatTable = (
   tab: Tab,
   response: Table,
   resultDom: HTMLElement,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions },
   options: { block?: Block; usePip?: boolean } = {}
 ) => {
   const formatRowOption = Object.assign(options, {
@@ -590,7 +601,7 @@ export const formatTable = (
 
     const prepareRows = prepareTable(tab, table)
 
-    const rows = prepareRows.map(formatOneRowResult(tab, formatRowOption))
+    const rows = prepareRows.map(formatOneRowResult(tab, formatRowOption, args))
     const rowFrag = document.createDocumentFragment()
     rows.map(row => rowFrag.appendChild(row))
     tableDom.appendChild(rowFrag)
@@ -717,10 +728,10 @@ export const formatTable = (
       if (foundIndex === -1) {
         // To get the insertion index, first concat the new row with the existing rows, then sort the rows
         const index = sortBody([newRow].concat(existingRows)).findIndex(_ => (_.rowKey || _.name) === newRow.name)
-        insertTheRow(newRow, index + 1, existingTable, options.block)(tab, formatRowOption)
+        insertTheRow(newRow, index + 1, existingTable, args, options.block)(tab, formatRowOption)
       } else {
         const doUpdate = JSON.stringify(newRow) !== JSON.stringify(existingRows[foundIndex])
-        if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable)(tab, formatRowOption)
+        if (doUpdate) udpateTheRow(newRow, foundIndex, existingTable, args)(tab, formatRowOption)
       }
     }
 
@@ -731,9 +742,9 @@ export const formatTable = (
 
       const newHeader = prepareHeader(header)
       if (foundIndex) {
-        insertTheRow(newHeader, 0, existingTable, options.block)(tab, formatRowOption)
+        insertTheRow(newHeader, 0, existingTable, args, options.block)(tab, formatRowOption)
       } else {
-        udpateTheRow(newHeader, 0, existingTable)(tab, formatRowOption)
+        udpateTheRow(newHeader, 0, existingTable, args)(tab, formatRowOption)
       }
     }
 

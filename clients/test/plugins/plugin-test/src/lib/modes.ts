@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Tab, ResourceWithMetadata, BadgeSpec, BadgeRegistration, ModeRegistration } from '@kui-shell/core'
+import {
+  Tab,
+  ResourceWithMetadata,
+  BadgeSpec,
+  BadgeRegistration,
+  ModeRegistration,
+  ParsedOptions
+} from '@kui-shell/core'
 
 export interface MyResource extends ResourceWithMetadata {
   foo: boolean
@@ -82,6 +89,22 @@ export const badge1 = {
     title: 'badge1'
   }
 }
+
+export const mode5 = {
+  when: isMyResource,
+  mode: {
+    mode: 'mode5',
+    label: 'mode5 label',
+    content: (tab: Tab, MyResource: MyResource, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => ({
+      contentFrom: `${args.argvNoOptions[0]} string`, // => should be 'test string'
+      order: 999
+    })
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const checkingModeType5: ModeRegistration<MyResource> = mode5
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const checkingBadgeType1: BadgeRegistration<MyResource> = badge1
 

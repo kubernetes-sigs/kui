@@ -623,7 +623,7 @@ class InProcessExecutor implements Executor {
                     const { streamTo: headlessStreamTo } = await import('../main/headless-support')
                     return headlessStreamTo()
                   } else {
-                    return Promise.resolve(streamToUI(tab, block))
+                    return Promise.resolve(streamToUI(tab, block, argvNoOptions, parsedOptions))
                   }
                 })
             })
@@ -685,6 +685,8 @@ class InProcessExecutor implements Executor {
                   tab,
                   resultDom,
                   echo && !render,
+                  argvNoOptions,
+                  parsedOptions,
                   execOptions,
                   command,
                   evaluator

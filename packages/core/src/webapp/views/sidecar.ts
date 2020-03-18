@@ -51,6 +51,7 @@ import {
   isMetadataBearingByReference,
   Entity
 } from '../../models/entity'
+import { ParsedOptions } from '../../models/command'
 import { ExecOptions } from '../../models/execOptions'
 import { apply as addRelevantBadges } from './registrar/badges'
 import { hasEditor, tryOpenWithEditor } from './registrar/editors'
@@ -352,7 +353,14 @@ export const addNameToSidecarHeader = async (
   return nameDom
 }
 
-export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOptions, resultDom?: Element) => {
+export const showCustom = async (
+  tab: Tab,
+  custom: CustomSpec,
+  options?: ExecOptions,
+  argvNoOptions?: string[],
+  parsedOptions?: ParsedOptions,
+  resultDom?: Element
+) => {
   if (!custom || custom.content === undefined) return
   debug('showCustom', custom, options, resultDom)
 
@@ -436,7 +444,7 @@ export const showCustom = async (tab: Tab, custom: CustomSpec, options?: ExecOpt
   // add mode buttons, if requested
   const modes = custom.modes
   if (!options || !options.leaveBottomStripeAlone) {
-    addModeButtons(tab, modes, custom, options)
+    addModeButtons(tab, modes, custom, { argvNoOptions, parsedOptions }, options)
     sidecar.setAttribute('class', `${sidecar.getAttribute('data-base-class')} custom-content`)
   } else {
     sidecar.classList.add('custom-content')

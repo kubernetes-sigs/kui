@@ -23,6 +23,7 @@ import { isCustomSpec } from './views/custom-content'
 import sidecarSelector from './views/sidecar-selector'
 import { apply as addRelevantModes } from './views/registrar/modes'
 import { isHTML } from '../util/types'
+import { ParsedOptions } from '../models/command'
 import { Entity, MetadataBearing, isMetadataBearing, isMetadataBearingByReference } from '../models/entity'
 import { Mode, Button, isButton } from '../models/mmr/types'
 import { onclick as buttonOnclick } from '../models/mmr/button'
@@ -85,7 +86,11 @@ const _addModeButton = (
   bottomStripe: Element,
   opts: SidecarMode,
   entity: MetadataBearing | CustomSpec,
-  show: string
+  show: string,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ) => {
   const { mode, label, defaultMode } = opts
 
@@ -308,7 +313,7 @@ const _addModeButton = (
         dom2.classList.add('result-as-table', 'repl-result')
         dom1.appendChild(dom2)
         const { formatTable } = await import('./views/table')
-        formatTable(tab, view, dom2)
+        formatTable(tab, view, dom2, args)
         const { insertCustomContent } = await import('./views/sidecar')
         insertCustomContent(tab, dom1)
       }
@@ -319,7 +324,7 @@ const _addModeButton = (
       buttonOnclick(tab, entity as MetadataBearing, opts)
     } else if (hasContent(opts)) {
       const { formatForTab } = await import('../models/mmr/show')
-      const view = await formatForTab(tab, entity as MetadataBearing, opts)
+      const view = await formatForTab(tab, entity as MetadataBearing, opts, args)
       changeActiveButton()
       await present(view)
     }
@@ -332,17 +337,25 @@ export const addModeButton = (
   tab: Tab,
   mode: SidecarMode,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  entity: Record<string, any>
+  entity: Record<string, any>,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ) => {
   const modeStripe = css.modeContainer(tab)
   const bottomStripe = css.bottomContainer(tab)
-  return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined)
+  return _addModeButton(tab, modeStripe, bottomStripe, mode, entity, undefined, args)
 }
 
 export const addModeButtons = (
   tab: Tab,
   modesUnsorted: SidecarMode[] = [],
   entity: MetadataBearing | CustomSpec,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  },
   options?: BottomStripOptions
 ): SidecarMode[] => {
   // consult the view registrar for registered view modes
@@ -373,7 +386,13 @@ export const addModeButtons = (
   }
 
   // for going back
-  const addModeButtons = (tab: Tab, modes: SidecarMode[], entity: MetadataBearing | CustomSpec, show: string) => {
+  const addModeButtons = (
+    tab: Tab,
+    modes: SidecarMode[],
+    entity: MetadataBearing | CustomSpec,
+    show: string,
+    args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+  ) => {
     const modeStripe = css.modeContainer(tab)
     const bottomStripe = css.bottomContainer(tab) as Capturable
     removeAllDomChildren(modeStripe)
@@ -381,7 +400,7 @@ export const addModeButtons = (
 
     if (modes) {
       modes.forEach(mode => {
-        _addModeButton(tab, modeStripe, bottomStripe, mode, entity, show)
+        _addModeButton(tab, modeStripe, bottomStripe, mode, entity, show, args)
       })
     }
 
@@ -394,14 +413,14 @@ export const addModeButtons = (
       // to avoid stale buttons from showing up while the new view renders
       removeAllDomChildren(bottomStripe)
 
-      return () => addModeButtons(tab, modes, entity, show)
+      return () => addModeButtons(tab, modes, entity, show, args)
     }
   }
 
   const defaultMode = modes && (modes.find(_ => _.defaultMode && !isButton(_)) || modes.find(_ => !isButton(_)))
   const show = (options && options.show) || (defaultMode && (defaultMode.mode || defaultMode.label))
 
-  addModeButtons(tab, modes, entity, show)
+  addModeButtons(tab, modes, entity, show, args)
 
   if (!options || !options.preserveBackButton) {
     const backContainer = css.backContainer(tab)

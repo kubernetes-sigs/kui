@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ParsedOptions } from '../command'
 import { Tab } from '../../webapp/tab'
 import { MetadataBearing } from '../entity'
 import { CustomSpec } from '../../webapp/views/sidecar-core'
@@ -43,24 +44,33 @@ type TabPresentableContent = CustomSpec | HTMLElement | Table
 export async function formatForTab<T extends MetadataBearing>(
   tab: Tab,
   mmr: T,
-  resource: ScalarResource | Content<T>
+  resource: ScalarResource | Content<T>,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ): Promise<TabPresentableContent> {
   if (!hasContent(resource)) {
     // then we have a plain resource. the rest of this function
     // assumes a Content structure, so wrap it up as such
-    return formatForTab(tab, mmr, { content: resource })
+    return formatForTab(tab, mmr, { content: resource }, args)
   } else if (isFunctionContent(resource)) {
     // then resource.content is a function that will provide the information
-    return formatForTab(tab, mmr, await resource.content(tab, mmr))
+    return formatForTab(tab, mmr, await resource.content(tab, mmr, args), args)
   } else if (isCommandStringContent(resource)) {
     const content = await tab.REPL.qexec<ScalarResource | ScalarContent>(resource.contentFrom)
     if (resource.contentType && typeof content === 'string') {
-      return formatForTab(tab, mmr, {
-        content,
-        contentType: resource.contentType
-      })
+      return formatForTab(
+        tab,
+        mmr,
+        {
+          content,
+          contentType: resource.contentType
+        },
+        args
+      )
     } else {
-      return formatForTab(tab, mmr, content)
+      return formatForTab(tab, mmr, content, args)
     }
   } else if (isCustomSpec(resource.content)) {
     return resource.content
@@ -75,7 +85,11 @@ export async function formatForTab<T extends MetadataBearing>(
   }
 }
 
-async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
+async function wrapTable(
+  tab: Tab,
+  table: Table,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+): Promise<HTMLElement> {
   const dom1 = document.createElement('div')
   const dom2 = document.createElement('div')
   dom1.classList.add('scrollable', 'scrollable-auto')
@@ -83,7 +97,7 @@ async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
   dom1.appendChild(dom2)
 
   const { formatTable } = await import('../../webapp/views/table')
-  formatTable(tab, table, dom2)
+  formatTable(tab, table, dom2, args)
 
   return dom1
 }
@@ -91,16 +105,20 @@ async function wrapTable(tab: Tab, table: Table): Promise<HTMLElement> {
 async function renderContent<T extends MetadataBearing>(
   tab: Tab,
   bearer: T,
-  content: Content<T> | MetadataBearing | SidecarMode
+  content: Content<T> | MetadataBearing | SidecarMode,
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 ): Promise<ScalarContent | StringContent> {
   if (isStringWithOptionalContentType(content)) {
     return content
   } else if (isFunctionContent(content)) {
-    const actualContent = (await content.content(tab, bearer)) as ScalarResource | ScalarContent
+    const actualContent = (await content.content(tab, bearer, args)) as ScalarResource | ScalarContent
     if (!isScalarContent(actualContent)) {
       if (isTable(actualContent)) {
         return {
-          content: await wrapTable(tab, actualContent)
+          content: await wrapTable(tab, actualContent, args)
         }
       } else {
         return {
@@ -113,14 +131,14 @@ async function renderContent<T extends MetadataBearing>(
   } else if (isScalarContent(content)) {
     if (isTable(content.content)) {
       return {
-        content: await wrapTable(tab, content.content)
+        content: await wrapTable(tab, content.content, args)
       }
     } else {
       return content
     }
   } else if (isTable(content)) {
     return {
-      content: await wrapTable(tab, content)
+      content: await wrapTable(tab, content, args)
     }
   } else if (isCommandStringContent(content)) {
     return {
@@ -134,7 +152,11 @@ async function renderContent<T extends MetadataBearing>(
  * Render a MultiModalResponse to the sidecar
  *
  */
-export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalResponse<T>) {
+export async function show<T extends MetadataBearing>(
+  tab: Tab,
+  mmr: MultiModalResponse<T>,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) {
   const modes = mmr.modes as SidecarMode<T>[]
 
   // const buttons = mmr.buttons ? formatButtons(tab, mmr, mmr.buttons) : ([] as SidecarMode[])
@@ -142,7 +164,7 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
 
   // first, do a "modelOnly" pass, to get the full list of modes
   // see https://github.com/IBM/kui/issues/3589
-  const modesWithButtons = addModeButtons(tab, ourModesWithButtons, mmr, {
+  const modesWithButtons = addModeButtons(tab, ourModesWithButtons, mmr, args, {
     preserveBackButton: true,
     show: mmr.defaultMode,
     modelOnly: true
@@ -156,12 +178,12 @@ export async function show<T extends MetadataBearing>(tab: Tab, mmr: MultiModalR
     throw new Error('default mode is a button')
   }
 
-  const content = hasContent(defaultMode) ? await renderContent(tab, mmr, defaultMode) : undefined
+  const content = hasContent(defaultMode) ? await renderContent(tab, mmr, defaultMode, args) : undefined
 
   // now that we've rendered the initial/default content, do a pass
   // over the modes and add them to the UI; see
   // https://github.com/IBM/kui/issues/3589
-  addModeButtons(tab, ourModesWithButtons, mmr, {
+  addModeButtons(tab, ourModesWithButtons, mmr, args, {
     preserveBackButton: true,
     show: mmr.defaultMode
   })
