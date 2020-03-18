@@ -243,6 +243,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
         key={this.state.history.key}
         tab={this.state.tab}
         mode={this.current.tabs[idx]}
+        args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
         response={this.current.response}
       />
     )

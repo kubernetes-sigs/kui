@@ -17,6 +17,7 @@
 import * as React from 'react'
 
 import {
+  ParsedOptions,
   Tab as KuiTab,
   Button,
   Content,
@@ -43,12 +44,16 @@ interface KuiMMRProps {
   tab: KuiTab
   mode: Content
   response: MultiModalResponse
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
   willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void
 }
 
 export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
   public render() {
-    const { tab, mode, response, willUpdateToolbar } = this.props
+    const { tab, mode, response, willUpdateToolbar, args } = this.props
 
     if (isStringWithOptionalContentType(mode)) {
       if (mode.contentType === 'text/html') {
@@ -67,9 +72,11 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
         )
       }
     } else if (isCommandStringContent(mode)) {
-      return <Eval tab={tab} command={mode.contentFrom} contentType={mode.contentType} response={response} />
+      return (
+        <Eval tab={tab} command={mode.contentFrom} contentType={mode.contentType} response={response} args={args} />
+      )
     } else if (isFunctionContent(mode)) {
-      return <Eval tab={tab} command={mode.content} response={response} />
+      return <Eval tab={tab} command={mode.content} response={response} args={args} />
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
