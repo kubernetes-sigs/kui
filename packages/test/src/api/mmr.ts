@@ -55,10 +55,11 @@ export class TestMMR {
 
   /**
    * name() starts a Mocha Test Suite
-   * name() executes `command` in REPL and expects `name` is shown in Sidecar
+   * name() executes `command` in REPL and expects `prettyName` or `name` is shown in Sidecar
    */
   public name(opt?: {
     nameHash?: string
+    prettyName?: string
     onclick?: {
       name: ClickExpect
       nameHash?: ClickExpect
@@ -72,11 +73,12 @@ export class TestMMR {
       before(Common.before(this))
       after(Common.after(this))
 
-      const { nameHash, onclick } = opt
+      const { nameHash, prettyName, onclick } = opt
 
       let cmdIdx = 0 // keep track of the command execution number
 
-      it(`should show name ${metadata.name} ${nameHash ? ' and namehash ' + nameHash : ''} in sidecar header`, () =>
+      const showName = prettyName || metadata.name
+      it(`should show name ${showName} ${nameHash ? ' and namehash ' + nameHash : ''} in sidecar header`, () =>
         CLI.command(command, this.app)
           .then(res => {
             cmdIdx = res.count
@@ -84,7 +86,7 @@ export class TestMMR {
           })
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(SidecarExpect.name(metadata.name))
+          .then(SidecarExpect.name(showName))
           .then(app => (nameHash ? SidecarExpect.namehash(nameHash) : app))
           .catch(Common.oops(this, true)))
 

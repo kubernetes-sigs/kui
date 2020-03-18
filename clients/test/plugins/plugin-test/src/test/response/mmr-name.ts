@@ -23,15 +23,31 @@
  */
 import { TestMMR } from '@kui-shell/test'
 
-const test = new TestMMR({
+const testMetadataName = new TestMMR({
   command: 'test mmr name',
   metadata: {
     name: 'this is the name part'
   }
 })
 
-test.name({
+const testPrettyName = new TestMMR({
+  command: 'test mmr name --pretty',
+  metadata: {
+    name: 'this is the name part'
+  }
+})
+
+testMetadataName.name({
   nameHash: 'this is the namehash part',
+  onclick: {
+    name: { command: 'test string', expect: 'hello world' },
+    nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
+  }
+})
+
+testPrettyName.name({
+  nameHash: 'this is the namehash part',
+  prettyName: 'this is the prettyName part',
   onclick: {
     name: { command: 'test string', expect: 'hello world' },
     nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
