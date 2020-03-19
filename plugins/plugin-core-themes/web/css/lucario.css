@@ -1,3 +1,5 @@
+@import "fonts.css";
+
 /**
  * scheme: "Lucario"
  * repo: https://github.com/raphamorim/lucario
@@ -30,57 +32,4 @@ body[kui-theme="Lucario"] {
   --color-latency-3: #e7d4e8;
   --color-latency-4: #af8dc3;
   --color-latency-5: #762a83;
-}
-
-/* atelier seaside dark highlightjs theme */
-.hljs-comment,
-.hljs-quote {
-  color: #809980;
-}
-.hljs-variable,
-.hljs-template-variable,
-.hljs-attribute,
-.hljs-tag,
-.hljs-name,
-.hljs-regexp,
-.hljs-link,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class {
-  color: var(--color-base08);
-}
-.hljs-number,
-.hljs-meta,
-.hljs-built_in,
-.hljs-builtin-name,
-.hljs-literal,
-.hljs-type,
-.hljs-params {
-  color: #87711d;
-}
-.hljs-string,
-.hljs-symbol,
-.hljs-bullet {
-  color: var(--color-base0B);
-}
-.hljs-title,
-.hljs-section {
-  color: var(--color-base0D);
-}
-.hljs-keyword,
-.hljs-selector-tag {
-  color: #ffb3b5;
-}
-.hljs {
-  display: block;
-  overflow-x: auto;
-  background: #131513;
-  color: var(--color-light-green);
-  padding: 0.5em;
-}
-.hljs-emphasis {
-  font-style: italic;
-}
-.hljs-strong {
-  font-weight: bold;
 }

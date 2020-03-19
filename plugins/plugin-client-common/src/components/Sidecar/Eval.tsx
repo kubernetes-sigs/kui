@@ -17,7 +17,6 @@
 import * as React from 'react'
 import * as Debug from 'debug'
 
-import { Loading } from '@kui-shell/plugin-client-common'
 import {
   ParsedOptions,
   Tab as KuiTab,
@@ -31,6 +30,7 @@ import {
   isStringWithOptionalContentType
 } from '@kui-shell/core'
 
+import { Loading } from '../../'
 import KuiMMRContent from './KuiContent'
 
 const debug = Debug('plugins/sidecar/Eval')

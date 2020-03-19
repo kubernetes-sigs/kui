@@ -18,19 +18,10 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { render as ReactDomRender } from 'react-dom'
-import { ComboSidecar } from '@kui-shell/plugin-sidecar'
-import { InputStripe, StatusStripe, TabContainer } from '@kui-shell/plugin-client-common'
+
+import { ComboSidecar, InputStripe, StatusStripe, TabContainer } from '..'
 
 const Popup = React.lazy(() => import('./Popup'))
-
-/**
- * Here we arrange the CSS for base functionality of Kui. Order is
- * preserved in the resulting <link> tags.
- *
- */
-import '../web/css/static/kui-ui.css'
-import '../web/css/static/carbon-overrides.css'
 
 interface Props {
   bottomInput?: boolean
@@ -47,7 +38,7 @@ interface State {
  * Render the main body of our client
  *
  */
-export class DefaultClient extends React.PureComponent<Props, State> {
+export class Kui extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
@@ -87,10 +78,4 @@ export class DefaultClient extends React.PureComponent<Props, State> {
   }
 }
 
-/**
- * Format the body view
- *
- */
-export default async function(container: Element, isPopup: boolean, commandLine?: string[]) {
-  ReactDomRender(<DefaultClient isPopup commandLine={commandLine} />, container)
-}
+export default Kui

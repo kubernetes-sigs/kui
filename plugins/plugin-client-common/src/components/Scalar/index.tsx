@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react'
-import { renderTable } from '@kui-shell/plugin-carbon-tables'
 import {
   isMessageWithUsageModel,
   isMessageWithCode,
@@ -28,6 +27,7 @@ import {
 } from '@kui-shell/core'
 
 import HTMLDom from './HTMLDom'
+import renderTable from '../Table'
 import { isError } from '../Terminal/Block/BlockModel'
 
 interface Props {

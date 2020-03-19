@@ -32,11 +32,11 @@ import {
   ToolbarText
 } from '@kui-shell/core'
 
-import { HTMLDom } from '@kui-shell/plugin-client-common'
+import renderTable from '../Table'
 import { KEditor as Editor } from '@kui-shell/plugin-editor'
-import { renderTable } from '@kui-shell/plugin-carbon-tables'
 
 import Eval from './Eval'
+import { HTMLDom } from '../../'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 

@@ -22,7 +22,7 @@ import { DataTable, DataTableHeader, TableContainer, Table, Pagination } from 'c
 import sortRow from './sort'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
-import kui2carbon, { NamedDataTableRow } from '../model/kui2carbon'
+import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 
 /** carbon styling */
 import 'carbon-components/scss/components/pagination/_pagination.scss'
@@ -30,10 +30,10 @@ import 'carbon-components/scss/components/data-table/_data-table-core.scss'
 import 'carbon-components/scss/components/radio-button/_radio-button.scss'
 
 /** hack (see comments in file) */
-import '../../web/css/static/hack-select.scss'
+import '../../../web/scss/components/Table/hack-select.scss'
 
 /** import the kui theme alignment */
-import '../../web/css/static/carbon-kui-theme-alignment.css'
+import '../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
 
 interface PaginationConfiguration {
   pageSize?: number
@@ -66,7 +66,7 @@ export interface State {
  * A DataTable/Pagination pair
  *
  */
-export class PaginatedTable<P extends Props, S extends State> extends React.PureComponent<P, S> {
+export default class PaginatedTable<P extends Props, S extends State> extends React.PureComponent<P, S> {
   private readonly defaultPageSize: number
 
   public constructor(props: P) {
@@ -156,8 +156,4 @@ export class PaginatedTable<P extends Props, S extends State> extends React.Pure
       )
     }
   }
-}
-
-export default function renderTable(tab: Tab, repl: REPL, response: KuiTable, paginate: boolean | number = true) {
-  return <PaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
 }

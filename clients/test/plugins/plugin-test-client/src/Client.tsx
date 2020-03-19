@@ -16,8 +16,7 @@
 
 import * as React from 'react'
 
-import { DefaultClient } from '@kui-shell/plugin-client-default/mdist/Client'
-import { ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
+import { Kui, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 import CounterWidget from './CounterWidget'
 
 import '../web/css/static/test.scss'
@@ -31,7 +30,7 @@ import '../web/css/static/test.scss'
  */
 export default function renderMain(isPopup: boolean, commandLine?: string[]) {
   return (
-    <DefaultClient isPopup commandLine={commandLine}>
+    <Kui isPopup commandLine={commandLine}>
       <ContextWidgets>
         <CounterWidget idx={0} />
       </ContextWidgets>
@@ -39,6 +38,6 @@ export default function renderMain(isPopup: boolean, commandLine?: string[]) {
       <MeterWidgets>
         <CounterWidget idx={1} />
       </MeterWidgets>
-    </DefaultClient>
+    </Kui>
   )
 }

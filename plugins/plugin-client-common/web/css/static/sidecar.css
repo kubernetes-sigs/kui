@@ -1,4 +1,4 @@
-@import "common.css";
+@import "SidecarCommon.css";
 
 .kui--sidecar.visible.kui--nav-view {
   flex: 3.5;

@@ -19,10 +19,10 @@
 
 import * as React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab } from '@kui-shell/core'
-import { ComboSidecar } from '@kui-shell/plugin-sidecar'
-import { ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '@kui-shell/plugin-client-common'
 
-import '../web/css/static/Popup.scss'
+import { ComboSidecar, ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '..'
+
+import '../../web/css/static/Popup.scss'
 
 interface Props {
   commandLine: string[]
@@ -52,12 +52,6 @@ export default class Popup extends React.PureComponent<Props, State> {
       promptPlaceholder: ''
     }
   }
-
-  /* public componentDidMount() {
-    if (this.state.tab && this.state.tab.REPL) {
-      this.state.tab.REPL
-    }
-  } */
 
   private onTabReady(tab: KuiTab) {
     tab.REPL.pexec(this.props.commandLine.join(' '))

@@ -16,12 +16,12 @@
 
 import * as React from 'react'
 import { render as ReactDomRender } from 'react-dom'
-import { DefaultClient } from '@kui-shell/plugin-client-default/mdist/Client'
+import { Kui } from '@kui-shell/plugin-client-common'
 
 /**
  * Use DefaultClient configured to run in bottomInput mode.
  *
  */
 export default function(container: Element) {
-  ReactDomRender(<DefaultClient bottomInput />, container)
+  ReactDomRender(<Kui bottomInput />, container)
 }

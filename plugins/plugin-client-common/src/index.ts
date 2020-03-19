@@ -26,6 +26,10 @@ import '../web/css/static/repl.scss'
 import '../web/css/static/status-stripe.css'
 import '../web/css/static/vendor/balloon-css/balloon.min.css'
 
+// default client
+export { default as Kui } from './components/Kui'
+
+// core components
 export { default as Search } from './components/Search'
 export { default as Loading } from './components/Loading'
 export { default as HTMLDom } from './components/Scalar/HTMLDom'
@@ -37,3 +41,8 @@ export { default as StatusStripe } from './components/StatusStripe'
 export { default as MeterWidgets } from './components/StatusStripe/MeterWidgets'
 export { default as ContextWidgets } from './components/StatusStripe/ContextWidgets'
 export { ViewLevel, default as TextWithIconWidget } from './components/StatusStripe/TextWithIconWidget'
+
+// sidecar components
+export { default as ComboSidecar } from './components/Sidecar/ComboSidecar'
+export { default as TopNavSidecar } from './components/Sidecar/TopNavSidecar'
+export { default as LeftNavSidecar } from './components/Sidecar/LeftNavSidecar'

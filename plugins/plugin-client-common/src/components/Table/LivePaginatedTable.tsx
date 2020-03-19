@@ -15,10 +15,10 @@
  */
 
 import * as React from 'react'
-import { Tab, REPL, Table as KuiTable, Row as KuiRow, isWatchable, Watchable } from '@kui-shell/core'
+import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
-import { kuiHeader2carbonHeader, kuiRow2carbonRow } from '../model/kui2carbon'
-import renderNonLiveTable, { Props, State, PaginatedTable } from './PaginatedTable'
+import PaginatedTable, { Props, State } from './PaginatedTable'
+import { kuiHeader2carbonHeader, kuiRow2carbonRow } from './kui2carbon'
 
 type LiveProps = Props<KuiTable & Watchable>
 
@@ -26,7 +26,7 @@ interface LiveState extends State {
   isWatching: boolean
 }
 
-class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
+export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
   public constructor(props: LiveProps) {
     super(props)
     this.state = Object.assign(this.state, { isWatching: true })
@@ -158,13 +158,5 @@ class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
   private done() {
     this.setState({ isWatching: false })
     // TODO uncapture job-tab connection?
-  }
-}
-
-export default function renderTable(tab: Tab, repl: REPL, response: KuiTable, paginate: boolean | number = 20) {
-  if (isWatchable(response)) {
-    return <LivePaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
-  } else {
-    return renderNonLiveTable(tab, repl, response, paginate)
   }
 }
