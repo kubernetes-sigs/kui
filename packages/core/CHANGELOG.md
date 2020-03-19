@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.17](https://github.com/IBM/kui/compare/v6.0.16...v6.0.17) (2020-03-19)
+
+### Bug Fixes
+
+- pass argvNoOptions and ParsedOptions to button function ([b65e28c](https://github.com/IBM/kui/commit/b65e28c))
+
 ## [6.0.16](https://github.com/IBM/kui/compare/v6.0.15...v6.0.16) (2020-03-18)
 
 ### Bug Fixes
