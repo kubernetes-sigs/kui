@@ -16,13 +16,19 @@
 
 import { Tab } from '../../webapp/tab'
 import { MetadataBearing } from '../entity'
+import { ParsedOptions } from '../command'
 import { Button, isViewButton } from './types'
 
-function getCommand<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
+function getCommand<T extends MetadataBearing>(
+  tab: Tab,
+  resource: T,
+  button: Button<T>,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) {
   if (isViewButton(button)) {
     return button.command
   } else {
-    const cmd = typeof button.command === 'string' ? button.command : button.command(tab, resource)
+    const cmd = typeof button.command === 'string' ? button.command : button.command(tab, resource, args)
     if (button.confirm) {
       return `confirm "${cmd}"`
     } else {
@@ -31,8 +37,13 @@ function getCommand<T extends MetadataBearing>(tab: Tab, resource: T, button: Bu
   }
 }
 
-export function onclick<T extends MetadataBearing>(tab: Tab, resource: T, button: Button<T>) {
-  const cmd = getCommand(tab, resource, button)
+export function onclick<T extends MetadataBearing>(
+  tab: Tab,
+  resource: T,
+  button: Button<T>,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) {
+  const cmd = getCommand(tab, resource, button, args)
 
   if (typeof cmd === 'string') {
     if (isViewButton(button) || button.confirm) {
@@ -41,6 +52,6 @@ export function onclick<T extends MetadataBearing>(tab: Tab, resource: T, button
       return tab.REPL.pexec(cmd)
     }
   } else {
-    cmd(tab, resource)
+    cmd(tab, resource, args)
   }
 }
