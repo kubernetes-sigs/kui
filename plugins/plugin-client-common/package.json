@@ -20,12 +20,13 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/plugin-carbon-tables": "*",
+    "@carbon/icons-react": "^10.9.1",
     "carbon-components": "^10.10.1",
     "carbon-components-react": "^7.10.1",
-    "@carbon/icons-react": "^10.9.1",
+    "carbon-icons": "^7.0.7",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-markdown": "^4.3.1",
     "react-split-pane": "^0.1.89"
   },
   "publishConfig": {
