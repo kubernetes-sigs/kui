@@ -35,7 +35,7 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
       .then(SidecarExpect.open)
       .then(SidecarExpect.showingTopNav('this is the name part'))
       .then(SidecarExpect.badge('badge1'))
-      .then(SidecarExpect.button({ mode: 'mode4', label: 'mode4 label' }))
+      .then(SidecarExpect.button({ mode: 'button1', label: 'button1 label' }))
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON)) // back button IS visible
       .catch(Common.oops(this, true))
   })
