@@ -16,8 +16,7 @@
 
 import * as React from 'react'
 
-import { DefaultClient } from '@kui-shell/plugin-client-default/mdist/Client'
-import { ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
+import { Kui, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
@@ -29,13 +28,13 @@ import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
  */
 export default function renderMain() {
   return (
-    <DefaultClient>
+    <Kui>
       <ContextWidgets>
         <CurrentGitBranch />
       </ContextWidgets>
       <MeterWidgets>
         <ProxyOfflineIndicator />
       </MeterWidgets>
-    </DefaultClient>
+    </Kui>
   )
 }
