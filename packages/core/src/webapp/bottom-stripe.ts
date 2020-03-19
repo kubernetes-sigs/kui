@@ -321,7 +321,7 @@ const _addModeButton = (
 
     // execute the actual onclick handler
     if (isButton(opts)) {
-      buttonOnclick(tab, entity as MetadataBearing, opts)
+      buttonOnclick(tab, entity as MetadataBearing, opts, args)
     } else if (hasContent(opts)) {
       const { formatForTab } = await import('../models/mmr/show')
       const view = await formatForTab(tab, entity as MetadataBearing, opts, args)
