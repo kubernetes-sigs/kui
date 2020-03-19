@@ -23,14 +23,14 @@ __webpack_nonce__ = _kuiNonce
 import * as React from 'react'
 import { render as ReactDomRender } from 'react-dom'
 
-import { Kui } from '@kui-shell/plugin-client-common'
+import Client from '@kui-shell/client'
 
 /**
  * Format the body view
  *
  */
 function renderMain(container: Element, isPopup: boolean, commandLine?: string[]) {
-  ReactDomRender(<Kui isPopup commandLine={commandLine} />, container)
+  ReactDomRender(<Client isPopup={isPopup} commandLine={commandLine} />, container)
 }
 
 /** boot Kui! */

@@ -23,7 +23,7 @@ import { ComboSidecar, InputStripe, StatusStripe, TabContainer } from '..'
 
 const Popup = React.lazy(() => import('./Popup'))
 
-interface Props {
+export interface Props {
   bottomInput?: boolean
 
   isPopup?: boolean
