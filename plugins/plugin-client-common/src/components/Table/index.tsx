@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { default as PaginatedTable } from './view/PaginatedTable'
-export { default as renderTable, default as LivePaginatedTable } from './view/LivePaginatedTable'
+import * as React from 'react'
+import { Tab, REPL, Table, isWatchable } from '@kui-shell/core'
+
+import PaginatedTable from './PaginatedTable'
+import LivePaginatedTable from './LivePaginatedTable'
+
+export default function renderTable(tab: Tab, repl: REPL, response: Table, paginate: boolean | number = 20) {
+  if (isWatchable(response)) {
+    return <LivePaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
+  } else {
+    return <PaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
+  }
+}

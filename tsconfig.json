@@ -5,16 +5,7 @@
       "path": "packages/core"
     },
     {
-      "path": "plugins/plugin-carbon-tables"
-    },
-    {
-      "path": "plugins/plugin-client-common"
-    },
-    {
       "path": "packages/test"
-    },
-    {
-      "path": "plugins/plugin-core-support"
     },
     {
       "path": "plugins/plugin-bash-like"
@@ -23,7 +14,10 @@
       "path": "plugins/plugin-editor"
     },
     {
-      "path": "plugins/plugin-sidecar"
+      "path": "plugins/plugin-client-common"
+    },
+    {
+      "path": "plugins/plugin-core-support"
     },
     {
       "path": "plugins/plugin-client-default"

@@ -1,3 +1,5 @@
+@import "fonts.css";
+
 /* inverted sidecar */
 body[kui-theme="Light"] .kui--inverted-color-context {
   --color-base00: #13171a; /* Default Background */
