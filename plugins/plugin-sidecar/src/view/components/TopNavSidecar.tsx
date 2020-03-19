@@ -258,6 +258,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
           <ToolbarContainer
             tab={this.state.tab}
             response={this.current.response}
+            args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
             toolbarText={toolbarText}
             buttons={this.current.buttons}
           >

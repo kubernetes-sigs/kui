@@ -16,11 +16,21 @@
 
 import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
 
-import { mode1, mode2, mode3, button, mode5, badge1, badge2, badge3 } from './lib/modes'
+import {
+  mode1,
+  mode2,
+  mode3,
+  drilldownButtonWithString,
+  drilldownButtonWithFunction,
+  mode5,
+  badge1,
+  badge2,
+  badge3
+} from './lib/modes'
 
 export default async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
-    registrar.registerModes(button, mode1, mode2, mode5, mode3)
+    registrar.registerModes(drilldownButtonWithString, drilldownButtonWithFunction, mode1, mode2, mode5, mode3)
     registrar.registerBadges(badge1, badge2, badge3)
   }
 }
