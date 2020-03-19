@@ -15,26 +15,12 @@
  */
 
 import * as React from 'react'
-
-import { Kui, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
-
-import { CurrentGitBranch } from '@kui-shell/plugin-git'
-import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
+import { Kui } from '@kui-shell/plugin-client-common'
 
 /**
- * Format our body, with extra status stripe widgets
- *   - CurrentGitBranch
+ * Use DefaultClient configured to run in bottomInput mode.
  *
  */
-export default function renderMain() {
-  return (
-    <Kui>
-      <ContextWidgets>
-        <CurrentGitBranch />
-      </ContextWidgets>
-      <MeterWidgets>
-        <ProxyOfflineIndicator />
-      </MeterWidgets>
-    </Kui>
-  )
+export default function BottomInputClient() {
+  return <Kui bottomInput />
 }

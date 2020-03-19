@@ -27,7 +27,7 @@ import '../web/css/static/status-stripe.css'
 import '../web/css/static/vendor/balloon-css/balloon.min.css'
 
 // default client
-export { default as Kui } from './components/Kui'
+export { default as Kui, Props as KuiProps } from './components/Kui'
 
 // core components
 export { default as Search } from './components/Search'

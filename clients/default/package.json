@@ -49,11 +49,11 @@
   "dependencies": {
     "@kui-shell/client": "file:./plugins/plugin-client",
     "@kui-shell/core": "file:/tmp/kui-packs/kui-shell-core.tgz",
+    "@kui-shell/react": "file:/tmp/kui-packs/kui-shell-react.tgz",
     "@kui-shell/plugin-bash-like": "file:/tmp/kui-packs/kui-shell-plugin-bash-like.tgz",
     "@kui-shell/plugin-core-support": "file:/tmp/kui-packs/kui-shell-plugin-core-support.tgz",
     "@kui-shell/plugin-core-themes": "file:/tmp/kui-packs/kui-shell-plugin-core-themes.tgz",
     "@kui-shell/plugin-client-common": "file:/tmp/kui-packs/kui-shell-plugin-client-common.tgz",
-    "@kui-shell/plugin-client-default": "file:/tmp/kui-packs/kui-shell-plugin-client-default.tgz",
     "@kui-shell/plugin-editor": "file:/tmp/kui-packs/kui-shell-plugin-editor.tgz",
     "@kui-shell/plugin-proxy-support": "file:/tmp/kui-packs/kui-shell-plugin-proxy-support.tgz",
     "@kui-shell/plugin-git": "file:/tmp/kui-packs/kui-shell-plugin-git.tgz",
