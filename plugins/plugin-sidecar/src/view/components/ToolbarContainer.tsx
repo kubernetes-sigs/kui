@@ -54,6 +54,7 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
         <Toolbar
           tab={this.props.tab}
           response={this.props.response}
+          args={this.props.args}
           toolbarText={this.state.toolbarText}
           buttons={this.props.buttons.concat(this.state.extraButtons || [])}
         />

@@ -17,6 +17,7 @@
 import { Tab } from '../../webapp/tab'
 import { Content } from './content-types'
 import { MetadataBearing } from '../entity'
+import { ParsedOptions } from '../command'
 // import { SelectionController } from '../../webapp/bottom-stripe'
 
 /**
@@ -96,7 +97,9 @@ export interface ModeTraits {
 export type DrilldownButton<T = MetadataBearing> = Label &
   ModeTraits &
   VisibilityTraits & {
-    command: string | ((tab: Tab, resource: T) => string)
+    command:
+      | string
+      | ((tab: Tab, resource: T, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => string)
     confirm?: boolean
     kind: 'drilldown'
   }
@@ -105,7 +108,7 @@ export type ViewButton<T = MetadataBearing> = Label &
   ModeTraits &
   VisibilityTraits & {
     kind: 'view'
-    command: (tab: Tab, resource: T) => void
+    command: (tab: Tab, resource: T, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => void
   }
 
 export function isViewButton<T = MetadataBearing>(button: Button<T>): button is ViewButton<T> {

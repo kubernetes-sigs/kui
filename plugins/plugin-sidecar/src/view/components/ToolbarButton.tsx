@@ -15,23 +15,34 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab, Button, ResourceWithMetadata, isViewButton, MultiModalResponse } from '@kui-shell/core'
+import {
+  Tab as KuiTab,
+  Button,
+  ResourceWithMetadata,
+  isViewButton,
+  MultiModalResponse,
+  ParsedOptions
+} from '@kui-shell/core'
 
 interface Props {
   tab: KuiTab
   button: Button
   response: MultiModalResponse
+  args: {
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
 }
 
 export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWithMetadata> extends React.PureComponent<
   Props
 > {
   private getCommand() {
-    const { tab, response, button } = this.props
+    const { tab, response, button, args } = this.props
     if (isViewButton(button)) {
       return button.command
     } else {
-      const cmd = typeof button.command === 'string' ? button.command : button.command(tab, response)
+      const cmd = typeof button.command === 'string' ? button.command : button.command(tab, response, args)
       if (button.confirm) {
         return `confirm "${cmd}"`
       } else {
@@ -42,7 +53,7 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
 
   private buttonOnclick() {
     const cmd = this.getCommand()
-    const { tab, response, button } = this.props
+    const { tab, response, button, args } = this.props
 
     if (typeof cmd === 'string') {
       if (isViewButton(button) || button.confirm) {
@@ -51,7 +62,7 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
         return tab.REPL.pexec(cmd)
       }
     } else {
-      cmd(tab, response)
+      cmd(tab, response, args)
     }
   }
 

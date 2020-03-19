@@ -77,7 +77,13 @@ const modesFromRegistration: MMRExpectMode[] = [
 ]
 
 const buttonFromRegistration = [
-  { mode: 'mode4', label: 'mode4 label', command: 'test string', kind: 'drilldown' as const }
+  { mode: 'button1', label: 'button1 label', command: 'test string', kind: 'drilldown' as const },
+  {
+    mode: 'button2',
+    label: 'button2 label',
+    command: 'test string',
+    kind: 'drilldown' as const
+  }
 ]
 
 // see implementation in src/lib/modes
