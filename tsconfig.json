@@ -20,13 +20,19 @@
       "path": "plugins/plugin-core-support"
     },
     {
-      "path": "plugins/plugin-client-default"
-    },
-    {
       "path": "packages/builder"
     },
     {
       "path": "plugins/plugin-git"
+    },
+    {
+      "path": "plugins/plugin-proxy-support"
+    },
+    {
+      "path": "clients/default"
+    },
+    {
+      "path": "packages/react"
     },
     {
       "path": "plugins/plugin-manager"
@@ -36,9 +42,6 @@
     },
     {
       "path": "plugins/plugin-sandbox"
-    },
-    {
-      "path": "plugins/plugin-proxy-support"
     }
   ]
 }

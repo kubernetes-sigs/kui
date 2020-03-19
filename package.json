@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@kui-shell/core": "file:packages/core",
+    "@kui-shell/react": "file:packages/react",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
     "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
     "@kui-shell/plugin-carbon-themes": "file:plugins/plugin-carbon-themes",
@@ -54,7 +55,7 @@
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-client-common": "file:plugins/plugin-client-common",
-    "@kui-shell/client": "file:plugins/plugin-client-default",
+    "@kui-shell/client": "file:clients/default/plugins/plugin-client",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
   },
   "devDependencies": {

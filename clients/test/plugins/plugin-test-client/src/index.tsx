@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
-import Client from './Client'
-import { render as ReactDomRender } from 'react-dom'
+import * as React from 'react'
+
+import { Kui, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
+import CounterWidget from './CounterWidget'
+
+/** We have tests that ensure the scss import worked */
+import '../web/css/static/test.scss'
 
 /**
- * Use react-dom to render the client into the given container
+ * Use the stock Kui client, with extra status stripe Context and
+ * Meter widgets.
+ *
+ * Note: we are intentionally placing the same widget type in two
+ * places. The impl for the widget is to be found in
+ * `./CounterWidget.tsx`.
  *
  */
-function renderMain(container: Element, isPopup: boolean, commandLine?: string[]) {
-  ReactDomRender(Client(isPopup, commandLine), container)
-}
+export default function TestClient({ isPopup, commandLine }: { isPopup: boolean; commandLine?: string[] }) {
+  return (
+    <Kui isPopup={isPopup} commandLine={commandLine}>
+      <ContextWidgets>
+        <CounterWidget idx={0} />
+      </ContextWidgets>
 
-/** boot Kui! */
-import('@kui-shell/core').then(_ => _.boot(renderMain))
+      <MeterWidgets>
+        <CounterWidget idx={1} />
+      </MeterWidgets>
+    </Kui>
+  )
+}

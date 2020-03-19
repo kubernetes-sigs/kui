@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-import Client from './Client'
-import { render as ReactDomRender } from 'react-dom'
+import * as React from 'react'
+
+import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
+
+import { CurrentGitBranch } from '@kui-shell/plugin-git'
+import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 
 /**
- * Use react-dom to render the client into the given container
+ * Format our body, with extra status stripe widgets
+ *   - <CurrentGitBranch />
+     - <ProxyOfflineIndicator />
  *
  */
-function renderMain(container: Element) {
-  ReactDomRender(Client(), container)
-}
+export default function renderMain(props: KuiProps) {
+  return (
+    <Kui isPopup={props.isPopup} commandLine={props.commandLine}>
+      <ContextWidgets>
+        <CurrentGitBranch />
+      </ContextWidgets>
 
-/** boot Kui! */
-import('@kui-shell/core').then(_ => _.boot(renderMain))
+      <MeterWidgets>
+        <ProxyOfflineIndicator />
+      </MeterWidgets>
+    </Kui>
+  )
+}
