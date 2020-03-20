@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-sandbox",
-  "version": "1.0.0",
+  "version": "8.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {

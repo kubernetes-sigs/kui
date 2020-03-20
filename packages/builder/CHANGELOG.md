@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/IBM/kui/compare/v4.5.0...v8.0.0) (2020-03-20)
+
+### Bug Fixes
+
+- **packages/builder:** remove old local-proxy.html file ([7ecd156](https://github.com/IBM/kui/commit/7ecd156)), closes [#3573](https://github.com/IBM/kui/issues/3573)
+- eliminate the the use of symlink of adding css files to build stage ([dad4987](https://github.com/IBM/kui/commit/dad4987)), closes [#3567](https://github.com/IBM/kui/issues/3567)
+- **packages/builder:** carbon gray 10 popup input font color too dark ([b7b39e3](https://github.com/IBM/kui/commit/b7b39e3)), closes [#2930](https://github.com/IBM/kui/issues/2930)
+- **packages/builder:** kui-compile still points to old theme/css ([a72a339](https://github.com/IBM/kui/commit/a72a339)), closes [#3520](https://github.com/IBM/kui/issues/3520)
+- **packages/builder:** remove outdated builder examples ([31a96f5](https://github.com/IBM/kui/commit/31a96f5)), closes [#3568](https://github.com/IBM/kui/issues/3568)
+- configure.js sometimes failed at loading client definition assets during webpack-build ([ac0690b](https://github.com/IBM/kui/commit/ac0690b)), closes [#3527](https://github.com/IBM/kui/issues/3527)
+- exclude all but woff2 fonts for electron builds ([bf28c49](https://github.com/IBM/kui/commit/bf28c49)), closes [#3550](https://github.com/IBM/kui/issues/3550)
+- **packages/builder:** remove outdated plugin-sample ([8af1712](https://github.com/IBM/kui/commit/8af1712)), closes [#1361](https://github.com/IBM/kui/issues/1361)
+- **packages/webpack:** electron packager versus node-pty binaries ([5397577](https://github.com/IBM/kui/commit/5397577)), closes [#3381](https://github.com/IBM/kui/issues/3381)
+- another attempt to not-modify a package-lock.json ([70ea4ea](https://github.com/IBM/kui/commit/70ea4ea)), closes [#3205](https://github.com/IBM/kui/issues/3205)
+- collect codecov for plugin assembler ([7a0a48c](https://github.com/IBM/kui/commit/7a0a48c)), closes [#3284](https://github.com/IBM/kui/issues/3284)
+- electron cross-builds for win32 on linux hosts do not avoid asar ([f4adf00](https://github.com/IBM/kui/commit/f4adf00)), closes [#3336](https://github.com/IBM/kui/issues/3336)
+- improve windows build support ([cacd68b](https://github.com/IBM/kui/commit/cacd68b)), closes [#3332](https://github.com/IBM/kui/issues/3332)
+- **packages/builder:** improve color contrast of about in Dark theme ([2e1b2f8](https://github.com/IBM/kui/commit/2e1b2f8)), closes [#3301](https://github.com/IBM/kui/issues/3301)
+- **packages/builder:** support cross-builds of electron clients ([27b5b8f](https://github.com/IBM/kui/commit/27b5b8f)), closes [#3304](https://github.com/IBM/kui/issues/3304)
+- electron publish breakage ([5f3d847](https://github.com/IBM/kui/commit/5f3d847)), closes [#2865](https://github.com/IBM/kui/issues/2865)
+- improve plugin install ([67e007c](https://github.com/IBM/kui/commit/67e007c)), closes [#3057](https://github.com/IBM/kui/issues/3057)
+- lingering reference to packages/app in push-cos.js ([77b88b0](https://github.com/IBM/kui/commit/77b88b0)), closes [#2870](https://github.com/IBM/kui/issues/2870)
+- mkclient.sh failed with tsc error ([bb6b706](https://github.com/IBM/kui/commit/bb6b706)), closes [#3146](https://github.com/IBM/kui/issues/3146)
+- Red error text contrast issue in Carbon 90 theme ([86a86ed](https://github.com/IBM/kui/commit/86a86ed)), closes [#FF767](https://github.com/IBM/kui/issues/FF767) [#3096](https://github.com/IBM/kui/issues/3096)
+- remove k8s command prefix for kube commands ([3c53806](https://github.com/IBM/kui/commit/3c53806)), closes [#3008](https://github.com/IBM/kui/issues/3008)
+- remove package-lock from publishers/s3 ([4a9d7a1](https://github.com/IBM/kui/commit/4a9d7a1)), closes [#3205](https://github.com/IBM/kui/issues/3205)
+- tomorrow night theme should use blue for table names ([0e3315d](https://github.com/IBM/kui/commit/0e3315d)), closes [#3102](https://github.com/IBM/kui/issues/3102)
+- wrong colors (Gray90 and Red50) in Carbon-90 theme ([e319783](https://github.com/IBM/kui/commit/e319783)), closes [#3157](https://github.com/IBM/kui/issues/3157)
+- **packages/builder:** electron builder versus external clients ([cbc1d37](https://github.com/IBM/kui/commit/cbc1d37)), closes [#3119](https://github.com/IBM/kui/issues/3119)
+- **packages/builder:** linux packaging issues ([cb9da09](https://github.com/IBM/kui/commit/cb9da09)), closes [#2968](https://github.com/IBM/kui/issues/2968)
+- **packages/core:** avoid "custom" in the sidecar "kind" display ([b9ddcd1](https://github.com/IBM/kui/commit/b9ddcd1)), closes [#3059](https://github.com/IBM/kui/issues/3059) [#3061](https://github.com/IBM/kui/issues/3061)
+- use carbon gray10 as default theme for clients/base ([b5d277d](https://github.com/IBM/kui/commit/b5d277d)), closes [#3054](https://github.com/IBM/kui/issues/3054)
+- **packages/core:** update sidecar tables to match [#3037](https://github.com/IBM/kui/issues/3037) ([4329e24](https://github.com/IBM/kui/commit/4329e24)), closes [#3045](https://github.com/IBM/kui/issues/3045)
+
+### Features
+
+- allow plugins to define themes ([216f41c](https://github.com/IBM/kui/commit/216f41c)), closes [#3420](https://github.com/IBM/kui/issues/3420)
+- enable plugin-manager for electron clients ([4814cb9](https://github.com/IBM/kui/commit/4814cb9)), closes [#2935](https://github.com/IBM/kui/issues/2935)
+- extend MultiModalResponse to support functions that produce content ([b940c63](https://github.com/IBM/kui/commit/b940c63)), closes [#3022](https://github.com/IBM/kui/issues/3022)
+- introduce new MultiModalResponse API ([67e9c8a](https://github.com/IBM/kui/commit/67e9c8a)), closes [#2899](https://github.com/IBM/kui/issues/2899)
+- introduce plugin-client-default meant for hosting a client definition ([688a991](https://github.com/IBM/kui/commit/688a991)), closes [#3463](https://github.com/IBM/kui/issues/3463)
+- publish kui-base electron distributions ([ab56847](https://github.com/IBM/kui/commit/ab56847)), closes [#2939](https://github.com/IBM/kui/issues/2939)
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+- use webpack to build html template ([c4ad57a](https://github.com/IBM/kui/commit/c4ad57a)), closes [#3544](https://github.com/IBM/kui/issues/3544)
+- **packages/builder:** add removeComments:true to tsconfig-base.json ([2e14274](https://github.com/IBM/kui/commit/2e14274)), closes [#2975](https://github.com/IBM/kui/issues/2975)
+- **packages/builder:** kui-compile should allow specifying a tsconfig ([c0eb201](https://github.com/IBM/kui/commit/c0eb201)), closes [#3353](https://github.com/IBM/kui/issues/3353)
+
 ## [6.0.12](https://github.com/IBM/kui/compare/v6.0.11...v6.0.12) (2020-02-03)
 
 **Note:** Version bump only for package @kui-shell/builder
