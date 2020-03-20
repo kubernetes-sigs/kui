@@ -29,7 +29,13 @@
       "path": "plugins/plugin-proxy-support"
     },
     {
-      "path": "clients/default"
+      "path": "plugins/plugin-client-default"
+    },
+    {
+      "path": "plugins/plugin-client-test"
+    },
+    {
+      "path": "plugins/plugin-client-alternate"
     },
     {
       "path": "packages/react"
