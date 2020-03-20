@@ -78,9 +78,8 @@ function tarCopy {
            --exclude ".travis*" \
            --exclude "node_modules/@kui-shell/build" \
            --exclude "./build/*/node_modules/*" \
-           --exclude "./packages/*/node_modules/*" \
-           --exclude "./plugins/*/node_modules/*" \
-           --exclude "./packages/*/dist" \
+           --exclude "./packages" \
+           --exclude "./plugins" \
            --exclude "**/*~" \
            --exclude "**/.bak" \
            --exclude "**/yarn.lock" \

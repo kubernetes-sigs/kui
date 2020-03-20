@@ -83,6 +83,10 @@ const prequire = async (
                 ? await import(/* webpackIgnore: true */ module.path)
                 : isHeadless()
                 ? await import(/* webpackIgnore: true */ mainPath(module.path))
+                : module.route === 'client'
+                ? await import(
+                    /* webpackMode: "lazy" */ '@kui-shell/clien' + webpackPath(module.route).slice(5) + '/mdist/plugin'
+                  )
                 : await import(
                     /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/plugin'
                   )
