@@ -277,9 +277,9 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         data-active={active}
       >
         {active ? (
-          <CameraAction width={18} height={18} onMouseDown={evt => evt.preventDefault()} />
+          <CameraAction onMouseDown={evt => evt.preventDefault()} />
         ) : (
-          <Camera width={18} height={18} onMouseDown={evt => evt.preventDefault()} />
+          <Camera onMouseDown={evt => evt.preventDefault()} />
         )}
       </a>
     )
