@@ -231,7 +231,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
   flex: 4;
   background-color: var(--color-repl-background);
 }
