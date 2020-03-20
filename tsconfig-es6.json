@@ -29,7 +29,13 @@
       "path": "plugins/plugin-proxy-support/tsconfig-es6.json"
     },
     {
-      "path": "clients/default/tsconfig-es6.json"
+      "path": "plugins/plugin-client-default/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-client-test/tsconfig-es6.json"
+    },
+    {
+      "path": "plugins/plugin-client-alternate/tsconfig-es6.json"
     },
     {
       "path": "packages/react/tsconfig-es6.json"

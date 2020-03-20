@@ -1,6 +1,0 @@
-.npmrc
-.keys
-build
-dist
-npm-packs
-package-lock.json
