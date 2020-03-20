@@ -26,7 +26,6 @@ before_script:
   - export DISPLAY=:2; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - export DISPLAY=:3; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - export DISPLAY=:4; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
-  - npm install -g concurrently
   - ${TRAVIS_BUILD_DIR}/tools/travis/cleanupNvm.sh
 
 # upload codecov
@@ -35,56 +34,46 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 # default install script
 install:
   - npm ci
+  - ./bin/switch-client.sh $CLIENT
   - ./tools/codecov/instrument.sh
-  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then (npm run proxy &) && (cd clients/$CLIENT && npm install && npm run watch:webpack); else (cd clients/$CLIENT && npm install && npm run build:electron -- $TRAVIS_OS_NAME); fi
+  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; npm run watch:webpack; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
 
-stages:
-  - test
+script:
+  - if [ -n "$CODECOV_OF_PRESCAN" ]; then TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile; fi
+  - npm run testv2 $LAYERS
 
 jobs:
   allow_failures:
     - if: os = windows AND env(NO_WINDOWS) IS present
 
   include:
-    # API Tests | os=Linux | targets=webpack-watch
-    - env: N="API" CLIENT="test" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
-      install:
-        - npm ci && ./tools/codecov/instrument.sh
-        - TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile # codecov of prescan
-        - cd clients/$CLIENT && npm install
-      script: npm run test:webpack
-    # API Tests | os=Linux | targets=electron-watch
-    - env: N="API" CLIENT="test" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
-      install:
-        - npm ci && ./tools/codecov/instrument.sh
-        - cd clients/$CLIENT && npm install
-      script: npm run test:electron
+    # STAGE 1
+    - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
 
-    # Core Tests | os=Darwin | targets=electron-build
+    # STAGE 2
+    - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="electron" LAYERS="response"
+
+    # STAGE 3 CLIENT=default | os=Darwin | TARGET=electron | core, core-support, editor, core-support2
     - os: osx
-      env: N="Mac core" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1
+      env: N="Mac core" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1
       before_install: which jq || brew install jq
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
-    # bottom-input Tests | os=Linux | targets=webpack-watch
-    - env: N="bottom-input" CLIENT="alternate" WEBPACK_CLIENT_URL="" # test:parallel formulates its own WP_CLIENT_URL
-      install:
-        - npm ci && ./tools/codecov/instrument.sh
-        - cd clients/$CLIENT && npm install
-      script: npm run test:webpack
+    # STAGE 4
+    - env: N="bottom-input" CLIENT="alternate" MOCHA_RUN_TARGET="webpack" LAYERS="bottom-input"
 
-      # - env: N="Linux core" LAYERS="core core-support editor"
+    # - env: N="Linux core" LAYERS="core core-support editor"
 
-    # Core Tests | os=Linux | targets=webpack-watch
+    # STAGE 5 CLIENT=default | os=Linux | targets=webpack | core, core-support, editor, core-support2
     - env: N="Webpack core" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
-    # Bash Tests | os=Linux | targets=electron-build
-    - env: N="Linux bash" CLIENT="default" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/clients/$CLIENT/dist/electron/Kui-linux-x64/Kui"
+    # STAGE 6 CLIENT=default | os=Linux | targets=electron | bash-like
+    - env: N="Linux bash" CLIENT="default" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui"
       before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
       script: npm run test1 bash-like
 
-    # Bash Tests | os=Linux | targets=webpack-watch
+    # STAGE 7 CLIENT=default | os=Linux | targets=webpack | bash-like
     - env: N="Webpack bash" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
       before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
       script: npm run test1 bash-like-wait && npm run test1 bash-like

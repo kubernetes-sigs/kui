@@ -1,3 +1,6 @@
+# electron builds
+dist
+
 # warning for future reference: see https://github.com/IBM/kui/issues/209
 # /package-lock.json
 

@@ -89,7 +89,7 @@ export function isFinished(block: BlockModel): block is FinishedBlock {
 }
 
 export function hasCommand(block: BlockModel & Partial<WithCommand>): block is BlockModel & Required<WithCommand> {
-  return !isActive(block)
+  return !isActive(block) && !isEmpty(block)
 }
 
 export function hasUUID(block: BlockModel & Partial<WithUUID>): block is BlockModel & Required<WithUUID> {

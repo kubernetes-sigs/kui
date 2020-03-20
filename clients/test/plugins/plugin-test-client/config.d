@@ -1,1 +1,0 @@
-../../../default/plugins/plugin-client/config.d
