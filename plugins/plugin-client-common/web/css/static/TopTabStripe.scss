@@ -153,11 +153,15 @@
         fill: var(--color-text-02);
       }
       &:hover svg path {
-        fill: var(--color-base01);
+        fill: var(--color-text-01);
       }
       &:hover {
-        background: var(--color-base05);
+        background: var(--color-table-border1);
       }
+    }
+
+    &:not(.kui--tab--active) .kui--tab-close:hover {
+      background: var(--color-table-border3);
     }
   }
 
@@ -168,12 +172,17 @@
 
     .kui--new-tab__plus {
       display: flex;
+      padding: 3px;
+
+      &:hover {
+        background: var(--color-table-border3);
+      }
 
       svg {
         fill: var(--color-text-02);
 
         &:hover {
-          fill: var(--color-brand-01);
+          fill: var(--color-text-01);
         }
       }
     }

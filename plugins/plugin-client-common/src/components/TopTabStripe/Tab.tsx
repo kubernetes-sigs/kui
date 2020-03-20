@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { Close16 } from '@carbon/icons-react'
+import { Close20 as CloseButton } from '@carbon/icons-react'
 import { i18n, eventChannelUnsafe, Event, ExecType, Theme } from '@kui-shell/core'
 import { HeaderMenuItem } from 'carbon-components-react'
 
@@ -157,7 +157,7 @@ export default class Tab extends React.PureComponent<Props, State> {
               this.props.onCloseTab(this.props.idx)
             }}
           >
-            <Close16 focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+            <CloseButton focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
           </div>
         )}
       </HeaderMenuItem>

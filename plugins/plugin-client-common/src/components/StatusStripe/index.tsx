@@ -86,7 +86,7 @@ export default class StatusStripe extends React.PureComponent {
               tabIndex={0}
               onClick={() => this.doAbout()}
             >
-              <SettingsIcon width={18} height={18} />
+              <SettingsIcon />
             </a>
           </div>
         </div>

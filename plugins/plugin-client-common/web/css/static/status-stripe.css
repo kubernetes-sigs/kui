@@ -1,6 +1,6 @@
 .kui--status-stripe {
   display: flex;
-  flex-basis: 1.75em;
+  flex-basis: 1.875em;
   background-color: var(--color-sidecar-background-02);
 
   --color-fg: var(--color-text-01);
@@ -85,7 +85,7 @@ body[kui-theme-style="dark"] {
   display: flex;
   align-items: center;
   font-weight: bold;
-  padding-right: calc(1em * 0.875);
+  margin-right: calc(1em * 0.875 - 6px);
 }
 
 .kui--status-stripe-element > a {
@@ -103,11 +103,15 @@ body[kui-theme-style="dark"] {
   color: var(--color-support-04) !important;
   text-decoration: none;
 }
-.kui--status-stripe .kui--status-stripe-element .clickable:hover svg,
-.kui--status-stripe .kui--status-stripe-element .clickable:hover svg path,
-.kui--status-stripe .kui--status-stripe-element .clickable:hover svg rect,
-.kui--status-stripe .kui--status-stripe-element .clickable:hover svg circle {
-  fill: var(--color-support-04) !important;
+
+.kui--status-stripe .kui--status-stripe-button .kui--status-stripe-element {
+  padding: 3px;
+  &:hover {
+    background-color: var(--color-table-border1);
+    svg {
+      fill: var(--color-text-01) !important;
+    }
+  }
 }
 
 .kui--status-stripe-icon {
