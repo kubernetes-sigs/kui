@@ -4,7 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "react",
-    "outDir": "dist",
+    "outDir": "mdist",
     "rootDir": "src"
   }
 }

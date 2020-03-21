@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Debug from 'debug'
+import Debug from 'debug'
 import { ensureDir, symlink, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { execFile, spawn } from 'child_process'

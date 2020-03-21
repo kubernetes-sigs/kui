@@ -59,10 +59,12 @@ import { isSuccessfulCommandResolution } from '../commands/resolution'
 import { Tab, getCurrentTab, getTabId } from '../webapp/tab'
 import { Block } from '../webapp/models/block'
 
-import * as minimist from 'yargs-parser'
-
 import { Stream, Streamable } from '../models/streamable'
 import enforceUsage from './enforce-usage'
+
+// TODO esModuleInterop to allow for import
+// import * as minimist from 'yargs-parser'
+const minimist = require('yargs-parser')
 
 let currentEvaluatorImpl: ReplEval = new DirectReplEval()
 
@@ -247,6 +249,7 @@ class InProcessExecutor implements Executor {
       )
     }
 
+    console.error('!!!!!!!!', minimist)
     const parsedOptions = (minimist(argv, allFlags) as any) as O
     const argvNoOptions: string[] = parsedOptions._
 
