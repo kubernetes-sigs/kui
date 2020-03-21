@@ -5,8 +5,8 @@
     "strictBindCallApply": true,
     "noImplicitAny": true,
     "composite": true,
-    "outDir": "dist",
     "rootDir": "src",
+    "outDir": "mdist",
     "baseUrl": ".",
     "paths": {
       "@kui-shell/core/*": ["src/*"]

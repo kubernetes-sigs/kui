@@ -29,6 +29,8 @@
 set -e
 set -o pipefail
 
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+
 # for compile.js below; give it an absolute path
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
@@ -49,6 +51,8 @@ else
 
   # compile the source
   npx tsc -b ${1-.}
+
+  $SCRIPTDIR/babel.sh
 fi
 
 if [ ! -d node_modules/@kui-shell/build ]; then

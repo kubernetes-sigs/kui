@@ -18,7 +18,7 @@
 
 import Debug from 'debug'
 
-import * as EventEmitter from 'events'
+import { EventEmitter } from 'events'
 
 import { onConnection, disableBashSessions } from './server'
 

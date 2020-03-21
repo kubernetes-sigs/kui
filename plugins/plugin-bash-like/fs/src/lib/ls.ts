@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as speedDate from 'speed-date'
+import { UTC as speedDate } from 'speed-date'
 import {
   i18n,
   Arguments,

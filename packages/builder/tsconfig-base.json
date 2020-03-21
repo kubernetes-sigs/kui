@@ -2,9 +2,10 @@
   "include": [],
   "exclude": ["**/flycheck*.ts"],
   "compilerOptions": {
+    "removeComments": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "ES2016",
     "sourceMap": true,

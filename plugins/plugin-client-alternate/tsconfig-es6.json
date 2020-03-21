@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "removeComments": false,
-    "outDir": "mdist",
-    "module": "esnext"
-  }
-}

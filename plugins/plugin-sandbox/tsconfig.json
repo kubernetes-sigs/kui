@@ -4,7 +4,7 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "composite": true,
-    "outDir": "dist",
+    "outDir": "mdist",
     "rootDir": "src"
   }
 }
