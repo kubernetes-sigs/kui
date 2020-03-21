@@ -15,7 +15,10 @@
  */
 
 import Debug from 'debug'
-import * as minimist from 'yargs-parser'
+
+// TODO esModuleInterop to allow for import
+// import * as minimist from 'yargs-parser'
+const minimist = require('yargs-parser')
 
 import { CommandHandlerWithEvents, KResponse, ParsedOptions, YargsParserFlags } from '../models/command'
 
