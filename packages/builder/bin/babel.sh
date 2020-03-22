@@ -28,16 +28,20 @@
 #
 PLUGINS=@babel/plugin-transform-modules-commonjs,dynamic-import-node-babel-7,babel-plugin-ignore-html-and-css-imports
 
+function babel {
+    npx babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored &
+}
+
 for i in {packages,plugins}/*; do
     if [ -d $i/mdist ]; then
         OUT=dist
         if [ "$i" == "packages/builder" ]; then OUT=build; fi
 
-        npx babel --plugins $PLUGINS $i/mdist --out-dir $i/$OUT &
+        babel $i
 
         for j in $i/*; do
             if [ -d $j/mdist ]; then
-               npx babel --plugins $PLUGINS $j/mdist --out-dir $j/dist &
+                babel $j
             fi
         done
     fi

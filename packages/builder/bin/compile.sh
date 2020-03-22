@@ -52,7 +52,7 @@ else
   # compile the source
   npx tsc -b ${1-.}
 
-  $SCRIPTDIR/babel.sh
+  npx kui-babel
 fi
 
 if [ ! -d node_modules/@kui-shell/build ]; then
