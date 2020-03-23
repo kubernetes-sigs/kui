@@ -249,7 +249,6 @@ class InProcessExecutor implements Executor {
       )
     }
 
-    console.error('!!!!!!!!', minimist)
     const parsedOptions = (minimist(argv, allFlags) as any) as O
     const argvNoOptions: string[] = parsedOptions._
 
