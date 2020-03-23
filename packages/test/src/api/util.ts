@@ -15,7 +15,10 @@
  */
 import * as assert from 'assert'
 import { Application } from 'spectron'
-import { safeLoad } from 'js-yaml'
+
+// until we can use esModuleInterop...
+// import { safeLoad } from 'js-yaml'
+const { safeLoad } = require('js-yaml')
 
 import * as Selectors from './selectors'
 import * as CLI from './cli'

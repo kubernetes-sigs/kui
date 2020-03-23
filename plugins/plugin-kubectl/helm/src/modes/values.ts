@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-import '../../web/css/static/wskflow.css'
+import { i18n } from '@kui-shell/core'
+import { HelmRelease, isHelmRelease } from '../models/release'
 
-export default function() {
-  // no-op
+const strings = i18n('plugin-kubectl', 'helm')
+
+export default {
+  when: isHelmRelease,
+  mode: {
+    mode: 'values',
+    label: strings('Values'),
+    content: (_, resource: HelmRelease) => {
+      return {
+        contentFrom: `helm get values ${resource.metadata.name}`,
+        contentType: 'json' as const
+      }
+    }
+  }
 }

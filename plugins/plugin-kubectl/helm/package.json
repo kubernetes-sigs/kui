@@ -1,0 +1,42 @@
+{
+  "name": "@kui-shell/plugin-helmui",
+  "version": "1.0.1",
+  "description": "Kubernetes visualization plugin for helm",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "helm",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "homepage": "https://github.com/kui-shell/plugin-kubeui#readme",
+  "bugs": {
+    "url": "https://github.com/kui-shell/plugin-kubeui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kui-shell/plugin-kubeui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "dependencies": {
+    "@kui-shell/core": "8.0.6",
+    "@kui-shell/plugin-kubeui": "*",
+    "debug": "4.1.1"
+  },
+  "krew": {
+    "commandPrefix": "kubeui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32"
+}

@@ -1,0 +1,6 @@
+{
+  "CPU:short": "c",
+  "Memory:short": "m",
+  "Cluster CPU": "Cluster CPU: {0}",
+  "Cluster Memory": "Cluster Memory: {0}"
+}

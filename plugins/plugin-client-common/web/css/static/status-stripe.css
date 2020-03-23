@@ -85,7 +85,7 @@ body[kui-theme-style="dark"] {
   display: flex;
   align-items: center;
   font-weight: bold;
-  margin-right: calc(1em * 0.875 - 6px);
+  margin-right: calc(1em * 0.875);
 }
 
 .kui--status-stripe-element > a {
@@ -106,6 +106,8 @@ body[kui-theme-style="dark"] {
 
 .kui--status-stripe .kui--status-stripe-button .kui--status-stripe-element {
   padding: 3px;
+  margin-right: calc(1em * 0.875 - 2 * 3px);
+
   &:hover {
     background-color: var(--color-table-border1);
     svg {

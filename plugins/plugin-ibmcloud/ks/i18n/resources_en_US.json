@@ -1,0 +1,15 @@
+{
+  "Open Dashboard": "Open Dashboard",
+  "An update is available for the cluster": "An update is available for the cluster",
+  "An update is available for this worker": "An update is available for this worker",
+  "ago": "{0} ago",
+  "one worker in zone": "one worker in zone {0} (in {1})",
+  "one worker in zones": "one worker in zones {0} (in {1})",
+  "N workers in zone": "{0} workers in zone {1} (in {2})",
+  "N workers in zones": "{0} workers in zones {1} (in {2})",
+  "Show Pool": "Show Pool",
+  "Show Cluster": "Show Cluster",
+  "Update Cluster": "Update Cluster",
+  "Update Worker": "Update Worker",
+  "Using machine type": "Using machine type {0}"
+}

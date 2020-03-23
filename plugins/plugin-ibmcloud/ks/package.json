@@ -1,0 +1,29 @@
+{
+  "name": "@kui-shell/plugin-ibmcloud/ks",
+  "version": "0.0.10",
+  "description": "ibmcloud kubernetes service kui plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "homepage": "https://github.com/kui-shell/plugin-kubeui#readme",
+  "bugs": {
+    "url": "https://github.com/kui-shell/plugin-kubeui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kui-shell/plugin-kubeui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts"
+}

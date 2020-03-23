@@ -160,6 +160,12 @@ const _listen = <T extends KResponse, O extends ParsedOptions>(
   handler: CommandHandler<T, O>,
   options: CommandOptions = new DefaultCommandOptions()
 ): Command<T, O> => {
+  if (resolver && resolver.isOverridden(route)) {
+    // then the overridden function was prematurely loaded; force a
+    // load of the overriding plugin
+    resolver.resolve(route, { tryCatchalls: false })
+  }
+
   const path = route.split('/').splice(1)
   const leaf = treeMatch(getModelInternal().root, path, false, options.hide)
 
