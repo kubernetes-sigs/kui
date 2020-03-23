@@ -84,9 +84,17 @@
         }
       }
       .bx--side-nav__link {
+        & {
+          height: 2em;
+          min-height: 2em;
+          padding-left: 2em;
+          font-size: 1em;
+        }
         &,
         &:hover {
           .bx--side-nav__link-text {
+            font-size: 1em;
+            line-height: 1.25em;
             color: var(--color-text-01);
           }
         }
@@ -141,6 +149,9 @@
     }
 
     .bx--side-nav__item--active .bx--side-nav__submenu {
+      font-size: 1em;
+      height: 2em;
+      line-height: 1.125em;
       &.entity-name .bx--side-nav__submenu-title {
         color: var(--color-brand-03);
       }

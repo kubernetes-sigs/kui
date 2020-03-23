@@ -255,7 +255,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
         {' '}
         {/* data-view helps with tests */}
         {this.title({ breadcrumbs: this.current.response.breadcrumbs })}
-        <div className="kui--sidecar-header-and-body" style={this.headerBodyStyle()}>
+        <div className="kui--sidecar-header-and-body zoomable" style={this.headerBodyStyle()}>
           {this.nav()}
           {this.bodyContainer(this.current.current.tabIdx, this.current.current.menuIdx)}
         </div>
