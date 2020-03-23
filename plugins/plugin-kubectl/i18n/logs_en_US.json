@@ -1,0 +1,12 @@
+{
+  "Show Logs": "Show Logs",
+  "Logs": "Logs",
+  "Previous": "Previous",
+  "Timestamp": "Timestamp",
+  "Level": "Level",
+  "Message": "Message",
+  "Details": "Details",
+  "Occurred at": "Occurred at {0}",
+  "Stack Trace": "Stack Trace",
+  "Error": "Error"
+}

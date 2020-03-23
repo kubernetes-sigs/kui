@@ -19,6 +19,8 @@ import * as React from 'react'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
+import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl'
+import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 
 /**
@@ -32,9 +34,12 @@ export default function renderMain(props: KuiProps) {
     <Kui isPopup={props.isPopup} commandLine={props.commandLine}>
       <ContextWidgets>
         <CurrentGitBranch />
+        <CurrentContext />
+        <CurrentNamespace />
       </ContextWidgets>
 
       <MeterWidgets>
+        <ClusterUtilization />
         <ProxyOfflineIndicator />
       </MeterWidgets>
     </Kui>

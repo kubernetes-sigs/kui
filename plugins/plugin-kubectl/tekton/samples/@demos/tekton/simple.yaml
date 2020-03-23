@@ -1,0 +1,57 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: demo-pipeline
+spec:
+  tasks:
+    - name: lint-repo
+      taskRef:
+        name: pylint
+      resources:
+        inputs:
+          - name: workspace
+            resource: my-repo
+    - name: test-app
+      taskRef:
+        name: make-test
+      resources:
+        inputs:
+          - name: workspace
+            resource: my-repo
+    - name: build-app
+      taskRef:
+        name: kaniko-build-app
+      runAfter:
+        - test-app
+      resources:
+        inputs:
+          - name: workspace
+            resource: my-repo
+        outputs:
+          - name: image
+            resource: my-app-image
+    - name: build-frontend
+      taskRef:
+        name: kaniko-build-frontend
+      runAfter:
+        - test-app
+      resources:
+        inputs:
+          - name: workspace
+            resource: my-repo
+        outputs:
+          - name: image
+            resource: my-frontend-image
+    - name: deploy-all
+      taskRef:
+        name: deploy-kubectl
+      resources:
+        inputs:
+          - name: my-app-image
+            resource: my-app-image
+            from:
+              - build-app
+          - name: my-frontend-image
+            resource: my-frontend-image
+            from:
+              - build-frontend

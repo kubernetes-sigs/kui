@@ -1,0 +1,320 @@
+/*
+ * Copyright 2018-19 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.project-config-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: 1em;
+  font-family: var(--font-sans-serif);
+}
+
+/* project description */
+.project-config-container .project-description,
+.project-config-container .project-description-left,
+.project-config-container .project-description-right {
+  display: flex;
+}
+.project-config-container .project-description-left,
+.project-config-container .project-description-right {
+  flex-direction: column;
+}
+.project-config-container .project-description-right {
+  margin-left: 1.5em;
+}
+.sidecar-full-screen .project-config-container .project-description {
+  flex-direction: row;
+}
+.project-config-container .project-config-paragraph {
+  display: flex;
+  flex-direction: column;
+}
+.project-config-container .project-config-paragraph p {
+  margin-bottom: 0;
+}
+.project-config-container .project-config-paragraph-icon {
+  font-size: 2.75em;
+  width: 64px;
+  text-align: center;
+}
+.project-config-container .project-config-paragraph-text {
+  font-weight: 400;
+  line-height: 1.5em;
+  flex: 1;
+  text-align: justify;
+}
+
+.project-config-container .project-config-list {
+  font-size: 0.875em;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.project-config-container .project-config-items:first-child {
+  margin-top: 0;
+}
+.project-config-container .project-config-items {
+  list-style-type: none;
+  display: flex;
+  margin: 1.5em 0 0;
+  margin-right: 1.5em;
+  transition: border 300ms ease-in-out, background 300ms ease-in-out;
+}
+.project-config-container .project-apis {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.project-config-container .project-api-item-set {
+  flex-direction: column;
+  padding-left: 0;
+  padding-right: 0;
+  width: 49%;
+}
+.project-api-items .config-item-title strong {
+  color: var(--color-brand-02);
+}
+/*.project-config-container .project-api-items {
+    flex-direction: column;
+}*/
+.project-config-container .project-api-items-inner {
+  display: flex;
+}
+.project-config-container .project-api-items-inner,
+.project-config-container .project-api-item-set > .config-item-title {
+  padding: 0 1.5em;
+}
+.project-config-container .project-api-items {
+  border-top: 1px solid var(--color-ui-04);
+}
+.project-config-container .project-api-items .project-api-items-inner,
+.project-config-container .project-api-items {
+  margin-top: 1em;
+}
+.project-config-container .project-api-items .config-item-title {
+  font-size: 1em;
+}
+.project-config-container .project-api-items .bx--label {
+  margin-bottom: 0.125em;
+}
+
+.project-config-container .project-config-items-left {
+  width: 5em;
+}
+.project-config-container .project-config-items-icon {
+  font-size: 2.75em;
+  text-align: center;
+}
+.project-config-container .project-config-items-right {
+  flex: 1;
+}
+
+.project-config-container .project-config-buttons {
+  margin-top: 1.5em;
+}
+.project-config-container .project-config-buttons button {
+  margin-right: 0.875em;
+}
+
+.project-config-container .form {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1.5em 0 0 1em;
+  background: var(--color-ui-01);
+  border: 1px solid var(--color-ui-04);
+}
+
+.project-config-container .configSourceIns {
+  margin-bottom: 1em;
+}
+
+/* config links, e.g. API Documentation link */
+.project-config-container .project-config-links {
+  display: flex;
+  flex-wrap: wrap;
+}
+.project-config-container .project-config-links a {
+  margin: 0 1em 1em 0;
+}
+
+.project-config-container .project-config-webview-container {
+  display: none;
+  width: 100%;
+  height: 60%;
+}
+
+.project-config-container .project-config-webview-source {
+  background: var(--color-stripe-02);
+  color: hsla(240, 2%, 90%, 1);
+  padding: 5px 20px 5px 20px;
+}
+
+.project-config-container .project-config-webview {
+  height: calc(100% - 27px);
+}
+
+.project-config-wskflow-container {
+  flex: 1;
+  overflow: hidden; /* wskflow can pan and zoom on its own */
+  /*border-top: 1px solid var(--color-ui-04);
+    background: var(--color-ui-01);*/
+}
+
+/* sidecar full screen */
+/*.sidecar-full-screen .project-config-container {
+    flex-direction: row;
+}*/
+/*.sidecar-full-screen .project-config-wskflow-container {
+    border-top: none;
+    border-left: 1px solid var(--color-ui-04);
+    background: inherit;
+}*/
+
+.project-config-items .api-attribute {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  height: 0.875em;
+}
+.project-config-items .api-attribute badge {
+  text-transform: capitalize;
+  letter-spacing: 1px;
+  color: var(--color-ui-01);
+  background: var(--color-ui-05);
+}
+.project-config-items .api-attribute badge.red-text {
+  background: var(--color-support-03);
+  color: var(--color-text-01);
+  filter: saturate(0.5);
+  transform: scale(0.775);
+  transform-origin: 100% -50%;
+}
+.bx--label.config-item-title {
+  display: flex;
+  align-items: center;
+}
+
+/* cloudshell tweaks */
+.bx--form-item.bx--form-item-wide {
+  flex-basis: 100%;
+}
+.bx--text-input[data-typeof="boolean"] {
+  min-width: 4em;
+}
+.bx--text-input[data-typeof="number"] {
+  min-width: 6em;
+}
+.bx--text-input[data-form-label="version"] {
+  min-width: 6em;
+}
+.bx--text-input[data-form-label="name"] {
+  min-width: 20em;
+}
+
+.bx--form-item .bx--text-input:focus {
+  outline-color: var(--color-base0C);
+}
+
+/* copied from the carbon components styling */
+.bx--form-item {
+  flex: 1;
+  margin-right: 1em;
+  margin-bottom: 1.5em;
+}
+.project-config-items .bx--label {
+  text-transform: capitalize;
+}
+.bx--label {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+  display: inline-block;
+  vertical-align: baseline;
+  margin-bottom: 0.5em;
+}
+.bx--text-input {
+  font-size: inherit;
+  display: block;
+  width: 100%;
+  height: 2.5em;
+  min-width: 10em;
+  padding: calc((2.5em - 1.25em) / 2) 1em;
+  color: var(--color-text-01);
+  background-color: var(--color-field-01);
+  border: 1px solid transparent;
+  transition: color 300ms ease-in-out;
+}
+.bx--btn--primary:focus,
+.bx--btn--primary:hover {
+  background-color: var(--color-brand-02);
+}
+.page button {
+  border-radius: 0;
+}
+.page button {
+  border-radius: 0;
+}
+button.bx--btn {
+  display: inline-block;
+}
+.bx--btn--primary {
+  background-color: var(--color-brand-01);
+  border-width: 2px;
+  border-style: solid;
+  border-color: transparent;
+  color: var(--color-ui-01);
+}
+.bx--btn--secondary {
+  background-color: transparent;
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--color-brand-01);
+  color: var(--color-brand-01);
+}
+.bx--btn--secondary:hover,
+.bx--btn--secondary:focus {
+  color: var(--color-ui-01);
+}
+.bx--btn--secondary:focus,
+.bx--btn--secondary:hover {
+  background-color: var(--color-brand-01);
+}
+.bx--btn {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 600;
+  height: 2.5em;
+  padding: 0 1em;
+  border-radius: 0;
+  text-align: center;
+  text-decoration: none;
+  transition-duration: 250ms;
+  transition-timing-function: ease-in;
+  white-space: nowrap;
+  line-height: 16px;
+}
