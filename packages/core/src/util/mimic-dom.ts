@@ -28,7 +28,11 @@ import ElementMimic from './element-mimic'
 export default function() {
   debug('mimicDom')
 
-  global.window = {}
+  global.window = {
+    navigator: {
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0'
+    }
+  }
   try {
     global.localStorage = Store()
     global.sessionStorage = Store()
@@ -65,6 +69,8 @@ export default function() {
 
   global.document = {
     body: dom0(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getElementById: (id: string) => dom0(),
     createElement: (tag: string) => {
       const element = dom0()
       element.nodeType = tag

@@ -1,0 +1,6 @@
+/*.tgz
+*~
+src
+tsconfig*
+/node_modules
+flycheck*

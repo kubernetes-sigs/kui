@@ -1,0 +1,23 @@
+#
+# notes:
+#   - this is a kui test input to ensure that `kedit thisfile.yaml` works
+#   - helm templates do not parse as valid yaml
+#   - but we still want to show them in the editor
+#   - origin: https://github.com/helm/helm/blob/master/docs/examples/nginx/templates/configmap.yaml
+#
+# the rest of the file is unchanged from that origin:
+
+# This is a simple example of using a config map to create a single page static site.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "nginx.fullname" . }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "nginx.name" . }}
+data:
+  # When the config map is mounted as a volume, these will be created as files.
+  index.html: {{ .Values.index | quote }}
+  test.txt: test

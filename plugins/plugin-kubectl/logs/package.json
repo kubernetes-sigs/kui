@@ -1,0 +1,45 @@
+{
+  "name": "@kui-shell/plugin-logui",
+  "version": "1.0.1",
+  "description": "Kui kubernetes log visualization support",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "homepage": "https://github.com/kui-shell/plugin-kubeui#readme",
+  "bugs": {
+    "url": "https://github.com/kui-shell/plugin-kubeui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kui-shell/plugin-kubeui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "dependencies": {
+    "@kui-shell/core": "^8.0.6",
+    "@kui-shell/plugin-bash-like": "^8.0.6",
+    "@kui-shell/plugin-core-support": "^8.0.6",
+    "@kui-shell/plugin-editor": "^8.0.6",
+    "@kui-shell/plugin-kubeui": "*",
+    "ansi_up": "4.0.4",
+    "debug": "4.1.1",
+    "js-yaml": "3.13.1"
+  },
+  "krew": {
+    "commandPrefix": "kubeui"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

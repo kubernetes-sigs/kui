@@ -26,6 +26,12 @@
       "path": "plugins/plugin-git"
     },
     {
+      "path": "plugins/plugin-wskflow"
+    },
+    {
+      "path": "plugins/plugin-kubectl"
+    },
+    {
       "path": "plugins/plugin-proxy-support"
     },
     {
@@ -44,7 +50,7 @@
       "path": "plugins/plugin-manager"
     },
     {
-      "path": "plugins/plugin-wskflow"
+      "path": "plugins/plugin-ibmcloud"
     },
     {
       "path": "plugins/plugin-sandbox"

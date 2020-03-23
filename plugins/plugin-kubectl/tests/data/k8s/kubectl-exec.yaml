@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vim
+spec:
+  containers:
+  - image: jare/alpine-vim
+    command:
+      - /bin/sh
+      - "-c"
+      - "while true; do echo hi; sleep 1; done"
+    name: alpine

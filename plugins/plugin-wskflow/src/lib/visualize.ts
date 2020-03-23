@@ -22,6 +22,8 @@ import Response from './response'
 import fsm2graph from './fsm2graph'
 import { ASTNode, ComponentBearing } from './ast'
 
+import '../../web/css/static/wskflow.css'
+
 const debug = Debug('plugins/wskflow/visualize')
 
 type GraphRenderer = (ir, containerElement, acts, options, rule) => Promise<void>
@@ -51,9 +53,6 @@ export default async (
   const ir = JSON.parse(JSON.stringify(passedFsm))
   debug('passfsm', JSON.stringify(passedFsm))
   debug('ir', ir)
-
-  // temporary hack until we port this to compnentry
-  import('./inject').then(_ => _.default())
 
   return fsm2graph(tab, ir, container, activations, options, rule)
 }

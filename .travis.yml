@@ -14,6 +14,9 @@ env:
     - KUI_USE_HTTP=true
     - CSP_ALLOWED_HOSTS="http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
     - PATH=bin:$PATH
+    - TRAVIS_KUBE_VERSION=1.15.7
+    - TRAVIS_HELM_VERSION=2.13.0
+    - TRAVIS_OC_VERISON=4.3.3
     - WINDOW_WIDTH=1400         # ! important ! so that clicks don't fail due to elements being off-viewport
     - WINDOW_HEIGHT=1050        # ! ibid !
     - BUILD_ENV=production      # used in dist/electron/build.sh with npm prune --production
@@ -33,10 +36,12 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 
 # default install script
 install:
+  - if [ -n "$NEEDS_K8S" ]; then ./tools/travis/microk8s.sh & k8s=$!; fi
   - npm ci
-  - ./bin/switch-client.sh $CLIENT
+  - ./bin/switch-client.sh ${CLIENT-default}
   - ./tools/codecov/instrument.sh
   - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; npm run watch:webpack; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
+  - if [ -n "$k8s" ]; then wait $k8s; fi
 
 script:
   - if [ -n "$CODECOV_OF_PRESCAN" ]; then TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile; fi
@@ -47,6 +52,16 @@ jobs:
     - if: os = windows AND env(NO_WINDOWS) IS present
 
   include:
+#    - env: LAYERS=logs MOCHA_RUN_TARGET=electron NEEDS_K8S=true
+    - env: LAYERS=logs MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true
+    - env: LAYERS=k8s  MOCHA_RUN_TARGET=electron NEEDS_K8S=true
+#    - env: LAYERS=k8s1 MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_OC=true
+    - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
+#    - env: LAYERS=k8s2 MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
+    - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
+#    - env: LAYERS=helm MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_HELM=true
+    - env: LAYERS=helm MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_HELM=true
+
     # STAGE 1
     - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
 
