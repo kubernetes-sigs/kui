@@ -24,8 +24,16 @@ import renderCell from './TableCell'
 /**
  * Render the TableBody part
  *
+ * @param offset offset into the kuiBody model
+ *
  */
-export default function renderBody(kuiBody: KuiRow[], renderOpts: DataTableCustomRenderProps, tab: Tab, repl: REPL) {
+export default function renderBody(
+  kuiBody: KuiRow[],
+  renderOpts: DataTableCustomRenderProps,
+  tab: Tab,
+  repl: REPL,
+  offset: number
+) {
   return (
     <TableBody>
       {renderOpts.rows.map((row, ridx) => (
@@ -33,10 +41,10 @@ export default function renderBody(kuiBody: KuiRow[], renderOpts: DataTableCusto
           key={row.id}
           {...renderOpts.getRowProps({
             row,
-            'data-name': kuiBody[ridx].name
+            'data-name': kuiBody[offset + ridx].name
           })}
         >
-          {row.cells.map(renderCell(kuiBody[ridx], row, renderOpts, tab, repl))}
+          {row.cells.map(renderCell(kuiBody[offset + ridx], row, renderOpts, tab, repl))}
         </TableRow>
       ))}
     </TableBody>

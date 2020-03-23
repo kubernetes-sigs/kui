@@ -98,7 +98,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     const { headers, rows, radio, page } = this.state
 
     // the view
-    const dataTable = (visibleRows: NamedDataTableRow[]) => (
+    const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
       // `<form>` prevents the radio button selection reads from the global form of browser.
       // See issue: https://github.com/IBM/kui/issues/3871
       <form className="kui--data-table-wrapper">
@@ -120,7 +120,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(response.body, renderOpts, tab, repl)}
+                {renderBody(response.body, renderOpts, tab, repl, offset)}
               </Table>
             </TableContainer>
           )}
@@ -150,7 +150,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       // see https://github.com/IBM/kui/issues/3773
       return (
         <div className="kui--paginated-table">
-          {dataTable(rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize))}
+          {dataTable(
+            rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
+            (page - 1) * this.state.pageSize
+          )}
           {pagination}
         </div>
       )
