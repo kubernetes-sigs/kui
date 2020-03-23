@@ -66,7 +66,9 @@ export const dispatchToShell = async ({
   if (isHeadless() || (!inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
     const response = await doExec(actualCommand, eOptions).catch(cleanUpError)
-    if (useRaw && typeof response === 'string') {
+    if (useRaw && (typeof response === 'number' || typeof response === 'boolean')) {
+      return response
+    } else if (useRaw && typeof response === 'string') {
       try {
         return JSON.parse(response)
       } catch (err) {
