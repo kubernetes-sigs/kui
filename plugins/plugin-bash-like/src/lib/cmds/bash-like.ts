@@ -37,7 +37,7 @@ export const doExec = (
   cmdLine: string,
   execOptions: ExecOptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<string | boolean | Record<string, any>> =>
+): Promise<string | number | boolean | Record<string, any>> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
@@ -98,7 +98,7 @@ export const doExec = (
           // else, we pass back a formatted form of the output
           const json = extractJSON(rawOut)
 
-          if (json) {
+          if (json && typeof json === 'object') {
             json['type'] = 'shell'
             json['verb'] = 'get'
             resolve(json)
