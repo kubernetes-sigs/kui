@@ -862,6 +862,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   }
   .bx--tabs__nav-item {
     height: 2.5em;
+    margin-left: 0.125em;
   }
 
   a.bx--tabs__nav-link {
@@ -869,7 +870,6 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
     height: 2.5em;
     line-height: 1.125em;
     margin: 0;
-    border-bottom-width: 3px;
   }
 
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) {
@@ -885,14 +885,17 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 }
 
 body[kui-theme-style] a.bx--tabs__nav-link {
-  color: var(--color-text-02);
+  color: var(--color-text-01);
   border-color: var(--color-text-02);
+  opacity: 0.875;
 }
 
 /* override carbon color when hovering over tab */
-.bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
+[kui-theme-style]
+  .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
+  .bx--tabs__nav-link {
   color: var(--color-text-01) !important;
-  border-color: var(--color-base05) !important;
+  border-color: var(--color-text-01) !important;
 }
 
 .kui--sidecar.visible .kui--sidecar-header-and-body {

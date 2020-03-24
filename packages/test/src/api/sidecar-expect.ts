@@ -237,6 +237,23 @@ export async function popupTitle(app: Application, expectedTitle: string) {
   }, waitTimeout)
 }
 
+/** expect a form in the sidecar content */
+export function form(form: Record<string, string>, idPrefix = 'kui-form') {
+  return async (app: Application) => {
+    await Promise.all(
+      Object.keys(form).map(key => {
+        return app.client.waitUntil(async () => {
+          const expectedValue = form[key]
+          const actualValue = await app.client.getValue(`${Selectors.SIDECAR_TAB_CONTENT} #${idPrefix}-${key}`)
+          return actualValue === expectedValue
+        }, waitTimeout)
+      })
+    )
+
+    return app
+  }
+}
+
 export const showing = (
   expectedName: string,
   expectedActivationId?: string,

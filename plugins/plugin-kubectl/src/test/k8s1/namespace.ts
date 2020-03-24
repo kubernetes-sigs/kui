@@ -15,7 +15,7 @@
  */
 
 import { strictEqual } from 'assert'
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   waitForRed,
@@ -34,19 +34,6 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   after(Common.after(this))
 
   synonyms.forEach(kubectl => {
-    /** return the editor text */
-    const getText = () => {
-      return Util.getValueFromMonaco(this.app)
-    }
-
-    /** expect to see some familiar bits of a pod in the editor under the Describe tab */
-    const expectDescribeText = (name: string) => () => {
-      return this.app.client.waitUntil(async () => {
-        const actualText = await getText()
-        return new RegExp(`NAME:\\s+${name}`).test(actualText)
-      })
-    }
-
     /** delete the given namespace */
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
@@ -160,7 +147,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(name))
           .then(SidecarExpect.mode('summary'))
-          .then(expectDescribeText(name))
+          .then(SidecarExpect.form({ Name: name }, 'kubectl-summary'))
           .catch(Common.oops(this))
       })
     }

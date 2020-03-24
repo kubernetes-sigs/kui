@@ -163,18 +163,6 @@ body[kui-theme="Carbon Gray10"]
   .bx--tabs__nav-link {
   color: var(--color-base07);
 }
-body[kui-theme="Carbon Gray10"]
-  .kui--sidecar
-  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
-  .bx--tabs__nav-link {
-  border-bottom-color: var(--color-map-key);
-}
-body[kui-theme="Carbon Gray10"]
-  .kui--sidecar
-  .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
-  .bx--tabs__nav-link {
-  color: var(--color-base01);
-}
 
 body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-bottom-stripe {
   border-bottom-color: var(--color-base02);
@@ -185,10 +173,6 @@ body[kui-theme="Carbon Gray10"]
   border-bottom-color: var(--color-base01);
 }
 
-body[kui-theme="Carbon Gray10"] .kui--sidecar a.bx--tabs__nav-link {
-  background-color: var(--color-sidecar-header);
-  color: var(--color-sidecar-toolbar-background);
-}
 body[kui-theme="Carbon Gray10"] .monaco-editor .margin-view-overlays .current-line-margin,
 body[kui-theme="Carbon Gray10"] .monaco-editor .view-overlays .current-line {
   border-color: #565656;

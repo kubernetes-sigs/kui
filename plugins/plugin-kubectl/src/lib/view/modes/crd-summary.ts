@@ -17,8 +17,9 @@
 import Debug from 'debug'
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
-import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
+import { renderForm } from './Form'
 import { command } from './show-crd-managed-resources'
+import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/view/modes/crd-summary')
@@ -34,25 +35,20 @@ async function content(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOp
   // safeguarding here, in case some of the fields are undefined;
   // js-yaml does not take kindly to `undefined` values; see
   // https://github.com/kui-shell/plugin-kubeui/issues/330
-  const scopeObj = scope ? { scope } : {}
-  const groupObj = group ? { group } : {}
-  const versionObj = version ? { version } : {}
-  const kindObj = kind ? { kind } : {}
+  const scopeObj = scope ? { Scope: scope } : {}
+  const groupObj = group ? { Group: group } : {}
+  const versionObj = version ? { Version: version } : {}
+  const kindObj = kind ? { Kind: kind } : {}
 
   const baseResponse = Object.assign({}, scopeObj, groupObj, versionObj, kindObj)
 
   try {
-    const [{ safeDump }, { body: resources }] = await Promise.all([
-      import('js-yaml'),
-      tab.REPL.qexec<Table>(`${command(tab, crd, args)} -o custom-columns=NAME:.metadata.name`)
-    ])
+    const { body: resources } = await tab.REPL.qexec<Table>(
+      `${command(tab, crd, args)} -o custom-columns=NAME:.metadata.name`
+    )
+    const countObj = { 'Resource count': resources.length }
 
-    const countObj = { 'resource count': resources.length }
-
-    return {
-      content: safeDump(Object.assign(baseResponse, countObj)),
-      contentType: 'yaml'
-    }
+    return renderForm(Object.assign(baseResponse, countObj))
   } catch (err) {
     // safeguarding here, in case of unexpected errors collecting
     // optional information; see
