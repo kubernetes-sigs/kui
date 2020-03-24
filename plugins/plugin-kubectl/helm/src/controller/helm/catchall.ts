@@ -37,7 +37,12 @@ export default (registrar: Registrar) => {
     (argv: string[]) => {
       return isHelm(argv[0]) || (argv[0] === commandPrefix && isHelm(argv[1]))
     },
-    (args: Arguments<KubeOptions>) => (isUsage(args) ? doHelp('helm', args) : doExecWithPty(args)),
+    (args: Arguments<KubeOptions>) =>
+      isUsage(args) ||
+      (args.argv.length === 1 && args.argv[0] === 'helm') ||
+      (args.argv.length === 2 && args.argv[1] === 'helm' && args.argv[0] === commandPrefix)
+        ? doHelp('helm', args)
+        : doExecWithPty(args),
     1, // priority
     { inBrowserOk: true }
   )

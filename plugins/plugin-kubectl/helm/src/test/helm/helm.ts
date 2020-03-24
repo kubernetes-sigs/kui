@@ -41,6 +41,8 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   })
 
   const help = doHelp.bind(this)
+  help('helm', ['helm'], ['Introduction', 'Options', 'Available'])
+  help('helm -h', ['helm'], ['Introduction', 'Options', 'Available'])
   help('helm get -h', ['helm', 'get'], ['Introduction', 'Flags', 'Global Flags', 'Available'])
 
   it('should show 500 error for helm create', () => {
