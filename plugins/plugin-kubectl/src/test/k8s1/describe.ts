@@ -103,6 +103,15 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
+    it(`should describe that pod via ${command}`, () => {
+      return CLI.command(`${command} describe pod nginx -n ${ns}`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.mode(defaultModeForGet))
+        .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+        .catch(Common.oops(this, true))
+    })
+
     it(`should summarize that pod via ${command}`, () => {
       return CLI.command(`${command} get pod nginx -n ${ns} -o yaml`, this.app)
         .then(ReplExpect.justOK)
