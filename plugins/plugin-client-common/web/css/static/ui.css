@@ -1087,6 +1087,10 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-size: unset;
   line-height: unset;
 }
+.page-content h5 {
+  font-size: 1.125em;
+  line-height: 2em;
+}
 .page-content ol,
 .page-content ul {
   font-size: 1em;
