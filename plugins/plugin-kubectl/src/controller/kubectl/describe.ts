@@ -30,7 +30,7 @@ import { KubeOptions } from './options'
  *
  */
 function prepareArgsForDescribe(args: Arguments<KubeOptions>) {
-  return `${args.command.replace(/(k|kubectl)(\s+)describe(\s+)/, '$1$2get$3')} -o yaml`
+  return `${args.command.replace(/(k|kubectl|oc)(\s+)describe(\s+)/, '$1$2get$3')} -o yaml`
 }
 
 export const doDescribe = (command = 'kubectl') =>
