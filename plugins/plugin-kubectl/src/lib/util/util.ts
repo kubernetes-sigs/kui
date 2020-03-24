@@ -15,7 +15,10 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
+import { Arguments } from '@kui-shell/core'
+
 import commandPrefix from '../../controller/command-prefix'
+import { KubeOptions } from '../../controller/kubectl/options'
 
 export interface TypedEntityName {
   type: string
@@ -113,4 +116,17 @@ export class NotFoundError extends StatusError {
 
 export const getCommandFromArgs = (args: { argvNoOptions: string[] }) => {
   return args.argvNoOptions[0] === commandPrefix ? args.argvNoOptions[1] : args.argvNoOptions[0]
+}
+
+/**
+ * Check if the command has verb but not resource. e.g. kubectl get
+ * This is a special case since kubectl returns error instead of usage
+ *
+ */
+export const commandWithoutResource = (args: Arguments<KubeOptions>) => {
+  if (args.argvNoOptions[0] === commandPrefix) {
+    return args.argvNoOptions.length === 3
+  } else {
+    return args.argvNoOptions.length === 2
+  }
 }

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar } from '@kui-shell/core'
+import { Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
 import commandPrefix from '../command-prefix'
 
 import { doGetAsEntity } from './get'
-
-import { KubeResource } from '../../lib/model/resource'
 import { KubeOptions } from './options'
+import { isUsage, doHelp } from '../../lib/util/help'
+import { commandWithoutResource } from '../../lib/util/util'
 
 /**
  * describe -> get
@@ -34,11 +34,16 @@ function prepareArgsForDescribe(args: Arguments<KubeOptions>) {
 }
 
 export const doDescribe = (command = 'kubectl') =>
-  async function(args: Arguments<KubeOptions>): Promise<KubeResource> {
-    // first, we do the raw exec of the given command
-    const response = await exec(args, prepareArgsForDescribe, command)
-
-    return doGetAsEntity(args, response)
+  async function(args: Arguments<KubeOptions>): Promise<KResponse> {
+    if (isUsage(args)) {
+      return doHelp(command, args)
+    } else if (commandWithoutResource(args)) {
+      return exec(args, undefined, command)
+    } else {
+      // first, we do the raw exec of the given command
+      const response = await exec(args, prepareArgsForDescribe, command)
+      return doGetAsEntity(args, response)
+    }
   }
 
 export default (registrar: Registrar) => {
