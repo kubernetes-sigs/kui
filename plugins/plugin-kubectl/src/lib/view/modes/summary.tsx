@@ -17,9 +17,13 @@
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
 import toMap from './table-to-map'
+import { renderForm } from './Form'
+import { getCommandFromArgs } from '../../util/util'
 import { fqnOf } from '../../../controller/kubectl/fqn'
 import { KubeResource, isSummarizableKubeResource, isKubeResourceWithItsOwnSummary } from '../../model/resource'
-import { getCommandFromArgs } from '../../util/util'
+
+import '@kui-shell/plugin-client-common/web/css/static/Form.scss'
+import 'carbon-components/scss/components/form/_form.scss'
 
 const strings = i18n('plugin-kubectl')
 
@@ -42,13 +46,9 @@ async function renderSummary(
   const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
 
   // in parallel, fetch the table model and the safeDump function from js-yaml
-  const [map, { safeDump }] = await Promise.all([tab.REPL.qexec<Table>(cmd).then(toMap), import('js-yaml')])
+  const map = await tab.REPL.qexec<Table>(cmd).then(toMap)
 
-  // our content is that map, rendered as yaml
-  return {
-    content: safeDump(map),
-    contentType: 'yaml'
-  }
+  return renderForm(map)
 }
 
 /**

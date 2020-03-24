@@ -39,9 +39,6 @@ body[kui-theme-style="dark"] {
 .kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg circle {
   fill: var(--color-text-02);
 }
-/*.kui--status-stripe .kui--status-stripe-element[data-view="dirty"] {
-  color: var(--color-yellow-sidecar);
-}*/
 .kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg,
 .kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg path,
 .kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg rect,
@@ -52,7 +49,7 @@ body[kui-theme-style="dark"] {
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg path,
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg rect,
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg circle {
-  fill: var(--color-yellow-sidecar);
+  fill: var(--color-base09);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="error"] svg,
 .kui--status-stripe .kui--status-stripe-element[data-view="error"] svg path,

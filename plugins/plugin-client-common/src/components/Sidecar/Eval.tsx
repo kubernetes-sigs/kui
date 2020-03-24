@@ -25,6 +25,8 @@ import {
   MultiModalResponse,
   isCommandStringContent,
   FunctionThatProducesContent,
+  ReactProvider,
+  isReactProvider,
   isScalarContent,
   ScalarContent,
   isStringWithOptionalContentType
@@ -49,6 +51,7 @@ interface EvalProps {
 interface EvalState {
   isLoading: boolean
   command: string | FunctionThatProducesContent
+  react: ReactProvider
   content: ScalarResource
   contentType: SupportedStringContent
 }
@@ -74,6 +77,7 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
     this.state = {
       isLoading: false,
       command: props.command,
+      react: undefined,
       content: undefined,
       contentType: props.contentType
     }
@@ -90,7 +94,8 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
   }
 
   public render() {
-    if (!this.state.content) {
+    //    console.error('!!Eval', this.state, this.props.command)
+    if (!this.state.content && !this.state.react) {
       if (!this.state.isLoading) {
         this.setState({ isLoading: true })
 
@@ -112,7 +117,9 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
               }
             })
             .then(content => {
-              if (isStringWithOptionalContentType(content)) {
+              if (isReactProvider(content)) {
+                this.setState({ isLoading: false, react: content })
+              } else if (isStringWithOptionalContentType(content)) {
                 this.setState({ isLoading: false, content: content.content, contentType: content.contentType })
               } else if (isScalarContent(content)) {
                 done(content.content)
@@ -126,10 +133,12 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
       return <Loading />
     }
 
-    const mode = {
-      content: this.state.content,
-      contentType: this.state.contentType
-    }
+    const mode = this.state.react
+      ? this.state.react
+      : {
+          content: this.state.content,
+          contentType: this.state.contentType
+        }
 
     return <KuiMMRContent tab={this.props.tab} mode={mode} response={this.props.response} args={this.props.args} />
   }

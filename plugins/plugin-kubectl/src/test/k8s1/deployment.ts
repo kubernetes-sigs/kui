@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   defaultModeForGet,
@@ -85,8 +85,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
           .then(SidecarExpect.showing('myapp', undefined, undefined, ns))
           .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('summary')))
           .then(() => this.app)
-          .then(Util.getValueFromMonaco)
-          .then(Util.expectYAMLSubset({ NAME: 'myapp' }))
+          .then(SidecarExpect.form({ Name: 'myapp' }, 'kubectl-summary'))
           .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
           .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('pods')))
           .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('pods')))

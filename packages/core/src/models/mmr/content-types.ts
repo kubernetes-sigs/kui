@@ -35,7 +35,7 @@ export interface ScalarContent<T = ScalarResource> {
 }
 
 export type ToolbarProps = { willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void }
-type ReactProvider = { react: (props: ToolbarProps) => ReactElement<any> }
+export type ReactProvider = { react: (props: ToolbarProps) => ReactElement<any> }
 export function isReactProvider(entity: ScalarLike<MetadataBearing>): entity is ReactProvider {
   const provider = entity as ReactProvider
   return typeof provider.react === 'function'
@@ -114,7 +114,12 @@ export type FunctionThatProducesContent<T extends MetadataBearing = MetadataBear
     argvNoOptions: string[]
     parsedOptions: ParsedOptions
   }
-) => ScalarResource | ScalarContent | Promise<ScalarResource> | Promise<ScalarContent> | CommandStringContent
+) =>
+  | ReactProvider
+  | ScalarResource
+  | ScalarContent
+  | Promise<ScalarResource | ScalarContent | ReactProvider>
+  | CommandStringContent
 
 export interface FunctionContent<T extends MetadataBearing> {
   content: FunctionThatProducesContent<T>
@@ -161,6 +166,7 @@ export type Content<T extends MetadataBearing = MetadataBearing> =
   | StringContent
   | FunctionContent<T>
   | CommandStringContent
+  | ReactProvider
 
 export function hasContent<T extends MetadataBearing>(
   resource: ScalarResource | Content<T> | ModeOrButton<T>

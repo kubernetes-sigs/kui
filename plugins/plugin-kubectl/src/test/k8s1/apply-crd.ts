@@ -61,23 +61,7 @@ commands.forEach(command => {
         await SidecarExpect.open(this.app)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing(crdName))
-
-        let idx = 0
-        await this.app.client.waitUntil(async () => {
-          const text = await Util.getValueFromMonaco(this.app)
-          if (++idx > 5) {
-            console.error(`still waiting for yaml in ${this.title}`, text)
-          }
-
-          return Promise.resolve(text).then(
-            Util.expectYAMLSubset(
-              {
-                kind: 'CronTab'
-              },
-              false
-            )
-          )
-        })
+          .then(SidecarExpect.form({ Kind: 'CronTab' }, 'kubectl-summary'))
       } catch (err) {
         return Common.oops(this, true)(err)
       }

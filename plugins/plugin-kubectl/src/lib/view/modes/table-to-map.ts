@@ -16,16 +16,20 @@
 
 import { Table } from '@kui-shell/core'
 
+function capitalize(str: string) {
+  return str === 'IP' ? str : str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
 /**
  * Turn a one-row Table into a Map
  *
  */
 export default function toMap(table: Table): Record<string, string> {
   return table.body.reduce((map, row) => {
-    map[row.key] = row.name
+    map[capitalize(row.key)] = row.name
 
     row.attributes.forEach(({ key, value }) => {
-      map[key] = value
+      map[capitalize(key)] = value
     })
 
     return map
