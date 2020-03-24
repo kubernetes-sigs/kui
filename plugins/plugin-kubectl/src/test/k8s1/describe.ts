@@ -73,13 +73,7 @@ commands.forEach(command => {
     const testSummaryTab = async (ctx: Common.ISuite) => {
       await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
       await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
-
-      // expect to see some familiar bits of a pod in the editor under the raw tab
-      return ctx.app.client.waitUntil(async () => {
-        const name = 'nginx'
-        const actualText = await Util.getValueFromMonaco(ctx.app)
-        return new RegExp(`NAME:\\s+${name}`).test(actualText)
-      })
+      await SidecarExpect.form({ Name: 'nginx' }, 'kubectl-summary')
     }
 
     allocateNS(this, ns, command)

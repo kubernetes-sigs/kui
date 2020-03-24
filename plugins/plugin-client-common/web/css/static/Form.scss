@@ -1,0 +1,30 @@
+[kui-theme-style] {
+  .bx--form {
+    display: grid;
+    grid-template-rows: min-content;
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+    grid-template-columns: repeat(auto-fill, minmax(15em, auto));
+    flex: unset;
+  }
+
+  .bx--text-input {
+    font-size: 1em;
+    line-height: 1.125em;
+    height: 2.5em;
+    padding: 0 1em;
+    color: var(--color-text-01);
+    background-color: var(--color-base03);
+    border-bottom-color: var(--color-base02);
+
+    &:focus,
+    &:active {
+      outline-color: var(--active-tab-color);
+    }
+  }
+
+  .bx--label {
+    color: var(--color-text-01);
+    font-size: 0.875em;
+  }
+}

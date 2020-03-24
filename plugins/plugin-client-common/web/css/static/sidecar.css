@@ -57,7 +57,7 @@
   .bx--tabs {
     display: flex;
     background-color: var(--color-sidecar-header);
-    border-bottom: 1px solid var(--color-content-divider);
+    border-bottom: 1px solid var(--color-sidecar-background-02);
   }
 
   .bx--side-nav {
