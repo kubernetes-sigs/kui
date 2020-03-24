@@ -116,6 +116,7 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
       .join('\n')
 
   const rawSections = nonUseOut.split(/\n\n([^'\s].*:)\n(?!\n)/) // the non-use sections of the docs
+  console.error('!!!!', rawSections)
 
   // the first section is the top-level doc string
   const headerEnd =
@@ -241,12 +242,13 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
       content: header
         .replace(/\n\s*(IMPORTANT:)([^\n]+)/, `\n> **$1**$2`)
         .replace(/(\s)(NOT)(\s)/g, '$1**$2**$3')
+        .replace(/^(.*):$/gm, '##### $1\n')
         .replace(
           /(:\n\n\s*)((([^,\n])+,)+[^,\n]+)/g,
           (_, m1, m2) =>
             `${m1}${m2
               .split(/,/)
-              .map(_ => ` - ${_}`)
+              .map(_ => (_.startsWith('-') ? _ : ` - ${_}`))
               .join('\n')}\n`
         )
         .concat('\n\n')
@@ -379,12 +381,14 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
   }
 }
 
+/** commands that we want to be sent to help, if executed on their own
+ * -- i.e. just "oc" or "kubectl" */
+const kubeLike = /^k(ubectl)?$/
+
 /** is the given string `str` the `kubectl` command? */
 const isKubectl = (args: Arguments<KubeOptions>) =>
-  (args.argvNoOptions.length === 1 && /^k(ubectl)?$/.test(args.argvNoOptions[0])) ||
-  (args.argvNoOptions.length === 2 &&
-    args.argvNoOptions[0] === commandPrefix &&
-    /^k(ubectl)?$/.test(args.argvNoOptions[1]))
+  (args.argv.length === 1 && kubeLike.test(args.argv[0])) ||
+  (args.argv.length === 2 && args.argv[0] === commandPrefix && kubeLike.test(args.argv[1]))
 
 export const isUsage = (args: Arguments<KubeOptions>) => isHelpRequest(args) || isKubectl(args)
 
