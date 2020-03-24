@@ -21,7 +21,8 @@ import {
   defaultModeForGet,
   createNS,
   allocateNS,
-  deleteNS
+  deleteNS,
+  doHelp
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl', 'k']
@@ -30,10 +31,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  // this test is still oddly buggy with webpack+proxy, hence the localDescribe
-  Common.localDescribe(`${command} get summary tab describe ${process.env.MOCHA_RUN_TARGET || ''}`, function(
-    this: Common.ISuite
-  ) {
+  describe(`${command} get summary tab describe ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -78,6 +76,22 @@ commands.forEach(command => {
 
     allocateNS(this, ns, command)
 
+    // test command usage
+    const help = doHelp.bind(this)
+    const execCommand = command === 'k' ? 'kubectl' : command
+    help(`${command} describe --help`, [execCommand, 'describe'], ['Introduction'])
+
+    it(`should fail with suggestion for invalid command syntax via ${command} describe`, () => {
+      return CLI.command(`${command} describe`, this.app)
+        .then(
+          ReplExpect.error(
+            500,
+            `error: You must specify the type of resource to describe. Use "${execCommand} api-resources" for a complete list of supported resources`
+          )
+        )
+        .catch(Common.oops(this, true))
+    })
+
     // this one sometimes times out in webpack in travis; not sure why yet [nickm 20190810]
     // localIt will have it run only in electron for now
     Common.localIt(`should fail with 404 for unknown resource type via ${command}`, () => {
@@ -102,7 +116,7 @@ commands.forEach(command => {
         .then(ReplExpect.justOK)
         .then(SidecarExpect.open)
         .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+        .then(SidecarExpect.showingTopNav('nginx'))
         .catch(Common.oops(this, true))
     })
 
@@ -111,7 +125,7 @@ commands.forEach(command => {
         .then(ReplExpect.justOK)
         .then(SidecarExpect.open)
         .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+        .then(SidecarExpect.showingTopNav('nginx'))
         .catch(Common.oops(this, true))
     })
 
