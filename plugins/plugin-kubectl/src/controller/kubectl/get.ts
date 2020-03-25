@@ -80,7 +80,6 @@ export async function doGetAsEntity(
   try {
     // this is the raw data string we get from `kubectl`
     const data = response.content.stdout
-    console.error('!!!!DDDD', data)
 
     // parse the raw response; the parser we use depends on whether
     // the user asked for JSON or for YAML
