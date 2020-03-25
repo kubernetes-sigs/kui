@@ -150,6 +150,9 @@ body[kui-theme-style] .repl.sidecar-visible {
   .repl-result {
     width: 100%;
 
+    [data-table-watching] {
+      width: 100%;
+    }
     .bx--data-table-container {
       width: 100%;
       .bx--data-table {
