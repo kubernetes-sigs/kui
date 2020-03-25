@@ -5,7 +5,7 @@
     grid-column-gap: 1em;
     grid-row-gap: 1em;
     grid-auto-flow: dense;
-    grid-template-columns: repeat(10, minmax(min-content, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(3em, auto));
     flex: unset;
 
     .bx--form-item {

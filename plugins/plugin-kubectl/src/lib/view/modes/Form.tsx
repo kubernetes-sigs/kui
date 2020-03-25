@@ -19,13 +19,11 @@ import { Form, TextInput } from 'carbon-components-react'
 
 /** @return a ReactElement */
 export default function SidecarForm({ map }: { map: Record<string, string> }) {
-  const minWidth = Object.keys(map).reduce((min, key) => Math.min(min, map[key].length), 10000)
-
   return (
     <Form className="page-content padding-content scrollable kui--placeholder-primary">
       {Object.keys(map).map((key, idx) => {
-        const width = Math.max(map[key].length) / minWidth / 2.5
-        const style = { gridColumn: `span ${~~width}` }
+        const colspan = Math.max(Math.ceil(key.length / 5), Math.ceil(map[key].length / 3.5))
+        const style = { gridColumn: `span ${colspan}` }
 
         return (
           <div key={idx} style={style}>
