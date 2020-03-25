@@ -31,7 +31,7 @@ const yamlMode: ModeRegistration<WithRawData> = {
     label: 'YAML',
 
     content: (_, resource: WithRawData) => ({
-      content: resource.data,
+      content: resource.kuiRawData,
       contentType: 'yaml'
     }),
 

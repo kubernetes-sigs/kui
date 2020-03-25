@@ -49,7 +49,7 @@ async function doGet(args: Arguments<WorkerPoolOptions>): Promise<MultiModalResp
     },
     nameHash: content.id,
     toolbarText,
-    data: safeDump(content),
+    kuiRawData: safeDump(content),
     modes: [],
     content,
     isSimulacrum: true,

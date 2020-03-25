@@ -21,6 +21,7 @@ import podMode from './lib/view/modes/pods'
 import yamlMode from './lib/view/modes/yaml'
 import summaryMode from './lib/view/modes/summary'
 import crdSummaryMode from './lib/view/modes/crd-summary'
+import configmapSummaryMode from './lib/view/modes/configmap-summary'
 import namespaceSummaryMode from './lib/view/modes/namespace-summary'
 import conditionsMode from './lib/view/modes/conditions'
 import containersMode from './lib/view/modes/containers'
@@ -40,6 +41,7 @@ export default async (registrar: PreloadRegistrar) => {
     eventsMode,
     summaryMode,
     crdSummaryMode,
+    configmapSummaryMode,
     namespaceSummaryMode,
     conditionsMode,
     containersMode,

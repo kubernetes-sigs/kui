@@ -16,7 +16,7 @@
 
 import { Table } from '@kui-shell/core'
 
-function capitalize(str: string) {
+export function capitalize(str: string) {
   return str === 'IP' ? str : str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
