@@ -4,13 +4,14 @@ body[kui-theme-style] .bx--data-table-container {
     tbody tr.bx--data-table--selected:hover {
       &,
       td {
-        background-color: rgba(255, 255, 255, 0.0375);
-        border-color: transparent;
+        background-color: var(--color-base03);
       }
     }
 
     &.bx--data-table--compact td {
       border-color: transparent;
+      border-bottom: 1px solid var(--color-base03);
+      vertical-align: middle;
     }
   }
 }

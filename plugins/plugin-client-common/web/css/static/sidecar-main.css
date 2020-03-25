@@ -928,3 +928,9 @@ body[kui-theme-style] a.bx--tabs__nav-link {
     margin-right: 0.5em;
   }
 }
+
+.kui--sidecar[data-view="topnav"] {
+  .kui--data-table-wrapper {
+    margin: 1em 0;
+  }
+}
