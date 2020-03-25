@@ -16,6 +16,8 @@
   "links": [
     { "label": "Home Page", "href": "http://kui.tools" },
     { "label": "Github", "href": "https://github.com/IBM/kui" },
-    { "label": "Bugs", "href": "https://github.com/IBM/kui/issues/new" }
+    { "label": "Bugs", "href": "https://github.com/IBM/kui/issues/new" },
+    { "label": "Kubectl Help", "command": "kubectl --help" },
+    { "label": "API Resources", "command": "kubectl api-resources" }
   ]
 }
