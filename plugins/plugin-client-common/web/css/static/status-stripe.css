@@ -24,37 +24,25 @@ body[kui-theme-style="dark"] {
 .kui--status-stripe .kui--status-stripe-element {
   color: var(--color-fg);
 }
-.kui--status-stripe .kui--status-stripe-element svg,
-.kui--status-stripe .kui--status-stripe-element svg path,
-.kui--status-stripe .kui--status-stripe-element svg rect,
-.kui--status-stripe .kui--status-stripe-element svg circle {
+.kui--status-stripe .kui--status-stripe-element svg {
   fill: var(--color-fg);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="obscured"] {
   color: var(--color-text-02);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg,
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg path,
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg rect,
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg circle {
+.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg {
   fill: var(--color-text-02);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg,
-.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg path,
-.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg rect,
-.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg circle {
+.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg {
   fill: var(--color-green);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg,
-.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg path,
-.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg rect,
-.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg circle {
+[kui-theme-style="light"] .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
   fill: var(--color-base09);
 }
-.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg,
-.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg path,
-.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg circle,
-.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg rect {
+.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
+  fill: var(--color-yellow-sidecar);
+}
+.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg {
   fill: var(--color-error);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="hidden"] {

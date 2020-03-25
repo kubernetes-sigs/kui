@@ -1,5 +1,5 @@
 body[kui-theme-style] .bx--pagination {
-  background-color: var(--color-ui-04);
+  background-color: var(--color-stripe-01);
   height: 2.375em;
   font-size: 0.875em;
   line-height: 1.125em;
@@ -37,12 +37,19 @@ body[kui-theme-style] .bx--pagination {
   }
 
   .bx--pagination__button--no-index {
-    fill: var(--color-base04);
+    fill: var(--color-text-02);
+    svg {
+      filter: opacity(0.5);
+    }
+  }
+
+  .bx--select-input:focus {
+    outline-color: var(--color-brand-03);
   }
 
   .bx--select-input,
   .bx--pagination__button {
-    border-color: var(--color-table-border3);
+    border-color: var(--color-table-border1);
   }
 
   .bx--pagination__button:hover {

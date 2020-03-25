@@ -79,7 +79,12 @@ export default function renderCell(
       return (
         <TableCell
           key={cell.id}
-          className={cidx === 0 ? 'entity-name ' + (kuiRow.outerCSS || '') : kuiRow.attributes[cidx - 1].outerCSS}
+          className={
+            cidx === 0
+              ? 'entity-name ' + (kuiRow.outerCSS || '')
+              : (kuiRow.attributes[cidx - 1].key === 'NAME' ? 'entity-name-secondary ' : '') +
+                kuiRow.attributes[cidx - 1].outerCSS
+          }
           onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
         >
           <span
