@@ -96,12 +96,12 @@ interface RoleRef {
 }
 
 export interface WithRawData<Content = void> extends ResourceWithMetadata<Content> {
-  data?: string // the raw data
+  kuiRawData?: string // the raw data
 }
 
 export function hasRawData(resource: ResourceWithMetadata) {
   const withData = resource as WithRawData
-  return typeof withData.data === 'string'
+  return typeof withData.kuiRawData === 'string'
 }
 
 /**
@@ -393,6 +393,24 @@ export function isCustomResourceDefinition(resource: KubeResource): resource is 
     (resource.apiVersion === 'apiextensions.k8s.io/v1' || resource.apiVersion === 'apiextensions.k8s.io/v1beta1') &&
     resource.kind === 'CustomResourceDefinition'
   )
+}
+
+/**
+ * ConfigMap
+ *
+ */
+export type ConfigMap = KubeResource & {
+  apiVersion: 'v1'
+  kind: 'ConfigMap'
+  data: Record<string, any>
+}
+
+/**
+ * @return whether the given resource is an instance of a CustomResourceDefinition
+ *
+ */
+export function isConfigMap(resource: KubeResource): resource is ConfigMap {
+  return resource.apiVersion === 'v1' && resource.kind === 'ConfigMap'
 }
 
 /**

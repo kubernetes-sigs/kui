@@ -80,6 +80,7 @@ export async function doGetAsEntity(
   try {
     // this is the raw data string we get from `kubectl`
     const data = response.content.stdout
+    console.error('!!!!DDDD', data)
 
     // parse the raw response; the parser we use depends on whether
     // the user asked for JSON or for YAML
@@ -101,7 +102,7 @@ export async function doGetAsEntity(
         originatingCommand: args.command,
         isKubeResource: true,
         modes: [],
-        data
+        kuiRawData: data
       }
     }
 
@@ -111,7 +112,7 @@ export async function doGetAsEntity(
       originatingCommand: args.command,
       isKubeResource: true,
       modes: [], // this tells Kui that we want the response to be interpreted as a MultiModalResponse
-      data // also include the raw, uninterpreted data string we got back
+      kuiRawData: data // also include the raw, uninterpreted data string we got back
     })
   } catch (err) {
     console.error('error handling entity response; raw=', response.content.stdout)

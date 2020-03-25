@@ -69,7 +69,7 @@ async function doGet(
     isSimulacrum: true,
     originatingCommand: command,
     isKubeResource: true,
-    data: response,
+    kuiRawData: response,
     modes: []
   }
 }

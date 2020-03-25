@@ -53,7 +53,7 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
      * optionally expect the given content to appear in the sidecar
      *
      */
-    const listAndClick = (name: string, content?: object) => {
+    const listAndClick = (name: string, content?: Record<string, any>) => {
       it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
         try {
           const selector = await CLI.command(`${kubectl} get cm ${inNamespace}`, this.app).then(
@@ -70,6 +70,10 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
             .then(SidecarExpect.showing(name))
 
           if (content) {
+            if (content.data) {
+              await SidecarExpect.form(content.data, 'kubectl-summary')(this.app)
+            }
+
             await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
             await expectContent(content)
           }
