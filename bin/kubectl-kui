@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+/**
+ * Note: this kubectl plugin wrapper is intended only for use while
+ * developing Kui plugins. The kubectl plugin used by production
+ * builds will be different, because, in that case, we need to launch
+ * the built Kui electron app, rather than (as we do here) launching
+ * Kui by requiring from the unpackaged node_modules.
+ *
+ */
+
+// get node off the argv
+process.argv.shift()
+
+require('@kui-shell/core').main(process.argv)
