@@ -4,7 +4,8 @@
     grid-template-rows: min-content;
     grid-column-gap: 1em;
     grid-row-gap: 1em;
-    grid-template-columns: repeat(auto-fill, minmax(15em, auto));
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(10, minmax(min-content, 1fr));
     flex: unset;
 
     .bx--form-item {
@@ -28,7 +29,7 @@
   }
 
   .bx--label {
-    color: var(--color-text-01);
+    color: var(--color-text-02);
     font-size: 0.875em;
     margin-bottom: 0.5em;
     line-height: 1em;
