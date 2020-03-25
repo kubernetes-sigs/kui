@@ -441,7 +441,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .kui--sidecar .custom-content pre > code,
 .kui--sidecar .padding-content {
   display: block;
-  padding: 1.5em 1em;
+  padding: 1em 1em;
 }
 .kui--sidecar .custom-content > .scrollable {
   /* for scrollable padding-content, we want the scrollbar to be flush-right */
