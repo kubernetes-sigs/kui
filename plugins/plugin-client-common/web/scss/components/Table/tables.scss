@@ -82,7 +82,7 @@ body .bx--data-table-container {
       td {
         background-color: var(--color-ui-03);
         color: var(--color-text-01);
-        border-color: var(--color-table-border2);
+        border-color: var(--color-table-border1);
       }
     }
 
@@ -158,7 +158,8 @@ body[kui-theme-style] .repl.sidecar-visible {
       .bx--data-table {
         width: 100%;
 
-        td.entity-name {
+        td.entity-name,
+        td.entity-name-secondary {
           width: 100%;
           max-width: 0;
           overflow: hidden;

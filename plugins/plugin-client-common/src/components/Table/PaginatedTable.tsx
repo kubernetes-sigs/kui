@@ -71,7 +71,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   public constructor(props: P) {
     super(props)
-    this.defaultPageSize = props.pageSize || 20
+    this.defaultPageSize = props.pageSize || 10
 
     try {
       // assemble the data model
