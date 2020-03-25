@@ -52,15 +52,15 @@ jobs:
     - if: os = windows AND env(NO_WINDOWS) IS present
 
   include:
-#    - env: LAYERS=logs MOCHA_RUN_TARGET=electron NEEDS_K8S=true
-    - env: LAYERS=logs MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true
-    - env: LAYERS=k8s  MOCHA_RUN_TARGET=electron NEEDS_K8S=true
+    - env: LAYERS="k8s helm logs" MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_HELM=true
+#    - env: LAYERS=logs MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true
+#    - env: LAYERS=k8s  MOCHA_RUN_TARGET=electron NEEDS_K8S=true
 #    - env: LAYERS=k8s1 MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_OC=true
     - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
 #    - env: LAYERS=k8s2 MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
     - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
 #    - env: LAYERS=helm MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_HELM=true
-    - env: LAYERS=helm MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_HELM=true
+#    - env: LAYERS=helm MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_HELM=true
 
     # STAGE 1
     - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
