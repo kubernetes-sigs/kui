@@ -12,13 +12,16 @@ body .bx--data-table-container {
   padding-top: 0.125em;
 
   .bx--data-table-header {
-    background-color: var(--color-stripe-02);
+    background-color: var(--color-stripe-01);
+    padding: 1em 0 1.5em 1em;
+
     .bx--data-table-header__title {
       color: var(--color-text-02);
     }
   }
 
   .bx--data-table {
+    font-family: var(--font-sans-serif);
     padding: 0.875em 1em;
     padding-bottom: 0.8125em;
 
@@ -36,6 +39,10 @@ body .bx--data-table-container {
       padding-right: 1em;
     }
 
+    td [data-key='NAME'] {
+      font-weight: 700;
+    }
+
     &.bx--data-table--short {
       thead tr,
       tbody tr,
@@ -48,7 +55,7 @@ body .bx--data-table-container {
       thead tr,
       tbody tr,
       tbody tr th {
-        height: 1.5em;
+        height: 1.875em;
       }
 
       td,
@@ -81,7 +88,8 @@ body .bx--data-table-container {
 
     th,
     .bx--table-sort {
-      background-color: var(--color-stripe-01);
+      background-color: transparent;
+      vertical-align: middle;
     }
 
     .bx--table-sort {
@@ -117,17 +125,24 @@ body .bx--data-table-container {
   }
 }
 
-body[kui-theme-style='light'] .bx--data-table {
+body .bx--data-table {
   th,
   .bx--table-sort {
-    background-color: var(--color-ui-04);
+    font-weight: 300;
+    background-color: transparent;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-base03);
+  }
+
+  thead {
+    background-color: transparent;
   }
 
   tr:hover,
   tbody tr:hover td,
   tbody tr.bx--data-table--selected:hover,
   tbody tr.bx--data-table--selected:hover td {
-    background-color: var(--color-ui-04);
+    background-color: transparent;
   }
 }
 
@@ -159,6 +174,9 @@ body[kui-theme-style] .repl.sidecar-visible {
 .sidecar-visible .kui--data-table-wrapper {
   /* render tables full-width when sidecar is open https://github.com/IBM/kui/issues/3952 */
   flex: 1;
+}
+.kui--data-table-wrapper {
+  overflow-x: auto;
 }
 
 .kui--paginated-table {
