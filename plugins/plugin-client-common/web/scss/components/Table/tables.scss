@@ -140,6 +140,14 @@ body[kui-theme-style] .repl.sidecar-visible {
       .bx--data-table {
         width: 100%;
 
+        td.entity-name {
+          width: 100%;
+          max-width: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
         .hide-with-sidecar {
           display: none;
         }
