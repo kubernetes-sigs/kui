@@ -36,11 +36,12 @@ fi
 
 export DISPLAY=":$((PORT_OFFSET+1))"
 
-export LAYER=$@
-
 if [ -z "$WEBPACK_CLIENT_URL" ]; then
     export WEBPACK_CLIENT_URL=http://localhost:908${PORT_OFFSET-0}/index${PORT_OFFSET}.html
     echo "Using WEBPACK_CLIENT_URL=$WEBPACK_CLIENT_URL"
 fi
 
-"$TEST_ROOT"/bin/runTest.sh
+for i in $@; do
+    export LAYER=$i
+    "$TEST_ROOT"/bin/runTest.sh
+done
