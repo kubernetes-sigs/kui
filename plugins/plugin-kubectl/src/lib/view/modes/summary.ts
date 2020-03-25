@@ -27,6 +27,20 @@ import 'carbon-components/scss/components/form/_form.scss'
 
 const strings = i18n('plugin-kubectl')
 
+export function getDefaultSummaryMap(
+  tab: Tab,
+  resource: KubeResource,
+  args: {
+    argvNoOptions: string[]
+  }
+) {
+  // a command that will fetch a single-row table
+  const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
+
+  // fetch the table model and the safeDump function from js-yaml
+  return tab.REPL.qexec<Table>(cmd).then(toMap)
+}
+
 /**
  * The content renderer for the summary tab
  *
@@ -42,13 +56,7 @@ async function renderSummary(
     return resource.summary
   }
 
-  // a command that will fetch a single-row table
-  const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
-
-  // in parallel, fetch the table model and the safeDump function from js-yaml
-  const map = await tab.REPL.qexec<Table>(cmd).then(toMap)
-
-  return renderForm(map)
+  return renderForm(await getDefaultSummaryMap(tab, resource, args))
 }
 
 /**

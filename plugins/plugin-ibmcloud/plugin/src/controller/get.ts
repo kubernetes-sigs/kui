@@ -80,7 +80,7 @@ const doGet = (cmd: string) => async (args: Arguments<ListOptions>): Promise<Mul
       creationTimestamp: availableEntry.updated
     },
     toolbarText,
-    data: safeDump(isInstalled ? installedEntry : availableEntry),
+    kuiRawData: safeDump(isInstalled ? installedEntry : availableEntry),
     version: `v${isInstalled ? currentVersion : latest.version}`,
     modes: [
       {

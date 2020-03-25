@@ -77,7 +77,7 @@ async function doGet(args: Arguments<WorkerOptions>): Promise<MultiModalResponse
     prettyName: name,
     nameHash,
     toolbarText,
-    data: safeDump(content),
+    kuiRawData: safeDump(content),
     version: content.kubeVersion,
     modes: [],
     content,
