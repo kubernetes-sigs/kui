@@ -15,13 +15,15 @@
  */
 
 import * as React from 'react'
-import { Form, TextInput } from 'carbon-components-react'
+import { Form, TextArea, TextInput } from 'carbon-components-react'
 
 import { FormMap } from './table-to-map'
 import { KubeResource } from '../../model/resource'
 
 import '@kui-shell/plugin-client-common/web/css/static/Form.scss'
 import 'carbon-components/scss/components/form/_form.scss'
+import 'carbon-components/scss/components/text-input/_text-input.scss'
+import 'carbon-components/scss/components/text-area/_text-area.scss'
 
 /** @return a ReactElement */
 export default function SidecarForm({
@@ -41,13 +43,17 @@ export default function SidecarForm({
           (typeof vvalue === 'number' ? vvalue.toLocaleString() : typeof vvalue !== 'object' ? vvalue : vvalue.label) ||
           ''
 
-        const colspan = Math.max(Math.ceil(key.length / 9), Math.ceil(value.length / 6))
-        const style = { gridColumn: `span ${colspan}` }
+        const colspan = Math.max(Math.ceil(key.length / 8), Math.ceil(value.length / 3))
+        const style = { gridColumn: `span ${colspan > 15 ? 8 : colspan}` }
         const className = typeof vvalue !== 'object' ? undefined : 'kui--form-item--for-label'
 
         return (
           <div key={idx} style={style} className={className}>
-            <TextInput readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
+            {colspan > 15 ? (
+              <TextArea readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
+            ) : (
+              <TextInput readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
+            )}
           </div>
         )
       })}

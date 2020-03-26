@@ -62,6 +62,7 @@ export interface MetadataBearing<Content = void> extends MetadataNamedResource {
 
   /** family of onclick handlers */
   onclick?: {
+    kind?: string
     name?: string
     nameHash?: string
     namespace?: string

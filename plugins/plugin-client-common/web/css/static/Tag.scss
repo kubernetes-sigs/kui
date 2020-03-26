@@ -1,0 +1,18 @@
+[kui-theme-style] .bx--tag {
+  &.bx--tag--gray {
+    background-color: var(--color-sidecar-border);
+    color: var(--color-sidecar-background-01);
+  }
+  &.bx--tag--red {
+    background-color: var(--color-red);
+    color: var(--color-base07);
+  }
+  &.bx--tag--green {
+    background-color: var(--color-green);
+    color: var(--color-base07);
+  }
+  &.bx--tag--warm-gray {
+    background-color: var(--color-yellow-sidecar);
+    color: var(--color-text-01);
+  }
+}
