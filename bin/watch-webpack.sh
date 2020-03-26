@@ -22,13 +22,6 @@ else
     npm run pty:nodejs
 fi
 
-# npm install the webpack support, if we haven't already done so (we
-# forgo installing the webpack components initially, due to their
-# size)
-if [ ! -d node_modules/webpack ]; then
-    npm install --no-save --ignore-scripts --no-package-lock ./packages/webpack
-fi
-
 if [ "$TARGET" = "electron-renderer" ]; then
     TARGETDIR=dist/electron/build
 else
