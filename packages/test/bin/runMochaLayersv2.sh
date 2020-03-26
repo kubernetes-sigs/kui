@@ -41,7 +41,11 @@ if [ -z "$WEBPACK_CLIENT_URL" ]; then
     echo "Using WEBPACK_CLIENT_URL=$WEBPACK_CLIENT_URL"
 fi
 
-for i in $@; do
-    export LAYER=$i
+if [ $# = 0 ]; then
     "$TEST_ROOT"/bin/runTest.sh
-done
+else
+    for i in $@; do
+        export LAYER=$i
+        "$TEST_ROOT"/bin/runTest.sh
+    done
+fi

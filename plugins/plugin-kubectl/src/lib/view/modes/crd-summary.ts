@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
-import { renderForm } from './Form'
+import { renderFormWithLabels } from './Form'
 import { command } from './show-crd-managed-resources'
 import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
 
@@ -48,7 +48,7 @@ async function content(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOp
     )
     const countObj = { 'Resource count': resources.length }
 
-    return renderForm(Object.assign(baseResponse, countObj))
+    return renderFormWithLabels(Object.assign(baseResponse, countObj), crd)
   } catch (err) {
     // safeguarding here, in case of unexpected errors collecting
     // optional information; see
