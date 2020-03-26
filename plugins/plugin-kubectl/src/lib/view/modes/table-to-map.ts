@@ -16,6 +16,12 @@
 
 import { Table } from '@kui-shell/core'
 
+export interface LabelValue {
+  label: string
+}
+
+export type FormMap = Record<string, number | string | LabelValue>
+
 export function capitalize(str: string) {
   return str === 'IP' ? str : str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
@@ -24,7 +30,7 @@ export function capitalize(str: string) {
  * Turn a one-row Table into a Map
  *
  */
-export default function toMap(table: Table): Record<string, string> {
+export default function toMap(table: Table): FormMap {
   return table.body.reduce((map, row) => {
     map[capitalize(row.key)] = row.name
 
