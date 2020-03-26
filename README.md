@@ -84,6 +84,4 @@ are a few such uses of Kui:
 If you want to create your own client, with a custom theme, custom
 icons, and an enhanced set of commands, you can start here:
 
-- [Clone and own a boilerplate repo](https://github.com/kui-shell/plugin-kubectl-boilerplate)
 - [API documentation for authoring new commands](https://github.com/IBM/kui/wiki/Authoring-Kui-Plugins)
-- [Some older documentation](docs/dev/custom-clients.md); we will be consolidating this into the newer docs.
