@@ -1,9 +1,9 @@
 {
   "name": "@kui-shell/plugin-client-default",
-  "version": "6.0.17",
+  "version": "6.0.18",
   "description": "Kui plugin that offers client defintion",
   "dependencies": {
-    "@kui-shell/plugin-client-common": "^6.0.17"
+    "@kui-shell/plugin-client-common": "^6.0.18"
   },
   "license": "Apache-2.0",
   "author": "Mengting Yan",
