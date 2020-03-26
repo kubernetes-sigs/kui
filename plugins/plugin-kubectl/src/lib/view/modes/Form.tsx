@@ -43,7 +43,7 @@ export default function SidecarForm({
           (typeof vvalue === 'number' ? vvalue.toLocaleString() : typeof vvalue !== 'object' ? vvalue : vvalue.label) ||
           ''
 
-        const colspan = Math.max(Math.ceil(key.length / 8), Math.ceil(value.length / 3))
+        const colspan = Math.max(Math.ceil(key.length / 7.5), Math.ceil(value.length / 3))
         const style = { gridColumn: `span ${colspan > 15 ? 8 : colspan}` }
         const className = typeof vvalue !== 'object' ? undefined : 'kui--form-item--for-label'
 
@@ -63,8 +63,10 @@ export default function SidecarForm({
 
 export function FormWithLabels(props: { map: FormMap; resource: KubeResource }) {
   const labelMap: FormMap = {}
+  let nLabels = 0
   if (props.resource.metadata && props.resource.metadata.labels) {
     for (const key in props.resource.metadata.labels) {
+      nLabels++
       labelMap[`${key} label`] = { label: props.resource.metadata.labels[key] }
     }
   }
@@ -72,7 +74,11 @@ export function FormWithLabels(props: { map: FormMap; resource: KubeResource }) 
   return (
     <div className="padding-content scrollable">
       <SidecarForm nested map={props.map} />
-      <SidecarForm nested map={labelMap} className="top-pad" />
+      {nLabels > 0 && (
+        <div style={{ paddingTop: '1em' }}>
+          <SidecarForm nested map={labelMap} className="top-pad" />
+        </div>
+      )}
     </div>
   )
 }
