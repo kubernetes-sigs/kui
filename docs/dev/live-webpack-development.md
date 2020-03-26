@@ -30,9 +30,6 @@ If you are developing a client as a fork of the main Kui monorepo,
 then use this command, from the top level of your kui clone:
 
 ```
-WEBPACK=true npm install
+npm ci
 npm run watch:webpack
 ```
-
-The first command is needed because, by default, an `npm install` does
-not install the rather large webpack dependencies.
