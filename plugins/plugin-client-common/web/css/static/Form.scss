@@ -8,30 +8,40 @@
     grid-template-columns: repeat(auto-fill, minmax(3em, auto));
     flex: unset;
 
+    .kui--form-item--for-label .bx--form-item {
+      .bx--label {
+        color: var(--color-base0D);
+      }
+      .bx--text-input {
+        background-color: var(--color-base04);
+        color: var(--color-base07);
+      }
+    }
+
     .bx--form-item {
       font-size: 0.875em;
+
+      .bx--text-input {
+        font-size: 1em;
+        line-height: 1.125em;
+        height: 2.5em;
+        padding: 0 1em;
+        color: var(--color-text-01);
+        background-color: var(--color-base03);
+        border-bottom-color: var(--color-base02);
+
+        &:focus,
+        &:active {
+          outline-color: var(--active-tab-color);
+        }
+      }
+
+      .bx--label {
+        color: var(--color-text-02);
+        font-size: 0.875em;
+        margin-bottom: 0.5em;
+        line-height: 1em;
+      }
     }
-  }
-
-  .bx--text-input {
-    font-size: 1em;
-    line-height: 1.125em;
-    height: 2.5em;
-    padding: 0 1em;
-    color: var(--color-text-01);
-    background-color: var(--color-base03);
-    border-bottom-color: var(--color-base02);
-
-    &:focus,
-    &:active {
-      outline-color: var(--active-tab-color);
-    }
-  }
-
-  .bx--label {
-    color: var(--color-text-02);
-    font-size: 0.875em;
-    margin-bottom: 0.5em;
-    line-height: 1em;
   }
 }

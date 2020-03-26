@@ -308,10 +308,10 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   justify-content: center;
 }
 .kui--sidecar .sidecar-header-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .kui--sidecar .sidecar-toolbar-text a,
 .kui--sidecar .sidecar-toolbar-text a:hover {

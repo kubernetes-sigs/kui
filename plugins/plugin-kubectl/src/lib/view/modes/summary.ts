@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
 import toMap from './table-to-map'
-import { renderForm } from './Form'
+import { renderFormWithLabels } from './Form'
 import { getCommandFromArgs } from '../../util/util'
 import { fqnOf } from '../../../controller/kubectl/fqn'
 import { KubeResource, isSummarizableKubeResource, isKubeResourceWithItsOwnSummary } from '../../model/resource'
-
-import '@kui-shell/plugin-client-common/web/css/static/Form.scss'
-import 'carbon-components/scss/components/form/_form.scss'
 
 const strings = i18n('plugin-kubectl')
 
@@ -56,7 +53,8 @@ async function renderSummary(
     return resource.summary
   }
 
-  return renderForm(await getDefaultSummaryMap(tab, resource, args))
+  const map = await await getDefaultSummaryMap(tab, resource, args)
+  return renderFormWithLabels(map, resource)
 }
 
 /**

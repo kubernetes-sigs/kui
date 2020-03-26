@@ -16,7 +16,7 @@
 
 import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
 
-import { renderForm } from './Form'
+import { renderFormWithLabels } from './Form'
 import { getDefaultSummaryMap } from './summary'
 import { ConfigMap, isConfigMap } from '../../model/resource'
 
@@ -43,7 +43,7 @@ async function content(tab: Tab, cm: ConfigMap, args: { argvNoOptions: string[] 
     }
   }
 
-  return renderForm(map)
+  return renderFormWithLabels(map, cm)
 }
 
 /**
