@@ -5,8 +5,6 @@
     display: flex;
     align-items: center;
     font-weight: normal;
-    font-family: var(--font-monospace);
-    letter-spacing: 0.16px;
   }
   [data-tag='badge']:not(.badge-as-image):not(.badge-as-fontawesome):before {
     content: '';
