@@ -53,9 +53,9 @@ complex menu structures.
 For example, to see a visual summary of your Kubernetes pods, issue
 this command from your favorite terminal:
 
-| Example Command             | Thumbnail of Output                                                                               |
-| :-------------------------- | :------------------------------------------------------------------------------------------------ |
-| `kubectl kui get pods --ui` | [![](docs/readme/images/kubectl-get-pods-thumbnail.jpg)](docs/readme/images/kubectl-get-pods.png) |
+| Example Command        | Thumbnail of Output                                                                               |
+| :--------------------- | :------------------------------------------------------------------------------------------------ |
+| `kubectl kui get pods` | [![](docs/readme/images/kubectl-get-pods-thumbnail.jpg)](docs/readme/images/kubectl-get-pods.png) |
 
 Without the `--ui` option, Kui will display the output in your
 terminal directly; you will observe that the output is identical to
