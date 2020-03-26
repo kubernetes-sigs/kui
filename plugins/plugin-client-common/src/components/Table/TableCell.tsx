@@ -76,6 +76,9 @@ export default function renderCell(
         />
       )
     } else {
+      const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
+      const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
+
       return (
         <TableCell
           key={cell.id}
@@ -90,7 +93,7 @@ export default function renderCell(
           <span
             data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
             data-value={cell.value}
-            data-tag={cidx > 0 && kuiRow.attributes[cidx - 1].tag}
+            data-tag={tag}
             className={
               'cell-inner ' +
               (cidx === 0
@@ -98,7 +101,10 @@ export default function renderCell(
                 : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
             }
           >
-            {(kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value}
+            {tag === 'badge' && (
+              <span title={innerText} data-tag="badge-circle" className={kuiRow.attributes[cidx - 1].css} />
+            )}
+            <span className="kui--cell-inner-text">{innerText}</span>
           </span>
         </TableCell>
       )
