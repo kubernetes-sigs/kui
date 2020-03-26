@@ -1151,14 +1151,6 @@ body[kui-theme-style] a:hover:not(.plain-anchor) {
 
 badge,
 [data-tag="badge"] {
-  & {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 600;
-    background-color: var(--color-tag-beta-fill);
-    color: var(--color-tag-beta-text);
-  }
   &.clickable:hover {
     /* no underline effect for icons (i) and badges */
     text-decoration: none;
