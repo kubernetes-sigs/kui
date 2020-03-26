@@ -205,6 +205,13 @@ function mac {
             mv "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/" "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
 	fi
 
+        echo "Add kubectl-kui to electron build darwin"
+
+        (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64" && touch kubectl-kui && chmod +x kubectl-kui \
+          && echo '#!/usr/bin/env sh
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+"$SCRIPTDIR"/Kui.app/Contents/MacOS/Kui $@ &' >> kubectl-kui)
+
         # create the installers
         #if [ -n "$ZIP_INSTALLER" ]; then
         #node ./builders/zip.js
@@ -249,6 +256,13 @@ function linux {
 	    rm -rf "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
 	    mv "$BUILDDIR/${PRODUCT_NAME}-linux-x64/" "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
 	fi
+
+        echo "Add kubectl-kui to electron build linux"
+
+        (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui && chmod +x kubectl-kui \
+          && echo '#!/usr/bin/env sh
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+"$SCRIPTDIR"/Kui $@ &' >> kubectl-kui)
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
