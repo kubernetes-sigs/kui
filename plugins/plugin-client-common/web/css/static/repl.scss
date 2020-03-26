@@ -258,11 +258,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
       flex: 1;
       display: flex;
       align-items: center;
-
-      input {
-        /* make equal to height after right-elements, including inline-loading */
-        height: 20px;
-      }
     }
   }
 
