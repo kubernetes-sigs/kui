@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@kui-shell/core": "file:packages/core",
+    "@kui-shell/webpack": "file:packages/webpack",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
     "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
     "@kui-shell/plugin-carbon-themes": "file:plugins/plugin-carbon-themes",
