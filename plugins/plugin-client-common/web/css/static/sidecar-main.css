@@ -55,7 +55,7 @@
   display: flex;
   z-index: 5;
   background-color: var(--color-stripe-02);
-  border-bottom: 1px inset var(--color-ui-02);
+  /* border-bottom: 1px inset var(--color-ui-02); */
   order: -1;
 }
 /* .kui--sidecar .sidecar-bottom-stripe {
@@ -251,8 +251,6 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .kui--sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
-  flex-basis: 5.5rem;
-  min-height: 5.5rem; /* see shell issue #712 */
 }
 .kui--sidecar .sidecar-header .header-main-content {
   flex: 1;
@@ -674,7 +672,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
     position: absolute !important;
     right: 2em;
     bottom: 0;
-    max-width: 25em;
+    max-width: 30em;
     height: 2.25em;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -849,6 +847,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   .bx--tabs {
     font-size: 0.875em;
     line-height: 1.125em;
+    overflow-x: auto;
     .bx--tabs__nav {
       background: none;
       box-shadow: none;
@@ -918,8 +917,7 @@ body[kui-theme-style] a.bx--tabs__nav-link {
 .kui--sidecar--titlebar-navigation:not(:empty) {
   display: flex;
   align-items: center;
-  margin-right: 0.375em;
-  border-right: 1px solid var(--color-table-border3);
+  overflow-x: hidden;
 
   .sidecar-bottom-stripe-button:first-child {
     margin-left: 0.5em;

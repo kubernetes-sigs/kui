@@ -35,7 +35,7 @@ export interface Props {
   kind?: string
   name?: string
   namespace?: string
-  breadcrumbs?: KuiBreadcrumb[]
+  breadcrumbs?: (KuiBreadcrumb & { deemphasize?: boolean; isCurrentPage?: boolean; className?: string })[]
 
   repl: REPL
   fixedWidth: boolean
@@ -150,30 +150,6 @@ export default class Window extends React.PureComponent<Props> {
     )
   }
 
-  private kind() {
-    return (
-      <div className="sidecar-header-icon-wrapper">
-        <span className="sidecar-header-icon">{this.props.kind}</span>
-      </div>
-    )
-  }
-
-  private namespace() {
-    const isMin = this.props.width === Width.Minimized
-    const ns = isMin ? this.props.name : this.props.namespace
-
-    if (ns) {
-      const onclick = isMin ? undefined : this.props.onClickNamespace
-      return (
-        <div className="sidecar-header-icon-wrapper sidecar-header-icon-wrapper-for-namespace">
-          <span className={'package-prefix' + (onclick ? ' clickable' : '')} onClick={onclick && (() => onclick())}>
-            {ns}
-          </span>
-        </div>
-      )
-    }
-  }
-
   /** back button */
   private back() {
     if (this.props.back) {
@@ -210,18 +186,23 @@ export default class Window extends React.PureComponent<Props> {
 
   /** render history navigation UI */
   private history() {
+    const breadcrumbs = this.props.breadcrumbs && this.props.breadcrumbs.filter(_ => _.label)
+    const currentPageIdxAsSpecified = breadcrumbs && breadcrumbs.findIndex(_ => _.isCurrentPage)
+    const currentPageIdx = currentPageIdxAsSpecified < 0 ? breadcrumbs.length - 1 : currentPageIdxAsSpecified
+
     return (
       <div className="kui--sidecar--titlebar-navigation">
         {this.back()}
         {this.forward()}
 
-        {this.props.breadcrumbs && (
-          <Breadcrumb noTrailingSlash={this.props.breadcrumbs.length > 1}>
-            {this.props.breadcrumbs.map((_, idx, A) => (
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <Breadcrumb noTrailingSlash={breadcrumbs.length > 1}>
+            {breadcrumbs.map((_, idx) => (
               <BreadcrumbItem
-                key={idx}
-                isCurrentPage={idx === A.length - 1}
                 href="#"
+                key={idx}
+                className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb'].filter(_ => _).join(' ')}
+                isCurrentPage={idx === currentPageIdx}
                 onClick={_.command && (() => this.props.repl.pexec(_.command))}
               >
                 {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
@@ -242,10 +223,7 @@ export default class Window extends React.PureComponent<Props> {
       >
         {this.history()}
 
-        <div className="sidecar-bottom-stripe-left-bits">
-          {this.kind()}
-          {this.namespace()}
-        </div>
+        <div className="sidecar-bottom-stripe-left-bits"></div>
 
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">

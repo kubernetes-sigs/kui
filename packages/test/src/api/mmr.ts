@@ -172,7 +172,7 @@ export class TestMMR {
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(SidecarExpect.kind(kind.toUpperCase()))
+          .then(SidecarExpect.kind(kind))
           .catch(Common.oops(this, true)))
     })
   }

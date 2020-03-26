@@ -19,13 +19,14 @@ import { CodedError, Arguments, ExecType, Registrar, MultiModalResponse, isHeadl
 import flags from './flags'
 import { exec } from './exec'
 import { RawResponse } from './response'
-import doGetWatchTable from './watch/get-watch'
+import { kindAndNamespaceOf } from './fqn'
 import commandPrefix from '../command-prefix'
+import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
+import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeResource } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
-import { isUsage, doHelp } from '../../lib/util/help'
 
 /**
  * For now, we handle watch ourselves, so strip these options off the command line
@@ -110,6 +111,11 @@ export async function doGetAsEntity(
       nameHash,
       originatingCommand: args.command,
       isKubeResource: true,
+      onclick: {
+        kind: `kubectl get ${kindAndNamespaceOf(resource)}`,
+        name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`,
+        namespace: `kubectl get ns ${resource.metadata.namespace || 'default'}`
+      },
       modes: [], // this tells Kui that we want the response to be interpreted as a MultiModalResponse
       kuiRawData: data // also include the raw, uninterpreted data string we got back
     })

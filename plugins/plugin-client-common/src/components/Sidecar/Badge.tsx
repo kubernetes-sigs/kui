@@ -16,7 +16,11 @@
 
 import * as React from 'react'
 import { HTMLDom } from '../../'
+import { Tag } from 'carbon-components-react'
 import { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
+
+import '../../../web/css/static/Tag.scss'
+import 'carbon-components/scss/components/tag/_tag.scss'
 
 interface Props {
   tab: Tab
@@ -62,9 +66,17 @@ function oneTimeRender(badgeText: KuiBadge) {
       badge.classList.add('badge-as-fontawesome')
       badge.appendChild(awesome) */
     } else {
+      const type =
+        className === 'green-background'
+          ? 'green'
+          : className === 'red-background'
+          ? 'red'
+          : className === 'yellow-background'
+          ? 'warm-gray'
+          : 'gray'
       return (
-        <div data-tag="badge" className={className} onClick={() => badgeText.onclick()}>
-          {badgeText.title}
+        <div className={className} onClick={() => badgeText.onclick()}>
+          <Tag type={type}>{badgeText.title}</Tag>
         </div>
       )
     }
