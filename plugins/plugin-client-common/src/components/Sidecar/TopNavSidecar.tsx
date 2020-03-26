@@ -190,10 +190,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       <div className="header-left-bits">
         <div className="sidecar-header-text">
           <div className="sidecar-header-name" data-base-class="sidecar-header-name">
-            <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
-              {this.nameHash()}
-              {this.name()}
-            </div>
+            <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content"></div>
           </div>
         </div>
       </div>
@@ -319,20 +316,41 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
         metadata: { namespace },
         onclick
       } = this.current.response
-      const onClickNamespace = onclick && onclick.namespace && (() => this.state.repl.pexec(onclick.namespace))
+      // const onClickNamespace = onclick && onclick.namespace && (() => this.state.repl.pexec(onclick.namespace))
 
+      const name =
+        this.current.response &&
+        (this.current.response.prettyName ||
+          (this.current.response.metadata ? this.current.response.metadata.name : undefined))
+
+      // Note: data-view helps with tests
       return (
         <div
           className={'kui--sidecar kui--inverted-color-context kui--screenshotable ' + this.width()}
           data-view="topnav"
         >
-          {/* data-view helps with tests */}
           {this.title({
-            kind,
-            namespace,
-            name:
-              this.current.response && this.current.response.metadata ? this.current.response.metadata.name : undefined,
-            onClickNamespace
+            breadcrumbs: [
+              { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' },
+              {
+                label: name,
+                command: onclick && onclick.name,
+                isCurrentPage: true,
+                className: 'kui--sidecar-entity-name'
+              },
+              {
+                label: this.current.response && this.current.response.nameHash,
+                command: onclick && onclick.nameHash,
+                deemphasize: true,
+                className: 'kui--sidecar-entity-name-hash'
+              },
+              {
+                label: namespace,
+                command: onclick && onclick.namespace,
+                deemphasize: true,
+                className: 'kui--sidecar-entity-namespace'
+              }
+            ]
           })}
           <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
             {this.header()}

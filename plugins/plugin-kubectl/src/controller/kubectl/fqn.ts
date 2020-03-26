@@ -53,8 +53,20 @@ function versionString(apiVersion: string): string {
   return group.length > 0 ? `.${version}.${group}` : ''
 }
 
+function kindPart(apiVersion: string, kind: string) {
+  return `${kind}${versionString(apiVersion)}`
+}
+
+function kindPartOf(resource: KubeResource) {
+  return kindPart(resource.apiVersion, resource.kind)
+}
+
+export function kindAndNamespaceOf(resource: KubeResource) {
+  return `${kindPartOf(resource)} -n ${resource.metadata.namespace}`
+}
+
 export function fqn(apiVersion: string, kind: string, name: string, namespace: string) {
-  return `${kind}${versionString(apiVersion)} ${namespace === '<none>' ? '' : `-n ${namespace}`} ${name}`
+  return `${kindPart(apiVersion, kind)} ${namespace === '<none>' ? '' : `-n ${namespace}`} ${name}`
 }
 
 export function fqnOf(resource: KubeResource) {

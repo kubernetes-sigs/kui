@@ -10,11 +10,12 @@
 
     .kui--form-item--for-label .bx--form-item {
       .bx--label {
-        color: var(--color-base0D);
+        color: var(--color-base0C);
       }
-      .bx--text-input {
-        background-color: var(--color-base04);
-        color: var(--color-base07);
+      .bx--text-input,
+      .bx--text-area {
+        background-color: var(--color-base03);
+        border-bottom-color: var(--color-base04);
       }
     }
 
@@ -22,13 +23,24 @@
       font-size: 0.875em;
 
       .bx--text-input {
-        font-size: 1em;
-        line-height: 1.125em;
         height: 2.5em;
         padding: 0 1em;
+        line-height: 1.125em;
+      }
+
+      .bx--text-area {
+        min-height: 2.5em;
+        min-width: 10em;
+        padding: 0.6875em 1em;
+        line-height: 1.25em;
+      }
+
+      .bx--text-input,
+      .bx--text-area {
+        font-size: 1em;
         color: var(--color-text-01);
-        background-color: var(--color-base03);
-        border-bottom-color: var(--color-base02);
+        background-color: rgba(255, 255, 255, 0.1);
+        border-bottom-color: var(--color-base03);
 
         &:focus,
         &:active {
@@ -37,7 +49,7 @@
       }
 
       .bx--label {
-        color: var(--color-text-02);
+        color: var(--color-text-01);
         font-size: 0.875em;
         margin-bottom: 0.5em;
         line-height: 1em;

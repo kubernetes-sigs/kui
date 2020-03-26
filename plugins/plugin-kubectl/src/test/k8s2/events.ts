@@ -79,9 +79,9 @@ commands.forEach(command => {
 
         await this.app.client.click(`${table} tr:first-child .clickable`)
 
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('EVENT'))
+        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
       } catch (err) {
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('EVENT'))
+        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
         await Common.oops(this, true)
       }
     })
@@ -91,7 +91,7 @@ commands.forEach(command => {
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
       await SidecarExpect.open(this.app)
         .then(SidecarExpect.showing(podName))
-        .then(SidecarExpect.kind('POD'))
+        .then(SidecarExpect.kind('Pod'))
     })
 
     deleteNS(this, ns)
