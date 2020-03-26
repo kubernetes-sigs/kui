@@ -20,6 +20,23 @@ body[kui-theme="Carbon Gray10"] .kui--inverted-color-context {
   --color-base0E: #fa75a6;
   --color-base0F: #bb8eff;
 
+  --color-black: var(--color-ui-01);
+  --color-red: var(--color-base08);
+  --color-green: var(--color-base0B);
+  --color-yellow: var(--color-base0A);
+  --color-cyan: var(--color-base0C);
+  --color-blue: var(--color-base0D);
+  --color-magenta: var(--color-base0E);
+  --color-white: var(--color-base07);
+  --color-light-gray: var(--color-base04);
+  --color-dark-gray: var(--color-base03);
+  --color-ui-01: var(--color-base00);
+  --color-ui-02: var(--color-base01);
+  --color-ui-03: var(--color-base03);
+  --color-ui-04: var(--color-base02);
+  --color-ui-05: var(--color-base04);
+  --color-ui-06: var(--color-base02);
+
   --color-ok: var(--color-green);
   --color-error: var(--color-red);
   --color-warning: var(--color-base09);
