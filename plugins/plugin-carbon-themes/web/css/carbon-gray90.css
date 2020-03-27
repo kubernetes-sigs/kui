@@ -37,8 +37,6 @@ body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-brand-03: #408bfc;
   --color-content-divider: #4c4c4c;
 
-  --color-selection-background: #6f6f6f;
-
   --color-stripe-01: var(--color-base02);
   --color-stripe-02: var(--color-sidecar-header);
   --tab-gray-text-color: #b5b5b5;
