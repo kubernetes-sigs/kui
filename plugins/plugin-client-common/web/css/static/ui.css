@@ -3,7 +3,6 @@
 }
 ::selection {
   background-color: var(--color-selection-background);
-  color: var(--color-selection-foreground);
 }
 html,
 body[kui-theme-style],
@@ -1382,9 +1381,6 @@ body {
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
 
-  --color-selection-background: var(--color-base04);
-  --color-selection-foreground: var(--color-text-01);
-
   --color-ok: var(--color-green);
   --color-error: var(--color-red);
   --color-warning: var(--color-base09);
@@ -1429,6 +1425,18 @@ body {
 
   /* repl background */
   --color-repl-background: var(--color-ui-01);
+
+  /* text selection */
+  --color-selection-background-dark: rgba(255, 255, 255, 0.3);
+  --color-selection-background-light: rgba(0, 0, 0, 0.3);
+}
+body[kui-theme-style="dark"],
+body[kui-theme-style="light"] .kui--inverted-color-context {
+  --color-selection-background: var(--color-selection-background-dark);
+}
+body[kui-theme-style="light"],
+body[kui-theme-style="dark"] .kui--inverted-color-context {
+  --color-selection-background: var(--color-selection-background-light);
 }
 
 .color-base08 {

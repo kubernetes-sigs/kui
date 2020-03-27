@@ -10,10 +10,6 @@
   transition: box-shadow 300ms ease-in-out;
 }
 
-[kui-theme-style] .monaco-editor .selected-text {
-  opacity: 0.3; /* i don't know why the selection outside of monaco is different, despite using the same CSS styling */
-}
-
 [kui-theme-style] .monaco-editor {
   transition: color 300ms ease-in-out;
   color: var(--color-text-01);
