@@ -20,12 +20,12 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@carbon/icons-react": "^10.9.1",
-    "carbon-components": "^10.10.1",
-    "carbon-components-react": "^7.10.1",
+    "@carbon/icons-react": "^10.9.2",
+    "carbon-components": "^10.10.2",
+    "carbon-components-react": "^7.10.2",
     "carbon-icons": "^7.0.7",
     "react-markdown": "^4.3.1",
-    "react-split-pane": "^0.1.89"
+    "react-split-pane": "^0.1.91"
   },
   "publishConfig": {
     "access": "public"
