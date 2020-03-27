@@ -101,7 +101,6 @@ body[kui-theme="Light"] {
   --color-sidecar-border: #e4e4e4;
 
   --color-brand-03: #008fff;
-  --color-selection-background: #b3e6ff;
 
   --color-confirm-background: var(--color-base00);
   --color-confirm-foreground: var(--color-base05);
