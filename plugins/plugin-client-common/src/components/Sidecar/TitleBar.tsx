@@ -18,12 +18,12 @@ import * as React from 'react'
 import { REPL, Breadcrumb as KuiBreadcrumb } from '@kui-shell/core'
 import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import {
-  Maximize20 as MaximizeIcon,
-  Minimize20 as MinimizeIcon,
-  ArrowLeft20 as BackIcon,
-  ArrowRight20 as ForwardIcon,
-  ChevronDown20 as CloseIcon,
-  Close20 as QuitIcon
+  Maximize16 as MaximizeIcon,
+  Minimize16 as MinimizeIcon,
+  ArrowLeft16 as BackIcon,
+  ArrowRight16 as ForwardIcon,
+  ChevronDown16 as CloseIcon,
+  Close16 as QuitIcon
 } from '@carbon/icons-react'
 
 import Width from './width'
