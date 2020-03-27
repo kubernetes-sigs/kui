@@ -76,7 +76,7 @@
 }
 
 .kui--status-stripe .kui--status-stripe-element .clickable:hover {
-  color: var(--color-support-04) !important;
+  color: var(--color-brand-01);
   text-decoration: none;
 }
 
