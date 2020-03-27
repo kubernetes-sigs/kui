@@ -284,7 +284,7 @@ export const formatTable = <O extends KubeOptions>(
               outerCSS:
                 header +
                 ' ' +
-                outerCSSForKey[key] +
+                (outerCSSForKey[key] || '') +
                 (colIdx <= 1 || colIdx === nameColumnIdx - 1 || columnVisibleWithSidecar.test(key)
                   ? ''
                   : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)

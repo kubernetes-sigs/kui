@@ -76,18 +76,26 @@ export default function renderCell(
         />
       )
     } else {
+      // e.g. is this a badge/status-like cell?
       const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
+
+      // column key
+      const key = cidx > 0 && kuiRow.attributes[cidx - 1].key
+
+      // className for the td
+      const className =
+        cidx === 0
+          ? 'entity-name ' + (kuiRow.outerCSS || '')
+          : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
+            (kuiRow.attributes[cidx - 1].outerCSS || '')
+
+      // the text value of the cell
       const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
 
       return (
         <TableCell
           key={cell.id}
-          className={
-            cidx === 0
-              ? 'entity-name ' + (kuiRow.outerCSS || '')
-              : (kuiRow.attributes[cidx - 1].key === 'NAME' ? 'entity-name-secondary ' : '') +
-                kuiRow.attributes[cidx - 1].outerCSS
-          }
+          className={className}
           onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
         >
           <span

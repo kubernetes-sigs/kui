@@ -30,7 +30,8 @@
 }
 
 .repl.sidecar-visible .bx--data-table-container .bx--data-table {
-  th[data-key='STATUS'] {
+  th[data-key='STATUS'],
+  td.kui--status-cell {
     padding-left: 0;
   }
   [data-tag='badge'] {
