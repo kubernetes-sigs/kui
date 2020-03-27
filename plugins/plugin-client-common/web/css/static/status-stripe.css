@@ -1,18 +1,12 @@
 .kui--status-stripe {
   display: flex;
   flex-basis: 1.875em;
-  background-color: var(--color-sidecar-background-02);
+  background-color: var(--color-sidecar-header);
 
   --color-fg: var(--color-text-01);
 
   z-index: 10;
-  box-shadow: 0 -3px 10px 0 rgba(60, 60, 60, 0.1);
-}
-
-body[kui-theme-style="dark"] {
-  .kui--status-stripe {
-    box-shadow: 0 -3px 10px 0 rgba(175, 175, 175, 0.1);
-  }
+  box-shadow: 0 -3px 10px 0 rgba(175, 175, 175, 0.1);
 }
 
 .kui--status-stripe .kui--status-stripe-element a.clickable {
@@ -35,9 +29,6 @@ body[kui-theme-style="dark"] {
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg {
   fill: var(--color-green);
-}
-[kui-theme-style="light"] .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
-  fill: var(--color-base09);
 }
 .kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
   fill: var(--color-yellow-sidecar);

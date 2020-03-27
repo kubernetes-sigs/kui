@@ -70,7 +70,7 @@ export default class StatusStripe extends React.PureComponent {
 
   public render() {
     return (
-      <div className="kui--status-stripe" id="kui--status-stripe">
+      <div className="kui--status-stripe kui--inverted-color-context" id="kui--status-stripe">
         {this.widgets()}
         <div className="kui--status-stripe-button">
           <div className="kui--status-stripe-element">{this.screenshot()}</div>
