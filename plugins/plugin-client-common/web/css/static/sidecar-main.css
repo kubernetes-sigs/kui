@@ -51,16 +51,11 @@
 }
 .sidecar-bottom-stripe {
   flex-basis: 2.5em;
-  min-height: 2.5rem; /* important for screenshot, which tries to maximally squish the sidecar height */
   display: flex;
   z-index: 5;
   background-color: var(--color-stripe-02);
   /* border-bottom: 1px inset var(--color-ui-02); */
-  order: -1;
 }
-/* .kui--sidecar .sidecar-bottom-stripe {
-    order: -1;
-} */
 .kui--sidecar .sidecar-bottom-stripe > div {
   font-size: 0.875em;
 }
@@ -251,6 +246,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .kui--sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
+  min-height: 1em;
 }
 .kui--sidecar .sidecar-header .header-main-content {
   flex: 1;
