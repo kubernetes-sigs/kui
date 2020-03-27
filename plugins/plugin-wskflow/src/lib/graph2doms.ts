@@ -45,7 +45,7 @@ export default async function graph2doms(
   activations?: ActivationLike[],
   {
     layoutOptions = {},
-    composites = { label: { fontSize: '4px', offset: { x: 0, y: -2 } } }
+    composites = { label: { fontSize: '4px', offset: { x: 0, y: -3 } } }
   }: {
     layoutOptions?: Record<string, string | boolean | number>
     composites?: {
@@ -81,7 +81,10 @@ export default async function graph2doms(
 
   const container = ssvg.append('g').on('dblclick.zoom', null)
 
-  const svg = container.append('g').attr('id', 'wskflowMainG')
+  const svg = container
+    .append('g')
+    .attr('id', 'wskflowMainG')
+    .attr('class', 'kui--screenshotable')
 
   const defs = svg.append('svg:defs')
 

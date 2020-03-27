@@ -69,7 +69,7 @@ break {
   /*vector-effect: non-scaling-stroke; not supported by IE or Edge */
   stroke-width: 0.5; /* 1.5 with non-scaling stroke */
   stroke: var(--color-text-02) !important;
-  stroke-opacity: 0.8;
+  stroke-opacity: 0.6875;
 }
 #wskflowSVG path.link {
   fill: transparent;
@@ -123,35 +123,20 @@ break {
 
 #wskflowSVG .node.leaf.Entry .atom,
 #wskflowSVG .node.leaf.Exit .atom {
-  fill: var(--color-text-01);
-}
-body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry .atom,
-body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Exit .atom {
-  fill: var(--color-ui-01);
+  fill: var(--color-base05);
   stroke: var(--color-ui-03) !important;
 }
 #wskflowSVG .node.leaf.Entry text,
 #wskflowSVG .node.leaf.Exit text {
-  fill: var(--color-ui-02) !important;
-  font-weight: 300;
+  font-weight: 700;
   font-variant: small-caps;
-}
-body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Entry text,
-body[kui-theme-style="dark"] #wskflowSVG .node.leaf.Exit text {
-  fill: var(--color-text-02) !important;
+  fill: var(--color-base00);
+  letter-spacing: 0.16px;
+  font-size: 5px;
 }
 
 #wskflowSVG .node .atom {
   fill: var(--color-base02);
-}
-body[kui-theme-style="dark"] #wskflowSVG .node .atom {
-  fill: var(--color-base03);
-}
-body[kui-theme-style="dark"] #wskflowSVG .node.leaf .atom {
-  stroke: var(--color-base02) !important;
-}
-body[kui-theme-style="dark"] #wskflowSVG .node[data-deployed="not-deployed"] .atom {
-  opacity: 0.7;
 }
 #wskflowSVG .node .atom ~ text {
   fill: var(--color-text-01);
@@ -216,11 +201,8 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom
   -webkit-font-smoothing: antialiased;
 }
 #wskflowSVG .node.leaf .atom {
-  stroke: var(--color-text-01) !important;
+  stroke: var(--color-base05);
   stroke-width: 0.5; /* 2 with vector-effects: non-scaling stroke support */
-}
-#wskflowSVG .node.leaf .atom {
-  stroke: var(--color-text-01) !important;
 }
 #wskflowSVG .action[data-deployed="deployed"] .atom {
   fill: var(--color-ui-03) !important;
@@ -240,7 +222,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom
 }
 #wskflowSVG .node[data-deployed="not-deployed"] .atom {
   mask: url(#mask-stripe);
-  fill: var(--color-base03) !important;
+  fill: var(--color-base04) !important;
 }
 
 #wskflowSVG .node.leaf.let .atom,
@@ -263,7 +245,6 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom
   /* function nodes; use code font */
   fill: var(--color-text-01) !important;
   font-family: var(--font-monospace);
-  font-size: 5px;
 }
 body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-label) {
   fill: var(--color-ui-01) !important;
@@ -275,10 +256,10 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
   stroke: var(--color-base0D) !important;
 }
 #wskflowSVG .node.compound:not(.root) .atom {
-  /* stroke-dasharray: 0.25,0.25; */
+  stroke-dasharray: 0.15, 0.5;
   stroke-width: 0.5;
-  stroke: var(--color-ui-04) !important;
-  fill: var(--color-base03) !important;
+  stroke: var(--color-ui-05);
+  fill: var(--color-base04) !important;
   fill-opacity: 0.05;
   rx: 4px;
 }
@@ -288,7 +269,7 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf.function text:not(.edge-labe
 #wskflowSVG .node.compound text {
   /* e.g. Try and Catch labels */
   font-weight: 500;
-  fill: var(--color-base09);
+  fill: var(--color-base0A);
 }
 #wskflowSVG .node.compound.try_catch.no-parents .atom {
   stroke: none !important;
