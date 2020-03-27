@@ -45,7 +45,7 @@ export default class Markdown extends React.PureComponent<Props> {
               {props.value}
             </CodeSnippet>
           ),
-          link: props => <Link {...props} target="_blank" title={props.href} />
+          link: props => <Link {...props} href="#" target="_blank" title={props.href} />
         }}
       />
     )

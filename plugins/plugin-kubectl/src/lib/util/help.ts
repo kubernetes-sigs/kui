@@ -116,7 +116,6 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
       .join('\n')
 
   const rawSections = nonUseOut.split(/\n\n([^'\s].*:)\n(?!\n)/) // the non-use sections of the docs
-  console.error('!!!!', rawSections)
 
   // the first section is the top-level doc string
   const headerEnd =
