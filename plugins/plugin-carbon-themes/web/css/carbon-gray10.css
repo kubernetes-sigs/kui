@@ -129,8 +129,8 @@ body[kui-theme="Carbon Gray10"] {
   --color-support-04: var(--color-base0C);
 
   /* from https://www.carbondesignsystem.com/data-visualization/color-palettes */
-  --color-latency-0: #8a3ffc;
-  --color-latency-1: #33b1ff;
+  --color-latency-0: #d4bbff;
+  --color-latency-1: #08bdba;
   --color-latency-2: #007d79;
   --color-latency-3: #ff7eb6;
   --color-latency-4: #fa4d56;
