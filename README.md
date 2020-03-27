@@ -17,11 +17,18 @@ We offer prebuilt releases that offer Kubernetes support:
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-These clients leverage the core framework hosted in this repository,
-combined with the Kubernetes plugins hosted
-[here](https://github.com/kui-shell/plugin-kubeui). Visit the [Kui
-Installation Guide](docs/installation.md) for installation details and
-alternative installation options.
+To run Kui as a [kubectl plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
+(requires version 1.12+), first download Kui, unpack the download, and add the unpacked directory to your PATH.
+For example, on MacOS, the steps would be:
+
+```bash
+curl -L https://macos-tarball.kui-shell.org/ | tar jxf -
+export PATH=$PWD/Kui-darwin-x64:$PATH
+kubectl kui get pods
+```
+
+After the final command, you should see a popup window listing pods in your current namespace.
+**Note**: Windows support for operating as a kubectl plugin coming soon.
 
 ## Contributing
 
@@ -57,10 +64,7 @@ this command from your favorite terminal:
 | :--------------------- | :------------------------------------------------------------------------------------------------ |
 | `kubectl kui get pods` | [![](docs/readme/images/kubectl-get-pods-thumbnail.jpg)](docs/readme/images/kubectl-get-pods.png) |
 
-Without the `--ui` option, Kui will display the output in your
-terminal directly; you will observe that the output is identical to
-that of `kubectl`, with the possible addition of syntax
-coloration. With Kui, you have the power to navigate between these
+With Kui, you have the power to navigate between these
 modes in a graceful and flexible manner.
 
 <a href="https://ibm.box.com/shared/static/55gasbz9fc40qrg43iq4b8t1uckupft4.gif">
