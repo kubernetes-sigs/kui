@@ -34,6 +34,7 @@ import {
 
 import Width from './width'
 import Badge from './Badge'
+import TopNavBreadcrumb from './breadcrumb'
 import ToolbarContainer from './ToolbarContainer'
 import { BaseHistoryEntry, BaseSidecar, Props } from './BaseSidecar'
 
@@ -152,37 +153,6 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
 
   protected headerBodyStyle() {
     return { 'flex-direction': 'column' }
-  }
-
-  private nameHash() {
-    const { nameHash } = this.current.response
-
-    if (nameHash) {
-      const onclick = this.current.response.onclick && this.current.response.onclick.nameHash
-      return (
-        <span
-          className={'entity-name-hash' + (onclick ? ' clickable' : '')}
-          onClick={onclick && (() => this.state.repl.pexec(onclick))}
-        >
-          {nameHash}
-        </span>
-      )
-    }
-  }
-
-  private name() {
-    const { prettyName } = this.current.response // e.g. the de-hashed part of auto-generated names
-    const onclick = this.current.response.onclick && this.current.response.onclick.name
-    return (
-      <div className="entity-name-line">
-        <span
-          className={'entity-name' + (onclick ? ' clickable' : '')}
-          onClick={onclick && (() => this.state.repl.pexec(onclick))}
-        >
-          {prettyName || this.current.response.metadata.name}
-        </span>
-      </div>
-    )
   }
 
   private namePart() {
@@ -306,22 +276,67 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     )
   }
 
+  private kindBreadcrumb(): TopNavBreadcrumb {
+    const { kind, onclick } = this.current.response
+    return { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' }
+  }
+
+  private nameBreadcrumb(): TopNavBreadcrumb {
+    const name =
+      this.current.response &&
+      (this.current.response.prettyName ||
+        (this.current.response.metadata ? this.current.response.metadata.name : undefined))
+    const { onclick } = this.current.response
+
+    return {
+      label: name,
+      command: onclick && onclick.name,
+      isCurrentPage: true,
+      className: 'kui--sidecar-entity-name'
+    }
+  }
+
+  private versionBreadcrumb(): TopNavBreadcrumb {
+    return this.current.response.version
+      ? { label: this.current.response.version, className: 'kui--version-breadcrumb' }
+      : undefined
+  }
+
+  private nameHashBreadcrumb(): TopNavBreadcrumb {
+    const { onclick } = this.current.response
+    return {
+      label: this.current.response && this.current.response.nameHash,
+      command: onclick && onclick.nameHash,
+      deemphasize: true,
+      className: 'kui--sidecar-entity-name-hash'
+    }
+  }
+
+  private namespaceBreadcrumb(): TopNavBreadcrumb {
+    const {
+      metadata: { namespace },
+      onclick
+    } = this.current.response
+    return {
+      label: namespace,
+      command: onclick && onclick.namespace,
+      deemphasize: true,
+      className: 'kui--sidecar-entity-namespace'
+    }
+  }
+
   public render() {
     if (!this.current || !this.current.response) {
       return <div />
     }
     try {
-      const {
-        kind,
-        metadata: { namespace },
-        onclick
-      } = this.current.response
-      // const onClickNamespace = onclick && onclick.namespace && (() => this.state.repl.pexec(onclick.namespace))
-
-      const name =
-        this.current.response &&
-        (this.current.response.prettyName ||
-          (this.current.response.metadata ? this.current.response.metadata.name : undefined))
+      const breadcrumbs = [
+        this.kindBreadcrumb(),
+        this.nameBreadcrumb(),
+        this.versionBreadcrumb(),
+        this.nameHashBreadcrumb(),
+        this.namespaceBreadcrumb()
+      ].filter(_ => _)
 
       // Note: data-view helps with tests
       return (
@@ -330,27 +345,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
           data-view="topnav"
         >
           {this.title({
-            breadcrumbs: [
-              { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' },
-              {
-                label: name,
-                command: onclick && onclick.name,
-                isCurrentPage: true,
-                className: 'kui--sidecar-entity-name'
-              },
-              {
-                label: this.current.response && this.current.response.nameHash,
-                command: onclick && onclick.nameHash,
-                deemphasize: true,
-                className: 'kui--sidecar-entity-name-hash'
-              },
-              {
-                label: namespace,
-                command: onclick && onclick.namespace,
-                deemphasize: true,
-                className: 'kui--sidecar-entity-namespace'
-              }
-            ]
+            breadcrumbs
           })}
           <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
             {this.header()}

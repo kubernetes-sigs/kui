@@ -87,7 +87,7 @@ export async function doGetAsEntity(
     const resource = formatOf(args) === 'json' ? JSON.parse(data) : (await import('js-yaml')).safeLoad(data)
 
     // attempt to separate out the app and generated parts of the resource name
-    const { name: prettyName, nameHash } = extractAppAndName(resource)
+    const { name: prettyName, nameHash, version } = extractAppAndName(resource)
 
     if (resource.kind === 'List' && args.execOptions.type === ExecType.TopLevel) {
       // then this is a response to e.g. `kubectl get pods -o yaml`
@@ -109,6 +109,7 @@ export async function doGetAsEntity(
     return Object.assign(resource, {
       prettyName,
       nameHash,
+      version,
       originatingCommand: args.command,
       isKubeResource: true,
       onclick: {
