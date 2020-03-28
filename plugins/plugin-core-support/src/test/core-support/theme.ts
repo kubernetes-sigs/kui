@@ -16,16 +16,18 @@
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
+const defaultTheme = 'Carbon Gray10'
+
 const resetTheme = (ctx: Common.ISuite) => {
   it('should reset theme preference', () =>
     CLI.command('theme reset', ctx.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(ctx)))
 
-  it('should show that we are using the default (dark) theme', () =>
+  it(`should show that we are using the default theme: ${defaultTheme}`, () =>
     CLI.command('theme current', ctx.app)
-      .then(ReplExpect.okWithString('Dark'))
-      .then(() => ctx.app.client.waitForExist('body[kui-theme="Dark"]')) // Dark being the default
+      .then(ReplExpect.okWithString(defaultTheme))
+      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${defaultTheme}"]`)) // Dark being the default
       .catch(Common.oops(ctx)))
 }
 
@@ -118,14 +120,17 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
 }
 
 /** some helpers */
+const Default = { name: defaultTheme, display: defaultTheme }
 const Dark = { name: 'Dark', display: 'Default Dark' }
 const Light = { name: 'Light', display: 'Default Light' }
 const goLight = go(Light)
 const goDark = go(Dark)
 const restartAndThenLight = restartAndThen(Light)
-const restartAndThenDark = restartAndThen(Dark)
+// const restartAndThenDark = restartAndThen(Dark)
+const restartAndThenDefault = restartAndThen(Default)
 const reloadAndThenLight = reloadAndThen(Light)
 const reloadAndThenDark = reloadAndThen(Dark)
+const reloadAndThenDefault = reloadAndThen(Default)
 const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
 const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
@@ -158,14 +163,14 @@ describe('theme switching', function(this: Common.ISuite) {
       .catch(Common.oops(this)))
 
   resetTheme(this)
-  reloadAndThenDark(this) // because Dark is default
+  reloadAndThenDefault(this)
 
   goLight(this)
   restartAndThenLight(this)
 
   resetTheme(this)
-  reloadAndThenDark(this) // because Dark is default
-  restartAndThenDark(this) // because Dark is default
+  reloadAndThenDefault(this) // because Dark is default
+  restartAndThenDefault(this) // because Dark is default
 
   // switch back and forth without restart
   goLight(this)
@@ -197,4 +202,6 @@ describe('theme switching', function(this: Common.ISuite) {
   // of times in a row
   restartAndThenLight(this)
   reloadAndThenLight(this)
+
+  resetTheme(this)
 })
