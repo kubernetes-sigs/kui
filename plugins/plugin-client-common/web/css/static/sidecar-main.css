@@ -848,19 +848,23 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
       background: none;
       box-shadow: none;
     }
+    .bx--tabs__nav--hidden {
+      display: flex;
+      flex-direction: row;
+      max-height: unset;
+    }
   }
   .bx--tabs-trigger {
     display: none;
   }
-  .bx--tabs__nav--hidden {
-    max-height: unset;
-  }
   .bx--tabs__nav-item {
+    background: transparent;
     height: 2.5em;
     margin-left: 0.125em;
   }
 
   a.bx--tabs__nav-link {
+    letter-spacing: 0.16px;
     padding: 0.5em 1em;
     height: 2.5em;
     line-height: 1.125em;
@@ -874,14 +878,15 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 
   .bx--tabs__nav-item--selected .bx--tabs__nav-link {
     color: var(--color-text-01);
-    border-color: var(--color-brand-03);
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-brand-03);
     opacity: 1;
   }
 }
 
 body[kui-theme-style] a.bx--tabs__nav-link {
   color: var(--color-text-01);
-  border-color: var(--color-text-02);
+  border-bottom: 2px solid var(--color-text-02);
   opacity: 0.875;
 }
 
