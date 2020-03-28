@@ -144,58 +144,16 @@ body[kui-theme="Carbon Gray10"] {
   --color-latency-13: #d4bbff;
 }
 
-body[kui-theme="Carbon Gray10"] sidecar .bx--data-table td .slightly-deemphasize {
-  color: var(--color-base02);
-}
-
-body[kui-theme="Carbon Gray10"] sidecar .sidecar-header {
-  border-bottom-color: #4c4c4c;
-}
-
-body[kui-theme="Carbon Gray10"] .result-table-title-outer {
-  background-color: transparent;
-}
-body[kui-theme="Carbon Gray10"] sidecar .bx--data-table-header__title {
-  color: var(--color-base07);
-}
-
-body[kui-theme="Carbon Gray10"] sidecar .bx--link {
-  color: var(--color-map-key);
-}
-body[kui-theme="Carbon Gray10"] sidecar,
-body[kui-theme="Carbon Gray10"] sidecar .sidecar-bottom-stripe,
-body[kui-theme="Carbon Gray10"] sidecar .monaco-editor,
-body[kui-theme="Carbon Gray10"] sidecar .monaco-editor .mtk5,
-body[kui-theme="Carbon Gray10"]
-  .kui--sidecar
-  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled)
-  .bx--tabs__nav-link {
-  color: var(--color-base07);
-}
-
-body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-bottom-stripe {
-  border-bottom-color: var(--color-base02);
-}
-body[kui-theme="Carbon Gray10"]
-  .kui--sidecar.kui--nav-view
-  .sidecar-bottom-stripe.kui--sidecar--titlebar-has-breadcrumbs {
-  border-bottom-color: var(--color-base01);
-}
-
 body[kui-theme="Carbon Gray10"] .monaco-editor .margin-view-overlays .current-line-margin,
 body[kui-theme="Carbon Gray10"] .monaco-editor .view-overlays .current-line {
   border-color: #565656;
 }
-body[kui-theme="Carbon Gray10"] .kui--sidecar .sidecar-header-secondary-content,
 body[kui-theme="Carbon Gray10"] .kui--sidecar .monaco-editor .mtk7,
 body[kui-theme="Carbon Gray10"] .kui--sidecar .monaco-editor .line-numbers {
   color: var(--color-sidecar-toolbar-background);
 }
 body[kui-theme="Carbon Gray10"] .monaco-editor .current-line ~ .line-numbers {
   color: #fa75a6;
-}
-body[kui-theme="Carbon Gray10"] sidecar .repl-input input {
-  color: var(--color-text-inverted01);
 }
 body[kui-theme="Carbon Gray10"] .kui--input-stripe .repl-input {
   background-color: var(--color-base04);
@@ -209,7 +167,4 @@ body[kui-theme="Carbon Gray10"] .kui--input-stripe input {
 
 body[kui-theme="Carbon Gray10"] .bx--data-table {
   font-family: var(--font-sans-serif);
-}
-body[kui-theme="Carbon Gray10"] repl .bx--data-table td {
-  background-color: var(--color-base00);
 }
