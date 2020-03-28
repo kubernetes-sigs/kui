@@ -100,7 +100,3 @@ body[kui-theme="Carbon Gray90"] .bx--btn--danger {
 body[kui-theme="Carbon Gray90"][kui-theme-style] ::placeholder {
   opacity: 0.875 !important;
 }
-
-body[kui-theme="Carbon Gray90"] sidecar .sidecar-header badge.version {
-  color: var(--color-base06);
-}
