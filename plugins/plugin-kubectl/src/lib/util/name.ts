@@ -36,15 +36,32 @@ export default function extract(resource: KubeResource) {
     (hasInvolvedObject(resource) && resource.involvedObject.name)
 
   if (app) {
-    const pattern = `(^${app})[-.]([0-9a-zA-Z]+-.+|[0-9a-z]{16})`
+    const version = metadata && metadata.labels && metadata.labels.version
+    const pattern = `(^${app})[-.](${version}-)?([0-9a-zA-Z]+-.+|[0-9a-z]{16})`
+    const match = resource.metadata.name.match(new RegExp(pattern))
+    const name = match && match[1]
+    const nameHash = match && match[3]
+
+    if (name && nameHash) {
+      return { app, name, nameHash, version }
+    }
+  }
+  // intentional fall through
+
+  const templateHash = metadata && metadata.labels && metadata.labels['pod-template-hash']
+  if (templateHash) {
+    const version = metadata && metadata.labels && metadata.labels.version
+    const pattern = `(.*)-(${templateHash}.*$)`
     const match = resource.metadata.name.match(new RegExp(pattern))
     const name = match && match[1]
     const nameHash = match && match[2]
-    // const name = resource.metadata.name
-    // const nameHash = undefined
 
-    return { app, name, nameHash }
-  } else {
-    return {}
+    if (name && nameHash) {
+      return { name, nameHash, version }
+    }
   }
+  // intentional fall through
+
+  // TODO: maybe utilize resource.metadata.generateName?
+  return {}
 }

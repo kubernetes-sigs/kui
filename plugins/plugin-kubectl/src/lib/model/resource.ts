@@ -75,6 +75,7 @@ export interface KubeMetadata {
   annotations?: object
   creationTimestamp?: string
   generation?: string
+  generateName?: string
   ownerReferences?: OwnerReferences[]
 }
 export class DefaultKubeMetadata implements KubeMetadata {
