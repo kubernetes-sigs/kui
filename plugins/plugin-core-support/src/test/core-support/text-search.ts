@@ -108,13 +108,17 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
 
       return this.app.client
         .waitUntil(() => this.app.client.hasFocus('#search-input'))
-        .then(() =>
-          this.app.client.waitUntil(async () => {
+        .then(() => {
+          let idx = 0
+          return this.app.client.waitUntil(async () => {
             await type(typeText)
             const txt = await this.app.client.getText('#search-found-text')
+            if (++idx > 5) {
+              console.error(`still waiting for search result actualText=${txt} expectedText=${searchFoundText}`)
+            }
             return txt === searchFoundText // one execution, plus one "Command not found: bojangles" match, plus one tab title match
           })
-        )
+        })
         .catch(Common.oops(this, true))
     })
   }
@@ -128,7 +132,7 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       .then(() => this.app.client.waitForVisible('#search-bar', 2000, true)) // reverse: true
       .catch(Common.oops(this, true)))
 
-  findMatch('bojangles', '3 matches') // one execution, plus one "Command not found: bojangles" match, plus one tab title match
+  findMatch('bojangles', '2 matches') // one execution, plus one "Command not found: bojangles" match (not with carbon themes: plus one tab title match)
 
   // no matches test
   it('should close the search bar via ctrl+f', async () => {
