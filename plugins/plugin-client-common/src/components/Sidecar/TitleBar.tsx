@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { REPL, Breadcrumb as KuiBreadcrumb } from '@kui-shell/core'
+import { REPL } from '@kui-shell/core'
 import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import {
   Maximize16 as MaximizeIcon,
@@ -27,6 +27,7 @@ import {
 } from '@carbon/icons-react'
 
 import Width from './width'
+import TopNavBreadcrumb from './breadcrumb'
 
 import '../../../web/css/static/Breadcrumb.scss'
 import 'carbon-components/scss/components/breadcrumb/_breadcrumb.scss'
@@ -35,7 +36,7 @@ export interface Props {
   kind?: string
   name?: string
   namespace?: string
-  breadcrumbs?: (KuiBreadcrumb & { deemphasize?: boolean; isCurrentPage?: boolean; className?: string })[]
+  breadcrumbs?: TopNavBreadcrumb[]
 
   repl: REPL
   fixedWidth: boolean
