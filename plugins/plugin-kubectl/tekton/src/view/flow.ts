@@ -55,7 +55,7 @@ export default async (
     layoutOptions: {
       'elk.separateConnectedComponents': false,
       'elk.spacing.nodeNode': 10,
-      'elk.padding': '[top=7.5,left=5,bottom=7.5,right=5]',
+      'elk.padding': '[top=10,left=7.5,bottom=10,right=7.5]',
       hierarchyHandling: 'INCLUDE_CHILDREN' // since we have hierarhical edges, i.e. that cross-cut subgraphs
     }
   })
