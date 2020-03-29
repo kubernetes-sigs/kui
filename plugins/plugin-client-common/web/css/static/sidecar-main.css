@@ -145,6 +145,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 /* sidecar view-button "flush right" toolbar */
 .kui--sidecar .sidecar-bottom-stripe-toolbar {
   display: flex;
+  overflow: visible; /* for tooltip visibility */
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
@@ -155,7 +156,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   display: flex;
   align-items: center;
   flex: 1;
-  overflow: hidden;
+  overflow: visible; /* for tooltip visibility */
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
@@ -218,17 +219,34 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   line-height: 1.5em;
   padding: 0 0.5em;
   color: inherit;
+
+  &:hover {
+    cursor: pointer;
+    [role="tab"] {
+      color: var(--color-base03);
+    }
+  }
+  [role="tab"] {
+    display: flex;
+    font-size: 0.875em;
+  }
+
+  &.kui--toolbar-button-with-icon {
+    padding: 3px;
+    overflow: visible; /* for tooltip visibility */
+  }
+
+  &.kui--toolbar-button-with-icon svg {
+    fill: var(--color-sidecar-toolbar-foreground);
+  }
+  &.kui--toolbar-button-with-icon:hover {
+    background-color: var(--color-table-border3);
+    svg {
+      fill: var(--color-text-01);
+    }
+  }
 }
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
-  cursor: pointer;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
-  font-size: 0.875em;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
-  color: var(--color-base03);
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg {
   fill: var(--color-sidecar-toolbar-foreground);
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
@@ -647,7 +665,6 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .fill-container {
   flex: 1;
   display: flex;
-  align-items: center;
 }
 .fill-container.flush-right {
   justify-content: flex-end;

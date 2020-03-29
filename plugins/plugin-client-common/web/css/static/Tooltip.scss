@@ -1,7 +1,17 @@
-.bx--tooltip {
-  &,
-  .bx--tooltip__caret {
-    background: var(--color-screenshot-background);
-    color: var(--color-screenshot-foreground);
+[kui-theme-style] {
+  .bx--tooltip,
+  .bx--tooltip__trigger {
+    &,
+    &.bx--tooltip--bottom .bx--assistive-text,
+    .bx--tooltip__caret {
+      background-color: var(--color-sidecar-toolbar-background);
+      color: var(--color-sidecar-toolbar-foreground);
+    }
+
+    &.bx--tooltip--bottom.bx--tooltip--align-end {
+      &:before {
+        border-bottom-color: var(--color-sidecar-toolbar-background);
+      }
+    }
   }
 }
