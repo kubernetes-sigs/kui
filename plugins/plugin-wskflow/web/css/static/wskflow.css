@@ -201,8 +201,8 @@ body[kui-theme-style="dark"] #wskflowSVG .node.leaf[data-status="success"] .atom
   -webkit-font-smoothing: antialiased;
 }
 #wskflowSVG .node.leaf .atom {
-  stroke: var(--color-base05);
-  stroke-width: 0.5; /* 2 with vector-effects: non-scaling stroke support */
+  stroke: var(--color-base04);
+  stroke-width: 0.25;
 }
 #wskflowSVG .action[data-deployed="deployed"] .atom {
   fill: var(--color-ui-03) !important;
