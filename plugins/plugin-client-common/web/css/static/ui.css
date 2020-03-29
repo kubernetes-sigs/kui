@@ -203,6 +203,9 @@ body.still-loading .repl {
 }
 
 /* generic */
+.kui--rotate-180 {
+  transform: rotate(180deg);
+}
 .full-height {
   flex: 1;
   display: flex;
