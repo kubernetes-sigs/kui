@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ReactElement } from 'react'
+
 import { Tab } from '../../webapp/tab'
 import { Content } from './content-types'
 import { MetadataBearing } from '../entity'
@@ -96,6 +98,7 @@ export interface ModeTraits {
  */
 export type DrilldownButton<T = MetadataBearing> = Label &
   ModeTraits &
+  Partial<IconTrait> &
   VisibilityTraits & {
     command:
       | string
@@ -106,6 +109,7 @@ export type DrilldownButton<T = MetadataBearing> = Label &
 
 export type ViewButton<T = MetadataBearing> = Label &
   ModeTraits &
+  Partial<IconTrait> &
   VisibilityTraits & {
     kind: 'view'
     command: (tab: Tab, resource: T, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => void
@@ -140,11 +144,19 @@ export interface Label {
 }
 
 /**
- * `Buttons` have visibility traits
+ * `Button` can have visibility traits
  *
  */
 export interface VisibilityTraits {
   visibleWhen?: string
   selected?: boolean
   // selectionController?: SelectionController
+}
+
+/**
+ * `Button` can have an icon
+ *
+ */
+export interface IconTrait {
+  icon: ReactElement
 }
