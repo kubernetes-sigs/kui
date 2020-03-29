@@ -2,12 +2,12 @@
   .bx--tooltip__trigger {
     &.bx--tooltip--bottom.bx--tooltip--align-end {
       .bx--assistive-text {
-        background-color: var(--color-sidecar-toolbar-background);
-        color: var(--color-sidecar-toolbar-foreground);
+        background-color: var(--color-base06);
+        color: var(--color-base00);
       }
 
       &:before {
-        border-bottom-color: var(--color-sidecar-toolbar-background);
+        border-bottom-color: var(--color-base06);
       }
     }
   }
