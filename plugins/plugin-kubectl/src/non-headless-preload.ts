@@ -26,7 +26,8 @@ import namespaceSummaryMode from './lib/view/modes/namespace-summary'
 import conditionsMode from './lib/view/modes/conditions'
 import containersMode from './lib/view/modes/containers'
 import lastAppliedMode from './lib/view/modes/last-applied'
-import deleteResourceMode from './lib/view/modes/DeleteButton'
+import showOwnerButton from './lib/view/modes/ShowOwnerButton'
+import deleteResourceButton from './lib/view/modes/DeleteButton'
 import involvedObjectMode from './lib/view/modes/involved-object'
 import showCRDResources from './lib/view/modes/show-crd-managed-resources'
 import { eventsMode, eventsBadge } from './lib/view/modes/events'
@@ -47,7 +48,8 @@ export default async (registrar: PreloadRegistrar) => {
     containersMode,
     lastAppliedMode,
     showCRDResources,
-    deleteResourceMode,
+    showOwnerButton,
+    deleteResourceButton,
     involvedObjectMode
   )
 

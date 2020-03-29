@@ -63,12 +63,15 @@ export class DefaultKubeStatus implements KubeStatus {
   public message = undefined
 }
 
-interface OwnerReferences {
-  kind: string
-  name: string
+interface WithOwnerReferences {
+  ownerReferences: {
+    apiVersion: string
+    kind: string
+    name: string
+  }[]
 }
 
-export interface KubeMetadata {
+export type KubeMetadata = Partial<WithOwnerReferences> & {
   name: string
   namespace?: string
   labels?: { [key: string]: string }
@@ -76,8 +79,26 @@ export interface KubeMetadata {
   creationTimestamp?: string
   generation?: string
   generateName?: string
-  ownerReferences?: OwnerReferences[]
 }
+
+export type KubeResourceWithOwnerReferences = KubeResource<{}, KubeMetadata & Required<WithOwnerReferences>>
+
+export function hasSingleOwnerReference(resource: KubeResource): resource is KubeResourceWithOwnerReferences {
+  if (!resource.metadata) {
+    return false
+  }
+
+  const { ownerReferences } = resource.metadata as WithOwnerReferences
+  return (
+    ownerReferences &&
+    Array.isArray(ownerReferences) &&
+    ownerReferences.length === 1 &&
+    typeof ownerReferences[0].apiVersion === 'string' &&
+    typeof ownerReferences[0].kind === 'string' &&
+    typeof ownerReferences[0].name === 'string'
+  )
+}
+
 export class DefaultKubeMetadata implements KubeMetadata {
   public kind = undefined
 
@@ -109,11 +130,11 @@ export function hasRawData(resource: ResourceWithMetadata) {
  * The basic Kubernetes resource
  *
  */
-export type KubeResource<Status = KubeStatus> = ResourceWithMetadata &
+export type KubeResource<Status = KubeStatus, Metadata = KubeMetadata> = ResourceWithMetadata &
   WithRawData & {
     apiVersion: string
     kind: string
-    metadata?: KubeMetadata
+    metadata?: Metadata
     status?: Status
     spec?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 

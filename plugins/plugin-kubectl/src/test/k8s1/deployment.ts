@@ -105,6 +105,32 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     })
   }
 
+  const getPods = () => {
+    it('should list pods in deployment, then navigate using Show Owner Reference button', async () => {
+      try {
+        const selector = await CLI.command(`kubectl get pod -lapp=drone-app ${inNamespace}`, this.app).then(
+          ReplExpect.okWithCustom({ selector: Selectors.LIST_RESULT_FIRST })
+        )
+
+        await this.app.client.click(selector)
+
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.showing('myapp', undefined, undefined, ns))
+          .then(SidecarExpect.button({ mode: 'ownerReference', label: 'Show Owner Reference' }))
+
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('ownerReference'))
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.kind('ReplicaSet'))
+          .then(SidecarExpect.button({ mode: 'ownerReference', label: 'Show Owner Reference' }))
+
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('ownerReference'))
+        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Deployment'))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
   const deleteItByName = () => {
     it('should delete the deployment by name', () => {
       return CLI.command(`kubectl delete deployment myapp ${inNamespace}`, this.app)
@@ -134,6 +160,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   createIt()
   listIt()
+  getPods()
   deleteItByName()
 
   createIt()

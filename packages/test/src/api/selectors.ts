@@ -90,6 +90,7 @@ export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string) => `${LIST_RE
 export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
+export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
 export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>
   `${LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
 export const OK_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-output .ok`

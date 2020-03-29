@@ -1,14 +1,11 @@
 [kui-theme-style] {
-  .bx--tooltip,
   .bx--tooltip__trigger {
-    &,
-    &.bx--tooltip--bottom .bx--assistive-text,
-    .bx--tooltip__caret {
-      background-color: var(--color-sidecar-toolbar-background);
-      color: var(--color-sidecar-toolbar-foreground);
-    }
-
     &.bx--tooltip--bottom.bx--tooltip--align-end {
+      .bx--assistive-text {
+        background-color: var(--color-sidecar-toolbar-background);
+        color: var(--color-sidecar-toolbar-foreground);
+      }
+
       &:before {
         border-bottom-color: var(--color-sidecar-toolbar-background);
       }
