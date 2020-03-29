@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { TooltipIcon } from 'carbon-components-react'
 import {
   Tab as KuiTab,
   Button,
@@ -33,6 +34,9 @@ interface Props {
     parsedOptions: ParsedOptions
   }
 }
+
+import '../../../web/css/static/Tooltip.scss'
+import 'carbon-components/scss/components/tooltip/_tooltip.scss'
 
 export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWithMetadata> extends React.PureComponent<
   Props
@@ -73,11 +77,22 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
       <a
         role="presentation"
         href="#"
-        className="kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button"
+        className={
+          'kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button' +
+          (button.icon ? ' kui--toolbar-button-with-icon' : '')
+        }
         data-mode={button.mode}
         onClick={this.buttonOnclick.bind(this)}
       >
-        <span role="tab">{button.label || button.mode}</span>
+        <span role="tab">
+          {button.icon ? (
+            <TooltipIcon direction="bottom" align="end" tooltipText={button.label || button.mode}>
+              {button.icon}
+            </TooltipIcon>
+          ) : (
+            button.label || button.mode
+          )}
+        </span>
       </a>
     )
   }

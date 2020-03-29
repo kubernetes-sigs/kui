@@ -27,5 +27,5 @@ export default async (registrar: PreloadRegistrar) => {
   await registrar.registerModes(hooks, manifest, values, notes, showStatus)
 
   // register badges
-  await registrar.registerBadges()
+  // await registrar.registerBadges()
 }

@@ -28,7 +28,6 @@ import updateCluster from './modes/update-cluster'
 // badges
 import statusBadge from './modes/health'
 import stateBadge from './modes/state'
-import versionBadge from './modes/version'
 
 /**
  * Notes: buttons and modes and badges will be presented in the order
@@ -45,5 +44,5 @@ export default async (registrar: PreloadRegistrar) => {
     showPool,
     updateWorker
   )
-  registrar.registerBadges(stateBadge, statusBadge, versionBadge)
+  registrar.registerBadges(stateBadge, statusBadge)
 }
