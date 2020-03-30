@@ -74,7 +74,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
       if (typeof response === 'number' || typeof response === 'string' || typeof response === 'boolean') {
         return <pre>{response}</pre>
       } else if (isTable(response)) {
-        return renderTable(tab, tab.REPL, response)
+        return renderTable(tab, tab.REPL, response, undefined, true)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />

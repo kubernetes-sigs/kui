@@ -230,21 +230,6 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
     display: flex;
     font-size: 0.875em;
   }
-
-  &.kui--toolbar-button-with-icon {
-    padding: 3px;
-    overflow: visible; /* for tooltip visibility */
-  }
-
-  &.kui--toolbar-button-with-icon svg {
-    fill: var(--color-sidecar-toolbar-foreground);
-  }
-  &.kui--toolbar-button-with-icon:hover {
-    background-color: var(--color-table-border3);
-    svg {
-      fill: var(--color-text-01);
-    }
-  }
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg {
   fill: var(--color-sidecar-toolbar-foreground);

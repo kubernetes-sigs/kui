@@ -29,7 +29,13 @@ import {
  * Generate an onclick handler for a cell
  *
  */
-function onClickForCell(row: KuiRow, tab: Tab, repl: REPL, cell?: KuiCell, selectRow: () => void = () => undefined) {
+export function onClickForCell(
+  row: KuiRow,
+  tab: Tab,
+  repl: REPL,
+  cell?: KuiCell,
+  selectRow: () => void = () => undefined
+) {
   const handler = cell ? cell.onclick : row.onclick
   if (typeof handler === 'function') {
     return () => {

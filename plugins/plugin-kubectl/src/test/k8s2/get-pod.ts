@@ -233,6 +233,21 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
+    it(`should toggle between grid and list mode`, async () => {
+      try {
+        const res = await CLI.command(`${command} get pods ${inNamespace}`, this.app)
+        await ReplExpect.okWithAny(res)
+
+        await this.app.client.click(Selectors.TABLE_SHOW_AS_GRID(res.count))
+        await this.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
+
+        await this.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+        await this.app.client.waitForVisible(Selectors.TABLE_AS_LIST(res.count))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+
     it(`should list pods via ${command} then click`, async () => {
       try {
         const selector: string = await CLI.command(`${command} get pods ${inNamespace}`, this.app).then(

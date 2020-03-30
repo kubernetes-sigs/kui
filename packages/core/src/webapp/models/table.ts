@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
 import { ReactElement } from 'react'
+import { Breadcrumb } from '../../models/NavResponse'
 import { MetadataBearing, Entity } from '../../models/entity'
 
 export class Row {
@@ -143,6 +144,7 @@ export class Table<RowType extends Row = Row> {
   noEntityColors?: boolean
 
   title?: string
+  breadcrumbs?: Breadcrumb[]
 
   flexWrap?: number | boolean
 

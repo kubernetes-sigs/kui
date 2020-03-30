@@ -1,0 +1,26 @@
+.kui--toolbar-button-with-icon {
+  display: flex;
+  padding: 3px !important;
+  overflow: visible !important; /* for tooltip visibility */
+
+  svg {
+    fill: var(--color-text-01);
+  }
+
+  &:hover {
+    background-color: var(--color-table-border3);
+    svg {
+      fill: var(--color-text-01) !important;
+    }
+  }
+
+  &[data-enabled='true'] {
+    background-color: var(--color-base03);
+    svg {
+      fill: var(--color-base0D);
+    }
+  }
+  &[data-enabled='false'] svg {
+    filter: opacity(0.375);
+  }
+}

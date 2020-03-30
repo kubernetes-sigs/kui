@@ -1,6 +1,9 @@
+$kui--pagination-height: 2.375em;
+$kui--pagination-background-color: var(--color-stripe-01);
+
 body[kui-theme-style] .bx--pagination {
-  background-color: var(--color-stripe-01);
-  height: 2.375em;
+  background-color: $kui--pagination-background-color;
+  height: $kui--pagination-height;
   font-size: 0.875em;
   line-height: 1.125em;
   border-top-color: var(--color-table-border3);
@@ -49,11 +52,11 @@ body[kui-theme-style] .bx--pagination {
 
   .bx--select-input,
   .bx--pagination__button {
-    border-color: var(--color-table-border1);
+    border-color: var(--color-table-border3);
   }
 
   .bx--pagination__button:hover {
-    background-color: var(--color-ui-03);
+    background-color: var(--color-table-border3);
   }
 }
 

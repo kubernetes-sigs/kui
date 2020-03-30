@@ -39,6 +39,7 @@ import ToolbarContainer from './ToolbarContainer'
 import { BaseHistoryEntry, BaseSidecar, Props } from './BaseSidecar'
 
 import 'carbon-components/scss/components/tabs/_tabs.scss'
+import '../../../web/css/static/ToolbarButton.scss'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('./KuiContent'))
