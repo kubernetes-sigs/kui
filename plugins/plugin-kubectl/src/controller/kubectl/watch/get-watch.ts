@@ -171,7 +171,9 @@ class KubectlWatcher implements Abortable, Watcher {
             try {
               const [{ value: name }, { value: kind }, { value: apiVersion }, { value: namespace }] = row
 
-              const getCommand = `${getCommandFromArgs(this.args)} get ${fqn(apiVersion, kind, name, namespace)} ${
+              const cmd = getCommandFromArgs(this.args)
+
+              const getCommand = `${cmd !== 'get' ? `${cmd} get` : 'get'} ${fqn(apiVersion, kind, name, namespace)} ${
                 this.output ? `-o ${this.output}` : ''
               }`
 
@@ -235,6 +237,7 @@ class KubectlWatcher implements Abortable, Watcher {
     // the `onInit` API
     const command =
       this.args.command
+        .replace(/^get(\s)/, 'kubectl get$1') // replace commands like 'get pods' with 'kubectl get pods' before sending the command to pty
         .replace(/^k(\s)/, 'kubectl$1')
         .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '--watch') // force --watch
         .replace(new RegExp(`(-o|--output)(\\s+|=)${this.output}`), '') +
