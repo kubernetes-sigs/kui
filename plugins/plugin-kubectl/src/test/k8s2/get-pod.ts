@@ -81,6 +81,12 @@ commands.forEach(command => {
     allocateNS(this, ns)
 
     /** error handling starts */
+    it('should command not found when kubectl is not specified', () => {
+      return CLI.command('get pods', this.app)
+        .then(ReplExpect.error(127))
+        .catch(Common.oops(this, true))
+    })
+
     it('should error out when getting non-existent pod', () => {
       const noName = 'shouldNotExist'
       return CLI.command(`${command} get pod ${noName}`, this.app)

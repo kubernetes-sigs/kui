@@ -12,4 +12,7 @@
 // get node off the argv
 process.argv.shift()
 
+// insert 'kubectl' into argv
+process.argv.splice(1, 0, 'kubectl')
+
 require('@kui-shell/core').main(process.argv)
