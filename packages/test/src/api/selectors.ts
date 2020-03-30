@@ -89,6 +89,10 @@ export const LIST_RESULTS_BY_NAME_N = (N: number) => `${LIST_RESULTS_N(N)} .enti
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string) => `${LIST_RESULTS_N(N)}[data-name="${name}"]`
 export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
+export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
+export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
+export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-grid`
+export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
 export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>

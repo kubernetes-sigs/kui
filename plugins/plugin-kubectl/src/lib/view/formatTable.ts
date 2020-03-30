@@ -188,8 +188,8 @@ export const formatTable = <O extends KubeOptions>(
   const drilldownFormat =
     (drilldownCommand === 'kubectl' || drilldownCommand === 'oc') && drilldownVerb === 'get' ? '-o yaml' : ''
 
-  const drilldownNamespace =
-    options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
+  const ns = options.n || options.namespace
+  const drilldownNamespace = ns ? `-n ${encodeComponent(ns)}` : ''
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
   const drilldownKind = (nameSplit: string[], row: Pair[]) => {
@@ -305,8 +305,9 @@ export const formatTable = <O extends KubeOptions>(
   return {
     header: rows[0],
     body: rows.slice(1),
-    noSort: true
-    // title: entityTypeFromRows || entityTypeFromCommandLine
+    noSort: true,
+    title: capitalize(entityTypeFromRows || entityTypeFromCommandLine),
+    breadcrumbs: [{ label: ns || 'default' }]
   }
 }
 

@@ -8,7 +8,6 @@
     width: 0.875em;
     height: 0.875em;
     background-color: var(--color-ui-05);
-    border-radius: 50%;
   }
   [data-tag='badge-circle'].green-background {
     background-color: var(--color-green);
@@ -26,6 +25,37 @@
   [data-tag='badge-circle'].gray-background {
     background: var(--color-processing);
     color: var(--color-ui-02);
+  }
+}
+
+.repl {
+  &.sidecar-visible .kui--data-table-wrapper.kui--data-table-as-grid {
+    flex: initial;
+  }
+
+  .kui--data-table-as-grid {
+    .bx--data-table {
+      display: grid;
+      grid-column-gap: 0.1875em;
+      grid-row-gap: 0.1875em;
+      padding: 0.5em 1em;
+
+      [data-tag='badge'] [data-tag='badge-circle'] {
+        margin: 0;
+        width: 1.375em;
+        height: 1.375em;
+        border-radius: 0;
+
+        transition-property: filter;
+        transition-timing-function: var(--transition-timing-function);
+        transition-duration: var(--transition-duration);
+
+        &:hover {
+          filter: saturate(2) brightness(1.5);
+          cursor: pointer;
+        }
+      }
+    }
   }
 }
 

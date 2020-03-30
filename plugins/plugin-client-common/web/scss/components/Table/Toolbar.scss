@@ -1,0 +1,61 @@
+body[kui-theme-style='light'] .kui--data-table-toolbar {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+body[kui-theme-style='dark'] .kui--data-table-toolbar {
+  background-color: var(--color-base01);
+}
+
+body[kui-theme-style] .kui--data-table-toolbar {
+  display: flex;
+
+  nav[aria-label='Breadcrumb'] {
+    overflow-x: unset;
+  }
+
+  &[data-frame='true'] {
+    border-top: 1px solid var(--color-base03);
+  }
+
+  & > div:not(:empty),
+  & > nav:not(:empty) {
+    height: 2.375em;
+  }
+
+  [aria-label='Breadcrumb'] {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .kui--toolbar-button-with-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .kui--data-table-toolbar-buttons {
+    flex: 1;
+    display: flex;
+  }
+
+  .kui--data-table-toolbar-pagination.bx--pagination {
+    display: flex;
+    border: none;
+    background-color: transparent;
+    width: auto;
+    height: unset;
+    align-items: unset;
+
+    .kui--data-table-toolbar-pagination-info {
+      white-space: pre; /* see padStart in Toolbar.tsx */
+      color: var(--color-text-02);
+      flex: 1;
+      padding: 0 1.25em;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-left: 1px solid;
+      border-color: var(--color-table-border3);
+    }
+  }
+}
