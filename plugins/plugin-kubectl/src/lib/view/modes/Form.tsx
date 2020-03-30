@@ -47,7 +47,7 @@ export default function SidecarForm({
               ? vvalue
               : vvalue.label) || ''
 
-          const colspan = Math.max(Math.ceil(key.length / 8), Math.ceil((value.length + 2) / 5.5))
+          const colspan = Math.max(Math.ceil(key.length / 8), Math.ceil((value.length + 3) / 5.5))
           const style = { gridColumn: `span ${colspan > 15 ? 8 : colspan}` }
           const className = typeof vvalue !== 'object' ? undefined : 'kui--form-item--for-label'
 
