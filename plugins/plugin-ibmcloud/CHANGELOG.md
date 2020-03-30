@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.9](https://github.com/kui-shell/plugin-kubeui/compare/v8.0.8...v8.0.9) (2020-03-30)
+
+**Note:** Version bump only for package @kui-shell/plugin-ibmcloud
+
 ## [8.0.8](https://github.com/kui-shell/plugin-kubeui/compare/v4.5.0...v8.0.8) (2020-03-30)
 
 ### Features
