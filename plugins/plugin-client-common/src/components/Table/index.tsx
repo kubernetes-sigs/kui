@@ -20,10 +20,16 @@ import { Tab, REPL, Table, isWatchable } from '@kui-shell/core'
 import PaginatedTable from './PaginatedTable'
 import LivePaginatedTable from './LivePaginatedTable'
 
-export default function renderTable(tab: Tab, repl: REPL, response: Table, paginate: boolean | number = 20) {
+export default function renderTable(
+  tab: Tab,
+  repl: REPL,
+  response: Table,
+  paginate: boolean | number = 20,
+  toolbars = false
+) {
   if (isWatchable(response)) {
-    return <LivePaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
+    return <LivePaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} toolbars={toolbars} />
   } else {
-    return <PaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} />
+    return <PaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} toolbars={toolbars} />
   }
 }

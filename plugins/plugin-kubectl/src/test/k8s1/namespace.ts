@@ -131,10 +131,8 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         await this.app.client.click('#kui--status-stripe .kui--plugin-kubeui--current-namespace .clickable')
 
         // await ReplExpect.okWith('default')({ app: this.app, count: res.count + 1 })
-        await this.app.client.waitForExist(`${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table-header__title`)
-        const title = await this.app.client.getText(
-          `${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table-header__title`
-        )
+        await this.app.client.waitForExist(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
+        const title = await this.app.client.getText(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
         strictEqual(title, 'Namespaces')
       })
     }

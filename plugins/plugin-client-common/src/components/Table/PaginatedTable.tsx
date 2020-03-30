@@ -17,15 +17,16 @@
 import { Tab, REPL, Table as KuiTable, TableStyle } from '@kui-shell/core'
 
 import * as React from 'react'
-import { DataTable, DataTableHeader, TableContainer, Table, Pagination } from 'carbon-components-react'
+import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-components-react'
 
 import sortRow from './sort'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
+import { onClickForCell } from './TableCell'
+import Toolbar, { ToolbarBreadcrumb, Props as ToolbarProps } from './Toolbar'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 
 /** carbon styling */
-import 'carbon-components/scss/components/pagination/_pagination.scss'
 import 'carbon-components/scss/components/data-table/_data-table-core.scss'
 import 'carbon-components/scss/components/radio-button/_radio-button.scss'
 
@@ -34,6 +35,9 @@ import '../../../web/scss/components/Table/hack-select.scss'
 
 /** import the kui theme alignment */
 import '../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
+
+import '../../../web/css/static/ToolbarButton.scss'
+import '../../../web/scss/components/Table/Toolbar.scss'
 
 interface PaginationConfiguration {
   pageSize?: number
@@ -44,16 +48,20 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   tab: Tab
   repl: REPL
   response: T
+
   /**
-   paginate: true -> always paginate
-   paginate: false -> never paginate
-   paginate: number -> paginate if above the threshold of rows
+   * paginate: true -> always paginate
+   * paginate: false -> never paginate
+   * paginate: number -> paginate if above the threshold of rows
    */
   paginate: boolean | number
+
+  /** use toolbars? */
+  toolbars: boolean
 }
 
 /** state of PaginatedTable component */
-export interface State {
+export type State = ToolbarProps & {
   headers: DataTableHeader[]
   rows: NamedDataTableRow[]
   radio: boolean
@@ -77,16 +85,93 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       // assemble the data model
       const { headers, rows, radio } = kui2carbon(this.props.response)
 
+      const gridableColumn = this.props.response.body[0]
+        ? this.props.response.header.attributes.findIndex(cell => /STATUS/i.test(cell.key))
+        : -1
+
       this.state = {
         headers,
         rows,
         radio,
+        gridableColumn,
+        asGrid: false,
         page: 1,
         pageSize: this.defaultPageSize
       } as S
     } catch (err) {
       console.error('Internal error preparing PaginatedTable', err)
     }
+  }
+
+  private topToolbar() {
+    const titleBreadcrumb: ToolbarBreadcrumb[] = this.props.response.title
+      ? [{ label: this.props.response.title, className: 'kui--data-table-title' }]
+      : []
+    const breadcrumbs = titleBreadcrumb.concat(
+      (this.props.response.breadcrumbs || []).map(_ => Object.assign({}, _, { className: 'kui--secondary-breadcrumb' }))
+    )
+
+    return this.props.toolbars && <Toolbar breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+  }
+
+  private isPaginated() {
+    return (
+      this.props.paginate !== undefined &&
+      this.props.paginate !== false &&
+      !this.state.asGrid &&
+      (this.props.paginate === true || this.state.rows.length > this.props.paginate)
+    )
+  }
+
+  private bottomToolbar() {
+    return (
+      this.props.toolbars && (
+        <Toolbar
+          frame={this.state.asGrid}
+          asGrid={this.state.asGrid}
+          gridableColumn={this.state.gridableColumn}
+          setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
+          paginate={this.isPaginated()}
+          setPage={(page: number) => this.setState({ page })}
+          page={this.state.page}
+          totalItems={this.state.rows.length}
+          pageSize={this.state.pageSize}
+        />
+      )
+    )
+  }
+
+  private grid(visibleRows: NamedDataTableRow[]) {
+    const { tab, repl, response } = this.props
+
+    const nCells = visibleRows.length
+    const nColumns = Math.ceil(Math.sqrt(nCells))
+    const style = { gridTemplateColumns: `repeat(${nColumns}, minmax(1em, auto))` }
+
+    return (
+      <div className="kui--data-table-wrapper kui--data-table-as-grid kui--screenshotable">
+        {this.topToolbar()}
+        <div className="bx--data-table kui--data-table-as-grid" style={style}>
+          {response.body.map((kuiRow, kidx) => {
+            const row = visibleRows[kidx]
+            const title = row['STATUS']
+            const { css } = kuiRow.attributes[this.state.gridableColumn]
+
+            return (
+              <span key={kidx} data-tag="badge">
+                <span
+                  title={title}
+                  data-tag="badge-circle"
+                  className={css}
+                  onClick={onClickForCell(kuiRow, tab, repl)}
+                />
+              </span>
+            )
+          })}
+        </div>
+        {this.bottomToolbar()}
+      </div>
+    )
   }
 
   public render() {
@@ -101,7 +186,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
       // `<form>` prevents the radio button selection reads from the global form of browser.
       // See issue: https://github.com/IBM/kui/issues/3871
-      <form className="kui--data-table-wrapper">
+      <form className="kui--data-table-wrapper kui--screenshotable">
+        {this.topToolbar()}
         <DataTable
           rows={visibleRows}
           headers={headers}
@@ -109,7 +195,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
           sortRow={sortRow}
           render={renderOpts => (
-            <TableContainer title={response.title} className="kui--screenshotable">
+            <TableContainer className="">
               <Table
                 size={
                   this.props.response.style === TableStyle.Heavy
@@ -125,38 +211,16 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             </TableContainer>
           )}
         />
+        {this.bottomToolbar()}
       </form>
     )
 
-    const pagination = (
-      <Pagination
-        page={page}
-        totalItems={rows.length}
-        pageSize={this.state.pageSize}
-        pageSizes={new Array(Math.min(5, ~~(rows.length / this.defaultPageSize)))
-          .fill(0)
-          .map((_, idx) => (idx + 1) * this.defaultPageSize)
-          .concat([rows.length])}
-        onChange={pagination => {
-          this.setState(pagination)
-        }}
-      />
-    )
-
-    if (this.props.paginate === false || (this.props.paginate !== true && rows.length <= this.props.paginate)) {
-      return dataTable(rows)
-    } else {
-      // overflow-x: auto so that the pagination parts don't overflow offscreen!
-      // see https://github.com/IBM/kui/issues/3773
-      return (
-        <div className="kui--paginated-table">
-          {dataTable(
-            rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
-            (page - 1) * this.state.pageSize
-          )}
-          {pagination}
-        </div>
-      )
-    }
+    const paginated = this.isPaginated()
+    return this.state.asGrid
+      ? this.grid(rows)
+      : dataTable(
+          !paginated ? rows : rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
+          !paginated ? 0 : (page - 1) * this.state.pageSize
+        )
   }
 }
