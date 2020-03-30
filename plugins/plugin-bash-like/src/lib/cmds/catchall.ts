@@ -34,7 +34,6 @@ const debug = Debug('plugins/bash-like/cmds/catchall')
  */
 export const dispatchToShell = async ({
   tab,
-  block,
   command,
   argvNoOptions,
   execOptions,
@@ -78,7 +77,7 @@ export const dispatchToShell = async ({
     return response
   } else {
     const { doExec } = await import(/* webpackMode: "lazy" */ '../../pty/client')
-    const exec = () => doExec(tab, block as HTMLElement, actualCommand, argvNoOptions, parsedOptions, eOptions)
+    const exec = () => doExec(tab, actualCommand, argvNoOptions, parsedOptions, eOptions)
 
     if (useRaw) {
       eOptions.quiet = true

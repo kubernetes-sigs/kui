@@ -812,7 +812,6 @@ interface Options extends ParsedOptions {
  */
 export const doExec = (
   tab: Tab,
-  block: HTMLElement,
   cmdline: string,
   argvNoOptions: string[],
   parsedOptions: Options,
@@ -831,12 +830,11 @@ export const doExec = (
       const ourUUID = uuid()
 
       try {
-        const hasBlock = block !== undefined && typeof block !== 'boolean'
-        if ((execOptions.quiet || execOptions.replSilence) && !hasBlock) {
+        if (execOptions.quiet || execOptions.replSilence) {
           debug('Warning: non-headless PTY exec without a head')
         }
 
-        if (!execOptions.quiet && !execOptions.replSilence && hasBlock) {
+        if (!execOptions.quiet && !execOptions.replSilence) {
           xtermContainer = document.createElement('xterm')
           xtermContainer.classList.add('xterm-container')
 

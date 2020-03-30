@@ -210,7 +210,7 @@ function mac {
         (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-"$SCRIPTDIR"/Kui.app/Contents/MacOS/Kui $@ &' >> kubectl-kui)
+"$SCRIPTDIR"/Kui.app/Contents/MacOS/Kui kubectl $@ &' >> kubectl-kui)
 
         # create the installers
         #if [ -n "$ZIP_INSTALLER" ]; then
@@ -262,7 +262,7 @@ function linux {
         (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-"$SCRIPTDIR"/Kui $@ &' >> kubectl-kui)
+"$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"

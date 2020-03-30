@@ -71,7 +71,7 @@ commands.forEach(command => {
     const testSummaryTab = async (ctx: Common.ISuite) => {
       await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
       await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
-      await SidecarExpect.form({ Name: 'nginx' }, 'kubectl-summary')
+      await SidecarExpect.form({ Name: 'nginx' }, 'kubectl-summary')(ctx.app)
     }
 
     allocateNS(this, ns, command)

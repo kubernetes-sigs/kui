@@ -17,8 +17,8 @@
 // temporary with disabled popup test
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Common, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
+import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()
@@ -57,28 +57,12 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
 
   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
     const textExists = verifyTextExists.bind(this)
-    const waitForIcon = async () => {
-      await this.app.client.waitUntil(async () => {
-        const iconText = await this.app.client.getText(`${Selectors.SIDECAR} .sidecar-header-icon`)
-        return new RegExp(kind, 'i').test(iconText)
-      })
-    }
 
     const waitForDescribeContent = async () => {
-      await waitForIcon()
-
-      const textExists = async (key: string, value: string) => {
-        return this.app.client.waitUntil(async () => {
-          const actualText = await this.app.client.getText(`${Selectors.SIDECAR} .monaco-editor .view-lines`)
-          return new RegExp(`${key.toUpperCase()}:\\s+${value}`).test(actualText)
-        })
-      }
-
-      return Promise.all([textExists('Name', name), textExists('Status', spec.status)])
+      await SidecarExpect.form({ Name: name, Status: spec.status }, 'kubectl-summary')(this.app)
     }
 
     const waitForRawContent = async () => {
-      await waitForIcon()
       await textExists(`apiVersion: v1`)
       await textExists(`kind: ${kind}`)
     }
@@ -91,13 +75,17 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
       // raw and summary modes, each time ensuring that the editor
       // shows the expected content await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
       await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
+      await SidecarExpect.open(this.app).then(SidecarExpect.mode(defaultModeForGet))
       await waitForDescribeContent()
+
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
       await waitForRawContent()
+
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
       await waitForDescribeContent()
+
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
     } catch (err) {
@@ -109,10 +97,16 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
 /** resource names */
 const pod = 'nginx'
 
-//
-// from here on are the tests...
-//
-/* Common.localDescribe(`popup create pod creating namespace ${ns1}`, function(this: Common.ISuite) {
+Common.localDescribe(`popup should error out for non-existant command`, function(this: Common.ISuite) {
+  before(Common.before(this, { popup: ['yoyo'] }))
+  after(Common.after(this))
+
+  it(`should error out for non-existant command`, () => {
+    return ReplExpect.error(127)({ app: this.app, count: 0 }).catch(Common.oops(this, true))
+  })
+})
+
+Common.localDescribe(`popup create pod creating namespace ${ns1}`, function(this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
   after(Common.after(this))
 
@@ -132,6 +126,13 @@ Common.localDescribe(`popup create pod creating pod in ${ns1}`, function(this: C
       ]
     })
   )
+  after(Common.after(this))
+
+  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
+})
+
+Common.localDescribe(`popup watch pods in ${ns1}`, function(this: Common.ISuite) {
+  before(Common.before(this, { popup: [kubectl, 'get', 'pods', '-w', '-n', ns1] }))
   after(Common.after(this))
 
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
@@ -188,4 +189,4 @@ Common.localDescribe(`popup create pod deleting namespace ${ns2}`, function(this
   after(Common.after(this))
 
   waitForDelete.bind(this)({ name: ns2 })
-}) */
+})
