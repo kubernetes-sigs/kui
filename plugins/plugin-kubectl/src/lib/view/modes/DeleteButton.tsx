@@ -33,6 +33,7 @@ function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string
 const mode = {
   icon: <DeleteIcon />,
   mode: 'delete',
+  order: 100, // delete button at the end
   label: strings('deleteResource'),
   kind: 'drilldown' as const,
   command,
