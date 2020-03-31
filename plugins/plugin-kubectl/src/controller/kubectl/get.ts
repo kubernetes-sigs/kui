@@ -179,10 +179,9 @@ export const doGet = (command: string) =>
     }
 
     // first, we do the raw exec of the given command
-    const fullKind =
-      isTableRequest(args) && args.execOptions.type === ExecType.TopLevel
-        ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
-        : undefined
+    const fullKind = isTableRequest(args)
+      ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
+      : undefined
     const response = await rawGet(args, command)
 
     if (isKubeTableResponse(response)) {
