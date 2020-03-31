@@ -104,14 +104,18 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private topToolbar() {
-    const titleBreadcrumb: ToolbarBreadcrumb[] = this.props.response.title
-      ? [{ label: this.props.response.title, className: 'kui--data-table-title' }]
-      : []
-    const breadcrumbs = titleBreadcrumb.concat(
-      (this.props.response.breadcrumbs || []).map(_ => Object.assign({}, _, { className: 'kui--secondary-breadcrumb' }))
-    )
+    if (this.props.toolbars) {
+      const titleBreadcrumb: ToolbarBreadcrumb[] = this.props.response.title
+        ? [{ label: this.props.response.title, className: 'kui--data-table-title' }]
+        : []
+      const breadcrumbs = titleBreadcrumb.concat(
+        (this.props.response.breadcrumbs || []).map(_ =>
+          Object.assign({}, _, { className: 'kui--secondary-breadcrumb' })
+        )
+      )
 
-    return this.props.toolbars && <Toolbar breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+      return <Toolbar breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+    }
   }
 
   private isPaginated() {
@@ -195,7 +199,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
           sortRow={sortRow}
           render={renderOpts => (
-            <TableContainer className="">
+            <TableContainer className={this.props.toolbars && 'kui--data-table-with-toolbars'}>
               <Table
                 size={
                   this.props.response.style === TableStyle.Heavy
