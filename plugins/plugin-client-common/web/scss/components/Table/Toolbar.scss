@@ -1,13 +1,27 @@
-body[kui-theme-style='light'] .kui--data-table-toolbar {
-  background-color: rgba(0, 0, 0, 0.0375);
+body[kui-theme-style='light'] {
+  .kui--data-table-toolbar,
+  .bx--data-table-container.kui--data-table-with-toolbars th {
+    background-color: rgba(0, 0, 0, 0.0375);
+  }
 }
-body[kui-theme-style='dark'] .kui--data-table-toolbar {
-  background-color: var(--color-base01);
+body[kui-theme-style='dark'] {
+  .kui--data-table-toolbar,
+  .bx--data-table-container.kui--data-table-with-toolbars th {
+    background-color: var(--color-base01);
+  }
+}
+
+.bx--data-table-container.kui--data-table-with-toolbars {
+  padding-top: 0;
 }
 
 body[kui-theme-style] .kui--data-table-toolbar {
   display: flex;
   border-radius: 2px / 4px;
+
+  &:first-child {
+    margin-top: 0.125em;
+  }
 
   nav[aria-label='Breadcrumb'] {
     overflow-x: unset;
