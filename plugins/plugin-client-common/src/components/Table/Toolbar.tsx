@@ -54,12 +54,16 @@ interface BreadcrumbProps {
 }
 
 export default class Toolbar extends React.PureComponent<Props> {
-  private isGridable() {
+  private hasGridButtons() {
     return this.props.gridableColumn && this.props.gridableColumn >= 0
   }
 
+  private hasButtons() {
+    return this.hasGridButtons()
+  }
+
   private gridController() {
-    if (this.isGridable()) {
+    if (this.hasGridButtons()) {
       return (
         <React.Fragment>
           <a
@@ -152,11 +156,17 @@ export default class Toolbar extends React.PureComponent<Props> {
     }
   }
 
+  private buttons() {
+    if (this.hasButtons()) {
+      return <div className="kui--data-table-toolbar-buttons">{this.gridController()}</div>
+    }
+  }
+
   public render() {
     return (
       <div className="kui--data-table-toolbar" data-frame={this.props.frame}>
         {this.breadcrumbs()}
-        <div className="kui--data-table-toolbar-buttons">{this.gridController()}</div>
+        {this.buttons()}
         {this.paginationController()}
       </div>
     )
