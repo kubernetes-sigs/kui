@@ -33,7 +33,9 @@ export interface Watchable {
 
 /** callbacks to indicate state changes */
 export interface WatchPusher {
-  update: (response: Row) => void
+  update: (response: Row, batch?: boolean) => void
+  batchUpdateDone: () => void
+
   offline: (rowKey: string) => void
 
   done: () => void
