@@ -33,7 +33,7 @@ function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string
 const mode = {
   icon: <DeleteIcon />,
   mode: 'delete',
-  order: 100, // delete button at the end
+  order: 100, // delete button at the end; see ShowOwnersButton, which also has an `order` constraint
   label: strings('deleteResource'),
   kind: 'drilldown' as const,
   command,

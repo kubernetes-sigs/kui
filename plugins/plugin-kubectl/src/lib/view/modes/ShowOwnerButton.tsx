@@ -55,6 +55,7 @@ const mode: ModeRegistration<KubeResourceWithOwnerReferences> = {
   mode: {
     mode: 'ownerReference',
     kind: 'drilldown',
+    order: 90, // we want this to appear before DeleteButton, but after others...
     label: strings('Show Owner Reference'),
     icon: <ShowOwnerIcon className="kui--rotate-180" />,
     command
