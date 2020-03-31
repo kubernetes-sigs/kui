@@ -84,12 +84,20 @@ async function doGetNamespaceTable(command: string, args: Arguments<KubeOptions>
       })
     })
 
-    // place default at the bottom of the table
+    // place current namespace at the top of the top (even above default)
+    const selectedIdx = baseTable.body.findIndex(row => row.name === currentNamespace)
+    if (selectedIdx >= 0) {
+      const selectedRow = augmentedTable.body[selectedIdx]
+      augmentedTable.body[selectedIdx] = augmentedTable.body[0]
+      augmentedTable.body[0] = selectedRow
+    }
+
+    // place default at the top of the table
     const rowIdxForDefaultNS = baseTable.body.findIndex(_ => _.name === 'default')
-    if (rowIdxForDefaultNS >= 0 && baseTable.body.length > 1) {
-      const lastRow = augmentedTable.body[augmentedTable.body.length - 1]
-      augmentedTable.body[augmentedTable.body.length - 1] = augmentedTable.body[rowIdxForDefaultNS]
-      augmentedTable.body[rowIdxForDefaultNS] = lastRow
+    if (rowIdxForDefaultNS !== 1 && rowIdxForDefaultNS !== selectedIdx && baseTable.body.length > 2) {
+      const swapRow = augmentedTable.body[1]
+      augmentedTable.body[1] = augmentedTable.body[rowIdxForDefaultNS]
+      augmentedTable.body[rowIdxForDefaultNS] = swapRow
     }
 
     return augmentedTable
