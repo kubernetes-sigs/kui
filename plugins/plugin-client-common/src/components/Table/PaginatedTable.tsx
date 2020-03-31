@@ -199,7 +199,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
           sortRow={sortRow}
           render={renderOpts => (
-            <TableContainer className={this.props.toolbars && 'kui--data-table-with-toolbars'}>
+            <TableContainer
+              className={
+                (this.props.toolbars ? 'kui--data-table-container-with-toolbars' : '') +
+                (this.props.response.title || this.props.response.breadcrumbs
+                  ? ' kui--data-table-container-with-title'
+                  : '')
+              }
+            >
               <Table
                 size={
                   this.props.response.style === TableStyle.Heavy
