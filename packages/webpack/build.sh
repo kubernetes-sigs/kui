@@ -135,7 +135,12 @@ function init {
 # install the webpackery bits
 function initWebpack {
     pushd "$STAGING_DIR" > /dev/null
-    cp -a "$BUILDER_HOME"/../webpack/{package.json,webpack.config.js,build-docker.sh,Dockerfile,Dockerfile.http,bin,conf.d} .
+    cp -a "$BUILDER_HOME"/../webpack/{package.json,webpack.config.js} .
+
+    if [ -z "$NO_DOCKER" ]; then
+      cp -a "$BUILDER_HOME"/../webpack/{build-docker.sh,Dockerfile,Dockerfile.http,bin,conf.d} .
+    fi
+
     popd > /dev/null
 }
 
