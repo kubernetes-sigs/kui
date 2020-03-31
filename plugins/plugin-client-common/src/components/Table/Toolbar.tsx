@@ -55,7 +55,7 @@ interface BreadcrumbProps {
 
 export default class Toolbar extends React.PureComponent<Props> {
   private hasGridButtons() {
-    return this.props.gridableColumn && this.props.gridableColumn >= 0
+    return this.props.gridableColumn !== undefined && this.props.gridableColumn >= 0
   }
 
   private hasButtons() {
@@ -162,11 +162,17 @@ export default class Toolbar extends React.PureComponent<Props> {
     }
   }
 
+  /** so that buttons are flush-left and pagination is flush-right */
+  private filler() {
+    return <div className="kui--data-table-toolbar-filler" />
+  }
+
   public render() {
     return (
       <div className="kui--data-table-toolbar" data-frame={this.props.frame}>
         {this.breadcrumbs()}
         {this.buttons()}
+        {this.filler()}
         {this.paginationController()}
       </div>
     )

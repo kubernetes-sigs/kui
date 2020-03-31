@@ -1,17 +1,19 @@
+$toolbar-height: 2.375em;
+
 body[kui-theme-style='light'] {
   .kui--data-table-toolbar,
-  .bx--data-table-container.kui--data-table-with-toolbars th {
+  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title th {
     background-color: rgba(0, 0, 0, 0.0375);
   }
 }
 body[kui-theme-style='dark'] {
   .kui--data-table-toolbar,
-  .bx--data-table-container.kui--data-table-with-toolbars th {
+  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title th {
     background-color: var(--color-base01);
   }
 }
 
-.bx--data-table-container.kui--data-table-with-toolbars {
+.bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title {
   padding-top: 0;
 }
 
@@ -33,7 +35,7 @@ body[kui-theme-style] .kui--data-table-toolbar {
 
   & > div:not(:empty),
   & > nav:not(:empty) {
-    height: 2.375em;
+    height: $toolbar-height;
   }
 
   [aria-label='Breadcrumb'] {
@@ -48,8 +50,12 @@ body[kui-theme-style] .kui--data-table-toolbar {
     align-items: center;
   }
 
-  .kui--data-table-toolbar-buttons {
+  /* so that buttons are flush-left and pagination is flush-right */
+  .kui--data-table-toolbar-filler {
     flex: 1;
+  }
+
+  .kui--data-table-toolbar-buttons {
     display: flex;
   }
 
@@ -57,8 +63,8 @@ body[kui-theme-style] .kui--data-table-toolbar {
     display: flex;
     border: none;
     background-color: transparent;
-    width: auto;
-    height: unset;
+    width: unset;
+    height: $toolbar-height;
     align-items: unset;
 
     .kui--data-table-toolbar-pagination-info {
