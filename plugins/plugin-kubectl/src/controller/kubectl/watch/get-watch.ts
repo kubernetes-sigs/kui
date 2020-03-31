@@ -20,55 +20,50 @@ import { Table, Arguments, CodedError, Streamable, Abortable, Watchable, Watcher
 import fqn from '../fqn'
 import { formatOf, KubeOptions, KubeExecOptions } from '../options'
 
-import { preprocessTable, Pair } from '../../../lib/view/formatTable'
+import { Pair } from '../../../lib/view/formatTable'
 import { getCommandFromArgs } from '../../../lib/util/util'
 
 const debug = Debug('plugin-kubectl/controller/watch/watcher')
 
-/**
- * We might get partial rows back; they will have empty strings in the
- * value field.
- *
- */
-function isFullRow(row: Pair[], nCols: number): boolean {
-  return row.length === nCols && row.every(_ => _.value.length > 0)
-}
+function preprocessTable(raw: string, nCols): { rows: Pair[][]; leftover: string } {
+  const rows = raw.split(/\n/).map(line => {
+    const cells = line.split(/\|/)
+    return cells.slice(0, cells.length - 1) // we have a trailing |
+  })
 
-/**
- * Return the pair of indices that define the extent of "full" rows
- * in the given table. Since we are streaming output from kubectl, we
- * get back partial rows in any one bundle of bits.
- *
- */
-function findFullRows(arr: Pair[][], nCols: number): { firstFullIdx: number; lastFullIdx: number } {
-  if (arr.length > 0) {
-    // value=NAME means that this is a header column; we know this
-    // because, below, we are in charge of the schema of the table!
-    // skip over that here, because we want to find the interval of
-    // "full" body rows, i.e. excluding the header row
-    const startIdx = arr.findIndex(row => row.length === nCols && row[0].value !== 'NAME')
-
-    if (startIdx >= 0) {
-      for (let idx = startIdx; idx < arr.length; idx++) {
-        if (isFullRow(arr[idx], nCols)) {
-          // then we have found the \lower\ bound
-          for (let jdx = arr.length - 1; jdx >= idx; jdx--) {
-            if (isFullRow(arr[jdx], nCols)) {
-              // and now we have found the /upper/ bound
-              return { firstFullIdx: idx, lastFullIdx: jdx }
-            }
-          }
-
-          // hmm, we couldn't find an upper bound, but we did find a
-          // lower bound
-          return { firstFullIdx: idx, lastFullIdx: idx }
-        }
-      }
+  let lastFullRowIdx = rows.length
+  while (--lastFullRowIdx >= 0) {
+    if (rows[lastFullRowIdx].length === nCols) {
+      break
     }
   }
 
-  // hmm, then we couldn't even find a lower bound
-  return { firstFullIdx: -1, lastFullIdx: -1 }
+  if (lastFullRowIdx < 0) {
+    return {
+      leftover: raw,
+      rows: []
+    }
+  } else if (lastFullRowIdx === rows.length - 1) {
+    return {
+      leftover: undefined,
+      rows: rows.map(line => line.map(value => ({ key: value, value }))).filter(_ => _.length > 0)
+    }
+  } else {
+    let lastNewlineIdx = raw.length
+    while (--lastNewlineIdx >= 0) {
+      if (raw.charAt(lastNewlineIdx) === '\n') {
+        break
+      }
+    }
+
+    return {
+      leftover: raw.slice(lastNewlineIdx),
+      rows: rows
+        .slice(0, lastFullRowIdx + 1)
+        .map(line => line.map(value => ({ key: value, value })))
+        .filter(_ => _.length > 0)
+    }
+  }
 }
 
 class KubectlWatcher implements Abortable, Watcher {
@@ -129,7 +124,7 @@ class KubectlWatcher implements Abortable, Watcher {
     return async (_: Streamable) => {
       if (typeof _ === 'string') {
         // <-- strings flowing out of the PTY
-        debug('streaming pty output', _)
+        // debug('streaming pty output', _)
         if (/not found/.test(_)) {
           this.pusher.allOffline()
           return
@@ -146,26 +141,11 @@ class KubectlWatcher implements Abortable, Watcher {
         this.leftover = undefined
 
         // here is where we turn the raw data into tabular data
-        const allRows = preprocessTable([rawData])[0]
-
-        // find the interval of "full" rows; we may get back partial
-        // rows, due to the way output streams back to us from the
-        // underlying PTY
-        const { firstFullIdx, lastFullIdx } = findFullRows(allRows, this.nCols)
-
-        if (lastFullIdx < 0) {
-          // then we got no full rows
-          debug('no full rows', _)
-          this.leftover = _
-          return
-        } else if (lastFullIdx < allRows.length - 1) {
-          // the we got some trailing leftover bits
-          const lastNewlineIdx = _.lastIndexOf('\n')
-          this.leftover = _.slice(lastNewlineIdx)
-        }
+        const preprocessed = preprocessTable(rawData, this.nCols)
+        this.leftover = preprocessed.leftover === '\n' ? undefined : preprocessed.leftover
+        const { rows } = preprocessed
 
         // now process the full rows into table view updates
-        const rows = allRows.slice(firstFullIdx, lastFullIdx + 1)
         const tables = await Promise.all(
           rows.map(async row => {
             try {
@@ -208,8 +188,12 @@ class KubectlWatcher implements Abortable, Watcher {
           if (table) {
             table.body.forEach(row => {
               // push an update to the table model
-              this.pusher.update(row)
+              // true means we want to do a batch update
+              this.pusher.update(row, true)
             })
+
+            // batch update done!
+            this.pusher.batchUpdateDone()
           }
         })
       } else {
@@ -238,7 +222,7 @@ class KubectlWatcher implements Abortable, Watcher {
         .replace(/^k(\s)/, 'kubectl$1')
         .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '--watch') // force --watch
         .replace(new RegExp(`(-o|--output)(\\s+|=)${this.output}`), '') +
-      ` -o custom-columns=NAME:.metadata.name,KIND:.kind,APIVERSION:.apiVersion,NAMESPACE:.metadata.namespace`
+      ` -o jsonpath='{.metadata.name}{"|"}{.kind}{"|"}{.apiVersion}{"|"}{.metadata.namespace}{"|\\n"}'`
     // ^^^^^ keep these in sync with nCols above !!
 
     this.args.REPL.qexec(`sendtopty ${command}`, this.args.block, undefined, {
