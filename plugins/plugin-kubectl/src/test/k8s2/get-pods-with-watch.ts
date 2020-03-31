@@ -226,6 +226,17 @@ xdescribe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     // after `clear`, the current tab should have jobs = []
     checkJob(0, false)
 
+    it('should show "Pod" as table title for a "po" watch table', async () => {
+      try {
+        const { count } = await CLI.command(`kubectl get po -w -n ${ns}`, this.app)
+
+        const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(count))
+        assert.strictEqual(actualTitle, 'Pod')
+      } catch (err) {
+        return Common.oops(this, true)
+      }
+    })
+
     deleteNS(this, ns)
   })
 })

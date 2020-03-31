@@ -300,6 +300,8 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
       return {
         header: initialTable.header,
         body: initialTable.body,
+        breadcrumbs: initialTable.breadcrumbs,
+        title: initialTable.title,
         watch: new KubectlWatcher(args) // <-- our watcher
       }
     }
