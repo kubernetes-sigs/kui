@@ -138,6 +138,24 @@ ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` :
     return response
   }
 
+/**
+ * @param kindAsProvidedByUser e.g. pod or po
+ * @return e.g. Pod
+ *
+ */
+export async function getKind(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<string> {
+  try {
+    const ourArgs = Object.assign({}, args, { command: `kubectl explain ${kindAsProvidedByUser}` })
+    const explained = await doExecWithStdout(ourArgs, undefined, command)
+
+    return explained.match(/^KIND:\s+(.*)/)[1]
+  } catch (err) {
+    if (!/does not exist/i.test(err.message)) {
+      console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
+    }
+  }
+}
+
 export default (registrar: Registrar) => {
   const handler = doExplain()
   registrar.listen(`/${commandPrefix}/kubectl/explain`, handler, flags)

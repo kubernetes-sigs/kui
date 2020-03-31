@@ -194,6 +194,17 @@ commands.forEach(command => {
       }
     })
 
+    it('should show "Pod" as table title for "po" get', async () => {
+      try {
+        const { count } = await CLI.command(`kubectl get po ${inNamespace}`, this.app)
+
+        const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(count))
+        assert.strictEqual(actualTitle, 'Pod')
+      } catch (err) {
+        return Common.oops(this, true)
+      }
+    })
+
     const getListAsYAMLCommand = `${command} get pods -o yaml ${inNamespace}`
     it(`should get a list of pods in yaml form via ${getListAsYAMLCommand}`, () => {
       return CLI.command(getListAsYAMLCommand, this.app)

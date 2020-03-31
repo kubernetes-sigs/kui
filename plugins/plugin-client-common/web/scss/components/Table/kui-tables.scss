@@ -21,3 +21,7 @@ body[kui-theme-style] {
     }
   }
 }
+
+body[kui-theme-style='light'] .bx--data-table-container .bx--data-table.bx--data-table--compact td {
+  border-color: rgba(0, 0, 0, 0.0375);
+}

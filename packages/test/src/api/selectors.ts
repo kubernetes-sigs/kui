@@ -93,6 +93,7 @@ export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-b
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
 export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-grid`
 export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
+export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} .kui--data-table-title`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
 export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>

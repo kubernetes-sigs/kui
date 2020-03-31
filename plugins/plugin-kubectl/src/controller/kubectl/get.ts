@@ -18,6 +18,7 @@ import { CodedError, Arguments, ExecType, Registrar, MultiModalResponse, isHeadl
 
 import flags from './flags'
 import { exec } from './exec'
+import { getKind } from './explain'
 import { RawResponse } from './response'
 import { kindAndNamespaceOf } from './fqn'
 import commandPrefix from '../command-prefix'
@@ -49,13 +50,14 @@ export function doGetAsTable(
   command: string,
   args: Arguments<KubeOptions>,
   response: RawResponse,
-  verb = 'get'
+  verb = 'get',
+  fullKind?: string
 ): KubeTableResponse {
   const {
     content: { stderr, stdout }
   } = response
 
-  const entityType = args.argvNoOptions[args.argvNoOptions.indexOf(verb) + 1]
+  const entityType = fullKind || args.argvNoOptions[args.argvNoOptions.indexOf(verb) + 1]
 
   return stringToTable(stdout, stderr, args, command, verb, entityType)
 }
@@ -177,6 +179,10 @@ export const doGet = (command: string) =>
     }
 
     // first, we do the raw exec of the given command
+    const fullKind =
+      isTableRequest(args) && args.execOptions.type === ExecType.TopLevel
+        ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
+        : undefined
     const response = await rawGet(args, command)
 
     if (isKubeTableResponse(response)) {
@@ -193,7 +199,7 @@ export const doGet = (command: string) =>
       return doGetAsEntity(args, response)
     } else if (isTableRequest(args)) {
       // case 2: get-as-table
-      return doGetAsTable(command, args, response)
+      return doGetAsTable(command, args, response, undefined, await fullKind)
     } else {
       // case 3: get-as-custom
       return doGetCustom(args, response)

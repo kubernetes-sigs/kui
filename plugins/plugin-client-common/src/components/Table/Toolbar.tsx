@@ -108,6 +108,7 @@ export default class Toolbar extends React.PureComponent<Props> {
         <div className="kui--data-table-toolbar-pagination bx--pagination">
           <span className="kui--data-table-toolbar-pagination-info">{rangeText}</span>
           <button
+            type="button"
             onMouseDown={evt => evt.preventDefault()}
             disabled={isFirstPage}
             className={
@@ -120,6 +121,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             <PreviousPage />
           </button>
           <button
+            type="button"
             onMouseDown={evt => evt.preventDefault()}
             disabled={isLastPage}
             className={
