@@ -17,6 +17,8 @@
 import { Common, CLI, Selectors, ReplExpect } from '@kui-shell/test'
 import { createNS, allocateNS, doHelp } from '../../../tests/lib/k8s/utils'
 
+import * as assert from 'assert'
+
 const commonModes = ['Introduction', 'Options']
 const kubectlApiResourcesModes = commonModes.concat(['api-resources'])
 
@@ -29,7 +31,11 @@ describe('kubectl api-resources', function(this: Common.ISuite) {
 
   it('should get a list of api resources', () =>
     CLI.command('kubectl api-resources', this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('bindings') }))
+      .then(async res => {
+        await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('bindings') })(res)
+        const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(res.count))
+        assert.strictEqual(actualTitle, 'Api-resources')
+      })
       .catch(Common.oops(this, true)))
 
   it('should get a list of api resources', () =>
