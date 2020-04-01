@@ -22,8 +22,8 @@ import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-compon
 import sortRow from './sort'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
-import { onClickForCell } from './TableCell'
 import Toolbar, { ToolbarBreadcrumb, Props as ToolbarProps } from './Toolbar'
+import Grid from './Grid'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 
 /** carbon styling */
@@ -146,33 +146,16 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private grid(visibleRows: NamedDataTableRow[]) {
-    const { tab, repl, response } = this.props
-
-    const nCells = visibleRows.length
-    const nColumns = Math.ceil(Math.sqrt(nCells))
-    const style = { gridTemplateColumns: `repeat(${nColumns}, minmax(1em, auto))` }
-
     return (
       <div className="kui--data-table-wrapper kui--data-table-as-grid kui--screenshotable">
         {this.topToolbar()}
-        <div className="bx--data-table kui--data-table-as-grid" style={style}>
-          {response.body.map((kuiRow, kidx) => {
-            const row = visibleRows[kidx]
-            const title = row['STATUS']
-            const { css } = kuiRow.attributes[this.state.gridableColumn]
-
-            return (
-              <span key={kidx} data-tag="badge">
-                <span
-                  title={title}
-                  data-tag="badge-circle"
-                  className={css}
-                  onClick={onClickForCell(kuiRow, tab, repl)}
-                />
-              </span>
-            )
-          })}
-        </div>
+        <Grid
+          tab={this.props.tab}
+          repl={this.props.repl}
+          response={this.props.response}
+          visibleRows={visibleRows}
+          gridableColumn={this.state.gridableColumn}
+        />
         {this.bottomToolbar()}
       </div>
     )
