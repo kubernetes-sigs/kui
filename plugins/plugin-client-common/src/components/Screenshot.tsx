@@ -76,7 +76,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   /** User has clicked on a region to be captured */
   private onClickScreenshotRegion(element: Element) {
     this.deactivate()
-    setTimeout(() => this.captureRegion(element), 100)
+    this.captureRegion(element)
   }
 
   /**
