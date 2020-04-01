@@ -28,9 +28,6 @@ CLIENT_HOME="$(pwd)"
 BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
 PROXY_HOME="$BUILDER_HOME"/../proxy
 
-# we aren't using docker for now
-NO_DOCKER=true
-
 # prep the staging area
 function init {
     rm -rf "$STAGING_DIR"
@@ -43,18 +40,8 @@ function initProxy {
     pushd "$STAGING_DIR" > /dev/null
     cp -a "$PROXY_HOME"/package.json .
 
-    if [ -z "$NO_DOCKER" ]; then
-      cp -a "$PROXY_HOME"/{build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore} .
-    fi
-
     mkdir -p kui/packages/proxy
     cp -a "$PROXY_HOME"/app kui/packages/proxy
-
-    # mkdir .kube and .bluemix if they don't exist, see issue: https://github.com/IBM/kui/issues/1647
-    if [ -z "$NO_DOCKER" ]; then
-        if [ -d ~/.kube ]; then cp -a ~/.kube .; else mkdir .kube; fi
-        if [ -d ~/.bluemix/plugins/container-service/clusters ]; then mkdir -p .bluemix/plugins/container-service && cp -a ~/.bluemix/plugins/container-service/clusters .bluemix/plugins/container-service; else mkdir .bluemix; fi
-    fi
 
     npm install --no-package-lock
     popd > /dev/null
@@ -66,25 +53,6 @@ function headless {
     pushd "$CLIENT_HOME" > /dev/null
     QUIET=true NO_ZIPS=true npx kui-build-headless "$STAGING_DIR"
     popd > /dev/null
-}
-
-# create the self-signed certificate
-function cert {
-  if [ -z "${NO_DOCKER}" ] && [ "$KUI_USE_HTTP" != "true" ] && [ -d "$BUILDER_HOME/../webpack" ]; then
-    pushd "$BUILDER_HOME/../webpack" > /dev/null
-    CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
-    cp -a "$CLIENT_HOME"/.keys "$STAGING_DIR"/app/bin
-    popd
-  fi
-}
-
-# create a docker image that can host the proxy
-function docker {
-    if [ -z "$NO_DOCKER" ]; then
-        pushd "$STAGING_DIR" > /dev/null
-        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
-        popd > /dev/null
-    fi
 }
 
 # clean up the staging area
@@ -99,8 +67,6 @@ function build {
     init
     headless
     initProxy
-    cert
-    docker
     clean
 }
 
