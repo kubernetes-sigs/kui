@@ -17,15 +17,7 @@
 #
 
 #
-# This script builds two sets of artifacts:
-#
-#  1. the webpack bundles
-#
-#  2. at the tail end of this script, ./build-docker.sh is
-#  invoked. That script builds a docker image that can be used to
-#  serve up the webpack client. Try `npm start` when this script
-#  finishes; this will start the docker container, allowing you to
-#  debug your webpack client.
+# This script builds the webpack bundles
 #
 # Notes on build configuration: see /docs/dev/build-customization.md
 #
@@ -136,11 +128,6 @@ function init {
 function initWebpack {
     pushd "$STAGING_DIR" > /dev/null
     cp -a "$BUILDER_HOME"/../webpack/{package.json,webpack.config.js} .
-
-    if [ -z "$NO_DOCKER" ]; then
-      cp -a "$BUILDER_HOME"/../webpack/{build-docker.sh,Dockerfile,Dockerfile.http,bin,conf.d} .
-    fi
-
     popd > /dev/null
 }
 
@@ -150,15 +137,6 @@ function webpack {
     rm -f "$BUILDDIR"/*.js*
     MODE="${MODE-production}" CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode production
     popd > /dev/null
-}
-
-# build a docker image that can serve the webpack client
-function docker {
-    if [ -z "${NO_DOCKER}" ]; then
-        pushd "$STAGING_DIR" > /dev/null
-        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
-        popd > /dev/null
-    fi
 }
 
 # remove the staging area
@@ -176,7 +154,6 @@ function build {
     initWebpack
     configure
     webpack
-    docker
     clean
 }
 
