@@ -5,21 +5,23 @@
 [![codecov](https://codecov.io/gh/IBM/kui/branch/master/graph/badge.svg)](https://codecov.io/gh/IBM/kui)
 [![Type Coverage](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/badge.json?which=core)](https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/typecov-model.json)
 
-Kui offers a new development experience for building cloud-native
-applications. By combining the power of familiar CLIs with
-visualizations in high-impact areas, Kui enables you to manipulate
-complex JSON and YAML data models, integrate disparate tooling, and
-provides quick access to aggregate views of operational data.
+Kui combines the power of familiar CLIs with visualizations in
+high-impact areas. Kui enables you to manipulate complex JSON and YAML
+data models, integrate disparate tooling, and provides quick access to
+aggregate views of operational data.
 
-## Quick Install
+<img align="right" width="37.5%" src="docs/readme/images/sidecar.png">
 
-We offer prebuilt releases that offer Kubernetes support:
+## Installation
+
+We offer prebuilt images that provide Kubernetes enhancements:
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-To run Kui as a [kubectl plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
-(requires version 1.12+), first download Kui, unpack the download, and add the unpacked directory to your PATH.
-For example, on MacOS, the steps would be:
+To run Kui as a [kubectl
+plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
+(for `kubectl` 1.12+), add the unpacked directory to your PATH;
+e.g. on MacOS:
 
 ```bash
 curl -L https://macos-tarball.kui-shell.org/ | tar jxf -
@@ -37,28 +39,23 @@ If you want to help, please take a look at our [guidelines](CONTRIBUTING.md) and
 
 ## Kui is a CLI, with Visualizations on the Side
 
-[![](docs/readme/images/kui-experience.gif)](docs/readme/images/kui-experience.gif)
+<img align="left" src="docs/readme/images/kui-experience.gif">
+
+To help with complex data, Kui offers a suite of
+**visualizations**. You can quickly flip between the terminal and
+these visualizations, without having to switch to a browser, log in,
+and navigate through complex menu structures.
 
 Kui uses [Electron](https://electronjs.org) to provide you with an
-augmented but CLI-focused development experience. By using Electron,
-the same experience carries over, from local development on your
-laptop, to a browser-based experience.
+augmented but CLI-focused development experience. You will have
+access to your filesystem and your favorite terminal and text
+editor. At the same time, one may offer a hosted Kui, allowing the
+same experience in both a local- and browser-based experience.
 
-When running locally, you will have access to your filesystem and your
-favorite terminal and text editor. To help with complex data, Kui
-offers a suite of **visualizations**. You can gracefully flip between
-the terminal and these visualizations, without having to switch to
-your browser, log in, wait for pages to load, and navigate through
-complex menu structures.
+<img width="372" src="docs/readme/images/namespaces.png"> <img width="261" src="docs/readme/images/summary.png"> <img width="270" src="docs/readme/images/usage.png">
+<img width="100" src="docs/readme/images/grid.png">
 
-## Kui as a Tool Platform
-
-Kui can form the basis for delivering CLI-driven GUI experiences. Here
-are a few such uses of Kui:
-
-- Apache OpenWhisk visualizations: [Oui](https://github.com/kui-shell/oui#readme)
-
-If you want to create your own client, with a custom theme, custom
-icons, and an enhanced set of commands, you can start here:
+## More Resources
 
 - [API documentation for authoring new commands](https://github.com/IBM/kui/wiki/Authoring-Kui-Plugins)
+- Kui can form the basis for delivering CLI-driven GUI experiences. For example, Kui has a custom client for Apache OpenWhisk: [Oui](https://github.com/kui-shell/oui#readme)
