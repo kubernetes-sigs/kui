@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.19](https://github.com/IBM/kui/compare/v6.0.18...v6.0.19) (2020-04-01)
+
+### Bug Fixes
+
+- proxy still runs http-allocate-cert even if NO_DOCKER is set ([38941ed](https://github.com/IBM/kui/commit/38941ed)), closes [#4137](https://github.com/IBM/kui/issues/4137)
+
 ## [6.0.18](https://github.com/IBM/kui/compare/v6.0.17...v6.0.18) (2020-03-26)
 
 **Note:** Version bump only for package kui-shell
