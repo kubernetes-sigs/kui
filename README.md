@@ -10,7 +10,7 @@ high-impact areas. Kui enables you to manipulate complex JSON and YAML
 data models, integrate disparate tooling, and provides quick access to
 aggregate views of operational data.
 
-<img align="right" width="37.5%" src="docs/readme/images/sidecar.png">
+<img align="right" width="410" src="docs/readme/images/sidecar.png">
 
 ## Installation
 
