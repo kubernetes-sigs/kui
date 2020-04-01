@@ -145,7 +145,7 @@ export const preprocessTable = (raw: string[]): Pair[][][] => {
 
 /** normalize the status badge by capitalization */
 const capitalize = (str: string): string => {
-  return !str ? 'Unknown' : str[0].toUpperCase() + str.slice(1).toLowerCase()
+  return !str ? '' : str[0].toUpperCase() + str.slice(1).toLowerCase()
 }
 
 /**
@@ -294,7 +294,7 @@ export const formatTable = <O extends KubeOptions>(
                 ((idx > 0 && cssForKey[key]) || '') +
                 ' ' +
                 (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column)),
-              value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
+              value: key === 'STATUS' && idx > 0 ? capitalize(column || 'unknown') : column
             })
           )
           .concat(fillTo(rows.length, maxColumns))

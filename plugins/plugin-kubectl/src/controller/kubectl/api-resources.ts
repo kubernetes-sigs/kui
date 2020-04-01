@@ -34,7 +34,7 @@ export const doGet = (command: string) => async (args: Arguments<KubeOptions>): 
       content: { stderr, stdout }
     } = response
 
-    const table = stringToTable(stdout, stderr, args, command, 'explain')
+    const table = stringToTable(stdout, stderr, args, command, 'explain', 'api-resources')
 
     if (isTable(table)) {
       table.body.forEach(_ => {
