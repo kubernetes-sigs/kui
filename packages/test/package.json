@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/test",
-  "version": "6.0.19",
+  "version": "6.0.20",
   "description": "",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -23,5 +23,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "17e1fc33791d1622c7835c89e9034afc7c04c987"
+  "gitHead": "633cbad0ab6e832beef3054a5f86426d601e0e8b"
 }
