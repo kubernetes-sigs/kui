@@ -123,6 +123,12 @@ body .bx--toast-notification {
   box-shadow: 0 0 0 1000px rgba(20, 20, 20, 0.5);
 
   filter: sepia(0.75) opacity(0.5);
+
+  &.kui--screenshot-overlay-transparent {
+    border: none;
+    filter: none;
+    opacity: 0;
+  }
 }
 
 [kui-theme-style='light'] #kui--screenshot-overlay {
