@@ -39,7 +39,7 @@ If you want to help, please take a look at our [guidelines](CONTRIBUTING.md) and
 
 ## Kui is a CLI, with Visualizations on the Side
 
-<img align="left" src="docs/readme/images/kui-experience.gif">
+<img width="640" align="left" src="docs/readme/images/kui-experience.gif">
 
 To help with complex data, Kui offers a suite of
 **visualizations**. You can quickly flip between the terminal and
