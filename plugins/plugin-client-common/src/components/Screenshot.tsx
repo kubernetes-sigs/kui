@@ -52,6 +52,10 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   private overlayCleaner: () => void
   private cleaners: (() => void)[] = []
 
+  /** @see https://github.com/IBM/kui/issues/4170 */
+  private renderOverlayTransparent = false
+  private toggleOverlayTransparency: () => void
+
   public constructor(props: Props) {
     super(props)
 
@@ -75,8 +79,18 @@ export default class Screenshot extends React.PureComponent<Props, State> {
 
   /** User has clicked on a region to be captured */
   private onClickScreenshotRegion(element: Element) {
-    this.deactivate()
-    this.captureRegion(element)
+    if (this.toggleOverlayTransparency) {
+      this.renderOverlayTransparent = true
+      this.toggleOverlayTransparency()
+    }
+    setTimeout(async () => {
+      try {
+        await this.captureRegion(element)
+        this.deactivate()
+      } finally {
+        this.renderOverlayTransparent = false
+      }
+    }, 120)
   }
 
   /**
@@ -84,35 +98,49 @@ export default class Screenshot extends React.PureComponent<Props, State> {
    * screen defined by the extent of the given dom.
    *
    */
-  private async captureRegion(element: Element) {
-    const { ipcRenderer, nativeImage, remote } = await import('electron')
-    const { app } = remote
+  private captureRegion(element: Element) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { ipcRenderer, nativeImage, remote } = await import('electron')
+        const { app } = remote
 
-    const domRect = element.getBoundingClientRect()
-    const rect = {
-      x: Math.round(domRect.left),
-      y: Math.round(domRect.top),
-      width: Math.round(domRect.width),
-      height: Math.round(domRect.height)
-    }
+        const domRect = element.getBoundingClientRect()
+        const rect = {
+          x: Math.round(domRect.left),
+          y: Math.round(domRect.top),
+          width: Math.round(domRect.width),
+          height: Math.round(domRect.height)
+        }
 
-    // capture a screenshot
-    const listener = (event: Event, buf: Buffer) => {
-      document.body.classList.remove('no-tooltips-anywhere')
+        // capture a screenshot
+        const listener = (event: Event, buf: Buffer) => {
+          try {
+            document.body.classList.remove('no-tooltips-anywhere')
 
-      if (!buf) {
-        console.error('Unable to capture screenshot')
-      } else {
-        this.setState({ captured: nativeImage.createFromBuffer(buf), desktop: app.getPath('desktop') })
+            if (!buf) {
+              console.error('Unable to capture screenshot')
+            } else {
+              this.setState({ captured: nativeImage.createFromBuffer(buf), desktop: app.getPath('desktop') })
+            }
+
+            // done!
+            resolve()
+          } catch (err) {
+            reject(err)
+          }
+        }
+
+        //
+        // register our listener, and tell the main process to get
+        // started (in that order!)
+        //
+        ipcRenderer.once('capture-page-to-clipboard-done', listener)
+        ipcRenderer.send('capture-page-to-clipboard', remote.getCurrentWebContents().id, rect)
+      } catch (err) {
+        reject(err)
       }
-    }
-
-    //
-    // register our listener, and tell the main process to get
-    // started (in that order!)
-    //
-    ipcRenderer.once('capture-page-to-clipboard-done', listener)
-    ipcRenderer.send('capture-page-to-clipboard', remote.getCurrentWebContents().id, rect)
+    })
   }
 
   /** Transition to a state where we are ready to capture a screenshot */
@@ -157,6 +185,9 @@ export default class Screenshot extends React.PureComponent<Props, State> {
       overlay.style.height = this.px(pos.height)
       document.body.appendChild(overlay)
       element.classList.add('kui--screenshot-hover')
+      if (this.renderOverlayTransparent) {
+        overlay.classList.add('kui--screenshot-overlay-transparent')
+      }
 
       const onMouseOut = () => {
         overlay.remove()
@@ -174,6 +205,9 @@ export default class Screenshot extends React.PureComponent<Props, State> {
       )
 
       this.overlayCleaner = onMouseOut
+      this.toggleOverlayTransparency = () => {
+        overlay.classList.toggle('kui--screenshot-overlay-transparent')
+      }
     }
 
     element.addEventListener('mouseover', onMouseOver)
