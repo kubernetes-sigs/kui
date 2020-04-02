@@ -62,12 +62,9 @@
     "@kui-shell/plugin-core-themes": "file:plugins/plugin-core-themes",
     "@kui-shell/plugin-git": "file:plugins/plugin-git",
     "@kui-shell/plugin-ibmcloud": "file:plugins/plugin-ibmcloud",
-    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8",
-    "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
-    "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
-    "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow",
-    "@kui-shell/react": "file:packages/react"
+    "@kui-shell/plugin-skeleton": "file:plugins/plugin-skeleton",
+    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8"
   },
   "devDependencies": {
     "@kui-shell/builder": "file:packages/builder",
