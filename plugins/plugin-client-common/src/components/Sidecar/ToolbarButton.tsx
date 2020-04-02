@@ -86,7 +86,7 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
       >
         <span role="tab">
           {button.icon ? (
-            <TooltipIcon direction="bottom" align="end" tooltipText={button.label || button.mode}>
+            <TooltipIcon className="zoomable" direction="bottom" align="end" tooltipText={button.label || button.mode}>
               {button.icon}
             </TooltipIcon>
           ) : (

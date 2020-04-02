@@ -223,7 +223,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
 
     return (
       <div className="sidecar-content-container">
-        <div className="custom-content zoomable">
+        <div className="custom-content">
           <ToolbarContainer
             tab={this.state.tab}
             response={this.current.response}
