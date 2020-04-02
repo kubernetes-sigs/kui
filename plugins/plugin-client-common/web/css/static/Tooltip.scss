@@ -9,6 +9,12 @@
       &:before {
         border-bottom-color: var(--color-base06);
       }
+
+      .bx--assistive-text,
+      &:before {
+        /* @see https://github.com/IBM/kui/issues/4159 */
+        z-index: 10000;
+      }
     }
   }
 }
