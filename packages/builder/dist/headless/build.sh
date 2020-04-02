@@ -126,33 +126,6 @@ function tarCopy {
                 --exclude "node_modules/**/docs/**/*.png" \
                 --exclude "node_modules/**/docs/**/*.js" . \
              | "$TAR" -C kui -xf -)
-
-    # check to see if the client wants to use an alternate readme
-    set +e
-    ALT="$(cat "$STAGING"/kui/package.json | jq --raw-output -e .kui.readme)"
-    if [ $? == 0 ]; then
-        if [ ! -e "$ALT" ]; then
-            # maybe ALT is specified relative to CLIENT_HOME, which
-            # would be understandable
-            ALT="$CLIENT_HOME"/"$ALT"
-        fi
-        if [ -f "$ALT" ]; then
-            echo "Copying in alternate README: $ALT"
-            cp "$ALT" "$STAGING"/kui/README.md
-        else
-            if [ -e "$ALT" ]; then
-                # so it exists, but the -f check failed
-                echo "ERROR: Specified alternate README not a file: $ALT"
-            else
-                # otherwise, it does not exist
-                echo "ERROR: Specified alternate README not found: $ALT"
-            fi
-            exit 1
-        fi
-    else
-        echo "Not using alternate README"
-    fi
-    set -e
 }
 
 function configure {
