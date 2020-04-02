@@ -1,31 +1,3 @@
-body.subwindow {
-  .kui--sidecar {
-    .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits .graphical-icon {
-      font-size: 3vmin;
-    }
-    .sidecar-bottom-stripe-toolbar {
-      font-size: 1.5vw;
-    }
-
-    .sidecar-bottom-stripe svg {
-      width: 2.5vmin;
-      height: 2.5vmin;
-    }
-    .sidecar-bottom-stripe-toolbar svg {
-      width: 1.5vmin;
-      height: 1.5vmin;
-    }
-
-    .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
-      font-size: 1.375vmin;
-    }
-
-    .sidecar-header-name {
-      font-size: 4vh;
-    }
-  }
-}
-
 body.subwindow .kui--sidecar .sidecar-bottom-stripe-close {
   /* no close button if in subwindow/popup mode */
   display: none;
@@ -76,17 +48,10 @@ body.subwindow .kui--sidecar .padding-content {
 body.subwindow .kui--sidecar .sidecar-header-secondary-content {
   font-size: 1em;
 }
-body.subwindow:not([data-presentation='FixedSize']) .custom-content {
-  font-size: 2.5vmin;
-}
 /* Duplicate rule with line 1451 in ui.css */
 body.subwindow .kui--sidecar .repl-input,
 body.subwindow .kui--sidecar .repl-block .ok-line:not(.show-in-popup) .ok {
   display: none;
-}
-body.subwindow .kui--sidecar .sidecar-bottom-stripe {
-  font-size: 2vmin;
-  min-height: unset;
 }
 body.subwindow .kui--sidecar .usage-error-wrapper .page-content {
   display: flex;
@@ -119,13 +84,6 @@ body.subwindow .sidecar-full-screen .kui--sidecar .sidecar-header .action-conten
 body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stripe .sidecar-bottom-stripe-close {
     display: none;
 }*/
-
-body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button:first-child .graphical-icon {
-  padding-left: 0.875vw;
-}
-body.subwindow .sidecar-bottom-stripe .sidecar-bottom-stripe-button .graphical-icon {
-  padding-right: 0.875vw;
-}
 
 .repl:not(.kui--input-stripe) {
   padding-top: 0;
