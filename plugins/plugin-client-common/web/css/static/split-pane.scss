@@ -93,13 +93,22 @@
   }
 }
 
-@media (max-width: 42rem) {
+@media (max-width: 44rem) {
   .SplitPane.vertical:not(.kui--secondary-closed) {
     .Pane1 {
       flex: 0 !important;
     }
+    .Resizer {
+      /* see https://github.com/IBM/kui/issues/4179 */
+      display: none;
+    }
     .Pane2 {
       width: 100% !important;
+
+      .toggle-sidecar-maximization-button {
+        /* no need to maximize, if the sidecar is taking up the full screen */
+        display: none;
+      }
     }
   }
 }
