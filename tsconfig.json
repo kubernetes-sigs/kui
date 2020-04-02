@@ -57,6 +57,10 @@
     },
     {
       "path": "plugins/plugin-ibmcloud"
+    },
+    {
+      "path": "plugins/plugin-iter8"
     }
+
   ]
 }
