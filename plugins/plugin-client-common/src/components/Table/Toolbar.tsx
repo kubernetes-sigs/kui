@@ -30,7 +30,8 @@ import 'carbon-components/scss/components/pagination/_pagination.scss'
 export type Props = Partial<GridProps> &
   Partial<PaginationProps> &
   Partial<BreadcrumbProps> & {
-    frame?: boolean
+    framed?: boolean
+    className?: string
   }
 
 interface GridProps {
@@ -168,8 +169,10 @@ export default class Toolbar extends React.PureComponent<Props> {
   }
 
   public render() {
+    const className = 'kui--data-table-toolbar' + (this.props.className ? ` ${this.props.className}` : '')
+
     return (
-      <div className="kui--data-table-toolbar" data-frame={this.props.frame}>
+      <div className={className} data-frame={this.props.framed}>
         {this.breadcrumbs()}
         {this.buttons()}
         {this.filler()}

@@ -1,15 +1,9 @@
-$toolbar-height: 2.375em;
+$toolbar-height: 1.875em;
 
 body[kui-theme-style='light'] {
-  .kui--data-table-toolbar,
-  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title th {
-    background-color: rgba(0, 0, 0, 0.0375);
-  }
-}
-body[kui-theme-style='dark'] {
-  .kui--data-table-toolbar,
-  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title th {
-    background-color: var(--color-base01);
+  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title td,
+  .bx--data-table.kui--data-table-as-grid {
+    background-color: rgba(0, 0, 0, 0.01375);
   }
 }
 
@@ -17,13 +11,29 @@ body[kui-theme-style='dark'] {
   padding-top: 0;
 }
 
+.kui--data-table-wrapper {
+  /* so that captured screenshots have some padding away from the breadcrumbs */
+  padding: 0 0.1875em;
+}
+
+.kui--toolbar-button-with-icon {
+  &[data-enabled='true'] {
+    svg {
+      fill: var(--color-base0D);
+      path {
+        /* give the enabled button a bit more weight */
+        stroke: var(--color-base0D);
+        stroke-width: 1.1;
+      }
+    }
+  }
+  &[data-enabled='false'] svg {
+    filter: opacity(0.375);
+  }
+}
+
 body[kui-theme-style] .kui--data-table-toolbar {
   display: flex;
-  border-radius: 2px / 4px;
-
-  &:first-child {
-    margin-top: 0.125em;
-  }
 
   nav[aria-label='Breadcrumb'] {
     overflow-x: unset;
@@ -38,10 +48,18 @@ body[kui-theme-style] .kui--data-table-toolbar {
     height: $toolbar-height;
   }
 
-  [aria-label='Breadcrumb'] {
+  &.kui--data-table-toolbar-bottom {
+    padding-top: 0.1875em;
+  }
+
+  nav[aria-label='Breadcrumb'] {
     display: flex;
     align-items: center;
     flex: 1;
+
+    .bx--breadcrumb {
+      padding-left: 0;
+    }
   }
 
   .kui--toolbar-button-with-icon {
@@ -64,7 +82,6 @@ body[kui-theme-style] .kui--data-table-toolbar {
     border: none;
     background-color: transparent;
     width: unset;
-    height: $toolbar-height;
     align-items: unset;
 
     .kui--data-table-toolbar-pagination-info {
@@ -75,8 +92,7 @@ body[kui-theme-style] .kui--data-table-toolbar {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      border-left: 1px solid;
-      border-color: var(--color-table-border3);
+      border: none;
     }
   }
 }
