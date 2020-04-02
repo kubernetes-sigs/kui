@@ -384,10 +384,9 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 }
 
-export function renderForm() {
-  return {
-    react: function renderComponent() {
-      return <ExprBase />
-    }
-  }
+
+export function renderForm(){
+	return {
+		react: () => <Base />
+	}
 }
