@@ -191,6 +191,7 @@ const prepareElectron = (popup: string[]) => {
   if (popup) {
     // used in spawn-electron.ts
     opts.env['KUI_POPUP'] = JSON.stringify(popup)
+    opts.env['KUI_POPUP_WINDOW_RESIZE'] = 'true'
   }
 
   return new Application(opts)

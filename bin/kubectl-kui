@@ -15,4 +15,6 @@ process.argv.shift()
 // insert 'kubectl' into argv
 process.argv.splice(1, 0, 'kubectl')
 
+process.env.KUI_POPUP_WINDOW_RESIZE = true
+
 require('@kui-shell/core').main(process.argv)
