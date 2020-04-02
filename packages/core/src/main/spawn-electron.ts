@@ -20,7 +20,7 @@ debug('loading')
 
 import { IpcMainEvent, Rectangle } from 'electron'
 
-import windowDefaults from '../webapp/defaults'
+import windowDefaults, { popupWindowDefaults } from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 
 /**
@@ -425,6 +425,14 @@ export const getCommand = (argv: string[]): Command => {
     subwindowPrefs = {}
   } else if (process.env.KUI_POPUP) {
     argv = JSON.parse(process.env.KUI_POPUP)
+  }
+
+  if (process.env.KUI_POPUP_WINDOW_RESIZE) {
+    subwindowPrefs = {
+      fullscreen: true,
+      width: popupWindowDefaults.width,
+      height: popupWindowDefaults.height
+    }
   }
 
   debug('using args', argv, subwindowPrefs)

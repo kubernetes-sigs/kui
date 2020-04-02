@@ -209,6 +209,7 @@ function mac {
 
         (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
+export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 "$SCRIPTDIR"/Kui.app/Contents/MacOS/Kui kubectl $@ &' >> kubectl-kui)
 
@@ -261,6 +262,7 @@ function linux {
 
         (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
+export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 "$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
 
