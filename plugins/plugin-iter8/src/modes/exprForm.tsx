@@ -175,6 +175,34 @@ class ExprBase extends React.Component<{}, Formstate> {
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ criteria: newMetric })
   }
+  	// Handlers for any input changes
+    handleChange(event){
+    	this.setState({name: event.target.value.toLowerCase().replace(" ", "_")});
+    }
+
+    handleSubmit(event){
+    	event.preventDefault();
+    }
+    // Adds the candidate value to the state if not already there and not base
+    handleAddCand = (e) => {
+    	if(!this.state.cand.includes((ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value) &&
+    		this.state.base !== (ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value){
+
+    		this.setState((prevState) => ({
+			cand: [...prevState.cand, (ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value],
+			}));
+    	}
+	}
+
+	handleAddNs = (e) => {
+		this.setState({ns: e.target.value, svc: '', base:'', cand:[]});
+	}
+	handleAddSvc = (e) => {
+		this.setState({svc: e.target.value, base:'', cand:[]});
+	}
+	handleAddBase = (e) => {
+		this.setState({base: e.target.value, cand: []});
+	}
 
   // Disables all the other checkboxes
   private handleRewardChange = idx => {
