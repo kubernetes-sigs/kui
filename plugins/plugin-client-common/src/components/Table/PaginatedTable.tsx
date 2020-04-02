@@ -114,7 +114,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         )
       )
 
-      return <Toolbar breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+      return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
     }
   }
 
@@ -131,7 +131,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return (
       this.props.toolbars && (
         <Toolbar
-          frame={this.state.asGrid}
+          framed
+          className="kui--data-table-toolbar-bottom"
           asGrid={this.state.asGrid}
           gridableColumn={this.state.gridableColumn}
           setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
