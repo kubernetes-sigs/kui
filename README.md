@@ -52,7 +52,7 @@ access to your filesystem and your favorite terminal and text
 editor. At the same time, one may offer a hosted Kui, allowing the
 same experience in both a local- and browser-based experience.
 
-<img width="372" src="docs/readme/images/namespaces.png"> <img width="261" src="docs/readme/images/summary.png"> <img width="270" src="docs/readme/images/usage.png">
+<img width="342" src="docs/readme/images/namespaces.png"> <img width="276" src="docs/readme/images/summary.png"> <img width="286" src="docs/readme/images/usage.png">
 <img width="100" src="docs/readme/images/grid.png">
 
 ## More Resources
