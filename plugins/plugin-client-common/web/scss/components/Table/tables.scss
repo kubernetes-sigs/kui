@@ -115,9 +115,10 @@ body .bx--data-table-container {
 
     tbody {
       .bx--data-table--selected {
+        background-color: var(--color-ui-03);
         td {
           color: var(--color-text-01);
-          background-color: var(--color-ui-02);
+          background-color: var(--color-ui-03);
           border-color: transparent;
         }
       }
