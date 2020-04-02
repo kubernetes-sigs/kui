@@ -66,8 +66,9 @@
     "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
     "@kui-shell/plugin-ibmcloud": "file:plugins/plugin-ibmcloud",
+    "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow",
     "@kui-shell/plugin-skeleton": "file:plugins/plugin-skeleton",
-    "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
+    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8"
   },
   "devDependencies": {
     "@kui-shell/builder": "file:packages/builder",
