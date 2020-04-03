@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,9 @@ export function memShare(str: string): number {
   let end = 2
   let unit = byte
 
-  if (/Ei$/.test(str)) {
+  if (str === '0') {
+    return 0
+  } else if (/Ei$/.test(str)) {
     unit = exabytes
   } else if (/Pi$/.test(str)) {
     unit = petabytes
