@@ -24,6 +24,7 @@ interface Props {
   text: string
   viewLevel: ViewLevel
 
+  className?: string
   iconIsNarrow?: boolean
   iconOnclick?: string
   textOnclick?: string
@@ -64,7 +65,11 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
 
     return (
       <div
-        className={'kui--status-stripe-element' + (!this.props.id ? '' : ' ' + this.props.id)}
+        className={
+          'kui--status-stripe-element' +
+          (!this.props.id ? '' : ' ' + this.props.id) +
+          (this.props.className ? ' ' + this.props.className : '')
+        }
         data-view={this.props.viewLevel}
       >
         {iconPart}
