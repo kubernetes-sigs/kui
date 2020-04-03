@@ -22,13 +22,17 @@ import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 const strings = i18n('plugin-bash-like')
 
+interface Props {
+  className?: string
+}
+
 interface State {
   text: string
   viewLevel: ViewLevel
 }
 
-export default class CurrentGitBranch extends React.PureComponent<{}, State> {
-  public constructor(props = {}) {
+export default class CurrentGitBranch extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
     super(props)
 
     this.state = {
@@ -91,6 +95,7 @@ export default class CurrentGitBranch extends React.PureComponent<{}, State> {
   public render() {
     return (
       <TextWithIconWidget
+        className={this.props.className}
         text={this.state.text}
         viewLevel={this.state.viewLevel}
         id="kui--plugin-git--current-git-branch"

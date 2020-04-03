@@ -59,25 +59,45 @@
   }
 }
 
-.repl.sidecar-visible .bx--data-table-container .bx--data-table {
-  th[data-key='STATUS'],
-  td.kui--status-cell {
-    padding-left: 0;
+@mixin narrow-window {
+  @media (max-width: 44rem) {
+    @content;
   }
-  [data-tag='badge'] {
-    justify-content: center;
+}
 
-    [data-tag='badge-circle'] {
-      margin: 0;
-      width: 1em;
-      height: 1em;
-      border-radius: 0;
+@mixin badge-only {
+  .bx--data-table-container .bx--data-table {
+    th[data-key='STATUS'],
+    td.kui--status-cell {
+      padding-left: 0;
     }
+    [data-tag='badge'] {
+      justify-content: center;
 
-    .kui--cell-inner-text {
-      /* show only the badge-circle when the sidecar is open */
-      display: none;
+      [data-tag='badge-circle'] {
+        margin: 0;
+        width: 1em;
+        height: 1em;
+        border-radius: 0;
+      }
+
+      .kui--cell-inner-text {
+        /* show only the badge-circle when the sidecar is open */
+        display: none;
+      }
     }
+  }
+}
+
+/* fine-tune the STATUS/badge presentation of tables when the sidecar is open, or with narrower windows */
+.repl.sidecar-visible {
+  @include badge-only;
+}
+@include narrow-window {
+  @include badge-only;
+
+  .kui--hide-in-narrower-windows {
+    display: none !important;
   }
 }
 
