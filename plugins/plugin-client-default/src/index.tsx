@@ -33,7 +33,7 @@ export default function renderMain(props: KuiProps) {
   return (
     <Kui isPopup={props.isPopup} commandLine={props.commandLine}>
       <ContextWidgets>
-        <CurrentGitBranch />
+        <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />
       </ContextWidgets>
