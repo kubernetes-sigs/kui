@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { Accordion } from 'carbon-components-react'
-import { eventChannelUnsafe, ScalarResponse, Tab as KuiTab } from '@kui-shell/core'
+import { eventChannelUnsafe, ScalarResponse, Tab as KuiTab, isPopup } from '@kui-shell/core'
 
 import Block from './Block'
 import Cleaner from '../cleaner'
@@ -32,6 +32,7 @@ type Props = TerminalOptions & {
   uuid: string
   tab: KuiTab
   secondaryIsVisible?: boolean
+  closeSecondary: () => void
 }
 
 interface State {
@@ -80,6 +81,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (echo === false) {
       // then the command wants to be incognito; e.g. onclickSilence for tables
       return
+    }
+
+    if (isPopup() && this.props.secondaryIsVisible) {
+      // see https://github.com/IBM/kui/issues/4183
+      this.props.closeSecondary()
     }
 
     this.setState(curState => {

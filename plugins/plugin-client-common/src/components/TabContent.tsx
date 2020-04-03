@@ -165,6 +165,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
           {...this.props}
           tab={this.state.tab}
           secondaryIsVisible={this.state.secondaryWidth !== '0%' && this.state.secondaryWidth !== '2em'}
+          closeSecondary={() => this.setState({ secondaryWidth: '0%' })}
           ref={c => {
             // so that we can refocus/blur
             this._terminal = c
