@@ -309,7 +309,7 @@ export function createWindow(
     debug('ipc registration')
     ipcMain.on('capture-page-to-clipboard', async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
       try {
-        const { clipboard, nativeImage, webContents } = Electron
+        const { clipboard, nativeImage, webContents } = await import('electron')
         const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
         try {
           const buf = image.toPNG()
