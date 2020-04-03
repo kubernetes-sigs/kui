@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
-import { IpcMainEvent, Rectangle } from 'electron'
+import { BrowserWindow, BrowserWindowConstructorOptions, IpcMainEvent, Rectangle, Screen } from 'electron'
 
 import windowDefaults, { popupWindowDefaults } from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
@@ -103,8 +103,8 @@ export function createWindow(
       '@kui-shell/client/config.d/icons.json'
     )
 
-    const Electron = await import('electron')
-    const opts: Electron.BrowserWindowConstructorOptions = Object.assign(
+    const position = subwindowPrefs && subwindowPrefs.position ? await subwindowPrefs.position() : {}
+    const opts: BrowserWindowConstructorOptions = Object.assign(
       {
         title: productName,
         width,
@@ -115,7 +115,7 @@ export function createWindow(
         }
         // titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
       },
-      subwindowPrefs && subwindowPrefs.position
+      position
     )
 
     // if user ups zoom level, reloads, we're stuck at a higher zoom
@@ -149,11 +149,11 @@ export function createWindow(
       opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
     }
     debug('createWindow::new BrowserWindow')
-    interface KuiBrowserWindow extends Electron.BrowserWindow {
+    interface KuiBrowserWindow extends BrowserWindow {
       executeThisArgvPlease?: string[]
       subwindow?: ISubwindowPrefs
     }
-    const mainWindow = new Electron.BrowserWindow(opts) as KuiBrowserWindow
+    const mainWindow = new BrowserWindow(opts) as KuiBrowserWindow
     nWindows++
     debug('createWindow::new BrowserWindow success')
 
@@ -166,7 +166,7 @@ export function createWindow(
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
     interface Win {
-      window?: Electron.BrowserWindow
+      window?: BrowserWindow
       url?: string
     }
     const fixedWindows: Record<string, Win> = {}
@@ -184,7 +184,7 @@ export function createWindow(
       const { window: existingWindow, url: currentURL } = existing
 
       if (!existingWindow || existingWindow.isDestroyed()) {
-        const window = new Electron.BrowserWindow({
+        const window = new BrowserWindow({
           width: size.width,
           height: size.height,
           frame: true
@@ -386,6 +386,21 @@ export function createWindow(
 }
 
 /**
+ * Screen coordinates for popup window
+ *
+ */
+function getPositionForPopup(screen: Screen) {
+  if (screen) {
+    const nWindows = BrowserWindow.getAllWindows().length
+    const { bounds } = screen.getPrimaryDisplay()
+    return {
+      x: bounds.width - popupWindowDefaults.width - 50,
+      y: Math.round((bounds.height - popupWindowDefaults.height) / 4 + (nWindows - 1) * 40)
+    }
+  }
+}
+
+/**
  * Strip off the command to be executed from the given argv
  *
  */
@@ -394,7 +409,7 @@ interface Command {
   subwindowPlease: boolean
   subwindowPrefs: ISubwindowPrefs
 }
-export const getCommand = (argv: string[]): Command => {
+export const getCommand = (argv: string[], screen: () => Promise<Screen>): Command => {
   debug('getCommand', argv)
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
@@ -430,6 +445,7 @@ export const getCommand = (argv: string[]): Command => {
   if (process.env.KUI_POPUP_WINDOW_RESIZE) {
     subwindowPrefs = {
       fullscreen: true,
+      position: async () => getPositionForPopup(await screen()),
       width: popupWindowDefaults.width,
       height: popupWindowDefaults.height
     }
@@ -507,7 +523,10 @@ export async function initElectron(
     app.on('second-instance', (event: Electron.Event, commandLine: string[]) => {
       // Someone tried to run a second instance, open a new window
       // to handle it
-      const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine)
+      const { argv, subwindowPlease, subwindowPrefs } = getCommand(
+        commandLine,
+        async () => (await import('electron')).screen
+      )
       debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
       createWindow(true, argv, subwindowPlease, subwindowPrefs)
     })
