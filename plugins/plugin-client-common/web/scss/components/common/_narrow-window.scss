@@ -1,0 +1,5 @@
+@mixin narrow-window {
+  @media (max-width: 44rem) {
+    @content;
+  }
+}

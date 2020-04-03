@@ -1,3 +1,5 @@
+@import '../common/narrow-window';
+
 .bx--data-table {
   [data-tag='badge'] {
     display: flex;
@@ -56,12 +58,6 @@
         }
       }
     }
-  }
-}
-
-@mixin narrow-window {
-  @media (max-width: 44rem) {
-    @content;
   }
 }
 

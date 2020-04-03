@@ -1,3 +1,5 @@
+@import '../common/narrow-window';
+
 body[kui-theme-style] {
   .bx--select--inline .bx--select-input {
     fill: var(--color-text-01);
@@ -147,7 +149,15 @@ body .bx--data-table {
   }
 }
 
-body[kui-theme-style] .repl.sidecar-visible {
+@mixin full-width-tables {
+  .kui--data-table-wrapper {
+    /* render tables full-width when sidecar is open https://github.com/IBM/kui/issues/3952 */
+    flex: 1;
+  }
+  .kui--paginated-table {
+    flex: 1;
+  }
+
   .repl-result {
     width: 100%;
 
@@ -176,10 +186,13 @@ body[kui-theme-style] .repl.sidecar-visible {
   }
 }
 
-.sidecar-visible .kui--data-table-wrapper {
-  /* render tables full-width when sidecar is open https://github.com/IBM/kui/issues/3952 */
-  flex: 1;
+body[kui-theme-style] .repl.sidecar-visible {
+  @include full-width-tables;
 }
+@include narrow-window {
+  @include full-width-tables;
+}
+
 .kui--data-table-wrapper {
   overflow-x: auto;
 }
@@ -187,7 +200,4 @@ body[kui-theme-style] .repl.sidecar-visible {
 .kui--paginated-table {
   display: flex;
   flex-direction: column;
-}
-.sidecar-visible .kui--paginated-table {
-  flex: 1;
 }
