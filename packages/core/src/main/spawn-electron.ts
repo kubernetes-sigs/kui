@@ -295,7 +295,7 @@ export function createWindow(
     //
     // set up ipc from renderer
     //
-    const { ipcMain } = Electron
+    const { ipcMain } = await import('electron')
 
     //
     // take a screenshot; note that this has to be done in the main
