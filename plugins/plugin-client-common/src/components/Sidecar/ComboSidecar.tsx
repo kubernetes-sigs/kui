@@ -45,6 +45,10 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
     // this.cleaners.push(() => eventChannelUnsafe.off(channel1, onResponse))
   }
 
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
+  }
+
   private onResponse(tab: Tab, response: MultiModalResponse | NavResponse) {
     this.setState({
       tab,

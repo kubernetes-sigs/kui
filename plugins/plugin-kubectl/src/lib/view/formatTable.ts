@@ -167,7 +167,8 @@ export const formatTable = <O extends KubeOptions>(
   verb: string,
   entityTypeFromCommandLine: string,
   options: O,
-  preTable: Pair[][]
+  preTable: Pair[][],
+  nameColumn = 'NAME'
 ): Table => {
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
@@ -182,6 +183,8 @@ export const formatTable = <O extends KubeOptions>(
       ? 'get'
       : isHelmStatus
       ? 'get'
+      : verb === 'krew'
+      ? verb
       : undefined) || undefined
 
   // helm doesn't support --output
@@ -199,13 +202,15 @@ export const formatTable = <O extends KubeOptions>(
       return kind ? ' ' + kind : ''
       /* } else if (drilldownVerb === 'config') {
         return ' use-context'; */
+    } else if (drilldownVerb === 'krew') {
+      return ' ' + entityTypeFromCommandLine
     } else {
       return ''
     }
   }
 
   // maximum column count across all rows
-  const nameColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAME')
+  const nameColumnIdx = preTable[0].findIndex(({ key }) => key === nameColumn)
   const namespaceColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAMESPACE')
   const maxColumns = preTable.reduce((max, columns) => Math.max(max, columns.length), 0)
 
@@ -271,7 +276,7 @@ export const formatTable = <O extends KubeOptions>(
         fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         onclickSilence: true,
-        css: firstColumnCSS,
+        css: firstColumnCSS + (rows[0].key === nameColumn ? ' kui--table-cell-is-name' : ''),
         rowCSS,
         outerCSS: `${header} ${outerCSSForKey[rows[0].key] || ''}`,
         attributes: rows
@@ -331,7 +336,8 @@ export const stringToTable = <O extends KubeOptions>(
   args: Arguments<O>,
   command?: string,
   verb?: string,
-  entityType?: string
+  entityType?: string,
+  nameColumn?: string
 ): KubeTableResponse => {
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
@@ -344,7 +350,7 @@ export const stringToTable = <O extends KubeOptions>(
   } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
     if (preTables.length === 1) {
-      const T = formatTable(command, verb, entityType, args.parsedOptions, preTables[0])
+      const T = formatTable(command, verb, entityType, args.parsedOptions, preTables[0], nameColumn)
       if (args.execOptions.filter) {
         T.body = args.execOptions.filter(T.body)
       }

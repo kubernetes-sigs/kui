@@ -93,6 +93,10 @@ export abstract class BaseSidecar<
     }
   }
 
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
+  }
+
   /** @return a `HistoryEntry` for the given `Response` */
   protected abstract getState(
     tab: KuiTab,

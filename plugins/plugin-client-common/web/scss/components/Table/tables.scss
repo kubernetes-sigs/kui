@@ -41,7 +41,8 @@ body .bx--data-table-container {
       padding-right: 1em;
     }
 
-    td [data-key='NAME'] {
+    td [data-key='NAME'],
+    td .kui--table-cell-is-name {
       font-weight: 700;
     }
 
