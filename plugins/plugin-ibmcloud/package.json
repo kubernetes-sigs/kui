@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-ibmcloud",
-  "version": "1.0.1",
+  "version": "8.1.0",
   "description": "ibmcloud kubernetes service kui plugin",
   "license": "Apache-2.0",
   "keywords": [
@@ -28,11 +28,11 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/core": "*",
-    "@kui-shell/plugin-bash-like": "*",
-    "@kui-shell/plugin-core-support": "*",
-    "@kui-shell/plugin-editor": "*",
-    "@kui-shell/plugin-kubectl": "*",
+    "@kui-shell/core": "^8.1.0",
+    "@kui-shell/plugin-bash-like": "^8.1.0",
+    "@kui-shell/plugin-core-support": "^8.1.0",
+    "@kui-shell/plugin-editor": "^8.1.0",
+    "@kui-shell/plugin-kubectl": "^8.1.0",
     "debug": "4.1.1",
     "fs-extra": "9.0.0",
     "js-yaml": "3.13.1",
