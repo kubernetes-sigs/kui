@@ -1033,9 +1033,11 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content code {
   font-family: var(--font-monospace);
 }
-.page-content p > code {
+.page-content p > code,
+.page-content li > code {
   color: var(--color-base0F);
   opacity: 0.875;
+  word-break: break-all;
 }
 .page-content p:not(:last-child) {
   padding-bottom: 0.5em;
@@ -1103,6 +1105,9 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-weight: 400;
   list-style-type: none;
   position: relative;
+  &:not(:first-child) {
+    margin-top: 0.5em;
+  }
 }
 .page-content li:before {
   content: "\002013";

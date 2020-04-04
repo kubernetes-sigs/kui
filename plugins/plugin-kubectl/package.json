@@ -1,5 +1,5 @@
 {
-  "name": "@kui-shell/plugin-kubeui",
+  "name": "@kui-shell/plugin-kubectl",
   "version": "1.0.1",
   "description": "Kubernetes visualization plugin for kubernetes",
   "license": "Apache-2.0",
@@ -15,13 +15,13 @@
   "contributors": [
     "Mengting Yan"
   ],
-  "homepage": "https://github.com/kui-shell/plugin-kubeui#readme",
+  "homepage": "https://github.com/IBM/kui#readme",
   "bugs": {
-    "url": "https://github.com/kui-shell/plugin-kubeui/issues/new"
+    "url": "https://github.com/IBM/kui/issues/new"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kui-shell/plugin-kubeui.git"
+    "url": "git+https://github.com/IBM/kui.git"
   },
   "main": "dist/index.js",
   "module": "mdist/index.js",

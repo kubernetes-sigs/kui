@@ -19,6 +19,9 @@
       "path": "helm"
     },
     {
+      "path": "krew"
+    },
+    {
       "path": "logs"
     },
     {
