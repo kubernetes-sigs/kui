@@ -220,7 +220,7 @@ export function createWindow(
     mainWindow.webContents.on(
       'new-window',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (event: Event, url: string, frameName: string, disposition: string, options: any) => {
+      async (event: Event, url: string, frameName: string, disposition: string, options: any) => {
         if (url.startsWith('https://youtu.be')) {
           // special handling of youtube links
           openFixedWindow({
@@ -232,7 +232,7 @@ export function createWindow(
           })
         } else {
           event.preventDefault()
-          Electron.shell.openExternal(url)
+          ;(await import('electron')).shell.openExternal(url)
         }
       }
     )
