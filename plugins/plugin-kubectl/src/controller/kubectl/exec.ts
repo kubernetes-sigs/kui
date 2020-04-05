@@ -29,7 +29,7 @@ import {
 
 import RawResponse from './response'
 import commandPrefix from '../command-prefix'
-import { KubeOptions, getNamespaceForArgv, getContextForArgv, fileOf } from './options'
+import { KubeOptions, getNamespaceForArgv, getContextForArgv, getFileForArgv } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { stringToTable, KubeTableResponse } from '../../lib/view/formatTable'
@@ -48,8 +48,7 @@ export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Argume
 /** Standard status preparation */
 function DefaultPrepareForStatus<O extends KubeOptions>(cmd: string, args: Arguments<O>) {
   const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf(cmd) + 1).join(' ')
-  const file = fileOf(args)
-  return file ? `-f ${fileOf(args)} ${rest}` : rest
+  return `${getFileForArgv(args, true)}${rest}`
 }
 
 /**

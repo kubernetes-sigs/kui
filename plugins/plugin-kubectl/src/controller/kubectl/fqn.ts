@@ -57,7 +57,7 @@ function kindPart(apiVersion: string, kind: string) {
   return `${kind}${versionString(apiVersion)}`
 }
 
-function kindPartOf(resource: KubeResource) {
+export function kindPartOf(resource: KubeResource) {
   return kindPart(resource.apiVersion, resource.kind)
 }
 

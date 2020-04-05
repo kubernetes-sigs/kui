@@ -32,10 +32,10 @@ import {
 
 import { flags } from './flags'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
-import { KubeOptions as Options, fileOf, getNamespace, getContextForArgv } from './options'
+import { KubeOptions as Options, fileOf, kustomizeOf, getNamespace, getContextForArgv } from './options'
 import commandPrefix from '../command-prefix'
 
-import fetchFile from '../../lib/util/fetch-file'
+import fetchFile, { fetchFileKustomize } from '../../lib/util/fetch-file'
 import KubeResource from '../../lib/model/resource'
 import TrafficLight from '../../lib/model/traffic-light'
 import { isDone, FinalState } from '../../lib/model/states'
@@ -60,6 +60,12 @@ const usage = (command: string) => ({
       alias: '-f',
       file: true,
       docs: 'A kubernetes resource file or kind'
+    },
+    {
+      name: '--kustomize',
+      alias: '-k',
+      file: true,
+      docs: 'A kustomize file or directory'
     },
     {
       name: 'resourceName',
@@ -100,11 +106,11 @@ const usage = (command: string) => ({
 })
 
 /**
- * @param file an argument to `-f`, as in `kubectl -f <file>`
+ * @param file an argument to `-f` or `-k`; e.g. `kubectl -f <file>`
  *
  */
 async function getResourcesReferencedByFile(file: string, args: Arguments<FinalStateOptions>): Promise<ResourceRef[]> {
-  const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFile(args.tab, file)])
+  const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFile(args.REPL, file)])
 
   const namespaceFromCommandLine = getNamespace(args) || 'default'
 
@@ -119,6 +125,49 @@ async function getResourcesReferencedByFile(file: string, args: Arguments<FinalS
       namespace
     }
   })
+}
+
+/**
+ * @param kusto a kustomize file spec
+ *
+ */
+interface Kustomization {
+  resources?: string[]
+}
+async function getResourcesReferencedByKustomize(
+  kusto: string,
+  args: Arguments<FinalStateOptions>
+): Promise<ResourceRef[]> {
+  const [{ safeLoad }, { join }, raw] = await Promise.all([
+    import('js-yaml'),
+    import('path'),
+    fetchFileKustomize(args.REPL, kusto)
+  ])
+
+  const kustomization: Kustomization = safeLoad(raw.data)
+  if (kustomization.resources) {
+    const files = await Promise.all(
+      kustomization.resources.map(resource => {
+        return fetchFile(args.REPL, raw.dir ? join(raw.dir, resource) : resource)
+      })
+    )
+
+    return files
+      .map(raw => safeLoad(raw[0]))
+      .map(resource => {
+        const { apiVersion, kind, metadata } = resource
+        const { group, version } = versionOf(apiVersion)
+        return {
+          group,
+          version,
+          kind,
+          name: metadata.name,
+          namespace: metadata.namespace || getNamespace(args) || 'default'
+        }
+      })
+  }
+
+  return []
 }
 
 /**
@@ -385,6 +434,7 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
   const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf('status') + 1)
   const commandArg = command || args.parsedOptions.command
   const file = fileOf(args)
+  const kusto = kustomizeOf(args)
   const contextArgs = getContextForArgv(args)
   // const fileArgs = file ? `-f ${file}` : ''
   // const cmd = `${command} get ${rest} --watch ${fileArgs} ${contextArgs}`
@@ -392,6 +442,8 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
   try {
     const resourcesToWaitFor = file
       ? await getResourcesReferencedByFile(file, args)
+      : kusto
+      ? await getResourcesReferencedByKustomize(kusto, args)
       : getResourcesReferencedByCommandLine(rest, args)
     debug('resourcesToWaitFor', resourcesToWaitFor)
 
