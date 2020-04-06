@@ -91,43 +91,26 @@ export const doExplain = (command = 'kubectl') =>
             .concat([{ label: kind, command: undefined }]),
           menus: [
             {
-              [kind]: {
-                modes: [
-                  {
-                    mode: 'Overview',
-                    contentType: 'text/markdown',
-                    content: `### Description
-#### ${description.replace(/\n/g, ' ')}
-### Version
-${version}
-${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
-`
-                  }
-                ]
-              }
+              label: kind,
+              items: [
+                {
+                  mode: 'Overview',
+                  contentType: 'text/markdown',
+                  content: `### Description
+    #### ${description.replace(/\n/g, ' ')}
+    ### Version
+    ${version}
+    ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
+    `
+                }
+              ]
             }
           ]
             .concat(
-              requiredFields.length === 0
-                ? []
-                : [
-                    {
-                      'Required Fields': {
-                        modes: requiredFields.map(formatField)
-                      }
-                    }
-                  ]
+              requiredFields.length === 0 ? [] : [{ label: 'Required Fields', items: requiredFields.map(formatField) }]
             )
             .concat(
-              notRequiredFields.length === 0
-                ? []
-                : [
-                    {
-                      Fields: {
-                        modes: notRequiredFields.map(formatField)
-                      }
-                    }
-                  ]
+              notRequiredFields.length === 0 ? [] : [{ label: 'Fields', items: notRequiredFields.map(formatField) }]
             )
         }
       }

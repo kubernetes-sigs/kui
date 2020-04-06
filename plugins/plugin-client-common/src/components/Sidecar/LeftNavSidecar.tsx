@@ -25,7 +25,6 @@ import {
   NavResponse,
   MultiModalMode,
   ParsedOptions,
-  Menu,
   Link,
   isLinkWithCommand
 } from '@kui-shell/core'
@@ -119,10 +118,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     const navigations = []
     // get state from each of the left navigation
     response.menus.forEach(menu => {
-      Object.entries(menu).forEach(([title, mmr]) => {
-        const state = getStateFromMMR(tab, mmr, argvNoOptions, parsedOptions)
-        navigations.push(Object.assign({ title }, state))
-      })
+      const state = getStateFromMMR(tab, { modes: menu.items }, argvNoOptions, parsedOptions)
+      navigations.push(Object.assign({ title: menu.label }, state))
     })
 
     return {
@@ -220,10 +217,6 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     return {}
   }
 
-  private getMMRFromMenu(menu: Menu) {
-    return Object.values(menu)[0]
-  }
-
   protected bodyContent(tabIdx: number, menuIdx = 0) {
     return (
       <React.Suspense fallback={<div />}>
@@ -232,7 +225,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
           tab={this.state.tab}
           mode={this.current.allNavs[menuIdx].tabs[tabIdx]}
           args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
-          response={this.getMMRFromMenu(this.current.response.menus[menuIdx])}
+          response={{ modes: this.current.response.menus[menuIdx].items }}
         />
       </React.Suspense>
     )

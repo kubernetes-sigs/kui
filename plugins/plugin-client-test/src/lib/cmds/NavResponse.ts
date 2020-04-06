@@ -32,15 +32,7 @@ interface Options extends ParsedOptions {
 const navResponseWithoutLinks = (): NavResponse => ({
   apiVersion: 'kui-shell/v1',
   kind: 'NavResponse',
-  menus: [
-    {
-      'Test Nav Without Links': {
-        kind: 'MultiModelResponse',
-        metadata: { name: 'test nav 2' },
-        modes: tableMode
-      }
-    }
-  ]
+  menus: [{ label: 'Test Nav Without Links', items: tableMode }]
 })
 
 function navResponseWithBreadcrumbs(): NavResponse {
@@ -62,15 +54,7 @@ const doNav = () => (args: Arguments<Options>): NavResponse => {
     return {
       apiVersion: 'kui-shell/v1',
       kind: 'NavResponse',
-      menus: [
-        {
-          'Test Nav 2': {
-            kind: 'MultiModelResponse',
-            metadata: { name: 'test nav 2' },
-            modes: tableMode
-          }
-        }
-      ],
+      menus: [{ label: 'Test Nav 2', items: tableMode }],
       links: [
         { label: 'Home Page', href: 'http://kui.tools' },
         { label: 'switch', command: 'test nav' }
@@ -80,15 +64,7 @@ const doNav = () => (args: Arguments<Options>): NavResponse => {
     return {
       apiVersion: 'kui-shell/v1',
       kind: 'NavResponse',
-      menus: [
-        {
-          'Test Nav': {
-            kind: 'MultiModelResponse',
-            metadata: { name: 'test nav' },
-            modes: tableMode
-          }
-        }
-      ],
+      menus: [{ label: 'Test Nav', items: tableMode }],
       links: [
         { label: 'Home Page', href: 'http://kui.tools' },
         { label: 'switch', command: 'test nav --switch' }
