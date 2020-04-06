@@ -33,41 +33,34 @@ function groupByKind(resources: KubeResource[], rawFull: string): Menu[] {
 
   const groups = resources.reduce((groups, resource, idx) => {
     const key = kindPartOf(resource)
-
     const group = groups[key]
     if (!group) {
       groups[key] = {
-        modes: []
+        label: key,
+        items: []
       }
     }
 
-    groups[key].modes.push({
+    groups[key].items.push({
       mode: resource.metadata.name,
       content: rawSplit[idx].replace(/^\n/, ''),
       contentType: 'yaml'
     })
-
     return groups
-  }, {} as Menu)
+  }, {} as Record<string, Menu>)
 
   const rawMenu: Menu = {
-    [strings('Raw Data')]: {
-      modes: [
-        {
-          mode: 'YAML',
-          content: rawFull,
-          contentType: 'yaml'
-        }
-      ]
-    }
+    label: strings('Raw Data'),
+    items: [
+      {
+        mode: 'YAML',
+        content: rawFull,
+        contentType: 'yaml'
+      }
+    ]
   }
 
-  // align to the somewhat odd NavResponse Menu model
-  return Object.keys(groups)
-    .map(group => ({
-      [group]: groups[group]
-    }))
-    .concat([rawMenu])
+  return Object.values(groups).concat([rawMenu])
 }
 
 export const doKustomize = (command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
