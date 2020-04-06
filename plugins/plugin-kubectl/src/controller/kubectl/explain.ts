@@ -50,8 +50,8 @@ ${formatDocumentation(_[4])}
 }
 
 // alternate patterns to match against
-const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?(.+)/s
-const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?(.+)\n\nFIELDS:\n(.+)/s
+const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
+const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
 
 export const doExplain = (command = 'kubectl') =>
   async function(args: Arguments<KubeOptions>) {
@@ -72,7 +72,7 @@ export const doExplain = (command = 'kubectl') =>
           : fields
               .split(/\n\n/)
               .filter(_ => _)
-              .map(_ => _.match(/\s*(\S+)\s+<(\S+)>( -required-)?\n\s*(.*)/s))
+              .map(_ => _.match(/\s*(\S+)\s+<(\S+)>( -required-)?\n\s*([\s\S]*)/))
               .filter(_ => _)
 
         const requiredFields = fieldSections.filter(_ => _[3])
