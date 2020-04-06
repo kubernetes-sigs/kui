@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Menu, NavResponse, i18n } from '@kui-shell/core'
+import { Arguments, NavResponse, i18n } from '@kui-shell/core'
 
 import { isUsage, doHelp, KubeOptions, doExecWithStdout } from '@kui-shell/plugin-kubectl'
 
@@ -49,44 +49,43 @@ export default (command: string) => async (args: Arguments<KubeOptions>) => {
     const homepage = !kv['HOMEPAGE:'] ? [] : [{ label: strings('Home Page'), href: kv['HOMEPAGE:'] }]
     const links = uri.concat(homepage)
 
-    const menus: Menu[] = [
+    const menus = [
       {
-        [strings('Plugin')]: {
-          modes: [
-            {
-              mode: 'overview',
-              label: strings('Overview'),
-              content: keys
-                .filter(_ => _ !== 'HOMEPAGE:' && _ !== 'CAVEATS:' && _ !== 'URI:')
-                .reduce((M, key) => {
-                  return (
-                    M +
-                    `
-### ${key}
-${key === 'NAME:' ? '#### ' : ''}${key === 'SHA256:' ? '`' : ''}${kv[key]}${key === 'SHA256:' ? '`' : ''}`
-                  )
-                }, ''),
-              contentType: 'text/markdown'
-            }
-          ].concat(
-            !kv['CAVEATS:']
-              ? []
-              : [
-                  {
-                    mode: 'caveats',
-                    label: strings('Caveats'),
-                    contentType: 'text/markdown',
-                    content: kv['CAVEATS:']
-                      .replace(/^\\\n/, '')
-                      .replace(/\n\/$/, '')
-                      .replace(/ \| /g, '')
-                      .replace(/(export \S+=.*)/g, '`$1`')
-                      .replace(/(%USERPROFILE\S+)/g, '`$1`')
-                      .replace(/\n\s+\$(.*)/g, '\n   ```\n$1\n   ```\n')
-                  }
-                ]
-          )
-        }
+        label: strings('Plugin'),
+        items: [
+          {
+            mode: 'overview',
+            label: strings('Overview'),
+            content: keys
+              .filter(_ => _ !== 'HOMEPAGE:' && _ !== 'CAVEATS:' && _ !== 'URI:')
+              .reduce((M, key) => {
+                return (
+                  M +
+                  `
+  ### ${key}
+  ${key === 'NAME:' ? '#### ' : ''}${key === 'SHA256:' ? '`' : ''}${kv[key]}${key === 'SHA256:' ? '`' : ''}`
+                )
+              }, ''),
+            contentType: 'text/markdown'
+          }
+        ].concat(
+          !kv['CAVEATS:']
+            ? []
+            : [
+                {
+                  mode: 'caveats',
+                  label: strings('Caveats'),
+                  contentType: 'text/markdown',
+                  content: kv['CAVEATS:']
+                    .replace(/^\\\n/, '')
+                    .replace(/\n\/$/, '')
+                    .replace(/ \| /g, '')
+                    .replace(/(export \S+=.*)/g, '`$1`')
+                    .replace(/(%USERPROFILE\S+)/g, '`$1`')
+                    .replace(/\n\s+\$(.*)/g, '\n   ```\n$1\n   ```\n')
+                }
+              ]
+        )
       }
     ]
 

@@ -24,9 +24,6 @@ import {
   NavResponse,
   isNavResponse,
   isLink,
-  Menu,
-  isMultiModalResponse,
-  MultiModalResponse,
   Table,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
@@ -98,22 +95,16 @@ const getAbout = async (): Promise<NavResponse> => {
     }
 
     // inject Configure Menu
-    const fullMenus = (_.menus as Menu[]).slice(0)
-    fullMenus.push({
-      [strings('Configure')]: {
-        modes: [
-          {
-            mode: 'theme',
-            contentFrom: 'themes'
-          }
-        ]
-      }
-    })
+    const fullMenus = _.menus.slice(0)
+    const configureMenu = {
+      label: strings('Configure'),
+      items: [{ mode: 'theme', contentFrom: 'themes' }]
+    }
 
     return {
       apiVersion: _apiVersion || 'kui-shell/v1',
       kind: _kind || 'NavResponse',
-      menus: fullMenus,
+      menus: fullMenus.concat([configureMenu]),
       links: _['links'] || []
     }
   })
@@ -140,44 +131,19 @@ const translateModesLabel = (modesFromAbout: Mode[]) => {
   )
 }
 
-// finish the MMR from modes
-const createMMRFromAbout = (modes: Mode[], name: string): MultiModalResponse => {
-  const mmr = {
-    kind: 'about',
-    modes,
-    metadata: { name }
-  }
-
-  if (!isMultiModalResponse(mmr)) {
-    throw new Error('Error in modes of about.json')
-  }
-
-  return mmr
-}
-
 const aboutWindow = async (): Promise<NavResponse> => {
-  const name = await getName()
   const { apiVersion, kind, menus, links } = await getAbout()
 
-  // translated labels and fulfilled MMR details for users
-  const translatedMenusWithMMR = menus.map(menu => {
-    const menuTitle = Object.keys(menu)[0]
-    const mmr = Object.values(menu)[0]
-
-    try {
-      const modesFromAbout = mmr.modes
-      const modes = translateModesLabel(modesFromAbout)
-      const fullMMR = createMMRFromAbout(modes, name)
-      return { [clientStrings(menuTitle)]: fullMMR }
-    } catch (err) {
-      console.error(err)
-      throw new Error('Error in menus of about.json')
-    }
+  // translate the label of sidecar modes under each menu
+  menus.forEach(menu => {
+    menu.label = clientStrings(menu.label)
+    menu.items = translateModesLabel(menu.items)
   })
 
-  const translatedLinks = links.map(link => {
+  // translate the label of each navlink
+  links.forEach(link => {
     if (isLink(link)) {
-      return Object.assign(link, { label: clientStrings(link.label) })
+      link.label = clientStrings(link.label)
     } else {
       console.error('error in about.json', link)
       throw new Error('links in about.json is not supported')
@@ -187,8 +153,8 @@ const aboutWindow = async (): Promise<NavResponse> => {
   return {
     apiVersion,
     kind,
-    menus: translatedMenusWithMMR,
-    links: translatedLinks
+    menus,
+    links
   }
 }
 

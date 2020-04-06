@@ -232,9 +232,6 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
     .filter(x => x)
 
   /* Here comes Usage NavResponse */
-  const kind = 'MultiModalResponse'
-  const metadata = { name: 'usage' }
-
   const baseModes = (): MultiModalMode[] => [
     {
       mode: strings('Introduction'),
@@ -293,29 +290,23 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
 
   /** headerNav contains sections: About and Usage */
   const headerMenu = (title: string): Menu => ({
-    [title]: {
-      kind,
-      metadata,
-      modes: baseModes().concat(optionsMenuItems())
-    }
+    label: title,
+    items: baseModes().concat(optionsMenuItems())
   })
 
   /** commandNav contains sections: Commands */
   const commandMenu = (): Menu => {
     if (sections.some(section => /command/i.test(section.title))) {
       return {
-        [strings('Commands')]: {
-          kind,
-          metadata,
-          modes: sections
-            .filter(section => /command/i.test(section.title))
-            .map(section => {
-              return {
-                mode: section.title.replace(/Command(s)/, '').replace(':', ''),
-                content: commandDocTable(section.rows, command, verb, 'COMMAND')
-              }
-            })
-        }
+        label: strings('Commands'),
+        items: sections
+          .filter(section => /command/i.test(section.title))
+          .map(section => {
+            return {
+              mode: section.title.replace(/Command(s)/, '').replace(':', ''),
+              content: commandDocTable(section.rows, command, verb, 'COMMAND')
+            }
+          })
       }
     }
   }
@@ -324,18 +315,15 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
   const exampleMenu = () => {
     if (detailedExample && detailedExample.length > 0) {
       return {
-        [strings('Examples')]: {
-          kind,
-          metadata,
-          modes: detailedExample.map(_ => ({
-            // e.g.
-            //  - kubectl get ... -> get ...
-            //  - kubectl create clusterrole ... -> clusterrole ...
-            mode: _.command.replace(new RegExp(`^${command}\\s+${entityType ? verb : ''}`), ''),
-            contentType: 'text/markdown',
-            content: formatAsMarkdown(_)
-          }))
-        }
+        label: strings('Examples'),
+        items: detailedExample.map(_ => ({
+          // e.g.
+          //  - kubectl get ... -> get ...
+          //  - kubectl create clusterrole ... -> clusterrole ...
+          mode: _.command.replace(new RegExp(`^${command}\\s+${entityType ? verb : ''}`), ''),
+          contentType: 'text/markdown',
+          content: formatAsMarkdown(_)
+        }))
       }
     }
   }
