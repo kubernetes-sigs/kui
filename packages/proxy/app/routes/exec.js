@@ -51,7 +51,7 @@ async function allocateUser() {
 }
 
 /** thin wrapper on child_process.exec */
-function main(cmdline, execOptions, server, port, host, existingSession, locale) {
+function main(cmdline, execOptions, server, port, hostname, existingSession, locale) {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     const { uid, gid, HOME } = existingSession || (await allocateUser())
@@ -67,6 +67,7 @@ function main(cmdline, execOptions, server, port, host, existingSession, locale)
         DEBUG: process.env.DEBUG,
         DEVMODE: true,
         TRAVIS_JOB_ID: process.env.TRAVIS_JOB_ID,
+        KUBECONFIG: process.env.KUBECONFIG,
         KUI_HEADLESS: true,
         KUI_REPL_MODE: 'stdout',
         KUI_EXEC_OPTIONS: JSON.stringify(execOptions)
@@ -121,7 +122,9 @@ function main(cmdline, execOptions, server, port, host, existingSession, locale)
           response: {
             mode: 'raw',
             content: {
-              url: `${proto}://${host}/bash/${N}`,
+              proto,
+              port: process.env.KUI_PROXY_COHOSTED ? -1 : port,
+              path: `/bash/${N}`,
               uid,
               gid
             }
@@ -189,15 +192,7 @@ module.exports = (server, port) => {
           }) */
         const sessionToken = parseCookie(req.headers.cookie || '')[sessionKey]
         const session = sessionToken && JSON.parse(Buffer.from(sessionToken, 'base64').toString('utf-8'))
-        const { type, cookie, response } = await main(
-          command,
-          execOptions,
-          server,
-          port,
-          req.headers.host,
-          session,
-          locale
-        )
+        const { type, cookie, response } = await main(command, execOptions, server, port, req.hostname, session, locale)
 
         if (cookie) {
           res.header('Access-Control-Allow-Credentials', 'true')
@@ -221,10 +216,16 @@ module.exports = (server, port) => {
   const router = express.Router()
 
   /** GET exec */
-  router.get('/:command', exec(req => req.params))
+  router.get(
+    '/:command',
+    exec(req => req.params)
+  )
 
   /** POST exec */
-  router.post('/', exec(req => req.body))
+  router.post(
+    '/',
+    exec(req => req.body)
+  )
 
   return router
 }

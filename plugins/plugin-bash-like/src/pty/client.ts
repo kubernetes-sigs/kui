@@ -694,8 +694,27 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
     const resp = await tab.REPL.rexec<ChannelId>('bash websocket open', {
       rethrowErrors: true
     })
-    const { url, uid, gid } = resp.content
-    debug('websocket url', url, uid, gid)
+    const { proto, port, path, uid, gid } = resp.content
+    const protoHostPortContextRoot = window.location.href
+      .replace(/#?\/?$/, '')
+      .replace(/^http(s?):\/\/([^:/]+):(\d+)?/, `${proto}://$2:${port === -1 ? '$3' : port}`)
+      .replace(/\/(index\.html)?$/, '')
+    const url = `${protoHostPortContextRoot}${path}`
+    debug('websocket url', url, proto, port, path, uid, gid)
+    console.error(
+      '!!!!!!!!WSURL',
+      url,
+      '|',
+      proto,
+      '||',
+      port,
+      '|||',
+      path,
+      '||||',
+      window.location.href,
+      '||||',
+      protoHostPortContextRoot
+    )
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
   } catch (err) {

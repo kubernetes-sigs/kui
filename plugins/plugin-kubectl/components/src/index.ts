@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-interface ChannelId {
-  proto: string
-  port: number
-  path: string
-  uid: number
-  gid: number
-}
-
-export default ChannelId
+export { default as CurrentContext } from './CurrentContext'
+export { default as CurrentNamespace } from './CurrentNamespace'

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kui-deployment
+  labels:
+    app: kui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kui
+  template:
+    metadata:
+      labels:
+        app: kui
+    spec:
+      terminationGracePeriodSeconds: 0
+      affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                      - kui
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: kui
+        image: kuishell/kui:latest
+        imagePullPolicy: Always
+        env:
+          - name: DEBUG
+            value: "*"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"

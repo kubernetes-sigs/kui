@@ -40,7 +40,7 @@ install:
   - npm ci
   - ./bin/switch-client.sh ${CLIENT-default}
   - ./tools/codecov/instrument.sh
-  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; npm run watch:webpack; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
+  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
   - if [ -n "$k8s" ]; then wait $k8s; fi
 
 script:
@@ -52,6 +52,7 @@ jobs:
     - if: os = windows AND env(NO_WINDOWS) IS present
 
   include:
+    - env: DEPLOY="cluster" LAYERS="core" MOCHA_RUN_TARGET=webpack
     - env: LAYERS="k8s k8s-popup helm logs" MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_HELM=true
     - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
     - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
