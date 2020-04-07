@@ -110,7 +110,12 @@ class ProxyEvaluator implements ReplEval {
         Object.assign({}, execOptions, {
           isProxied: true,
           cwd: process.env.PWD,
-          env: process.env,
+          env:
+            process.env && execOptions.env
+              ? { ...process.env, ...execOptions.env }
+              : execOptions.env
+              ? execOptions.env
+              : process.env,
           credentials: getValidCredentials(),
           tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
           rawResponse: true // we will post-process the response
