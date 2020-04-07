@@ -19,7 +19,7 @@ import * as React from 'react'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
-import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl'
+import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 

@@ -17,6 +17,8 @@
   ],
   "bin": {
     "kui-build-proxy": "./build.sh",
+    "kui-build-docker-with-proxy": "./build-docker.sh",
+    "kui-run-cproxy": "./dev.sh",
     "kui-run-proxy": "./app/bin/run-proxy.sh"
   },
   "scripts": {

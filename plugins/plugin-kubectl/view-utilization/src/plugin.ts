@@ -20,13 +20,13 @@ import { KubeOptions, defaultFlags, commandPrefix } from '@kui-shell/plugin-kube
 import { topContainer, topPod } from './controller/get-pod-data'
 import { NodeOptions, topNode } from './controller/get-node-data'
 
-export default async (commandTree: Registrar) => {
+export default async (registrar: Registrar) => {
   // works around a defect in the core's `override` function; if the
   // plugin-kubectl is loaded before us, our override is ignored
-  const top = (await commandTree.find(`/${commandPrefix}/kubectl/top/node`, 'plugin-kubectl')).$ as (
+  const top = (await registrar.find(`/${commandPrefix}/kubectl/top/node`, 'plugin-kubectl')).$ as (
     args: Arguments<KubeOptions>
   ) => Promise<Table>
-  commandTree.listen(
+  registrar.listen(
     `/${commandPrefix}/kubectl/top/node-summary`,
     async (args: Arguments<NodeOptions>) => {
       args.command = args.command.replace(/node-summary/, 'node --summary')
@@ -36,12 +36,12 @@ export default async (commandTree: Registrar) => {
     defaultFlags
   )
 
-  commandTree.override(`/${commandPrefix}/kubectl/top/node`, 'plugin-kubectl', topNode, defaultFlags)
-  commandTree.override(`/${commandPrefix}/k/top/node`, 'plugin-kubectl', topNode, defaultFlags)
+  registrar.override(`/${commandPrefix}/kubectl/top/node`, 'plugin-kubectl', topNode, defaultFlags)
+  registrar.override(`/${commandPrefix}/k/top/node`, 'plugin-kubectl', topNode, defaultFlags)
 
-  commandTree.override(`/${commandPrefix}/kubectl/top/pod`, 'plugin-kubectl', topPod, defaultFlags)
-  commandTree.override(`/${commandPrefix}/k/top/pod`, 'plugin-kubectl', topPod, defaultFlags)
+  registrar.override(`/${commandPrefix}/kubectl/top/pod`, 'plugin-kubectl', topPod, defaultFlags)
+  registrar.override(`/${commandPrefix}/k/top/pod`, 'plugin-kubectl', topPod, defaultFlags)
 
-  commandTree.listen(`/${commandPrefix}/kubectl/top/container`, topContainer, defaultFlags)
-  commandTree.listen(`/${commandPrefix}/k/top/container`, topContainer, defaultFlags)
+  registrar.listen(`/${commandPrefix}/kubectl/top/container`, topContainer, defaultFlags)
+  registrar.listen(`/${commandPrefix}/k/top/container`, topContainer, defaultFlags)
 }

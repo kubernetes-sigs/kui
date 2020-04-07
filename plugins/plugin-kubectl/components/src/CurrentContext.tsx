@@ -15,9 +15,10 @@
  */
 
 import * as React from 'react'
-import { eventChannelUnsafe, wireToStandardEvents } from '@kui-shell/core'
+import { KubeContext } from '@kui-shell/plugin-kubectl'
 import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { KubeContext } from '..'
+
+import { eventChannelUnsafe, wireToStandardEvents } from '@kui-shell/core'
 
 interface State {
   text: string

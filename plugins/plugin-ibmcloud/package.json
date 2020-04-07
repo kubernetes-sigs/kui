@@ -31,7 +31,6 @@
     "@kui-shell/core": "^8.1.0",
     "@kui-shell/plugin-bash-like": "^8.1.0",
     "@kui-shell/plugin-core-support": "^8.1.0",
-    "@kui-shell/plugin-editor": "^8.1.0",
     "@kui-shell/plugin-kubectl": "^8.1.0",
     "debug": "4.1.1",
     "fs-extra": "9.0.0",

@@ -91,7 +91,3 @@ export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
 export { doDescribe } from './controller/kubectl/describe'
-
-/** Components */
-export { default as CurrentContext } from './components/CurrentContext'
-export { default as CurrentNamespace } from './components/CurrentNamespace'

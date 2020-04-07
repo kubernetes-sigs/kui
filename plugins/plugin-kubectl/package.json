@@ -30,7 +30,6 @@
     "@kui-shell/core": "^8.1.0",
     "@kui-shell/plugin-bash-like": "^8.1.0",
     "@kui-shell/plugin-core-support": "^8.1.0",
-    "@kui-shell/plugin-editor": "^8.1.0",
     "ansi_up": "4.0.4",
     "bytes-iec": "3.1.0",
     "command-exists": "1.2.8",

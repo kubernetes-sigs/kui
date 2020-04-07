@@ -37,8 +37,6 @@ set -o pipefail
 # @param $1 staging directory
 #
 STAGING="${1-`pwd`}"
-STAGING_DIR="$(cd $STAGING && pwd)/kui-webpack-tmp"
-STAGING="$STAGING_DIR"/kui
 echo "staging directory: $STAGING"
 
 CLIENT_HOME="$(pwd)"
@@ -56,128 +54,30 @@ echo "build-webpack STAGING=$STAGING"
 echo "build-webpack CORE_HOME=$CORE_HOME"
 echo "build-webpack APPDIR=$APPDIR"
 
-function pre {
-    (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/pre' -exec {} \;)
-    # (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/pre' -exec rm node_modules/@kui-plugin/{} \;)
-    # npm prune --production
-}
-
-function post {
-    (cd "$TOPDIR" && find -L "node_modules/.bin/@kui-plugin" -type f -path '*webpack/post' -exec {} \;)
-    # npm install
-}
-
-# copy the core bits to the staging area
-function tarCopy {
-    if [[ `uname` == Darwin ]]; then
-        which gtar || brew install gnu-tar
-        TAR=gtar
-    else
-        TAR=tar
-    fi
-
-    # word of warning for linux: in the TAR command below, the `-cf -` has
-    # to come before the --exclude rules!
-    "$TAR" -C "$CLIENT_HOME" -cf - \
-           --exclude "./npm-packs" \
-           --exclude "./dist" \
-           --exclude "./kui" \
-           --exclude "./kui-*-tmp" \
-           --exclude '.git*' \
-           --exclude '*flycheck_*.js' \
-           --exclude '*.icns' \
-           --exclude '*~' \
-           --exclude '*.d.ts' \
-           --exclude package-lock.json \
-           --exclude "./node_modules/husky" \
-           --exclude "node_modules/@types" \
-	   --exclude "monaco-editor/dev" \
-	   --exclude "monaco-editor/min-maps" \
-           --exclude '*/tests/*' \
-           --exclude './packages/proxy/*.js' \
-           --exclude "./build/*/node_modules/*" \
-           --exclude "./packages/*/node_modules/*" \
-           --exclude "./plugins/*/node_modules/*" \
-           --exclude './packages/builder' \
-           --exclude './tests' . | "$TAR" -C "$STAGING" -xf -
-
-    echo "tar copy done"
-}
-
-# TODO share this with headless/build.sh, as they should eventually be identical
-function configure {
-    # generate prescan.json
-    UGLIFY=true npx --no-install kui-prescan
-
-    mv node_modules/@kui-shell/prescan.json .            # /// prune will remove prescan.json
-
-    # remove any dev dependencies
-    npm prune --production
-
-    mv prescan.json node_modules/@kui-shell/prescan.json # \\\ restore it after the prune
-}
-
-# check for prerequisites
-function prereq {
-    if [ ! -d "$THEME" ]; then
-        echo "Your do not provide client definition"
-        exit 1
-    fi
-}
-
-# prep the staging area
-function init {
-    rm -rf "$STAGING_DIR"
-    mkdir -p "$STAGING"
-    cd "$STAGING"
-}
-
-# install the webpackery bits
-function initWebpack {
-    pushd "$STAGING_DIR" > /dev/null
-    cp -a "$BUILDER_HOME"/../webpack/{package.json,webpack.config.js} .
-
-    if [ -z "$NO_DOCKER" ]; then
-      cp -a "$BUILDER_HOME"/../webpack/{build-docker.sh,Dockerfile,Dockerfile.http,bin,conf.d} .
-    fi
-
-    popd > /dev/null
-}
+export MODE="${MODE-production}"
+export CLIENT_HOME="$CLIENT_HOME"
+export KUI_STAGE="$STAGING"
+export KUI_BUILDDIR="$BUILDDIR"
+export KUI_BUILDER_HOME="$BUILDER_HOME"
 
 # build the webpack bundles
 function webpack {
-    pushd "$STAGING_DIR" > /dev/null
+    pushd "$STAGING" > /dev/null
     rm -f "$BUILDDIR"/*.js*
-    MODE="${MODE-production}" CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode production
+    npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/webpack.config.js --mode production
     popd > /dev/null
 }
 
-# build a docker image that can serve the webpack client
-function docker {
-    if [ -z "${NO_DOCKER}" ]; then
-        pushd "$STAGING_DIR" > /dev/null
-        CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" ./build-docker.sh
-        popd > /dev/null
-    fi
-}
+KUI_LINK="$CLIENT_HOME"/node_modules/@kui-shell/proxy/kui
+if [ -L "$KUI_LINK" ]; then
+    echo "removing kui link"
+    rm -f "$KUI_LINK"
+    RESTORE_KUI_LINK=true
+fi
 
-# remove the staging area
-function clean {
-    if [ -z "$NO_CLEAN" ]; then
-        rm -rf "$STAGING"
-    fi
-}
+webpack
 
-# this is the main routine
-function build {
-    prereq
-    init
-    tarCopy
-    initWebpack
-    configure
-    webpack
-    docker
-    clean
-}
-
-build
+if [ -n "$RESTORE_KUI_LINK" ]; then
+    echo "restoring kui link"
+    git checkout packages/proxy/kui
+fi
