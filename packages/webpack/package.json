@@ -27,6 +27,7 @@
   },
   "bin": {
     "kui-build-webpack": "./build.sh",
+    "kui-build-docker": "./build-docker.sh",
     "kui-run-webpack": "./bin/webpack-client.sh",
     "kui-watch-webpack": "./bin/watch.sh"
   },

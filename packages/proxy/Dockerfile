@@ -1,5 +1,5 @@
 #
-# Copyright 2019 IBM Corporation
+# Copyright 2019-20 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,16 +14,22 @@
 # limitations under the License.
 #
 
-FROM node:8-alpine
+FROM mhart/alpine-node:12
 
+# proxy ports (keep in sync with conf.d/proxy.conf)
 ENV PORT 3000
-EXPOSE 3000/tcp
+ENV KUI_PROXY_EXTERNAL_PORT 9080
 
-# default passphrase for the self-signed certificates; this Dockerfile
-# is intended only for testing, do not use this for production
-ENV PASSPHRASE kuishell
+# nginx port
+EXPOSE 80/tcp
 
-WORKDIR /kui-proxy/kui
+RUN apk add --no-cache nginx
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+        && ln -sf /dev/stderr /var/log/nginx/error.log
+
+# for development, we inject the developer's kubeconfig into the container
+ARG KUBECONFIG
+ENV KUBECONFIG=$KUBECONFIG
 
 # the following from https://github.com/dtzar/helm-kubectl/blob/2.12.2/Dockerfile
 ###########
@@ -53,13 +59,34 @@ RUN (apk add --no-cache ca-certificates bash git python make g++ && wget -q http
     (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.14 && chmod +x /usr/local/bin/helm-2.14); wait
 ###########
 
-COPY . /kui-proxy
+COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+RUN mkdir /kui-proxy
+
+COPY . /usr/share/nginx/html
+
+RUN cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock
+
+# recompile pty
+RUN cd /usr/share/nginx/html/kui/node_modules/node-pty-prebuilt-multiarch && npm run install && apk del python make g++
+
+# kubeconfig
 COPY .kube /root/.kube
 COPY .bluemix /root/.bluemix
 
-# hmm.. sometimes the npm link command hangs without this extra npm config set
-RUN npm config set registry https://registry.npmjs.org
-RUN cd /kui-proxy/kui && npm rebuild node-pty --update-binary && apk del python make g++
-RUN cd /kui-proxy/kui && npm link ../app --no-package-lock
+# krew
+RUN apk add --no-cache curl && \
+  set -x; cd "$(mktemp -d)" && \
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" && \
+  tar zxvf krew.tar.gz && \
+  KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" && \
+  "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz && \
+  "$KREW" update && \
+   apk del curl
+ENV PATH=/root/.krew/bin:$PATH
 
-CMD [ "npx", "start-proxy" ]
+# profile.d
+COPY profile.d /tmp/profile.d
+RUN for i in /tmp/profile.d/*; do cat $i >> /etc/profile; done
+
+CMD [ "/usr/share/nginx/html/start-proxy-and-nginx.sh" ]

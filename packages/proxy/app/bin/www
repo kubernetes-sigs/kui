@@ -33,7 +33,7 @@ if (process.env.KUI_USE_HTTP) {
   server = require('https').createServer(options, app)
 }
 
-setServer(server, port)
+setServer(server, process.env.KUI_PROXY_EXTERNAL_PORT || port)
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -45,7 +45,6 @@ server.on('listening', onListening)
 /**
  * Normalize a port into a number, string, or false.
  */
-
 function normalizePort (val) {
   const port = parseInt(val, 10)
 

@@ -216,12 +216,15 @@ class ProxyEvaluator implements ReplEval {
       debug('sending body', body)
 
       try {
-        const proxyURL = new URL(proxyServerConfig.url, window.location.origin)
+        const proxyHref = /KUI_PROXY_COHOSTED=true/.test(document.cookie)
+          ? `${window.location.pathname.replace(/index\.html/, '')}exec`
+          : new URL(proxyServerConfig.url, window.location.origin).href
+        debug('proxy server url', proxyHref)
 
         const invokeRemote = () =>
           new Promise(resolve => {
             const xhr = new XMLHttpRequest()
-            xhr.open('POST', proxyURL.href)
+            xhr.open('POST', proxyHref)
             xhr.responseType = 'json'
             xhr.withCredentials = true
             xhr.setRequestHeader('Content-Type', 'application/json')

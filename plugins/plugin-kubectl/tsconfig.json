@@ -16,6 +16,9 @@
       "path": "src"
     },
     {
+      "path": "components"
+    },
+    {
       "path": "helm"
     },
     {
