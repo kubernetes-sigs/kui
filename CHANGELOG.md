@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.21](https://github.com/IBM/kui/compare/v6.0.20...v6.0.21) (2020-04-07)
+
+### Bug Fixes
+
+- **plugins/plugin-proxy-support:** fixed env for proxy executor ([8355281](https://github.com/IBM/kui/commit/8355281))
+- headless build script has outdated use of jq ([33e87b2](https://github.com/IBM/kui/commit/33e87b2))
+- remove docker-related bits in {proxy,webpack}/build.sh ([14031a3](https://github.com/IBM/kui/commit/14031a3))
+
 ## [6.0.20](https://github.com/IBM/kui/compare/v6.0.19...v6.0.20) (2020-04-01)
 
 **Note:** Version bump only for package kui-shell
