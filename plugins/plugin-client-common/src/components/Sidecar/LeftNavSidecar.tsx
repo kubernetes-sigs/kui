@@ -87,7 +87,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     this.state = {
       repl: undefined,
       tab: undefined,
-      width: Width.Default,
+      width: Width.Closed,
       history: undefined,
       current: undefined
     }
