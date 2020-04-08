@@ -183,7 +183,7 @@ export abstract class BaseSidecar<
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.key === 'Escape') {
+    if (evt.key === 'Escape' && this.state.width !== Width.Closed) {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
           if (this.props.willChangeSize) {

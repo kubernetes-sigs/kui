@@ -135,7 +135,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     this.state = {
       repl: undefined,
       tab: undefined,
-      width: Width.Default,
+      width: Width.Closed,
 
       history: undefined,
       current: undefined
