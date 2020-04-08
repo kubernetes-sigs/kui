@@ -81,6 +81,12 @@ commands.forEach(command => {
     allocateNS(this, ns)
 
     /** error handling starts */
+    it('should command not found when kubectl is not specified', () => {
+      return CLI.command('get pods', this.app)
+        .then(ReplExpect.error(127))
+        .catch(Common.oops(this, true))
+    })
+
     it('should error out when getting non-existent pod', () => {
       const noName = 'shouldNotExist'
       return CLI.command(`${command} get pod ${noName}`, this.app)
@@ -194,6 +200,17 @@ commands.forEach(command => {
       }
     })
 
+    it('should show "Pod" as table title for "po" get', async () => {
+      try {
+        const { count } = await CLI.command(`kubectl get po ${inNamespace}`, this.app)
+
+        const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(count))
+        assert.strictEqual(actualTitle, 'Pod')
+      } catch (err) {
+        return Common.oops(this, true)
+      }
+    })
+
     const getListAsYAMLCommand = `${command} get pods -o yaml ${inNamespace}`
     it(`should get a list of pods in yaml form via ${getListAsYAMLCommand}`, () => {
       return CLI.command(getListAsYAMLCommand, this.app)
@@ -231,6 +248,21 @@ commands.forEach(command => {
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
+    })
+
+    it(`should toggle between grid and list mode`, async () => {
+      try {
+        const res = await CLI.command(`${command} get pods ${inNamespace}`, this.app)
+        await ReplExpect.okWithAny(res)
+
+        await this.app.client.click(Selectors.TABLE_SHOW_AS_GRID(res.count))
+        await this.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
+
+        await this.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+        await this.app.client.waitForVisible(Selectors.TABLE_AS_LIST(res.count))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
     })
 
     it(`should list pods via ${command} then click`, async () => {

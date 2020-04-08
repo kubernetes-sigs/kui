@@ -340,7 +340,7 @@ export default async function(jsons: KubeResource[], filepath?: string, run?: Pi
               height: defaultHeight,
               nChildren: 0,
               nParents: 0,
-              deployed: false,
+              deployed: true,
               visited: step.visitedIdx !== undefined ? [step.visitedIdx] : undefined,
               type: 'Tekton Step',
               tooltip: `<strong>Image</strong>: ${step.image}`,

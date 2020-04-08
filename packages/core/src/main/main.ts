@@ -19,6 +19,16 @@ const debug = Debug('main/main')
 debug('loading')
 
 import { ExecOptions } from '../models/execOptions'
+import ISubwindowPrefs from '../models/SubwindowPrefs'
+
+function getPrefsFromEnv(env: typeof process.env, defaultPrefs: ISubwindowPrefs) {
+  if (env.subwindowPrefs) {
+    const envPrefs = typeof env.subwindowPrefs === 'string' ? JSON.parse(env.subwindowPrefs) : env.subwindowPrefs
+    return Object.assign(defaultPrefs, envPrefs)
+  } else {
+    return defaultPrefs
+  }
+}
 
 /**
  * This is the main entry point to kui
@@ -32,16 +42,15 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
     // then spawn the electron graphics
     debug('shortcut to graphics')
     const { getCommand, initElectron } = await import('./spawn-electron')
-    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv)
+    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(
+      argv,
+      async () => (await import('electron')).screen
+    )
     initElectron(
       strippedArgv,
       { isRunningHeadless },
       !!(env.subwindowPlease || subwindowPlease),
-      env.subwindowPrefs
-        ? typeof env.subwindowPrefs === 'string'
-          ? JSON.parse(env.subwindowPrefs)
-          : env.subwindowPrefs
-        : subwindowPrefs
+      getPrefsFromEnv(env, subwindowPrefs)
     )
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode

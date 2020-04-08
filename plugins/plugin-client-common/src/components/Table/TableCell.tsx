@@ -29,7 +29,13 @@ import {
  * Generate an onclick handler for a cell
  *
  */
-function onClickForCell(row: KuiRow, tab: Tab, repl: REPL, cell?: KuiCell, selectRow: () => void = () => undefined) {
+export function onClickForCell(
+  row: KuiRow,
+  tab: Tab,
+  repl: REPL,
+  cell?: KuiCell,
+  selectRow: () => void = () => undefined
+) {
   const handler = cell ? cell.onclick : row.onclick
   if (typeof handler === 'function') {
     return () => {
@@ -76,21 +82,32 @@ export default function renderCell(
         />
       )
     } else {
+      // e.g. is this a badge/status-like cell?
+      const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
+
+      // column key
+      const key = cidx > 0 && kuiRow.attributes[cidx - 1].key
+
+      // className for the td
+      const className =
+        cidx === 0
+          ? 'entity-name ' + (kuiRow.outerCSS || '')
+          : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
+            (kuiRow.attributes[cidx - 1].outerCSS || '')
+
+      // the text value of the cell
+      const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
+
       return (
         <TableCell
           key={cell.id}
-          className={
-            cidx === 0
-              ? 'entity-name ' + (kuiRow.outerCSS || '')
-              : (kuiRow.attributes[cidx - 1].key === 'NAME' ? 'entity-name-secondary ' : '') +
-                kuiRow.attributes[cidx - 1].outerCSS
-          }
+          className={className}
           onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
         >
           <span
             data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
             data-value={cell.value}
-            data-tag={cidx > 0 && kuiRow.attributes[cidx - 1].tag}
+            data-tag={tag}
             className={
               'cell-inner ' +
               (cidx === 0
@@ -98,7 +115,10 @@ export default function renderCell(
                 : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
             }
           >
-            {(kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value}
+            {tag === 'badge' && (
+              <span title={innerText} data-tag="badge-circle" className={kuiRow.attributes[cidx - 1].css} />
+            )}
+            <span className="kui--cell-inner-text">{innerText}</span>
           </span>
         </TableCell>
       )

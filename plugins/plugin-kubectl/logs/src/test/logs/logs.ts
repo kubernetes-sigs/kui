@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -95,6 +95,23 @@ describe(`kubectl logs getty ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       it(`should show logs for label selector ${label}`, () => {
         return CLI.command(`kubectl logs -l${label} -n ${ns}`, this.app)
           .then(checkLogs)
+          .catch(Common.oops(this, true))
+      })
+    }
+
+    if (hasLogs) {
+      it('should show logs from sidecar', () => {
+        return CLI.command(`kubectl get pod ${podName} -n ${ns} -o yaml`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(podName, undefined, undefined, ns))
+          .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs')))
+          .then(() =>
+            this.app.client.waitUntil(async () => {
+              const txt = await this.app.client.getText(Selectors.OUTPUT_LAST_STREAMING)
+              return txt.length > 0
+            })
+          )
           .catch(Common.oops(this, true))
       })
     }

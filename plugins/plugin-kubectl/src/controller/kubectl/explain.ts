@@ -50,8 +50,8 @@ ${formatDocumentation(_[4])}
 }
 
 // alternate patterns to match against
-const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?(.+)/s
-const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?(.+)\n\nFIELDS:\n(.+)/s
+const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
+const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
 
 export const doExplain = (command = 'kubectl') =>
   async function(args: Arguments<KubeOptions>) {
@@ -72,7 +72,7 @@ export const doExplain = (command = 'kubectl') =>
           : fields
               .split(/\n\n/)
               .filter(_ => _)
-              .map(_ => _.match(/\s*(\S+)\s+<(\S+)>( -required-)?\n\s*(.*)/s))
+              .map(_ => _.match(/\s*(\S+)\s+<(\S+)>( -required-)?\n\s*([\s\S]*)/))
               .filter(_ => _)
 
         const requiredFields = fieldSections.filter(_ => _[3])
@@ -91,43 +91,26 @@ export const doExplain = (command = 'kubectl') =>
             .concat([{ label: kind, command: undefined }]),
           menus: [
             {
-              [kind]: {
-                modes: [
-                  {
-                    mode: 'Overview',
-                    contentType: 'text/markdown',
-                    content: `### Description
-#### ${description.replace(/\n/g, ' ')}
-### Version
-${version}
-${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
-`
-                  }
-                ]
-              }
+              label: kind,
+              items: [
+                {
+                  mode: 'Overview',
+                  contentType: 'text/markdown',
+                  content: `### Description
+    #### ${description.replace(/\n/g, ' ')}
+    ### Version
+    ${version}
+    ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
+    `
+                }
+              ]
             }
           ]
             .concat(
-              requiredFields.length === 0
-                ? []
-                : [
-                    {
-                      'Required Fields': {
-                        modes: requiredFields.map(formatField)
-                      }
-                    }
-                  ]
+              requiredFields.length === 0 ? [] : [{ label: 'Required Fields', items: requiredFields.map(formatField) }]
             )
             .concat(
-              notRequiredFields.length === 0
-                ? []
-                : [
-                    {
-                      Fields: {
-                        modes: notRequiredFields.map(formatField)
-                      }
-                    }
-                  ]
+              notRequiredFields.length === 0 ? [] : [{ label: 'Fields', items: notRequiredFields.map(formatField) }]
             )
         }
       }
@@ -137,6 +120,24 @@ ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` :
 
     return response
   }
+
+/**
+ * @param kindAsProvidedByUser e.g. pod or po
+ * @return e.g. Pod
+ *
+ */
+export async function getKind(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<string> {
+  try {
+    const ourArgs = Object.assign({}, args, { command: `kubectl explain ${kindAsProvidedByUser}` })
+    const explained = await doExecWithStdout(ourArgs, undefined, command)
+
+    return explained.match(/^KIND:\s+(.*)/)[1]
+  } catch (err) {
+    if (!/does not exist/i.test(err.message)) {
+      console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
+    }
+  }
+}
 
 export default (registrar: Registrar) => {
   const handler = doExplain()

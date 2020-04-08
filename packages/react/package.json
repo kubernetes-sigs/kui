@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/react",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "description": "Kui react enablement",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -15,8 +15,8 @@
     "url": "git+https://github.com/IBM/kui.git"
   },
   "dependencies": {
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "publishConfig": {
     "access": "public"

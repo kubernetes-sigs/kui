@@ -271,3 +271,8 @@ disabled see https://github.com/IBM/kui/issues/3939
 .xterm-container .xterm-viewport::-webkit-scrollbar {
   background-color: transparent !important;
 }
+
+/* selection */
+[kui-theme-style="light"] .xterm-container .xterm-screen .xterm-selection div {
+  background-color: rgba(0, 0, 0, 0.3);
+}

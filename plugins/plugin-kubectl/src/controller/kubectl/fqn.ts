@@ -57,7 +57,7 @@ function kindPart(apiVersion: string, kind: string) {
   return `${kind}${versionString(apiVersion)}`
 }
 
-function kindPartOf(resource: KubeResource) {
+export function kindPartOf(resource: KubeResource) {
   return kindPart(resource.apiVersion, resource.kind)
 }
 
@@ -66,7 +66,11 @@ export function kindAndNamespaceOf(resource: KubeResource) {
 }
 
 export function fqn(apiVersion: string, kind: string, name: string, namespace: string) {
-  return `${kindPart(apiVersion, kind)} ${namespace === '<none>' ? '' : `-n ${namespace}`} ${name}`
+  if (kind === 'Namespace' && apiVersion === 'v1') {
+    return `${kind} ${name}`
+  } else {
+    return `${kindPart(apiVersion, kind)} ${namespace === '<none>' ? '' : `-n ${namespace}`} ${name}`
+  }
 }
 
 export function fqnOf(resource: KubeResource) {

@@ -3,7 +3,6 @@
 }
 ::selection {
   background-color: var(--color-selection-background);
-  color: var(--color-selection-foreground);
 }
 html,
 body[kui-theme-style],
@@ -204,6 +203,9 @@ body.still-loading .repl {
 }
 
 /* generic */
+.kui--rotate-180 {
+  transform: rotate(180deg);
+}
 .full-height {
   flex: 1;
   display: flex;
@@ -1031,9 +1033,11 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content code {
   font-family: var(--font-monospace);
 }
-.page-content p > code {
+.page-content p > code,
+.page-content li > code {
   color: var(--color-base0F);
   opacity: 0.875;
+  word-break: break-all;
 }
 .page-content p:not(:last-child) {
   padding-bottom: 0.5em;
@@ -1101,6 +1105,9 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-weight: 400;
   list-style-type: none;
   position: relative;
+  &:not(:first-child) {
+    margin-top: 0.5em;
+  }
 }
 .page-content li:before {
   content: "\002013";
@@ -1151,14 +1158,6 @@ body[kui-theme-style] a:hover:not(.plain-anchor) {
 
 badge,
 [data-tag="badge"] {
-  & {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 600;
-    background-color: var(--color-tag-beta-fill);
-    color: var(--color-tag-beta-text);
-  }
   &.clickable:hover {
     /* no underline effect for icons (i) and badges */
     text-decoration: none;
@@ -1390,9 +1389,6 @@ body {
   --color-text-01: var(--color-base06);
   --color-text-02: var(--color-base04);
 
-  --color-selection-background: var(--color-base04);
-  --color-selection-foreground: var(--color-text-01);
-
   --color-ok: var(--color-green);
   --color-error: var(--color-red);
   --color-warning: var(--color-base09);
@@ -1437,6 +1433,18 @@ body {
 
   /* repl background */
   --color-repl-background: var(--color-ui-01);
+
+  /* text selection */
+  --color-selection-background-dark: rgba(255, 255, 255, 0.3);
+  --color-selection-background-light: rgba(0, 0, 0, 0.3);
+}
+body[kui-theme-style="dark"],
+body[kui-theme-style="light"] .kui--inverted-color-context {
+  --color-selection-background: var(--color-selection-background-dark);
+}
+body[kui-theme-style="light"],
+body[kui-theme-style="dark"] .kui--inverted-color-context {
+  --color-selection-background: var(--color-selection-background-light);
 }
 
 .color-base08 {

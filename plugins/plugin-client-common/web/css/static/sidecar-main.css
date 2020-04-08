@@ -51,16 +51,11 @@
 }
 .sidecar-bottom-stripe {
   flex-basis: 2.5em;
-  min-height: 2.5rem; /* important for screenshot, which tries to maximally squish the sidecar height */
   display: flex;
   z-index: 5;
   background-color: var(--color-stripe-02);
   /* border-bottom: 1px inset var(--color-ui-02); */
-  order: -1;
 }
-/* .kui--sidecar .sidecar-bottom-stripe {
-    order: -1;
-} */
 .kui--sidecar .sidecar-bottom-stripe > div {
   font-size: 0.875em;
 }
@@ -150,6 +145,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 /* sidecar view-button "flush right" toolbar */
 .kui--sidecar .sidecar-bottom-stripe-toolbar {
   display: flex;
+  overflow: visible; /* for tooltip visibility */
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
@@ -160,7 +156,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   display: flex;
   align-items: center;
   flex: 1;
-  overflow: hidden;
+  overflow: visible; /* for tooltip visibility */
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
   fill: var(--color-sidecar-toolbar-foreground);
@@ -223,17 +219,19 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   line-height: 1.5em;
   padding: 0 0.5em;
   color: inherit;
+
+  &:hover {
+    cursor: pointer;
+    [role="tab"] {
+      color: var(--color-base03);
+    }
+  }
+  [role="tab"] {
+    display: flex;
+    font-size: 0.875em;
+  }
 }
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover {
-  cursor: pointer;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button [role="tab"] {
-  font-size: 0.875em;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button:hover [role="tab"] {
-  color: var(--color-base03);
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg path {
+.kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg {
   fill: var(--color-sidecar-toolbar-foreground);
 }
 .kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
@@ -251,6 +249,7 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .kui--sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
+  min-height: 1em;
 }
 .kui--sidecar .sidecar-header .header-main-content {
   flex: 1;
@@ -651,7 +650,6 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .fill-container {
   flex: 1;
   display: flex;
-  align-items: center;
 }
 .fill-container.flush-right {
   justify-content: flex-end;
@@ -852,19 +850,23 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
       background: none;
       box-shadow: none;
     }
+    .bx--tabs__nav--hidden {
+      display: flex;
+      flex-direction: row;
+      max-height: unset;
+    }
   }
   .bx--tabs-trigger {
     display: none;
   }
-  .bx--tabs__nav--hidden {
-    max-height: unset;
-  }
   .bx--tabs__nav-item {
+    background: transparent;
     height: 2.5em;
     margin-left: 0.125em;
   }
 
   a.bx--tabs__nav-link {
+    letter-spacing: 0.16px;
     padding: 0.5em 1em;
     height: 2.5em;
     line-height: 1.125em;
@@ -878,14 +880,15 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 
   .bx--tabs__nav-item--selected .bx--tabs__nav-link {
     color: var(--color-text-01);
-    border-color: var(--color-brand-03);
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-brand-03);
     opacity: 1;
   }
 }
 
 body[kui-theme-style] a.bx--tabs__nav-link {
   color: var(--color-text-01);
-  border-color: var(--color-text-02);
+  border-bottom: 2px solid var(--color-text-02);
   opacity: 0.875;
 }
 

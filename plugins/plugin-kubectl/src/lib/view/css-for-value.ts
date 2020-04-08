@@ -35,6 +35,9 @@ export default {
   PodInitializing: TrafficLight.Yellow,
   Initialized: TrafficLight.Yellow,
   Terminating: TrafficLight.Yellow,
+  ImagePullBackOff: TrafficLight.Yellow,
+  ErrImagePull: TrafficLight.Red,
+  Error: TrafficLight.Red,
 
   // kube lifecycle
   CrashLoopBackOff: TrafficLight.Red,

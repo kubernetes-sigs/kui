@@ -1,40 +1,104 @@
+@import '../common/narrow-window';
+
 .bx--data-table {
-  [data-tag='badge']:not(.badge-as-image):not(.badge-as-fontawesome) {
-    color: var(--color-text-02);
-    background-color: transparent !important;
+  [data-tag='badge'] {
     display: flex;
     align-items: center;
-    font-weight: normal;
   }
-  [data-tag='badge']:not(.badge-as-image):not(.badge-as-fontawesome):before {
-    content: '';
+  [data-tag='badge-circle'] {
     margin-right: 1ex;
-    width: 0.75em;
-    height: 0.75em;
+    width: 0.875em;
+    height: 0.875em;
     background-color: var(--color-ui-05);
-    border-radius: 50%;
   }
-  [data-tag='badge'].green-background:not(.badge-as-image):before {
+  [data-tag='badge-circle'].green-background {
     background-color: var(--color-green);
     color: var(--color-ui-01);
   }
-  [data-tag='badge'].yellow-background:not(.badge-as-image):before,
+  [data-tag='badge-circle'].yellow-background,
   button.yellow-background {
     background: var(--color-yellow);
     color: var(--color-ui-01);
   }
-  [data-tag='badge'].red-background:not(.badge-as-image):before {
+  [data-tag='badge-circle'].red-background {
     background: var(--color-red);
     color: var(--color-ui-01);
   }
-  [data-tag='badge'].gray-background:not(.badge-as-image):before {
+  [data-tag='badge-circle'].gray-background {
     background: var(--color-processing);
     color: var(--color-ui-02);
   }
 }
 
+.repl {
+  &.sidecar-visible .kui--data-table-wrapper.kui--data-table-as-grid {
+    flex: initial;
+  }
+
+  .kui--data-table-as-grid {
+    .bx--data-table {
+      display: grid;
+      grid-column-gap: 0.1875em;
+      grid-row-gap: 0.1875em;
+      padding: 0.5em 1em;
+
+      [data-tag='badge'] [data-tag='badge-circle'] {
+        margin: 0;
+        width: 1.375em;
+        height: 1.375em;
+        border-radius: 0;
+
+        transition-property: filter;
+        transition-timing-function: var(--transition-timing-function);
+        transition-duration: var(--transition-duration);
+
+        &:hover {
+          filter: saturate(2) brightness(1.5);
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+@mixin badge-only {
+  .bx--data-table-container .bx--data-table {
+    th[data-key='STATUS'],
+    td.kui--status-cell {
+      padding-left: 0;
+    }
+    [data-tag='badge'] {
+      justify-content: center;
+
+      [data-tag='badge-circle'] {
+        margin: 0;
+        width: 1em;
+        height: 1em;
+        border-radius: 0;
+      }
+
+      .kui--cell-inner-text {
+        /* show only the badge-circle when the sidecar is open */
+        display: none;
+      }
+    }
+  }
+}
+
+/* fine-tune the STATUS/badge presentation of tables when the sidecar is open, or with narrower windows */
+.repl.sidecar-visible {
+  @include badge-only;
+}
+@include narrow-window {
+  @include badge-only;
+
+  .kui--hide-in-narrower-windows {
+    display: none !important;
+  }
+}
+
 [data-table-watching='true'] .bx--data-table {
-  [data-tag='badge'].yellow-background:not(.badge-as-image) {
+  [data-tag='badge-circle'].yellow-background {
     animation: var(--animation-repeating-pulse);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-import { i18n } from '@kui-shell/core'
+import { Breadcrumb } from '@kui-shell/core'
 
-import makeButton from './button'
-import { isCrudableKubeResource } from '../../model/resource'
+type TopNavBreadcrumb = Breadcrumb & { deemphasize?: boolean; isCurrentPage?: boolean; className?: string }
 
-const strings = i18n('plugin-kubectl')
-
-export const deleteResourceButton = () =>
-  makeButton({
-    mode: 'delete',
-    label: strings('deleteResource')
-  })
-
-export const deleteResourceMode = {
-  when: isCrudableKubeResource,
-  mode: deleteResourceButton()
-}
-
-export default deleteResourceMode
+export default TopNavBreadcrumb

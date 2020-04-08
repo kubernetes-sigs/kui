@@ -15,6 +15,7 @@
  */
 
 import {
+  Streamable,
   ExecType,
   CodedError,
   i18n,
@@ -28,7 +29,7 @@ import {
 
 import RawResponse from './response'
 import commandPrefix from '../command-prefix'
-import { KubeOptions, getNamespaceForArgv, getContextForArgv, fileOf } from './options'
+import { KubeOptions, getNamespaceForArgv, getContextForArgv, getFileForArgv } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { stringToTable, KubeTableResponse } from '../../lib/view/formatTable'
@@ -47,8 +48,7 @@ export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Argume
 /** Standard status preparation */
 function DefaultPrepareForStatus<O extends KubeOptions>(cmd: string, args: Arguments<O>) {
   const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf(cmd) + 1).join(' ')
-  const file = fileOf(args)
-  return file ? `-f ${fileOf(args)} ${rest}` : rest
+  return `${getFileForArgv(args, true)}${rest}`
 }
 
 /**
@@ -132,6 +132,47 @@ export async function doExecWithPty<
 }
 
 /**
+ * Execute the given command using a pty, but return a string
+ *
+ */
+export async function doExecWithStdoutViaPty<O extends KubeOptions = KubeOptions>(
+  args: Arguments<O>,
+  prepare: Prepare<O> = NoPrepare
+): Promise<string> {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise<string>(async (resolve, reject) => {
+    let stdout = ''
+
+    // a bit of plumbing: tell the PTY that we will be handling everything
+    const myExecOptions = Object.assign({}, args.execOptions, {
+      rethrowErrors: true, // we want to handle errors
+      quiet: true, // don't ever emit anything on your own
+      replSilence: true, // repl: same thing
+      echo: false, // do not even echo "ok"
+
+      // the PTY will call this when the PTY process is ready; in
+      // return, we send it back a consumer of streaming output
+      onInit: () => {
+        return (chunk: Streamable) => {
+          if (typeof chunk === 'string') {
+            stdout += chunk
+          }
+        }
+      }
+    })
+
+    const myArgs = Object.assign({}, args, { execOptions: myExecOptions })
+
+    await doExecWithPty(myArgs, prepare).catch(err => {
+      console.error(err)
+      reject(err)
+    })
+
+    resolve(stdout)
+  })
+}
+
+/**
  * Decide whether to use a pty or a raw exec.
  *
  */
@@ -162,11 +203,28 @@ export async function exec<O extends KubeOptions>(
  */
 export async function doExecWithTable<O extends KubeOptions>(
   args: Arguments<O>,
-  prepare: Prepare<O> = NoPrepare
+  prepare: Prepare<O> = NoPrepare,
+  command = 'kubectl',
+  {
+    usePty = false,
+    nameColumn,
+    verb,
+    entityType
+  }: { usePty?: boolean; nameColumn?: string; verb?: string; entityType?: string } = {}
 ): Promise<Table | MixedResponse> {
-  const response = await doExecWithoutPty(args, prepare)
+  const response = usePty
+    ? { content: { stdout: await doExecWithStdoutViaPty(args, prepare), stderr: undefined } }
+    : await doExecWithoutPty(args, prepare)
 
-  const table = stringToTable(response.content.stdout, response.content.stderr, args)
+  const table = stringToTable(
+    response.content.stdout,
+    response.content.stderr,
+    args,
+    command,
+    verb,
+    entityType,
+    nameColumn
+  )
   if (typeof table === 'string') {
     throw new Error(strings('Unable to parse table'))
   } else {

@@ -36,35 +36,42 @@ export default function SidecarForm({
   className?: string
 }) {
   return (
-    <Form className={nested ? className : `padding-content scrollable ${className || ''}`}>
-      {Object.keys(map).map((key, idx) => {
-        const vvalue = map[key]
-        const value =
-          (typeof vvalue === 'number' ? vvalue.toLocaleString() : typeof vvalue !== 'object' ? vvalue : vvalue.label) ||
-          ''
+    <div className="kui--form-section">
+      <Form className={nested ? className : `padding-content scrollable ${className || ''}`}>
+        {Object.keys(map).map((key, idx) => {
+          const vvalue = map[key]
+          const value =
+            (typeof vvalue === 'number'
+              ? vvalue.toLocaleString()
+              : typeof vvalue !== 'object'
+              ? vvalue
+              : vvalue.label) || ''
 
-        const colspan = Math.max(Math.ceil(key.length / 8), Math.ceil(value.length / 3))
-        const style = { gridColumn: `span ${colspan > 15 ? 8 : colspan}` }
-        const className = typeof vvalue !== 'object' ? undefined : 'kui--form-item--for-label'
+          const colspan = Math.max(Math.ceil(key.length / 8), Math.ceil((value.length + 3) / 5.5))
+          const style = { gridColumn: `span ${colspan > 15 ? 8 : colspan}` }
+          const className = typeof vvalue !== 'object' ? undefined : 'kui--form-item--for-label'
 
-        return (
-          <div key={idx} style={style} className={className}>
-            {colspan > 15 ? (
-              <TextArea readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
-            ) : (
-              <TextInput readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
-            )}
-          </div>
-        )
-      })}
-    </Form>
+          return (
+            <div key={idx} style={style} className={className}>
+              {colspan > 15 ? (
+                <TextArea readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
+              ) : (
+                <TextInput readOnly id={`kubectl-summary-${key}`} labelText={key} defaultValue={value} />
+              )}
+            </div>
+          )
+        })}
+      </Form>
+    </div>
   )
 }
 
 export function FormWithLabels(props: { map: FormMap; resource: KubeResource }) {
   const labelMap: FormMap = {}
+  let nLabels = 0
   if (props.resource.metadata && props.resource.metadata.labels) {
     for (const key in props.resource.metadata.labels) {
+      nLabels++
       labelMap[`${key} label`] = { label: props.resource.metadata.labels[key] }
     }
   }
@@ -72,7 +79,7 @@ export function FormWithLabels(props: { map: FormMap; resource: KubeResource }) 
   return (
     <div className="padding-content scrollable">
       <SidecarForm nested map={props.map} />
-      <SidecarForm nested map={labelMap} className="top-pad" />
+      {nLabels > 0 && <SidecarForm nested map={labelMap} />}
     </div>
   )
 }

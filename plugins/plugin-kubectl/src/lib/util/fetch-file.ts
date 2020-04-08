@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
  */
 
 import Debug from 'debug'
-import { Tab, inBrowser, isHeadless, hasProxy, CodedError, i18n } from '@kui-shell/core'
+import { REPL, inBrowser, isHeadless, hasProxy, CodedError, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
 
-async function needle(tab: Tab, method: 'get', url: string): Promise<{ statusCode: number; body: string }> {
+async function needle({ qexec }: REPL, method: 'get', url: string): Promise<{ statusCode: number; body: string }> {
   if (isHeadless()) {
     const needle = await import('needle')
     debug('fetch via needle', needle)
@@ -36,7 +36,7 @@ async function needle(tab: Tab, method: 'get', url: string): Promise<{ statusCod
       throw new Error(strings('Unable to fetch remote file'))
     } else {
       debug('fetch via proxy')
-      const body = await tab.REPL.qexec<string>(`_fetchfile ${url}`)
+      const body = await qexec<string>(`_fetchfile ${url}`)
       debug('fetched via proxy', body)
       return {
         statusCode: 200,
@@ -105,7 +105,7 @@ async function needle(tab: Tab, method: 'get', url: string): Promise<{ statusCod
  * Either fetch a remote file or read a local one
  *
  */
-export function fetchFile(tab: Tab, url: string): Promise<(string | Buffer)[]> {
+export function fetchFile(repl: REPL, url: string): Promise<(string | Buffer)[]> {
   debug('fetchFile', url)
 
   const urls = url.split(/,/)
@@ -114,7 +114,7 @@ export function fetchFile(tab: Tab, url: string): Promise<(string | Buffer)[]> {
     urls.map(async url => {
       if (url.match(/http(s)?:\/\//)) {
         debug('fetch remote', url)
-        const fetchOnce = () => needle(tab, 'get', url).then(_ => _.body)
+        const fetchOnce = () => needle(repl, 'get', url).then(_ => _.body)
 
         const retry = (delay: number) => async (err: Error) => {
           if (/timeout/.test(err.message) || /hang up/.test(err.message) || /hangup/.test(err.message)) {
@@ -134,9 +134,8 @@ export function fetchFile(tab: Tab, url: string): Promise<(string | Buffer)[]> {
       } else {
         const filepath = url
         debug('fetch local', filepath)
-        const stats = (
-          await tab.REPL.rexec<{ data: string }>(`fstat ${tab.REPL.encodeComponent(filepath)} --with-data`)
-        ).content
+        const stats = (await repl.rexec<{ data: string }>(`fstat ${repl.encodeComponent(filepath)} --with-data`))
+          .content
         return stats.data
       }
     })
@@ -144,9 +143,16 @@ export function fetchFile(tab: Tab, url: string): Promise<(string | Buffer)[]> {
 }
 
 /** same as fetchFile, but returning a string rather than a Buffer */
-export async function fetchFileString(tab: Tab, url: string): Promise<string[]> {
-  const files = await fetchFile(tab, url)
+export async function fetchFileString(repl: REPL, url: string): Promise<string[]> {
+  const files = await fetchFile(repl, url)
   return files.map(_ => _.toString())
+}
+
+export async function fetchFileKustomize(repl: REPL, url: string): Promise<{ data: string; dir?: string }> {
+  const stats = (
+    await repl.rexec<{ data: string; dir?: string }>(`_fetchfile ${repl.encodeComponent(url)} --kustomize`)
+  ).content
+  return stats
 }
 
 export default fetchFileString

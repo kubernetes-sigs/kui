@@ -44,6 +44,10 @@
 .page[data-zoom="2"] .zoomable {
   font-size: 106.25% !important;
 }
+.page[data-zoom="2"] button.zoomable svg[width="16"] {
+  width: 17px;
+  height: 17px;
+}
 .page[data-zoom="2"] .graphical-icon > svg {
   width: 21.25px;
   height: 21.25px;
@@ -51,6 +55,10 @@
 .page[data-zoom="3"] .zoomable .view-lines > div,
 .page[data-zoom="3"] .zoomable {
   font-size: 112.5% !important;
+}
+.page[data-zoom="3"] button.zoomable svg[width="16"] {
+  width: 18px;
+  height: 18px;
 }
 .page[data-zoom="3"] .graphical-icon > svg {
   width: 22.25px;
@@ -63,6 +71,10 @@
 .page[data-zoom="4"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
 }
+.page[data-zoom="4"] button.zoomable svg[width="16"] {
+  width: 19px;
+  height: 19px;
+}
 .page[data-zoom="4"] .graphical-icon > svg {
   width: 23.75px;
   height: 23.75px;
@@ -73,6 +85,10 @@
 }
 .page[data-zoom="5"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
+}
+.page[data-zoom="5"] button.zoomable svg[width="16"] {
+  width: 20px;
+  height: 20px;
 }
 .page[data-zoom="5"] .graphical-icon > svg {
   width: 25px;
@@ -85,6 +101,10 @@
 .page[data-zoom="6"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
 }
+.page[data-zoom="6"] button.zoomable svg[width="16"] {
+  width: 21px;
+  height: 21px;
+}
 .page[data-zoom="6"] .graphical-icon > svg {
   width: 26.25px;
   height: 26.25px;
@@ -95,6 +115,10 @@
 }
 .page[data-zoom="7"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
+}
+.page[data-zoom="7"] button.zoomable svg[width="16"] {
+  width: 22px;
+  height: 22px;
 }
 .page[data-zoom="7"] .graphical-icon > svg {
   width: 27.5px;
@@ -107,6 +131,10 @@
 .page[data-zoom="8"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
 }
+.page[data-zoom="8"] button.zoomable svg[width="16"] {
+  width: 23px;
+  height: 23px;
+}
 .page[data-zoom="8"] .graphical-icon > svg {
   width: 28.75px;
   height: 28.75px;
@@ -118,6 +146,10 @@
 .page[data-zoom="9"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
 }
+.page[data-zoom="9"] button.zoomable svg[width="16"] {
+  width: 24px;
+  height: 24px;
+}
 .page[data-zoom="9"] .graphical-icon > svg {
   width: 30px;
   height: 30px;
@@ -128,6 +160,10 @@
 }
 .page[data-zoom="10"] .zoomable[data-bounded-zoom] {
   font-size: 112.5% !important;
+}
+.page[data-zoom="10"] button.zoomable svg[width="16"] {
+  width: 25px;
+  height: 25px;
 }
 .page[data-zoom="10"] .graphical-icon > svg {
   width: 31.25px;

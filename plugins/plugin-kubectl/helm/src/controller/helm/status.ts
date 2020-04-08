@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Arguments, ExecOptions, Menu, Registrar, i18n } from '@kui-shell/core'
+import { Arguments, ExecOptions, Registrar, NavResponse, i18n } from '@kui-shell/core'
 import { isUsage, doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import doExecWithStdout from './exec'
@@ -124,62 +124,58 @@ ${notesMatch[3]}`
 
     const notes = notesMatch && notesMatch[4]
 
-    const overviewMenu: Menu[] = [
-      {
-        Overview: {
-          modes: [
-            {
-              mode: 'status',
-              label: strings('status'),
-              content: status,
-              contentType: 'text/markdown'
-            }
-          ]
-            .concat(
-              !summary
-                ? []
-                : [
-                    {
-                      mode: 'summary',
-                      label: strings('summary'),
-                      content: summary,
-                      contentType: 'text/markdown'
-                    }
-                  ]
-            )
-            .concat(
-              !notes
-                ? []
-                : [
-                    {
-                      mode: 'notes',
-                      label: strings2('Notes'),
-                      content: notes,
-                      contentType: 'text/markdown'
-                    }
-                  ]
-            )
+    const overviewMenu = {
+      label: 'Overview',
+      items: [
+        {
+          mode: 'status',
+          label: strings('status'),
+          content: status,
+          contentType: 'text/markdown'
         }
-      }
-    ]
+      ]
+        .concat(
+          !summary
+            ? []
+            : [
+                {
+                  mode: 'summary',
+                  label: strings('summary'),
+                  content: summary,
+                  contentType: 'text/markdown'
+                }
+              ]
+        )
+        .concat(
+          !notes
+            ? []
+            : [
+                {
+                  mode: 'notes',
+                  label: strings2('Notes'),
+                  content: notes,
+                  contentType: 'text/markdown'
+                }
+              ]
+        )
+    }
 
-    const resourcesMenu: Menu[] = [
-      {
-        Resources: {
-          modes: resources.map(_ => ({
-            mode: _.kind,
-            content: _.table
-          }))
-        }
-      }
-    ]
+    const resourcesMenu = {
+      label: 'Resources',
+      items: resources.map(_ => ({
+        mode: _.kind,
+        content: _.table
+      }))
+    }
 
-    return {
+    const response: NavResponse = {
       apiVersion: 'kui-shell/v1',
       kind: 'NavResponse',
       breadcrumbs: [{ label: 'helm' }, { label: 'release', command: `helm ls` }, { label: name }],
-      menus: overviewMenu.concat(resourcesMenu)
+      menus: [overviewMenu, resourcesMenu]
     }
+
+    return response
   }
 }
 

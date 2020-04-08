@@ -11,6 +11,10 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
     .bx--breadcrumb-item {
       margin-right: 0.5em;
 
+      &.kui--version-breadcrumb .bx--link {
+        color: var(--color-base0F);
+      }
+
       &.kui--secondary-breadcrumb {
         overflow: hidden;
         .bx--link {

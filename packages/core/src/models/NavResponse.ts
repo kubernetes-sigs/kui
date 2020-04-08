@@ -15,7 +15,7 @@
  */
 
 import { Entity } from './entity'
-import { MultiModalResponse } from './mmr/types'
+import { Mode } from './mmr/types'
 
 export interface Breadcrumb {
   label: string
@@ -34,7 +34,8 @@ export type NavResponse = {
   breadcrumbs?: Breadcrumb[]
 }
 
-export type Menu = Record<string, MultiModalResponse>
+export type Menu = Label & MenuItems
+type MenuItems = { items: Mode[] }
 
 type Label = { label: string }
 type Command = { command: string }

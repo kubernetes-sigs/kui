@@ -41,7 +41,12 @@ function init {
 # install the proxy-specific build bits
 function initProxy {
     pushd "$STAGING_DIR" > /dev/null
-    cp -a "$PROXY_HOME"/{package.json,build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore} .
+    cp -a "$PROXY_HOME"/package.json .
+
+    if [ -z "$NO_DOCKER" ]; then
+      cp -a "$PROXY_HOME"/{build-docker.sh,Dockerfile,Dockerfile.http,.dockerignore} .
+    fi
+
     mkdir -p kui/packages/proxy
     cp -a "$PROXY_HOME"/app kui/packages/proxy
 
@@ -65,7 +70,7 @@ function headless {
 
 # create the self-signed certificate
 function cert {
-  if [ "$KUI_USE_HTTP" != "true" ] && [ -d "$BUILDER_HOME/../webpack" ]; then
+  if [ -z "${NO_DOCKER}" ] && [ "$KUI_USE_HTTP" != "true" ] && [ -d "$BUILDER_HOME/../webpack" ]; then
     pushd "$BUILDER_HOME/../webpack" > /dev/null
     CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
     cp -a "$CLIENT_HOME"/.keys "$STAGING_DIR"/app/bin

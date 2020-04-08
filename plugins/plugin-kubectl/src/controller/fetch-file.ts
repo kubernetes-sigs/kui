@@ -14,10 +14,53 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import { Arguments, ParsedOptions, Registrar, REPL } from '@kui-shell/core'
 
 import commandPrefix from './command-prefix'
 import { fetchFileString } from '../lib/util/fetch-file'
+
+interface Options extends ParsedOptions {
+  kustomize?: boolean
+}
+
+async function isFile(filepath: string): Promise<boolean> {
+  const { lstat } = await import('fs')
+  return new Promise((resolve, reject) => {
+    lstat(filepath, (err, stats) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          resolve(false)
+        } else {
+          reject(err)
+        }
+      } else {
+        resolve(stats.isFile())
+      }
+    })
+  })
+}
+
+async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: string; dir?: string }> {
+  const [isFile0, { join }] = await Promise.all([isFile(uri), import('path')])
+
+  if (isFile0) {
+    return { data: await fetchFileString(repl, uri)[0] }
+  } else {
+    const k1 = join(uri, 'kustomization.yml')
+    const k2 = join(uri, 'kustomization.yaml')
+    const k3 = join(uri, 'Kustomization')
+
+    const [isFile1, isFile2, isFile3] = await Promise.all([isFile(k1), isFile(k2), isFile(k3)])
+    const dir = uri // if we are here, then `uri` is a directory
+    if (isFile1) {
+      return { data: (await fetchFileString(repl, k1))[0], dir }
+    } else if (isFile2) {
+      return { data: (await fetchFileString(repl, k2))[0], dir }
+    } else if (isFile3) {
+      return { data: (await fetchFileString(repl, k3))[0], dir }
+    }
+  }
+}
 
 /**
  * A server-side shim to allow browser-based clients to fetch `-f`
@@ -27,10 +70,15 @@ import { fetchFileString } from '../lib/util/fetch-file'
 export default (registrar: Registrar) => {
   registrar.listen(
     `/${commandPrefix}/_fetchfile`,
-    async ({ argvNoOptions, tab }) => {
+    async ({ argvNoOptions, parsedOptions, REPL }: Arguments<Options>) => {
       const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
-      return fetchFileString(tab, uri)
+
+      if (!parsedOptions.kustomize) {
+        return fetchFileString(REPL, uri)
+      } else {
+        return { mode: 'raw', content: await fetchKustomizeString(REPL, uri) }
+      }
     },
-    { requiresLocal: true }
+    { requiresLocal: true, flags: { boolean: ['kustomize'] } }
   )
 }

@@ -40,7 +40,11 @@ async function renderPods(tab: Tab, resource: KubeResource, args): Promise<Table
  *
  */
 function hasPods(resource: KubeResource) {
-  return resource.kind === 'Deployment' || (resource.status !== undefined && resource.status.podName !== undefined)
+  return (
+    resource.kind === 'Deployment' ||
+    resource.kind === 'ReplicaSet' ||
+    (resource.status !== undefined && resource.status.podName !== undefined)
+  )
 }
 
 /**

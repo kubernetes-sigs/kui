@@ -145,7 +145,7 @@ export const preprocessTable = (raw: string[]): Pair[][][] => {
 
 /** normalize the status badge by capitalization */
 const capitalize = (str: string): string => {
-  return !str ? 'Unknown' : str[0].toUpperCase() + str.slice(1).toLowerCase()
+  return !str ? '' : str[0].toUpperCase() + str.slice(1).toLowerCase()
 }
 
 /**
@@ -167,7 +167,8 @@ export const formatTable = <O extends KubeOptions>(
   verb: string,
   entityTypeFromCommandLine: string,
   options: O,
-  preTable: Pair[][]
+  preTable: Pair[][],
+  nameColumn = 'NAME'
 ): Table => {
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
@@ -182,14 +183,16 @@ export const formatTable = <O extends KubeOptions>(
       ? 'get'
       : isHelmStatus
       ? 'get'
+      : verb === 'krew'
+      ? verb
       : undefined) || undefined
 
   // helm doesn't support --output
   const drilldownFormat =
     (drilldownCommand === 'kubectl' || drilldownCommand === 'oc') && drilldownVerb === 'get' ? '-o yaml' : ''
 
-  const drilldownNamespace =
-    options.n || options.namespace ? `-n ${encodeComponent(options.n || options.namespace)}` : ''
+  const ns = options.n || options.namespace
+  const drilldownNamespace = ns ? `-n ${encodeComponent(ns)}` : ''
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')
   const drilldownKind = (nameSplit: string[], row: Pair[]) => {
@@ -199,13 +202,15 @@ export const formatTable = <O extends KubeOptions>(
       return kind ? ' ' + kind : ''
       /* } else if (drilldownVerb === 'config') {
         return ' use-context'; */
+    } else if (drilldownVerb === 'krew') {
+      return ' ' + entityTypeFromCommandLine
     } else {
       return ''
     }
   }
 
   // maximum column count across all rows
-  const nameColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAME')
+  const nameColumnIdx = preTable[0].findIndex(({ key }) => key === nameColumn)
   const namespaceColumnIdx = preTable[0].findIndex(({ key }) => key === 'NAMESPACE')
   const maxColumns = preTable.reduce((max, columns) => Math.max(max, columns.length), 0)
 
@@ -271,7 +276,7 @@ export const formatTable = <O extends KubeOptions>(
         fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         onclickSilence: true,
-        css: firstColumnCSS,
+        css: firstColumnCSS + (rows[0].key === nameColumn ? ' kui--table-cell-is-name' : ''),
         rowCSS,
         outerCSS: `${header} ${outerCSSForKey[rows[0].key] || ''}`,
         attributes: rows
@@ -284,7 +289,7 @@ export const formatTable = <O extends KubeOptions>(
               outerCSS:
                 header +
                 ' ' +
-                outerCSSForKey[key] +
+                (outerCSSForKey[key] || '') +
                 (colIdx <= 1 || colIdx === nameColumnIdx - 1 || columnVisibleWithSidecar.test(key)
                   ? ''
                   : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
@@ -294,7 +299,7 @@ export const formatTable = <O extends KubeOptions>(
                 ((idx > 0 && cssForKey[key]) || '') +
                 ' ' +
                 (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column)),
-              value: key === 'STATUS' && idx > 0 ? capitalize(column) : column
+              value: key === 'STATUS' && idx > 0 ? capitalize(column || 'unknown') : column
             })
           )
           .concat(fillTo(rows.length, maxColumns))
@@ -305,8 +310,9 @@ export const formatTable = <O extends KubeOptions>(
   return {
     header: rows[0],
     body: rows.slice(1),
-    noSort: true
-    // title: entityTypeFromRows || entityTypeFromCommandLine
+    noSort: true,
+    title: capitalize(entityTypeFromRows || entityTypeFromCommandLine),
+    breadcrumbs: [{ label: ns || 'default' }]
   }
 }
 
@@ -330,7 +336,8 @@ export const stringToTable = <O extends KubeOptions>(
   args: Arguments<O>,
   command?: string,
   verb?: string,
-  entityType?: string
+  entityType?: string,
+  nameColumn?: string
 ): KubeTableResponse => {
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
@@ -343,7 +350,7 @@ export const stringToTable = <O extends KubeOptions>(
   } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
     if (preTables.length === 1) {
-      const T = formatTable(command, verb, entityType, args.parsedOptions, preTables[0])
+      const T = formatTable(command, verb, entityType, args.parsedOptions, preTables[0], nameColumn)
       if (args.execOptions.filter) {
         T.body = args.execOptions.filter(T.body)
       }

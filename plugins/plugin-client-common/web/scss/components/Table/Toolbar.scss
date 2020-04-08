@@ -1,0 +1,98 @@
+$toolbar-height: 1.875em;
+
+body[kui-theme-style='light'] {
+  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title td,
+  .bx--data-table.kui--data-table-as-grid {
+    background-color: rgba(0, 0, 0, 0.01375);
+  }
+}
+
+.bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title {
+  padding-top: 0;
+}
+
+.kui--data-table-wrapper {
+  /* so that captured screenshots have some padding away from the breadcrumbs */
+  padding: 0 0.1875em;
+}
+
+.kui--toolbar-button-with-icon {
+  &[data-enabled='true'] {
+    svg {
+      fill: var(--color-base0D);
+      path {
+        /* give the enabled button a bit more weight */
+        stroke: var(--color-base0D);
+        stroke-width: 1.1;
+      }
+    }
+  }
+  &[data-enabled='false'] svg {
+    filter: opacity(0.375);
+  }
+}
+
+body[kui-theme-style] .kui--data-table-toolbar {
+  display: flex;
+
+  nav[aria-label='Breadcrumb'] {
+    overflow-x: unset;
+  }
+
+  &[data-frame='true'] {
+    border-top: 1px solid var(--color-base03);
+  }
+
+  & > div:not(:empty),
+  & > nav:not(:empty) {
+    height: $toolbar-height;
+  }
+
+  &.kui--data-table-toolbar-bottom {
+    padding-top: 0.1875em;
+  }
+
+  nav[aria-label='Breadcrumb'] {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    .bx--breadcrumb {
+      padding-left: 0;
+    }
+  }
+
+  .kui--toolbar-button-with-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* so that buttons are flush-left and pagination is flush-right */
+  .kui--data-table-toolbar-filler {
+    flex: 1;
+  }
+
+  .kui--data-table-toolbar-buttons {
+    display: flex;
+  }
+
+  .kui--data-table-toolbar-pagination.bx--pagination {
+    display: flex;
+    border: none;
+    background-color: transparent;
+    width: unset;
+    align-items: unset;
+
+    .kui--data-table-toolbar-pagination-info {
+      white-space: pre; /* see padStart in Toolbar.tsx */
+      color: var(--color-text-02);
+      flex: 1;
+      padding: 0 1.25em;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border: none;
+    }
+  }
+}

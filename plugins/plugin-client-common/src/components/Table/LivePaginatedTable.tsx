@@ -18,7 +18,7 @@ import * as React from 'react'
 import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
 import PaginatedTable, { Props, State } from './PaginatedTable'
-import { kuiHeader2carbonHeader, kuiRow2carbonRow } from './kui2carbon'
+import { kuiHeader2carbonHeader, kuiRow2carbonRow, NamedDataTableRow } from './kui2carbon'
 
 type LiveProps = Props<KuiTable & Watchable>
 
@@ -27,6 +27,9 @@ interface LiveState extends State {
 }
 
 export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
+  /** To allow for batch updates, the setState can be deferred until a call to updateDone() */
+  private _deferredUpdate: NamedDataTableRow[]
+
   public constructor(props: LiveProps) {
     super(props)
     this.state = Object.assign(this.state, { isWatching: true })
@@ -60,11 +63,12 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
     // initiate the pusher watch
     const update = this.update.bind(this)
+    const batchUpdateDone = this.batchUpdateDone.bind(this)
     const offline = this.offline.bind(this)
     const done = this.done.bind(this)
     const allOffline = this.allOffline.bind(this)
     const header = this.header.bind(this)
-    this.props.response.watch.init({ update, offline, done, allOffline, header })
+    this.props.response.watch.init({ update, batchUpdateDone, offline, done, allOffline, header })
   }
 
   /**
@@ -112,7 +116,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    * update consumes the update notification and apply it to the table view
    *
    */
-  private update(newKuiRow: KuiRow) {
+  private update(newKuiRow: KuiRow, batch = false) {
     const existingRows = this.state.rows
     const nRowsBefore = existingRows.length
 
@@ -139,7 +143,22 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
       this.props.response.body[foundIndex] = newKuiRow
     }
 
-    this.setState({ rows: newRows })
+    if (!batch) {
+      this.setState({ rows: newRows })
+    } else if (this._deferredUpdate) {
+      this._deferredUpdate = this._deferredUpdate.concat(newRows)
+    } else {
+      this._deferredUpdate = newRows
+    }
+  }
+
+  /** End of a deferred batch of updates */
+  private batchUpdateDone() {
+    if (this._deferredUpdate) {
+      const rows = this._deferredUpdate
+      this._deferredUpdate = undefined
+      this.setState({ rows })
+    }
   }
 
   /**

@@ -42,7 +42,13 @@ export { default as TrafficLight } from './lib/model/traffic-light'
 
 export { default as apiVersion } from './controller/kubectl/apiVersion'
 
-export { doExecWithPty, doExecWithStdout, doExecWithStatus, doExecWithTable } from './controller/kubectl/exec'
+export {
+  doExecWithStdoutViaPty,
+  doExecWithPty,
+  doExecWithStdout,
+  doExecWithStatus,
+  doExecWithTable
+} from './controller/kubectl/exec'
 
 export { doExecRaw, doNativeExec } from './controller/kubectl/raw'
 
@@ -65,7 +71,7 @@ export {
 
 export { default as parseName } from './lib/util/name'
 
-export { formatTable, preprocessTable } from './lib/view/formatTable'
+export { stringToTable, formatTable, preprocessTable } from './lib/view/formatTable'
 
 export { isUsage, doHelp } from './lib/util/help'
 

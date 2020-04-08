@@ -33,8 +33,6 @@ body[kui-theme="Dark"] {
   --color-sidecar-toolbar-background: #d7dce3;
   --color-sidecar-toolbar-foreground: var(--color-base02);
 
-  --color-selection-background: var(--color-base05);
-
   --color-brand-03: #418cff;
   --color-tag-beta-fill: #202529;
   --color-tag-beta-text: var(--color-text-01);

@@ -26,6 +26,24 @@ export function fileOf(args: Arguments<KubeOptions>): string {
   return args.parsedOptions.f || args.parsedOptions.filename
 }
 
+export function kustomizeOf(args: Arguments<KubeOptions>): string {
+  return args.parsedOptions.k || args.parsedOptions.kustomize
+}
+
+export function getFileForArgv(args: Arguments<KubeOptions>, addSpace = false): string {
+  const file = fileOf(args)
+  if (file) {
+    return `-f ${file}${addSpace ? ' ' : ''}`
+  } else {
+    const kusto = kustomizeOf(args)
+    if (kusto) {
+      return `-k ${kusto}${addSpace ? ' ' : ''}`
+    }
+  }
+
+  return ''
+}
+
 export function formatOf(args: Arguments<KubeOptions>): OutputFormat {
   return args.parsedOptions.o || args.parsedOptions.output
 }
@@ -160,6 +178,9 @@ export interface KubeOptions extends ParsedOptions {
 
   f?: string
   filename?: string
+
+  k?: string
+  kustomize?: string
 
   h?: boolean
   help?: boolean

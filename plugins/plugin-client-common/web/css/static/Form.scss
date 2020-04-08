@@ -1,4 +1,11 @@
 [kui-theme-style] {
+  .kui--form-section {
+    &:not(:first-child) {
+      padding-top: 1em;
+      margin-top: 1em;
+    }
+  }
+
   .bx--form {
     display: grid;
     grid-template-rows: min-content;
@@ -10,7 +17,7 @@
 
     .kui--form-item--for-label .bx--form-item {
       .bx--label {
-        color: var(--color-base0C);
+        color: var(--color-map-key);
       }
       .bx--text-input,
       .bx--text-area {

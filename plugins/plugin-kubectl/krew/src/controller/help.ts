@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { WithVersion, hasVersion } from '../models/version'
+import { Arguments } from '@kui-shell/core'
 
-/**
- * Display resource version as a badge
- *
- */
-export default {
-  when: hasVersion,
-  badge: (resource: WithVersion) => ({
-    title: resource.version,
-    css: 'version'
-  })
+import { doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
+
+export default (command: string) => (args: Arguments<KubeOptions>) => {
+  return doHelp(command, args)
 }
