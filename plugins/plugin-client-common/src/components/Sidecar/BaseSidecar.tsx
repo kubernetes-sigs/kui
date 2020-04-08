@@ -85,11 +85,13 @@ export abstract class BaseSidecar<
   protected constructor(props: Props) {
     super(props)
 
-    // interpret Escape key as a toggle of the view's width
+    // Interpret Escape key as a toggle of the view's width
     if (!this.isFixedWidth()) {
       const onEscape = this.onEscape.bind(this)
-      document.addEventListener('keyup', onEscape)
-      this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
+      document.addEventListener('keydown', onEscape)
+      this.cleaners.push(() => document.removeEventListener('keydown', onEscape))
+      // ^^^ Note! keydown versus keyup is important (for now at
+      // least; @starpit 20200408); see https://github.com/IBM/kui/issues/4215
     }
   }
 
@@ -183,7 +185,7 @@ export abstract class BaseSidecar<
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.key === 'Escape' && this.state.width !== Width.Closed) {
+    if (evt.key === 'Escape' && this.state.width !== Width.Closed && !document.getElementById('confirm-dialog')) {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
           if (this.props.willChangeSize) {
