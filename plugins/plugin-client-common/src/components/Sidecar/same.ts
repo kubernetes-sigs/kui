@@ -45,10 +45,15 @@ function sameOptions(O1: ParsedOptions, O2: ParsedOptions) {
 }
 
 /** Confirm equality of two commands, by comparing the parsed argvNoOptions and ParsedOptions */
-export default function sameCommand(expectedArgvNoOptions: string[], expectedParsedOptions: ParsedOptions) {
-  return (entry: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => {
+export default function sameCommand(
+  expectedArgvNoOptions: string[],
+  expectedParsedOptions: ParsedOptions,
+  currentCwd: string
+) {
+  return (entry: { cwd: string; argvNoOptions: string[]; parsedOptions: ParsedOptions }) => {
     return (
       entry &&
+      entry.cwd === currentCwd &&
       sameArray(entry.argvNoOptions, expectedArgvNoOptions) &&
       sameOptions(entry.parsedOptions, expectedParsedOptions)
     )
