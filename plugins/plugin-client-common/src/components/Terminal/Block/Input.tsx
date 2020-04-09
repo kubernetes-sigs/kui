@@ -130,12 +130,9 @@ export default class Input extends React.PureComponent<Props, State> {
 
   /** the ">" part of "xxx >" of the prompt */
   private promptRight() {
-    return (
-      <span className="repl-prompt-righty">
-        {/* a right chevron */}
-        <i>&#x276f;</i>
-      </span>
-    )
+    // &#x2771; "heavy right-pointing angle bracket ornament"
+    // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
+    return <span className="repl-prompt-righty">&#x276f;</span>
   }
 
   private isearchPrompt() {
