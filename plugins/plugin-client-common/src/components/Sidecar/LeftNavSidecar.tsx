@@ -32,7 +32,7 @@ import { Content, SideNavLink, SideNavMenu, SideNavMenuItem, SideNav, SideNavIte
 
 import Width from './width'
 import { getStateFromMMR } from './TopNavSidecar'
-import { BaseHistoryEntry, BaseSidecar, Props } from './BaseSidecar'
+import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
 
 import 'carbon-components/scss/components/ui-shell/_content.scss'
 import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
@@ -123,6 +123,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     })
 
     return {
+      cwd: cwd(),
       argvNoOptions,
       parsedOptions,
       allNavs: navigations,

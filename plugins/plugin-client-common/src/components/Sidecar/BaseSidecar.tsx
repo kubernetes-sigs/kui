@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
+import { inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
 import sameCommand from './same'
@@ -49,6 +49,7 @@ export type Props = SidecarOptions & {
 }
 
 export interface BaseHistoryEntry {
+  cwd: string
   argvNoOptions: string[]
   parsedOptions: ParsedOptions
 }
@@ -75,6 +76,11 @@ export interface BaseState<HistoryEntry extends BaseHistoryEntry> {
 }
 
 type Cleaner = () => void
+
+/** cwd */
+export function cwd() {
+  return process.env.PWD || (!inBrowser() && process.cwd())
+}
 
 export abstract class BaseSidecar<
   R extends KResponse,
@@ -110,7 +116,9 @@ export abstract class BaseSidecar<
   /** Enter a given `response` into the History model */
   protected onResponse(tab: KuiTab, response: R, _, argvNoOptions: string[], parsedOptions: ParsedOptions) {
     this.setState(curState => {
-      const existingIdx = curState.history ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions)) : -1
+      const existingIdx = curState.history
+        ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions, cwd()))
+        : -1
       const current =
         this.idempotent() && existingIdx !== -1
           ? curState.history.peekAt(existingIdx)
