@@ -36,7 +36,7 @@ import Width from './width'
 import Badge from './Badge'
 import TopNavBreadcrumb from './breadcrumb'
 import ToolbarContainer from './ToolbarContainer'
-import { BaseHistoryEntry, BaseSidecar, Props } from './BaseSidecar'
+import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
 
 import 'carbon-components/scss/components/tabs/_tabs.scss'
 import '../../../web/css/static/ToolbarButton.scss'
@@ -97,6 +97,7 @@ export function getStateFromMMR(
   const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
 
   return {
+    cwd: cwd(),
     argvNoOptions,
     parsedOptions,
     currentTabIndex: defaultMode,
