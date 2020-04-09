@@ -514,6 +514,22 @@ export class TestMMR {
           .catch(Common.oops(this, true)))
     })
   }
+
+  public toolbarNotExist() {
+    const { command, testName } = this.param
+    describe(`mmr toolbar ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it(`should not show toolbar in sidecar `, () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(() => this.app.client.waitForExist(Selectors.SIDECAR_TOOLBAR, CLI.waitTimeout, false))
+          .catch(Common.oops(this, true)))
+    })
+  }
 }
 
 interface Label {
