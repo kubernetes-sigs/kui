@@ -23,6 +23,8 @@ describe('kubectl explain', function(this: Common.ISuite) {
 
   const help = doHelp.bind(this)
 
+  help('kubectl explain -h', ['kubectl', 'explain'], ['Introduction', 'Options'])
+
   help(
     'kubectl explain pod',
     ['API Resources', 'Pod'],

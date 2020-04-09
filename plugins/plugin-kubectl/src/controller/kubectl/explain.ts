@@ -20,6 +20,7 @@ import flags from './flags'
 import { KubeOptions } from './options'
 import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
+import { isUsage, doHelp } from '../../lib/util/help'
 
 const strings = i18n('plugin-kubectl')
 
@@ -55,6 +56,11 @@ const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED -
 
 export const doExplain = (command = 'kubectl') =>
   async function(args: Arguments<KubeOptions>) {
+    if (isUsage(args)) {
+      // special case: get --help/-h
+      return doHelp(command, args)
+    }
+
     // first, we do the raw exec of the given command
     const response = await doExecWithStdout(args, undefined, command)
 
