@@ -171,6 +171,22 @@ function win32 {
 	    mv "$BUILDDIR/${PRODUCT_NAME}-win32-x64/" "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
 	fi
 
+        echo "Add kubectl-kui UNIX shell script to electron build win32"
+        (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui && chmod +x kubectl-kui \
+          && echo '#!/usr/bin/env sh
+export KUI_POPUP_WINDOW_RESIZE=true
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+"$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
+
+        echo "Add kubectl-kui PowerShell script to electron build win32"
+        (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui.ps1 && chmod +x kubectl-kui.ps1 \
+          && echo '$Env:KUI_POPUP_WINDOW_RESIZE="true"
+$ScriptDir = Split-Path $script:MyInvocation.MyCommand.Path
+Write-Host "Current script directory is $ScriptDir"
+Write-Host "yoyo $args"
+$argv = "kubectl " + $args
+Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-kui.ps1)
+
         #
         # deal with win32 packaging
         #
@@ -206,7 +222,6 @@ function mac {
 	fi
 
         echo "Add kubectl-kui to electron build darwin"
-
         (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
 export KUI_POPUP_WINDOW_RESIZE=true
@@ -259,7 +274,6 @@ function linux {
 	fi
 
         echo "Add kubectl-kui to electron build linux"
-
         (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
 export KUI_POPUP_WINDOW_RESIZE=true
