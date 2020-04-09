@@ -27,6 +27,7 @@ import conditionsMode from './lib/view/modes/conditions'
 import containersMode from './lib/view/modes/containers'
 import lastAppliedMode from './lib/view/modes/last-applied'
 import showOwnerButton from './lib/view/modes/ShowOwnerButton'
+import showNodeButton from './lib/view/modes/ShowNodeOfPodButton'
 import deleteResourceButton from './lib/view/modes/DeleteButton'
 import involvedObjectMode from './lib/view/modes/involved-object'
 import showCRDResources from './lib/view/modes/show-crd-managed-resources'
@@ -49,6 +50,7 @@ export default async (registrar: PreloadRegistrar) => {
     lastAppliedMode,
     showCRDResources,
     showOwnerButton,
+    showNodeButton,
     deleteResourceButton,
     involvedObjectMode
   )
