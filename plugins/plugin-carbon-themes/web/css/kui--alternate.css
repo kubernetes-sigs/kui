@@ -5,17 +5,6 @@ body.kui--alternate .repl:not(.kui--input-stripe) .repl-block {
   padding-right: calc(1em * 0.875);
 }
 
-body.kui--alternate .repl-prompt {
-  border: none;
-}
-
-body.kui--alternate .repl-prompt-righty {
+/*body.kui--alternate .repl-prompt-righty {
   color: var(--color-text-01);
-}
-body.kui--alternate .repl-prompt-righty svg path {
-  fill: var(--color-text-01);
-}
-
-body.kui--alternate .bx--header {
-  font-size: 1em;
-}
+}*/

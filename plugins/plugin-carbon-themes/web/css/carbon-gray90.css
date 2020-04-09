@@ -24,6 +24,7 @@ body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-confirm-foreground: var(--color-base06);
 
   --color-brand-01: #97c1ff;
+  --color-brand-02: var(--color-base07);
   --color-brand-03: #0062ff;
 
   --color-sidecar-toolbar-foreground: var(--color-base01);
