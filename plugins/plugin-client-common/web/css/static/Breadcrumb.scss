@@ -7,6 +7,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
     flex-wrap: nowrap;
     font-family: var(--font-sans-serif);
     padding: 0 1em;
+    line-height: unset;
 
     .bx--breadcrumb-item {
       margin-right: 0.5em;
@@ -19,7 +20,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
         overflow: hidden;
         .bx--link {
           color: var(--color-text-02);
-          overflow: hidden;
+          overflow-x: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
@@ -30,6 +31,8 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
         font-size: 1em;
         font-weight: normal;
         color: var(--color-base0C);
+        overflow: unset;
+        line-height: unset;
       }
 
       &:not(.kui--secondary-breadcrumb) .bx--link {
