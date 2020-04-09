@@ -111,7 +111,7 @@ export default class ActiveISearch {
     // where do we want to start the search? if the user is just
     // typing, then start from the end of history; if the user hit
     // ctrl+r, then they want to search for the next match
-    const userHitCtrlR = evt.ctrlKey && evt.key === 'KeyR'
+    const userHitCtrlR = evt.ctrlKey && evt.key === 'r'
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
 
     const { prompt } = this.input.state
