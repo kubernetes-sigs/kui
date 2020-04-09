@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
+import { isPopup, inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
 import sameCommand from './same'
@@ -193,7 +193,12 @@ export abstract class BaseSidecar<
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.key === 'Escape' && this.state.width !== Width.Closed && !document.getElementById('confirm-dialog')) {
+    if (
+      evt.key === 'Escape' &&
+      this.state.width !== Width.Closed &&
+      !document.getElementById('confirm-dialog') &&
+      !isPopup()
+    ) {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
           if (this.props.willChangeSize) {
