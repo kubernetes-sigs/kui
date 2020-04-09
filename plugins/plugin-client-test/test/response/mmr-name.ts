@@ -45,6 +45,8 @@ testMetadataName.name({
   }
 })
 
+testMetadataName.toolbarNotExist()
+
 testPrettyName.name({
   nameHash: 'this is the namehash part',
   prettyName: 'this is the prettyName part',

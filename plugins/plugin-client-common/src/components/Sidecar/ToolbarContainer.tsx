@@ -49,15 +49,20 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   }
 
   public render() {
+    const toolbarButtons = this.props.buttons.concat(this.state.extraButtons || [])
+    const toolbarHasContent = this.state.toolbarText || toolbarButtons.length !== 0
+
     return (
       <div className="full-height">
-        <Toolbar
-          tab={this.props.tab}
-          response={this.props.response}
-          args={this.props.args}
-          toolbarText={this.state.toolbarText}
-          buttons={this.props.buttons.concat(this.state.extraButtons || [])}
-        />
+        {toolbarHasContent && (
+          <Toolbar
+            tab={this.props.tab}
+            response={this.props.response}
+            args={this.props.args}
+            toolbarText={this.state.toolbarText}
+            buttons={toolbarButtons}
+          />
+        )}
         <React.Suspense fallback={<div />}>{this.children()}</React.Suspense>
       </div>
     )
