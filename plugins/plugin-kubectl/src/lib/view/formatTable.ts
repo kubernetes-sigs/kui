@@ -34,7 +34,7 @@ const fillTo = (length: number, maxColumns: number): Cell[] => {
 /** decorate certain columns specially */
 const outerCSSForKey = {
   NAME: 'entity-name-group',
-  READY: 'a-few-numbers-wide',
+  READY: 'a-few-numbers-wide kui--hide-in-narrower-windows',
   KIND: 'max-width-id-like entity-kind',
   NAMESPACE: 'entity-name-group hide-with-sidecar not-a-name', // kubectl get pods --all-namespaces
   MESSAGE: 'not-too-compact hide-with-sidecar',
