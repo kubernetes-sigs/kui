@@ -29,8 +29,9 @@ export PATH=$PWD/Kui-darwin-x64:$PATH
 kubectl kui get pods
 ```
 
-After the final command, you should see a popup window listing pods in your current namespace.
-**Note**: Windows support for operating as a kubectl plugin coming soon.
+After the final command, you should see a popup window listing pods in
+your current namespace. **Note:** On Windows, Kui currently has
+kubectl plugin support for UNIX shells and PowerShell.
 
 ## Contributing
 
