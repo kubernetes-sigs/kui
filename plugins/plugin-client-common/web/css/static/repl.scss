@@ -352,6 +352,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
         line-height: unset;
         letter-spacing: unset;
         margin: 0;
+        overflow-x: hidden; /* see https://github.com/IBM/kui/issues/4231 */
       }
 
       .bx--accordion__arrow {
