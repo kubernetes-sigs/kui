@@ -2,4 +2,12 @@
   @media (max-width: 44rem) {
     @content;
   }
+
+  .page[data-zoom='6'],
+  .page[data-zoom='7'],
+  .page[data-zoom='8'],
+  .page[data-zoom='9'],
+  .page[data-zoom='10'] {
+    @content;
+  }
 }
