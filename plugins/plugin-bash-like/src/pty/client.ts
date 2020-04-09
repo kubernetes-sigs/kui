@@ -701,20 +701,6 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
       .replace(/\/(index\.html)?$/, '')
     const url = `${protoHostPortContextRoot}${path}`
     debug('websocket url', url, proto, port, path, uid, gid)
-    console.error(
-      '!!!!!!!!WSURL',
-      url,
-      '|',
-      proto,
-      '||',
-      port,
-      '|||',
-      path,
-      '||||',
-      window.location.href,
-      '||||',
-      protoHostPortContextRoot
-    )
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
   } catch (err) {
