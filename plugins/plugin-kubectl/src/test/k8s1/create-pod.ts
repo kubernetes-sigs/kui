@@ -59,6 +59,11 @@ commands.forEach(command => {
           await SidecarExpect.open(this.app)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing('nginx'))
+            .then(SidecarExpect.button({ mode: 'show-node', label: 'Show Node' }))
+
+          // click on Show Node button
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('show-node'))
+          await SidecarExpect.open(this.app).then(SidecarExpect.kind('Node'))
         } catch (err) {
           await Common.oops(this, true)(err)
         }
