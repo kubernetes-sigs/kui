@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.1](https://github.com/IBM/kui/compare/v4.5.0...v8.4.1) (2020-04-10)
+
+### Bug Fixes
+
+- add support for hiding elements at higher zoom levels ([7d2a7e0](https://github.com/IBM/kui/commit/7d2a7e0)), closes [#4232](https://github.com/IBM/kui/issues/4232)
+- **plugins/plugin-kubectl:** kubectl explain -h should render as usage in sidecar ([8e00c3f](https://github.com/IBM/kui/commit/8e00c3f)), closes [#4211](https://github.com/IBM/kui/issues/4211)
+- eliminate complex nesting of NavResponse model ([e849ae7](https://github.com/IBM/kui/commit/e849ae7)), closes [#4205](https://github.com/IBM/kui/issues/4205)
+- **plugins/plugin-kubectl:** ensure Show Owner button appears near end of toolbar buttons ([224c586](https://github.com/IBM/kui/commit/224c586)), closes [#4124](https://github.com/IBM/kui/issues/4124)
+- **plugins/plugin-kubectl:** firefox does not support the /s flag to RegExp ([5b661a6](https://github.com/IBM/kui/commit/5b661a6)), closes [#4206](https://github.com/IBM/kui/issues/4206)
+- **plugins/plugin-kubectl:** in kube namespace table, selected namespace should float to top ([f0e597f](https://github.com/IBM/kui/commit/f0e597f)), closes [#4129](https://github.com/IBM/kui/issues/4129)
+- **plugins/plugin-kubectl:** kubectl top nodes can present "NaN" ([30df3dd](https://github.com/IBM/kui/commit/30df3dd)), closes [#4189](https://github.com/IBM/kui/issues/4189)
+- Form component sometimes has too-small TextInputs ([21d841d](https://github.com/IBM/kui/commit/21d841d)), closes [#4036](https://github.com/IBM/kui/issues/4036)
+- helm on its own should render in sidecar ([4b82517](https://github.com/IBM/kui/commit/4b82517)), closes [#4010](https://github.com/IBM/kui/issues/4010)
+- improve contrast of table Pagination component in light themes ([41246c3](https://github.com/IBM/kui/commit/41246c3)), closes [#4038](https://github.com/IBM/kui/issues/4038)
+- improve Form layout ([2003622](https://github.com/IBM/kui/commit/2003622)), closes [#4034](https://github.com/IBM/kui/issues/4034)
+- improve kubectl breadcrumb detection ([6cacfe6](https://github.com/IBM/kui/commit/6cacfe6)), closes [#4099](https://github.com/IBM/kui/issues/4099)
+- kubectl summary form clipping ([7ea65e8](https://github.com/IBM/kui/commit/7ea65e8)), closes [#4093](https://github.com/IBM/kui/issues/4093)
+- kubectl summary Form TextInputs can be cropped ([3becaf9](https://github.com/IBM/kui/commit/3becaf9)), closes [#4077](https://github.com/IBM/kui/issues/4077)
+- remove use of inline styling in Form.tsx ([23121b2](https://github.com/IBM/kui/commit/23121b2)), closes [#4112](https://github.com/IBM/kui/issues/4112)
+- tekton Step nodes show with hashed background ([8428d72](https://github.com/IBM/kui/commit/8428d72)), closes [#4114](https://github.com/IBM/kui/issues/4114)
+- the colors of status badges: Error, ImagePullBackOff and ErrImagePull are incorrect ([fd206f6](https://github.com/IBM/kui/commit/fd206f6)), closes [#4171](https://github.com/IBM/kui/issues/4171)
+- **plugins/plugin-kubectl:** kubectl api-resources table shows 'unknown' in title ([0461710](https://github.com/IBM/kui/commit/0461710)), closes [#4145](https://github.com/IBM/kui/issues/4145)
+- **plugins/plugin-kubectl:** kubectl describe (--help) fails ([10b8e8a](https://github.com/IBM/kui/commit/10b8e8a)), closes [#4012](https://github.com/IBM/kui/issues/4012)
+- **plugins/plugin-kubectl:** kubectl watch tables can be misparsed ([cb3e1c2](https://github.com/IBM/kui/commit/cb3e1c2)), closes [#4139](https://github.com/IBM/kui/issues/4139)
+- **plugins/plugin-kubectl:** more refinements to Form layout heuristics ([e92327d](https://github.com/IBM/kui/commit/e92327d)), closes [#4118](https://github.com/IBM/kui/issues/4118)
+- **plugins/plugin-kubectl:** oc describe fails ([4f4de4e](https://github.com/IBM/kui/commit/4f4de4e)), closes [#4008](https://github.com/IBM/kui/issues/4008)
+- **plugins/plugin-kubectl:** remove leftover debugging printf in kubectl help ([39ab52f](https://github.com/IBM/kui/commit/39ab52f)), closes [#4083](https://github.com/IBM/kui/issues/4083)
+- **plugins/plugin-kubectl:** watch table doesn't have breadcrumbs title ([43fbe6a](https://github.com/IBM/kui/commit/43fbe6a)), closes [#4135](https://github.com/IBM/kui/issues/4135)
+- **plugins/plugin-kubectl:** watcher table disappears when kui is launched as kubectl plugin ([167eabc](https://github.com/IBM/kui/commit/167eabc)), closes [#4120](https://github.com/IBM/kui/issues/4120) [#4123](https://github.com/IBM/kui/issues/4123)
+- ensure kubectl Delete toolbar button appears at far right ([9eb3079](https://github.com/IBM/kui/commit/9eb3079)), closes [#4116](https://github.com/IBM/kui/issues/4116)
+- STATUS cell not centered when sidecar is open ([4fb507a](https://github.com/IBM/kui/commit/4fb507a)), closes [#4059](https://github.com/IBM/kui/issues/4059)
+- status stripe refinements ([1394043](https://github.com/IBM/kui/commit/1394043)), closes [#4069](https://github.com/IBM/kui/issues/4069) [#4069](https://github.com/IBM/kui/issues/4069)
+- tables overflow horizontally when sidecar is open ([2d6bc95](https://github.com/IBM/kui/commit/2d6bc95)), closes [#4016](https://github.com/IBM/kui/issues/4016)
+- when sidecar is open, only show status badge, not status text ([3214db2](https://github.com/IBM/kui/commit/3214db2)), closes [#4058](https://github.com/IBM/kui/issues/4058)
+
+### Features
+
+- **plugins/plugin-kubectl:** add Show Node button for kubectl pods ([04e29d2](https://github.com/IBM/kui/commit/04e29d2)), closes [#4214](https://github.com/IBM/kui/issues/4214)
+- simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+- **plugins/plugin-kubectl:** add support for kustomize apply/delete/create ([b95cbdb](https://github.com/IBM/kui/commit/b95cbdb)), closes [#4203](https://github.com/IBM/kui/issues/4203)
+- add krew support ([f87cb6c](https://github.com/IBM/kui/commit/f87cb6c)), closes [#4199](https://github.com/IBM/kui/issues/4199)
+- add labels to summary mode ([95f731d](https://github.com/IBM/kui/commit/95f731d)), closes [#4041](https://github.com/IBM/kui/issues/4041) [#4040](https://github.com/IBM/kui/issues/4040)
+- add Show Owner Reference button for kube resources ([80ea40f](https://github.com/IBM/kui/commit/80ea40f)), closes [#4106](https://github.com/IBM/kui/issues/4106)
+- add support for Toolbar Buttons ([f55b8c6](https://github.com/IBM/kui/commit/f55b8c6)), closes [#4103](https://github.com/IBM/kui/issues/4103) [#4105](https://github.com/IBM/kui/issues/4105)
+- improve pagination and toolbar UIs of PaginatedTable ([08062e9](https://github.com/IBM/kui/commit/08062e9)), closes [#1456](https://github.com/IBM/kui/issues/1456)
+- kubectl tables should show official kind in title ([06eec95](https://github.com/IBM/kui/commit/06eec95)), closes [#4127](https://github.com/IBM/kui/issues/4127)
+- **plugins/plugin-kubectl:** configmap summary should show data ([50c7e10](https://github.com/IBM/kui/commit/50c7e10)), closes [#4025](https://github.com/IBM/kui/issues/4025)
+- **plugins/plugin-kubectl:** ReplicaSet should have Pods tab ([42cd286](https://github.com/IBM/kui/commit/42cd286)), closes [#4110](https://github.com/IBM/kui/issues/4110)
+- **plugins/plugin-kubectl:** restore Show Logs button for kubectl ([6b17dbd](https://github.com/IBM/kui/commit/6b17dbd)), closes [#4089](https://github.com/IBM/kui/issues/4089)
+- render kubectl summary tab using forms ([d88436e](https://github.com/IBM/kui/commit/d88436e)), closes [#4014](https://github.com/IBM/kui/issues/4014)
+- use breadcrumbs for TopNavSidecar naming ([5a4611e](https://github.com/IBM/kui/commit/5a4611e)), closes [#4043](https://github.com/IBM/kui/issues/4043) [#3657](https://github.com/IBM/kui/issues/3657) [#4044](https://github.com/IBM/kui/issues/4044)
+
 # [8.4.0](https://github.com/IBM/kui/compare/v4.5.0...v8.4.0) (2020-04-10)
 
 ### Bug Fixes
