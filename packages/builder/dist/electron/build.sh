@@ -182,8 +182,6 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
         (cd "$BUILDDIR/${CLIENT_NAME}-win32-x64" && touch kubectl-kui.ps1 && chmod +x kubectl-kui.ps1 \
           && echo '$Env:KUI_POPUP_WINDOW_RESIZE="true"
 $ScriptDir = Split-Path $script:MyInvocation.MyCommand.Path
-Write-Host "Current script directory is $ScriptDir"
-Write-Host "yoyo $args"
 $argv = "kubectl " + $args
 Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-kui.ps1)
 
