@@ -1,18 +1,57 @@
-import { Tab } from '@kui-shell/core'
+import { safeLoad } from 'js-yaml'
+const execSync = require('child_process').execSync
 
-function parseData(data: string): Array<Object> {
-	var dataArr = data.split(" ")
-	var dict = []
-	for(let i = 0; i < dataArr.length-1; i++){
-    dict.push({
-        id: 'ns-'+i,
-        text: dataArr[i]
-    })
-	}
-	return dict
-}
+export default class GetKubeInfo {
+  private rawOutput = ''
 
-export async function getNsData(tab: Tab): Promise<Array<Object>>{
-	const cmd = `kubectl get ns -o=jsonpath='{range .items[*]}{.metadata.name}{" "}'`	
-	return parseData(await(tab.REPL.qexec(cmd)))
+  public getNamespace(): Array<any>{
+  	this.rawOutput = execSync('kubectl get ns -o yaml', { encoding: 'utf-8' })
+  	const rawQuery = safeLoad(this.rawOutput)['items'];
+  	var dataArr = []
+  	for(let i = 0; i < rawQuery.length; i++){
+  		let name = rawQuery[i]['metadata']['name'];
+  		dataArr.push(
+  		{
+  			id: `ns-${i}`,
+  			text: name
+  		})
+  	}
+    return dataArr
+  }
+
+  public getSvc(ns: string): Array<any>{
+  	this.rawOutput = execSync(`kubectl get svc -n ${ns} -o yaml`, { encoding: 'utf-8' })
+  	const rawQuery = safeLoad(this.rawOutput)['items'];
+  	var dataArr = []
+  	for(let i = 0; i < rawQuery.length; i++){
+  		let name = rawQuery[i]['metadata']['name'];
+  		dataArr.push(
+  		{
+  			id: `svc-${i}`,
+  			text: name
+  		})
+  	}
+  	return dataArr;
+  }
+
+  public getDeployment(ns: string, svc: string): Array<any>{
+  	this.rawOutput = execSync(`kubectl get deployments -n ${ns} -o yaml`, { encoding: 'utf-8' });
+  	const rawQuery = safeLoad(this.rawOutput)['items'];
+  	var dataArr = []
+  	for(let i = 0; i < rawQuery.length; i++){
+  		let name = rawQuery[i]['metadata']['labels']['app'];
+  		if(name === svc){
+  			dataArr.push(
+  			{
+	  			id: `dep-${i}`,
+	  			text: rawQuery[i]['metadata']['name']
+  			})
+  		}
+  	}
+  	return dataArr;	
+  }
 }
+// const ob = new GetKubeInfo()
+// const query = ob.getDeployment('bookinfo-iter8', 'reviews');
+
+// console.log(query)
