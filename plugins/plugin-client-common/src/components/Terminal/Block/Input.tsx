@@ -285,16 +285,14 @@ export default class Input extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <div className="repl-input">
-        <div style={{ flex: 1 }}>
-          <div className="kui--input-and-context">
-            {this.prompt()}
-            {this.props.children}
-            {this.input()}
-            {this.status()}
-          </div>
-          {this.state.tabCompletion && this.state.tabCompletion.render()}
+      <div className={'repl-input' + (this.state.isearch ? ' kui--isearch-active' : '')}>
+        <div className="kui--input-and-context">
+          {this.prompt()}
+          {this.props.children}
+          {this.input()}
+          {this.status()}
         </div>
+        {this.state.tabCompletion && this.state.tabCompletion.render()}
       </div>
     )
   }

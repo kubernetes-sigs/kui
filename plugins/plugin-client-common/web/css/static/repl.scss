@@ -20,12 +20,14 @@
   white-space: normal;
 }
 .repl-prompt {
-  font-family: var(--font-sans-serif);
-  font-weight: 500;
   margin-right: 0.1875em;
   --color-prompt-text: var(--color-brand-02);
   --color-prompt-background: transparent;
   color: var(--color-prompt-text);
+}
+.repl-input:not(.kui--isearch-active) .repl-prompt {
+  font-weight: 500;
+  font-family: var(--font-sans-serif);
 }
 .repl-prompt .repl-selection {
   font-size: 80%;
