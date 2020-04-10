@@ -7,6 +7,7 @@ $light-green: #DEF2F1;
 $light-red: #ff6961;
 $dark-red: #ff1f13;
 $light-grey: #c6ccd8;
+$trans-grey: #5E6367;
 
 .header {
   padding-top: 10px;
@@ -45,4 +46,22 @@ h3 {
   font-size: 10px;
   color: $light-grey;
   margin: 0 0 15px 5px;
+}
+
+p {
+  font-size: 0.75rem !important;
+  line-height: 1.0rem !important;
+}
+
+.helper {
+  color: $trans-grey !important;
+}
+
+.bx--list-box__field {
+  width: 350px !important;
+}
+
+.formProps {
+  overflow-y: auto !important;
+  height: 689.5px;
 }
