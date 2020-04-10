@@ -22,7 +22,6 @@
 .repl-prompt {
   font-family: var(--font-sans-serif);
   font-weight: 500;
-  font-size: 0.875em;
   margin-right: 0.1875em;
   --color-prompt-text: var(--color-brand-02);
   --color-prompt-background: transparent;
@@ -38,7 +37,7 @@
 .repl-context {
   background-color: var(--color-prompt-background);
   letter-spacing: 0.16px;
-  filter: grayscale(50%);
+  filter: opacity(0.6875) grayscale(50%);
 }
 /*.repl-block.using-custom-prompt .repl-prompt-righty > svg,
 .repl-block.using-custom-prompt .repl-prompt-righty > i,
