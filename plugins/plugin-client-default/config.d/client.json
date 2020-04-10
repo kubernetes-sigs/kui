@@ -2,6 +2,5 @@
   "userAgent": "Kui-Shell",
   "cssHome": "css/",
   "imageHome": "",
-  "contextRoot": "",
-  "contentSecurityPolicy": "default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data:; script-src 'self' 'nonce-kuiDefaultNonce' 'unsafe-eval' 'strict-dynamic'; font-src 'self' file:; connect-src 'self' http://localhost:9953"
+  "contextRoot": ""
 }

@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
+import { isPopup, inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
 import sameCommand from './same'
@@ -49,6 +49,7 @@ export type Props = SidecarOptions & {
 }
 
 export interface BaseHistoryEntry {
+  cwd: string
   argvNoOptions: string[]
   parsedOptions: ParsedOptions
 }
@@ -76,6 +77,11 @@ export interface BaseState<HistoryEntry extends BaseHistoryEntry> {
 
 type Cleaner = () => void
 
+/** cwd */
+export function cwd() {
+  return process.env.PWD || (!inBrowser() && process.cwd())
+}
+
 export abstract class BaseSidecar<
   R extends KResponse,
   HistoryEntry extends BaseHistoryEntry
@@ -85,11 +91,13 @@ export abstract class BaseSidecar<
   protected constructor(props: Props) {
     super(props)
 
-    // interpret Escape key as a toggle of the view's width
+    // Interpret Escape key as a toggle of the view's width
     if (!this.isFixedWidth()) {
       const onEscape = this.onEscape.bind(this)
-      document.addEventListener('keyup', onEscape)
-      this.cleaners.push(() => document.removeEventListener('keyup', onEscape))
+      document.addEventListener('keydown', onEscape)
+      this.cleaners.push(() => document.removeEventListener('keydown', onEscape))
+      // ^^^ Note! keydown versus keyup is important (for now at
+      // least; @starpit 20200408); see https://github.com/IBM/kui/issues/4215
     }
   }
 
@@ -108,7 +116,9 @@ export abstract class BaseSidecar<
   /** Enter a given `response` into the History model */
   protected onResponse(tab: KuiTab, response: R, _, argvNoOptions: string[], parsedOptions: ParsedOptions) {
     this.setState(curState => {
-      const existingIdx = curState.history ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions)) : -1
+      const existingIdx = curState.history
+        ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions, cwd()))
+        : -1
       const current =
         this.idempotent() && existingIdx !== -1
           ? curState.history.peekAt(existingIdx)
@@ -183,7 +193,12 @@ export abstract class BaseSidecar<
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.key === 'Escape') {
+    if (
+      evt.key === 'Escape' &&
+      this.state.width !== Width.Closed &&
+      !document.getElementById('confirm-dialog') &&
+      !isPopup()
+    ) {
       this.setState(({ width: currentWidth, priorWidth }) => {
         if (priorWidth !== undefined) {
           if (this.props.willChangeSize) {

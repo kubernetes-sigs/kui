@@ -25,31 +25,14 @@ set -e
 set -o pipefail
 
 CLIENT_HOME=${CLIENT_HOME-$(pwd)}
-BUILDDIR=${KUI_BUILDDIR-"$CLIENT_HOME"/dist/webpack}
+BUILDDIR="$CLIENT_HOME"/dist/webpack
 
 echo "build-docker CLIENT_HOME=$CLIENT_HOME"
 echo "build-docker BUILDDIR=$BUILDDIR"
 
-if [ "$KUI_USE_HTTP" != "true" ]; then
-  # create the self-signed certificate
-  CLIENT_HOME="$CLIENT_HOME" npm run http-allocate-cert
-  cp -a "$CLIENT_HOME"/.keys .
-fi
-
-# this directory will contain the webpack bundles, CSS, images,
-# index.html, etc.
-mkdir build
-  if [[ `uname` == Darwin ]]; then
-      which gtar || brew install gnu-tar
-      TAR=gtar
-  else
-      TAR=tar
-  fi
-$TAR -C "$BUILDDIR" -hcf - . | $TAR -C build -xf -
+#rm -rf "$BUILDDIR"/conf.d && mkdir "$BUILDDIR"/conf.d
+#cp "$CLIENT_HOME"/node_modules/@kui-shell/webpack/conf.d/default.conf "$BUILDDIR"/conf.d/
+cp "$CLIENT_HOME"/node_modules/@kui-shell/webpack/Dockerfile "$BUILDDIR"/Dockerfile
 
 # finally, build the docker image
-if [ "$KUI_USE_HTTP" == "true" ]; then
-  docker build . -t kui-webpack -f Dockerfile.http
-else
-  docker build . -t kui-webpack
-fi
+(cd "$BUILDDIR" && docker build . -t kui-shell/kui)

@@ -130,12 +130,9 @@ export default class Input extends React.PureComponent<Props, State> {
 
   /** the ">" part of "xxx >" of the prompt */
   private promptRight() {
-    return (
-      <span className="repl-prompt-righty">
-        {/* a right chevron */}
-        <i>&#x276f;</i>
-      </span>
-    )
+    // &#x2771; "heavy right-pointing angle bracket ornament"
+    // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
+    return <span className="repl-prompt-righty">&#x276f;</span>
   }
 
   private isearchPrompt() {
@@ -288,16 +285,14 @@ export default class Input extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <div className="repl-input">
-        <div style={{ flex: 1 }}>
-          <div className="kui--input-and-context">
-            {this.prompt()}
-            {this.props.children}
-            {this.input()}
-            {this.status()}
-          </div>
-          {this.state.tabCompletion && this.state.tabCompletion.render()}
+      <div className={'repl-input' + (this.state.isearch ? ' kui--isearch-active' : '')}>
+        <div className="kui--input-and-context">
+          {this.prompt()}
+          {this.props.children}
+          {this.input()}
+          {this.status()}
         </div>
+        {this.state.tabCompletion && this.state.tabCompletion.render()}
       </div>
     )
   }
