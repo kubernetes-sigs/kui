@@ -1,65 +1,15 @@
 import * as React from 'react'
-import { useState } from 'react';
-import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect } from 'carbon-components-react'
-import { CaretDown32, Information16, View32, Data_132, AddAlt32, SubtractAlt32 } from "@carbon/icons-react";
+import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect, Checkbox } from 'carbon-components-react'
+import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 } from "@carbon/icons-react";
+import { Data_132 as Data132 } from "@carbon/icons-react";
 import "../../web/scss/components/exprForm.scss"
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
 import 'carbon-components/scss/components/select/_select.scss'
 import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
-import { Tab } from '@kui-shell/core'
-import { getNsData } from './get_cluster_info'
+import 'carbon-components/scss/components/checkbox/_checkbox.scss'
+import GetKubeInfo from './get_cluster_info'
 
-let nsList = [
-	{
-		id: 'ns-0',
-		text: 'bookinfo-iter8'
-	},
-
-	{
-		id: 'ns-1',
-		text: 'default'
-	},
-
-	{
-		id: 'ns-2',
-		text: 'kube-system'
-	},
-]
-
-let svcList = [
-	{
-		id: 'svc-0',
-		text: 'reviews'
-	},
-
-	{
-		id: 'svc-1',
-		text: 'details'
-	},
-
-	{
-		id: 'svc-2',
-		text: 'ratings'
-	},
-]
-
-let deployList = [
-	{
-		id: 'dep-0',
-		text: 'reviews-v1'
-	},
-
-	{
-		id: 'dep-1',
-		text: 'reviews-v2'
-	},
-
-	{
-		id: 'dep-2',
-		text: 'reviews-v3'
-	},
-]
 // export default StratOptions;
 const TextInputProps = {
   id: 'expName',
@@ -69,7 +19,10 @@ const TextInputProps = {
 };
 
 class Base extends React.Component<any, any> {
-	constructor(props){
+	private kubeMethods = new GetKubeInfo();
+	private svcList = [];
+	private deployList = [];
+	public constructor(props){
   	super(props);
     this.state = {showMetrics: false, name: '', ns:'', svc: '', base:'', cand:[],
 					metric: [{name: "", type:"", reward: false, limitType: "", limitValue:0}],
@@ -79,12 +32,12 @@ class Base extends React.Component<any, any> {
   }
 
   	// Handlers for any input changes
-    handleChange(event){
+    private handleChange(event){
     	this.setState({name: event.target.value.toLowerCase().replace(" ", "_")});
     }
     
     //Adds the candidate value to the state if not already there and not base
-    handleAddCand = (e) => {
+    private handleAddCand = (e) => {
     	if(!this.state.cand.includes(e.target.value) &&
     		this.state.base !== (e.target.value)){
     		
@@ -94,43 +47,47 @@ class Base extends React.Component<any, any> {
     	}
 	}
 	
-	handleAddNs = (e) => {
+	private handleAddNs = (e) => {
 		this.setState({ns: e.target.value, svc: '', base:'', cand:[]});
+		this.svcList = this.kubeMethods.getSvc(e.target.value);
+		this.deployList = []
 		event.preventDefault();
 	}
-	handleAddSvc = (e) => {
+	private handleAddSvc = (e) => {
 		this.setState({svc: e.target.value, base:'', cand:[]});
+		this.deployList = this.kubeMethods.getDeployment(this.state.ns, e.target.value);
 		event.preventDefault();
 	}
-	handleAddBase = (e) => {
+	private handleAddBase = (e) => {
 		this.setState({base: e.target.value, cand: []});
 		event.preventDefault();
 	}
-	handleMetric = (e) => {
+	private handleMetric = (e) => {
 		this.setState({showMetrics: !this.state.showMetrics});
 		event.preventDefault();
 	}
 	/*
 	* Metric Configuration related functions
 	*/
-	addMetric = (e) => {
+	private addMetric = () => {
     this.setState((prevState) => ({
       metric: [...prevState.metric, {name: "", type:"", reward: false, limitType: "", limitValue:0}],
     }));
   	}
   	// Removes the metric field from the state
-	onDeleteMetric = (idx) => {
+	private onDeleteMetric = (idx) => {
 	this.setState(state => {
 	  const metric = state.metric.filter((m, i) => i !== idx);
-
 	  return {
 	    metric,
 	  };
 	});
 	};
 
-    render(){
-    	let { metric } = this.state
+    public render(){
+    	let { metric } = this.state;
+    	const nsList = this.kubeMethods.getNamespace();
+    	
     	return (
         <Form className="formProps">
         	<div className="header">
@@ -166,15 +123,15 @@ class Base extends React.Component<any, any> {
 					labelText="Namespace"
 					helperText="Namespace where your application resides."
 					defaultValue="Select a namespace"
+					onChange={this.handleAddNs}
 					style={{width: 350}}
 				>
 				{
 					nsList.map((val,idx) => {
-						let itemId = `${val.id}`,
-						itemName = `${val.text}`
+						let itemName = `${val.text}`
 						return(
 							<SelectItem
-								value={itemId}
+								value={itemName}
 								text={itemName}
 							/>
 						)
@@ -188,15 +145,15 @@ class Base extends React.Component<any, any> {
 					labelText="Service"
 					helperText="The name of your microservice."
 					defaultValue="Select a service"
+					onChange={this.handleAddSvc}
 					style={{width: 350}}
 				>
 				{
-					svcList.map((val,idx) => {
-						let itemId = `${val.id}`,
-						itemName = `${val.text}`
+					this.svcList.map((val,idx) => {
+						let itemName = `${val.text}`
 						return(
 							<SelectItem
-								value={itemId}
+								value={itemName}
 								text={itemName}
 							/>
 						)
@@ -213,7 +170,7 @@ class Base extends React.Component<any, any> {
 					style={{width: 350}}
 				>
 				{
-					deployList.map((val,idx) => {
+					this.deployList.map((val,idx) => {
 						let itemId = `${val.id}`,
 						itemName = `${val.text}`
 						return(
@@ -235,7 +192,7 @@ class Base extends React.Component<any, any> {
 				<div style={{position: "relative", top: 55, left: -350}}>
 					<MultiSelect
 						id="cand-select"
-						items={deployList}
+						items={this.deployList}
 						itemToString={item => (item ? item.text : '')}
 						label="Candidate Deployment(s)"
 					>
@@ -252,7 +209,7 @@ class Base extends React.Component<any, any> {
 						<Button
 							size="default"
 							kind="secondary"
-							renderIcon={Data_132}
+							renderIcon={Data132}
 							onClick={this.handleMetric}
 						> Metric Config </Button>
 					</div>
@@ -277,7 +234,8 @@ class Base extends React.Component<any, any> {
         								let metricId = `metric-${idx}`,
         								rewardId=`reward-${idx}`,
         								limitTypeId=`limitType-${idx}`,
-        								limitValueId=`limitValue-${idx}`
+        								limitValueId=`limitValue-${idx}`,
+        								checkId=`checkbox-${idx}`
         								return(
         									<div key={idx}>
         										<p> {`Metric #${idx+1}`} </p>
@@ -314,6 +272,10 @@ class Base extends React.Component<any, any> {
 									            	helperText="Set the value for the designated threshold selected.
 									            	(Delta-%, abs-number)."
 									            	style={{width: 350}}
+		            							/>
+		            							<Checkbox 
+		            								id={checkId}
+		            								labelText="Set as reward"
 		            							/>
 		            							<Button
 		            								size="small"
