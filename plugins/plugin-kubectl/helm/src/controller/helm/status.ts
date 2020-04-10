@@ -95,7 +95,7 @@ export const format = async (name: string, options: KubeOptions, response: strin
     const notesMatch =
       notesString &&
       notesString.match(
-        /^NOTES:\n(\S+) can be accessed via port (\d+) on the following DNS name from within your cluster:\n(\S+)(.+)?/s
+        /^NOTES:\n(\S+) can be accessed via port (\d+) on the following DNS name from within your cluster:\n(\S+)([s\S]+)?/
       )
 
     const statusMatch = headerString.match(/LAST DEPLOYED: (.*)\nNAMESPACE: (.*)\nSTATUS: (.*)/)
