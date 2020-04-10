@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/webpack",
-  "version": "8.4.0",
+  "version": "8.4.1",
   "description": "Kui support for webpack clients",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
