@@ -5,10 +5,10 @@ body.kui--alternate .repl:not(.kui--input-stripe) .repl-block {
   padding-right: calc(1em * 0.875);
 }
 
-body.kui--alternate .repl-prompt {
+body.kui--alternate .repl-input:not(.kui--isearch-active) .repl-prompt {
   font-family: "IBM Plex Sans Condensed";
 }
-body.kui--alternate .repl-prompt .repl-context {
+body.kui--alternate .repl-context {
   filter: none;
   color: var(--color-text-02);
 }
