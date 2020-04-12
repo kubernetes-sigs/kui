@@ -22,7 +22,6 @@ import {
   isHTML,
   isTable,
   eventChannelUnsafe,
-  getTabId,
   Tab as KuiTab,
   Stream,
   Streamable
@@ -46,7 +45,12 @@ import Scalar from '../../Scalar'
 const okString = i18n('plugin-client-common')('ok')
 
 interface Props {
+  /** tab UUID */
+  uuid: string
+
+  /** for key handlers, which may go away soon */
   tab: KuiTab
+
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
 }
@@ -63,7 +67,7 @@ export default class Output extends React.PureComponent<Props, State> {
     super(props)
 
     const streamingConsumer = this.streamingConsumer.bind(this)
-    const tabUUID = getTabId(props.tab)
+    const tabUUID = props.uuid
 
     if (isProcessing(props.model)) {
       eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, streamingConsumer)
@@ -83,13 +87,13 @@ export default class Output extends React.PureComponent<Props, State> {
         streamingOutput: curState.streamingOutput.concat([part])
       }))
       this.props.onRender()
-      eventChannelUnsafe.emit(`/command/stdout/done/${getTabId(this.props.tab)}/${this.props.model.execUUID}`)
+      eventChannelUnsafe.emit(`/command/stdout/done/${this.props.uuid}/${this.props.model.execUUID}`)
     }
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
     if (isFinished(props.model) && !state.isResultRendered) {
-      const tabUUID = getTabId(props.tab)
+      const tabUUID = props.uuid
 
       if (!isEmpty(props.model)) {
         eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
