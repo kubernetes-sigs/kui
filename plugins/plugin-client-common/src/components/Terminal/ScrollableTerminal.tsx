@@ -29,8 +29,12 @@ export interface TerminalOptions {
 }
 
 type Props = TerminalOptions & {
+  /** tab UUID */
   uuid: string
+
+  /** tab model */
   tab: KuiTab
+
   secondaryIsVisible?: boolean
   closeSecondary: () => void
 }
@@ -213,6 +217,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 key={idx}
                 idx={idx}
                 model={_}
+                uuid={this.props.uuid}
                 tab={this.props.tab}
                 noActiveInput={this.props.noActiveInput}
                 onOutputRender={this.onOutputRender.bind(this)}

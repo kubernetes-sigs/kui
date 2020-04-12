@@ -58,6 +58,7 @@ export default class InputStripe extends React.PureComponent<Props, State> {
       <div className="kui--input-stripe repl">
         <Block
           idx={this.state.idx}
+          uuid={this.props.uuid}
           tab={this.props.tab}
           model={this.state.model}
           noOutput
