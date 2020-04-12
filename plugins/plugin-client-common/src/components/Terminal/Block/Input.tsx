@@ -63,6 +63,9 @@ type Props = InputOptions & {
   /** needed temporarily to make pty/client happy */
   _block: HTMLElement
 
+  /** tab UUID */
+  uuid: string
+
   /** for key handlers, which may go away soon */
   tab: KuiTab
 
