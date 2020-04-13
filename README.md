@@ -57,5 +57,5 @@ same experience in both a local- and browser-based experience.
 
 ## More Resources
 
-- [API documentation for authoring new commands](https://github.com/IBM/kui/wiki/Authoring-Kui-Plugins)
+- [Developer Guide](https://github.com/IBM/kui/wiki)
 - Kui can form the basis for delivering CLI-driven GUI experiences. For example, Kui has a custom client for Apache OpenWhisk: [Oui](https://github.com/kui-shell/oui#readme)
