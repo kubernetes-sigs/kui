@@ -1,1 +1,1 @@
-Copy [plugin-example](plugin-example/) into [plugins/](../../plugins/) to try it out!
+This application houses the examples from the [wiki](https://github.com/IBM/kui/wiki).
