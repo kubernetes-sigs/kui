@@ -30,7 +30,9 @@ import Client from '@kui-shell/client'
  *
  */
 function renderMain(container: Element, isPopup: boolean, commandLine?: string[]) {
-  ReactDomRender(<Client isPopup={isPopup} commandLine={commandLine} />, container)
+  // re: noBootstrap; since we do the bootstrapping here, we don't
+  // need the Client to do anything more
+  ReactDomRender(<Client noBootstrap isPopup={isPopup} commandLine={commandLine} />, container)
 }
 
 /** boot Kui! */
