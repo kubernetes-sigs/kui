@@ -32,7 +32,7 @@
     "compile:prep": "touch node_modules/@kui-shell/prescan.json",
     "compile:source:es6": "tsc --build tsconfig.json",
     "compile:source": "npm run compile:prep && npm run compile:source:es6 && npx kui-babel",
-    "compile:prescan": "MONOREPO_MODE=true CLIENT_HOME=./node_modules/@kui-shell/client node ./packages/builder/dist/bin/compile.js",
+    "compile:prescan": "MONOREPO_MODE=true node ./packages/builder/dist/bin/compile.js",
     "compile:clean": "tsc --build tsconfig.json --clean",
     "compile": "npm run compile:source && npm run compile:prescan",
     "rebuild": "npm run compile:clean; npm run compile",
