@@ -31,7 +31,7 @@ import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui isPopup={props.isPopup} commandLine={props.commandLine}>
+    <Kui {...props}>
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />

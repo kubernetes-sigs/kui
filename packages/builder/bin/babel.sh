@@ -33,7 +33,7 @@ function babel {
     if [ "$i" == "packages/builder" ]; then OUT=build; fi
 
     echo "babeling $1 to $OUT"
-    npx babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored &
+    npx --no-install babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored &
 }
 
 for i in {packages,plugins}/*; do
