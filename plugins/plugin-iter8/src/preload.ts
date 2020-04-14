@@ -1,5 +1,5 @@
 import { PreloadRegistrar } from "@kui-shell/core"
-import exprcreateMode from './modes/exprSetup'
+import exprcreateMode from './models/exprSetup'
 export default async (registrar: PreloadRegistrar) => {
 	await registrar.registerModes(
 		exprcreateMode
