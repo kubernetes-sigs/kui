@@ -1,13 +1,14 @@
 import { safeLoad } from 'js-yaml'
+import { MetricConfigMap } from './metric-config-types'
 
 const execSync = require('child_process').execSync
 
 export default class GetMetricConfig {
-  public output = {}
+  public output: { configmaps: MetricConfigMap } | { error: string }
   public constructor() {
     try {
       this.output = {
-        configmaps: execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
+        configmaps: execSync('kubectl get configmaps -n iter8 iter8config-metrics2 -o yaml', {
           encoding: 'utf-8',
           stdio: 'pipe'
         })
