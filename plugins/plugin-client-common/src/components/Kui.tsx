@@ -19,18 +19,27 @@
 
 import * as React from 'react'
 
-import { ComboSidecar, InputStripe, StatusStripe, TabContainer } from '..'
+import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '..'
 
 const Popup = React.lazy(() => import('./Popup'))
 
 export interface Props {
+  /** no Kui bootstrap needed? */
+  noBootstrap?: boolean
+
+  /** operate in bottom Input mode? rather than as a conventional Input/Output terminal */
   bottomInput?: boolean
 
+  /** operate in popup mode? */
   isPopup?: boolean
+
+  /** if in popup mode, execute the given command line */
   commandLine?: string[]
 }
 
 interface State {
+  isBootstrapped: boolean
+
   productName: string
 }
 
@@ -42,19 +51,37 @@ export class Kui extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
+    if (!props.noBootstrap) {
+      import('@kui-shell/core')
+        .then(_ => _.bootIntoSandbox())
+        .then(() => {
+          this.setState({ isBootstrapped: true })
+        })
+    }
+
     try {
       this.state = {
+        isBootstrapped: !!props.noBootstrap,
         productName: require('@kui-shell/client/config.d/name.json').productName
       }
     } catch (err) {
       console.log('using default configuration')
       this.state = {
+        isBootstrapped: !!props.noBootstrap,
         productName: 'Kui Demo'
       }
     }
   }
 
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
+  }
+
   public render() {
+    if (!this.state.isBootstrapped) {
+      return <Loading />
+    }
+
     if (this.props.isPopup && this.props.commandLine) {
       return (
         <React.Suspense fallback={<div />}>

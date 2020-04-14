@@ -25,9 +25,17 @@ import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from
 import 'carbon-components/scss/components/accordion/_accordion.scss'
 
 type Props = InputOptions & {
+  /** block ordinal index */
   idx: number
-  tab: KuiTab
+
+  /** block model */
   model: BlockModel
+
+  /** tab UUID */
+  uuid: string
+
+  /** tab model */
+  tab: KuiTab
 
   noActiveInput?: boolean
 
@@ -64,6 +72,7 @@ export default class Block extends React.PureComponent<Props, State> {
     if (isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (
         <Output
+          uuid={this.props.uuid}
           tab={this.props.tab}
           model={this.props.model}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
@@ -77,6 +86,7 @@ export default class Block extends React.PureComponent<Props, State> {
       this.state._block && (
         <Input
           key={this.props.idx}
+          uuid={this.props.uuid}
           tab={this.props.tab}
           model={this.props.model}
           {...this.props}

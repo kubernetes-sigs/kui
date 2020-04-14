@@ -35,8 +35,7 @@ kubectl plugin support for UNIX shells and PowerShell.
 
 ## Contributing
 
-If you want to help, please take a look at our [guidelines](CONTRIBUTING.md) and [developer guide](docs/dev/README.md). If you want to develop your own custom client, using the Kui framework, check out the
-[API docs](https://apidocs.kui-shell.org/).
+If you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).
 
 ## Kui is a CLI, with Visualizations on the Side
 
@@ -58,5 +57,5 @@ same experience in both a local- and browser-based experience.
 
 ## More Resources
 
-- [API documentation for authoring new commands](https://github.com/IBM/kui/wiki/Authoring-Kui-Plugins)
+- [Developer Guide](https://github.com/IBM/kui/wiki)
 - Kui can form the basis for delivering CLI-driven GUI experiences. For example, Kui has a custom client for Apache OpenWhisk: [Oui](https://github.com/kui-shell/oui#readme)
