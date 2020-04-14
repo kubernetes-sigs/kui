@@ -9,7 +9,7 @@ import 'carbon-components/scss/components/select/_select.scss'
 import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
-import GetKubeInfo from './get_cluster_info'
+import GetKubeInfo from '../components/get_cluster_info'
 
 // Component Properties
 const TextInputProps = {
