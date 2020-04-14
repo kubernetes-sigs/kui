@@ -19,7 +19,7 @@ const TextInputProps = {
   style: {width: 350, height: 50},
 };
 
-class Base extends React.Component<any, any> {
+class ExprBase extends React.Component<any, any> {
 	private kubeMethods = new GetKubeInfo();
 	private svcList = [];
 	private deployList = [];
@@ -33,13 +33,14 @@ class Base extends React.Component<any, any> {
 		metric: [{name: "", type:"", reward: false, limitType: "", limitValue:0}], //metric attributes
 		disableReward: false, //disables the reward select for other metrics
 				 };
+    this.submitForm = this.submitForm.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);   
   }
   	/*
   	* ==== Sets the basic experiment state attributes =====
   	*/
     private handleNameChange(event){
-    	this.setState({name: event.target.value.toLowerCase().replace(" ", "_")});
+    	this.setState({name: event.target.value.toLowerCase()});
     }
     
     private handleAddCand = (value) => {
@@ -90,13 +91,14 @@ class Base extends React.Component<any, any> {
 		}
 	}
 
+	/*
+	* ==== Metric Configuration related functions ====
+	*/
 	private handleMetric = (e) => {
 		this.setState({showMetrics: !this.state.showMetrics});
 		event.preventDefault();
 	}
-	/*
-	* ==== Metric Configuration related functions ====
-	*/
+
 	private addMetric = () => {
     this.setState((prevState) => ({
       metric: [...prevState.metric, {name: "", type:"", reward: false, limitType: "", limitValue:0}],
@@ -112,6 +114,12 @@ class Base extends React.Component<any, any> {
 	});
 	};
 
+	/*
+	*	Data transfer/manipulation logic
+	*/
+	private submitForm(e) {
+		this.props.handleData(this.state);
+	}
     public render(){
     	let { metric } = this.state;
     	const nsList = this.kubeMethods.getNamespace();
@@ -205,6 +213,7 @@ class Base extends React.Component<any, any> {
 						kind="primary"
 						renderIcon={View32}
 						disabled={this.state.invalidCand}
+						onClick={this.submitForm}
 					> Observe </Button>
 					<div style={{position: "relative", top: -48, left: 190}}>
 						<Button
@@ -305,9 +314,9 @@ class Base extends React.Component<any, any> {
   }
 
 
-
+export default ExprBase;
 export function renderForm(){
 	return {
-		react: () => <Base />
+		react: () => <ExprBase />
 	}
 }
