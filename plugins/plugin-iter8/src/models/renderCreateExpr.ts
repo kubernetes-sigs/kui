@@ -3,7 +3,7 @@ import { KubeResource } from '@kui-shell/plugin-kubectl'
 import { renderForm } from '../modes/exprForm'
 import { renderDecisionTab } from '../modes/decisionForm'
 
-//Checks the correct command response 
+//Checks the correct command response
 function verifyResponse(resource: KubeResource): boolean {
   return resource.kind === 'Command' && resource.metadata.name === "Experiment Creation";
 }
