@@ -25,7 +25,7 @@ async function getMatchingStrings(tab: Tab, cmd: string, spec: TabCompletionSpec
   const completions: string = await tab.REPL.qexec(cmd, undefined, undefined, { raw: true })
   const list: string[] = completions.split(/[\n\r]/).map(_ => _.replace(/^\w+\//, ''))
 
-  return list.filter(name => name.startsWith(spec.toBeCompleted))
+  return list.filter(name => name.startsWith(spec.toBeCompleted)).map(name => name.substring(spec.toBeCompleted.length))
 }
 
 /**

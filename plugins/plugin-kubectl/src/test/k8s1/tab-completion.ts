@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 import { dirname } from 'path'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
@@ -40,11 +40,11 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     allocateNS(this, ns3)
 
     it(`should tab complete unique namespace`, () => {
-      return tabby(this.app, `k get pods -n ${uniquePrefix}`, `k get pods -n ${ns3}`, false) // it's ok to have an error, as we don't have any pods, yet
+      return tabby(this, `k get pods -n ${uniquePrefix}`, `k get pods -n ${ns3}`, false) // it's ok to have an error, as we don't have any pods, yet
     })
 
     it(`should tab complete namespaces not unique`, () => {
-      return tabbyWithOptions(this.app, `k get pods -n ${commonPrefix}`, [ns, ns2], `k get pods -n ${ns}`, {
+      return tabbyWithOptions(this, `k get pods -n ${commonPrefix}`, [ns, ns2], `k get pods -n ${ns}`, {
         click: 0,
         expectOK: false, // it's ok to have an error, as we don't have any pods, yet
         expectedPromptAfterTab: `k get pods -n ${commonPrefix}`
@@ -84,12 +84,12 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     })
 
     it(`should tab complete pods`, () => {
-      return tabby(this.app, `k get pods -n ${ns} n`, `k get pods -n ${ns} nginx`)
+      return tabby(this, `k get pods -n ${ns} n`, `k get pods -n ${ns} nginx`)
     })
 
     it(`should tab complete pods not unique`, () => {
       return tabbyWithOptions(
-        this.app,
+        this,
         `k get pods -n ${ns} t`,
         [`tab-completion-1`, `tab-completion-2`],
         `k get pods -n ${ns} tab-completion-1`,
@@ -105,4 +105,3 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     deleteNS(this, ns3)
   })
 })
-*/

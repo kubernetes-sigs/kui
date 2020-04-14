@@ -239,7 +239,7 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 
 .repl-block {
   .repl-input {
-    align-items: center;
+    flex-direction: column;
 
     .kui--input-and-context {
       flex: 1;

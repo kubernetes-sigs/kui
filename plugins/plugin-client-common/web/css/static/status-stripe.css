@@ -7,91 +7,104 @@
 
   z-index: 10;
   box-shadow: 0 -3px 10px 0 rgba(175, 175, 175, 0.1);
-}
 
-.kui--status-stripe .kui--status-stripe-element a.clickable {
-  /* wrappers around clickable svgs */
-  display: flex;
-  align-items: center;
-}
+  .kui--status-stripe-element a.clickable {
+    /* wrappers around clickable svgs */
+    display: flex;
+    align-items: center;
+  }
 
-.kui--status-stripe .kui--status-stripe-element {
-  color: var(--color-fg);
-}
-.kui--status-stripe .kui--status-stripe-element svg {
-  fill: var(--color-fg);
-}
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] {
-  color: var(--color-text-02);
-}
-.kui--status-stripe .kui--status-stripe-element[data-view="obscured"] svg {
-  fill: var(--color-text-02);
-}
-.kui--status-stripe .kui--status-stripe-element[data-view="ok"] svg {
-  fill: var(--color-green);
-}
-.kui--status-stripe .kui--status-stripe-element[data-view="warn"] svg {
-  fill: var(--color-yellow-sidecar);
-}
-.kui--status-stripe .kui--status-stripe-element[data-view="error"] svg {
-  fill: var(--color-error);
-}
-.kui--status-stripe .kui--status-stripe-element[data-view="hidden"] {
-  display: none;
-}
+  .kui--status-stripe-element {
+    color: var(--color-fg);
+  }
+  .kui--status-stripe-element svg {
+    fill: var(--color-fg);
+  }
+  .kui--status-stripe-element[data-view="obscured"] {
+    color: var(--color-text-02);
+  }
+  .kui--status-stripe-element[data-view="obscured"] svg {
+    fill: var(--color-text-02);
+  }
+  .kui--status-stripe-element[data-view="ok"] svg {
+    fill: var(--color-green);
+  }
+  .kui--status-stripe-element[data-view="warn"] svg {
+    fill: var(--color-yellow-sidecar);
+  }
+  .kui--status-stripe-element[data-view="error"] svg {
+    fill: var(--color-error);
+  }
+  .kui--status-stripe-element[data-view="hidden"] {
+    display: none;
+  }
 
-.kui--status-stripe > div {
-  display: flex;
-}
-.kui--status-stripe .kui--status-stripe-context {
-  flex: 1;
-  font-size: 0.6875em;
-  padding-left: calc(1em * 0.875 / 0.6875);
-}
-.kui--status-stripe .kui--status-stripe-meter {
-  font-size: 0.6875em;
-  padding-left: 1em;
-}
+  & > div {
+    display: flex;
+  }
+  .kui--status-stripe-context {
+    flex: 1;
+    font-size: 0.6875em;
+    padding-left: calc(1em * 0.875 / 0.6875);
+  }
+  .kui--status-stripe-meter {
+    font-size: 0.6875em;
+    padding-left: 1em;
+  }
 
-.kui--status-stripe .kui--status-stripe-right {
-  justify-content: flex-end;
-}
+  .kui--status-stripe-right {
+    justify-content: flex-end;
+  }
 
-.kui--status-stripe .kui--status-stripe-element {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  margin-right: calc(1em * 0.875);
-}
+  .kui--status-stripe-element {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    margin-right: calc(1em * 0.875);
+  }
 
-.kui--status-stripe-element > a {
-  /* see https://github.com/IBM/kui/issues/3489 */
-  display: flex;
-  align-items: center;
-}
+  .kui--status-stripe-element > a {
+    /* see https://github.com/IBM/kui/issues/3489 */
+    display: flex;
+    align-items: center;
+  }
 
-.kui--status-stripe .clickable {
-  color: var(--color-fg);
-  text-decoration: none;
-}
+  .clickable {
+    color: var(--color-fg);
+    text-decoration: none;
+  }
 
-.kui--status-stripe .kui--status-stripe-element .clickable:hover {
-  color: var(--color-brand-01);
-  text-decoration: none;
-}
+  .kui--status-stripe-element .clickable:hover {
+    color: var(--color-brand-01);
+    text-decoration: none;
+  }
 
-.kui--status-stripe .kui--status-stripe-button .kui--status-stripe-element {
-  padding: 3px;
-  margin-right: calc(1em * 0.875 - 2 * 3px);
+  .kui--status-stripe-button .kui--status-stripe-element {
+    padding: 3px;
+    margin-right: calc(1em * 0.875 - 2 * 3px);
 
-  &:hover {
-    background-color: var(--color-table-border1);
-    svg {
-      fill: var(--color-text-01) !important;
+    &:hover {
+      background-color: var(--color-table-border1);
+      svg {
+        fill: var(--color-text-01) !important;
+      }
     }
   }
-}
 
-.kui--status-stripe-icon {
-  opacity: 0.875;
+  .kui--status-stripe-icon {
+    opacity: 0.875;
+  }
+
+  /* tab completions in status stripe input element */
+  .kui--input-stripe .repl-block .kui--tab-completions {
+    bottom: 1.875rem;
+    left: 0;
+    background-color: var(--color-sidecar-background-01);
+    border-bottom: 1px solid var(--color-table-border3);
+    z-index: 100;
+
+    .kui--tab-completions--option .bx--btn--primary:focus {
+      border-radius: 4px 4px 0px 0px;
+    }
+  }
 }
