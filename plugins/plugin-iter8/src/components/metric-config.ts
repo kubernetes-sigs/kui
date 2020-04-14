@@ -43,9 +43,15 @@ export default class GetMetricConfig {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   public getCounterMetrics(): Array<any> {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return [this.errorResponse()]
+=======
+  public getCounterMetrics() {
+    if ({}.hasOwnProperty.call(this.output, 'error')) {
+      return this.errorResponse()
+>>>>>>> Metric config file
 =======
   public getCounterMetrics() {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
@@ -56,9 +62,15 @@ export default class GetMetricConfig {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   public getRatioMetrics(): Array<any> {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return [this.errorResponse()]
+=======
+  public getRatioMetrics() {
+    if ({}.hasOwnProperty.call(this.output, 'error')) {
+      return this.errorResponse()
+>>>>>>> Metric config file
 =======
   public getRatioMetrics() {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
