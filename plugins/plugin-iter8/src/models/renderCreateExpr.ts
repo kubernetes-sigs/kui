@@ -20,7 +20,7 @@ const exprcreateMode: ModeRegistration<KubeResource> = {
 const decisionMode: ModeRegistration<KubeResource> = {
 	when: verifyResponse,
 	mode: {
-		mode: "Decision",
+		mode: "Experiment Decision",
 		content: renderDecisionTab,
 	},
 
