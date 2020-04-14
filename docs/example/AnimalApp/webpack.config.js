@@ -42,6 +42,12 @@ module.exports = {
   output: {
     path: path.resolve('./dist')
   },
+  node: {
+    fs: 'empty',
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    child_process: 'empty'
+  },
+  externals: ['net', 'node-pty-prebuilt-multiarch'],
   devServer: {
     port: 9080,
 

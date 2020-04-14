@@ -6,7 +6,7 @@
   "scripts": {
     "watch:source": "tsc --build . --watch",
     "compile": "npx tsc --build . && npx kui-babel && npx kui-prescan",
-    "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
+    "kill": "npm run kill:proxy; kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
     "watch:electron": "export CLIENT_HOME=$(pwd); npx webpack-dev-server --progress",
     "watch": "npm run kill; if [ ! -d node_modules/@kui-shell/build ]; then mkdir -p node_modules/@kui-shell/build; fi; concurrently -n PROXY,ES6,WEBPACK --kill-others 'npm run proxy' 'npm run watch:source' 'npm run watch:electron $WATCH_ARGS'",
     "proxy": "npx kui-run-proxy",
