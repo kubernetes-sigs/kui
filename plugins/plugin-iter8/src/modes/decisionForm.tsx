@@ -980,10 +980,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   }
 }
 
-export function renderDecisionTab() {
-  return {
-    react: function renderComponent() {
-      return <DecisionBase />
-    }
-  }
+export function renderDecisionTab(){
+	return {
+		react: () => <DecisionBase />
+	}
 }
