@@ -1,2 +1,3 @@
 src/index.js
-src.index.d.ts
+src/index.d.ts
+src/index.js.map

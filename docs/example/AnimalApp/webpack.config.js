@@ -36,40 +36,25 @@ module.exports = {
         test: /\.scss$/i,
         use: sassLoaderChain
       },
-      // { test: /\.css$/i, include: thisPath('@kui-shell/plugin-'), exclude: thisPath('web/css/static'), use: ['to-string-loader', 'css-loader'] },
-      { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['style-loader', 'css-loader'] },
-      { test: /\.png$/, use: 'file-loader' },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader'
-          }
-        ]
-      }
+      { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['style-loader', 'css-loader'] }
     ]
   },
-  target: process.env.TARGET || 'web',
   output: {
     path: path.resolve('./dist')
   },
-  node: {
-    fs: 'empty',
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    child_process: 'empty'
-  },
   devServer: {
     port: 9080,
+
+    // otherwise, webpack-dev-server spews a gigantic volume of
+    // messages to the browser every time it recompiles
     clientLogLevel: 'silent',
+
+    // these are build artifacts, no need to watch for changes therein
     watchOptions: {
-      ignored: ['**/*.d.ts', '**/*.js.map', /node_modules/, '**/clients/default/**']
-    },
-    writeToDisk: process.env.TARGET === 'electron-renderer'
+      ignored: ['**/*.d.ts', '**/*.js.map', /node_modules/]
+    }
   },
-  // externals: { 'node-pty-prebuilt-multiarch': 'commonjs node-pty-prebuilt-multiarch' },
-  externals: ['net', 'module', 'readline', 'node-pty-prebuilt-multiarch'],
   stats: {
-    // while developing, you should set this to true
     warnings: false
   },
   plugins: [

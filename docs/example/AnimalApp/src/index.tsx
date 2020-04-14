@@ -5,5 +5,5 @@ import { Kui } from '@kui-shell/plugin-client-common'
 
 const wrapper = document.querySelector('.main')
 if (wrapper) {
-  render(<Kui bootstrap />, wrapper)
+  render(<Kui />, wrapper)
 }
