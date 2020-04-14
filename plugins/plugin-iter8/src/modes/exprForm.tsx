@@ -175,8 +175,10 @@ class ExprBase extends React.Component<{}, Formstate> {
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ criteria: newMetric })
   }
-  	// Handlers for any input changes
-    handleChange(event){
+  	/*
+  	* ==== Sets the basic experiment state attributes =====
+  	*/
+    private handleNameChange(event){
     	this.setState({name: event.target.value.toLowerCase().replace(" ", "_")});
     }
 
@@ -192,16 +194,29 @@ class ExprBase extends React.Component<{}, Formstate> {
 			cand: [...prevState.cand, (ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value],
 			}));
     	}
+    	this.setState({
+			cand: versionValue
+		});
 	}
 
 	handleAddNs = (e) => {
 		this.setState({ns: e.target.value, svc: '', base:'', cand:[]});
 	}
-	handleAddSvc = (e) => {
-		this.setState({svc: e.target.value, base:'', cand:[]});
+	private handleAddBase = (value) => {
+
+		if(value == null){
+			console.log("The value is null");
+			this.setState({base: '', cand: []});
+		}
+		else{
+			console.log("Baseline: ", value.text);
+			this.setState({base: value.text, cand: []});
+		}
 	}
-	handleAddBase = (e) => {
-		this.setState({base: e.target.value, cand: []});
+
+	private handleMetric = (e) => {
+		this.setState({showMetrics: !this.state.showMetrics});
+		event.preventDefault();
 	}
 
   // Disables all the other checkboxes
