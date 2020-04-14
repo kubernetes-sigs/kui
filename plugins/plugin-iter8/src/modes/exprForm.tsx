@@ -1,16 +1,17 @@
 import * as React from 'react'
-import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect, Checkbox } from 'carbon-components-react'
+import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect, Checkbox, ComboBox } from 'carbon-components-react'
 import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 } from "@carbon/icons-react";
 import { Data_132 as Data132 } from "@carbon/icons-react";
-import "../../web/scss/components/exprForm.scss"
+import "../../src/web/scss/static/exprForm.scss"
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
+import 'carbon-components/scss/components/combo-box/_combo-box.scss'
 import 'carbon-components/scss/components/select/_select.scss'
 import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 import GetKubeInfo from './get_cluster_info'
 
-// export default StratOptions;
+// Component Properties
 const TextInputProps = {
   id: 'expName',
   labelText: 'Name',
@@ -22,52 +23,79 @@ class Base extends React.Component<any, any> {
 	private kubeMethods = new GetKubeInfo();
 	private svcList = [];
 	private deployList = [];
+	
 	public constructor(props){
   	super(props);
-    this.state = {showMetrics: false, name: '', ns:'', svc: '', base:'', cand:[],
-					metric: [{name: "", type:"", reward: false, limitType: "", limitValue:0}],
-					disableOthers: false,
+    this.state = {
+    	showMetrics: false, //determines the visibility of metric config
+    	invalidCand: false, //determines whether cand values are valid
+    	name: '', ns:'', svc: '', base:'', cand:[], //basic expr attributes
+		metric: [{name: "", type:"", reward: false, limitType: "", limitValue:0}], //metric attributes
+		disableReward: false, //disables the reward select for other metrics
 				 };
-    this.handleChange = this.handleChange.bind(this);   
+    this.handleNameChange = this.handleNameChange.bind(this);   
   }
-
-  	// Handlers for any input changes
-    private handleChange(event){
+  	/*
+  	* ==== Sets the basic experiment state attributes =====
+  	*/
+    private handleNameChange(event){
     	this.setState({name: event.target.value.toLowerCase().replace(" ", "_")});
     }
     
-    //Adds the candidate value to the state if not already there and not base
-    private handleAddCand = (e) => {
-    	if(!this.state.cand.includes(e.target.value) &&
-    		this.state.base !== (e.target.value)){
-    		
-    		this.setState((prevState) => ({
-			cand: [...prevState.cand, e.target.value],
-			}));
+    private handleAddCand = (value) => {
+    	// Convert all input into an iterable array
+    	let versionValue = value.map((data) => {return data.text});
+    	this.setState({invalidCand: false});
+    	// Check for invalid selections
+    	for(let i = 0; i <versionValue.length; i++){
+    		console.log("Candidate:", versionValue[i]);
+	    	if(this.state.base === (versionValue[i])){
+	    		this.setState({invalidCand: true});
+	    		versionValue.splice(i, 1);	
+	    	}
     	}
+    	this.setState({
+			cand: versionValue
+		});
 	}
 	
-	private handleAddNs = (e) => {
-		this.setState({ns: e.target.value, svc: '', base:'', cand:[]});
-		this.svcList = this.kubeMethods.getSvc(e.target.value);
-		this.deployList = []
-		event.preventDefault();
+	private handleAddNs = (value) => {
+		if(value == null){
+			this.setState({ns: '', svc: '', base:'', cand:[]});
+			this.svcList = [];
+		}else{
+			this.setState({ns: value.text, svc: '', base:'', cand:[]});
+			this.svcList = this.kubeMethods.getSvc(value.text);	
+		}
+		this.deployList = [];
 	}
-	private handleAddSvc = (e) => {
-		this.setState({svc: e.target.value, base:'', cand:[]});
-		this.deployList = this.kubeMethods.getDeployment(this.state.ns, e.target.value);
-		event.preventDefault();
+	private handleAddSvc = (value) => {
+		if(value == null){
+			this.setState({svc: '', base:'', cand:[]});
+			this.deployList = []
+		}else{
+			this.setState({svc: value.text, base:'', cand:[]});
+			this.deployList = this.kubeMethods.getDeployment(this.state.ns, value.text);
+		}
 	}
-	private handleAddBase = (e) => {
-		this.setState({base: e.target.value, cand: []});
-		event.preventDefault();
+	private handleAddBase = (value) => {
+		
+		if(value == null){
+			console.log("The value is null");
+			this.setState({base: '', cand: []});
+		}
+		else{
+			console.log("Baseline: ", value.text);
+			this.setState({base: value.text, cand: []});
+		}
 	}
+
 	private handleMetric = (e) => {
 		this.setState({showMetrics: !this.state.showMetrics});
 		event.preventDefault();
 	}
 	/*
-	* Metric Configuration related functions
+	* ==== Metric Configuration related functions ====
 	*/
 	private addMetric = () => {
     this.setState((prevState) => ({
@@ -100,7 +128,7 @@ class Base extends React.Component<any, any> {
 		            	{...TextInputProps}
 		            	type="text"
 		            	value={this.state.name} 
-		            	onChange={this.handleChange} 
+		            	onChange={this.handleNameChange} 
 		            />
 		        </div>
 		        <div className='helpDiv'>
@@ -118,70 +146,40 @@ class Base extends React.Component<any, any> {
         		<h3> Target Configuration </h3>
             </div>
             <div style={{ width: 350, position: "relative", top: 240, left: -130 }}>
-	            <Select
+	            <ComboBox
 					id="ns-select"
-					labelText="Namespace"
+					titleText="Namespace"
 					helperText="Namespace where your application resides."
-					defaultValue="Select a namespace"
-					onChange={this.handleAddNs}
+					placeholder="Select a Namespace"
+					items={nsList}
+					itemToString={item => (item ? item.text : '')}
+					onChange={(value) => this.handleAddNs(value.selectedItem)}
 					style={{width: 350}}
-				>
-				{
-					nsList.map((val,idx) => {
-						let itemName = `${val.text}`
-						return(
-							<SelectItem
-								value={itemName}
-								text={itemName}
-							/>
-						)
-					})
-				}
-				</Select>
+				/>
 				</div>
 			<div style={{ width: 350, position: "relative", top: 340, left: -195 }}>
-	            <Select
+	            <ComboBox
 					id="svc-select"
-					labelText="Service"
+					titleText="Service"
 					helperText="The name of your microservice."
-					defaultValue="Select a service"
-					onChange={this.handleAddSvc}
+					placeholder="Select a Service"
+					items={this.svcList}
+					itemToString={item => (item ? item.text : '')}
+					onChange={(value) => this.handleAddSvc(value.selectedItem)}
 					style={{width: 350}}
-				>
-				{
-					this.svcList.map((val,idx) => {
-						let itemName = `${val.text}`
-						return(
-							<SelectItem
-								value={itemName}
-								text={itemName}
-							/>
-						)
-					})
-				}
-				</Select>
+				/>
 				</div>
 			<div style={{ width: 350, position: "relative", top: 440, left: -260 }}>
-	            <Select
+	            <ComboBox
 					id="base-select"
-					labelText="Baseline Deployment"
+					titleText="Baseline Deployment"
 					helperText="The version of your microservice to use as the experimental baseline."
-					defaultValue="Select a Baseline"
+					placeholder="Select a Baseline Deployment"
+					items={this.deployList}
+					itemToString={item => (item ? item.text : '')}
+					onChange={(value) => this.handleAddBase(value.selectedItem)}
 					style={{width: 350}}
-				>
-				{
-					this.deployList.map((val,idx) => {
-						let itemId = `${val.id}`,
-						itemName = `${val.text}`
-						return(
-							<SelectItem
-								value={itemId}
-								text={itemName}
-							/>
-						)
-					})
-				}
-				</Select>
+				/>
 			</div>
 			<div style={{ width: 350, height:100, position: "relative", top: 555, left: -325, display:"-webkit-inline-box" }}>
 				<div style={{height: 50}}>
@@ -194,7 +192,10 @@ class Base extends React.Component<any, any> {
 						id="cand-select"
 						items={this.deployList}
 						itemToString={item => (item ? item.text : '')}
-						label="Candidate Deployment(s)"
+						label="Select Candidate Deployment(s)"
+						onChange={(value) => {this.handleAddCand(value.selectedItems)}}
+						invalid={this.state.invalidCand}
+						invalidText="Cannot select same version as baseline."
 					>
 					</MultiSelect>
 				</div>
@@ -203,7 +204,7 @@ class Base extends React.Component<any, any> {
 						size="default"
 						kind="primary"
 						renderIcon={View32}
-						// disabled={this.disableSubmit()}
+						disabled={this.state.invalidCand}
 					> Observe </Button>
 					<div style={{position: "relative", top: -48, left: 190}}>
 						<Button
