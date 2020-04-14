@@ -15,7 +15,7 @@ class DecisionBase extends React.Component<any, any> {
 		this.handleComponentData = this.handleComponentData.bind(this);
 	}
 	// Receive data from Experiment Creation Form
-	private handleComponentData = (formModel) => {
+	private handleComponentData (formModel){
 		console.log(formModel);
 		if(formModel.ns !== '')
 			this.setState({exprCreated: true});
