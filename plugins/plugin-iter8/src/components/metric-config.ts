@@ -1,10 +1,8 @@
 import { safeLoad } from 'js-yaml'
-import { MetricConfigMap } from './metric-config-types'
 
 const execSync = require('child_process').execSync
 
 export default class GetMetricConfig {
-  public output: { configmaps: MetricConfigMap } | { error: string }
   public constructor() {
     try {
       this.output = {
