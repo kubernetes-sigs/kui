@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { isHeadless, Registrar } from '@kui-shell/core'
+import * as React from 'react'
+import { InlineLoading } from 'carbon-components-react'
 
-export default async (registrar: Registrar) => {
-  if (!isHeadless()) {
-    await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
+import '../../../web/css/static/loading.scss'
+
+interface Props {
+  description?: string
+}
+
+export default class Loading extends React.PureComponent<Props> {
+  public render() {
+    return (
+      <div className="flex-layout flex-align-top larger-text">
+        <InlineLoading status="active" className="fade-in" description={this.props.description} />
+      </div>
+    )
   }
 }

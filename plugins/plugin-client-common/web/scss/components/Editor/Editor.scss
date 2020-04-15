@@ -1,0 +1,141 @@
+@import './theme-alignment.css';
+@import '~monaco-editor/min/vs/editor/editor.main.css';
+
+.monaco-editor-wrapper {
+  flex: 1;
+
+  /* This allows room for the horizontal scrollbar, and other
+   miscellaneous monaco-editor bits that are positioned violently,
+   without regard to the container. See
+   https://github.com/Microsoft/monaco-editor/issues/29 */
+  overflow: hidden;
+}
+
+.monaco-editor-wrapper .monaco-editor .emphasis {
+  font-style: italic;
+}
+
+.monaco-editor-wrapper .monaco-editor {
+  display: block;
+}
+.monaco-editor-wrapper .monaco-editor {
+  background: transparent;
+}
+
+.monaco-editor .main {
+  /* ui.css has a .main rule that we have to override; otherwise, the
+   completion/suggestion UI list elements will have zero height and be
+   rendered invisible */
+  height: auto;
+}
+
+.code-highlighting {
+  min-width: 0; /* hack needed for chrome to send resize events on shrink */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.code-highlighting > .monaco-editor {
+  padding: 1em 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.kui--sidecar .monaco-editor,
+.kui--sidecar .monaco-editor .margin,
+.kui--sidecar .monaco-editor-background {
+  background: transparent;
+}
+
+.kui--sidecar .monaco-editor .view-lines {
+  -webkit-app-region: no-drag;
+
+  /* monaco doesn't let us do this; we have to hard-wire it in the editor constructor in edit.js */
+  /*font-size: 0.9rem !important;
+    font-family: var(--font-monospace) !important;*/
+}
+
+.ql-editor > p {
+  margin: 0;
+}
+
+.ql-editor:focus,
+.ql-container code:focus {
+  outline: none;
+}
+
+.editor-status {
+  display: flex;
+}
+.editor-status > div {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.kui--sidecar .editor-status:not(.is-new).is-modified .is-modified,
+.kui--sidecar .editor-status:not(.is-new):not(.is-modified) .is-up-to-date,
+.kui--sidecar .editor-status.is-new:not(.is-read-only) .is-new,
+.kui--sidecar .editor-status.is-new.is-read-only .is-new-read-only {
+  opacity: 1;
+  width: auto;
+  height: auto;
+  pointer-events: unset;
+}
+
+/* wskflow container while editing compositions */
+#sidecar .monaco-editor-wrapper.half-height {
+  max-height: 30%; /* hmm.. monaco is persistent in its height */
+  flex: 3;
+}
+.wskflow-container.visible {
+  max-height: 70%; /* ugh, wskflow also uses pixel dimensions */
+  flex: 7;
+  border-top: 1px solid var(--color-ui-04);
+  background: var(--color-ui-01);
+
+  /* see shell issue #885 */
+  display: flex;
+  flex-direction: column;
+}
+/* wskflow container in editor while sidecar is maximized */
+.kui--tab-content.sidecar-full-screen #sidecar .code-highlighting {
+  flex-direction: row;
+}
+.kui--tab-content.sidecar-full-screen #sidecar .monaco-editor-wrapper.half-height {
+  max-height: none;
+  max-width: 50%;
+}
+.kui--tab-content.sidecar-full-screen #sidecar .wskflow-container.visible {
+  max-height: none;
+  max-width: 50%;
+}
+
+/* gutter and inline decorations */
+.editor.parse-error-gutter-marker {
+  border-radius: 0.9375em;
+  background-color: var(--color-support-01);
+  width: 1em !important;
+  height: 1em !important;
+}
+.editor.parse-error-before-marker:hover {
+  cursor: default;
+}
+.editor.parse-error-before-marker:before {
+  content: '^';
+  font-weight: bold;
+  position: absolute;
+  bottom: -1em;
+  color: var(--color-support-01);
+}
+
+body[kui-theme-style] .monaco-editor .selected-text {
+  transition: background 300ms ease-in-out;
+  background: var(--color-selection-background);
+}
+
+/* tooltip text is unreadble */
+.monaco-editor .monaco-editor-hover .hover-row p {
+  background: var(--color-sidecar-toolbar-background);
+  color: var(--color-sidecar-toolbar-foreground);
+}
