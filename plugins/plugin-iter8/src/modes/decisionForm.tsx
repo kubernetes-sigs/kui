@@ -1,9 +1,13 @@
 import * as React from 'react'
 import { InlineLoading } from 'carbon-components-react'
+import Chart from 'react-apexcharts'
 import ExprBase from "./exprForm"
 import 'carbon-components/scss/components/loading/_loading.scss'
 import '../../src/web/scss/static/decisionForm.scss'
-
+const options = {
+	labels:['Optimistic Bayesian', 'Posterior Bayesian', 'Uniform Split']
+};
+const series = [44, 55, 41];
 
 class DecisionBase extends React.Component<any, any> {
 	
@@ -30,6 +34,12 @@ class DecisionBase extends React.Component<any, any> {
 					iconDescription="Active loading indicator"
 					status="active"
 					onSuccess={this.state.exprCreated}
+				/>
+				<Chart
+					type="pie"
+					options={options}
+					series={series}
+					width="500"
 				/>
 			</div>
 		)
