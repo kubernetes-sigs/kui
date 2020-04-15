@@ -1,10 +1,4 @@
 {
   "bodyCss": ["kui--bottom-input", "kui-alternate"],
-  "tabStripe": "top-tab-stripe.css",
-  "tableStyle": "Medium",
-  "defaultTheme": "Carbon Gray10",
-  "promptPlaceholder": "",
-  "topTabs": {
-    "names": "fixed"
-  }
+  "defaultTheme": "Carbon Gray10"
 }
