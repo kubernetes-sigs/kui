@@ -3,6 +3,7 @@ import { safeLoad } from 'js-yaml'
 const execSync = require('child_process').execSync
 
 export default class GetMetricConfig {
+  public output = {}
   public constructor() {
     try {
       this.output = {
