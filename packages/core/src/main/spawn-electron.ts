@@ -97,7 +97,6 @@ export function createWindow(
   // but this doesn't render the inset window buttons
   // see https://github.com/electron/electron/issues/10243
   promise.then(async () => {
-    const { imageHome }: { imageHome: string } = await import('@kui-shell/client/config.d/client.json')
     const { productName }: { productName: string } = await import('@kui-shell/client/config.d/name.json')
     const { filesystem }: { filesystem: { linux: string; win32: string } } = await import(
       '@kui-shell/client/config.d/icons.json'
@@ -126,10 +125,10 @@ export function createWindow(
     const { dirname, join } = await import('path')
     const root = dirname(require.resolve('@kui-shell/prescan.json'))
     if (process.platform === 'linux') {
-      const icon = join(root, 'build', imageHome, filesystem.linux)
+      const icon = join(root, 'build', filesystem.linux)
       opts.icon = icon
     } else if (process.platform === 'win32') {
-      const icon = join(root, 'build', imageHome, filesystem.win32)
+      const icon = join(root, 'build', filesystem.win32)
       opts.icon = icon
     }
     if (process.platform === 'linux' || process.platform === 'win32') {
