@@ -5,9 +5,9 @@ import ExprBase from "./exprForm"
 import 'carbon-components/scss/components/loading/_loading.scss'
 import '../../src/web/scss/static/decisionForm.scss'
 const options = {
-	labels:['Optimistic Bayesian', 'Posterior Bayesian', 'Uniform Split']
+	labels:['reviews-v1', 'reviews-v2', 'reviews-v3']
 };
-const series = [44, 55, 41];
+const series = [20, 55, 25];	//add to 100?
 
 class DecisionBase extends React.Component<any, any> {
 	
