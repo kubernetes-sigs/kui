@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-import { isHeadless, Registrar } from '@kui-shell/core'
+import { editor as Monaco } from 'monaco-editor'
+import { i18n, Button } from '@kui-shell/core'
 
-export default async (registrar: Registrar) => {
-  if (!isHeadless()) {
-    await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
+const strings = i18n('plugin-client-common', 'editor')
+
+/**
+ * Offer a Save button
+ *
+ */
+export default function ClearButton(editor: Monaco.ICodeEditor, onClear?: () => void): Button {
+  return {
+    mode: 'Clear',
+    kind: 'view',
+    label: strings('Clear'),
+    command: () => {
+      editor.setValue('')
+      if (onClear) {
+        onClear()
+      }
+    }
   }
 }

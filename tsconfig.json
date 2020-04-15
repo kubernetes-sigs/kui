@@ -11,9 +11,6 @@
       "path": "plugins/plugin-bash-like"
     },
     {
-      "path": "plugins/plugin-editor"
-    },
-    {
       "path": "plugins/plugin-client-common"
     },
     {

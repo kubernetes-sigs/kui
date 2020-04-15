@@ -1,5 +1,8 @@
 @import './Button';
 
+@import 'carbon-components/scss/components/tooltip/_tooltip.scss';
+@import 'carbon-components/scss/components/notification/_toast-notification.scss';
+
 body .bx--toast-notification {
   /* provide default values for these color classes */
   --color-screenshot-background: var(--color-base02);

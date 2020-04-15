@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2018-19 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { isHeadless, Registrar } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
-export default async (registrar: Registrar) => {
-  if (!isHeadless()) {
-    await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
-  }
+export default (registrar: Registrar) => {
+  registrar.listen(
+    '/edit',
+    ({ command, REPL }) => {
+      // re: the stripping of --create; this is no longer needed, but
+      // some users might expect it to be
+      return REPL.qexec(command.replace(/\s*edit/, 'open').replace(/--create/, ''))
+    },
+    { inBrowserOk: true }
+  )
 }
