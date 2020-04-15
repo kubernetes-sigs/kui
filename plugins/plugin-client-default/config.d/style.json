@@ -1,10 +1,4 @@
 {
   "bodyCss": ["kui"],
-  "tabStripe": "top-tab-stripe.css",
-  "tableStyle": "Light",
-  "defaultTheme": "Carbon Gray10",
-  "promptPlaceholder": "",
-  "topTabs": {
-    "names": "command"
-  }
+  "defaultTheme": "Carbon Gray10"
 }
