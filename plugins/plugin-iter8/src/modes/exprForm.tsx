@@ -113,7 +113,23 @@ class ExprBase extends React.Component<any, any> {
 	  };
 	});
 	};
-
+	
+	// Disables all the other checkboxes
+	onSelectedChange = (idx) => {
+		let newMetricArr = this.state.metric.map((metric, i) => {
+		  if(i === idx){
+		    return {
+		      ...metric,
+		      reward: !metric.reward
+		    }
+		  }
+		  return metric;
+		})
+		this.setState( (prevState) => ({
+	      metric: newMetricArr,
+	      disableOthers: !prevState.disableOthers
+	    })); 
+	};
 	/*
 	*	Data transfer/manipulation logic
 	*/
@@ -135,8 +151,6 @@ class ExprBase extends React.Component<any, any> {
 		            <TextInput 
 		            	{...TextInputProps}
 		            	type="text"
-		            	value={this.state.name} 
-		            	onChange={this.handleNameChange} 
 		            />
 		        </div>
 		        <div className='helpDiv'>
@@ -149,11 +163,11 @@ class ExprBase extends React.Component<any, any> {
 		  			</TooltipIcon>
 	            </div>
             </div>
-            <div className="header" style={{position: "relative", top: 150, left: -130}}>
+            <div className="header" style={{position: "relative", top: 150, left: -145}}>
             	<CaretDown32 className="iconprops"/>
         		<h3> Target Configuration </h3>
             </div>
-            <div style={{ width: 350, position: "relative", top: 240, left: -130 }}>
+            <div style={{ width: 350, position: "relative", top: 240, left: -150 }}>
 	            <ComboBox
 					id="ns-select"
 					titleText="Namespace"
@@ -165,7 +179,7 @@ class ExprBase extends React.Component<any, any> {
 					style={{width: 350}}
 				/>
 				</div>
-			<div style={{ width: 350, position: "relative", top: 340, left: -195 }}>
+			<div style={{ width: 350, position: "relative", top: 340, left: -225 }}>
 	            <ComboBox
 					id="svc-select"
 					titleText="Service"
@@ -177,7 +191,7 @@ class ExprBase extends React.Component<any, any> {
 					style={{width: 350}}
 				/>
 				</div>
-			<div style={{ width: 350, position: "relative", top: 440, left: -260 }}>
+			<div style={{ width: 350, position: "relative", top: 440, left: -295 }}>
 	            <ComboBox
 					id="base-select"
 					titleText="Baseline Deployment"
@@ -189,13 +203,13 @@ class ExprBase extends React.Component<any, any> {
 					style={{width: 350}}
 				/>
 			</div>
-			<div style={{ width: 350, height:100, position: "relative", top: 555, left: -325, display:"-webkit-inline-box" }}>
-				<div style={{height: 50}}>
+			<div style={{ width: 350, height:100, position: "relative", top: 555, left: -345, display:"-webkit-inline-box" }}>
+				<div style={{height: 50, position: "relative", left: -23}}>
 					<p> Candidate Deployment(s) <br/>
 					<p className="helper"> The version(s) of your microservice to use as the experimental candidate.</p>
 					</p>
 				</div>
-				<div style={{position: "relative", top: 55, left: -350}}>
+				<div style={{position: "relative", top: 55, left: -370}}>
 					<MultiSelect
 						id="cand-select"
 						items={this.deployList}
@@ -207,7 +221,7 @@ class ExprBase extends React.Component<any, any> {
 					>
 					</MultiSelect>
 				</div>
-				<div style={{position: "relative", top: 120, left: -700}}>
+				<div style={{position: "relative", top: 120, left: -720}}>
 					<Button
 						size="default"
 						kind="primary"
@@ -242,7 +256,6 @@ class ExprBase extends React.Component<any, any> {
         						{
         							metric.map((val, idx) => {
         								let metricId = `metric-${idx}`,
-        								rewardId=`reward-${idx}`,
         								limitTypeId=`limitType-${idx}`,
         								limitValueId=`limitValue-${idx}`,
         								checkId=`checkbox-${idx}`
@@ -286,6 +299,8 @@ class ExprBase extends React.Component<any, any> {
 		            							<Checkbox 
 		            								id={checkId}
 		            								labelText="Set as reward"
+		            								disabled={!metric[idx].reward && this.state.disableOthers}
+                    								onChange = {() => this.onSelectedChange(idx)}
 		            							/>
 		            							<Button
 		            								size="small"
