@@ -103,10 +103,10 @@ export const doExplain = (command = 'kubectl') =>
                   mode: 'Overview',
                   contentType: 'text/markdown',
                   content: `### Description
-    #### ${description.replace(/\n/g, ' ')}
-    ### Version
-    ${version}
-    ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
+#### ${description.replace(/\n/g, ' ')}
+### Version
+${version}
+${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
     `
                 }
               ]
