@@ -53,10 +53,9 @@
     "npm": ">=6.9.0"
   },
   "dependencies": {
+    "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/core": "file:packages/core",
-    "@kui-shell/react": "file:packages/react",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
-    "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
     "@kui-shell/plugin-carbon-themes": "file:plugins/plugin-carbon-themes",
     "@kui-shell/plugin-patternfly4-themes": "file:plugins/plugin-patternfly4-themes",
     "@kui-shell/plugin-core-themes": "file:plugins/plugin-core-themes",
@@ -71,7 +70,8 @@
     "@kui-shell/plugin-skeleton": "file:plugins/plugin-skeleton",
     "@kui-shell/plugin-s3": "file:plugins/plugin-s3",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow",
-    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8"
+    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8",
+    "@kui-shell/react": "file:packages/react"
   },
   "devDependencies": {
     "@kui-shell/builder": "file:packages/builder",
