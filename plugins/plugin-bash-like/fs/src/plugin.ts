@@ -16,6 +16,7 @@
 
 import ls from './lib/ls'
 import glob from './lib/glob'
+import edit from './lib/edit'
 import open from './lib/open'
 import fstat from './lib/fstat'
 import fwrite from './lib/fwrite'
@@ -29,6 +30,7 @@ import { Registrar } from '@kui-shell/core'
  */
 export default async (registrar: Registrar) => {
   ls(registrar)
+  edit(registrar)
   open(registrar)
   fstat(registrar)
   fwrite(registrar)
