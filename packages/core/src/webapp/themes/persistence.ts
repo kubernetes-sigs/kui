@@ -49,8 +49,10 @@ export const getPersistedThemeChoice = (): Promise<string> => {
 const getCss = async (addon: string, addonKey: string, plugin: string) => {
   return {
     key: addonKey,
-    css: (await import('@kui-shell/plugin-' + webpackPath(plugin) + '/web/css/' + addon.replace(/\.css$/, '') + '.css'))
-      .default
+    css: /.scss/.test(addon)
+      ? await import('@kui-shell/plugin-' + webpackPath(plugin) + '/web/scss/' + addon.replace(/\.scss$/, '') + '.scss')
+      : (await import('@kui-shell/plugin-' + webpackPath(plugin) + '/web/css/' + addon.replace(/\.css$/, '') + '.css'))
+          .default
   }
 }
 
