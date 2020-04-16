@@ -48,7 +48,6 @@
 import { Registrar } from '@kui-shell/core'
 import { MetricDetailsMode } from '../modes/get-metrics'
 const ob = new MetricDetailsMode()
-
 export const kind = 'Metric Config'
 /** A Kui response needs some metadata to describe the resource */
 const metadata = {
@@ -62,7 +61,7 @@ const metadata = {
 function getMetrics() {
   return Object.assign(metadata, {
     modes: [
-      { mode: 'Metric Config', react: ob.MetricList() },
+      { mode: 'Metric List', react: ob.MetricList() },
       { mode: 'Metric Yaml', label: 'Config Map', content: ob.MetricYaml(), contentType: 'yaml' }
     ]
   })
