@@ -1,4 +1,3 @@
-// var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 export default class GetAnalyticsAssessment {
   public data = {}
   public url = ''
@@ -8,7 +7,7 @@ export default class GetAnalyticsAssessment {
   }
 
   public getAnalyticsAssessment() {
-    const data = this.data
+    const data = this.data // eslint-disable-line @typescript-eslint/no-this-alias
     const url = this.url
     const promiseObj = new Promise(function(resolve, reject) {
       const xhr = new XMLHttpRequest()
@@ -23,7 +22,7 @@ export default class GetAnalyticsAssessment {
             const respJson = JSON.stringify(resp)
             resolve(respJson)
           } else {
-            reject(JSON.stringify({ error: xhr.status }))
+            reject(xhr.status)
             console.log('Request failed')
           }
         } else {
@@ -35,3 +34,4 @@ export default class GetAnalyticsAssessment {
     return promiseObj
   }
 }
+// async () => {let x = await ob2.getAnalyticsAssessment(); return x;}
