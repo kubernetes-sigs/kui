@@ -191,7 +191,7 @@ function renderFullVersion(name: string, version: string): Table {
  *
  */
 const reportVersion = async ({ parsedOptions }: Arguments<VersionOptions>) => {
-  const { version } = await import('@kui-shell/client/config.d/version.json').catch(() => {
+  const { version } = await import('@kui-shell/client/package.json').catch(() => {
     console.log('using default version')
     return defaultConfig()
   })

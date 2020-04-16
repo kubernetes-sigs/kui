@@ -19,7 +19,7 @@ import * as colors from 'colors'
 import { Func, Suite, HookFunction, after as mochaAfter } from 'mocha'
 import { Application } from 'spectron'
 
-import { version } from '@kui-shell/client/config.d/version.json'
+import { version } from '@kui-shell/client/package.json'
 
 import * as CLI from './cli'
 import * as Selectors from './selectors'
