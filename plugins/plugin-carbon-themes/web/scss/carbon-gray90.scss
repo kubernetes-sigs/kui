@@ -1,8 +1,8 @@
-@import "ibm-plex.css";
-@import "kui--alternate.css";
+@import 'ibm-plex.scss';
+@import 'kui--alternate.scss';
 
 /* color variables */
-body[kui-theme="Carbon Gray90"][kui-theme-style] {
+body[kui-theme='Carbon Gray90'][kui-theme-style] {
   --color-base00: #262626;
   --color-base01: #171717;
   --color-base02: #565656;
@@ -65,39 +65,37 @@ body[kui-theme="Carbon Gray90"][kui-theme-style] {
   --color-latency-11: #bae6ff;
   --color-latency-12: #ba4e00;
   --color-latency-13: #d4bbff;
-}
 
-/* some carbon-overrides */
-body[kui-theme="Carbon Gray90"] .bx--modal-close__icon {
-  fill: #ebebeb;
-}
-body[kui-theme="Carbon Gray90"] .bx--data-table {
-  font-family: var(--font-sans-serif);
-}
-body[kui-theme="Carbon Gray90"] .bx--tabs__nav-link {
-  color: var(--color-base06);
-  border-bottom-color: var(--color-base02);
-}
-body[kui-theme="Carbon Gray90"] .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
-  color: var(--color-base06);
-}
-body[kui-theme="Carbon Gray90"]
-  .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
+  /* some carbon-overrides */
+  .bx--modal-close__icon {
+    fill: #ebebeb;
+  }
+  .bx--data-table {
+    font-family: var(--font-sans-serif);
+  }
   .bx--tabs__nav-link {
-  color: var(--color-text-01);
-}
-body[kui-theme="Carbon Gray90"] .bx--modal-header__heading,
-body[kui-theme="Carbon Gray90"] .bx--modal-content {
-  color: var(--color-text-01);
-}
-body[kui-theme="Carbon Gray90"] .bx--btn--secondary {
-  background-color: #6f6f6f;
-}
-body[kui-theme="Carbon Gray90"] .bx--btn--danger {
-  background-color: #ff3751;
-}
+    color: var(--color-base06);
+    border-bottom-color: var(--color-base02);
+  }
+  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
+    color: var(--color-base06);
+  }
+  .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link {
+    color: var(--color-text-01);
+  }
+  .bx--modal-header__heading,
+  .bx--modal-content {
+    color: var(--color-text-01);
+  }
+  .bx--btn--secondary {
+    background-color: #6f6f6f;
+  }
+  .bx--btn--danger {
+    background-color: #ff3751;
+  }
 
-/* input placeholder text */
-body[kui-theme="Carbon Gray90"][kui-theme-style] ::placeholder {
-  opacity: 0.875 !important;
+  /* input placeholder text */
+  ::placeholder {
+    opacity: 0.875 !important;
+  }
 }
