@@ -1,0 +1,17 @@
+$font-prefix: '~@ibm/plex';
+
+@import '~@ibm/plex/scss/mono/semibold/index';
+@import '~@ibm/plex/scss/mono/regular/index';
+
+@import '~@ibm/plex/scss/sans/bold/index';
+@import '~@ibm/plex/scss/sans/semibold/index';
+@import '~@ibm/plex/scss/sans/medium/index';
+@import '~@ibm/plex/scss/sans/regular/index';
+@import '~@ibm/plex/scss/sans/light/index';
+
+@import '~@ibm/plex/scss/sans-condensed/regular/index';
+
+body.kui--alternate[kui-theme-style] {
+  --font-monospace: 'IBM Plex Mono';
+  --font-sans-serif: 'IBM Plex Sans';
+}
