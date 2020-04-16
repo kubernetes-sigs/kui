@@ -1,7 +1,9 @@
 import * as React from 'react'
-import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect, Checkbox, ComboBox } from 'carbon-components-react'
+//Component Imports
+import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
 import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 } from "@carbon/icons-react";
 import { Data_132 as Data132 } from "@carbon/icons-react";
+// UI Style imports
 import "../../src/web/scss/static/exprForm.scss"
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
 import 'carbon-components/scss/components/combo-box/_combo-box.scss'
@@ -9,7 +11,9 @@ import 'carbon-components/scss/components/select/_select.scss'
 import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
+//Functionality Imports
 import GetKubeInfo from '../components/get_cluster_info'
+import GetMetricConfig from '../components/metric-config'
 
 // Component Properties
 const TextInputProps = {
@@ -21,6 +25,9 @@ const TextInputProps = {
 
 class ExprBase extends React.Component<any, any> {
 	private kubeMethods = new GetKubeInfo();
+	private GetMetricConfig = new GetMetricConfig();
+	private nsList = this.kubeMethods.getNamespace();
+	private countMetricsList = this.GetMetricConfig.getCounterMetrics();
 	private svcList = [];
 	private deployList = [];
 	
@@ -113,7 +120,37 @@ class ExprBase extends React.Component<any, any> {
 	  };
 	});
 	};
-	
+	//Handles metric selection
+	handleMetricName = (value, idx) => {
+		var metricName;
+		var metricType;
+		if(value == null){
+			metricName = '';
+			metricType = '';
+		}
+		else{
+			metricName = value.name;
+			metricType = "Gauge";
+			for(let i = 0; i < this.countMetricsList.length; i++){
+				if(this.countMetricsList[i].name === value.name)
+					metricType = "Counter"
+			}			
+		}
+
+
+		let newMetricArr = this.state.metric.map((metric, i) => {
+		  if(i === idx){
+		    return {
+		      ...metric,
+		      name: metricName,
+		      type: metricType
+		    }
+		  }
+		  return metric;
+		})
+		this.setState({metric: newMetricArr});
+
+	}
 	// Disables all the other checkboxes
 	onSelectedChange = (idx) => {
 		let newMetricArr = this.state.metric.map((metric, i) => {
@@ -138,8 +175,6 @@ class ExprBase extends React.Component<any, any> {
 	}
     public render(){
     	let { metric } = this.state;
-    	const nsList = this.kubeMethods.getNamespace();
-    	
     	return (
         <Form className="formProps">
         	<div className="header">
@@ -173,7 +208,7 @@ class ExprBase extends React.Component<any, any> {
 					titleText="Namespace"
 					helperText="Namespace where your application resides."
 					placeholder="Select a Namespace"
-					items={nsList}
+					items={this.nsList}
 					itemToString={item => (item ? item.text : '')}
 					onChange={(value) => this.handleAddNs(value.selectedItem)}
 					style={{width: 350}}
@@ -261,19 +296,19 @@ class ExprBase extends React.Component<any, any> {
         								checkId=`checkbox-${idx}`
         								return(
         									<div key={idx}>
-        										<p> {`Metric #${idx+1}`} </p>
-        										<Select
+        										<ComboBox
         											id={metricId}
-													labelText="Name"
-													defaultValue="Select a metric"
-													helperText="Metrics supported by Iter8."
-													style={{width: 350}}
-												>
-													<SelectItem
-														text="latency"
-														value="iter8-latency"
-													/>
-												</Select>
+        											titleText={`Metric #${idx+1}`}
+        											helperText="Experimental metrics supported by Iter8."
+        											placeholder="Select a Metric"
+        											items={this.countMetricsList}
+        											itemToString={item => (item ? item.name : '')}
+        											onChange={(value) => this.handleMetricName(value.selectedItem, idx)}
+        										/>
+        										<Tag
+        											type="cyan"
+        											children={val.type !== '' ? val.type : "Metric Type"}
+        										/>
 												<Select
 													id={limitTypeId}
 													labelText="Limit Type"
@@ -282,11 +317,11 @@ class ExprBase extends React.Component<any, any> {
 												>
 													<SelectItem
 														text="Absolute Threshold"
-														value="abs-thres"
+														value="absolute"
 													/>
 													<SelectItem
 														text="Delta Threshold"
-														value="delt-thres"
+														value="delta"
 													/>
 												</Select>
 												<TextInput 
