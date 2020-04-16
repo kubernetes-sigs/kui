@@ -74,7 +74,7 @@ describe('bodyCss', function(this: Common.ISuite) {
 
   Common.localIt('should have kui.in-electron in bodyCss', async () => {
     try {
-      await this.app.client.waitForExist('body.kui.in-electron')
+      await this.app.client.waitForExist('body.in-electron')
     } catch (err) {
       return Common.oops(this)(err)
     }
@@ -82,7 +82,7 @@ describe('bodyCss', function(this: Common.ISuite) {
 
   Common.remoteIt('should have kui.not-electron in bodyCss', async () => {
     try {
-      await this.app.client.waitForExist('body.kui.not-electron')
+      await this.app.client.waitForExist('body.not-electron')
     } catch (err) {
       return Common.oops(this)(err)
     }
