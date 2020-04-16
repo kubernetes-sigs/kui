@@ -16,7 +16,15 @@
 
 import * as React from 'react'
 import { Close20 as CloseButton } from '@carbon/icons-react'
-import { i18n, eventChannelUnsafe, Event, ExecType, Theme } from '@kui-shell/core'
+import {
+  i18n,
+  eventChannelUnsafe,
+  Event,
+  ExecType,
+  Theme,
+  getPersistedThemeChoice,
+  findThemeByName
+} from '@kui-shell/core'
 import { HeaderMenuItem } from 'carbon-components-react'
 
 const strings = i18n('plugin-core-support')
@@ -55,6 +63,17 @@ export default class Tab extends React.PureComponent<Props, State> {
       processing: false,
       isFreshlyCreated: true,
       topTabNames: props.topTabNames || 'command'
+    }
+
+    if (!props.topTabNames) {
+      setTimeout(async () => {
+        const { theme } = await findThemeByName(await getPersistedThemeChoice())
+        if (theme.topTabNames) {
+          this.setState({
+            topTabNames: theme.topTabNames
+          })
+        }
+      })
     }
 
     this.addCommandEvaluationListeners()
