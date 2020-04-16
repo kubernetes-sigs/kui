@@ -1,21 +1,26 @@
 {
-	"name": "@kui-shell/plugin-iter8",
-	"version": "1.0.0",
-	"description": "Kui plugin that offers Iter8 integration",
-	"author": "Yan Yan Huang",
-	"keywords": [
-		"kui",
-		"plugin",
-		"iter8"
-	],
-	"dependencies": {
-		"@fortawesome/fontawesome-svg-core": "^1.2.28",
-		"@fortawesome/free-solid-svg-icons": "^5.13.0",
-		"@fortawesome/react-fontawesome": "^0.1.9",
-		"bootstrap": "^4.4.1",
-		"jquery": "^3.4.1",
-		"react": "^16.13.1",
-		"react-dom": "^16.13.1",
-		"reactstrap": "^8.4.1"
-	}
+  "name": "@kui-shell/plugin-iter8",
+  "version": "1.0.0",
+  "description": "Kui plugin that offers Iter8 integration",
+  "author": "Yan Yan Huang",
+  "keywords": [
+    "kui",
+    "plugin",
+    "iter8",
+    "kubectl",
+    "Kubernetes",
+    "ui"
+  ],
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "reactstrap": "^8.4.1",
+    "js-yaml": "3.13.1",
+    "react-collapsible": "2.7.0"
+  }
 }

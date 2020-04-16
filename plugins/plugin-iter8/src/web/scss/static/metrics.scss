@@ -1,0 +1,72 @@
+$sans-serif: 'Source Sans Pro', Helvetica, Verdana, sans-serif;
+$dark-purple: #282936;
+$grey: #dddddd;
+
+.listouter {
+  padding: 10px;
+}
+
+.ratio-metric-table {
+  table {
+    width: 70%;
+    border: 1px solid $dark-purple !important;
+  }
+  tr:nth-child(even) {
+    background-color: $dark-purple;
+  }
+  td {
+    color: $grey;
+    text-align: left;
+    padding: 3px;
+  }
+}
+.ratio-metric-table::before {
+  content: '' !important;
+}
+.Collapsible {
+  cursor: pointer;
+}
+
+.pageStyle {
+  overflow-y: auto;
+}
+
+.listinner {
+  padding: 0 0 5px 10px;
+}
+.metrictext {
+  color: #b3d9ff; //blue-ish
+  font-size: 24;
+  font-weight: 100;
+  font-family: 'Arial';
+  fill: #b3d9ff;
+}
+
+.metrictext:hover,
+.metrictext:active {
+  color: $grey; //white
+  fill: $grey;
+}
+
+.box {
+  position: relative;
+  color: #62d6e8;
+  background-color: $dark-purple;
+  box-sizing: border-box;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 2px;
+  overflow: auto;
+  margin-top: 4px;
+}
+.infotext {
+  color: $grey;
+  font-weight: 100;
+}
+
+.metrictext::before {
+  content: '' !important;
+}
+
+.infotext::before {
+  content: '' !important;
+}
