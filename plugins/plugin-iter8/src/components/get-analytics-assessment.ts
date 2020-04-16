@@ -7,7 +7,7 @@ export default class GetAnalyticsAssessment {
   }
 
   public getAnalyticsAssessment() {
-    const data = this.data // eslint-disable-line @typescript-eslint/no-this-alias
+    const data = this.data
     const url = this.url
     const promiseObj = new Promise(function(resolve, reject) {
       const xhr = new XMLHttpRequest()
@@ -22,7 +22,7 @@ export default class GetAnalyticsAssessment {
             const respJson = JSON.stringify(resp)
             resolve(respJson)
           } else {
-            reject(xhr.status)
+            reject(JSON.stringify({ error: xhr.status }))
             console.log('Request failed')
           }
         } else {
