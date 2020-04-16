@@ -249,7 +249,8 @@ if (contentSecurityPolicyForDevServer) {
 
 const htmlBuildOptions = Object.assign(
   {
-    inject: false
+    inject: false,
+    favicon: path.join(buildDir, clientOptions.icons.favicon)
   },
   clientOptions,
   {

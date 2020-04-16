@@ -7,10 +7,6 @@
     <!-- css overrides go here -->
     <%= htmlWebpackPlugin.tags.headTags.map(_ => { _.attributes.nonce="kuiDefaultNonce"; return _ }).join('\n') %>
 
-    <link rel="shortcut icon" href="<%= htmlWebpackPlugin.options.client.imageHome %><%= htmlWebpackPlugin.options.icons.favicon %>" />
-
-    <!-- <meta http-equiv="Content-Security-Policy" content="<%= htmlWebpackPlugin.options.client.contentSecurityPolicy %>" /> -->
-
     <script nonce="kuiDefaultNonce">
       window['_kuiNonce'] = 'kuiDefaultNonce'
       window['_kuiWebpackHash'] = '${hash}'
