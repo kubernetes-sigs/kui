@@ -14,7 +14,6 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 //Functionality Imports
 import GetKubeInfo from '../components/get_cluster_info'
 import GetMetricConfig from '../components/metric-config'
-import { DecisionBase } from './decisionForm'
 // Component Properties
 const TextInputProps = {
   id: 'expName',
@@ -151,7 +150,7 @@ class ExprBase extends React.Component<any, any> {
 	}
 
 	private handleLimitValChange = (value, idx) => {
-		var limitValue = (value == '') ? 0: parseInt(value);
+		var limitValue = (value === '') ? 0: parseInt(value);
 		console.log(limitValue);
 		let newMetric = [...this.state.metric];
 		newMetric[idx] = { ...newMetric[idx], limitValue: limitValue};
@@ -339,7 +338,7 @@ class ExprBase extends React.Component<any, any> {
 		            							<Checkbox 
 		            								id={checkId}
 		            								labelText="Set as reward"
-		            								disabled={!metric[idx].reward && this.state.disableOthers}
+		            								disabled={!val.reward && this.state.disableOthers || val.type==="Counter"}
                     								onChange = {() => this.handleRewardChange(idx)}
 		            							/>
 		            							<Button
