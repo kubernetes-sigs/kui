@@ -96,14 +96,12 @@ function doReact() {
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/mode', doModes(0), {
-    inBrowserOk: true,
     usage: {
       docs: 'A test of MultiModalResponse mode'
     }
   })
 
   commandTree.listen('/test/mmr/react', doReact, {
-    inBrowserOk: true,
     usage: {
       docs: 'A test of MultiModalResponse mode that presents a React component'
     }
@@ -111,8 +109,6 @@ export default (commandTree: Registrar) => {
 
   modeOrderVariants.slice(1).forEach((_, idx) => {
     // `test mmr mode2/3/4/5` which uses modeOrderVariants[1/2/3/4]
-    commandTree.listen(`/test/mmr/mode${idx + 2}`, doModes(idx + 1), {
-      inBrowserOk: true
-    })
+    commandTree.listen(`/test/mmr/mode${idx + 2}`, doModes(idx + 1))
   })
 }

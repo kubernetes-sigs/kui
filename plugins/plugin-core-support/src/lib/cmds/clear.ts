@@ -32,7 +32,5 @@ const clear = ({ tab }: Arguments) => {
  *
  */
 export default (registrar: Registrar) => {
-  registrar.listen('/clear', clear, {
-    inBrowserOk: true
-  })
+  registrar.listen('/clear', clear)
 }

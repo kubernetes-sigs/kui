@@ -493,13 +493,17 @@ export default (commandTree: Registrar) => {
           reject(err)
         }
       }),
-    { noAuthOk: true }
+    { requiresLocal: true }
   )
 
   // Notes: this is a placeholder, simplify to make the command
   // resolver happy; the real implementation is to be found in the
   // proxy server, e.g. packages/proxy/app/routes/exec.js
-  commandTree.listen('/bash/websocket/open', () => {
-    throw new Error('Unsupported operation')
-  })
+  commandTree.listen(
+    '/bash/websocket/open',
+    () => {
+      throw new Error('Unsupported operation')
+    },
+    { requiresLocal: true }
+  )
 }

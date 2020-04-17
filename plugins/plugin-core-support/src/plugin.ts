@@ -20,7 +20,6 @@ import { isHeadless, Registrar } from '@kui-shell/core'
 import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
 import base64 from './lib/cmds/base64'
-import openui from './lib/cmds/open-ui-from-terminal'
 import prompt from './lib/cmds/prompt'
 import sleep from './lib/cmds/sleep'
 import history from './lib/cmds/history/history'
@@ -35,7 +34,6 @@ import tabManagement from './lib/cmds/tab-management'
 export default async (commandTree: Registrar) => {
   await Promise.all([
     // help(commandTree, options),
-    openui(commandTree),
     quit(commandTree),
     clear(commandTree),
     base64(commandTree),

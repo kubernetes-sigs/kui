@@ -43,7 +43,6 @@ export default (registrar: Registrar) => {
       (args.argv.length === 2 && args.argv[1] === 'helm' && args.argv[0] === commandPrefix)
         ? doHelp('helm', args)
         : doExecWithPty(args),
-    1, // priority
-    { inBrowserOk: true }
+    1 // priority
   )
 }

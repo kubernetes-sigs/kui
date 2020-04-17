@@ -37,11 +37,7 @@ async function doList(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/list`, doList, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/list`, doList)
 
-  registrar.listen(`/${commandPrefix}/helm/ls`, doList, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/ls`, doList)
 }

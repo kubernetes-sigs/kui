@@ -294,8 +294,6 @@ const usage = (command: string) => ({
 export default (commandTree: Registrar) => {
   const ls = commandTree.listen('/ls', doLs('ls'), {
     usage: usage('ls'),
-    requiresLocal: true,
-    inBrowserOk: true,
     flags: {
       boolean: usage('ls')
         .optional.filter(_ => _.boolean)
@@ -303,8 +301,6 @@ export default (commandTree: Registrar) => {
     }
   })
   commandTree.synonym('/lls', doLs('lls'), ls, {
-    usage: usage('lls'),
-    requiresLocal: true,
-    inBrowserOk: true
+    usage: usage('lls')
   })
 }

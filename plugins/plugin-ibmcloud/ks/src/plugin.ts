@@ -32,12 +32,8 @@ export default async (registrar: Registrar) => {
   workerPoolGet(registrar)
 
   // temporarily
-  registrar.listen(
-    '/kuiopen',
-    ({ argvNoOptions }) => {
-      window.open(argvNoOptions[1])
-      return true
-    },
-    { inBrowserOk: true }
-  )
+  registrar.listen('/kuiopen', ({ argvNoOptions }) => {
+    window.open(argvNoOptions[1])
+    return true
+  })
 }

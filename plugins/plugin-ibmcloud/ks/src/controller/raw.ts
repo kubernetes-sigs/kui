@@ -23,6 +23,6 @@ export default async (registrar: Registrar) => {
   registrar.listen(
     `/${commandPrefix}/_ibmcloud`,
     doNativeExec,
-    Object.assign({}, defaultFlags, { requiresLocal: true, inBrowserOk: false })
+    Object.assign({}, defaultFlags, { requiresLocal: true })
   )
 }

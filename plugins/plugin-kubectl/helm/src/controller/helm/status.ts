@@ -196,7 +196,5 @@ async function doStatus(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/status`, doStatus, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/status`, doStatus)
 }

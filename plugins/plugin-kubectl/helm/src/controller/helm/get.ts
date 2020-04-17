@@ -75,7 +75,5 @@ async function doGet(
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/get`, doGet, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/get`, doGet)
 }

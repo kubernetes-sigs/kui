@@ -66,6 +66,6 @@ export default async (commandTree: Registrar) => {
         eventChannelUnsafe.once(responseChannel, onConfirm)
         eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
       }),
-    { usage, inBrowserOk: true, incognito: ['popup'] }
+    { usage, incognito: ['popup'] }
   )
 }

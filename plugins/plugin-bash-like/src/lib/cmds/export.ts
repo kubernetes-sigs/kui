@@ -45,5 +45,5 @@ const usage = {
  *
  */
 export default (commandTree: Registrar) => {
-  commandTree.listen('/export', exportCommand, { usage, noAuthOk: true, inBrowserOk: true })
+  commandTree.listen('/export', exportCommand, { usage })
 }

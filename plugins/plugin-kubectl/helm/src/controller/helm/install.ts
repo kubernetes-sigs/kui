@@ -38,7 +38,5 @@ async function doInstall(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/install`, doInstall, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/install`, doInstall)
 }

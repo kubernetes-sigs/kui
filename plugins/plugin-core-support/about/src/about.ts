@@ -221,7 +221,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen(
     '/version', // the command path
     reportVersion, // the command handler
-    { usage: usage.version, inBrowserOk: true }
+    { usage: usage.version }
   )
 
   /**
@@ -229,14 +229,9 @@ export default (commandTree: Registrar) => {
    *
    */
   commandTree.listen('/about', aboutWindow, {
-    hidden: true, // don't list about in the help menu
-    needsUI: true, // about requires a window
-    inBrowserOk: true
+    hidden: true // don't list about in the help menu
   })
 
   // getting started shortcut
-  commandTree.listen('/getting/started', ({ REPL }) => REPL.qexec('about'), {
-    needsUI: true,
-    inBrowserOk: true
-  })
+  commandTree.listen('/getting/started', ({ REPL }) => REPL.qexec('about'))
 }

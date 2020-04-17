@@ -155,37 +155,25 @@ export const plugin = (commandTree: Registrar) => {
   debug('plugin')
 
   commandTree.listen('/theme/list', list, {
-    usage: usage.list,
-    noAuthOk: true,
-    inBrowserOk: true
+    usage: usage.list
   })
   commandTree.listen('/themes', list, {
-    usage: usage.themes,
-    noAuthOk: true,
-    inBrowserOk: true
+    usage: usage.themes
   })
   commandTree.listen('/theme', list, {
-    usage: usage.theme,
-    noAuthOk: true,
-    inBrowserOk: true
+    usage: usage.theme
   })
 
   commandTree.listen('/theme/set', set, {
-    usage: usage.set,
-    noAuthOk: true,
-    inBrowserOk: true
+    usage: usage.set
   })
 
   // returns the current persisted theme choice; helpful for debugging
   commandTree.listen('/theme/current', async () => (await getPersistedThemeChoice()) || strings('theme.currentTheme'), {
-    noAuthOk: true,
-    inBrowserOk: true,
     hidden: true
   }) // for debugging
 
   commandTree.listen('/theme/reset', resetToDefaultTheme, {
-    usage: usage.reset,
-    noAuthOk: true,
-    inBrowserOk: true
+    usage: usage.reset
   })
 }

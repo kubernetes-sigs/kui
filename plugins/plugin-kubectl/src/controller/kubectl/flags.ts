@@ -31,7 +31,6 @@ const defaultBooleans = [
 
 export function flags(booleans: string[] = []) {
   return {
-    inBrowserOk: true,
     flags: {
       configuration: {
         // disable yargs-parser being clever with -lapp=name

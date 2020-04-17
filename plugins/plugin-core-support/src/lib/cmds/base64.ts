@@ -82,6 +82,6 @@ export default (commandTree: Registrar) => {
         return breakout(Buffer.from(str).toString('base64'), options)
       }
     },
-    { usage, noAuthOk: true }
+    { usage }
   )
 }

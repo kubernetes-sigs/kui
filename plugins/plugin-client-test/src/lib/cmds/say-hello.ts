@@ -58,9 +58,7 @@ const sayTime3 = async () => {
   return prettyPrintTime(t2, 'long', t1)
 }
 
-const options: CommandOptions = {
-  inBrowserOk: true
-}
+const options: CommandOptions = {}
 const options2: CommandOptions = Object.assign(
   {
     usage: {

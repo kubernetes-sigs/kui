@@ -94,10 +94,7 @@ class ProxyEvaluator implements ReplEval {
     const proxyServerConfig = await this.proxyServerConfig
     if (
       isDisabled(proxyServerConfig) ||
-      (isCommandHandlerWithEvents(evaluator) &&
-        evaluator.options &&
-        !execOptions.forceProxy &&
-        (evaluator.options.inBrowserOk || evaluator.options.needsUI))
+      (isCommandHandlerWithEvents(evaluator) && evaluator.options && !evaluator.options.requiresLocal)
     ) {
       debug('delegating to direct evaluator')
       return directEvaluator.apply(command, execOptions, evaluator, args)

@@ -32,11 +32,7 @@ async function doRepoList(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/repo/list`, doRepoList, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/repo/list`, doRepoList)
 
-  registrar.listen(`/${commandPrefix}/helm/repo/ls`, doRepoList, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/repo/ls`, doRepoList)
 }

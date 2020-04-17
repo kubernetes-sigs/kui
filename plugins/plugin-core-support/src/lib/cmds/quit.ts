@@ -31,13 +31,11 @@ const usage = (command: string) => ({
 
 export default (commandTree: Registrar) => {
   const quitCmd = commandTree.listen('/quit', doQuit, {
-    usage: usage('quit'),
-    inBrowserOk: true
+    usage: usage('quit')
   })
 
   // just for fun, make /exit a synonym for /quit
   commandTree.synonym('/exit', doQuit, quitCmd, {
-    usage: usage('exit'),
-    inBrowserOk: true
+    usage: usage('exit')
   })
 }

@@ -138,5 +138,5 @@ const usage = {
  *
  */
 export default (registrar: Registrar) => {
-  registrar.listen('/open', open, { usage, needsUI: true, inBrowserOk: true })
+  registrar.listen('/open', open, { usage })
 }

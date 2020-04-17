@@ -39,7 +39,6 @@ export default (registrar: Registrar) => {
       return isKubectl(argv[0]) || (argv[0] === commandPrefix && isKubectl(argv[1]))
     },
     (args: Arguments<KubeOptions>) => (isUsage(args) ? doHelp('kubectl', args) : doExecWithPty(args)),
-    1, // priority
-    { inBrowserOk: true }
+    1 // priority
   )
 }
