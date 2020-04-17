@@ -65,7 +65,6 @@ const doModes = (): ((args: Arguments<Options>) => MultiModalResponse) => {
 
 export default (commandTree: Registrar) => {
   commandTree.listen(`/test/mmr/mode-via-registration`, doModes(), {
-    inBrowserOk: true,
     usage: {
       docs: 'A test of MultiModalResponse mode'
     },

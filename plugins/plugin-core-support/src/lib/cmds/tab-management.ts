@@ -55,14 +55,10 @@ export default function plugin(commandTree: Registrar) {
       eventBus.emit('/tab/switch/request', idx - 1)
       return true
     },
-    { usage, needsUI: true }
+    { usage }
   )
 
-  commandTree.listen('/tab/new', newTabAsync, {
-    needsUI: true
-  })
+  commandTree.listen('/tab/new', newTabAsync)
 
-  commandTree.listen('/tab/close', ({ tab }) => closeTab(tab), {
-    needsUI: true
-  })
+  commandTree.listen('/tab/close', ({ tab }) => closeTab(tab))
 }

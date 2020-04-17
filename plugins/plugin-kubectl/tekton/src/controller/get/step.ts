@@ -63,5 +63,5 @@ const getStep = async ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>
 }
 
 export default (commandTree: Registrar) => {
-  commandTree.listen('/tekton/get/step', getStep, { usage, noAuthOk: true })
+  commandTree.listen('/tekton/get/step', getStep, { usage })
 }

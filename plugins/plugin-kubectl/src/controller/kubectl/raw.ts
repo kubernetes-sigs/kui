@@ -128,9 +128,5 @@ export async function doExecRaw(
 }
 
 export default async (registrar: Registrar) => {
-  registrar.listen(
-    `/${commandPrefix}/_kubectl`,
-    doNativeExec,
-    Object.assign({}, flags, { requiresLocal: true, inBrowserOk: false })
-  )
+  registrar.listen(`/${commandPrefix}/_kubectl`, doNativeExec, Object.assign({}, flags, { requiresLocal: true }))
 }

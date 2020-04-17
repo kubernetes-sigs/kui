@@ -32,7 +32,5 @@ async function doSearch(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/search`, doSearch, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/search`, doSearch)
 }

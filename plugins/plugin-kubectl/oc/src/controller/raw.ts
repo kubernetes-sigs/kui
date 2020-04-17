@@ -18,9 +18,5 @@ import { Registrar } from '@kui-shell/core'
 import { doNativeExec, defaultFlags, commandPrefix } from '@kui-shell/plugin-kubectl'
 
 export default async (registrar: Registrar) => {
-  registrar.listen(
-    `/${commandPrefix}/_oc`,
-    doNativeExec,
-    Object.assign({}, defaultFlags, { requiresLocal: true, inBrowserOk: false })
-  )
+  registrar.listen(`/${commandPrefix}/_oc`, doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
 }
