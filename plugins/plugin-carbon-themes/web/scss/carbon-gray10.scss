@@ -1,0 +1,173 @@
+@import 'ibm-plex.scss';
+@import 'kui--alternate.scss';
+
+/* inverted sidecar */
+body[kui-theme='Carbon Gray10'] {
+  .kui--inverted-color-context {
+    --color-base00: #262626;
+    --color-base01: #171717;
+    --color-base02: #565656;
+    --color-base03: #565656;
+    --color-base04: #8c8c8c;
+    --color-base05: #adadad;
+    --color-base06: #f3f3f3;
+    --color-base07: #fff;
+    --color-base08: #fa4d56;
+    --color-base09: #bf5b17;
+    --color-base0A: #fdd13a;
+    --color-base0B: #56d679;
+    --color-base0C: #30b0ff;
+    --color-base0D: #4589ff;
+    --color-base0E: #fa75a6;
+    --color-base0F: #bb8eff;
+
+    --color-black: var(--color-ui-01);
+    --color-red: var(--color-base08);
+    --color-green: var(--color-base0B);
+    --color-yellow: var(--color-base0A);
+    --color-cyan: var(--color-base0C);
+    --color-blue: var(--color-base0D);
+    --color-magenta: var(--color-base0E);
+    --color-white: var(--color-base07);
+    --color-light-gray: var(--color-base04);
+    --color-dark-gray: var(--color-base03);
+    --color-ui-01: var(--color-base00);
+    --color-ui-02: var(--color-base01);
+    --color-ui-03: var(--color-base03);
+    --color-ui-04: var(--color-base02);
+    --color-ui-05: var(--color-base04);
+    --color-ui-06: var(--color-base02);
+
+    --color-ok: var(--color-green);
+    --color-error: var(--color-red);
+    --color-warning: var(--color-base09);
+
+    --color-text-01: var(--color-base06);
+    --color-text-02: var(--color-base04);
+    color: var(--color-text-01);
+
+    --color-map-value: var(--color-text-01);
+    --color-map-key: var(--color-base0C);
+    --color-name: #30b0ff;
+
+    --color-brand-01: #97c1ff;
+    --color-brand-02: var(--color-base07);
+    --color-brand-03: var(--color-base0C);
+
+    --color-stripe-01: var(--color-base02);
+    --color-stripe-02: var(--color-sidecar-header);
+
+    --color-sidecar-background-01: #171717;
+    --color-sidecar-background-02: var(--color-base03);
+    --color-name-sidecar: var(--color-name);
+
+    --color-screenshot-background: #3d3d3d; /* $ui-01 */
+    --color-screenshot-primary-button-background: #0062ff; /* $interactive-01 */
+    --color-screenshot-secondary-button-background: #6f6f6f; /* $interactive-02 */
+
+    --color-table-border1: rgba(255, 255, 255, 0.35);
+    --color-table-border2: rgba(255, 255, 255, 0.5);
+    --color-table-border3: var(--color-ui-04);
+  }
+
+  /* color variables */
+  & {
+    --color-base00: #ffffff;
+    --color-base01: #f3f3f3;
+    --color-base02: #8c8c8c;
+    --color-base03: #dcdcdc;
+    --color-base04: #f2f4f8;
+    --color-base05: #50565b;
+    --color-base06: #171717;
+    --color-base07: #fff;
+    --color-base08: #da1e28;
+    --color-base09: #bf5b17;
+    --color-base0A: #8e6926;
+    --color-base0B: #198038;
+    --color-base0C: #0072c3;
+    --color-base0D: #054ada;
+    --color-base0E: #d12765;
+    --color-base0F: #8a3ffc;
+
+    --color-red-sidecar: #fb4b53;
+    --color-yellow-sidecar: #fdd13a;
+    --color-green-sidecar: #56d679;
+
+    --color-brand-01: #0062ff;
+    --color-brand-02: #171717;
+    --color-brand-03: #0062ff;
+
+    --color-ui-05: #171717;
+    --color-ui-03: #e0e0e0;
+    --color-text-02: #565656;
+
+    --color-map-key: #6ea6ff;
+    --color-map-value: var(--color-text-inverted01);
+
+    --color-table-border1: #9e9fa1;
+    --color-table-border2: #3d4144;
+    --color-table-border3: #a5adb4;
+
+    --color-sidecar-toolbar-foreground: var(--color-text-01);
+
+    --color-sidecar-header: #282828;
+    --color-sidecar-background-01: var(--color-base06);
+    --color-sidecar-border: #e4e4e4;
+
+    --color-brand-03: #008fff;
+    --color-content-divider: #bfc0c2;
+
+    --color-stripe-01: var(--color-base03);
+    --color-stripe-02: #f5f7fa;
+    --tab-gray-text-color: var(--color-text-01);
+    --active-tab-color: #0f62fe;
+    --color-repl-background: var(--color-base01);
+
+    --color-light-red: hsla(354, 81%, 51%, 50%);
+    --color-light-green: hsla(143, 73%, 43%, 50%);
+    --color-light-yellow: hsla(46, 99%, 59%, 50%);
+
+    --color-support-04: var(--color-base0C);
+
+    /* from https://www.carbondesignsystem.com/data-visualization/color-palettes */
+    --color-latency-0: #d4bbff;
+    --color-latency-1: #08bdba;
+    --color-latency-2: #007d79;
+    --color-latency-3: #ff7eb6;
+    --color-latency-4: #fa4d56;
+    --color-latency-5: #fff1f1;
+    --color-latency-6: #6fdc8c;
+    --color-latency-7: #458dff;
+    --color-latency-8: #d12771;
+    --color-latency-9: #d2a106;
+    --color-latency-10: #08bdba;
+    --color-latency-11: #bae6ff;
+    --color-latency-12: #ba4e00;
+    --color-latency-13: #d4bbff;
+  }
+
+  .monaco-editor .margin-view-overlays .current-line-margin,
+  .monaco-editor .view-overlays .current-line {
+    border-color: #565656;
+  }
+  .kui--sidecar .monaco-editor .mtk7,
+  .kui--sidecar .monaco-editor .line-numbers {
+    color: var(--color-sidecar-toolbar-background);
+  }
+  .monaco-editor .current-line ~ .line-numbers {
+    color: #fa75a6;
+  }
+  .kui--input-stripe .repl-input {
+    background-color: var(--color-base04);
+  }
+  .kui--input-stripe {
+    background-color: var(--color-base00);
+  }
+  .kui--input-stripe input {
+    background-color: var(--color-base01);
+  }
+
+  .bx--data-table {
+    font-family: var(--font-sans-serif);
+  }
+}

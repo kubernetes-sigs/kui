@@ -1,6 +1,0 @@
-@import url(~@ibm/plex/css/ibm-plex.min.css);
-
-body.kui--alternate[kui-theme-style] {
-  --font-monospace: "IBM Plex Mono";
-  --font-sans-serif: "IBM Plex Sans";
-}

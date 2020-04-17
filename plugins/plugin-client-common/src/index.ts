@@ -27,22 +27,24 @@ import '../web/css/static/status-stripe.css'
 import '../web/css/static/vendor/balloon-css/balloon.min.css'
 
 // default client
-export { default as Kui, Props as KuiProps } from './components/Kui'
+export { default as Kui, Props as KuiProps } from './components/Client/Kui'
 
-// core components
-export { default as Search } from './components/Search'
-export { default as Loading } from './components/Loading'
-export { default as HTMLDom } from './components/Scalar/HTMLDom'
-export { default as InputStripe } from './components/InputStripe'
-export { default as TabContainer } from './components/TabContainer'
-export { default as TabContent } from './components/TabContent'
-export { default as TabModel } from './components/TabModel'
-export { default as StatusStripe } from './components/StatusStripe'
-export { default as MeterWidgets } from './components/StatusStripe/MeterWidgets'
-export { default as ContextWidgets } from './components/StatusStripe/ContextWidgets'
-export { ViewLevel, default as TextWithIconWidget } from './components/StatusStripe/TextWithIconWidget'
+// Client components
+export { default as Search } from './components/Client/Search'
+export { default as InputStripe } from './components/Client/InputStripe'
+export { default as TabContainer } from './components/Client/TabContainer'
+export { default as TabContent } from './components/Client/TabContent'
+export { default as TabModel } from './components/Client/TabModel'
+export { default as StatusStripe } from './components/Client/StatusStripe'
+export { default as MeterWidgets } from './components/Client/StatusStripe/MeterWidgets'
+export { default as ContextWidgets } from './components/Client/StatusStripe/ContextWidgets'
+export { ViewLevel, default as TextWithIconWidget } from './components/Client/StatusStripe/TextWithIconWidget'
+
+// Content components
+export { default as Loading } from './components/Content/Loading'
+export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 
 // sidecar components
-export { default as ComboSidecar } from './components/Sidecar/ComboSidecar'
-export { default as TopNavSidecar } from './components/Sidecar/TopNavSidecar'
-export { default as LeftNavSidecar } from './components/Sidecar/LeftNavSidecar'
+export { default as ComboSidecar } from './components/Views/Sidecar/ComboSidecar'
+export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecar'
+export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
