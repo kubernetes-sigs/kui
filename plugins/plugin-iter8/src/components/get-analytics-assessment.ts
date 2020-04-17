@@ -1,3 +1,4 @@
+// var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 export default class GetAnalyticsAssessment {
   public data = {}
   public url = ''
@@ -34,4 +35,3 @@ export default class GetAnalyticsAssessment {
     return promiseObj
   }
 }
-// async () => {let x = await ob2.getAnalyticsAssessment(); return x;}
