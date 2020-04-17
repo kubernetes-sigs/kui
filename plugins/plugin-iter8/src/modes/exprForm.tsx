@@ -1,6 +1,6 @@
 import * as React from 'react'
 //Component Imports
-import { TooltipIcon, Form, TextInput, Button, Select, SelectItem, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
+import { TooltipIcon, Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
 import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 } from "@carbon/icons-react";
 import { Data_132 as Data132 } from "@carbon/icons-react";
 // UI Style imports
@@ -24,10 +24,15 @@ const TextInputProps = {
 };
 
 class ExprBase extends React.Component<any, any> {
+	public static displayName = "ExprBase";
+	//imported class of methods from /components
 	private kubeMethods = new GetKubeInfo();
 	private GetMetricConfig = new GetMetricConfig();
+	//Lists of dropdown menu items
 	private nsList = this.kubeMethods.getNamespace();
 	private countMetricsList = this.GetMetricConfig.getCounterMetrics();
+	private ratioMetricsList = this.GetMetricConfig.getRatioMetrics();
+	private totMetricsList = this.countMetricsList.concat(this.ratioMetricsList);
 	private svcList = [];
 	private deployList = [];
 	
@@ -42,7 +47,7 @@ class ExprBase extends React.Component<any, any> {
 				 };
     this.submitForm = this.submitForm.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);   
-  }
+  	}
   	/*
   	* ==== Sets the basic experiment state attributes =====
   	*/
@@ -56,7 +61,6 @@ class ExprBase extends React.Component<any, any> {
     	this.setState({invalidCand: false});
     	// Check for invalid selections
     	for(let i = 0; i <versionValue.length; i++){
-    		console.log("Candidate:", versionValue[i]);
 	    	if(this.state.base === (versionValue[i])){
 	    		this.setState({invalidCand: true});
 	    		versionValue.splice(i, 1);	
@@ -86,26 +90,22 @@ class ExprBase extends React.Component<any, any> {
 			this.deployList = this.kubeMethods.getDeployment(this.state.ns, value.text);
 		}
 	}
-	private handleAddBase = (value) => {
-		
-		if(value == null){
-			console.log("The value is null");
+	private handleAddBase = (value) => {		
+		if(value == null)
 			this.setState({base: '', cand: []});
-		}
-		else{
-			console.log("Baseline: ", value.text);
+		else
 			this.setState({base: value.text, cand: []});
-		}
 	}
 
 	/*
 	* ==== Metric Configuration related functions ====
 	*/
-	private handleMetric = (e) => {
+	//Toggle for Metric Configuration
+	private handleMetric = () => {
 		this.setState({showMetrics: !this.state.showMetrics});
 		event.preventDefault();
 	}
-
+	// Method for Add Metric (+) button
 	private addMetric = () => {
     this.setState((prevState) => ({
       metric: [...prevState.metric, {name: "", type:"", reward: false, limitType: "", limitValue:0}],
@@ -119,59 +119,58 @@ class ExprBase extends React.Component<any, any> {
 	    metric,
 	  };
 	});
-	};
-	//Handles metric selection
-	handleMetricName = (value, idx) => {
+	}
+
+	//Handles metric selection from dropdown
+	private handleMetricName = (value, idx) => {
 		var metricName;
 		var metricType;
+		//Removal of a selected value
 		if(value == null){
 			metricName = '';
 			metricType = '';
 		}
 		else{
 			metricName = value.name;
-			metricType = "Gauge";
+			metricType = "Ratio";
 			for(let i = 0; i < this.countMetricsList.length; i++){
 				if(this.countMetricsList[i].name === value.name)
 					metricType = "Counter"
 			}			
 		}
+		let newMetric = [...this.state.metric];
+		newMetric[idx] = { ...newMetric[idx], name: metricName,type: metricType};
+		this.setState({metric: newMetric});
+	}
+	// Updates states based on limit type changes
+	private handleLimitTypeChange = (value, idx) => {
+		var limitType = (value == null) ? '': value;
+		let newMetric = [...this.state.metric];
+		newMetric[idx] = { ...newMetric[idx], limitType: limitType};
+		this.setState({metric: newMetric});	
+	}
 
-
-		let newMetricArr = this.state.metric.map((metric, i) => {
-		  if(i === idx){
-		    return {
-		      ...metric,
-		      name: metricName,
-		      type: metricType
-		    }
-		  }
-		  return metric;
-		})
-		this.setState({metric: newMetricArr});
-
+	private handleLimitValChange = (value, idx) => {
+		var limitValue = (value == null) ? 0: value;
+		let newMetric = [...this.state.metric];
+		newMetric[idx] = { ...newMetric[idx], limitValue: limitValue};
+		this.setState({metric: newMetric});
 	}
 	// Disables all the other checkboxes
-	onSelectedChange = (idx) => {
-		let newMetricArr = this.state.metric.map((metric, i) => {
-		  if(i === idx){
-		    return {
-		      ...metric,
-		      reward: !metric.reward
-		    }
-		  }
-		  return metric;
-		})
+	private handleRewardChange = (idx) => {
+		let newMetric = [...this.state.metric];
+		newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward};
 		this.setState( (prevState) => ({
-	      metric: newMetricArr,
+	      metric: newMetric,
 	      disableOthers: !prevState.disableOthers
 	    })); 
 	};
 	/*
 	*	Data transfer/manipulation logic
 	*/
-	private submitForm(e) {
-		this.props.handleData(this.state);
+	private submitForm() {
+		//@todo
+		console.log("read to submit");
 	}
     public render(){
     	let { metric } = this.state;
@@ -301,41 +300,46 @@ class ExprBase extends React.Component<any, any> {
         											titleText={`Metric #${idx+1}`}
         											helperText="Experimental metrics supported by Iter8."
         											placeholder="Select a Metric"
-        											items={this.countMetricsList}
+        											items={this.totMetricsList}
         											itemToString={item => (item ? item.name : '')}
         											onChange={(value) => this.handleMetricName(value.selectedItem, idx)}
         										/>
-        										<Tag
-        											type="cyan"
-        											children={val.type !== '' ? val.type : "Metric Type"}
-        										/>
-												<Select
+        										<Tag type="cyan">
+        											{val.type === '' ? "..." : val.type}
+        										</Tag>
+        										<Tag type="magenta">
+        											{val.reward ? "Reward" : "..."}
+        										</Tag>
+        										<Tag type="cool-gray">
+        											{val.limitType === '' ? "..." : `${val.limitType} threshold`}
+        										</Tag>
+												<ComboBox
 													id={limitTypeId}
-													labelText="Limit Type"
+													titleText="Limit Type"
 													helperText="For non-reward metrics, designate the type of threshold for the metric."
+													placeholder="Select a Threshold"
+													disabled={val.reward}
+													invalid={val.reward && val.limitType !== ''}
+													invalidText="Limits can only be set for non-reward metrics."
+													items={["absolute", "delta"]}
+													onChange={(value) => this.handleLimitTypeChange(value.selectedItem, idx)}
 													style={{width: 350}}
-												>
-													<SelectItem
-														text="Absolute Threshold"
-														value="absolute"
-													/>
-													<SelectItem
-														text="Delta Threshold"
-														value="delta"
-													/>
-												</Select>
+												/>
 												<TextInput 
 									            	id={limitValueId}
 									            	labelText="Limit Value"
-									            	helperText="Set the value for the designated threshold selected.
-									            	(Delta-%, abs-number)."
+									            	helperText="Set the value for the designated threshold selected."
+									            	disabled={val.reward}
+									            	invalid={val.reward && val.limitValue !== 0}
+													invalidText="Limit values can only be set for non-reward metrics."
+													onChange={(e) => this.handleLimitValChange(e.target.value, idx)}
 									            	style={{width: 350}}
 		            							/>
 		            							<Checkbox 
 		            								id={checkId}
 		            								labelText="Set as reward"
 		            								disabled={!metric[idx].reward && this.state.disableOthers}
-                    								onChange = {() => this.onSelectedChange(idx)}
+                    								onChange = {() => this.handleRewardChange(idx)}
 		            							/>
 		            							<Button
 		            								size="small"
