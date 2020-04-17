@@ -32,6 +32,9 @@
       "path": "plugins/plugin-proxy-support"
     },
     {
+      "path": "plugins/plugin-skeleton"
+    },
+    {
       "path": "plugins/plugin-client-default"
     },
     {
