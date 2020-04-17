@@ -32,7 +32,5 @@ async function doHistory(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/history`, doHistory, {
-    inBrowserOk: true
-  })
+  registrar.listen(`/${commandPrefix}/helm/history`, doHistory)
 }

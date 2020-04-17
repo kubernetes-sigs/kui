@@ -28,27 +28,21 @@ export default (commandTree: Registrar) => {
   // commandTree.listen('/window/bigger', () => tellMain('enlarge-window'))
   // commandTree.listen('/window/smaller', () => tellMain('reduce-window'))
   commandTree.listen('/window/max', () => tellMain('maximize-window'), {
-    docs: 'Maximize the window',
-    noAuthOk: true
+    docs: 'Maximize the window'
   })
   commandTree.listen('/window/unmax', () => tellMain('unmaximize-window'), {
-    docs: 'Unmaximize the window',
-    noAuthOk: true
+    docs: 'Unmaximize the window'
   })
 
   // register a window close command handler
-  commandTree.listen(
-    '/window/close',
-    () => {
-      if (inBrowser()) {
-        throw new Error('Unsupported operation')
-      } else {
-        const remote = require('electron').remote
-        const w = remote.getCurrentWindow()
-        w.close()
-        return true
-      }
-    },
-    { noAuthOk: true }
-  )
+  commandTree.listen('/window/close', () => {
+    if (inBrowser()) {
+      throw new Error('Unsupported operation')
+    } else {
+      const remote = require('electron').remote
+      const w = remote.getCurrentWindow()
+      w.close()
+      return true
+    }
+  })
 }

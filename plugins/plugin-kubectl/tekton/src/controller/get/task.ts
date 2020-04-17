@@ -60,11 +60,9 @@ const getTask = (cmd: string) => async ({ tab, argvNoOptions, parsedOptions }: A
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/tekton/get/task', getTask('task'), {
-    usage: usage('task'),
-    noAuthOk: true
+    usage: usage('task')
   })
   commandTree.listen('/tekton/get/tasks', getTask('tasks'), {
-    usage: usage('tasks'),
-    noAuthOk: true
+    usage: usage('tasks')
   })
 }

@@ -257,31 +257,25 @@ const specialHandler = (args: Arguments) => {
 export default (commandTree: Registrar) => {
   commandTree.listen('/!', dispatchToShell, {
     docs: 'Execute a UNIX shell command',
-    noAuthOk: true,
     requiresLocal: true
   })
 
   commandTree.listen('/sendtopty', specialHandler, {
     docs: 'Execute a UNIX shell command with a PTY',
-    noAuthOk: true,
-    inBrowserOk: true,
     hidden: true
   })
 
   commandTree.listen('/kuicd', cd, {
-    noAuthOk: true
+    requiresLocal: true
   })
 
   if (!inBrowser()) {
     commandTree.listen('/cd', cd, {
-      usage: usage.cd,
-      noAuthOk: true
+      usage: usage.cd
     })
   } else {
     commandTree.listen('/cd', bcd, {
-      usage: usage.cd,
-      noAuthOk: true,
-      inBrowserOk: true
+      usage: usage.cd
     })
   }
 }

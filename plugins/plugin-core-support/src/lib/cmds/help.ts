@@ -88,12 +88,6 @@ const strings = i18n('plugin-core-support') */
  *
  */
 /* export default async (commandTree: Registrar, { usage }) => {
-  commandTree.listen('/help', help(usage), {
-    noAuthOk: true,
-    inBrowserOk: true
-  })
-  commandTree.listen('/?', help(usage), {
-    noAuthOk: true,
-    inBrowserOk: true
-  }) 
+  commandTree.listen('/help', help(usage))
+  commandTree.listen('/?', help(usage)) 
 } */

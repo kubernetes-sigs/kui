@@ -42,6 +42,6 @@ export default (commandTree: Registrar) => {
         // would add if we resolved with true
         setTimeout(() => resolve(''), nMillis)
       }),
-    { usage, noAuthOk: true, inBrowserOk: true }
+    { usage }
   )
 }

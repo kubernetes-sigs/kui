@@ -17,13 +17,9 @@
 import { Registrar } from '@kui-shell/core'
 
 export default (registrar: Registrar) => {
-  registrar.listen(
-    '/edit',
-    ({ command, REPL }) => {
-      // re: the stripping of --create; this is no longer needed, but
-      // some users might expect it to be
-      return REPL.qexec(command.replace(/\s*edit/, 'open').replace(/--create/, ''))
-    },
-    { inBrowserOk: true }
-  )
+  registrar.listen('/edit', ({ command, REPL }) => {
+    // re: the stripping of --create; this is no longer needed, but
+    // some users might expect it to be
+    return REPL.qexec(command.replace(/\s*edit/, 'open').replace(/--create/, ''))
+  })
 }

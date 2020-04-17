@@ -16,6 +16,8 @@
 
 import { UsageError, Arguments, Registrar } from '@kui-shell/core'
 
+import '../../../web/css/static/zoom.css'
+
 /**
  * Keyboard event character codes
  *
@@ -62,8 +64,6 @@ const usage = {
  *
  */
 const _set = newZoom => {
-  import('./zoomCSS').then(_ => _.default())
-
   const main = document.querySelector('body > .page')
 
   if (newZoom <= 10 && newZoom >= -2) {

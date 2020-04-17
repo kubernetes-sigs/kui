@@ -219,7 +219,6 @@ export type CommandTree = Command<KResponse, ParsedOptions>
 
 export interface CapabilityRequirements {
   needsUI?: boolean
-  inBrowserOk?: boolean
   requiresLocal?: boolean
   noAuthOk?: boolean | string[]
   fullscreen?: boolean
@@ -310,6 +309,6 @@ export interface CommandRegistrar {
     offer: CatchAllOffer,
     handler: CommandHandler<T, O>,
     prio: number,
-    options: CommandOptions
+    options?: CommandOptions
   ) => void
 }

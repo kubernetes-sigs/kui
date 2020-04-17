@@ -241,7 +241,6 @@ const _subtree = <T extends KResponse, O extends ParsedOptions>(
       noArgs: true,
       subtreeHandler: true,
       noAuthOk: true,
-      inBrowserOk: true,
       requiresFullyQualifiedRoute: true
     }
     myListen(route, help, Object.assign({}, options, opts))

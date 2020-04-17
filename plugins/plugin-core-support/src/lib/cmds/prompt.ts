@@ -37,6 +37,6 @@ export default (commandTree: Registrar) => {
     () => {
       throw new Error('Unsupported at the moment')
     },
-    { usage, inBrowserOk: true }
+    { usage }
   )
 }
