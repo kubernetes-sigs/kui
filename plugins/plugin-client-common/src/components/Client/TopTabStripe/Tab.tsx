@@ -22,6 +22,7 @@ import {
   Event,
   ExecType,
   Theme,
+  getDefaultTheme,
   getPersistedThemeChoice,
   findThemeByName
 } from '@kui-shell/core'
@@ -67,7 +68,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
     if (!props.topTabNames) {
       setTimeout(async () => {
-        const { theme } = await findThemeByName(await getPersistedThemeChoice())
+        const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
         if (theme.topTabNames) {
           this.setState({
             topTabNames: theme.topTabNames
