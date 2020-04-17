@@ -14,7 +14,7 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 //Functionality Imports
 import GetKubeInfo from '../components/get_cluster_info'
 import GetMetricConfig from '../components/metric-config'
-
+import { DecisionBase } from './decisionForm'
 // Component Properties
 const TextInputProps = {
   id: 'expName',
@@ -151,7 +151,8 @@ class ExprBase extends React.Component<any, any> {
 	}
 
 	private handleLimitValChange = (value, idx) => {
-		var limitValue = (value == null) ? 0: value;
+		var limitValue = (value == '') ? 0: parseInt(value);
+		console.log(limitValue);
 		let newMetric = [...this.state.metric];
 		newMetric[idx] = { ...newMetric[idx], limitValue: limitValue};
 		this.setState({metric: newMetric});
@@ -169,8 +170,8 @@ class ExprBase extends React.Component<any, any> {
 	*	Data transfer/manipulation logic
 	*/
 	private submitForm() {
-		//@todo
-		console.log("read to submit");
+		console.log("ready to submit");
+		
 	}
     public render(){
     	let { metric } = this.state;
@@ -321,7 +322,7 @@ class ExprBase extends React.Component<any, any> {
 													disabled={val.reward}
 													invalid={val.reward && val.limitType !== ''}
 													invalidText="Limits can only be set for non-reward metrics."
-													items={["absolute", "delta"]}
+													items={["absolute", "relative"]}
 													onChange={(value) => this.handleLimitTypeChange(value.selectedItem, idx)}
 													style={{width: 350}}
 												/>
