@@ -32,7 +32,6 @@ const strings = i18n('plugin-core-support')
 
 export interface TabConfiguration {
   topTabNames?: 'command' | 'fixed' // was { topTabs } from '@kui-shell/client/config.d/style.json'
-  productName?: string
 }
 
 type Props = TabConfiguration & {
