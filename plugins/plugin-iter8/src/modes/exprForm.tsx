@@ -14,6 +14,7 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 //Functionality Imports
 import GetKubeInfo from '../components/get-cluster-info'
 import GetMetricConfig from '../components/metric-config'
+import { Metricstate, Formstate, RequestModel } from '../components/get-iter8-req'
 // Component Properties
 const TextInputProps = {
   id: 'expName',
@@ -21,8 +22,11 @@ const TextInputProps = {
   placeholder: 'Ex. rollout_v1_v2',
   style: {width: 350, height: 50},
 };
+/*
+* Data models for the state object in ExprForm
+*/
 
-class ExprBase extends React.Component<any, any> {
+class ExprBase extends React.Component<any, Formstate> {
 	public static displayName = "ExprBase";
 	//imported class of methods from /components
 	private kubeMethods = new GetKubeInfo();
@@ -34,7 +38,7 @@ class ExprBase extends React.Component<any, any> {
 	private totMetricsList = this.countMetricsList.concat(this.ratioMetricsList);
 	private svcList = [];
 	private deployList = [];
-	
+
 	public constructor(props){
   	super(props);
     this.state = {
@@ -43,7 +47,7 @@ class ExprBase extends React.Component<any, any> {
     	name: '', ns:'', svc: '', base:'', cand:[], //basic expr attributes
 		metric: [{name: "", type:"", reward: false, limitType: "", limitValue:0}], //metric attributes
 		disableReward: false, //disables the reward select for other metrics
-				 };
+	};
     this.submitForm = this.submitForm.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);   
   	}
@@ -162,15 +166,18 @@ class ExprBase extends React.Component<any, any> {
 		newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward};
 		this.setState( (prevState) => ({
 	      metric: newMetric,
-	      disableOthers: !prevState.disableOthers
+	      disableReward: !prevState.disableReward
 	    })); 
-	};
+	}
 	/*
 	*	Data transfer/manipulation logic
 	*/
 	private submitForm() {
-		console.log("ready to submit");
-		
+		let d = new Date();
+		let time = d.toISOString();
+		let reqModel = new RequestModel();
+		let jsonOutput = reqModel.getRequestModel(time, this.state);
+		//@todo: move to next Tab
 	}
     public render(){
     	let { metric } = this.state;
@@ -338,7 +345,7 @@ class ExprBase extends React.Component<any, any> {
 		            							<Checkbox 
 		            								id={checkId}
 		            								labelText="Set as reward"
-		            								disabled={!val.reward && this.state.disableOthers || val.type==="Counter"}
+		            								disabled={!val.reward && this.state.disableReward || val.type==="Counter"}
                     								onChange = {() => this.handleRewardChange(idx)}
 		            							/>
 		            							<Button
@@ -362,13 +369,11 @@ class ExprBase extends React.Component<any, any> {
 				}
 			</div>
 
-        </Form> 	  	
+        </Form>	  	
       );
     }
   }
 
-
-export default ExprBase;
 export function renderForm(){
 	return {
 		react: () => <ExprBase />
