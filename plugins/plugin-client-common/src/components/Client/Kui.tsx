@@ -19,11 +19,12 @@
 
 import * as React from 'react'
 
+import KuiConfiguration from './KuiConfiguration'
 import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '../..'
 
 const Popup = React.lazy(() => import('./Popup'))
 
-export interface Props {
+export interface Props extends KuiConfiguration {
   /** no Kui bootstrap needed? */
   noBootstrap?: boolean
 
@@ -39,8 +40,6 @@ export interface Props {
 
 interface State {
   isBootstrapped: boolean
-
-  productName: string
 }
 
 /**
@@ -61,14 +60,12 @@ export class Kui extends React.PureComponent<Props, State> {
 
     try {
       this.state = {
-        isBootstrapped: !!props.noBootstrap,
-        productName: require('@kui-shell/client/config.d/name.json').productName
+        isBootstrapped: !!props.noBootstrap
       }
     } catch (err) {
       console.log('using default configuration')
       this.state = {
-        isBootstrapped: !!props.noBootstrap,
-        productName: 'Kui Demo'
+        isBootstrapped: !!props.noBootstrap
       }
     }
   }
@@ -92,7 +89,7 @@ export class Kui extends React.PureComponent<Props, State> {
       return (
         <div className="kui--full-height">
           <TabContainer
-            productName={this.state.productName}
+            productName={this.props.productName || 'Kui Demo'}
             noActiveInput={this.props.bottomInput}
             bottom={this.props.bottomInput && <InputStripe />}
           >

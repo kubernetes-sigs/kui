@@ -23,6 +23,8 @@ import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/comp
 import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 
+import { productName } from '@kui-shell/client/config.d/name.json'
+
 /**
  * Format our body, with extra status stripe widgets
  *   - <CurrentGitBranch />
@@ -31,7 +33,7 @@ import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui {...props}>
+    <Kui productName={productName} {...props}>
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />

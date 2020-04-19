@@ -21,6 +21,7 @@ import { Header, HeaderName, HeaderMenuButton, HeaderNavigation } from 'carbon-c
 import TabModel from '../TabModel'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
+import KuiConfiguration from '../KuiConfiguration'
 
 import '../../../../web/css/static/TopTabStripe.scss'
 
@@ -47,7 +48,7 @@ import '../../../../web/css/static/TopTabStripe.scss'
  *   | activeIdx
  */
 
-export type TopTabStripeConfiguration = TabConfiguration
+export type TopTabStripeConfiguration = TabConfiguration & KuiConfiguration
 
 type Props = TopTabStripeConfiguration & {
   tabs: TabModel[]
