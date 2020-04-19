@@ -22,10 +22,9 @@ interface Formstate {
 	disableReward: Boolean
 
 }
+class RequestModel {
 
-export default class RequestModel {
-
-	//Convert the list of criteria
+	//Convert the list of criteria in API request format
 	private getCriteriaModel(definedMetrics: Array<Metricstate>): Array<Object>{
 		let metricArr = [];
 		for(let i = 0; i < definedMetrics.length; i++){
@@ -51,7 +50,7 @@ export default class RequestModel {
 		}
 		return metricArr;
 	}
-
+	//Convert the list of candidates in API request format
 	private getCandModel(namespace: string, candList: Array<string>):Array<Object>{
 		let candObjs = [];
 		for(let i = 0; i < candList.length; i++){
@@ -65,7 +64,7 @@ export default class RequestModel {
 		}
 		return candObjs;
 	}
-
+	//Converts the current time and form state in API request format
 	public getRequestModel(time: string, formstate: Formstate): Object{
 		var MetricMethods = new GetMetricConfig();
 		var counterRlts = MetricMethods.getCounterMetrics();
@@ -89,7 +88,11 @@ export default class RequestModel {
 		};
 	}
 }
-
+export {
+	Metricstate,
+	Formstate,
+	RequestModel
+}
 // const state = {
 // 	showMetrics: false, //determines the visibility of metric config
 // 	invalidCand: false, //determines whether cand values are valid
