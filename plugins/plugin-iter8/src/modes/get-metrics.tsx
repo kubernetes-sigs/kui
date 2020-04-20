@@ -15,11 +15,13 @@
  */
 import * as React from 'react'
 import { ToolbarProps } from '@kui-shell/core'
-// import PropTypes from 'prop-types'
+
 import Collapsible from 'react-collapsible'
-import { ListItem, UnorderedList } from 'carbon-components-react'
+import { ListItem, UnorderedList, Button } from 'carbon-components-react'
 import 'carbon-components/scss/components/list/_list.scss'
+import 'carbon-components/scss/components/button/_button.scss'
 import '../../src/web/scss/static/metrics.scss'
+
 import { CaretRight16 } from '@carbon/icons-react'
 import GetMetricConfig from '../components/metric-config'
 import ReactErrorDisplay from './error-react'
@@ -41,13 +43,12 @@ class RatioMetrics extends React.Component<any, any> {
               <Collapsible
                 trigger={
                   <p>
-                    {' '}
                     <CaretRight16 className="metrictext" /> {rM.name.toUpperCase()}
                   </p>
                 }
               >
                 <UnorderedList nested className="listinner">
-                  <ListItem className="ratio-metric-table">
+                  <ListItem className="metric-table">
                     <table>
                       <tr>
                         <td>Numerator</td>
@@ -63,10 +64,16 @@ class RatioMetrics extends React.Component<any, any> {
                           <td>{rM.preferred_direction}</td>
                         </tr>
                       ) : null}
-                      {{}.hasOwnProperty.call(rM, 'between_zero_and_one') ? (
+                      {{}.hasOwnProperty.call(rM, 'zero_and_one') ? (
                         <tr>
                           <td>Zero to One</td>
                           <td>{rM.zero_to_one}</td>
+                        </tr>
+                      ) : null}
+                      {{}.hasOwnProperty.call(rM, 'units') ? (
+                        <tr>
+                          <td>Units</td>
+                          <td>{rM.units}</td>
                         </tr>
                       ) : null}
                     </table>
@@ -98,19 +105,30 @@ class CounterMetrics extends React.Component<any, any> {
               <Collapsible
                 trigger={
                   <p>
-                    {' '}
                     <CaretRight16 className="metrictext" /> {cM.name.toUpperCase()}
                   </p>
                 }
               >
                 <UnorderedList nested className="listinner">
-                  <ListItem className="infotext">
-                    <div className="infotext">
-                      QueryTemplate:{' '}
-                      <p className="box">
-                        <kbd>{cM.query_template}</kbd>
-                      </p>
-                    </div>
+                  <ListItem className="metric-table">
+                    <table>
+                      <tr>
+                        <td>Query Template</td>
+                        <td>{cM.query_template}</td>
+                      </tr>
+                      {{}.hasOwnProperty.call(cM, 'preferred_direction') ? (
+                        <tr>
+                          <td>Preferred Direction</td>
+                          <td>{cM.preferred_direction}</td>
+                        </tr>
+                      ) : null}
+                      {{}.hasOwnProperty.call(cM, 'units') ? (
+                        <tr>
+                          <td>Units</td>
+                          <td>{cM.units}</td>
+                        </tr>
+                      ) : null}
+                    </table>
                   </ListItem>
                 </UnorderedList>
               </Collapsible>
@@ -130,9 +148,6 @@ class DisplayMetrics extends React.Component<any, any> {
     super(props)
     this.ratioMetrics = props['params']['rM']
     this.counterMetrics = props['params']['cM']
-    console.log(props)
-    console.log(this.ratioMetrics)
-    console.log(this.counterMetrics)
   }
 
   public render() {
@@ -141,6 +156,26 @@ class DisplayMetrics extends React.Component<any, any> {
         <h3> Currently Available Metrics</h3>
         <RatioMetrics params={{ ...this.props, rM: this.ratioMetrics }} />
         <CounterMetrics params={{ ...this.props, cM: this.counterMetrics }} />
+        <div className="center">
+          <div className="inner">
+            <Button size="default" kind="primary">
+              {' '}
+              Add Metric{' '}
+            </Button>
+          </div>
+          <div className="inner">
+            <Button size="default" kind="primary">
+              {' '}
+              Delete Metric{' '}
+            </Button>
+          </div>
+          <div className="inner">
+            <Button size="default" kind="primary">
+              {' '}
+              Edit Metric{' '}
+            </Button>
+          </div>
+        </div>
       </div>
     )
   }
