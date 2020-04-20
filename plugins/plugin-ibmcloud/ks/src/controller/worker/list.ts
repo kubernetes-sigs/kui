@@ -70,11 +70,11 @@ async function doLs(args: Arguments<WorkerOptions>): Promise<Table> {
 function doList(args: Arguments<WorkerOptions>): Promise<Table> {
   args.command = args.command.replace(/ibmcloud\s+ks\s+worker\s+list/, 'ibmcloud ks worker ls')
 
-  const idx1 = args.argv.indexOf('ibmcloud')
-  args.argv[idx1 + 3] = 'ls'
+  const idx1 = args.argv.indexOf('worker')
+  args.argv[idx1 + 1] = 'ls'
 
-  const idx2 = args.argvNoOptions.indexOf('ibmcloud')
-  args.argvNoOptions[idx2 + 3] = 'ls'
+  const idx2 = args.argvNoOptions.indexOf('worker')
+  args.argvNoOptions[idx2 + 1] = 'ls'
 
   return doLs(args)
 }

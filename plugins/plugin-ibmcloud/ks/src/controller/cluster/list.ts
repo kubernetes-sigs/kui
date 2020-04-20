@@ -57,13 +57,13 @@ async function doLs(args: Arguments<KubeOptions>): Promise<Table> {
  *
  */
 function doList(args: Arguments<KubeOptions>): Promise<Table> {
-  args.command = args.command.replace(/ibmcloud\s+ks\s+cluster(s?)\s+list/, 'ibmcloud ks cluster ls')
+  args.command = args.command.replace(/ks\s+cluster(s?)\s+list/, 'ks cluster ls')
 
-  const idx1 = args.argv.indexOf('ibmcloud')
-  args.argv[idx1 + 3] = 'ls'
+  const idx1 = args.argv.indexOf('cluster')
+  args.argv[idx1 + 1] = 'ls'
 
-  const idx2 = args.argvNoOptions.indexOf('ibmcloud')
-  args.argvNoOptions[idx2 + 3] = 'ls'
+  const idx2 = args.argvNoOptions.indexOf('cluster')
+  args.argvNoOptions[idx2 + 1] = 'ls'
 
   return doLs(args)
 }
