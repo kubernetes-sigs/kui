@@ -12,6 +12,7 @@ env:
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
     - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true
+    - IBMCLOUD_TRACE=true
     - CSP_ALLOWED_HOSTS="http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
     - PATH=bin:$PATH
     - TRAVIS_KUBE_VERSION=1.15.7
@@ -53,7 +54,9 @@ jobs:
 
   include:
     - env: DEPLOY="cluster" LAYERS="core" MOCHA_RUN_TARGET=webpack
-    - env: LAYERS="k8s k8s-popup helm logs" MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_HELM=true
+    - env: LAYERS="k8s k8s-popup helm logs" NEEDS_K8S=true NEEDS_HELM=true TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD}
+      before_install: ./tools/travis/ibmcloud.sh; ./tools/travis/ibmcloud-plugin-build-install.sh
+
     - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
     - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
     - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
@@ -72,10 +75,8 @@ jobs:
 
     # CLIENT=default | os=Linux | targets=electron | bash-like
     - env: N="Linux bash" CLIENT="default" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui"
-      before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
       script: npm run test1 bash-like
 
     # CLIENT=default | os=Linux | targets=webpack | bash-like
     - env: N="Webpack bash" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
-      before_install: ./tools/travis/ibmcloud.sh # see plugins/plugin-bash-like/src/test/bash-like/bash-like.ts
       script: npm run test1 bash-like-wait && npm run test1 bash-like

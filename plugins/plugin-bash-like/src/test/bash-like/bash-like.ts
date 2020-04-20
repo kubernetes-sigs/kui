@@ -15,11 +15,10 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { exec } from 'child_process'
 import { fileSync as tmpFile } from 'tmp'
 import { writeFileSync } from 'fs'
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 /** expect the given folder within the help tree */
 export const header = (folder: string) => folder
@@ -57,15 +56,6 @@ const jsonContent = JSON.stringify({ x: 3 })
 const jsonFile = tmpFile({ postfix: '.json' })
 writeFileSync(jsonFile.fd, jsonContent)
 
-/**
- * Check to see if the given executable is available
- *
- */
-const hasExe = (exe: string): Promise<boolean> =>
-  new Promise(resolve => {
-    exec(exe, err => resolve(!err))
-  })
-
 describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -96,37 +86,6 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .then(ReplExpect.error(1))
       .catch(Common.oops(this, true))
   )
-
-  // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
-  it.skip('should give usage for ibmcloud', () =>
-    CLI.command(`ibmcloud`, this.app)
-      .then(ReplExpect.error(500, header('ibmcloud')))
-      .catch(Common.oops(this, true)))
-
-  if (hasExe('ibmcloud')) {
-    // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
-    it.skip('should give usage for ibmcloud config', () =>
-      CLI.command(`ibmcloud config`, this.app)
-        .then(ReplExpect.error(2, undefined))
-        .catch(Common.oops(this, true)))
-
-    // TODO: Disabled for now. See https://github.com/IBM/kui/issues/1977
-    it.skip('should give usage for ibmcloud app', () =>
-      CLI.command(`ibmcloud app`, this.app)
-        .then(ReplExpect.errorWithPassthrough(500))
-        .then(N =>
-          Promise.all([
-            this.app.client.waitForExist(`${Selectors.OUTPUT_N(N)} h4.usage-error-title[data-title="commands"]`),
-            this.app.client.waitForExist(
-              `${Selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--no-link[data-label="app"]`
-            ),
-            this.app.client.waitForExist(
-              `${Selectors.OUTPUT_N(N)} .bx--breadcrumb-item .bx--link[data-label="ibmcloud"]`
-            )
-          ])
-        )
-        .catch(Common.oops(this, true)))
-  }
 
   Common.pit('should answer which ls with /bin/ls', () =>
     CLI.command(`which -a ls`, this.app) // For some customized bash, `which ls` could show: ls: aliased to ls -G
