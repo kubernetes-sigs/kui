@@ -222,3 +222,5 @@ export {
   isStringResponse,
   applyEnumerator as findCompletions
 } from './repl/tab-completion'
+
+export { default as teeToFile } from './util/tee'

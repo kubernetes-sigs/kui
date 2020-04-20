@@ -1,0 +1,14 @@
+[
+  {
+    "id": "Installing the plugin...",
+    "translation": "Installing the plugin..."
+  },
+  {
+    "id": "An error has occurred.",
+    "translation": "Error has occurred."
+  },
+  {
+    "id": "An error has occurred:\n{{.Error}}\n",
+    "translation": "An error has occurred:\n{{.Error}}\n"
+  }
+]

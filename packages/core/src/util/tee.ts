@@ -15,20 +15,18 @@
  */
 
 import Debug from 'debug'
-import { createWriteStream } from 'fs'
-
 import { Entity } from '../models/entity'
-import { print } from '../main/headless-pretty-print'
-
 const debug = Debug('util/tee')
 
-export default function(response: Entity) {
+export default async function(response: Entity) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { createWriteStream } = await import('fs')
     const stream = createWriteStream(process.env.KUI_TEE_TO_FILE)
     const logger = (data: string | Buffer) => stream.write(data)
     try {
+      const { print } = await import('../main/headless-pretty-print')
       print(response, logger, stream)
       if (process.env.KUI_TEE_TO_FILE_END_MARKER) {
         stream.write(process.env.KUI_TEE_TO_FILE_END_MARKER)

@@ -25,7 +25,8 @@ interface IOutput {
   output: string
 }
 
-interface CLI {
+export declare class CLI {
+  constructor(exec: string, pathEnv: string, teeToFile?: boolean);
   command: (cmd: string, env?: object, options?: object) => Promise<IResponse>;
   exitCode: (statusCode: number) =>  number;
   expectJustOK: () => any;
@@ -34,7 +35,7 @@ interface CLI {
 }
 
 export var cli: CLI
-export var kuiElectron: CLI
+export var ibmcloudKui: CLI
 
 /**
  * @return a CLI impl for the given executable `exe`, located in the given `bindir`.
