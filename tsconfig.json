@@ -47,9 +47,6 @@
       "path": "packages/react"
     },
     {
-      "path": "plugins/plugin-manager"
-    },
-    {
       "path": "plugins/plugin-ibmcloud"
     },
     {
