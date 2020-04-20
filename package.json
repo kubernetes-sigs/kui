@@ -20,6 +20,7 @@
     "build:electron:win32": "PLATFORM=win32 kui-build-electron",
     "build:electron:windows": "PLATFORM=win32 kui-build-electron",
     "build:electron:all": "kui-build-electron",
+    "build:ibmcloudplugin": "cd tools/go/ibmcloud; go get; go build; ls; ibmcloud plugin install ./kui; ibmcloud kui",
     "kill": "kill $(lsof -t -i:908${PORT_OFFSET-0}) > /dev/null 2> /dev/null || true",
     "kill:proxy": "kill $(lsof -t -i:808${PORT_OFFSET-1}) > /dev/null 2> /dev/null || true",
     "kill:cproxy": "kill $(lsof -t -i:9081) > /dev/null 2> /dev/null || true",

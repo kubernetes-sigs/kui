@@ -3,6 +3,9 @@ node_js: 12   # Note: windows requires 10 or higher
 dist: xenial # Note: dist>=xenial required by microk8s
 cache: false # as of 20190709 trav-ci.org started loading garbage from the build cache
 
+go:
+  - 1.12.x
+
 services:
   - docker
 
@@ -17,6 +20,7 @@ env:
     - TRAVIS_KUBE_VERSION=1.15.7
     - TRAVIS_HELM_VERSION=2.13.0
     - TRAVIS_OC_VERISON=4.3.3
+    - TRAVIS_GO_VERSION=1.12
     - WINDOW_WIDTH=1400         # ! important ! so that clicks don't fail due to elements being off-viewport
     - WINDOW_HEIGHT=1050        # ! ibid !
     - BUILD_ENV=production      # used in dist/electron/build.sh with npm prune --production
@@ -52,6 +56,10 @@ jobs:
     - if: os = windows AND env(NO_WINDOWS) IS present
 
   include:
+    - env: N="Linux" CLIENT="default" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" IBM_CLOUD_TRACE=true KUI_DIST_PATH="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui"
+      before_install: ./tools/travis/ibmcloud.sh; eval "$(gimme 1.12)"
+      script: go version; npm run build:ibmcloudplugin
+
     - env: DEPLOY="cluster" LAYERS="core" MOCHA_RUN_TARGET=webpack
     - env: LAYERS="k8s k8s-popup helm logs" MOCHA_RUN_TARGET=electron NEEDS_K8S=true NEEDS_HELM=true
     - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
