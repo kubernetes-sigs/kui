@@ -24,7 +24,7 @@
     "kill:proxy": "kill $(lsof -t -i:808${PORT_OFFSET-1}) > /dev/null 2> /dev/null || true",
     "kill:cproxy": "kill $(lsof -t -i:9081) > /dev/null 2> /dev/null || true",
     "_watch": "npm run kill; CSP_ALLOWED_HOSTS=\"http: https: data: filesystem: about: blob: ws: wss:\" kui-watch-webpack",
-    "watch:webpack": "npm run pty:nodejs && (npm run proxy &); npm run _watch",
+    "watch:webpack": "npm run pty:nodejs && (npm run proxy &); npm run _watch $WATCH_ARGS",
     "watch:electron": "npm run pty:electron && TARGET=electron-renderer npm run _watch",
     "watch": "npm run kill; npm run compile && npm run link && concurrently -n ES6,WEBPACK --kill-others 'npm run watch:source' 'npm run watch:electron'",
     "proxy": "export PORT=8081; export KUI_USE_HTTP=true; npm run pty:nodejs && cd packages/proxy/app && npm install && ../../../tools/travis/proxy.sh ../../../..",
@@ -46,29 +46,28 @@
     "update": "ncu -u -x \"@types/yargs-parser,husky,electron,spectron,@types/webdriverio\" && for i in plugins/*; do (cd $i && ncu -u -x electron,spectron,@types/webdriverio,chokidar,d3,elkjs,xtermjs,strip-ansi && rm -rf node_modules); done && rm -rf node_modules/ package-lock.json  && npm install",
     "postinstall": "npm rebuild node-sass && npm run compile",
     "open": "electron . shell",
-    "start": "npm run watch:electron && npm run open"
+    "start": "WATCH_ARGS='open' npm run watch"
   },
   "engines": {
     "node": ">=8.15.0",
     "npm": ">=6.9.0"
   },
   "dependencies": {
+    "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/core": "file:packages/core",
-    "@kui-shell/react": "file:packages/react",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
-    "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
     "@kui-shell/plugin-carbon-themes": "file:plugins/plugin-carbon-themes",
+    "@kui-shell/plugin-client-common": "file:plugins/plugin-client-common",
+    "@kui-shell/plugin-core-support": "file:plugins/plugin-core-support",
     "@kui-shell/plugin-core-themes": "file:plugins/plugin-core-themes",
-    "@kui-shell/plugin-editor": "file:plugins/plugin-editor",
     "@kui-shell/plugin-git": "file:plugins/plugin-git",
+    "@kui-shell/plugin-ibmcloud": "file:plugins/plugin-ibmcloud",
+    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8",
+    "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
     "@kui-shell/plugin-manager": "file:plugins/plugin-manager",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
-    "@kui-shell/plugin-client-common": "file:plugins/plugin-client-common",
-    "@kui-shell/client": "file:plugins/plugin-client-default",
-    "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
-    "@kui-shell/plugin-ibmcloud": "file:plugins/plugin-ibmcloud",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow",
-    "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8"
+    "@kui-shell/react": "file:packages/react"
   },
   "devDependencies": {
     "@kui-shell/builder": "file:packages/builder",

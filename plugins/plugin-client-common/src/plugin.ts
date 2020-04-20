@@ -16,10 +16,8 @@
 
 import { isHeadless, Registrar } from '@kui-shell/core'
 
-import confirm from './controller/confirm'
-
-export default (registrar: Registrar) => {
+export default async (registrar: Registrar) => {
   if (!isHeadless()) {
-    confirm(registrar)
+    await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
   }
 }

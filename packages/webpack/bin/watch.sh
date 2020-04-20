@@ -48,3 +48,7 @@ if [ -n "$LOCKFILE" ]; then
     until [ -f $LOCKFILE ]; do sleep 1; done
     rm -f $LOCKFILE
 fi
+
+if [ "$WATCH_ARGS" = "open" ]; then
+    npm run open
+fi
