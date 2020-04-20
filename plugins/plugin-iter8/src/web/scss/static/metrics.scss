@@ -5,10 +5,17 @@ $grey: #dddddd;
 .listouter {
   padding: 10px;
 }
-
-.ratio-metric-table {
+.center {
+  margin: auto;
+  width: 70%;
+}
+.inner {
+  display: inline-block;
+  padding: 10px;
+}
+.metric-table {
   table {
-    width: 70%;
+    width: 100%;
     border: 1px solid $dark-purple !important;
   }
   tr:nth-child(even) {
