@@ -45,32 +45,57 @@
  * that scenario, for `pluginB` only to register its new modes.
  *
  */
-import { Registrar } from '@kui-shell/core'
+import { ModeRegistration } from '@kui-shell/core'
+import { KubeResource } from '@kui-shell/plugin-kubectl'
 import { MetricDetailsMode } from '../modes/get-metrics'
 const ob = new MetricDetailsMode()
 export const kind = 'Metric Config'
 /** A Kui response needs some metadata to describe the resource */
-const metadata = {
-  kind,
-  metadata: {
-    name: 'Currently Available Iter8 Metrics',
-    namespace: 'Use: kubectl get configmaps -n iter8'
+
+function verifyMetricResponse(resource: KubeResource): boolean {
+  return resource.kind === 'Command' && resource.metadata.name === 'Metric Command'
+}
+
+const metricListMode: ModeRegistration<KubeResource> = {
+  when: verifyMetricResponse,
+  mode: {
+    mode: 'Metric List',
+    react: ob.MetricList()
   }
 }
 
-function getMetrics() {
-  return Object.assign(metadata, {
-    modes: [
-      { mode: 'Metric List', react: ob.MetricList() },
-      { mode: 'Metric Yaml', label: 'Config Map', content: ob.MetricYaml(), contentType: 'yaml' }
-    ]
-  })
+const metricYamlMode: ModeRegistration<KubeResource> = {
+  when: verifyMetricResponse,
+  mode: {
+    mode: 'Metric Yaml',
+    label: 'Config Map',
+    content: ob.MetricYaml(),
+    contentType: 'yaml'
+  }
 }
-
-export default (registrar: Registrar) => {
-  registrar.listen('/iter8/get/metrics', getMetrics, {
-    usage: {
-      docs: 'A showcase of MultiModalResponse'
-    }
-  })
-}
+export { metricListMode, metricYamlMode }
+//
+// const metadata = {
+//   kind,
+//   metadata: {
+//     name: 'Currently Available Iter8 Metrics',
+//     namespace: 'Use: kubectl get configmaps -n iter8'
+//   }
+// }
+//
+// function getMetrics() {
+//   return Object.assign(metadata, {
+//     modes: [
+//       { mode: 'Metric List', react: ob.MetricList() },
+//       { mode: 'Metric Yaml', label: 'Config Map', content: ob.MetricYaml(), contentType: 'yaml' }
+//     ]
+//   })
+// }
+//
+// export default (registrar: Registrar) => {
+//   registrar.listen('/iter8/get/metrics', getMetrics, {
+//     usage: {
+//       docs: 'A showcase of MultiModalResponse'
+//     }
+//   })
+// }

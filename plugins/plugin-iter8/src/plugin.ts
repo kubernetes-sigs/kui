@@ -6,4 +6,9 @@ export default async (registrar: Registrar) => {
     metadata: { name: 'Experiment Creation' },
     modes: []
   }))
+  registrar.listen('/iter8/get/metrics', () => ({
+    kind: 'Command',
+    metadata: { name: 'Metric Command', namespace: 'Use: kubectl get configmaps -n iter8' },
+    modes: []
+  }))
 }
