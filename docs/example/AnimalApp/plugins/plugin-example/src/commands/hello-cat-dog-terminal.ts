@@ -20,6 +20,6 @@ const printCat = () => '🐱'
 const printDog = () => '🐶'
 
 export default (commandTree: Registrar) => {
-  commandTree.listen('/hello/cat', printCat, { inBrowserOk: true })
-  commandTree.listen('/hello/dog', printDog, { inBrowserOk: true })
+  commandTree.listen('/hello/cat', printCat)
+  commandTree.listen('/hello/dog', printDog)
 }

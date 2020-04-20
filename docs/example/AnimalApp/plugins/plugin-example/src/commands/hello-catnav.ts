@@ -58,5 +58,5 @@ const printCatInLeftNavSidecar: NavResponse = {
 }
 
 export default (commandTree: Registrar) => {
-  commandTree.listen('/hello/catnav', () => printCatInLeftNavSidecar, { inBrowserOk: true })
+  commandTree.listen('/hello/catnav', () => printCatInLeftNavSidecar)
 }

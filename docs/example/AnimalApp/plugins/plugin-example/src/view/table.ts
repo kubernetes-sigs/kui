@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
-import helloCatDogTerminal from './commands/hello-cat-dog-terminal'
-import helloCatNav from './commands/hello-catnav'
-import helloSidecat from './commands/hello-sidecat'
+import { Table } from '@kui-shell/core'
 
-export default async (kui: Registrar) => {
-  await Promise.all([helloCatDogTerminal(kui), helloSidecat(kui), helloCatNav(kui)])
-}
+export const printTable = (): Table => ({
+  header: { name: 'Column1', attributes: [{ value: 'Column2' }] },
+  body: [
+    { name: 'Row1Column1', attributes: [{ value: 'Row1Column2' }] },
+    { name: 'Row2Column1', attributes: [{ value: 'Row2Column2' }] }
+  ]
+})

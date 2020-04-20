@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
-import helloCatDogTerminal from './commands/hello-cat-dog-terminal'
-import helloCatNav from './commands/hello-catnav'
-import helloSidecat from './commands/hello-sidecat'
-
-export default async (kui: Registrar) => {
-  await Promise.all([helloCatDogTerminal(kui), helloSidecat(kui), helloCatNav(kui)])
-}
+export const printOK = () => true

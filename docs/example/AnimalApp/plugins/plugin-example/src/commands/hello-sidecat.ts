@@ -35,5 +35,5 @@ const printCatInTopNavSidecar: MultiModalResponse = {
 }
 
 export default (commandTree: Registrar) => {
-  commandTree.listen('/hello/sidecat', () => printCatInTopNavSidecar, { inBrowserOk: true })
+  commandTree.listen('/hello/sidecat', () => printCatInTopNavSidecar)
 }
