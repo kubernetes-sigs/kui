@@ -68,12 +68,13 @@ function isTableFormat(format: OutputFormat): format is TableFormat {
   return !format || format === 'wide' || /^custom-columns=/.test(format) || /^custom-columns-file=/.test(format)
 }
 
+export function isDashHelp(args: Arguments<KubeOptions>) {
+  return args.parsedOptions.help || args.parsedOptions.h
+}
+
 export function isHelpRequest(args: Arguments<KubeOptions>) {
   return (
-    args.parsedOptions.help ||
-    args.parsedOptions.h ||
-    args.argvNoOptions[1] === 'help' ||
-    args.argvNoOptions[1] === 'options' // usage: `kubectl options`
+    isDashHelp(args) || args.argvNoOptions[1] === 'help' || args.argvNoOptions[1] === 'options' // usage: `kubectl options`
   )
 }
 
