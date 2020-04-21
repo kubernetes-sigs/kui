@@ -42,7 +42,7 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
   // Notes: the filter reduces allInstalled down to those installed in
   // the specified repo
   const rowData = Object.keys(allInstalled)
-    .filter(installedName => available.find(({ name: availableName }) => availableName === installedName))
+    //    .filter(installedName => available.find(({ name: availableName }) => availableName === installedName))
     .map(key => {
       const { Name: name, Aliases, Version } = allInstalled[key]
 
