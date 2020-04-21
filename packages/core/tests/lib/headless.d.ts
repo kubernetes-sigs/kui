@@ -35,6 +35,7 @@ interface CLI {
 
 export var cli: CLI
 export var kuiElectron: CLI
+export var ibmcloudKui: CLI
 
 /**
  * @return a CLI impl for the given executable `exe`, located in the given `bindir`.

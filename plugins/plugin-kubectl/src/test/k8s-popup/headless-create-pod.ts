@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Common } from '@kui-shell/test'
-import { CLI } from '@kui-shell/core/tests/lib/headless'
+import { CLI, kuiElectron } from '@kui-shell/core/tests/lib/headless'
 import { kubectl, createNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
@@ -96,11 +96,12 @@ const doHeadless = (ctx: Common.ISuite, impl: CLI) => {
     })
   })
 }
-
-/* Common.localDescribe('headless create poddy kubectl kui mode', function(this: Common.ISuite) {
+/*
+Common.localDescribe('headless create poddy kubectl kui mode', function(this: Common.ISuite) {
   doHeadless(this, kubectl)
 }) */
 
-/* Common.localDescribe('headless create pod bin/kui mode', function(this: Common.ISuite) {
-  doHeadless(this, kui)
+/*
+Common.localDescribe('headless create pod bin/kui mode', function(this: Common.ISuite) {
+  doHeadless(this, kuiElectron)
 }) */
