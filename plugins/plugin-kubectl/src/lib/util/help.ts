@@ -28,7 +28,7 @@ import {
   Breadcrumb
 } from '@kui-shell/core'
 
-import { KubeOptions, isHelpRequest } from '../../controller/kubectl/options'
+import { KubeOptions, isHelpRequest, isDashHelp } from '../../controller/kubectl/options'
 import commandPrefix from '../../controller/command-prefix'
 import { doExecWithoutPty, Prepare, NoPrepare } from '../../controller/kubectl/exec'
 
@@ -84,6 +84,7 @@ interface Section {
 
 /** Produce a Breadcrumb */
 function breadcrumb(label: string, hasCommand = true, ...commandContext: string[]): Breadcrumb[] {
+  // re: help see https://github.com/IBM/kui/issues/4342
   return !label ? [] : [{ label, command: hasCommand ? `${commandContext.join(' ')} ${label} -h` : undefined }]
 }
 
@@ -95,7 +96,12 @@ function breadcrumb(label: string, hasCommand = true, ...commandContext: string[
  * @param entityType e.g. pod versus deployment
  *
  */
-export const renderHelp = (out: string, command: string, verb: string, entityType?: string): NavResponse | Table => {
+const renderHelpUnsafe = (
+  out: string,
+  command: string,
+  verb: string,
+  entityType?: string
+): string | NavResponse | Table => {
   // kube and helm help often have a `Use "this command" to do that operation`
   // let's pick those off and place them into the detailedExample model
   const splitOutUse = out.match(/^(Use\s+.+)$/gm)
@@ -231,6 +237,11 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
     }, [])
     .filter(x => x)
 
+  if (header.length === 0) {
+    // we were not successful in extracting a NavResponse from `out`
+    return out
+  }
+
   /* Here comes Usage NavResponse */
   const baseModes = (): MultiModalMode[] => [
     {
@@ -253,7 +264,9 @@ export const renderHelp = (out: string, command: string, verb: string, entityTyp
         .replace(/\n\s*(Find more information at:)\s+([^\n]+)/, '') // [Find more information] will be in links below the menus
         .concat(!aliasesSection ? '' : `### Aliases\n${aliasesSection.content}`)
         .concat(
-          `
+          !usageSection || usageSection.length === 0
+            ? ''
+            : `
 ### Usage
 \`\`\`
 ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()}
@@ -368,6 +381,20 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
   }
 }
 
+export const renderHelp = (
+  out: string,
+  command: string,
+  verb: string,
+  entityType?: string
+): string | NavResponse | Table => {
+  try {
+    return renderHelpUnsafe(out, command, verb, entityType)
+  } catch (err) {
+    console.error('Internal Error parsing help output', err)
+    return out
+  }
+}
+
 /** commands that we want to be sent to help, if executed on their own
  * -- i.e. just "oc" or "kubectl" */
 const kubeLike = /^k(ubectl)?$/
@@ -385,7 +412,15 @@ export async function doHelp<O extends KubeOptions>(
   prepare: Prepare<O> = NoPrepare
 ): Promise<KResponse> {
   const response = await doExecWithoutPty(args, prepare, command)
-  const verb = args.argvNoOptions.length >= 2 ? args.argvNoOptions[1] : ''
-  const entityType = args.argvNoOptions.length >= 3 ? args.argvNoOptions[2] : ''
-  return renderHelp(response.content.stdout, command, verb, entityType)
+  const _verb = args.argvNoOptions.length >= 2 ? args.argvNoOptions[1] : ''
+  const _entityType = args.argvNoOptions.length >= 3 ? args.argvNoOptions[2] : ''
+
+  // see https://github.com/IBM/kui/issues/4342
+  const isXHelp = _verb === 'help' // kubectl help ...something... <-- could be help on something or help on help
+  const isHelpOnHelp = isXHelp && isDashHelp(args) // kubectl help -h <-- help on help
+  const isXHelpOnSomething = isXHelp && !isHelpOnHelp
+  const verb = isXHelpOnSomething ? _entityType : _verb
+  const entityType = isXHelp ? undefined : _entityType // k help -h or k help create, in either case, no entityType
+
+  return renderHelp(response.content.stdout || response.content.stderr, command, verb, entityType)
 }
