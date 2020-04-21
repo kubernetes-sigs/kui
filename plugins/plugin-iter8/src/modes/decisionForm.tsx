@@ -18,7 +18,6 @@ import '../../src/web/scss/static/decisionForm.scss'
 // 	width="500"
 // />
 export class DecisionBase extends React.Component<any, any> {
-  public static displayName = 'DecisionBase'
   public constructor(props) {
     super(props)
     this.state = {

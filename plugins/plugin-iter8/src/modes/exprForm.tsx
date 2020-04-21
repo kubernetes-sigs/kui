@@ -1,7 +1,7 @@
 import * as React from 'react'
 // Component Imports
 import { TooltipIcon, Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
-import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 , Data_132 as Data132 } from '@carbon/icons-react'
+import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
@@ -38,7 +38,6 @@ class ExprBase extends React.Component<any, Formstate> {
   private totMetricsList = this.countMetricsList.concat(this.ratioMetricsList)
   private svcList = []
   private deployList = []
-
   public constructor(props) {
     super(props)
     this.state = {
@@ -307,10 +306,10 @@ class ExprBase extends React.Component<any, Formstate> {
               </Button>
               <div style={{ position: 'relative', top: 110, right: 865 }}>
                 {metric.map((val, idx) => {
-                  const metricId = `metric-${idx}`;
-                    const limitTypeId = `limitType-${idx}`;
-                    const limitValueId = `limitValue-${idx}`;
-                    const checkId = `checkbox-${idx}`
+                  const metricId = `metric-${idx}`
+                  const limitTypeId = `limitType-${idx}`
+                  const limitValueId = `limitValue-${idx}`
+                  const checkId = `checkbox-${idx}`
                   return (
                     <div key={idx}>
                       <ComboBox
