@@ -36,7 +36,9 @@
   "currentContext": "This is your current context",
   "notCurrentContext": "This is not your current context",
   "More Information": "More Information",
+  "Basic": "Basic",
   "Introduction": "Introduction",
+  "Miscellaneous": "Miscellaneous",
   "Options": "Options",
   "Commands": "Commands",
   "Examples": "Examples"
