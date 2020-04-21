@@ -42,6 +42,8 @@ export { default as TrafficLight } from './lib/model/traffic-light'
 
 export { default as apiVersion } from './controller/kubectl/apiVersion'
 
+export { default as doExecWithMarkdown } from './controller/kubectl/exec-to-markdown'
+
 export {
   doExecWithStdoutViaPty,
   doExecWithPty,

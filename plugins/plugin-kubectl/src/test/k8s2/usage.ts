@@ -60,4 +60,20 @@ describe('kubectl dash h', function(this: Common.ISuite) {
   // help on get
   it('should refresh', () => Common.refresh(this))
   help('kubectl get -h', ['kubectl', 'get'], kubectlGetModes)
+
+  // help on oc
+  it('should refresh', () => Common.refresh(this))
+  help('oc', ['oc'], commonModes)
+
+  // oc -h
+  it('should refresh', () => Common.refresh(this))
+  help('oc -h', ['oc'], commonModes.concat(['Basic']))
+
+  // help on odo
+  it('should refresh', () => Common.refresh(this))
+  help('odo', ['odo'], commonModes)
+
+  // odo -h
+  it('should refresh', () => Common.refresh(this))
+  help('odo -h', ['odo'], commonModes.concat(['Flags', 'Basic']))
 })

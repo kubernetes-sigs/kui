@@ -130,7 +130,6 @@ const renderHelpUnsafe = (
 
   const processSections = (section: Section) => ({
     title: section.title,
-    nRowsInViewport: section.title.match(/Available Commands/i) ? 8 : undefined,
     rows: section.content
       .split(/[\n\r]/)
       .filter(x => x)
@@ -279,7 +278,7 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
   ]
 
   const optionsMenuItems = (): MultiModalMode[] => {
-    if (verb === '') {
+    if (verb === '' && command === 'kubectl') {
       // kubectl
       return [
         {
@@ -316,10 +315,25 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
           .filter(section => /command/i.test(section.title))
           .map(section => {
             return {
-              mode: section.title.replace(/Command(s)/, '').replace(':', ''),
+              mode: section.title.replace(/Command(s)/, '').replace(/:$/, '') || strings('Basic'),
               content: commandDocTable(section.rows, command, verb, 'COMMAND')
             }
           })
+      }
+    }
+  }
+
+  const miscMenu = (): Menu => {
+    const randomSections = sections.filter(
+      section => !(/command/i.test(section.title) || /Flags|Options/i.test(section.title))
+    )
+    if (randomSections.length > 0) {
+      return {
+        label: strings('Miscellaneous'),
+        items: randomSections.map(section => ({
+          mode: section.title.replace(/:$/, ''),
+          content: commandDocTable(section.rows, command, verb, 'COMMAND')
+        }))
       }
     }
   }
@@ -341,7 +355,7 @@ ${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()
     }
   }
 
-  const menus = [headerMenu(strings('Usage')), commandMenu(), exampleMenu()].filter(x => x)
+  const menus = [headerMenu(strings('Usage')), commandMenu(), miscMenu(), exampleMenu()].filter(x => x)
 
   debug('menus', menus)
 

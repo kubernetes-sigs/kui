@@ -19,4 +19,5 @@ import { doNativeExec, defaultFlags, commandPrefix } from '@kui-shell/plugin-kub
 
 export default async (registrar: Registrar) => {
   registrar.listen(`/${commandPrefix}/_oc`, doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
+  registrar.listen(`/${commandPrefix}/_odo`, doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
 }
