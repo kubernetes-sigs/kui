@@ -12,9 +12,9 @@ import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 // Functionality Imports
-import GetKubeInfo from '../components/get_cluster_info'
+import GetKubeInfo from '../components/get-cluster-info'
 import GetMetricConfig from '../components/metric-config'
-import { Metricstate, Formstate, RequestModel } from '../components/get-iter8-req'
+import { Formstate } from '../components/get-iter8-req'
 // Component Properties
 const TextInputProps = {
   id: 'expName',
@@ -22,8 +22,12 @@ const TextInputProps = {
   placeholder: 'Ex. rollout_v1_v2',
   style: { width: 350, height: 50 }
 }
+/*
+ * Data models for the state object in ExprForm
+ */
 
-class ExprBase extends React.Component<any, any> {
+class ExprBase extends React.Component<any, Formstate> {
+  public static displayName = 'ExprBase'
   // imported class of methods from /components
   private kubeMethods = new GetKubeInfo()
   private GetMetricConfig = new GetMetricConfig()
@@ -34,6 +38,7 @@ class ExprBase extends React.Component<any, any> {
   private totMetricsList = this.countMetricsList.concat(this.ratioMetricsList)
   private svcList = []
   private deployList = []
+
   public constructor(props) {
     super(props)
     this.state = {
@@ -170,7 +175,7 @@ class ExprBase extends React.Component<any, any> {
     newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward }
     this.setState(prevState => ({
       metric: newMetric,
-      disableOthers: !prevState.disableOthers
+      disableReward: !prevState.disableReward
     }))
   }
 
@@ -178,7 +183,11 @@ class ExprBase extends React.Component<any, any> {
    *	Data transfer/manipulation logic
    */
   private submitForm() {
-    console.log('ready to submit')
+    // let d = new Date();
+    // let time = d.toISOString();
+    // let reqModel = new RequestModel();
+    // let jsonOutput = reqModel.getRequestModel(time, this.state);
+    // @todo: move to next Tab
   }
 
   public render() {
@@ -341,7 +350,7 @@ class ExprBase extends React.Component<any, any> {
                       <Checkbox
                         id={checkId}
                         labelText="Set as reward"
-                        disabled={(!val.reward && this.state.disableOthers) || val.type === 'Counter'}
+                        disabled={(!val.reward && this.state.disableReward) || val.type === 'Counter'}
                         onChange={() => this.handleRewardChange(idx)}
                       />
                       <Button
