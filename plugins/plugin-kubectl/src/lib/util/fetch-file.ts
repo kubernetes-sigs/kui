@@ -91,7 +91,7 @@ async function needle({ qexec }: REPL, method: 'get', url: string): Promise<{ st
         })
 
         response.on('data', chunk => {
-          debug('got chunk', chunk.toString())
+          // debug('got chunk', chunk.toString())
           body += chunk.toString()
         })
       })
