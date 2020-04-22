@@ -26,8 +26,9 @@ interface Formstate {
 */
 interface DecisionState {
 	exprCreated: Boolean,
+	haveResults: Boolean,
 	exprReq?: Formstate,
-	exprResult?: object
+	exprResult?: any
 }
 
 class RequestModel {
@@ -79,7 +80,6 @@ class RequestModel {
 		var ratioRlts = MetricMethods.getRatioMetrics();
 		return {
 			"start_time": time,
-			"iteration_number": 1, //default value, need to change
 			"service_name": formstate.svc,
 			"metric_specs": {
 				"counter_metrics": counterRlts,
