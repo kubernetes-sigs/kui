@@ -74,28 +74,3 @@ const metricYamlMode: ModeRegistration<KubeResource> = {
   }
 }
 export { metricListMode, metricYamlMode }
-//
-// const metadata = {
-//   kind,
-//   metadata: {
-//     name: 'Currently Available Iter8 Metrics',
-//     namespace: 'Use: kubectl get configmaps -n iter8'
-//   }
-// }
-//
-// function getMetrics() {
-//   return Object.assign(metadata, {
-//     modes: [
-//       { mode: 'Metric List', react: ob.MetricList() },
-//       { mode: 'Metric Yaml', label: 'Config Map', content: ob.MetricYaml(), contentType: 'yaml' }
-//     ]
-//   })
-// }
-//
-// export default (registrar: Registrar) => {
-//   registrar.listen('/iter8/get/metrics', getMetrics, {
-//     usage: {
-//       docs: 'A showcase of MultiModalResponse'
-//     }
-//   })
-// }
