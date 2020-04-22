@@ -103,7 +103,7 @@ export default class Toolbar extends React.PureComponent<Props> {
       const start = (this.props.page - 1) * this.props.pageSize + 1
       const end = this.props.page * this.props.pageSize
       const isFirstPage = this.props.page === 1
-      const nPages = ~~(this.props.totalItems / this.props.pageSize)
+      const nPages = Math.ceil(this.props.totalItems / this.props.pageSize)
       const isLastPage = this.props.page === nPages
 
       const maxLength = end.toString().length
