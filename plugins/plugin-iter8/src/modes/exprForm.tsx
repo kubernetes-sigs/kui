@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
 import { TooltipIcon, Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
 import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 , Data_132 as Data132 } from '@carbon/icons-react'
@@ -14,7 +15,7 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 // Functionality Imports
 import GetKubeInfo from '../components/get-cluster-info'
 import GetMetricConfig from '../components/metric-config'
-import { Formstate } from '../components/get-iter8-req'
+import { Formstate, RequestModel } from '../components/get-iter8-req'
 // Component Properties
 const TextInputProps = {
   id: 'expName',
@@ -26,8 +27,7 @@ const TextInputProps = {
  * Data models for the state object in ExprForm
  */
 
-class ExprBase extends React.Component<any, Formstate> {
-  public static displayName = 'ExprBase'
+class ExprBase extends React.Component<{}, Formstate> {
   // imported class of methods from /components
   private kubeMethods = new GetKubeInfo()
   private GetMetricConfig = new GetMetricConfig()
@@ -42,6 +42,7 @@ class ExprBase extends React.Component<any, Formstate> {
   public constructor(props) {
     super(props)
     this.state = {
+      disableresubmit: false, //prevents form resubmission
       showMetrics: false, // determines the visibility of metric config
       invalidCand: false, // determines whether cand values are valid
       name: '',
@@ -163,7 +164,6 @@ class ExprBase extends React.Component<any, Formstate> {
 
   private handleLimitValChange = (value, idx) => {
     const limitValue = value === '' ? 0 : parseInt(value)
-    console.log(limitValue)
     const newMetric = [...this.state.metric]
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ metric: newMetric })
@@ -183,11 +183,12 @@ class ExprBase extends React.Component<any, Formstate> {
    *	Data transfer/manipulation logic
    */
   private submitForm() {
-    // let d = new Date();
-    // let time = d.toISOString();
-    // let reqModel = new RequestModel();
-    // let jsonOutput = reqModel.getRequestModel(time, this.state);
-    // @todo: move to next Tab
+    let d = new Date();
+    let time = d.toISOString();
+    let reqModel = new RequestModel();
+    let jsonOutput = reqModel.getRequestModel(time, this.state);
+    eventChannelUnsafe.emit('/my/channel', jsonOutput);
+    this.setState({disableresubmit: true});
   }
 
   public render() {
@@ -276,11 +277,10 @@ class ExprBase extends React.Component<any, Formstate> {
               size="default"
               kind="primary"
               renderIcon={View32}
-              disabled={this.state.invalidCand}
+              disabled={this.state.invalidCand || this.state.disableresubmit}
               onClick={this.submitForm}
             >
-              {' '}
-              Observe{' '}
+              Observe
             </Button>
             <div style={{ position: 'relative', top: -48, left: 190 }}>
               <Button size="default" kind="secondary" renderIcon={Data132} onClick={this.handleMetric}>
@@ -302,8 +302,7 @@ class ExprBase extends React.Component<any, Formstate> {
                 onClick={this.addMetric}
                 style={{ position: 'relative', top: 95, right: 600 }}
               >
-                {' '}
-                Add Metric{' '}
+                Add Metric
               </Button>
               <div style={{ position: 'relative', top: 110, right: 865 }}>
                 {metric.map((val, idx) => {
