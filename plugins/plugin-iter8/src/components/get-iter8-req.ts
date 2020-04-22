@@ -1,5 +1,4 @@
 import GetMetricConfig from './metric-config'
-
 /*
 * Data models for the state object in ExprForm
 */
@@ -11,6 +10,7 @@ interface Metricstate {
 	limitValue: number
 }
 interface Formstate {
+	disableresubmit: Boolean,
 	showMetrics: Boolean,
 	invalidCand: Boolean,
 	name: string,
@@ -20,8 +20,16 @@ interface Formstate {
 	cand:Array<string>,
 	metric:Array<Metricstate>,
 	disableReward: Boolean
-
 }
+/*
+* Data model for state object in DecisionForm
+*/
+interface DecisionState {
+	exprCreated: Boolean,
+	exprReq?: Formstate,
+	exprResult?: object
+}
+
 class RequestModel {
 
 	//Convert the list of criteria in API request format
@@ -71,6 +79,7 @@ class RequestModel {
 		var ratioRlts = MetricMethods.getRatioMetrics();
 		return {
 			"start_time": time,
+			"iteration_number": 1, //default value, need to change
 			"service_name": formstate.svc,
 			"metric_specs": {
 				"counter_metrics": counterRlts,
@@ -91,19 +100,6 @@ class RequestModel {
 export {
 	Metricstate,
 	Formstate,
+	DecisionState,
 	RequestModel
 }
-// const state = {
-// 	showMetrics: false, //determines the visibility of metric config
-// 	invalidCand: false, //determines whether cand values are valid
-// 	name: 'rollout-test', ns:'bookinfo-iter8', svc: 'reviews', base:'reviews-v2', cand:['reviews-v2', 'reviews-v3'], //basic expr attributes
-// 	metric: [{name: "iter8_request_count", type:"Counter", reward: false, limitType: "absolute", limitValue:20},
-// 			{name: "iter8_error_rate", type:"Ratio", reward: true, limitType: '', limitValue:0}
-// 			], //metric attributes
-// 	disableReward: false, //disables the reward select for other metrics
-// }
-// var model = new RequestModel();
-// var d = new Date();
-// var n = d.toISOString();
-// var jsonObj = model.getRequestModel(n, state);
-// console.log(jsonObj);

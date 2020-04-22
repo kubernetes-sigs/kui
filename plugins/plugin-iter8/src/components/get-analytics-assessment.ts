@@ -10,7 +10,7 @@ export default class GetAnalyticsAssessment {
   public getAnalyticsAssessment() {
     const data = this.data
     const url = this.url
-    const promiseObj = new Promise(function(resolve, reject) {
+    const promiseObj = new Promise<string>(function(resolve, reject) {
       const xhr = new XMLHttpRequest()
       xhr.open('POST', url, true)
       xhr.setRequestHeader('Content-Type', 'application/json')
