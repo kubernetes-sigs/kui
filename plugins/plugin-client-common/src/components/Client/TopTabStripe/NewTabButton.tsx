@@ -28,9 +28,6 @@ export default class NewTabButton extends React.PureComponent<Props> {
         href="#"
         className="kui--tab-navigatable kui--new-tab__plus left-tab-stripe-button smaller-button kui-new-tab"
         id="new-tab-button"
-        data-balloon-disabled="Open a new tab"
-        data-balloon-pos="right"
-        data-balloon-length="fit"
         aria-label="Open a new tab"
         tabIndex={0}
         onClick={() => this.props.onNewTab()}
