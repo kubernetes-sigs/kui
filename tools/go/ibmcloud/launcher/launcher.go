@@ -21,8 +21,10 @@ type CloudShellPlugin struct {
 	ui terminal.UI
 }
 
-// THE PLUGIN_VERSION CONSTANT SHOULD BE LEFT EXACTLY AS-IS SINCE IT CAN BE PROGRAMMATICALLY SUBSTITUTED
-const PLUGIN_VERSION = "8.4.3"
+// this value will be injected at build time, e.g. via
+// go build -ldflags "-X github.com/IBM/kui/launcher.PLUGIN_VERSION=$(node -e 'console.log(require("@kui-shell/client/package.json").version)')"
+// which pulls the version from @kui-shell/client/package.json
+var PLUGIN_VERSION string
 
 func Start() {
 	argsWithoutProg := os.Args[1:]

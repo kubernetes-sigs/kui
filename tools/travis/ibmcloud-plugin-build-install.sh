@@ -6,10 +6,10 @@ echo "Installing Go Stable"
 eval "$(gimme stable)";
 
 echo "Building ibmcloud kui binary"
-go build
+make
 
 echo "Installing ibmcloud kui plugin"
-ibmcloud plugin install ./kui
+make install
 
 echo "Testing Kui dist download and duplicate download"
-go test ./...
+make test
