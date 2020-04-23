@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.6.0](https://github.com/IBM/kui/compare/v4.5.0...v8.6.0) (2020-04-23)
+
+### Bug Fixes
+
+- simplify handling of opengraph META ([ff3c0de](https://github.com/IBM/kui/commit/ff3c0de)), closes [#4288](https://github.com/IBM/kui/issues/4288)
+- **packages/proxy:** proxy docker container needs style-src: 'unsafe-inline' ([89c33e2](https://github.com/IBM/kui/commit/89c33e2)), closes [#4261](https://github.com/IBM/kui/issues/4261)
+- proxy still runs http-allocate-cert even if NO_DOCKER is set ([5267e52](https://github.com/IBM/kui/commit/5267e52)), closes [#4137](https://github.com/IBM/kui/issues/4137)
+
+### Features
+
+- proxy nginx should support serving gzip_static content ([f592fc7](https://github.com/IBM/kui/commit/f592fc7)), closes [#4252](https://github.com/IBM/kui/issues/4252)
+- simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
 # [8.5.0](https://github.com/IBM/kui/compare/v4.5.0...v8.5.0) (2020-04-19)
 
 ### Bug Fixes
