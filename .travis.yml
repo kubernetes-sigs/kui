@@ -39,6 +39,7 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 install:
   - if [ -n "$NEEDS_K8S" ]; then ./tools/travis/microk8s.sh & k8s=$!; fi
   - npm ci
+  - if [ -n "$NEEDS_IBMCLOUD" ]; then ./tools/travis/ibmcloud.sh && ./tools/travis/ibmcloud-plugin-build-install.sh; fi
   - ./bin/switch-client.sh ${CLIENT-default}
   - ./tools/codecov/instrument.sh
   - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
@@ -54,8 +55,7 @@ jobs:
 
   include:
     - env: DEPLOY="cluster" LAYERS="core" MOCHA_RUN_TARGET=webpack
-    - env: LAYERS="k8s k8s-popup helm logs" NEEDS_K8S=true NEEDS_HELM=true TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD}
-      before_install: ./tools/travis/ibmcloud.sh; ./tools/travis/ibmcloud-plugin-build-install.sh
+    - env: LAYERS="k8s k8s-popup helm logs" NEEDS_K8S=true NEEDS_HELM=true TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD} NEEDS_IBMCLOUD=true
 
     - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
     - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
