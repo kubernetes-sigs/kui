@@ -24,7 +24,6 @@ import '../web/css/static/inverted-colors.css'
 import '../web/css/static/ui.css'
 import '../web/css/static/repl.scss'
 import '../web/css/static/status-stripe.css'
-import '../web/css/static/vendor/balloon-css/balloon.min.css'
 
 // default client
 export { default as Kui, Props as KuiProps } from './components/Client/Kui'
