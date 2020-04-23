@@ -1,10 +1,23 @@
-//Overload for Loading Component Label
+// Overload for Loading Component Label
 .bx--inline-loading__text{
 	color: #FFFFFF !important;
 	font-size: 0.9rem !important;
+}
+// Overload for Slider Component label
+.bx--slider__range-label {
+	color: #FFFFFF !important;	
 }
 
 .apexcharts-legend-text {
 	font-size: 14px !important;
 	color: #FFFFFF !important;
+}
+
+.formProps {
+  overflow-y: auto !important;
+  height: 735.53px;
+}
+.formGroupProps {
+	font-size: 1rem !important;
+	font-weight: 600 !important;
 }
