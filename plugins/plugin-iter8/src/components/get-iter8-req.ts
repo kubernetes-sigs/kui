@@ -25,6 +25,7 @@ interface Formstate {
 * Data model for state object in DecisionForm
 */
 interface DecisionState {
+	selectedAlgo: string,
 	exprCreated: Boolean,
 	haveResults: Boolean,
 	exprReq?: any,
