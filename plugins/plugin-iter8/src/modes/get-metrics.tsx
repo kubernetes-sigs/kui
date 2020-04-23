@@ -139,8 +139,8 @@ class DisplayMetrics extends React.Component<any, any> {
     return (
       <div className="pageStyle">
         <h3> Currently Available Metrics</h3>
-        <RatioMetrics params={{ ...this.props, rM: this.ratioMetrics }} />
         <CounterMetrics params={{ ...this.props, cM: this.counterMetrics }} />
+        <RatioMetrics params={{ ...this.props, rM: this.ratioMetrics }} />
         <div className="center">
           <div className="inner">
             <Button size="default" kind="primary">
