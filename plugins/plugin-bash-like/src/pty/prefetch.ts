@@ -16,7 +16,6 @@
 
 import Debug from 'debug'
 const debug = Debug('plugins/bash-like/pty/prefetch')
-debug('loading')
 
 import { exec } from 'child_process'
 import * as propertiesParser from 'properties-parser'
@@ -35,7 +34,7 @@ function prefetchEnv() {
 
     debug('prefetchEnv')
     const { getLoginShell } = await import('./server')
-    const { shellExe: shell } = await getLoginShell()
+    const shell = await getLoginShell()
     debug('prefetchEnv got shell', shell)
 
     exec(`${shell} -l -c printenv`, (err, stdout, stderr) => {
