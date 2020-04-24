@@ -163,7 +163,7 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 
   private handleLimitValChange = (value, idx) => {
-    const limitValue = value === '' ? 0 : parseInt(value)
+    const limitValue = value === '' ? 0 : parseFloat(value);
     const newMetric = [...this.state.metric]
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ metric: newMetric })

@@ -43,14 +43,14 @@ class RequestModel {
 				metricArr.push({
 					"id": i,
 					"metric_id": newMetric.name,
-					"reward": newMetric.reward,
+					"is_reward": newMetric.reward,
 				})			
 			}
 			else{
 				metricArr.push({
 					"id": i,
 					"metric_id": newMetric.name,
-					"reward": newMetric.reward,
+					"is_reward": newMetric.reward,
 					"threshold": {
 				        "type": newMetric.limitType,
 				        "value": newMetric.limitValue
@@ -65,7 +65,7 @@ class RequestModel {
 		let candObjs = [];
 		for(let i = 0; i < candList.length; i++){
 			candObjs.push({
-		      "id": `${candList[i]}`,
+		      "id": `${candList[i]}-${namespace}`,
 		      "version_labels": {
 		        "destination_service_namespace": namespace,
 		        "destination_workload": candList[i]
@@ -88,7 +88,7 @@ class RequestModel {
 			},
 			"criteria": this.getCriteriaModel(formstate.metric),
 			"baseline": {
-			    "id": `${formstate.base}_base`,
+			    "id": `${formstate.base}-${formstate.ns}`,
 			    "version_labels": {
 			      "destination_service_namespace": formstate.ns,
 			      "destination_workload": formstate.base
