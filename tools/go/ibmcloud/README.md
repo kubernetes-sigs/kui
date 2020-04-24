@@ -4,7 +4,17 @@ This directory offers Kui as a plugin to the [`ibmcloud` CLI](https://clis.ng.bl
 
 ## Prebuilt Binaries
 
-> Coming Soon
+You may use a precompiled binary. Pick one of the following three
+commands, based on your platform:
+
+```bash
+ibmcloud plugin install https://github.com/IBM/kui/releases/latest/download/kui-ibmcloud-plugin-darwin-amd64
+ibmcloud plugin install https://github.com/IBM/kui/releases/latest/download/kui-ibmcloud-plugin-linux-amd64
+ibmcloud plugin install https://github.com/IBM/kui/releases/latest/download/kui-ibmcloud-plugin-windows-amd64
+```
+
+Then, you can use Kui via commands such as `ibmcloud kui kubectl get pods`. After an initial one-time download (of the Kui UI component),
+you should see a window pop up.
 
 ## Usage
 
