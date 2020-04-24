@@ -116,7 +116,7 @@ export { default as encodeComponent } from './repl/encode'
 export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl, doEval } from './repl/exec'
 
 // Tabs
-export { Tab, getTabFromTarget, getCurrentTab, getTabId, sameTab } from './webapp/tab'
+export { Tab, getCurrentTab, getTabId, sameTab } from './webapp/tab'
 export { default as TabState } from './models/tab-state'
 
 // Themes
