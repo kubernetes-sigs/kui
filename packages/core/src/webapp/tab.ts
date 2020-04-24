@@ -22,9 +22,15 @@ export interface Tab extends HTMLDivElement {
   state: TabState
   queueListener: EventListener // for input queueing, see queueing.ts
   _kui_session: Promise<any>
+
+  onActivate(handler: (isActive: boolean) => void): void
+  offActivate(handler: (isActive: boolean) => void): void
+
+  addClass(cls: string): void
+  removeClass(cls: string): void
 }
 
-export function isTab(node: Element): node is Tab {
+export function isTab(node: Element | Tab): node is Tab {
   return node.classList.contains('kui--tab-content')
 }
 
@@ -40,25 +46,6 @@ export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
   return getTabId(tab1) === getTabId(tab2)
 }
 
-export const getTabFromTarget = (target: EventTarget): Tab => {
-  if (target) {
-    let iter = target as Element
-
-    while (iter && !isTab(iter)) {
-      iter = iter.parentElement
-    }
-
-    if (iter && isTab(iter)) {
-      return iter
-    }
-
-    // debug('current tab fallthrough', target)
-  }
-
-  // fallthrough
-  return document.querySelector('.kui--tab-content.visible')
-}
-
 export const getCurrentTab = (): Tab => {
-  return getTabFromTarget(document.activeElement)
+  return document.querySelector('.kui--tab-content.visible') as Tab
 }

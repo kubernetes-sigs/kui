@@ -194,7 +194,6 @@ export const getLoginShell = (): Promise<string> => {
 export async function getShellOpts(): Promise<Shell> {
   const bashShellOpts = process.platform === 'win32' ? undefined : ['--rcfile', await kuirc, '-i', '-c', '--']
   const shellOpts = process.platform === 'win32' ? [] : bashShellOpts
-  console.error('!!!!!!!!', bashShellOpts)
 
   return {
     shellExe: process.platform === 'win32' ? 'powershell.exe' : '/bin/bash',

@@ -559,12 +559,8 @@ export const pexec = <T extends KResponse>(command: string, execOptions?: ExecOp
  * Execute a command in response to an in-view click
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const click = async (command: string | (() => Promise<string>), evt: MouseEvent): Promise<void> => {
-  // const { drilldown } = await import('../webapp/picture-in-picture')
-  // const tab = getTabFromTarget(evt.currentTarget)
-  // await drilldown(tab, command)(evt)
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
+export async function click(command: string | (() => Promise<string>), evt: MouseEvent): Promise<void> {}
 
 /**
  * Update the executor impl

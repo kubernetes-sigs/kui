@@ -34,6 +34,8 @@ interface WithTabUUID {
 
 interface WithTab {
   tab: KuiTab
+  tabClassList: Record<string, boolean>
+  activateHandlers: ((isActive: boolean) => void)[]
 }
 
 export type TabContentOptions = TerminalOptions & {
@@ -224,11 +226,61 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
+  /** Construct the `className` property of the tab element */
+  private tabClassName() {
+    return (
+      'kui--tab-content' +
+      (this.props.active ? ' visible' : '') +
+      (!this.state.tabClassList ? '' : ' ' + Object.keys(this.state.tabClassList).join(' '))
+    )
+  }
+
   public render() {
+    if (this.state.tab && this.state.activateHandlers) {
+      this.state.activateHandlers.forEach(handler => handler(this.props.active))
+    }
+
     return (
       <div
-        ref={c => this.setState({ tab: c as KuiTab })}
-        className={'kui--tab-content' + (this.props.active ? ' visible' : '')}
+        ref={c => {
+          const tab = c as KuiTab
+          this.setState({ tab })
+
+          if (tab) {
+            tab.onActivate = (handler: (isActive: boolean) => void) => {
+              this.setState(curState => ({
+                activateHandlers: !curState.activateHandlers ? [handler] : curState.activateHandlers.concat([handler])
+              }))
+            }
+            tab.offActivate = (handler: (isActive: boolean) => void) => {
+              this.setState(curState => {
+                const idx = !curState.activateHandlers ? -1 : curState.activateHandlers.findIndex(_ => _ === handler)
+                if (idx >= 0) {
+                  return {
+                    activateHandlers: curState.activateHandlers
+                      .slice(0, idx)
+                      .concat(curState.activateHandlers.slice(idx + 1))
+                  }
+                }
+              })
+            }
+
+            tab.addClass = (cls: string) => {
+              this.setState(curState => ({ tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true }) }))
+            }
+
+            tab.removeClass = (cls: string) => {
+              this.setState(curState => {
+                const update = Object.assign({}, curState.tabClassList)
+                delete update[cls]
+                return {
+                  tabClassList: update
+                }
+              })
+            }
+          }
+        }}
+        className={this.tabClassName()}
         data-tab-id={this.props.uuid}
       >
         <div className="kui--rows">
