@@ -30,8 +30,10 @@ kubectl kui get pods
 ```
 
 After the final command, you should see a popup window listing pods in
-your current namespace. **Note:** On Windows, Kui currently has
-kubectl plugin support for UNIX shells and PowerShell.
+your current namespace.
+
+You may also install Kui as an [`ibmcloud` CLI
+plugin](tools/go/ibmcloud/README.md#prebuilt-binaries).
 
 ## Contributing
 
