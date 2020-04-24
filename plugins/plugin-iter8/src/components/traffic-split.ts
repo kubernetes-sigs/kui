@@ -70,12 +70,26 @@ export function applyTrafficSplit(userDecision) {
   try {
     const dr = applyDestinationRule(userDecision)
     applyVirtualService(dr, userDecision)
-    return { success: 200 }
+    return JSON.stringify({ success: 200 })
   } catch (err) {
-    return { error: err }
+    return JSON.stringify({ error: err })
   }
 }
 
+const arrSum = arr => arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+
+export function checkTrafficSplit(trafficPerVersion) {
+  if (arrSum(trafficPerVersion) === 100) {
+    return true
+  } else {
+    return false
+  }
+}
+// To check traffic Split:
+// checkTrafficSplit([10,20,30])
+// checkTrafficSplit([10,20,30]).toString()
+
+// To apply traffic split:
 // const sample = {
 //     "service_name": "reviews",
 //     "candidate-1": {
