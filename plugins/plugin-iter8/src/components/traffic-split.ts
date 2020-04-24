@@ -2,10 +2,10 @@ import { safeLoad, safeDump } from 'js-yaml'
 
 const execSync = require('child_process').execSync
 
-export function applyKube(rule) {
+function applyKube(rule) {
   const yamlRule = safeDump(rule)
-  const command = `cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`
-  execSync(command, { encoding: 'utf-8', stdio: 'pipe' })
+  const command = `cat <<EOF | kubectl apply -f -\n${yamlRule}\nEOF`
+  execSync(command, { encoding: 'utf-8' })
 }
 
 function getLabelInfo(label) {
@@ -21,8 +21,8 @@ export function applyDestinationRule(userDecision) {
     apiVersion: 'networking.istio.io/v1alpha3',
     kind: 'DestinationRule',
     metadata: {
-      name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
-      namespace: userDecision['service_namespace']
+      name: userDecision['service_name'] + '.' + 'bookinfo-iter8' + '.' + 'iter8-experiment',
+      namespace: 'bookinfo-iter8'
     },
     spec: {
       host: userDecision['service_name'],
@@ -30,7 +30,7 @@ export function applyDestinationRule(userDecision) {
     }
   }
   for (const [key, value] of Object.entries(userDecision)) {
-    if (key === 'service_name' || key === 'service_namespace') {
+    if (key === 'service_name') {
       continue
     }
     destinationRule['spec']['subsets'].push({ labels: getLabelInfo(value['version_labels']), name: key })
