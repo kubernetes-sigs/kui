@@ -135,7 +135,7 @@ export default class Input extends React.PureComponent<Props, State> {
   private promptRight() {
     // &#x2771; "heavy right-pointing angle bracket ornament"
     // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
-    return <span className="repl-prompt-righty">&#x276f;</span>
+    return <span className="repl-prompt-righty">/</span>
   }
 
   private isearchPrompt() {
