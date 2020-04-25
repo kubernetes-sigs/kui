@@ -21,7 +21,10 @@ import { SidecarOptions } from './BaseSidecar'
 import TopNavSidecar from './TopNavSidecar'
 import LeftNavSidecar from './LeftNavSidecar'
 
-export type Props = SidecarOptions
+export type Props = SidecarOptions & {
+  /** tab uuid */
+  uuid?: string
+}
 
 interface State {
   tab: Tab
@@ -37,8 +40,8 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
       response: undefined
     }
 
-    const channel1 = '/command/complete/fromuser/NavResponse'
-    const channel2 = '/command/complete/fromuser/MultiModalResponse'
+    const channel1 = `/command/complete/fromuser/NavResponse/${props.uuid}`
+    const channel2 = `/command/complete/fromuser/MultiModalResponse/${props.uuid}`
     const onResponse = this.onResponse.bind(this)
     eventChannelUnsafe.on(channel1, onResponse)
     eventChannelUnsafe.on(channel2, onResponse)

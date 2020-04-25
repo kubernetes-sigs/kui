@@ -79,7 +79,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   public constructor(props: Props) {
     super(props)
 
-    const channel = '/command/complete/fromuser/NavResponse'
+    const channel = `/command/complete/fromuser/NavResponse/${this.props.uuid}`
     const onResponse = this.onResponse.bind(this)
     eventChannelUnsafe.on(channel, onResponse)
     this.cleaners.push(() => eventChannelUnsafe.off(channel, onResponse))
