@@ -21,8 +21,8 @@ export function applyDestinationRule(userDecision) {
     apiVersion: 'networking.istio.io/v1alpha3',
     kind: 'DestinationRule',
     metadata: {
-      name: userDecision['service_name'] + '.' + 'bookinfo-iter8' + '.' + 'iter8-experiment',
-      namespace: 'bookinfo-iter8'
+      name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
+      namespace: userDecision['service_namespace']
     },
     spec: {
       host: userDecision['service_name'],
@@ -30,7 +30,7 @@ export function applyDestinationRule(userDecision) {
     }
   }
   for (const [key, value] of Object.entries(userDecision)) {
-    if (key === 'service_name') {
+    if (key === 'service_name' || key === 'service_namespace') {
       continue
     }
     destinationRule['spec']['subsets'].push({ labels: getLabelInfo(value['version_labels']), name: key })
@@ -74,6 +74,9 @@ export function applyTrafficSplit(userDecision) {
   } catch (err) {
     return JSON.stringify({ error: err })
   }
+  // const dr = applyDestinationRule(userDecision)
+  // // applyVirtualService(dr, userDecision)
+  // return JSON.stringify(dr)
 }
 
 const arrSum = arr => arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
@@ -92,6 +95,7 @@ export function checkTrafficSplit(trafficPerVersion) {
 // To apply traffic split:
 // const sample = {
 //     "service_name": "reviews",
+//     "service_namespace": "bookinfo_iter8",
 //     "candidate-1": {
 //         "version_labels": {
 //                 'destination_service_namespace': "bookinfo-iter8",
