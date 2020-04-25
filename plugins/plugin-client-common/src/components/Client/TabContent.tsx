@@ -290,6 +290,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
                 this.setState({ splitPaneImpl: c })
               }}
               split="vertical"
+              resizerStyle={this.state.secondaryWidth === '100%' && { display: 'none' }}
               minSize={0}
               className={
                 this.state.secondaryWidth === '0%'
