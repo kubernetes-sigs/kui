@@ -11,7 +11,8 @@
   }
   &.bx--tag--green {
     background-color: var(--color-green);
-    color: var(--color-base07);
+    color: var(--color-base00);
+    mix-blend-mode: hard-light;
   }
   &.bx--tag--warm-gray {
     background-color: var(--color-yellow-sidecar);
