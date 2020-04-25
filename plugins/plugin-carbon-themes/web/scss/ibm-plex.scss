@@ -9,8 +9,6 @@ $font-prefix: '~@ibm/plex';
 @import '~@ibm/plex/scss/sans/regular/index';
 @import '~@ibm/plex/scss/sans/light/index';
 
-@import '~@ibm/plex/scss/sans-condensed/medium/index';
-
 body.kui--alternate[kui-theme-style] {
   --font-monospace: 'IBM Plex Mono';
   --font-sans-serif: 'IBM Plex Sans';
