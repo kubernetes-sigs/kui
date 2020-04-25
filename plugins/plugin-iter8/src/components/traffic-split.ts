@@ -74,9 +74,6 @@ export function applyTrafficSplit(userDecision) {
   } catch (err) {
     return JSON.stringify({ error: err })
   }
-  // const dr = applyDestinationRule(userDecision)
-  // // applyVirtualService(dr, userDecision)
-  // return JSON.stringify(dr)
 }
 
 const arrSum = arr => arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
