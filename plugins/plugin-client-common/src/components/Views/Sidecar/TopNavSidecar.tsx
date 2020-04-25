@@ -127,7 +127,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   public constructor(props: Props) {
     super(props)
 
-    const channel = '/command/complete/fromuser/MultiModalResponse'
+    const channel = `/command/complete/fromuser/MultiModalResponse/${this.props.uuid}`
     const onResponse = this.onResponse.bind(this)
     eventChannelUnsafe.on(channel, onResponse)
     this.cleaners.push(() => eventChannelUnsafe.off(channel, onResponse))

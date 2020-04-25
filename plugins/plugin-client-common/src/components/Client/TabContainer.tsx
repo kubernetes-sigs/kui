@@ -171,6 +171,27 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     )
   }
 
+  private graft(node: React.ReactNode | {}, uuid: string, key?: number) {
+    if (React.isValidElement(node)) {
+      // ^^^ this check avoids tsc errors
+      return React.cloneElement(node, {
+        key,
+        uuid
+      })
+    } else {
+      return node
+    }
+  }
+
+  /** Graft the tab `uuid` */
+  private children(uuid: string) {
+    if (Array.isArray(this.props.children)) {
+      return this.props.children.map((child, idx) => this.graft(child, uuid, idx))
+    } else {
+      return this.graft(this.props.children, uuid)
+    }
+  }
+
   public render() {
     return (
       <div className="kui--full-height">
@@ -186,7 +207,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
             <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} {...this.props}>
-              {this.props.children}
+              {this.children(_.uuid)}
             </TabContent>
           ))}
         </div>

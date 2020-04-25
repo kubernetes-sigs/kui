@@ -44,6 +44,7 @@ export interface SidecarOptions {
 }
 
 export type Props = SidecarOptions & {
+  uuid?: string
   tab?: KuiTab
   onClose?: () => void
 }
