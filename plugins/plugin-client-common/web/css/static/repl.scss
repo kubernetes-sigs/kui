@@ -19,51 +19,59 @@
 .repl.sidecar-visible p {
   white-space: normal;
 }
-.repl-prompt {
-  margin-right: 0.1875em;
-  --color-prompt-text: var(--color-brand-02);
-  --color-prompt-background: transparent;
-  color: var(--color-prompt-text);
-}
-.repl-input:not(.kui--isearch-active) .repl-prompt {
-  font-weight: 500;
-  font-family: var(--font-sans-serif);
-}
-.repl-prompt .repl-selection {
-  font-size: 80%;
-  opacity: 0.6;
-}
-.repl-prompt .repl-selection.has-selection-true {
-  margin-left: 1ex;
-}
-.repl-context {
-  background-color: var(--color-prompt-background);
-  letter-spacing: 0.16px;
-  filter: opacity(0.6875) grayscale(50%);
-}
-/*.repl-block.using-custom-prompt .repl-prompt-righty > svg,
+.repl {
+  .repl-prompt {
+    font-size: 0.875em;
+    margin-right: 0.25em;
+    --color-prompt-text: var(--color-brand-02);
+    --color-prompt-background: transparent;
+    color: var(--color-prompt-text);
+  }
+  .repl-input:not(.kui--isearch-active) .repl-prompt {
+    font-weight: 500;
+    font-family: var(--font-sans-serif);
+  }
+  .repl-prompt .repl-selection {
+    font-size: 80%;
+    opacity: 0.6;
+  }
+  .repl-prompt .repl-selection.has-selection-true {
+    margin-left: 1ex;
+  }
+  .repl-context {
+    background-color: var(--color-prompt-background);
+    letter-spacing: 0.16px;
+    filter: grayscale(20%);
+  }
+  /*.repl-block.using-custom-prompt .repl-prompt-righty > svg,
 .repl-block.using-custom-prompt .repl-prompt-righty > i,
 .repl-block.using-custom-prompt .repl-context {
   display: none;
 }*/
-.repl-prompt-righty .repl-temporary {
-  display: flex;
-  align-items: center;
-}
+  .repl-prompt-righty {
+    font-weight: 700;
+    text-shadow: 0 0 1px var(--color-text-02);
+  }
 
-/* repl right-hand decorations */
-.repl-prompt-right-elements {
-  display: flex;
-  align-items: center;
-  flex: 0;
-  white-space: nowrap;
-  margin-left: 1em;
-}
-.kui--repl-prompt-buttons {
-  margin-right: 1em;
-}
-.kui--repl-prompt-buttons .graphical-icon {
-  opacity: 0.0375;
+  .repl-prompt-righty .repl-temporary {
+    display: flex;
+    align-items: center;
+  }
+
+  /* repl right-hand decorations */
+  .repl-prompt-right-elements {
+    display: flex;
+    align-items: center;
+    flex: 0;
+    white-space: nowrap;
+    margin-left: 1em;
+  }
+  .kui--repl-prompt-buttons {
+    margin-right: 1em;
+  }
+  .kui--repl-prompt-buttons .graphical-icon {
+    opacity: 0.0375;
+  }
 }
 .repl-block .repl-input:hover .kui--repl-prompt-buttons .graphical-icon {
   opacity: 0.25;
@@ -128,6 +136,9 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   overflow: hidden;
   white-space: nowrap;
   /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
+}
+.repl-block:not(.repl-active) .repl-input-element {
+  color: var(--color-text-02);
 }
 .kui--prompt-like:empty {
   border-right: 1ex solid var(--color-caret);
@@ -278,7 +289,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   .bx--inline-loading__text {
     color: var(--color-text-02);
     font-size: 0.75em;
-    opacity: 0.75;
     order: -1;
     margin-right: 0.875em;
   }

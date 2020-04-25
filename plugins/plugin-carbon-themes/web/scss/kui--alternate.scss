@@ -6,9 +6,6 @@ body.kui--alternate {
     padding-right: calc(1em * 0.875);
   }
 
-  .repl-input:not(.kui--isearch-active) .repl-prompt {
-    font-family: 'IBM Plex Sans Condensed';
-  }
   .repl-context {
     filter: none;
     color: var(--color-text-02);
