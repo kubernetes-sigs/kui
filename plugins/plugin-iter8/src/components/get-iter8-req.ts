@@ -26,6 +26,7 @@ interface Formstate {
 */
 interface DecisionState {
 	selectedAlgo: string,
+	trafficSplit: Array<any>,
 	exprCreated: Boolean,
 	haveResults: Boolean,
 	exprReq?: any,
@@ -65,7 +66,7 @@ class RequestModel {
 		let candObjs = [];
 		for(let i = 0; i < candList.length; i++){
 			candObjs.push({
-		      "id": `${candList[i]}-${namespace}`,
+		      "id": `${candList[i]}`,
 		      "version_labels": {
 		        "destination_service_namespace": namespace,
 		        "destination_workload": candList[i]
@@ -88,7 +89,7 @@ class RequestModel {
 			},
 			"criteria": this.getCriteriaModel(formstate.metric),
 			"baseline": {
-			    "id": `${formstate.base}-${formstate.ns}`,
+			    "id": `${formstate.base}`,
 			    "version_labels": {
 			      "destination_service_namespace": formstate.ns,
 			      "destination_workload": formstate.base
