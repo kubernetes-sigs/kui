@@ -1334,6 +1334,7 @@ body[kui-theme-style="dark"] .legend-icon.is-waitTime {
 /* directory listing coloring */
 .dir-listing-is-directory {
   color: var(--color-name);
+  font-weight: 700;
 }
 .dir-listing-is-executable {
   color: var(--color-support-01);

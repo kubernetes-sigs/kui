@@ -128,14 +128,14 @@ export default class Input extends React.PureComponent<Props, State> {
 
   /** the "xxx" part of "xxx >" of the prompt */
   private promptLeft() {
-    return !this.props.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>
+    return !this.props.noPromptContext && <span className="repl-context">{this.props.model.cwd}/</span>
   }
 
   /** the ">" part of "xxx >" of the prompt */
   private promptRight() {
     // &#x2771; "heavy right-pointing angle bracket ornament"
     // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
-    return <span className="repl-prompt-righty">/</span>
+    // return <span className="repl-prompt-righty">/</span>
   }
 
   private isearchPrompt() {

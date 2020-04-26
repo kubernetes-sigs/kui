@@ -53,7 +53,7 @@ export default BlockModel
 /** Capture the current working directory */
 function cwd() {
   const dir = inBrowser() ? process.env.PWD : process.cwd()
-  return dir === process.env.HOME ? '~' : basename(dir)
+  return process.env.HOME ? dir.replace(process.env.HOME, '~') : dir ? basename(dir) : dir
 }
 
 export function isError(response: ScalarResponse): response is Error {

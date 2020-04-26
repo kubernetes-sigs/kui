@@ -119,6 +119,7 @@ disabled see https://github.com/IBM/kui/issues/3939
   transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
 }
 .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
+  background-color: var(--color-base03) !important;
   outline-color: transparent !important;
 }
 

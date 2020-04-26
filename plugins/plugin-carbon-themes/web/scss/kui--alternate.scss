@@ -6,8 +6,11 @@ body.kui--alternate {
     padding-right: calc(1em * 0.875);
   }
 
-  .repl-context {
+  /* .repl-input:not(.kui--isearch-active) .repl-context {
+    font-family: 'IBM Plex Sans Condensed';
+  } */
+  /* .repl-context {
     filter: none;
     color: var(--color-text-02);
-  }
+  } */
 }

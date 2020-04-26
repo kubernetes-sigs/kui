@@ -21,37 +21,43 @@
 }
 .repl {
   .repl-prompt {
-    font-size: 0.875em;
+    display: flex;
+    align-items: center;
     margin-right: 0.25em;
-    --color-prompt-text: var(--color-brand-02);
-    --color-prompt-background: transparent;
-    color: var(--color-prompt-text);
+    --color-prompt-text: var(--color-base00);
+    --color-prompt-background: var(--color-base05);
+    .repl-context {
+      transition: none;
+      font-weight: 500;
+      border-top-left-radius: 1px 2px;
+      border-top-right-radius: 4px 8px;
+      border-bottom-left-radius: 1px 2px;
+      border-bottom-right-radius: 4px 8px;
+      padding: 0 0.75em 1px 0.1875em;
+      font-family: var(--font-sans-serif);
+      background-color: var(--color-prompt-background);
+      color: var(--color-prompt-text);
+    }
   }
+  /* .repl-block.valid-response .repl-context {
+      background-color: var(--color-ok);
+    } */
+  .repl-block.error .repl-context {
+    background-color: var(--color-error);
+  }
+
   .repl-input:not(.kui--isearch-active) .repl-prompt {
-    font-weight: 500;
-    font-family: var(--font-sans-serif);
-  }
-  .repl-prompt .repl-selection {
-    font-size: 80%;
-    opacity: 0.6;
-  }
-  .repl-prompt .repl-selection.has-selection-true {
-    margin-left: 1ex;
-  }
-  .repl-context {
-    background-color: var(--color-prompt-background);
-    letter-spacing: 0.16px;
-    filter: grayscale(20%);
+    font-size: 0.8125em;
   }
   /*.repl-block.using-custom-prompt .repl-prompt-righty > svg,
 .repl-block.using-custom-prompt .repl-prompt-righty > i,
 .repl-block.using-custom-prompt .repl-context {
   display: none;
 }*/
-  .repl-prompt-righty {
+  /*.repl-prompt-righty {
     font-weight: 700;
-    text-shadow: 0 0 1px var(--color-text-02);
-  }
+    color: var(--color-base0C);
+  }*/
 
   .repl-prompt-righty .repl-temporary {
     display: flex;
@@ -66,55 +72,6 @@
     white-space: nowrap;
     margin-left: 1em;
   }
-  .kui--repl-prompt-buttons {
-    margin-right: 1em;
-  }
-  .kui--repl-prompt-buttons .graphical-icon {
-    opacity: 0.0375;
-  }
-}
-.repl-block .repl-input:hover .kui--repl-prompt-buttons .graphical-icon {
-  opacity: 0.25;
-}
-.repl-block .repl-input .kui--repl-prompt-buttons .graphical-icon:hover {
-  opacity: 1;
-  cursor: pointer;
-}
-.repl-input .kui--repl-prompt-buttons .graphical-icon:hover svg path {
-  fill: var(--color-text-01);
-}
-.repl .repl-prompt-right-element-status-icon.deemphasize {
-  font-size: 0.875em; /* see the comment for repl-input re: min-height; that should match this */
-  opacity: 1;
-  transition-property: all;
-}
-.repl-block.valid-response
-  .repl-prompt-right-element-status-icon
-  svg.kui--icon-ok
-  path:not([data-icon-path='inner-path']) {
-  fill: var(--color-ok);
-  stroke: var(--color-ok);
-  stroke-opacity: 0.5;
-}
-svg.kui--error-icon path:not([data-icon-path='inner-path']),
-.repl-block.error .repl-prompt-right-element-status-icon svg.kui--icon-error path:not([data-icon-path='inner-path']) {
-  fill: var(--color-error);
-  stroke: var(--color-error);
-  stroke-opacity: 0.5;
-}
-.repl-prompt-right-elements .repl-prompt-right-element-status-icon:hover {
-  opacity: 1;
-}
-
-body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
-  display: none;
-}
-body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.sidecar-full-screen*/ repl .repl-selection {
-  /* collapse the context and selection when the sidecar is visible */
-  width: 0;
-  min-width: 0;
-  opacity: 0 !important;
-  margin: 0 !important;
 }
 .repl-result,
 .repl-result-like,
@@ -137,15 +94,15 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   white-space: nowrap;
   /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
 }
-.repl-block:not(.repl-active) .repl-input-element {
-  color: var(--color-text-02);
-}
 .kui--prompt-like:empty {
   border-right: 1ex solid var(--color-caret);
 }
 .repl-input input:focus,
 .repl-input-like:focus {
   outline: none;
+}
+.repl-prompt .repl-input-like {
+  transition: none;
 }
 
 .repl-block.valid-response .oops,
