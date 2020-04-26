@@ -27,6 +27,7 @@ interface Formstate {
 interface DecisionState {
 	selectedAlgo: string,
 	trafficSplit: Array<any>,
+	trafficErr: Boolean,
 	exprCreated: Boolean,
 	haveResults: Boolean,
 	exprReq?: any,

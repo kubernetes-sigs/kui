@@ -1,18 +1,23 @@
 import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
-import { Form, FormGroup, InlineLoading, Button, Slider, Dropdown, DataTable } from 'carbon-components-react'
+// Component imports
+import { Form, FormGroup, InlineLoading, Button, Slider, Dropdown, DataTable, InlineNotification } from 'carbon-components-react'
 import { Renew32, Undo32, Export32 } from '@carbon/icons-react'
 import Chart from 'react-apexcharts'
+// Styling imports
 import 'carbon-components/scss/components/loading/_loading.scss'
 import 'carbon-components/scss/components/form/_form.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/slider/_slider.scss'
 import 'carbon-components/scss/components/dropdown/_dropdown.scss'
 import 'carbon-components/scss/components/data-table/_data-table.scss'
+import 'carbon-components/scss/components/notification/_inline-notification.scss'
 import '../../src/web/scss/static/decisionForm.scss'
+// Functional imports
 import { DecisionState, RequestModel } from '../components/get-iter8-req'
 import GetAnalyticsAssessment from "../components/get-analytics-assessment"
 import DisplayName from "../components/displayname-dict"
+import { trafficCheck, getUserDecision, applyTrafficSplit } from '../components/traffic-split'
 //Deconstructs the DataTable component
 const {
   TableContainer,
@@ -68,6 +73,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.state = {
       selectedAlgo: 'unif',  //Assumes that unif is always the first algorithm
       trafficSplit: [{version: '', split: 0}],
+      trafficErr: false,  // Checks if custom traffic sum to 100
       exprCreated: false, // User has finished expr setup
       haveResults: false, // First AJAX call has been successful
       exprReq: null,
@@ -207,27 +213,37 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.setState({selectedAlgo: value.id});
     this.getTrafficRecs(value.id, this.state.exprResult);
   }
+
   //Handle sliders changing
   private handleTrafficChange = (value, version) => {
+    var newSplit;
     for(let i = 0; i < this.state.trafficSplit.length; i++){
       if(this.state.trafficSplit[i].version === version){
-        const newSplit = [...this.state.trafficSplit]
+        newSplit = [...this.state.trafficSplit]
         newSplit[i] = { ...newSplit[i], split: value }
-        this.setState({ trafficSplit: newSplit });
         break;
       }
     }
+    // Error notification if sum(traffic) != 100
+    if(trafficCheck(newSplit))
+      this.setState({ trafficSplit: newSplit, trafficErr: false });
+    else
+      this.setState({ trafficSplit: newSplit, trafficErr: true });
   }
 
   // Handle reset button
   private handleReset = () => {
     const newTraffic = Array.from(this.trafficRecs);
-    this.setState({trafficSplit: newTraffic});
+    this.setState({trafficSplit: newTraffic, trafficErr: false});
   }
 
   // Handle apply button
   private handleApply = () => {
     console.log(JSON.stringify(this.state.trafficSplit));
+    let ns = this.state.exprReq.baseline.version_labels.destination_service_namespace;
+    let svc = this.state.exprReq.service_name;
+    let decision = getUserDecision(ns, svc, this.state.trafficSplit);
+    applyTrafficSplit(decision);
   }
    public render() {
     if(this.state.haveResults){
@@ -254,6 +270,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           renderIcon={Renew32}
           disabled={!this.state.exprCreated}
           onClick={this.refreshHandler}
+          className="refreshBtn"
           >
             Refresh
           </Button>
@@ -296,6 +313,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           kind="primary"
           renderIcon={Export32}
           onClick={this.handleApply}
+          disabled={this.state.trafficErr}
         >
           Apply
         </Button>
@@ -315,6 +333,18 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               />
           )
         })}
+        {this.state.trafficErr ? 
+          <InlineNotification
+            kind="error"
+            notificationType="inline"
+            role="alert"
+            title="Invalid Traffic Split"
+            subtitle="Traffic percentages must add to 100%"
+            hideCloseButton={true}
+            style={{width: 600}}
+          />
+          : null
+        }
         </FormGroup>
             <FormGroup legendText="">
               <DataTable

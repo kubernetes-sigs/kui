@@ -8,11 +8,20 @@
 	color: #FFFFFF !important;	
 }
 
+// Overload for FormGroup
+.bx--fieldset {
+	margin-left: 1rem !important;
+}
+
+// Change the Pie Chart legend
 .apexcharts-legend-text {
 	font-size: 14px !important;
 	color: #FFFFFF !important;
 }
-
+// Reposition refresh button
+.refreshBtn {
+	margin-left: 30px !important;
+}
 .formProps {
   overflow-y: auto !important;
   height: 735.53px;

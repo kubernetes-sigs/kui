@@ -85,10 +85,32 @@ export function checkTrafficSplit(trafficPerVersion) {
     return false
   }
 }
-// To check traffic Split:
-// checkTrafficSplit([10,20,30])
-// checkTrafficSplit([10,20,30]).toString()
 
+// Utility wrapper for traffic check
+export function trafficCheck(result: Array<any>){
+  let trafficArr = [];
+  for(let i = 0; i < result.length; i++){
+    trafficArr.push(result[i].split);
+  }
+  return(checkTrafficSplit(trafficArr));
+}
+// Organizes relevant information for building vs
+export function getUserDecision(ns: string, service: string, trafficDecision: Array<any>){
+  let trafficObj = {
+    "service_name": service,
+    "service_namespace": ns,
+  }
+  for(let i = 0; i < trafficDecision.length; i++){
+    trafficObj[`${trafficDecision[i].version}`] = {
+      "version_labels":{
+        "destination_service_namespace": ns,
+        "destination_workload": trafficDecision[i].version
+      },
+      "traffic_percentage": trafficDecision[i].split
+    }
+  }
+  return(trafficObj)
+}
 // To apply traffic split:
 // const sample = {
 //     "service_name": "reviews",
