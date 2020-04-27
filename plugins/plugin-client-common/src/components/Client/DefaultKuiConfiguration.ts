@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-interface KuiConfiguration {
-  /** This will be displayed in the upper left of the TopTabStripe */
-  productName?: string
+import KuiConfiguration from './KuiConfiguration'
 
-  /** component library */
-  components?: 'carbon' | 'patternfly'
+const defaultConfiguration: KuiConfiguration = {
+  productName: 'Kui Demo',
+  components: 'carbon'
 }
 
-export default KuiConfiguration
+export default defaultConfiguration

@@ -60,6 +60,10 @@ body[kui-theme-style] .kui--data-table-toolbar {
     .bx--breadcrumb {
       padding-left: 0;
     }
+
+    &.pf-c-breadcrumb {
+      padding-left: 0;
+    }
   }
 
   .kui--toolbar-button-with-icon {

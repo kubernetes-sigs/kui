@@ -33,7 +33,7 @@ import { productName } from '@kui-shell/client/config.d/name.json'
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui productName={productName} {...props}>
+    <Kui productName={productName} components="carbon" {...props}>
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />

@@ -19,9 +19,9 @@ import { KeyCodes, inElectron } from '@kui-shell/core'
 import { Header, HeaderName, HeaderMenuButton, HeaderNavigation } from 'carbon-components-react'
 
 import TabModel from '../TabModel'
+import KuiContext from '../context'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
-import KuiConfiguration from '../KuiConfiguration'
 
 import '../../../../web/css/static/TopTabStripe.scss'
 
@@ -48,7 +48,7 @@ import '../../../../web/css/static/TopTabStripe.scss'
  *   | activeIdx
  */
 
-export type TopTabStripeConfiguration = TabConfiguration & KuiConfiguration
+export type TopTabStripeConfiguration = TabConfiguration
 
 type Props = TopTabStripeConfiguration & {
   tabs: TabModel[]
@@ -154,7 +154,9 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   }
 
   private headerName() {
-    return <HeaderName prefix="">{this.props.productName}</HeaderName>
+    return (
+      <KuiContext.Consumer>{config => <HeaderName prefix="">{config.productName}</HeaderName>}</KuiContext.Consumer>
+    )
   }
 
   /**

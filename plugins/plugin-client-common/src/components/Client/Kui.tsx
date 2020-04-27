@@ -19,12 +19,13 @@
 
 import * as React from 'react'
 
+import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
 import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '../..'
 
-const Popup = React.lazy(() => import('./Popup'))
+const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
-export interface Props extends KuiConfiguration {
+export type Props = Partial<KuiConfiguration> & {
   /** no Kui bootstrap needed? */
   noBootstrap?: boolean
 
@@ -87,16 +88,14 @@ export class Kui extends React.PureComponent<Props, State> {
       )
     } else {
       return (
-        <div className="kui--full-height">
-          <TabContainer
-            productName={this.props.productName || 'Kui Demo'}
-            noActiveInput={this.props.bottomInput}
-            bottom={this.props.bottomInput && <InputStripe />}
-          >
-            <ComboSidecar />
-          </TabContainer>
-          <StatusStripe>{this.props.children}</StatusStripe>
-        </div>
+        <KuiContext.Provider value={this.props}>
+          <div className="kui--full-height">
+            <TabContainer noActiveInput={this.props.bottomInput} bottom={this.props.bottomInput && <InputStripe />}>
+              <ComboSidecar />
+            </TabContainer>
+            <StatusStripe>{this.props.children}</StatusStripe>
+          </div>
+        </KuiContext.Provider>
       )
     }
   }

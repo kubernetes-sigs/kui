@@ -16,7 +16,6 @@
 
 import * as React from 'react'
 import { REPL } from '@kui-shell/core'
-import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import {
   Maximize16 as MaximizeIcon,
   Minimize16 as MinimizeIcon,
@@ -27,15 +26,13 @@ import {
 } from '@carbon/icons-react'
 
 import Width from './width'
-import TopNavBreadcrumb from './breadcrumb'
-
-import '../../../../web/css/static/Breadcrumb.scss'
+import Breadcrumb, { BreadcrumbView } from '../Breadcrumb/'
 
 export interface Props {
   kind?: string
   name?: string
   namespace?: string
-  breadcrumbs?: TopNavBreadcrumb[]
+  breadcrumbs?: BreadcrumbView[]
 
   repl: REPL
   fixedWidth: boolean
@@ -187,31 +184,13 @@ export default class Window extends React.PureComponent<Props> {
   /** render history navigation UI */
   private history() {
     const breadcrumbs = this.props.breadcrumbs && this.props.breadcrumbs.filter(_ => _.label)
-    const currentPageIdxAsSpecified = breadcrumbs && breadcrumbs.findIndex(_ => _.isCurrentPage)
-    const currentPageIdx = currentPageIdxAsSpecified < 0 ? breadcrumbs.length - 1 : currentPageIdxAsSpecified
 
     return (
       <div className="kui--sidecar--titlebar-navigation">
         {this.back()}
         {this.forward()}
 
-        {breadcrumbs && breadcrumbs.length > 0 && (
-          <Breadcrumb noTrailingSlash={breadcrumbs.length > 1}>
-            {breadcrumbs.map((_, idx) => (
-              <BreadcrumbItem
-                href="#"
-                key={idx}
-                className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb', 'zoomable']
-                  .filter(_ => _)
-                  .join(' ')}
-                isCurrentPage={idx === currentPageIdx}
-                onClick={_.command && (() => this.props.repl.pexec(_.command))}
-              >
-                {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
-              </BreadcrumbItem>
-            ))}
-          </Breadcrumb>
-        )}
+        {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumb breadcrumbs={breadcrumbs} repl={this.props.repl} />}
       </div>
     )
   }
