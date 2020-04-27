@@ -38,6 +38,7 @@ export { default as StatusStripe } from './components/Client/StatusStripe'
 export { default as MeterWidgets } from './components/Client/StatusStripe/MeterWidgets'
 export { default as ContextWidgets } from './components/Client/StatusStripe/ContextWidgets'
 export { ViewLevel, default as TextWithIconWidget } from './components/Client/StatusStripe/TextWithIconWidget'
+export { default as KuiContext } from './components/Client/context'
 
 // Content components
 export { default as Loading } from './components/Content/Loading'

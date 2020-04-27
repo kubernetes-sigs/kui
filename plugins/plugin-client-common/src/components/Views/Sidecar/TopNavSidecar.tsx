@@ -34,7 +34,7 @@ import {
 
 import Width from './width'
 import Badge from './Badge'
-import TopNavBreadcrumb from './breadcrumb'
+import { BreadcrumbView } from '../Breadcrumb/'
 import ToolbarContainer from './ToolbarContainer'
 import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
 
@@ -277,12 +277,12 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     )
   }
 
-  private kindBreadcrumb(): TopNavBreadcrumb {
+  private kindBreadcrumb(): BreadcrumbView {
     const { kind, onclick } = this.current.response
     return { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' }
   }
 
-  private nameBreadcrumb(): TopNavBreadcrumb {
+  private nameBreadcrumb(): BreadcrumbView {
     const name =
       this.current.response &&
       (this.current.response.prettyName ||
@@ -297,13 +297,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     }
   }
 
-  private versionBreadcrumb(): TopNavBreadcrumb {
+  private versionBreadcrumb(): BreadcrumbView {
     return this.current.response.version
       ? { label: this.current.response.version, className: 'kui--version-breadcrumb' }
       : undefined
   }
 
-  private nameHashBreadcrumb(): TopNavBreadcrumb {
+  private nameHashBreadcrumb(): BreadcrumbView {
     const { onclick } = this.current.response
     return {
       label: this.current.response && this.current.response.nameHash,
@@ -313,7 +313,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     }
   }
 
-  private namespaceBreadcrumb(): TopNavBreadcrumb {
+  private namespaceBreadcrumb(): BreadcrumbView {
     const {
       metadata: { namespace },
       onclick

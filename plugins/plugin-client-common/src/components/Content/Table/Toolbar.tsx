@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { Breadcrumb as KuiBreadcrumb } from '@kui-shell/core'
-
 import * as React from 'react'
-import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import {
   Grid16 as GridIcon,
   List16 as ListIcon,
   CaretRight20 as NextPage,
   CaretLeft20 as PreviousPage
 } from '@carbon/icons-react'
+
+import Breadcrumb, { BreadcrumbProps } from '../../Views/Breadcrumb/'
 
 import 'carbon-components/scss/components/pagination/_pagination.scss'
 
@@ -46,12 +45,6 @@ interface PaginationProps {
   totalItems: number
   pageSize: number
   setPage: (page: number) => void
-}
-
-export type ToolbarBreadcrumb = KuiBreadcrumb & { className?: string; isCurrentPage?: boolean }
-
-interface BreadcrumbProps {
-  breadcrumbs: ToolbarBreadcrumb[]
 }
 
 export default class Toolbar extends React.PureComponent<Props> {
@@ -145,15 +138,7 @@ export default class Toolbar extends React.PureComponent<Props> {
 
   private breadcrumbs() {
     if (this.props.breadcrumbs) {
-      return (
-        <Breadcrumb noTrailingSlash>
-          {this.props.breadcrumbs.map((_, idx) => (
-            <BreadcrumbItem href="#" key={idx} className={_.className} isCurrentPage={_.isCurrentPage}>
-              {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
-            </BreadcrumbItem>
-          ))}
-        </Breadcrumb>
-      )
+      return <Breadcrumb breadcrumbs={this.props.breadcrumbs} repl={this.props.repl} />
     }
   }
 

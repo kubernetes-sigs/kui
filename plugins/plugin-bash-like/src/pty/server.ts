@@ -29,8 +29,6 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import kuirc from './kuirc'
-
 import { CodedError, ExecOptions, Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/server')
@@ -192,6 +190,7 @@ export const getLoginShell = (): Promise<string> => {
 }
 
 export async function getShellOpts(): Promise<Shell> {
+  const kuirc = (await import('./kuirc')).default
   const bashShellOpts = process.platform === 'win32' ? undefined : ['--rcfile', await kuirc, '-i', '-c', '--']
   const shellOpts = process.platform === 'win32' ? [] : bashShellOpts
 

@@ -42,7 +42,7 @@ export BUILDDIR="$CLIENT_HOME"/dist/electron
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/carbon-components)'
+export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/@patternfly)|(/node_modules/@emotion)|(/node_modules/babel-plugin-emotion)|(/node_modules/core-js)|(/node_modules/cssstyle)|(/node_modules/lodash)|(/node_modules/carbon-icons)|(/node_modules/@fortawesome)|(/node_modules/@babel)|(/node_modules/carbon-components)|(/node_modules/@kui-shell/plugin-.*/node_modules/)'
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"

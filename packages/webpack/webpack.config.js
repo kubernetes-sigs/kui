@@ -419,7 +419,7 @@ module.exports = {
       {
         test: /\.css$/i,
         exclude: thisPath('web/css/static'),
-        use: ['style-loader', 'css-loader', 'resolve-url-loader']
+        use: ['style-loader', 'css-loader']
       },
 
       //

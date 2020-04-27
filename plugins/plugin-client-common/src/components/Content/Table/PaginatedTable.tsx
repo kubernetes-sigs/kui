@@ -22,7 +22,8 @@ import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-compon
 import sortRow from './sort'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
-import Toolbar, { ToolbarBreadcrumb, Props as ToolbarProps } from './Toolbar'
+import Toolbar, { Props as ToolbarProps } from './Toolbar'
+import { BreadcrumbView } from '../../Views/Breadcrumb/'
 import Grid from './Grid'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 
@@ -105,7 +106,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   private topToolbar() {
     if (this.props.toolbars) {
-      const titleBreadcrumb: ToolbarBreadcrumb[] = this.props.response.title
+      const titleBreadcrumb: BreadcrumbView[] = this.props.response.title
         ? [{ label: this.props.response.title, className: 'kui--data-table-title' }]
         : []
       const breadcrumbs = titleBreadcrumb.concat(

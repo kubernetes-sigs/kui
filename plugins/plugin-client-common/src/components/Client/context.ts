@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-interface KuiConfiguration {
-  /** This will be displayed in the upper left of the TopTabStripe */
-  productName?: string
+import { createContext } from 'react'
+import KuiConfiguration from './KuiConfiguration'
+import defaultKuiConfiguration from './DefaultKuiConfiguration'
 
-  /** component library */
-  components?: 'carbon' | 'patternfly'
-}
-
-export default KuiConfiguration
+export default createContext<KuiConfiguration>(defaultKuiConfiguration)
