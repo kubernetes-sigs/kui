@@ -1,0 +1,43 @@
+/* attribution: @patternfly/react-core/dist/styles/base.css version 3.153.13; license MIT */
+body {
+  --pf-global--BoxShadow--sm: 0 0.0625em 0.125em 0 rgba(3, 3, 3, 0.2);
+  --pf-global--BoxShadow--sm-right: 0.25em 0 0.625em -0.25em rgba(3, 3, 3, 0.12);
+  --pf-global--BoxShadow--sm-left: -0.25em 0 0.625em -0.25em rgba(3, 3, 3, 0.12);
+  --pf-global--BoxShadow--sm-bottom: 0 0.25em 0.625em -0.25em rgba(3, 3, 3, 0.12);
+  --pf-global--BoxShadow--sm-top: 0 -0.25em 0.625em -0.25em rgba(3, 3, 3, 0.12);
+  --pf-global--BoxShadow--md: 0 0.0625em 0.0625em 0em rgba(3, 3, 3, 0.05), 0 0.25em 0.5em 0.25em rgba(3, 3, 3, 0.06);
+  --pf-global--BoxShadow--md-right: 0.3125em 0 0.625em -0.25em rgba(3, 3, 3, 0.25);
+  --pf-global--BoxShadow--md-left: -0.3125em 0 0.625em -0.25em rgba(3, 3, 3, 0.25);
+  --pf-global--BoxShadow--md-bottom: 0 0.3125em 0.625em -0.25em rgba(3, 3, 3, 0.25);
+  --pf-global--BoxShadow--md-top: 0 -0.3125em 0.625em -0.25em rgba(3, 3, 3, 0.25);
+  --pf-global--BoxShadow--lg: 0 0.1875em 0.4375em 0.1875em rgba(3, 3, 3, 0.13), 0 0.6875em 1.5em 1em rgba(3, 3, 3, 0.12);
+  --pf-global--BoxShadow--lg-right: 0.75em 0 0.625em -0.25em rgba(3, 3, 3, 0.07);
+  --pf-global--BoxShadow--lg-left: -0.75em 0 0.625em -0.25em rgba(3, 3, 3, 0.07);
+  --pf-global--BoxShadow--lg-bottom: 0 0.75em 0.625em -0.25em rgba(3, 3, 3, 0.07);
+  --pf-global--BoxShadow--lg-top: 0 -0.75em 0.625em -0.25em rgba(3, 3, 3, 0.07);
+  --pf-global--BoxShadow--inset: inset 0 0 0.625em 0 rgba(3, 3, 3, 0.25);
+  --pf-global--spacer--xs: 0.25em;
+  --pf-global--spacer--sm: 0.5em;
+  --pf-global--spacer--md: 1em;
+  --pf-global--spacer--lg: 1.5em;
+  --pf-global--spacer--xl: 2em;
+  --pf-global--spacer--2xl: 3em;
+  --pf-global--spacer--3xl: 4em;
+  --pf-global--spacer--form-element: 0.375em;
+  --pf-global--gutter: 1.5em;
+  --pf-global--gutter--md: 1em;
+  --pf-global--icon--FontSize--sm: 0.625em;
+  --pf-global--icon--FontSize--md: 1.125em;
+  --pf-global--icon--FontSize--lg: 1.5em;
+  --pf-global--icon--FontSize--xl: 3.375em;
+  --pf-global--FontSize--4xl: 2.25em;
+  --pf-global--FontSize--3xl: 1.75em;
+  --pf-global--FontSize--2xl: 1.5em;
+  --pf-global--FontSize--xl: 1.25em;
+  --pf-global--FontSize--lg: 1.125em;
+  --pf-global--FontSize--md: 1em;
+  --pf-global--FontSize--sm: 0.875em;
+  --pf-global--FontSize--xs: 0.75em;
+  --pf-global--arrow--width: 0.9375em;
+  --pf-global--arrow--width-lg: 1.5625em;
+}

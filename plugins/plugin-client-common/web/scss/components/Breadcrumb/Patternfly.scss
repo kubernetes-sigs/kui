@@ -1,0 +1,38 @@
+@import '../../patternfly-common';
+
+/* breadcrumbs */
+body[kui-theme-style] nav[aria-label='Breadcrumb'] {
+  overflow-x: hidden;
+
+  &.pf-c-breadcrumb {
+    padding: 0 1em;
+
+    .pf-c-breadcrumb__item {
+      &.kui--version-breadcrumb .pf-c-breadcrumb__link {
+        color: var(--color-base0F);
+      }
+
+      &.kui--secondary-breadcrumb {
+        .pf-c-breadcrumb__link {
+          color: var(--color-text-02);
+        }
+      }
+
+      &:not(.kui--secondary-breadcrumb) .pf-c-breadcrumb__link {
+        font-weight: 500;
+      }
+
+      .pf-c-breadcrumb__link {
+        text-decoration: unset;
+        &.pf-m-current {
+          color: var(--color-text-01);
+          font-weight: 700;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
