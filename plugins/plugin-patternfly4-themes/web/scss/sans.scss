@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'RedHatText';
+  src: url('~@patternfly/react-core/dist/styles/assets/fonts/RedHatText/RedHatText-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: 'RedHatText';
+  src: url('~@patternfly/react-core/dist/styles/assets/fonts/RedHatText/RedHatText-Bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  text-rendering: optimizeLegibility;
+}
+
+body.kui--patternfly4[kui-theme-style] {
+  --font-sans-serif: 'RedHatText';
+}
