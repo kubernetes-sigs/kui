@@ -1,8 +1,8 @@
 @import 'ibm-plex.scss';
 @import 'kui--alternate.scss';
 
-/* inverted sidecar */
 body[kui-theme='Carbon Gray10'] {
+  /* inverted sidecar */
   .kui--inverted-color-context {
     --color-base00: #262626;
     --color-base01: #171717;

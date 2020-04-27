@@ -1,0 +1,18 @@
+/* @font-face {
+  font-family: "Liberation Mono";
+  src: url("./vendor/Liberation Mono V2/Liberation Mono V2.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Liberation Mono";
+  src: url("./vendor/Liberation\ Mono\ Bold\ V2/Liberation\ Mono\ Bold\ V2.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+} */
+
+body.kui--patternfly4[kui-theme-style] {
+  /* odd alignment issues --font-monospace: 'Liberation Mono'; */
+  --font-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
