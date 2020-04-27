@@ -422,6 +422,11 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
 
+      {
+        test: /\.(ttf|eot)$/i,
+        use: 'ignore-loader'
+      },
+
       //
       // typescript exclusion rules
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },

@@ -1,0 +1,88 @@
+@import './fonts';
+
+body.kui--patternfly4[kui-theme-style] {
+  .repl:not(.kui--input-stripe) .repl-block {
+    padding-left: calc(1em * 0.875);
+    padding-right: calc(1em * 0.875);
+  }
+
+  /* attribution: @patternfly/react-core/dist/styles/base.css version 3.153.13; license MIT */
+  --pf-global--palette--black-100: #fafafa;
+  --pf-global--palette--black-150: #f5f5f5;
+  --pf-global--palette--black-200: #ededed;
+  --pf-global--palette--black-300: #d2d2d2;
+  --pf-global--palette--black-400: #b8bbbe;
+  --pf-global--palette--black-500: #8a8d90;
+  --pf-global--palette--black-600: #737679;
+  --pf-global--palette--black-700: #4f5255;
+  --pf-global--palette--black-800: #3c3f42;
+  --pf-global--palette--black-850: #212427;
+  --pf-global--palette--black-900: #151515;
+  --pf-global--palette--black-1000: #030303;
+  --pf-global--palette--blue-50: #def3ff;
+  --pf-global--palette--blue-100: #bee1f4;
+  --pf-global--palette--blue-200: #73bcf7;
+  --pf-global--palette--blue-300: #2b9af3;
+  --pf-global--palette--blue-400: #06c;
+  --pf-global--palette--blue-500: #004080;
+  --pf-global--palette--blue-600: #004368;
+  --pf-global--palette--blue-700: #002235;
+  --pf-global--palette--cyan-100: #a2d9d9;
+  --pf-global--palette--cyan-200: #73c5c5;
+  --pf-global--palette--cyan-300: #009596;
+  --pf-global--palette--cyan-400: #005f60;
+  --pf-global--palette--cyan-500: #003737;
+  --pf-global--palette--cyan-600: #003d44;
+  --pf-global--palette--cyan-700: #001f22;
+  --pf-global--palette--gold-100: #f9e0a2;
+  --pf-global--palette--gold-200: #f6d173;
+  --pf-global--palette--gold-300: #f4c145;
+  --pf-global--palette--gold-400: #f0ab00;
+  --pf-global--palette--gold-500: #c58c00;
+  --pf-global--palette--gold-600: #795600;
+  --pf-global--palette--gold-700: #3d2c00;
+  --pf-global--palette--green-100: #bde5b8;
+  --pf-global--palette--green-200: #95d58e;
+  --pf-global--palette--green-300: #6ec664;
+  --pf-global--palette--green-400: #5ba352;
+  --pf-global--palette--green-500: #467f40;
+  --pf-global--palette--green-600: #1e4f18;
+  --pf-global--palette--green-700: #0f280d;
+  --pf-global--palette--light-blue-100: #beedf9;
+  --pf-global--palette--light-blue-200: #7cdbf3;
+  --pf-global--palette--light-blue-300: #35caed;
+  --pf-global--palette--light-blue-400: #00b9e4;
+  --pf-global--palette--light-blue-500: #008bad;
+  --pf-global--palette--light-blue-600: #005c73;
+  --pf-global--palette--light-blue-700: #002d39;
+  --pf-global--palette--light-green-100: #e4f5bc;
+  --pf-global--palette--light-green-200: #c8eb79;
+  --pf-global--palette--light-green-300: #ace12e;
+  --pf-global--palette--light-green-400: #92d400;
+  --pf-global--palette--light-green-500: #6ca100;
+  --pf-global--palette--light-green-600: #486b00;
+  --pf-global--palette--light-green-700: #253600;
+  --pf-global--palette--orange-100: #f4b678;
+  --pf-global--palette--orange-200: #ef9234;
+  --pf-global--palette--orange-300: #ec7a08;
+  --pf-global--palette--orange-400: #c46100;
+  --pf-global--palette--orange-500: #8f4700;
+  --pf-global--palette--orange-600: #773d00;
+  --pf-global--palette--orange-700: #3b1f00;
+  --pf-global--palette--purple-100: #cbc1ff;
+  --pf-global--palette--purple-200: #b2a3ff;
+  --pf-global--palette--purple-300: #a18fff;
+  --pf-global--palette--purple-400: #8476d1;
+  --pf-global--palette--purple-500: #6753ac;
+  --pf-global--palette--purple-600: #40199a;
+  --pf-global--palette--purple-700: #1f0066;
+  --pf-global--palette--red-100: #c9190b;
+  --pf-global--palette--red-200: #a30000;
+  --pf-global--palette--red-300: #7d1007;
+  --pf-global--palette--red-400: #470000;
+  --pf-global--palette--red-500: #2c0000;
+  --pf-global--active-color--100: #06c;
+  --pf-global--active-color--200: #bee1f4;
+  --pf-global--active-color--300: #73bcf7;
+  --pf-global--active-color--400: #2b9af3;
+}
