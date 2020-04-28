@@ -42,16 +42,16 @@ export default class GetMetricConfig {
     return this.output['configmaps']
   }
 
-  public getCounterMetrics() {
+  public getCounterMetrics(): Array<any> {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
-      return this.errorResponse()
+      return [this.errorResponse()]
     }
     return safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml'])
   }
 
-  public getRatioMetrics() {
+  public getRatioMetrics(): Array<any> {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
-      return this.errorResponse()
+      return [this.errorResponse()]
     }
     return safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml'])
   }
