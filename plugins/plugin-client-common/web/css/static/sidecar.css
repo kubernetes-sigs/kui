@@ -60,6 +60,28 @@
     border-bottom: 1px solid var(--color-sidecar-background-02);
   }
 
+  .pf-c-nav {
+    width: 29.4%; /* FIXME */
+    background-color: var(--color-sidecar-header);
+
+    .pf-c-nav__list {
+      padding-top: 1em;
+
+      a:hover:not(.plain-anchor) {
+        color: unset;
+      }
+
+      .pf-c-nav__item .pf-c-nav__simple-list .pf-c-nav__link {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
   .bx--side-nav {
     z-index: unset;
     position: unset;
