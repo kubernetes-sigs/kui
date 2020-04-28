@@ -19,8 +19,8 @@ import { REPL, Breadcrumb as KuBreadcrumb } from '@kui-shell/core'
 
 import KuiContext from '../../Client/context'
 
-const CarbonBreadcrumb = React.lazy(() => import(/* webpackMode: "lazy" */ './Carbon'))
-const PatternflyBreadcrumb = React.lazy(() => import(/* webpackMode: "lazy" */ './Patternfly'))
+import CarbonBreadcrumb from './Carbon'
+import PatternflyBreadcrumb from './Patternfly'
 
 export type BreadcrumbView = KuBreadcrumb & { deemphasize?: boolean; isCurrentPage?: boolean; className?: string }
 
