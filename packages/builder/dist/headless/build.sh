@@ -133,16 +133,9 @@ function configure {
     echo "nothing to do"
 }
 
-function pty {
-    if [ -d node_modules/node-pty-prebuilt-multiarch ]; then
-        (cd node_modules/node-pty-prebuilt-multiarch && npm install --ignore-scripts && npx prebuild-install)
-    fi
-}
-
 function build {
     tarCopy
     configure
-    pty
 
     # override prescan
     if [ -n "$PRESCAN_OVERRIDE" ]; then
