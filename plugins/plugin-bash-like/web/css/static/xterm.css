@@ -1,3 +1,5 @@
+@import "~xterm/css/xterm.css";
+
 /* Explanation for width hacks:
    see https://github.com/xtermjs/xterm.js/pull/2067
    see https://github.com/IBM/kui/issues/1518
@@ -62,6 +64,7 @@ disabled see https://github.com/IBM/kui/issues/3939
       }
       &.processing {
         padding: 0;
+        margin: 0;
         -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
 
         .bx--accordion__heading {
@@ -88,9 +91,9 @@ disabled see https://github.com/IBM/kui/issues/3939
   }
 }
 
-.kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
+/* .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
   display: none;
-}
+} */
 
 .xterm .xterm-rows .xterm-hidden-row {
   display: none;
@@ -119,6 +122,7 @@ disabled see https://github.com/IBM/kui/issues/3939
   transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
 }
 .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
+  background-color: var(--color-base03) !important;
   outline-color: transparent !important;
 }
 
