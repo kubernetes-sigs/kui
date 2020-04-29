@@ -1,18 +1,34 @@
 /* @font-face {
-  font-family: "Liberation Mono";
-  src: url("./vendor/Liberation Mono V2/Liberation Mono V2.woff2") format("woff2");
+  font-family: "overpass-mono";
   font-style: normal;
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: "Liberation Mono";
-  src: url("./vendor/Liberation\ Mono\ Bold\ V2/Liberation\ Mono\ Bold\ V2.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 700;
+  font-weight: 300;
+  src: url("~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-light.woff2") format("woff2");
 } */
 
+@font-face {
+  font-family: 'overpass-mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-regular.woff2')
+    format('woff2');
+}
+
+/* @font-face {
+  font-family: "overpass-mono";
+  font-style: normal;
+  font-weight: 500;
+  src: url("~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-semibold.woff2") format("woff2");
+} */
+
+@font-face {
+  font-family: 'overpass-mono';
+  font-style: normal;
+  font-weight: 600;
+  src: url('~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-bold.woff2')
+    format('woff2');
+}
+
 body.kui--patternfly4[kui-theme-style] {
-  /* odd alignment issues --font-monospace: 'Liberation Mono'; */
-  --font-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-monospace: overpass-mono, overpass-mono, SFMono-Regular, menlo, monaco, consolas, Liberation Mono, Courier New,
+    monospace;
 }
