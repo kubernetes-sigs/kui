@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component imports
-import { Form, FormGroup, InlineLoading, Button, Slider, Dropdown, DataTable, InlineNotification } from 'carbon-components-react'
+import { Form, FormGroup, InlineLoading, Button, Slider, Dropdown, DataTable, InlineNotification, ToastNotification } from 'carbon-components-react'
 import { Renew32, Undo32, Export32 } from '@carbon/icons-react'
 import Chart from 'react-apexcharts'
 // Styling imports
@@ -12,6 +12,7 @@ import 'carbon-components/scss/components/slider/_slider.scss'
 import 'carbon-components/scss/components/dropdown/_dropdown.scss'
 import 'carbon-components/scss/components/data-table/_data-table.scss'
 import 'carbon-components/scss/components/notification/_inline-notification.scss'
+import 'carbon-components/scss/components/notification/_toast-notification.scss'
 import '../../src/web/scss/static/decisionForm.scss'
 // Functional imports
 import { DecisionState, RequestModel } from '../components/get-iter8-req'
@@ -71,9 +72,11 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   public constructor(props) {
     super(props)
     this.state = {
+      currTime: '',
       selectedAlgo: 'unif',  //Assumes that unif is always the first algorithm
       trafficSplit: [{version: '', split: 0}],
       trafficErr: false,  // Checks if custom traffic sum to 100
+      confRouting: false, // Checks if vs has been successfully created
       exprCreated: false, // User has finished expr setup
       haveResults: false, // First AJAX call has been successful
       exprReq: null,
@@ -186,7 +189,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
 
   //Makes an AJAX call to Iter8 API
   private refreshHandler = () => {
-    if(!this.state.haveResults){
       let AnalyticsAssess = new GetAnalyticsAssessment(this.state.exprReq);
       AnalyticsAssess.getAnalyticsAssessment()
         .then((result) => {let jsonrlts = JSON.parse(JSON.parse(result));
@@ -194,19 +196,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 this.setState({haveResults: true, exprResult: jsonrlts, trafficSplit: traffic});
          })
         .catch((failure) => {console.log(failure);})
-    }else{
-      // Update the request model to have last_state
-      let apiModels = new RequestModel();
-      let updatedReq = apiModels.updateLastState(this.state.exprResult, this.state.exprReq);
-      // Make API request using
-      let AnalyticsAssess = new GetAnalyticsAssessment(updatedReq);
-      AnalyticsAssess.getAnalyticsAssessment()
-        .then((result) => {let jsonrlts = JSON.parse(JSON.parse(result));
-                  this.setState({exprResult: jsonrlts});
-         })
-        .catch((failure) => {console.log(failure);})
-      }
-
   }
   // On changing the algorithm type
   private handleAlgoChange = (value) => {
@@ -244,6 +233,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     let svc = this.state.exprReq.service_name;
     let decision = getUserDecision(ns, svc, this.state.trafficSplit);
     applyTrafficSplit(decision);
+    let d = new Date();
+    let time = d.toISOString();
+    this.setState({currTime: time, confRouting: true});
   }
    public render() {
     if(this.state.haveResults){
@@ -317,6 +309,16 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         >
           Apply
         </Button>
+        {this.state.confRouting ?
+          <ToastNotification
+            caption={this.state.currTime}
+            kind="success"
+            title="Virtual Service Created"
+            subtitle="Traffic is being re-routed. Allow a few seconds for changes to be implemented."
+            timeout={10000}
+            style={{width: 680}}
+          /> : null
+        }
         </FormGroup>
         <FormGroup legendText=''>
         {trafficSplit.map((val, idx) => {
@@ -333,7 +335,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               />
           )
         })}
-        {this.state.trafficErr ? 
+        {this.state.trafficErr ?
           <InlineNotification
             kind="error"
             notificationType="inline"

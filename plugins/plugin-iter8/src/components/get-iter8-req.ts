@@ -25,9 +25,11 @@ interface Formstate {
 * Data model for state object in DecisionForm
 */
 interface DecisionState {
+	currTime: string,
 	selectedAlgo: string,
 	trafficSplit: Array<any>,
 	trafficErr: Boolean,
+	confRouting: Boolean,
 	exprCreated: Boolean,
 	haveResults: Boolean,
 	exprReq?: any,
