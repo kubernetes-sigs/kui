@@ -63,7 +63,7 @@ export class DefaultKubeStatus implements KubeStatus {
   public message = undefined
 }
 
-interface WithOwnerReferences {
+export interface WithOwnerReferences {
   ownerReferences: {
     apiVersion: string
     kind: string

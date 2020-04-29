@@ -3,6 +3,7 @@ export const keys = {
   Numpad2: '\uE01C',
   PageUp: '\uE00E',
   PageDown: '\uE00F',
+  End: '\uE010',
   BACKSPACE: '\uE003',
   TAB: '\uE004',
   ENTER: '\uE007',
