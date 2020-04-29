@@ -8,7 +8,8 @@
   z-index: 10;
   box-shadow: 0 -3px 10px 0 rgba(175, 175, 175, 0.1);
 
-  .kui--status-stripe-element a.clickable {
+  .kui--status-stripe-element a.clickable,
+  .kui--status-stripe-icon > div {
     /* wrappers around clickable svgs */
     display: flex;
     align-items: center;
