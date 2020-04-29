@@ -120,7 +120,7 @@ export { Tab, getCurrentTab, getTabId, sameTab } from './webapp/tab'
 export { default as TabState } from './models/tab-state'
 
 // Themes
-export { default as Theme } from './webapp/themes/Theme'
+export { default as Theme, ThemeProperties } from './webapp/themes/Theme'
 export { findByName as findThemeByName } from './webapp/themes/find'
 export { getDefault as getDefaultTheme } from './webapp/themes/default'
 export {
