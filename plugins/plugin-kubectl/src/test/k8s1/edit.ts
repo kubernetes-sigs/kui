@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS, typeSlowly } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys, Util } from '@kui-shell/test'
+import {
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS,
+  defaultModeForGet
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
-if (process.env.NEEDS_OC) {
-  commands.push('oc')
-}
 
 commands.forEach(command => {
   describe(`${command} edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -30,7 +33,7 @@ commands.forEach(command => {
     const ns: string = createNS()
     const inNamespace = `-n ${ns}`
 
-    const createIt = (name: string) => {
+    const create = (name: string) => {
       it(`should create sample pod ${name} from URL via ${command}`, async () => {
         try {
           const selector = await CLI.command(
@@ -46,45 +49,73 @@ commands.forEach(command => {
       })
     }
 
-    const editIt = (name: string, quit: string) => {
-      it(`should edit it via ${command} edit, and using ${quit} to quit`, async () => {
+    const edit = (name: string) => {
+      it(`should edit it via ${command} edit`, async () => {
         try {
-          const res = await CLI.command(`${command} edit pod ${name} ${inNamespace}`, this.app)
-
-          const rows = Selectors.xtermRows(res.count)
-
-          // wait for vi to come up
-          await this.app.client.waitForExist(rows)
-
-          // wait for vi to come up in alt buffer mode
-          await this.app.client.waitForExist(`${Selectors.CURRENT_TAB}.xterm-alt-buffer-mode`)
-
-          // wait for apiVersion: v<something> to show up in the pty
-          await this.app.client.waitUntil(async () => {
-            try {
-              const txt = await CLI.getTextContent(this.app, rows)
-              return /apiVersion: v/.test(txt)
-            } catch (err) {
-              console.error(err)
-              return false
-            }
-          })
-
-          await this.app.client.waitUntil(async () => {
-            // quit without saving
-            await this.app.client.keys(Keys.ESCAPE)
-            await typeSlowly(this.app, `${quit}${Keys.ENTER}`)
-
-            // first false: not exact
-            // second false: don't assert, so that we can waitUntil
-            return Promise.resolve(res)
-              .then(ReplExpect.okWithTextContent('cancelled', false, false))
-              .then(() => true)
-              .catch(() => false)
-          })
+          await CLI.command(`${command} edit pod ${name} ${inNamespace}`, this.app)
+            .then(ReplExpect.justOK)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.showing(name, undefined, undefined, ns))
+            .then(SidecarExpect.mode('edit'))
+            .then(
+              SidecarExpect.yaml({
+                kind: 'Pod'
+              })
+            )
         } catch (err) {
           await Common.oops(this, true)(err)
         }
+      })
+    }
+
+    const cancel = (name: string) => {
+      it('should cancel edit session', async () => {
+        try {
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('cancel'))
+          await SidecarExpect.open(this.app)
+            .then(SidecarExpect.showing(name, undefined, undefined, ns))
+            .then(SidecarExpect.mode(defaultModeForGet))
+            .catch(Common.oops(this, true))
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+    }
+
+    const modify = (name: string) => {
+      it('should modify the content', async () => {
+        try {
+          const actualText = await Util.getValueFromMonaco(this.app)
+          const labelsLineIdx = actualText.split(/\n/).indexOf('  labels:')
+
+          // +2 here because nth-child is indexed from 1, and we want the line after that
+          const lineSelector = `.view-lines > .view-line:nth-child(${labelsLineIdx + 2}) .mtk5:last-child`
+          await this.app.client.click(lineSelector)
+
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          await this.app.client.keys(`${Keys.End}${Keys.ENTER}foo: bar${Keys.ENTER}`)
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('Save'), 10000, true)
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+
+      cancel(name)
+
+      it('should switch to yaml tab', async () => {
+        try {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('raw'))
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+
+      it('should show the modified content', () => {
+        return SidecarExpect.yaml({ metadata: { labels: { foo: 'bar' } } })(this.app).catch(Common.oops(this, true))
       })
     }
 
@@ -94,9 +125,13 @@ commands.forEach(command => {
     allocateNS(this, ns)
 
     const nginx = 'nginx'
-    createIt(nginx)
-    editIt(nginx, ':wq!')
-    editIt(nginx, ':wq')
+    create(nginx)
+
+    edit(nginx)
+    cancel(nginx)
+
+    edit(nginx)
+    modify(nginx)
 
     deleteNS(this, ns)
   })

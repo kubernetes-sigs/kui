@@ -28,7 +28,7 @@ import { TestStringResponse } from '@kui-shell/test'
  * pty streaming
  *
  */
-const pty = (prefix = 'XXX') => `${prefix} hi`
+/* const pty = (prefix = 'XXX') => `${prefix} hi`
 const repeat = (str: string, n: number, joiner = '\n') =>
   Array(n)
     .fill(str)
@@ -50,7 +50,7 @@ new TestStringResponse({
   expect: repeat(pty('MMM'), 8),
   exact: true,
   streaming: true
-}).string()
+}).string() */
 
 /**
  * string response with no arguments

@@ -48,15 +48,19 @@ export default class Toolbar extends React.PureComponent<Props> {
 
   private buttons() {
     if (this.props.buttons) {
-      return this.props.buttons.map((button, idx) => (
-        <ToolbarButton
-          tab={this.props.tab}
-          button={button}
-          response={this.props.response}
-          args={this.props.args}
-          key={idx}
-        />
-      ))
+      return this.props.buttons
+        .sort((a, b) => {
+          return (a.order || 0) - (b.order || 0)
+        })
+        .map((button, idx) => (
+          <ToolbarButton
+            tab={this.props.tab}
+            button={button}
+            response={this.props.response}
+            args={this.props.args}
+            key={idx}
+          />
+        ))
     }
   }
 

@@ -31,10 +31,25 @@ import '../../../../web/scss/components/Editor/Editor.scss'
 
 const strings = i18n('plugin-client-common', 'editor')
 
+interface WithOptions {
+  spec: {
+    readOnly?: boolean
+    clearable?: boolean
+    save?: {
+      label: string
+      onSave: (data: string) => Promise<void>
+    }
+    revert?: {
+      label: string
+      onRevert: () => Promise<string>
+    }
+  }
+}
+
 interface Props extends MonacoOptions {
   repl: REPL
   content: StringContent
-  response: File | MultiModalResponse
+  response: File | (MultiModalResponse & Partial<WithOptions>)
   willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void
 }
 
@@ -119,32 +134,81 @@ export default class Editor extends React.PureComponent<Props, State> {
     }
   }
 
+  private static isClearable(props: Props) {
+    return (
+      (isFile(props.response) && !props.readOnly) ||
+      (!isFile(props.response) && props.response.spec && props.response.spec.clearable !== false)
+    )
+  }
+
   private static onChange(props: Props, editor: Monaco.ICodeEditor) {
     return () => {
+      const clearable = Editor.isClearable(props)
+
       const buttons: Button[] = []
 
+      // save
       if (isFile(props.response)) {
         const save = SaveFileButton(editor, props.repl, props.response, (success: boolean) => {
           if (success) {
-            props.willUpdateToolbar(this.allClean(props), props.readOnly ? undefined : [ClearButton(editor)])
+            props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
           } else {
             props.willUpdateToolbar(this.error(props, 'errorSaving'))
           }
         })
         buttons.push(save)
+      } else if (props.response.spec && props.response.spec.save) {
+        const { onSave } = props.response.spec.save
+        buttons.push({
+          mode: 'Save',
+          label: props.response.spec.save.label || strings('saveLocalFile'),
+          kind: 'view' as const,
+          command: async () => {
+            try {
+              await onSave(editor.getValue())
+              props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
+            } catch (err) {
+              console.error(err)
+              props.willUpdateToolbar(this.error(props, 'errorSaving'))
+            }
+          }
+        })
+      }
 
+      // revert
+      if (isFile(props.response)) {
         const revert = RevertFileButton(editor, props.repl, props.response, (success: boolean, data?: string) => {
           if (success) {
             editor.setValue(data)
-            props.willUpdateToolbar(this.allClean(props), props.readOnly ? undefined : [ClearButton(editor)])
+            props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
           } else {
             props.willUpdateToolbar(this.error(props, 'errorReverting'))
           }
         })
         buttons.push(revert)
+      } else if (props.response.spec && props.response.spec.revert) {
+        const { onRevert } = props.response.spec.revert
+        buttons.push({
+          mode: 'Revert',
+          label: props.response.spec.revert.label || strings('revert'),
+          kind: 'view' as const,
+          command: async () => {
+            try {
+              const data = await onRevert()
+              editor.setValue(data)
+              props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
+            } catch (err) {
+              console.error(err)
+              props.willUpdateToolbar(this.error(props, 'errorReverting'))
+            }
+          }
+        })
       }
 
-      buttons.push(ClearButton(editor))
+      // clear
+      if (clearable) {
+        buttons.push(ClearButton(editor))
+      }
 
       props.willUpdateToolbar(
         {
@@ -160,7 +224,7 @@ export default class Editor extends React.PureComponent<Props, State> {
   private static subscribeToChanges(props: Props, editor: Monaco.ICodeEditor) {
     if (props.willUpdateToolbar) {
       // send an initial update
-      props.willUpdateToolbar(this.allClean(props), props.readOnly ? undefined : [ClearButton(editor)])
+      props.willUpdateToolbar(this.allClean(props), !Editor.isClearable(props) ? undefined : [ClearButton(editor)])
 
       // then subscribe to future model change events
       return editor.onDidChangeModelContent(Editor.onChange(props, editor))
@@ -173,7 +237,10 @@ export default class Editor extends React.PureComponent<Props, State> {
       // here we instantiate an editor widget
       const providedOptions = {
         value: props.content.content,
-        readOnly: props.readOnly || !isFile(props.response) || false,
+        readOnly:
+          !isFile(props.response) &&
+          (!props.response.spec || props.response.spec.readOnly !== false) &&
+          (props.readOnly || !isFile(props.response) || false),
         language: props.content.contentType ? language(props.content.contentType) : undefined
       }
       const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)

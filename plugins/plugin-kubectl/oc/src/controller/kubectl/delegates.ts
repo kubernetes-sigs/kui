@@ -15,15 +15,25 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-import { commandPrefix, defaultFlags, doGet, doCreate, doDelete, doRun, doDescribe } from '@kui-shell/plugin-kubectl'
+import {
+  commandPrefix,
+  defaultFlags,
+  doCreate,
+  doGet,
+  doDelete,
+  doDescribe,
+  doEdit,
+  doRun
+} from '@kui-shell/plugin-kubectl'
 
 const command = 'oc'
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/${command}/get`, doGet(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/describe`, doDescribe(command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/apply`, doCreate('apply', command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/create`, doCreate('create', command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/describe`, doDescribe(command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/edit`, doEdit(command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/get`, doGet(command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), defaultFlags)
 }
