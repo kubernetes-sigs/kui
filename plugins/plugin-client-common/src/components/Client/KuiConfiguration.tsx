@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-interface KuiConfiguration {
+import { ThemeProperties } from '@kui-shell/core'
+
+type KuiConfiguration = Partial<ThemeProperties> & {
   /** This will be displayed in the upper left of the TopTabStripe */
   productName?: string
-
-  /** component library */
-  components?: 'carbon' | 'patternfly'
 }
 
 export default KuiConfiguration
