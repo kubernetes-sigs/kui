@@ -5,13 +5,13 @@
   src: url("~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-light.woff2") format("woff2");
 } */
 
-@font-face {
+/* @font-face {
   font-family: 'overpass-mono';
   font-style: normal;
   font-weight: 400;
   src: url('~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-regular.woff2')
     format('woff2');
-}
+} */
 
 /* @font-face {
   font-family: "overpass-mono";
@@ -20,15 +20,14 @@
   src: url("~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-semibold.woff2") format("woff2");
 } */
 
-@font-face {
+/* @font-face {
   font-family: 'overpass-mono';
   font-style: normal;
   font-weight: 600;
   src: url('~@patternfly/react-core/dist/styles/assets/fonts/overpass-mono-webfont/overpass-mono-bold.woff2')
     format('woff2');
-}
+} */
 
 body.kui--patternfly4[kui-theme-style] {
-  --font-monospace: overpass-mono, overpass-mono, SFMono-Regular, menlo, monaco, consolas, Liberation Mono, Courier New,
-    monospace;
+  --font-monospace: Liberation Mono, consolas, SFMono-Regular, menlo, monaco, Courier New, monospace;
 }
