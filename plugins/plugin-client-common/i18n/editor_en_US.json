@@ -3,6 +3,7 @@
   "saveLocalFile": "Save",
   "Edit": "Edit",
   "Clear": "Clear",
+  "Cancel": "Cancel",
   "revert": "Revert",
   "readonly": "Done Editing",
   "errorSaving": "Error saving file",
