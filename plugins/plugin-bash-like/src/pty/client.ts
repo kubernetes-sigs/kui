@@ -51,7 +51,6 @@ const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
 import copy from './copy'
 
-import 'xterm/css/xterm.css'
 import '../../web/css/static/xterm.css'
 
 interface Size {
@@ -898,8 +897,8 @@ export const doExec = (
           }
 
           // heuristic for hiding empty rows
-          terminal.element.classList.add('xterm-empty-row-heuristic')
-          setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
+          // terminal.element.classList.add('xterm-empty-row-heuristic')
+          // setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
           //
           // on exit, remove event handlers and the like

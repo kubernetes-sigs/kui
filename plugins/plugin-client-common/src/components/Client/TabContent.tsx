@@ -35,7 +35,6 @@ interface WithTabUUID {
 interface WithTab {
   tab: KuiTab
   tabClassList: Record<string, boolean>
-  activateHandlers: ((isActive: boolean) => void)[]
 }
 
 export type TabContentOptions = TerminalOptions & {
@@ -74,6 +73,9 @@ type State = Partial<WithTab> & {
  */
 export default class TabContent extends React.PureComponent<Props, State> {
   private readonly cleaners: Cleaner[] = []
+
+  /** switching back or away from this tab */
+  private activateHandlers: ((isActive: boolean) => void)[] = []
 
   /** grab a ref (below) so that we can maintain focus */
   private _terminal: ScrollableTerminal
@@ -236,9 +238,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (this.state.tab && this.state.activateHandlers) {
-      this.state.activateHandlers.forEach(handler => handler(this.props.active))
-    }
+    this.activateHandlers.forEach(handler => handler(this.props.active))
 
     return (
       <div
@@ -248,33 +248,33 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
           if (tab) {
             tab.onActivate = (handler: (isActive: boolean) => void) => {
-              this.setState(curState => ({
-                activateHandlers: !curState.activateHandlers ? [handler] : curState.activateHandlers.concat([handler])
-              }))
+              this.activateHandlers.push(handler)
             }
             tab.offActivate = (handler: (isActive: boolean) => void) => {
+              const idx = this.activateHandlers.findIndex(_ => _ === handler)
+              if (idx >= 0) {
+                this.activateHandlers.splice(idx, 1)
+              }
+            }
+
+            tab.addClass = (cls: string) => {
               this.setState(curState => {
-                const idx = !curState.activateHandlers ? -1 : curState.activateHandlers.findIndex(_ => _ === handler)
-                if (idx >= 0) {
+                if (!curState.tabClassList || !curState.tabClassList[cls]) {
                   return {
-                    activateHandlers: curState.activateHandlers
-                      .slice(0, idx)
-                      .concat(curState.activateHandlers.slice(idx + 1))
+                    tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true })
                   }
                 }
               })
             }
 
-            tab.addClass = (cls: string) => {
-              this.setState(curState => ({ tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true }) }))
-            }
-
             tab.removeClass = (cls: string) => {
               this.setState(curState => {
-                const update = Object.assign({}, curState.tabClassList)
-                delete update[cls]
-                return {
-                  tabClassList: update
+                if (curState.tabClassList && curState.tabClassList[cls]) {
+                  const update = Object.assign({}, curState.tabClassList)
+                  delete update[cls]
+                  return {
+                    tabClassList: update
+                  }
                 }
               })
             }
