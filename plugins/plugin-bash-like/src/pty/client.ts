@@ -897,7 +897,7 @@ export const doExec = (
           }
 
           // heuristic for hiding empty rows
-          // terminal.element.classList.add('xterm-empty-row-heuristic')
+          terminal.element.classList.add('xterm-empty-row-heuristic')
           // setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
           //
