@@ -102,9 +102,10 @@ export class Kui extends React.PureComponent<Props, State> {
       // note the priority order, from highest to lowest:
       //  1) any properties defined by the theme (since we just switched themes)
       //  2) any properties defined by the container of this <Kui/>
-      //  3) any prior state
-      //  4) default choices
-      const stateAfterThemeChange = Object.assign({}, defaultThemeProperties, curState, this.props, themeModel)
+      //  3) default choices
+      //  4) any prior state
+      // re: ordering of 3 and 4, see https://github.com/IBM/kui/issues/4423
+      const stateAfterThemeChange = Object.assign({}, curState, defaultThemeProperties, this.props, themeModel)
       debug('state after theme change', stateAfterThemeChange)
       return stateAfterThemeChange
     })
