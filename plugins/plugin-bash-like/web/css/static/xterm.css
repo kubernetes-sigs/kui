@@ -4,276 +4,279 @@
    see https://github.com/xtermjs/xterm.js/pull/2067
    see https://github.com/IBM/kui/issues/1518
 */
-.xterm-screen,
-.xterm-rows > div {
-  width: 100% !important;
-}
-.xterm-terminated .xterm-rows > div {
-  width: auto !important;
-  min-height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
-  height: auto !important; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
-  line-height: normal !important; /* ibid */
-}
-/*.xterm-terminated.error .xterm-rows > div {
+[kui-theme-style] .tab-container {
+  .xterm-screen,
+  .xterm-rows > div {
+    width: 100% !important;
+  }
+  .xterm-terminated .xterm-rows > div {
+    width: auto !important;
+    min-height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
+    height: auto !important; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
+    line-height: normal !important; /* ibid */
+  }
+  /*.xterm-terminated.error .xterm-rows > div {
 disabled see https://github.com/IBM/kui/issues/3939
   color: var(--color-error);
 }*/
-.xterm-container .xterm-rows > div > span {
+  /* .xterm-container .xterm-rows > div > span {
   width: auto !important;
 }
 .xterm-container:not(.xterm-terminated) .xterm-rows > div > span {
   white-space: pre;
-}
+} */
 
-.repl-result-like > div.xterm-container {
-  padding-right: 0;
-}
-
-.xterm-screen,
-.xterm-container .xterm-rows > div {
-  transition: width 10ms ease-in-out, height 10ms ease-in-out;
-}
-
-.kui--tab-content:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
-  height: auto !important;
-}
-
-/* alt buffer mode */
-.kui--tab-content.xterm-alt-buffer-mode {
-  .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
-    background-color: var(--color-support-01) !important;
+  .repl-result-like > div.xterm-container {
+    padding-right: 0;
   }
 
-  .repl-inner {
-    overflow: hidden;
-    display: flex;
-    /* align-items: flex-start; */
-    -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
+  /* .xterm-screen,
+.xterm-container .xterm-rows > div {
+  transition: width 10ms ease-in-out, height 10ms ease-in-out;
+} */
 
-    /* when in alt-buffer mode, hide anything in the REPL not related to the current output */
-    .repl-block:not(.processing),
-    .repl-input,
-    .repl-result,
-    .repl-result-spinner {
-      display: none;
+  .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
+    height: auto !important;
+  }
+
+  /* alt buffer mode */
+  .kui--tab-content.xterm-alt-buffer-mode {
+    .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+      background-color: var(--color-base08);
+      color: var(--color-base00);
     }
 
-    .repl-block {
-      & {
-        flex: 1;
-      }
-      &.processing {
-        padding: 0;
-        margin: 0;
-        -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
+    .repl-inner {
+      overflow: hidden;
+      display: flex;
+      /* align-items: flex-start; */
+      -webkit-app-region: drag; /* for emacs/vi, in case there is a top slice of repl-inner visible */
 
-        .bx--accordion__heading {
-          /** accordion around input */
-          display: none;
-        }
+      /* when in alt-buffer mode, hide anything in the REPL not related to the current output */
+      .repl-block:not(.processing),
+      .repl-input,
+      .repl-result,
+      .repl-result-spinner {
+        display: none;
       }
-      .repl-output {
-        &,
-        .repl-result-like {
+
+      .repl-block {
+        & {
           flex: 1;
-          display: flex;
+        }
+        &.processing {
+          padding: 0;
+          margin: 0;
+          -webkit-app-region: no-drag; /* but make sure the content of the blocks are not draggable */
 
-          .xterm-container {
-            &,
-            .xterm {
-              flex: 1;
-              display: flex;
+          .bx--accordion__heading {
+            /** accordion around input */
+            display: none;
+          }
+        }
+        .repl-output {
+          &,
+          .repl-result-like {
+            flex: 1;
+            display: flex;
+
+            .xterm-container {
+              &,
+              .xterm {
+                flex: 1;
+                display: flex;
+              }
             }
           }
         }
       }
     }
   }
-}
 
-.kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
-  display: none;
-}
+  .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
+    display: none;
+  }
 
-.xterm .xterm-rows .xterm-hidden-row {
-  display: none;
-}
+  .xterm .xterm-rows .xterm-hidden-row {
+    display: none;
+  }
 
-.xterm-container .xterm-fg-7.xterm-dim {
-  opacity: 1;
-  color: var(--color-text-02);
-}
+  .xterm-container .xterm-fg-7.xterm-dim {
+    opacity: 1;
+    color: var(--color-text-02);
+  }
 
-.xterm-container .xterm-bold {
-  font-weight: bold;
-}
+  .xterm-container .xterm-bold {
+    font-weight: bold;
+  }
 
-.xterm-container .xterm-rows .xterm-cursor.xterm-cursor-block {
-  background-color: transparent !important;
-  outline-color: transparent !important;
-  transition-property: background-color, outline-color;
-  transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
-}
-.xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
-  background-color: var(--color-processing) !important;
-  outline-color: transparent;
-  color: var(--color-base06) !important;
-  transition-property: background-color, outline-color;
-  transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
-}
-.xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
-  background-color: var(--color-base03) !important;
-  outline-color: transparent !important;
-}
+  .xterm-container .xterm-rows .xterm-cursor.xterm-cursor-block {
+    background-color: transparent;
+    outline-color: transparent;
+    transition-property: background-color, outline-color;
+    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
+  }
+  .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
+    background-color: var(--color-processing);
+    outline-color: transparent;
+    color: var(--color-base06);
+    transition-property: background-color, outline-color;
+    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
+  }
+  .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
+    background-color: var(--color-base03);
+    outline-color: transparent;
+  }
 
-/* rules for terminated xterm */
-/* hide cursor block for terminated processes */
-.xterm-terminated .xterm-rows .xterm-cursor {
-  display: none;
-}
-.xterm-terminated .xterm-rows,
-.xterm-terminated .xterm-viewport .xterm-terminated .xterm-scroll-area {
-  /* we don't want scrollbars to appear for terminated xterms */
-  overflow: hidden;
-}
-.xterm-terminated .xterm-screen {
-  width: auto !important;
-}
-/* try to disable xterm components for terminated processes */
-.xterm-terminated .xterm-helper-textarea {
-  display: none;
-  pointer-events: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-.xterm-terminated .xterm {
-  user-select: unset;
-  -webkit-user-select: unset;
-}
+  /* rules for terminated xterm */
+  /* hide cursor block for terminated processes */
+  .xterm-terminated .xterm-rows .xterm-cursor {
+    display: none;
+  }
+  .xterm-terminated .xterm-rows,
+  .xterm-terminated .xterm-viewport .xterm-terminated .xterm-scroll-area {
+    /* we don't want scrollbars to appear for terminated xterms */
+    overflow: hidden;
+  }
+  .xterm-terminated .xterm-screen {
+    width: auto;
+  }
+  /* try to disable xterm components for terminated processes */
+  .xterm-terminated .xterm-helper-textarea {
+    display: none;
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .xterm-terminated .xterm {
+    user-select: unset;
+    -webkit-user-select: unset;
+  }
 
-/* themes */
-.xterm-container .xterm-viewport,
-.xterm-rows {
-  background: transparent !important;
-}
-.xterm-rows {
-  font-size: 1em !important;
-  font-family: var(--font-monospace) !important;
-  color: var(--color-text-01) !important;
-  transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
-}
-.xterm-rows > div > span {
+  /* themes */
+  .xterm-container .xterm-viewport,
+  .xterm-rows {
+    background-color: transparent !important;
+  }
+  .xterm-rows {
+    font-size: 1em;
+    font-family: var(--font-monospace);
+    color: var(--color-text-01);
+    transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
+  }
+  /* .xterm-rows > div > span {
   transition: color 300ms ease-in-out;
-  color: var(--color-text-01) !important;
-}
-.xterm-rows .xterm-bg-0,
-.xterm-rows .xterm-bg-8 {
-  background-color: var(--color-ui-01) !important;
-}
-.xterm-rows .xterm-fg-0,
-.xterm-rows .xterm-fg-8 {
-  color: var(--color-ui-01) !important;
-}
-.xterm-rows .xterm-bg-1,
-.xterm-rows .xterm-bg-9 {
-  background-color: var(--color-red) !important;
-}
-.xterm-rows .xterm-fg-1,
-.xterm-rows .xterm-fg-9 {
-  color: var(--color-red) !important;
-}
-.xterm-rows .xterm-bg-2,
-.xterm-rows .xterm-bg-10 {
-  background-color: var(--color-green) !important;
-}
-.xterm-rows .xterm-fg-2,
-.xterm-rows .xterm-fg-10 {
-  color: var(--color-green) !important;
-}
-.xterm-rows .xterm-bg-3,
-.xterm-rows .xterm-bg-11 {
-  background-color: var(--color-yellow-text) !important;
-}
-.xterm-rows .xterm-fg-3,
-.xterm-rows .xterm-fg-11 {
-  color: var(--color-yellow-text) !important;
-}
-.xterm-rows .xterm-bg-4,
-.xterm-rows .xterm-bg-12 {
-  background-color: var(--color-blue) !important;
-}
-.xterm-rows .xterm-fg-4,
-.xterm-rows .xterm-fg-12 {
-  color: var(--color-blue) !important;
-}
-.xterm-rows .xterm-bg-5,
-.xterm-rows .xterm-bg-13 {
-  background-color: var(--color-magenta) !important;
-}
-.xterm-rows .xterm-fg-5,
-.xterm-rows .xterm-fg-13 {
-  color: var(--color-magenta) !important;
-}
-.xterm-rows .xterm-bg-6,
-.xterm-rows .xterm-bg-14 {
-  background-color: var(--color-cyan) !important;
-}
-.xterm-rows .xterm-fg-6,
-.xterm-rows .xterm-fg-14 {
-  color: var(--color-cyan) !important;
-}
-.xterm-rows .xterm-bg-7,
-.xterm-rows .xterm-bg-15 {
-  background-color: var(--color-white) !important;
-}
-.xterm-rows .xterm-fg-7,
-.xterm-rows .xterm-fg-15 {
-  color: var(--color-text-01) !important;
-}
-.xterm-rows .xterm-fg-257 {
-  /* inverted default color */
-  background-color: var(--color-text-01) !important;
-  color: var(--color-ui-01) !important;
-}
+  color: var(--color-text-01);
+} */
+  .xterm-rows .xterm-bg-0,
+  .xterm-rows .xterm-bg-8 {
+    background-color: var(--color-ui-01);
+  }
+  .xterm-rows .xterm-fg-0,
+  .xterm-rows .xterm-fg-8 {
+    color: var(--color-ui-01);
+  }
+  .xterm-rows .xterm-bg-1,
+  .xterm-rows .xterm-bg-9 {
+    background-color: var(--color-red);
+  }
+  .xterm-rows .xterm-fg-1,
+  .xterm-rows .xterm-fg-9 {
+    color: var(--color-red);
+  }
+  .xterm-rows .xterm-bg-2,
+  .xterm-rows .xterm-bg-10 {
+    background-color: var(--color-green);
+  }
+  .xterm-rows .xterm-fg-2,
+  .xterm-rows .xterm-fg-10 {
+    color: var(--color-green);
+  }
+  .xterm-rows .xterm-bg-3,
+  .xterm-rows .xterm-bg-11 {
+    background-color: var(--color-yellow-text);
+  }
+  .xterm-rows .xterm-fg-3,
+  .xterm-rows .xterm-fg-11 {
+    color: var(--color-yellow-text);
+  }
+  .xterm-rows .xterm-bg-4,
+  .xterm-rows .xterm-bg-12 {
+    background-color: var(--color-blue);
+  }
+  .xterm-rows .xterm-fg-4,
+  .xterm-rows .xterm-fg-12 {
+    color: var(--color-blue);
+  }
+  .xterm-rows .xterm-bg-5,
+  .xterm-rows .xterm-bg-13 {
+    background-color: var(--color-magenta);
+  }
+  .xterm-rows .xterm-fg-5,
+  .xterm-rows .xterm-fg-13 {
+    color: var(--color-magenta);
+  }
+  .xterm-rows .xterm-bg-6,
+  .xterm-rows .xterm-bg-14 {
+    background-color: var(--color-cyan);
+  }
+  .xterm-rows .xterm-fg-6,
+  .xterm-rows .xterm-fg-14 {
+    color: var(--color-cyan);
+  }
+  .xterm-rows .xterm-bg-7,
+  .xterm-rows .xterm-bg-15 {
+    background-color: var(--color-white);
+  }
+  .xterm-rows .xterm-fg-7,
+  .xterm-rows .xterm-fg-15 {
+    color: var(--color-text-01);
+  }
+  .xterm-rows .xterm-fg-257 {
+    /* inverted default color */
+    background-color: var(--color-text-01);
+    color: var(--color-ui-01);
+  }
 
-/**
+  /**
  * When the xterm terminates, we signify lines that xtermjs inserted
  * only for line wrapping, so that we can reflow them
  * naturally. Please see `reflowLineWraps()` in `src/pty/client.ts`
  * for the logic that establishes the `.xterm-is-wrapped` property.
  *
  */
-.xterm-terminated .xterm-rows > div {
-  white-space: pre-wrap;
-}
-.xterm-is-wrapped {
-  display: inline;
-}
-.xterm-is-wrapped-with-prefix-break:before {
-  /* see https://github.com/IBM/kui/issues/1605 */
-  display: block;
-  content: "";
+  .xterm-terminated .xterm-rows > div {
+    white-space: pre-wrap;
+  }
+  .xterm-is-wrapped {
+    display: inline;
+  }
+  .xterm-is-wrapped-with-prefix-break:before {
+    /* see https://github.com/IBM/kui/issues/1605 */
+    display: block;
+    content: "";
 
-  /* see https://github.com/IBM/kui/issues/2681 */
-  height: 0;
-}
+    /* see https://github.com/IBM/kui/issues/2681 */
+    height: 0;
+  }
 
-/* in case we change our minds and want to hide it */
-.xterm-invisible {
-  display: none;
-}
+  /* in case we change our minds and want to hide it */
+  .xterm-invisible {
+    display: none;
+  }
 
-.repl-block.processing .xterm-rows {
+  /* .repl-block.processing .xterm-rows {
   margin-bottom: 0.25em;
-}
+} */
 
-/* we never want to see inner scrollbars */
-.xterm-container .xterm-viewport::-webkit-scrollbar {
-  background-color: transparent !important;
+  /* we never want to see inner scrollbars */
+  .xterm-container .xterm-viewport::-webkit-scrollbar {
+    background-color: transparent;
+  }
 }
 
 /* selection */
