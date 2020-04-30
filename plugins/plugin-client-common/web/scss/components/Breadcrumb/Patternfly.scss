@@ -22,6 +22,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
       &:not(.kui--secondary-breadcrumb) {
         &.kui--current-page-breadcrumb .pf-c-breadcrumb__link {
           font-weight: 700;
+          color: var(--color-text-01);
         }
 
         .pf-c-breadcrumb__link {

@@ -1375,6 +1375,14 @@ body {
   --color-brand-02: var(--color-magenta);
   --color-brand-03: var(--color-cyan);
 
+  --color-primary-button-background: var(--color-brand-03);
+  --color-primary-button-border: none;
+  --color-secondary-button-background: var(--color-base04);
+  --color-secondary-button-border: none;
+  --color-secondary-button-border-hover: none;
+  --color-primary-button-background-hover: var(--color-primary-button);
+  --color-secondary-button-background-hover: var(--color-secondary-button);
+
   --color-field-01: var(--color-base01);
 
   --color-text-against-dark-bg: var(--color-text-01);

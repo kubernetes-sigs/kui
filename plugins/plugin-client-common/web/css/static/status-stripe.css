@@ -6,7 +6,7 @@
   --color-fg: var(--color-text-01);
 
   z-index: 10;
-  box-shadow: 0 -3px 10px 0 rgba(175, 175, 175, 0.1);
+  box-shadow: 0 -1px 0px 0px rgba(175, 175, 175, 0.1);
 
   .kui--status-stripe-element a.clickable,
   .kui--status-stripe-icon > div {
