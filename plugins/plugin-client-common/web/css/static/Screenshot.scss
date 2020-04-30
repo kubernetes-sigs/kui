@@ -7,9 +7,14 @@ body .bx--toast-notification {
   /* provide default values for these color classes */
   --color-screenshot-background: var(--color-base02);
   --color-screenshot-foreground: var(--color-base06);
-  --color-screenshot-primary-button-background: var(--color-brand-03);
+  --color-screenshot-primary-button-background: var(--color-primary-button-background);
+  --color-screenshot-primary-button-border: var(--color-primary-button-border);
+  --color-screenshot-primary-button-background-hover: var(--color-primary-button-background-hover);
   --color-screenshot-button-foreground: var(--color-text-01);
-  --color-screenshot-secondary-button-background: var(--color-base04);
+  --color-screenshot-secondary-button-background: var(--color-secondary-button-background);
+  --color-screenshot-secondary-button-background-hover: var(--color-secondary-button-background-hover);
+  --color-screenshot-secondary-button-border: var(--color-secondary-button-border);
+  --color-screenshot-secondary-button-border-hover: var(--color-secondary-button-border-hover);
 }
 
 .kui--screenshot-button[data-active='true'] svg path {
@@ -34,9 +39,18 @@ body .bx--toast-notification {
       }
       &.bx--btn--primary {
         background-color: var(--color-screenshot-primary-button-background);
+        border: var(--color-screenshot-primary-button-border);
+        &:hover {
+          background-color: var(--color-screenshot-primary-button-background-hover);
+        }
       }
       &.bx--btn--secondary {
         background-color: var(--color-screenshot-secondary-button-background);
+        border: var(--color-screenshot-secondary-button-border);
+        &:hover {
+          background-color: var(--color-screenshot-secondary-button-background-hover);
+          border: var(--color-screenshot-secondary-button-border-hover);
+        }
       }
     }
 
