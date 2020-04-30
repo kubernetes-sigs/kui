@@ -907,7 +907,10 @@ export const doExec = (
             cleanupEventHandlers()
             resizer.destroy()
 
-            if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
+            if (
+              (execOptions.type === ExecType.Nested && execOptions.quiet !== false) ||
+              resizer.wasEverInAltBufferMode()
+            ) {
               xtermContainer.remove()
             } else {
               xtermContainer.classList.add('xterm-terminated')
