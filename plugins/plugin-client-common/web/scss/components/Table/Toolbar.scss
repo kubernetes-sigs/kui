@@ -21,7 +21,7 @@ $toolbar-height: 1.875em;
     }
   }
   &[data-enabled='false'] svg {
-    filter: opacity(0.375);
+    fill: var(--color-base05);
   }
 }
 
