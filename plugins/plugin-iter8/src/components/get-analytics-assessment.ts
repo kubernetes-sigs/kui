@@ -2,7 +2,7 @@
 export default class GetAnalyticsAssessment {
   public data = {}
   public url = ''
-  public constructor(data, url = 'http://localhost:8000/assessment') {
+  public constructor(data, url = 'http://0.0.0.0:5555/assessment') {
     this.url = url
     this.data = data
   }
