@@ -1,12 +1,5 @@
 $toolbar-height: 1.875em;
 
-body[kui-theme-style='light'] {
-  .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title td,
-  .bx--data-table.kui--data-table-as-grid {
-    background-color: rgba(0, 0, 0, 0.01375);
-  }
-}
-
 .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title {
   padding-top: 0;
 }
