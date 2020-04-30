@@ -30,6 +30,7 @@ export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
             to="#"
             key={idx}
             className={[
+              'plain-anchor',
               _.className,
               _.deemphasize && 'kui--secondary-breadcrumb',
               idx === this.props.currentPageIdx && 'kui--current-page-breadcrumb',

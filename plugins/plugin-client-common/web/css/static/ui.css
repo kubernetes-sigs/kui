@@ -1136,9 +1136,9 @@ body[kui-theme-style] {
 body[kui-theme-style] a {
   color: var(--color-brand-01);
 }
-body[kui-theme-style] a:hover:not(.plain-anchor) {
+/* body[kui-theme-style] a:hover:not(.plain-anchor) {
   color: var(--color-support-04);
-}
+} */
 
 .header {
   background: var(--color-stripe-01);
