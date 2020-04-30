@@ -62,8 +62,8 @@ export function applyVirtualService(dr, userDecision) {
       destination: { host: dr['spec']['host'], subset: subsets[i]['name'] },
       weight: userDecision[subsets[i]['name']]['traffic_percentage']
     })
-    applyKube(virtualService)
   }
+  applyKube(virtualService)
 }
 
 export function applyTrafficSplit(userDecision) {
@@ -114,20 +114,34 @@ export function getUserDecision(ns: string, service: string, trafficDecision: Ar
 // To apply traffic split:
 // const sample = {
 //     "service_name": "reviews",
-//     "service_namespace": "bookinfo_iter8",
-//     "candidate-1": {
-//         "version_labels": {
-//                 'destination_service_namespace': "bookinfo-iter8",
-//                 'destination_workload': "reviews-v2"
-//             },
-//             "traffic_percentage": 20
-//     },
-//     "candidate-2": {
+//     "service_namespace": "bookinfo-iter8",
+//     "reviews-v3": {
 //         "version_labels": {
 //                 'destination_service_namespace': "bookinfo-iter8",
 //                 'destination_workload': "reviews-v3"
 //             },
-//             "traffic_percentage": 80
-//     }
+//             "traffic_percentage": 25
+//     },
+//     "reviews-v4": {
+//         "version_labels": {
+//                 'destination_service_namespace': "bookinfo-iter8",
+//                 'destination_workload': "reviews-v4"
+//             },
+//             "traffic_percentage": 25
+//     },
+//     "reviews-v5": {
+//         "version_labels": {
+//                 'destination_service_namespace': "bookinfo-iter8",
+//                 'destination_workload': "reviews-v5"
+//             },
+//             "traffic_percentage": 25
+//     },
+//     "reviews-v6": {
+//         "version_labels": {
+//                 'destination_service_namespace': "bookinfo-iter8",
+//                 'destination_workload': "reviews-v6"
+//             },
+//             "traffic_percentage": 25
+//     },
 // }
 // applyTrafficSplit(sample)

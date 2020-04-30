@@ -69,6 +69,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // For displaying Metric Comparison Section
   private metricTableHeaders = [];
   private metricTableRows = [];
+  private notifKey = 0;
   public constructor(props) {
     super(props)
     this.state = {
@@ -192,6 +193,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       let AnalyticsAssess = new GetAnalyticsAssessment(this.state.exprReq);
       AnalyticsAssess.getAnalyticsAssessment()
         .then((result) => {let jsonrlts = JSON.parse(JSON.parse(result));
+                console.log(JSON.stringify(jsonrlts, undefined, 2));
                 let traffic = this.getTrafficRecs(this.state.selectedAlgo, jsonrlts);
                 this.setState({haveResults: true, exprResult: jsonrlts, trafficSplit: traffic});
          })
@@ -237,7 +239,15 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     let time = d.toISOString();
     this.setState({currTime: time, confRouting: true});
   }
+
+  // Handle closing toast notification
+  private handleCloseNotif = () => {
+    console.log("Closed notification");
+    this.setState({confRouting: false});
+  }
+
    public render() {
+    ++this.notifKey;
     if(this.state.haveResults){
       this.getWinProbs();
       this.getAlgo();
@@ -311,11 +321,12 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         </Button>
         {this.state.confRouting ? 
           <ToastNotification
+            key={this.notifKey}
             caption={this.state.currTime}
             kind="success"
             title="Virtual Service Created"
             subtitle="Traffic is being re-routed. Allow a few seconds for changes to be implemented."
-            timeout={10000}
+            onCloseButtonClick={this.handleCloseNotif}
             style={{width: 680}}
           /> : null
         }
@@ -323,9 +334,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         <FormGroup legendText=''>
         {trafficSplit.map((val, idx) => {
           console.log(`At ${val.version}:`, val.split);
+          let sliderId = `${idx}=${val.split}`
           return(
               <Slider
-                key={idx}
+                key={sliderId}
                 value={val.split}
                 min={0}
                 max={100}

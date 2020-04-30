@@ -99,15 +99,7 @@ class RequestModel {
 	    		}
 			},
 			"candidates": this.getCandModel(formstate.ns, formstate.cand),
-			"last_state": null
 		};
-	}
-
-	public updateLastState(lastState:object, reqmodel:any): object{
-		var newmodel = reqmodel;
-		newmodel["last_state"]= lastState;
-		return newmodel;
-
 	}
 }
 export {
