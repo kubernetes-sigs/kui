@@ -20,6 +20,9 @@ body[kui-theme-style] {
   font-weight: 400;
   margin: 0;
   overflow: hidden;
+
+  /* see https://github.com/IBM/kui/issues/4414 */
+  -webkit-font-smoothing: unset;
 }
 .kui--full-height,
 .page {
@@ -305,13 +308,12 @@ code.fancy-code.hljs {
 }
 .grid-layout {
   display: grid;
-  grid-column-gap: 0.375em;
+  grid-column-gap: 0.875em;
   grid-template-columns: repeat(auto-fill, minmax(10em, auto));
   grid-template-rows: repeat(auto-fill, minmax(1.25em, auto));
   flex: 1;
 }
 .grid-layout > div {
-  margin-right: 0.5em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
