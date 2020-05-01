@@ -44,7 +44,7 @@ export const closed = async (app: Application) => {
 
 /** fully closed, not just minimized */
 export const fullyClosed = async (app: Application) => {
-  return app.client.waitForExist(Selectors.SIDECAR, waitTimeout, true).then(() => app)
+  return app.client.waitForExist(Selectors.SIDECAR_FULLY_CLOSED).then(() => app)
 }
 
 /** close the sidecar by ESCAPE key */

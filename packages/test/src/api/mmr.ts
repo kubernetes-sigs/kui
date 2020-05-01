@@ -354,7 +354,7 @@ export class TestMMR {
             }
           })
 
-        const minimize = () => {
+        /* const minimize = () => {
           it('should toggle the sidebar closed with close button click', async () => {
             try {
               await this.app.client.waitForVisible(Selectors.SIDECAR_CLOSE_BUTTON)
@@ -364,7 +364,7 @@ export class TestMMR {
               await Common.oops(this, true)
             }
           })
-        }
+        } */
 
         const backToOpen = (backFromMinimized: boolean) => {
           const button = backFromMinimized
@@ -389,11 +389,10 @@ export class TestMMR {
         toggleSidecarWithESC()
         showModes()
 
-        minimize()
-        backToOpen(true)
-
-        minimize()
-        showModes()
+        // minimize()
+        // backToOpen(true)
+        // minimize()
+        // showModes()
 
         maximize()
         backToOpen(false)

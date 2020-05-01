@@ -22,7 +22,7 @@ import {
   ArrowLeft16 as BackIcon,
   ArrowRight16 as ForwardIcon,
   ChevronDown16 as CloseIcon,
-  Close16 as QuitIcon
+  Close20 as QuitIcon
 } from '@carbon/icons-react'
 
 import Width from './width'
@@ -209,7 +209,7 @@ export default class Window extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">
             {this.maximizeButton()}
-            {this.closeButton()}
+            {/* this.closeButton() */}
             {this.quitButton()}
           </div>
         </div>

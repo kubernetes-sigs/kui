@@ -39,6 +39,7 @@ import '../../../../web/css/static/sidecar-main.css'
  */
 export interface SidecarOptions {
   defaultWidth?: string
+  onClose?: () => void
   willLoseFocus?: () => void
   willChangeSize?: (desiredWidth: string) => void
 }
@@ -46,7 +47,6 @@ export interface SidecarOptions {
 export type Props = SidecarOptions & {
   uuid?: string
   tab?: KuiTab
-  onClose?: () => void
 }
 
 export interface BaseHistoryEntry {
@@ -260,7 +260,7 @@ export abstract class BaseSidecar<
   }
 
   protected onClose() {
-    this.setState({ width: Width.Closed })
+    this.setState(curState => ({ width: Width.Closed, priorWidth: curState.width }))
 
     if (this.props.onClose) {
       this.props.onClose()
@@ -284,7 +284,7 @@ export abstract class BaseSidecar<
       case Width.Default:
         return 'visible'
       default:
-        return ''
+        return 'visible'
     }
   }
 

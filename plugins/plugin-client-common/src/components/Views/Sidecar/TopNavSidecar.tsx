@@ -328,7 +328,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
 
   public render() {
     if (!this.current || !this.current.response) {
-      return <div />
+      return <div>hi</div>
     }
     try {
       const breadcrumbs = [
