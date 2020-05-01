@@ -12,7 +12,6 @@ export const STATUS_STRIPE_PROMPT = `${STATUS_STRIPE_BLOCK} input`
 export const OOPS = `${CURRENT_TAB} .repl .repl-block .oops`
 export const SIDECAR = `${SIDECAR_BASE}.visible:not(.minimized)`
 export const SIDECAR_WITH_FAILURE = `${SIDECAR_BASE}.visible.activation-success-false`
-export const SIDECAR_HIDDEN = `${SIDECAR_BASE}:not(.visible)`
 export const SIDECAR_ACTIVATION_TITLE = `${SIDECAR} .kui--sidecar-entity-name-hash .bx--link`
 export const SIDECAR_TITLE = `${SIDECAR} .kui--sidecar-entity-name .bx--link`
 export const SIDECAR_LEFTNAV_TITLE = `${SIDECAR} .sidecar-header-name-content .bx--side-nav__submenu-title`
@@ -34,6 +33,10 @@ export const SIDECAR_SEQUENCE_CANVAS_NODES = `${SIDECAR_SEQUENCE_CANVAS} .node.a
 export const SIDECAR_SEQUENCE_CANVAS_NODE_N = (N: number) => `${SIDECAR_SEQUENCE_CANVAS_NODES}[data-task-index="${N}"]`
 export const SIDECAR_LIMIT = (type: string) => `${SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 export const SIDECAR_BADGES = `${SIDECAR} .sidecar-header .badges`
+
+// top tab stripe buttons
+export const TERMINAL_AND_SIDECAR_BUTTON = `#kui--custom-top-tab-stripe-button-container [data-mode="show terminal and sidecar"]`
+export const ONLY_TERMINAL_BUTTON = `#kui--custom-top-tab-stripe-button-container [data-mode="show only terminal"]`
 
 // sidecar toolbar
 export const SIDECAR_TOOLBAR = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
@@ -69,6 +72,7 @@ export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
 export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close a` // resume button in minimized mode
 export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
+export const SIDECAR_FULLY_CLOSED = `${CURRENT_TAB} .kui--secondary-closed .kui--sidecar`
 export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`

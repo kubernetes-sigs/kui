@@ -1,432 +1,224 @@
 @import "SidecarCommon.css";
 
-/* Duplicate rule with line 13-15 in ui.css */
 .kui--sidecar {
   height: 100%;
   max-height: 100%;
   overflow-x: hidden;
-}
-.kui--sidecar .header-top-bits {
-  display: flex;
-  padding-left: 1em;
-  margin: 0.75em 0 0;
-}
-/* Duplicate rule with line 435, 436, 2025 in ui.css */
-.kui--sidecar.rule-enabled-false .sidecar-header-icon {
-  opacity: 1 !important;
-  white-space: pre-wrap;
-  color: var(--color-error);
-}
-/* Duplicate rule with line 522-523 in ui.css */
-.kui--tab-content:not(.sidecar-full-screen) .kui--sidecar .fifty-fifty {
-  max-width: unset;
-  margin-right: unset;
-}
-/* Duplicate rule with line 604-613 in ui.css */
-.sidecar-header [data-tag="badge"]:not(.badge-as-image) {
-  font-weight: 500;
-  font-size: 0.825em;
-  border-radius: 0.9375em;
-  margin: 0.1875em;
-  padding: 0 0.825em;
-  height: 1.925em;
-  line-height: 1.925em;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-.kui--sidecar {
-  flex: 0 0 0%;
-  min-width: 0;
+
+  /* float above the repl and SplitPane draggable */
+  z-index: 1;
+
   transition-property: background-color, color, border-color;
   transition-duration: calc(var(--transition-duration) * 2); /* twice the normal duration */
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
   background: var(--color-sidecar-background-01);
-}
-.kui--sidecar.visible {
-  flex: 6;
-  z-index: 1; /* float above the repl */
-}
-.sidecar-bottom-stripe {
-  flex-basis: 2.5em;
-  display: flex;
-  z-index: 5;
-  background-color: var(--color-stripe-02);
-  /* border-bottom: 1px inset var(--color-ui-02); */
-}
-.kui--sidecar .sidecar-bottom-stripe > div {
-  font-size: 0.875em;
-}
-.kui--sidecar .sidecar-bottom-stripe-left-bits,
-.kui--sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
-  /* button container in sidecar bottom stripe */
-  flex: 1;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.kui--sidecar .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
-  /* back button container in sidecar bottom stripe */
-  flex: 0 0 0%;
-  min-width: 0;
-}
-.kui--sidecar
-  .sidecar-bottom-stripe-left-bits
-  .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
-  flex: initial;
-  margin-right: 0;
-  padding: 0 calc(1em - 0.375em); /* the button inside has 0.375em padding left-right */
-}
-.kui--sidecar .sidecar-bottom-stripe-close-icon {
-  letter-spacing: -1ex;
-  opacity: 0.6;
-  transition-property: all;
-}
-body.os-win32 .kui--sidecar .sidecar-bottom-stripe-close-icon {
-  /* dunno why windows is weird here */
-  letter-spacing: 0px;
-}
 
-.kui--sidecar .sidecar-bottom-stripe .package-prefix {
-  /* kubectl namespace and openwhisk package name, etc. */
-  display: block;
-  font-weight: 400;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.kui--sidecar .sidecar-header .limits {
-  /* don't show limits in header for now */
-  display: none;
-}
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover,
-.kui--sidecar .sidecar-bottom-stripe-button.hover {
-  cursor: pointer;
-  opacity: 1;
-}
-.kui--sidecar .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active).force-no-hover:hover,
-.kui--sidecar .sidecar-bottom-stripe-button.force-no-hover.hover {
-  /* e.g. the screenshot plugin wants to disallow tooltips on the
-   "capture screenshot" button while capturing a screenshot! */
-  color: inherit !important;
-  transition: none !important;
-}
-.sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon,
-.sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon,
-.sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
-  /* on hover, squeeze the >> a bit closer together */
-  letter-spacing: -1.25ex;
-}
-body.os-win32 .kui--sidecar .sidecar-bottom-stripe-close:hover .sidecar-bottom-stripe-close-icon,
-body.os-win32 .kui--sidecar .sidecar-bottom-stripe-close.hover .sidecar-bottom-stripe-close-icon,
-body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidecar-bottom-stripe-close-icon {
-  letter-spacing: -1px; /* windows is different here */
-}
-.kui--sidecar .sidecar-bottom-stripe-back-bits,
-.sidecar-bottom-stripe .fill-container {
-  /* back button in sidecar bottom stripe */
-  border-right: 1px solid var(--color-table-border2);
-  padding-right: 0.475rem;
-  margin-right: 0.475rem;
-}
-.kui--sidecar .sidecar-bottom-stripe-back-bits > div {
-  display: flex;
-  align-items: center;
-}
-.kui--sidecar .sidecar-bottom-stripe-back-bits > div:hover {
-  opacity: 1;
-}
-.kui--sidecar .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits:not(.has-back-button) {
-  display: none;
+  .header-top-bits {
+    display: flex;
+    padding-left: 1em;
+    margin: 0.75em 0 0;
+  }
+
+  .sidecar-bottom-stripe {
+    flex-basis: 2.5em;
+    display: flex;
+    z-index: 5;
+    background-color: var(--color-stripe-02);
+    /* border-bottom: 1px inset var(--color-ui-02); */
+  }
+  .sidecar-bottom-stripe > div {
+    font-size: 0.875em;
+  }
+  .sidecar-bottom-stripe-left-bits,
+  .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
+    /* button container in sidecar bottom stripe */
+    flex: 1;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits {
+    /* back button container in sidecar bottom stripe */
+    flex: 0 0 0%;
+    min-width: 0;
+  }
+
+  .sidecar-bottom-stripe-left-bits
+    .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
+    flex: initial;
+    margin-right: 0;
+    padding: 0 calc(1em - 0.375em); /* the button inside has 0.375em padding left-right */
+  }
+  .sidecar-bottom-stripe-close-icon {
+    letter-spacing: -1ex;
+    opacity: 0.6;
+    transition-property: all;
+  }
+
+  .sidecar-bottom-stripe .package-prefix {
+    /* kubectl namespace and openwhisk package name, etc. */
+    display: block;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sidecar-header .limits {
+    /* don't show limits in header for now */
+    display: none;
+  }
 }
 
 /* sidecar view-button "flush right" toolbar */
-.kui--sidecar .sidecar-bottom-stripe-toolbar {
+.sidecar-bottom-stripe-toolbar {
   display: flex;
   overflow: visible; /* for tooltip visibility */
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text,
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits {
-  background-color: var(--color-sidecar-toolbar-background);
-  color: var(--color-sidecar-toolbar-foreground);
-  height: 1.5em;
-  line-height: 1.5em;
-  display: flex;
-  align-items: center;
-  flex: 1;
-  overflow: visible; /* for tooltip visibility */
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text svg path {
-  fill: var(--color-sidecar-toolbar-foreground);
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="warning"] svg path {
-  fill: var(--color-warning);
-}
-.kui--sidecar
-  .sidecar-bottom-stripe-toolbar
-  .sidecar-toolbar-text[data-type="warning"]
-  svg
-  path[data-icon-path="inner-path"],
-.kui--sidecar
-  .sidecar-bottom-stripe-toolbar
-  .sidecar-toolbar-text[data-type="error"]
-  svg
-  path[data-icon-path="inner-path"] {
-  fill: var(--color-white);
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type="error"] svg path {
-  fill: var(--color-error);
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text:not([data-type]),
-.kui--sidecar
-  .sidecar-bottom-stripe-toolbar
-  .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
-  display: none !important;
-}
-.kui--sidecar
-  .sidecar-bottom-stripe-toolbar
-  .sidecar-toolbar-text:not([data-type])
-  + .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:not(:empty) {
-  flex: 1;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon,
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-content {
-  opacity: 0.875;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon {
-  margin-right: 0.375em;
-  margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
-  padding-left: 1em;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text-icon > svg {
-  display: none;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text[data-type] svg {
-  display: block;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-toolbar-text .sidecar-toolbar-text-content {
-  font-size: 0.75em;
-  display: block;
-  letter-spacing: 0.32px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-button {
-  display: flex;
-  line-height: 1.5em;
-  padding: 0 0.5em;
-  color: inherit;
 
-  &:hover {
-    cursor: pointer;
+  .sidecar-toolbar-text,
+  .sidecar-bottom-stripe-mode-bits {
+    background-color: var(--color-sidecar-toolbar-background);
+    color: var(--color-sidecar-toolbar-foreground);
+    height: 1.5em;
+    line-height: 1.5em;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: visible; /* for tooltip visibility */
+  }
+  .sidecar-toolbar-text svg path {
+    fill: var(--color-sidecar-toolbar-foreground);
+  }
+  .sidecar-toolbar-text[data-type="warning"] svg path {
+    fill: var(--color-warning);
+  }
+
+  .sidecar-toolbar-text[data-type="warning"] svg path[data-icon-path="inner-path"],
+  .sidecar-toolbar-text[data-type="error"] svg path[data-icon-path="inner-path"] {
+    fill: var(--color-white);
+  }
+  .sidecar-toolbar-text[data-type="error"] svg path {
+    fill: var(--color-error);
+  }
+  .sidecar-toolbar-text:not([data-type]),
+  .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {
+    display: none !important;
+  }
+  .sidecar-toolbar-text:not([data-type])
+    + .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:not(:empty) {
+    flex: 1;
+  }
+  .sidecar-toolbar-text-icon,
+  .sidecar-toolbar-text-content {
+    opacity: 0.875;
+  }
+  .sidecar-toolbar-text-icon {
+    margin-right: 0.375em;
+    margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
+    padding-left: 1em;
+  }
+  .sidecar-toolbar-text-icon > svg {
+    display: none;
+  }
+  .sidecar-toolbar-text[data-type] svg {
+    display: block;
+  }
+  .sidecar-toolbar-text .sidecar-toolbar-text-content {
+    font-size: 0.75em;
+    display: block;
+    letter-spacing: 0.32px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sidecar-bottom-stripe-button {
+    display: flex;
+    line-height: 1.5em;
+    padding: 0 0.5em;
+    color: inherit;
+
+    &:hover {
+      cursor: pointer;
+      [role="tab"] {
+        color: var(--color-base03);
+      }
+    }
     [role="tab"] {
-      color: var(--color-base03);
+      display: flex;
+      font-size: 0.875em;
     }
   }
-  [role="tab"] {
+  .graphical-icon svg {
+    fill: var(--color-sidecar-toolbar-foreground);
+  }
+  .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
+    padding: 0 1em;
     display: flex;
-    font-size: 0.875em;
+    flex: initial;
+  }
+
+  .sidecar-toolbar-text a,
+  .sidecar-toolbar-text a:hover {
+    color: inherit !important;
   }
 }
-.kui--sidecar .sidecar-bottom-stripe-toolbar .graphical-icon svg {
-  fill: var(--color-sidecar-toolbar-foreground);
-}
-.kui--sidecar .sidecar-bottom-stripe-toolbar .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
-  padding: 0 1em;
-  display: flex;
-  flex: initial;
+
+.kui--sidecar {
+  .sidecar-content-container,
+  .custom-content {
+    display: flex;
+    flex: 1;
+    min-height: 0; /* without this, in firefox wskflow pushes the bottom stripe off the bottom of the viewport */
+  }
 }
 
-.kui--sidecar .sidecar-content-container,
-.kui--sidecar .custom-content {
-  display: flex;
-  flex: 1;
-  min-height: 0; /* without this, in firefox wskflow pushes the bottom stripe off the bottom of the viewport */
-}
 .kui--sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
   min-height: 1em;
-}
-.kui--sidecar .sidecar-header .header-main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 
-  /* this is needed, as we rotate the "sidecar-header-icon", which confuses chrome in terms of width occupancy;
-       see sidecar .sidecar-header-icon-wrapper; the 4em parts must match! */
-  /* width: calc(100% - 4em); */
+  .header-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 
-  /* this is needed to work around firefox's odd behavior with nested
+    /* this is needed to work around firefox's odd behavior with nested
    flex boxes versus text-overflow; see
    https://github.com/IBM/kui/issues/1334 */
-  min-width: 0;
-}
-.kui--sidecar .header-right-bits {
-  white-space: nowrap;
-  margin: 0 1em;
-}
-.sidecar-header .kind {
-  font-variant: small-caps;
-  flex: 1;
-  margin-top: 1ex;
-}
-.sidecar-header .action-content .kind {
-  font-size: 0.875rem;
-  font-variant: normal;
-  font-weight: 300;
-  font-family: inherit;
-  margin: 0;
-}
-.header-right-bits .action-content,
-.header-right-bits .custom-header-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  align-items: flex-end;
-  justify-content: space-evenly;
-}
-.sidecar-header .badges:not(:empty) + .activation-duration {
-  margin-top: 0.1em;
-  font-size: 1.5em;
-}
-.sidecar-header .activation-duration,
-.sidecar-header .kind {
-  font-weight: bold;
-  font-size: 2.5em;
-}
-.kui--sidecar .sidecar-header-text {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.kui--sidecar .sidecar-header-icon {
-  text-transform: uppercase;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.kui--sidecar .sidecar-toolbar-text a,
-.kui--sidecar .sidecar-toolbar-text a:hover {
-  color: inherit !important;
-}
-.kui--sidecar .sidecar-header-icon-wrapper > span {
-  padding: 0 1em;
-}
-.kui--sidecar .sidecar-header-icon-wrapper + .sidecar-header-icon-wrapper > span:not(:empty) {
-  border-left: 1px solid var(--color-table-border2);
-}
-.kui--sidecar .sidecar-header-icon-wrapper {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.kui--sidecar .header-left-bits {
-  align-items: stretch;
-  overflow: hidden;
-}
-.kui--sidecar .sidecar-header-icon {
-  font-weight: 600;
-  letter-spacing: 1px;
-  pointer-events: none; /* with text rotation, this element bumps into neighbors, otherwise obfuscating mouse events */
-}
-.kui--sidecar .sidecar-header-name {
-  flex: 1;
-  font-weight: 400;
-  font-size: 2em;
-  display: flex;
-  align-items: center;
+    min-width: 0;
+  }
+  .header-right-bits {
+    white-space: nowrap;
+    margin: 0 1em;
 
-  /* the bit of padding allows for space to initiate a drag-select of
-   the header name text */
-  padding-right: 1rem;
-  -webkit-app-region: no-drag !important;
-}
-.kui--sidecar .sidecar-header .entity-name-line {
-  display: flex;
-  align-items: center;
-}
-.kui--sidecar.entity-has-badges .sidecar-header .header-right-bits .action-content {
-  display: flex;
-}
-.kui--sidecar .sidecar-header .badges {
-  margin-left: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-}
-.kui--sidecar .sidecar-header .badges:first-child {
-  margin-left: 0;
-}
-.kui--sidecar .sidecar-header badge.clickable:hover {
-  filter: brightness(1.1);
-}
-.kui--sidecar .sidecar-header-name-content {
-  overflow-x: hidden;
-}
-.kui--sidecar .sidecar-header-name-content .entity-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-  word-break: break-all;
-  max-height: 2.35em;
+    .custom-header-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      align-items: flex-end;
+      justify-content: space-evenly;
+    }
+  }
+  .sidecar-header-text {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
-  /* these two rules help us to simulate left-ellision */
-  /* direction: rtl;
-    text-align: left; */
+  .badges {
+    margin-left: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
 }
-.kui--sidecar .sidecar-header-name-content[data-has-name-hash] .entity-name {
-  white-space: nowrap;
-}
-.kui--sidecar .sidecar-header-name-content > span {
-  display: block;
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.kui--sidecar .sidecar-header-name .package-prefix {
-  font-size: 0.875rem;
-  max-width: none;
-  text-transform: uppercase;
-  letter-spacing: 1.6px;
-}
-.kui--sidecar .sidecar-header-name .entity-name-hash {
-  font-family: var(--font-monospace);
-  font-size: 75%;
-  color: var(--color-text-02);
-  font-size: 1rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.kui--sidecar.entity-is-activations .sidecar-header-name .package-prefix {
-  /* don't display package name for activations? hmm */
-  display: none;
-}
-.kui--sidecar.entity-is-activations .sidecar-header-name .sidecar-header-name-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.kui--sidecar .sidecar-header-secondary-content {
-  padding-left: 1rem;
-  font-size: 0.875em;
-  display: flex;
-  align-items: center;
-  color: var(--color-text-02);
-  letter-spacing: 0.32px;
-  line-height: 1.25em;
-}
-.kui--sidecar .sidecar-header-secondary-content .kind-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
 .kui--sidecar .sidecar-content {
   flex: 1;
   overflow-y: auto;
@@ -434,7 +226,6 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   flex-direction: column;
 }
 .kui--sidecar .sidecar-content > div,
-.kui--sidecar .sidecar-content .activation-content > pre > code,
 .kui--sidecar .custom-content pre > code,
 .kui--sidecar .padding-content {
   display: block;
@@ -444,170 +235,9 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   /* for scrollable padding-content, we want the scrollbar to be flush-right */
   flex: 1;
 }
-.kui--sidecar .sidecar-content .hook-for-third-party-content.no-content {
-  display: none;
-}
-.kui--sidecar .sidecar-header .activation-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.kui--sidecar .sidecar-content .activation-content {
-  padding: 0;
-}
-.kui--sidecar .sidecar-content .activation-content,
-.kui--sidecar .sidecar-content .hook-for-third-party-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.entity-web-export-url:not(.has-url) {
-  display: none;
-}
-.kui--sidecar .activation-status {
-  color: white;
-  font-size: 2.5rem;
-  border-radius: 50%;
-  width: 4rem;
-  height: 4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 0.5ex;
-}
 .kui--sidecar pre {
   /* no margin for action source code */
   margin: 0;
-}
-.kui--sidecar .action-content > pre {
-  /* some odd issue here; pre > code will give us the pre-wrap */
-  white-space: normal;
-}
-.kui--sidecar:not(.entity-is-actions):not(.entity-is-apps):not(.entity-is-compositions) .action-content {
-  display: none;
-}
-.kui--sidecar:not(.entity-is-activations) .activation-content {
-  display: none;
-}
-.kui--sidecar.no-activation-timing-data .sidecar-header-secondary-content {
-  /* no timing information for activations */
-  display: none;
-}
-.kui--sidecar:not(.entity-is-packages) .package-content {
-  display: none;
-}
-.kui--sidecar.entity-is-packages:not(entity-is-package-binding) .package-binding-signifier {
-  display: none;
-}
-.kui--sidecar:not(.entity-is-rules) .rule-content {
-  display: none;
-}
-.kui--sidecar:not(.entity-is-triggers) .trigger-content {
-  display: none;
-}
-/* Duplicate rule with line 654-658 in ui.css */
-.kui--sidecar.entity-is-actions:not(.entity-is-sequence) .action-source,
-.kui--sidecar .activation-result {
-  font-family: var(--font-monospace);
-  font-weight: 400;
-  font-size: 0.875em;
-  white-space: pre-wrap;
-  background: transparent;
-}
-.package-content-count {
-  font-weight: bold;
-}
-.rule-components {
-  display: flex;
-  justify-content: center;
-}
-.kui--sidecar:not(.entity-is-sequence) .sequence-components {
-  display: none;
-}
-.sequence-components {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.sequence-component {
-  border: 3px solid;
-  margin: 1em;
-  height: 5em;
-  width: 5em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1em;
-  position: relative;
-}
-.sequence-component:before {
-  content: " ";
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  border: 3px solid rgba(0, 0, 0, 0.075);
-}
-.sequence-component:hover:before {
-  border-color: rgba(0, 0, 0, 0.2);
-}
-.sequence-component.trigger-node {
-  border-radius: 0;
-}
-.sequence-component.trigger-node:before {
-  border-radius: 0;
-}
-.sequence-component:hover {
-  cursor: pointer;
-  height: 11.25em; /* 25% larger */
-  width: 20em; /* 25% larger */
-}
-.sequence-component-inner .emphasize {
-  font-size: 1.4375rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.sequence-component-inner .deemphasize {
-  opacity: 1;
-  margin: 1ex;
-}
-.sequence-component {
-  height: 9em;
-  width: 16em;
-}
-.sequence-component:not(:last-child):after {
-  /* edge */
-  content: "";
-  border: 1px solid #333;
-  outline: 1px solid #999;
-  position: absolute;
-  height: 2em;
-  top: calc(100% + 4px);
-  left: 50%;
-}
-.horizontal-canvas .sequence-component:not(:last-child):after {
-  height: 0px;
-  width: calc(2em - 2px);
-  top: 50%;
-  left: calc(100% + 3px);
-}
-.sequence-component .sequence-component-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /*white-space: nowrap;*/
-  font-variant: small-caps;
-  font-weight: 400;
-  word-break: break-all;
-}
-
-/* sidecar cost */
-.activation-estimated-cost-container {
-  display: none;
 }
 
 /* generic */
@@ -655,48 +285,8 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
   justify-content: flex-end;
 }
 
-.kui--sidecar [data-balloon]:before,
-.kui--sidecar [data-balloon]:after {
-  transition-delay: 750ms;
-}
-
 .kui--sidecar .sidecar-header-icon-wrapper > span {
   padding: 0 0.5em;
-}
-
-/* sidecar minimize to stripe */
-[kui-theme-style] .kui--sidecar {
-  &.minimized {
-    position: absolute !important;
-    right: 2em;
-    bottom: 0;
-    max-width: 30em;
-    height: 2.25em;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border: 1px solid transparent;
-    border-bottom: none;
-
-    .sidecar-bottom-stripe {
-      flex-basis: 2.25em;
-      min-height: 2.25em;
-      .toggle-sidecar-button a {
-        transform: rotate(-180deg);
-      }
-    }
-  }
-}
-
-@keyframes fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-.fade-in {
-  animation: fadein 1s ease-in-out;
 }
 
 /* grabbable elements */
@@ -755,149 +345,38 @@ body.os-win32 .kui--sidecar .sidecar-bottom-stripe-button-container:hover .sidec
 .sidecar-bottom-stripe {
   color: var(--color-text-01);
   background: var(--color-stripe-02);
-}
-.sidecar-non-window-buttons .sidecar-bottom-stripe-button:last-child .graphical-icon {
-  border-right: 1px solid var(--color-table-border1);
-}
-.sidecar-bottom-stripe-right-bits,
-.sidecar-non-window-buttons,
-.sidecar-window-buttons {
-  display: flex;
-}
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 0.1875em;
 
-  a {
-    padding: 3px;
+  .sidecar-bottom-stripe-right-bits,
+  .sidecar-non-window-buttons,
+  .sidecar-window-buttons {
     display: flex;
-    svg {
-      fill: var(--color-text-02);
-    }
   }
-  &:hover {
+  .sidecar-bottom-stripe-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.1875em;
+
     a {
-      background-color: var(--color-table-border1);
+      padding: 3px;
+      display: flex;
       svg {
-        fill: var(--color-text-01);
+        fill: var(--color-text-02);
+      }
+    }
+    &:hover {
+      a {
+        background-color: var(--color-table-border1);
+        svg {
+          fill: var(--color-text-01);
+        }
       }
     }
   }
 }
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button:not(.sidecar-bottom-stripe-button-active):hover,
-.sidecar-bottom-stripe .sidecar-bottom-stripe-button.hover,
-.sidecar-bottom-stripe-button-as-button.selected {
-  color: var(--color-base0D);
-}
-
-.kui--sidecar .sidecar-header-icon {
-  color: var(--color-name-sidecar);
-}
-
-.package-prefix {
-  font-weight: 300;
-}
-
-.sequence-component {
-  background-color: var(--color-ui-05);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.header .clickable:hover {
-  color: var(--color-support-04);
-}
 
 .kui--sidecar .custom-content .log-field pre > code {
   padding: 1em;
-}
-
-/* override the carbon color when tabbing through sidecar tabs */
-.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
-  .bx--tabs__nav-link:focus,
-.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
-  a.bx--tabs__nav-link:active {
-  color: var(--color-text-02);
-}
-.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link:focus,
-.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link:active {
-  outline-color: var(--color-brand-03);
-}
-
-[kui-theme-style] .kui--sidecar {
-  .bx--tabs,
-  .bx--tabs .bx--tabs__nav,
-  .bx--tabs .bx--tabs__nav li,
-  .bx--tabs .bx--tabs__nav li a {
-    width: unset;
-    min-height: unset;
-    position: unset;
-    font-size: unset;
-  }
-  a.bx--tabs__nav-link,
-  a.bx--tabs__nav-link:active {
-    outline: none;
-    width: unset;
-    min-width: 8em;
-  }
-
-  .bx--tabs {
-    font-size: 0.875em;
-    line-height: 1.125em;
-    overflow-x: auto;
-    .bx--tabs__nav {
-      background: none;
-      box-shadow: none;
-    }
-    .bx--tabs__nav--hidden {
-      display: flex;
-      flex-direction: row;
-      max-height: unset;
-    }
-  }
-  .bx--tabs-trigger {
-    display: none;
-  }
-  .bx--tabs__nav-item {
-    background: transparent;
-    height: 2.5em;
-    margin-left: 0.125em;
-  }
-
-  a.bx--tabs__nav-link {
-    letter-spacing: 0.16px;
-    padding: 0.5em 1em;
-    height: 2.5em;
-    line-height: 1.125em;
-    margin: 0;
-  }
-
-  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) {
-    display: flex;
-    background-color: transparent;
-  }
-
-  .bx--tabs__nav-item--selected .bx--tabs__nav-link {
-    color: var(--color-text-01);
-    font-weight: 600;
-    border-bottom: 2px solid var(--color-brand-03);
-    opacity: 1;
-  }
-}
-
-body[kui-theme-style] a.bx--tabs__nav-link {
-  color: var(--color-text-01);
-  border-bottom: 2px solid var(--color-text-02);
-  opacity: 0.875;
-}
-
-/* override carbon color when hovering over tab */
-[kui-theme-style]
-  .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
-  .bx--tabs__nav-link {
-  color: var(--color-text-01) !important;
-  border-color: var(--color-text-01) !important;
 }
 
 .kui--sidecar.visible .kui--sidecar-header-and-body {

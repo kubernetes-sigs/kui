@@ -32,7 +32,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  describe(`${command} get pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} get pod no watch ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
