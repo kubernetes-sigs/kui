@@ -32,7 +32,6 @@ import {
   Button
 } from '@kui-shell/core'
 
-import Width from './width'
 import Badge from './Badge'
 import { BreadcrumbView } from '../Breadcrumb/'
 import ToolbarContainer from './ToolbarContainer'
@@ -135,7 +134,6 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     this.state = {
       repl: undefined,
       tab: undefined,
-      width: Width.Closed,
 
       history: undefined,
       current: undefined
@@ -328,7 +326,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
 
   public render() {
     if (!this.current || !this.current.response) {
-      return <div />
+      return <div>hi</div>
     }
     try {
       const breadcrumbs = [

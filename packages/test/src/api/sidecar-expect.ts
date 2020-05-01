@@ -36,15 +36,14 @@ export const fullscreen = async (app: Application) => {
   return app.client.waitForVisible(Selectors.SIDECAR_FULLSCREEN, waitTimeout).then(() => app)
 }
 
-/** either minimized or fully closed */
-export const closed = async (app: Application) => {
-  await app.client.waitForExist(Selectors.SIDECAR_HIDDEN, waitTimeout).then(() => app)
-  await new Promise(resolve => setTimeout(resolve, 600)) // wait for the transition effect
-}
-
 /** fully closed, not just minimized */
 export const fullyClosed = async (app: Application) => {
-  return app.client.waitForExist(Selectors.SIDECAR, waitTimeout, true).then(() => app)
+  return app.client.waitForExist(Selectors.SIDECAR_FULLY_CLOSED).then(() => app)
+}
+
+/** either minimized or fully closed */
+export const closed = async (app: Application) => {
+  return fullyClosed(app)
 }
 
 /** close the sidecar by ESCAPE key */

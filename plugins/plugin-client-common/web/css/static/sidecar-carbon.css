@@ -1,0 +1,86 @@
+/* override the carbon color when tabbing through sidecar tabs */
+.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
+  .bx--tabs__nav-link:focus,
+.bx--tabs__nav-item:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled):not(.bx--tabs__nav-item--selected)
+  a.bx--tabs__nav-link:active {
+  color: var(--color-text-02);
+}
+.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link:focus,
+.bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) .bx--tabs__nav-link:active {
+  outline-color: var(--color-brand-03);
+}
+
+[kui-theme-style] .kui--sidecar {
+  .bx--tabs,
+  .bx--tabs .bx--tabs__nav,
+  .bx--tabs .bx--tabs__nav li,
+  .bx--tabs .bx--tabs__nav li a {
+    width: unset;
+    min-height: unset;
+    position: unset;
+    font-size: unset;
+  }
+  a.bx--tabs__nav-link,
+  a.bx--tabs__nav-link:active {
+    outline: none;
+    width: unset;
+    min-width: 8em;
+  }
+
+  .bx--tabs {
+    font-size: 0.875em;
+    line-height: 1.125em;
+    overflow-x: auto;
+    .bx--tabs__nav {
+      background: none;
+      box-shadow: none;
+    }
+    .bx--tabs__nav--hidden {
+      display: flex;
+      flex-direction: row;
+      max-height: unset;
+    }
+  }
+  .bx--tabs-trigger {
+    display: none;
+  }
+  .bx--tabs__nav-item {
+    background: transparent;
+    height: 2.5em;
+    margin-left: 0.125em;
+  }
+
+  a.bx--tabs__nav-link {
+    letter-spacing: 0.16px;
+    padding: 0.5em 1em;
+    height: 2.5em;
+    line-height: 1.125em;
+    margin: 0;
+  }
+
+  .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) {
+    display: flex;
+    background-color: transparent;
+  }
+
+  .bx--tabs__nav-item--selected .bx--tabs__nav-link {
+    color: var(--color-text-01);
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-brand-03);
+    opacity: 1;
+  }
+}
+
+body[kui-theme-style] a.bx--tabs__nav-link {
+  color: var(--color-text-01);
+  border-bottom: 2px solid var(--color-text-02);
+  opacity: 0.875;
+}
+
+/* override carbon color when hovering over tab */
+[kui-theme-style]
+  .bx--tabs__nav-item:hover:not(.bx--tabs__nav-item--selected):not(.bx--tabs__nav-item--disabled)
+  .bx--tabs__nav-link {
+  color: var(--color-text-01) !important;
+  border-color: var(--color-text-01) !important;
+}

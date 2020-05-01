@@ -206,6 +206,9 @@ body.still-loading .repl {
 }
 
 /* generic */
+.flex-fill {
+  flex: 1;
+}
 .kui--rotate-180 {
   transform: rotate(180deg);
 }
@@ -1537,11 +1540,4 @@ body[kui-theme-style="dark"] .kui--inverted-color-context {
 #openwhisk-api-host,
 #openwhisk-namespace {
   pointer-events: none;
-}
-
-#kui--custom-top-tab-stripe-button-container {
-  /* e.g. holds the session disconnected icon */
-  display: flex;
-  flex: 1;
-  justify-content: flex-end;
 }

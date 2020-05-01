@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+import SplitPane from 'react-split-pane'
 import * as React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
-import SplitPane from 'react-split-pane'
+
+// icons
+import { Terminal32 as ShowOnlyTerminal, OpenPanelLeft32 as ShowTerminalAndSidecar } from '@carbon/icons-react'
 
 import Confirm from '../Views/Confirm'
 import Loading from '../Content/Loading'
+import Width from '../Views/Sidecar/width'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
 
 import '../../../web/css/static/split-pane.scss'
@@ -49,12 +53,19 @@ type Props = TabContentOptions &
     onTabReady?: (tab: KuiTab) => void
   }
 
+type CurrentlyShowing = 'TerminalOnly' | 'TerminalPlusSidecar'
+
 type State = Partial<WithTab> & {
   sessionInit: 'NotYet' | 'InProgress' | 'Done'
-  secondaryWidth: string
+
+  secondaryWidth: Width
+  priorSecondaryWidth: Width /* prior to closing */
+  secondaryHasContent: boolean
 
   splitPaneImpl?: SplitPane
   splitPaneImplHacked?: boolean
+
+  activeView: CurrentlyShowing
 }
 
 /**
@@ -86,7 +97,10 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.state = {
       tab: undefined,
       sessionInit: 'NotYet',
-      secondaryWidth: '0%'
+      secondaryWidth: Width.Closed,
+      priorSecondaryWidth: Width.Closed,
+      secondaryHasContent: false,
+      activeView: 'TerminalOnly'
     }
   }
 
@@ -169,8 +183,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
         <ScrollableTerminal
           {...this.props}
           tab={this.state.tab}
-          secondaryIsVisible={this.state.secondaryWidth !== '0%' && this.state.secondaryWidth !== '2em'}
-          closeSecondary={() => this.setState({ secondaryWidth: '0%' })}
+          secondaryIsVisible={this.state.secondaryWidth !== Width.Closed}
+          closeSecondary={() => this.setState({ secondaryWidth: Width.Closed })}
           ref={c => {
             // so that we can refocus/blur
             this._terminal = c
@@ -180,9 +194,25 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
-  private onWillChangeSize(secondaryWidth: string) {
-    this.setState({
-      secondaryWidth
+  private onWillChangeSize(desiredWidth: Width) {
+    this.setState(curState => {
+      const secondaryWidth = desiredWidth
+      const activeView = secondaryWidth === Width.Closed ? 'TerminalOnly' : 'TerminalPlusSidecar'
+
+      return {
+        secondaryHasContent: true,
+        secondaryWidth,
+        priorSecondaryWidth: curState.secondaryWidth,
+        activeView
+      }
+    })
+  }
+
+  private show(activeView: CurrentlyShowing) {
+    this.setState(curState => {
+      const secondaryWidth =
+        activeView === 'TerminalOnly' ? Width.Closed : curState.priorSecondaryWidth || Width.Split60
+      return { secondaryWidth, activeView, priorSecondaryWidth: curState.secondaryWidth }
     })
   }
 
@@ -198,6 +228,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       return React.cloneElement(node, {
         key,
         uuid: this.props.uuid,
+        width: this.state.secondaryWidth,
         willChangeSize: this.onWillChangeSize.bind(this),
         willLoseFocus: this.onWillLoseFocus.bind(this)
       })
@@ -241,76 +272,109 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.activateHandlers.forEach(handler => handler(this.props.active))
 
     return (
-      <div
-        ref={c => {
-          const tab = c as KuiTab
-          this.setState({ tab })
+      <React.Fragment>
+        <div
+          ref={c => {
+            const tab = c as KuiTab
+            this.setState({ tab })
 
-          if (tab) {
-            tab.onActivate = (handler: (isActive: boolean) => void) => {
-              this.activateHandlers.push(handler)
-            }
-            tab.offActivate = (handler: (isActive: boolean) => void) => {
-              const idx = this.activateHandlers.findIndex(_ => _ === handler)
-              if (idx >= 0) {
-                this.activateHandlers.splice(idx, 1)
+            if (tab) {
+              tab.onActivate = (handler: (isActive: boolean) => void) => {
+                this.activateHandlers.push(handler)
+              }
+              tab.offActivate = (handler: (isActive: boolean) => void) => {
+                const idx = this.activateHandlers.findIndex(_ => _ === handler)
+                if (idx >= 0) {
+                  this.activateHandlers.splice(idx, 1)
+                }
+              }
+
+              tab.addClass = (cls: string) => {
+                this.setState(curState => {
+                  if (!curState.tabClassList || !curState.tabClassList[cls]) {
+                    return {
+                      tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true })
+                    }
+                  }
+                })
+              }
+
+              tab.removeClass = (cls: string) => {
+                this.setState(curState => {
+                  if (curState.tabClassList && curState.tabClassList[cls]) {
+                    const update = Object.assign({}, curState.tabClassList)
+                    delete update[cls]
+                    return {
+                      tabClassList: update
+                    }
+                  }
+                })
               }
             }
+          }}
+          className={this.tabClassName()}
+          data-tab-id={this.props.uuid}
+        >
+          <div className="kui--rows">
+            <div className="kui--columns" style={{ position: 'relative' }}>
+              {this.leftRightSplit()}
+            </div>
 
-            tab.addClass = (cls: string) => {
-              this.setState(curState => {
-                if (!curState.tabClassList || !curState.tabClassList[cls]) {
-                  return {
-                    tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true })
-                  }
-                }
-              })
-            }
-
-            tab.removeClass = (cls: string) => {
-              this.setState(curState => {
-                if (curState.tabClassList && curState.tabClassList[cls]) {
-                  const update = Object.assign({}, curState.tabClassList)
-                  delete update[cls]
-                  return {
-                    tabClassList: update
-                  }
-                }
-              })
-            }
-          }
-        }}
-        className={this.tabClassName()}
-        data-tab-id={this.props.uuid}
-      >
-        <div className="kui--rows">
-          <div className="kui--columns" style={{ position: 'relative' }}>
-            <SplitPane
-              ref={c => {
-                this.setState({ splitPaneImpl: c })
-              }}
-              split="vertical"
-              resizerStyle={this.state.secondaryWidth === '100%' && { display: 'none' }}
-              minSize={0}
-              className={
-                this.state.secondaryWidth === '0%'
-                  ? 'kui--secondary-closed'
-                  : this.state.secondaryWidth === '2em'
-                  ? 'kui--secondary-minimized'
-                  : undefined
-              }
-              size={this.state.secondaryWidth}
-              primary="second"
-            >
-              {this.terminal()}
-              {this.children()}
-            </SplitPane>
+            {this.bottom()}
           </div>
-
-          {this.bottom()}
+          {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
         </div>
-        {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
-      </div>
+
+        {this.topTabButtons()}
+      </React.Fragment>
     )
+  }
+
+  /**
+   * [ Terminal | Sidecar ]
+   */
+  private leftRightSplit() {
+    return (
+      <SplitPane
+        ref={c => {
+          this.setState({ splitPaneImpl: c })
+        }}
+        split="vertical"
+        resizerStyle={this.state.secondaryWidth === Width.Maximized && { display: 'none' }}
+        minSize={0}
+        className={this.state.secondaryWidth === Width.Closed ? 'kui--secondary-closed' : undefined}
+        size={this.state.secondaryWidth}
+        primary="second"
+      >
+        {this.terminal()}
+        {this.children()}
+      </SplitPane>
+    )
+  }
+
+  /**
+   * Buttons that are placed in the TopTabStripe and which controller
+   * the visibility of various views.
+   */
+  protected topTabButtons() {
+    if (this.props.active && this.state.secondaryHasContent) {
+      return (
+        <div id="kui--custom-top-tab-stripe-button-container">
+          <ShowOnlyTerminal
+            data-mode="show only terminal"
+            data-active={this.state.activeView === 'TerminalOnly' || undefined}
+            onClick={this.state.activeView !== 'TerminalOnly' ? () => this.show('TerminalOnly') : undefined}
+          />
+
+          <ShowTerminalAndSidecar
+            data-mode="show terminal and sidecar"
+            data-active={this.state.activeView === 'TerminalPlusSidecar' || undefined}
+            onClick={
+              this.state.activeView !== 'TerminalPlusSidecar' ? () => this.show('TerminalPlusSidecar') : undefined
+            }
+          />
+        </div>
+      )
+    }
   }
 }

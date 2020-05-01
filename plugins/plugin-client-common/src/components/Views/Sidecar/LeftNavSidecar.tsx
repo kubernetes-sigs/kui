@@ -21,9 +21,9 @@ import { eventChannelUnsafe, Tab, Button, NavResponse, MultiModalMode, ParsedOpt
 import { Content } from 'carbon-components-react'
 
 import Width from './width'
+import Navigation from './Navigation/'
 import { getStateFromMMR } from './TopNavSidecar'
 import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
-import Navigation from './Navigation/'
 
 import 'carbon-components/scss/components/ui-shell/_content.scss'
 import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
@@ -76,7 +76,6 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     this.state = {
       repl: undefined,
       tab: undefined,
-      width: Width.Closed,
       history: undefined,
       current: undefined
     }
@@ -93,8 +92,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   }
 
   /** matching the old `flex: 3.5` compared to `flex: 4` for the Terminal */
-  protected defaultWidth() {
-    return '46.67%'
+  protected defaultWidth(): Width {
+    return Width.Split45
   }
 
   /** @return a `HistoryEntry` for the given `Response` */

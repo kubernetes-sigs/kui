@@ -24,6 +24,7 @@ import CircularBuffer from './CircularBuffer'
 
 import '../../../../web/css/static/sidecar.css'
 import '../../../../web/css/static/sidecar-main.css'
+import '../../../../web/css/static/sidecar-carbon.css'
 
 /**
  * In order to support a sidecar being managed from an enclosing
@@ -38,15 +39,19 @@ import '../../../../web/css/static/sidecar-main.css'
  *
  */
 export interface SidecarOptions {
-  defaultWidth?: string
+  defaultWidth?: Width
+  onClose?: () => void
+
+  /** Current presentation of the sidecar; e.g. Maximized or Closed or Default width? */
+  width?: Width
+  willChangeSize?: (width: Width) => void
+
   willLoseFocus?: () => void
-  willChangeSize?: (desiredWidth: string) => void
 }
 
 export type Props = SidecarOptions & {
   uuid?: string
   tab?: KuiTab
-  onClose?: () => void
 }
 
 export interface BaseHistoryEntry {
@@ -57,17 +62,6 @@ export interface BaseHistoryEntry {
 
 /** Mostly, this State deals with the current "width" of the view. */
 export interface BaseState<HistoryEntry extends BaseHistoryEntry> {
-  /** Current presentation of the sidecar; e.g. Maximized or Minimized or Default width? */
-  width: Width
-
-  /**
-   * To handle toggling: if the sidecar is Maximized, then *
-   * toggle+toggle should return us to Maximized; whereas if the
-   * sidecar is Default, then toggle+toggle should return us to
-   * Default... `priorWidth` state helps us manage this effect.
-   */
-  priorWidth?: Width
-
   /** TODO investigate removing these */
   repl: REPL
   tab: KuiTab
@@ -133,8 +127,7 @@ export abstract class BaseSidecar<
             tab,
             repl: tab.REPL,
             current,
-            history: new CircularBuffer(current, this.capacity()),
-            width: Width.Default
+            history: new CircularBuffer(current, this.capacity())
           }
         } else {
           if (existingIdx === -1) {
@@ -147,8 +140,7 @@ export abstract class BaseSidecar<
             tab,
             repl: tab.REPL,
             current,
-            history: curState.history,
-            width: Width.Default
+            history: curState.history
           }
         }
       }
@@ -180,94 +172,38 @@ export abstract class BaseSidecar<
     return this.state.current
   }
 
-  protected maximizedWidth() {
-    return '100%'
-  }
-
-  protected defaultWidth() {
-    return this.props.defaultWidth || '60%'
-  }
-
-  protected minimizedWidth() {
-    return '2em'
+  protected defaultWidth(): Width {
+    return this.props.defaultWidth || Width.Split60
   }
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (
-      evt.key === 'Escape' &&
-      this.state.width !== Width.Closed &&
-      !document.getElementById('confirm-dialog') &&
-      !isPopup()
-    ) {
-      this.setState(({ width: currentWidth, priorWidth }) => {
-        if (priorWidth !== undefined) {
-          if (this.props.willChangeSize) {
-            this.props.willChangeSize(priorWidth === Width.Default ? this.defaultWidth() : this.maximizedWidth())
-          }
-
-          return {
-            width: priorWidth,
-            priorWidth: undefined
-          }
-        } else {
-          if (this.props.willChangeSize) {
-            this.props.willChangeSize(this.minimizedWidth())
-          }
-
-          return {
-            width: Width.Minimized,
-            priorWidth: currentWidth
-          }
-        }
-      })
+    if (evt.key === 'Escape' && !document.getElementById('confirm-dialog') && !isPopup()) {
+      if (this.props.willChangeSize) {
+        this.props.willChangeSize(this.props.width === Width.Closed ? this.defaultWidth() : Width.Closed)
+      }
     }
   }
 
   protected onMaximize() {
-    this.setState({ width: Width.Maximized })
-
     if (this.props.willChangeSize) {
-      this.props.willChangeSize(this.maximizedWidth())
+      this.props.willChangeSize(Width.Maximized)
     }
   }
 
   protected onRestore() {
-    this.setState({ width: Width.Default })
-
     if (this.props.willChangeSize) {
       this.props.willChangeSize(this.defaultWidth())
     }
   }
 
-  protected onMinimize() {
-    this.setState(({ width }) => {
-      if (width === Width.Default && this.props.willLoseFocus) {
-        this.props.willLoseFocus()
-      }
-
-      const newWidth = width === Width.Minimized ? Width.Default : Width.Minimized
-
-      if (this.props.willChangeSize) {
-        this.props.willChangeSize(newWidth === Width.Default ? this.defaultWidth() : this.minimizedWidth())
-      }
-
-      return {
-        width: newWidth,
-        priorWidth: width === Width.Minimized ? undefined : width
-      }
-    })
-  }
-
   protected onClose() {
-    this.setState({ width: Width.Closed })
-
     if (this.props.onClose) {
       this.props.onClose()
     }
 
     if (this.props.willChangeSize) {
-      this.props.willChangeSize('0%')
+      this.props.willChangeSize(Width.Closed)
     }
   }
 
@@ -276,15 +212,11 @@ export abstract class BaseSidecar<
   }
 
   protected width(): Required<string> {
-    switch (this.state.width) {
-      case Width.Minimized:
-        return 'minimized'
+    switch (this.props.width) {
       case Width.Maximized:
         return 'visible maximized'
-      case Width.Default:
-        return 'visible'
       default:
-        return ''
+        return 'visible'
     }
   }
 
@@ -295,15 +227,14 @@ export abstract class BaseSidecar<
       <TitleBar
         {...props}
         repl={this.state.tab.REPL}
-        width={this.state.width}
+        width={this.props.width}
         fixedWidth={this.isFixedWidth()}
         onMaximize={this.onMaximize.bind(this)}
         onRestore={this.onRestore.bind(this)}
-        onMinimize={this.onMinimize.bind(this)}
         onClose={this.onClose.bind(this)}
         back={
           this.useArrowNavigation() &&
-          this.state.width !== Width.Minimized &&
+          this.props.width !== Width.Closed &&
           this.state.history.length > 1 && {
             enabled: true,
             onClick: () => {
@@ -313,7 +244,7 @@ export abstract class BaseSidecar<
         }
         forward={
           this.useArrowNavigation() &&
-          this.state.width !== Width.Minimized &&
+          this.props.width !== Width.Closed &&
           this.state.history.length > 1 && {
             enabled: true,
             onClick: () => {

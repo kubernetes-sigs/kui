@@ -170,8 +170,9 @@
 
   .kui--top-tab-buttons {
     display: flex;
+    flex: 1;
     align-items: center;
-    margin-left: 0.375em;
+    margin: 0 0.375em;
 
     .kui--new-tab__plus {
       display: flex;
@@ -180,14 +181,10 @@
       &:hover {
         background: var(--color-table-border3);
       }
+    }
 
-      svg {
-        fill: var(--color-text-02);
-
-        &:hover {
-          fill: var(--color-text-01);
-        }
-      }
+    svg {
+      fill: var(--color-text-02);
     }
   }
 }
@@ -211,5 +208,66 @@
 @media (max-width: 42rem) {
   .kui--top-tab-stripe {
     display: none;
+  }
+}
+
+#kui--custom-top-tab-stripe-button-container {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  z-index: 10000;
+
+  /* 2.75: height of header; 0.875: font size of header; 24px height of icons */
+  $headerHeight: 2.75em;
+  $headerFontSize: 0.875;
+  $iconSize: 32px;
+  $iconPadding: 5px;
+  top: calc(((#{$headerHeight} * #{$headerFontSize}) - #{$iconSize}) / 2);
+
+  /* number of buttons in the container */
+  $numButtons: 2;
+  right: calc(-1.875em * #{$numButtons - 1});
+
+  transition-property: right;
+  color: var(--color-text-01);
+
+  &:hover {
+    /* expose all buttons when hovering over the button container */
+    right: 0;
+
+    svg {
+      color: var(--color-text-02);
+
+      &,
+      &:not([data-active]) {
+        /*order: unset;*/
+      }
+
+      &[data-active] {
+        color: var(--active-tab-color);
+        border-bottom-color: currentColor;
+      }
+    }
+  }
+
+  svg {
+    padding: $iconPadding;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 1;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:not([data-active]) {
+      order: 99999;
+      &:hover {
+        cursor: pointer;
+        background: var(--color-table-border3);
+        color: var(--color-text-01);
+      }
+    }
   }
 }
