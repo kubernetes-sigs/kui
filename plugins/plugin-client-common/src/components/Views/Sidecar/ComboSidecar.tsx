@@ -60,8 +60,6 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
   }
 
   private onClose() {
-    this.setState({ response: undefined })
-
     // when closing, tell our owner that they can have focus back
     if (this.props.willLoseFocus) {
       this.props.willLoseFocus()

@@ -22,7 +22,7 @@ import {
   ArrowLeft16 as BackIcon,
   ArrowRight16 as ForwardIcon,
   ChevronDown16 as CloseIcon,
-  Close16 as QuitIcon
+  Close20 as QuitIcon
 } from '@carbon/icons-react'
 
 import Width from './width'
@@ -41,7 +41,6 @@ export interface Props {
   onClickNamespace?: () => void
   onMaximize: () => void
   onRestore: () => void
-  onMinimize: () => void
   onClose: () => void
 
   back?: { enabled: boolean; onClick: () => void }
@@ -64,7 +63,7 @@ export interface Props {
 export default class Window extends React.PureComponent<Props> {
   private toggleMaximization() {
     try {
-      if (this.props.width === Width.Default) {
+      if (this.props.width !== Width.Maximized) {
         this.props.onMaximize()
       } else {
         this.props.onRestore()
@@ -72,17 +71,10 @@ export default class Window extends React.PureComponent<Props> {
     } catch (err) {
       console.error(err)
     }
-    /* this.setState(({ width }) => ({
-      width: width === Width.Maximized ? Width.Default : width === Width.Default ? Width.Maximized : width
-    })) */
   }
 
-  private toggleMinimization() {
-    this.props.onMinimize()
-
-    /* this.setState(({ width }) => ({
-      width: width === Width.Maximized || width === Width.Default ? Width.Minimized : Width.Default
-    })) */
+  private toggleClose() {
+    this.props.onClose()
   }
 
   private closeButton() {
@@ -95,7 +87,7 @@ export default class Window extends React.PureComponent<Props> {
             tabIndex={-1}
             aria-label="Minimize"
             onMouseDown={evt => evt.preventDefault()}
-            onClick={() => this.toggleMinimization()}
+            onClick={() => this.toggleClose()}
           >
             <CloseIcon />
           </a>
@@ -105,7 +97,7 @@ export default class Window extends React.PureComponent<Props> {
   }
 
   private maximizeButton() {
-    if (this.props.width !== Width.Minimized && !this.props.fixedWidth) {
+    if (this.props.width !== Width.Closed && !this.props.fixedWidth) {
       const max = this.props.width === Width.Maximized
       const className = max ? 'unmaximize-button-label' : 'maximize-button-label'
       const icon = max ? <MinimizeIcon /> : <MaximizeIcon />
@@ -209,7 +201,7 @@ export default class Window extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">
             {this.maximizeButton()}
-            {this.closeButton()}
+            {/* this.closeButton() */}
             {this.quitButton()}
           </div>
         </div>
