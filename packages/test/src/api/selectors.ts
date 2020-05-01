@@ -35,6 +35,10 @@ export const SIDECAR_SEQUENCE_CANVAS_NODE_N = (N: number) => `${SIDECAR_SEQUENCE
 export const SIDECAR_LIMIT = (type: string) => `${SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 export const SIDECAR_BADGES = `${SIDECAR} .sidecar-header .badges`
 
+// top tab stripe buttons
+export const TERMINAL_AND_SIDECAR_BUTTON = `#kui--custom-top-tab-stripe-button-container [data-mode="show terminal and sidecar"]`
+export const ONLY_TERMINAL_BUTTON = `#kui--custom-top-tab-stripe-button-container [data-mode="show only terminal"]`
+
 // sidecar toolbar
 export const SIDECAR_TOOLBAR = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
 export const SIDECAR_TOOLBAR_TEXT = (type: string) =>

@@ -341,10 +341,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
         {this.props.active && this.state.secondaryHasContent && (
           <div id="kui--custom-top-tab-stripe-button-container">
             <ShowOnlyTerminal
+              data-mode="show only terminal"
               data-active={this.state.activeView === 'TerminalOnly' || undefined}
               onClick={this.state.activeView !== 'TerminalOnly' ? () => this.show('TerminalOnly') : undefined}
             />
             <ShowTerminalAndSidecar
+              data-mode="show terminal and sidecar"
               data-active={this.state.activeView === 'TerminalPlusSidecar' || undefined}
               onClick={
                 this.state.activeView !== 'TerminalPlusSidecar' ? () => this.show('TerminalPlusSidecar') : undefined
