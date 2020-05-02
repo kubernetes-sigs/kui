@@ -494,20 +494,6 @@ const _read = async <T extends KResponse, O extends ParsedOptions>(
       return false
     }
   } else {
-    if (leaf.options && leaf.options.requiresFullyQualifiedRoute) {
-      const routeWithoutContext = `/${originalArgv.join('/')}`
-      if (leaf.route !== routeWithoutContext) {
-        // e.g. executing "help" we don't want to use the default
-        // context (see "subtree help" above for an example use of
-        // this feature)
-        if (argv.length === originalArgv.length && argv.every((elt, idx) => elt === originalArgv[idx])) {
-          return false
-        } else {
-          return _read(getModelInternal().root, originalArgv, undefined, originalArgv, tryCatchalls)
-        }
-      }
-    }
-
     return withEvents<T, O>(evaluator, leaf)
   }
 }

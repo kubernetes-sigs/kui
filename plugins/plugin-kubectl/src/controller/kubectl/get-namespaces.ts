@@ -17,10 +17,9 @@
 import Debug from 'debug'
 import { isTable, Arguments, Registrar, Tab, Table, Row, Cell, ExecType } from '@kui-shell/core'
 
-import flags from './flags'
 import { getCurrentContext } from './contexts'
 import commandPrefix from '../command-prefix'
-import { doGet, doGetAsTable, rawGet } from './get'
+import { doGet, doGetAsTable, rawGet, getFlags as flags } from './get'
 import { KubeOptions, isTableRequest, isWatchRequest } from './options'
 
 const debug = Debug('plugin-kubectl/controller/kubectl/get/namespace')
