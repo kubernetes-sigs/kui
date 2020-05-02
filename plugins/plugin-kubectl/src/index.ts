@@ -89,8 +89,8 @@ export { fqnOf, fqn } from './controller/kubectl/fqn'
  *
  */
 export { doEdit } from './controller/kubectl/edit'
-export { doGet } from './controller/kubectl/get'
+export { getter } from './controller/kubectl/get'
 export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
-export { doDescribe } from './controller/kubectl/describe'
+export { describer } from './controller/kubectl/describe'

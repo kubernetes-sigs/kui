@@ -35,6 +35,7 @@ import { isNavResponse } from '../models/NavResponse'
 import {
   CommandTreeResolution,
   CommandHandlerWithEvents,
+  EvaluatorArgs as Arguments,
   ExecType,
   EvaluatorArgs,
   KResponse,
@@ -336,21 +337,23 @@ class InProcessExecutor implements Executor {
 
       this.loadSymbolTable(tab, execOptions)
 
+      const args: Arguments<O> = {
+        tab,
+        REPL,
+        block: execOptions.block,
+        nextBlock: undefined,
+        argv,
+        command,
+        execOptions,
+        argvNoOptions,
+        parsedOptions: parsedOptions as O,
+        createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
+      }
+
       let response: T | Promise<T>
       try {
         response = await Promise.resolve(
-          currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, {
-            tab,
-            REPL,
-            block: execOptions.block,
-            nextBlock: undefined,
-            argv,
-            command,
-            execOptions,
-            argvNoOptions,
-            parsedOptions: parsedOptions as O,
-            createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
-          })
+          currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, args)
         ).then(response => {
           // indicate that the command was successfuly completed
           evaluator.success({
@@ -369,6 +372,13 @@ class InProcessExecutor implements Executor {
           throw err
         }
         response = err
+      }
+
+      if (evaluator.options.viewTransformer) {
+        response = await Promise.resolve(response).then(async _ => {
+          const maybeAView = await evaluator.options.viewTransformer(args, _)
+          return maybeAView || _
+        })
       }
 
       // the || true part is a safeguard for cases where typescript

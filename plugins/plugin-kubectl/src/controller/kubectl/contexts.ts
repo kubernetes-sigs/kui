@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  i18n,
-  Tab,
-  Table,
-  Row,
-  RawResponse,
-  Arguments,
-  ExecOptions,
-  Registrar,
-  UsageModel,
-  KResponse
-} from '@kui-shell/core'
+import { i18n, Tab, Table, Row, RawResponse, Arguments, Registrar, UsageModel, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
 import apiVersion from './apiVersion'
@@ -55,26 +44,17 @@ const usage = {
  * Add click handlers to change context
  *
  */
-const addClickHandlers = (table: Table, { REPL }: Arguments, execOptions: ExecOptions): Table => {
+const addClickHandlers = (table: Table, { REPL }: Arguments): Table => {
   const body = table.body.map(row => {
     const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
     const { value: contextName } = nameAttr
 
-    nameAttr.outerCSS += ' entity-name-group-narrow'
-
     const onclick = async () => {
-      await REPL.qexec(
-        `kubectl config use-context ${REPL.encodeComponent(contextName)}`,
-        undefined,
-        undefined,
-        Object.assign({}, execOptions, { raw: true })
-      )
-      row.setSelected()
+      await REPL.pexec(`kubectl config use-context ${REPL.encodeComponent(contextName)}`)
     }
 
     row.name = contextName
     row.onclick = onclick
-    nameAttr.onclick = onclick
 
     return row
   })
@@ -134,7 +114,7 @@ const listContexts = async (args: Arguments): Promise<RawResponse<KubeContext[]>
       }))
     }
   } else {
-    return addClickHandlers(contexts, args, execOptions)
+    return addClickHandlers(contexts, args)
   }
 }
 

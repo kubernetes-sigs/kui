@@ -19,9 +19,9 @@ import {
   commandPrefix,
   defaultFlags,
   doCreate,
-  doGet,
+  getter,
   doDelete,
-  doDescribe,
+  describer,
   doEdit,
   doRun
 } from '@kui-shell/plugin-kubectl'
@@ -32,8 +32,9 @@ export default (registrar: Registrar) => {
   registrar.listen(`/${commandPrefix}/${command}/apply`, doCreate('apply', command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/create`, doCreate('create', command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/describe`, doDescribe(command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/edit`, doEdit(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/get`, doGet(command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), defaultFlags)
+
+  getter(registrar, command)
+  describer(registrar, command)
 }

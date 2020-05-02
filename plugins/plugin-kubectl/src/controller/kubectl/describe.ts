@@ -16,11 +16,10 @@
 
 import { Arguments, Registrar, KResponse } from '@kui-shell/core'
 
-import flags from './flags'
 import { exec } from './exec'
 import commandPrefix from '../command-prefix'
 
-import { doGetAsEntity } from './get'
+import { doGetAsEntity, getFlags as flags } from './get'
 import { KubeOptions } from './options'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { commandWithoutResource } from '../../lib/util/util'
@@ -33,7 +32,7 @@ function prepareArgsForDescribe(args: Arguments<KubeOptions>) {
   return `${args.command.replace(/(k|kubectl|oc)(\s+)describe(\s+)/, '$1$2get$3')} -o yaml`
 }
 
-export const doDescribe = (command = 'kubectl') =>
+const doDescribe = (command: string) =>
   async function(args: Arguments<KubeOptions>): Promise<KResponse> {
     if (isUsage(args)) {
       return doHelp(command, args)
@@ -46,8 +45,12 @@ export const doDescribe = (command = 'kubectl') =>
     }
   }
 
+/** Register a command listener */
+export function describer(registrar: Registrar, command: string, cli = command) {
+  registrar.listen(`/${commandPrefix}/${command}/describe`, doDescribe(cli), flags)
+}
+
 export default (registrar: Registrar) => {
-  const handler = doDescribe()
-  registrar.listen(`/${commandPrefix}/kubectl/describe`, handler, flags)
-  registrar.listen(`/${commandPrefix}/k/describe`, handler, flags)
+  describer(registrar, 'kubectl')
+  describer(registrar, 'k', 'kubectl')
 }

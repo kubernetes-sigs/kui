@@ -37,7 +37,7 @@ const initialContext = execSync('kubectl config current-context')
   .trim()
 
 // TODO: enable this once proxy can find $HOME on travis
-Common.localDescribe('electron context switching', function(this: Common.ISuite) {
+Common.localDescribe('kubectl context switching', function(this: Common.ISuite) {
   before(Common.before(this))
   after(
     Common.after(this, () => {
@@ -203,7 +203,7 @@ Common.localDescribe('electron context switching', function(this: Common.ISuite)
             })
           )
 
-          await this.app.client.click(`${selector} .entity-name.clickable`)
+          await this.app.client.click(`${selector} .bx--radio-button-wrapper`)
 
           // the row in that first table had better now be selected
           await this.app.client.waitForExist(`${selector}${RADIO_BUTTON_SELECTED}`)

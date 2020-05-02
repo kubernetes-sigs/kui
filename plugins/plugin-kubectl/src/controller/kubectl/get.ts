@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CodedError, Arguments, ExecType, Registrar, MultiModalResponse, isHeadless, KResponse } from '@kui-shell/core'
+import { CodedError, Arguments, Registrar, MultiModalResponse, isHeadless, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
@@ -25,7 +25,7 @@ import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeResource } from '../../lib/model/resource'
+import { KubeResource, isKubeResource } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
 
@@ -76,10 +76,7 @@ export function doGetAsTable(
  * `kubectl get` as entity response
  *
  */
-export async function doGetAsEntity(
-  args: Arguments<KubeOptions>,
-  response: RawResponse
-): Promise<MultiModalResponse<KubeResource>> {
+export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawResponse): Promise<KubeResource> {
   try {
     // this is the raw data string we get from `kubectl`
     const data = response.content.stdout
@@ -87,11 +84,29 @@ export async function doGetAsEntity(
     // parse the raw response; the parser we use depends on whether
     // the user asked for JSON or for YAML
     const resource = formatOf(args) === 'json' ? JSON.parse(data) : (await import('js-yaml')).safeLoad(data)
+    return Object.assign(resource, {
+      isKubeResource: true,
+      kuiRawData: data
+    })
+  } catch (err) {
+    console.error('error handling entity response; raw=', response.content.stdout)
+    throw err
+  }
+}
 
+/**
+ * `kubectl get` as entity response
+ *
+ */
+export async function doGetAsMMR(
+  args: Arguments<KubeOptions>,
+  resource: KubeResource
+): Promise<MultiModalResponse<KubeResource>> {
+  try {
     // attempt to separate out the app and generated parts of the resource name
     const { name: prettyName, nameHash, version } = extractAppAndName(resource)
 
-    if (resource.kind === 'List' && args.execOptions.type === ExecType.TopLevel) {
+    if (resource.kind === 'List') {
       // then this is a response to e.g. `kubectl get pods -o yaml`
       return {
         apiVersion: resource.apiVersion,
@@ -104,7 +119,7 @@ export async function doGetAsEntity(
         originatingCommand: args.command,
         isKubeResource: true,
         modes: [],
-        kuiRawData: data
+        kuiRawData: resource.kuiRawData
       }
     }
 
@@ -120,10 +135,10 @@ export async function doGetAsEntity(
         namespace: `kubectl get ns ${resource.metadata.namespace || 'default'}`
       },
       modes: [], // this tells Kui that we want the response to be interpreted as a MultiModalResponse
-      kuiRawData: data // also include the raw, uninterpreted data string we got back
+      kuiRawData: resource.kuiRawData // also include the raw, uninterpreted data string we got back
     })
   } catch (err) {
-    console.error('error handling entity response; raw=', response.content.stdout)
+    console.error('error handling entity response', resource)
     throw err
   }
 }
@@ -205,7 +220,21 @@ export const doGet = (command: string) =>
     }
   }
 
-export default (commandTree: Registrar) => {
-  commandTree.listen(`/${commandPrefix}/kubectl/get`, doGet('kubectl'), flags)
-  commandTree.listen(`/${commandPrefix}/k/get`, doGet('kubectl'), flags)
+/** KubeResource -> MultiModalResponse view transformer */
+function viewTransformer(args: Arguments<KubeOptions>, response: KubeResource) {
+  if (isKubeResource(response)) {
+    return doGetAsMMR(args, response)
+  }
+}
+
+export const getFlags = Object.assign({}, flags, { viewTransformer })
+
+/** Register a command listener */
+export function getter(registrar: Registrar, command: string, cli = command) {
+  registrar.listen(`/${commandPrefix}/${command}/get`, doGet(cli), getFlags)
+}
+
+export default (registrar: Registrar) => {
+  getter(registrar, 'kubectl')
+  getter(registrar, 'k', 'kubectl')
 }

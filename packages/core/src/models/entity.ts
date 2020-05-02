@@ -160,10 +160,12 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
  */
 export type ScalarResponse<RowType extends Row = Row> = SimpleEntity | Table<RowType> | MixedResponse
 
+export type ViewableResponse = MultiModalResponse | NavResponse
+
 export type StructuredResponse<
   Content = void,
   SomeSortOfResource extends MetadataBearing<Content> = MetadataBearing<Content>
-> = MultiModalResponse | NavResponse | UsageModel | SomeSortOfResource | RawResponse<Content>
+> = ViewableResponse | UsageModel | SomeSortOfResource | RawResponse<Content>
 
 /**
  * A potentially more complex entity with a "spec"

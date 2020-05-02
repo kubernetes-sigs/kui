@@ -52,7 +52,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
       const currentContext = await getCurrentContext(tab)
       eventChannelUnsafe.emit('/kubeui/context/current', currentContext)
 
-      if (currentContext.metadata.namespace) {
+      if (currentContext && currentContext.metadata && currentContext.metadata.namespace) {
         this.setState({
           text: currentContext === undefined ? '' : this.renderNamespace(currentContext),
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
