@@ -68,12 +68,6 @@ export interface CommandOptions extends CapabilityRequirements {
   // hint for screen height in popup mode
   height?: number
 
-  // request that the REPL be cleared of the initial command in popup mode
-  clearREPLOnLoad?: boolean
-
-  // show this placeholder text when executing the command in popup mode (instead of the command line)
-  placeholder?: string
-
   /** is this an interior node ("directory", versus a leaf-node with a command handler */
   isDirectory?: boolean
 
@@ -84,8 +78,12 @@ export interface CommandOptions extends CapabilityRequirements {
   override?: CommandHandler<KResponse, ParsedOptions>
   plugin?: string
   okOptions?: string[]
-  isIntention?: boolean
-  requiresFullyQualifiedRoute?: boolean
+
+  /** model to view transformer */
+  viewTransformer?<T extends KResponse, O extends ParsedOptions>(
+    args: EvaluatorArgs<O>,
+    response: T
+  ): Promise<T> | void | Promise<void>
 }
 
 export interface Event {

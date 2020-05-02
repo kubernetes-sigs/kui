@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { CommandOptions } from '@kui-shell/core'
+
 const defaultBooleans = [
   'w',
   'watch',
@@ -29,7 +31,7 @@ const defaultBooleans = [
   'show-labels'
 ]
 
-export function flags(booleans: string[] = []) {
+export function flags(booleans: string[] = []): CommandOptions {
   return {
     flags: {
       configuration: {
