@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { VirtualMachine16 as ShowNodeIcon } from '@carbon/icons-react'
+import { Icons } from '@kui-shell/plugin-client-common'
 import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
 
 import { isPod, Pod } from '../../model/resource'
@@ -42,7 +42,7 @@ const mode: ModeRegistration<Pod> = {
     kind: 'drilldown',
     order: 80, // we want this to appear before DeleteButton, but after others...
     label: strings('Show Node'),
-    icon: <ShowNodeIcon />,
+    icon: <Icons icon="Server" />,
     command
   }
 }

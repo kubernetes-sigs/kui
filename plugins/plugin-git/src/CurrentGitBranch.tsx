@@ -15,10 +15,9 @@
  */
 
 import * as React from 'react'
-import { Branch16 as BranchIcon } from '@carbon/icons-react'
 
+import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import { wireToStandardEvents, getCurrentTab, i18n, CodedError } from '@kui-shell/core'
-import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 const strings = i18n('plugin-bash-like')
 
@@ -102,7 +101,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
         iconOnclick="git status"
         textOnclick="git branch"
       >
-        <BranchIcon />
+        <Icons icon="CodeBranch" />
       </TextWithIconWidget>
     )
   }

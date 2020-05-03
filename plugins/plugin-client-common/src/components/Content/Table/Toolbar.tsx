@@ -15,13 +15,8 @@
  */
 
 import * as React from 'react'
-import {
-  Grid16 as GridIcon,
-  List16 as ListIcon,
-  CaretRight20 as NextPage,
-  CaretLeft20 as PreviousPage
-} from '@carbon/icons-react'
 
+import Icons from '../../spi/Icons'
 import Breadcrumb, { BreadcrumbProps } from '../../Views/Breadcrumb/'
 
 import 'carbon-components/scss/components/pagination/_pagination.scss'
@@ -67,7 +62,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             data-enabled={!this.props.asGrid}
             onClick={() => this.props.setAsGrid(false)}
           >
-            <ListIcon />
+            <Icons icon="List" />
           </a>
           <a
             role="presentation"
@@ -76,7 +71,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             data-enabled={this.props.asGrid}
             onClick={() => this.props.setAsGrid(true)}
           >
-            <GridIcon />
+            <Icons icon="Grid" />
           </a>
         </React.Fragment>
       )
@@ -116,7 +111,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             aria-label="Previous page"
             onClick={() => this.previousPage()}
           >
-            <PreviousPage />
+            <Icons icon="PreviousPage" />
           </button>
           <button
             type="button"
@@ -129,7 +124,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             aria-label="Next page"
             onClick={() => this.nextPage()}
           >
-            <NextPage />
+            <Icons icon="NextPage" />
           </button>
         </div>
       )

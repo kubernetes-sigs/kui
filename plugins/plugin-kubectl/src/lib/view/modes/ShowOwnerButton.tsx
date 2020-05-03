@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { JumpLink16 as ShowOwnerIcon } from '@carbon/icons-react'
+import { Icons } from '@kui-shell/plugin-client-common'
 import { i18n, encodeComponent, Tab, ModeRegistration } from '@kui-shell/core'
 
 import { fqn } from '../../../controller/kubectl/fqn'
@@ -57,7 +57,7 @@ const mode: ModeRegistration<KubeResourceWithOwnerReferences> = {
     kind: 'drilldown',
     order: 90, // we want this to appear before DeleteButton, but after others...
     label: strings('Show Owner Reference'),
-    icon: <ShowOwnerIcon className="kui--rotate-180" />,
+    icon: <Icons icon="Up" />,
     command
   }
 }

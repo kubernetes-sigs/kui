@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { i18n, Tab } from '@kui-shell/core'
-import { TrashCan16 as DeleteIcon } from '@carbon/icons-react'
+import { Icons } from '@kui-shell/plugin-client-common'
 
 import { KubeResource, isCrudableKubeResource as when } from '../../model/resource'
 import { fqnOf } from '../../../controller/kubectl/fqn'
@@ -31,7 +31,7 @@ function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string
 
 /** The Delete button mode */
 const mode = {
-  icon: <DeleteIcon />,
+  icon: <Icons icon="Trash" />,
   mode: 'delete',
   order: 100, // delete button at the end; see ShowOwnersButton, which also has an `order` constraint
   label: strings('deleteResource'),

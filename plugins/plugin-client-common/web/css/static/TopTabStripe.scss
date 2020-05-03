@@ -221,8 +221,8 @@
   $headerHeight: 2.75em;
   $headerFontSize: 0.875;
   $iconSize: 32px;
-  $iconPadding: 5px;
-  top: calc(((#{$headerHeight} * #{$headerFontSize}) - #{$iconSize}) / 2);
+  $iconPadding: 3px;
+  top: calc(((#{$headerHeight} * #{$headerFontSize}) - #{$iconSize}) / 2 + 1px);
 
   /* number of buttons in the container */
   $numButtons: 2;
@@ -256,6 +256,7 @@
     stroke: currentColor;
     stroke-width: 1;
     border-bottom: 2px solid transparent;
+    border-top: 2px solid transparent;
 
     &:hover {
       opacity: 1;

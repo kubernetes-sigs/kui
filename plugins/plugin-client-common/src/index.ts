@@ -48,3 +48,6 @@ export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 export { default as ComboSidecar } from './components/Views/Sidecar/ComboSidecar'
 export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecar'
 export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
+
+// Icons
+export { default as Icons } from './components/spi/Icons'
