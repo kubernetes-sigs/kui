@@ -16,9 +16,10 @@
 
 import * as React from 'react'
 import { i18n } from '@kui-shell/core'
-import { Camera20 as Camera, CameraAction20 as CameraAction } from '@carbon/icons-react'
 import { Button, ToastNotification } from 'carbon-components-react'
 import { Event, NativeImage } from 'electron'
+
+import Icons from '../spi/Icons'
 
 import '../../../web/css/static/Screenshot.scss'
 
@@ -309,9 +310,9 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         data-active={active}
       >
         {active ? (
-          <CameraAction onMouseDown={evt => evt.preventDefault()} />
+          <Icons icon="ScreenshotInProgress" onMouseDown={evt => evt.preventDefault()} />
         ) : (
-          <Camera onMouseDown={evt => evt.preventDefault()} />
+          <Icons icon="Screenshot" onMouseDown={evt => evt.preventDefault()} />
         )}
       </a>
     )

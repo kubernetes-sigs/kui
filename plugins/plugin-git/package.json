@@ -23,7 +23,6 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@carbon/icons-react": "^10.9.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
   },

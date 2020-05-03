@@ -16,16 +16,9 @@
 
 import * as React from 'react'
 import { REPL } from '@kui-shell/core'
-import {
-  Maximize16 as MaximizeIcon,
-  Minimize16 as MinimizeIcon,
-  ArrowLeft16 as BackIcon,
-  ArrowRight16 as ForwardIcon,
-  ChevronDown16 as CloseIcon,
-  Close20 as QuitIcon
-} from '@carbon/icons-react'
 
 import Width from './width'
+import Icons from '../../spi/Icons'
 import Breadcrumb, { BreadcrumbView } from '../Breadcrumb/'
 
 export interface Props {
@@ -77,30 +70,11 @@ export default class Window extends React.PureComponent<Props> {
     this.props.onClose()
   }
 
-  private closeButton() {
-    return (
-      !this.props.fixedWidth && (
-        <div className="sidecar-bottom-stripe-button sidecar-bottom-stripe-close toggle-sidecar-button">
-          <a
-            href="#"
-            className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
-            tabIndex={-1}
-            aria-label="Minimize"
-            onMouseDown={evt => evt.preventDefault()}
-            onClick={() => this.toggleClose()}
-          >
-            <CloseIcon />
-          </a>
-        </div>
-      )
-    )
-  }
-
   private maximizeButton() {
     if (this.props.width !== Width.Closed && !this.props.fixedWidth) {
       const max = this.props.width === Width.Maximized
       const className = max ? 'unmaximize-button-label' : 'maximize-button-label'
-      const icon = max ? <MinimizeIcon /> : <MaximizeIcon />
+      const icon = max ? <Icons icon="WindowMinimize" /> : <Icons icon="WindowMaximize" />
       const aria = max ? 'Restore' : 'Maximize'
 
       return (
@@ -133,7 +107,7 @@ export default class Window extends React.PureComponent<Props> {
           aria-label="Close"
           onClick={() => this.props.onClose()}
         >
-          <QuitIcon />
+          <Icons icon="WindowClose" />
         </a>
       </div>
     )
@@ -145,7 +119,8 @@ export default class Window extends React.PureComponent<Props> {
       return (
         <span className="sidecar-bottom-stripe-button">
           <a href="#" className="graphical-icon kui--tab-navigable">
-            <BackIcon
+            <Icons
+              icon="Back"
               onClick={this.props.back.onClick}
               onMouseDown={evt => evt.preventDefault()}
               className="kui--sidecar--titlebar-navigation--back"
@@ -162,7 +137,8 @@ export default class Window extends React.PureComponent<Props> {
       return (
         <span className="sidecar-bottom-stripe-button">
           <a href="#" className="graphical-icon kui--tab-navigable">
-            <ForwardIcon
+            <Icons
+              icon="Forward"
               onClick={this.props.forward.onClick}
               onMouseDown={evt => evt.preventDefault()}
               className="kui--sidecar--titlebar-navigation--forward"
@@ -201,7 +177,6 @@ export default class Window extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">
             {this.maximizeButton()}
-            {/* this.closeButton() */}
             {this.quitButton()}
           </div>
         </div>

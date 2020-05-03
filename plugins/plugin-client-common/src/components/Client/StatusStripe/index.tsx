@@ -19,7 +19,8 @@
 
 import * as React from 'react'
 import { inElectron } from '@kui-shell/core'
-import { SettingsAdjust20 as SettingsIcon } from '@carbon/icons-react'
+
+import Icons from '../../spi/Icons'
 
 export default class StatusStripe extends React.PureComponent {
   /**
@@ -86,7 +87,7 @@ export default class StatusStripe extends React.PureComponent {
               tabIndex={0}
               onClick={() => this.doAbout()}
             >
-              <SettingsIcon />
+              <Icons icon="Settings" />
             </a>
           </div>
         </div>
