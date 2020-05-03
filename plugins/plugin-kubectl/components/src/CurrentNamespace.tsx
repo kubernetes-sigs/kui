@@ -15,11 +15,9 @@
  */
 
 import * as React from 'react'
-import { At16 } from '@carbon/icons-react'
-
-import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 import { KubeContext, getCurrentContext } from '@kui-shell/plugin-kubectl'
+import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import { getCurrentTab, eventChannelUnsafe, wireToStandardEvents } from '@kui-shell/core'
 
 interface State {
@@ -88,7 +86,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
         textOnclick="kubectl get namespaces"
       >
         <div className="current-namesapce-button" onClick={() => false}>
-          <At16 />
+          <Icons icon="At" />
         </div>
       </TextWithIconWidget>
     )

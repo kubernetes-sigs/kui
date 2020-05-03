@@ -18,9 +18,7 @@ import SplitPane from 'react-split-pane'
 import * as React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
 
-// icons
-import { Terminal32 as ShowOnlyTerminal, OpenPanelLeft32 as ShowTerminalAndSidecar } from '@carbon/icons-react'
-
+import Icons from '../spi/Icons'
 import Confirm from '../Views/Confirm'
 import Loading from '../Content/Loading'
 import Width from '../Views/Sidecar/width'
@@ -360,13 +358,15 @@ export default class TabContent extends React.PureComponent<Props, State> {
     if (this.props.active && this.state.secondaryHasContent) {
       return (
         <div id="kui--custom-top-tab-stripe-button-container">
-          <ShowOnlyTerminal
+          <Icons
+            icon="TerminalOnly"
             data-mode="show only terminal"
             data-active={this.state.activeView === 'TerminalOnly' || undefined}
             onClick={this.state.activeView !== 'TerminalOnly' ? () => this.show('TerminalOnly') : undefined}
           />
 
-          <ShowTerminalAndSidecar
+          <Icons
+            icon="TerminalPlusSidecar"
             data-mode="show terminal and sidecar"
             data-active={this.state.activeView === 'TerminalPlusSidecar' || undefined}
             onClick={
