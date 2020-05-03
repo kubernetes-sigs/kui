@@ -17,12 +17,14 @@
 import * as React from 'react'
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core'
 
-import { Props } from './Carbon'
+import { Props, getCurrentPageIdx } from '..'
 
-import '../../../../web/scss/components/Breadcrumb/Patternfly.scss'
+import '../../../../../web/scss/components/Breadcrumb/Patternfly.scss'
 
 export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
   public render() {
+    const currentPageIdx = getCurrentPageIdx(this.props)
+
     return (
       <Breadcrumb>
         {this.props.breadcrumbs.map((_, idx) => (
@@ -32,7 +34,7 @@ export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
             className={[
               _.className,
               _.deemphasize && 'kui--secondary-breadcrumb',
-              idx === this.props.currentPageIdx && 'kui--current-page-breadcrumb',
+              idx === currentPageIdx && 'kui--current-page-breadcrumb',
               'zoomable'
             ]
               .filter(_ => _)
