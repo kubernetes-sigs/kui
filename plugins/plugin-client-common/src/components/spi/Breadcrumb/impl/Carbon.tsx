@@ -17,15 +17,15 @@
 import * as React from 'react'
 import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 
-import { BreadcrumbProps } from './index'
+import { Props, getCurrentPageIdx } from '..'
 
-import '../../../../web/scss/components/Breadcrumb/Carbon.scss'
-
-export type Props = BreadcrumbProps & { currentPageIdx: number }
+import '../../../../../web/scss/components/Breadcrumb/Carbon.scss'
 
 export default class CarbonBreadcrumb extends React.PureComponent<Props> {
   public render() {
     const breadcrumbs = this.props.breadcrumbs
+    const currentPageIdx = getCurrentPageIdx(this.props)
+
     return (
       <Breadcrumb noTrailingSlash={breadcrumbs.length > 1}>
         {breadcrumbs.map((_, idx) => (
@@ -33,7 +33,7 @@ export default class CarbonBreadcrumb extends React.PureComponent<Props> {
             href="#"
             key={idx}
             className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb', 'zoomable'].filter(_ => _).join(' ')}
-            isCurrentPage={idx === this.props.currentPageIdx}
+            isCurrentPage={idx === currentPageIdx}
             onClick={_.command && (() => this.props.repl.pexec(_.command))}
           >
             {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}

@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 import Icons from '../../spi/Icons'
-import Breadcrumb, { BreadcrumbProps } from '../../Views/Breadcrumb/'
+import Breadcrumb, { Props as BreadcrumbProps } from '../../spi/Breadcrumb'
 
 import 'carbon-components/scss/components/pagination/_pagination.scss'
 

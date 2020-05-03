@@ -23,7 +23,7 @@ import sortRow from './sort'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
-import { BreadcrumbView } from '../../Views/Breadcrumb/'
+import { BreadcrumbView } from '../../spi/Breadcrumb'
 import Grid from './Grid'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 

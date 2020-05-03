@@ -19,7 +19,7 @@ import { REPL } from '@kui-shell/core'
 
 import Width from './width'
 import Icons from '../../spi/Icons'
-import Breadcrumb, { BreadcrumbView } from '../Breadcrumb/'
+import Breadcrumb, { BreadcrumbView } from '../../spi/Breadcrumb'
 
 export interface Props {
   kind?: string
