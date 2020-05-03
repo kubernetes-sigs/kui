@@ -37,9 +37,12 @@ body[kui-theme='PatternFly4 Dark'] {
 
   @include patternfly-sidecar;
 
+  --color-repl-background: var(--pf-global--palette--black-850);
   --color-stripe-01: var(--pf-global--palette--black-700);
+
   .kui--inverted-color-context {
-    --color-sidecar-header: var(--pf-global--palette--black-800);
+    --color-sidecar-header: var(--pf-global--palette--black-900);
+    --color-sidecar-background-01: var(--color-base00);
     --active-tab-color: var(--pf-global--active-color--300);
   }
 }
