@@ -33,8 +33,8 @@ import {
 } from '@kui-shell/core'
 
 import Badge from './Badge'
-import { BreadcrumbView } from '../Breadcrumb/'
 import ToolbarContainer from './ToolbarContainer'
+import { BreadcrumbView } from '../../spi/Breadcrumb'
 import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
 
 import '../../../../web/css/static/ToolbarButton.scss'
