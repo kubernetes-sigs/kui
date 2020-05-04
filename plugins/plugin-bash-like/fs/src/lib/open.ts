@@ -25,7 +25,8 @@ import {
   i18n,
   Arguments,
   Registrar,
-  KResponse
+  KResponse,
+  SupportedStringContent
 } from '@kui-shell/core'
 
 import File from './File'
@@ -34,6 +35,23 @@ import { localFilepath } from './usage-helpers'
 
 const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/cmds/open')
+
+/** Important for alignment to the Editor view component */
+function contentTypeOf(suffix: string): SupportedStringContent {
+  switch (suffix) {
+    case 'sh':
+      return 'shell'
+    case 'md':
+      return 'text/markdown'
+    case 'html':
+      return 'text/html'
+    case 'yaml':
+    case 'json':
+      return suffix
+    default:
+      return 'text/plain'
+  }
+}
 
 /**
  * Decide how to display a given filepath
@@ -89,16 +107,7 @@ async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
           ? {
               mode: 'view',
               label: strings('Edit'),
-              contentType:
-                suffix === 'sh'
-                  ? 'shell'
-                  : suffix === 'md'
-                  ? 'text/markdown'
-                  : suffix === 'html'
-                  ? 'text/html'
-                  : suffix === 'yaml' || suffix === 'json'
-                  ? suffix
-                  : 'text/plain',
+              contentType: contentTypeOf(suffix),
               content: data
             }
           : {

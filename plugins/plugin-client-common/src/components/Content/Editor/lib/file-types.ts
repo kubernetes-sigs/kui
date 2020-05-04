@@ -21,11 +21,13 @@ const debug = Debug('plugins/editor/file-types')
  * What is the monaco "language" for the given kind?
  *    only nodejs and compositions diverge from monaco's notation
  */
-export const language = (kind: string) => {
-  const base = kind.substring(0, kind.indexOf(':')) || kind
-  debug('language', kind, base)
+export const language = (kind: string, extension?: string) => {
+  const base = extension || kind.substring(0, kind.indexOf(':')) || kind
+  debug('language', kind, extension, base)
 
   if (base === 'nodejs' || base === 'app' || base === 'composition' || base === 'sequence') {
+    return 'javascript'
+  } else if (base === 'js') {
     return 'javascript'
   } else if (base === 'ts') {
     return 'typescript'
