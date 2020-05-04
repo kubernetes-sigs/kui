@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
@@ -241,7 +242,13 @@ export default class Editor extends React.PureComponent<Props, State> {
           !isFile(props.response) &&
           (!props.response.spec || props.response.spec.readOnly !== false) &&
           (props.readOnly || !isFile(props.response) || false),
-        language: props.content.contentType ? language(props.content.contentType) : undefined
+        language:
+          props.content.contentType === 'text/plain'
+            ? language(
+                props.content.contentType,
+                isFile(props.response) ? extname(props.response.spec.filepath).slice(1) : undefined
+              )
+            : props.content.contentType || undefined
       }
       const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)
       const editor = Monaco.create(state.wrapper, options)
