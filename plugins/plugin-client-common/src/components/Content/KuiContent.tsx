@@ -16,6 +16,8 @@
 
 import * as React from 'react'
 
+import { isFile } from '@kui-shell/plugin-bash-like/fs'
+
 import {
   ParsedOptions,
   Tab as KuiTab,
@@ -58,7 +60,14 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
       if (mode.contentType === 'text/html') {
         return <HTMLString content={mode.content} />
       } else if (mode.contentType === 'text/markdown') {
-        return <Markdown source={mode.content} />
+        return (
+          <Markdown
+            tab={tab}
+            repl={tab.REPL}
+            fullpath={isFile(response) ? response.spec.fullpath : undefined}
+            source={mode.content}
+          />
+        )
       } else {
         return (
           <Editor

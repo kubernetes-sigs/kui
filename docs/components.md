@@ -44,34 +44,34 @@ export default function MyKui(props: KuiProps) {
 
 ### SPI for Third Party Components
 
-#### Breadcrumb
+In this table "carbon" stands for Carbon Components, and "pf4" stands for PatternFly v4.
 
-- [SPI Interface](../plugins/plugin-client-common/src/components/spi/Breadcrumb/model.ts)
-- [Carbon Components impl](../plugins/plugin-client-common/src/components/spi/Breadcrumb/impl/Carbon.tsx)
-- [PatternFly4 impl](../plugins/plugin-client-common/src/components/spi/Breadcrumb/impl/PatternFly.tsx)
+| Component  | Model                                                                         | Implemenatations                                                                                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Breadcrumb | [spi](../plugins/plugin-client-common/src/components/spi/Breadcrumb/model.ts) | [carbon](../plugins/plugin-client-common/src/components/spi/Breadcrumb/impl/Carbon.tsx) **\|** [pf4](../plugins/plugin-client-common/src/components/spi/Breadcrumb/impl/PatternFly.tsx) |
 
 ## Work In Progress: Third Party Components Not Yet under an SPI
 
 The following is a comprehensive list of the third party components
 that are currently hard-wired to use Carbon Components:
 
-- [Badge](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Sidecar/Badge.tsx)
-- [Code Snippet](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Content/Markdown.tsx)
-- [Confirm](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Confirm.tsx)
-- [LeftNavSidecar Content](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Sidecar/LeftNavSidecar.tsx)
-- [Form](https://github.com/IBM/kui/blob/master/plugins/plugin-kubectl/src/lib/view/modes/Form.tsx)
-- [Navigation](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Sidecar/Navigation/Carbon.tsx)
-- [Loading](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Content/Loading.tsx)
-- [Search](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Client/Search.tsx)
-- [TabCompletion](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Terminal/Block/TabCompletion.tsx)
+- [Badge](../plugins/plugin-client-common/src/components/Views/Sidecar/Badge.tsx)
+- [Code Snippet](../plugins/plugin-client-common/src/components/Content/Markdown.tsx)
+- [Confirm](../plugins/plugin-client-common/src/components/Views/Confirm.tsx)
+- [LeftNavSidecar Content](../plugins/plugin-client-common/src/components/Views/Sidecar/LeftNavSidecar.tsx)
+- [Form](../plugins/plugin-kubectl/src/lib/view/modes/Form.tsx)
+- [Navigation](../plugins/plugin-client-common/src/components/Views/Sidecar/Navigation/Carbon.tsx)
+- [Loading](../plugins/plugin-client-common/src/components/Content/Loading.tsx)
+- [Search](../plugins/plugin-client-common/src/components/Client/Search.tsx)
+- [TabCompletion](../plugins/plugin-client-common/src/components/Views/Terminal/Block/TabCompletion.tsx)
 - [Table](https://github.com/IBM/kui/tree/master/plugins/plugin-client-common/src/components/Content/Table)
-- [Terminal Accordian](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Terminal/ScrollableTerminal.tsx)
-- [ToolbarButton's TooltipIcon](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Sidecar/ToolbarButton.tsx)
-- [TopNavSidecar Tabs](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Sidecar/TopNavSidecar.tsx)
-- [TopTabStribe](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Client/TopTabStripe/Tab.tsx)
+- [Terminal Accordian](../plugins/plugin-client-common/src/components/Views/Terminal/ScrollableTerminal.tsx)
+- [ToolbarButton's TooltipIcon](../plugins/plugin-client-common/src/components/Views/Sidecar/ToolbarButton.tsx)
+- [TopNavSidecar Tabs](../plugins/plugin-client-common/src/components/Views/Sidecar/TopNavSidecar.tsx)
+- [TopTabStribe](../plugins/plugin-client-common/src/components/Client/TopTabStripe/Tab.tsx)
 
 The Navigation component currently also supports PatternFly v4
-([here](https://github.com/IBM/kui/blob/master/plugins/plugin-client-common/src/components/Views/Sidecar/Navigation/Patternfly.tsx)),
+([here](../plugins/plugin-client-common/src/components/Views/Sidecar/Navigation/Patternfly.tsx)),
 though is not yet structured under an SPI.
 
 ## Icons

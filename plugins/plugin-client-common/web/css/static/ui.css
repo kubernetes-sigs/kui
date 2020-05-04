@@ -1049,8 +1049,7 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 .page-content h1 {
   margin-bottom: 1rem;
-  font-size: 3.375em;
-  font-weight: 300;
+  font-size: 2.375em;
   letter-spacing: 0;
   line-height: 1.25;
   padding: 0;
@@ -1104,6 +1103,7 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content ul {
   font-size: 1em;
   margin-left: 2em;
+  line-height: 1.125em;
   letter-spacing: 0.16px;
 }
 .page-content li {
