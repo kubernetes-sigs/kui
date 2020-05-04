@@ -35,7 +35,8 @@ import {
 import Badge from './Badge'
 import ToolbarContainer from './ToolbarContainer'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
-import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
+import { BaseSidecar, Props, cwd } from './BaseSidecar'
+import { BaseHistoryEntry } from '../util/CircularBuffer'
 
 import '../../../../web/css/static/ToolbarButton.scss'
 

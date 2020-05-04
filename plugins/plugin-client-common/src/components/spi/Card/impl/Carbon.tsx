@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-import { Button, Link, MultiModalMode, NavResponse, Tab } from '@kui-shell/core'
-import { BaseHistoryEntry } from '../../Views/util/CircularBuffer'
+import * as React from 'react'
+import { Tile } from 'carbon-components-react'
 
-interface Nav {
-  title: string
-  currentTabIndex: number
-  tabs: MultiModalMode[]
-  buttons?: Button[]
+import Props from '../model'
+
+import '../../../../../web/scss/components/Card/Carbon.scss'
+
+export default class CarbonTile extends React.PureComponent<Props> {
+  public render() {
+    return <Tile className={this.props.className}>{this.props.children}</Tile>
+  }
 }
-
-export interface HistoryEntry extends BaseHistoryEntry {
-  current: { menuIdx: number; tabIdx: number }
-  allNavs: Nav[]
-  allLinks: Link[]
-
-  response: NavResponse
-}
-
-interface Props {
-  tab: Tab
-  current: HistoryEntry
-  changeCurrent: (menuIdx: number, tabIdx: number) => void
-}
-
-export default Props

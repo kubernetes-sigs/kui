@@ -27,7 +27,12 @@ export type Props<T extends KuiTable = KuiTable> = {
   repl: REPL
   response: T
   visibleRows: NamedDataTableRow[]
-  gridableColumn: number
+}
+
+export const findGridableColumn = (response: KuiTable) => {
+  return response.body[0]
+    ? response.header.attributes.findIndex(cell => /STATUS/i.test(cell.key) || /STATUS/i.test(cell.value))
+    : -1
 }
 
 /**
@@ -36,7 +41,9 @@ export type Props<T extends KuiTable = KuiTable> = {
  */
 export default class Grid<P extends Props> extends React.PureComponent<P> {
   public render() {
-    const { tab, repl, response, visibleRows, gridableColumn } = this.props
+    const { tab, repl, response, visibleRows } = this.props
+
+    const gridableColumn = findGridableColumn(response)
 
     const nCells = visibleRows.length
     const nColumns = Math.ceil(Math.sqrt(nCells))
@@ -47,10 +54,10 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
         {response.body.map((kuiRow, kidx) => {
           const row = visibleRows[kidx]
           const title = row['STATUS']
-          const { css } = kuiRow.attributes[gridableColumn]
+          const css = (gridableColumn !== -1 && kuiRow.attributes[gridableColumn].css) || 'kui--status-unknown'
 
           return (
-            <span key={kidx} data-tag="badge">
+            <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name}>
               <span title={title} data-tag="badge-circle" className={css} onClick={onClickForCell(kuiRow, tab, repl)} />
             </span>
           )

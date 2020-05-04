@@ -21,6 +21,10 @@ import {
   createNS as create,
   defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+
+import { Application } from 'spectron'
+import * as assert from 'assert'
+
 /** name of the namespace */
 const nsName: string = create()
 
@@ -86,19 +90,19 @@ const deleteNS = function(this: Common.ISuite, kubectl: string) {
  * Drilldown to a given namespace from the watch table
  *
  */
-const testDrilldown = async (nsName: string, res: ReplExpect.AppAndCount) => {
-  const selector = await ReplExpect.okWithCustom({
-    selector: Selectors.BY_NAME(nsName)
-  })(res)
+const testDrilldown = async (nsName: string, badgeSelector: string, app: Application) => {
+  await app.client.click(`${badgeSelector}`)
 
-  await res.app.client.click(`${selector} .entity-name`)
-
-  await SidecarExpect.open(res.app)
+  await SidecarExpect.open(app)
     .then(SidecarExpect.mode(defaultModeForGet))
     .then(SidecarExpect.showing(nsName))
 
-  await res.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
-  await SidecarExpect.fullyClosed(res.app)
+  await app.client.waitForVisible(Selectors.TERMINAL_SIDECAR_WATCHER_BUTTON)
+
+  await app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+  await SidecarExpect.fullyClosed(app)
+
+  await app.client.waitForVisible(Selectors.TERMINAL_AND_WATCHER_BUTTON)
 }
 
 /** k get ns -w */
@@ -120,13 +124,36 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         const waitForOnline = waitForStatus.bind(this, Status.Online, nsNameForIter)
         const waitForOffline = waitForStatus.bind(this, Status.Offline, nsNameForIter)
 
+        console.error('wait for create')
         const createBadge = await waitForOnline(await CLI.command(`${kubectl} create ns ${nsNameForIter}`, this.app))
 
-        const testWatch = await CLI.command(watchCmd, this.app)
-        const watchBadge = await waitForOnline(testWatch)
-        const watchBadgeButOffline = watchBadge.replace(Status.Online, Status.Offline)
-        await testDrilldown(nsNameForIter, testWatch)
+        console.error('start watching')
+        // execute the watch command, and expect ok in repl
+        await CLI.command(watchCmd, this.app)
+          .then(ReplExpect.justOK)
+          .then(async () => {
+            console.error('wait for watcher1')
+            await this.app.client.waitForExist(Selectors.WATCHER_N(1))
+            console.error('wait for terminalAndWather button')
+            await this.app.client.waitForExist(Selectors.TERMINAL_AND_WATCHER_BUTTON)
+          })
 
+        console.error('wait for watch title')
+        // expect watcher1 has title pod
+        await this.app.client.waitForExist(Selectors.WATCHER_N_TITLE(1)) // or watcher1, assert
+        const title = await this.app.client.getText(Selectors.WATCHER_N_TITLE(1))
+        assert.strictEqual(title, 'Namespace')
+
+        const watchBadge = Selectors.WATCHER_N_GRID_CELL_ONLINE(1, nsNameForIter)
+        const watchBadgeButOffline = Selectors.WATCHER_N_GRID_CELL_OFFLINE(1, nsNameForIter)
+
+        console.error('wait for badge online')
+        await this.app.client.waitForExist(watchBadge)
+
+        console.error('drilldown from badge')
+        await testDrilldown(nsNameForIter, watchBadge, this.app)
+
+        console.error('wait for delete')
         const deleteBadge = await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))
 
         // the create and delete badges had better still exist

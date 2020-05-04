@@ -212,6 +212,9 @@ body.still-loading .repl {
 .kui--rotate-180 {
   transform: rotate(180deg);
 }
+.kui--rotate-180-then-flip {
+  transform: scaleY(-1);
+}
 .full-height {
   flex: 1;
   display: flex;
@@ -1443,6 +1446,9 @@ body {
 
   /* repl background */
   --color-repl-background: var(--color-ui-01);
+
+  /* background of third view */
+  --color-background-03: var(--color-ui-03);
 
   /* text selection */
   --color-selection-background-dark: rgba(255, 255, 255, 0.3);

@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ParsedOptions } from '@kui-shell/core'
+
+export interface BaseHistoryEntry {
+  cwd: string
+  argvNoOptions: string[]
+  parsedOptions: ParsedOptions
+}
 
 export default class CircularBuffer<T> {
   private readonly entries: T[]
@@ -38,6 +45,10 @@ export default class CircularBuffer<T> {
 
   public findIndex(predicate: (t: T, idx?: number, A?: T[]) => boolean) {
     return this.entries.findIndex(predicate)
+  }
+
+  public get peekAll() {
+    return this.entries
   }
 
   public update(idx: number, t: T) {
@@ -76,7 +87,7 @@ export default class CircularBuffer<T> {
   }
 
   /* public hasRight() {
-    return this.activeIdx < 
+    return this.activeIdx <
   } */
 
   public shiftRight() {

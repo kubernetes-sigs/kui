@@ -282,6 +282,7 @@ class InProcessExecutor implements Executor {
 
       const execUUID = execOptions.execUUID || uuid()
       execOptions.execUUID = execUUID
+      const evaluatorOptions = evaluator.options
 
       const startEvent = {
         tab,
@@ -306,7 +307,8 @@ class InProcessExecutor implements Executor {
           response: true,
           execUUID,
           cancelled: true,
-          echo: execOptions.echo
+          echo: execOptions.echo,
+          evaluatorOptions
         }
         eventChannelUnsafe.emit('/command/complete', endEvent)
         if (execType !== ExecType.Nested) {
@@ -388,13 +390,15 @@ class InProcessExecutor implements Executor {
       if (!response) {
         debug('warning: command handler returned nothing', commandUntrimmed)
       }
+
       const endEvent = {
         tab,
         execType,
         command: commandUntrimmed,
         response: response || true,
         execUUID,
-        echo: execOptions.echo
+        echo: execOptions.echo,
+        evaluatorOptions
       }
       eventChannelUnsafe.emit(`/command/complete`, endEvent)
       eventChannelUnsafe.emit(`/command/complete/${getTabId(tab)}`, endEvent)
@@ -416,7 +420,8 @@ class InProcessExecutor implements Executor {
             execUUID,
             argvNoOptions,
             parsedOptions,
-            responseType
+            responseType,
+            evaluatorOptions
           )
           eventChannelUnsafe.emit(
             `/command/complete/fromuser/${responseType}/${getTabId(tab)}`,
@@ -425,7 +430,8 @@ class InProcessExecutor implements Executor {
             execUUID,
             argvNoOptions,
             parsedOptions,
-            responseType
+            responseType,
+            evaluatorOptions
           )
         })
       }
