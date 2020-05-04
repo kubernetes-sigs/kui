@@ -10,4 +10,24 @@
   .page[data-zoom='10'] {
     @content;
   }
+
+  @media (max-width: 58rem) {
+    .sidecar-visible .hide-with-narrow-window {
+      display: none;
+    }
+  }
+
+  @media (max-width: 68rem) {
+    .sidecar-visible .elide-with-narrow-window {
+      display: inline-block;
+      max-width: 6em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .sidecar-visible .hide-with-narrow-window {
+      display: none;
+    }
+  }
 }
