@@ -23,8 +23,9 @@ import sortRow from './sort'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
-import Grid from './Grid'
+import Grid, { findGridableColumn } from './Grid'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
+import { BreadcrumbView } from '../../spi/Breadcrumb'
 
 /** carbon styling */
 import 'carbon-components/scss/components/data-table/_data-table-core.scss'
@@ -57,6 +58,12 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 
   /** use toolbars? */
   toolbars: boolean
+
+  /** display as grid (versus as regular table)? */
+  asGrid: boolean
+
+  /** prefix breadcrumbs? */
+  prefixBreadcrumbs?: BreadcrumbView[]
 }
 
 /** state of PaginatedTable component */
@@ -83,15 +90,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       // assemble the data model
       const { headers, rows } = kui2carbon(this.props.response)
 
-      const gridableColumn = this.props.response.body[0]
-        ? this.props.response.header.attributes.findIndex(cell => /STATUS/i.test(cell.key))
-        : -1
-
       this.state = {
         headers,
         rows,
-        gridableColumn,
-        asGrid: false,
+        asGrid: this.props.asGrid,
         page: 1,
         pageSize: this.defaultPageSize
       } as S
@@ -102,14 +104,16 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   private topToolbar() {
     if (this.props.toolbars) {
-      const titleBreadcrumb = this.props.response.title
+      const titleBreadcrumb: BreadcrumbView[] = this.props.response.title
         ? [{ label: this.props.response.title, className: 'kui--data-table-title' }]
         : []
-      const breadcrumbs = titleBreadcrumb.concat(
-        (this.props.response.breadcrumbs || []).map(_ =>
-          Object.assign({}, _, { className: 'kui--secondary-breadcrumb' })
+      const breadcrumbs = (this.props.prefixBreadcrumbs || [])
+        .concat(titleBreadcrumb)
+        .concat(
+          (this.props.response.breadcrumbs || []).map(_ =>
+            Object.assign({}, _, { className: 'kui--secondary-breadcrumb' })
+          )
         )
-      )
 
       return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
     }
@@ -131,7 +135,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           framed
           className="kui--data-table-toolbar-bottom"
           asGrid={this.state.asGrid}
-          gridableColumn={this.state.gridableColumn}
+          gridableColumn={findGridableColumn(this.props.response)}
           setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
           paginate={this.isPaginated()}
           setPage={(page: number) => this.setState({ page })}
@@ -147,13 +151,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return (
       <div className="kui--data-table-wrapper kui--data-table-as-grid kui--screenshotable">
         {this.topToolbar()}
-        <Grid
-          tab={this.props.tab}
-          repl={this.props.repl}
-          response={this.props.response}
-          visibleRows={visibleRows}
-          gridableColumn={this.state.gridableColumn}
-        />
+        <Grid tab={this.props.tab} repl={this.props.repl} response={this.props.response} visibleRows={visibleRows} />
         {this.bottomToolbar()}
       </div>
     )

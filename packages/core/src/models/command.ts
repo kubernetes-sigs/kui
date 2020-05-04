@@ -79,6 +79,12 @@ export interface CommandOptions extends CapabilityRequirements {
   plugin?: string
   okOptions?: string[]
 
+  /*
+   * always show the view in terminal, e.g. for certain commands producing watchable table,
+   * we want them to always show in `Terminal`
+   */
+  alwaysViewIn?: 'Terminal'
+
   /** model to view transformer */
   viewTransformer?<T extends KResponse, O extends ParsedOptions>(
     args: EvaluatorArgs<O>,

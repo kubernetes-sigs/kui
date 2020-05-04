@@ -46,4 +46,7 @@ export function flags(booleans: string[] = []): CommandOptions {
 }
 
 const defaultFlags = flags()
+
+export const crudFlags = Object.assign({}, flags(), { alwaysViewIn: 'Terminal' })
+
 export default defaultFlags

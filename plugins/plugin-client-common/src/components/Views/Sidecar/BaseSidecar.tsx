@@ -18,9 +18,9 @@ import * as React from 'react'
 import { isPopup, inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
-import sameCommand from './same'
+import sameCommand from '../util/same'
 import TitleBar, { Props as TitleBarProps } from './TitleBar'
-import CircularBuffer from './CircularBuffer'
+import CircularBuffer, { BaseHistoryEntry } from '../util/CircularBuffer'
 
 import '../../../../web/css/static/sidecar.css'
 import '../../../../web/css/static/sidecar-main.css'
@@ -52,12 +52,6 @@ export interface SidecarOptions {
 export type Props = SidecarOptions & {
   uuid?: string
   tab?: KuiTab
-}
-
-export interface BaseHistoryEntry {
-  cwd: string
-  argvNoOptions: string[]
-  parsedOptions: ParsedOptions
 }
 
 /** Mostly, this State deals with the current "width" of the view. */

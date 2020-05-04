@@ -107,6 +107,14 @@ export default function PatternFly4Icons(props: Props) {
       return <WindowMaximize style={Sidecar} {...props} />
     case 'WindowMinimize':
       return <WindowMinimize style={Sidecar} {...props} />
+
+    // there's no icon for `TerminalPlusWatcher` and
+    // `TerminalSidecarWatcher` in Patternfly, so we use carbon
+    // icons for now
+    case 'TerminalPlusWatcher':
+      return <div />
+    case 'TerminalSidecarWatcher':
+      return <div />
   }
 
   // this bit of magic ensures exhaustiveness of the switch;
