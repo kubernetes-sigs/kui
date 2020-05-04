@@ -40,6 +40,8 @@ export type SupportedIcon =
   | 'Trash'
   | 'TerminalOnly'
   | 'TerminalPlusSidecar'
+  | 'TerminalPlusWatcher'
+  | 'TerminalSidecarWatcher'
   | 'Up'
   | 'Warning'
   | 'WindowMaximize'
@@ -52,6 +54,9 @@ export interface Props extends Record<string, any> {
 }
 
 export default function iconImpl(props: Props): React.ReactElement {
+  if (props.icon === 'TerminalPlusWatcher' || props.icon === 'TerminalSidecarWatcher') {
+    return <Carbon {...props} />
+  }
   return (
     <KuiContext.Consumer>
       {config => (config.components === 'patternfly' ? <PatternFly {...props} /> : <Carbon {...props} />)}

@@ -1,6 +1,6 @@
 @import './common';
 
-body[kui-theme='PatternFly4 Dark'] {
+body.kui--patternfly4[kui-theme='PatternFly4 Dark'] {
   --color-base00: var(--pf-global--palette--black-850);
   --color-base01: var(--pf-global--palette--black-700);
   --color-base02: var(--pf-global--palette--black-600);
@@ -40,6 +40,7 @@ body[kui-theme='PatternFly4 Dark'] {
   @include patternfly-sidecar;
 
   --color-repl-background: var(--pf-global--palette--black-850);
+  --color-background-03: var(--pf-global--palette--black-800);
   --color-stripe-01: var(--pf-global--palette--black-700);
 
   .kui--inverted-color-context {

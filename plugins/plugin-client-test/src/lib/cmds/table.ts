@@ -130,6 +130,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen('/test/table', doTable(), {
     usage: {
       docs: 'A showcase of the Table view'
-    }
+    },
+    alwaysViewIn: 'Terminal'
   })
 }

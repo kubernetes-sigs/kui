@@ -25,11 +25,30 @@ export default function renderTable(
   repl: REPL,
   response: Table,
   paginate: boolean | number = 20,
-  toolbars = false
+  toolbars = false,
+  asGrid = false
 ) {
   if (isWatchable(response)) {
-    return <LivePaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} toolbars={toolbars} />
+    return (
+      <LivePaginatedTable
+        tab={tab}
+        repl={repl}
+        response={response}
+        paginate={paginate}
+        toolbars={toolbars}
+        asGrid={asGrid}
+      />
+    )
   } else {
-    return <PaginatedTable tab={tab} repl={repl} response={response} paginate={paginate} toolbars={toolbars} />
+    return (
+      <PaginatedTable
+        tab={tab}
+        repl={repl}
+        response={response}
+        paginate={paginate}
+        toolbars={toolbars}
+        asGrid={asGrid}
+      />
+    )
   }
 }

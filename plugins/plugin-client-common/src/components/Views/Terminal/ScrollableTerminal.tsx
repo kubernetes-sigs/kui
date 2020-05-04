@@ -16,7 +16,14 @@
 
 import * as React from 'react'
 import { Accordion } from 'carbon-components-react'
-import { eventChannelUnsafe, ScalarResponse, Tab as KuiTab, isPopup } from '@kui-shell/core'
+import {
+  eventChannelUnsafe,
+  ScalarResponse,
+  Tab as KuiTab,
+  isPopup,
+  CommandOptions,
+  isWatchable
+} from '@kui-shell/core'
 
 import Block from './Block'
 import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
@@ -36,8 +43,8 @@ type Props = TerminalOptions & {
   /** tab model */
   tab: KuiTab
 
-  secondaryIsVisible?: boolean
-  closeSecondary: () => void
+  sidecarIsVisible?: boolean
+  closeSidecar: () => void
 }
 
 interface State {
@@ -88,9 +95,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       return
     }
 
-    if (isPopup() && this.props.secondaryIsVisible) {
+    if (isPopup() && this.props.sidecarIsVisible) {
       // see https://github.com/IBM/kui/issues/4183
-      this.props.closeSecondary()
+      this.props.closeSidecar()
     }
 
     this.setState(curState => {
@@ -105,7 +112,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL finished executing a command */
   private onExecEnd(
-    { response, cancelled, echo }: { response: ScalarResponse; cancelled: boolean; echo: boolean },
+    {
+      response,
+      cancelled,
+      echo,
+      evaluatorOptions
+    }: { response: ScalarResponse; cancelled: boolean; echo: boolean; evaluatorOptions: CommandOptions },
     execUUID: string,
     responseType: string
   ) {
@@ -117,13 +129,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.setState(curState => {
       const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === execUUID)
 
+      // response `showInTerminal` is either non-watchable response, or watch response that's forced to show in terminal
+      const showInTerminal =
+        !isWatchable(response) || (isWatchable(response) && evaluatorOptions.alwaysViewIn === 'Terminal')
+
       if (inProcessIdx >= 0) {
         const inProcess = curState.blocks[inProcessIdx]
         if (isProcessing(inProcess)) {
           try {
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([Finished(inProcess, responseType === 'ScalarResponse' ? response : true, cancelled)]) // mark as finished
+              .concat([
+                Finished(inProcess, responseType === 'ScalarResponse' && showInTerminal ? response : true, cancelled)
+              ]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat([Active()]) // plus a new block!
             return {
@@ -210,7 +228,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <div className={'repl' + (this.props.secondaryIsVisible ? ' sidecar-visible' : '')} id="main-repl">
+      <div className={'repl' + (this.props.sidecarIsVisible ? ' sidecar-visible' : '')} id="main-repl">
         <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)} onClick={this.onClick.bind(this)}>
           <Accordion>
             {this.state.blocks.map((_, idx) => (

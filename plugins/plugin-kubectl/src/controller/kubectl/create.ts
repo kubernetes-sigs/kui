@@ -16,7 +16,7 @@
 
 import { Registrar, Arguments } from '@kui-shell/core'
 
-import flags from './flags'
+import { crudFlags } from './flags'
 import { doExecWithStatus } from './exec'
 import { KubeOptions } from './options'
 import commandPrefix from '../command-prefix'
@@ -39,7 +39,7 @@ export const doCreate = (verb: string, command = 'kubectl') => async (args: Argu
 export default (registrar: Registrar) => {
   verbs.forEach(verb => {
     const handler = doCreate(verb)
-    registrar.listen(`/${commandPrefix}/kubectl/${verb}`, handler, flags)
-    registrar.listen(`/${commandPrefix}/k/${verb}`, handler, flags)
+    registrar.listen(`/${commandPrefix}/kubectl/${verb}`, handler, crudFlags)
+    registrar.listen(`/${commandPrefix}/k/${verb}`, handler, crudFlags)
   })
 }

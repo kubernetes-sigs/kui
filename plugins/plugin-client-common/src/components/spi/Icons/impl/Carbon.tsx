@@ -21,6 +21,8 @@ import {
   Add20 as Add,
   Terminal32 as TerminalOnly,
   Notebook32 as TerminalPlusSidecar,
+  Thumbnail_132 as TerminalPlusWatcher,
+  Template32 as TerminalSidecarWatcher,
   Close20 as WindowClose,
   Maximize16 as WindowMaximize,
   Minimize16 as WindowMinimize,
@@ -67,6 +69,8 @@ const icons: Record<Exclude<SupportedIcon, 'Up'>, CarbonIconType> = {
   Trash,
   TerminalOnly,
   TerminalPlusSidecar,
+  TerminalPlusWatcher,
+  TerminalSidecarWatcher,
   Warning,
   WindowMaximize,
   WindowMinimize,
@@ -76,6 +80,8 @@ const icons: Record<Exclude<SupportedIcon, 'Up'>, CarbonIconType> = {
 export default function CarbonIcons(props: Props) {
   if (props.icon === 'Up') {
     return <Up {...props} className="kui--rotate-180" />
+  } else if (props.icon === 'TerminalSidecarWatcher') {
+    return <TerminalSidecarWatcher {...props} className="kui--rotate-180-then-flip" />
   } else {
     return React.createElement(icons[props.icon], props)
   }

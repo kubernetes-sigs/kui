@@ -15,7 +15,7 @@
  */
 
 import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS, typeSlowly } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS, typeSlowly } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -42,10 +42,15 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it(`should wait for the pod to come up`, () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-      .then(selector => waitForGreen(this.app, selector))
+      .then(async () => {
+        await this.app.client.waitForExist(Selectors.WATCHER_N(1))
+        await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL(1, podName))
+        await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, podName))
+      })
       .catch(Common.oops(this))
   })
+
+  it('should reload', () => Common.refresh(this))
 
   /* it(`should copy the vimrc to the current container`, () => {
     return CLI

@@ -16,7 +16,7 @@
 
 import * as assert from 'assert'
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -64,11 +64,13 @@ describe(`kubectl logs getty ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     })
   }
 
-  const waitForPod = (podName: string) => {
+  const waitForPod = (podName: string, watcherIndex: number) => {
     it(`should wait for the pod ${podName} to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-        .then(selector => waitForGreen(this.app, selector))
+        .then(async () => {
+          await this.app.client.waitForExist(Selectors.WATCHER_N(watcherIndex))
+          await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(watcherIndex, podName))
+        })
         .catch(Common.oops(this, true))
     })
   }
@@ -118,13 +120,13 @@ describe(`kubectl logs getty ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   }
 
   allocateNS(this, ns)
-  inputs.forEach(_ => {
+  inputs.forEach((_, idx) => {
     if (_.expectString) {
       createPodExpectingString(_.podName, _.cmdline)
     } else {
       createPodExpectingTable(_.podName, _.cmdline)
     }
-    waitForPod(_.podName)
+    waitForPod(_.podName, idx + 1)
     showLogs(_.podName, _.containerName, _.label, _.hasLogs)
   })
   inputs.forEach(_ => {

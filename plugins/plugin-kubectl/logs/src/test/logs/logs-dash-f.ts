@@ -18,7 +18,7 @@ import * as assert from 'assert'
 import { Application } from 'spectron'
 
 import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -57,8 +57,10 @@ describe(`kubectl logs follow ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
   it(`should wait for the pod to come up`, () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-      .then(selector => waitForGreen(this.app, selector))
+      .then(async () => {
+        await this.app.client.waitForExist(Selectors.WATCHER_N(1))
+        await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, podName))
+      })
       .catch(Common.oops(this, true))
   })
 

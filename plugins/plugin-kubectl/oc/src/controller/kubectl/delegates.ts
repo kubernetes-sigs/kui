@@ -18,6 +18,7 @@ import { Registrar } from '@kui-shell/core'
 import {
   commandPrefix,
   defaultFlags,
+  crudFlags,
   doCreate,
   getter,
   doDelete,
@@ -29,11 +30,11 @@ import {
 const command = 'oc'
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/${command}/apply`, doCreate('apply', command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/create`, doCreate('create', command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/apply`, doCreate('apply', command), crudFlags)
+  registrar.listen(`/${commandPrefix}/${command}/create`, doCreate('create', command), crudFlags)
+  registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), crudFlags)
   registrar.listen(`/${commandPrefix}/${command}/edit`, doEdit(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), defaultFlags)
+  registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), crudFlags)
 
   getter(registrar, command)
   describer(registrar, command)

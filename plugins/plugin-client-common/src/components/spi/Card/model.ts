@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-import { Button, Link, MultiModalMode, NavResponse, Tab } from '@kui-shell/core'
-import { BaseHistoryEntry } from '../../Views/util/CircularBuffer'
-
-interface Nav {
-  title: string
-  currentTabIndex: number
-  tabs: MultiModalMode[]
-  buttons?: Button[]
-}
-
-export interface HistoryEntry extends BaseHistoryEntry {
-  current: { menuIdx: number; tabIdx: number }
-  allNavs: Nav[]
-  allLinks: Link[]
-
-  response: NavResponse
-}
+import { ReactNode } from 'react'
+// import { } from '@kui-shell/core'
 
 interface Props {
-  tab: Tab
-  current: HistoryEntry
-  changeCurrent: (menuIdx: number, tabIdx: number) => void
+  className?: string
+  children: ReactNode
 }
 
 export default Props

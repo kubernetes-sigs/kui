@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-import { Button, Link, MultiModalMode, NavResponse, Tab } from '@kui-shell/core'
-import { BaseHistoryEntry } from '../../Views/util/CircularBuffer'
+import * as React from 'react'
 
-interface Nav {
-  title: string
-  currentTabIndex: number
-  tabs: MultiModalMode[]
-  buttons?: Button[]
+import Carbon from './impl/Carbon'
+import PatternFly4 from './impl/PatternFly'
+import KuiContext from '../../Client/context'
+
+import Props from './model'
+
+export default function CardSpi(props: Props): React.ReactElement {
+  return (
+    <KuiContext.Consumer>
+      {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}
+    </KuiContext.Consumer>
+  )
 }
-
-export interface HistoryEntry extends BaseHistoryEntry {
-  current: { menuIdx: number; tabIdx: number }
-  allNavs: Nav[]
-  allLinks: Link[]
-
-  response: NavResponse
-}
-
-interface Props {
-  tab: Tab
-  current: HistoryEntry
-  changeCurrent: (menuIdx: number, tabIdx: number) => void
-}
-
-export default Props

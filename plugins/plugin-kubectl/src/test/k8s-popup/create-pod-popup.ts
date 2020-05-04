@@ -20,6 +20,8 @@
 import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
+import * as assert from 'assert'
+
 const ns1: string = createNS()
 const ns2: string = createNS()
 
@@ -135,7 +137,14 @@ Common.localDescribe(`popup watch pods in ${ns1}`, function(this: Common.ISuite)
   before(Common.before(this, { popup: [kubectl, 'get', 'pods', '-w', '-n', ns1] }))
   after(Common.after(this))
 
-  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
+  it(`should watch resource named ${pod} in namespace ${ns1}`, async () => {
+    try {
+      await this.app.client.waitForExist(Selectors.WATCHER_N(1))
+      await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, pod))
+    } catch (err) {
+      Common.oops(this, true)(err)
+    }
+  })
 })
 
 Common.localDescribe(`popup create pod creating namespace ${ns2}`, function(this: Common.ISuite) {

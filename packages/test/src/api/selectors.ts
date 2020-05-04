@@ -36,8 +36,11 @@ export const SIDECAR_LIMIT = (type: string) => `${SIDECAR} .sidecar-header .limi
 export const SIDECAR_BADGES = `${SIDECAR} .sidecar-header .badges`
 
 // top tab stripe buttons
-export const TERMINAL_AND_SIDECAR_BUTTON = `#kui--custom-top-tab-stripe-button-container [data-mode="show terminal and sidecar"]`
-export const ONLY_TERMINAL_BUTTON = `#kui--custom-top-tab-stripe-button-container [data-mode="show only terminal"]`
+const TOP_TAB_BUTTONS = `#kui--custom-top-tab-stripe-button-container`
+export const TERMINAL_AND_SIDECAR_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal and sidecar"]`
+export const ONLY_TERMINAL_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show only terminal"]`
+export const TERMINAL_AND_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal and watcher"]`
+export const TERMINAL_SIDECAR_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal sidecar and watcher"]`
 
 // sidecar toolbar
 export const SIDECAR_TOOLBAR = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
@@ -73,7 +76,7 @@ export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
 export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close a` // resume button in minimized mode
 export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
-export const SIDECAR_FULLY_CLOSED = `${CURRENT_TAB} .kui--secondary-closed .kui--sidecar`
+export const SIDECAR_FULLY_CLOSED = `${CURRENT_TAB} .kui--sidecar-closed .kui--sidecar`
 export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
@@ -96,9 +99,14 @@ export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th[data-key="${c
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
-export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-grid`
+
+const _TABLE_AS_GRID = '.kui--data-table-as-grid'
+export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} ${_TABLE_AS_GRID}`
 export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
-export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} .kui--data-table-title`
+
+const _TABLE_TITLE = `.kui--data-table-title`
+export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} ${_TABLE_TITLE}`
+
 export const TABLE_TITLE_SECONDARY = (N: number) => `${OUTPUT_N(N)} .kui--secondary-breadcrumb`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
@@ -106,3 +114,14 @@ export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>
   `${LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
 export const OK_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-output .ok`
 export const xtermRows = (N: number) => `${PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
+
+export const WATCHER_N = (N: number) => `.kui--sub-pane[data-pane-index="${N}"]`
+export const WATCHER_N_TITLE = (N: number) => `${WATCHER_N(N)} ${_TABLE_TITLE}`
+export const WATCHER_N_GRID_CELL = (N: number, name: string) =>
+  `${WATCHER_N(N)} ${_TABLE_AS_GRID} [data-tag="badge"][data-entity-name="${name}"]`
+export const WATCHER_N_GRID_CELL_ONLINE = (N: number, name: string) =>
+  `${WATCHER_N_GRID_CELL(N, name)} .green-background`
+export const WATCHER_N_GRID_CELL_OFFLINE = (N: number, name: string) =>
+  `${WATCHER_N_GRID_CELL(N, name)} .red-background`
+export const WATCHER_N_GRID_CELL_PENDING = (N: number, name: string) =>
+  `${WATCHER_N_GRID_CELL(N, name)} .yello-background`
