@@ -79,7 +79,7 @@ const list = async ({ REPL }: Arguments) => {
     outerCSS: 'not-a-name',
     attributes: [
       { value: strings('Theme') },
-      { value: strings('Style') },
+      { value: strings('Style'), outerCSS: 'hide-with-narrow-window' },
       { value: strings('Provider'), outerCSS: 'hide-with-sidecar' }
     ]
   }
@@ -111,7 +111,7 @@ const list = async ({ REPL }: Arguments) => {
                 outerCSS: 'entity-name-group',
                 onclick: undefined
               },
-              { value: strings(theme.style), outerCSS: 'pretty-narrow' },
+              { value: strings(theme.style), outerCSS: 'pretty-narrow hide-with-narrow-window' },
               { value: plugin, css: 'sub-text', outerCSS: 'hide-with-sidecar' }
             ],
             onclick: undefined

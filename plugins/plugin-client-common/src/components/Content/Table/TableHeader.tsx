@@ -27,19 +27,24 @@ export default function renderHeader(kuiHeader: KuiRow, { getHeaderProps, header
   return (
     <TableHead>
       <TableRow>
-        {headers.map((header, cidx) => (
-          <TableHeader
-            key={header.key}
-            {...getHeaderProps({
-              header,
-              'data-key': header.key,
-              // isSortable: isSortable && (!radio || cidx > 0),
-              className: cidx === 0 ? kuiHeader.outerCSS : kuiHeader.attributes[cidx - 1].outerCSS
-            })}
-          >
-            {header.header}
-          </TableHeader>
-        ))}
+        {headers.map((header, cidx) => {
+          const outerCSS = cidx === 0 ? kuiHeader.outerCSS : kuiHeader.attributes[cidx - 1].outerCSS
+          const css = cidx === 0 ? kuiHeader.css : kuiHeader.attributes[cidx - 1].css
+
+          return (
+            <TableHeader
+              key={header.key}
+              {...getHeaderProps({
+                header,
+                'data-key': header.key,
+                // isSortable: isSortable && (!radio || cidx > 0),
+                className: outerCSS
+              })}
+            >
+              {css ? <span className={css}>{header.header}</span> : header.header}
+            </TableHeader>
+          )
+        })}
       </TableRow>
     </TableHead>
   )
