@@ -15,29 +15,25 @@
  */
 
 import * as React from 'react'
-import { REPL, Breadcrumb as BreadcrumbModel } from '@kui-shell/core'
 
 import Carbon from './impl/Carbon'
 import PatternFly4 from './impl/PatternFly'
 import KuiContext from '../../Client/context'
 
-export type BreadcrumbView = BreadcrumbModel & { deemphasize?: boolean; isCurrentPage?: boolean; className?: string }
+import Props, { BreadcrumbView } from './model'
+export { Props, BreadcrumbView }
 
-export interface Props {
-  repl: REPL
-  breadcrumbs: BreadcrumbView[]
-}
-
-function currentPageIdxAsSpecified(props: Props) {
-  return props.breadcrumbs && props.breadcrumbs.findIndex(_ => _.isCurrentPage)
-}
-
+/**
+ * Kui allows for one of the breadcrumbs to be distinguished. We term
+ * this the "current page".
+ *
+ */
 export function getCurrentPageIdx(props: Props) {
-  const asSpecified = currentPageIdxAsSpecified(props)
+  const asSpecified = props.breadcrumbs && props.breadcrumbs.findIndex(_ => _.isCurrentPage)
   return asSpecified < 0 ? props.breadcrumbs.length - 1 : asSpecified
 }
 
-export default function iconImpl(props: Props): React.ReactElement {
+export default function BreadcrumbSpi(props: Props): React.ReactElement {
   return (
     <KuiContext.Consumer>
       {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}

@@ -17,7 +17,8 @@
 import * as React from 'react'
 import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 
-import { Props, getCurrentPageIdx } from '..'
+import Props from '../model'
+import { getCurrentPageIdx } from '..'
 
 import '../../../../../web/scss/components/Breadcrumb/Carbon.scss'
 
