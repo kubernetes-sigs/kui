@@ -17,7 +17,8 @@
 import * as React from 'react'
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core'
 
-import { Props, getCurrentPageIdx } from '..'
+import Props from '../model'
+import { getCurrentPageIdx } from '..'
 
 import '../../../../../web/scss/components/Breadcrumb/Patternfly.scss'
 
