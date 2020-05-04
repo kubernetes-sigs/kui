@@ -91,9 +91,9 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     return false
   }
 
-  /** matching the old `flex: 3.5` compared to `flex: 4` for the Terminal */
+  /** 30/70 split between the Terminal and the LeftNavSidecar */
   protected defaultWidth(): Width {
-    return Width.Split45
+    return Width.Split70
   }
 
   /** @return a `HistoryEntry` for the given `Response` */
