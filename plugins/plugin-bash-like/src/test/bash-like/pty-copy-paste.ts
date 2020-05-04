@@ -126,16 +126,16 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await this.app.client.execute(() => document.execCommand('paste'))
 
       // escape then :wq
-      console.error('CP12')
-      await this.app.client.keys(Keys.ESCAPE)
-      console.error('CP13')
       let idx = 0
       await this.app.client.waitUntil(async () => {
+        console.error(`CP12.${idx}`)
+        await this.app.client.keys(Keys.ESCAPE)
+        console.error(`CP13.${idx}`)
         const txt = await this.app.client.getText(lastRow(res.count))
         if (++idx > 5) {
           console.error(`still waiting for text actualValue=${txt} whereas length should be zero`)
         }
-        return txt.length === 0
+        return !/INSERT/i.test(txt)
       }, CLI.waitTimeout)
 
       console.error('CP14')
