@@ -25,8 +25,8 @@
     "carbon-components": "10.10.2",
     "carbon-components-react": "7.10.2",
     "carbon-icons": "7.0.7",
-    "monaco-editor": "0.18.1",
-    "monaco-editor-webpack-plugin": "1.7.0",
+    "monaco-editor": "0.20.0",
+    "monaco-editor-webpack-plugin": "1.9.0",
     "react-markdown": "4.3.1",
     "react-split-pane": "0.1.91",
     "tmp": "0.1.0"
