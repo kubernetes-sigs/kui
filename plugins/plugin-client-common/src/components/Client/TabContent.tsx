@@ -356,8 +356,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
    */
   protected topTabButtons() {
     if (this.props.active && this.state.secondaryHasContent) {
+      /* re: kui--hide-in-narrower-windows, see https://github.com/IBM/kui/issues/4459 */
       return (
-        <div id="kui--custom-top-tab-stripe-button-container">
+        <div id="kui--custom-top-tab-stripe-button-container" className="kui--hide-in-narrower-windows">
           <Icons
             icon="TerminalOnly"
             data-mode="show only terminal"
