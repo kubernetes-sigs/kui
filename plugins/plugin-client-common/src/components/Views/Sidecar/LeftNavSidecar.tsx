@@ -17,34 +17,18 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import * as React from 'react'
-import { eventChannelUnsafe, Tab, Button, NavResponse, MultiModalMode, ParsedOptions, Link } from '@kui-shell/core'
+import { eventChannelUnsafe, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
 import { Content } from 'carbon-components-react'
 
 import Width from './width'
-import Navigation from './Navigation/'
+import Navigation, { HistoryEntry } from '../../spi/Navigation'
 import { getStateFromMMR } from './TopNavSidecar'
-import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
+import { BaseSidecar, Props, cwd } from './BaseSidecar'
 
 import 'carbon-components/scss/components/ui-shell/_content.scss'
-import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('../../Content/KuiContent'))
-
-interface Nav {
-  title: string
-  currentTabIndex: number
-  tabs: MultiModalMode[]
-  buttons?: Button[]
-}
-
-export interface HistoryEntry extends BaseHistoryEntry {
-  current: { menuIdx: number; tabIdx: number }
-  allNavs: Nav[]
-  allLinks: Link[]
-
-  response: NavResponse
-}
 
 /**
  *

@@ -17,7 +17,8 @@
 import * as React from 'react'
 import { MultiModalMode, Link, isLinkWithCommand, i18n } from '@kui-shell/core'
 import { Nav, NavExpandable, NavItem, NavList } from '@patternfly/react-core'
-import { NavigationProps } from './index'
+
+import NavigationProps from '../model'
 
 import '../../../../../web/scss/components/Navigation/Patternfly.scss'
 

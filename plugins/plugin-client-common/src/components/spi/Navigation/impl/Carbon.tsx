@@ -17,7 +17,10 @@
 import * as React from 'react'
 import { MultiModalMode, Link, isLinkWithCommand, i18n } from '@kui-shell/core'
 import { SideNavLink, SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
-import { NavigationProps } from './index'
+
+import NavigationProps from '../model'
+
+import '../../../../../web/scss/components/Navigation/Carbon.scss'
 
 const strings = i18n('client', 'about')
 

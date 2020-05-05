@@ -15,28 +15,21 @@
  */
 
 import * as React from 'react'
-import { Tab } from '@kui-shell/core'
-import KuiContext from '../../../Client/context'
-import { HistoryEntry } from '../LeftNavSidecar'
+import { KuiContext } from '../../..'
 
-import CarbonSideNav from './Carbon'
-import PatternflyNavgitation from './Patternfly'
+import NavigationProps from './model'
+export { HistoryEntry } from './model'
 
-export interface NavigationProps {
-  tab: Tab
-  current: HistoryEntry
-  changeCurrent: (menuIdx: number, tabIdx: number) => void
-}
+const Carbon = React.lazy(() => import('./impl/Carbon'))
+const PatternFly = React.lazy(() => import('./impl/PatternFly'))
 
 export default class Navigation extends React.PureComponent<NavigationProps> {
   public render() {
     return (
       <React.Suspense fallback={<div />}>
         <KuiContext.Consumer>
-          {config =>
-            (config.components === 'patternfly' && <PatternflyNavgitation {...this.props} />) || (
-              <CarbonSideNav {...this.props} />
-            )
+          {({ components }) =>
+            components === 'patternfly' ? <PatternFly {...this.props} /> : <Carbon {...this.props} />
           }
         </KuiContext.Consumer>
       </React.Suspense>
