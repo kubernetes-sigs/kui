@@ -107,13 +107,27 @@ export default class Markdown extends React.PureComponent<Props> {
               props.children
             )
           },
-          list: props => React.createElement(props.ordered ? OrderedList : UnorderedList, props, props.children),
-          listItem: props => <ListItem {...props} />,
-          table: props => <StructuredListWrapper {...props} />,
-          tableHead: props => <StructuredListHead {...props} />,
-          tableBody: props => <StructuredListBody {...props} />,
-          tableRow: props => <StructuredListRow {...props} />,
-          tableCell: props => <StructuredListCell head={props.isHeader} {...props} />
+          list: props => {
+            return React.createElement(
+              props.ordered ? OrderedList : UnorderedList,
+              { nested: props.depth > 0, className: props.className },
+              props.children
+            )
+          },
+          listItem: props => <ListItem className={props.className}>{props.children}</ListItem>,
+          table: props => <StructuredListWrapper className={props.className}>{props.children}</StructuredListWrapper>,
+          tableHead: props => <StructuredListHead className={props.className}>{props.children}</StructuredListHead>,
+          tableBody: props => <StructuredListBody className={props.className}>{props.children}</StructuredListBody>,
+          tableRow: props => (
+            <StructuredListRow head={props.isHeader} className={props.className}>
+              {props.children}
+            </StructuredListRow>
+          ),
+          tableCell: props => (
+            <StructuredListCell head={props.isHeader} className={props.className}>
+              {props.children}
+            </StructuredListCell>
+          )
         }}
       />
     )
