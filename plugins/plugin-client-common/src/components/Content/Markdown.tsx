@@ -97,15 +97,28 @@ export default class Markdown extends React.PureComponent<Props> {
             </CodeSnippet>
           ),
           heading: props => {
-            const anchor =
-              !props.children || !props.children[0].props
-                ? undefined
-                : this.anchorFrom(props.children[0].props.value.toLowerCase().replace(/ /g, '-'))
+            const valueChild =
+              props.children && props.children.length === 1
+                ? props.children[0]
+                : props.children.find(_ => _.props.value)
+            const anchor = !valueChild
+              ? undefined
+              : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
             return React.createElement(
               `h${props.level}`,
               Object.assign({}, props, { 'data-markdown-anchor': anchor }),
               props.children
             )
+          },
+          image: props => {
+            const isLocal = !/^http/i.test(props.src)
+            if (isLocal && this.props.fullpath) {
+              const absoluteSrc = join(dirname(this.props.fullpath), props.src)
+              const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteSrc)
+              return <img src={relativeToCWD} />
+            } else {
+              return <img {...props} />
+            }
           },
           list: props => {
             return React.createElement(
