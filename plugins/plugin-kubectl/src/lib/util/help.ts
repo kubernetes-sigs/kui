@@ -115,7 +115,7 @@ const renderHelpUnsafe = (
       .map(_ =>
         _.replace(
           /"([^"]+)"/g,
-          (_, command) => `[${command}](kui://exec?command=${encodeURIComponent(command)} "Execute ${command}")`
+          (_, command) => `[${command}](#kuiexec?command=${encodeURIComponent(command)} "Execute ${command}")`
         )
       )
       // .map(_ => ` - ${_}`)
