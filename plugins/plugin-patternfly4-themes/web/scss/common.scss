@@ -6,6 +6,7 @@ body.kui--patternfly4[kui-theme-style] {
     padding-right: calc(1em * 0.875);
   }
 
+  --color-hover-primary-text: var(--pf-global--link--Color--light--hover);
   --color-primary-button-background: var(--pf-global--primary-color--100);
   --color-secondary-button-background: transparent;
   --color-primary-button-background-hover: var(--pf-global--primary-color--200);
@@ -139,6 +140,13 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--FontWeight--semi-bold: 500;
   --pf-global--FontWeight--bold: 600;
   --pf-global--FontWeight--redhatfont--bold: 700;
+
+  --pf-global--link--Color: #06c;
+  --pf-global--link--Color--hover: #004080;
+  --pf-global--link--Color--light: #73bcf7;
+  --pf-global--link--Color--light--hover: #2b9af3;
+  --pf-global--link--Color--dark: #06c;
+  --pf-global--link--Color--dark--hover: #004080;
 }
 
 @mixin patternfly-sidecar {
