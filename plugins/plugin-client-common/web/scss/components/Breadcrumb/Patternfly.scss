@@ -2,7 +2,16 @@
 
 /* breadcrumbs */
 body[kui-theme-style] nav[aria-label='Breadcrumb'] {
-  overflow-x: hidden;
+  &,
+  .pf-c-breadcrumb__list {
+    /* see https://github.com/IBM/kui/issues/4431 */
+    overflow-x: hidden;
+  }
+
+  .pf-c-breadcrumb__list {
+    /* see https://github.com/IBM/kui/issues/4431 */
+    flex-wrap: initial;
+  }
 
   &.pf-c-breadcrumb {
     padding: 0 1em;
@@ -14,8 +23,16 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
       }
 
       &.kui--secondary-breadcrumb {
+        /* see https://github.com/IBM/kui/issues/4431 */
+        overflow: hidden;
+
         .pf-c-breadcrumb__link {
           color: var(--color-text-02);
+
+          /* see https://github.com/IBM/kui/issues/4431 */
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
 
