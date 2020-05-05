@@ -18,14 +18,11 @@
 
 import * as React from 'react'
 import { eventChannelUnsafe, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
-import { Content } from 'carbon-components-react'
 
 import Width from './width'
 import Navigation, { HistoryEntry } from '../../spi/Navigation'
 import { getStateFromMMR } from './TopNavSidecar'
 import { BaseSidecar, Props, cwd } from './BaseSidecar'
-
-import 'carbon-components/scss/components/ui-shell/_content.scss'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('../../Content/KuiContent'))
@@ -143,7 +140,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   }
 
   protected bodyContainer(tabIdx: number, menuIdx: number) {
-    return <Content>{this.bodyContent(tabIdx, menuIdx)}</Content>
+    return <div className="kui--sidecar-content">{this.bodyContent(tabIdx, menuIdx)}</div>
   }
 
   public render() {
