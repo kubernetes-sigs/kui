@@ -44,11 +44,12 @@ export default function MyKui(props: KuiProps) {
 
 ### SPI for Third Party Components
 
-In this table "carbon" stands for Carbon Components, and "pf4" stands for PatternFly v4.
+In this table `carbon` stands for Carbon Components, and `pf4` stands for PatternFly v4.
 
 | Component  | Model                                                                         | Implemenatations                                                                                                                                                                        |
 | ---------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Breadcrumb | [spi](../plugins/plugin-client-common/src/components/spi/Breadcrumb/model.ts) | [carbon](../plugins/plugin-client-common/src/components/spi/Breadcrumb/impl/Carbon.tsx) **\|** [pf4](../plugins/plugin-client-common/src/components/spi/Breadcrumb/impl/PatternFly.tsx) |
+| Navigation | [spi](../plugins/plugin-client-common/src/components/spi/Navigation/model.ts) | [carbon](../plugins/plugin-client-common/src/components/spi/Navigation/impl/Carbon.tsx) **\|** [pf4](../plugins/plugin-client-common/src/components/spi/Navigation/impl/PatternFly.tsx) |
 
 ## Work In Progress: Third Party Components Not Yet under an SPI
 
@@ -60,7 +61,6 @@ that are currently hard-wired to use Carbon Components:
 - [Confirm](../plugins/plugin-client-common/src/components/Views/Confirm.tsx)
 - [LeftNavSidecar Content](../plugins/plugin-client-common/src/components/Views/Sidecar/LeftNavSidecar.tsx)
 - [Form](../plugins/plugin-kubectl/src/lib/view/modes/Form.tsx)
-- [Navigation](../plugins/plugin-client-common/src/components/Views/Sidecar/Navigation/Carbon.tsx)
 - [Loading](../plugins/plugin-client-common/src/components/Content/Loading.tsx)
 - [Search](../plugins/plugin-client-common/src/components/Client/Search.tsx)
 - [TabCompletion](../plugins/plugin-client-common/src/components/Views/Terminal/Block/TabCompletion.tsx)
@@ -69,10 +69,6 @@ that are currently hard-wired to use Carbon Components:
 - [ToolbarButton's TooltipIcon](../plugins/plugin-client-common/src/components/Views/Sidecar/ToolbarButton.tsx)
 - [TopNavSidecar Tabs](../plugins/plugin-client-common/src/components/Views/Sidecar/TopNavSidecar.tsx)
 - [TopTabStribe](../plugins/plugin-client-common/src/components/Client/TopTabStripe/Tab.tsx)
-
-The Navigation component currently also supports PatternFly v4
-([here](../plugins/plugin-client-common/src/components/Views/Sidecar/Navigation/Patternfly.tsx)),
-though is not yet structured under an SPI.
 
 ## Icons
 
