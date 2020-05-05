@@ -20,12 +20,12 @@ import {
   CameraIcon as Screenshot,
   CameraRetroIcon as ScreenshotInProgress,
   PlusIcon as Add,
-  TerminalIcon as TerminalOnly,
+  OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
-  WindowCloseIcon,
-  ExpandArrowsAltIcon as WindowMaximizeIcon,
-  CompressArrowsAltIcon as WindowMinimizeIcon,
-  ToolsIcon as Settings,
+  TimesIcon /* WindowCloseIcon */ as WindowClose,
+  ExpandIcon as WindowMaximize,
+  CompressIcon as WindowMinimize,
+  QuestionCircleIcon /* ToolsIcon */ as Settings,
   TrashAltIcon as Trash,
   LevelUpAltIcon as Up,
   ServerIcon as Server,
@@ -35,7 +35,7 @@ import {
   ArrowRightIcon as Forward,
   InfoCircleIcon as Info,
   WarningTriangleIcon as Warning,
-  ExclamationTriangleIcon as ErrorIcon,
+  ExclamationTriangleIcon as Oops,
   ListIcon as List,
   ThIcon as Grid,
   CaretLeftIcon as PreviousPage,
@@ -49,6 +49,7 @@ const size20 = { fontSize: '0.875em' }
 const size32 = { fontSize: '32px', padding: '5px' }
 const Sidecar = { fontSize: '1.125em' }
 const StatusStripe = Sidecar
+const Pagination = { fontSize: '1.5em' }
 
 /** helper to ensure exhaustiveness of the switch statement below */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -67,7 +68,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'CodeBranch':
       return <CodeBranch style={StatusStripe} {...props} />
     case 'Error':
-      return <ErrorIcon {...props} />
+      return <Oops {...props} />
     case 'Forward':
       return <Forward style={Sidecar} {...props} />
     case 'Grid':
@@ -77,11 +78,11 @@ export default function PatternFly4Icons(props: Props) {
     case 'List':
       return <List {...props} />
     case 'PreviousPage':
-      return <PreviousPage {...props} />
+      return <PreviousPage style={Pagination} {...props} />
     case 'Network':
       return <Network {...props} />
     case 'NextPage':
-      return <NextPage {...props} />
+      return <NextPage style={Pagination} {...props} />
     case 'Server':
       return <Server {...props} />
     case 'Settings':
@@ -101,11 +102,11 @@ export default function PatternFly4Icons(props: Props) {
     case 'Up':
       return <Up {...props} />
     case 'WindowClose':
-      return <WindowCloseIcon style={Sidecar} {...props} />
+      return <WindowClose style={Sidecar} {...props} />
     case 'WindowMaximize':
-      return <WindowMaximizeIcon style={Sidecar} {...props} />
+      return <WindowMaximize style={Sidecar} {...props} />
     case 'WindowMinimize':
-      return <WindowMinimizeIcon style={Sidecar} {...props} />
+      return <WindowMinimize style={Sidecar} {...props} />
   }
 
   // this bit of magic ensures exhaustiveness of the switch;
