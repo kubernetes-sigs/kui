@@ -1,0 +1,111 @@
+@import 'carbon-components/scss/components/ui-shell/_side-nav.scss';
+
+[kui-theme-style] {
+  .bx--side-nav {
+    z-index: unset;
+    position: unset;
+    font-family: var(--font-sans-serif);
+    background-color: var(--color-sidecar-header);
+
+    .bx--side-nav__items {
+      padding-top: 1em;
+
+      a.bx--side-nav__link:focus,
+      .bx--side-nav a.bx--header__menu-item:focus {
+        outline-color: var(--color-brand-03);
+      }
+
+      .bx--side-nav__menu {
+        a.bx--side-nav__link {
+          &:not(.bx--side-nav__link--current) {
+            .bx--side-nav__link-text {
+              color: var(--color-text-02);
+            }
+          }
+        }
+      }
+      .bx--side-nav__menu .bx--side-nav__link {
+        height: 2em;
+        padding-left: 2em;
+      }
+      .bx--side-nav__link {
+        & {
+          min-height: 2em;
+          font-size: 1em;
+        }
+        &,
+        &:hover {
+          .bx--side-nav__link-text {
+            font-size: 1em;
+            line-height: 1.25em;
+            color: var(--color-text-01);
+          }
+        }
+      }
+
+      .bx--side-nav__icon > svg {
+        fill: var(--color-text-02);
+      }
+
+      .bx--side-nav__menu[role='menu'] a.bx--side-nav__link--current,
+      .bx--side-nav__menu[role='menu'] a.bx--side-nav__link[aria-current='page'],
+      a.bx--side-nav__link--current {
+        background-color: var(--color-sidecar-background-01);
+      }
+
+      .bx--side-nav__item--active .bx--side-nav__submenu[aria-expanded='false'] {
+        background-color: var(--color-sidecar-background-02);
+      }
+
+      .bx--side-nav__item:not(.bx--side-nav__item--active) > .bx--side-nav__link:hover,
+      .bx--side-nav__menu[role='menu']
+        a.bx--side-nav__link[role='menuitem']:not(.bx--side-nav__link--current):not([aria-current='page']):hover,
+      .bx--side-nav__item--active .bx--side-nav__submenu:hover {
+        background-color: var(--color-sidecar-background-01);
+        color: var(--color-text-01);
+      }
+
+      .bx--side-nav__item:not(.bx--side-nav__item--active):hover
+        .bx--side-nav__item:not(.bx--side-nav__item--active)
+        > .bx--side-nav__submenu:hover,
+      .bx--side-nav__item:not(.bx--side-nav__item--active) > .bx--side-nav__link:hover,
+      .bx--side-nav__menu a.bx--side-nav__link:not(.bx--side-nav__link--current):not([aria-current='page']):hover,
+      .bx--side-nav a.bx--header__menu-item:hover,
+      .bx--side-nav .bx--header__menu-title[aria-expanded='true']:hover {
+        background-color: var(--color-sidecar-background-01);
+        color: var(--color-text-01);
+      }
+    }
+
+    &:not(.bx--side-nav--fixed):hover,
+    &.bx--side-nav--expanded {
+      width: auto;
+      flex: 2.5;
+    }
+
+    &.bx--side-nav--expanded ~ .bx--content {
+      flex: 6;
+      margin: unset;
+      padding: 0;
+      overflow: auto;
+      display: flex;
+    }
+
+    .bx--side-nav__item--active .bx--side-nav__submenu {
+      font-size: 1em;
+      height: 2em;
+      line-height: 1.125em;
+      &.entity-name .bx--side-nav__submenu-title {
+        color: var(--color-brand-03);
+      }
+      .bx--side-nav__submenu-title {
+        color: var(--color-text-01);
+      }
+    }
+
+    a.bx--side-nav__link[aria-current='page']::before,
+    a.bx--side-nav__link--current::before {
+      background-color: var(--color-brand-03);
+    }
+  }
+}
