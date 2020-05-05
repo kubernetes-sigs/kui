@@ -83,7 +83,7 @@
     }
   }
 
-  .bx--content {
+  .kui--sidecar-content {
     display: flex;
     flex: 1;
     background-color: var(--color-background);
