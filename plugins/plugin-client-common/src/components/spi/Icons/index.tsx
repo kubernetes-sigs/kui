@@ -17,8 +17,8 @@
 import * as React from 'react'
 
 import KuiContext from '../../Client/context'
-import PatternFly4Icons from './impl/PatternFly4Icons'
-import CarbonIcons from './impl/CarbonIcons'
+import Carbon from './impl/Carbon'
+import PatternFly from './impl/PatternFly'
 
 export type SupportedIcon =
   | 'Add'
@@ -54,7 +54,7 @@ export interface Props extends Record<string, any> {
 export default function iconImpl(props: Props): React.ReactElement {
   return (
     <KuiContext.Consumer>
-      {config => (config.components === 'patternfly' ? <PatternFly4Icons {...props} /> : <CarbonIcons {...props} />)}
+      {config => (config.components === 'patternfly' ? <PatternFly {...props} /> : <Carbon {...props} />)}
     </KuiContext.Consumer>
   )
 }
