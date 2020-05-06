@@ -1044,8 +1044,8 @@ body.oops-total-catastrophe #restart-needed-warning {
   opacity: 0.875;
   word-break: break-all;
 }
-.page-content p:not(:last-child) {
-  padding-bottom: 0.5em;
+.page-content p {
+  padding: 0.375em 0;
 }
 .page-content h1 {
   margin-bottom: 1rem;
