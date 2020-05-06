@@ -187,8 +187,8 @@ export interface KubeOptions extends ParsedOptions {
   help?: boolean
 }
 
-export function isForAllNamespaces(args: Arguments<KubeOptions>) {
-  return args.parsedOptions.A || args.parsedOptions['all-namespaces']
+export function isForAllNamespaces(parsedOptions: KubeOptions) {
+  return parsedOptions.A || parsedOptions['all-namespaces']
 }
 
 export default KubeOptions

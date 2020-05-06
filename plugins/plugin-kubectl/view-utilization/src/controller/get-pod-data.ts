@@ -202,7 +202,7 @@ async function getPodDataForAllNodes(
   args: Arguments<PodOptions>,
   top: (args: Arguments<KubeOptions>) => Promise<Table>
 ): Promise<Table> {
-  if (isForAllNamespaces(args) || args.parsedOptions.containers) {
+  if (isForAllNamespaces(args.parsedOptions) || args.parsedOptions.containers) {
     return top(args)
   } else {
     const [forThisNS, forAllNS] = await Promise.all([top(args), top(withAllNamespaces(args))])
@@ -224,7 +224,7 @@ async function getPodDataForOneNode(
   // strip off the --node <node> option
   strip(args, '--node', 1) // 1 means --node takes 1 arg
 
-  if (isForAllNamespaces(args) || args.parsedOptions.containers) {
+  if (isForAllNamespaces(args.parsedOptions) || args.parsedOptions.containers) {
     const [podTable, pods] = await Promise.all([top(args), getPodsInNode(args, forNode)])
 
     if (podTable.body) {
