@@ -23,6 +23,8 @@ import {
   waitTillNone
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
+import * as assert from 'assert'
+
 const synonyms = ['kubectl']
 
 describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -55,26 +57,38 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
 
     /** list pods across all namespaces, then find the pod corresponding to the given namespace `ns` */
     const listAndClickOn = (ns: string) => {
-      it(`should list pods --all-namespaces expecting ns ${ns} via ${kubectl} then click`, async () => {
-        try {
-          const selector = await CLI.command(`${kubectl} get pods --all-namespaces`, this.app).then(
-            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) })
-          )
+      const allNamespaces = ['--all-namespaces', '-A']
 
-          // wait for the badge to become green
-          await waitForGreen(this.app, selector)
+      allNamespaces.forEach(allNamespace => {
+        it(`should list pods ${allNamespace} expecting ns ${ns} via ${kubectl} then click`, async () => {
+          try {
+            const { app, count } = await CLI.command(`${kubectl} get pods ${allNamespace}`, this.app)
 
-          // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
-          await this.app.client.waitForExist(`${selector} .clickable[data-key="NAME"]`)
+            await this.app.client.waitForExist(Selectors.TABLE_TITLE(count))
 
-          // now click on that cell
-          await this.app.client.click(`${selector} .clickable`)
-          await SidecarExpect.open(this.app)
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
-        } catch (err) {
-          return Common.oops(this, true)(err)
-        }
+            const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(count))
+            assert.strictEqual(actualTitle, 'Pod')
+
+            const secondaryTitle = await this.app.client.getText(Selectors.TABLE_TITLE_SECONDARY(count))
+            assert.strictEqual(secondaryTitle, 'all')
+
+            const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) })({ app, count })
+
+            // wait for the badge to become green
+            await waitForGreen(this.app, selector)
+
+            // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
+            await this.app.client.waitForExist(`${selector} .clickable[data-key="NAME"]`)
+
+            // now click on that cell
+            await this.app.client.click(`${selector} .clickable`)
+            await SidecarExpect.open(this.app)
+              .then(SidecarExpect.mode(defaultModeForGet))
+              .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+          } catch (err) {
+            return Common.oops(this, true)(err)
+          }
+        })
       })
     }
 
