@@ -178,7 +178,7 @@ export abstract class BaseSidecar<
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.key === 'Escape' && !document.getElementById('confirm-dialog') && !isPopup()) {
+    if (evt.key === 'Escape' && !document.getElementById('confirm-dialog') && !isPopup() && this.current) {
       if (this.props.willChangeSize) {
         this.props.willChangeSize(this.props.width === Width.Closed ? this.defaultWidth() : Width.Closed)
       }

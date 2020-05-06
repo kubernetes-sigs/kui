@@ -4,6 +4,7 @@ export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
 export const SIDECAR_BASE = `${CURRENT_TAB} .kui--sidecar`
 export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} .kui--sidecar.visible.maximized:not(.minimized)`
+export const TERMINAL_WITH_SIDECAR_VISIBLE = `${CURRENT_TAB} .repl.sidecar-visible`
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
 export const BOTTOM_PROMPT_BLOCK = `${CURRENT_TAB} .kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
