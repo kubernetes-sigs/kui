@@ -19,6 +19,7 @@ import { CodeSnippet } from 'carbon-components-react'
 
 import Props from '../model'
 
+import 'carbon-components/scss/components/copy-button/_copy-button.scss'
 import 'carbon-components/scss/components/code-snippet/_code-snippet.scss'
 
 export default class CarbonCodeSnippet extends React.PureComponent<Props> {
