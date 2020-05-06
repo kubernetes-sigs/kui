@@ -214,7 +214,7 @@ export async function doExecWithTable<O extends KubeOptions>(
 ): Promise<Table | MixedResponse> {
   const response = usePty
     ? { content: { stdout: await doExecWithStdoutViaPty(args, prepare), stderr: undefined } }
-    : await doExecWithoutPty(args, prepare)
+    : await doExecWithoutPty(args, prepare, command)
 
   const table = stringToTable(
     response.content.stdout,
