@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Table, Row, Cell, isTable, encodeComponent, Arguments, MixedResponse } from '@kui-shell/core'
+import { Table, Row, Cell, isTable, encodeComponent, Arguments, MixedResponse, i18n } from '@kui-shell/core'
 
 import TrafficLight from '../model/traffic-light'
-import KubeOptions from '../../controller/kubectl/options'
+import KubeOptions, { isForAllNamespaces } from '../../controller/kubectl/options'
 import { RawResponse } from '../../controller/kubectl/response'
 
 import cssForValue from './css-for-value'
+
+const strings = i18n('plugin-kubectl')
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length: number, maxColumns: number): Cell[] => {
@@ -312,7 +314,7 @@ export const formatTable = <O extends KubeOptions>(
     body: rows.slice(1),
     noSort: true,
     title: capitalize(entityTypeFromRows || entityTypeFromCommandLine),
-    breadcrumbs: [{ label: ns || 'default' }]
+    breadcrumbs: [{ label: ns || (isForAllNamespaces(options) && strings('all')) || 'default' }]
   }
 }
 
