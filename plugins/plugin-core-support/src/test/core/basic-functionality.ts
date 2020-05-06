@@ -22,7 +22,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { Common, CLI } from '@kui-shell/test'
+import { CLI, Common, Selectors, Keys } from '@kui-shell/test'
 
 const APP_TITLE = process.env.APP_TITLE || 'Kui'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
@@ -56,6 +56,11 @@ Common.localDescribe('Basic Functionality', function(this: Common.ISuite) {
   it('shows an initial window', () => openWindow(this.app).catch(Common.oops(this, true)))
 
   it('has an initial focus on the CLI prompt', () => assert.ok(this.app.client.hasFocus(selectors.PROMPT)))
+
+  it('should do nothing when hitting escape key', async () => {
+    await this.app.client.keys(Keys.ESCAPE)
+    await this.app.client.waitForExist(Selectors.TERMINAL_WITH_SIDECAR_VISIBLE, 2000, true)
+  })
 
   /* it('has the expected placeholder text in the CLI prompt', async () => {
     try {
