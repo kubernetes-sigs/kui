@@ -20,7 +20,6 @@ import { dirname, join, relative } from 'path'
 import * as ReactMarkdown from 'react-markdown'
 import { REPL, Tab as KuiTab } from '@kui-shell/core'
 import {
-  CodeSnippet,
   Link,
   StructuredListWrapper,
   StructuredListHead,
@@ -32,8 +31,9 @@ import {
   ListItem
 } from 'carbon-components-react'
 
+import CodeSnippet from '../spi/CodeSnippet'
+
 import 'carbon-components/scss/components/link/_link.scss'
-import 'carbon-components/scss/components/code-snippet/_code-snippet.scss'
 import 'carbon-components/scss/components/copy-button/_copy-button.scss'
 import '../../../web/scss/components/List/Carbon.scss'
 import '../../../web/scss/components/StructuredList/Carbon.scss'
@@ -93,14 +93,7 @@ export default class Markdown extends React.PureComponent<Props> {
                 }
             return <Link {...props} href={href} target={target} onClick={onClick} />
           },
-          code: props => (
-            <CodeSnippet
-              type={/\n/.test(props.value) || props.value.length > 40 ? 'multi' : 'single'}
-              onClick={this.onCopy.bind(this, props.value)}
-            >
-              {props.value}
-            </CodeSnippet>
-          ),
+          code: props => <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />,
           heading: props => {
             const valueChild =
               props.children && props.children.length === 1

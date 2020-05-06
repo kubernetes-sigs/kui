@@ -147,6 +147,22 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--link--Color--light--hover: #2b9af3;
   --pf-global--link--Color--dark: #06c;
   --pf-global--link--Color--dark--hover: #004080;
+
+  --pf-global--BorderColor--100: #d2d2d2;
+  --pf-global--BorderColor--200: #8a8d90;
+  --pf-global--BorderColor--300: #ededed;
+  --pf-global--BorderColor--dark-100: #d2d2d2;
+  --pf-global--BorderColor--light-100: #b8bbbe;
+
+  --pf-global--icon--Color--light: #737679;
+  --pf-global--icon--Color--dark: #151515;
+
+  --pf-global--BorderRadius--sm: 3px;
+  --pf-global--BorderRadius--lg: 30em;
+
+  --pf-global--BorderWidth--sm: 1px;
+  --pf-global--BorderWidth--md: 2px;
+  --pf-global--BorderWidth--lg: 3px;
 }
 
 @mixin patternfly-sidecar {
