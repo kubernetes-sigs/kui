@@ -34,7 +34,6 @@ import {
 import CodeSnippet from '../spi/CodeSnippet'
 
 import 'carbon-components/scss/components/link/_link.scss'
-import 'carbon-components/scss/components/copy-button/_copy-button.scss'
 import '../../../web/scss/components/List/Carbon.scss'
 import '../../../web/scss/components/StructuredList/Carbon.scss'
 
