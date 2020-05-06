@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
-import { doNativeExec, defaultFlags, commandPrefix } from '@kui-shell/plugin-kubectl'
+import { Arguments } from '@kui-shell/core'
 
-export default async (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/_oc`, doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
+import { doExecWithTable, KubeOptions } from '@kui-shell/plugin-kubectl'
+
+export default function doList(args: Arguments<KubeOptions>) {
+  return doExecWithTable(args, undefined, 'odo', { verb: 'catalog', entityType: 'services' })
 }
