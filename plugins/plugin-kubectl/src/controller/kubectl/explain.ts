@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { Arguments, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
@@ -23,6 +24,7 @@ import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
 
 const strings = i18n('plugin-kubectl')
+const debug = Debug('plugin-kubectl/controller/kubectl/explain')
 
 function formatHref(href: string) {
   if (/api-conventions/.test(href) && !/sig-architecture/.test(href)) {
@@ -50,7 +52,7 @@ ${formatDocumentation(_[4])}
   }
 }
 
-// alternate patterns to match against
+/** alternate patterns to match against */
 const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
 const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
 
@@ -128,21 +130,42 @@ ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` :
   }
 
 /**
+ * Cache of the getKind() lookup
+ *
+ */
+const cache: Record<string, Promise<string>> = {}
+
+/**
  * @param kindAsProvidedByUser e.g. pod or po
  * @return e.g. Pod
  *
  */
 export async function getKind(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<string> {
-  try {
-    const ourArgs = Object.assign({}, args, { command: `kubectl explain ${kindAsProvidedByUser}` })
-    const explained = await doExecWithStdout(ourArgs, undefined, command)
+  if (!cache[kindAsProvidedByUser]) {
+    // otherwise, we need to do a more expensive call to `kubectl`
+    // eslint-disable-next-line no-async-promise-executor
+    cache[kindAsProvidedByUser] = new Promise<string>(async (resolve, reject) => {
+      try {
+        const ourArgs = Object.assign({}, args, { command: `${command} explain ${kindAsProvidedByUser}` })
+        const explained = await doExecWithStdout(ourArgs, undefined, command).catch(err => {
+          // e.g. trying to explain CustomResourceDefinition.v1beta1.apiextensions.k8s.io
+          // or a resource kind that does not exist
+          debug(err)
+          return `KIND: ${kindAsProvidedByUser}`
+        })
 
-    return explained.match(/^KIND:\s+(.*)/)[1]
-  } catch (err) {
-    if (!/does not exist/i.test(err.message)) {
-      console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
-    }
+        const kindFromServer = explained.match(/^KIND:\s+(.*)/)[1]
+        resolve(kindFromServer)
+      } catch (err) {
+        if (!/does not exist/i.test(err.message)) {
+          console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
+          reject(err)
+        }
+      }
+    })
   }
+
+  return cache[kindAsProvidedByUser]
 }
 
 export default (registrar: Registrar) => {
