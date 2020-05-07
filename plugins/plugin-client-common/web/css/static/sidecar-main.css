@@ -28,9 +28,6 @@
     background-color: var(--color-stripe-02);
     /* border-bottom: 1px inset var(--color-ui-02); */
   }
-  .sidecar-bottom-stripe > div {
-    font-size: 0.875em;
-  }
   .sidecar-bottom-stripe-left-bits,
   .sidecar-bottom-stripe-left-bits .sidecar-bottom-stripe-button-container {
     /* button container in sidecar bottom stripe */
