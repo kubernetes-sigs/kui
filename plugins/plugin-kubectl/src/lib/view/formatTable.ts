@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -328,6 +328,43 @@ export function isKubeTableResponse(response: KubeTableResponse | RawResponse): 
   )
 }
 
+function withNotFound(table: Table, stderr: string) {
+  const notFounds = stderr
+    .split(/\n/)
+    .filter(_ => /NotFound/.test(_))
+    .map(_ => _.match(/"([^"]+)" not found/)[1])
+
+  if (notFounds.length > 0) {
+    const statusIdx = table.body.length === 0 ? -1 : table.body[0].attributes.findIndex(_ => /STATUS/i.test(_.key))
+    const attributes =
+      table.body.length === 0
+        ? []
+        : Array(table.body[0].attributes.length)
+            .fill(undefined)
+            .map((_, idx) => {
+              const cell = {} as Cell
+              if (idx === statusIdx) {
+                const value = 'Offline'
+                cell.value = value
+                cell.tag = tagForKey['STATUS']
+                cell.outerCSS = outerCSSForKey['STATUS']
+                cell.css = [cssForKey['STATUS'], cssForValue[value]].join(' ')
+              }
+              return cell
+            })
+
+    notFounds.forEach(name => {
+      table.body.push({
+        name,
+        isDeleted: true,
+        attributes
+      })
+    })
+  }
+
+  return table
+}
+
 /**
  * Display the given string as a REPL table
  *
@@ -356,14 +393,14 @@ export const stringToTable = <O extends KubeOptions>(
       if (args.execOptions.filter) {
         T.body = args.execOptions.filter(T.body)
       }
-      return T
+      return withNotFound(T, stderr)
     } else {
       return preTables.map(preTable => {
         const T = formatTable(command, verb, entityType, args.parsedOptions, preTable)
         if (args.execOptions.filter) {
           T.body = args.execOptions.filter(T.body)
         }
-        return T
+        return withNotFound(T, stderr)
       })
     }
   } else {
