@@ -256,13 +256,17 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
         //
         // a) kubectl get <kind> <name> -w -> then <name> does not exist; fail fast
         // b) kubectl get <kind> -w -n <ns> -> then <ns> does not exist; enter poll mode
+        // c) kubectl get <kind> -w -> then <kind> does not exist; fail fast
         //
         const argv = args.argvNoOptions
         const idx = argv.indexOf('get') + 1
         const kind = argv[idx] // <-- <kind>
         const name = argv[idx + 1] // <-- <name>
 
-        if (kind && name) {
+        if (/doesn't have a resource type/i.test(err.message)) {
+          // case c, e.g. error: the server doesn't have a resource type "foo"
+          throw err
+        } else if (kind && name) {
           // case a
           throw err
         } else {
