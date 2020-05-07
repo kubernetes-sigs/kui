@@ -60,6 +60,14 @@ describe(`kubectl watch error handler ${process.env.MOCHA_RUN_TARGET || ''}`, fu
 
   testWrongCommand(`k -w get pod`, 500)
 
+  // test wrong resource type
+  testWrongCommand(`k get shouldNotExist -w`, 404, 'error: the server doesn\'t have a resource type "shouldNotExist"')
+  testWrongCommand(
+    `k get shouldNotExist --watch -n shouldNotExist`,
+    404,
+    'error: the server doesn\'t have a resource type "shouldNotExist"'
+  )
+
   // here comes the tests should start watching successfully
   it(`should watch pods, starting from an non-existent namespace`, async () => {
     try {
