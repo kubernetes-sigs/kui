@@ -6,7 +6,7 @@ export default class GetAnalyticsAssessment {
     this.url = url
     this.data = data
   }
-
+  // AJAX Call to Iter8 and returns a promise
   public getAnalyticsAssessment() {
     const data = this.data
     const url = this.url

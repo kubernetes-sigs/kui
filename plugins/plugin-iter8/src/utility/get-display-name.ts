@@ -1,13 +1,13 @@
-// Dictionary to convert the metric config name -> Human readible
-export default class DisplayName {
+// Dictionary to convert the metric config name -> Human readable
+export default class NameDict {
 
 	// Dictionary for metrics
 	private metricDisplayNames = {
-		iter8_request_count: "Request Count",
-		iter8_total_latency: "Total Latency (sec)",
-		iter8_error_count: "Error Count",
-		iter8_mean_latency: "Mean Latency (sec)",
-		iter8_error_rate: "Error Rate"
+		"iter8_request_count": "Request Count",
+		"iter8_total_latency": "Total Latency (sec)",
+		"iter8_error_count": "Error Count",
+		"iter8_mean_latency": "Mean Latency (sec)",
+		"iter8_error_rate": "Error Rate"
 	}
 
 	// Dictionary for displaying Analytics Algorithms
