@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,14 +194,15 @@ export const doGet = (command: string) =>
     }
 
     // first, we do the raw exec of the given command
-    const fullKind = isTableRequest(args)
+    const isTableReq = isTableRequest(args)
+    const fullKind = isTableReq
       ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
       : undefined
     const response = await rawGet(args, command)
 
     if (isKubeTableResponse(response)) {
       return response
-    } else if (response.content.code !== 0) {
+    } else if (response.content.code !== 0 && !isTableReq && response.content.stdout.length === 0) {
       // raw exec yielded an error!
       const err: CodedError = new Error(response.content.stderr)
       err.code = response.content.code
@@ -211,7 +212,7 @@ export const doGet = (command: string) =>
     } else if (isEntityRequest(args)) {
       // case 1: get-as-entity
       return doGetAsEntity(args, response)
-    } else if (isTableRequest(args)) {
+    } else if (isTableReq) {
       // case 2: get-as-table
       return doGetAsTable(command, args, response, undefined, await fullKind)
     } else {
