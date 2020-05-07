@@ -104,7 +104,7 @@ const testDrilldown = async (nsName: string, res: ReplExpect.AppAndCount) => {
 /** k get ns -w */
 const watchNS = function(this: Common.ISuite, kubectl: string) {
   const watchCmds = [
-    `${kubectl} get ns -w`,
+    //    `${kubectl} get ns -w`, <-- not guaranteed to work locally, due to table pagination
     `${kubectl} get ns ${nsName} -w`,
     `${kubectl} get -w=true --watch ns ${nsName} --watch=true -w`
   ]

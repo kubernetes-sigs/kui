@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { Table, Arguments, CodedError, Streamable, Abortable, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
-import fqn from '../fqn'
+import { kindPart } from '../fqn'
 import { formatOf, KubeOptions, KubeExecOptions } from '../options'
 
 import { Pair } from '../../../lib/view/formatTable'
@@ -146,56 +146,47 @@ class KubectlWatcher implements Abortable, Watcher {
         const { rows } = preprocessed
 
         // now process the full rows into table view updates
-        const tables = await Promise.all(
-          rows.map(async row => {
-            try {
-              const [{ value: name }, { value: kind }, { value: apiVersion }, { value: namespace }] = row
+        const kind = rows[0][1].value
+        const apiVersion = rows[0][2].value
+        const namespace = rows[0][3].value || 'default'
+        const rowNames = rows.map(_ => _[0].value)
 
-              const getCommand = `${getCommandFromArgs(this.args)} get ${fqn(apiVersion, kind, name, namespace)} ${
-                this.output ? `-o ${this.output}` : ''
-              }`
+        const getCommand = `${getCommandFromArgs(this.args)} get ${kindPart(apiVersion, kind)} ${rowNames.join(
+          ' '
+        )} -n ${namespace} ${this.output ? `-o ${this.output}` : ''}`
 
-              // this is where we fetch the table columns the user
-              // requested; note our use of the "output" variable,
-              // which (above) we defined to be the user's schema
-              // request
-              return this.args.REPL.qexec<Table>(getCommand).catch((err: CodedError) => {
-                // error fetching the row data
-                // const rowKey = fqn(apiVersion, kind, name, namespace)
-                if (err.code !== 404) {
-                  console.error(err)
-                }
-                this.pusher.offline(name)
-              })
-            } catch (err) {
-              console.error('error handling watched row', err)
+        const table = await this.args.REPL.qexec<Table>(getCommand).catch((err: CodedError) => {
+          if (err.code !== 404) {
+            console.error(err)
+          }
+          // mark as all offline, if we got a 404 for the bulk get
+          rowNames.forEach(name => this.pusher.offline(name))
+        })
+
+        if (table) {
+          // in case the initial get was empty, we add the header to the
+          // table; see https://github.com/kui-shell/plugin-kubeui/issues/219
+          if (table.header) {
+            // yup, we have a header; push it to the view
+            this.pusher.header(table.header)
+          }
+
+          // based on the information we got back, 1) we push updates to
+          // the table model; and 2) we may be able to discern that we
+          // can stop watching
+          table.body.forEach(row => {
+            // push an update to the table model
+            // true means we want to do a batch update
+            if (row.isDeleted) {
+              this.pusher.offline(row.name)
+            } else {
+              this.pusher.update(row, true)
             }
           })
-        )
 
-        // in case the initial get was empty, we add the header to the
-        // table; see https://github.com/kui-shell/plugin-kubeui/issues/219
-        const tableWithHeader = tables.find(table => table && table.header)
-        if (tableWithHeader && tableWithHeader.header) {
-          // yup, we have a header; push it to the view
-          this.pusher.header(tableWithHeader.header)
+          // batch update done!
+          this.pusher.batchUpdateDone()
         }
-
-        // based on the information we got back, 1) we push updates to
-        // the table model; and 2) we may be able to discern that we
-        // can stop watching
-        tables.forEach(table => {
-          if (table) {
-            table.body.forEach(row => {
-              // push an update to the table model
-              // true means we want to do a batch update
-              this.pusher.update(row, true)
-            })
-
-            // batch update done!
-            this.pusher.batchUpdateDone()
-          }
-        })
       } else {
         console.error('unknown streamable type', _)
       }
