@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ function versionString(apiVersion: string): string {
   return group.length > 0 ? `.${version}.${group}` : ''
 }
 
-function kindPart(apiVersion: string, kind: string) {
+export function kindPart(apiVersion: string, kind: string) {
   return `${kind}${versionString(apiVersion)}`
 }
 

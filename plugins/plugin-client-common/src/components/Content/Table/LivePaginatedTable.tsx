@@ -121,6 +121,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     const nRowsBefore = existingRows.length
 
     const foundIndex = existingRows.findIndex(_ => _.NAME === newKuiRow.name)
+
     const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex
 
     const newRow = kuiRow2carbonRow(this.state.headers)(newKuiRow, insertionIndex)
@@ -146,7 +147,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     if (!batch) {
       this.setState({ rows: newRows })
     } else if (this._deferredUpdate) {
-      this._deferredUpdate = this._deferredUpdate.concat(newRows)
+      this._deferredUpdate = newRows
     } else {
       this._deferredUpdate = newRows
     }
