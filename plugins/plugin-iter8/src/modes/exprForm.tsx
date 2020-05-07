@@ -2,8 +2,7 @@ import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
 import { TooltipIcon, Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
-import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32 , Data_132 as Data132 } from '@carbon/icons-react'
-
+import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
@@ -13,16 +12,11 @@ import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 // Functionality Imports
-import GetKubeInfo from '../components/get-cluster-info'
+import GetKubeInfo from '../components/cluster-info'
 import GetMetricConfig from '../components/metric-config'
-import { Formstate, RequestModel } from '../components/get-iter8-req'
-// Component Properties
-const TextInputProps = {
-  id: 'expName',
-  labelText: 'Name',
-  placeholder: 'Ex. rollout_v1_v2',
-  style: { width: 350, height: 50 }
-}
+import getRequestModel from '../utility/get-iter8-req'
+import { Formstate } from '../modes/state-models'
+
 /*
  * Data models for the state object in ExprForm
  */
@@ -43,41 +37,48 @@ class ExprBase extends React.Component<{}, Formstate> {
     super(props)
     this.state = {
       disableresubmit: false, //prevents form resubmission
-      showMetrics: false, // determines the visibility of metric config
+      showMetrics: false, // determines the visibility of metric config section
       invalidCand: false, // determines whether cand values are valid
-      name: '',
-      ns: '',
-      svc: '',
-      base: '',
-      cand: [], // basic expr attributes
+      name: '',	// name of the experiment
+      ns: '',   // namespace of microservice
+      svc: '',  // service name of microservice
+      base: '', // baseline deployment of microservice
+      cand: [], // list of candidate deployment names of microservice
       metric: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
-      disableReward: false // disables the reward select for other metrics
+      disableReward: false // disables the reward select for selected metrics
     }
-    this.submitForm = this.submitForm.bind(this)
-    this.handleNameChange = this.handleNameChange.bind(this)
+    // Bound NON-lambda functions to component's scope
+    this.submitForm = this.submitForm.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.toggleMetricConfig = this.toggleMetricConfig.bind(this);
+    this.addMetric = this.addMetric.bind(this);
   }
 
   /*
-   * ==== Sets the basic experiment state attributes =====
+   * ==== Basic Experiment State Handlers =====
    */
   private handleNameChange(event) {
-    this.setState({ name: event.target.value.toLowerCase() })
+  	console.log(event.target.value);
+    this.setState({ name: event.target.value})
   }
 
   private handleAddCand = value => {
-    // Convert all input into an iterable array
+    // Convert all input items into an iterable array
     const versionValue = value.map(data => {
       return data.text
     })
-    this.setState({ invalidCand: false })
     // Check for invalid selections
     for (let i = 0; i < versionValue.length; i++) {
       if (this.state.base === versionValue[i]) {
-        this.setState({ invalidCand: true })
         versionValue.splice(i, 1)
+        this.setState({ invalidCand: true,
+        				cand: versionValue
+        			 });
+        return;
       }
     }
     this.setState({
+      invalidCand: false,
       cand: versionValue
     })
   }
@@ -109,23 +110,22 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 
   /*
-   * ==== Metric Configuration related functions ====
+   * ==== Metric Configuration Handler Functions ====
    */
   // Toggle for Metric Configuration
-  private handleMetric = () => {
+  private toggleMetricConfig(){
     this.setState({ showMetrics: !this.state.showMetrics })
-    event.preventDefault()
   }
 
   // Method for Add Metric (+) button
-  private addMetric = () => {
+  private addMetric(){
     this.setState(prevState => ({
       metric: [...prevState.metric, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
     }))
   }
 
   // Removes the metric field from the state
-  private onDeleteMetric = idx => {
+  private deleteMetric = idx => {
     this.setState(state => {
       const metric = state.metric.filter((m, i) => i !== idx)
       return {
@@ -142,7 +142,9 @@ class ExprBase extends React.Component<{}, Formstate> {
     if (value == null) {
       metricName = ''
       metricType = ''
-    } else {
+    }
+    // Check for metric type (ratio/counter)
+    else {
       metricName = value.name
       metricType = 'Ratio'
       for (let i = 0; i < this.countMetricsList.length; i++) {
@@ -161,7 +163,7 @@ class ExprBase extends React.Component<{}, Formstate> {
     newMetric[idx] = { ...newMetric[idx], limitType: limitType }
     this.setState({ metric: newMetric })
   }
-
+  // Update the state for limit value
   private handleLimitValChange = (value, idx) => {
     const limitValue = value === '' ? 0 : parseFloat(value);
     const newMetric = [...this.state.metric]
@@ -180,31 +182,43 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 
   /*
-   *	Data transfer/manipulation logic
+   *	==== Form Submission Handlers ====
    */
   private submitForm() {
+    // Get the current time in ISO form
     let d = new Date();
     let time = d.toISOString();
-    let reqModel = new RequestModel();
-    let jsonOutput = reqModel.getRequestModel(time, this.state);
+    // Reorganize form input into Iter8 Request model
+    let jsonOutput = getRequestModel(time, this.state);
+    // Transmit data to Decision form using eventBus
     eventChannelUnsafe.emit('/my/channel', jsonOutput);
     this.setState({disableresubmit: true});
   }
-
+  // Cancels form submission event caused by "Enter" press
+  private preventFormRefresh(event){
+  	event.preventDefault();
+  }
   public render() {
     const { metric } = this.state
     return (
-      <Form className="formProps">
+      <Form className="formProps" onSubmit={this.preventFormRefresh}>
         <div className="header">
           <CaretDown32 className="iconprops" />
           <h3> Experiment Basics </h3>
         </div>
         <div className="inputInfoDiv">
           <div className="textinputDiv">
-            <TextInput {...TextInputProps} type="text" />
+            <TextInput
+            	id='expName'
+            	labelText='Name'
+            	placeholder='Ex. experiment_v1_v2'
+            	onChange={this.handleNameChange}
+            	type="text"
+            	style={{ width: 350, height: 50 }}
+            />
           </div>
           <div className="helpDiv">
-            <TooltipIcon direction="top" align="center" tooltipText="The name of the Experiment K8s Custom Resouce">
+            <TooltipIcon direction="top" align="center" tooltipText="Name to identify the experiment.">
               <Information16 />
             </TooltipIcon>
           </div>
@@ -265,9 +279,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}
               label="Select Candidate Deployment(s)"
-              onChange={value => {
-                this.handleAddCand(value.selectedItems)
-              }}
+              onChange={value => this.handleAddCand(value.selectedItems)}
               invalid={this.state.invalidCand}
               invalidText="Cannot select same version as baseline."
             ></MultiSelect>
@@ -283,7 +295,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               Observe
             </Button>
             <div style={{ position: 'relative', top: -48, left: 190 }}>
-              <Button size="default" kind="secondary" renderIcon={Data132} onClick={this.handleMetric}>
+              <Button size="default" kind="secondary" renderIcon={Data132} onClick={this.toggleMetricConfig}>
                 {' '}
                 Metric Config{' '}
               </Button>
@@ -356,7 +368,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         size="small"
                         kind="ghost"
                         renderIcon={SubtractAlt32}
-                        onClick={() => this.onDeleteMetric(idx)}
+                        onClick={() => this.deleteMetric(idx)}
                         style={{ color: 'red' }}
                       >
                         {`Delete Metric ${idx + 1}`}
