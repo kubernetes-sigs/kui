@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,9 @@ export default {
   SUPERSEDED: TrafficLight.Yellow,
   FAILED: TrafficLight.Red,
   DELETING: TrafficLight.Yellow,
+
+  // kui manufactured; see formatTable.ts withNotFounds()
+  Offline: TrafficLight.Red,
 
   // pod lifecycle
   'Init:0/1': TrafficLight.Yellow,
