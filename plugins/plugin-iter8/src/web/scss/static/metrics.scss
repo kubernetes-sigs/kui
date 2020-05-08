@@ -13,6 +13,57 @@ $grey: #dddddd;
   display: inline-block;
   padding: 10px;
 }
+
+.clickableicon {
+  cursor: pointer;
+  fill: $grey;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  background-color: $dark-purple;
+  z-index: 1;
+  font-style: italic;
+}
+.clickableicon:hover {
+  fill: $dark-purple;
+  .tooltiptext {
+    visibility: visible;
+  }
+}
+.width20 {
+  width: 20%;
+}
+.deletedtext {
+  font-style: italic;
+  color: #bfbfbf;
+}
+
+tr.bx--parent-row.bx--expandable-row {
+  background-color: transparent;
+}
+
+tr.bx--parent-row.bx--expandable-row + tr[data-child-row] td {
+  border-bottom: none;
+  border-top: none;
+}
+
+.innertable {
+  tr {
+    height: 5px;
+    padding: 2px;
+  }
+  td {
+    padding: 2px;
+    font-style: italic;
+  }
+}
+
+svg.bx--table-expand__svg {
+  fill: $grey;
+}
+
 .metric-table {
   table {
     width: 100%;
