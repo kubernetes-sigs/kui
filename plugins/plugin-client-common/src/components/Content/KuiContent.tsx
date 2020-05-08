@@ -24,6 +24,7 @@ import {
   Button,
   Content,
   isHTML,
+  isRadioTable,
   isReactProvider,
   isStringWithOptionalContentType,
   isTable,
@@ -40,6 +41,7 @@ import renderTable from './Table'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
+import RadioTableSpi from '../spi/RadioTable'
 
 interface KuiMMRProps {
   tab: KuiTab
@@ -88,6 +90,8 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
+      } else if (isRadioTable(mode.content)) {
+        return <RadioTableSpi table={mode.content} />
       } else if (isTable(mode.content)) {
         return renderTable(tab, tab.REPL, mode.content, false)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:

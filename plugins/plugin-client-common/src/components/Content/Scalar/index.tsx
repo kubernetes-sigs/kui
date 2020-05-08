@@ -21,6 +21,7 @@ import {
   Tab as KuiTab,
   ScalarResponse,
   isHTML,
+  isRadioTable,
   isTable,
   isMixedResponse,
   isUsageError
@@ -28,6 +29,7 @@ import {
 
 import HTMLDom from './HTMLDom'
 import renderTable from '../Table'
+import RadioTableSpi from '../../spi/RadioTable'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
 
 interface Props {
@@ -73,6 +75,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
     try {
       if (typeof response === 'number' || typeof response === 'string' || typeof response === 'boolean') {
         return <pre>{response}</pre>
+      } else if (isRadioTable(response)) {
+        return <RadioTableSpi table={response} />
       } else if (isTable(response)) {
         return renderTable(tab, tab.REPL, response, undefined, true)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
