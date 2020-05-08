@@ -20,6 +20,7 @@ import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
 import { MultiModalResponse } from './mmr/types'
 import { NavResponse } from './NavResponse'
+import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
 
 export interface MessageBearingEntity {
@@ -160,7 +161,7 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
  */
 export type ScalarResponse<RowType extends Row = Row> = SimpleEntity | Table<RowType> | MixedResponse
 
-export type ViewableResponse = MultiModalResponse | NavResponse
+export type ViewableResponse = MultiModalResponse | NavResponse | RadioTable
 
 export type StructuredResponse<
   Content = void,

@@ -18,8 +18,8 @@ import Debug from 'debug'
 
 import {
   i18n,
-  Row,
-  Table,
+  RadioTable,
+  CellShould,
   Arguments,
   Registrar,
   getPersistedThemeChoice,
@@ -72,68 +72,59 @@ const usage = {
  * List themes
  *
  */
-const list = async ({ REPL }: Arguments) => {
-  const header: Row = {
-    type: 'theme',
-    name: '',
-    outerCSS: 'not-a-name',
-    attributes: [
-      { value: strings('Theme') },
-      { value: strings('Style'), outerCSS: 'hide-with-narrow-window' },
-      { value: strings('Provider'), outerCSS: 'hide-with-sidecar' }
+const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
+  const header = {
+    cells: [
+      strings('Theme'),
+      { value: strings('Style'), hints: CellShould.HideWhenNarrow },
+      { value: strings('Provider'), hints: CellShould.HideWithSidecar }
     ]
   }
 
   // careful: the user's chosen theme might not be available in the
   // settings.themes model; e.g. they previously selected a theme that
   // has since been eliminated
-  const chosenTheme = (await getPersistedThemeChoice()) || (await getDefaultTheme())
-  const currentTheme = findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
-  debug('currentTheme', currentTheme)
+  const currentTheme = async () => {
+    const chosenTheme = (await getPersistedThemeChoice()) || (await getDefaultTheme())
+    return findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
+  }
+  debug('currentTheme', await currentTheme())
   // debug('theme list', uiThemes())
 
-  const body: Row[] = flatten(
+  const body = flatten(
     (await uiThemes()).map(({ plugin, themes }) =>
-      themes.map(
-        (theme: Theme): Row => {
-          const row: Row = {
-            type: 'theme',
-            name: theme.name,
-            fontawesome: 'fas fa-check',
-            outerCSS: 'not-a-name',
-            css: 'selected-entity',
-            rowCSS: theme.name === currentTheme && 'selected-row',
-            attributes: [
-              {
-                key: 'NAME',
-                value: strings(theme.description) || strings(theme.name),
-                css: 'not-too-wide entity-name',
-                outerCSS: 'entity-name-group',
-                onclick: undefined
-              },
-              { value: strings(theme.style), outerCSS: 'pretty-narrow hide-with-narrow-window' },
-              { value: plugin, css: 'sub-text', outerCSS: 'hide-with-sidecar' }
-            ],
-            onclick: undefined
-          }
+      themes.map((theme: Theme) => ({
+        name: theme.name,
+        cells: [
+          theme.name,
+          { value: strings(theme.style), hints: CellShould.HideWhenNarrow },
+          { value: plugin, hints: [CellShould.HideWithSidecar, CellShould.BeGrayish] }
+        ],
 
-          const onclick = async () => {
-            await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
-          }
-
-          row.onclick = onclick // <-- clicks on the "check mark"
-
-          return row
+        onSelect: async () => {
+          await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
         }
-      )
+      }))
     )
   )
 
-  return new Table({
+  const getSelectedIdx = async () => {
+    const current = await currentTheme()
+    return body.findIndex(_ => _.cells[0] === current)
+  }
+
+  const defaultSelectedIdx = await getSelectedIdx()
+
+  const table: RadioTable = {
+    apiVersion: 'kui-shell/v1',
+    kind: 'RadioTable',
     title: strings('theme.Available Themes'),
     header,
-    body
-  })
+    body,
+    defaultSelectedIdx
+  }
+
+  return table
 }
 
 /**

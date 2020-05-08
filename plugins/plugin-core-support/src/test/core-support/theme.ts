@@ -33,7 +33,6 @@ const resetTheme = (ctx: Common.ISuite) => {
 
 interface Theme {
   name: string
-  display: string
 }
 
 /**
@@ -97,7 +96,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
       await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('theme'))
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"] td.bx--table-column-checkbox.not-a-name`
+      const checkMarkCell = `${Selectors.SIDECAR} [data-name="${clickOn.name}"]`
 
       console.error('A', checkMarkCell)
       await ctx.app.client.waitForVisible(checkMarkCell)
@@ -120,9 +119,9 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
 }
 
 /** some helpers */
-const Default = { name: defaultTheme, display: defaultTheme }
-const Dark = { name: 'Dark', display: 'Default Dark' }
-const Light = { name: 'Light', display: 'Default Light' }
+const Default = { name: defaultTheme }
+const Dark = { name: 'Dark' }
+const Light = { name: 'Light' }
 const goLight = go(Light)
 const goDark = go(Dark)
 const restartAndThenLight = restartAndThen(Light)
@@ -148,7 +147,7 @@ describe('theme switching', function(this: Common.ISuite) {
     CLI.command('theme list', this.app)
       .then(
         ReplExpect.okWithCustom({
-          selector: `.entity-name[data-value="${Light.display}"]`
+          selector: `[data-name="${Light.name}"]`
         })
       )
       .catch(Common.oops(this)))
@@ -157,7 +156,7 @@ describe('theme switching', function(this: Common.ISuite) {
     CLI.command('theme list', this.app)
       .then(
         ReplExpect.okWithCustom({
-          selector: `.entity-name[data-value="${Dark.display}"]`
+          selector: `[data-name="${Dark.name}"]`
         })
       )
       .catch(Common.oops(this)))
