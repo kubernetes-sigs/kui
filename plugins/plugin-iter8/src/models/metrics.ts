@@ -1,8 +1,8 @@
 import { ModeRegistration } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
 import { MetricDetailsMode } from '../modes/get-metrics'
+import { deleteMetricCommand } from '../components/delete-metric'
 const ob = new MetricDetailsMode()
-export const kind = 'Metric Config'
 
 function verifyMetricResponse(resource: KubeResource): boolean {
   return resource.kind === 'Command' && resource.metadata.name === 'Metric Command'
@@ -25,4 +25,7 @@ const metricYamlMode: ModeRegistration<KubeResource> = {
     contentType: 'yaml'
   }
 }
-export { metricListMode, metricYamlMode }
+
+const metricDeleteCommand: string = deleteMetricCommand()
+
+export { metricListMode, metricYamlMode, metricDeleteCommand }

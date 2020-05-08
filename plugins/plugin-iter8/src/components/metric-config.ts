@@ -79,4 +79,20 @@ export default class GetMetricConfig {
     }
     return safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml'])
   }
+
+  public getMetricList() {
+    if ({}.hasOwnProperty.call(this.output, 'error')) {
+      return this.errorResponse()
+    }
+    const list = { ratio: [], counter: [] }
+    const rM = safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml'])
+    const cM = safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml'])
+    rM.map(r => list.ratio.push(r['name']))
+    cM.map(r => list.counter.push(r['name']))
+    return list
+  }
+
+  public deleteMetric() {
+    return 'Hello'
+  }
 }

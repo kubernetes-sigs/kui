@@ -2,10 +2,10 @@ import { safeLoad, safeDump } from 'js-yaml'
 
 const execSync = require('child_process').execSync
 
-function applyKube(rule) {
+export function applyKube(rule) {
   const yamlRule = safeDump(rule)
-  const command = `cat <<EOF | kubectl apply -f -\n${yamlRule}\nEOF`
-  execSync(command, { encoding: 'utf-8' })
+  const command = `cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`
+  execSync(command, { encoding: 'utf-8', stdio: 'pipe' })
 }
 
 function getLabelInfo(label) {
