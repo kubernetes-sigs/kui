@@ -104,10 +104,11 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     if (apiResult.winner_assessment.winning_version_found) {
       const assessment = apiResult.winner_assessment
       const prob = apiResult.winner_assessment.winning_probability
-      this.winner = assessment.current_winner + 'is the winner with' + prob + '% of winning'
-      return
+      this.winner = `%{assessment.current_winner} is the winner with ${prob} % of winning`
     }
-    this.winner = 'No winners determined.'
+    else{
+      this.winner = 'No winners determined.'
+    }
   }
 
   // Fill pie chart with version probabilities

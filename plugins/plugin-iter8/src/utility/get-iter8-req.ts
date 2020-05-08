@@ -42,9 +42,9 @@ function getCandModel(namespace: string, candList: Array<string>):Array<Object>{
 }
 //Converts the current time and form state in API request format
 export default function getRequestModel(time: string, formstate: Formstate): Object{
-	var MetricMethods = new GetMetricConfig();
-	var counterRlts = MetricMethods.getCounterMetrics();
-	var ratioRlts = MetricMethods.getRatioMetrics();
+	let MetricMethods = new GetMetricConfig();
+	let counterRlts = MetricMethods.getCounterMetrics();
+	let ratioRlts = MetricMethods.getRatioMetrics();
 	return {
 		"start_time": time,
 		"service_name": formstate.svc,
