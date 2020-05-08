@@ -708,9 +708,9 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
     const { proto, port, path, uid, gid } = resp.content
     const protoHostPortContextRoot = window.location.href
       .replace(/#?\/?$/, '')
-      .replace(/^http(s?):\/\/([^:/]+):(\d+)?/, `${proto}://$2:${port === -1 ? '$3' : port}`)
+      .replace(/^http(s?):\/\/([^:/]+)(:\d+)?/, `${proto}://$2${port === -1 ? '$3' : ':'+port}`)
       .replace(/\/(index\.html)?$/, '')
-    const url = `${protoHostPortContextRoot}${path}`
+    const url = new URL(path, protoHostPortContextRoot).href
     debug('websocket url', url, proto, port, path, uid, gid)
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
