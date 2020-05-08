@@ -1,6 +1,7 @@
 // var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 export default class GetAnalyticsAssessment {
   public data = {}
+  //URL used by the local Iter8 analytics service (should adapt to the svc running in cluster)
   public url = ''
   public constructor(data, url = 'http://0.0.0.0:5555/assessment') {
     this.url = url
