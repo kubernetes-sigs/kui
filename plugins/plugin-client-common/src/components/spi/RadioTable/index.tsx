@@ -22,16 +22,50 @@ import Props from './model'
 import Carbon from './impl/Carbon'
 import PatternFly4 from './impl/PatternFly'
 
+import Toolbar from '../../Content/Table/Toolbar'
+
 export interface State {
+  page: number
+  pageSize: number
+  offset: number
   selectedIdx: number
+}
+
+/** @return the row slice for the current page */
+export function slice(props: Props & State) {
+  return props.table.body.slice((props.page - 1) * props.pageSize, props.page * props.pageSize)
 }
 
 export default class RadioTableSpi extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
+    const pageSize = 15
     this.state = {
-      selectedIdx: props.table.defaultSelectedIdx
+      page: 1,
+      pageSize,
+      offset: 0,
+      selectedIdx: this.swapSelectedToTop(pageSize)
+    }
+  }
+
+  /**
+   * If the table is going to be paginated, bring the selected row to
+   * the top.
+   *
+   */
+  private swapSelectedToTop(pageSize: number): number {
+    if (this.isPaginated(pageSize)) {
+      const { table } = this.props
+      const selectedIdx = table.defaultSelectedIdx
+
+      const selectedRow = table.body[selectedIdx]
+      table.body[selectedIdx] = table.body[0]
+      table.body[0] = selectedRow
+
+      return 0
+    } else {
+      return this.props.table.defaultSelectedIdx
     }
   }
 
@@ -39,19 +73,53 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
     this.setState({ selectedIdx })
   }
 
+  private numRows() {
+    return this.props.table.body.length
+  }
+
+  private isPaginated(pageSize = this.state.pageSize) {
+    return this.numRows() > pageSize
+  }
+
+  private topToolbar() {
+    const { table } = this.props
+
+    const titleBreadcrumb = table.title ? [{ label: table.title, className: 'kui--data-table-title' }] : []
+    const breadcrumbs = titleBreadcrumb
+
+    return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+  }
+
+  private bottomToolbar() {
+    return (
+      <Toolbar
+        className="kui--data-table-toolbar-bottom"
+        paginate={this.isPaginated()}
+        setPage={(page: number) => this.setState(curState => ({ page, offset: (page - 1) * curState.pageSize }))}
+        page={this.state.page}
+        totalItems={this.numRows()}
+        pageSize={this.state.pageSize}
+      />
+    )
+  }
+
   public render() {
     const onChange = this.onChange.bind(this)
 
     return (
-      <KuiContext.Consumer>
-        {config =>
-          config.components === 'patternfly' ? (
-            <PatternFly4 {...this.props} selectedIdx={this.state.selectedIdx} onChange={onChange} />
-          ) : (
-            <Carbon {...this.props} selectedIdx={this.state.selectedIdx} onChange={onChange} />
-          )
-        }
-      </KuiContext.Consumer>
+      <div className="kui--data-table-wrapper kui--screenshotable">
+        {this.topToolbar()}
+        <KuiContext.Consumer>
+          {config =>
+            config.components === 'patternfly' ? (
+              <PatternFly4 {...this.props} {...this.state} onChange={onChange} />
+            ) : (
+              <Carbon {...this.props} {...this.state} onChange={onChange} />
+            )
+          }
+        </KuiContext.Consumer>
+        {this.bottomToolbar()}
+      </div>
     )
   }
 }

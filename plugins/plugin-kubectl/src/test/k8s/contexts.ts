@@ -27,7 +27,7 @@ import {
   waitForRed,
   createNS,
   waitTillNone,
-  RADIO_BUTTON_SELECTED
+  RADIO_BUTTON_OLD_SELECTED as RADIO_BUTTON_SELECTED
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']

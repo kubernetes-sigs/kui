@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { v4 as uuid } from 'uuid'
-import { RadioTableRow } from '@kui-shell/core'
+import { RadioTableRow, radioTableHintsAsCss, radioTableCellToString, cellShouldHaveBadge } from '@kui-shell/core'
 
 import {
   DataList,
@@ -29,7 +29,7 @@ import {
 } from '@patternfly/react-core'
 
 import BaseProps from '../model'
-import { State as BaseState } from '../index'
+import { State as BaseState, slice } from '../index'
 
 type Props = BaseProps &
   BaseState & {
@@ -53,13 +53,13 @@ export default class PatternFly4RadioTable extends React.PureComponent<Props, St
   }
 
   /** row id */
-  private static id(uuid: string, idx: number) {
-    return `${uuid}-${idx}`
+  private id(idx: number) {
+    return `${this.state.uuid}-${idx + this.props.offset}`
   }
 
-  /** row id */
-  private static aria(uuid: string, idx: number) {
-    return `${PatternFly4RadioTable.id(uuid, idx)}-aria`
+  /** row id aria */
+  private aria(idx: number) {
+    return `${this.id(idx)}-aria`
   }
 
   private idxPartOfId(id: string): number {
@@ -78,18 +78,33 @@ export default class PatternFly4RadioTable extends React.PureComponent<Props, St
   }
 
   private row(row: RadioTableRow, ridx: number) {
-    const id = PatternFly4RadioTable.id(this.state.uuid, ridx)
-    const aria = PatternFly4RadioTable.aria(this.state.uuid, ridx)
+    const id = this.id(ridx)
+    const aria = this.aria(ridx)
 
     return (
-      <DataListItem key={ridx} aria-labelledby={aria} id={id}>
+      <DataListItem
+        key={ridx}
+        aria-labelledby={aria}
+        id={id}
+        data-name={row.nameIdx !== undefined ? radioTableCellToString(row.cells[row.nameIdx]) : name}
+      >
         <DataListItemRow>
           <DataListItemCells
-            dataListCells={row.cells.map((_, cidx) => (
-              <DataListCell key={cidx} data-key={typeof _ !== 'string' && _.key}>
-                <span id={cidx === 0 ? id : undefined}>{typeof _ === 'string' ? _ : _.value}</span>
-              </DataListCell>
-            ))}
+            dataListCells={row.cells.map((cell, cidx) => {
+              const badgeHint = cellShouldHaveBadge(cell)
+
+              return (
+                <DataListCell
+                  key={cidx}
+                  data-is-name={cidx === row.nameIdx ? true : undefined}
+                  data-key={typeof cell !== 'string' && cell.key}
+                  className={radioTableHintsAsCss(cell)}
+                >
+                  {badgeHint && <span data-tag={'badge-circle'} className={badgeHint.toString()} />}
+                  <span id={cidx === 0 ? id : undefined}>{radioTableCellToString(cell)}</span>
+                </DataListCell>
+              )
+            })}
           />
         </DataListItemRow>
       </DataListItem>
@@ -106,19 +121,19 @@ export default class PatternFly4RadioTable extends React.PureComponent<Props, St
   }
 
   private body() {
-    return <React.Fragment>{this.props.table.body.map((row, idx) => this.row(row, idx))}</React.Fragment>
+    return <React.Fragment>{slice(this.props).map((row, idx) => this.row(row, idx))}</React.Fragment>
   }
 
   public render() {
-    const selectedDataListItemId = PatternFly4RadioTable.id(this.state.uuid, this.props.selectedIdx)
+    const selectedDataListItemId = this.id(this.props.selectedIdx - this.props.offset)
 
     return (
       <DataList
         isCompact
         aria-label="radio table"
-        className="kui--screenshotable"
         selectedDataListItemId={selectedDataListItemId}
         onSelectDataListItem={this.onSelectDataListItem.bind(this)}
+        className="kui--table-like"
       >
         {this.header()}
         {this.body()}

@@ -94,7 +94,7 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
   const body = flatten(
     (await uiThemes()).map(({ plugin, themes }) =>
       themes.map((theme: Theme) => ({
-        name: theme.name,
+        nameIdx: 0,
         cells: [
           theme.name,
           { value: strings(theme.style), hints: CellShould.HideWhenNarrow },
