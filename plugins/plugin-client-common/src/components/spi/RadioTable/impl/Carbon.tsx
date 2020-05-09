@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { v4 as uuid } from 'uuid'
-import { RadioTableRow } from '@kui-shell/core'
+import { RadioTableRow, radioTableHintsAsCss, radioTableCellToString, cellShouldHaveBadge } from '@kui-shell/core'
 
 import { CheckmarkFilled16 as Checkmark } from '@carbon/icons-react'
 import {
@@ -29,9 +29,9 @@ import {
 } from 'carbon-components-react'
 
 import BaseProps from '../model'
-import { State as BaseState } from '../index'
+import { State as BaseState, slice } from '../index'
 
-import '../../../../../web/scss/components/StructuredList/Carbon.scss'
+import '../../../../../web/scss/components/RadioTable/Carbon.scss'
 
 type Props = BaseProps &
   BaseState & {
@@ -53,43 +53,64 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
 
   private async onChange(selectedIdx: number, onSelect: () => void) {
     // wow, carbon components isn't so great; we have to manage unchecking ourselves??
-    ;(document.getElementById(this.id(this.props.selectedIdx)) as HTMLInputElement).checked = false
+    const currentSelection = document.getElementById(this.id(this.props.selectedIdx)) as HTMLInputElement
+    if (currentSelection) {
+      currentSelection.checked = false
+    }
 
     if (onSelect) {
       await onSelect()
     }
 
-    this.props.onChange(selectedIdx)
+    this.props.onChange(selectedIdx + this.props.offset)
   }
 
   private id(idx: number): string {
     return `${this.state.uuid}-${idx}`
   }
 
-  private row(row: RadioTableRow, idx: number, head: boolean, onSelect?: () => void) {
-    const isSelected = !head && idx === this.props.selectedIdx
-    const name = this.id(idx)
+  private row(row: RadioTableRow, ridx: number, head: boolean, onSelect?: () => void) {
+    const isSelected = !head && ridx === this.props.selectedIdx - this.props.offset
+    const name = this.id(ridx)
 
     // notes: label is needed for selection
     return (
-      <StructuredListRow label head={head} key={idx} data-name={row.name || name}>
+      <StructuredListRow
+        label
+        head={head}
+        key={ridx}
+        data-name={row.nameIdx !== undefined ? radioTableCellToString(row.cells[row.nameIdx]) : name}
+        data-is-selected={isSelected || undefined}
+      >
         {!head && (
           <StructuredListInput
             defaultChecked={isSelected}
             id={name}
             name={name}
             value={name}
-            onChange={this.onChange.bind(this, idx, onSelect)}
+            onChange={this.onChange.bind(this, ridx, onSelect)}
           />
         )}
 
         <StructuredListCell>{isSelected && <Checkmark className="bx--structured-list-svg" />}</StructuredListCell>
 
-        {row.cells.map((_, idx) => (
-          <StructuredListCell head={head} key={idx} data-key={typeof _ !== 'string' && _.key}>
-            {typeof _ === 'string' ? _ : _.value}
-          </StructuredListCell>
-        ))}
+        {row.cells.map((cell, cidx) => {
+          const badgeHint = cellShouldHaveBadge(cell)
+
+          return (
+            <StructuredListCell
+              head={head}
+              key={cidx}
+              data-is-name={cidx === row.nameIdx ? true : undefined}
+              data-key={typeof cell !== 'string' ? cell.key : undefined}
+              className={radioTableHintsAsCss(cell)}
+            >
+              {badgeHint && <span data-tag={'badge-circle'} className={badgeHint.toString()} />}
+
+              {radioTableCellToString(cell)}
+            </StructuredListCell>
+          )
+        })}
       </StructuredListRow>
     )
   }
@@ -101,14 +122,14 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
   private body() {
     return (
       <StructuredListBody>
-        {this.props.table.body.map((row, idx) => this.row(row, idx, false, row.onSelect))}
+        {slice(this.props).map((row, idx) => this.row(row, idx, false, row.onSelect))}
       </StructuredListBody>
     )
   }
 
   public render() {
     return (
-      <StructuredListWrapper selection className="kui--radio-table kui--screenshotable">
+      <StructuredListWrapper selection className="kui--radio-table kui--table-like">
         {this.header()}
         {this.body()}
       </StructuredListWrapper>

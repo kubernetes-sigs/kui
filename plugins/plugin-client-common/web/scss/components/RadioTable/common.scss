@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-@import './common';
+@import '../Table/badges.scss';
 
-[kui-theme-style] {
-  .pf-c-data-list__item {
-    background-color: transparent;
-    color: var(--color-text-01);
-  }
-
-  .pf-m-selected [data-is-name] {
+[kui-theme-style] .kui--table-like {
+  [data-is-selected] [data-is-name] {
     font-weight: 700;
   }
 
-  .sidecar-visible {
-    .pf-c-data-list {
-      width: 100%;
-
-      .pf-c-data-list__cell:not([data-is-name]) {
-        flex: initial;
-      }
-
-      .hide-with-sidecar {
-        display: none;
-      }
-    }
+  [data-tag='badge-circle'] {
+    display: inline-block;
+    vertical-align: middle;
   }
 }

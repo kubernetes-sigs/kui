@@ -22,7 +22,31 @@ const enum CellShould {
   HideWithSidecar = 'hide-with-sidecar',
   HideWhenNarrow = 'hide-with-narrow-window',
   ElideWhenNarrow = 'elide-with-narrow-window',
-  BeGrayish = 'sub-text'
+  BeGrayish = 'sub-text',
+
+  HaveGreenBadge = 'green-background',
+  HaveYellowBadge = 'yellow-background',
+  HaveRedBadge = 'red-background',
+  HaveGrayBadge = 'gray-background'
+}
+
+function cellShouldHaveBadge2(hint: CellShould) {
+  return (
+    hint === CellShould.HaveGreenBadge ||
+    hint === CellShould.HaveRedBadge ||
+    hint === CellShould.HaveYellowBadge ||
+    hint === CellShould.HaveGrayBadge
+  )
+}
+
+export function cellShouldHaveBadge(hints: CellShould | CellShould[]): CellShould | void {
+  if (!hints) {
+    
+  } else if (Array.isArray(hints)) {
+    return hints.find(cellShouldHaveBadge2)
+  } else if (cellShouldHaveBadge2(hints)) {
+    return hints
+  }
 }
 
 export default CellShould

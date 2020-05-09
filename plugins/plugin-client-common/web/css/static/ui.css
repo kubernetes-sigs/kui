@@ -346,7 +346,7 @@ code.fancy-code.hljs {
 .somewhat-smaller-text {
   font-size: 0.925em;
 }
-.sub-text {
+[kui-theme-style] .sub-text {
   color: var(--color-text-02);
 }
 .lighter-text {
