@@ -84,7 +84,7 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
       if (opt && opt.expectString) {
         // expect exactly one entry
         return app.client
-          .getText(Selectors.LIST_RESULTS_BY_NAME_N(N - 1))
+          .getText(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1)} .entity-name`)
           .then(name => assert.strictEqual(name, opt.expectString))
       } else if (opt && opt.expectArray) {
         // expect several entries, of which opt is one // NOTE: what does it mean by opt is one???

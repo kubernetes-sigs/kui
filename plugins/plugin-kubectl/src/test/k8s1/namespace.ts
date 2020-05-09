@@ -95,8 +95,8 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       })
 
       it(`should initiate namespace switch via click`, () => {
-        const radioButton = `${Selectors.BY_NAME('')} ${RADIO_BUTTON}`
-        const radioButtonSelected = `${Selectors.BY_NAME('')}${RADIO_BUTTON_SELECTED}`
+        const radioButton = RADIO_BUTTON
+        const radioButtonSelected = RADIO_BUTTON_SELECTED
 
         return CLI.command(`${kubectl} get ns ${ns1}`, this.app)
           .then(ReplExpect.okWithCustom({ selector: radioButton }))

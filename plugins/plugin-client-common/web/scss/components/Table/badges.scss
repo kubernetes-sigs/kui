@@ -1,6 +1,7 @@
 @import '../common/narrow-window';
 
-.bx--data-table {
+.bx--data-table,
+.kui--table-like {
   [data-tag='badge'] {
     display: flex;
     align-items: center;

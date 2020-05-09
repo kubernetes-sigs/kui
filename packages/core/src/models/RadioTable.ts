@@ -15,7 +15,7 @@
  */
 
 import { KResponse } from './command'
-import CellShould from './CellShould'
+import CellShould, { cellShouldHaveBadge as shouldHaveBadge } from './CellShould'
 
 interface RadioTable {
   apiVersion: 'kui-shell/v1'
@@ -29,12 +29,32 @@ interface RadioTable {
 }
 
 export interface RadioTableRow {
-  name?: string
+  nameIdx?: number
   cells: RadioTableCell[]
 }
 
 export interface Selectable {
-  onSelect: () => Promise<void>
+  onSelect: () => void | Promise<void>
+}
+
+export function radioTableHintsAsCss(cell: RadioTableCell) {
+  if (typeof cell !== 'string' && cell.hints) {
+    if (Array.isArray(cell.hints)) {
+      return cell.hints.map(_ => _.toString()).join(' ')
+    } else {
+      return cell.hints.toString()
+    }
+  }
+}
+
+/** Project the string value of the given `cell` */
+export function radioTableCellToString(cell: RadioTableCell) {
+  return typeof cell === 'string' ? cell : cell.value
+}
+
+/** Should the cell be rendered with a traffic light badge? */
+export function cellShouldHaveBadge(cell: RadioTableCell) {
+  return typeof cell !== 'string' && shouldHaveBadge(cell.hints)
 }
 
 export type RadioTableCell =

@@ -16,6 +16,29 @@
 
 @import '~carbon-components/scss/components/structured-list/_structured-list.scss';
 
+[kui-theme-style] {
+  .sidecar-visible {
+    .bx--structured-list.kui--radio-table {
+      width: 100%;
+
+      .bx--structured-list-td,
+      .bx--structured-list-th {
+        &[data-is-name] {
+          width: 100%;
+          max-width: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        &.hide-with-sidecar {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 [kui-theme-style] .bx--structured-list {
   font-family: var(--font-sans-serif);
   color: var(--color-text-01);
@@ -30,6 +53,7 @@
   }
 
   .bx--structured-list-td {
+    color: inherit;
     font-size: 0.875em;
     line-height: 1.25em;
     padding-top: 1em;
@@ -38,6 +62,10 @@
     padding-left: 1em;
     line-height: 1.3125em;
     max-width: 36em;
+
+    &.sub-text {
+      color: var(--color-text-02);
+    }
   }
 
   &.kui--radio-table .bx--structured-list-td {
@@ -53,7 +81,7 @@
     border-color: var(--color-table-border1);
 
     &,
-    .bx--structured-list-td {
+    .bx--structured-list-td:not(.sub-text) {
       color: var(--color-text-01);
     }
   }

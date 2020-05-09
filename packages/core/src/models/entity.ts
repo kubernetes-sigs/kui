@@ -166,7 +166,7 @@ export type ViewableResponse = MultiModalResponse | NavResponse | RadioTable
 export type StructuredResponse<
   Content = void,
   SomeSortOfResource extends MetadataBearing<Content> = MetadataBearing<Content>
-> = ViewableResponse | UsageModel | SomeSortOfResource | RawResponse<Content>
+> = ViewableResponse | UsageModel | SomeSortOfResource | RawResponse<Content> | SomeSortOfResource[]
 
 /**
  * A potentially more complex entity with a "spec"

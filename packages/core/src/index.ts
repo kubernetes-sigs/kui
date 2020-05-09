@@ -196,7 +196,15 @@ export { default as SymbolTable } from './core/symbol-table'
 // Tables
 export { default as CellShould } from './models/CellShould'
 export { Icon, TableStyle, Table, Row, Cell, isTable } from './webapp/models/table'
-export { default as RadioTable, isRadioTable, RadioTableRow, RadioTableCell } from './models/RadioTable'
+export {
+  default as RadioTable,
+  isRadioTable,
+  RadioTableRow,
+  RadioTableCell,
+  radioTableHintsAsCss,
+  radioTableCellToString,
+  cellShouldHaveBadge
+} from './models/RadioTable'
 
 // Util
 export { findFileWithViewer, findFile, isSpecialDirectory, addPath as augmentModuleLoadPath } from './core/find-file'
