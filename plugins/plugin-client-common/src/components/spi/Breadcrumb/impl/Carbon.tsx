@@ -33,7 +33,7 @@ export default class CarbonBreadcrumb extends React.PureComponent<Props> {
           <BreadcrumbItem
             href="#"
             key={idx}
-            className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb', 'zoomable'].filter(_ => _).join(' ')}
+            className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb'].filter(_ => _).join(' ')}
             isCurrentPage={idx === currentPageIdx}
             onClick={_.command && (() => this.props.repl.pexec(_.command))}
           >
