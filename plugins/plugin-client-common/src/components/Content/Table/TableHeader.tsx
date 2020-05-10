@@ -37,7 +37,7 @@ export default function renderHeader(kuiHeader: KuiRow, { getHeaderProps, header
               {...getHeaderProps({
                 header,
                 'data-key': header.key,
-                // isSortable: isSortable && (!radio || cidx > 0),
+                // isSortable: isSortable,
                 className: outerCSS
               })}
             >
