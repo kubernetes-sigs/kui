@@ -28,7 +28,6 @@ import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 
 /** carbon styling */
 import 'carbon-components/scss/components/data-table/_data-table-core.scss'
-import 'carbon-components/scss/components/radio-button/_radio-button.scss'
 
 /** hack (see comments in file) */
 import '../../../../web/scss/components/Table/hack-select.scss'
@@ -64,7 +63,6 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 export type State = ToolbarProps & {
   headers: DataTableHeader[]
   rows: NamedDataTableRow[]
-  radio: boolean
 
   page: number
   pageSize: number
@@ -83,7 +81,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     try {
       // assemble the data model
-      const { headers, rows, radio } = kui2carbon(this.props.response)
+      const { headers, rows } = kui2carbon(this.props.response)
 
       const gridableColumn = this.props.response.body[0]
         ? this.props.response.header.attributes.findIndex(cell => /STATUS/i.test(cell.key))
@@ -92,7 +90,6 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       this.state = {
         headers,
         rows,
-        radio,
         gridableColumn,
         asGrid: false,
         page: 1,
@@ -168,18 +165,15 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     }
 
     const { tab, repl, response } = this.props
-    const { headers, rows, radio, page } = this.state
+    const { headers, rows, page } = this.state
 
     // the view
     const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
-      // `<form>` prevents the radio button selection reads from the global form of browser.
-      // See issue: https://github.com/IBM/kui/issues/3871
-      <form className="kui--data-table-wrapper kui--screenshotable">
+      <div className="kui--data-table-wrapper kui--screenshotable">
         {this.topToolbar()}
         <DataTable
           rows={visibleRows}
           headers={headers}
-          radio={radio}
           isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
           sortRow={sortRow}
           render={renderOpts => (
@@ -207,7 +201,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           )}
         />
         {this.bottomToolbar()}
-      </form>
+      </div>
     )
 
     const paginated = this.isPaginated()

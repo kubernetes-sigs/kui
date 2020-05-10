@@ -44,7 +44,7 @@ export default function renderBody(
             'data-name': kuiBody[offset + ridx].name
           })}
         >
-          {row.cells.map(renderCell(kuiBody[offset + ridx], row, renderOpts, tab, repl))}
+          {row.cells.map(renderCell(kuiBody[offset + ridx], row, tab, repl))}
         </TableRow>
       ))}
     </TableBody>

@@ -17,13 +17,7 @@
 import { Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
 
 import * as React from 'react'
-import {
-  DataTableRow,
-  DataTableCell,
-  DataTableCustomRenderProps,
-  TableCell,
-  TableSelectRow
-} from 'carbon-components-react'
+import { TableCell, DataTableRow, DataTableCell } from 'carbon-components-react'
 
 /**
  * Generate an onclick handler for a cell
@@ -62,66 +56,47 @@ export function onClickForCell(
  * Render a TableCell part
  *
  */
-export default function renderCell(
-  kuiRow: KuiRow,
-  row: DataTableRow,
-  { getSelectionProps, radio, selectRow }: DataTableCustomRenderProps,
-  tab: Tab,
-  repl: REPL
-) {
-  return (cell: DataTableCell, cidx: number) => {
-    if (cidx === 0 && radio) {
-      return (
-        <TableSelectRow
-          {...getSelectionProps({
-            row,
-            key: row.id,
-            className: kuiRow.outerCSS + ' not-a-name radio-button-width',
-            onClick: onClickForCell(kuiRow, tab, repl, undefined, () => selectRow(row.id))
-          })}
-        />
-      )
-    } else {
-      // e.g. is this a badge/status-like cell?
-      const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
+export default function renderCell(kuiRow: KuiRow, row: DataTableRow, tab: Tab, repl: REPL) {
+  return function KuiTableCell(cell: DataTableCell, cidx: number) {
+    // e.g. is this a badge/status-like cell?
+    const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
 
-      // column key
-      const key = cidx > 0 && kuiRow.attributes[cidx - 1].key
+    // column key
+    const key = cidx > 0 && kuiRow.attributes[cidx - 1].key
 
-      // className for the td
-      const className =
-        cidx === 0
-          ? 'entity-name ' + (kuiRow.outerCSS || '')
-          : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
-            (kuiRow.attributes[cidx - 1].outerCSS || '')
+    // className for the td
+    const className =
+      cidx === 0
+        ? 'entity-name ' + (kuiRow.outerCSS || '')
+        : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
+          (kuiRow.attributes[cidx - 1].outerCSS || '')
 
-      // the text value of the cell
-      const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
+    // the text value of the cell
+    const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
 
-      return (
-        <TableCell
-          key={cell.id}
-          className={className}
-          onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
+    return (
+      <TableCell
+        key={cell.id}
+        className={className}
+        onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
+      >
+        <span
+          data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
+          data-value={cell.value}
+          data-tag={tag}
+          className={
+            'cell-inner ' +
+            (cidx === 0
+              ? (kuiRow.css || '') + (kuiRow.onclick ? ' clickable' : '')
+              : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
+          }
         >
-          <span
-            data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
-            data-value={cell.value}
-            data-tag={tag}
-            className={
-              'cell-inner ' +
-              (cidx === 0
-                ? (kuiRow.css || '') + (kuiRow.onclick ? ' clickable' : '')
-                : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
-            }
-          >
-            {tag === 'badge' && (
-              <span title={innerText} data-tag="badge-circle" className={kuiRow.attributes[cidx - 1].css} />
-            )}
-            <span className="kui--cell-inner-text">{innerText}</span>
-          </span>
-        </TableCell>
-      )
-    }
+          {tag === 'badge' && (
+            <span title={innerText} data-tag="badge-circle" className={kuiRow.attributes[cidx - 1].css} />
+          )}
+          <span className="kui--cell-inner-text">{innerText}</span>
+        </span>
+      </TableCell>
+    )
   }
 }
