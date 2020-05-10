@@ -20,6 +20,7 @@ import { isUsage, doHelp, commandPrefix, defaultFlags, KubeOptions } from '@kui-
 
 import raw from './controller/raw'
 
+import { projectList, projectListView } from './controller/odo/project/list'
 import catalogListComponents from './controller/odo/catalog/list/components'
 import catalogListServices from './controller/odo/catalog/list/services'
 
@@ -36,6 +37,12 @@ function withHelp(handler: (args: Arguments<KubeOptions>) => Promise<KResponse>)
 
 export default (registrar: Registrar) => {
   raw(registrar)
+
+  registrar.listen(
+    `/${commandPrefix}/odo/project/list`,
+    withHelp(projectList),
+    Object.assign({}, defaultFlags, { viewTransformer: projectListView })
+  )
 
   registrar.listen(`/${commandPrefix}/odo/catalog/list/components`, withHelp(catalogListComponents), defaultFlags)
   registrar.listen(`/${commandPrefix}/odo/catalog/list/services`, withHelp(catalogListServices), defaultFlags)

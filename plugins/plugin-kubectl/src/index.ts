@@ -49,6 +49,7 @@ export {
   doExecWithPty,
   doExecWithStdout,
   doExecWithStatus,
+  doExecWithRadioTable,
   doExecWithTable
 } from './controller/kubectl/exec'
 

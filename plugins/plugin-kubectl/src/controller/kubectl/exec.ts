@@ -20,6 +20,7 @@ import {
   CodedError,
   i18n,
   Table,
+  RadioTable,
   isHeadless,
   inBrowser,
   Arguments,
@@ -29,6 +30,7 @@ import {
 
 import RawResponse from './response'
 import commandPrefix from '../command-prefix'
+import KubeResource from '../../lib/model/resource'
 import { KubeOptions, getNamespaceForArgv, getContextForArgv, getFileForArgv } from './options'
 
 import { FinalState } from '../../lib/model/states'
@@ -267,6 +269,34 @@ export const doExecWithStatus = <O extends KubeOptions>(
     const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
 
     return args.REPL.qexec(statusCmd, args.block)
+  }
+}
+
+export async function doExecWithRadioTable<Resource extends KubeResource>(
+  resources: Resource[],
+  defaultSelectedIdx: number,
+  onSelect: (name: string, resource: Resource) => void | Promise<void>,
+  { title = resources.length === 0 ? undefined : resources[0].kind, nameColumnTitle = 'NAME' } = {}
+): Promise<RadioTable | void> {
+  if (resources.length > 0) {
+    return {
+      apiVersion: 'kui-shell/v1',
+      kind: 'RadioTable',
+      title,
+      defaultSelectedIdx,
+
+      header: {
+        cells: [nameColumnTitle]
+      },
+      body: resources.map(resource => {
+        const name = resource.metadata.name
+        return {
+          nameIdx: 0,
+          cells: [name],
+          onSelect: () => onSelect(name, resource)
+        }
+      })
+    }
   }
 }
 
