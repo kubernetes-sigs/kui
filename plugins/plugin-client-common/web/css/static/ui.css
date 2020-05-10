@@ -434,9 +434,6 @@ pre.monospace {
   /* intended for fontawesome table cells */
   width: 2em;
 }
-.radio-button-width {
-  width: 2em !important;
-}
 .double-icon-width {
   /* intended for fontawesome table cells */
   width: 4em;
