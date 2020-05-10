@@ -35,8 +35,7 @@ export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
             className={[
               _.className,
               _.deemphasize && 'kui--secondary-breadcrumb',
-              idx === currentPageIdx && 'kui--current-page-breadcrumb',
-              'zoomable'
+              idx === currentPageIdx && 'kui--current-page-breadcrumb'
             ]
               .filter(_ => _)
               .join(' ')}

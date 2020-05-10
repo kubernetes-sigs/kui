@@ -6,6 +6,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
 
   .bx--breadcrumb {
     display: flex;
+    font-size: unset;
     flex-wrap: nowrap;
     font-family: var(--font-sans-serif);
     padding: 0 1em;
@@ -30,7 +31,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
 
       .bx--link {
         font-size: inherit;
-        font-size: 1em;
+        font-size: unset;
         font-weight: normal;
         color: var(--color-base0C);
         overflow: unset;
