@@ -32,13 +32,11 @@ exports.defaultModeForGet = 'summary'
 /** Do singleton tables have a title decoration? */
 exports.singletonTablesHaveTitle = false
 
-/** Selectors of radio button (old PaginatedTable-based) */
-exports.RADIO_BUTTON_OLD = 'td.bx--table-column-checkbox.not-a-name'
-exports.RADIO_BUTTON_OLD_SELECTED = '.bx--data-table--selected'
-
 /** Selectors of radio button (new RadioTable-based) */
 exports.RADIO_BUTTON = '.bx--structured-list-tbody .bx--structured-list-row'
-exports.RADIO_BUTTON_SELECTED = `${exports.RADIO_BUTTON}[data-is-selected]`
+exports.RADIO_BUTTON_BY_NAME = name => `.bx--structured-list-tbody .bx--structured-list-row[data-name="${name}"]`
+exports.RADIO_BUTTON_IS_SELECTED = '[data-is-selected]'
+exports.RADIO_BUTTON_SELECTED = `${exports.RADIO_BUTTON}${exports.RADIO_BUTTON_IS_SELECTED}`
 
 /**
  * Wait for a green badge
