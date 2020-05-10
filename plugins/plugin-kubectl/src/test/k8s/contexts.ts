@@ -27,7 +27,9 @@ import {
   waitForRed,
   createNS,
   waitTillNone,
-  RADIO_BUTTON_OLD_SELECTED as RADIO_BUTTON_SELECTED
+  RADIO_BUTTON_BY_NAME,
+  RADIO_BUTTON_SELECTED,
+  RADIO_BUTTON_IS_SELECTED
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -146,7 +148,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts`, this.app)
             .then(
               ReplExpect.okWithCustom({
-                selector: `${RADIO_BUTTON_SELECTED} .entity-name[data-key="NAME"]`
+                selector: `${RADIO_BUTTON_SELECTED} [data-is-name]`
               })
             )
             .then(selector => this.app.client.getText(selector))
@@ -164,7 +166,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
         try {
           const allContextNames = await CLI.command(`contexts`, this.app)
             .then(ReplExpect.okWithCustom({ selector: ' ' }))
-            .then(selector => this.app.client.elements(`${selector} .entity-name[data-key="NAME"]`))
+            .then(selector => this.app.client.elements(`${selector} [data-is-name]`))
             .then(elements => elements.value.map(_ => _.ELEMENT))
             .then(elements => Promise.all(elements.map(element => this.app.client.elementIdText(element))))
             .then(texts => texts.map(_ => _.value))
@@ -199,22 +201,22 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
         try {
           const selector = await CLI.command(`contexts`, this.app).then(
             ReplExpect.okWithCustom({
-              selector: Selectors.BY_NAME(contextName)
+              selector: RADIO_BUTTON_BY_NAME(contextName)
             })
           )
 
-          await this.app.client.click(`${selector} .bx--radio-button-wrapper`)
+          await this.app.client.click(selector)
 
           // the row in that first table had better now be selected
-          await this.app.client.waitForExist(`${selector}${RADIO_BUTTON_SELECTED}`)
+          await this.app.client.waitForExist(`${selector}${RADIO_BUTTON_IS_SELECTED}`)
 
           // and if we request a new contexts table, it'd better be selected there, too
           const selector2 = await CLI.command(`contexts`, this.app).then(
             ReplExpect.okWithCustom({
-              selector: Selectors.BY_NAME(contextName)
+              selector: RADIO_BUTTON_BY_NAME(contextName)
             })
           )
-          await this.app.client.waitForExist(`${selector2}${RADIO_BUTTON_SELECTED}`)
+          await this.app.client.waitForExist(`${selector2}${RADIO_BUTTON_IS_SELECTED}`)
         } catch (err) {
           return Common.oops(this)(err)
         }

@@ -144,7 +144,7 @@ function hintsFor(outerCSS: string, css: string): CellShould[] {
 }
 
 /** Convert old Table row model to new RadioTable row model. */
-function t2rt({ name, attributes }: Row): RadioTableRow {
+export function t2rt({ name, attributes }: Row): RadioTableRow {
   return {
     nameIdx: 0,
     cells: [
@@ -175,7 +175,8 @@ async function asRadioTable(args: Arguments<KubeOptions>, { header, body }: Tabl
     body: body.map(t2rt).map(rtRow =>
       Object.assign(rtRow, {
         onSelect: () => {
-          args.REPL.pexec(`namespace switch ns ${radioTableCellToString(rtRow.cells[rtRow.nameIdx])}`)
+          const ns = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
+          args.REPL.pexec(`namespace switch ns ${ns}`)
         }
       })
     )

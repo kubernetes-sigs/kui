@@ -244,7 +244,7 @@ export const formatTable = <O extends KubeOptions>(
       const rowCSS = [
         (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
         rowIsSelected ? 'selected-row' : ''
-      ]
+      ].filter(_ => _)
 
       // if there isn't a global namespace specifier, maybe there is a row namespace specifier
       // we use the row specifier in preference to a global specifier -- is that right?
