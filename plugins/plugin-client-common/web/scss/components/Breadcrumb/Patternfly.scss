@@ -31,6 +31,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
 
   &.pf-c-breadcrumb {
     padding: 0 1em;
+    padding-left: 0;
 
     .pf-c-breadcrumb__item {
       font-size: unset;
