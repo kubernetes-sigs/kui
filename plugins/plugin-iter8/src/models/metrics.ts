@@ -26,6 +26,7 @@ const metricYamlMode: ModeRegistration<KubeResource> = {
   }
 }
 
-const metricDeleteCommand: string = deleteMetricCommand()
-
+function metricDeleteCommand(metricName) {
+  return deleteMetricCommand(metricName.argv.splice(3))
+}
 export { metricListMode, metricYamlMode, metricDeleteCommand }

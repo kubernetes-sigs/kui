@@ -12,5 +12,6 @@ export default async (registrar: Registrar) => {
     metadata: { name: 'Metric Command', namespace: 'Use: kubectl get configmaps -n iter8' },
     modes: []
   }))
-  registrar.listen('/iter8/delete/metric', () => metricDeleteCommand)
+  const cmd = registrar.listen('/iter8/delete/metric', metricNames => metricDeleteCommand(metricNames))
+  registrar.synonym('/iter8/delete/metrics', metricNames => metricDeleteCommand(metricNames), cmd)
 }

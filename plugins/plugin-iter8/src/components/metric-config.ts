@@ -2,6 +2,11 @@ import { safeLoad } from 'js-yaml'
 
 const execSync = require('child_process').execSync
 
+export const iter8Metrics = {
+  counter: ['iter8_request_count', 'iter8_total_latency', 'iter8_error_count'],
+  ratio: ['iter8_mean_latency', 'iter8_error_rate']
+}
+
 export default class GetMetricConfig {
   public output = {}
   public constructor() {
@@ -90,9 +95,5 @@ export default class GetMetricConfig {
     rM.map(r => list.ratio.push(r['name']))
     cM.map(r => list.counter.push(r['name']))
     return list
-  }
-
-  public deleteMetric() {
-    return 'Hello'
   }
 }
