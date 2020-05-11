@@ -26,6 +26,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
     flex-wrap: nowrap;
     font-family: var(--font-sans-serif);
     padding: 0 1em;
+    padding-left: 0;
     line-height: unset;
 
     .bx--breadcrumb-item {

@@ -17,7 +17,33 @@
 @import '../WatchPane/WatchPane.scss';
 
 [kui-theme-style] .kui--watch-pane {
-  .pf-c-card__body {
-    padding: 0;
+  .pf-c-card__actions {
+    font-size: $master-font-size;
+  }
+
+  .kui--card {
+    background-color: var(--color-background-03);
+
+    .pf-c-dropdown__menu-item {
+      background-color: var(--color-base01);
+    }
+
+    .pf-c-card__body {
+      padding: 0 $body-spacing;
+    }
+
+    .pf-c-card__head {
+      padding: $body-spacing;
+      padding-right: 0; /* the actions svg has spacing... */
+
+      .pf-c-card__head-main {
+        padding: 0 $header-spacing;
+        font-size: $master-font-size;
+
+        .pf-c-breadcrumb {
+          padding: 0;
+        }
+      }
+    }
   }
 }

@@ -115,13 +115,18 @@ export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>
 export const OK_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-output .ok`
 export const xtermRows = (N: number) => `${PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
 
-export const WATCHER_N = (N: number) => `.kui--sub-pane[data-pane-index="${N}"]`
-export const WATCHER_N_TITLE = (N: number) => `${WATCHER_N(N)} ${_TABLE_TITLE}`
+export const WATCHER_N = (N: number) => `.kui--card.kui--card-${N}`
+
 export const WATCHER_N_GRID_CELL = (N: number, name: string) =>
-  `${WATCHER_N(N)} ${_TABLE_AS_GRID} [data-tag="badge"][data-entity-name="${name}"]`
+  `${WATCHER_N(N)} .kui--sub-card ${_TABLE_AS_GRID} [data-tag="badge"][data-entity-name="${name}"]`
 export const WATCHER_N_GRID_CELL_ONLINE = (N: number, name: string) =>
   `${WATCHER_N_GRID_CELL(N, name)} .green-background`
 export const WATCHER_N_GRID_CELL_OFFLINE = (N: number, name: string) =>
   `${WATCHER_N_GRID_CELL(N, name)} .red-background`
 export const WATCHER_N_GRID_CELL_PENDING = (N: number, name: string) =>
   `${WATCHER_N_GRID_CELL(N, name)} .yello-background`
+
+export const WATCHER_N_TITLE = (N: number) => `${WATCHER_N(N)} ${_TABLE_TITLE}`
+export const WATCHER_N_DROPDOWN = (N: number) => `${WATCHER_N(N)} .pf-c-dropdown button.pf-c-dropdown__toggle`
+export const WATCHER_N_DROPDOWN_ITEM = (N: number, label: string) =>
+  `${WATCHER_N(N)} .pf-c-dropdown button.pf-c-dropdown__menu-item[data-mode="${label}"]`

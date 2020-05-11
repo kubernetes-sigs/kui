@@ -16,16 +16,11 @@
 
 import * as React from 'react'
 
-import Carbon from './impl/Carbon'
 import PatternFly4 from './impl/PatternFly'
-import KuiContext from '../../Client/context'
 
 import Props from './model'
 
+// FIXME There's no ideal Card component in Carbon Component Libary, so we use Patternfly
 export default function CardSpi(props: Props): React.ReactElement {
-  return (
-    <KuiContext.Consumer>
-      {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}
-    </KuiContext.Consumer>
-  )
+  return <PatternFly4 {...props} />
 }

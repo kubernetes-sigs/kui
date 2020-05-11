@@ -18,6 +18,7 @@ import * as React from 'react'
 import { Accordion } from 'carbon-components-react'
 import {
   eventChannelUnsafe,
+  ExecOptions,
   ScalarResponse,
   Tab as KuiTab,
   isPopup,
@@ -116,8 +117,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       response,
       cancelled,
       echo,
-      evaluatorOptions
-    }: { response: ScalarResponse; cancelled: boolean; echo: boolean; evaluatorOptions: CommandOptions },
+      evaluatorOptions,
+      execOptions
+    }: {
+      response: ScalarResponse
+      cancelled: boolean
+      echo: boolean
+      evaluatorOptions: CommandOptions
+      execOptions: ExecOptions
+    },
     execUUID: string,
     responseType: string
   ) {
@@ -131,7 +139,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       // response `showInTerminal` is either non-watchable response, or watch response that's forced to show in terminal
       const showInTerminal =
-        !isWatchable(response) || (isWatchable(response) && evaluatorOptions.alwaysViewIn === 'Terminal')
+        !isWatchable(response) ||
+        (isWatchable(response) &&
+          (evaluatorOptions.alwaysViewIn === 'Terminal' || execOptions.alwaysViewIn === 'Terminal'))
 
       if (inProcessIdx >= 0) {
         const inProcess = curState.blocks[inProcessIdx]

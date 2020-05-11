@@ -75,6 +75,18 @@ export type State = ToolbarProps & {
   pageSize: number
 }
 
+export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: BreadcrumbView[]) {
+  const titleBreadcrumb: BreadcrumbView[] = response.title
+    ? [{ label: response.title, className: 'kui--data-table-title' }]
+    : []
+
+  const breadcrumbs = (prefixBreadcrumbs || [])
+    .concat(titleBreadcrumb)
+    .concat((response.breadcrumbs || []).map(_ => Object.assign({}, _, { className: 'kui--secondary-breadcrumb' })))
+
+  return breadcrumbs
+}
+
 /**
  * A DataTable/Pagination pair
  *
@@ -104,17 +116,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   private topToolbar() {
     if (this.props.toolbars) {
-      const titleBreadcrumb: BreadcrumbView[] = this.props.response.title
-        ? [{ label: this.props.response.title, className: 'kui--data-table-title' }]
-        : []
-      const breadcrumbs = (this.props.prefixBreadcrumbs || [])
-        .concat(titleBreadcrumb)
-        .concat(
-          (this.props.response.breadcrumbs || []).map(_ =>
-            Object.assign({}, _, { className: 'kui--secondary-breadcrumb' })
-          )
-        )
-
+      const breadcrumbs = getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
       return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
     }
   }

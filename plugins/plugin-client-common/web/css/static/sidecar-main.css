@@ -398,6 +398,7 @@
   align-items: center;
   overflow-x: hidden;
   font-size: 0.875em;
+  padding-left: 1em;
 
   .sidecar-bottom-stripe-button:first-child {
     margin-left: 0.5em;
