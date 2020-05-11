@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.1](https://github.com/IBM/kui/compare/v8.7.0...v8.7.1) (2020-05-11)
+
+### Bug Fixes
+
+- TopNavSidecar does not always show updates ([898bf7c](https://github.com/IBM/kui/commit/898bf7c)), closes [#4524](https://github.com/IBM/kui/issues/4524)
+- **plugins/plugin-client-common:** breadcrumb fonts can be too large, and double zoom ([72c18e7](https://github.com/IBM/kui/commit/72c18e7)), closes [#4519](https://github.com/IBM/kui/issues/4519)
+
 # [8.7.0](https://github.com/IBM/kui/compare/v4.5.0...v8.7.0) (2020-05-08)
 
 ### Bug Fixes

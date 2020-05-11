@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.1](https://github.com/IBM/kui/compare/v8.7.0...v8.7.1) (2020-05-11)
+
+**Note:** Version bump only for package @kui-shell/plugin-sandbox
+
 # [8.7.0](https://github.com/IBM/kui/compare/v4.5.0...v8.7.0) (2020-05-08)
 
 ### Bug Fixes
