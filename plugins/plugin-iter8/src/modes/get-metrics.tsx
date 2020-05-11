@@ -11,10 +11,11 @@ import 'carbon-components/scss/components/data-table/_data-table-skeleton.scss'
 
 import '../../src/web/scss/static/metrics.scss'
 
-import GetMetricConfig from '../components/metric-config'
 import ReactErrorDisplay from './error-react'
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
+import GetMetricConfig, { iter8Metrics } from '../components/metric-config'
+
 const { Table, TableBody, TableCell, TableRow, TableContainer, TableExpandRow, TableExpandedRow } = DataTable
 
 function getInitialRows(metricObject) {
@@ -59,6 +60,9 @@ class Display extends React.Component<any, any> {
 
   public updateIsDeleted(metric, type) {
     if (type === 'counter') {
+      if (iter8Metrics.counter.includes(metric)) {
+        return
+      }
       if (deleteMetric(metric, type).success === metric) {
         this.counterMetrics[metric].isDeleted = true
         console.log('Deleted: ' + metric)
@@ -66,21 +70,23 @@ class Display extends React.Component<any, any> {
         for (let j = 0; j < alsoDelete.length; j++) {
           if (deleteMetric(alsoDelete[j], 'ratio').success === alsoDelete[j]) {
             this.ratioMetrics[alsoDelete[j]].isDeleted = true
-            console.log(alsoDelete[j])
+            console.log('Deleted: ' + alsoDelete[j])
           }
         }
       }
     } else {
+      if (iter8Metrics.ratio.includes(metric)) {
+        return
+      }
       if (deleteMetric(metric, type).success === metric) {
         this.ratioMetrics[metric].isDeleted = true
-        console.log(metric)
+        console.log('Deleted: ' + metric)
       }
     }
     this.setState({ counter: this.counterMetrics, ratio: this.ratioMetrics })
   }
 
   public restore(metric, type) {
-    console.log(metric, type)
     if (type === 'counter') {
       if (restoreMetric(metric, this.counterMetrics[metric].details, type).success === metric) {
         this.counterMetrics[metric].isDeleted = false
@@ -122,11 +128,15 @@ class Display extends React.Component<any, any> {
     )
   }
 
-  public renderTableTitle(title, type) {
+  public addMetric(type) {
     console.log(type)
+    
+  }
+
+  public renderTableTitle(title, type) {
     return (
       <div>
-        {title} <Add20 className="clickableicon" />
+        {title} <Add20 onClick={() => this.addMetric(type)} className="clickableicon" />
       </div>
     )
   }
@@ -153,19 +163,24 @@ class Display extends React.Component<any, any> {
                         <TableCell className="width20">
                           <div>
                             {metrics[row.id].isDeleted ? (
-                              this.renderOnDelete(row.id, type)
+                              <div>
+                                {this.renderOnDelete(row.id, type)}
+                                {type === 'ratio' && !metrics[row.id].custom && metrics[row.id].alsoRestore.length ? (
+                                  <div className="tooltiptext">
+                                    Warning: Will also restore {JSON.stringify(metrics[row.id].alsoRestore)}
+                                  </div>
+                                ) : null}
+                              </div>
                             ) : (
                               <div className="clickableicon" onClick={() => this.updateIsDeleted(row.id, type)}>
                                 <TrashCan20 />
-                                {type === 'counter' && metrics[row.id].alsoDelete.length ? (
+                                {type === 'counter' && !metrics[row.id].custom && metrics[row.id].alsoDelete.length ? (
                                   <div className="tooltiptext">
                                     Warning: Will also delete {JSON.stringify(metrics[row.id].alsoDelete)}
                                   </div>
                                 ) : null}
-                                {type === 'ratio' && metrics[row.id].alsoRestore.length ? (
-                                  <div className="tooltiptext">
-                                    Warning: Will also restore {JSON.stringify(metrics[row.id].alsoRestore)}
-                                  </div>
+                                {metrics[row.id].custom ? (
+                                  <div className="tooltiptext">Warning: Cannot delete iter8 metrics</div>
                                 ) : null}
                               </div>
                             )}
@@ -222,9 +237,18 @@ export class MetricDetailsMode {
         isDeleted: false,
         alsoDelete: [],
         alsoRestore: [],
-        details: metrics[i]
+        details: metrics[i],
+        custom: false
+      }
+      if (type === 'counter') {
+        if (iter8Metrics.counter.includes(metrics[i].name)) {
+          m[metrics[i].name].custom = true
+        }
       }
       if (type === 'ratio') {
+        if (iter8Metrics.ratio.includes(metrics[i].name)) {
+          m[metrics[i].name].custom = true
+        }
         m[metrics[i].name].alsoRestore = [metrics[i].numerator, metrics[i].denominator]
         this.counterMetricOutput[metrics[i].numerator].alsoDelete.push(metrics[i].name)
         this.counterMetricOutput[metrics[i].denominator].alsoDelete.push(metrics[i].name)
