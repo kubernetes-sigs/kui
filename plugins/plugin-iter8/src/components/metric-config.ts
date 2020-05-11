@@ -8,7 +8,7 @@ export default class GetMetricConfig {
   public constructor() {
     try {
       this.output = {
-        configmaps: execSync('kubectl get configmaps -n iter8 iter8config-metrics2 -o yaml', {
+        configmaps: execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
           encoding: 'utf-8',
           stdio: 'pipe'
         })
