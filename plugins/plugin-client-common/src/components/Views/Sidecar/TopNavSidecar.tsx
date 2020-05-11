@@ -196,7 +196,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
                 handleTabClick={() => false}
                 onMouseDown={event => event.preventDefault()}
               >
-                {this.tabContent(idx)}
+                {idx === this.current.currentTabIndex && this.tabContent(idx)}
               </Tab>
             ))}
           </Tabs>

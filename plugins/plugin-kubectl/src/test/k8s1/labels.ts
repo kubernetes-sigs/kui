@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -68,11 +68,36 @@ describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, functio
         .catch(Common.oops(this))
     })
 
+    const expectLabelInSidecar = (key: string, value: string) => {
+      it(`should show label ${key}=${value} in the sidecar`, async () => {
+        try {
+          await CLI.command(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
+            .then(ReplExpect.justOK)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('raw'))
+
+          await SidecarExpect.yaml({ metadata: { labels: { [key]: value } } })
+        } catch (err) {
+          await Common.oops(this, true)
+        }
+      })
+    }
+
+    expectLabelInSidecar('creepy', 'pasta')
+
     it('should add another label that starts with "f" to that pod resource', () => {
       return CLI.command(`${kubectl} label pod nginx feels=life ${inNamespace}`, this.app)
         .then(ReplExpect.okWithPtyOutput('nginx'))
         .catch(Common.oops(this))
     })
+
+    // make sure the new label shows up in sidecar; see bug
+    // https://github.com/IBM/kui/issues/4524
+    expectLabelInSidecar('feels', 'life')
 
     it('should NOT error with 404 for now-existent label variant 1', () => {
       return CLI.command(`${kubectl} get pod -l feels=life ${inNamespace}`, this.app)
