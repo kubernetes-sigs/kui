@@ -1,6 +1,7 @@
 import { safeLoad, safeDump } from 'js-yaml'
 import { applyKube } from './traffic-split'
 const execSync = require('child_process').execSync
+import { iter8Metrics } from './metric-config'
 
 export default function deleteMetric(metric, type = null) {
   let configmap = {}
@@ -64,6 +65,18 @@ export default function deleteMetric(metric, type = null) {
     return { success: deleted }
   }
 }
-export function deleteMetricCommand() {
-  return 'Hello'
+export function deleteMetricCommand(metrics) {
+  let response = ''
+  for (let i = 0; i < metrics.length; i++) {
+    if (iter8Metrics.counter.includes(metrics[i]) || iter8Metrics.ratio.includes(metrics[i])) {
+      response = response + '\n' + 'Cannot delete iter8 metric: ' + metrics[i]
+    } else {
+      if (deleteMetric(metrics[i]).success === metrics[i]) {
+        response = response + '\n' + 'Deleted: ' + metrics[i]
+      } else {
+        response = response + '\n' + 'Could not delete: ' + metrics[i]
+      }
+    }
+  }
+  return response
 }
