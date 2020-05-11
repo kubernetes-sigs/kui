@@ -17,9 +17,18 @@
 @import './common';
 
 [kui-theme-style] {
+  .pf-c-data-list {
+    white-space: normal;
+    border: none;
+  }
+
   .pf-c-data-list__item {
     background-color: transparent;
     color: var(--color-text-01);
+
+    &[aria-labelledby='header'] {
+      font-weight: var(--pf-global--FontWeight--bold);
+    }
   }
 
   .pf-m-selected [data-is-name] {

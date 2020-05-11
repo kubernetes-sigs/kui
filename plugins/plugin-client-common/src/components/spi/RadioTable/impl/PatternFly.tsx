@@ -18,25 +18,17 @@ import * as React from 'react'
 import { v4 as uuid } from 'uuid'
 import { RadioTableRow, radioTableHintsAsCss, radioTableCellToString, cellShouldHaveBadge } from '@kui-shell/core'
 
-import {
-  DataList,
-  DataListItem,
-  DataListCell,
-  DataListItemRow,
-  //  DataListCheck,
-  DataListItemCells
-  //  DataListAction
-} from '@patternfly/react-core'
+import { DataList, DataListItem, DataListCell, DataListItemRow, DataListItemCells } from '@patternfly/react-core'
 
 import BaseProps from '../model'
 import { State as BaseState, slice } from '../index'
+
+import '../../../../../web/scss/components/RadioTable/PatternFly.scss'
 
 type Props = BaseProps &
   BaseState & {
     onChange: (selectedIdx: number) => void
   }
-
-import '../../../../../web/scss/components/RadioTable/PatternFly.scss'
 
 interface State {
   uuid: string
@@ -77,13 +69,13 @@ export default class PatternFly4RadioTable extends React.PureComponent<Props, St
     this.props.onChange(selectedIdx)
   }
 
-  private row(row: RadioTableRow, ridx: number) {
-    const id = this.id(ridx)
-    const aria = this.aria(ridx)
+  private row(row: RadioTableRow, ridx?: number) {
+    const id = ridx !== undefined ? this.id(ridx) : `${this.state.uuid}-header`
+    const aria = ridx !== undefined ? this.aria(ridx) : 'header'
 
     return (
       <DataListItem
-        key={ridx}
+        key={ridx || aria}
         aria-labelledby={aria}
         id={id}
         data-name={row.nameIdx !== undefined ? radioTableCellToString(row.cells[row.nameIdx]) : name}
@@ -112,16 +104,11 @@ export default class PatternFly4RadioTable extends React.PureComponent<Props, St
   }
 
   private header() {
-    /* return (
-      <StructuredListHead>
-        {this.row(this.props.table.header, 0, true)}
-      </StructuredListHead>
-      ) */
-    return <div />
+    return this.row(this.props.table.header)
   }
 
   private body() {
-    return <React.Fragment>{slice(this.props).map((row, idx) => this.row(row, idx))}</React.Fragment>
+    return slice(this.props).map(this.row.bind(this))
   }
 
   public render() {
