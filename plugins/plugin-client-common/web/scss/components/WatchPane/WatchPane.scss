@@ -4,6 +4,7 @@ $cell-size: 0.875em;
 $head-spacing: 0.5em;
 $body-spacing: 0.375em;
 $pane-gap: 5px;
+$header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wrapper */
 
 [kui-theme-style] .kui--watch-pane {
   height: 100%;
@@ -21,19 +22,32 @@ $pane-gap: 5px;
   .kui--card {
     background-color: var(--color-background-03);
     padding: 0 $body-spacing;
+
+    .pf-c-card__head {
+      padding: 0;
+
+      .pf-c-card__head-main {
+        padding: 0 $header-spacing;
+        font-size: $master-font-size;
+
+        .pf-c-breadcrumb {
+          padding: 0;
+        }
+
+        .bx--breadcrumb {
+          padding: 0;
+        }
+      }
+    }
   }
 
-  .kui--sub-pane {
+  .kui--sub-card {
     font-size: $master-font-size;
     overflow-x: auto;
     display: flex;
 
     & > div {
       flex: 1;
-    }
-
-    .kui--data-table-toolbar {
-      font-size: $cell-size;
     }
 
     // copied from componenets/Table/badges.scss

@@ -15,11 +15,17 @@
  */
 
 import { ReactNode } from 'react'
-// import { } from '@kui-shell/core'
+
+export interface Actions {
+  label: string
+  handler: () => void
+}
 
 interface Props {
   className?: string
   children: ReactNode
+  actions?: Actions[]
+  header: ReactNode
 }
 
 export default Props
