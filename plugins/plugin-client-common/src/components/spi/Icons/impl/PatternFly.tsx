@@ -19,6 +19,7 @@ import * as React from 'react'
 import {
   CameraIcon as Screenshot,
   CameraRetroIcon as ScreenshotInProgress,
+  CheckCircleIcon as Checkmark,
   PlusIcon as Add,
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
@@ -67,6 +68,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Back style={Sidecar} {...props} />
     case 'CodeBranch':
       return <CodeBranch style={StatusStripe} {...props} />
+    case 'Checkmark':
+      return <Checkmark {...props} />
     case 'Error':
       return <Oops {...props} />
     case 'Forward':
