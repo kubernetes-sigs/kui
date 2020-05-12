@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { v4 as uuid } from 'uuid'
 import { ParsedOptions } from '@kui-shell/core'
 
 export interface BaseHistoryEntry {
@@ -21,18 +23,26 @@ export interface BaseHistoryEntry {
   parsedOptions: ParsedOptions
 }
 
-export default class CircularBuffer<T> {
-  private readonly entries: T[]
+type InternalEntry<T extends BaseHistoryEntry> = T & {
+  key: string
+}
+
+export default class CircularBuffer<T extends BaseHistoryEntry> {
+  private readonly entries: InternalEntry<T>[]
   private activeIdx: number
   private insertionIdx: number
   private _length: number
 
   public constructor(first: T, capacity = 15) {
-    this.entries = new Array<T>(capacity)
+    this.entries = new Array<InternalEntry<T>>(capacity)
     this.activeIdx = 0
     this.insertionIdx = 1 % capacity
     this._length = 1
-    this.entries[0] = first
+    this.entries[0] = this.entry(first)
+  }
+
+  private entry(asGiven: T): InternalEntry<T> {
+    return Object.assign(asGiven, { key: uuid() })
   }
 
   public get length() {
@@ -40,7 +50,7 @@ export default class CircularBuffer<T> {
   }
 
   public get key() {
-    return this.activeIdx
+    return this.peek().key
   }
 
   public findIndex(predicate: (t: T, idx?: number, A?: T[]) => boolean) {
@@ -52,7 +62,7 @@ export default class CircularBuffer<T> {
   }
 
   public update(idx: number, t: T) {
-    this.entries[idx] = t
+    this.entries[idx] = this.entry(t)
     this.activeIdx = idx
   }
 
@@ -63,7 +73,7 @@ export default class CircularBuffer<T> {
 
   public push(entry: T) {
     const idx = this.insertionIdx
-    this.entries[idx] = entry
+    this.entries[idx] = this.entry(entry)
     this.activeIdx = idx
     this.insertionIdx = (idx + 1) % this.entries.length
     this._length = Math.min(this._length + 1, this.entries.length)

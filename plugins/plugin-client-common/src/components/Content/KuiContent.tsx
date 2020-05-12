@@ -15,8 +15,6 @@
  */
 
 import * as React from 'react'
-import { v4 as uuid } from 'uuid'
-
 import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import {
@@ -83,20 +81,11 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
         )
       }
     } else if (isCommandStringContent(mode)) {
-      // re: key see https://github.com/IBM/kui/issues/4524
       return (
-        <Eval
-          key={uuid()}
-          tab={tab}
-          command={mode.contentFrom}
-          contentType={mode.contentType}
-          response={response}
-          args={args}
-        />
+        <Eval tab={tab} command={mode.contentFrom} contentType={mode.contentType} response={response} args={args} />
       )
     } else if (isFunctionContent(mode)) {
-      // re: key see https://github.com/IBM/kui/issues/4524
-      return <Eval key={uuid()} tab={tab} command={mode.content} response={response} args={args} />
+      return <Eval tab={tab} command={mode.content} response={response} args={args} />
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
