@@ -192,10 +192,14 @@ export const getLoginShell = (): Promise<string> => {
 export async function getShellOpts(): Promise<Shell> {
   const kuirc = (await import('./kuirc')).default
   const bashShellOpts = process.platform === 'win32' ? undefined : ['--rcfile', await kuirc, '-i', '-c', '--']
-  const shellOpts = process.platform === 'win32' ? [] : bashShellOpts
 
+  const { shellExe: s, shellOpts: o } = await import('@kui-shell/client/config.d/proxy.json').catch(() => {
+    return { shellExe: '', shellOpts: [] }
+  })
+  const shellExe = s || (process.platform === 'win32' ? 'powershell.exe' : '/bin/bash')
+  const shellOpts = o && Array.isArray(o) && o.length > 0 ? o : process.platform === 'win32' ? [] : bashShellOpts
   return {
-    shellExe: process.platform === 'win32' ? 'powershell.exe' : '/bin/bash',
+    shellExe,
     shellOpts
   }
 }
