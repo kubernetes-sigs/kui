@@ -27,7 +27,6 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
     enabled: false
   },
   cursorWidth: 3,
-  autoIndent: true,
   codeLens: false,
   quickSuggestions: false,
   contextmenu: false,
@@ -49,9 +48,5 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   // simplify the UI?
   lineNumbers: options.simple ? 'off' : 'on',
   renderIndentGuides: !options.simple,
-  renderLineHighlight: options.simple ? 'none' : 'all',
-
-  // we will fill these two in later, in setText
-  value: '',
-  language: 'javascript'
+  renderLineHighlight: options.simple ? 'none' : 'all'
 })

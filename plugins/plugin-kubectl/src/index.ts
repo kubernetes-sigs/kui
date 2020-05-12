@@ -42,11 +42,14 @@ export { default as TrafficLight } from './lib/model/traffic-light'
 
 export { default as apiVersion } from './controller/kubectl/apiVersion'
 
+export { default as doExecWithMarkdown } from './controller/kubectl/exec-to-markdown'
+
 export {
   doExecWithStdoutViaPty,
   doExecWithPty,
   doExecWithStdout,
   doExecWithStatus,
+  doExecWithRadioTable,
   doExecWithTable
 } from './controller/kubectl/exec'
 
@@ -54,7 +57,7 @@ export { doExecRaw, doNativeExec } from './controller/kubectl/raw'
 
 export { default as commandPrefix } from './controller/command-prefix'
 
-export { default as defaultFlags } from './controller/kubectl/flags'
+export { default as defaultFlags, crudFlags } from './controller/kubectl/flags'
 
 export { getCurrentContext } from './controller/kubectl/contexts'
 
@@ -86,8 +89,9 @@ export { fqnOf, fqn } from './controller/kubectl/fqn'
  * `kubectl get pods`
  *
  */
-export { doGet } from './controller/kubectl/get'
+export { doEdit } from './controller/kubectl/edit'
+export { getter } from './controller/kubectl/get'
 export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
-export { doDescribe } from './controller/kubectl/describe'
+export { describer } from './controller/kubectl/describe'

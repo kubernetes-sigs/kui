@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import {
   CodedError,
   i18n,
   Table,
+  RadioTable,
   isHeadless,
   inBrowser,
   Arguments,
@@ -29,6 +30,7 @@ import {
 
 import RawResponse from './response'
 import commandPrefix from '../command-prefix'
+import KubeResource from '../../lib/model/resource'
 import { KubeOptions, getNamespaceForArgv, getContextForArgv, getFileForArgv } from './options'
 
 import { FinalState } from '../../lib/model/states'
@@ -191,8 +193,7 @@ export async function exec<O extends KubeOptions>(
       }
     })
   } else {
-    const response = await doExecWithoutPty(args, prepare, exec)
-    return response
+    return doExecWithoutPty(args, prepare, exec)
   }
 }
 
@@ -214,7 +215,7 @@ export async function doExecWithTable<O extends KubeOptions>(
 ): Promise<Table | MixedResponse> {
   const response = usePty
     ? { content: { stdout: await doExecWithStdoutViaPty(args, prepare), stderr: undefined } }
-    : await doExecWithoutPty(args, prepare)
+    : await doExecWithoutPty(args, prepare, command)
 
   const table = stringToTable(
     response.content.stdout,
@@ -268,6 +269,34 @@ export const doExecWithStatus = <O extends KubeOptions>(
     const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
 
     return args.REPL.qexec(statusCmd, args.block)
+  }
+}
+
+export async function doExecWithRadioTable<Resource extends KubeResource>(
+  resources: Resource[],
+  defaultSelectedIdx: number,
+  onSelect: (name: string, resource: Resource) => void | Promise<void>,
+  { title = resources.length === 0 ? undefined : resources[0].kind, nameColumnTitle = 'NAME' } = {}
+): Promise<RadioTable | void> {
+  if (resources.length > 0) {
+    return {
+      apiVersion: 'kui-shell/v1',
+      kind: 'RadioTable',
+      title,
+      defaultSelectedIdx,
+
+      header: {
+        cells: [nameColumnTitle]
+      },
+      body: resources.map(resource => {
+        const name = resource.metadata.name
+        return {
+          nameIdx: 0,
+          cells: [name],
+          onSelect: () => onSelect(name, resource)
+        }
+      })
+    }
   }
 }
 

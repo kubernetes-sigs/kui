@@ -16,8 +16,8 @@
 
 import * as React from 'react'
 import { Tab as KuiTab, ToolbarText, Button, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
-import { InformationFilled16 as Info, WarningAltFilled16 as Warning, ErrorFilled16 as Error } from '@carbon/icons-react'
 
+import Icons from '../../spi/Icons'
 import ToolbarButton from './ToolbarButton'
 
 export type Props = {
@@ -37,26 +37,30 @@ export default class Toolbar extends React.PureComponent<Props> {
       const { type } = this.props.toolbarText
       switch (type) {
         case 'info':
-          return <Info />
+          return <Icons icon="Info" />
         case 'warning':
-          return <Warning />
+          return <Icons icon="Warning" />
         default:
-          return <Error />
+          return <Icons icon="Error" />
       }
     }
   }
 
   private buttons() {
     if (this.props.buttons) {
-      return this.props.buttons.map((button, idx) => (
-        <ToolbarButton
-          tab={this.props.tab}
-          button={button}
-          response={this.props.response}
-          args={this.props.args}
-          key={idx}
-        />
-      ))
+      return this.props.buttons
+        .sort((a, b) => {
+          return (a.order || 0) - (b.order || 0)
+        })
+        .map((button, idx) => (
+          <ToolbarButton
+            tab={this.props.tab}
+            button={button}
+            response={this.props.response}
+            args={this.props.args}
+            key={idx}
+          />
+        ))
     }
   }
 

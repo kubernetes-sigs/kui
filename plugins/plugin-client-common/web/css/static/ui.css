@@ -20,6 +20,9 @@ body[kui-theme-style] {
   font-weight: 400;
   margin: 0;
   overflow: hidden;
+
+  /* see https://github.com/IBM/kui/issues/4414 */
+  -webkit-font-smoothing: unset;
 }
 .kui--full-height,
 .page {
@@ -203,8 +206,14 @@ body.still-loading .repl {
 }
 
 /* generic */
+.flex-fill {
+  flex: 1;
+}
 .kui--rotate-180 {
   transform: rotate(180deg);
+}
+.kui--rotate-180-then-flip {
+  transform: scaleY(-1);
 }
 .full-height {
   flex: 1;
@@ -305,13 +314,12 @@ code.fancy-code.hljs {
 }
 .grid-layout {
   display: grid;
-  grid-column-gap: 0.375em;
+  grid-column-gap: 0.875em;
   grid-template-columns: repeat(auto-fill, minmax(10em, auto));
   grid-template-rows: repeat(auto-fill, minmax(1.25em, auto));
   flex: 1;
 }
 .grid-layout > div {
-  margin-right: 0.5em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -341,7 +349,7 @@ code.fancy-code.hljs {
 .somewhat-smaller-text {
   font-size: 0.925em;
 }
-.sub-text {
+[kui-theme-style] .sub-text {
   color: var(--color-text-02);
 }
 .lighter-text {
@@ -428,9 +436,6 @@ pre.monospace {
 .icon-width {
   /* intended for fontawesome table cells */
   width: 2em;
-}
-.radio-button-width {
-  width: 2em !important;
 }
 .double-icon-width {
   /* intended for fontawesome table cells */
@@ -1039,13 +1044,12 @@ body.oops-total-catastrophe #restart-needed-warning {
   opacity: 0.875;
   word-break: break-all;
 }
-.page-content p:not(:last-child) {
-  padding-bottom: 0.5em;
+.page-content p {
+  padding: 0.375em 0;
 }
 .page-content h1 {
   margin-bottom: 1rem;
-  font-size: 3.375em;
-  font-weight: 300;
+  font-size: 2.375em;
   letter-spacing: 0;
   line-height: 1.25;
   padding: 0;
@@ -1099,6 +1103,7 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content ul {
   font-size: 1em;
   margin-left: 2em;
+  line-height: 1.125em;
   letter-spacing: 0.16px;
 }
 .page-content li {
@@ -1136,9 +1141,9 @@ body[kui-theme-style] {
 body[kui-theme-style] a {
   color: var(--color-brand-01);
 }
-body[kui-theme-style] a:hover:not(.plain-anchor) {
+/* body[kui-theme-style] a:hover:not(.plain-anchor) {
   color: var(--color-support-04);
-}
+} */
 
 .header {
   background: var(--color-stripe-01);
@@ -1373,6 +1378,14 @@ body {
   --color-brand-02: var(--color-magenta);
   --color-brand-03: var(--color-cyan);
 
+  --color-primary-button-background: var(--color-brand-03);
+  --color-primary-button-border: none;
+  --color-secondary-button-background: var(--color-base04);
+  --color-secondary-button-border: none;
+  --color-secondary-button-border-hover: none;
+  --color-primary-button-background-hover: var(--color-primary-button);
+  --color-secondary-button-background-hover: var(--color-secondary-button);
+
   --color-field-01: var(--color-base01);
 
   --color-text-against-dark-bg: var(--color-text-01);
@@ -1433,6 +1446,9 @@ body {
 
   /* repl background */
   --color-repl-background: var(--color-ui-01);
+
+  /* background of third view */
+  --color-background-03: var(--color-ui-03);
 
   /* text selection */
   --color-selection-background-dark: rgba(255, 255, 255, 0.3);
@@ -1527,11 +1543,4 @@ body[kui-theme-style="dark"] .kui--inverted-color-context {
 #openwhisk-api-host,
 #openwhisk-namespace {
   pointer-events: none;
-}
-
-#kui--custom-top-tab-stripe-button-container {
-  /* e.g. holds the session disconnected icon */
-  display: flex;
-  flex: 1;
-  justify-content: flex-end;
 }

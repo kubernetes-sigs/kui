@@ -131,6 +131,9 @@ function nameOf(glob: GlobStats): string {
 const outerCSSSecondary = 'hide-with-sidecar'
 const cssSecondary = 'slightly-deemphasize'
 
+const outerCSSLesser = 'hide-with-narrow-window'
+const cssLesser = 'elide-with-narrow-window'
+
 function formatPermissions({ dirent }: GlobStats) {
   return dirent.permissions
 }
@@ -147,13 +150,19 @@ function attrs(entry: GlobStats, args: Arguments<LsOptions>) {
 
   const wide = args.parsedOptions.l
   const perms = wide ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
-  const uid = wide ? [{ value: formatUid(entry), outerCSS: '', css: cssSecondary }] : []
-  const gid = wide ? [{ value: formatGid(entry), outerCSS: '', css: cssSecondary }] : []
+  const uid = wide ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
+  const gid = wide ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
   const size = wide
     ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: `${outerCSSSecondary} text-right` }]
     : []
   const lastMod = wide
-    ? [{ value: prettyTime(entry.stats.mtimeMs), outerCSS: 'badge-width', css: `${cssSecondary} pre-wrap` }]
+    ? [
+        {
+          value: prettyTime(entry.stats.mtimeMs),
+          outerCSS: outerCSSLesser,
+          css: `${cssLesser} ${cssSecondary} pre-wrap`
+        }
+      ]
     : []
 
   return perms
@@ -198,12 +207,11 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     container.appendChild(frag)
     return container
   } else {
-    const wide = args.parsedOptions.l
-    const perms = wide ? [{ value: 'PERMISSIONS', outerCSS: outerCSSSecondary }] : []
-    const uid = wide ? [{ value: 'USER', outerCSS: '' }] : []
-    const gid = wide ? [{ value: 'GROUP', outerCSS: '' }] : []
-    const size = wide ? [{ value: 'SIZE', outerCSS: `${outerCSSSecondary} text-right` }] : []
-    const lastMod = wide ? [{ value: 'LAST MODIFIED', outerCSS: 'badge-width' }] : []
+    const perms = [{ value: 'PERMISSIONS', outerCSS: outerCSSSecondary }]
+    const uid = [{ value: 'USER', outerCSS: outerCSSSecondary }]
+    const gid = [{ value: 'GROUP', outerCSS: outerCSSSecondary }]
+    const size = [{ value: 'SIZE', outerCSS: `${outerCSSSecondary} text-right` }]
+    const lastMod = [{ value: 'LAST MODIFIED', outerCSS: outerCSSLesser, css: cssLesser }]
 
     const header = {
       name: 'NAME',
@@ -294,8 +302,6 @@ const usage = (command: string) => ({
 export default (commandTree: Registrar) => {
   const ls = commandTree.listen('/ls', doLs('ls'), {
     usage: usage('ls'),
-    requiresLocal: true,
-    inBrowserOk: true,
     flags: {
       boolean: usage('ls')
         .optional.filter(_ => _.boolean)
@@ -303,8 +309,6 @@ export default (commandTree: Registrar) => {
     }
   })
   commandTree.synonym('/lls', doLs('lls'), ls, {
-    usage: usage('lls'),
-    requiresLocal: true,
-    inBrowserOk: true
+    usage: usage('lls')
   })
 }

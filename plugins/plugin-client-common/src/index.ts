@@ -24,7 +24,6 @@ import '../web/css/static/inverted-colors.css'
 import '../web/css/static/ui.css'
 import '../web/css/static/repl.scss'
 import '../web/css/static/status-stripe.css'
-import '../web/css/static/vendor/balloon-css/balloon.min.css'
 
 // default client
 export { default as Kui, Props as KuiProps } from './components/Client/Kui'
@@ -39,6 +38,7 @@ export { default as StatusStripe } from './components/Client/StatusStripe'
 export { default as MeterWidgets } from './components/Client/StatusStripe/MeterWidgets'
 export { default as ContextWidgets } from './components/Client/StatusStripe/ContextWidgets'
 export { ViewLevel, default as TextWithIconWidget } from './components/Client/StatusStripe/TextWithIconWidget'
+export { default as KuiContext } from './components/Client/context'
 
 // Content components
 export { default as Loading } from './components/Content/Loading'
@@ -48,3 +48,6 @@ export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 export { default as ComboSidecar } from './components/Views/Sidecar/ComboSidecar'
 export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecar'
 export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
+
+// Icons
+export { default as Icons } from './components/spi/Icons'

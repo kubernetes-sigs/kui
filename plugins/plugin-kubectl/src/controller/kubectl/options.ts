@@ -68,12 +68,13 @@ function isTableFormat(format: OutputFormat): format is TableFormat {
   return !format || format === 'wide' || /^custom-columns=/.test(format) || /^custom-columns-file=/.test(format)
 }
 
+export function isDashHelp(args: Arguments<KubeOptions>) {
+  return args.parsedOptions.help || args.parsedOptions.h
+}
+
 export function isHelpRequest(args: Arguments<KubeOptions>) {
   return (
-    args.parsedOptions.help ||
-    args.parsedOptions.h ||
-    args.argvNoOptions[1] === 'help' ||
-    args.argvNoOptions[1] === 'options' // usage: `kubectl options`
+    isDashHelp(args) || args.argvNoOptions[1] === 'help' || args.argvNoOptions[1] === 'options' // usage: `kubectl options`
   )
 }
 
@@ -186,8 +187,8 @@ export interface KubeOptions extends ParsedOptions {
   help?: boolean
 }
 
-export function isForAllNamespaces(args: Arguments<KubeOptions>) {
-  return args.parsedOptions.A || args.parsedOptions['all-namespaces']
+export function isForAllNamespaces(parsedOptions: KubeOptions) {
+  return parsedOptions.A || parsedOptions['all-namespaces']
 }
 
 export default KubeOptions

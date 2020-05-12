@@ -49,7 +49,6 @@ const doModes = () =>
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/name', doModes(), {
-    inBrowserOk: true,
     usage: {
       command: 'string',
       strict: 'string',

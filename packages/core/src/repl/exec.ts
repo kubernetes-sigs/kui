@@ -35,6 +35,7 @@ import { isNavResponse } from '../models/NavResponse'
 import {
   CommandTreeResolution,
   CommandHandlerWithEvents,
+  EvaluatorArgs as Arguments,
   ExecType,
   EvaluatorArgs,
   KResponse,
@@ -281,6 +282,7 @@ class InProcessExecutor implements Executor {
 
       const execUUID = execOptions.execUUID || uuid()
       execOptions.execUUID = execUUID
+      const evaluatorOptions = evaluator.options
 
       const startEvent = {
         tab,
@@ -305,7 +307,8 @@ class InProcessExecutor implements Executor {
           response: true,
           execUUID,
           cancelled: true,
-          echo: execOptions.echo
+          echo: execOptions.echo,
+          evaluatorOptions
         }
         eventChannelUnsafe.emit('/command/complete', endEvent)
         if (execType !== ExecType.Nested) {
@@ -336,21 +339,23 @@ class InProcessExecutor implements Executor {
 
       this.loadSymbolTable(tab, execOptions)
 
+      const args: Arguments<O> = {
+        tab,
+        REPL,
+        block: execOptions.block,
+        nextBlock: undefined,
+        argv,
+        command,
+        execOptions,
+        argvNoOptions,
+        parsedOptions: parsedOptions as O,
+        createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
+      }
+
       let response: T | Promise<T>
       try {
         response = await Promise.resolve(
-          currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, {
-            tab,
-            REPL,
-            block: execOptions.block,
-            nextBlock: undefined,
-            argv,
-            command,
-            execOptions,
-            argvNoOptions,
-            parsedOptions: parsedOptions as O,
-            createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
-          })
+          currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, args)
         ).then(response => {
           // indicate that the command was successfuly completed
           evaluator.success({
@@ -371,6 +376,13 @@ class InProcessExecutor implements Executor {
         response = err
       }
 
+      if (evaluator.options.viewTransformer && execType !== ExecType.Nested) {
+        response = await Promise.resolve(response).then(async _ => {
+          const maybeAView = await evaluator.options.viewTransformer(args, _)
+          return maybeAView || _
+        })
+      }
+
       // the || true part is a safeguard for cases where typescript
       // didn't catch a command handler returning nothing; it
       // shouldn't happen, but probably isn't a sign of a dire
@@ -378,13 +390,15 @@ class InProcessExecutor implements Executor {
       if (!response) {
         debug('warning: command handler returned nothing', commandUntrimmed)
       }
+
       const endEvent = {
         tab,
         execType,
         command: commandUntrimmed,
         response: response || true,
         execUUID,
-        echo: execOptions.echo
+        echo: execOptions.echo,
+        evaluatorOptions
       }
       eventChannelUnsafe.emit(`/command/complete`, endEvent)
       eventChannelUnsafe.emit(`/command/complete/${getTabId(tab)}`, endEvent)
@@ -406,7 +420,8 @@ class InProcessExecutor implements Executor {
             execUUID,
             argvNoOptions,
             parsedOptions,
-            responseType
+            responseType,
+            evaluatorOptions
           )
           eventChannelUnsafe.emit(
             `/command/complete/fromuser/${responseType}/${getTabId(tab)}`,
@@ -415,7 +430,8 @@ class InProcessExecutor implements Executor {
             execUUID,
             argvNoOptions,
             parsedOptions,
-            responseType
+            responseType,
+            evaluatorOptions
           )
         })
       }
@@ -559,12 +575,8 @@ export const pexec = <T extends KResponse>(command: string, execOptions?: ExecOp
  * Execute a command in response to an in-view click
  *
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const click = async (command: string | (() => Promise<string>), evt: MouseEvent): Promise<void> => {
-  // const { drilldown } = await import('../webapp/picture-in-picture')
-  // const tab = getTabFromTarget(evt.currentTarget)
-  // await drilldown(tab, command)(evt)
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
+export async function click(command: string | (() => Promise<string>), evt: MouseEvent): Promise<void> {}
 
 /**
  * Update the executor impl

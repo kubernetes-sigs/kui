@@ -1,0 +1,40 @@
+{
+  "name": "@kui-shell/plugin-openshift",
+  "version": "1.0.1",
+  "description": "Kui OpenShift support",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "openshift",
+    "redhat",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "dependencies": {
+    "@kui-shell/plugin-kubectl": "*"
+  },
+  "krew": {
+    "commandPrefix": "kubeui"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

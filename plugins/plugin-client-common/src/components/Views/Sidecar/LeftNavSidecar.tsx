@@ -17,45 +17,15 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import * as React from 'react'
-import {
-  eventChannelUnsafe,
-  i18n,
-  Tab,
-  Button,
-  NavResponse,
-  MultiModalMode,
-  ParsedOptions,
-  Link,
-  isLinkWithCommand
-} from '@kui-shell/core'
-import { Content, SideNavLink, SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
+import { eventChannelUnsafe, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
+import Navigation, { HistoryEntry } from '../../spi/Navigation'
 import { getStateFromMMR } from './TopNavSidecar'
-import { BaseHistoryEntry, BaseSidecar, Props, cwd } from './BaseSidecar'
-
-import 'carbon-components/scss/components/ui-shell/_content.scss'
-import 'carbon-components/scss/components/ui-shell/_side-nav.scss'
+import { BaseSidecar, Props, cwd } from './BaseSidecar'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('../../Content/KuiContent'))
-
-const strings = i18n('client', 'about')
-
-interface Navigation {
-  title: string
-  currentTabIndex: number
-  tabs: MultiModalMode[]
-  buttons?: Button[]
-}
-
-interface HistoryEntry extends BaseHistoryEntry {
-  current: { menuIdx: number; tabIdx: number }
-  allNavs: Navigation[]
-  allLinks: Link[]
-
-  response: NavResponse
-}
 
 /**
  *
@@ -79,7 +49,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   public constructor(props: Props) {
     super(props)
 
-    const channel = '/command/complete/fromuser/NavResponse'
+    const channel = `/command/complete/fromuser/NavResponse/${this.props.uuid}`
     const onResponse = this.onResponse.bind(this)
     eventChannelUnsafe.on(channel, onResponse)
     this.cleaners.push(() => eventChannelUnsafe.off(channel, onResponse))
@@ -87,7 +57,6 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     this.state = {
       repl: undefined,
       tab: undefined,
-      width: Width.Closed,
       history: undefined,
       current: undefined
     }
@@ -103,9 +72,9 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     return false
   }
 
-  /** matching the old `flex: 3.5` compared to `flex: 4` for the Terminal */
-  protected defaultWidth() {
-    return '46.67%'
+  /** 30/70 split between the Terminal and the LeftNavSidecar */
+  protected defaultWidth(): Width {
+    return Width.Split70
   }
 
   /** @return a `HistoryEntry` for the given `Response` */
@@ -137,81 +106,19 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     return true
   }
 
-  /** render menu options specified by client/config.d/about.json */
-  private renderSideNavMenu(menuIdx: number) {
-    const thisNav = this.current.allNavs[menuIdx]
-    return (
-      <SideNavMenu
-        title={strings(thisNav.title)}
-        key={menuIdx}
-        isActive
-        defaultExpanded
-        className={menuIdx === 0 ? 'sidecar-header-name-content' : undefined}
-      >
-        {thisNav.tabs.map((mode: MultiModalMode, idx: number) => (
-          <SideNavMenuItem
-            href="#" // needed for tab navigation
-            key={idx} // if you make this mode.mode, then data-mode doesn't work
-            data-mode={mode.mode} // needed for tests
-            isActive={this.current.current.menuIdx === menuIdx && this.current.current.tabIdx === idx}
-            onClick={() => {
-              this.setState(({ current, history }) => {
-                const newCurrent = Object.assign({}, current, { current: { menuIdx: menuIdx, tabIdx: idx } })
-                history.updateActive(newCurrent)
-                return {
-                  current: newCurrent
-                }
-              })
-            }}
-            onMouseDown={event => event.preventDefault()}
-          >
-            <span className="kui--mode-placeholder" data-mode={mode.mode}>
-              {strings(mode.label || mode.mode)}
-            </span>
-          </SideNavMenuItem>
-        ))}
-      </SideNavMenu>
-    )
-  }
-
-  private renderSideNavLink(idx: number, link: Link) {
-    if (isLinkWithCommand(link)) {
-      return (
-        <SideNavLink
-          className="kui--nav-command-link"
-          data-link={strings(link.label)}
-          key={idx}
-          href="#"
-          onClick={() => this.state.tab.REPL.pexec(link.command)}
-        >
-          {strings(link.label)}
-        </SideNavLink>
-      )
-    } else {
-      return (
-        <SideNavLink
-          className="kui--nav-href-link"
-          data-link={strings(link.label)}
-          key={idx}
-          target="_blank"
-          href={link.href}
-        >
-          {strings(link.label)}
-        </SideNavLink>
-      )
-    }
+  private changeCurrent(menuIdx: number, tabIdx: number) {
+    this.setState(({ current, history }) => {
+      const newCurrent = Object.assign({}, current, { current: { menuIdx, tabIdx } })
+      history.updateActive(newCurrent)
+      return {
+        current: newCurrent
+      }
+    })
   }
 
   /** render the leftnav part */
   protected nav() {
-    return (
-      <SideNav aria-label="Side navigation" expanded isChildOfHeader={false} isFixedNav>
-        <SideNavItems>
-          {this.current.allNavs.map((nav, idx) => this.renderSideNavMenu(idx))}
-          {this.current.allLinks.map((link, idx) => this.renderSideNavLink(idx, link))}
-        </SideNavItems>
-      </SideNav>
-    )
+    return <Navigation tab={this.state.tab} current={this.current} changeCurrent={this.changeCurrent.bind(this)} />
   }
 
   protected headerBodyStyle() {
@@ -233,7 +140,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   }
 
   protected bodyContainer(tabIdx: number, menuIdx: number) {
-    return <Content>{this.bodyContent(tabIdx, menuIdx)}</Content>
+    return <div className="kui--sidecar-content">{this.bodyContent(tabIdx, menuIdx)}</div>
   }
 
   public render() {

@@ -68,12 +68,6 @@ export interface CommandOptions extends CapabilityRequirements {
   // hint for screen height in popup mode
   height?: number
 
-  // request that the REPL be cleared of the initial command in popup mode
-  clearREPLOnLoad?: boolean
-
-  // show this placeholder text when executing the command in popup mode (instead of the command line)
-  placeholder?: string
-
   /** is this an interior node ("directory", versus a leaf-node with a command handler */
   isDirectory?: boolean
 
@@ -84,8 +78,18 @@ export interface CommandOptions extends CapabilityRequirements {
   override?: CommandHandler<KResponse, ParsedOptions>
   plugin?: string
   okOptions?: string[]
-  isIntention?: boolean
-  requiresFullyQualifiedRoute?: boolean
+
+  /*
+   * always show the view in terminal, e.g. for certain commands producing watchable table,
+   * we want them to always show in `Terminal`
+   */
+  alwaysViewIn?: 'Terminal'
+
+  /** model to view transformer */
+  viewTransformer?<T extends KResponse, O extends ParsedOptions>(
+    args: EvaluatorArgs<O>,
+    response: T
+  ): Promise<T> | void | Promise<void>
 }
 
 export interface Event {
@@ -219,7 +223,6 @@ export type CommandTree = Command<KResponse, ParsedOptions>
 
 export interface CapabilityRequirements {
   needsUI?: boolean
-  inBrowserOk?: boolean
   requiresLocal?: boolean
   noAuthOk?: boolean | string[]
   fullscreen?: boolean
@@ -310,6 +313,6 @@ export interface CommandRegistrar {
     offer: CatchAllOffer,
     handler: CommandHandler<T, O>,
     prio: number,
-    options: CommandOptions
+    options?: CommandOptions
   ) => void
 }

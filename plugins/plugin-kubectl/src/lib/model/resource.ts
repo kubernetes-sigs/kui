@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ResourceWithMetadata } from '@kui-shell/core'
+import { KResponse, ResourceWithMetadata } from '@kui-shell/core'
 
 import kubeuiApiVersion from '../../controller/kubectl/apiVersion'
 
@@ -63,7 +63,7 @@ export class DefaultKubeStatus implements KubeStatus {
   public message = undefined
 }
 
-interface WithOwnerReferences {
+export interface WithOwnerReferences {
   ownerReferences: {
     apiVersion: string
     kind: string
@@ -150,7 +150,7 @@ export function isNamespaced(resource: KubeResource) {
 }
 
 /** is the command response a Kubernetes resource? note: excluding any ones we simulate in kubeui */
-export function isKubeResource(entity: ResourceWithMetadata): entity is KubeResource {
+export function isKubeResource(entity: KResponse | ResourceWithMetadata): entity is KubeResource {
   const kube = entity as KubeResource
   return (
     kube.isKubeResource === true &&

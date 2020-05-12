@@ -21,11 +21,6 @@ export interface NamedDataTableRow extends DataTableRow {
   NAME: string
 }
 
-/** Are we rendering a Radio Table? */
-function isRadioTable(response: KuiTable): boolean {
-  return !!response.body.find(_ => /fa-check/.test(_.fontawesome))
-}
-
 /** attempt to infer header model from body model */
 function headerFromBody(table: KuiTable) {
   if (table.body.length > 0) {
@@ -90,14 +85,12 @@ export function kuiRow2carbonRow(headers: DataTableHeader[]) {
  * Components.
  *
  */
-export default function kui2carbon(
-  response: KuiTable
-): { headers: DataTableHeader[]; rows: NamedDataTableRow[]; radio: boolean } {
+export default function kui2carbon(response: KuiTable): { headers: DataTableHeader[]; rows: NamedDataTableRow[] } {
   // align header model
   const headers = !response.header ? headerFromBody(response) : kuiHeader2carbonHeader(response.header)
 
   // align body model
   const rows = response.body.map(kuiRow2carbonRow(headers))
 
-  return { headers, rows, radio: isRadioTable(response) }
+  return { headers, rows }
 }

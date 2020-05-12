@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,22 @@ export const apiVersion = 'v2'
 /** all known Theme apiVersions */
 export type ThemeApiVersion = 'v1' | 'v2'
 
-export default interface Theme {
+/** Properties that can be associated with <Kui/> component */
+export interface ThemeProperties {
+  components: 'carbon' | 'patternfly'
+  topTabNames: 'command' | 'fixed'
+}
+
+type Theme = ThemeProperties & {
   apiVersion?: ThemeApiVersion
   name: string
   description?: string
   css: string | string[]
   attrs?: string[]
   style: string
-  topTabNames: 'command' | 'fixed'
 }
+
+export default Theme
 
 export interface ThemeSet {
   /** import path prefix for all themes */

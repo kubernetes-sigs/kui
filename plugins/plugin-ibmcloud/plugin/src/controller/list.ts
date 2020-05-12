@@ -42,7 +42,7 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
   // Notes: the filter reduces allInstalled down to those installed in
   // the specified repo
   const rowData = Object.keys(allInstalled)
-    .filter(installedName => available.find(({ name: availableName }) => availableName === installedName))
+    //    .filter(installedName => available.find(({ name: availableName }) => availableName === installedName))
     .map(key => {
       const { Name: name, Aliases, Version } = allInstalled[key]
 
@@ -104,13 +104,13 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
  *
  */
 function doList(args: Arguments<KubeOptions>): Promise<Table> {
-  args.command = args.command.replace(/ibmcloud\s+ks\s+clusters?\s+list/, 'ibmcloud ks cluster ls')
+  args.command = args.command.replace(/ibmcloud\s+plugin?\s+ls/, 'ibmcloud plugin list')
 
-  const idx1 = args.argv.indexOf('ibmcloud')
-  args.argv[idx1 + 3] = 'ls'
+  const idx1 = args.argv.indexOf('plugin')
+  args.argv[idx1 + 1] = 'list'
 
-  const idx2 = args.argvNoOptions.indexOf('ibmcloud')
-  args.argvNoOptions[idx2 + 3] = 'ls'
+  const idx2 = args.argvNoOptions.indexOf('plugin')
+  args.argvNoOptions[idx2 + 1] = 'list'
 
   return doLs(args)
 }

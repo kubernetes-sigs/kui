@@ -166,9 +166,7 @@ export default (commandTree: Registrar) => {
   debug('init')
 
   commandTree.listen('/history', showHistory, {
-    usage: usage.history,
-    inBrowserOk: true,
-    noAuthOk: true
+    usage: usage.history
   })
 
   /** clear view or clear history */
@@ -182,13 +180,9 @@ export default (commandTree: Registrar) => {
     return again(args, N, args.execOptions && args.execOptions.history)
   }
   const cmd = commandTree.listen('/!!', againCmd(), {
-    usage: usage.again('!!'),
-    inBrowserOk: true,
-    noAuthOk: true
+    usage: usage.again('!!')
   })
   commandTree.synonym('/again', againCmd(), cmd, {
-    usage: usage.again('again'),
-    inBrowserOk: true,
-    noAuthOk: true
+    usage: usage.again('again')
   })
 }

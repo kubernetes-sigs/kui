@@ -115,16 +115,18 @@ async function getResourcesReferencedByFile(file: string, args: Arguments<FinalS
   const namespaceFromCommandLine = getNamespace(args) || 'default'
 
   const models: KubeResource[] = safeLoadAll(raw)
-  return models.map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
-    const { group, version } = versionOf(apiVersion)
-    return {
-      group,
-      version,
-      kind,
-      name,
-      namespace
-    }
-  })
+  return models
+    .filter(_ => _.metadata)
+    .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
+      const { group, version } = versionOf(apiVersion)
+      return {
+        group,
+        version,
+        kind,
+        name,
+        namespace
+      }
+    })
 }
 
 /**

@@ -80,14 +80,14 @@ export const doNativeExec = (args: Arguments): Promise<RawResponse> =>
         debug('exec stderr', stderr)
       }
 
-      const noResources = stderr.match(/no resources found/i)
-      if (code !== 0 || noResources) {
+      const noResources = /no resources found/i.test(stderr)
+      if (stdout.length === 0 && (code !== 0 || noResources)) {
         const message = stderr
-        const fileNotFound = message.match(/error: the path/)
+        const fileNotFound = /error: the path/.test(message)
         const codeForREPL =
-          noResources || message.match(/not found/i) || message.match(/doesn't have/i)
+          noResources || /not found/i.test(message) || /doesn't have/i.test(message)
             ? 404
-            : message.match(/already exists/i)
+            : /already exists/i.test(message)
             ? 409
             : fileNotFound
             ? 412
@@ -128,9 +128,5 @@ export async function doExecRaw(
 }
 
 export default async (registrar: Registrar) => {
-  registrar.listen(
-    `/${commandPrefix}/_kubectl`,
-    doNativeExec,
-    Object.assign({}, flags, { requiresLocal: true, inBrowserOk: false })
-  )
+  registrar.listen(`/${commandPrefix}/_kubectl`, doNativeExec, Object.assign({}, flags, { requiresLocal: true }))
 }

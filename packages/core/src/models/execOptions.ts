@@ -37,7 +37,6 @@ export interface ExecOptions {
   render?: boolean
 
   isProxied?: boolean
-  forceProxy?: boolean
   noDelegation?: boolean
   delegationOk?: boolean
 

@@ -75,7 +75,6 @@ const doNav = () => (args: Arguments<Options>): NavResponse => {
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/nav', doNav(), {
-    inBrowserOk: true,
     usage: {
       docs: 'test NavResposne'
     }

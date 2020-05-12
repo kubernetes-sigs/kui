@@ -116,11 +116,11 @@ export { default as encodeComponent } from './repl/encode'
 export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl, doEval } from './repl/exec'
 
 // Tabs
-export { Tab, getTabFromTarget, getCurrentTab, getTabId, sameTab } from './webapp/tab'
+export { Tab, getCurrentTab, getTabId, sameTab } from './webapp/tab'
 export { default as TabState } from './models/tab-state'
 
 // Themes
-export { default as Theme } from './webapp/themes/Theme'
+export { default as Theme, ThemeProperties } from './webapp/themes/Theme'
 export { findByName as findThemeByName } from './webapp/themes/find'
 export { getDefault as getDefaultTheme } from './webapp/themes/default'
 export {
@@ -194,7 +194,17 @@ export { default as Store } from './models/store'
 export { default as SymbolTable } from './core/symbol-table'
 
 // Tables
+export { default as CellShould } from './models/CellShould'
 export { Icon, TableStyle, Table, Row, Cell, isTable } from './webapp/models/table'
+export {
+  default as RadioTable,
+  isRadioTable,
+  RadioTableRow,
+  RadioTableCell,
+  radioTableHintsAsCss,
+  radioTableCellToString,
+  cellShouldHaveBadge
+} from './models/RadioTable'
 
 // Util
 export { findFileWithViewer, findFile, isSpecialDirectory, addPath as augmentModuleLoadPath } from './core/find-file'
@@ -222,3 +232,5 @@ export {
   isStringResponse,
   applyEnumerator as findCompletions
 } from './repl/tab-completion'
+
+export { default as teeToFile } from './util/tee'

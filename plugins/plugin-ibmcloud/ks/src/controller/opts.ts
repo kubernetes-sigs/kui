@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export default {
-  inBrowserOk: true
-}
+export default {}
