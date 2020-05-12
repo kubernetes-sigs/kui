@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-@import '../Table/badges';
-@import '../Table/common';
-
 [kui-theme-style] .kui--table-like {
-  [data-is-selected] [data-is-name] {
-    font-weight: 700;
-  }
-
-  [data-tag='badge-circle'] {
-    display: inline-block;
-    vertical-align: middle;
-  }
+  font-family: var(--font-sans-serif);
 }

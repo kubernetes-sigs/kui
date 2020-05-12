@@ -18,7 +18,6 @@ import * as React from 'react'
 import { v4 as uuid } from 'uuid'
 import { RadioTableRow, radioTableHintsAsCss, radioTableCellToString, cellShouldHaveBadge } from '@kui-shell/core'
 
-import { CheckmarkFilled16 as Checkmark } from '@carbon/icons-react'
 import {
   StructuredListWrapper,
   StructuredListHead,
@@ -29,6 +28,7 @@ import {
 } from 'carbon-components-react'
 
 import BaseProps from '../model'
+import Icons from '../../Icons'
 import { State as BaseState, slice } from '../index'
 
 import '../../../../../web/scss/components/RadioTable/Carbon.scss'
@@ -92,7 +92,9 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
           />
         )}
 
-        <StructuredListCell>{isSelected && <Checkmark className="bx--structured-list-svg" />}</StructuredListCell>
+        <StructuredListCell>
+          {isSelected && <Icons icon="Checkmark" className="bx--structured-list-svg" />}
+        </StructuredListCell>
 
         {row.cells.map((cell, cidx) => {
           const badgeHint = cellShouldHaveBadge(cell)
