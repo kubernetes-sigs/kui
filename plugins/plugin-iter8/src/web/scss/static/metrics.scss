@@ -1,5 +1,6 @@
-$sans-serif: 'Source Sans Pro', Helvetica, Verdana, sans-serif;
+$font_courier: 'Courier New', Courier, monospace;
 $dark-purple: #282936;
+$blue: #62d6e8;
 $grey: #dddddd;
 
 .listouter {
@@ -19,16 +20,25 @@ $grey: #dddddd;
   fill: $grey;
 }
 
-.tooltiptext {
+.clickableicon .warningtext {
   visibility: hidden;
+  width: 150px;
   position: absolute;
   background-color: $dark-purple;
+  border-radius: 6px;
+  padding: 5px 5px 5px 5px;
+  text-align: center;
   z-index: 1;
   font-style: italic;
+  margin-left: -150px;
+  font-weight: 100;
+  font-family: $font_courier;
+  word-wrap: break-word;
+  color: $blue;
 }
 .clickableicon:hover {
   fill: $dark-purple;
-  .tooltiptext {
+  .warningtext {
     visibility: visible;
   }
 }
@@ -108,10 +118,10 @@ svg.bx--table-expand__svg {
 
 .box {
   position: relative;
-  color: #62d6e8;
+  color: $blue;
   background-color: $dark-purple;
   box-sizing: border-box;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: $font_courier;
   padding: 2px;
   overflow: auto;
   margin-top: 4px;
