@@ -121,8 +121,12 @@ class Display extends React.Component<any, any> {
       <div>
         <div className="deletedtext">Deleted</div>
         <div className="clickableicon" onClick={() => this.restore(metric, type)}>
-          {' '}
-          <Reset20 />{' '}
+          <Reset20 />
+          {type === 'ratio' && this.ratioMetrics[metric].custom && this.ratioMetrics[metric].alsoRestore.length ? (
+            <div className="warningtext">
+              Warning: Will also restore {this.ratioMetrics[metric].alsoRestore.join(', ')}
+            </div>
+          ) : null}
         </div>
       </div>
     )
@@ -130,7 +134,10 @@ class Display extends React.Component<any, any> {
 
   public addMetric(type) {
     console.log(type)
-    
+  }
+
+  public modifyIter8Metric(mode) {
+    return <div className="warningtext">Warning: Cannot {mode} iter8 metrics</div>
   }
 
   public renderTableTitle(title, type) {
@@ -158,30 +165,22 @@ class Display extends React.Component<any, any> {
                         <TableCell>
                           <div className="clickableicon">
                             <Edit20 />
+                            {!metrics[row.id].custom ? this.modifyIter8Metric('edit') : null}
                           </div>
                         </TableCell>
                         <TableCell className="width20">
                           <div>
                             {metrics[row.id].isDeleted ? (
-                              <div>
-                                {this.renderOnDelete(row.id, type)}
-                                {type === 'ratio' && !metrics[row.id].custom && metrics[row.id].alsoRestore.length ? (
-                                  <div className="tooltiptext">
-                                    Warning: Will also restore {JSON.stringify(metrics[row.id].alsoRestore)}
-                                  </div>
-                                ) : null}
-                              </div>
+                              <div>{this.renderOnDelete(row.id, type)}</div>
                             ) : (
                               <div className="clickableicon" onClick={() => this.updateIsDeleted(row.id, type)}>
                                 <TrashCan20 />
-                                {type === 'counter' && !metrics[row.id].custom && metrics[row.id].alsoDelete.length ? (
-                                  <div className="tooltiptext">
-                                    Warning: Will also delete {JSON.stringify(metrics[row.id].alsoDelete)}
+                                {type === 'counter' && metrics[row.id].custom && metrics[row.id].alsoDelete.length ? (
+                                  <div className="warningtext">
+                                    Warning: Will also delete {metrics[row.id].alsoDelete.join(', ')}
                                   </div>
                                 ) : null}
-                                {metrics[row.id].custom ? (
-                                  <div className="tooltiptext">Warning: Cannot delete iter8 metrics</div>
-                                ) : null}
+                                {!metrics[row.id].custom ? this.modifyIter8Metric('delete') : null}
                               </div>
                             )}
                           </div>
@@ -238,20 +237,24 @@ export class MetricDetailsMode {
         alsoDelete: [],
         alsoRestore: [],
         details: metrics[i],
-        custom: false
+        custom: true
       }
       if (type === 'counter') {
         if (iter8Metrics.counter.includes(metrics[i].name)) {
-          m[metrics[i].name].custom = true
+          m[metrics[i].name].custom = false
         }
       }
       if (type === 'ratio') {
         if (iter8Metrics.ratio.includes(metrics[i].name)) {
-          m[metrics[i].name].custom = true
+          m[metrics[i].name].custom = false
         }
         m[metrics[i].name].alsoRestore = [metrics[i].numerator, metrics[i].denominator]
-        this.counterMetricOutput[metrics[i].numerator].alsoDelete.push(metrics[i].name)
-        this.counterMetricOutput[metrics[i].denominator].alsoDelete.push(metrics[i].name)
+        if ({}.hasOwnProperty.call(this.counterMetricOutput, metrics[i].numerator)) {
+          this.counterMetricOutput[metrics[i].numerator].alsoDelete.push(metrics[i].name)
+        }
+        if ({}.hasOwnProperty.call(this.counterMetricOutput, metrics[i].denominator)) {
+          this.counterMetricOutput[metrics[i].denominator].alsoDelete.push(metrics[i].name)
+        }
       }
     }
     return m
