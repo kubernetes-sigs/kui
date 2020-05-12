@@ -39,7 +39,7 @@
   }
 }
 
-[kui-theme-style] .bx--structured-list {
+[kui-theme-style] .bx--structured-list.kui--table-like {
   font-family: var(--font-sans-serif);
   color: var(--color-text-01);
 
@@ -79,6 +79,10 @@
     &.sub-text {
       color: var(--color-text-02);
     }
+  }
+
+  .bx--structured-list-row:hover .bx--structured-list-td {
+    border-top-color: var(--color-base05);
   }
 
   &.kui--radio-table .bx--structured-list-td {
