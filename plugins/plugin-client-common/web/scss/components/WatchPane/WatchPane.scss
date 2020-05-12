@@ -3,7 +3,7 @@ $master-font-size: 0.825em;
 $cell-size: 0.875em;
 $head-spacing: 0.5em;
 $body-spacing: 0.375em;
-$pane-gap: 5px;
+$pane-gap: 0.5em;
 $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wrapper */
 
 [kui-theme-style] .kui--watch-pane {
@@ -32,7 +32,7 @@ $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wr
         grid-template-columns: repeat(auto-fill, $cell-size) !important;
 
         /* get overflow for grid; keep 8em in sync with TabContent Watching; 1em from ; 0.375em from $body-spacing */
-        max-height: calc(8em - 1em - 2 * 0.375em);
+        max-height: calc(9em - 1em - 2 * 0.1875em - 0.375em - 2px);
         overflow-y: auto;
 
         [data-tag='badge'] [data-tag='badge-circle'] {

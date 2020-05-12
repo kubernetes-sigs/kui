@@ -47,7 +47,7 @@ const strings = i18n('plugin-client-common')
  *
  */
 export const enum Height {
-  Split = 'calc(100% - 8em)',
+  Split = 'calc(100% - 9em - 2 * 0.5em)', // remember to add 2 * $pane-gap
   NotSplit = '100%'
 }
 
@@ -178,7 +178,7 @@ export default class WatchPane extends React.PureComponent<Props, State> {
                   header={history && this.header(history.response, idx)}
                   key={history ? history.key : idx}
                 >
-                  {history ? (
+                  {history && (
                     <div className="kui--sub-card">
                       <LivePaginatedTable
                         tab={this.props.tab}
@@ -189,8 +189,6 @@ export default class WatchPane extends React.PureComponent<Props, State> {
                         paginate={false}
                       />
                     </div>
-                  ) : (
-                    <div className="kui--sub-pane" data-pane-id={idx} />
                   )}
                 </CardSpi>
               )
