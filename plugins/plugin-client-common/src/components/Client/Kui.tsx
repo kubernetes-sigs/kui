@@ -17,13 +17,30 @@
 // FIXME:
 /* eslint-disable react/prop-types */
 
+import Debug from 'debug'
 import * as React from 'react'
+import {
+  eventChannelUnsafe,
+  Theme,
+  findThemeByName,
+  getPersistedThemeChoice,
+  getDefaultTheme,
+  ThemeProperties
+} from '@kui-shell/core'
 
+import KuiContext from './context'
+import KuiConfiguration from './KuiConfiguration'
 import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '../..'
 
-const Popup = React.lazy(() => import('./Popup'))
+const debug = Debug('<Kui/>')
+const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
-export interface Props {
+const defaultThemeProperties: ThemeProperties = {
+  components: 'carbon',
+  topTabNames: 'fixed'
+}
+
+export type Props = Partial<KuiConfiguration> & {
   /** no Kui bootstrap needed? */
   noBootstrap?: boolean
 
@@ -37,10 +54,8 @@ export interface Props {
   commandLine?: string[]
 }
 
-interface State {
+type State = KuiConfiguration & {
   isBootstrapped: boolean
-
-  productName: string
 }
 
 /**
@@ -51,6 +66,16 @@ export class Kui extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
+    eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
+    setTimeout(async () => {
+      const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
+      this.setState(curState => {
+        const stateWithThemeProps = Object.assign({}, theme, curState)
+        debug('state with theme props', stateWithThemeProps)
+        return stateWithThemeProps
+      })
+    })
+
     if (!props.noBootstrap) {
       import('@kui-shell/core')
         .then(_ => _.bootIntoSandbox())
@@ -60,17 +85,30 @@ export class Kui extends React.PureComponent<Props, State> {
     }
 
     try {
-      this.state = {
-        isBootstrapped: !!props.noBootstrap,
-        productName: require('@kui-shell/client/config.d/name.json').productName
-      }
+      this.state = Object.assign({}, props, {
+        isBootstrapped: !!props.noBootstrap
+      })
+      debug('initial state', this.state)
     } catch (err) {
       console.log('using default configuration')
       this.state = {
-        isBootstrapped: !!props.noBootstrap,
-        productName: 'Kui Demo'
+        isBootstrapped: !!props.noBootstrap
       }
     }
+  }
+
+  private onThemeChange({ themeModel }: { themeModel: Theme }) {
+    this.setState(curState => {
+      // note the priority order, from highest to lowest:
+      //  1) any properties defined by the theme (since we just switched themes)
+      //  2) any properties defined by the container of this <Kui/>
+      //  3) default choices
+      //  4) any prior state
+      // re: ordering of 3 and 4, see https://github.com/IBM/kui/issues/4423
+      const stateAfterThemeChange = Object.assign({}, curState, defaultThemeProperties, this.props, themeModel)
+      debug('state after theme change', stateAfterThemeChange)
+      return stateAfterThemeChange
+    })
   }
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -90,16 +128,14 @@ export class Kui extends React.PureComponent<Props, State> {
       )
     } else {
       return (
-        <div className="kui--full-height">
-          <TabContainer
-            productName={this.state.productName}
-            noActiveInput={this.props.bottomInput}
-            bottom={this.props.bottomInput && <InputStripe />}
-          >
-            <ComboSidecar />
-          </TabContainer>
-          <StatusStripe>{this.props.children}</StatusStripe>
-        </div>
+        <KuiContext.Provider value={this.state}>
+          <div className="kui--full-height">
+            <TabContainer noActiveInput={this.props.bottomInput} bottom={this.props.bottomInput && <InputStripe />}>
+              <ComboSidecar />
+            </TabContainer>
+            <StatusStripe>{this.props.children}</StatusStripe>
+          </div>
+        </KuiContext.Provider>
       )
     }
   }

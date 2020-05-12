@@ -35,9 +35,9 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     }
   }
 
-  /** @return e.g. name/uuid -> name */
+  /** @return e.g. name/uuid -> name; or name:nnnn -> name */
   private renderName(context: string): string {
-    return context.slice(0, context.indexOf('/'))
+    return context.replace(/[/:].*$/, '')
   }
 
   private async reportCurrentContext() {
@@ -46,7 +46,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     eventChannelUnsafe.once('/kubeui/context/current', (context: KubeContext) => {
       try {
         this.setState({
-          text: this.renderName(context.metadata.name),
+          text: this.renderName(context.spec.cluster),
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
         })
       } catch (err) {

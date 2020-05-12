@@ -19,6 +19,7 @@ import { KeyCodes, inElectron } from '@kui-shell/core'
 import { Header, HeaderName, HeaderMenuButton, HeaderNavigation } from 'carbon-components-react'
 
 import TabModel from '../TabModel'
+import KuiContext from '../context'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
 
@@ -111,29 +112,29 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   /** Render tabs */
   private tabs() {
     return (
-      <HeaderNavigation aria-label="Tabs">
-        {this.props.tabs.map((tab, idx) => (
-          <Tab
-            {...this.props}
-            key={idx}
-            idx={idx}
-            uuid={tab.uuid}
-            closeable={this.props.tabs.length > 1}
-            active={idx === this.props.activeIdx}
-            onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
-            onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
-          />
-        ))}
+      <React.Fragment>
+        <HeaderNavigation aria-label="Tabs">
+          {this.props.tabs.map((tab, idx) => (
+            <Tab
+              {...this.props}
+              key={idx}
+              idx={idx}
+              uuid={tab.uuid}
+              closeable={this.props.tabs.length > 1}
+              active={idx === this.props.activeIdx}
+              onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
+              onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
+            />
+          ))}
+        </HeaderNavigation>
         <div className="kui--top-tab-buttons">
           <NewTabButton
             onNewTab={() => {
               this.props.onNewTab()
             }}
           />
-
-          <div id="kui--custom-top-tab-stripe-button-container"></div>
         </div>
-      </HeaderNavigation>
+      </React.Fragment>
     )
   }
 
@@ -153,7 +154,11 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   }
 
   private headerName() {
-    return <HeaderName prefix="">{this.props.productName}</HeaderName>
+    return (
+      <KuiContext.Consumer>
+        {config => <HeaderName prefix="">{config.productName || 'Kui'}</HeaderName>}
+      </KuiContext.Consumer>
+    )
   }
 
   /**

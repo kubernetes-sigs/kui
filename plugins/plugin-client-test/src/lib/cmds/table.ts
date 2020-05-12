@@ -128,9 +128,9 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
  */
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/table', doTable(), {
-    inBrowserOk: true,
     usage: {
       docs: 'A showcase of the Table view'
-    }
+    },
+    alwaysViewIn: 'Terminal'
   })
 }

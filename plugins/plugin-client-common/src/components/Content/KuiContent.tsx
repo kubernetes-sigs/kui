@@ -15,6 +15,9 @@
  */
 
 import * as React from 'react'
+import { v4 as uuid } from 'uuid'
+
+import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import {
   ParsedOptions,
@@ -22,6 +25,7 @@ import {
   Button,
   Content,
   isHTML,
+  isRadioTable,
   isReactProvider,
   isStringWithOptionalContentType,
   isTable,
@@ -38,6 +42,7 @@ import renderTable from './Table'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
+import RadioTableSpi from '../spi/RadioTable'
 
 interface KuiMMRProps {
   tab: KuiTab
@@ -58,7 +63,14 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
       if (mode.contentType === 'text/html') {
         return <HTMLString content={mode.content} />
       } else if (mode.contentType === 'text/markdown') {
-        return <Markdown source={mode.content} />
+        return (
+          <Markdown
+            tab={tab}
+            repl={tab.REPL}
+            fullpath={isFile(response) ? response.spec.fullpath : undefined}
+            source={mode.content}
+          />
+        )
       } else {
         return (
           <Editor
@@ -71,14 +83,25 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
         )
       }
     } else if (isCommandStringContent(mode)) {
+      // re: key see https://github.com/IBM/kui/issues/4524
       return (
-        <Eval tab={tab} command={mode.contentFrom} contentType={mode.contentType} response={response} args={args} />
+        <Eval
+          key={uuid()}
+          tab={tab}
+          command={mode.contentFrom}
+          contentType={mode.contentType}
+          response={response}
+          args={args}
+        />
       )
     } else if (isFunctionContent(mode)) {
-      return <Eval tab={tab} command={mode.content} response={response} args={args} />
+      // re: key see https://github.com/IBM/kui/issues/4524
+      return <Eval key={uuid()} tab={tab} command={mode.content} response={response} args={args} />
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
+      } else if (isRadioTable(mode.content)) {
+        return <RadioTableSpi table={mode.content} />
       } else if (isTable(mode.content)) {
         return renderTable(tab, tab.REPL, mode.content, false)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:

@@ -29,3 +29,9 @@ located
 
 We welcome your contributions! The Kui developer guide is currently
 located on the [wiki](https://github.com/IBM/kui/wiki).
+
+## Component Libraries
+
+Kui currently supports Carbon Components and (partially) PatternFly
+v4. If you wish to add support for a new component library, or augment
+the current support, [read more](./components.md).

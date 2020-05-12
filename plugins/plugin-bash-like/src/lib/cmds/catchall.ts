@@ -117,7 +117,6 @@ export const preload = (commandTree: Registrar) => {
   return commandTree.catchall(
     () => true, // we will accept anything
     dispatchToShell, // command handler dispatches to outer shell
-    0, // priority
-    { noAuthOk: true, inBrowserOk: true }
+    0 // priority
   )
 }

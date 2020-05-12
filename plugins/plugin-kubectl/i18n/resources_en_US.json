@@ -1,4 +1,5 @@
 {
+  "Apply Changes": "Apply Changes",
   "This API Resource is deprecated": "This API Resource is deprecated.",
   "Namespace": "Namespace",
   "Usage": "Usage",
@@ -36,7 +37,9 @@
   "currentContext": "This is your current context",
   "notCurrentContext": "This is not your current context",
   "More Information": "More Information",
+  "Basic": "Basic",
   "Introduction": "Introduction",
+  "Miscellaneous": "Miscellaneous",
   "Options": "Options",
   "Commands": "Commands",
   "Examples": "Examples"

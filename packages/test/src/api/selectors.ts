@@ -4,6 +4,7 @@ export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
 export const SIDECAR_BASE = `${CURRENT_TAB} .kui--sidecar`
 export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} .kui--sidecar.visible.maximized:not(.minimized)`
+export const TERMINAL_WITH_SIDECAR_VISIBLE = `${CURRENT_TAB} .repl.sidecar-visible`
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
 export const BOTTOM_PROMPT_BLOCK = `${CURRENT_TAB} .kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
@@ -12,7 +13,6 @@ export const STATUS_STRIPE_PROMPT = `${STATUS_STRIPE_BLOCK} input`
 export const OOPS = `${CURRENT_TAB} .repl .repl-block .oops`
 export const SIDECAR = `${SIDECAR_BASE}.visible:not(.minimized)`
 export const SIDECAR_WITH_FAILURE = `${SIDECAR_BASE}.visible.activation-success-false`
-export const SIDECAR_HIDDEN = `${SIDECAR_BASE}:not(.visible)`
 export const SIDECAR_ACTIVATION_TITLE = `${SIDECAR} .kui--sidecar-entity-name-hash .bx--link`
 export const SIDECAR_TITLE = `${SIDECAR} .kui--sidecar-entity-name .bx--link`
 export const SIDECAR_LEFTNAV_TITLE = `${SIDECAR} .sidecar-header-name-content .bx--side-nav__submenu-title`
@@ -34,6 +34,13 @@ export const SIDECAR_SEQUENCE_CANVAS_NODES = `${SIDECAR_SEQUENCE_CANVAS} .node.a
 export const SIDECAR_SEQUENCE_CANVAS_NODE_N = (N: number) => `${SIDECAR_SEQUENCE_CANVAS_NODES}[data-task-index="${N}"]`
 export const SIDECAR_LIMIT = (type: string) => `${SIDECAR} .sidecar-header .limits .limit[data-limit-type="${type}"]`
 export const SIDECAR_BADGES = `${SIDECAR} .sidecar-header .badges`
+
+// top tab stripe buttons
+const TOP_TAB_BUTTONS = `#kui--custom-top-tab-stripe-button-container`
+export const TERMINAL_AND_SIDECAR_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal and sidecar"]`
+export const ONLY_TERMINAL_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show only terminal"]`
+export const TERMINAL_AND_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal and watcher"]`
+export const TERMINAL_SIDECAR_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal sidecar and watcher"]`
 
 // sidecar toolbar
 export const SIDECAR_TOOLBAR = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
@@ -69,6 +76,7 @@ export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
 export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close a` // resume button in minimized mode
 export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
+export const SIDECAR_FULLY_CLOSED = `${CURRENT_TAB} .kui--sidecar-closed .kui--sidecar`
 export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
@@ -85,18 +93,35 @@ export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
 export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
 export const OUTPUT_LAST_PTY = OUTPUT_LAST_STREAMING
 export const LIST_RESULTS_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result tbody tr`
-export const LIST_RESULTS_BY_NAME_N = (N: number) => `${LIST_RESULTS_N(N)} .entity-name`
+export const LIST_RESULTS_BY_NAME_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result [data-name]`
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string) => `${LIST_RESULTS_N(N)}[data-name="${name}"]`
 export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
-export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-grid`
+
+const _TABLE_AS_GRID = '.kui--data-table-as-grid'
+export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} ${_TABLE_AS_GRID}`
 export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
-export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} .kui--data-table-title`
+
+const _TABLE_TITLE = `.kui--data-table-title`
+export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} ${_TABLE_TITLE}`
+
+export const TABLE_TITLE_SECONDARY = (N: number) => `${OUTPUT_N(N)} .kui--secondary-breadcrumb`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
 export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>
   `${LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
 export const OK_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-output .ok`
 export const xtermRows = (N: number) => `${PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
+
+export const WATCHER_N = (N: number) => `.kui--sub-pane[data-pane-index="${N}"]`
+export const WATCHER_N_TITLE = (N: number) => `${WATCHER_N(N)} ${_TABLE_TITLE}`
+export const WATCHER_N_GRID_CELL = (N: number, name: string) =>
+  `${WATCHER_N(N)} ${_TABLE_AS_GRID} [data-tag="badge"][data-entity-name="${name}"]`
+export const WATCHER_N_GRID_CELL_ONLINE = (N: number, name: string) =>
+  `${WATCHER_N_GRID_CELL(N, name)} .green-background`
+export const WATCHER_N_GRID_CELL_OFFLINE = (N: number, name: string) =>
+  `${WATCHER_N_GRID_CELL(N, name)} .red-background`
+export const WATCHER_N_GRID_CELL_PENDING = (N: number, name: string) =>
+  `${WATCHER_N_GRID_CELL(N, name)} .yello-background`

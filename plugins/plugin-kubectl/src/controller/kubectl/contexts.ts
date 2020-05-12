@@ -17,11 +17,14 @@
 import {
   i18n,
   Tab,
+  RadioTable,
+  RadioTableRow,
+  radioTableCellToString,
   Table,
+  isTable,
   Row,
   RawResponse,
   Arguments,
-  ExecOptions,
   Registrar,
   UsageModel,
   KResponse
@@ -29,8 +32,10 @@ import {
 
 import flags from './flags'
 import apiVersion from './apiVersion'
-import commandPrefix from '../command-prefix'
+import { t2rt } from './get-namespaces'
+import { KubeOptions } from './options'
 import { doExecWithTable } from './exec'
+import commandPrefix from '../command-prefix'
 import { KubeContext } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
 
@@ -51,39 +56,57 @@ const usage = {
   })
 }
 
+/** Exclude the CURRENT column. */
+function rtRowsFor(row: Row): RadioTableRow {
+  const rtRow = t2rt(row)
+  rtRow.cells = rtRow.cells.slice(1)
+  return rtRow
+}
+
 /**
  * Add click handlers to change context
  *
  */
-const addClickHandlers = (table: Table, { REPL }: Arguments, execOptions: ExecOptions): Table => {
+const asRadioTable = ({ REPL }: Arguments, { header, body }: Table): RadioTable => {
+  /* const header = t2rt(table.header)
   const body = table.body.map(row => {
     const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
     const { value: contextName } = nameAttr
 
-    nameAttr.outerCSS += ' entity-name-group-narrow'
-
-    const onclick = async () => {
-      await REPL.qexec(
-        `kubectl config use-context ${REPL.encodeComponent(contextName)}`,
-        undefined,
-        undefined,
-        Object.assign({}, execOptions, { raw: true })
-      )
-      row.setSelected()
+    return {
+      nameIdx: 0,
+      cells: [
+        contextName,
+        ...row.attributes.map(({ value, outerCSS, css }) => ({
+          value,
+          hints: hintsFor(outerCSS, css),
+          onSelect: () => REPL.pexec(`kubectl config use-context ${REPL.encodeComponent(contextName)}`)
+        }))
+      ]
     }
+  }) */
 
-    row.name = contextName
-    row.onclick = onclick
-    nameAttr.onclick = onclick
+  // leftover from old model bad choices
+  const defaultSelectedIdx = body.findIndex(_ => _.rowCSS[0] === 'selected-row')
 
-    return row
-  })
+  return {
+    apiVersion: 'kui-shell/v1',
+    kind: 'RadioTable',
+    title: strings('contextsTableTitle'),
+    defaultSelectedIdx,
 
-  return new Table({
-    header: table.header,
-    body: body,
-    title: strings('contextsTableTitle')
-  })
+    header: rtRowsFor(header),
+    body: body
+      .map(row => rtRowsFor(row))
+      .map(rtRow =>
+        Object.assign(rtRow, {
+          onSelect: async () => {
+            const context = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
+            await REPL.pexec(`kubectl config use-context ${context}`)
+          }
+        })
+      )
+  }
 }
 
 function valueOf(key: 'NAME' | 'NAMESPACE' | 'AUTHINFO' | 'CLUSTER', row: Row) {
@@ -134,9 +157,26 @@ const listContexts = async (args: Arguments): Promise<RawResponse<KubeContext[]>
       }))
     }
   } else {
-    return addClickHandlers(contexts, args, execOptions)
+    return contexts
   }
 }
+
+// addClickHandlers(contexts, args)
+/** Table -> RadioTable view transformer */
+function viewTransformer(args: Arguments<KubeOptions>, response: Table) {
+  if (isTable(response)) {
+    return asRadioTable(args, response)
+  } else {
+    return response
+  }
+}
+
+/**
+ * Command registration flags for commands that we want to present as
+ * a RadioTable.
+ *
+ */
+const rtFlags = Object.assign({}, flags, { viewTransformer })
 
 /**
  * Register the commands
@@ -146,7 +186,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen(
     `/${commandPrefix}/kubectl/config/get-contexts`,
     (args: Arguments): Promise<KResponse> => (isUsage(args) ? doHelp('kubectl', args) : doExecWithTable(args)),
-    flags
+    rtFlags
   )
 
   commandTree.listen(
@@ -169,7 +209,7 @@ export default (commandTree: Registrar) => {
       {
         usage: usage.contexts('contexts')
       },
-      flags
+      rtFlags
     )
   )
 }

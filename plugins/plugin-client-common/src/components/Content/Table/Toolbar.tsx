@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { Breadcrumb as KuiBreadcrumb } from '@kui-shell/core'
-
 import * as React from 'react'
-import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
-import {
-  Grid16 as GridIcon,
-  List16 as ListIcon,
-  CaretRight20 as NextPage,
-  CaretLeft20 as PreviousPage
-} from '@carbon/icons-react'
+
+import Icons from '../../spi/Icons'
+import Breadcrumb, { Props as BreadcrumbProps } from '../../spi/Breadcrumb'
 
 import 'carbon-components/scss/components/pagination/_pagination.scss'
 
@@ -48,12 +42,6 @@ interface PaginationProps {
   setPage: (page: number) => void
 }
 
-export type ToolbarBreadcrumb = KuiBreadcrumb & { className?: string; isCurrentPage?: boolean }
-
-interface BreadcrumbProps {
-  breadcrumbs: ToolbarBreadcrumb[]
-}
-
 export default class Toolbar extends React.PureComponent<Props> {
   private hasGridButtons() {
     return this.props.gridableColumn !== undefined && this.props.gridableColumn >= 0
@@ -74,7 +62,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             data-enabled={!this.props.asGrid}
             onClick={() => this.props.setAsGrid(false)}
           >
-            <ListIcon />
+            <Icons icon="List" />
           </a>
           <a
             role="presentation"
@@ -83,7 +71,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             data-enabled={this.props.asGrid}
             onClick={() => this.props.setAsGrid(true)}
           >
-            <GridIcon />
+            <Icons icon="Grid" />
           </a>
         </React.Fragment>
       )
@@ -103,7 +91,7 @@ export default class Toolbar extends React.PureComponent<Props> {
       const start = (this.props.page - 1) * this.props.pageSize + 1
       const end = this.props.page * this.props.pageSize
       const isFirstPage = this.props.page === 1
-      const nPages = ~~(this.props.totalItems / this.props.pageSize)
+      const nPages = Math.ceil(this.props.totalItems / this.props.pageSize)
       const isLastPage = this.props.page === nPages
 
       const maxLength = end.toString().length
@@ -123,7 +111,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             aria-label="Previous page"
             onClick={() => this.previousPage()}
           >
-            <PreviousPage />
+            <Icons icon="PreviousPage" />
           </button>
           <button
             type="button"
@@ -136,7 +124,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             aria-label="Next page"
             onClick={() => this.nextPage()}
           >
-            <NextPage />
+            <Icons icon="NextPage" />
           </button>
         </div>
       )
@@ -145,15 +133,7 @@ export default class Toolbar extends React.PureComponent<Props> {
 
   private breadcrumbs() {
     if (this.props.breadcrumbs) {
-      return (
-        <Breadcrumb noTrailingSlash>
-          {this.props.breadcrumbs.map((_, idx) => (
-            <BreadcrumbItem href="#" key={idx} className={_.className} isCurrentPage={_.isCurrentPage}>
-              {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
-            </BreadcrumbItem>
-          ))}
-        </Breadcrumb>
-      )
+      return <Breadcrumb breadcrumbs={this.props.breadcrumbs} repl={this.props.repl} />
     }
   }
 

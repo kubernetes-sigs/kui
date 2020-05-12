@@ -75,61 +75,50 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
     super(props)
 
     this.state = {
-      isLoading: false,
+      isLoading: true,
       command: props.command,
       react: undefined,
       content: undefined,
       contentType: props.contentType
     }
+
+    this.startLoading()
   }
 
-  public static getDerivedStateFromProps(props: EvalProps, state: EvalState) {
-    const newState = {
-      isLoading: state.isLoading,
-      command: props.command,
-      content: props.command === state.command ? state.content : undefined
+  private startLoading() {
+    const done = (content: ScalarResource) => {
+      debug('eval done', content)
+      this.setState({ isLoading: false, content })
     }
 
-    return newState
+    if (typeof this.props.command === 'string') {
+      // command string
+      this.props.tab.REPL.qexec<ScalarResource>(this.props.command).then(done)
+    } else {
+      Promise.resolve(this.props.command(this.props.tab, this.props.response, this.props.args))
+        .then(content => {
+          if (isCommandStringContent(content)) {
+            return this.props.tab.REPL.qexec<ScalarResource | ScalarContent>(content.contentFrom)
+          } else {
+            return content
+          }
+        })
+        .then(content => {
+          if (isReactProvider(content)) {
+            this.setState({ isLoading: false, react: content })
+          } else if (isStringWithOptionalContentType(content)) {
+            this.setState({ isLoading: false, content: content.content, contentType: content.contentType })
+          } else if (isScalarContent(content)) {
+            done(content.content)
+          } else {
+            done(content)
+          }
+        })
+    }
   }
 
   public render() {
-    //    console.error('!!Eval', this.state, this.props.command)
-    if (!this.state.content && !this.state.react) {
-      if (!this.state.isLoading) {
-        this.setState({ isLoading: true })
-
-        const done = (content: ScalarResource) => {
-          debug('eval done', content)
-          this.setState({ isLoading: false, content })
-        }
-
-        if (typeof this.props.command === 'string') {
-          // command string
-          this.props.tab.REPL.qexec<ScalarResource>(this.props.command).then(done)
-        } else {
-          Promise.resolve(this.props.command(this.props.tab, this.props.response, this.props.args))
-            .then(content => {
-              if (isCommandStringContent(content)) {
-                return this.props.tab.REPL.qexec<ScalarResource | ScalarContent>(content.contentFrom)
-              } else {
-                return content
-              }
-            })
-            .then(content => {
-              if (isReactProvider(content)) {
-                this.setState({ isLoading: false, react: content })
-              } else if (isStringWithOptionalContentType(content)) {
-                this.setState({ isLoading: false, content: content.content, contentType: content.contentType })
-              } else if (isScalarContent(content)) {
-                done(content.content)
-              } else {
-                done(content)
-              }
-            })
-        }
-      }
-
+    if (this.state.isLoading) {
       return <Loading />
     }
 

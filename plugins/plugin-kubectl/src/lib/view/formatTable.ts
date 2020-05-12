@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Table, Row, Cell, isTable, encodeComponent, Arguments, MixedResponse } from '@kui-shell/core'
+import { Table, Row, Cell, isTable, encodeComponent, Arguments, MixedResponse, i18n } from '@kui-shell/core'
 
 import TrafficLight from '../model/traffic-light'
-import KubeOptions from '../../controller/kubectl/options'
+import KubeOptions, { isForAllNamespaces } from '../../controller/kubectl/options'
 import { RawResponse } from '../../controller/kubectl/response'
 
 import cssForValue from './css-for-value'
+
+const strings = i18n('plugin-kubectl')
 
 /** return an array with at least maxColumns entries */
 const fillTo = (length: number, maxColumns: number): Cell[] => {
@@ -242,7 +244,7 @@ export const formatTable = <O extends KubeOptions>(
       const rowCSS = [
         (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
         rowIsSelected ? 'selected-row' : ''
-      ]
+      ].filter(_ => _)
 
       // if there isn't a global namespace specifier, maybe there is a row namespace specifier
       // we use the row specifier in preference to a global specifier -- is that right?
@@ -312,7 +314,7 @@ export const formatTable = <O extends KubeOptions>(
     body: rows.slice(1),
     noSort: true,
     title: capitalize(entityTypeFromRows || entityTypeFromCommandLine),
-    breadcrumbs: [{ label: ns || 'default' }]
+    breadcrumbs: [{ label: ns || (isForAllNamespaces(options) && strings('all')) || 'default' }]
   }
 }
 
@@ -324,6 +326,43 @@ export function isKubeTableResponse(response: KubeTableResponse | RawResponse): 
     isTable(response) ||
     (Array.isArray(response) && response.length > 0 && isTable(response[0]))
   )
+}
+
+function withNotFound(table: Table, stderr: string) {
+  const notFounds = stderr
+    .split(/\n/)
+    .filter(_ => /NotFound/.test(_))
+    .map(_ => _.match(/"([^"]+)" not found/)[1])
+
+  if (notFounds.length > 0) {
+    const statusIdx = table.body.length === 0 ? -1 : table.body[0].attributes.findIndex(_ => /STATUS/i.test(_.key))
+    const attributes =
+      table.body.length === 0
+        ? []
+        : Array(table.body[0].attributes.length)
+            .fill(undefined)
+            .map((_, idx) => {
+              const cell = {} as Cell
+              if (idx === statusIdx) {
+                const value = 'Offline'
+                cell.value = value
+                cell.tag = tagForKey['STATUS']
+                cell.outerCSS = outerCSSForKey['STATUS']
+                cell.css = [cssForKey['STATUS'], cssForValue[value]].join(' ')
+              }
+              return cell
+            })
+
+    notFounds.forEach(name => {
+      table.body.push({
+        name,
+        isDeleted: true,
+        attributes
+      })
+    })
+  }
+
+  return table
 }
 
 /**
@@ -354,14 +393,14 @@ export const stringToTable = <O extends KubeOptions>(
       if (args.execOptions.filter) {
         T.body = args.execOptions.filter(T.body)
       }
-      return T
+      return withNotFound(T, stderr)
     } else {
       return preTables.map(preTable => {
         const T = formatTable(command, verb, entityType, args.parsedOptions, preTable)
         if (args.execOptions.filter) {
           T.body = args.execOptions.filter(T.body)
         }
-        return T
+        return withNotFound(T, stderr)
       })
     }
   } else {

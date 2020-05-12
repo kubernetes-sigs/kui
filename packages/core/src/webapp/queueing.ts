@@ -69,14 +69,18 @@ export const disableInputQueueing = (tab: Tab): string => {
     document.body.removeEventListener('keydown', tab.queueListener)
   }
 
-  // here is what might have queued up
-  const queuedInput = invisibleHand.value
+  let queuedInput = ''
 
-  // reset the queueing state
-  invisibleHand.value = ''
+  if (invisibleHand) {
+    // here is what might have queued up
+    queuedInput = invisibleHand.value
 
-  // this can be expensive; callers MUST focus on their element if they want this behavior
-  // invisibleHand.blur()
+    // reset the queueing state
+    invisibleHand.value = ''
+
+    // this can be expensive; callers MUST focus on their element if they want this behavior
+    // invisibleHand.blur()
+  }
 
   return queuedInput
 }

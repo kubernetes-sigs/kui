@@ -15,10 +15,12 @@
  */
 
 const enum Width {
-  Default,
-  Minimized,
-  Maximized,
-  Closed
+  Split45 = '45%',
+  Split60 = '60%',
+  Split70 = '70%',
+  Split75 = '75%',
+  Maximized = '100%',
+  Closed = '0%'
 }
 
 export default Width

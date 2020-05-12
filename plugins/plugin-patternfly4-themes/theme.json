@@ -1,0 +1,20 @@
+{
+  "themes": [
+    {
+      "name": "PatternFly4 Light",
+      "css": ["patternfly4-light.scss"],
+      "attrs": ["kui--patternfly4", "pf-t-light", "kui--sidecar-inverted"],
+      "style": "light",
+      "topTabNames": "fixed",
+      "components": "patternfly"
+    },
+    {
+      "name": "PatternFly4 Dark",
+      "css": ["patternfly4-dark.scss"],
+      "attrs": ["kui--patternfly4", "pf-t-dark"],
+      "style": "dark",
+      "topTabNames": "fixed",
+      "components": "patternfly"
+    }
+  ]
+}

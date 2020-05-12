@@ -16,8 +16,7 @@
 
 import * as React from 'react'
 import { eventChannelUnsafe, inBrowser } from '@kui-shell/core'
-import { FlashOffFilled20 as OfflineIcon } from '@carbon/icons-react'
-import { TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { Icons, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
 
@@ -52,7 +51,7 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
     } else {
       return (
         <TextWithIconWidget text="" viewLevel="error" id={buttonDesignation}>
-          <OfflineIcon />
+          <Icons icon="Network" />
         </TextWithIconWidget>
       )
     }

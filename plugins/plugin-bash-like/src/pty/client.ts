@@ -51,7 +51,6 @@ const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
 import copy from './copy'
 
-import 'xterm/css/xterm.css'
 import '../../web/css/static/xterm.css'
 
 interface Size {
@@ -335,14 +334,14 @@ class Resizer {
     // switching to application mode
     debug('switching to application mode')
     this.app = true
-    this.tab.classList.add('xterm-application-mode')
+    this.tab.addClass('xterm-application-mode')
   }
 
   exitApplicationMode() {
     // switching out of application mode
     debug('switching from application mode')
     this.app = false
-    this.tab.classList.remove('xterm-application-mode')
+    this.tab.removeClass('xterm-application-mode')
   }
 
   enterAltBufferMode() {
@@ -360,11 +359,11 @@ class Resizer {
         this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows + 1, uuid: this.uuid }))
         setTimeout(() => {
           this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows, uuid: this.uuid }))
-          this.tab.classList.add('xterm-alt-buffer-mode')
+          this.tab.addClass('xterm-alt-buffer-mode')
         }, 1)
       }
     } else {
-      this.tab.classList.add('xterm-alt-buffer-mode')
+      this.tab.addClass('xterm-alt-buffer-mode')
     }
   }
 
@@ -372,7 +371,7 @@ class Resizer {
     // switching to normal buffer mode
     debug('switching from alt buffer mode')
     this.alt = false
-    this.tab.classList.remove('xterm-alt-buffer-mode')
+    this.tab.removeClass('xterm-alt-buffer-mode')
   }
 }
 
@@ -484,6 +483,17 @@ async function initOnMessage(
     }
   }
 
+  let onActivate: (isActive: boolean) => void
+  if (terminal) {
+    // focus the terminal when the tab enclosing this terminal re-activates
+    onActivate = (isActive: boolean) => {
+      if (isActive) {
+        setTimeout(() => terminal.focus())
+      }
+    }
+    tab.onActivate(onActivate)
+  }
+
   // xtermjs writes are asynchronous, and ultimately occur in an
   // animation frame; the result is that the terminal canvas may
   // receive updates after we receive a process exit event; but we
@@ -568,6 +578,7 @@ async function initOnMessage(
       if (terminal) {
         clearInterval(scrollPoll)
         disposeOnRender.dispose()
+        tab.offActivate(onActivate)
       }
 
       // server told us that it is done with msg.exitCode
@@ -697,9 +708,9 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
     const { proto, port, path, uid, gid } = resp.content
     const protoHostPortContextRoot = window.location.href
       .replace(/#?\/?$/, '')
-      .replace(/^http(s?):\/\/([^:/]+):(\d+)?/, `${proto}://$2:${port === -1 ? '$3' : port}`)
+      .replace(/^http(s?):\/\/([^:/]+)(:\d+)?/, `${proto}://$2${port === -1 ? '$3' : ':'+port}`)
       .replace(/\/(index\.html)?$/, '')
-    const url = `${protoHostPortContextRoot}${path}`
+    const url = new URL(path, protoHostPortContextRoot).href
     debug('websocket url', url, proto, port, path, uid, gid)
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
@@ -887,7 +898,7 @@ export const doExec = (
 
           // heuristic for hiding empty rows
           terminal.element.classList.add('xterm-empty-row-heuristic')
-          setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
+          // setTimeout(() => terminal.element.classList.remove('xterm-empty-row-heuristic'), 100)
 
           //
           // on exit, remove event handlers and the like
@@ -896,7 +907,10 @@ export const doExec = (
             cleanupEventHandlers()
             resizer.destroy()
 
-            if (execOptions.type === ExecType.Nested && execOptions.quiet !== false) {
+            if (
+              (execOptions.type === ExecType.Nested && execOptions.quiet !== false) ||
+              resizer.wasEverInAltBufferMode()
+            ) {
               xtermContainer.remove()
             } else {
               xtermContainer.classList.add('xterm-terminated')

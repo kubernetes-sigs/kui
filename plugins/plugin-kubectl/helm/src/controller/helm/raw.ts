@@ -20,9 +20,5 @@ import { doNativeExec, defaultFlags } from '@kui-shell/plugin-kubectl'
 import commandPrefix from '../command-prefix'
 
 export default async (registrar: Registrar) => {
-  registrar.listen(
-    `/${commandPrefix}/_helm`,
-    doNativeExec,
-    Object.assign({}, defaultFlags, { requiresLocal: true, inBrowserOk: false })
-  )
+  registrar.listen(`/${commandPrefix}/_helm`, doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
 }

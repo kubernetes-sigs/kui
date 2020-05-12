@@ -111,9 +111,7 @@ const sayPty = async ({ block, parsedOptions, REPL, createOutputStream }: Argume
   })
 }
 
-const options: CommandOptions = {
-  inBrowserOk: true
-}
+const options: CommandOptions = {}
 const options2: CommandOptions = Object.assign(
   {
     usage: {

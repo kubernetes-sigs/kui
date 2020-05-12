@@ -32,7 +32,8 @@ declare let singletonTablesHaveTitle: boolean
 
 /** Selectors of radio button */
 declare var RADIO_BUTTON: string
-
+declare function RADIO_BUTTON_BY_NAME(name: string): string
+declare var RADIO_BUTTON_IS_SELECTED: string
 declare var RADIO_BUTTON_SELECTED: string
 
 /**

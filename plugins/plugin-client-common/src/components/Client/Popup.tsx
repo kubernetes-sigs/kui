@@ -18,8 +18,9 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { eventChannelUnsafe, eventBus, Tab as KuiTab } from '@kui-shell/core'
+import { eventChannelUnsafe, eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
 
+import Width from '../Views/Sidecar/width'
 import { ComboSidecar, ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '../..'
 
 import '../../../web/css/static/Popup.scss'
@@ -43,7 +44,14 @@ export default class Popup extends React.PureComponent<Props, State> {
       tab.REPL.qexec('window close')
     })
 
-    eventChannelUnsafe.on('/command/complete/fromuser', ({ command }: { command: string }) => {
+    eventChannelUnsafe.on('/command/complete/fromuser', async ({ command, response }) => {
+      if (process.env.KUI_TEE_TO_FILE) {
+        // tee the response to a file
+        // maybe in the future we could do this better
+        // e.g. hoistingit to Kui, making it driven off a property rather than env variable
+        await teeToFile(response)
+      }
+
       this.setState({ promptPlaceholder: command })
     })
 
@@ -67,7 +75,7 @@ export default class Popup extends React.PureComponent<Props, State> {
           state={this.state.model.state}
           onTabReady={this.onTabReady.bind(this)}
         >
-          <ComboSidecar defaultWidth="75%" />
+          <ComboSidecar defaultWidth={Width.Split75} />
         </TabContent>
         <StatusStripe>
           <ContextWidgets className="kui--input-stripe-in-status-stripe">

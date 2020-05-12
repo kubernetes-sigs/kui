@@ -148,28 +148,26 @@ export const disableBashSessions = async (): Promise<ExitHandler> => {
  * Determine, and cache, the user's login shell
  *
  */
-const bashShellOpts = ['-l', '-i', '-c', '--']
-const shellOpts = process.platform === 'win32' ? [] : bashShellOpts
 type Shell = { shellExe: string; shellOpts: string[] }
-let cachedLoginShell: Shell
-export const getLoginShell = (): Promise<Shell> => {
+let cachedLoginShell: string
+export const getLoginShell = (): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (cachedLoginShell) {
       debug('returning cached login shell', cachedLoginShell)
       resolve(cachedLoginShell)
     } else if (process.env.SHELL) {
       // Note how we intentionally assume bash here, even on windows
-      resolve({ shellExe: process.env.SHELL, shellOpts: bashShellOpts })
+      resolve(process.env.SHELL)
     } else {
       const defaultShell = process.platform === 'win32' ? 'powershell.exe' : '/bin/bash'
 
       if (process.env.TRAVIS_JOB_ID !== undefined || process.platform === 'win32') {
         debug('using defaultShell for travis')
-        cachedLoginShell = { shellExe: defaultShell, shellOpts }
+        cachedLoginShell = defaultShell
         resolve(cachedLoginShell)
       } else {
         try {
-          exec(`${defaultShell} -l -c "echo $SHELL"`, (err, stdout, stderr) => {
+          exec(`${defaultShell} -l -c "echo $SHELL"`, async (err, stdout, stderr) => {
             if (err) {
               console.error('error in getLoginShell subroutine', err)
               if (stderr) {
@@ -177,18 +175,29 @@ export const getLoginShell = (): Promise<Shell> => {
               }
               reject(err)
             } else {
-              cachedLoginShell = { shellExe: stdout.trim() || defaultShell, shellOpts }
+              cachedLoginShell = stdout.trim() || defaultShell
               debug('login shell', cachedLoginShell)
               resolve(cachedLoginShell)
             }
           })
         } catch (err) {
           console.error('error in exec of getLoginShell subroutine', err)
-          resolve({ shellExe: defaultShell, shellOpts })
+          resolve(defaultShell)
         }
       }
     }
   })
+}
+
+export async function getShellOpts(): Promise<Shell> {
+  const kuirc = (await import('./kuirc')).default
+  const bashShellOpts = process.platform === 'win32' ? undefined : ['--rcfile', await kuirc, '-i', '-c', '--']
+  const shellOpts = process.platform === 'win32' ? [] : bashShellOpts
+
+  return {
+    shellExe: process.platform === 'win32' ? 'powershell.exe' : '/bin/bash',
+    shellOpts
+  }
 }
 
 /**
@@ -305,7 +314,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
               const aliasedCmd = shellAliases[cmd]
               const cmdline = aliasedCmd ? msg.cmdline.replace(new RegExp(`^${cmd}`), aliasedCmd) : msg.cmdline
 
-              const { shellExe, shellOpts } = await getLoginShell()
+              const { shellExe, shellOpts } = await getShellOpts()
               let shell = spawn(shellExe, shellOpts.concat([cmdline]), {
                 uid,
                 gid,
@@ -493,13 +502,17 @@ export default (commandTree: Registrar) => {
           reject(err)
         }
       }),
-    { noAuthOk: true }
+    { requiresLocal: true }
   )
 
   // Notes: this is a placeholder, simplify to make the command
   // resolver happy; the real implementation is to be found in the
   // proxy server, e.g. packages/proxy/app/routes/exec.js
-  commandTree.listen('/bash/websocket/open', () => {
-    throw new Error('Unsupported operation')
-  })
+  commandTree.listen(
+    '/bash/websocket/open',
+    () => {
+      throw new Error('Unsupported operation')
+    },
+    { requiresLocal: true }
+  )
 }

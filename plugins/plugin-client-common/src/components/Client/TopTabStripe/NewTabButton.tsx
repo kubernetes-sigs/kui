@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { Add20 } from '@carbon/icons-react'
+import Icons from '../../spi/Icons'
 
 interface Props {
   onNewTab: () => void
@@ -28,14 +28,17 @@ export default class NewTabButton extends React.PureComponent<Props> {
         href="#"
         className="kui--tab-navigatable kui--new-tab__plus left-tab-stripe-button smaller-button kui-new-tab"
         id="new-tab-button"
-        data-balloon-disabled="Open a new tab"
-        data-balloon-pos="right"
-        data-balloon-length="fit"
         aria-label="Open a new tab"
         tabIndex={0}
         onClick={() => this.props.onNewTab()}
       >
-        <Add20 className="kui-new-tab__plus" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+        <Icons
+          icon="Add"
+          className="kui-new-tab__plus"
+          focusable="false"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+        />
       </a>
     )
   }

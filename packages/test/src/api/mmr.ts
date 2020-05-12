@@ -355,10 +355,14 @@ export class TestMMR {
           })
 
         const minimize = () => {
-          it('should toggle the sidebar closed with close button click', async () => {
+          it('should toggle the sidebar closed with ShowSidecarAndTerminal button', async () => {
             try {
-              await this.app.client.waitForVisible(Selectors.SIDECAR_CLOSE_BUTTON)
-              await this.app.client.click(Selectors.SIDECAR_CLOSE_BUTTON)
+              await this.app.client.waitForVisible(Selectors.TERMINAL_AND_SIDECAR_BUTTON)
+              console.log('see on ShowSidecarAndTerminal button')
+              await this.app.client.touch(Selectors.TERMINAL_AND_SIDECAR_BUTTON, false)
+              console.log('hover on ShowSidecarAndTerminal button')
+              await this.app.client.waitForVisible(Selectors.ONLY_TERMINAL_BUTTON)
+              await this.app.client.click(Selectors.ONLY_TERMINAL_BUTTON)
               await SidecarExpect.closed(this.app)
             } catch (err) {
               await Common.oops(this, true)
@@ -367,12 +371,14 @@ export class TestMMR {
         }
 
         const backToOpen = (backFromMinimized: boolean) => {
-          const button = backFromMinimized
-            ? Selectors.SIDECAR_RESUME_FROM_CLOSE_BUTTON
-            : Selectors.SIDECAR_MAXIMIZE_BUTTON
+          const button = backFromMinimized ? Selectors.TERMINAL_AND_SIDECAR_BUTTON : Selectors.SIDECAR_MAXIMIZE_BUTTON
 
           it(`should resume the sidecar from ${backFromMinimized ? 'minimized' : 'maximized'} to open`, async () => {
             try {
+              if (backFromMinimized) {
+                await this.app.client.touch(Selectors.ONLY_TERMINAL_BUTTON, false)
+                console.log('hover on ShowOnlyTerminal button')
+              }
               await this.app.client.waitForVisible(button)
               await this.app.client.click(button)
               await SidecarExpect.open(this.app)
