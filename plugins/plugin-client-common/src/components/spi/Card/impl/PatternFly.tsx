@@ -75,11 +75,15 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   public render() {
     return (
       <Card className={this.props.className}>
-        <CardHead>
-          <CardHeadMain>{this.props.header}</CardHeadMain>
-          {this.props.actions && this.cardActions()}
-        </CardHead>
-        <CardBody>{this.props.children}</CardBody>
+        {React.Children.count(this.props.children) > 0 && (
+          <React.Fragment>
+            <CardHead>
+              <CardHeadMain>{this.props.header}</CardHeadMain>
+              {this.props.actions && this.cardActions()}
+            </CardHead>
+            <CardBody>{this.props.children}</CardBody>
+          </React.Fragment>
+        )}
       </Card>
     )
   }
