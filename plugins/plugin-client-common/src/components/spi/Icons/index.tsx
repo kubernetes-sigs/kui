@@ -24,6 +24,7 @@ export type SupportedIcon =
   | 'Add'
   | 'At'
   | 'Back'
+  | 'Checkmark'
   | 'CodeBranch'
   | 'Error'
   | 'Forward'
