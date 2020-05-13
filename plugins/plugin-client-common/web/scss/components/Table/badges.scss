@@ -63,7 +63,8 @@
 }
 
 @mixin badge-only {
-  .bx--data-table-container .bx--data-table {
+  .bx--data-table-container .bx--data-table,
+  .kui--table-like {
     th[data-key='STATUS'],
     td.kui--status-cell {
       padding-left: 0;
