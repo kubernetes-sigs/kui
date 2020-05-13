@@ -23,6 +23,9 @@ import {
   defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
+
 const commands = ['kubectl']
 
 commands.forEach(command => {
@@ -33,11 +36,11 @@ commands.forEach(command => {
     const ns: string = createNS()
     const inNamespace = `-n ${ns}`
 
-    const create = (name: string) => {
+    const create = (name: string, source = 'pod.yaml') => {
       it(`should create sample pod ${name} from URL via ${command}`, async () => {
         try {
           const selector = await CLI.command(
-            `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            `${command} create -f ${ROOT}/data/k8s/headless/${source} ${inNamespace}`,
             this.app
           ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
 
@@ -49,17 +52,17 @@ commands.forEach(command => {
       })
     }
 
-    const edit = (name: string) => {
-      it(`should edit it via ${command} edit`, async () => {
+    const edit = (name: string, kind = 'Pod', nameAsShown = name) => {
+      it(`should edit it via ${command} edit with name=${name || 'no-name'}`, async () => {
         try {
-          await CLI.command(`${command} edit pod ${name} ${inNamespace}`, this.app)
+          await CLI.command(`${command} edit pod ${name || ''} ${inNamespace}`, this.app)
             .then(ReplExpect.justOK)
             .then(SidecarExpect.open)
-            .then(SidecarExpect.showing(name, undefined, undefined, ns))
+            .then(SidecarExpect.showing(nameAsShown, undefined, undefined, ns))
             .then(SidecarExpect.mode('edit'))
             .then(
               SidecarExpect.yaml({
-                kind: 'Pod'
+                kind
               })
             )
         } catch (err) {
@@ -126,6 +129,10 @@ commands.forEach(command => {
 
     const nginx = 'nginx'
     create(nginx)
+
+    const name2 = 'nginx2'
+    create(name2, 'pod2.yaml')
+    edit('', 'List', '2 items')
 
     edit(nginx)
     cancel(nginx)
