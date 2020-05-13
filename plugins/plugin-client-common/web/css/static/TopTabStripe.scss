@@ -211,23 +211,29 @@
   }
 }
 
-#kui--custom-top-tab-stripe-button-container[num-button='2'] {
-  /* number of buttons in the container */
-  $numButtons: 2;
-  right: calc(-1.875em * #{$numButtons - 1});
-}
-
-#kui--custom-top-tab-stripe-button-container[num-button='4'] {
-  /* number of buttons in the container */
-  $numButtons: 4;
-  right: calc(-1.875em * #{$numButtons - 1});
-}
-
 #kui--custom-top-tab-stripe-button-container {
   display: flex;
   justify-content: flex-end;
   position: absolute;
   z-index: 10000;
+
+  &[num-button='2'] {
+    /* number of buttons in the container */
+    $numButtons: 2;
+    right: calc(-1.875em * #{$numButtons - 1} - 3px);
+  }
+
+  &[num-button='4'] {
+    /* number of buttons in the container */
+    $numButtons: 4;
+    right: calc(-1.875em * #{$numButtons - 1} - 3px);
+  }
+
+  &:not(:hover) {
+    svg[data-active='true'] {
+      margin-right: 6px;
+    }
+  }
 
   /* 2.75: height of header; 0.875: font size of header; 24px height of icons */
   $headerHeight: 2.75em;
