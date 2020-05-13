@@ -19,7 +19,7 @@ import { Arguments, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import commandPrefix from '../command-prefix'
-import { KubeResource } from '../../lib/model/resource'
+import { KubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
 import { KubeOptions, getNamespaceForArgv } from './options'
 
 const strings = i18n('plugin-kubectl')
@@ -28,17 +28,27 @@ const strings2 = i18n('plugin-client-common', 'editor')
 export function doEdit(cmd: string) {
   return async (args: Arguments<KubeOptions>) => {
     const idx = args.argvNoOptions.indexOf('edit')
-    const kind = args.argvNoOptions[idx + 1]
-    const name = args.argvNoOptions[idx + 2]
+    const kindForQuery = args.argvNoOptions[idx + 1] || ''
+    const nameForQuery = args.argvNoOptions[idx + 2] || ''
     const ns = getNamespaceForArgv(args)
 
-    const getCommand = `${cmd} get ${kind} ${name} ${ns} -o yaml`
-    const resource = await args.REPL.qexec<KubeResource>(getCommand)
+    const getCommand = `${cmd} get ${kindForQuery} ${nameForQuery} ${ns} -o yaml`
+    const resource = await args.REPL.qexec<KubeResource | KubeItems>(getCommand)
+
+    // isKubeItems: did the user ask to edit a collection of resources?
+    const kind = isKubeItems(resource) ? resource.items[0].kind : resource.kind
+    const metadata = isKubeItems(resource) ? resource.items[0].metadata : resource.metadata
+    const name =
+      !isKubeItems(resource) || resource.items.length === 1 ? metadata.name : strings('nItems', resource.items.length)
+    const namespace = metadata.namespace
 
     return {
       apiVersion: 'kui-shell/v1',
-      kind: resource.kind,
-      metadata: resource.metadata,
+      kind,
+      metadata: {
+        name,
+        namespace
+      },
       spec: {
         readOnly: false,
         clearable: false,
