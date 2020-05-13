@@ -112,7 +112,6 @@
   }
   .sidecar-toolbar-text-icon {
     margin-right: 0.375em;
-    margin-left: calc(43px - 2em); /* attempting to roughly match monaco's gutter spacing */
     padding-left: 1em;
   }
   .sidecar-toolbar-text-icon > svg {
@@ -150,7 +149,7 @@
     fill: var(--color-sidecar-toolbar-foreground);
   }
   .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
-    padding: 0 1em;
+    padding: 0 0.375em;
     display: flex;
     flex: initial;
   }
@@ -347,6 +346,7 @@
   .sidecar-non-window-buttons,
   .sidecar-window-buttons {
     display: flex;
+    margin-right: 2px;
   }
   .sidecar-bottom-stripe-button {
     display: flex;

@@ -47,7 +47,7 @@ import {
 import { Props } from '..'
 
 const size20 = { fontSize: '0.875em' }
-const size32 = { fontSize: '32px', padding: '5px' }
+const size32 = { fontSize: '32px', padding: '3px' }
 const Sidecar = { fontSize: '1.125em' }
 const StatusStripe = Sidecar
 const Pagination = { fontSize: '1.5em' }

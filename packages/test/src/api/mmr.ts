@@ -359,7 +359,7 @@ export class TestMMR {
             try {
               await this.app.client.waitForVisible(Selectors.TERMINAL_AND_SIDECAR_BUTTON)
               console.log('see on ShowSidecarAndTerminal button')
-              await this.app.client.touch(Selectors.TERMINAL_AND_SIDECAR_BUTTON, false)
+              await this.app.client.moveToObject(Selectors.TERMINAL_AND_SIDECAR_BUTTON)
               console.log('hover on ShowSidecarAndTerminal button')
               await this.app.client.waitForVisible(Selectors.ONLY_TERMINAL_BUTTON)
               await this.app.client.click(Selectors.ONLY_TERMINAL_BUTTON)
