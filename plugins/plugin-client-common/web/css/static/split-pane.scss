@@ -90,6 +90,10 @@ $background-color: var(--color-base06);
     /* see https://github.com/IBM/kui/issues/3914 */
     position: unset !important;
   }
+
+  &.kui--sidecar-closed .Resizer.vertical {
+    display: none;
+  }
 }
 
 @media (max-width: 44rem) {
