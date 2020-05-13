@@ -17,6 +17,7 @@
   "status": "Status",
   "save": "Save",
   "revert": "Revert",
+  "nItems": "{0} items",
   "allTableTitle": "All",
   "keditUsageRequiredDocs": "A kubernetes resource file or kind",
   "keditUsageDocs": "Edit a resource definition file",
