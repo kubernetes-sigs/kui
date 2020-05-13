@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-@import '../Table/badges.scss';
+@import '../Table/badges';
+@import '../Table/common';
 
 [kui-theme-style] .kui--table-like {
   [data-is-selected] [data-is-name] {

@@ -36,6 +36,12 @@ export interface ExecOptions {
   /** true, if you wish a qexec to return rendered HTML; default is false, meaning you get the model back on qexec */
   render?: boolean
 
+  /*
+   * always show the view in terminal, e.g. for certain commands producing watchable table,
+   * we want them to always show in `Terminal`
+   */
+  alwaysViewIn?: 'Terminal'
+
   isProxied?: boolean
   noDelegation?: boolean
   delegationOk?: boolean

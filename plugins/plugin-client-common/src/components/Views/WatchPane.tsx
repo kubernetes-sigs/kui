@@ -19,6 +19,8 @@ import { v4 as uuid } from 'uuid'
 
 import {
   eventChannelUnsafe,
+  ExecOptions,
+  i18n,
   isWatchable,
   ScalarResponse,
   Tab,
@@ -33,7 +35,11 @@ import CardSpi from '../spi/Card'
 import sameCommand from './util/same'
 import { cwd as getCwd } from './Sidecar/BaseSidecar'
 import LivePaginatedTable from '../Content/Table/LivePaginatedTable'
+import { getBreadcrumbsFromTable } from '../Content/Table/PaginatedTable'
 import CircularBuffer, { BaseHistoryEntry } from './util/CircularBuffer'
+import Breadcrumb from '../spi/Breadcrumb'
+
+const strings = i18n('plugin-client-common')
 
 /*
  * Height defines the primary height of
@@ -41,7 +47,7 @@ import CircularBuffer, { BaseHistoryEntry } from './util/CircularBuffer'
  *
  */
 export const enum Height {
-  Split = 'calc(100% - 8em)',
+  Split = 'calc(100% - 9em - 2 * 0.5em)', // remember to add 2 * $pane-gap
   NotSplit = '100%'
 }
 
@@ -52,6 +58,7 @@ interface Props {
 }
 
 interface HistoryEntry extends BaseHistoryEntry {
+  command: string
   key: string // helps react distinguish similar Table
   response: Table & Watchable
 }
@@ -82,9 +89,16 @@ export default class WatchPane extends React.PureComponent<Props, State> {
     argvNoOptions: string[],
     parsedOptions: ParsedOptions,
     __,
-    evaluatorOptions: CommandOptions
+    evaluatorOptions: CommandOptions,
+    execOptions: ExecOptions,
+    command: string
   ) {
-    if (isTable(response) && isWatchable(response) && evaluatorOptions.alwaysViewIn !== 'Terminal') {
+    if (
+      isTable(response) &&
+      isWatchable(response) &&
+      evaluatorOptions.alwaysViewIn !== 'Terminal' &&
+      execOptions.alwaysViewIn !== 'Terminal'
+    ) {
       this.setState(curState => {
         const cwd = getCwd()
 
@@ -97,6 +111,7 @@ export default class WatchPane extends React.PureComponent<Props, State> {
           response,
           argvNoOptions,
           parsedOptions,
+          command,
           cwd
         }
 
@@ -130,8 +145,22 @@ export default class WatchPane extends React.PureComponent<Props, State> {
     return 4
   }
 
-  private prefixBreadcrumbs(idx: number) {
-    return [{ label: `Watcher ${idx + 1}` }]
+  /** re-execute the command, but display the watch result in terminal */
+  private watchInTerminal(command: string) {
+    this.props.tab.REPL.pexec(command, { alwaysViewIn: 'Terminal' })
+  }
+
+  /** `Card Actions`, will be rendred as `Dropdown` */
+  private actions(command: string) {
+    const watchInTerminal = { label: strings('Show as table'), handler: this.watchInTerminal.bind(this, command) }
+    return [watchInTerminal]
+  }
+
+  /** render subpane header as Breadcrumb */
+  private header(response: Table, idx: number) {
+    const prefixBreadcrumbs = [{ label: `Watcher ${idx + 1}` }]
+    const breadcrumbs = getBreadcrumbsFromTable(response, prefixBreadcrumbs)
+    return <Breadcrumb repl={this.props.tab.REPL} breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
   }
 
   public render() {
@@ -143,21 +172,23 @@ export default class WatchPane extends React.PureComponent<Props, State> {
             .map((_, idx) => {
               const history = this.state.history.peekAt(idx)
               return (
-                <CardSpi className="kui--card kui--screenshotable" key={history ? history.key : idx}>
-                  {history ? (
-                    <div className="kui--sub-pane" data-pane-index={idx + 1}>
+                <CardSpi
+                  className={`kui--card kui--screenshotable kui--card-${idx + 1}`}
+                  actions={history && this.actions(history.command)}
+                  header={history && this.header(history.response, idx)}
+                  key={history ? history.key : idx}
+                >
+                  {history && (
+                    <div className="kui--sub-card">
                       <LivePaginatedTable
                         tab={this.props.tab}
                         repl={this.props.tab.REPL}
                         response={history.response}
                         asGrid
-                        toolbars
+                        toolbars={false}
                         paginate={false}
-                        prefixBreadcrumbs={this.prefixBreadcrumbs(idx)}
                       />
                     </div>
-                  ) : (
-                    <div className="kui--sub-pane" data-pane-id={idx} />
                   )}
                 </CardSpi>
               )

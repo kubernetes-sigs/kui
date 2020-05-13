@@ -398,7 +398,8 @@ class InProcessExecutor implements Executor {
         response: response || true,
         execUUID,
         echo: execOptions.echo,
-        evaluatorOptions
+        evaluatorOptions,
+        execOptions
       }
       eventChannelUnsafe.emit(`/command/complete`, endEvent)
       eventChannelUnsafe.emit(`/command/complete/${getTabId(tab)}`, endEvent)
@@ -431,7 +432,9 @@ class InProcessExecutor implements Executor {
             argvNoOptions,
             parsedOptions,
             responseType,
-            evaluatorOptions
+            evaluatorOptions,
+            execOptions,
+            commandUntrimmed
           )
         })
       }

@@ -129,14 +129,14 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
 
         console.error('start watching')
         // execute the watch command, and expect ok in repl
-        await CLI.command(watchCmd, this.app)
-          .then(ReplExpect.justOK)
-          .then(async () => {
-            console.error('wait for watcher1')
-            await this.app.client.waitForExist(Selectors.WATCHER_N(1))
-            console.error('wait for terminalAndWather button')
-            await this.app.client.waitForExist(Selectors.TERMINAL_AND_WATCHER_BUTTON)
-          })
+        const watchReplResult = await CLI.command(watchCmd, this.app)
+        await ReplExpect.justOK(watchReplResult)
+
+        console.error('wait for watcher1')
+        await this.app.client.waitForExist(Selectors.WATCHER_N(1))
+
+        console.error('wait for terminalAndWather button')
+        await this.app.client.waitForExist(Selectors.TERMINAL_AND_WATCHER_BUTTON)
 
         console.error('wait for watch title')
         // expect watcher1 has title pod
@@ -152,6 +152,19 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
 
         console.error('drilldown from badge')
         await testDrilldown(nsNameForIter, watchBadge, this.app)
+
+        console.error('click showAsTable')
+        // click dropdown
+        await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
+        const showAsTableButton = Selectors.WATCHER_N_DROPDOWN_ITEM(1, 'Show as table')
+        await this.app.client.waitForVisible(showAsTableButton)
+
+        console.error('wait for table shown in terminal')
+        await this.app.client.click(showAsTableButton)
+        await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(nsNameForIter) })({
+          app: this.app,
+          count: watchReplResult.count + 1
+        })
 
         console.error('wait for delete')
         const deleteBadge = await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))

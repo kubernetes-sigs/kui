@@ -15,11 +15,24 @@
  */
 
 import { ReactNode } from 'react'
-// import { } from '@kui-shell/core'
+
+export interface Action {
+  label: string
+  handler: () => void
+}
 
 interface Props {
-  className?: string
+  /** Place the given header node at the top of the Card */
+  header: ReactNode
+
+  /** Force children to be a required property */
   children: ReactNode
+
+  /** [Optional] Actions to be rendered in an overflow menu associated with the Card */
+  actions?: Action[]
+
+  /** [Optional] CSS class to associate with the outermost Card element */
+  className?: string
 }
 
 export default Props

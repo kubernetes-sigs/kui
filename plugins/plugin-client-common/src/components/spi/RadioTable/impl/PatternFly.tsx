@@ -88,6 +88,7 @@ export default class PatternFly4RadioTable extends React.PureComponent<Props, St
               return (
                 <DataListCell
                   key={cidx}
+                  isFilled
                   data-is-name={cidx === row.nameIdx ? true : undefined}
                   data-key={typeof cell !== 'string' && cell.key}
                   className={radioTableHintsAsCss(cell)}
