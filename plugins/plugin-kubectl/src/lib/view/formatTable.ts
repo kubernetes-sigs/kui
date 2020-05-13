@@ -275,6 +275,7 @@ export const formatTable = <O extends KubeOptions>(
       return {
         key: rows[0].key,
         name: nameForDisplay,
+        rowKey: name,
         fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         onclickSilence: true,

@@ -30,9 +30,7 @@ export type Props<T extends KuiTable = KuiTable> = {
 }
 
 export const findGridableColumn = (response: KuiTable) => {
-  return response.body[0]
-    ? response.header.attributes.findIndex(cell => /STATUS/i.test(cell.key) || /STATUS/i.test(cell.value))
-    : -1
+  return response.body[0] ? response.header.attributes.findIndex(cell => /STATUS|REASON/i.test(cell.key)) : -1
 }
 
 /**
@@ -52,13 +50,23 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
     return (
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
-          const row = visibleRows[kidx]
-          const title = row['STATUS']
-          const css = (gridableColumn !== -1 && kuiRow.attributes[gridableColumn].css) || 'kui--status-unknown'
+          const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
+          const title = badgeCell ? badgeCell.value : ''
+          const css = badgeCell ? badgeCell.css : 'kui--status-unknown'
 
           return (
             <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name}>
-              <span title={title} data-tag="badge-circle" className={css} onClick={onClickForCell(kuiRow, tab, repl)} />
+              <span
+                title={title}
+                data-tag="badge-circle"
+                className={css}
+                onClick={onClickForCell(
+                  kuiRow,
+                  tab,
+                  repl,
+                  kuiRow.attributes.find(_ => _.onclick)
+                )}
+              />
             </span>
           )
         })}

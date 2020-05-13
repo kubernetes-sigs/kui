@@ -415,7 +415,7 @@ class StatusWatcher implements Abortable, Watcher {
 
     const initialHeader = {
       name: 'NAME',
-      attributes: this.initialBody[0].attributes.map(({ key, outerCSS }) => ({ value: key, outerCSS }))
+      attributes: this.initialBody[0].attributes.map(({ key, outerCSS }) => ({ key, value: key, outerCSS }))
     }
 
     return {

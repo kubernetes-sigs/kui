@@ -169,6 +169,21 @@ export function rawGet(args: Arguments<KubeOptions>, _command = 'kubectl') {
 }
 
 /**
+ *  Force Event Watcher to show the NAME column with Event ID
+ *  This helps kui table watcher to distinguish the updated rows
+ *
+ */
+const overrideEventCommand = (args: Arguments<KubeOptions>, output: string) => {
+  if (output) {
+    const cmd = args.command.replace(`${args.parsedOptions.o ? '-o' : '--output'} ${output}`, '-o wide')
+    return args.REPL.qexec(cmd)
+  } else {
+    const cmd = `${args.command} -o wide`
+    return args.REPL.qexec(cmd)
+  }
+}
+
+/**
  * This is the main handler for `kubectl get`. Here, we act as a
  * dispatcher: in `kubectl` a `get` can mean either get-as-table,
  * get-as-entity, or get-as-custom, depending on the `-o` flag.
@@ -182,6 +197,12 @@ export const doGet = (command: string) =>
       return doHelp(command, args, prepareArgsForGet)
     }
 
+    // first, we do the raw exec of the given command
+    const isTableReq = isTableRequest(args)
+    const fullKind = isTableReq
+      ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
+      : undefined
+
     if (!isHeadless() && isWatchRequest(args)) {
       // special case: get --watch/watch-only
 
@@ -189,15 +210,16 @@ export const doGet = (command: string) =>
       // though we could handle it, we have decided to keep parity
       // with kubectl's errors here
       if (!/^k(ubectl)?\s+-/.test(args.command)) {
-        return doGetWatchTable(args)
+        const output = args.parsedOptions.o || args.parsedOptions.output
+
+        if ((await fullKind) === 'Event' && output !== 'wide') {
+          return overrideEventCommand(args, output)
+        } else {
+          return doGetWatchTable(args)
+        }
       }
     }
 
-    // first, we do the raw exec of the given command
-    const isTableReq = isTableRequest(args)
-    const fullKind = isTableReq
-      ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
-      : undefined
     const response = await rawGet(args, command)
 
     if (isKubeTableResponse(response)) {

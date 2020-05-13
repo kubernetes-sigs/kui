@@ -120,7 +120,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     const existingRows = this.state.rows
     const nRowsBefore = existingRows.length
 
-    const foundIndex = existingRows.findIndex(_ => _.NAME === newKuiRow.name)
+    const foundIndex = existingRows.findIndex(_ => _.id === newKuiRow.rowKey || _.NAME === newKuiRow.name)
 
     const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex
 
