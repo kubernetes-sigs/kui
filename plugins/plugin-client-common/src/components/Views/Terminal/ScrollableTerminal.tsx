@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react'
-import { Accordion } from 'carbon-components-react'
 import {
   eventChannelUnsafe,
   ExecOptions,
@@ -28,8 +27,6 @@ import {
 
 import Block from './Block'
 import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
-
-import 'carbon-components/scss/components/accordion/_accordion.scss'
 
 type Cleaner = () => void
 
@@ -231,7 +228,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private onClick() {
-    if (document.activeElement === document.body) {
+    if (document.activeElement === document.body && !getSelection().toString()) {
       this.doFocus()
     }
   }
@@ -240,25 +237,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return (
       <div className={'repl' + (this.props.sidecarIsVisible ? ' sidecar-visible' : '')} id="main-repl">
         <div className="repl-inner zoomable" ref={c => (this._scrollRegion = c)} onClick={this.onClick.bind(this)}>
-          <Accordion>
-            {this.state.blocks.map((_, idx) => (
-              <Block
-                key={idx}
-                idx={idx}
-                model={_}
-                uuid={this.props.uuid}
-                tab={this.props.tab}
-                noActiveInput={this.props.noActiveInput}
-                onOutputRender={this.onOutputRender.bind(this)}
-                ref={c => {
-                  if (isActive(_)) {
-                    // grab a ref to the active block, to help us maintain focus
-                    this._activeBlock = c
-                  }
-                }}
-              />
-            ))}
-          </Accordion>
+          {this.state.blocks.map((_, idx) => (
+            <Block
+              key={idx}
+              idx={idx}
+              model={_}
+              uuid={this.props.uuid}
+              tab={this.props.tab}
+              noActiveInput={this.props.noActiveInput}
+              onOutputRender={this.onOutputRender.bind(this)}
+              ref={c => {
+                if (isActive(_)) {
+                  // grab a ref to the active block, to help us maintain focus
+                  this._activeBlock = c
+                }
+              }}
+            />
+          ))}
         </div>
       </div>
     )

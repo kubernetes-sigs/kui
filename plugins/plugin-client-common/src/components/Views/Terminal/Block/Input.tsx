@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { dots as spinnerFrames } from 'cli-spinners'
 import { Tab as KuiTab } from '@kui-shell/core'
 
 import onPaste from './OnPaste'
@@ -85,6 +86,10 @@ interface State {
 
   /** state of tab completion */
   tabCompletion?: TabCompletionState
+
+  /** spinner? */
+  spinner: ReturnType<typeof setInterval>
+  spinnerDom?: HTMLSpanElement
 }
 
 export default class Input extends React.PureComponent<Props, State> {
@@ -93,7 +98,8 @@ export default class Input extends React.PureComponent<Props, State> {
 
     this.state = {
       execUUID: hasUUID(props.model) && props.model.execUUID,
-      prompt: undefined
+      prompt: undefined,
+      spinner: undefined
     }
   }
 
@@ -109,15 +115,39 @@ export default class Input extends React.PureComponent<Props, State> {
     }
   }
 
+  private static newSpinner(spinnerDom: HTMLSpanElement) {
+    let frame = 0
+
+    return setInterval(function() {
+      frame = frame + 1 === spinnerFrames.frames.length ? 0 : frame + 1
+      spinnerDom.innerText = spinnerFrames.frames[frame]
+    }, spinnerFrames.interval)
+  }
+
+  private static updateSpinner(props: Props, state: State) {
+    const spinner = isProcessing(props.model)
+      ? state.spinner || (state.spinnerDom && Input.newSpinner(state.spinnerDom))
+      : undefined
+    if (!spinner && state.spinner) {
+      clearInterval(state.spinner)
+    }
+
+    return spinner
+  }
+
   public static getDerivedStateFromProps(props: Props, state: State) {
+    const spinner = Input.updateSpinner(props, state)
+
     if (hasUUID(props.model)) {
       return {
+        spinner,
         execUUID: props.model.execUUID
       }
     } else if (state.prompt && isActive(props.model) && state.execUUID !== undefined && !state.isearch) {
       // e.g. terminal has been cleared; we need to excise the current
       // <input/> because react aggressively caches these
       return {
+        spinner,
         prompt: undefined,
         execUUID: undefined
       }
@@ -218,26 +248,24 @@ export default class Input extends React.PureComponent<Props, State> {
         />
       )
     } else {
+      const value =
+        this.value() ||
+        (hasValue(this.props.model)
+          ? this.props.model.value
+          : hasCommand(this.props.model)
+          ? this.props.model.command
+          : '')
+
       return (
         <input
           type="text"
-          autoFocus
-          autoCorrect="off"
-          autoComplete="off"
-          spellCheck="false"
-          autoCapitalize="off"
           className="repl-input-element"
           aria-label="Command Input"
           readOnly
           tabIndex={-1}
-          onClick={evt => evt.stopPropagation() /* accordion... */}
+          value={value}
           ref={c => {
             if (c && !this.state.prompt) {
-              c.value = hasValue(this.props.model)
-                ? this.props.model.value
-                : hasCommand(this.props.model)
-                ? this.props.model.command
-                : ''
               this.setState({ prompt: c })
             }
           }}
@@ -246,29 +274,28 @@ export default class Input extends React.PureComponent<Props, State> {
     }
   }
 
-  /** a status icon, e.g. spinner, "ok" check mark, etc. */
-  private statusIcon() {
-    try {
-      if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
-        // "true" means a blank response; don't display any statusIcon bits in this case
-        // also don't display statusIcon bits for "active" blocks, i.e. those accepting Input
-        return (
-          <span className="bx--inline-loading__text">
-            {this.props.model.startTime && this.props.model.startTime.toLocaleTimeString()}
-          </span>
+  /** render the time the block started processing */
+  private timestamp() {
+    if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
+      return (
+        this.props.model.startTime && (
+          <span className="kui--repl-block-timestamp">{this.props.model.startTime.toLocaleTimeString()}</span>
         )
-        /*        return (
-          <div className={isProcessing(this.props.model) ? 'fade-in2' : undefined}>
-            <Loading
-              status={isProcessing(this.props.model) ? 'active' : isOk(this.props.model) ? 'finished' : 'error'}
-              successDelay={1000}
-              description={this.props.model.startTime && this.props.model.startTime.toLocaleTimeString()}
-            />
-          </div>
-        ) */
-      }
-    } catch (err) {
-      console.error(err)
+      )
+    }
+  }
+
+  /** spinner for processing blocks */
+  private spinner() {
+    if (isProcessing(this.props.model)) {
+      return (
+        <span
+          className="kui--repl-block-spinner"
+          ref={spinnerDom => {
+            this.setState({ spinnerDom })
+          }}
+        />
+      )
     }
   }
 
@@ -281,7 +308,8 @@ export default class Input extends React.PureComponent<Props, State> {
   private status() {
     return (
       <span className="repl-prompt-right-elements">
-        <div className="repl-prompt-right-element-status-icon deemphasize">{this.statusIcon()}</div>
+        {this.spinner()}
+        {this.timestamp()}
       </span>
     )
   }

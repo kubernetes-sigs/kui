@@ -15,14 +15,11 @@
  */
 
 import * as React from 'react'
-import { AccordionItem } from 'carbon-components-react'
 import { Tab as KuiTab } from '@kui-shell/core'
 
 import Input, { InputOptions } from './Input'
 import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from './BlockModel'
-
-import 'carbon-components/scss/components/accordion/_accordion.scss'
 
 type Props = InputOptions & {
   /** block ordinal index */
@@ -101,20 +98,7 @@ export default class Block extends React.PureComponent<Props, State> {
 
   /**
    * For Active or Empty blocks, just show the <Input/>, otherwise
-   * wrap the <Input/>-<Output/> pair around an <AccordionItem/>
-   *
-   * Notes: if you attempt to use an <AccordionItem/> for the Active
-   * state, you may find that hitting return for command execution
-   * percolates till a click on the accordion, thus collapsing it; the
-   * net result is all valid, except that the accordion is closed when
-   * the command execution completes. I can't replicate this at human
-   * speed, but the tests trigger it. Furtheermore, it is important to
-   * do this for Empty as well as Active, so that e.g. typing
-   * "foo<Ctrl+c>" results in preservation of the aborted "foo" text;
-   * i.e. we need to keep the same <Input/> instance for this
-   * Active-to-Empty state transition, otherwise React will re-render
-   * a new <Input/> element, thus losing the input.value of the
-   * <input> element that underlies <Input/>.
+   * wrap the <Input/>-<Output/> pair.
    *
    */
   public render() {
@@ -129,15 +113,10 @@ export default class Block extends React.PureComponent<Props, State> {
           {isActive(this.props.model) || isEmpty(this.props.model) ? (
             this.input()
           ) : (
-            <AccordionItem
-              open
-              onKeyDown={event => event.stopPropagation()}
-              onClick={event => event.stopPropagation()}
-              iconDescription=""
-              title={this.input()}
-            >
+            <React.Fragment>
+              {this.input()}
               {this.output()}
-            </AccordionItem>
+            </React.Fragment>
           )}
         </div>
       )
