@@ -400,11 +400,8 @@
   font-size: 0.875em;
   padding-left: 1em;
 
-  .sidecar-bottom-stripe-button:first-child {
-    margin-left: 0.5em;
-  }
-  .sidecar-bottom-stripe-button:last-child {
-    margin-right: 0.5em;
+  .sidecar-bottom-stripe-button:nth-child(2) {
+    margin-right: 1em;
   }
 }
 

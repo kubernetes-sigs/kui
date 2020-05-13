@@ -28,23 +28,26 @@ export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
 
     return (
       <Breadcrumb>
-        {this.props.breadcrumbs.map((_, idx) => (
-          <BreadcrumbItem
-            to="#"
-            key={idx}
-            className={[
-              _.className,
-              _.deemphasize && 'kui--secondary-breadcrumb',
-              idx === currentPageIdx && 'kui--current-page-breadcrumb'
-            ]
-              .filter(_ => _)
-              .join(' ')}
-            isActive={idx === this.props.breadcrumbs.length - 1}
-            onClick={_.command && (() => this.props.repl.pexec(_.command))}
-          >
-            {_.label}
-          </BreadcrumbItem>
-        ))}
+        {this.props.breadcrumbs.map((_, idx) => {
+          const onClick = _.command && (() => this.props.repl.pexec(_.command))
+          return (
+            <BreadcrumbItem
+              to={onClick ? '#' : undefined}
+              key={idx}
+              className={[
+                _.className,
+                _.deemphasize && 'kui--secondary-breadcrumb',
+                idx === currentPageIdx && 'kui--current-page-breadcrumb'
+              ]
+                .filter(_ => _)
+                .join(' ')}
+              isActive={idx === this.props.breadcrumbs.length - 1}
+              onClick={onClick}
+            >
+              {_.label}
+            </BreadcrumbItem>
+          )
+        })}
       </Breadcrumb>
     )
   }

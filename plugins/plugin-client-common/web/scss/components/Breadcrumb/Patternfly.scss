@@ -42,11 +42,12 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
       &.kui--secondary-breadcrumb {
         /* see https://github.com/IBM/kui/issues/4431 */
         overflow: hidden;
+        font-weight: normal;
+        color: var(--color-text-02);
 
         .pf-c-breadcrumb__link {
-          color: var(--color-text-02);
-
           /* see https://github.com/IBM/kui/issues/4431 */
+          color: var(--color-text-02);
           overflow-x: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -54,9 +55,12 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
       }
 
       &:not(.kui--secondary-breadcrumb) {
-        &.kui--current-page-breadcrumb .pf-c-breadcrumb__link {
-          font-weight: 700;
-          color: var(--color-text-01);
+        &.kui--current-page-breadcrumb {
+          &.pf-c-breadcrumb__link,
+          & .pf-c-breadcrumb__link {
+            font-weight: 700;
+            color: var(--color-text-01);
+          }
         }
 
         .pf-c-breadcrumb__link {

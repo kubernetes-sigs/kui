@@ -953,60 +953,6 @@ body.oops-total-catastrophe #restart-needed-warning {
   text-transform: capitalize;
 }
 
-/* usage */
-.usage-error-wrapper {
-  color: var(--color-text-01);
-  font-weight: normal;
-}
-.usage-error-wrapper .marked-content {
-  /* marked markdown renderer section */
-  white-space: normal;
-  font-size: 1em;
-  max-width: 45em;
-  border-left: 3px solid var(--color-ui-03);
-  padding: 0.375em;
-  background-color: var(--color-base01);
-}
-.usage-error-wrapper .marked-content p {
-  /* marked markdown renderer paragraphs */
-  margin: 0.25em 0;
-  white-space: pre-wrap;
-}
-.usage-error-wrapper .bx--breadcrumb-item .bx--link {
-  letter-spacing: 2px;
-}
-.usage-error-wrapper .hideable {
-  margin: 2em 0;
-  color: var(--color-text-01);
-}
-.usage-error-wrapper h3,
-.usage-error-wrapper h4 {
-  font-weight: 400;
-  font-size: 1.125em;
-  color: var(--color-brand-01);
-  font-family: var(--font-sans-serif);
-}
-.usage-error-wrapper h4 {
-  text-transform: capitalize;
-  margin: 0 0 0.375em;
-}
-.usage-error-wrapper .log-lines .log-line {
-  /* usage docs tend to be multi-line */
-  height: unset;
-}
-.usage-error-wrapper .log-lines .log-line .log-field {
-  /* used in tandem with height: unset */
-  padding-top: 0.875em;
-  padding-bottom: 0.875em;
-  background-color: var(--color-ui-02);
-}
-.usage-error-wrapper h4 {
-  margin: 1.33em 0 0.375em;
-}
-.usage-error-wrapper .example-command-text {
-  color: var(--color-name);
-}
-
 /* markdown */
 .page-content {
   flex: 1;

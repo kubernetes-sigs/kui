@@ -58,18 +58,21 @@ a.kui-new-tab__plus:active,
 
 body[kui-theme-style] .bx--link {
   font-weight: 600;
-  color: var(--color-brand-01);
   /* text-decoration: underline; */
   transition-duration: 250ms;
   pointer-events: unset;
   touch-action: unset;
-}
-body[kui-theme-style] .bx--link:not([href]),
-body[kui-theme-style] .bx--link:visited {
-  color: var(--color-brand-01);
-}
-body[kui-theme-style] .bx--link:hover {
-  color: var(--color-hover-primary-text);
+  color: var(--color-text-01);
+
+  &[href] {
+    color: var(--color-brand-01);
+  }
+  &:visited {
+    color: var(--color-text-01);
+  }
+  &:hover {
+    color: var(--color-hover-primary-text);
+  }
 }
 
 .repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle.bx--loading__stroke-kui {
