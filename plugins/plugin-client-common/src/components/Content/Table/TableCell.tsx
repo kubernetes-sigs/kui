@@ -65,11 +65,17 @@ export default function renderCell(kuiRow: KuiRow, row: DataTableRow, tab: Tab, 
     const key = cidx > 0 && kuiRow.attributes[cidx - 1].key
 
     // className for the td
-    const className =
+    const cellClassName =
       cidx === 0
         ? 'entity-name ' + (kuiRow.outerCSS || '')
         : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
           (kuiRow.attributes[cidx - 1].outerCSS || '')
+
+    const outerClassName =
+      'cell-inner ' +
+      (cidx === 0
+        ? (kuiRow.css || '') + (kuiRow.onclick ? ' clickable' : '')
+        : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
 
     // the text value of the cell
     const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
@@ -77,19 +83,14 @@ export default function renderCell(kuiRow: KuiRow, row: DataTableRow, tab: Tab, 
     return (
       <TableCell
         key={cell.id}
-        className={className}
+        className={cellClassName}
         onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
       >
         <span
           data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
           data-value={cell.value}
           data-tag={tag}
-          className={
-            'cell-inner ' +
-            (cidx === 0
-              ? (kuiRow.css || '') + (kuiRow.onclick ? ' clickable' : '')
-              : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
-          }
+          className={outerClassName}
         >
           {tag === 'badge' && (
             <span title={innerText} data-tag="badge-circle" className={kuiRow.attributes[cidx - 1].css} />
