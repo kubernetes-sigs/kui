@@ -77,7 +77,7 @@ export type State = ToolbarProps & {
 
 export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: BreadcrumbView[]) {
   const titleBreadcrumb: BreadcrumbView[] = response.title
-    ? [{ label: response.title, className: 'kui--data-table-title' }]
+    ? [{ label: response.title, className: 'kui--data-table-title', isCurrentPage: true }]
     : []
 
   const breadcrumbs = (prefixBreadcrumbs || [])

@@ -29,17 +29,20 @@ export default class CarbonBreadcrumb extends React.PureComponent<Props> {
 
     return (
       <Breadcrumb noTrailingSlash={breadcrumbs.length > 1}>
-        {breadcrumbs.map((_, idx) => (
-          <BreadcrumbItem
-            href="#"
-            key={idx}
-            className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb'].filter(_ => _).join(' ')}
-            isCurrentPage={idx === currentPageIdx}
-            onClick={_.command && (() => this.props.repl.pexec(_.command))}
-          >
-            {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
-          </BreadcrumbItem>
-        ))}
+        {breadcrumbs.map((_, idx) => {
+          const onClick = _.command && (() => this.props.repl.pexec(_.command))
+          return (
+            <BreadcrumbItem
+              href={onClick ? '#' : undefined}
+              key={idx}
+              className={[_.className, _.deemphasize && 'kui--secondary-breadcrumb'].filter(_ => _).join(' ')}
+              isCurrentPage={idx === currentPageIdx}
+              onClick={onClick}
+            >
+              {_.command ? <a href="#">{_.label}</a> : <span>{_.label}</span>}
+            </BreadcrumbItem>
+          )
+        })}
       </Breadcrumb>
     )
   }
