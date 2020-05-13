@@ -105,11 +105,12 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
               key={cidx}
               data-is-name={cidx === row.nameIdx ? true : undefined}
               data-key={typeof cell !== 'string' ? cell.key : undefined}
+              data-tag={badgeHint ? 'badge' : undefined}
               className={radioTableHintsAsCss(cell)}
             >
-              {badgeHint && <span data-tag={'badge-circle'} className={badgeHint.toString()} />}
+              {badgeHint && <span data-tag="badge-circle" className={badgeHint.toString()} />}
 
-              {radioTableCellToString(cell)}
+              <span className="kui--cell-inner-text">{radioTableCellToString(cell)}</span>
             </StructuredListCell>
           )
         })}
