@@ -25,7 +25,7 @@ import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeResource, isKubeResource } from '../../lib/model/resource'
+import { KubeResource, isKubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
 
@@ -101,12 +101,12 @@ export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawR
 export async function doGetAsMMR(
   args: Arguments<KubeOptions>,
   resource: KubeResource
-): Promise<MultiModalResponse<KubeResource>> {
+): Promise<MultiModalResponse<KubeResource | KubeItems>> {
   try {
     // attempt to separate out the app and generated parts of the resource name
     const { name: prettyName, nameHash, version } = extractAppAndName(resource)
 
-    if (resource.kind === 'List') {
+    if (isKubeItems(resource)) {
       // then this is a response to e.g. `kubectl get pods -o yaml`
       return {
         apiVersion: resource.apiVersion,
@@ -119,6 +119,7 @@ export async function doGetAsMMR(
         originatingCommand: args.command,
         isKubeResource: true,
         modes: [],
+        items: resource.items,
         kuiRawData: resource.kuiRawData
       }
     }
