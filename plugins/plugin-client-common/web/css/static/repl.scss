@@ -31,23 +31,21 @@
     font-weight: 500;
     font-family: var(--font-sans-serif);
   }
-  .repl-prompt .repl-selection {
-    font-size: 80%;
-    opacity: 0.6;
-  }
-  .repl-prompt .repl-selection.has-selection-true {
-    margin-left: 1ex;
-  }
   .repl-context {
     background-color: var(--color-prompt-background);
     letter-spacing: 0.16px;
     filter: grayscale(20%);
   }
-  /*.repl-block.using-custom-prompt .repl-prompt-righty > svg,
-.repl-block.using-custom-prompt .repl-prompt-righty > i,
-.repl-block.using-custom-prompt .repl-context {
-  display: none;
-}*/
+
+  .repl-block.error {
+    .repl-prompt,
+    .repl-prompt-right-elements,
+    .kui--repl-block-timestamp {
+      color: var(--color-error);
+      font-weight: 700;
+    }
+  }
+
   .repl-prompt-righty {
     font-weight: 700;
     text-shadow: 0 0 1px var(--color-text-02);
@@ -72,50 +70,18 @@
   .kui--repl-prompt-buttons .graphical-icon {
     opacity: 0.0375;
   }
-}
-.repl-block .repl-input:hover .kui--repl-prompt-buttons .graphical-icon {
-  opacity: 0.25;
-}
-.repl-block .repl-input .kui--repl-prompt-buttons .graphical-icon:hover {
-  opacity: 1;
-  cursor: pointer;
-}
-.repl-input .kui--repl-prompt-buttons .graphical-icon:hover svg path {
-  fill: var(--color-text-01);
-}
-.repl .repl-prompt-right-element-status-icon.deemphasize {
-  font-size: 0.875em; /* see the comment for repl-input re: min-height; that should match this */
-  opacity: 1;
-  transition-property: all;
-}
-.repl-block.valid-response
-  .repl-prompt-right-element-status-icon
-  svg.kui--icon-ok
-  path:not([data-icon-path='inner-path']) {
-  fill: var(--color-ok);
-  stroke: var(--color-ok);
-  stroke-opacity: 0.5;
-}
-svg.kui--error-icon path:not([data-icon-path='inner-path']),
-.repl-block.error .repl-prompt-right-element-status-icon svg.kui--icon-error path:not([data-icon-path='inner-path']) {
-  fill: var(--color-error);
-  stroke: var(--color-error);
-  stroke-opacity: 0.5;
-}
-.repl-prompt-right-elements .repl-prompt-right-element-status-icon:hover {
-  opacity: 1;
+  .kui--repl-block-timestamp {
+    color: var(--color-text-02);
+    font-size: 0.6875em;
+  }
+  .kui--repl-block-spinner {
+    color: var(--color-brand-03);
+    margin-right: 0.5em;
+    font-size: 0.875em;
+    font-weight: 700;
+  }
 }
 
-body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-prompt-lefty, body/*.sidecar-full-screen*/ repl .repl-prompt-lefty {
-  display: none;
-}
-body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.sidecar-full-screen*/ repl .repl-selection {
-  /* collapse the context and selection when the sidecar is visible */
-  width: 0;
-  min-width: 0;
-  opacity: 0 !important;
-  margin: 0 !important;
-}
 .repl-result,
 .repl-result-like,
 .repl-input input,
@@ -211,9 +177,8 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
 
 /* when sidecar is visible */
 .repl.sidecar-visible .repl-block {
-  .bx--inline-loading__text,
-  &:not(.processing) .bx--inline-loading svg {
-    /* hide repl timestamp (except when processing), and any svgs (always) */
+  .kui--repl-block-timestamp {
+    /* hide repl timestamp  */
     display: none;
   }
 }
@@ -259,11 +224,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     }
   }
 
-  .bx--inline-loading {
-    /* carbon override */
-    min-height: unset;
-  }
-
   .repl-output {
     .repl-result {
       pre:empty {
@@ -279,111 +239,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
     &.valid-response .oops {
       /* oops output often times doesn't word wrap nicely on its own, e.g. help/usage; issue #396 */
       word-break: break-all;
-    }
-  }
-
-  .bx--inline-loading__animation {
-    width: 20px;
-    height: 20px;
-  }
-  .bx--inline-loading__text {
-    color: var(--color-text-02);
-    font-size: 0.75em;
-    order: -1;
-    margin-right: 0.875em;
-  }
-
-  &.processing .repl-prompt-right-element-status-icon {
-    .bx--loading.bx--loading--small {
-      width: 20px;
-      height: 20px;
-      .bx--loading__svg {
-        .bx--loading__background {
-          transform: scale(1.6875);
-          stroke: var(--color-text-02);
-        }
-        .bx--loading__stroke {
-          transform: scale(1.6875);
-          stroke: var(--color-brand-03);
-        }
-      }
-    }
-  }
-
-  &.valid-response .repl-input svg {
-    position: unset;
-    fill: var(--color-ok);
-    /*    width: 20px;
-    height: 20px;*/
-  }
-  &.error .repl-input svg {
-    position: unset;
-    fill: var(--color-error);
-    /*    width: 20px;
-    height: 20px;*/
-  }
-}
-
-.repl-block {
-  &.repl-active .bx--accordion__arrow {
-    display: none;
-  }
-  &.error .bx--accordion__arrow {
-    fill: var(--color-error);
-  }
-  &.valid-response .bx--accordion__arrow {
-    fill: var(--color-ok);
-  }
-  &.processing .bx--accordion__arrow {
-    fill: var(--color-processing);
-    /* nope: see https://github.com/IBM/kui/issues/3937 animation: spin 2s infinite linear; */
-  }
-
-  .bx--accordion__item {
-    &,
-    &:last-child {
-      border: none;
-    }
-
-    .bx--accordion__heading {
-      color: var(--color-text-01);
-      padding: 0;
-      font-size: inherit;
-
-      &:focus:before {
-        border-color: var(--color-brand-03);
-      }
-
-      &:hover::before {
-        background-color: unset;
-      }
-
-      .bx--accordion__title {
-        font-size: unset;
-        line-height: unset;
-        letter-spacing: unset;
-        margin: 0;
-        overflow-x: hidden; /* see https://github.com/IBM/kui/issues/4231 */
-      }
-
-      .bx--accordion__arrow {
-        margin: 2px 0 0;
-      }
-    }
-
-    .bx--accordion__content {
-      padding: 0;
-    }
-
-    &:not(.bx--accordion__item--active) {
-      /* collapsed accordion */
-      .repl-prompt-right-elements {
-        display: none;
-      }
-      .bx--accordion__arrow:not(:hover) {
-        opacity: 1;
-        fill: var(--color-text-01);
-      }
     }
   }
 }
