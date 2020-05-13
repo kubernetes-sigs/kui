@@ -50,9 +50,13 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
         font-size: inherit;
         font-size: unset;
         font-weight: normal;
-        color: var(--color-brand-01);
         overflow: unset;
         line-height: unset;
+        color: var(--color-text-01);
+
+        &[href] {
+          color: var(--color-brand-01);
+        }
       }
 
       &:not(.kui--secondary-breadcrumb) .bx--link {

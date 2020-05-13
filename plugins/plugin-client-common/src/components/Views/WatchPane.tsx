@@ -47,7 +47,7 @@ const strings = i18n('plugin-client-common')
  *
  */
 export const enum Height {
-  Split = 'calc(100% - 9em - 2 * 0.5em)', // remember to add 2 * $pane-gap
+  Split = 'calc(100% - 8em - 2 * 0.5em)', // remember to add 2 * $pane-gap
   NotSplit = '100%'
 }
 
