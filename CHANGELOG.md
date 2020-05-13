@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.5](https://github.com/IBM/kui/compare/v8.7.4...v8.7.5) (2020-05-13)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl edit should support editing a list of resources ([1d778cc](https://github.com/IBM/kui/commit/1d778cc)), closes [#4555](https://github.com/IBM/kui/issues/4555)
+- clicking on container name in details sidecar should add -c to logs command ([a6f15a1](https://github.com/IBM/kui/commit/a6f15a1)), closes [#4498](https://github.com/IBM/kui/issues/4498)
+
 ## [8.7.4](https://github.com/IBM/kui/compare/v8.7.3...v8.7.4) (2020-05-13)
 
 ### Bug Fixes
