@@ -197,15 +197,15 @@ export default class Input extends React.PureComponent<Props, State> {
           onChange={this.props.onInputChange}
           onClick={this.props.onInputClick}
           onKeyPress={evt => {
-            kp(evt)
+            if (kp) kp(evt)
             this.props.onInputKeyPress && this.props.onInputKeyPress(evt)
           }}
           onKeyDown={evt => {
-            kd(evt)
+            if (kd) kd(evt)
             this.props.onInputKeyDown && this.props.onInputKeyDown(evt)
           }}
           onKeyUp={evt => {
-            ku(evt)
+            if (ku) ku(evt)
             this.props.onInputKeyUp && this.props.onInputKeyUp(evt)
           }}
           onPaste={op}
