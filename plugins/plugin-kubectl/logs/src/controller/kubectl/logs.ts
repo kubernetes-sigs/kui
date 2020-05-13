@@ -93,7 +93,7 @@ function decorateLogLines(lines: string): string {
  * some ANSI control codes for coloring.
  *
  */
-async function doLogs(args: Arguments<LogOptions>) {
+export async function doLogs(args: Arguments<LogOptions>) {
   if (isUsage(args)) {
     // special case: get --help/-h
     return doHelp('kubectl', args)

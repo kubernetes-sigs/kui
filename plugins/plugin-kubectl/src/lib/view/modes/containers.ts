@@ -59,7 +59,7 @@ const showLogs = (tab: Tab, { pod, container }, args: { argvNoOptions: string[] 
   const containerName = encodeComponent(container.name)
   const ns = encodeComponent(pod.metadata.namespace)
 
-  return `${getCommandFromArgs(args)} logs ${podName} ${containerName} -n ${ns}`
+  return `${getCommandFromArgs(args)} logs ${podName} -c ${containerName} -n ${ns}`
 }
 
 /**
