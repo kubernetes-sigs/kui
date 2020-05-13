@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { Tile } from 'carbon-components-react'
-
-import Props from '../model'
-
-import '../../../../../web/scss/components/Card/Carbon.scss'
-
-export default class CarbonTile extends React.PureComponent<Props> {
-  public render() {
-    return <Tile className={this.props.className}>{this.props.children}</Tile>
-  }
+[kui-theme-style] .kui--table-like {
+  font-family: var(--font-sans-serif);
 }
