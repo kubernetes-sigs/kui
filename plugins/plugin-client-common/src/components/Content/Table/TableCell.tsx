@@ -31,7 +31,9 @@ export function onClickForCell(
   selectRow: () => void = () => undefined
 ) {
   const handler = cell ? cell.onclick : row.onclick
-  if (typeof handler === 'function') {
+  if (handler === false) {
+    return () => handler
+  } else if (typeof handler === 'function') {
     return () => {
       selectRow()
       handler()

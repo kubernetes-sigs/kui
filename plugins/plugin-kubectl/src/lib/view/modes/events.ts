@@ -36,7 +36,7 @@ function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string
   const customColumns = 'wide'
   // 'custom-columns=TYPE:type,REASON:reason,LAST SEEN:lastTimestamp,COUNT:count,FIRST SEEN:firstTimestamp,FROM:source.component,MESSAGE:message'
 
-  return `${cmdGetPodEvents} -o "${customColumns}"`
+  return `${cmdGetPodEvents} -o "${customColumns}" -w`
 }
 
 /**
