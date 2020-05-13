@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.4](https://github.com/IBM/kui/compare/v8.7.3...v8.7.4) (2020-05-13)
+
+### Bug Fixes
+
+- **plugins/plugin-carbon-themers:** bottom input can have poor color contrast ([d01d863](https://github.com/IBM/kui/commit/d01d863)), closes [#4543](https://github.com/IBM/kui/issues/4543)
+
 ## [8.7.3](https://github.com/IBM/kui/compare/v8.7.2...v8.7.3) (2020-05-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-carbon-themes
