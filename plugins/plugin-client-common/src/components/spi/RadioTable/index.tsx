@@ -16,11 +16,9 @@
 
 import * as React from 'react'
 
-import KuiContext from '../../Client/context'
-
 import Props from './model'
 import Carbon from './impl/Carbon'
-import PatternFly4 from './impl/PatternFly'
+// import PatternFly4 from './impl/PatternFly'
 
 import Toolbar from '../../Content/Table/Toolbar'
 
@@ -103,21 +101,34 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
     )
   }
 
-  public render() {
-    const onChange = this.onChange.bind(this)
+  private carbon() {
+    return <Carbon {...this.props} {...this.state} onChange={this.onChange.bind(this)} />
+  }
 
+  /* private patternfly() {
+    return <PatternFly4 {...this.props} {...this.state} onChange={this.onChange.bind(this)} />
+  } */
+
+  private broker() {
+    // notes: the PatternFly DataTable is junk
+    /* <KuiContext.Consumer>
+          {config =>
+            config.components === 'patternfly' ? (
+              {this.patternfly()}
+            ) : (
+              {this.carbon()}
+            )
+          }
+        </KuiContext.Consumer> */
+
+    return this.carbon()
+  }
+
+  public render() {
     return (
       <div className="kui--data-table-wrapper kui--screenshotable">
         {this.topToolbar()}
-        <KuiContext.Consumer>
-          {config =>
-            config.components === 'patternfly' ? (
-              <PatternFly4 {...this.props} {...this.state} onChange={onChange} />
-            ) : (
-              <Carbon {...this.props} {...this.state} onChange={onChange} />
-            )
-          }
-        </KuiContext.Consumer>
+        {this.broker()}
         {this.bottomToolbar()}
       </div>
     )
