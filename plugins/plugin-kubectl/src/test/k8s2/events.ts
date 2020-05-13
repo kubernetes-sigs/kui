@@ -17,6 +17,7 @@
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
+import * as assert from 'assert'
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
@@ -65,9 +66,23 @@ commands.forEach(command => {
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('events'))
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('events'))
 
-        await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
+        console.error('wait for event watcher')
+        await this.app.client.waitForVisible(Selectors.WATCHER_N(1))
+        await this.app.client.waitForExist(Selectors.TERMINAL_SIDECAR_WATCHER_BUTTON)
+        await this.app.client.waitForExist(Selectors.WATCHER_N_TITLE(1)) // or watcher1, assert
+        const title = await this.app.client.getText(Selectors.WATCHER_N_TITLE(1))
+        assert.strictEqual(title, 'Event')
 
-        const table = `${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table`
+        console.error('show event watcher in terminal')
+        // click dropdown
+        await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
+        const showAsTableButton = Selectors.WATCHER_N_DROPDOWN_ITEM(1, 'Show as table')
+        await this.app.client.waitForVisible(showAsTableButton)
+        await this.app.client.click(showAsTableButton)
+
+        await Promise.resolve({ app: this.app, count: res.count + 2 }).then(ReplExpect.okWithAny)
+
+        const table = `${Selectors.OUTPUT_N(res.count + 2)} .bx--data-table`
 
         // test events table has correct header
         const header = ['TYPE', 'REASON', 'LAST SEEN', 'FIRST SEEN', 'MESSAGE']
