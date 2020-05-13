@@ -288,7 +288,51 @@ export class MetricDetailsMode {
     }
   }
 
-  public MetricDeleteCommand() {
-    return this.ob.deleteMetric()
+  public MetricDeleteCommand(metricList) {
+    let response = ''
+    let type = null
+    const ratio = this.ob.getRatioMetrics()
+    const counter = this.ob.getCounterMetrics()
+    this.counterMetricOutput = this.generateObject(counter, 'counter')
+    this.ratioMetricOutput = this.generateObject(ratio, 'ratio')
+
+    for (let i = 0; i < metricList.length; i++) {
+      if ({}.hasOwnProperty.call(this.counterMetricOutput, metricList[i])) {
+        type = 'counter'
+      } else if ({}.hasOwnProperty.call(this.ratioMetricOutput, metricList[i])) {
+        type = 'ratio'
+      } else {
+        response = response + '\n' + 'Could not find: ' + metricList[i]
+        continue
+      }
+      if (type) {
+        if (type === 'counter') {
+          if (!this.counterMetricOutput[metricList[i]].custom) {
+            response = response + '\n' + 'Cannot delete iter8 counter metric: ' + metricList[i]
+            continue
+          } else if (this.counterMetricOutput[metricList[i]].alsoDelete.length) {
+            response =
+              response +
+              '\n' +
+              'Please delete dependency metrics: ' +
+              this.counterMetricOutput[metricList[i]].alsoDelete.join(', ') +
+              ' before deleting ' +
+              metricList[i]
+            continue
+          }
+        } else if (type === 'ratio') {
+          if (!this.ratioMetricOutput[metricList[i]].custom) {
+            response = response + '\n' + 'Cannot delete iter8 ratio metric: ' + metricList[i]
+            continue
+          }
+        }
+        if (deleteMetric(metricList[i]).success === metricList[i]) {
+          response = response + '\n' + 'Deleted: ' + metricList[i]
+        } else {
+          response = response + '\n' + 'Could not delete: ' + metricList[i]
+        }
+      }
+    }
+    return response
   }
 }
