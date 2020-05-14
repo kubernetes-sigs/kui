@@ -85,8 +85,6 @@ const tagForKey = {
   STATUS: 'badge'
 }
 
-const cssForKeyValue = {}
-
 /**
  * Split the given string at the given split indices
  *
@@ -239,12 +237,7 @@ export const formatTable = <O extends KubeOptions>(
       }
 
       const rowIsSelected = rows[0].key === 'CURRENT' && rows[0].value === '*'
-      const rowKey = rows[0].key
-      const rowValue = rows[0].value
-      const rowCSS = [
-        (cssForKeyValue[rowKey] && cssForKeyValue[rowKey][rowValue]) || '',
-        rowIsSelected ? 'selected-row' : ''
-      ].filter(_ => _)
+      const rowCSS = [rowIsSelected ? 'selected-row' : ''].filter(_ => _)
 
       // if there isn't a global namespace specifier, maybe there is a row namespace specifier
       // we use the row specifier in preference to a global specifier -- is that right?
@@ -272,10 +265,23 @@ export const formatTable = <O extends KubeOptions>(
         return /failed/i.test(reason) ? TrafficLight.Red : ''
       }
 
+      /**
+       * rowKey is the unique string that distinguishes each row
+       * option 1. name
+       * option 2. `first column`-`name`, e.g. --all-namespaces
+       * option 3. `first column`-`idx` when there's no name column, e.g. k get events
+       *
+       */
+      const rowKey = name
+        ? isForAllNamespaces(options)
+          ? `${rows[0].value}-${name}`
+          : name
+        : `${rows[0].value}-${idx}`
+
       return {
         key: rows[0].key,
         name: nameForDisplay,
-        rowKey: name,
+        rowKey,
         fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         onclickSilence: true,
