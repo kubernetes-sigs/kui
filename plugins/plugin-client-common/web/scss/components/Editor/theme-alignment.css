@@ -144,3 +144,7 @@
 [kui-theme-style] .monaco-editor .cursor {
   background-color: var(--color-support-01);
 }
+
+[kui-theme-style] .monaco-editor .folded-background {
+  background-color: var(--color-table-border3);
+}
