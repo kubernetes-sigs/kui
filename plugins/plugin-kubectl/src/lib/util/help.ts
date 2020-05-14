@@ -248,7 +248,7 @@ const renderHelpUnsafe = (
       content: header
         .replace(/\n\s*(IMPORTANT:)([^\n]+)/, `\n> **$1**$2`)
         .replace(/(\s)(NOT)(\s)/g, '$1**$2**$3')
-        .replace(/^(.*):$/gm, '##### $1\n')
+        .replace(/^(.{1-15}):$/gm, '##### $1\n')
         .replace(
           /(:\n\n\s*)((([^,\n])+,)+[^,\n]+)/g,
           (_, m1, m2) =>
