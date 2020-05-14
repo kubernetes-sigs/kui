@@ -423,8 +423,13 @@ module.exports = {
       },
 
       {
-        test: /\.(ttf|eot)$/i,
+        test: /\.(eot)$/i,
         use: 'ignore-loader'
+      },
+
+      {
+        test: /\.(ttf)$/i,
+        use: 'file-loader'
       },
 
       //
