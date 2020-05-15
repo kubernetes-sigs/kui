@@ -580,8 +580,6 @@ class Display extends React.Component<DisplayProps, DisplayState> {
       const alsoRestore = this.ratioMetrics[metric].alsoRestore
       const deleted = []
 
-      console.log(alsoRestore)
-
       alsoRestore.forEach(metric => {
         if (this.counterMetrics[metric].isDeleted) {
           if (restoreMetric(metric, this.counterMetrics[metric].details, MetricTypes.counter).success === metric) {
@@ -633,10 +631,27 @@ class Display extends React.Component<DisplayProps, DisplayState> {
   }
 
   public editMetric(metric: string, type: MetricTypes) {
+    const selectedMetric2 = type === MetricTypes.counter
+        ? counterMetrics.find(counterMetric => {
+            return counterMetric.name === metric
+          })
+        : ratioMetrics.find(ratioMetric => {
+            return ratioMetric.name === metric
+          })
+
+    const selectedMetricCopy = JSON.parse(JSON.stringify(selectedMetric2))
+    const defaultConfig = type === MetricTypes.counter ? DEFAULT_COUNTER_METRIC_CONFIG : DEFAULT_RATIO_METRIC_CONFIG
+
+    // Add default config attributes in case
+    const editedMetric = { ...defaultConfig, ...selectedMetricCopy }
+
     this.setState({ 
       display: MetricDetailsModeDisplay.editMetrics,
       selectedType: type,
-      selectedMetric: metric
+      selectedMetric: metric,
+      selectedMetricName: metric,
+      selectedMetric2,
+      editedMetric
     })
   }
 
@@ -748,32 +763,6 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     // }
 
     // e.preventDefault()
-  }
-
-  private updateSelectedMetricName = e => {
-    const selectedMetricName = e.target.value
-
-    const selectedMetric2 =
-      this.state.selectedType === MetricTypes.counter
-        ? counterMetrics.find(counterMetric => {
-            return counterMetric.name === selectedMetricName
-          })
-        : ratioMetrics.find(ratioMetric => {
-            return ratioMetric.name === selectedMetricName
-          })
-
-    const selectedMetricCopy = JSON.parse(JSON.stringify(selectedMetric2))
-    const defaultConfig =
-      this.state.selectedType === MetricTypes.counter ? DEFAULT_COUNTER_METRIC_CONFIG : DEFAULT_RATIO_METRIC_CONFIG
-
-    // Add default config attributes in case
-    const editedMetric = { ...defaultConfig, ...selectedMetricCopy }
-
-    this.setState({
-      selectedMetricName,
-      selectedMetric2,
-      editedMetric
-    })
   }
 
   private updateMetricConfig = e => {
@@ -985,28 +974,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
       case MetricDetailsModeDisplay.editMetrics:
         if (selectedType === MetricTypes.counter) {
           return (
-            <div style={{ padding: '10px' }}>
-              <Form style={{ display: 'block' }}>
-                <FormGroup legendText="">
-                  <Select
-                    id="selectMetricToEdit"
-                    helperText="Select a counter metric to edit"
-                    onChange={this.updateSelectedMetricName}
-                  >
-                    <SelectItem
-                      key="Please select a counter metric"
-                      text="Please select a counter metric"
-                      value={''}
-                    ></SelectItem>
-                    {counterMetricNames.map(metricName => (
-                      <SelectItem key={metricName} text={metricName} value={metricName}></SelectItem>
-                    ))}
-                  </Select>
-                </FormGroup>
-              </Form>
-  
-              <hr></hr>
-  
+            <div style={{ padding: '10px' }}>  
               <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
                 {(() => {
                   if (this.state.selectedMetric2) {
@@ -1029,28 +997,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
           )
         } else {
           return (
-            <div style={{ padding: '10px' }}>
-              <Form style={{ display: 'block' }}>
-                <FormGroup legendText="">
-                  <Select
-                    id="selectMetricToEdit"
-                    helperText="Select a ratio metric to edit"
-                    onChange={this.updateSelectedMetricName}
-                  >
-                    <SelectItem
-                      key="Please select a ratio metric"
-                      text="Please select a ratio metric"
-                      value={''}
-                    ></SelectItem>
-                    {ratioMetricNames.map(metricName => (
-                      <SelectItem key={metricName} text={metricName} value={metricName}></SelectItem>
-                    ))}
-                  </Select>
-                </FormGroup>
-              </Form>
-  
-              <hr></hr>
-  
+            <div style={{ padding: '10px' }}>  
               <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
                 {(() => {
                   if (this.state.selectedMetric2) {
@@ -1284,8 +1231,6 @@ export class MetricDetailsMode2 extends React.Component<any, MetricDetailsMode2S
           '${metric.denominator}' which is not defined.`)
       }
     })
-
-    console.log(counterMetricsState, ratioMetricsState)
 
     return { counterMetricsState, ratioMetricsState}
   }
