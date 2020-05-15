@@ -1,0 +1,39 @@
+.bx--header .kui--tab.kui--tab--active {
+  box-shadow: none;
+}
+
+.bx--header {
+  background-color: var(--color-stripe-02);
+  height: 48px;
+  flex-basis: 48px;
+  display: flex;
+  font-weight: 600;
+  box-shadow: 0 1px 10px 0 rgba(21, 41, 53, 0.1);
+  z-index: 1;
+}
+
+.kui--tab--label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.kui--tab--active {
+  color: var(--active-tab-color);
+}
+
+.kui--tab::after {
+  display: block;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: transparent;
+  bottom: 0;
+  transition: all 0.2s;
+  pointer-events: none;
+}
+
+.kui--tab:hover:after,
+.kui--tab--active:after {
+  background-color: currentColor;
+}
