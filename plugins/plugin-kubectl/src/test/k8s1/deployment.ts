@@ -85,7 +85,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
           .then(SidecarExpect.showing('myapp', undefined, undefined, ns))
           .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('summary')))
           .then(() => this.app)
-          .then(SidecarExpect.form({ Name: 'myapp' }, 'kubectl-summary'))
+          .then(SidecarExpect.yaml({ Name: 'myapp' }))
           .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
           .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('pods')))
           .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('pods')))

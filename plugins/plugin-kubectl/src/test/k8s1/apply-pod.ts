@@ -60,7 +60,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           await SidecarExpect.open(this.app)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing('nginx'))
-            .then(SidecarExpect.form({ Status: 'Running' }, 'kubectl-summary'))
+            .then(SidecarExpect.yaml({ Status: 'Running' }))
         } catch (err) {
           return Common.oops(this, true)(err)
         }
