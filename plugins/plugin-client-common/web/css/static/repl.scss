@@ -70,16 +70,17 @@
   .kui--repl-prompt-buttons .graphical-icon {
     opacity: 0.0375;
   }
-  .kui--repl-block-timestamp {
-    color: var(--color-text-02);
-    font-size: 0.6875em;
-  }
   .kui--repl-block-spinner {
     color: var(--color-brand-03);
     margin-right: 0.5em;
     font-size: 0.875em;
     font-weight: 700;
   }
+}
+
+[kui-theme-style] .kui--repl-block-right-element {
+  color: var(--color-text-02);
+  font-size: 0.6875em;
 }
 
 .repl-result,
