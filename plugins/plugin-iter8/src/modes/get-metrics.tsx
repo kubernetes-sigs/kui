@@ -14,14 +14,18 @@ import '../../src/web/scss/static/metrics.scss'
 import ReactErrorDisplay from './error-react'
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
-import GetMetricConfig, { iter8Metrics } from '../components/metric-config'
+import { GetMetricConfig, ITER8_METRIC_NAMES } from '../components/metric-config'
+import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics } from '../components/metric-config-types'
 
 const { Table, TableBody, TableCell, TableRow, TableContainer, TableExpandRow, TableExpandedRow } = DataTable
 
+enum MetricTypes {
+  'counter',
+  'ratio'
+}
+
 function getInitialRows(metricObject) {
-  const r = []
-  Object.entries(metricObject).map(m => r.push({ id: m[0] }))
-  return r
+  return Object.entries(metricObject).map(m => {return { id: m[0] }})
 }
 
 function metricDetails(details) {
@@ -51,61 +55,70 @@ class Display extends React.Component<any, any> {
   public output = ''
   private ratioMetrics = {}
   private counterMetrics = {}
+
   public constructor(props) {
     super(props)
+
     this.ratioMetrics = props['params']['rM']
     this.counterMetrics = props['params']['cM']
     this.state = { ratio: this.ratioMetrics, counter: this.counterMetrics }
   }
 
-  public updateIsDeleted(metric, type) {
-    if (type === 'counter') {
-      if (iter8Metrics.counter.includes(metric)) {
+  public updateIsDeleted(metric, type: MetricTypes) {
+    if (type === MetricTypes.counter) {
+      if (ITER8_METRIC_NAMES.counter.includes(metric)) {
         return
       }
+
       if (deleteMetric(metric, type).success === metric) {
         this.counterMetrics[metric].isDeleted = true
         console.log('Deleted: ' + metric)
         const alsoDelete = this.counterMetrics[metric].alsoDelete
         for (let j = 0; j < alsoDelete.length; j++) {
-          if (deleteMetric(alsoDelete[j], 'ratio').success === alsoDelete[j]) {
+          if (deleteMetric(alsoDelete[j], MetricTypes.ratio).success === alsoDelete[j]) {
             this.ratioMetrics[alsoDelete[j]].isDeleted = true
             console.log('Deleted: ' + alsoDelete[j])
           }
         }
       }
+
     } else {
-      if (iter8Metrics.ratio.includes(metric)) {
+      if (ITER8_METRIC_NAMES.ratio.includes(metric)) {
         return
       }
+
       if (deleteMetric(metric, type).success === metric) {
         this.ratioMetrics[metric].isDeleted = true
         console.log('Deleted: ' + metric)
       }
     }
+
     this.setState({ counter: this.counterMetrics, ratio: this.ratioMetrics })
   }
 
-  public restore(metric, type) {
-    if (type === 'counter') {
+  public restore(metric, type: MetricTypes) {
+    if (type === MetricTypes.counter) {
       if (restoreMetric(metric, this.counterMetrics[metric].details, type).success === metric) {
         this.counterMetrics[metric].isDeleted = false
         console.log('Restored: ' + metric)
       }
+
     } else {
       const alsoRestore = this.ratioMetrics[metric].alsoRestore
       const deleted = []
-      for (let i = 0; i < alsoRestore.length; i++) {
-        if (this.counterMetrics[alsoRestore[i]].isDeleted) {
-          if (restoreMetric(metric, this.counterMetrics[alsoRestore[i]].details, 'counter').success === metric) {
-            this.counterMetrics[alsoRestore[i]].isDeleted = false
-            console.log('Restored: ' + alsoRestore[i])
-            deleted.push(alsoRestore[i])
+
+      alsoRestore.forEach(restoreMetric => {
+        if (this.counterMetrics[restoreMetric].isDeleted) {
+          if (restoreMetric(metric, this.counterMetrics[restoreMetric].details, MetricTypes.counter).success === metric) {
+            this.counterMetrics[restoreMetric].isDeleted = false
+            console.log('Restored: ' + restoreMetric)
+            deleted.push(restoreMetric)
           }
         } else {
-          deleted.push(alsoRestore[i])
+          deleted.push(restoreMetric)
         }
-      }
+      })
+
       if (alsoRestore.length === deleted.length) {
         if (restoreMetric(metric, this.ratioMetrics[metric].details, type).success === metric) {
           this.ratioMetrics[metric].isDeleted = false
@@ -122,7 +135,7 @@ class Display extends React.Component<any, any> {
         <div className="deletedtext">Deleted</div>
         <div className="clickableicon" onClick={() => this.restore(metric, type)}>
           <Reset20 />
-          {type === 'ratio' && this.ratioMetrics[metric].custom && this.ratioMetrics[metric].alsoRestore.length ? (
+          {type === MetricTypes.ratio && this.ratioMetrics[metric].custom && this.ratioMetrics[metric].alsoRestore.length ? (
             <div className="warningtext">
               Warning: Will also restore {this.ratioMetrics[metric].alsoRestore.join(', ')}
             </div>
@@ -175,7 +188,7 @@ class Display extends React.Component<any, any> {
                             ) : (
                               <div className="clickableicon" onClick={() => this.updateIsDeleted(row.id, type)}>
                                 <TrashCan20 />
-                                {type === 'counter' && metrics[row.id].custom && metrics[row.id].alsoDelete.length ? (
+                                {type === MetricTypes.counter && metrics[row.id].custom && metrics[row.id].alsoDelete.length ? (
                                   <div className="warningtext">
                                     Warning: Will also delete {metrics[row.id].alsoDelete.join(', ')}
                                   </div>
@@ -206,8 +219,8 @@ class Display extends React.Component<any, any> {
     return (
       <div className="pageStyle">
         <h3> Currently Available Metrics</h3>
-        {this.renderMetricTable(this.counterMetrics, 'counter', 'Counter Metrics')}
-        {this.renderMetricTable(this.ratioMetrics, 'ratio', 'Ratio Metrics')}
+        {this.renderMetricTable(this.counterMetrics, MetricTypes.counter, 'Counter Metrics')}
+        {this.renderMetricTable(this.ratioMetrics, MetricTypes.ratio, 'Ratio Metrics')}
         <div className="center">
           <div className="inner">
             <Button size="default" kind="primary">
@@ -220,119 +233,139 @@ class Display extends React.Component<any, any> {
   }
 }
 
+type MetricsState = {
+  [metricName: string]: MetricState
+}
+
+type MetricState = {
+  name: string
+  isDeleted: boolean
+  alsoDelete: string[]
+  alsoRestore: string[]
+
+  // TODO: rename to config?
+  details: CounterMetric | RatioMetric
+  custom: boolean 
+}
+
 export class MetricDetailsMode {
-  public ob
-  public ratioMetricOutput = {}
-  public counterMetricOutput = {}
+  public ob: GetMetricConfig
+  public ratioMetricOutput: MetricsState
+  public counterMetricOutput: MetricsState
+
   public constructor() {
     this.ob = new GetMetricConfig()
+
+    // TODO: Set up ratioMetricOutput and counterMetricOutput
   }
 
-  public generateObject(metrics, type) {
-    const m = {}
-    for (let i = 0; i < metrics.length; i++) {
-      m[metrics[i].name] = {
-        name: metrics[i].name,
+  // TODO: rename to generateMetricState
+  public generateObject(metrics: CounterMetrics | RatioMetrics, type: MetricTypes): MetricsState {
+    // TODO: rename to metricsState
+    const m: MetricsState = {}
+
+    metrics.forEach(metric => {
+      m[metric.name] = {
+        name: metric.name,
         isDeleted: false,
         alsoDelete: [],
         alsoRestore: [],
-        details: metrics[i],
-        custom: true
+        details: metric,
+        custom: !ITER8_METRIC_NAMES.counter.includes(metric.name)
       }
-      if (type === 'counter') {
-        if (iter8Metrics.counter.includes(metrics[i].name)) {
-          m[metrics[i].name].custom = false
+
+      if (type === MetricTypes.ratio) {
+        // Add alsoRestore
+        m[metric.name].alsoRestore = [metric.numerator, metric.denominator]
+
+        // Add alsoDelete
+        if ({}.hasOwnProperty.call(this.counterMetricOutput, metric.numerator)) {
+          this.counterMetricOutput[metric.numerator].alsoDelete.push(metric.name)
         }
-      }
-      if (type === 'ratio') {
-        if (iter8Metrics.ratio.includes(metrics[i].name)) {
-          m[metrics[i].name].custom = false
-        }
-        m[metrics[i].name].alsoRestore = [metrics[i].numerator, metrics[i].denominator]
-        if ({}.hasOwnProperty.call(this.counterMetricOutput, metrics[i].numerator)) {
-          this.counterMetricOutput[metrics[i].numerator].alsoDelete.push(metrics[i].name)
-        }
-        if ({}.hasOwnProperty.call(this.counterMetricOutput, metrics[i].denominator)) {
-          this.counterMetricOutput[metrics[i].denominator].alsoDelete.push(metrics[i].name)
+        if ({}.hasOwnProperty.call(this.counterMetricOutput, metric.denominator)) {
+          this.counterMetricOutput[metric.denominator].alsoDelete.push(metric.name)
         }
       }
-    }
+    })
+
     return m
   }
 
   public MetricList() {
-    let ratio = this.ob.getRatioMetrics()
-    let counter = this.ob.getCounterMetrics()
-    if ({}.hasOwnProperty.call(ratio, 'error')) {
-      return ReactErrorDisplay(ratio.error)
-    } else if ({}.hasOwnProperty.call(counter, 'error')) {
-      return ReactErrorDisplay(counter.error)
+    const ratioMetrics = this.ob.getRatioMetrics()
+    const counterMetrics = this.ob.getCounterMetrics()
+    
+    if ('error' in ratioMetrics) {
+      return ReactErrorDisplay(ratioMetrics.error)
+    } else if ('error' in counterMetrics) {
+      return ReactErrorDisplay(counterMetrics.error)
     } else {
-      this.counterMetricOutput = this.generateObject(counter, 'counter')
-      this.ratioMetricOutput = this.generateObject(ratio, 'ratio')
-      ratio = this.ratioMetricOutput
-      counter = this.counterMetricOutput
+      // TODO: Shouldn't this be done in the constructor?
+      this.counterMetricOutput = this.generateObject(counterMetrics, MetricTypes.counter)
+      this.ratioMetricOutput = this.generateObject(ratioMetrics, MetricTypes.ratio)
+
+      const counterMetricsState = this.counterMetricOutput
+      const ratioMetricsState = this.ratioMetricOutput
 
       return function GetMetricList(props: ToolbarProps) {
-        return <Display params={{ ...props, rM: ratio, cM: counter }} />
+        return <Display params={{ ...props, rM: ratioMetricsState, cM: counterMetricsState }} />
       }
     }
   }
 
-  public MetricYaml() {
+  public MetricYaml(): string {
     const yamlOutput = this.ob.getMetricsConfigMap()
-    if ({}.hasOwnProperty.call(yamlOutput, 'error')) {
-      return yamlOutput.error
-    } else {
+    
+    // // TODO: handle error
+    // if ('error' in yamlOutput) {
+    //   return yamlOutput.error
+    // } else {
+    //   return yamlOutput
+    // }
+
+    if (typeof yamlOutput === 'string') {
       return yamlOutput
     }
   }
 
-  public MetricDeleteCommand(metricList) {
-    let response = ''
-    let type = null
-    const ratio = this.ob.getRatioMetrics()
-    const counter = this.ob.getCounterMetrics()
-    this.counterMetricOutput = this.generateObject(counter, 'counter')
-    this.ratioMetricOutput = this.generateObject(ratio, 'ratio')
+  public MetricDeleteCommand(metricList): string {
+    const ratioMetrics = this.ob.getRatioMetrics()
+    const counterMetrics = this.ob.getCounterMetrics()
+
+    // TODO: Resolve following errors by configuring metric output in constructor
+    if ('error' in ratioMetrics) {
+      // return ReactErrorDisplay(ratioMetrics.error)
+    } else if ('error' in counterMetrics) {
+      // return ReactErrorDisplay(counterMetrics.error)
+    } else {
+      this.counterMetricOutput = this.generateObject(counterMetrics, MetricTypes.counter)
+      this.ratioMetricOutput = this.generateObject(ratioMetrics, MetricTypes.ratio)
+    }
 
     for (let i = 0; i < metricList.length; i++) {
-      if ({}.hasOwnProperty.call(this.counterMetricOutput, metricList[i])) {
-        type = 'counter'
-      } else if ({}.hasOwnProperty.call(this.ratioMetricOutput, metricList[i])) {
-        type = 'ratio'
+      const metric = metricList[i]
+
+      if (metric in this.counterMetricOutput) {
+        if (!this.counterMetricOutput[metric].custom) {
+          return `Cannot delete iter8 counter metric: ${metric}`
+
+        } else if (this.counterMetricOutput[metric].alsoDelete.length) {
+          // TODO: Please delete dependent metrics?
+          return `Please delete dependency metrics: 
+            ${this.counterMetricOutput[metric].alsoDelete.join(', ')} 
+            before deleting ${metric}`
+        }
       } else {
-        response = response + '\n' + 'Could not find: ' + metricList[i]
-        continue
+        if (!this.ratioMetricOutput[metric].custom) {
+          return `Cannot delete iter8 ratio metric: ${metric}`
+        }
       }
-      if (type) {
-        if (type === 'counter') {
-          if (!this.counterMetricOutput[metricList[i]].custom) {
-            response = response + '\n' + 'Cannot delete iter8 counter metric: ' + metricList[i]
-            continue
-          } else if (this.counterMetricOutput[metricList[i]].alsoDelete.length) {
-            response =
-              response +
-              '\n' +
-              'Please delete dependency metrics: ' +
-              this.counterMetricOutput[metricList[i]].alsoDelete.join(', ') +
-              ' before deleting ' +
-              metricList[i]
-            continue
-          }
-        } else if (type === 'ratio') {
-          if (!this.ratioMetricOutput[metricList[i]].custom) {
-            response = response + '\n' + 'Cannot delete iter8 ratio metric: ' + metricList[i]
-            continue
-          }
-        }
-        if (deleteMetric(metricList[i]).success === metricList[i]) {
-          response = response + '\n' + 'Deleted: ' + metricList[i]
-        } else {
-          response = response + '\n' + 'Could not delete: ' + metricList[i]
-        }
+
+      if (deleteMetric(metric).success === metric) {
+        return `Deleted: ${metric}`
+      } else {
+        return `Could not delete: ${metric}`
       }
     }
-    return response
   }
 }
