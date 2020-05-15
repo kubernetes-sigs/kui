@@ -61,7 +61,7 @@ commands.forEach(command => {
         await SidecarExpect.open(this.app)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing(crdName))
-          .then(SidecarExpect.form({ Kind: 'CronTab' }, 'kubectl-summary'))
+          .then(SidecarExpect.yaml({ Kind: 'CronTab' }))
       } catch (err) {
         return Common.oops(this, true)(err)
       }

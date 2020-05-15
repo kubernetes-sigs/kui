@@ -61,7 +61,7 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
     const textExists = verifyTextExists.bind(this)
 
     const waitForDescribeContent = async () => {
-      await SidecarExpect.form({ Name: name, Status: spec.status }, 'kubectl-summary')(this.app)
+      await SidecarExpect.yaml({ Name: name, Status: spec.status })(this.app)
     }
 
     const waitForRawContent = async () => {
