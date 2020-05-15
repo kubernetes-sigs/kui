@@ -32,10 +32,14 @@
   }
 
   .bx--header__name {
-    color: var(--color-text-02);
     font-size: 0.875em;
     line-height: 1.125em;
     padding: 0 2em 0 1em;
+
+    &,
+    &:hover {
+      color: var(--color-text-02);
+    }
   }
 
   .bx--header__nav {

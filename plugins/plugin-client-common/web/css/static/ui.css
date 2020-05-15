@@ -41,9 +41,6 @@ body[kui-theme-style] a {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-body[kui-theme-style] a:hover:not(.plain-anchor) {
-  cursor: pointer;
-}
 
 /* HEADER */
 body.still-loading .left-tab-stripe {
