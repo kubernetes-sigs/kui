@@ -71,7 +71,7 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
           if (content) {
             if (content.data) {
-              await SidecarExpect.form(content.data, 'kubectl-summary')(this.app)
+              await SidecarExpect.yaml(content.data)(this.app)
             }
 
             await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
