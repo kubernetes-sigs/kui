@@ -137,9 +137,6 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   white-space: nowrap;
   /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
 }
-.repl-block:not(.repl-active) .repl-input-element {
-  color: var(--color-text-02);
-}
 .kui--prompt-like:empty {
   border-right: 1ex solid var(--color-caret);
 }
