@@ -1,14 +1,27 @@
 import { safeLoad } from 'js-yaml'
 
+import { MetricConfigMap, CounterMetrics, RatioMetrics } from './metric-config-types'
+
 const execSync = require('child_process').execSync
 
-export const iter8Metrics = {
+// TODO: configmaps to camelCase
+type MetricConfigData = { configmaps: string } | { error: any }
+type ErrorData = {
+  error: {
+    message: any[]
+    response: any
+  }
+}
+
+// TODO: Make metric attributes data contain this data
+export const ITER8_METRIC_NAMES = {
   counter: ['iter8_request_count', 'iter8_total_latency', 'iter8_error_count'],
   ratio: ['iter8_mean_latency', 'iter8_error_rate']
 }
 
-export default class GetMetricConfig {
-  public output = {}
+export class GetMetricConfig {
+  public output: MetricConfigData
+
   public constructor() {
     try {
       this.output = {
@@ -22,7 +35,7 @@ export default class GetMetricConfig {
     }
   }
 
-  public errorResponse() {
+  public errorResponse(): ErrorData {
     if ({}.hasOwnProperty.call(this.output['error'], 'stderr')) {
       return {
         error: {
@@ -40,36 +53,43 @@ export default class GetMetricConfig {
     }
   }
 
-  public getMetricsConfigMap() {
+  public getMetricsConfigMap(): string | ErrorData {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return this.errorResponse()
     }
     return this.output['configmaps']
   }
 
-  public getCounterMetrics() {
+  public getCounterMetrics(): CounterMetrics | ErrorData {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return this.errorResponse()
     }
+
+    // TODO: This seems inefficient, to YAML parse twice whenever you need this
     return safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml'])
   }
 
-  public getRatioMetrics() {
+  public getRatioMetrics(): RatioMetrics | ErrorData {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return this.errorResponse()
     }
+
+    // TODO: This seems inefficient, to YAML parse twice whenever you need this
     return safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml'])
   }
 
-  public getMetricList() {
+  // Return list of names of counter and ratio metrics in the config map
+  public getMetricList(): { counter: string[], ratio: string[]} | ErrorData {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return this.errorResponse()
     }
-    const list = { ratio: [], counter: [] }
-    const rM = safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml'])
-    const cM = safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml'])
-    rM.map(r => list.ratio.push(r['name']))
-    cM.map(r => list.counter.push(r['name']))
-    return list
+
+    const counterMetrics = safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml']) as CounterMetrics
+    const ratioMetrics = safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml']) as RatioMetrics
+    
+    return {
+      counter: counterMetrics.map(metric => metric['name']),
+      ratio: ratioMetrics.map(metric => metric['name'])
+    }
   }
 }
