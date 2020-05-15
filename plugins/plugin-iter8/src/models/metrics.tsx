@@ -1,16 +1,24 @@
 import { ModeRegistration } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
-import { MetricDetailsMode } from '../modes/get-metrics'
+import { MetricDetailsMode, getMetricDetailsMode2 } from '../modes/get-metrics'
 
 function verifyMetricResponse(resource: KubeResource): boolean {
   return resource.kind === 'Command' && resource.metadata.name === 'Metric Command'
 }
 
+// const metricListMode: ModeRegistration<KubeResource> = {
+//   when: verifyMetricResponse,
+//   mode: {
+//     mode: 'Metric List',
+//     react: new MetricDetailsMode().MetricList()
+//   }
+// }
+
 const metricListMode: ModeRegistration<KubeResource> = {
   when: verifyMetricResponse,
   mode: {
     mode: 'Metric List',
-    react: new MetricDetailsMode().MetricList()
+    react: getMetricDetailsMode2
   }
 }
 
@@ -27,4 +35,5 @@ const metricYamlMode: ModeRegistration<KubeResource> = {
 function metricDeleteCommand(metricName) {
   return new MetricDetailsMode().MetricDeleteCommand(metricName.argv.splice(3))
 }
+
 export { metricListMode, metricYamlMode, metricDeleteCommand }
