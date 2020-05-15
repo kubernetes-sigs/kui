@@ -4,6 +4,7 @@ const execSync = require('child_process').execSync
 
 export default function deleteMetric(metric, type = null) {
   let configmap = {}
+  
   try {
     configmap = execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
       encoding: 'utf-8',
@@ -12,6 +13,7 @@ export default function deleteMetric(metric, type = null) {
   } catch (err) {
     configmap = { error: err }
   }
+
   if (!{}.hasOwnProperty.call(configmap, 'error')) {
     const rM = safeLoad(safeLoad(configmap)['data']['ratio_metrics.yaml'])
     const cM = safeLoad(safeLoad(configmap)['data']['counter_metrics.yaml'])

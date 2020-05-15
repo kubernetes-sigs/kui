@@ -13,7 +13,8 @@ import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 // Functionality Imports
 import GetKubeInfo from '../components/get_cluster_info'
-import GetMetricConfig from '../components/metric-config'
+import { GetMetricConfig } from '../components/metric-config'
+import { CounterMetrics } from '../components/metric-config-types'
 // Component Properties
 const TextInputProps = {
   id: 'expName',
@@ -26,11 +27,16 @@ class ExprBase extends React.Component<any, any> {
   // imported class of methods from /components
   private kubeMethods = new GetKubeInfo()
   private GetMetricConfig = new GetMetricConfig()
+
   // Lists of dropdown menu items
   private nsList = this.kubeMethods.getNamespace()
   private countMetricsList = this.GetMetricConfig.getCounterMetrics()
   private ratioMetricsList = this.GetMetricConfig.getRatioMetrics()
+
+  // TODO: Handle error
+  // @ts-ignore
   private totMetricsList = this.countMetricsList.concat(this.ratioMetricsList)
+
   private svcList = []
   private deployList = []
   public constructor(props) {
@@ -138,7 +144,9 @@ class ExprBase extends React.Component<any, any> {
     } else {
       metricName = value.name
       metricType = 'Ratio'
-      for (let i = 0; i < this.countMetricsList.length; i++) {
+
+      // TODO: handle error
+      for (let i = 0; i < (this.countMetricsList as CounterMetrics).length; i++) {
         if (this.countMetricsList[i].name === value.name) metricType = 'Counter'
       }
     }
