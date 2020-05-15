@@ -28,9 +28,11 @@ const strings = i18n('plugin-kubectl')
  *
  */
 function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string[] }) {
-  const cmdGetPodEvents = `${getCommandFromArgs(args)} get events --field-selector involvedObject.name=${
-    resource.metadata.name
-  },involvedObject.namespace=${resource.metadata.namespace} -n ${resource.metadata.namespace}`
+  const cmdGetPodEvents = `${getCommandFromArgs(args)} get events --field-selector involvedObject.apiVersion=${
+    resource.apiVersion
+  },involvedObject.kind=${resource.kind},involvedObject.name=${resource.metadata.name},involvedObject.namespace=${
+    resource.metadata.namespace
+  } -n ${resource.metadata.namespace}`
 
   // mimic the events table shown in the 'kubectl describe' output
   const customColumns = 'wide'
