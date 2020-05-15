@@ -186,9 +186,7 @@ export default class Output extends React.PureComponent<Props, State> {
     const hasContent = this.isShowingSomethingInTerminal(this.props.model)
 
     return (
-      <div
-        className={'repl-output result-vertical kui--screenshotable' + (hasContent ? ' repl-result-has-content' : '')}
-      >
+      <div className={'repl-output result-vertical' + (hasContent ? ' repl-result-has-content' : '')}>
         {this.stream()}
         {this.result()}
         {this.cursor()}

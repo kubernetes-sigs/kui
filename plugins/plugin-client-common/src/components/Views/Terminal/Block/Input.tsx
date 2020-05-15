@@ -15,8 +15,8 @@
  */
 
 import * as React from 'react'
-import { dots as spinnerFrames } from 'cli-spinners'
 import { Tab as KuiTab } from '@kui-shell/core'
+import { dots as spinnerFrames } from 'cli-spinners'
 
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
@@ -24,6 +24,8 @@ import onKeyPress from './OnKeyPress'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
+
+import DropDown from '../../../spi/DropDown'
 
 export interface InputOptions {
   /** Optional: placeholder value for prompt */
@@ -58,6 +60,12 @@ export interface InputOptions {
 
   /** Optional: onFocus handler */
   onInputFocus?: (event: React.FocusEvent<HTMLInputElement>) => void
+
+  /** Remove the enclosing block */
+  willRemove?: () => void
+
+  /** Capture a screenshot of the enclosing block */
+  willScreenshot?: () => void
 }
 
 type Props = InputOptions & {
@@ -279,7 +287,9 @@ export default class Input extends React.PureComponent<Props, State> {
     if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
       return (
         this.props.model.startTime && (
-          <span className="kui--repl-block-timestamp">{this.props.model.startTime.toLocaleTimeString()}</span>
+          <span className="kui--repl-block-timestamp kui--repl-block-right-element">
+            {this.props.model.startTime.toLocaleTimeString()}
+          </span>
         )
       )
     }
@@ -299,6 +309,29 @@ export default class Input extends React.PureComponent<Props, State> {
     }
   }
 
+  private removeAction() {
+    return !this.props.willRemove ? [] : [{ label: 'Remove', handler: () => this.props.willRemove() }]
+  }
+
+  private screenshotAction() {
+    return !this.props.willScreenshot
+      ? []
+      : [
+          {
+            label: 'Screenshot',
+            handler: () => this.props.willScreenshot()
+          }
+        ]
+  }
+
+  /** DropDown menu for completed blocks */
+  private dropdown() {
+    if (!isActive(this.props.model)) {
+      const actions = this.removeAction().concat(this.screenshotAction())
+      return <DropDown actions={actions} className="kui--repl-block-right-element" />
+    }
+  }
+
   /**
    * Status elements associated with the block; even though these
    * pertain to the Output part of a Block, these are currently placed
@@ -310,6 +343,7 @@ export default class Input extends React.PureComponent<Props, State> {
       <span className="repl-prompt-right-elements">
         {this.spinner()}
         {this.timestamp()}
+        {this.dropdown()}
       </span>
     )
   }

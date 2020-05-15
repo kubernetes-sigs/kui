@@ -233,6 +233,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
+  /** remove the block at the given index */
+  private willRemoveBlock(idx: number) {
+    this.setState(curState => ({
+      blocks: curState.blocks
+        .slice(0, idx)
+        .concat(curState.blocks.slice(idx + 1))
+        .concat(curState.blocks.find(_ => isActive(_)) ? [] : [Active()]) // plus a new block, if needed
+    }))
+  }
+
   public render() {
     return (
       <div className={'repl' + (this.props.sidecarIsVisible ? ' sidecar-visible' : '')} id="main-repl">
@@ -246,6 +256,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               tab={this.props.tab}
               noActiveInput={this.props.noActiveInput}
               onOutputRender={this.onOutputRender.bind(this)}
+              willRemove={this.willRemoveBlock.bind(this, idx)}
+              willLoseFocus={() => this.doFocus()}
               ref={c => {
                 if (isActive(_)) {
                   // grab a ref to the active block, to help us maintain focus
