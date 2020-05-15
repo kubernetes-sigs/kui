@@ -14,20 +14,35 @@
  * limitations under the License.
  */
 
-import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
+import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
-import { renderFormWithLabels } from './Form'
-import { getDefaultSummaryMap } from './summary'
-import { ConfigMap, isConfigMap } from '../../model/resource'
+import toMap from './table-to-map'
+import { getCommandFromArgs } from '../../util/util'
+import { fqnOf } from '../../../controller/kubectl/fqn'
+import { KubeResource, ConfigMap, isConfigMap } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
+
+export function getDefaultSummaryMap(
+  tab: Tab,
+  resource: KubeResource,
+  args: {
+    argvNoOptions: string[]
+  }
+) {
+  // a command that will fetch a single-row table
+  const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
+
+  // fetch the table model and the safeDump function from js-yaml
+  return tab.REPL.qexec<Table>(cmd).then(toMap)
+}
 
 /**
  * Extract the events
  *
  */
 async function content(tab: Tab, cm: ConfigMap, args: { argvNoOptions: string[] }) {
-  const map = await getDefaultSummaryMap(tab, cm, args)
+  const [map, { safeDump }] = await Promise.all([getDefaultSummaryMap(tab, cm, args), import('js-yaml')])
 
   if (cm.data) {
     delete map.Data
@@ -43,7 +58,10 @@ async function content(tab: Tab, cm: ConfigMap, args: { argvNoOptions: string[] 
     }
   }
 
-  return renderFormWithLabels(map, cm)
+  return {
+    content: safeDump(map),
+    contentType: 'yaml'
+  }
 }
 
 /**

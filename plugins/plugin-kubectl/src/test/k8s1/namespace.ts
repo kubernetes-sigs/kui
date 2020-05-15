@@ -145,7 +145,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(name))
           .then(SidecarExpect.mode('summary'))
-          .then(SidecarExpect.form({ Name: name }, 'kubectl-summary'))
+          .then(SidecarExpect.yaml({ Name: name }))
           .catch(Common.oops(this, true))
       })
     }

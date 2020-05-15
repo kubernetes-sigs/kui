@@ -17,7 +17,6 @@
 import Debug from 'debug'
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
-import { renderFormWithLabels } from './Form'
 import { command } from './show-crd-managed-resources'
 import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
 
@@ -41,25 +40,24 @@ async function content(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOp
   const kindObj = kind ? { Kind: kind } : {}
 
   const baseResponse = Object.assign({}, scopeObj, groupObj, versionObj, kindObj)
+  const jsyaml = import('js-yaml')
 
   try {
     const { body: resources } = await tab.REPL.qexec<Table>(
       `${command(tab, crd, args)} -o custom-columns=NAME:.metadata.name`
     )
-    const countObj = { 'Resource count': resources.length }
 
-    return renderFormWithLabels(Object.assign(baseResponse, countObj), crd)
+    baseResponse['Resource count'] = resources.length
   } catch (err) {
     // safeguarding here, in case of unexpected errors collecting
     // optional information; see
     // https://github.com/kui-shell/plugin-kubeui/issues/330
-    debug('error trying to determine resource count for crd', err)
+    debug('error fetching resource count for crd', err)
+  }
 
-    const safeDump = await import('js-yaml')
-    return {
-      content: safeDump(baseResponse),
-      contentType: 'yaml'
-    }
+  return {
+    content: (await jsyaml).safeDump(baseResponse),
+    contentType: 'yaml'
   }
 }
 

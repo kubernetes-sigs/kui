@@ -17,44 +17,30 @@
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
 import toMap from './table-to-map'
-import { renderFormWithLabels } from './Form'
-import { getCommandFromArgs } from '../../util/util'
-import { fqnOf } from '../../../controller/kubectl/fqn'
 import { KubeResource, isSummarizableKubeResource, isKubeResourceWithItsOwnSummary } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
-
-export function getDefaultSummaryMap(
-  tab: Tab,
-  resource: KubeResource,
-  args: {
-    argvNoOptions: string[]
-  }
-) {
-  // a command that will fetch a single-row table
-  const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
-
-  // fetch the table model and the safeDump function from js-yaml
-  return tab.REPL.qexec<Table>(cmd).then(toMap)
-}
 
 /**
  * The content renderer for the summary tab
  *
  */
-async function renderSummary(
-  tab: Tab,
-  resource: KubeResource,
-  args: {
-    argvNoOptions: string[]
-  }
-) {
+async function renderSummary(tab: Tab, resource: KubeResource) {
   if (isKubeResourceWithItsOwnSummary(resource)) {
     return resource.summary
   }
 
-  const map = await await getDefaultSummaryMap(tab, resource, args)
-  return renderFormWithLabels(map, resource)
+  // a command that will fetch a single-row table
+  const cmd = `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
+
+  // in parallel, fetch the table model and the safeDump function from js-yaml
+  const [map, { safeDump }] = await Promise.all([tab.REPL.qexec<Table>(cmd).then(toMap), import('js-yaml')])
+
+  // our content is that map, rendered as yaml
+  return {
+    content: safeDump(map),
+    contentType: 'yaml'
+  }
 }
 
 /**
