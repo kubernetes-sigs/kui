@@ -1,8 +1,11 @@
 import { safeLoad, safeDump } from 'js-yaml'
 import { applyKube } from './traffic-split'
+import { CounterMetric, RatioMetric } from './metric-config-types'
+import { MetricTypes } from '../modes/get-metrics'
+
 const execSync = require('child_process').execSync
 
-export default function restoreMetric(metric, details, type) {
+export default function restoreMetric(metric, details: CounterMetric | RatioMetric, type: MetricTypes) {
   let configmap = {}
   try {
     configmap = execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
@@ -31,7 +34,7 @@ export default function restoreMetric(metric, details, type) {
       }
     }
     let restored = ''
-    if (type === 'counter') {
+    if (type === MetricTypes.counter) {
       restored = metric
       cM.push(details)
     } else {
