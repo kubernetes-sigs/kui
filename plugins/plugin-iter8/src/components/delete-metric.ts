@@ -1,5 +1,7 @@
 import { safeLoad, safeDump } from 'js-yaml'
 import { applyKube } from './traffic-split'
+import { MetricTypes } from '../modes/get-metrics'
+
 const execSync = require('child_process').execSync
 
 export default function deleteMetric(metric, type = null) {
@@ -29,20 +31,22 @@ export default function deleteMetric(metric, type = null) {
       },
       data: {}
     }
+
     if (type === null) {
       for (let i = 0; i < cM.length; i++) {
         if (cM[i].name === metric) {
-          type = 'counter'
+          type = MetricTypes.counter
           break
         }
       }
     }
+
     if (type === null) {
-      type = 'ratio'
+      type = MetricTypes.ratio
     }
 
     let deleted = ''
-    if (type === 'counter') {
+    if (type === MetricTypes.counter) {
       for (let i = 0; i < cM.length; i++) {
         if (cM[i].name === metric) {
           deleted = cM[i].name
@@ -59,6 +63,7 @@ export default function deleteMetric(metric, type = null) {
         }
       }
     }
+
     newconfigmap.data['counter_metrics.yaml'] = safeDump(cM)
     newconfigmap.data['ratio_metrics.yaml'] = safeDump(rM)
 

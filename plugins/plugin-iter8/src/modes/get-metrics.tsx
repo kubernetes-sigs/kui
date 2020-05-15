@@ -1282,6 +1282,8 @@ export class MetricDetailsMode2 extends React.Component<any, MetricDetailsMode2S
       }
     })
 
+    console.log(counterMetricsState, ratioMetricsState)
+
     return { counterMetricsState, ratioMetricsState}
   }
 
