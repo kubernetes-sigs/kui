@@ -177,8 +177,13 @@ async function getResourcesReferencedByKustomize(
  *
  */
 function getResourcesReferencedByCommandLine(argvRest: string[], args: Arguments<FinalStateOptions>): ResourceRef[] {
-  const [kind, nameGroupVersion] = argvRest
-  const [name, group, version] = nameGroupVersion.split(/\./)
+  // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
+  const [kind, nameGroupVersion, nameAlt] = argvRest
+
+  const isDelete = args.parsedOptions['final-state'] === FinalState.OfflineLike
+  const isCreateSecret = !isDelete && /secret(s)?/i.test(kind)
+  const [name, group, version] = isCreateSecret ? [nameAlt] : nameGroupVersion.split(/\./)
+
   const namespace = getNamespace(args) || 'default'
 
   return [{ group, version, kind, name, namespace }]
