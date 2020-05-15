@@ -156,7 +156,7 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         console.error('click showAsTable')
         // click dropdown
         await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
-        const showAsTableButton = Selectors.WATCHER_N_DROPDOWN_ITEM(1, 'Show as table')
+        const showAsTableButton = Selectors.WATCHER_N_SHOW_AS_TABLE(1)
         await this.app.client.waitForVisible(showAsTableButton)
 
         console.error('wait for table shown in terminal')
@@ -199,6 +199,12 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
 
         // and, conversely, that watch had better eventually show Offline
         await this.app.client.waitForExist(watchBadgeButOffline)
+
+        await this.app.client.waitForExist(Selectors.WATCHER_N_DROPDOWN(1))
+        await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
+        await this.app.client.waitForVisible(Selectors.WATCHER_N_CLOSE(1))
+        await this.app.client.click(Selectors.WATCHER_N_CLOSE(1))
+        await this.app.client.waitForExist(Selectors.WATCHER_N(1), 500, true)
       } catch (err) {
         await Common.oops(this, false)(err)
       }

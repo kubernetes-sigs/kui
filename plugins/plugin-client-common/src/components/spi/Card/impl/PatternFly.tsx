@@ -44,8 +44,8 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   }
 
   private renderDropDownItems(actions: Action[]) {
-    return actions.map(item => (
-      <DropdownItem key="action" component="button" onClick={item.handler} data-mode={item.label}>
+    return actions.map((item, idx) => (
+      <DropdownItem key={idx} component="button" onClick={item.handler} data-mode={item.label}>
         {item.label}
       </DropdownItem>
     ))

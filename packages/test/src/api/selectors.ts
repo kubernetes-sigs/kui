@@ -130,3 +130,5 @@ export const WATCHER_N_TITLE = (N: number) => `${WATCHER_N(N)} ${_TABLE_TITLE}`
 export const WATCHER_N_DROPDOWN = (N: number) => `${WATCHER_N(N)} .pf-c-dropdown button.pf-c-dropdown__toggle`
 export const WATCHER_N_DROPDOWN_ITEM = (N: number, label: string) =>
   `${WATCHER_N(N)} .pf-c-dropdown button.pf-c-dropdown__menu-item[data-mode="${label}"]`
+export const WATCHER_N_CLOSE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N, 'Stop watching')
+export const WATCHER_N_SHOW_AS_TABLE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N, 'Show as table')
