@@ -43,7 +43,6 @@ let ratioMetricNames: string[]
 const newCounterMetricConfig: Partial<CounterMetric> = {}
 const newRatioMetricConfig: Partial<RatioMetric> = {}
 
-
 export enum MetricTypes {
   'counter',
   'ratio'
@@ -101,7 +100,7 @@ type DropdownAttributeData = {
    * The option that will be selected on render. If not set, then the first
    * element of dropdown options will be selected.
    */
-  defaultDropdownOption?: string
+  noDefaultDropdownOptionPlaceholder?: string
 }
 
 type InvalidCheck = {
@@ -196,7 +195,7 @@ const RATIO_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
     type: AttributeTypes.dropdown,
     required: true,
     dropdownOptions: [], // Added dynamically in updateMetricAttributesData()
-    defaultDropdownOption: ratioDefaultDropdownOption
+    noDefaultDropdownOptionPlaceholder: ratioDefaultDropdownOption
   },
   {
     name: 'denominator',
@@ -205,7 +204,7 @@ const RATIO_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
     type: AttributeTypes.dropdown,
     required: true,
     dropdownOptions: [], // Added dynamically in updateMetricAttributesData()
-    defaultDropdownOption: ratioDefaultDropdownOption
+    noDefaultDropdownOptionPlaceholder: ratioDefaultDropdownOption
   },
   {
     name: 'preferred_direction',
@@ -228,9 +227,40 @@ const RATIO_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
       { printableOption: 'True', value: true },
       { printableOption: 'False', value: false }
     ],
-    defaultDropdownOption: noneSelected
+    noDefaultDropdownOptionPlaceholder: noneSelected
   }
 ]
+
+/**
+ * Given some metric type, get all default values
+ */
+function getDefaultConfig(metricAttributesData: MetricAttributesData): { [key: string]: any } {
+  const rs = {}
+
+  Object.values(metricAttributesData).forEach(attribute => {
+    // TODO: extend for other attribute types
+    if (attribute.type === AttributeTypes.dropdown) {
+      /**
+       * If there is no default dropdown option placeholder, then that means
+       * the default option should be the first entry among the dropdown
+       * options
+       */
+      if (!attribute.noDefaultDropdownOptionPlaceholder) {
+        if (attribute.dropdownOptions.length > 0) {
+          rs[attribute.name] = attribute.dropdownOptions[0].value
+        } else {
+          throw new Error(`No known dropdown options for attribute '${attribute.name}'`)
+        }
+      }
+    }
+  })
+
+  return rs
+}
+
+const DEFAULT_COUNTER_METRIC_CONFIG = getDefaultConfig(COUNTER_METRIC_ATTRIBUTES_DATA)
+
+const DEFAULT_RATIO_METRIC_CONFIG = getDefaultConfig(RATIO_METRIC_ATTRIBUTES_DATA)
 
 enum MetricDetailsModeDisplay {
   'getMetrics',
@@ -257,8 +287,11 @@ type DisplayState = {
   counter: MetricsState
   ratio: MetricsState
   display: MetricDetailsModeDisplay
-  selectedType: MetricTypes,
+  selectedType: MetricTypes
   selectedMetric: string
+  selectedMetric2: CounterMetric | RatioMetric
+  selectedMetricName: string
+  editedMetric: CounterMetric | RatioMetric
 }
 
 /**
@@ -360,8 +393,8 @@ class AttributeElement extends React.Component<{ attribute: AttributeData; metri
       // Dropdown attribute
     } else {
       // Default on default option if applicable
-      if (this.props.attribute.defaultDropdownOption) {
-        this.state = { value: this.props.attribute.defaultDropdownOption }
+      if (this.props.attribute.noDefaultDropdownOptionPlaceholder) {
+        this.state = { value: this.props.attribute.noDefaultDropdownOptionPlaceholder }
 
         // Select first dropdown option if otherwise
       } else {
@@ -409,7 +442,7 @@ class AttributeElement extends React.Component<{ attribute: AttributeData; metri
       const dropdownAttribute = relevantAttributeData as DropdownAttributeData
 
       // The target value may be null if the default dropdown option is selected
-      if (e.target.value !== dropdownAttribute.defaultDropdownOption) {
+      if (e.target.value !== dropdownAttribute.noDefaultDropdownOptionPlaceholder) {
         // Transform dropdown printable value to the actual value
         newMetricConfig[attribute.name] = dropdownAttribute.dropdownOptions.find(option => {
           return option.printableOption === e.target.value
@@ -422,8 +455,6 @@ class AttributeElement extends React.Component<{ attribute: AttributeData; metri
 
   public render() {
     const { attribute } = this.props
-
-    console.log(attribute)
 
     if (attribute.type === AttributeTypes.input) {
       // Text input
@@ -456,12 +487,12 @@ class AttributeElement extends React.Component<{ attribute: AttributeData; metri
           >
             {// Adding the default dropdown option if applicable
             (() => {
-              if (attribute.defaultDropdownOption) {
+              if (attribute.noDefaultDropdownOptionPlaceholder) {
                 return (
                   <SelectItem
                     key="default"
-                    text={attribute.defaultDropdownOption}
-                    value={attribute.defaultDropdownOption}
+                    text={attribute.noDefaultDropdownOptionPlaceholder}
+                    value={attribute.noDefaultDropdownOptionPlaceholder}
                   ></SelectItem>
                 )
               }
@@ -506,7 +537,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     return Object.keys(metricObject).map(metricName => { return { id: metricName } })
   }
 
-  public updateIsDeleted(metric, type: MetricTypes): void {
+  public updateIsDeleted(metric: string, type: MetricTypes): void {
     if (type === MetricTypes.counter) {
       if (ITER8_METRIC_NAMES.counter.includes(metric)) {
         return
@@ -538,7 +569,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     this.setState({ counter: this.counterMetrics, ratio: this.ratioMetrics })
   }
 
-  public restore(metric, type: MetricTypes) {
+  public restore(metric: string, type: MetricTypes) {
     if (type === MetricTypes.counter) {
       if (restoreMetric(metric, this.counterMetrics[metric].details, type).success === metric) {
         this.counterMetrics[metric].isDeleted = false
@@ -575,7 +606,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     return <div className="warningtext">Warning: Cannot {mode} iter8 metrics</div>
   }
 
-  public renderOnDelete(metric, type) {
+  public renderOnDelete(metric: string, type: MetricTypes) {
     return (
       <div>
         <div className="deletedtext">Deleted</div>
@@ -595,6 +626,14 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     this.setState({ 
       display: MetricDetailsModeDisplay.addMetrics,
       selectedType: type
+    })
+  }
+
+  public editMetric(metric: string, type: MetricTypes) {
+    this.setState({ 
+      display: MetricDetailsModeDisplay.editMetrics,
+      selectedType: type,
+      selectedMetric: metric
     })
   }
 
@@ -708,6 +747,36 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     // e.preventDefault()
   }
 
+  private updateSelectedMetricName = e => {
+    const selectedMetricName = e.target.value
+
+    const selectedMetric2 =
+      this.state.selectedType === MetricTypes.counter
+        ? counterMetrics.find(counterMetric => {
+            return counterMetric.name === selectedMetricName
+          })
+        : ratioMetrics.find(ratioMetric => {
+            return ratioMetric.name === selectedMetricName
+          })
+
+    const selectedMetricCopy = JSON.parse(JSON.stringify(selectedMetric2))
+    const defaultConfig =
+      this.state.selectedType === MetricTypes.counter ? DEFAULT_COUNTER_METRIC_CONFIG : DEFAULT_RATIO_METRIC_CONFIG
+
+    // Add default config attributes in case
+    const editedMetric = { ...defaultConfig, ...selectedMetricCopy }
+
+    this.setState({
+      selectedMetricName,
+      selectedMetric2,
+      editedMetric
+    })
+  }
+
+  private updateMetricConfig = e => {
+
+  }
+
   public renderTableTitle(title: string, type: MetricTypes) {
     return (
       <div>
@@ -754,7 +823,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
                       <TableExpandRow {...getRowProps({ row })}>
                         <TableCell>{row.id}</TableCell>
                         <TableCell>
-                          <div className="clickableicon">
+                          <div className="clickableicon" onClick={() => this.editMetric(row.id, type)}>
                             <Edit20 />
                             {!metrics[row.id].custom ? this.modifyIter8Metric('edit') : null}
                           </div>
@@ -793,10 +862,82 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     )
   }
 
+  private renderAttribute(
+    attribute: AttributeData,
+    selectedMetric: CounterMetric | RatioMetric,
+    values: any,
+    updateMetricConfig: (e, attribute: AttributeData) => void
+  ) {
+    if (attribute.type === AttributeTypes.input) {
+      // Text input
+      const invalidText =
+        attribute.invalidCheck && attribute.invalidCheck.invalidText ? attribute.invalidCheck.invalidText : ''
+  
+      return (
+        <FormGroup legendText="">
+          <TextInput
+            disabled={selectedMetric.name.length === 0}
+            id={name}
+            labelText={attribute.printableName}
+            helperText={attribute.description}
+            value={values[attribute.name]}
+            invalidText={invalidText}
+            onChange={e => {
+              return updateMetricConfig(e, attribute)
+            }}
+          ></TextInput>
+        </FormGroup>
+      )
+    } else {
+      const dropdownOption = attribute.dropdownOptions.find(option => {
+        return option.value === values[attribute.name]
+      })
+  
+      const printableValue = dropdownOption ? dropdownOption.printableOption : values[attribute.name]
+  
+      // Dropdown menu
+      return (
+        <FormGroup legendText="">
+          <Select
+            disabled={selectedMetric.name.length === 0}
+            id={name}
+            labelText={attribute.printableName}
+            helperText={attribute.description}
+            value={printableValue}
+            onChange={e => {
+              return updateMetricConfig(e, attribute)
+            }}
+          >
+            {// Adding the default dropdown option if applicable
+            (() => {
+              if (attribute.noDefaultDropdownOptionPlaceholder) {
+                return (
+                  <SelectItem
+                    key="default"
+                    text={attribute.noDefaultDropdownOptionPlaceholder}
+                    value={attribute.noDefaultDropdownOptionPlaceholder}
+                  ></SelectItem>
+                )
+              }
+            })()}
+            {// Adding the dropdown options
+            attribute.dropdownOptions.map(option => {
+              return (
+                <SelectItem
+                  key={option.printableOption}
+                  text={option.printableOption}
+                  value={option.printableOption}
+                ></SelectItem>
+              )
+            })}
+          </Select>
+        </FormGroup>
+      )
+    }
+  }
+
   public render() {
     const { display, counter, ratio, selectedType, selectedMetric } = this.state
-
-    console.log(selectedType)
 
     switch(display) {
       case MetricDetailsModeDisplay.getMetrics:
@@ -837,6 +978,98 @@ class Display extends React.Component<DisplayProps, DisplayState> {
             </Form>
           </div>
         )
+
+      case MetricDetailsModeDisplay.editMetrics:
+        if (selectedType === MetricTypes.counter) {
+          return (
+            <div style={{ padding: '10px' }}>
+              <Form style={{ display: 'block' }}>
+                <FormGroup legendText="">
+                  <Select
+                    id="selectMetricToEdit"
+                    helperText="Select a counter metric to edit"
+                    onChange={this.updateSelectedMetricName}
+                  >
+                    <SelectItem
+                      key="Please select a counter metric"
+                      text="Please select a counter metric"
+                      value={''}
+                    ></SelectItem>
+                    {counterMetricNames.map(metricName => (
+                      <SelectItem key={metricName} text={metricName} value={metricName}></SelectItem>
+                    ))}
+                  </Select>
+                </FormGroup>
+              </Form>
+  
+              <hr></hr>
+  
+              <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
+                {(() => {
+                  if (this.state.selectedMetric2) {
+                    return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
+                      this.renderAttribute(
+                        attribute,
+                        this.state.selectedMetric2,
+                        // counterMetrics.find(metric => metric.name === selectedMetric),
+                        this.state.editedMetric,
+                        this.updateMetricConfig
+                      )
+                    )
+                  }
+                })()}
+                <Button kind="primary" tabIndex={0} type="submit">
+                  Edit counter metric
+                </Button>
+              </Form>
+            </div>
+          )
+        } else {
+          return (
+            <div style={{ padding: '10px' }}>
+              <Form style={{ display: 'block' }}>
+                <FormGroup legendText="">
+                  <Select
+                    id="selectMetricToEdit"
+                    helperText="Select a ratio metric to edit"
+                    onChange={this.updateSelectedMetricName}
+                  >
+                    <SelectItem
+                      key="Please select a ratio metric"
+                      text="Please select a ratio metric"
+                      value={''}
+                    ></SelectItem>
+                    {ratioMetricNames.map(metricName => (
+                      <SelectItem key={metricName} text={metricName} value={metricName}></SelectItem>
+                    ))}
+                  </Select>
+                </FormGroup>
+              </Form>
+  
+              <hr></hr>
+  
+              <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
+                {(() => {
+                  if (this.state.selectedMetric2) {
+                    return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
+                      this.renderAttribute(
+                        attribute,
+                        this.state.selectedMetric2,
+                        // ratioMetrics.find(metric => metric.name === selectedMetric),
+                        this.state.editedMetric,
+                        this.updateMetricConfig
+                      )
+                    )
+                  }
+                })()}
+                <Button kind="primary" tabIndex={0} type="submit">
+                  Edit ratio metric
+                </Button>
+              </Form>
+            </div>
+          )
+        }
+      
 
       default: 
         return (<div>Which display type?</div>)
