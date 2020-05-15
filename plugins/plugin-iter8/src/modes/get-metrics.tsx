@@ -580,6 +580,8 @@ class Display extends React.Component<DisplayProps, DisplayState> {
       const alsoRestore = this.ratioMetrics[metric].alsoRestore
       const deleted = []
 
+      console.log(alsoRestore)
+
       alsoRestore.forEach(metric => {
         if (this.counterMetrics[metric].isDeleted) {
           if (restoreMetric(metric, this.counterMetrics[metric].details, MetricTypes.counter).success === metric) {
@@ -599,6 +601,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
         }
       }
     }
+
     this.setState({ counter: this.counterMetrics, ratio: this.ratioMetrics })
   }
 
@@ -1262,7 +1265,7 @@ export class MetricDetailsMode2 extends React.Component<any, MetricDetailsMode2S
         name: metric.name,
         isDeleted: false,
         alsoDelete: [],
-        alsoRestore: [],
+        alsoRestore: [metric.numerator, metric.denominator],
         details: metric,
         custom: !ITER8_METRIC_NAMES.ratio.includes(metric.name)
       }
