@@ -34,7 +34,7 @@ describe('kubectl api-resources', function(this: Common.ISuite) {
       .then(async res => {
         await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('bindings') })(res)
         const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(res.count))
-        assert.strictEqual(actualTitle, 'Api-resources')
+        assert.strictEqual(actualTitle, 'api-resources')
       })
       .catch(Common.oops(this, true)))
 

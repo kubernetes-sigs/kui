@@ -320,7 +320,7 @@ export const formatTable = <O extends KubeOptions>(
     header: rows[0],
     body: rows.slice(1),
     noSort: true,
-    title: capitalize(entityTypeFromRows || entityTypeFromCommandLine),
+    title: entityTypeFromRows || entityTypeFromCommandLine || '',
     breadcrumbs: [{ label: ns || (isForAllNamespaces(options) && strings('all')) || 'default' }]
   }
 }
