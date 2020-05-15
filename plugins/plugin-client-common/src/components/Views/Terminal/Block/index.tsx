@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab } from '@kui-shell/core'
+import { Tab as KuiTab, eventChannelUnsafe } from '@kui-shell/core'
 
 import Input, { InputOptions } from './Input'
 import Output from './Output'
@@ -38,6 +38,9 @@ type Props = InputOptions & {
 
   noOutput?: boolean
   onOutputRender?: (idx: number) => void
+
+  /** Block is about to lose focus */
+  willLoseFocus?: () => void
 }
 
 interface State {
@@ -78,6 +81,19 @@ export default class Block extends React.PureComponent<Props, State> {
     }
   }
 
+  private willScreenshot() {
+    if (this.props.willLoseFocus) {
+      this.props.willLoseFocus()
+    }
+
+    // async, to allow willLoseFocus() to take affect
+    setTimeout(() => {
+      const element = this.state._block.querySelector('.kui--screenshotable') || this.state._block
+      console.error('!!!!!!', element, this.state._block.querySelectorAll('.kui--screenshotable'))
+      eventChannelUnsafe.emit('/screenshot/element', element)
+    })
+  }
+
   private input() {
     return (
       this.state._block && (
@@ -87,6 +103,7 @@ export default class Block extends React.PureComponent<Props, State> {
           tab={this.props.tab}
           model={this.props.model}
           {...this.props}
+          willScreenshot={this.state._block && this.props.willRemove ? () => this.willScreenshot() : undefined}
           _block={this.state._block}
           ref={c => (this._input = c)}
         >
@@ -105,7 +122,7 @@ export default class Block extends React.PureComponent<Props, State> {
     return (
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <div
-          className={'repl-block kui--screenshotable ' + this.props.model.state.toString()}
+          className={'repl-block ' + this.props.model.state.toString()}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
           ref={c => this.setState({ _block: c })}

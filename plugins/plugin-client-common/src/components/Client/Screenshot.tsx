@@ -15,9 +15,9 @@
  */
 
 import * as React from 'react'
-import { i18n } from '@kui-shell/core'
-import { Button, ToastNotification } from 'carbon-components-react'
 import { Event, NativeImage } from 'electron'
+import { i18n, eventChannelUnsafe } from '@kui-shell/core'
+import { Button, ToastNotification } from 'carbon-components-react'
 
 import Icons from '../spi/Icons'
 
@@ -61,6 +61,10 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     this.state = {
       isActive: false
     }
+
+    eventChannelUnsafe.on('/screenshot/element', (element: HTMLElement) => {
+      this.onClickScreenshotRegion(element)
+    })
   }
 
   /** Transition back to a normal state, where are aren't ready to capture a screenshot */
