@@ -17,6 +17,8 @@
 import * as React from 'react'
 import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
 
+import '../web/scss/components/TopTabStripe/Carbon.scss'
+
 /**
  * Use DefaultClient configured to run in bottomInput mode.
  *
