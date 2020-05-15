@@ -57,10 +57,6 @@ export default class CircularBuffer<T extends BaseHistoryEntry> {
     return this.entries.findIndex(predicate)
   }
 
-  public get peekAll() {
-    return this.entries
-  }
-
   public update(idx: number, t: T) {
     this.entries[idx] = this.entry(t)
     this.activeIdx = idx
@@ -77,6 +73,18 @@ export default class CircularBuffer<T extends BaseHistoryEntry> {
     this.activeIdx = idx
     this.insertionIdx = (idx + 1) % this.entries.length
     this._length = Math.min(this._length + 1, this.entries.length)
+  }
+
+  /** pop the entry at idx */
+  public popAt(idx: number) {
+    while (idx < this._length - 1) {
+      this.entries[idx] = this.entry(this.entries[++idx])
+    }
+
+    delete this.entries[idx]
+    this.activeIdx = idx - 1
+    this.insertionIdx = idx % this.entries.length
+    this._length = this._length - 1
   }
 
   public hasLeft() {

@@ -249,6 +249,16 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
+  private closeWatchPane() {
+    this.setState(curState => {
+      return {
+        activeView: curState.activeView === 'TerminalSidecarWatcher' ? 'TerminalPlusSidecar' : 'TerminalOnly',
+        watchPaneHasContent: false,
+        primaryHeight: Height.NotSplit
+      }
+    })
+  }
+
   private onWillLoseFocus() {
     if (this._terminal) {
       this._terminal.doFocus()
@@ -376,7 +386,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
         className={this.state.primaryHeight === Height.NotSplit ? 'kui--watch-pane-closed' : undefined}
       >
         {this.leftRightSplit()}
-        <WatchPane uuid={this.props.uuid} tab={this.state.tab} openWatchPane={this.openWatchPane.bind(this)} />
+        <WatchPane
+          uuid={this.props.uuid}
+          tab={this.state.tab}
+          openWatchPane={this.openWatchPane.bind(this)}
+          closeWatchPane={this.closeWatchPane.bind(this)}
+        />
       </SplitPane>
     )
   }

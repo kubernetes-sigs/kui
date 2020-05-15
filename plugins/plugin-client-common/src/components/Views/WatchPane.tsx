@@ -55,6 +55,7 @@ interface Props {
   uuid: string
   tab: Tab
   openWatchPane: () => void
+  closeWatchPane: () => void
 }
 
 interface HistoryEntry extends BaseHistoryEntry {
@@ -151,9 +152,16 @@ export default class WatchPane extends React.PureComponent<Props, State> {
   }
 
   /** `Card Actions`, will be rendred as `Dropdown` */
-  private actions(command: string) {
-    const watchInTerminal = { label: strings('Show as table'), handler: this.watchInTerminal.bind(this, command) }
-    return [watchInTerminal]
+  private actions(history: HistoryEntry, watcherIdx: number) {
+    const watchInTerminal = {
+      label: strings('Show as table'),
+      handler: this.watchInTerminal.bind(this, history.command)
+    }
+    const stopWatching = {
+      label: strings('Stop watching'),
+      handler: this.clearSubPane.bind(this, history.response, watcherIdx)
+    }
+    return [watchInTerminal, stopWatching]
   }
 
   /** render subpane header as Breadcrumb */
@@ -163,10 +171,28 @@ export default class WatchPane extends React.PureComponent<Props, State> {
     return <Breadcrumb repl={this.props.tab.REPL} breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
   }
 
+  /** abort the watchable job and clear the watch pane */
+  private clearSubPane(response: Watchable, idx: number) {
+    // abort the watchable job
+    response.watch.abort()
+
+    // remove the history entry from circular buffer
+    this.state.history.popAt(idx)
+
+    // force re-rendering
+    this.forceUpdate()
+
+    // remove the watch pane if there's no watcher
+    if (!this.state.history || this.state.history.length === 0) {
+      this.props.closeWatchPane()
+    }
+  }
+
   public render() {
     return (
       <div className="kui--watch-pane">
         {this.state.history &&
+          this.state.history.length !== 0 &&
           Array(this.capacity())
             .fill(undefined)
             .map((_, idx) => {
@@ -174,7 +200,7 @@ export default class WatchPane extends React.PureComponent<Props, State> {
               return (
                 <CardSpi
                   className={`kui--card kui--screenshotable kui--card-${idx + 1}`}
-                  actions={history && this.actions(history.command)}
+                  actions={history && this.actions(history, idx)}
                   header={history && this.header(history.response, idx)}
                   key={history ? history.key : idx}
                 >
