@@ -1,72 +1,28 @@
-@import 'ibm-plex.scss';
-@import 'kui--alternate.scss';
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'ibm-plex';
+@import 'kui--alternate';
+@import 'charts';
+@import 'colors';
 
 /* color variables */
 body[kui-theme='Carbon Gray90'][kui-theme-style] {
-  --color-base00: #262626;
-  --color-base01: #171717;
-  --color-base02: #525252;
-  --color-base03: #393939;
-  --color-base04: #8c8c8c;
-  --color-base05: #adadad;
-  --color-base06: #f3f3f3;
-  --color-base07: #fff;
-  --color-base08: #fa4d56;
-  --color-base09: #bf5b17;
-  --color-base0A: #fdd13a;
-  --color-base0B: #56d679;
-  --color-base0C: #30b0ff;
-  --color-base0D: #4589ff;
-  --color-base0E: #fa75a6;
-  --color-base0F: #bb8eff;
-
-  --color-confirm-background: var(--color-sidecar-header);
-  --color-confirm-foreground: var(--color-base06);
-
-  --color-brand-01: #97c1ff;
-  --color-brand-02: var(--color-base07);
-  --color-brand-03: #0062ff;
-
-  --color-sidecar-toolbar-foreground: var(--color-base01);
-
-  --color-text-02: #bebebe; /**/
-
-  --color-background-03: #393939;
-
-  --color-sidecar-header: #3d3d3d;
-  --color-sidecar-background-01: #171717;
-  --color-sidecar-border: transparent;
-
-  --color-brand-03: #408bfc;
-  --color-content-divider: #4c4c4c;
-
-  --color-stripe-01: var(--color-base02);
-  --color-stripe-02: var(--color-sidecar-header);
-  --tab-gray-text-color: #b5b5b5;
-  --active-tab-color: #6ea6ff;
-  --color-repl-background: var(--color-base00);
-
-  --color-prompt-text: #408bfc;
-
-  --color-light-red: hsla(354, 81%, 51%, 50%);
-  --color-light-green: hsla(143, 73%, 43%, 50%);
-  --color-light-yellow: hsla(46, 99%, 59%, 50%);
-
-  /* from https://www.carbondesignsystem.com/data-visualization/color-palettes */
-  --color-latency-0: #d4bbff;
-  --color-latency-1: #08bdba;
-  --color-latency-2: #007d79;
-  --color-latency-3: #ff7eb6;
-  --color-latency-4: #fa4d56;
-  --color-latency-5: #fff1f1;
-  --color-latency-6: #6fdc8c;
-  --color-latency-7: #458dff;
-  --color-latency-8: #d12771;
-  --color-latency-9: #d2a106;
-  --color-latency-10: #08bdba;
-  --color-latency-11: #bae6ff;
-  --color-latency-12: #ba4e00;
-  --color-latency-13: #d4bbff;
+  @include charts-dark;
+  @include colors-dark;
 
   /* some carbon-overrides */
   .bx--modal-close__icon {

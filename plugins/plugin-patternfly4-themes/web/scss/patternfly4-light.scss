@@ -30,12 +30,13 @@ body[kui-theme='PatternFly4 Light'] {
   --color-yellow-sidecar: var(--pf-global--palette--gold-200);
   --color-green-sidecar: var(--pf-global--palette--green-200);
 
-  --color-latency-0: #8bc1f7;
-  --color-latency-1: #bde2b9;
-  --color-latency-2: #a2d9d9;
-  --color-latency-3: #b2b0ea;
-  --color-latency-4: #f9e0a2;
-  --color-latency-5: #f4b678;
+  --color-latency-0: #0066cc;
+  --color-latency-1: #4cb140;
+  --color-latency-2: #009596;
+  --color-latency-3: #5752d1;
+  --color-latency-4: #f4c145;
+  --color-latency-5: #ec7a08;
+  --color-latency-6: #8b8d8f;
 
   @include patternfly-sidecar;
 }
