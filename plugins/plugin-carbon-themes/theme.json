@@ -3,14 +3,14 @@
     {
       "name": "Carbon Gray10",
       "css": ["carbon-gray10.scss"],
-      "attrs": ["kui--alternate", "kui--sidecar-inverted"],
+      "attrs": ["kui--alternate", "kui--sidecar-inverted", "kui--carbon"],
       "style": "light",
       "topTabNames": "fixed"
     },
     {
       "name": "Carbon Gray90",
       "css": ["carbon-gray90.scss"],
-      "attrs": ["kui--alternate"],
+      "attrs": ["kui--alternate", "kui--carbon"],
       "style": "dark",
       "topTabNames": "fixed"
     }
