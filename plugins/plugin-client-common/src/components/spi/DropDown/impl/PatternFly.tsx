@@ -19,6 +19,8 @@ import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core'
 
 import Props, { Action } from '../model'
 
+import '../../../../../web/scss/components/DropDown/PatternFly.scss'
+
 interface State {
   isOpen: boolean
 }
@@ -45,7 +47,12 @@ export default class PatternFlyDropDown extends React.PureComponent<Props, State
     return (
       <Dropdown
         className={this.props.className}
-        onSelect={() => this.setState(curState => ({ isOpen: !curState.isOpen }))}
+        onSelect={() => {
+          this.setState(curState => ({ isOpen: !curState.isOpen }))
+          if (this.props.onClose) {
+            this.props.onClose.bind(this)
+          }
+        }}
         toggle={
           <KebabToggle
             onToggle={isOpen => {

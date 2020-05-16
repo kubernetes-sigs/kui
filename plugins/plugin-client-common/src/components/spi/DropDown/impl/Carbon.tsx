@@ -22,19 +22,13 @@ import Props from '../model'
 import '../../../../../web/scss/components/DropDown/Carbon.scss'
 
 export default class CarbonDropDown extends React.PureComponent<Props> {
-  private onClose() {
-    if (this.props.onClose) {
-      this.props.onClose()
-    }
-  }
-
   public render() {
     return (
       <OverflowMenu
         flipped
         menuOptionsClass={this.props.className}
         className={this.props.className}
-        onClose={this.onClose.bind(this)}
+        onClose={this.props.onClose && this.props.onClose.bind(this)}
       >
         {this.props.actions.map((_, idx) => (
           <OverflowMenuItem
