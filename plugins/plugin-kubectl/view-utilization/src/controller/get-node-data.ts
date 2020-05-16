@@ -211,12 +211,12 @@ export async function topNode(
 
     const cpuPercentAttr = row.attributes.find(_ => _.key === 'CPU%')
     if (cpuPercentAttr) {
-      cpuPercentAttr.valueDom = bar({ color: BarColor.CPU, fractionString: cpuPercentAttr.value })
+      cpuPercentAttr.valueDom = bar({ color: BarColor.CPU, fractionString: cpuPercentAttr.value, text: true })
     }
 
     const memoryPercentAttr = row.attributes.find(_ => _.key === 'MEMORY%')
     if (memoryPercentAttr) {
-      memoryPercentAttr.valueDom = bar({ color: BarColor.Memory, fractionString: memoryPercentAttr.value })
+      memoryPercentAttr.valueDom = bar({ color: BarColor.Memory, fractionString: memoryPercentAttr.value, text: true })
     }
 
     const allocatableInfo = detailTable.body.find(_ => _.name === row.name)
