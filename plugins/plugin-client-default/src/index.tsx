@@ -20,7 +20,7 @@ import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-c
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
-import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
+// import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
@@ -41,7 +41,7 @@ export default function renderMain(props: KuiProps) {
       </ContextWidgets>
 
       <MeterWidgets>
-        <ClusterUtilization />
+        {/* <ClusterUtilization /> */}
         <ProxyOfflineIndicator />
       </MeterWidgets>
     </Kui>
