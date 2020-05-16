@@ -66,6 +66,9 @@ export interface InputOptions {
 
   /** Capture a screenshot of the enclosing block */
   willScreenshot?: () => void
+
+  /** Block is about to lose focus */
+  willLoseFocus?: () => void
 }
 
 type Props = InputOptions & {
@@ -328,7 +331,13 @@ export default class Input extends React.PureComponent<Props, State> {
   private dropdown() {
     if (!isActive(this.props.model)) {
       const actions = this.removeAction().concat(this.screenshotAction())
-      return <DropDown actions={actions} className="kui--repl-block-right-element" />
+      return (
+        <DropDown
+          actions={actions}
+          className="kui--repl-block-right-element small-left-pad"
+          onClose={this.props.willLoseFocus && this.props.willLoseFocus.bind(this)}
+        />
+      )
     }
   }
 

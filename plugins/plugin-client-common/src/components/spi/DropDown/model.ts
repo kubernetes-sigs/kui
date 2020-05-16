@@ -23,6 +23,9 @@ interface Props {
 
   /** [Optional] CSS class to associate with the outermost Card element */
   className?: string
+
+  /** [Optional] Handler called when the DropDown is closed */
+  onClose?: () => void
 }
 
 export default Props

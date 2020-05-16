@@ -443,37 +443,39 @@ pre.monospace {
   font-size: inherit;
   font-weight: inherit;
 }
-.small-bottom-pad {
-  margin-bottom: 1ex;
-  display: inline-flex;
-}
-.tiny-top-pad {
-  margin-top: 0.125em;
-}
-.small-top-pad {
-  margin-top: 1ex;
-}
-.top-pad {
-  margin-top: 1em;
+[kui-theme-style] {
+  .small-bottom-pad {
+    margin-bottom: 1ex;
+    display: inline-flex;
+  }
+  .tiny-top-pad {
+    margin-top: 0.125em;
+  }
+  .small-top-pad {
+    margin-top: 1ex;
+  }
+  .top-pad {
+    margin-top: 1em;
+  }
+  .small-left-pad {
+    margin-left: 1ex;
+  }
+  .left-pad {
+    margin-left: 1em;
+  }
+  .tiny-right-pad {
+    margin-right: 0.1875em;
+  }
+  .small-right-pad {
+    margin-right: 0.375em;
+  }
+  .right-pad {
+    margin-right: 1em;
+  }
 }
 .repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div,
 body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
   padding-right: 2em;
-}
-.small-left-pad {
-  margin-left: 1ex;
-}
-.left-pad {
-  margin-left: 1em;
-}
-.tiny-right-pad {
-  margin-right: 0.1875em;
-}
-.small-right-pad {
-  margin-right: 0.375em;
-}
-.right-pad {
-  margin-right: 1em;
 }
 .emphasize {
   font-size: 1.5rem;
