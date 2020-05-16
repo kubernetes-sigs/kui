@@ -79,17 +79,17 @@ export default class ActiveISearch {
 
   public render() {
     if (this.currentSearchIdx < 0) {
-      return <span className="repl-input-like">{this.fixedPart()}</span>
+      return this.fixedPart()
     } else {
       const newValue = this.currentMatch()
       const caretPosition = newValue.indexOf(this.input.state.prompt.value) + 1
       return (
-        <span className="repl-input-like">
+        <React.Fragment>
           {this.fixedPart()}
           {this.matchedPrefixPart(newValue, caretPosition)}
           {this.typedPart()}
           {this.matchedSuffixPart(newValue, caretPosition)}
-        </span>
+        </React.Fragment>
       )
     }
   }
