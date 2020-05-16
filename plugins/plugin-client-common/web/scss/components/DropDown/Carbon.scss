@@ -18,11 +18,11 @@
 
 $color: var(--color-text-01);
 $bg-color: var(--color-base01);
-$hover-color: var(--color-base02);
+$hover-color: var(--color-table-border3);
 
 [kui-theme-style] {
   .bx--overflow-menu {
-    width: 2em;
+    width: 1.5em;
     height: 1.5em;
     &:hover {
       background-color: $hover-color;

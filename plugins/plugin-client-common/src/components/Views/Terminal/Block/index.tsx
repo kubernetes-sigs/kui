@@ -38,9 +38,6 @@ type Props = InputOptions & {
 
   noOutput?: boolean
   onOutputRender?: (idx: number) => void
-
-  /** Block is about to lose focus */
-  willLoseFocus?: () => void
 }
 
 interface State {
@@ -89,7 +86,6 @@ export default class Block extends React.PureComponent<Props, State> {
     // async, to allow willLoseFocus() to take affect
     setTimeout(() => {
       const element = this.state._block.querySelector('.kui--screenshotable') || this.state._block
-      console.error('!!!!!!', element, this.state._block.querySelectorAll('.kui--screenshotable'))
       eventChannelUnsafe.emit('/screenshot/element', element)
     })
   }
