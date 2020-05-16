@@ -18,17 +18,19 @@
 
 $color: var(--color-text-01);
 $bg-color: var(--color-base01);
-$hover-color: var(--color-table-border3);
+$bg-open-color: var(--color-base03);
+$button-hover-color: var(--color-table-border3);
+$option-hover-color: var(--color-base02);
 
 [kui-theme-style] {
   .bx--overflow-menu {
     width: 1.5em;
     height: 1.5em;
     &:hover {
-      background-color: $hover-color;
+      background-color: $button-hover-color;
     }
     &.bx--overflow-menu--open {
-      background-color: $bg-color;
+      background-color: $bg-open-color;
     }
   }
   .bx--overflow-menu__icon {
@@ -36,10 +38,17 @@ $hover-color: var(--color-table-border3);
   }
   .bx--overflow-menu-options {
     width: 10em;
+    background-color: $bg-color;
 
-    &,
+    &.bx--overflow-menu-options--open {
+      background-color: $bg-open-color;
+    }
+
     &:after {
-      background-color: $bg-color;
+      background-color: $bg-open-color;
+      top: -0.1875em;
+      width: 1.4em;
+      height: 0.1875em;
     }
     &:active,
     &:focus {
@@ -49,7 +58,7 @@ $hover-color: var(--color-table-border3);
   .bx--overflow-menu-options__option {
     height: 2.5em;
     &:hover {
-      background-color: $hover-color;
+      background-color: $option-hover-color;
     }
   }
   .bx--overflow-menu--flip .bx--overflow-menu-options__btn {
