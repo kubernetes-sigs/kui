@@ -31,6 +31,11 @@ function hasFraction(props: BarProps): props is BarProps & WithFraction {
   return typeof (props as WithFraction).fraction === 'number'
 }
 
+/** Format as a "xy%" string */
+function fractionString(props: BarProps): string {
+  return hasFraction(props) ? 100 * props.fraction + '%' : props.fractionString
+}
+
 /**
  * Create a bar, and place it in the given container. If the optional
  * initialFraction is given, then set the bar's width to that value.
@@ -44,11 +49,11 @@ export function Bar(props: BarProps) {
   const liveStyle = {
     backgroundColor: props.color,
     bodrerRight: '1px solid var(--color-stripe-02)',
-    width: hasFraction(props) ? 100 * props.fraction + '%' : props.fractionString
+    width: fractionString(props)
   }
 
   return (
-    <div style={{ display: 'flex', backgroundColor: 'var(--color-stripe-01)', height: '45%' }}>
+    <div style={{ display: 'flex', backgroundColor: 'var(--color-stripe-01)', height: '1em', width: '5em' }}>
       <div style={liveStyle} />
     </div>
   )
@@ -66,14 +71,13 @@ export function Bar(props: BarProps) {
 export function BarContainer(props: {
   children?: React.ReactNode
   alignment?: 'space-between' | 'center'
+  flexDirection?: 'column' | 'row'
   onClick?: string
 }) {
   const style = {
     display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: props.alignment || 'space-between',
-    width: '5em',
-    height: '1.375em'
+    flexDirection: props.flexDirection || ('column' as const),
+    justifyContent: props.alignment || 'space-between'
   }
 
   return props.onClick ? (
@@ -89,14 +93,16 @@ export function BarContainer(props: {
  * Create a single bar with its own container, and return the container.
  *
  */
-export function SingletonBar(props: BarProps) {
+type BP = BarProps & { text?: boolean }
+export function SingletonBar(props: BP) {
   return (
-    <BarContainer alignment="center">
+    <BarContainer alignment="center" flexDirection="row">
       <Bar {...props} />
+      {props.text && <span className="even-smaller-text sub-text small-left-pad">{fractionString(props)}</span>}
     </BarContainer>
   )
 }
 
-export function singletonBar(props: BarProps) {
+export function singletonBar(props: BP) {
   return <SingletonBar {...props} />
 }
