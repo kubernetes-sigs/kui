@@ -182,6 +182,9 @@ body/*:not(.sidecar-full-screen)*/ repl.sidecar-visible .repl-selection, body/*.
   /* probably not 100% right, but: for pty output, don't show kui's "caret", since xtermjs has its own */
   display: none;
 }
+.repl-block.processing .repl-input input {
+  color: var(--color-name);
+}
 .repl-block.processing .repl-result-spinner-inner {
   /* animation: spin 750ms linear infinite; */
   height: auto;

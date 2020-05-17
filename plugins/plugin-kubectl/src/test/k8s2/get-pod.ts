@@ -40,7 +40,7 @@ commands.forEach(command => {
      * Interact with the Containers tab
      *
      */
-    const testContainersTab = async (click = true) => {
+    /* const testContainersTab = async (click = true) => {
       if (click) {
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('containers'))
       }
@@ -57,24 +57,22 @@ commands.forEach(command => {
       // check that the message shows the final state
       const message = await this.app.client.getText(`${table} [data-name="nginx"] [data-key="message"]`)
       assert.ok(!/Initializing/i.test(message))
-    }
-
-    /* const testLogTabs = async () => {
-      const container = `${Selectors.SIDECAR} .bx--data-table .entity[data-name="nginx"] .entity-name`
-      await this.app.client.waitForVisible(container)
-      await this.app.client.click(container)
-      await SidecarExpect.open(this.app)
-
-      await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON) // make sure the back button exists
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs')) // Latest Tab
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('previous'))
-
-      await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON) // make sure the back button exists
-      // await new Promise(resolve => setTimeout(resolve, 2000))
-      await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON) // transition back to the previous view
-
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('containers'))
     } */
+
+    const testLogTab = async (click = true) => {
+      if (click) {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
+      }
+
+      await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
+
+      return this.app.client.waitUntil(async () => {
+        const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+        return text === 'No log data'
+      })
+    }
 
     const ns: string = createNS()
     const inNamespace = `-n ${ns}`
@@ -189,9 +187,10 @@ commands.forEach(command => {
         await SidecarExpect.open(this.app)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('nginx'))
+          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
 
-        await testContainersTab()
-        // await testLogTabs()
+        // await testContainersTab()
+        await testLogTab()
         // await testContainersTab(false) // testing back button, don't click the container tab
         // await testLogTabs()
         // await testContainersTab(false) // testing back button, don't click the container tab
@@ -302,13 +301,13 @@ commands.forEach(command => {
       }
     })
 
-    it(`should click on containers sidecar tab and show containers table`, testContainersTab)
+    // it(`should click on containers sidecar tab and show containers table`, testContainersTab)
 
     // it('should drill down to log when container is clicked', testLogTabs)
     // it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
     // it('should drill down to log when container is clicked', testLogTabs)
 
-    it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
+    // it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
 
     it(`should be able to show table with grep`, async () => {
       try {

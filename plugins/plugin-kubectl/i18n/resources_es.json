@@ -1,6 +1,6 @@
 {
   "startedOn": "Iniciado el",
-  "createdOn": "Fecha de creación",
+  "createdOn": "Creado el",
   "readonly": "Está en modalidad de vista de solo lectura",
   "contextsTableTitle": "Contextos de Kubernetes",
   "deleteResource": "Suprimir este recurso",

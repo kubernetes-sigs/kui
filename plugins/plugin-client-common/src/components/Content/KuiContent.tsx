@@ -15,8 +15,6 @@
  */
 
 import * as React from 'react'
-import { v4 as uuid } from 'uuid'
-
 import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import {
@@ -42,7 +40,7 @@ import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
 
-interface KuiMMRProps {
+export interface KuiMMRProps {
   tab: KuiTab
   mode: Content
   response: MultiModalResponse
@@ -55,7 +53,7 @@ interface KuiMMRProps {
 
 export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
   public render() {
-    const { tab, mode, response, willUpdateToolbar, args } = this.props
+    const { tab, mode, response, willUpdateToolbar } = this.props
 
     if (isStringWithOptionalContentType(mode)) {
       if (mode.contentType === 'text/html') {
@@ -74,27 +72,16 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
           <Editor
             content={mode}
             readOnly={false}
-            willUpdateToolbar={willUpdateToolbar}
+            willUpdateToolbar={!response.toolbarText && willUpdateToolbar}
             response={response}
             repl={tab.REPL}
           />
         )
       }
     } else if (isCommandStringContent(mode)) {
-      // re: key see https://github.com/IBM/kui/issues/4524
-      return (
-        <Eval
-          key={uuid()}
-          tab={tab}
-          command={mode.contentFrom}
-          contentType={mode.contentType}
-          response={response}
-          args={args}
-        />
-      )
+      return <Eval {...this.props} command={mode.contentFrom} contentType={mode.contentType} />
     } else if (isFunctionContent(mode)) {
-      // re: key see https://github.com/IBM/kui/issues/4524
-      return <Eval key={uuid()} tab={tab} command={mode.content} response={response} args={args} />
+      return <Eval {...this.props} command={mode.content} />
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
