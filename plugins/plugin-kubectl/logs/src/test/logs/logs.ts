@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -102,7 +102,7 @@ describe(`kubectl logs getty ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     }
 
     if (hasLogs) {
-      it('should show logs from sidecar', () => {
+      /* it('should show logs from sidecar', () => {
         return CLI.command(`kubectl get pod ${podName} -n ${ns} -o yaml`, this.app)
           .then(ReplExpect.justOK)
           .then(SidecarExpect.open)
@@ -115,7 +115,7 @@ describe(`kubectl logs getty ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
             })
           )
           .catch(Common.oops(this, true))
-      })
+      }) */
     }
   }
 

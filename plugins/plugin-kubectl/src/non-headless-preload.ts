@@ -24,7 +24,7 @@ import crdSummaryMode from './lib/view/modes/crd-summary'
 import configmapSummaryMode from './lib/view/modes/configmap-summary'
 import namespaceSummaryMode from './lib/view/modes/namespace-summary'
 import conditionsMode from './lib/view/modes/conditions'
-import containersMode from './lib/view/modes/containers'
+import logsMode from './lib/view/modes/logs'
 import lastAppliedMode from './lib/view/modes/last-applied'
 import showOwnerButton from './lib/view/modes/ShowOwnerButton'
 import showNodeButton from './lib/view/modes/ShowNodeOfPodButton'
@@ -46,7 +46,7 @@ export default async (registrar: PreloadRegistrar) => {
     configmapSummaryMode,
     namespaceSummaryMode,
     conditionsMode,
-    containersMode,
+    logsMode,
     lastAppliedMode,
     showCRDResources,
     showOwnerButton,

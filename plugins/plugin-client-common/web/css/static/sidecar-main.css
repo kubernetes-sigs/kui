@@ -21,6 +21,10 @@
     margin: 0.75em 0 0;
   }
 
+  .kui--sidecar-text-content {
+    font-size: 0.875em;
+  }
+
   .sidecar-bottom-stripe {
     flex-basis: 2.5em;
     display: flex;
@@ -88,7 +92,9 @@
     fill: var(--color-sidecar-toolbar-foreground);
   }
   .sidecar-toolbar-text[data-type="warning"] svg path {
-    fill: var(--color-warning);
+    fill: var(--color-base0A);
+    stroke: var(--color-base00);
+    stroke-width: 4%;
   }
 
   .sidecar-toolbar-text[data-type="warning"] svg path[data-icon-path="inner-path"],
@@ -97,6 +103,7 @@
   }
   .sidecar-toolbar-text[data-type="error"] svg path {
     fill: var(--color-error);
+    stroke: var(--color-base00);
   }
   .sidecar-toolbar-text:not([data-type]),
   .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:empty {

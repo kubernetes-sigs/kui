@@ -18,11 +18,8 @@ import * as React from 'react'
 import * as Debug from 'debug'
 
 import {
-  ParsedOptions,
-  Tab as KuiTab,
   ScalarResource,
   SupportedStringContent,
-  MultiModalResponse,
   isCommandStringContent,
   FunctionThatProducesContent,
   ReactProvider,
@@ -33,18 +30,12 @@ import {
 } from '@kui-shell/core'
 
 import { Loading } from '../../'
-import KuiMMRContent from './KuiContent'
+import KuiMMRContent, { KuiMMRProps } from './KuiContent'
 
 const debug = Debug('plugins/sidecar/Eval')
 
-interface EvalProps {
-  tab: KuiTab
+interface EvalProps extends Omit<KuiMMRProps, 'mode'> {
   command: string | FunctionThatProducesContent
-  args: {
-    argvNoOptions: string[]
-    parsedOptions: ParsedOptions
-  }
-  response: MultiModalResponse
   contentType?: SupportedStringContent
 }
 
@@ -129,6 +120,6 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
           contentType: this.state.contentType
         }
 
-    return <KuiMMRContent tab={this.props.tab} mode={mode} response={this.props.response} args={this.props.args} />
+    return <KuiMMRContent {...this.props} mode={mode} />
   }
 }

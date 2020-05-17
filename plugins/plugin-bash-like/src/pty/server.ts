@@ -251,6 +251,24 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
       } = JSON.parse(data)
 
       switch (msg.type) {
+        case 'xon': {
+          const shell = msg.uuid && (await shells[msg.uuid])
+          if (shell) {
+            const RESUME = '\x11' // this is XON
+            shell.write(RESUME)
+          }
+          break
+        }
+
+        case 'xoff': {
+          const shell = msg.uuid && (await shells[msg.uuid])
+          if (shell) {
+            const PAUSE = '\x13' // this is XOFF
+            shell.write(PAUSE)
+          }
+          break
+        }
+
         case 'kill': {
           const shell = msg.uuid && (await shells[msg.uuid])
           if (shell) {

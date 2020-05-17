@@ -1,6 +1,6 @@
 {
   "startedOn": "Avviato il",
-  "createdOn": "Creato il",
+  "createdOn": "Creato il {0}",
   "readonly": "Si sta utilizzando la modalità di visualizzazione sola lettura",
   "contextsTableTitle": "Contesti Kubernetes",
   "deleteResource": "Elimina questa risorsa",

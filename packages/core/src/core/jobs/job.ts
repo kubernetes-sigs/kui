@@ -18,5 +18,10 @@ export interface Abortable {
   abort(): void
 }
 
+export interface FlowControllable {
+  xon(): void
+  xoff(): void
+}
+
 /** in the future, a WatchableJob may be more than Abortable, e.g. Suspendable */
 export type WatchableJob = Abortable

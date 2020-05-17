@@ -1,6 +1,6 @@
 {
   "startedOn": "Gestartet am",
-  "createdOn": "Erstellt am",
+  "createdOn": "Erstellt am {0}",
   "readonly": "Sie verwenden den schreibgeschützten Anzeigemodus",
   "contextsTableTitle": "Kubernetes-Kontexte",
   "deleteResource": "Diese Ressource löschen",

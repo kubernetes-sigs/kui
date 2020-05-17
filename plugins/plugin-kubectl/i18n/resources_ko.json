@@ -1,6 +1,5 @@
 {
   "startedOn": "시작일",
-  "createdOn": "작성일",
   "readonly": "읽기 전용 보기 모드임",
   "contextsTableTitle": "Kubernetes 컨텍스트",
   "deleteResource": "이 리소스 삭제",

@@ -42,7 +42,7 @@ import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
 import RadioTableSpi from '../spi/RadioTable'
 
-interface KuiMMRProps {
+export interface KuiMMRProps {
   tab: KuiTab
   mode: Content
   response: MultiModalResponse
@@ -55,7 +55,7 @@ interface KuiMMRProps {
 
 export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
   public render() {
-    const { tab, mode, response, willUpdateToolbar, args } = this.props
+    const { tab, mode, response, willUpdateToolbar } = this.props
 
     if (isStringWithOptionalContentType(mode)) {
       if (mode.contentType === 'text/html') {
@@ -74,18 +74,16 @@ export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
           <Editor
             content={mode}
             readOnly={false}
-            willUpdateToolbar={willUpdateToolbar}
+            willUpdateToolbar={!response.toolbarText && willUpdateToolbar}
             response={response}
             repl={tab.REPL}
           />
         )
       }
     } else if (isCommandStringContent(mode)) {
-      return (
-        <Eval tab={tab} command={mode.contentFrom} contentType={mode.contentType} response={response} args={args} />
-      )
+      return <Eval {...this.props} command={mode.contentFrom} contentType={mode.contentType} />
     } else if (isFunctionContent(mode)) {
-      return <Eval tab={tab} command={mode.content} response={response} args={args} />
+      return <Eval {...this.props} command={mode.content} />
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })

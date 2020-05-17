@@ -79,7 +79,7 @@ export {
   isMetadataBearing as isResourceWithMetadata
 } from './models/entity'
 export { isWatchable, Watchable, Watcher, WatchPusher } from './core/jobs/watchable'
-export { Abortable } from './core/jobs/job'
+export { Abortable, FlowControllable } from './core/jobs/job'
 import { Tab } from './webapp/tab'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function History(tab: Tab) {

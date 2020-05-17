@@ -6,6 +6,10 @@
   "Level": "Level",
   "Message": "Message",
   "Details": "Details",
+  "Logs are live streaming": "Logs are live streaming",
+  "Log streaming is paused": "Log streaming is paused",
+  "Pause Streaming": "Pause Streaming",
+  "Resume Streaming": "Resume Streaming",
   "Occurred at": "Occurred at {0}",
   "Stack Trace": "Stack Trace",
   "Error": "Error"

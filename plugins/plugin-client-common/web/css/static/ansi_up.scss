@@ -1,0 +1,93 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.ansi-black-fg {
+  color: var(--color-black);
+}
+.ansi-black-bg,
+.ansi-bright-black-bg {
+  background-color: var(--color-black);
+}
+
+.ansi-bright-black-fg {
+  color: var(--color-text-02);
+}
+.ansi-bright-black-bg {
+  background-color: var(--color-text-02);
+}
+
+.ansi-red-fg,
+.ansi-bright-red-fg {
+  color: var(--color-red);
+}
+.ansi-red-bg,
+.ansi-bright-red-bg {
+  background-color: var(--color-red);
+}
+
+.ansi-green-fg,
+.ansi-bright-green-fg {
+  color: var(--color-green);
+}
+.ansi-green-bg,
+.ansi-bright-green-bg {
+  background-color: var(--color-green);
+}
+
+.ansi-yellow-fg,
+.ansi-bright-yellow-fg {
+  color: var(--color-yellow);
+}
+.ansi-yellow-bg,
+.ansi-bright-yellow-bg {
+  background-color: var(--color-yellow);
+}
+
+.ansi-blue-fg,
+.ansi-bright-blue-fg {
+  color: var(--color-blue);
+}
+.ansi-blue-bg,
+.ansi-bright-blue-bg {
+  background-color: var(--color-blue);
+}
+
+.ansi-magenta-fg,
+.ansi-bright-magenta-fg {
+  color: var(--color-green);
+}
+.ansi-magenta-bg,
+.ansi-bright-magenta-bg {
+  background-color: var(--color-green);
+}
+
+.ansi-cyan-fg,
+.ansi-bright-cyan-fg {
+  color: var(--color-cyan);
+}
+.ansi-cyan-bg,
+.ansi-bright-cyan-bg {
+  background-color: var(--color-cyan);
+}
+
+.ansi-white-fg,
+.ansi-bright-white-fg {
+  color: var(--color-white);
+}
+.ansi-white-bg,
+.ansi-bright-white-bg {
+  background-color: var(--color-white);
+}

@@ -31,6 +31,12 @@ export type Props = {
   }
 }
 
+/** helper to ensure exhaustiveness of the switch statement below */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function assertUnreachable(x: never): never {
+  throw new Error('Did not expect to get here')
+}
+
 export default class Toolbar extends React.PureComponent<Props> {
   private icon() {
     if (this.props.toolbarText) {
@@ -40,9 +46,13 @@ export default class Toolbar extends React.PureComponent<Props> {
           return <Icons icon="Info" />
         case 'warning':
           return <Icons icon="Warning" />
-        default:
+        case 'error':
           return <Icons icon="Error" />
       }
+
+      // this bit of magic ensures exhaustiveness of the switch;
+      // reference: https://stackoverflow.com/a/39419171
+      return assertUnreachable(type)
     }
   }
 

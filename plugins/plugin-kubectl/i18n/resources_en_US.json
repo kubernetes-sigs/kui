@@ -4,7 +4,7 @@
   "Namespace": "Namespace",
   "Usage": "Usage",
   "startedOn": "Started on",
-  "createdOn": "Created on",
+  "createdOn": "Created on {0}",
   "readonly": "You are in read-only view mode",
   "contextsTableTitle": "Kubernetes Contexts",
   "deleteResource": "Delete this resource",
