@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CodedError, Arguments, Registrar, MultiModalResponse, isHeadless, KResponse } from '@kui-shell/core'
+import { Arguments, CodedError, KResponse, MultiModalResponse, Registrar, isHeadless, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
@@ -28,6 +28,8 @@ import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeResource, isKubeResource } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
+
+const strings = i18n('plugin-kubectl')
 
 /**
  * For now, we handle watch ourselves, so strip these options off the command line
@@ -129,6 +131,12 @@ export async function doGetAsMMR(
       version,
       originatingCommand: args.command,
       isKubeResource: true,
+      toolbarText: !resource.metadata.creationTimestamp
+        ? undefined
+        : {
+            type: 'info',
+            text: strings('createdOn', new Date(resource.metadata.creationTimestamp).toLocaleString())
+          },
       onclick: {
         kind: `kubectl get ${kindAndNamespaceOf(resource)}`,
         name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`,

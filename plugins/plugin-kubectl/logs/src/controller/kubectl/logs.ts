@@ -17,12 +17,13 @@
 import Debug from 'debug'
 import PrettyPrintAnsiString from 'ansi_up'
 import * as colors from 'colors/safe'
-import { Abortable, Arguments, Registrar, Streamable } from '@kui-shell/core'
+import { Abortable, Arguments, ExecType, FlowControllable, Registrar, Streamable } from '@kui-shell/core'
 import {
   isUsage,
   doHelp,
   KubeOptions,
   doExecWithPty,
+  doExecWithStdout,
   defaultFlags as flags,
   isHelpRequest
 } from '@kui-shell/plugin-kubectl'
@@ -38,7 +39,7 @@ interface LogOptions extends KubeOptions {
 
 const debug = Debug('plugin-kubectl/logs/controller/kubectl/logs')
 
-const literal = (match, p1, p2) => `${p1}${colors.blue(p2)}`
+const literal = (match, p1, p2) => `${p1}${colors.gray(p2)}`
 const literal2 = (match, p1, p2) => `${p1}${colors.cyan(p2)}`
 const deemphasize = (match, p1, p2) => `${p1}${colors.gray(p2)}`
 const deemphasize2 = (match, p1, p2, p3, p4) => `${deemphasize(match, p1, p2)}${p4}`
@@ -70,7 +71,7 @@ function decorateLogLines(lines: string): string {
       // various timestamp formats
       .replace(
         /(\w{3}\s+\d\d?\s+\d{2}:\d{2}:\d{2}|\d{2}:\d{2}:\d{2}.\d{6}|\w{3}\s+\w{3}\s+\d\d?\s+\d{2}:\d{2}:\d{2}\s+\d{4}|\[(\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2} [+-]\d{4})\]|\w{3},\s+\d{2}\s+\w{3}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+\w{3}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z|\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(.\d{3}?)|\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}(.\d+)?)/g,
-        (match, p1) => colors.cyan(p1)
+        (match, p1) => colors.bold(colors.cyan(p1))
       )
       // start/restart
       .replace(/(success|succeeded|starting|started|restarting|restarted)/gi, (match, p1) => colors.green(p1))
@@ -99,6 +100,10 @@ export async function doLogs(args: Arguments<LogOptions>) {
     return doHelp('kubectl', args)
   }
 
+  if (args.execOptions.raw) {
+    return doExecWithStdout(args)
+  }
+
   const streamed = args.parsedOptions.follow || args.parsedOptions.f
 
   // if we are streaming (logs -f), and the user did not specify a
@@ -121,9 +126,6 @@ export async function doLogs(args: Arguments<LogOptions>) {
     args.command = args.command + ' --tail=' + tail
   }
 
-  // set up the PTY stream; we want to stream to this stdout sink
-  const stdout = await args.createOutputStream()
-
   // a bit of plumbing: tell the PTY that we will be handling everything
   const myExecOptions = Object.assign({}, args.execOptions, {
     rethrowErrors: true, // we want to handle errors
@@ -133,7 +135,10 @@ export async function doLogs(args: Arguments<LogOptions>) {
 
     // the PTY will call this when the PTY process is ready; in
     // return, we send it back a consumer of streaming output
-    onInit: (ptyJob: Abortable) => {
+    onInit: async (ptyJob: Abortable & FlowControllable) => {
+      // set up the PTY stream; we want to stream to this stdout sink
+      const stdout = args.execOptions.onInit ? await args.execOptions.onInit(ptyJob) : await args.createOutputStream()
+
       let curLine: string
 
       // _ is one chunk of streaming output
@@ -150,16 +155,23 @@ export async function doLogs(args: Arguments<LogOptions>) {
             // eslint-disable-next-line no-control-regex
             const fullLine = /\x1b/.test(joined) ? joined : decorateLogLines(joined)
 
-            const lineDom = document.createElement('pre')
-            lineDom.classList.add('pre-wrap', 'kubeui--logs')
             const formatter = new PrettyPrintAnsiString()
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            formatter.use_classes = true
-            lineDom.innerHTML = formatter.ansi_to_html(fullLine)
-            curLine = undefined
+            formatter.use_classes = true // eslint-disable-line @typescript-eslint/camelcase
+            const innerHTML = formatter.ansi_to_html(fullLine)
 
-            // here is where we emit to the REPL:
-            stdout(lineDom)
+            if (args.execOptions.type === ExecType.TopLevel) {
+              const lineDom = document.createElement('pre')
+              lineDom.classList.add('pre-wrap', 'kubeui--logs')
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              formatter.use_classes = true
+              lineDom.innerHTML = innerHTML
+              curLine = undefined
+
+              // here is where we emit to the REPL:
+              stdout(lineDom)
+            } else {
+              stdout(innerHTML)
+            }
           } else if (curLine) {
             // we did not get a terminal newline in this chunk
             curLine = curLine + _

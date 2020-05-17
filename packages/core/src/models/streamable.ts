@@ -19,6 +19,6 @@ import { ScalarResponse } from './entity'
 export type Streamable = ScalarResponse // SimpleEntity | Table | MixedResponse | MultiModalResponse
 export default Streamable
 
-export type Stream = (response: Streamable) => Promise<void>
+export type Stream = (response: Streamable) => void | Promise<void>
 
-export type StreamableFactory = () => Promise<Stream>
+export type StreamableFactory = () => Stream | Promise<Stream>

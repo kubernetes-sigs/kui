@@ -708,7 +708,7 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
     const { proto, port, path, uid, gid } = resp.content
     const protoHostPortContextRoot = window.location.href
       .replace(/#?\/?$/, '')
-      .replace(/^http(s?):\/\/([^:/]+)(:\d+)?/, `${proto}://$2${port === -1 ? '$3' : ':'+port}`)
+      .replace(/^http(s?):\/\/([^:/]+)(:\d+)?/, `${proto}://$2${port === -1 ? '$3' : ':' + port}`)
       .replace(/\/(index\.html)?$/, '')
     const url = new URL(path, protoHostPortContextRoot).href
     debug('websocket url', url, proto, port, path, uid, gid)
@@ -938,11 +938,20 @@ export const doExec = (
 
           if (execOptions.onInit) {
             const job = {
+              xon: () => {
+                debug('xon requested')
+                ws.send(JSON.stringify({ type: 'xon', uuid: ourUUID }))
+              },
+              xoff: () => {
+                debug('xoff requested')
+                ws.send(JSON.stringify({ type: 'xoff', uuid: ourUUID }))
+              },
               abort: () => {
+                debug('abort requested')
                 ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID }))
               }
             }
-            execOptions.stdout = execOptions.onInit(job)
+            execOptions.stdout = await execOptions.onInit(job)
           }
         }
 
