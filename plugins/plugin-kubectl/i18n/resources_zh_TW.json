@@ -1,6 +1,6 @@
 {
   "startedOn": "開始日期",
-  "createdOn": "建立於",
+  "createdOn": "創建於 {0}",
   "readonly": "您正在使用唯讀檢視模式",
   "contextsTableTitle": "Kubernetes 環境定義",
   "deleteResource": "刪除此資源",
