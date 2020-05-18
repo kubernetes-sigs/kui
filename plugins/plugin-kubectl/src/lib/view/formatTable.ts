@@ -39,8 +39,8 @@ const outerCSSForKey = {
   READY: 'a-few-numbers-wide kui--hide-in-narrower-windows',
   KIND: 'max-width-id-like entity-kind',
   NAMESPACE: 'entity-name-group hide-with-sidecar not-a-name', // kubectl get pods --all-namespaces
-  MESSAGE: 'not-too-compact hide-with-sidecar',
-  TYPE: 'hide-with-sidecar',
+  MESSAGE: 'not-too-compact', // k get events
+  TYPE: 'hide-with-sidecar', // k get events
 
   CLUSTER: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
   AUTHINFO: 'entity-name-group entity-name-group-narrow hide-with-sidecar', // kubectl config get-contexts
