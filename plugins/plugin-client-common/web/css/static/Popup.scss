@@ -94,7 +94,7 @@ body.subwindow .sidecar-full-screen sidecar:not(.minimized) .sidecar-bottom-stri
       margin-right: 0.1875em;
       .repl-context {
         /* e.g. cwd displayed in prompt */
-        display: none;
+        /* display: none; */
       }
     }
   }

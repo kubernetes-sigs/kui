@@ -46,6 +46,10 @@ disabled see https://github.com/IBM/kui/issues/3939
       color: var(--color-base00);
     }
 
+    .kui--session-init-done {
+      display: none;
+    }
+
     .repl-inner {
       overflow: hidden;
       display: flex;

@@ -34,4 +34,7 @@ export async function initializeSession(tab: Tab): Promise<void> {
   await promise
 
   tab.state.ready = true
+
+  // to test the session init error handling:
+  // throw new Error('artificial failure')
 }
