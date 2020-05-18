@@ -36,15 +36,15 @@ class ExprBase extends React.Component<{}, Formstate> {
   public constructor(props) {
     super(props)
     this.state = {
-      disableresubmit: false, // prevents form resubmission
+      disableResubmit: false, // prevents form resubmission
       showMetrics: false, // determines the visibility of metric config section
-      invalidCand: false, // determines whether cand values are valid
+      invalidCandidate: false, // determines whether candidates values are valid
       name: '', // name of the experiment
       type: '', // type of experiment: HIL vs automated
-      ns: '', // namespace of microservice
-      svc: '', // service name of microservice
-      base: '', // baseline deployment of microservice
-      cand: [], // list of candidate deployment names of microservice
+      namespace: '', // namespace of microservice
+      service: '', // service name of microservice
+      baseline: '', // baseline deployment of microservice
+      candidates: [], // list of candidates deployment names of microservice
       metric: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
       disableReward: false // disables the reward select for selected metrics
     }
@@ -70,24 +70,24 @@ class ExprBase extends React.Component<{}, Formstate> {
     })
     // Check for invalid selections
     for (let i = 0; i < versionValue.length; i++) {
-      if (this.state.base === versionValue[i]) {
+      if (this.state.baseline === versionValue[i]) {
         versionValue.splice(i, 1)
-        this.setState({ invalidCand: true, cand: versionValue })
+        this.setState({ invalidCandidate: true, candidates: versionValue })
         return
       }
     }
     this.setState({
-      invalidCand: false,
-      cand: versionValue
+      invalidCandidate: false,
+      candidates: versionValue
     })
   }
 
   private handleAddNs = value => {
     if (value == null) {
-      this.setState({ ns: '', svc: '', base: '', cand: [] })
+      this.setState({ namespace: '', service: '', baseline: '', candidates: [] })
       this.svcList = []
     } else {
-      this.setState({ ns: value.text, svc: '', base: '', cand: [] })
+      this.setState({ namespace: value.text, service: '', baseline: '', candidates: [] })
       this.svcList = this.kubeMethods.getSvc(value.text)
     }
     this.deployList = []
@@ -95,17 +95,17 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   private handleAddSvc = value => {
     if (value == null) {
-      this.setState({ svc: '', base: '', cand: [] })
+      this.setState({ service: '', baseline: '', candidates: [] })
       this.deployList = []
     } else {
-      this.setState({ svc: value.text, base: '', cand: [] })
-      this.deployList = this.kubeMethods.getDeployment(this.state.ns, value.text)
+      this.setState({ service: value.text, baseline: '', candidates: [] })
+      this.deployList = this.kubeMethods.getDeployment(this.state.namespace, value.text)
     }
   }
 
   private handleAddBase = value => {
-    if (value == null) this.setState({ base: '', cand: [] })
-    else this.setState({ base: value.text, cand: [] })
+    if (value == null) this.setState({ baseline: '', candidates: [] })
+    else this.setState({ baseline: value.text, candidates: [] })
   }
 
   /*
@@ -192,7 +192,7 @@ class ExprBase extends React.Component<{}, Formstate> {
     const jsonOutput = getRequestModel(time, this.state)
     // Transmit data to Decision form using eventBus
     eventChannelUnsafe.emit('/get/decision', jsonOutput)
-    this.setState({ disableresubmit: true })
+    this.setState({ disableResubmit: true })
   }
 
   // Cancels form submission event caused by "Enter" press
@@ -231,7 +231,7 @@ class ExprBase extends React.Component<{}, Formstate> {
         </div>
         <div style={{ width: 350, position: 'relative', top: 240, left: -150 }}>
           <ComboBox
-            id="ns-select"
+            id="namespace-select"
             titleText="Namespace"
             helperText="Namespace where your application resides."
             placeholder="Select a Namespace"
@@ -243,7 +243,7 @@ class ExprBase extends React.Component<{}, Formstate> {
         </div>
         <div style={{ width: 350, position: 'relative', top: 340, left: -225 }}>
           <ComboBox
-            id="svc-select"
+            id="service-select"
             titleText="Service"
             helperText="The name of your microservice."
             placeholder="Select a Service"
@@ -255,7 +255,7 @@ class ExprBase extends React.Component<{}, Formstate> {
         </div>
         <div style={{ width: 350, position: 'relative', top: 440, left: -295 }}>
           <ComboBox
-            id="base-select"
+            id="baseline-select"
             titleText="Baseline Deployment"
             helperText="The version of your microservice to use as the experimental baseline."
             placeholder="Select a Baseline Deployment"
@@ -272,17 +272,17 @@ class ExprBase extends React.Component<{}, Formstate> {
             <p>
               {' '}
               Candidate Deployment(s) <br />
-              <p className="helper"> The version(s) of your microservice to use as the experimental candidate.</p>
+              <p className="helper"> The version(s) of your microservice to use as the experimental candidates.</p>
             </p>
           </div>
           <div style={{ position: 'relative', top: 55, left: -370 }}>
             <MultiSelect
-              id="cand-select"
+              id="candidates-select"
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}
               label="Select Candidate Deployment(s)"
               onChange={value => this.handleAddCand(value.selectedItems)}
-              invalid={this.state.invalidCand}
+              invalid={this.state.invalidCandidate}
               invalidText="Cannot select same version as baseline."
             ></MultiSelect>
           </div>
@@ -291,7 +291,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               size="default"
               kind="primary"
               renderIcon={View32}
-              disabled={this.state.invalidCand || this.state.disableresubmit}
+              disabled={this.state.invalidCandidate || this.state.disableResubmit}
               onClick={this.submitForm}
             >
               Observe
