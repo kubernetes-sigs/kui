@@ -59,7 +59,7 @@ commands.forEach(command => {
       assert.ok(!/Initializing/i.test(message))
     } */
 
-    const testLogTab = async (click = true) => {
+    const testLogsTab = async (click = true) => {
       if (click) {
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
@@ -174,7 +174,7 @@ commands.forEach(command => {
     */
 
     // NOTE: this is an alternative test for the click mid-creation test above, since sidecar table poller is not ready
-    it(`should show ready containers if we click after creation`, async () => {
+    it(`should show summary tab if we click after creation`, async () => {
       try {
         const selector: string = await CLI.command(
           `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
@@ -190,9 +190,9 @@ commands.forEach(command => {
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
 
         // await testContainersTab()
-        await testLogTab()
+        // await testLogsTab()
         // await testContainersTab(false) // testing back button, don't click the container tab
-        // await testLogTabs()
+        // await testLogsTabs()
         // await testContainersTab(false) // testing back button, don't click the container tab
       } catch (err) {
         return Common.oops(this, true)(err)
@@ -283,6 +283,8 @@ commands.forEach(command => {
       }
     })
 
+    it('should show logs tab', testLogsTab)
+
     it('should click on the sidecar maximize button', async () => {
       try {
         await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON)
@@ -303,9 +305,9 @@ commands.forEach(command => {
 
     // it(`should click on containers sidecar tab and show containers table`, testContainersTab)
 
-    // it('should drill down to log when container is clicked', testLogTabs)
+    // it('should drill down to log when container is clicked', testLogsTabs)
     // it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
-    // it('should drill down to log when container is clicked', testLogTabs)
+    // it('should drill down to log when container is clicked', testLogsTabs)
 
     // it('should transition back from log and see containers table', testContainersTab.bind(this, false)) // testing back button, do not click the Container tab
 

@@ -24,6 +24,8 @@ import { IDisposable, Terminal as XTerminal } from 'xterm'
 // uses of the public kui-shell API
 import {
   Tab,
+  Abortable,
+  FlowControllable,
   eventChannelUnsafe,
   eventBus,
   CodedError,
@@ -391,7 +393,8 @@ async function initOnMessage(
   execOptions: ExecOptions,
   cleanUpTerminal: () => void,
   resolve: (val: boolean) => void,
-  reject: (err: Error) => void
+  reject: (err: Error) => void,
+  job: Abortable & FlowControllable
 ) {
   let gotExit = false
   let pendingWrites = 0
@@ -526,6 +529,9 @@ async function initOnMessage(
     if (msg.type === 'state' && msg.state === 'ready') {
       if (terminal) {
         onFirstMessage()
+      }
+      if (execOptions.onReady) {
+        await execOptions.onReady(job)
       }
     } else if (msg.type === 'data' && terminal) {
       // plain old data flowing out of the PTY; send it on to the xterm UI
@@ -921,6 +927,21 @@ export const doExec = (
         // this function will be called just prior to executing the
         // command against the websocket/channel
         const init = async (ws: Channel) => {
+          const job = {
+            xon: () => {
+              debug('xon requested')
+              ws.send(JSON.stringify({ type: 'xon', uuid: ourUUID }))
+            },
+            xoff: () => {
+              debug('xoff requested')
+              ws.send(JSON.stringify({ type: 'xoff', uuid: ourUUID }))
+            },
+            abort: () => {
+              debug('abort requested')
+              ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID }))
+            }
+          }
+
           await initOnMessage(
             terminal,
             xtermContainer,
@@ -933,24 +954,11 @@ export const doExec = (
             execOptions,
             cleanUpTerminal,
             resolve,
-            reject
+            reject,
+            job
           )
 
           if (execOptions.onInit) {
-            const job = {
-              xon: () => {
-                debug('xon requested')
-                ws.send(JSON.stringify({ type: 'xon', uuid: ourUUID }))
-              },
-              xoff: () => {
-                debug('xoff requested')
-                ws.send(JSON.stringify({ type: 'xoff', uuid: ourUUID }))
-              },
-              abort: () => {
-                debug('abort requested')
-                ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID }))
-              }
-            }
             execOptions.stdout = await execOptions.onInit(job)
           }
         }
