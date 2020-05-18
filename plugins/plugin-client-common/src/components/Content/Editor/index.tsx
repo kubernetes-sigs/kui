@@ -19,7 +19,7 @@ import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
-import { Button, REPL, StringContent, ToolbarText, MultiModalResponse, i18n } from '@kui-shell/core'
+import { Button, REPL, StringContent, ToolbarText, ToolbarProps, MultiModalResponse, i18n } from '@kui-shell/core'
 
 import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
@@ -47,12 +47,12 @@ interface WithOptions {
   }
 }
 
-interface Props extends MonacoOptions {
-  repl: REPL
-  content: StringContent
-  response: File | (MultiModalResponse & Partial<WithOptions>)
-  willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void
-}
+type Props = MonacoOptions &
+  ToolbarProps & {
+    repl: REPL
+    content: StringContent
+    response: File | (MultiModalResponse & Partial<WithOptions>)
+  }
 
 interface State {
   editor: Monaco.ICodeEditor

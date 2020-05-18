@@ -34,7 +34,9 @@ export interface ScalarContent<T = ScalarResource> {
   content: T
 }
 
-export type ToolbarProps = { willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void }
+export type ToolbarProps = {
+  willUpdateToolbar?: (toolbarText: ToolbarText, extraButtons?: Button[], extraButtonsOverride?: boolean) => void
+}
 export type ReactProvider = { react: (props: ToolbarProps) => ReactElement<any> }
 export function isReactProvider(entity: ScalarLike<MetadataBearing>): entity is ReactProvider {
   const provider = entity as ReactProvider
