@@ -29,7 +29,10 @@ $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wr
   grid-template-columns: repeat($num-columns, 1fr);
   grid-column-gap: $pane-gap;
   background-color: var(--color-repl-background);
-  padding: $pane-gap;
+
+  &:not(:empty) {
+    padding: $pane-gap;
+  }
 
   .kui--sub-card {
     overflow-x: auto;
