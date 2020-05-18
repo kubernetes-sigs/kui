@@ -70,28 +70,32 @@ commands.forEach(command => {
         const table = `${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table`
 
         // test events table has correct header
-        const header = ['TYPE', 'REASON', 'LAST SEEN', 'FIRST SEEN', 'MESSAGE']
+        const headerWithSidecarOpen = ['REASON', 'MESSAGE']
         await Promise.all(
-          header.map(async _header => {
-            await this.app.client.waitForExist(`${table} thead th[data-key="${_header}"]`)
+          headerWithSidecarOpen.map(async _header => {
+            await this.app.client.waitForVisible(`${table} thead th[data-key="${_header}"]`)
           })
         )
-
-        await this.app.client.click(`${table} tr:first-child .clickable`)
-
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
       } catch (err) {
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
         await Common.oops(this, true)
       }
     })
 
     it('should click on Show Involved Object', async () => {
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
-      await SidecarExpect.open(this.app)
-        .then(SidecarExpect.showing(podName))
-        .then(SidecarExpect.kind('Pod'))
+      try {
+        const res = await CLI.command('k get events -o wide', this.app)
+
+        const table = `${Selectors.OUTPUT_N(res.count)} .bx--data-table`
+        await this.app.client.click(`${table} tr:first-child .clickable`)
+
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.showing(podName))
+          .then(SidecarExpect.kind('Pod'))
+      } catch (err) {
+        await Common.oops(this, true)
+      }
     })
 
     deleteNS(this, ns)
