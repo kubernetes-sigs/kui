@@ -23,7 +23,6 @@ import summaryMode from './lib/view/modes/summary'
 import crdSummaryMode from './lib/view/modes/crd-summary'
 import configmapSummaryMode from './lib/view/modes/configmap-summary'
 import namespaceSummaryMode from './lib/view/modes/namespace-summary'
-import conditionsMode from './lib/view/modes/conditions'
 import logsMode from './lib/view/modes/logs'
 import lastAppliedMode from './lib/view/modes/last-applied'
 import showOwnerButton from './lib/view/modes/ShowOwnerButton'
@@ -45,7 +44,6 @@ export default async (registrar: PreloadRegistrar) => {
     crdSummaryMode,
     configmapSummaryMode,
     namespaceSummaryMode,
-    conditionsMode,
     logsMode,
     lastAppliedMode,
     showCRDResources,
