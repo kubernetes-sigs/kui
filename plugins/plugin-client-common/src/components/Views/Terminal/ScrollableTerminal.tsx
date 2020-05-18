@@ -41,6 +41,9 @@ type Props = TerminalOptions & {
   /** tab model */
   tab: KuiTab
 
+  /** handler for terminal clear */
+  onClear?: () => void
+
   sidecarIsVisible?: boolean
   closeSidecar: () => void
 }
@@ -68,6 +71,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Clear Terminal; TODO: also clear persisted state, when we have it */
   private clear() {
+    if (this.props.onClear) {
+      this.props.onClear()
+    }
+
     this.setState(() => {
       // capture the value of the last input
       const capturedValue = this._activeBlock ? this._activeBlock.inputValue() : ''

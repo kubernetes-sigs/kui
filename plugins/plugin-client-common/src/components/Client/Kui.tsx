@@ -20,8 +20,11 @@
 import Debug from 'debug'
 import * as React from 'react'
 import {
-  eventChannelUnsafe,
+  i18n,
+  REPL,
   Theme,
+  inBrowser,
+  eventChannelUnsafe,
   findThemeByName,
   getPersistedThemeChoice,
   getDefaultTheme,
@@ -33,6 +36,7 @@ import KuiConfiguration from './KuiConfiguration'
 import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '../..'
 
 const debug = Debug('<Kui/>')
+const strings = i18n('plugin-bash-like')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
 const defaultThemeProperties: ThemeProperties = {
@@ -59,7 +63,19 @@ type State = KuiConfiguration & {
 }
 
 /**
- * Render the main body of our client
+ * Render the main body of our client.
+ *
+ * |Notes on Session Initialization|: to provide custom views for
+ * session initialization (only relevant for browser-based hosted
+ * Kui), you can instantiate <Kui/> with these properties (defined in
+ * KuiConfiguration), show here with some sample views:
+ *
+ * <Kui
+ *    loading={<div className="kui--hero-text">Hold on...</div>}
+ *    reinit={<div className="kui--hero-text">Connection broken...</div>}
+ *    loadingError={err => <div className="kui--hero-text">{err.toString()}</div>}
+ *    loadingDone={<div>Welcome to Kui</div>}
+ * />
  *
  */
 export class Kui extends React.PureComponent<Props, State> {
@@ -85,7 +101,7 @@ export class Kui extends React.PureComponent<Props, State> {
     }
 
     try {
-      this.state = Object.assign({}, props, {
+      this.state = Object.assign({}, this.defaultSessionBehavior(), props, {
         isBootstrapped: !!props.noBootstrap
       })
       debug('initial state', this.state)
@@ -95,6 +111,29 @@ export class Kui extends React.PureComponent<Props, State> {
         isBootstrapped: !!props.noBootstrap
       }
     }
+  }
+
+  /**
+   * For browser-based clients, this defines the default UI for
+   * session initialization.
+   *
+   */
+  private defaultSessionBehavior(): KuiConfiguration {
+    return !inBrowser()
+      ? {}
+      : {
+          loading: <div className="kui--hero-text">Connecting to your cloud...</div>,
+          reinit: <div className="kui--hero-text">Connection broken...</div>,
+          loadingError: err => <div className="kui--hero-text">Error connecting to your cloud: {err.toString()}</div>,
+          loadingDone: (repl: REPL) => (
+            <span>
+              {strings('Successfully connected to your cloud. For next steps, try this command: ')}{' '}
+              <a href="#" className="bx--link" onClick={() => repl.pexec('getting started')}>
+                getting started
+              </a>
+            </span>
+          )
+        }
   }
 
   private onThemeChange({ themeModel }: { themeModel: Theme }) {

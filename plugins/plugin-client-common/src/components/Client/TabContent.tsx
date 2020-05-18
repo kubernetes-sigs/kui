@@ -19,6 +19,7 @@ import * as React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
 
 import Icons from '../spi/Icons'
+import KuiContext from './context'
 import Confirm from '../Views/Confirm'
 import Loading from '../Content/Loading'
 import Width from '../Views/Sidecar/width'
@@ -41,7 +42,7 @@ interface WithTab {
 }
 
 export type TabContentOptions = TerminalOptions & {
-  /** Optional: elements to be placed below the Terminal */
+  /** [Optional] elements to be placed below the Terminal */
   bottom?: React.ReactElement<WithTabUUID & WithTab>
 }
 
@@ -53,9 +54,12 @@ type Props = TabContentOptions &
   }
 
 type CurrentlyShowing = 'TerminalOnly' | 'TerminalPlusSidecar' | 'TerminalPlusWatcher' | 'TerminalSidecarWatcher'
+type SessionInitStatus = 'NotYet' | 'InProgress' | 'Reinit' | 'Done' | 'Error'
 
 type State = Partial<WithTab> & {
-  sessionInit: 'NotYet' | 'InProgress' | 'Done'
+  sessionInit: SessionInitStatus
+  sessionInitError?: Error
+  showSessionInitDone: boolean
 
   sidecarWidth: Width
   priorSidecarWidth: Width /* prior to closing */
@@ -99,6 +103,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.state = {
       tab: undefined,
       sessionInit: 'NotYet',
+      showSessionInitDone: true,
       sidecarWidth: Width.Closed,
       priorSidecarWidth: Width.Closed,
       sidecarHasContent: false,
@@ -109,32 +114,43 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, () => {
+    const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
 
       if (this.props.onTabReady) {
         this.props.onTabReady(this.state.tab)
       }
-    })
+    }
+    eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, onTabNew)
+    this.cleaners.push(() => eventChannelUnsafe.off(`/tab/new/${this.props.uuid}`, onTabNew))
+
+    const onError = (sessionInitError: Error) => {
+      this.setState({ sessionInit: 'Error', sessionInitError })
+    }
+    eventChannelUnsafe.on(`/tab/new/error/${this.props.uuid}`, onError)
+    this.cleaners.push(() => eventChannelUnsafe.off(`/tab/new/error/${this.props.uuid}`, onError))
 
     const onOffline = this.onOffline.bind(this)
     eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
     this.cleaners.push(() => eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
   }
 
-  /* public static getDerivedStateFromProps(props: Props, state: State) {
-  } */
-
-  private onOffline() {
+  private async onOffline() {
     this.setState({
-      sessionInit: 'InProgress'
+      sessionInit: 'Reinit'
     })
 
-    initializeSession(this.state.tab).then(() => {
-      this.setState({
-        sessionInit: 'Done'
+    initializeSession(this.state.tab)
+      .then(() => {
+        this.setState({
+          sessionInit: 'Done' as const
+        })
       })
-    })
+      .catch(TabContent.onSessionInitError.bind(undefined, this.props.uuid))
+  }
+
+  private static onSessionInitError(uuid: string, sessionInitError: Error) {
+    eventChannelUnsafe.emit(`/tab/new/error/${uuid}`, sessionInitError)
   }
 
   /** emit /tab/new event, if we have now a tab, but have not yet
@@ -143,10 +159,13 @@ export default class TabContent extends React.PureComponent<Props, State> {
     if (state.tab && state.sessionInit === 'NotYet') {
       try {
         state.tab.state = props.state
-        initializeSession(state.tab).then(() => {
-          eventBus.emit('/tab/new', state.tab)
-          eventChannelUnsafe.emit(`/tab/new/${props.uuid}`)
-        })
+        // session init hook goes here
+        initializeSession(state.tab)
+          .then(() => {
+            eventBus.emit('/tab/new', state.tab)
+            eventChannelUnsafe.emit(`/tab/new/${props.uuid}`)
+          })
+          .catch(TabContent.onSessionInitError.bind(undefined, props.uuid))
 
         TabContent.hackResizer(state)
 
@@ -177,23 +196,63 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
   public componentWillUnmount() {
     eventBus.emit('/tab/close', this.state.tab)
+    this.cleaners.forEach(cleaner => cleaner())
+  }
+
+  private defaultLoading() {
+    return <Loading description={strings('Please wait while we connect to your cloud')} />
+  }
+
+  private sessionInitDoneMessage() {
+    return (
+      this.state.showSessionInitDone &&
+      this.state.sidecarWidth === Width.Closed && (
+        <KuiContext.Consumer>
+          {config =>
+            config.loadingDone && (
+              <div className="kui--repl-message kui--session-init-done">
+                <span className="repl-block">{config.loadingDone(this.state.tab.REPL)}</span>
+              </div>
+            )
+          }
+        </KuiContext.Consumer>
+      )
+    )
   }
 
   private terminal() {
     if (this.state.sessionInit !== 'Done') {
-      return <Loading description={strings('Please wait while we connect to your cloud')} />
+      return (
+        <KuiContext.Consumer>
+          {config => {
+            if (this.state.sessionInit === 'Error' && config.loadingError) {
+              return config.loadingError(this.state.sessionInitError)
+            } else if (this.state.sessionInit === 'Reinit' && config.reinit) {
+              return config.reinit
+            }
+
+            return config.loading || this.defaultLoading()
+          }}
+        </KuiContext.Consumer>
+      )
     } else {
       return (
-        <ScrollableTerminal
-          {...this.props}
-          tab={this.state.tab}
-          sidecarIsVisible={this.state.sidecarWidth !== Width.Closed}
-          closeSidecar={() => this.setState({ sidecarWidth: Width.Closed })}
-          ref={c => {
-            // so that we can refocus/blur
-            this._terminal = c
-          }}
-        />
+        <React.Fragment>
+          {this.sessionInitDoneMessage()}
+          <ScrollableTerminal
+            {...this.props}
+            tab={this.state.tab}
+            sidecarIsVisible={this.state.sidecarWidth !== Width.Closed}
+            closeSidecar={() => this.setState({ sidecarWidth: Width.Closed })}
+            onClear={() => {
+              this.setState({ showSessionInitDone: false })
+            }}
+            ref={c => {
+              // so that we can refocus/blur
+              this._terminal = c
+            }}
+          />
+        </React.Fragment>
       )
     }
   }
