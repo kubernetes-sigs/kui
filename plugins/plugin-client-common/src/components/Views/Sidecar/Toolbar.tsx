@@ -19,6 +19,7 @@ import { Tab as KuiTab, ToolbarText, Button, MultiModalResponse, ParsedOptions }
 
 import Icons from '../../spi/Icons'
 import ToolbarButton from './ToolbarButton'
+import Markdown from '../../Content/Markdown'
 
 export type Props = {
   tab: KuiTab
@@ -80,17 +81,17 @@ export default class Toolbar extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-toolbar">
           <div className="sidecar-toolbar-text" data-type={this.props.toolbarText && this.props.toolbarText.type}>
             <div className="sidecar-toolbar-text-icon">{this.icon()}</div>
-            {this.props.toolbarText && (
-              <div
-                className="sidecar-toolbar-text-content"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    typeof this.props.toolbarText.text === 'string'
-                      ? this.props.toolbarText.text
-                      : this.props.toolbarText.text.innerHTML
-                }}
-              />
-            )}
+            {this.props.toolbarText &&
+              (typeof this.props.toolbarText.text === 'string' ? (
+                <Markdown source={this.props.toolbarText.text} className="sidecar-toolbar-text-content" />
+              ) : (
+                <div
+                  className="sidecar-toolbar-text-content"
+                  dangerouslySetInnerHTML={{
+                    __html: this.props.toolbarText.text.innerHTML
+                  }}
+                />
+              ))}
           </div>
 
           <div className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container">

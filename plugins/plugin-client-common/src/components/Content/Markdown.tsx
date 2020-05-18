@@ -38,12 +38,15 @@ import '../../../web/scss/components/List/Carbon.scss'
 import '../../../web/scss/components/StructuredList/Carbon.scss'
 
 interface Props {
-  tab: KuiTab
-  repl: REPL
   source: string
+
+  tab?: KuiTab
+  repl?: REPL
 
   /** if we have the full path to the source file */
   fullpath?: string
+
+  className?: string
 }
 
 export default class Markdown extends React.PureComponent<Props> {
@@ -61,7 +64,10 @@ export default class Markdown extends React.PureComponent<Props> {
     return (
       <ReactMarkdown
         source={this.props.source}
-        className="padding-content scrollable scrollable-auto marked-content page-content"
+        className={
+          'padding-content scrollable scrollable-auto marked-content page-content' +
+          (this.props.className ? ` ${this.props.className}` : '')
+        }
         renderers={{
           link: props => {
             const isLocal = !/^http/i.test(props.href)

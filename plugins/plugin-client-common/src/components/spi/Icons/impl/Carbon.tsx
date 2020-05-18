@@ -42,6 +42,8 @@ import {
   ErrorFilled16 as ErrorIcon,
   Grid16 as Grid,
   List16 as List,
+  PauseOutlineFilled16 as Pause,
+  PlayFilled16 as Play,
   CaretRight20 as NextPage,
   CaretLeft20 as PreviousPage,
   FlashOffFilled20 as Network
@@ -63,6 +65,8 @@ const icons: Record<Exclude<SupportedIcon, 'Up'>, CarbonIconType> = {
   List,
   Network,
   NextPage,
+  Pause,
+  Play,
   PreviousPage,
   Screenshot,
   ScreenshotInProgress,

@@ -22,6 +22,8 @@ import Props from './model'
 import Carbon from './impl/Carbon'
 import PatternFly4 from './impl/PatternFly'
 
+export { Action as DropDownAction } from './model'
+
 export default function DropDownSpi(props: Props): React.ReactElement {
   return (
     <KuiContext.Consumer>
