@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
-import { Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
-import { CaretDown32, View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
+import { Form, FormGroup, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
+import { View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
@@ -15,7 +15,7 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 import GetKubeInfo from '../components/cluster-info'
 import GetMetricConfig from '../components/metric-config'
 import getRequestModel from '../utility/get-iter8-req'
-import { Formstate } from '../modes/state-models'
+import { Formstate, experimentTypes } from '../modes/state-models'
 
 /*
  * Data models for the state object in ExprForm
@@ -40,7 +40,7 @@ class ExprBase extends React.Component<{}, Formstate> {
       showMetrics: false, // determines the visibility of metric config section
       invalidCandidate: false, // determines whether candidates values are valid
       name: '', // name of the experiment
-      type: '', // type of experiment: HIL vs automated
+      type: experimentTypes.HIL, // type of experiment: HIL vs automated
       namespace: '', // namespace of microservice
       service: '', // service name of microservice
       baseline: '', // baseline deployment of microservice
@@ -80,6 +80,10 @@ class ExprBase extends React.Component<{}, Formstate> {
       invalidCandidate: false,
       candidates: versionValue
     })
+  }
+
+  private handleSelectExpType = value => {
+    console.log('Running ' + value + ' Experiment')
   }
 
   private handleAddNs = value => {
@@ -204,74 +208,67 @@ class ExprBase extends React.Component<{}, Formstate> {
     const { metric } = this.state
     return (
       <Form className="formProps" onSubmit={this.preventFormRefresh}>
-        <div className="header">
-          <CaretDown32 className="iconprops" />
-          <h3> Experiment Basics </h3>
-        </div>
-        <div className="inputInfoDiv">
-          <div className="textinputDiv">
+        <div>
+          <FormGroup style={{ width: 350 }}>
             <TextInput
-            	id='expName'
-            	labelText='Name'
-            	placeholder='Ex. experiment_v1_v2'
-            	onChange={this.handleNameChange}
-            	type="text"
-            	style={{ width: 350, height: 50 }}
+              id="experimentName"
+              labelText="Name"
+              helperText="Name to identify the experiment."
+              placeholder="Ex. experiment_v1_v2"
+              onChange={this.handleNameChange}
+              type="text"
+            ></TextInput>
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="experiment-type-select"
+              titleText="Experiment Type"
+              helperText="Type of experiment to be conducted"
+              placeholder="Select an Experiment Type"
+              items={[experimentTypes.HIL]}
+              onChange={value => this.handleSelectExpType(value.selectedItem)}
             />
-          </div>
-        </div>
-        <div className="header">
-          <CaretDown32 className="iconprops" />
-          <h3> Target Configuration </h3>
-        </div>
-        <div style={{ width: 350, position: 'relative', top: 240, left: -150 }}>
-          <ComboBox
-            id="namespace-select"
-            titleText="Namespace"
-            helperText="Namespace where your application resides."
-            placeholder="Select a Namespace"
-            items={this.nsList}
-            itemToString={item => (item ? item.text : '')}
-            onChange={value => this.handleAddNs(value.selectedItem)}
-            style={{ width: 350 }}
-          />
-        </div>
-        <div style={{ width: 350, position: 'relative', top: 340, left: -225 }}>
-          <ComboBox
-            id="service-select"
-            titleText="Service"
-            helperText="The name of your microservice."
-            placeholder="Select a Service"
-            items={this.svcList}
-            itemToString={item => (item ? item.text : '')}
-            onChange={value => this.handleAddSvc(value.selectedItem)}
-            style={{ width: 350 }}
-          />
-        </div>
-        <div style={{ width: 350, position: 'relative', top: 440, left: -295 }}>
-          <ComboBox
-            id="baseline-select"
-            titleText="Baseline Deployment"
-            helperText="The version of your microservice to use as the experimental baseline."
-            placeholder="Select a Baseline Deployment"
-            items={this.deployList}
-            itemToString={item => (item ? item.text : '')}
-            onChange={value => this.handleAddBase(value.selectedItem)}
-            style={{ width: 350 }}
-          />
-        </div>
-        <div
-          style={{ width: 350, height: 100, position: 'relative', top: 555, left: -345, display: '-webkit-inline-box' }}
-        >
-          <div style={{ height: 50, position: 'relative', left: -23 }}>
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="namespace-select"
+              titleText="Service Namespace"
+              helperText="Namespace where your service resides."
+              placeholder="Select a Namespace"
+              items={this.nsList}
+              itemToString={item => (item ? item.text : '')}
+              onChange={value => this.handleAddNs(value.selectedItem)}
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="service-select"
+              titleText="Service"
+              helperText="The name of your microservice."
+              placeholder="Select a Service"
+              items={this.svcList}
+              itemToString={item => (item ? item.text : '')}
+              onChange={value => this.handleAddSvc(value.selectedItem)}
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="baseline-select"
+              titleText="Baseline Deployment"
+              helperText="The version of your microservice to use as the experimental baseline."
+              placeholder="Select a Baseline Deployment"
+              items={this.deployList}
+              itemToString={item => (item ? item.text : '')}
+              onChange={value => this.handleAddBase(value.selectedItem)}
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
             <p>
-              {' '}
               Candidate Deployment(s) <br />
               <p className="helper"> The version(s) of your microservice to use as the experimental candidates.</p>
             </p>
-          </div>
-          <div style={{ position: 'relative', top: 55, left: -370 }}>
             <MultiSelect
+              classname="extendwidth"
               id="candidates-select"
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}
@@ -279,9 +276,9 @@ class ExprBase extends React.Component<{}, Formstate> {
               onChange={value => this.handleAddCand(value.selectedItems)}
               invalid={this.state.invalidCandidate}
               invalidText="Cannot select same version as baseline."
-            ></MultiSelect>
-          </div>
-          <div style={{ position: 'relative', top: 120, left: -720 }}>
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
             <Button
               size="default"
               kind="primary"
@@ -291,29 +288,28 @@ class ExprBase extends React.Component<{}, Formstate> {
             >
               Observe
             </Button>
-            <div style={{ position: 'relative', top: -48, left: 190 }}>
-              <Button size="default" kind="secondary" renderIcon={Data132} onClick={this.toggleMetricConfig}>
-                {' '}
-                Metric Config{' '}
-              </Button>
-            </div>
-          </div>
+            <Button
+              style={{ position: 'relative', left: 70 }}
+              size="default"
+              kind="secondary"
+              renderIcon={Data132}
+              onClick={this.toggleMetricConfig}
+            >
+              Metric Config
+            </Button>
+          </FormGroup>
           {this.state.showMetrics ? (
-            <div>
-              <div className="header" style={{ position: 'relative', top: 160, right: 920 }}>
-                <CaretDown32 className="iconprops" />
-                <h3> Metric Configuration </h3>
-              </div>
+            <FormGroup>
               <Button
+                style={{ position: 'relative' }}
                 size="small"
                 kind="ghost"
                 renderIcon={AddAlt32}
                 onClick={this.addMetric}
-                style={{ position: 'relative', top: 95, right: 600 }}
               >
                 Add Metric
               </Button>
-              <div style={{ position: 'relative', top: 110, right: 865 }}>
+              <div style={{ position: 'relative' }}>
                 {metric.map((val, idx) => {
                   const metricId = `metric-${idx}`;
                     const limitTypeId = `limitType-${idx}`;
@@ -330,6 +326,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         itemToString={item => (item ? item.name : '')}
                         onChange={value => this.handleMetricName(value.selectedItem, idx)}
                       />
+                      <Tag type="gray">{'Info:'}</Tag>
                       <Tag type="cyan">{val.type === '' ? '...' : val.type}</Tag>
                       <Tag type="magenta">{val.reward ? 'Reward' : '...'}</Tag>
                       <Tag type="cool-gray">{val.limitType === '' ? '...' : `${val.limitType} threshold`}</Tag>
@@ -374,7 +371,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                   )
                 })}
               </div>
-            </div>
+            </FormGroup>
           ) : null}
         </div>
       </Form>
