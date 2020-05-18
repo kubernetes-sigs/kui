@@ -36,30 +36,31 @@ class ExprBase extends React.Component<{}, Formstate> {
   public constructor(props) {
     super(props)
     this.state = {
-      disableresubmit: false, //prevents form resubmission
+      disableresubmit: false, // prevents form resubmission
       showMetrics: false, // determines the visibility of metric config section
       invalidCand: false, // determines whether cand values are valid
-      name: '',	// name of the experiment
-      ns: '',   // namespace of microservice
-      svc: '',  // service name of microservice
+      name: '', // name of the experiment
+      type: '', // type of experiment: HIL vs automated
+      ns: '', // namespace of microservice
+      svc: '', // service name of microservice
       base: '', // baseline deployment of microservice
       cand: [], // list of candidate deployment names of microservice
       metric: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
       disableReward: false // disables the reward select for selected metrics
     }
     // Bound NON-lambda functions to component's scope
-    this.submitForm = this.submitForm.bind(this);
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.toggleMetricConfig = this.toggleMetricConfig.bind(this);
-    this.addMetric = this.addMetric.bind(this);
+    this.submitForm = this.submitForm.bind(this)
+    this.handleNameChange = this.handleNameChange.bind(this)
+    this.toggleMetricConfig = this.toggleMetricConfig.bind(this)
+    this.addMetric = this.addMetric.bind(this)
   }
 
   /*
    * ==== Basic Experiment State Handlers =====
    */
   private handleNameChange(event) {
-  	console.log(event.target.value);
-    this.setState({ name: event.target.value})
+    console.log(event.target.value)
+    this.setState({ name: event.target.value })
   }
 
   private handleAddCand = value => {
@@ -71,10 +72,8 @@ class ExprBase extends React.Component<{}, Formstate> {
     for (let i = 0; i < versionValue.length; i++) {
       if (this.state.base === versionValue[i]) {
         versionValue.splice(i, 1)
-        this.setState({ invalidCand: true,
-        				cand: versionValue
-        			 });
-        return;
+        this.setState({ invalidCand: true, cand: versionValue })
+        return
       }
     }
     this.setState({
@@ -113,12 +112,12 @@ class ExprBase extends React.Component<{}, Formstate> {
    * ==== Metric Configuration Handler Functions ====
    */
   // Toggle for Metric Configuration
-  private toggleMetricConfig(){
+  private toggleMetricConfig() {
     this.setState({ showMetrics: !this.state.showMetrics })
   }
 
   // Method for Add Metric (+) button
-  private addMetric(){
+  private addMetric() {
     this.setState(prevState => ({
       metric: [...prevState.metric, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
     }))
@@ -163,9 +162,10 @@ class ExprBase extends React.Component<{}, Formstate> {
     newMetric[idx] = { ...newMetric[idx], limitType: limitType }
     this.setState({ metric: newMetric })
   }
+
   // Update the state for limit value
   private handleLimitValChange = (value, idx) => {
-    const limitValue = value === '' ? 0 : parseFloat(value);
+    const limitValue = value === '' ? 0 : parseFloat(value)
     const newMetric = [...this.state.metric]
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ metric: newMetric })
@@ -186,18 +186,20 @@ class ExprBase extends React.Component<{}, Formstate> {
    */
   private submitForm() {
     // Get the current time in ISO form
-    let d = new Date();
-    let time = d.toISOString();
+    const d = new Date()
+    const time = d.toISOString()
     // Reorganize form input into Iter8 Request model
-    let jsonOutput = getRequestModel(time, this.state);
+    const jsonOutput = getRequestModel(time, this.state)
     // Transmit data to Decision form using eventBus
-    eventChannelUnsafe.emit('/my/channel', jsonOutput);
-    this.setState({disableresubmit: true});
+    eventChannelUnsafe.emit('/get/decision', jsonOutput)
+    this.setState({ disableresubmit: true })
   }
+
   // Cancels form submission event caused by "Enter" press
-  private preventFormRefresh(event){
-  	event.preventDefault();
+  private preventFormRefresh(event) {
+    event.preventDefault()
   }
+
   public render() {
     const { metric } = this.state
     return (

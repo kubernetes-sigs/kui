@@ -85,7 +85,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       exprReq: null, // JSON object sent as Iter8 Request
       exprResult: null // JSON object returned from Iter8 API
     }
-    eventChannelUnsafe.on('/my/channel', formstate => {
+    eventChannelUnsafe.on('/get/decision', formstate => {
       this.setState({ exprCreated: true, exprReq: formstate })
     })
     // Bound NON-lambda functions to component's scope
@@ -102,11 +102,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Sets display with winner information
   private getWinAnalysis(apiResult) {
     if (apiResult.winner_assessment.winning_version_found) {
-      const assessment = apiResult.winner_assessment
+      // const assessment = apiResult.winner_assessment
       const prob = apiResult.winner_assessment.winning_probability
       this.winner = `%{assessment.current_winner} is the winner with ${prob} % of winning`
-    }
-    else{
+    } else {
       this.winner = 'No winners determined.'
     }
   }

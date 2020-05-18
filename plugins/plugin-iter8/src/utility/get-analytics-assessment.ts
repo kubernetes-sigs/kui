@@ -1,12 +1,13 @@
 // var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 export default class GetAnalyticsAssessment {
   public data = {}
-  //URL used by the local Iter8 analytics service (should adapt to the svc running in cluster)
+  // URL used by the local Iter8 analytics service (should adapt to the svc running in cluster)
   public url = ''
-  public constructor(data, url = 'http://0.0.0.0:5555/assessment') {
+  public constructor(data, url = 'http://0.0.0.0:8000/assessment') {
     this.url = url
     this.data = data
   }
+
   // AJAX Call to Iter8 and returns a promise
   public getAnalyticsAssessment() {
     const data = this.data
