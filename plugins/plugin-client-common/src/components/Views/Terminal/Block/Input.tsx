@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab } from '@kui-shell/core'
+import { Tab as KuiTab, inBrowser } from '@kui-shell/core'
 import { dots as spinnerFrames } from 'cli-spinners'
 
 import onPaste from './OnPaste'
@@ -317,7 +317,7 @@ export default class Input extends React.PureComponent<Props, State> {
   }
 
   private screenshotAction() {
-    return !this.props.willScreenshot
+    return !this.props.willScreenshot || inBrowser()
       ? []
       : [
           {
