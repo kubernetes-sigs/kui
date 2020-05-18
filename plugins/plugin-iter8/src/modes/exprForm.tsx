@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
-import { TooltipIcon, Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
-import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
+import { Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
+import { CaretDown32, View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
@@ -219,13 +219,8 @@ class ExprBase extends React.Component<{}, Formstate> {
             	style={{ width: 350, height: 50 }}
             />
           </div>
-          <div className="helpDiv">
-            <TooltipIcon direction="top" align="center" tooltipText="Name to identify the experiment.">
-              <Information16 />
-            </TooltipIcon>
-          </div>
         </div>
-        <div className="header" style={{ position: 'relative', top: 150, left: -145 }}>
+        <div className="header" t>
           <CaretDown32 className="iconprops" />
           <h3> Target Configuration </h3>
         </div>
