@@ -11,15 +11,15 @@ interface Metricstate {
   limitValue: number
 }
 interface Formstate {
-  disableresubmit: boolean
+  disableResubmit: boolean
   showMetrics: boolean
-  invalidCand: boolean
+  invalidCandidate: boolean
   name: string
   type: string
-  ns: string
-  svc: string
-  base: string
-  cand: Array<string>
+  namespace: string
+  service: string
+  baseline: string
+  candidates: Array<string>
   metric: Array<Metricstate>
   disableReward: boolean
 }
@@ -30,10 +30,10 @@ interface DecisionState {
   trafficSplit: Array<any>
   trafficErr: boolean
   notifyUser: boolean
-  exprCreated: boolean
+  experimentCreated: boolean
   haveResults: boolean
-  exprReq?: any
-  exprResult?: any
+  experimentRequest?: any
+  experimentResult?: any
 }
 
 export { Metricstate, Formstate, DecisionState }
