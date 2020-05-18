@@ -220,7 +220,7 @@ class ExprBase extends React.Component<{}, Formstate> {
             />
           </div>
         </div>
-        <div className="header" t>
+        <div className="header">
           <CaretDown32 className="iconprops" />
           <h3> Target Configuration </h3>
         </div>
