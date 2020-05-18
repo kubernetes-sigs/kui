@@ -40,7 +40,9 @@ import {
   ThIcon as Grid,
   CaretLeftIcon as PreviousPage,
   CaretRightIcon as NextPage,
-  NetworkWiredIcon as Network
+  NetworkWiredIcon as Network,
+  PauseCircleIcon as Pause,
+  PlayCircleIcon as Play
 } from '@patternfly/react-icons'
 
 import { Props } from '..'
@@ -77,6 +79,10 @@ export default function PatternFly4Icons(props: Props) {
       return <Info {...props} />
     case 'List':
       return <List {...props} />
+    case 'Pause':
+      return <Pause {...props} />
+    case 'Play':
+      return <Play {...props} />
     case 'PreviousPage':
       return <PreviousPage style={Pagination} {...props} />
     case 'Network':

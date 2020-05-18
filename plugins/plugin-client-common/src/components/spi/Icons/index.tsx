@@ -32,6 +32,8 @@ export type SupportedIcon =
   | 'List'
   | 'Network'
   | 'NextPage'
+  | 'Pause'
+  | 'Play'
   | 'PreviousPage'
   | 'Screenshot'
   | 'ScreenshotInProgress'
