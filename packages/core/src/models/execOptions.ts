@@ -88,8 +88,11 @@ export interface ExecOptions {
   stdout?: (str: Streamable) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  /** on job init, pass the job, and get back a stdout */
+  /** on job init, pass the job, and get back a stdout; i.e. just before the PTY is brought up */
   onInit?: (job: Abortable & FlowControllable) => Stream | Promise<Stream>
+
+  /** on job ready, i.e. after the PTY is up, but before any data has been processed */
+  onReady?: (job: Abortable & FlowControllable) => void | Promise<void>
 
   parameters?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
