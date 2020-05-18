@@ -105,7 +105,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             onMouseDown={evt => evt.preventDefault()}
             disabled={isFirstPage}
             className={
-              'bx--pagination__button bx--pagination__button--forward' +
+              'bx--pagination__button bx--pagination__button--backward' +
               (isFirstPage ? ' bx--pagination__button--no-index' : '')
             }
             aria-label="Previous page"
@@ -118,7 +118,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             onMouseDown={evt => evt.preventDefault()}
             disabled={isLastPage}
             className={
-              'bx--pagination__button bx--pagination__backward--forward' +
+              'bx--pagination__button bx--pagination__button--forward' +
               (isLastPage ? ' bx--pagination__button--no-index' : '')
             }
             aria-label="Next page"
