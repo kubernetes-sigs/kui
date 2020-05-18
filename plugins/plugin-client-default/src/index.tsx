@@ -28,7 +28,7 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 /**
  * Format our body, with extra status stripe widgets
  *   - <CurrentGitBranch />
-     - <ProxyOfflineIndicator />
+ *   - <ProxyOfflineIndicator />
  *
  */
 export default function renderMain(props: KuiProps) {
