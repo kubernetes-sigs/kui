@@ -31,6 +31,13 @@ import { Loading } from '@kui-shell/plugin-client-common'
 
 const strings = i18n('plugin-kubectl', 'logs')
 
+/**
+ * We will wait this many milliseconds after the PTY is ready for log
+ * data to arrive before proclaiming No log data.
+ *
+ */
+const HYSTERESIS = 1500
+
 interface Props {
   repl: REPL
   pod: Pod
@@ -42,6 +49,7 @@ interface State {
   ref?: HTMLElement
   logs: string[]
   isLive: boolean
+  waitingForHysteresis: boolean
   job: Abortable & FlowControllable
 }
 
@@ -52,6 +60,7 @@ class Logs extends React.PureComponent<Props, State> {
     this.state = {
       logs: [],
       isLive: false,
+      waitingForHysteresis: false,
       job: undefined
     }
 
@@ -78,7 +87,8 @@ class Logs extends React.PureComponent<Props, State> {
           command: this.toggleStreaming.bind(this, !isLive),
           order: -1
         }
-      ]
+      ],
+      true // replace default buttons
     )
   }
 
@@ -107,14 +117,16 @@ class Logs extends React.PureComponent<Props, State> {
   private initStream(isLive: boolean) {
     setTimeout(async () => {
       const { pod, repl } = this.props
-      const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${isLive ? '-f' : ''}`
+      const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} --all-containers ${
+        isLive ? '-f' : ''
+      }`
 
       this.updateToolbar(isLive)
 
       repl.qexec(cmd, undefined, undefined, {
-        onInit: (job: Abortable & FlowControllable) => {
-          this.setState({ isLive, job })
-
+        /** prior to PTY initialization, we provide a streaming consumer */
+        onInit: () => {
+          // this is our streaming consumer
           return (_: Streamable) => {
             if (typeof _ === 'string') {
               this.setState(curState => ({
@@ -122,6 +134,12 @@ class Logs extends React.PureComponent<Props, State> {
               }))
             }
           }
+        },
+
+        /** when the PTY is up, but before any data has been processed */
+        onReady: (job: Abortable & FlowControllable) => {
+          setTimeout(() => this.setState({ waitingForHysteresis: false }), HYSTERESIS)
+          this.setState({ isLive, job, waitingForHysteresis: true })
         }
       })
     })
@@ -132,7 +150,7 @@ class Logs extends React.PureComponent<Props, State> {
       return this.nothingToShow()
     } else {
       return this.state.logs.map((__html, idx) => (
-        <pre key={idx} className="pre-wrap break-all monospace" dangerouslySetInnerHTML={{ __html }} />
+        <pre key={idx} className="smaller-text pre-wrap break-all monospace" dangerouslySetInnerHTML={{ __html }} />
       ))
     }
   }
@@ -150,7 +168,7 @@ class Logs extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (!this.state.job) {
+    if (!this.state.job || this.state.waitingForHysteresis) {
       return this.notDoneLoading()
     }
 

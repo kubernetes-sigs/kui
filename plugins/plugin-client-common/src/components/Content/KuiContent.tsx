@@ -20,7 +20,6 @@ import { isFile } from '@kui-shell/plugin-bash-like/fs'
 import {
   ParsedOptions,
   Tab as KuiTab,
-  Button,
   Content,
   isHTML,
   isReactProvider,
@@ -30,7 +29,7 @@ import {
   isFunctionContent,
   isScalarContent,
   MultiModalResponse,
-  ToolbarText
+  ToolbarProps
 } from '@kui-shell/core'
 
 import Eval from './Eval'
@@ -40,7 +39,7 @@ import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
 
-export interface KuiMMRProps {
+export type KuiMMRProps = ToolbarProps & {
   tab: KuiTab
   mode: Content
   response: MultiModalResponse
@@ -48,7 +47,6 @@ export interface KuiMMRProps {
     argvNoOptions: string[]
     parsedOptions: ParsedOptions
   }
-  willUpdateToolbar?: (toolbarText: ToolbarText, buttons?: Button[]) => void
 }
 
 export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {

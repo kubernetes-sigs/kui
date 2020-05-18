@@ -22,6 +22,7 @@ import Toolbar, { Props } from './Toolbar'
 interface State {
   toolbarText: ToolbarText
   extraButtons?: Button[]
+  extraButtonsOverride?: boolean
 }
 
 export default class ToolbarContainer extends React.PureComponent<Props, State> {
@@ -34,8 +35,8 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   }
 
   /** Called by children if they desire an update to the Toolbar */
-  private onToolbarUpdate(toolbarText: ToolbarText, extraButtons?: Button[]) {
-    this.setState({ toolbarText, extraButtons })
+  private onToolbarUpdate(toolbarText: ToolbarText, extraButtons?: Button[], extraButtonsOverride?: boolean) {
+    this.setState({ toolbarText, extraButtons, extraButtonsOverride })
   }
 
   /** Graft on the toolbar event management */
@@ -49,7 +50,10 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   }
 
   public render() {
-    const toolbarButtons = this.props.buttons.concat(this.state.extraButtons || [])
+    const toolbarButtons =
+      this.state.extraButtonsOverride && Array.isArray(this.state.extraButtons)
+        ? this.state.extraButtons
+        : this.props.buttons.concat(this.state.extraButtons || [])
     const toolbarHasContent = this.state.toolbarText || toolbarButtons.length !== 0
 
     return (
