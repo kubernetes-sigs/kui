@@ -3,6 +3,11 @@
  */
 
 // Model for exprForm.tsx state
+enum experimentTypes {
+  HIL = 'Human In the Loop',
+  automated = 'Automated'
+}
+
 interface Metricstate {
   name: string
   type: string
@@ -15,7 +20,7 @@ interface Formstate {
   showMetrics: boolean
   invalidCandidate: boolean
   name: string
-  type: string
+  type: experimentTypes
   namespace: string
   service: string
   baseline: string
@@ -36,4 +41,4 @@ interface DecisionState {
   experimentResult?: any
 }
 
-export { Metricstate, Formstate, DecisionState }
+export { Metricstate, Formstate, DecisionState, experimentTypes }

@@ -1,37 +1,44 @@
-
 //Defined colors
 $light-grey: #c6ccd8;
-$trans-grey: #5E6367;
+$trans-grey: #5e6367;
 
-.header {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  width: 400px;
-  height: 100px;
-  background:transparent;
-}
+// .header {
+//   padding-top: 10px;
+//   padding-bottom: 10px;
+//   width: 400px;
+//   height: 100px;
+//   background:transparent;
+// }
 
-.inputInfoDiv{
-    height: 100px;
-    width: 100px;
-    position: relative;
-    top: 90px;
-}
+// .inputInfoDiv{
+//     height: 100px;
+//     width: 100px;
+//     position: relative;
+//     top: 90px;
+// }
 .iconprops {
   fill: $light-grey;
 }
 
-.textinputDiv {
-    height: 100px;
-    width: 450px;
+// .textinputDiv {
+//     height: 100px;
+//     width: 450px;
+// }
+
+.helper {
+  color: $trans-grey !important;
 }
 
-.helpDiv{
-    height: 20px;
-    width: 20px;
-    position: relative;
-    top: -103px;
-    left: 40px;
+.extendwidth {
+  width: 350px !important;
+}
+
+.helpDiv {
+  height: 20px;
+  width: 20px;
+  position: relative;
+  top: -103px;
+  left: 40px;
 }
 
 h3 {
@@ -39,16 +46,12 @@ h3 {
   font-weight: 900;
   font-size: 10px;
   color: $light-grey;
-  margin: 0 0 15px 5px;
+  // margin: 0 0 15px 5px;
 }
 
 p {
   font-size: 0.75rem !important;
-  line-height: 1.0rem !important;
-}
-
-.helper {
-  color: $trans-grey !important;
+  line-height: 1rem !important;
 }
 
 .bx--list-box__field {
@@ -57,10 +60,11 @@ p {
 
 .formProps {
   overflow-y: auto !important;
-  height: 689.5px;
+  display: block;
+  // height: 689.5px;
 }
-.bx--label{
-  color: #FFFFFF !important;
+.bx--label {
+  color: #ffffff !important;
 }
 .bx--list-box {
   width: 350px !important;
