@@ -19,6 +19,7 @@ import {
   i18n,
   REPL,
   Abortable,
+  Button,
   FlowControllable,
   Streamable,
   Tab,
@@ -27,7 +28,7 @@ import {
 } from '@kui-shell/core'
 
 import { Pod, isPod } from '../../model/resource'
-import { Loading } from '@kui-shell/plugin-client-common'
+import { DropDown, Icons, Loading } from '@kui-shell/plugin-client-common'
 
 const strings = i18n('plugin-kubectl', 'logs')
 
@@ -42,14 +43,26 @@ interface Props {
   repl: REPL
   pod: Pod
   toolbarController: ToolbarProps
-  container?: string
 }
 
 interface State {
+  /** Reference to the scrollable region. Allows us to manage scroll-to-bottom. */
   ref?: HTMLElement
+
+  /** The current log entries. */
   logs: string[]
+
+  /** Are we streaming? */
   isLive: boolean
+
+  /** Are we focused on one container? `undefined` means all containers. */
+  container: string
+
+  /** It may take a second or two between establishing the PTY stream
+   * and receiving the first log record. */
   waitingForHysteresis: boolean
+
+  /** The underlying PTY streaming job. */
   job: Abortable & FlowControllable
 }
 
@@ -60,6 +73,7 @@ class Logs extends React.PureComponent<Props, State> {
     this.state = {
       logs: [],
       isLive: false,
+      container: this.defaultContainer(),
       waitingForHysteresis: false,
       job: undefined
     }
@@ -67,31 +81,99 @@ class Logs extends React.PureComponent<Props, State> {
     this.initStream(true)
   }
 
+  /** When we are going away, make sure to abort the streaming job. */
   public componentWillUnmount() {
     if (this.state.job) {
       this.state.job.abort()
     }
   }
 
+  /** Text to display in the Toolbar. */
+  private toolbarText(isLive: boolean) {
+    // i18n message key for toolbar text
+    const msg1 = isLive ? 'Logs are live streaming.' : 'Log streaming is paused.'
+    const msg2 = `${msg1} ${this.state.container ? 'Showing container X.' : 'Showing all containers.'}`
+
+    return {
+      type: isLive ? ('info' as const) : ('warning' as const),
+      text: this.state.container ? strings(msg2, this.state.container) : strings(msg2)
+    }
+  }
+
+  /** Buttons to display in the Toolbar. */
+  private toolbarButtons(isLive: boolean) {
+    return [
+      {
+        mode: 'toggle-streaming',
+        label: isLive ? strings('Pause Streaming') : strings('Resume Streaming'),
+        kind: 'view',
+        icon: <Icons icon={isLive ? 'Pause' : 'Play'} />,
+        command: this.toggleStreaming.bind(this, !isLive)
+      } as Button
+    ].concat(
+      this.props.pod.spec.containers.length <= 1
+        ? []
+        : [
+            {
+              mode: 'container-list',
+              label: 'Select a container',
+              kind: 'view' as const,
+              command: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+              icon: this.containerOptions()
+            } as Button
+          ]
+    )
+  }
+
+  /** Update Toolbar text and Toolbar buttons. */
   private updateToolbar(isLive = this.state.isLive) {
     this.props.toolbarController.willUpdateToolbar(
-      {
-        type: isLive ? 'info' : 'warning',
-        text: isLive ? strings('Logs are live streaming') : strings('Log streaming is paused')
-      },
-      [
-        {
-          mode: 'toggle-streaming',
-          label: isLive ? strings('Pause Streaming') : strings('Resume Streaming'),
-          kind: 'view',
-          command: this.toggleStreaming.bind(this, !isLive),
-          order: -1
-        }
-      ],
+      this.toolbarText(isLive),
+      this.toolbarButtons(isLive),
       true // replace default buttons
     )
   }
 
+  /** Which container should we focus on by default? */
+  private defaultContainer() {
+    // undefined means all containers
+    return this.props.pod.spec.containers.length === 1 ? this.props.pod.spec.containers[0].name : undefined
+  }
+
+  /** Handler to focus on the given container. */
+  private showContainer(container?: string) {
+    this.setState(curState => {
+      if (curState.container !== container) {
+        this.initStream(this.state.isLive)
+      }
+
+      return {
+        container
+      }
+    })
+  }
+
+  /** Render a selection component that allows user to select a container. */
+  private containerOptions() {
+    const { containers } = this.props.pod.spec
+    if (containers.length > 1) {
+      const actions = containers
+        .map(_ => ({
+          label: _.name,
+          handler: () => this.showContainer(_.name)
+        }))
+        .concat([
+          {
+            label: strings('All Containers'),
+            handler: () => this.showContainer()
+          }
+        ])
+
+      return <DropDown actions={actions} className="kui--repl-block-right-element" />
+    }
+  }
+
+  /** The part of toggleStreaming that deals with PTY flow control. */
   private doFlowControl(desiredStateIsLive = this.state.isLive) {
     if (this.state.job) {
       if (desiredStateIsLive) {
@@ -102,6 +184,7 @@ class Logs extends React.PureComponent<Props, State> {
     }
   }
 
+  /** Handler for Pause/Play. */
   private toggleStreaming(desiredState: boolean) {
     if (this.state.isLive !== desiredState) {
       this.doFlowControl(desiredState)
@@ -114,12 +197,18 @@ class Logs extends React.PureComponent<Props, State> {
     }
   }
 
+  /** Set up the PTY stream. */
   private initStream(isLive: boolean) {
+    if (this.state.job) {
+      // terminate existing watcher
+      this.state.job.abort()
+    }
+
     setTimeout(async () => {
       const { pod, repl } = this.props
-      const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} --all-containers ${
-        isLive ? '-f' : ''
-      }`
+
+      const container = this.state.container ? `-c ${this.state.container}` : '--all-containers'
+      const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} ${isLive ? '-f' : ''}`
 
       this.updateToolbar(isLive)
 
@@ -145,6 +234,12 @@ class Logs extends React.PureComponent<Props, State> {
     })
   }
 
+  /** Scroll to bottom if needed. */
+  private doScroll(ref = this.state.ref) {
+    ref.scrollTop = ref.scrollHeight
+  }
+
+  /** Render the log content in the case we have logs to show. */
   private logs() {
     if (this.state.logs.length === 0) {
       return this.nothingToShow()
@@ -155,18 +250,17 @@ class Logs extends React.PureComponent<Props, State> {
     }
   }
 
-  private doScroll(ref = this.state.ref) {
-    ref.scrollTop = ref.scrollHeight
-  }
-
+  /** Render the log content in the case we not yet finished initializing. */
   private notDoneLoading() {
     return <Loading />
   }
 
+  /** Render the log content in the case we no logs to show. */
   private nothingToShow() {
     return <div className="kui--hero-text">No log data</div>
   }
 
+  /** Render the log content. */
   public render() {
     if (!this.state.job || this.state.waitingForHysteresis) {
       return this.notDoneLoading()

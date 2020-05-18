@@ -49,5 +49,6 @@ export { default as ComboSidecar } from './components/Views/Sidecar/ComboSidecar
 export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecar'
 export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
 
-// Icons
+// spi
 export { default as Icons } from './components/spi/Icons'
+export { default as DropDown, DropDownAction } from './components/spi/DropDown'
