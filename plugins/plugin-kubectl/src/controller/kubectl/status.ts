@@ -396,6 +396,7 @@ class StatusWatcher implements Abortable, Watcher {
 
     this.initialBody = this.resourcesToWaitFor.map(ref => {
       const { group = '', version = '', kind, name, namespace } = ref
+
       return {
         name,
         onclick: `${this.command} get ${fqnOfRef(ref)} -o yaml`,

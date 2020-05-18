@@ -96,6 +96,11 @@ export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th[data-key="${c
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
+export const TABLE_PAGINATION_FORWARD = (N: number) =>
+  `${OUTPUT_N(N)} .kui--data-table-toolbar-pagination button.bx--pagination__button--forward`
+export const TABLE_PAGINATION_BACKWARD = (N: number) =>
+  `${OUTPUT_N(N)} .kui--data-table-toolbar-pagination button.bx--pagination__button--backward`
+
 export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-grid`
 export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
 export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} .kui--data-table-title`
