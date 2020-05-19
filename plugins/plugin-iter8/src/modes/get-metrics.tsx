@@ -23,7 +23,10 @@ import ReactErrorDisplay from './error-react'
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
 import { GetMetricConfig, ITER8_METRIC_NAMES } from '../components/metric-config'
-import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics } from '../components/metric-config-types'
+import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics, MetricConfigMap } from '../components/metric-config-types'
+
+import { safeLoad, safeDump } from 'js-yaml'
+import { execSync } from 'child_process'
 
 const { 
   Table, 
@@ -35,6 +38,8 @@ const {
   TableExpandedRow,
 } = DataTable
 
+let configMap: MetricConfigMap
+
 let counterMetrics: CounterMetrics
 let ratioMetrics: RatioMetrics
 let counterMetricNames: string[]
@@ -42,6 +47,9 @@ let ratioMetricNames: string[]
 
 const newCounterMetricConfig: Partial<CounterMetric> = {}
 const newRatioMetricConfig: Partial<RatioMetric> = {}
+
+let COUNTER_METRIC_REQUIRED_ATTRIBUTES
+let RATIO_METRIC_REQUIRED_ATTRIBUTES
 
 export enum MetricTypes {
   'counter',
@@ -294,6 +302,13 @@ type DisplayState = {
   editedMetric: CounterMetric | RatioMetric
 }
 
+// Apply the given config to Kubernetes
+function kubectlApplyConfig(config: string): string {
+  const command = `cat <<EOF | kubectl apply -f -\n${config}\nEOF`
+
+  return execSync(command, { encoding: 'utf-8' })
+}
+
 /**
  * Create a simple DropdownOptions from a string array
  *
@@ -317,6 +332,9 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
  */
 function updateMetricAttributesData() {
   const metricConfig = new GetMetricConfig()
+
+  configMap = safeLoad(execSync('kubectl get configmaps -n iter8 iter8config-metrics2 -o yaml', { encoding: 'utf-8' }))
+  // configMap = SAMPLE_METRICS
     
   // TODO: Add proper error handling
   counterMetrics = (metricConfig.getCounterMetrics() as CounterMetrics)
@@ -344,6 +362,19 @@ function updateMetricAttributesData() {
   })
   ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
   ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+
+  // Required attributes to create counter and ratio metrics
+  COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+    return attribute.required
+  }).map(attribute => {
+    return attribute.name
+  })
+
+  RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+    return attribute.required
+  }).map(attribute => {
+    return attribute.name
+  })
 }
 
 /**
@@ -623,14 +654,14 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     )
   }
 
-  public addMetric(type: MetricTypes) {
+  public displayAddMetric(type: MetricTypes) {
     this.setState({ 
       display: MetricDetailsModeDisplay.addMetrics,
       selectedType: type
     })
   }
 
-  public editMetric(metric: string, type: MetricTypes) {
+  public displayEditMetric(metric: string, type: MetricTypes) {
     const selectedMetric2 = type === MetricTypes.counter
         ? counterMetrics.find(counterMetric => {
             return counterMetric.name === metric
@@ -655,124 +686,286 @@ class Display extends React.Component<DisplayProps, DisplayState> {
     })
   }
 
-  private onSubmit = e => {
+  private addMetric = e => {
     console.log('click submitted')
 
-    // const { metricType } = this.props
+    const { selectedType } = this.state
 
-    // this.setState({
-    //   formSubmitted: true
-    // })
+    if (selectedType === MetricTypes.counter) {
+      console.log('new counter metric config:', newCounterMetricConfig)
 
-    // if (metricType === MetricTypes.counter) {
-    //   console.log('new counter metric config:', newCounterMetricConfig)
+      /**
+       * Ensure that there are no name collisions
+       *
+       * This is separate from the invalid check in the form
+       */
+      const uniqueName = !counterMetrics.some(metric => {
+        return metric.name === newCounterMetricConfig.name
+      })
 
-    //   /**
-    //    * Ensure that there are no name collisions
-    //    *
-    //    * This is separate from the invalid check in the form
-    //    */
-    //   const uniqueName = !counterMetrics.some(metric => {
-    //     return metric.name === newCounterMetricConfig.name
-    //   })
+      // Ensure all required fields are present
+      const allRequiredFieldsPresent = COUNTER_METRIC_REQUIRED_ATTRIBUTES.every(id => {
+        return newCounterMetricConfig[id]
+      })
 
-    //   // Ensure all required fields are present
-    //   const allRequiredFieldsPresent = this.state.requiredAttributeIds.every(id => {
-    //     return newCounterMetricConfig[id]
-    //   })
+      // Final checks
+      if (allRequiredFieldsPresent && uniqueName) {
+        /**
+         * TS ignore because writing with proper typing would result in lots of
+         * code duplication and greatly enhance complexity.
+         *
+         * This should be of the correct data type and safe to push at this point
+         * with the final checks.
+         */
+        counterMetrics.push(newCounterMetricConfig as CounterMetric)
 
-    //   // Final checks
-    //   if (allRequiredFieldsPresent && uniqueName) {
-    //     this.setState({
-    //       formSubmitted: true,
-    //       sucessfulSubmission: true
-    //     })
+        // Convert new metric config to stringified YAML
+        const stringifiedMetrics = safeDump(counterMetrics)
 
-    //     /**
-    //      * TS ignore because writing with proper typing would result in lots of
-    //      * code duplication and greatly enhance complexity.
-    //      *
-    //      * This should be of the correct data type and safe to push at this point
-    //      * with the final checks.
-    //      */
-    //     counterMetrics.push(newCounterMetricConfig as CounterMetric)
+        // Add new metric config to config map
+        configMap.data['counter_metrics.yaml'] = stringifiedMetrics
 
-    //     // Convert new metric config to stringified YAML
-    //     const stringifiedMetrics = safeDump(counterMetrics)
+        // Apply new config map
+        console.log(kubectlApplyConfig(safeDump(configMap)))
 
-    //     // Add new metric config to config map
-    //     configMap.data['counter_metrics.yaml'] = stringifiedMetrics
+        this.setState({
+          display: MetricDetailsModeDisplay.getMetrics
+        })
+      } else {
+        // TODO: inform user of problems
+        console.log('uniqueName:', uniqueName)
+        console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
+      }
+    } else {
+      console.log('new ratio metric config:', newRatioMetricConfig)
 
-    //     // Apply new config map
-    //     console.log(kubectlApplyConfig(safeDump(configMap)))
+      /**
+       * Ensure that there are no name collisions
+       *
+       * This is separate from the invalid check in the form
+       */
+      const uniqueName = !ratioMetrics.some(metric => {
+        return metric.name === newRatioMetricConfig.name
+      })
 
-    //     // TODO: display success/failure message
-    //   } else {
-    //     // TODO: inform user of problems
-    //     console.log('uniqueName:', uniqueName)
-    //     console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
-    //   }
-    // } else {
-    //   console.log('new ratio metric config:', newRatioMetricConfig)
+      // Ensure all required fields are present
+      const allRequiredFieldsPresent = RATIO_METRIC_REQUIRED_ATTRIBUTES.every(id => {
+        return newRatioMetricConfig[id]
+      })
 
-    //   /**
-    //    * Ensure that there are no name collisions
-    //    *
-    //    * This is separate from the invalid check in the form
-    //    */
-    //   const uniqueName = !ratioMetrics.some(metric => {
-    //     return metric.name === newRatioMetricConfig.name
-    //   })
+      // Final checks
+      if (allRequiredFieldsPresent && uniqueName) {
+        /**
+         * TS ignore because writing with proper typing would result in lots of
+         * code duplication and greatly enhance complexity.
+         *
+         * This should be of the correct data type and safe to push at this point
+         * with the final checks.
+         */
+        ratioMetrics.push(newRatioMetricConfig as RatioMetric)
 
-    //   // Ensure all required fields are present
-    //   const allRequiredFieldsPresent = this.state.requiredAttributeIds.every(id => {
-    //     return newRatioMetricConfig[id]
-    //   })
+        // Convert new metric config to stringified YAML
+        const stringifiedMetrics = safeDump(ratioMetrics)
 
-    //   // Final checks
-    //   if (allRequiredFieldsPresent && uniqueName) {
-    //     this.setState({
-    //       formSubmitted: true,
-    //       sucessfulSubmission: true
-    //     })
+        // Add new metric config to config map
+        configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
 
-    //     /**
-    //      * TS ignore because writing with proper typing would result in lots of
-    //      * code duplication and greatly enhance complexity.
-    //      *
-    //      * This should be of the correct data type and safe to push at this point
-    //      * with the final checks.
-    //      */
-    //     ratioMetrics.push(newRatioMetricConfig as RatioMetric)
+        // Apply new config map
+        console.log(kubectlApplyConfig(safeDump(configMap)))
 
-    //     // Convert new metric config to stringified YAML
-    //     const stringifiedMetrics = safeDump(ratioMetrics)
+        this.setState({
+          display: MetricDetailsModeDisplay.getMetrics
+        })
+      } else {
+        // TODO: inform user of problems
+        console.log('uniqueName:', uniqueName)
+        console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
+      }
+    }
 
-    //     // Add new metric config to config map
-    //     configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
-
-    //     // Apply new config map
-    //     console.log(kubectlApplyConfig(safeDump(configMap)))
-
-    //     // TODO: display success/failure message
-    //   } else {
-    //     // TODO: inform user of problems
-    //     console.log('uniqueName:', uniqueName)
-    //     console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
-    //   }
-    // }
-
-    // e.preventDefault()
+    e.preventDefault()
   }
 
-  private updateMetricConfig = e => {
+  private editMetric = e => {
+    console.log('click submitted')
 
+    const { selectedType } = this.state
+
+    if (selectedType === MetricTypes.counter) {
+      console.log('edited counter metric config:', this.state.editedMetric)
+
+      /**
+       * Ensure that there are no name collisions
+       *
+       * This is separate from the invalid check in the form
+       */
+      const uniqueName = !counterMetrics
+        .filter(metric => {
+          return metric.name !== this.state.selectedMetricName
+        })
+        .some(metric => {
+          return metric.name === this.state.editedMetric.name
+        })
+
+      // Ensure all required fields are present
+      const allRequiredFieldsPresent = COUNTER_METRIC_REQUIRED_ATTRIBUTES.every(id => {
+        return this.state.editedMetric[id]
+      })
+
+      // Final checks
+      if (allRequiredFieldsPresent && uniqueName) {
+        // Remove metric corresponding to edit
+        counterMetrics = counterMetrics.filter(metric => {
+          return metric.name !== this.state.selectedMetricName
+        })
+
+        // Add edited metric
+        counterMetrics.push(this.state.editedMetric as CounterMetric)
+
+        // Propagate name change to ratio metrics
+        ratioMetrics = ratioMetrics.map(metric => {
+          if (metric.numerator === this.state.selectedMetricName) {
+            metric.numerator = this.state.editedMetric.name
+          }
+
+          if (metric.denominator === this.state.selectedMetricName) {
+            metric.denominator = this.state.editedMetric.name
+          }
+
+          return metric
+        })
+
+        // Convert new metric config to stringified YAML
+        const stringifiedCounterMetrics = safeDump(counterMetrics)
+        const stringifiedRatioMetrics = safeDump(ratioMetrics)
+
+        // Add new metric config to config map
+        configMap.data['counter_metrics.yaml'] = stringifiedCounterMetrics
+        configMap.data['ratio_metrics.yaml'] = stringifiedRatioMetrics
+
+        // Apply new config map
+        console.log(kubectlApplyConfig(safeDump(configMap)))
+
+        this.setState({
+          display: MetricDetailsModeDisplay.getMetrics
+        })
+      } else {
+        // TODO: inform user of problems
+        console.log('uniqueName:', uniqueName)
+        console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
+      }
+    } else {
+      console.log('edited ratio metric config:', this.state.editedMetric)
+
+      /**
+       * Ensure that there are no name collisions
+       *
+       * This is separate from the invalid check in the form
+       */
+      const uniqueName = !ratioMetrics
+        .filter(metric => {
+          return metric.name !== this.state.selectedMetricName
+        })
+        .some(metric => {
+          return metric.name === this.state.editedMetric.name
+        })
+
+      // Ensure all required fields are present
+      const allRequiredFieldsPresent = RATIO_METRIC_REQUIRED_ATTRIBUTES.every(id => {
+        return this.state.editedMetric[id]
+      })
+
+      // Final checks
+      if (allRequiredFieldsPresent && uniqueName) {
+        // Remove metric corresponding to edit
+        ratioMetrics = ratioMetrics.filter(metric => {
+          return metric.name === this.state.selectedMetricName
+        })
+
+        // Add edited metric
+        ratioMetrics.push(this.state.editedMetric as RatioMetric)
+
+        // Convert new metric config to stringified YAML
+        const stringifiedMetrics = safeDump(ratioMetrics)
+
+        // Add new metric config to config map
+        configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
+
+        // Apply new config map
+        console.log(kubectlApplyConfig(safeDump(configMap)))
+
+        this.setState({
+          display: MetricDetailsModeDisplay.getMetrics
+        })
+      } else {
+        // TODO: inform user of problems
+        console.log('uniqueName:', uniqueName)
+        console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
+      }
+    }
+
+    e.preventDefault()
+  }
+
+  // private updateMetricConfig = (e, attribute) => {
+  //   const { selectedType } = this.state
+
+  //   // Invalid check for input
+  //   if (attribute.type === AttributeTypes.input && attribute.invalidCheck) {
+  //     this.setState({ invalid: attribute.invalidCheck.check(e) })
+  //   }
+
+  //   this.setState({ value: e.target.value })
+
+  //   // Get appropriate config and attributes
+  //   const { newMetricConfig, metricAttributes } = getAppropriateMetricData(selectedType)
+
+  //   const relevantAttributeData = metricAttributes.find(a => {
+  //     return a.name === attribute.name
+  //   })
+
+  //   // Update the new metric config
+  //   if (relevantAttributeData.type === AttributeTypes.input) {
+  //     /**
+  //      * Input type means that value is a string and no transformation is
+  //      * necessary
+  //      */
+  //     newMetricConfig[attribute.name] = e.target.value
+  //   } else {
+  //     const dropdownAttribute = relevantAttributeData as DropdownAttributeData
+
+  //     // The target value may be null if the default dropdown option is selected
+  //     if (e.target.value !== dropdownAttribute.noDefaultDropdownOptionPlaceholder) {
+  //       // Transform dropdown printable value to the actual value
+  //       newMetricConfig[attribute.name] = dropdownAttribute.dropdownOptions.find(option => {
+  //         return option.printableOption === e.target.value
+  //       }).value
+  //     } else {
+  //       newMetricConfig[attribute.name] = undefined
+  //     }
+  //   }
+  // }
+
+  // Callback when an attribute of the selected metric is edited
+  private updateMetricConfig = (e, attribute: AttributeData) => {
+    // Get the non-printable value, if applicable
+    const editedAttributeValue =
+      attribute.type === AttributeTypes.input
+        ? e.target.value
+        : attribute.dropdownOptions.find(option => {
+            return option.printableOption === e.target.value
+          }).value
+
+    const tempMetric = {}
+    tempMetric[attribute.name] = editedAttributeValue
+
+    this.setState({ editedMetric: { ...this.state.editedMetric, ...tempMetric } })
   }
 
   public renderTableTitle(title: string, type: MetricTypes) {
     return (
       <div>
-        {title} <Add20 onClick={() => this.addMetric(type)} className="clickableicon" />
+        {title} <Add20 onClick={() => this.displayAddMetric(type)} className="clickableicon" />
       </div>
     )
   }
@@ -815,7 +1008,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
                       <TableExpandRow {...getRowProps({ row })}>
                         <TableCell>{row.id}</TableCell>
                         <TableCell>
-                          <div className="clickableicon" onClick={() => this.editMetric(row.id, type)}>
+                          <div className="clickableicon" onClick={() => this.displayEditMetric(row.id, type)}>
                             <Edit20 />
                             {!metrics[row.id].custom ? this.modifyIter8Metric('edit') : null}
                           </div>
@@ -950,7 +1143,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
       case MetricDetailsModeDisplay.addMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
+            <Form style={{ display: 'block' }} onSubmit={this.addMetric}>
               {(() => {
                 if (selectedType === MetricTypes.counter) {
                   return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute => (
@@ -975,7 +1168,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
         if (selectedType === MetricTypes.counter) {
           return (
             <div style={{ padding: '10px' }}>  
-              <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
+              <Form style={{ display: 'block' }} onSubmit={this.editMetric}>
                 {(() => {
                   if (this.state.selectedMetric2) {
                     return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
@@ -998,7 +1191,7 @@ class Display extends React.Component<DisplayProps, DisplayState> {
         } else {
           return (
             <div style={{ padding: '10px' }}>  
-              <Form style={{ display: 'block' }} onSubmit={this.onSubmit}>
+              <Form style={{ display: 'block' }} onSubmit={this.editMetric}>
                 {(() => {
                   if (this.state.selectedMetric2) {
                     return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
