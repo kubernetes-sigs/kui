@@ -8,7 +8,7 @@ enum experimentTypes {
   automated = 'Automated'
 }
 
-interface Metricstate {
+interface CriterionState {
   name: string
   type: string
   reward: boolean
@@ -17,7 +17,7 @@ interface Metricstate {
 }
 interface Formstate {
   disableResubmit: boolean
-  showMetrics: boolean
+  showCriteria: boolean
   invalidCandidate: boolean
   name: string
   type: experimentTypes
@@ -25,7 +25,7 @@ interface Formstate {
   service: string
   baseline: string
   candidates: Array<string>
-  criteria: Array<Metricstate>
+  criteria: Array<CriterionState>
   disableReward: boolean
 }
 // Model for decisionForm.tsx
@@ -41,4 +41,4 @@ interface DecisionState {
   experimentResult?: any
 }
 
-export { Metricstate, Formstate, DecisionState, experimentTypes }
+export { CriterionState, Formstate, DecisionState, experimentTypes }
