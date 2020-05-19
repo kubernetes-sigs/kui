@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.6](https://github.com/IBM/kui/compare/v8.7.5...v8.7.6) (2020-05-19)
+
+### Bug Fixes
+
+- kubectl api-resources has duplicate rows and odd pagination behavior ([9101f76](https://github.com/IBM/kui/commit/9101f76)), closes [#4626](https://github.com/IBM/kui/issues/4626)
+- **plugins/plugin-kubectl:** remove Conditions tab ([7eed0f2](https://github.com/IBM/kui/commit/7eed0f2)), closes [#4606](https://github.com/IBM/kui/issues/4606)
+- kubectl top node should show % text ([6fc9c9b](https://github.com/IBM/kui/commit/6fc9c9b)), closes [#4598](https://github.com/IBM/kui/issues/4598)
+- reduce No log data followed by log data behavior in kube logs ([ed8183e](https://github.com/IBM/kui/commit/ed8183e)), closes [#4624](https://github.com/IBM/kui/issues/4624)
+- **plugins/plugin-kubectl:** kubectl describe -h has old bold text ([f3737d7](https://github.com/IBM/kui/commit/f3737d7)), closes [#4568](https://github.com/IBM/kui/issues/4568)
+- **plugins/plugin-kubectl:** kubectl get --all-namespaces --watch does not update ([c8fc2ea](https://github.com/IBM/kui/commit/c8fc2ea)), closes [#4581](https://github.com/IBM/kui/issues/4581)
+- **plugins/plugin-kubectl:** kubectl Show Events query not precise enough ([b466552](https://github.com/IBM/kui/commit/b466552)), closes [#4572](https://github.com/IBM/kui/issues/4572)
+- **plugins/plugin-kubectl:** remove Show Logs registration ([a53b476](https://github.com/IBM/kui/commit/a53b476)), closes [#4603](https://github.com/IBM/kui/issues/4603)
+- replace Containers with Logs tab ([3965f87](https://github.com/IBM/kui/commit/3965f87)), closes [#4603](https://github.com/IBM/kui/issues/4603)
+- **plugins/plugin-kubectl:** inconsistent capitalization of breadcrumbs ([f014f3d](https://github.com/IBM/kui/commit/f014f3d)), closes [#4607](https://github.com/IBM/kui/issues/4607)
+- **plugins/plugin-kubectl:** revert to editor-based Summary tab ([5d24130](https://github.com/IBM/kui/commit/5d24130)), closes [#4594](https://github.com/IBM/kui/issues/4594)
+- **plugins/plugin-kubectl:** showEvents button should issue a non-wide table ([ab24f99](https://github.com/IBM/kui/commit/ab24f99)), closes [#4604](https://github.com/IBM/kui/issues/4604)
+
 ## [8.7.5](https://github.com/IBM/kui/compare/v8.7.4...v8.7.5) (2020-05-13)
 
 ### Bug Fixes

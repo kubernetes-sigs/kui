@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.6](https://github.com/IBM/kui/compare/v8.7.5...v8.7.6) (2020-05-19)
+
+### Bug Fixes
+
+- some UI elements missing from editor UI ([5211b6b](https://github.com/IBM/kui/commit/5211b6b)), closes [#4582](https://github.com/IBM/kui/issues/4582)
+
 ## [8.7.5](https://github.com/IBM/kui/compare/v8.7.4...v8.7.5) (2020-05-13)
 
 **Note:** Version bump only for package @kui-shell/webpack

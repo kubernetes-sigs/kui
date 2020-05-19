@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.6](https://github.com/IBM/kui/compare/v8.7.5...v8.7.6) (2020-05-19)
+
+### Bug Fixes
+
+- kubectl api-resources has duplicate rows and odd pagination behavior ([9101f76](https://github.com/IBM/kui/commit/9101f76)), closes [#4626](https://github.com/IBM/kui/issues/4626)
+- productName in carbon theme shouldn't have hover effect ([8e591dc](https://github.com/IBM/kui/commit/8e591dc)), closes [#4592](https://github.com/IBM/kui/issues/4592)
+- reduce No log data followed by log data behavior in kube logs ([ed8183e](https://github.com/IBM/kui/commit/ed8183e)), closes [#4624](https://github.com/IBM/kui/issues/4624)
+- replace Containers with Logs tab ([3965f87](https://github.com/IBM/kui/commit/3965f87)), closes [#4603](https://github.com/IBM/kui/issues/4603)
+- **plugins/plugin-client-common:** don't use text-02 for finished Inputs ([0f149ce](https://github.com/IBM/kui/commit/0f149ce)), closes [#4600](https://github.com/IBM/kui/issues/4600)
+- **plugins/plugin-client-common:** reverse-i-search text too small ([1521e34](https://github.com/IBM/kui/commit/1521e34)), closes [#4616](https://github.com/IBM/kui/issues/4616)
+- some UI elements missing from editor UI ([5211b6b](https://github.com/IBM/kui/commit/5211b6b)), closes [#4582](https://github.com/IBM/kui/issues/4582)
+
+### Features
+
+- allow <Kui/> users to provide custom views for session init ([1f03657](https://github.com/IBM/kui/commit/1f03657)), closes [#4596](https://github.com/IBM/kui/issues/4596)
+
 ## [8.7.5](https://github.com/IBM/kui/compare/v8.7.4...v8.7.5) (2020-05-13)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common

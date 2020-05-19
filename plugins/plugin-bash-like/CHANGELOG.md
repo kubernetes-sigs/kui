@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.7.6](https://github.com/IBM/kui/compare/v8.7.5...v8.7.6) (2020-05-19)
+
+### Bug Fixes
+
+- reduce No log data followed by log data behavior in kube logs ([ed8183e](https://github.com/IBM/kui/commit/ed8183e)), closes [#4624](https://github.com/IBM/kui/issues/4624)
+- replace Containers with Logs tab ([3965f87](https://github.com/IBM/kui/commit/3965f87)), closes [#4603](https://github.com/IBM/kui/issues/4603)
+
+### Features
+
+- allow <Kui/> users to provide custom views for session init ([1f03657](https://github.com/IBM/kui/commit/1f03657)), closes [#4596](https://github.com/IBM/kui/issues/4596)
+
 ## [8.7.5](https://github.com/IBM/kui/compare/v8.7.4...v8.7.5) (2020-05-13)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
