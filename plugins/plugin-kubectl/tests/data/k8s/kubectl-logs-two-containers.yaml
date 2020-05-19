@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kui-two-containers
+spec:
+  containers:
+  - name: a
+    image: jare/alpine-vim
+    command: ["/bin/sh", "-c", "while true; do echo b; sleep 1; done"]
+  - name: b
+    image: jare/alpine-vim
+    command: ["/bin/sh", "-c", "while true; do echo b; sleep 1; done"]

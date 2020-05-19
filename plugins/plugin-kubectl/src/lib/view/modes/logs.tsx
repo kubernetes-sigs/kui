@@ -144,11 +144,16 @@ class Logs extends React.PureComponent<Props, State> {
   private showContainer(container?: string) {
     this.setState(curState => {
       if (curState.container !== container) {
-        this.initStream(this.state.isLive)
+        if (curState.job) {
+          curState.job.abort()
+        }
+
+        this.initStream(curState.isLive, container)
       }
 
       return {
-        container
+        container,
+        logs: []
       }
     })
   }
@@ -198,16 +203,11 @@ class Logs extends React.PureComponent<Props, State> {
   }
 
   /** Set up the PTY stream. */
-  private initStream(isLive: boolean) {
-    if (this.state.job) {
-      // terminate existing watcher
-      this.state.job.abort()
-    }
-
+  private initStream(isLive: boolean, containerName?: string) {
     setTimeout(async () => {
       const { pod, repl } = this.props
 
-      const container = this.state.container ? `-c ${this.state.container}` : '--all-containers'
+      const container = containerName ? `-c ${containerName}` : '--all-containers'
       const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} ${isLive ? '-f' : ''}`
 
       this.updateToolbar(isLive)
