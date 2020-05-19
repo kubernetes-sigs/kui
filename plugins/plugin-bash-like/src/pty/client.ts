@@ -581,6 +581,10 @@ async function initOnMessage(
     } else if (msg.type === 'exit') {
       gotExit = true
 
+      if (execOptions.onExit) {
+        execOptions.onExit(job, msg.exitCode)
+      }
+
       if (terminal) {
         clearInterval(scrollPoll)
         disposeOnRender.dispose()
