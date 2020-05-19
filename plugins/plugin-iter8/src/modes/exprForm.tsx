@@ -2,7 +2,7 @@ import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
 import { Form, FormGroup, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
-import { View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
+import { View32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
@@ -45,14 +45,13 @@ class ExprBase extends React.Component<{}, Formstate> {
       service: '', // service name of microservice
       baseline: '', // baseline deployment of microservice
       candidates: [], // list of candidates deployment names of microservice
-      metric: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
+      criteria: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
       disableReward: false // disables the reward select for selected metrics
     }
     // Bound NON-lambda functions to component's scope
     this.submitForm = this.submitForm.bind(this)
     this.handleNameChange = this.handleNameChange.bind(this)
-    this.toggleMetricConfig = this.toggleMetricConfig.bind(this)
-    this.addMetric = this.addMetric.bind(this)
+    this.addCriterion = this.addCriterion.bind(this)
   }
 
   /*
@@ -115,24 +114,26 @@ class ExprBase extends React.Component<{}, Formstate> {
   /*
    * ==== Metric Configuration Handler Functions ====
    */
-  // Toggle for Metric Configuration
-  private toggleMetricConfig() {
-    this.setState({ showMetrics: !this.state.showMetrics })
-  }
 
   // Method for Add Metric (+) button
-  private addMetric() {
-    this.setState(prevState => ({
-      metric: [...prevState.metric, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
-    }))
+  private addCriterion() {
+    if (this.state.showMetrics) {
+      // If a metric is already shown, add a new metric
+      this.setState(prevState => ({
+        criteria: [...prevState.criteria, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
+      }))
+    } else {
+      // If no metric has been addded, add the first metric
+      this.setState({ showMetrics: true })
+    }
   }
 
   // Removes the metric field from the state
   private deleteMetric = idx => {
     this.setState(state => {
-      const metric = state.metric.filter((m, i) => i !== idx)
+      const criteria = state.criteria.filter((m, i) => i !== idx)
       return {
-        metric
+        criteria
       }
     })
   }
@@ -154,33 +155,33 @@ class ExprBase extends React.Component<{}, Formstate> {
         if (this.countMetricsList[i].name === value.name) metricType = 'Counter'
       }
     }
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], name: metricName, type: metricType }
-    this.setState({ metric: newMetric })
+    this.setState({ criteria: newMetric })
   }
 
   // Updates states based on limit type changes
   private handleLimitTypeChange = (value, idx) => {
     const limitType = value == null ? '' : value
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitType: limitType }
-    this.setState({ metric: newMetric })
+    this.setState({ criteria: newMetric })
   }
 
   // Update the state for limit value
   private handleLimitValChange = (value, idx) => {
     const limitValue = value === '' ? 0 : parseFloat(value)
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
-    this.setState({ metric: newMetric })
+    this.setState({ criteria: newMetric })
   }
 
   // Disables all the other checkboxes
   private handleRewardChange = idx => {
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward }
     this.setState(prevState => ({
-      metric: newMetric,
+      criteria: newMetric,
       disableReward: !prevState.disableReward
     }))
   }
@@ -205,7 +206,7 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 
   public render() {
-    const { metric } = this.state
+    const { criteria } = this.state
     return (
       <Form className="formProps" onSubmit={this.preventFormRefresh}>
         <div>
@@ -280,53 +281,35 @@ class ExprBase extends React.Component<{}, Formstate> {
           </FormGroup>
           <FormGroup style={{ width: 350 }}>
             <Button
-              size="default"
-              kind="primary"
-              renderIcon={View32}
-              disabled={this.state.invalidCandidate || this.state.disableResubmit}
-              onClick={this.submitForm}
-            >
-              Observe
-            </Button>
-            <Button
-              style={{ position: 'relative', left: 70 }}
-              size="default"
-              kind="secondary"
+              style={{ position: 'relative' }}
+              size="small"
+              kind="ghost"
               renderIcon={Data132}
-              onClick={this.toggleMetricConfig}
+              onClick={this.addCriterion}
             >
-              Metric Config
+              Add Criterion
             </Button>
           </FormGroup>
           {this.state.showMetrics ? (
             <FormGroup>
-              <Button
-                style={{ position: 'relative' }}
-                size="small"
-                kind="ghost"
-                renderIcon={AddAlt32}
-                onClick={this.addMetric}
-              >
-                Add Metric
-              </Button>
               <div style={{ position: 'relative' }}>
-                {metric.map((val, idx) => {
-                  const metricId = `metric-${idx}`;
-                    const limitTypeId = `limitType-${idx}`;
-                    const limitValueId = `limitValue-${idx}`;
-                    const checkId = `checkbox-${idx}`
+                {criteria.map((val, idx) => {
+                  const criterionId = `criterion-${idx}`
+                  const limitTypeId = `limitType-${idx}`
+                  const limitValueId = `limitValue-${idx}`
+                  const checkId = `checkbox-${idx}`
                   return (
                     <div key={idx}>
                       <ComboBox
-                        id={metricId}
-                        titleText={`Metric #${idx + 1}`}
+                        id={criterionId}
+                        titleText={`Criterion #${idx + 1}`}
                         helperText="Experimental metrics supported by Iter8."
                         placeholder="Select a Metric"
                         items={this.totMetricsList}
                         itemToString={item => (item ? item.name : '')}
                         onChange={value => this.handleMetricName(value.selectedItem, idx)}
                       />
-                      <Tag type="gray">{'Info:'}</Tag>
+                      <Tag type="teal">{'Info:'}</Tag>
                       <Tag type="cyan">{val.type === '' ? '...' : val.type}</Tag>
                       <Tag type="magenta">{val.reward ? 'Reward' : '...'}</Tag>
                       <Tag type="cool-gray">{val.limitType === '' ? '...' : `${val.limitType} threshold`}</Tag>
@@ -365,7 +348,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         onClick={() => this.deleteMetric(idx)}
                         style={{ color: 'red' }}
                       >
-                        {`Delete Metric ${idx + 1}`}
+                        {`Delete Criterion ${idx + 1}`}
                       </Button>
                     </div>
                   )
@@ -373,6 +356,17 @@ class ExprBase extends React.Component<{}, Formstate> {
               </div>
             </FormGroup>
           ) : null}
+          <FormGroup style={{ width: 350 }}>
+            <Button
+              size="default"
+              kind="primary"
+              renderIcon={View32}
+              disabled={this.state.invalidCandidate || this.state.disableResubmit}
+              onClick={this.submitForm}
+            >
+              Observe
+            </Button>
+          </FormGroup>
         </div>
       </Form>
     )

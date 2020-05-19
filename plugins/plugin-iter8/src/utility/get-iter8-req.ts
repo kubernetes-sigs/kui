@@ -3,19 +3,19 @@ import GetMetricConfig from '../components/metric-config'
 import { Metricstate, Formstate } from '../modes/state-models'
 //Convert the list of criteria in API request format
 function getCriteriaModel(definedMetrics: Array<Metricstate>): Array<Object> {
-  let metricArr = []
+  let criteriaArr = []
   for (let i = 0; i < definedMetrics.length; i++) {
     let newMetric = definedMetrics[i]
     if (newMetric.limitType === '') {
-      metricArr.push({
+      criteriaArr.push({
         id: i,
-        metric_id: newMetric.name,
+        criterion_id: newMetric.name,
         is_reward: newMetric.reward
       })
     } else {
-      metricArr.push({
+      criteriaArr.push({
         id: i,
-        metric_id: newMetric.name,
+        criterion_id: newMetric.name,
         is_reward: newMetric.reward,
         threshold: {
           type: newMetric.limitType,
@@ -24,7 +24,7 @@ function getCriteriaModel(definedMetrics: Array<Metricstate>): Array<Object> {
       })
     }
   }
-  return metricArr
+  return criteriaArr
 }
 //Convert the list of candidates in API request format
 function getCandModel(namespace: string, candList: Array<string>): Array<Object> {
@@ -52,7 +52,7 @@ export default function getRequestModel(time: string, formstate: Formstate): Obj
       counter_metrics: counterRlts,
       ratio_metrics: ratioRlts
     },
-    criteria: getCriteriaModel(formstate.metric),
+    criteria: getCriteriaModel(formstate.criteria),
     baseline: {
       id: `${formstate.baseline}`,
       version_labels: {

@@ -25,7 +25,7 @@ interface Formstate {
   service: string
   baseline: string
   candidates: Array<string>
-  metric: Array<Metricstate>
+  criteria: Array<Metricstate>
   disableReward: boolean
 }
 // Model for decisionForm.tsx
