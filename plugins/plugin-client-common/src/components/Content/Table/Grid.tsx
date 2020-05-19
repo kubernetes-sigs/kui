@@ -51,7 +51,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
           const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
-          const title = badgeCell ? badgeCell.value : ''
+          const title = `${kuiRow.name}: ${badgeCell ? badgeCell.value : ''}`
           const css = badgeCell ? badgeCell.css : 'kui--status-unknown'
 
           return (

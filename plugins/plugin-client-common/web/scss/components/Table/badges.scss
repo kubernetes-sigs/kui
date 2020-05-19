@@ -1,4 +1,5 @@
 @import '../common/narrow-window';
+@import '../common/stippling';
 
 .bx--data-table,
 .kui--table-like {
@@ -22,8 +23,10 @@
     color: var(--color-ui-01);
   }
   [data-tag='badge-circle'].red-background {
-    background: var(--color-red);
-    color: var(--color-ui-01);
+    --color1: var(--color-light-red);
+    --color2: var(--color-red);
+    --color3: transparent;
+    @include kui--crosshatch;
   }
   [data-tag='badge-circle'].gray-background {
     background: var(--color-processing);
@@ -39,8 +42,8 @@
   .kui--data-table-as-grid {
     .bx--data-table {
       display: grid;
-      grid-column-gap: 0.1875em;
-      grid-row-gap: 0.1875em;
+      grid-column-gap: 1px;
+      grid-row-gap: 1px;
       padding: 0.5em 1em;
 
       [data-tag='badge'] [data-tag='badge-circle'] {

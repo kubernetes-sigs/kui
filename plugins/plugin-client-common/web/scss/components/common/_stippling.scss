@@ -1,0 +1,9 @@
+@mixin kui--crosshatch {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color2),
+    var(--color2) 10px,
+    var(--color1) 10px,
+    var(--color1) 20px
+  );
+}
