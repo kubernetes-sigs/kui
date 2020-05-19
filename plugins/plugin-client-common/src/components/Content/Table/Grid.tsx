@@ -46,7 +46,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
           const row = visibleRows[kidx]
-          const title = row['STATUS']
+          const title = `${row['NAME']}: ${row['STATUS']}`
           const { css } = kuiRow.attributes[gridableColumn]
 
           return (
