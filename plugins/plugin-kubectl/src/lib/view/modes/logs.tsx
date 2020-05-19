@@ -50,7 +50,7 @@ interface State {
   ref?: HTMLElement
 
   /** The current log entries. */
-  logs: string[]
+  logs: string
 
   /** Are we streaming? */
   isLive: boolean
@@ -71,14 +71,14 @@ class Logs extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      logs: [],
+      logs: '',
       isLive: false,
       container: this.defaultContainer(),
       waitingForHysteresis: false,
       job: undefined
     }
 
-    this.initStream(true)
+    this.initStream(true, this.defaultContainer())
   }
 
   /** When we are going away, make sure to abort the streaming job. */
@@ -144,11 +144,16 @@ class Logs extends React.PureComponent<Props, State> {
   private showContainer(container?: string) {
     this.setState(curState => {
       if (curState.container !== container) {
-        this.initStream(this.state.isLive)
-      }
+        if (curState.job) {
+          setTimeout(() => curState.job.abort(), 5000)
+        }
 
-      return {
-        container
+        this.initStream(true, container)
+
+        return {
+          container,
+          logs: ''
+        }
       }
     })
   }
@@ -198,16 +203,10 @@ class Logs extends React.PureComponent<Props, State> {
   }
 
   /** Set up the PTY stream. */
-  private initStream(isLive: boolean) {
-    if (this.state.job) {
-      // terminate existing watcher
-      this.state.job.abort()
-    }
-
+  private initStream(isLive: boolean, containerName: string) {
     setTimeout(async () => {
       const { pod, repl } = this.props
-
-      const container = this.state.container ? `-c ${this.state.container}` : '--all-containers'
+      const container = containerName ? `-c ${containerName}` : '--all-containers'
       const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} ${isLive ? '-f' : ''}`
 
       this.updateToolbar(isLive)
@@ -218,9 +217,30 @@ class Logs extends React.PureComponent<Props, State> {
           // this is our streaming consumer
           return (_: Streamable) => {
             if (typeof _ === 'string') {
-              this.setState(curState => ({
-                logs: curState.logs.concat([_])
-              }))
+              this.setState(curState => {
+                if (curState.container === containerName) {
+                  // concat the new logs data with the prior one
+                  const allLogs = curState.logs.concat(_)
+                  const charLimit = 1000000
+
+                  // only show the last `limit` characters of the logs
+                  if (allLogs.length > charLimit) {
+                    const logsWithLimit = allLogs.slice(charLimit * -1)
+                    // due to the limit slice, we might have partial line at the top of the logs
+                    // don't display that to users
+                    const trimFirstPartialLine = logsWithLimit.substring(logsWithLimit.indexOf('\n') + 1)
+                    return {
+                      logs: trimFirstPartialLine
+                    }
+                  } else {
+                    return {
+                      logs: allLogs
+                    }
+                  }
+                }
+              })
+            } else {
+              console.error('pty stream does not return string back', _)
             }
           }
         },
@@ -244,9 +264,8 @@ class Logs extends React.PureComponent<Props, State> {
     if (this.state.logs.length === 0) {
       return this.nothingToShow()
     } else {
-      return this.state.logs.map((__html, idx) => (
-        <pre key={idx} className="smaller-text pre-wrap break-all monospace" dangerouslySetInnerHTML={{ __html }} />
-      ))
+      const __html = this.state.logs
+      return <pre className="smaller-text pre-wrap break-all monospace" dangerouslySetInnerHTML={{ __html }} />
     }
   }
 

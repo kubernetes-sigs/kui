@@ -94,6 +94,9 @@ export interface ExecOptions {
   /** on job ready, i.e. after the PTY is up, but before any data has been processed */
   onReady?: (job: Abortable & FlowControllable) => void | Promise<void>
 
+  /** on job exit, pass the exitCode */
+  onExit?: (job: Abortable & FlowControllable, exitCode: number) => void
+
   parameters?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
