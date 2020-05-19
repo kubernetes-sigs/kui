@@ -104,23 +104,11 @@ export async function doLogs(args: Arguments<LogOptions>) {
     return doExecWithStdout(args)
   }
 
-  const streamed = args.parsedOptions.follow || args.parsedOptions.f
-
-  // if we are streaming (logs -f), and the user did not specify a
-  // "--since", then add one, to prevent the default behavior of
+  // if the user has not specified a "--tail",
+  // then add one, to prevent the default behavior of
   // kubectl which fetches quite a bit of history
-  if (streamed && !args.parsedOptions.since) {
-    // see https://github.com/kui-shell/plugin-kubeui/issues/210
-    const since = '10s'
-    args.parsedOptions.since = since
-    args.argv.push('--since=since')
-    args.command = args.command + ' --since=10s'
-  }
-
-  // if we are not streaming, and the user has not specified a
-  // "--tail", then add one, for the same reason
-  if (!streamed && !args.parsedOptions.tail) {
-    const tail = 30
+  if (!args.parsedOptions.tail) {
+    const tail = 1000
     args.parsedOptions.tail = tail
     args.argv.push('--tail=' + tail)
     args.command = args.command + ' --tail=' + tail
