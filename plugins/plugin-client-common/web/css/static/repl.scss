@@ -73,6 +73,12 @@
     opacity: 0.0375;
   }
 }
+
+[kui-theme-style] .kui--repl-block-right-element {
+  color: var(--color-text-02);
+  font-size: 0.6875em;
+}
+
 .repl-block .repl-input:hover .kui--repl-prompt-buttons .graphical-icon {
   opacity: 0.25;
 }
