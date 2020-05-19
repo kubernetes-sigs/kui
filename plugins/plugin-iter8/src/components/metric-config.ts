@@ -20,7 +20,7 @@ export const ITER8_METRIC_NAMES = {
 }
 
 export class GetMetricConfig {
-  public output: MetricConfigData
+  private output: MetricConfigData
 
   public constructor() {
     try {
