@@ -37,7 +37,7 @@ class ExprBase extends React.Component<{}, Formstate> {
     super(props)
     this.state = {
       disableResubmit: false, // prevents form resubmission
-      showMetrics: false, // determines the visibility of metric config section
+      showCriteria: false, // determines the visibility of metric config section
       invalidCandidate: false, // determines whether candidates values are valid
       name: '', // name of the experiment
       type: experimentTypes.HIL, // type of experiment: HIL vs automated
@@ -117,19 +117,19 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   // Method for Add Metric (+) button
   private addCriterion() {
-    if (this.state.showMetrics) {
-      // If a metric is already shown, add a new metric
+    if (this.state.showCriteria) {
+      // If a criterion is already shown, add a new criterion
       this.setState(prevState => ({
         criteria: [...prevState.criteria, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
       }))
     } else {
-      // If no metric has been addded, add the first metric
-      this.setState({ showMetrics: true })
+      // If no criteria has been addded, add the first criterion
+      this.setState({ showCriteria: true })
     }
   }
 
   // Removes the metric field from the state
-  private deleteMetric = idx => {
+  private deleteCriterion = idx => {
     this.setState(state => {
       const criteria = state.criteria.filter((m, i) => i !== idx)
       return {
@@ -210,12 +210,17 @@ class ExprBase extends React.Component<{}, Formstate> {
     return (
       <Form className="formProps" onSubmit={this.preventFormRefresh}>
         <div>
+          <FormGroup style={{ width: 600 }}>
+            <h3>
+              <span style={{ fontFamily: 'monospace', fontSize: 'larger' }}>iter8 </span> Experiment Configurations{' '}
+            </h3>
+          </FormGroup>
           <FormGroup style={{ width: 350 }}>
             <TextInput
-              id="experimentName"
+              id="experiment-name"
               labelText="Name"
               helperText="Name to identify the experiment."
-              placeholder="Ex. experiment_v1_v2"
+              placeholder="Eg: experiment_v1_v2"
               onChange={this.handleNameChange}
               type="text"
             ></TextInput>
@@ -234,7 +239,7 @@ class ExprBase extends React.Component<{}, Formstate> {
             <ComboBox
               id="namespace-select"
               titleText="Service Namespace"
-              helperText="Namespace where your service resides."
+              helperText="Namespace where the target service resides"
               placeholder="Select a Namespace"
               items={this.nsList}
               itemToString={item => (item ? item.text : '')}
@@ -245,7 +250,7 @@ class ExprBase extends React.Component<{}, Formstate> {
             <ComboBox
               id="service-select"
               titleText="Service"
-              helperText="The name of your microservice."
+              helperText="Name of the target service"
               placeholder="Select a Service"
               items={this.svcList}
               itemToString={item => (item ? item.text : '')}
@@ -256,7 +261,7 @@ class ExprBase extends React.Component<{}, Formstate> {
             <ComboBox
               id="baseline-select"
               titleText="Baseline Deployment"
-              helperText="The version of your microservice to use as the experimental baseline."
+              helperText="The version of the service to be used as experimental baseline"
               placeholder="Select a Baseline Deployment"
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}
@@ -266,7 +271,7 @@ class ExprBase extends React.Component<{}, Formstate> {
           <FormGroup style={{ width: 350 }}>
             <p>
               Candidate Deployment(s) <br />
-              <p className="helper"> The version(s) of your microservice to use as the experimental candidates.</p>
+              <p className="helper"> The version(s) of the service to be used as experimental candidate(s).</p>
             </p>
             <MultiSelect
               classname="extendwidth"
@@ -276,21 +281,21 @@ class ExprBase extends React.Component<{}, Formstate> {
               label="Select Candidate Deployment(s)"
               onChange={value => this.handleAddCand(value.selectedItems)}
               invalid={this.state.invalidCandidate}
-              invalidText="Cannot select same version as baseline."
+              invalidText="Cannot select same version as experimental baseline."
             />
           </FormGroup>
           <FormGroup style={{ width: 350 }}>
             <Button
-              style={{ position: 'relative' }}
-              size="small"
-              kind="ghost"
+              style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
+              size="medium"
+              kind="primary"
               renderIcon={Data132}
               onClick={this.addCriterion}
             >
               Add Criterion
             </Button>
           </FormGroup>
-          {this.state.showMetrics ? (
+          {this.state.showCriteria ? (
             <FormGroup>
               <div style={{ position: 'relative' }}>
                 {criteria.map((val, idx) => {
@@ -299,11 +304,15 @@ class ExprBase extends React.Component<{}, Formstate> {
                   const limitValueId = `limitValue-${idx}`
                   const checkId = `checkbox-${idx}`
                   return (
-                    <div key={idx}>
+                    <div
+                      style={{ padding: 5, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+                      key={idx}
+                    >
+                      <h5> {`Criterion #${idx + 1}`}</h5>
                       <ComboBox
                         id={criterionId}
-                        titleText={`Criterion #${idx + 1}`}
-                        helperText="Experimental metrics supported by Iter8."
+                        titleText="Metric name"
+                        helperText="Metric to be used for this critetion"
                         placeholder="Select a Metric"
                         items={this.totMetricsList}
                         itemToString={item => (item ? item.name : '')}
@@ -316,11 +325,11 @@ class ExprBase extends React.Component<{}, Formstate> {
                       <ComboBox
                         id={limitTypeId}
                         titleText="Limit Type"
-                        helperText="For non-reward metrics, designate the type of threshold for the metric."
-                        placeholder="Select a Threshold"
+                        helperText="For non-reward criteria, designate the type of threshold to be set for the metric"
+                        placeholder="Select the type of threshold"
                         disabled={val.reward}
                         invalid={val.reward && val.limitType !== ''}
-                        invalidText="Limits can only be set for non-reward metrics."
+                        invalidText="Limits can only be set for non-reward metrics"
                         items={['absolute', 'relative']}
                         onChange={value => this.handleLimitTypeChange(value.selectedItem, idx)}
                         style={{ width: 350 }}
@@ -328,10 +337,10 @@ class ExprBase extends React.Component<{}, Formstate> {
                       <TextInput
                         id={limitValueId}
                         labelText="Limit Value"
-                        helperText="Set the value for the designated threshold selected."
+                        helperText="Set a value for the threshold selected"
                         disabled={val.reward}
                         invalid={val.reward && val.limitValue !== 0}
-                        invalidText="Limit values can only be set for non-reward metrics."
+                        invalidText="Limit values can only be set for non-reward metrics"
                         onChange={e => this.handleLimitValChange(e.target.value, idx)}
                         style={{ width: 350 }}
                       />
@@ -345,7 +354,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         size="small"
                         kind="ghost"
                         renderIcon={SubtractAlt32}
-                        onClick={() => this.deleteMetric(idx)}
+                        onClick={() => this.deleteCriterion(idx)}
                         style={{ color: 'red' }}
                       >
                         {`Delete Criterion ${idx + 1}`}
@@ -358,13 +367,14 @@ class ExprBase extends React.Component<{}, Formstate> {
           ) : null}
           <FormGroup style={{ width: 350 }}>
             <Button
-              size="default"
+              size="medium"
               kind="primary"
               renderIcon={View32}
               disabled={this.state.invalidCandidate || this.state.disableResubmit}
               onClick={this.submitForm}
+              style={{ fontSize: 'medium' }}
             >
-              Observe
+              Create Experiment
             </Button>
           </FormGroup>
         </div>

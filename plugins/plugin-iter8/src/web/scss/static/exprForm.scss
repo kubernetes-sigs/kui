@@ -2,35 +2,19 @@
 $light-grey: #c6ccd8;
 $trans-grey: #5e6367;
 
-// .header {
-//   padding-top: 10px;
-//   padding-bottom: 10px;
-//   width: 400px;
-//   height: 100px;
-//   background:transparent;
-// }
-
-// .inputInfoDiv{
-//     height: 100px;
-//     width: 100px;
-//     position: relative;
-//     top: 90px;
-// }
 .iconprops {
   fill: $light-grey;
 }
 
-// .textinputDiv {
-//     height: 100px;
-//     width: 450px;
-// }
-
 .helper {
-  color: $trans-grey !important;
+  color: $trans-grey;
 }
 
 .extendwidth {
-  width: 350px !important;
+  width: 350px;
+}
+.bx--list-box__label {
+  color: #737373;
 }
 
 .helpDiv {
@@ -39,14 +23,6 @@ $trans-grey: #5e6367;
   position: relative;
   top: -103px;
   left: 40px;
-}
-
-h3 {
-  font-weight: bold;
-  font-weight: 900;
-  font-size: 10px;
-  color: $light-grey;
-  // margin: 0 0 15px 5px;
 }
 
 p {

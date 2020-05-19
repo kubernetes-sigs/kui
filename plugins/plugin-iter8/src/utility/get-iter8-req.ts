@@ -1,21 +1,23 @@
 /* eslint-disable */
 import GetMetricConfig from '../components/metric-config'
-import { Metricstate, Formstate } from '../modes/state-models'
+import { CriterionState, Formstate } from '../modes/state-models'
 //Convert the list of criteria in API request format
-function getCriteriaModel(definedMetrics: Array<Metricstate>): Array<Object> {
+function getCriteriaModel(definedCriteria: Array<CriterionState>): Array<Object> {
   let criteriaArr = []
-  for (let i = 0; i < definedMetrics.length; i++) {
-    let newMetric = definedMetrics[i]
-    if (newMetric.limitType === '') {
+  for (let i = 0; i < definedCriteria.length; i++) {
+    let newMetric = definedCriteria[i]
+    if (newMetric.name === '') {
+      continue
+    } else if (newMetric.limitType === '') {
       criteriaArr.push({
         id: i,
-        criterion_id: newMetric.name,
+        metric_id: newMetric.name,
         is_reward: newMetric.reward
       })
     } else {
       criteriaArr.push({
         id: i,
-        criterion_id: newMetric.name,
+        metric_id: newMetric.name,
         is_reward: newMetric.reward,
         threshold: {
           type: newMetric.limitType,
