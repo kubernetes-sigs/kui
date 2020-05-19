@@ -18,9 +18,10 @@ import { v4 as uuid } from 'uuid'
 import { Arguments, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
+import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
+import { KubeOptions, getNamespace, getNamespaceForArgv } from './options'
 import { KubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
-import { KubeOptions, getNamespaceForArgv } from './options'
 
 const strings = i18n('plugin-kubectl')
 const strings2 = i18n('plugin-client-common', 'editor')
@@ -57,7 +58,36 @@ export function doEdit(cmd: string) {
           onSave: async (data: string) => {
             const tmp = `/tmp/kui-${uuid()}`
             await args.REPL.rexec(`fwrite ${tmp}`, { data })
-            await args.REPL.qexec(`${cmd} apply ${ns} -f ${tmp}`)
+
+            const ns = getNamespace(args) || 'default'
+            const argv = [cmd, 'apply', '-n', ns, '-f', tmp]
+            const applyArgs = Object.assign({}, args, {
+              command: argv.join(' '),
+              argv,
+              argvNoOptions: [cmd, 'apply'],
+              parsedOptions: { n: ns, f: tmp }
+            })
+
+            // execute the apply command, making sure to report any
+            // validation or parse errors to the user
+            await doExecWithStdout(applyArgs, undefined, cmd).catch(err => {
+              console.error('error in apply for edit', err)
+
+              // was this a validation error?
+              const msg = err.message.match(/ValidationError\(.*\): ([^]+) in/)
+              if (msg && msg.length === 2) {
+                throw new Error(msg[1])
+              } else {
+                // maybe this was a syntax error?
+                const msg = err.message.match(/error parsing.*(line .*)/)
+                if (msg && msg.length === 2) {
+                  throw new Error(msg[1])
+                } else {
+                  // hmm, some other random error
+                  throw new Error(err.message.replace(tmp, '').slice(0, 40))
+                }
+              }
+            })
           }
         },
         revert: {

@@ -85,6 +85,41 @@ commands.forEach(command => {
       })
     }
 
+    const modifyWithError = (title: string, where: string, expectedError: string) => {
+      it(`should modify the content, introducing a ${title}`, async () => {
+        try {
+          const actualText = await Util.getValueFromMonaco(this.app)
+          const specLineIdx = actualText.split(/\n/).indexOf('spec:')
+
+          // +1 here because nth-child is indexed from 1
+          const lineSelector = `.view-lines > .view-line:nth-child(${specLineIdx + 1}) .mtk22`
+          await this.app.client.click(lineSelector)
+
+          // we'll inject some garbage that we expect to fail validation
+          const garbage = 'zzzzzz'
+
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          await this.app.client.keys(`${where}${garbage}`) // <-- injecting garbage
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
+
+          // an error state and the garbage text had better appear in the toolbar text
+          await SidecarExpect.toolbarText({ type: 'error', text: expectedError || garbage, exact: false })(this.app)
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+    }
+
+    // go to spec: line, insert garbage at the beginning (Keys.Home),
+    // expect to find garbage text in error message; the last
+    // "undefined" means use garbage text as the expected error
+    const validationError = modifyWithError.bind(undefined, 'validation error', Keys.Home, undefined)
+
+    // go to spec: line, insert garbage at the end (Keys.End), expect
+    // to find "could not find expected..." in error message
+    const parseError = modifyWithError.bind(undefined, 'parse error', Keys.End, 'could not find expected')
+
     const modify = (name: string) => {
       it('should modify the content', async () => {
         try {
@@ -139,6 +174,12 @@ commands.forEach(command => {
 
     edit(nginx)
     modify(nginx)
+
+    edit(nginx)
+    validationError()
+
+    edit(nginx)
+    parseError()
 
     deleteNS(this, ns)
   })

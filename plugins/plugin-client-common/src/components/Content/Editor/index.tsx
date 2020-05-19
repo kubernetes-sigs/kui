@@ -98,10 +98,10 @@ export default class Editor extends React.PureComponent<Props, State> {
    * ToolbarText to indicate error saving.
    *
    */
-  private static error(props: Props, msg: string): ToolbarText {
+  private static error(props: Props, msg: string, ...args: string[]): ToolbarText {
     return {
       type: 'error',
-      text: strings(msg)
+      text: strings(msg, ...args)
     }
   }
 
@@ -169,8 +169,7 @@ export default class Editor extends React.PureComponent<Props, State> {
               await onSave(editor.getValue())
               props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
             } catch (err) {
-              console.error(err)
-              props.willUpdateToolbar(this.error(props, 'errorSaving'))
+              props.willUpdateToolbar(this.error(props, 'errorSavingWithMessage', err.message))
             }
           }
         })
