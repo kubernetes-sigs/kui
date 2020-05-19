@@ -15,8 +15,6 @@
  */
 
 import * as React from 'react'
-import Props, { Action } from '../model'
-
 import {
   Card,
   CardActions,
@@ -27,6 +25,9 @@ import {
   DropdownItem,
   KebabToggle
 } from '@patternfly/react-core'
+
+import Props from '../model'
+import { DropDownAction } from '../../DropDown'
 
 import '../../../../../web/scss/components/Card/Patternfly.scss'
 
@@ -43,7 +44,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     }
   }
 
-  private renderDropDownItems(actions: Action[]) {
+  private renderDropDownItems(actions: DropDownAction[]) {
     return actions.map((item, idx) => (
       <DropdownItem key={idx} component="button" onClick={item.handler} data-mode={item.label}>
         {item.label}

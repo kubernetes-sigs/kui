@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { Action } from '../Card/model'
-export { Action }
+export interface Action {
+  label: string
+  handler: () => void
+}
 
 interface Props {
   /** Actions to be rendered in an overflow menu associated with the Card */

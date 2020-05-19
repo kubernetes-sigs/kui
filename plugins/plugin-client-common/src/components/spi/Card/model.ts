@@ -16,10 +16,7 @@
 
 import { ReactNode } from 'react'
 
-export interface Action {
-  label: string
-  handler: () => void
-}
+import { DropDownAction } from '../DropDown'
 
 interface Props {
   /** Place the given header node at the top of the Card */
@@ -29,7 +26,7 @@ interface Props {
   children: ReactNode
 
   /** [Optional] Actions to be rendered in an overflow menu associated with the Card */
-  actions?: Action[]
+  actions?: DropDownAction[]
 
   /** [Optional] CSS class to associate with the outermost Card element */
   className?: string
