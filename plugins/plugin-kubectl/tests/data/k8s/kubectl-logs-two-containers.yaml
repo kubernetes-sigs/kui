@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kui-two-containers
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    command: ["/bin/sh", "-c", "while true; do echo nginx-`date +'%M:%S'`; sleep 1; done"]
+  - name: vim
+    image: jare/alpine-vim
+    command: ["/bin/sh", "-c", "while true; do echo vim-`date +'%M:%S'`; sleep 1; done"]
