@@ -1,24 +1,36 @@
 //Defined colors
 $light-grey: #c6ccd8;
 $trans-grey: #5e6367;
-$coral: #ffa280;
 
-.coralColor {
-  color: $coral;
+.header {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 400px;
+  height: 100px;
+  background: transparent;
+}
+
+.inputInfoDiv {
+  height: 100px;
+  width: 100px;
+  position: relative;
+  top: 90px;
 }
 .iconprops {
   fill: $light-grey;
 }
 
-.helper {
-  color: $trans-grey;
+.textinputDiv {
+  height: 100px;
+  width: 450px;
 }
 
-.extendwidth {
-  width: 350px;
-}
-.bx--list-box__label {
-  color: #737373;
+.helpDiv {
+  height: 20px;
+  width: 20px;
+  position: relative;
+  top: -103px;
+  left: 40px;
 }
 
 .helpDiv {
@@ -34,6 +46,10 @@ p {
   line-height: 1rem !important;
 }
 
+.helper {
+  color: $trans-grey !important;
+}
+
 .bx--list-box__field {
   width: 350px !important;
 }
@@ -43,7 +59,7 @@ p {
   display: block;
 }
 .bx--label {
-  color: $coral !important;
+  color: #ffffff !important;
 }
 .bx--list-box {
   width: 350px !important;
