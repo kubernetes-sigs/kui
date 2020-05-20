@@ -135,5 +135,12 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     const historyModel = await (await import('@kui-shell/core')).History(tab)
     const newValue = (historyModel.next() || { raw: '' }).raw
     updateInputAndMoveCaretToEOL(prompt, newValue)
+  } else if (event.key === 'w' && event.ctrlKey) {
+    const { prompt } = this.state
+    const idx = prompt.value.lastIndexOf(
+      ' ',
+      prompt.value.charAt(prompt.value.length - 1) === ' ' ? prompt.value.length - 2 : prompt.value.length - 1
+    )
+    this.state.prompt.value = this.state.prompt.value.slice(0, idx + 1)
   }
 }
