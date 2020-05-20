@@ -1,7 +1,11 @@
 //Defined colors
 $light-grey: #c6ccd8;
 $trans-grey: #5e6367;
+$coral: #ffa280;
 
+.coralColor {
+  color: $coral;
+}
 .iconprops {
   fill: $light-grey;
 }
@@ -37,10 +41,9 @@ p {
 .formProps {
   overflow-y: auto !important;
   display: block;
-  // height: 689.5px;
 }
 .bx--label {
-  color: #ffffff !important;
+  color: $coral !important;
 }
 .bx--list-box {
   width: 350px !important;

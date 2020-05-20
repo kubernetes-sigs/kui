@@ -270,8 +270,9 @@ class ExprBase extends React.Component<{}, Formstate> {
           </FormGroup>
           <FormGroup style={{ width: 350 }}>
             <p>
-              Candidate Deployment(s) <br />
-              <p className="helper"> The version(s) of the service to be used as experimental candidate(s).</p>
+              <span className="coralColor"> Candidate Deployment(s) </span>
+              <br />
+              <span className="helper"> The version(s) of the service to be used as experimental candidate(s).</span>
             </p>
             <MultiSelect
               classname="extendwidth"
@@ -287,7 +288,7 @@ class ExprBase extends React.Component<{}, Formstate> {
           <FormGroup style={{ width: 350 }}>
             <Button
               style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
-              size="medium"
+              size="default"
               kind="primary"
               renderIcon={Data132}
               onClick={this.addCriterion}
@@ -367,7 +368,7 @@ class ExprBase extends React.Component<{}, Formstate> {
           ) : null}
           <FormGroup style={{ width: 350 }}>
             <Button
-              size="medium"
+              size="default"
               kind="primary"
               renderIcon={View32}
               disabled={this.state.invalidCandidate || this.state.disableResubmit}
