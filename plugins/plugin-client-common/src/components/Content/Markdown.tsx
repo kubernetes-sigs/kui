@@ -46,6 +46,7 @@ interface Props {
   /** if we have the full path to the source file */
   fullpath?: string
 
+  /** css class for top-level element */
   className?: string
 }
 
@@ -64,10 +65,7 @@ export default class Markdown extends React.PureComponent<Props> {
     return (
       <ReactMarkdown
         source={this.props.source}
-        className={
-          'padding-content scrollable scrollable-auto marked-content page-content' +
-          (this.props.className ? ` ${this.props.className}` : '')
-        }
+        className={this.props.className || 'padding-content scrollable scrollable-auto marked-content page-content'}
         renderers={{
           link: props => {
             const isLocal = !/^http/i.test(props.href)
