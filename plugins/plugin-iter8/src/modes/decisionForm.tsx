@@ -80,13 +80,14 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       trafficErr: false, // true if sum(traffic) != 100
       notifyUser: false, // true if vs has been successfully created
       notifyTime: '', // timestamp assoc. with notification
-      exprCreated: false, // true if user has finished expr creation
+      experimentCreated: false, // true if user has finished expr creation
       haveResults: false, // true if Iter8 AJAX call has been successful
-      exprReq: null, // JSON object sent as Iter8 Request
-      exprResult: null // JSON object returned from Iter8 API
+      experimentRequest: null, // JSON object sent as Iter8 Request
+      experimentResult: null // JSON object returned from Iter8 API
     }
-    eventChannelUnsafe.on('/my/channel', formstate => {
-      this.setState({ exprCreated: true, exprReq: formstate })
+    eventChannelUnsafe.on('/get/decision', formstate => {
+      console.log(JSON.stringify(formstate))
+      this.setState({ experimentCreated: true, experimentRequest: formstate })
     })
     // Bound NON-lambda functions to component's scope
     this.handleReset = this.handleReset.bind(this)
@@ -102,11 +103,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Sets display with winner information
   private getWinAnalysis(apiResult) {
     if (apiResult.winner_assessment.winning_version_found) {
-      const assessment = apiResult.winner_assessment
+      // const assessment = apiResult.winner_assessment
       const prob = apiResult.winner_assessment.winning_probability
       this.winner = `%{assessment.current_winner} is the winner with ${prob} % of winning`
-    }
-    else{
+    } else {
       this.winner = 'No winners determined.'
     }
   }
@@ -209,7 +209,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
 
   // Makes an AJAX call to Iter8 API
   private handleRefresh() {
-    const AnalyticsAssess = new GetAnalyticsAssessment(this.state.exprReq)
+    const AnalyticsAssess = new GetAnalyticsAssessment(this.state.experimentRequest)
     AnalyticsAssess.getAnalyticsAssessment()
       .then(result => {
         const jsonrlts = JSON.parse(JSON.parse(result))
@@ -219,7 +219,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         this.getMetricHeaders(jsonrlts)
         this.getMetricRows(jsonrlts)
         const traffic = this.getTrafficRecs(this.state.selectedAlgo, jsonrlts)
-        this.setState({ haveResults: true, exprResult: jsonrlts, trafficSplit: traffic })
+        console.log(jsonrlts)
+        this.setState({ haveResults: true, experimentResult: jsonrlts, trafficSplit: traffic })
       })
       .catch(failure => {
         console.log(failure)
@@ -229,7 +230,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Get new traffic recommendations for the selected algorithm type
   private handleAlgoChange = value => {
     this.setState({ selectedAlgo: value.id })
-    this.getTrafficRecs(value.id, this.state.exprResult)
+    this.getTrafficRecs(value.id, this.state.experimentResult)
   }
 
   // Handle sliders changing
@@ -255,9 +256,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
 
   // Converts traffic implementation into VS and Dest. Rules
   private handleApply() {
-    const ns = this.state.exprReq.baseline.version_labels.destination_service_namespace
-    const svc = this.state.exprReq.service_name
-    const decision = getUserDecision(ns, svc, this.state.trafficSplit)
+    const namespace = this.state.experimentRequest.baseline.version_labels.destination_service_namespace
+    const service = this.state.experimentRequest.service_name
+    const decision = getUserDecision(namespace, service, this.state.trafficSplit)
     applyTrafficSplit(decision)
     const d = new Date()
     const time = d.toISOString()
@@ -277,17 +278,17 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         <FormGroup legendText="">
           <InlineLoading
             description={
-              !this.state.exprCreated ? 'Waiting for Experiment Creation Completion...' : 'Experiment Created.'
+              !this.state.experimentCreated ? 'Waiting for Experiment Creation Completion...' : 'Experiment Created.'
             }
             iconDescription="Active loading indicator"
-            status={this.state.exprCreated ? 'finished' : 'active'}
+            status={this.state.experimentCreated ? 'finished' : 'active'}
             style={{ width: 350 }}
           />
           <Button
             size="default"
             kind="primary"
             renderIcon={Renew32}
-            disabled={!this.state.exprCreated}
+            disabled={!this.state.experimentCreated}
             onClick={this.handleRefresh}
             className="refreshBtn"
           >

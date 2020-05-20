@@ -1,42 +1,44 @@
 /*
-* Data models for the state object in React Components
-*/
+ * Data models for the state object in React Components
+ */
 
 // Model for exprForm.tsx state
-interface Metricstate {
-	name: string,
-	type:string,
-	reward: Boolean,
-	limitType: string,
-	limitValue: number
+enum experimentTypes {
+  HIL = 'Human In the Loop',
+  automated = 'Automated'
+}
+
+interface CriterionState {
+  name: string
+  type: string
+  reward: boolean
+  limitType: string
+  limitValue: number
 }
 interface Formstate {
-	disableresubmit: Boolean,
-	showMetrics: Boolean,
-	invalidCand: Boolean,
-	name: string,
-	ns:string,
-	svc: string,
-	base:string,
-	cand:Array<string>,
-	metric:Array<Metricstate>,
-	disableReward: Boolean
+  disableResubmit: boolean
+  showCriteria: boolean
+  invalidCandidate: boolean
+  name: string
+  type: experimentTypes
+  namespace: string
+  service: string
+  baseline: string
+  candidates: Array<string>
+  criteria: Array<CriterionState>
+  disableReward: boolean
 }
 // Model for decisionForm.tsx
 interface DecisionState {
-	notifyTime: string,
-	selectedAlgo: string,
-	trafficSplit: Array<any>,
-	trafficErr: Boolean,
-	notifyUser: Boolean,
-	exprCreated: Boolean,
-	haveResults: Boolean,
-	exprReq?: any,
-	exprResult?: any
+  notifyTime: string
+  selectedAlgo: string
+  trafficSplit: Array<any>
+  trafficErr: boolean
+  notifyUser: boolean
+  experimentCreated: boolean
+  haveResults: boolean
+  experimentRequest?: any
+  experimentResult?: any
 }
 
-export {
-	Metricstate,
-	Formstate,
-	DecisionState
-}
+export { CriterionState, Formstate, DecisionState, experimentTypes }

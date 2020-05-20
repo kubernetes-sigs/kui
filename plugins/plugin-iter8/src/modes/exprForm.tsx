@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
-import { TooltipIcon, Form, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
-import { CaretDown32, Information16, View32, AddAlt32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
+import { Form, FormGroup, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
+import { View32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
@@ -15,7 +15,7 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 import GetKubeInfo from '../components/cluster-info'
 import GetMetricConfig from '../components/metric-config'
 import getRequestModel from '../utility/get-iter8-req'
-import { Formstate } from '../modes/state-models'
+import { Formstate, experimentTypes } from '../modes/state-models'
 
 /*
  * Data models for the state object in ExprForm
@@ -35,30 +35,30 @@ class ExprBase extends React.Component<{}, Formstate> {
   public constructor(props) {
     super(props)
     this.state = {
-      disableresubmit: false, //prevents form resubmission
-      showMetrics: false, // determines the visibility of metric config section
-      invalidCand: false, // determines whether cand values are valid
-      name: '',	// name of the experiment
-      ns: '',   // namespace of microservice
-      svc: '',  // service name of microservice
-      base: '', // baseline deployment of microservice
-      cand: [], // list of candidate deployment names of microservice
-      metric: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
+      disableResubmit: false, // prevents form resubmission
+      showCriteria: false, // determines the visibility of metric config section
+      invalidCandidate: false, // determines whether candidates values are valid
+      name: '', // name of the experiment
+      type: experimentTypes.HIL, // type of experiment: HIL vs automated
+      namespace: '', // namespace of microservice
+      service: '', // service name of microservice
+      baseline: '', // baseline deployment of microservice
+      candidates: [], // list of candidates deployment names of microservice
+      criteria: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
       disableReward: false // disables the reward select for selected metrics
     }
     // Bound NON-lambda functions to component's scope
-    this.submitForm = this.submitForm.bind(this);
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.toggleMetricConfig = this.toggleMetricConfig.bind(this);
-    this.addMetric = this.addMetric.bind(this);
+    this.submitForm = this.submitForm.bind(this)
+    this.handleNameChange = this.handleNameChange.bind(this)
+    this.addCriterion = this.addCriterion.bind(this)
   }
 
   /*
    * ==== Basic Experiment State Handlers =====
    */
   private handleNameChange(event) {
-  	console.log(event.target.value);
-    this.setState({ name: event.target.value})
+    console.log(event.target.value)
+    this.setState({ name: event.target.value })
   }
 
   private handleAddCand = value => {
@@ -68,26 +68,28 @@ class ExprBase extends React.Component<{}, Formstate> {
     })
     // Check for invalid selections
     for (let i = 0; i < versionValue.length; i++) {
-      if (this.state.base === versionValue[i]) {
+      if (this.state.baseline === versionValue[i]) {
         versionValue.splice(i, 1)
-        this.setState({ invalidCand: true,
-        				cand: versionValue
-        			 });
-        return;
+        this.setState({ invalidCandidate: true, candidates: versionValue })
+        return
       }
     }
     this.setState({
-      invalidCand: false,
-      cand: versionValue
+      invalidCandidate: false,
+      candidates: versionValue
     })
+  }
+
+  private handleSelectExpType = value => {
+    console.log('Running ' + value + ' Experiment')
   }
 
   private handleAddNs = value => {
     if (value == null) {
-      this.setState({ ns: '', svc: '', base: '', cand: [] })
+      this.setState({ namespace: '', service: '', baseline: '', candidates: [] })
       this.svcList = []
     } else {
-      this.setState({ ns: value.text, svc: '', base: '', cand: [] })
+      this.setState({ namespace: value.text, service: '', baseline: '', candidates: [] })
       this.svcList = this.kubeMethods.getSvc(value.text)
     }
     this.deployList = []
@@ -95,40 +97,42 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   private handleAddSvc = value => {
     if (value == null) {
-      this.setState({ svc: '', base: '', cand: [] })
+      this.setState({ service: '', baseline: '', candidates: [] })
       this.deployList = []
     } else {
-      this.setState({ svc: value.text, base: '', cand: [] })
-      this.deployList = this.kubeMethods.getDeployment(this.state.ns, value.text)
+      this.setState({ service: value.text, baseline: '', candidates: [] })
+      this.deployList = this.kubeMethods.getDeployment(this.state.namespace, value.text)
     }
   }
 
   private handleAddBase = value => {
-    if (value == null) this.setState({ base: '', cand: [] })
-    else this.setState({ base: value.text, cand: [] })
+    if (value == null) this.setState({ baseline: '', candidates: [] })
+    else this.setState({ baseline: value.text, candidates: [] })
   }
 
   /*
    * ==== Metric Configuration Handler Functions ====
    */
-  // Toggle for Metric Configuration
-  private toggleMetricConfig(){
-    this.setState({ showMetrics: !this.state.showMetrics })
-  }
 
   // Method for Add Metric (+) button
-  private addMetric(){
-    this.setState(prevState => ({
-      metric: [...prevState.metric, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
-    }))
+  private addCriterion() {
+    if (this.state.showCriteria) {
+      // If a criterion is already shown, add a new criterion
+      this.setState(prevState => ({
+        criteria: [...prevState.criteria, { name: '', type: '', reward: false, limitType: '', limitValue: 0 }]
+      }))
+    } else {
+      // If no criteria has been addded, add the first criterion
+      this.setState({ showCriteria: true })
+    }
   }
 
   // Removes the metric field from the state
-  private deleteMetric = idx => {
+  private deleteCriterion = idx => {
     this.setState(state => {
-      const metric = state.metric.filter((m, i) => i !== idx)
+      const criteria = state.criteria.filter((m, i) => i !== idx)
       return {
-        metric
+        criteria
       }
     })
   }
@@ -141,7 +145,7 @@ class ExprBase extends React.Component<{}, Formstate> {
     if (value == null) {
       metricName = ''
       metricType = ''
-    } 
+    }
     // Check for metric type (ratio/counter)
     else {
       metricName = value.name
@@ -150,32 +154,33 @@ class ExprBase extends React.Component<{}, Formstate> {
         if (this.countMetricsList[i].name === value.name) metricType = 'Counter'
       }
     }
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], name: metricName, type: metricType }
-    this.setState({ metric: newMetric })
+    this.setState({ criteria: newMetric })
   }
 
   // Updates states based on limit type changes
   private handleLimitTypeChange = (value, idx) => {
     const limitType = value == null ? '' : value
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitType: limitType }
-    this.setState({ metric: newMetric })
+    this.setState({ criteria: newMetric })
   }
+
   // Update the state for limit value
   private handleLimitValChange = (value, idx) => {
-    const limitValue = value === '' ? 0 : parseFloat(value);
-    const newMetric = [...this.state.metric]
+    const limitValue = value === '' ? 0 : parseFloat(value)
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
-    this.setState({ metric: newMetric })
+    this.setState({ criteria: newMetric })
   }
 
   // Disables all the other checkboxes
   private handleRewardChange = idx => {
-    const newMetric = [...this.state.metric]
+    const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward }
     this.setState(prevState => ({
-      metric: newMetric,
+      criteria: newMetric,
       disableReward: !prevState.disableReward
     }))
   }
@@ -185,164 +190,146 @@ class ExprBase extends React.Component<{}, Formstate> {
    */
   private submitForm() {
     // Get the current time in ISO form
-    let d = new Date();
-    let time = d.toISOString();
+    const d = new Date()
+    const time = d.toISOString()
     // Reorganize form input into Iter8 Request model
-    let jsonOutput = getRequestModel(time, this.state);
+    const jsonOutput = getRequestModel(time, this.state)
     // Transmit data to Decision form using eventBus
-    eventChannelUnsafe.emit('/my/channel', jsonOutput);
-    this.setState({disableresubmit: true});
+    eventChannelUnsafe.emit('/get/decision', jsonOutput)
+    this.setState({ disableResubmit: true })
   }
+
   // Cancels form submission event caused by "Enter" press
-  private preventFormRefresh(event){
-  	event.preventDefault();
+  private preventFormRefresh(event) {
+    event.preventDefault()
   }
+
   public render() {
-    const { metric } = this.state
+    const { criteria } = this.state
     return (
       <Form className="formProps" onSubmit={this.preventFormRefresh}>
-        <div className="header">
-          <CaretDown32 className="iconprops" />
-          <h3> Experiment Basics </h3>
-        </div>
-        <div className="inputInfoDiv">
-          <div className="textinputDiv">
-            <TextInput 
-            	id='expName'
-            	labelText='Name'
-            	placeholder='Ex. experiment_v1_v2' 
-            	onChange={this.handleNameChange}
-            	type="text"
-            	style={{ width: 350, height: 50 }} 
+        <div>
+          <FormGroup style={{ width: 600 }}>
+            <h3>
+              <span style={{ fontFamily: 'monospace', fontSize: 'larger' }}>iter8 </span> Experiment Configurations{' '}
+            </h3>
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <TextInput
+              id="experiment-name"
+              labelText="Name"
+              helperText="Name to identify the experiment."
+              placeholder="Eg: experiment_v1_v2"
+              onChange={this.handleNameChange}
+              type="text"
+            ></TextInput>
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="experiment-type-select"
+              titleText="Experiment Type"
+              helperText="Type of experiment to be conducted"
+              placeholder="Select an Experiment Type"
+              items={[experimentTypes.HIL]}
+              onChange={value => this.handleSelectExpType(value.selectedItem)}
             />
-          </div>
-          <div className="helpDiv">
-            <TooltipIcon direction="top" align="center" tooltipText="Name to identify the experiment.">
-              <Information16 />
-            </TooltipIcon>
-          </div>
-        </div>
-        <div className="header" style={{ position: 'relative', top: 150, left: -145 }}>
-          <CaretDown32 className="iconprops" />
-          <h3> Target Configuration </h3>
-        </div>
-        <div style={{ width: 350, position: 'relative', top: 240, left: -150 }}>
-          <ComboBox
-            id="ns-select"
-            titleText="Namespace"
-            helperText="Namespace where your application resides."
-            placeholder="Select a Namespace"
-            items={this.nsList}
-            itemToString={item => (item ? item.text : '')}
-            onChange={value => this.handleAddNs(value.selectedItem)}
-            style={{ width: 350 }}
-          />
-        </div>
-        <div style={{ width: 350, position: 'relative', top: 340, left: -225 }}>
-          <ComboBox
-            id="svc-select"
-            titleText="Service"
-            helperText="The name of your microservice."
-            placeholder="Select a Service"
-            items={this.svcList}
-            itemToString={item => (item ? item.text : '')}
-            onChange={value => this.handleAddSvc(value.selectedItem)}
-            style={{ width: 350 }}
-          />
-        </div>
-        <div style={{ width: 350, position: 'relative', top: 440, left: -295 }}>
-          <ComboBox
-            id="base-select"
-            titleText="Baseline Deployment"
-            helperText="The version of your microservice to use as the experimental baseline."
-            placeholder="Select a Baseline Deployment"
-            items={this.deployList}
-            itemToString={item => (item ? item.text : '')}
-            onChange={value => this.handleAddBase(value.selectedItem)}
-            style={{ width: 350 }}
-          />
-        </div>
-        <div
-          style={{ width: 350, height: 100, position: 'relative', top: 555, left: -345, display: '-webkit-inline-box' }}
-        >
-          <div style={{ height: 50, position: 'relative', left: -23 }}>
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="namespace-select"
+              titleText="Service Namespace"
+              helperText="Namespace where the target service resides"
+              placeholder="Select a Namespace"
+              items={this.nsList}
+              itemToString={item => (item ? item.text : '')}
+              onChange={value => this.handleAddNs(value.selectedItem)}
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="service-select"
+              titleText="Service"
+              helperText="Name of the target service"
+              placeholder="Select a Service"
+              items={this.svcList}
+              itemToString={item => (item ? item.text : '')}
+              onChange={value => this.handleAddSvc(value.selectedItem)}
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
+            <ComboBox
+              id="baseline-select"
+              titleText="Baseline Deployment"
+              helperText="The version of the service to be used as experimental baseline"
+              placeholder="Select a Baseline Deployment"
+              items={this.deployList}
+              itemToString={item => (item ? item.text : '')}
+              onChange={value => this.handleAddBase(value.selectedItem)}
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
             <p>
-              {' '}
-              Candidate Deployment(s) <br />
-              <p className="helper"> The version(s) of your microservice to use as the experimental candidate.</p>
+              <span className="coralColor"> Candidate Deployment(s) </span>
+              <br />
+              <span className="helper"> The version(s) of the service to be used as experimental candidate(s).</span>
             </p>
-          </div>
-          <div style={{ position: 'relative', top: 55, left: -370 }}>
             <MultiSelect
-              id="cand-select"
+              classname="extendwidth"
+              id="candidates-select"
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}
               label="Select Candidate Deployment(s)"
               onChange={value => this.handleAddCand(value.selectedItems)}
-              invalid={this.state.invalidCand}
-              invalidText="Cannot select same version as baseline."
-            ></MultiSelect>
-          </div>
-          <div style={{ position: 'relative', top: 120, left: -720 }}>
+              invalid={this.state.invalidCandidate}
+              invalidText="Cannot select same version as experimental baseline."
+            />
+          </FormGroup>
+          <FormGroup style={{ width: 350 }}>
             <Button
+              style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
               size="default"
               kind="primary"
-              renderIcon={View32}
-              disabled={this.state.invalidCand || this.state.disableresubmit}
-              onClick={this.submitForm}
+              renderIcon={Data132}
+              onClick={this.addCriterion}
             >
-              Observe
+              Add Criterion
             </Button>
-            <div style={{ position: 'relative', top: -48, left: 190 }}>
-              <Button size="default" kind="secondary" renderIcon={Data132} onClick={this.toggleMetricConfig}>
-                {' '}
-                Metric Config{' '}
-              </Button>
-            </div>
-          </div>
-          {this.state.showMetrics ? (
-            <div>
-              <div className="header" style={{ position: 'relative', top: 160, right: 920 }}>
-                <CaretDown32 className="iconprops" />
-                <h3> Metric Configuration </h3>
-              </div>
-              <Button
-                size="small"
-                kind="ghost"
-                renderIcon={AddAlt32}
-                onClick={this.addMetric}
-                style={{ position: 'relative', top: 95, right: 600 }}
-              >
-                Add Metric
-              </Button>
-              <div style={{ position: 'relative', top: 110, right: 865 }}>
-                {metric.map((val, idx) => {
-                  const metricId = `metric-${idx}`
+          </FormGroup>
+          {this.state.showCriteria ? (
+            <FormGroup>
+              <div style={{ position: 'relative' }}>
+                {criteria.map((val, idx) => {
+                  const criterionId = `criterion-${idx}`
                   const limitTypeId = `limitType-${idx}`
                   const limitValueId = `limitValue-${idx}`
                   const checkId = `checkbox-${idx}`
                   return (
-                    <div key={idx}>
+                    <div
+                      style={{ padding: 5, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+                      key={idx}
+                    >
+                      <h5> {`Criterion #${idx + 1}`}</h5>
                       <ComboBox
-                        id={metricId}
-                        titleText={`Metric #${idx + 1}`}
-                        helperText="Experimental metrics supported by Iter8."
+                        id={criterionId}
+                        titleText="Metric name"
+                        helperText="Metric to be used for this critetion"
                         placeholder="Select a Metric"
                         items={this.totMetricsList}
                         itemToString={item => (item ? item.name : '')}
                         onChange={value => this.handleMetricName(value.selectedItem, idx)}
                       />
+                      <Tag type="teal">{'Info:'}</Tag>
                       <Tag type="cyan">{val.type === '' ? '...' : val.type}</Tag>
                       <Tag type="magenta">{val.reward ? 'Reward' : '...'}</Tag>
                       <Tag type="cool-gray">{val.limitType === '' ? '...' : `${val.limitType} threshold`}</Tag>
                       <ComboBox
                         id={limitTypeId}
                         titleText="Limit Type"
-                        helperText="For non-reward metrics, designate the type of threshold for the metric."
-                        placeholder="Select a Threshold"
+                        helperText="For non-reward criteria, designate the type of threshold to be set for the metric"
+                        placeholder="Select the type of threshold"
                         disabled={val.reward}
                         invalid={val.reward && val.limitType !== ''}
-                        invalidText="Limits can only be set for non-reward metrics."
+                        invalidText="Limits can only be set for non-reward metrics"
                         items={['absolute', 'relative']}
                         onChange={value => this.handleLimitTypeChange(value.selectedItem, idx)}
                         style={{ width: 350 }}
@@ -350,10 +337,10 @@ class ExprBase extends React.Component<{}, Formstate> {
                       <TextInput
                         id={limitValueId}
                         labelText="Limit Value"
-                        helperText="Set the value for the designated threshold selected."
+                        helperText="Set a value for the threshold selected"
                         disabled={val.reward}
                         invalid={val.reward && val.limitValue !== 0}
-                        invalidText="Limit values can only be set for non-reward metrics."
+                        invalidText="Limit values can only be set for non-reward metrics"
                         onChange={e => this.handleLimitValChange(e.target.value, idx)}
                         style={{ width: 350 }}
                       />
@@ -367,17 +354,29 @@ class ExprBase extends React.Component<{}, Formstate> {
                         size="small"
                         kind="ghost"
                         renderIcon={SubtractAlt32}
-                        onClick={() => this.deleteMetric(idx)}
+                        onClick={() => this.deleteCriterion(idx)}
                         style={{ color: 'red' }}
                       >
-                        {`Delete Metric ${idx + 1}`}
+                        {`Delete Criterion ${idx + 1}`}
                       </Button>
                     </div>
                   )
                 })}
               </div>
-            </div>
+            </FormGroup>
           ) : null}
+          <FormGroup style={{ width: 350 }}>
+            <Button
+              size="default"
+              kind="primary"
+              renderIcon={View32}
+              disabled={this.state.invalidCandidate || this.state.disableResubmit}
+              onClick={this.submitForm}
+              style={{ fontSize: 'medium' }}
+            >
+              Create Experiment
+            </Button>
+          </FormGroup>
         </div>
       </Form>
     )
