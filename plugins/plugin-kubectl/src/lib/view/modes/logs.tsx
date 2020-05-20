@@ -257,7 +257,7 @@ class Logs extends React.PureComponent<Props, State> {
 
   /** Render the log content in the case we no logs to show. */
   private nothingToShow() {
-    return <div className="kui--hero-text">No log data</div>
+    return <div className="kui--hero-text">{strings('No log data')}</div>
   }
 
   /** Render the log content. */
