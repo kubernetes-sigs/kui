@@ -61,6 +61,9 @@ const newTab = () => tellRendererToExecute('tab new')
  */
 const closeTab = () => tellRendererToExecute('tab close')
 
+const isDarwin = process.platform === 'darwin'
+const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
+
 export const install = (createWindow: () => void) => {
   if (!isDev) {
     const fileMenuItems: MenuItemConstructorOptions[] = [
@@ -78,9 +81,9 @@ export const install = (createWindow: () => void) => {
       {
         label: 'Close Tab',
         click: closeTab,
-        accelerator: 'CommandOrControl+W'
+        accelerator: closeAccelerator
       },
-      { role: 'close' }
+      { role: 'close', accelerator: undefined }
     ]
     if (process.platform !== 'darwin') {
       fileMenuItems.push({ type: 'separator' })
@@ -160,7 +163,7 @@ export const install = (createWindow: () => void) => {
 
       {
         role: 'window',
-        submenu: [{ role: 'minimize' }, { role: 'close' }]
+        submenu: [{ role: 'minimize' }, { role: 'close', accelerator: closeAccelerator }]
       },
 
       {
