@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
+import { ReactNode } from 'react'
+import { REPL } from '@kui-shell/core'
 
-import '../web/scss/components/TopTabStripe/Carbon.scss'
+type SessionProps = {
+  /** [Optional] session init started view */
+  loading?: ReactNode
 
-/**
- * Use DefaultClient configured to run in bottomInput mode.
- *
- */
-export default function BottomInputClient(props: KuiProps) {
-  // prompt is unicode for "heavy right-pointing angle quotation mark ornament"
-  return <Kui {...props} bottomInput noPromptContext prompt="&#x276f;" />
+  /** [Optional] session was severed; reinit started view */
+  reinit?: ReactNode
+
+  /** [Optional] session could not be established; error view */
+  loadingError?: (err: Error) => ReactNode
+
+  /** [Optional] session established! welcome to your session view */
+  loadingDone?: (repl: REPL) => ReactNode
 }
+
+export default SessionProps

@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { REPL, ThemeProperties } from '@kui-shell/core'
+import InputProps from './props/Input'
+import SessionProps from './props/Session'
+import BrandingProps from './props/Branding'
+import { ThemeProperties } from '@kui-shell/core'
 
-type KuiConfiguration = Partial<ThemeProperties> & {
-  /** This will be displayed in the upper left of the TopTabStripe */
-  productName?: string
-
-  /** [Optional] session init started view */
-  loading?: React.ReactNode
-
-  /** [Optional] session was severed; reinit started view */
-  reinit?: React.ReactNode
-
-  loadingError?: (err: Error) => React.ReactNode
-
-  loadingDone?: (repl: REPL) => React.ReactNode
-}
+type KuiConfiguration = Partial<ThemeProperties> & Partial<InputProps> & Partial<SessionProps> & Partial<BrandingProps>
 
 export default KuiConfiguration

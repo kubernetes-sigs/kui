@@ -21,6 +21,7 @@ import { dots as spinnerFrames } from 'cli-spinners'
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
+import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
@@ -169,14 +170,24 @@ export default class Input extends React.PureComponent<Props, State> {
 
   /** the "xxx" part of "xxx >" of the prompt */
   private promptLeft() {
-    return !this.props.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>
+    return (
+      !this.props.noPromptContext && (
+        <KuiContext.Consumer>
+          {config => !config.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>}
+        </KuiContext.Consumer>
+      )
+    )
   }
 
   /** the ">" part of "xxx >" of the prompt */
   private promptRight() {
     // &#x2771; "heavy right-pointing angle bracket ornament"
     // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
-    return <span className="repl-prompt-righty">/</span>
+    return (
+      <KuiContext.Consumer>
+        {config => <span className="repl-prompt-righty">{config.prompt || '/'}</span>}
+      </KuiContext.Consumer>
+    )
   }
 
   private isearchPrompt() {
