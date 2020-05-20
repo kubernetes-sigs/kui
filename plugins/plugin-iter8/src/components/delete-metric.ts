@@ -4,7 +4,7 @@ import { MetricTypes } from '../modes/get-metrics'
 
 const execSync = require('child_process').execSync
 
-export default function deleteMetric(metric, type = null) {
+export default function deleteMetric(metricName: string, type: MetricTypes) {
   let configmap = {}
   
   try {
@@ -34,7 +34,7 @@ export default function deleteMetric(metric, type = null) {
 
     if (type === null) {
       for (let i = 0; i < cM.length; i++) {
-        if (cM[i].name === metric) {
+        if (cM[i].name === metricName) {
           type = MetricTypes.counter
           break
         }
@@ -48,7 +48,7 @@ export default function deleteMetric(metric, type = null) {
     let deleted = ''
     if (type === MetricTypes.counter) {
       for (let i = 0; i < cM.length; i++) {
-        if (cM[i].name === metric) {
+        if (cM[i].name === metricName) {
           deleted = cM[i].name
           cM.splice(i, 1)
           break
@@ -56,7 +56,7 @@ export default function deleteMetric(metric, type = null) {
       }
     } else {
       for (let i = 0; i < rM.length; i++) {
-        if (rM[i].name === metric) {
+        if (rM[i].name === metricName) {
           deleted = rM[i].name
           rM.splice(i, 1)
           break
