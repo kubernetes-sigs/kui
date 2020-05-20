@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
-
-import '../web/scss/components/TopTabStripe/Carbon.scss'
-
-/**
- * Use DefaultClient configured to run in bottomInput mode.
- *
- */
-export default function BottomInputClient(props: KuiProps) {
-  // prompt is unicode for "heavy right-pointing angle quotation mark ornament"
-  return <Kui {...props} bottomInput noPromptContext prompt="&#x276f;" />
+type BrandingProps = {
+  /** [Optional] This will be displayed in the upper left of the TopTabStripe. Default: "Kui" */
+  productName?: string
 }
+
+export default BrandingProps
