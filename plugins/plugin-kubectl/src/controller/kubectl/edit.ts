@@ -20,6 +20,7 @@ import { Arguments, Registrar, i18n } from '@kui-shell/core'
 import flags from './flags'
 import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
+import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, getNamespace, getNamespaceForArgv } from './options'
 import { KubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
 
@@ -28,6 +29,11 @@ const strings2 = i18n('plugin-client-common', 'editor')
 
 export function doEdit(cmd: string) {
   return async (args: Arguments<KubeOptions>) => {
+    if (isUsage(args)) {
+      // special case: get --help/-h
+      return doHelp(cmd, args)
+    }
+
     const idx = args.argvNoOptions.indexOf('edit')
     const kindForQuery = args.argvNoOptions[idx + 1] || ''
     const nameForQuery = args.argvNoOptions[idx + 2] || ''
