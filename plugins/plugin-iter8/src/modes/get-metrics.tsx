@@ -1235,127 +1235,127 @@ type MetricState = {
   custom: boolean 
 }
 
-export class MetricDetailsMode {
-  public ob: GetMetricConfig
-  public ratioMetricOutput: MetricsState
-  public counterMetricOutput: MetricsState
+// export class MetricDetailsMode {
+//   public ob: GetMetricConfig
+//   public ratioMetricOutput: MetricsState
+//   public counterMetricOutput: MetricsState
 
-  public constructor() {
-    this.ob = new GetMetricConfig()
+//   public constructor() {
+//     this.ob = new GetMetricConfig()
 
-    // TODO: Set up ratioMetricOutput and counterMetricOutput
-  }
+//     // TODO: Set up ratioMetricOutput and counterMetricOutput
+//   }
 
-  // TODO: rename to generateMetricState
-  public generateObject(metrics: CounterMetrics | RatioMetrics, type: MetricTypes): MetricsState {
-    // TODO: rename to metricsState
-    const m: MetricsState = {}
+//   // TODO: rename to generateMetricState
+//   public generateObject(metrics: CounterMetrics | RatioMetrics, type: MetricTypes): MetricsState {
+//     // TODO: rename to metricsState
+//     const m: MetricsState = {}
 
-    metrics.forEach(metric => {
-      m[metric.name] = {
-        name: metric.name,
-        isDeleted: false,
-        alsoDelete: [],
-        alsoRestore: [],
-        details: metric,
-        custom: !ITER8_METRIC_NAMES.counter.includes(metric.name)
-      }
+//     metrics.forEach(metric => {
+//       m[metric.name] = {
+//         name: metric.name,
+//         isDeleted: false,
+//         alsoDelete: [],
+//         alsoRestore: [],
+//         details: metric,
+//         custom: !ITER8_METRIC_NAMES.counter.includes(metric.name)
+//       }
 
-      if (type === MetricTypes.ratio) {
-        // Add alsoRestore
-        m[metric.name].alsoRestore = [metric.numerator, metric.denominator]
+//       if (type === MetricTypes.ratio) {
+//         // Add alsoRestore
+//         m[metric.name].alsoRestore = [metric.numerator, metric.denominator]
 
-        // Add alsoDelete
-        if ({}.hasOwnProperty.call(this.counterMetricOutput, metric.numerator)) {
-          this.counterMetricOutput[metric.numerator].alsoDelete.push(metric.name)
-        }
-        if ({}.hasOwnProperty.call(this.counterMetricOutput, metric.denominator)) {
-          this.counterMetricOutput[metric.denominator].alsoDelete.push(metric.name)
-        }
-      }
-    })
+//         // Add alsoDelete
+//         if ({}.hasOwnProperty.call(this.counterMetricOutput, metric.numerator)) {
+//           this.counterMetricOutput[metric.numerator].alsoDelete.push(metric.name)
+//         }
+//         if ({}.hasOwnProperty.call(this.counterMetricOutput, metric.denominator)) {
+//           this.counterMetricOutput[metric.denominator].alsoDelete.push(metric.name)
+//         }
+//       }
+//     })
 
-    return m
-  }
+//     return m
+//   }
 
-  // public MetricList() {
-  //   const ratioMetrics = this.ob.getRatioMetrics()
-  //   const counterMetrics = this.ob.getCounterMetrics()
+//   // public MetricList() {
+//   //   const ratioMetrics = this.ob.getRatioMetrics()
+//   //   const counterMetrics = this.ob.getCounterMetrics()
     
-  //   if ('error' in ratioMetrics) {
-  //     return ReactErrorDisplay(ratioMetrics.error)
-  //   } else if ('error' in counterMetrics) {
-  //     return ReactErrorDisplay(counterMetrics.error)
-  //   } else {
-  //     // TODO: Shouldn't this be done in the constructor?
-  //     this.counterMetricOutput = this.generateObject(counterMetrics, MetricTypes.counter)
-  //     this.ratioMetricOutput = this.generateObject(ratioMetrics, MetricTypes.ratio)
+//   //   if ('error' in ratioMetrics) {
+//   //     return ReactErrorDisplay(ratioMetrics.error)
+//   //   } else if ('error' in counterMetrics) {
+//   //     return ReactErrorDisplay(counterMetrics.error)
+//   //   } else {
+//   //     // TODO: Shouldn't this be done in the constructor?
+//   //     this.counterMetricOutput = this.generateObject(counterMetrics, MetricTypes.counter)
+//   //     this.ratioMetricOutput = this.generateObject(ratioMetrics, MetricTypes.ratio)
 
-  //     const counterMetricsState = this.counterMetricOutput
-  //     const ratioMetricsState = this.ratioMetricOutput
+//   //     const counterMetricsState = this.counterMetricOutput
+//   //     const ratioMetricsState = this.ratioMetricOutput
 
-  //     return function GetMetricList(props: ToolbarProps) {
-  //       return <Display params={{ ...props, rM: ratioMetricsState, cM: counterMetricsState }} />
-  //     }
-  //   }
-  // }
+//   //     return function GetMetricList(props: ToolbarProps) {
+//   //       return <Display params={{ ...props, rM: ratioMetricsState, cM: counterMetricsState }} />
+//   //     }
+//   //   }
+//   // }
 
-  public MetricYaml(): string {
-    const yamlOutput = this.ob.getMetricsConfigMap()
+//   // public MetricYaml(): string {
+//   //   const yamlOutput = this.ob.getMetricsConfigMap()
     
-    // // TODO: handle error
-    // if ('error' in yamlOutput) {
-    //   return yamlOutput.error
-    // } else {
-    //   return yamlOutput
-    // }
+//   //   // // TODO: handle error
+//   //   // if ('error' in yamlOutput) {
+//   //   //   return yamlOutput.error
+//   //   // } else {
+//   //   //   return yamlOutput
+//   //   // }
 
-    if (typeof yamlOutput === 'string') {
-      return yamlOutput
-    }
-  }
+//   //   if (typeof yamlOutput === 'string') {
+//   //     return yamlOutput
+//   //   }
+//   // }
 
-  public MetricDeleteCommand(metricList): string {
-    const ratioMetrics = this.ob.getRatioMetrics()
-    const counterMetrics = this.ob.getCounterMetrics()
+//   // public MetricDeleteCommand(metricList): string {
+//   //   const ratioMetrics = this.ob.getRatioMetrics()
+//   //   const counterMetrics = this.ob.getCounterMetrics()
 
-    // TODO: Resolve following errors by configuring metric output in constructor
-    if ('error' in ratioMetrics) {
-      // return ReactErrorDisplay(ratioMetrics.error)
-    } else if ('error' in counterMetrics) {
-      // return ReactErrorDisplay(counterMetrics.error)
-    } else {
-      this.counterMetricOutput = this.generateObject(counterMetrics, MetricTypes.counter)
-      this.ratioMetricOutput = this.generateObject(ratioMetrics, MetricTypes.ratio)
-    }
+//   //   // TODO: Resolve following errors by configuring metric output in constructor
+//   //   if ('error' in ratioMetrics) {
+//   //     // return ReactErrorDisplay(ratioMetrics.error)
+//   //   } else if ('error' in counterMetrics) {
+//   //     // return ReactErrorDisplay(counterMetrics.error)
+//   //   } else {
+//   //     this.counterMetricOutput = this.generateObject(counterMetrics, MetricTypes.counter)
+//   //     this.ratioMetricOutput = this.generateObject(ratioMetrics, MetricTypes.ratio)
+//   //   }
 
-    for (let i = 0; i < metricList.length; i++) {
-      const metric = metricList[i]
+//   //   for (let i = 0; i < metricList.length; i++) {
+//   //     const metric = metricList[i]
 
-      if (metric in this.counterMetricOutput) {
-        if (!this.counterMetricOutput[metric].custom) {
-          return `Cannot delete iter8 counter metric: ${metric}`
+//   //     if (metric in this.counterMetricOutput) {
+//   //       if (!this.counterMetricOutput[metric].custom) {
+//   //         return `Cannot delete iter8 counter metric: ${metric}`
 
-        } else if (this.counterMetricOutput[metric].alsoDelete.length) {
-          // TODO: Please delete dependent metrics?
-          return `Please delete dependency metrics: 
-            ${this.counterMetricOutput[metric].alsoDelete.join(', ')} 
-            before deleting ${metric}`
-        }
-      } else {
-        if (!this.ratioMetricOutput[metric].custom) {
-          return `Cannot delete iter8 ratio metric: ${metric}`
-        }
-      }
+//   //       } else if (this.counterMetricOutput[metric].alsoDelete.length) {
+//   //         // TODO: Please delete dependent metrics?
+//   //         return `Please delete dependency metrics: 
+//   //           ${this.counterMetricOutput[metric].alsoDelete.join(', ')} 
+//   //           before deleting ${metric}`
+//   //       }
+//   //     } else {
+//   //       if (!this.ratioMetricOutput[metric].custom) {
+//   //         return `Cannot delete iter8 ratio metric: ${metric}`
+//   //       }
+//   //     }
 
-      if (deleteMetric(metric).success === metric) {
-        return `Deleted: ${metric}`
-      } else {
-        return `Could not delete: ${metric}`
-      }
-    }
-  }
-}
+//   //     if (deleteMetric(metric).success === metric) {
+//   //       return `Deleted: ${metric}`
+//   //     } else {
+//   //       return `Could not delete: ${metric}`
+//   //     }
+//   //   }
+//   // }
+// }
 
 export class MetricDetailsMode2 extends React.Component<any, MetricDetailsMode2State> {
   public constructor(props) {
@@ -1437,6 +1437,42 @@ export class MetricDetailsMode2 extends React.Component<any, MetricDetailsMode2S
         return <Display params={{ rM: ratioMetricsState, cM: counterMetricsState }} />
     }
   }
+}
+
+// Outputs the metric config map as a YAML string
+export function getMetricsYaml(): string {
+  return safeDump(configMap)
+}
+
+// Delete the specified metrics
+export function deleteMetrics(metricNames: string[]): string {
+  // Error checking
+  for (let i = 0; i < metricNames.length; i++) {
+    const metricName = metricNames[i]
+
+    if (counterMetricNames.includes(metricName)) {
+      if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
+        return `Cannot delete iter8 counter metric '${metricName}'`
+      }
+    } else if (ratioMetricNames.includes(metricName)) {
+      if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
+        return `Cannot delete iter8 counter metric '${metricName}'`
+      }
+    } else {
+      return `Invalid metric name '${metricName}'`
+    }
+  }
+
+  // Execute deletion
+  metricNames.forEach((metricName) => {
+    const type = counterMetricNames.includes(metricName) ?
+      MetricTypes.counter :
+      ratioMetricNames.includes(metricName) ?
+        MetricTypes.ratio :
+        undefined
+
+    deleteMetric(metricName, type)
+  })
 }
 
 export function getMetricDetailsMode2() {
