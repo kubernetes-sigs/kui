@@ -77,6 +77,11 @@
   display: flex;
   overflow: visible; /* for tooltip visibility */
 
+  .sidecar-toolbar-text p {
+    font-size: inherit;
+    line-height: unset;
+  }
+
   .sidecar-toolbar-text,
   .sidecar-bottom-stripe-mode-bits {
     background-color: var(--color-sidecar-toolbar-background);
