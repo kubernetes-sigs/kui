@@ -1,6 +1,6 @@
 import { ModeRegistration } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
-import { deleteMetrics, getMetricsYaml, getMetricDetailsMode2 } from '../modes/get-metrics'
+import { deleteMetrics, getMetricsYaml, getMetricDetailsMode } from '../modes/get-metrics'
 
 function verifyMetricResponse(resource: KubeResource): boolean {
   return resource.kind === 'Command' && resource.metadata.name === 'Metric Command'
@@ -10,7 +10,7 @@ const metricListMode: ModeRegistration<KubeResource> = {
   when: verifyMetricResponse,
   mode: {
     mode: 'Metric List',
-    react: getMetricDetailsMode2
+    react: getMetricDetailsMode
   }
 }
 
