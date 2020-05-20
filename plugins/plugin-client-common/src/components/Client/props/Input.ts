@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
+type InputProps = {
+  /** [Optional] do not display any extra information beside the > prompt. Default: false */
+  noPromptContext?: boolean
 
-import '../web/scss/components/TopTabStripe/Carbon.scss'
-
-/**
- * Use DefaultClient configured to run in bottomInput mode.
- *
- */
-export default function BottomInputClient(props: KuiProps) {
-  // prompt is unicode for "heavy right-pointing angle quotation mark ornament"
-  return <Kui {...props} bottomInput noPromptContext prompt="&#x276f;" />
+  /** [Optional] characters to display before every <input>. Default: "/" */
+  prompt?: string
 }
+
+export default InputProps
