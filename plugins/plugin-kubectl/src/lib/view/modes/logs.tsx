@@ -264,8 +264,7 @@ class Logs extends React.PureComponent<Props, State> {
     if (this.state.logs.length === 0) {
       return this.nothingToShow()
     } else {
-      const __html = this.state.logs
-      return <pre className="smaller-text pre-wrap break-all monospace" dangerouslySetInnerHTML={{ __html }} />
+      return <pre className="smaller-text pre-wrap break-all monospace">{this.state.logs}</pre>
     }
   }
 
