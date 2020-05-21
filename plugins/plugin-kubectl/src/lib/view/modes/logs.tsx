@@ -201,11 +201,15 @@ class Logs extends React.PureComponent<Props, State> {
       const actions = containers
         .map(_ => ({
           label: _.name,
+          isSelected: this.state.container === _.name,
+          hasDivider: false,
           handler: () => this.showContainer(_.name)
         }))
         .concat([
           {
             label: strings('All Containers'),
+            isSelected: !this.state.container,
+            hasDivider: true,
             handler: () => this.showContainer()
           }
         ])
