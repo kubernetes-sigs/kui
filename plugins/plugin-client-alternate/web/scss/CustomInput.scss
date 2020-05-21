@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
-
-import CustomInput from './CustomInput'
-import '../web/scss/components/TopTabStripe/Carbon.scss'
-
-/**
- * Use DefaultClient configured to run in bottomInput mode.
- *
- */
-export default function BottomInputClient(props: KuiProps) {
-  // prompt is unicode for "heavy right-pointing angle quotation mark ornament"
-  return <Kui {...props} bottomInput={<CustomInput />} noPromptContext prompt="&#x276f;" />
+.kui--tab-completions {
+  bottom: 3.25em;
 }

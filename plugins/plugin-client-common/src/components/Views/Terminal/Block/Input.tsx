@@ -72,19 +72,24 @@ export interface InputOptions {
   willLoseFocus?: () => void
 }
 
-type Props = InputOptions & {
+type InputProps = {
+  /** number of commands issued; a strictly increasing natural number */
+  idx?: number
+
   /** needed temporarily to make pty/client happy */
-  _block: HTMLElement
+  _block?: HTMLElement
 
   /** tab UUID */
-  uuid: string
+  uuid?: string
 
   /** for key handlers, which may go away soon */
-  tab: KuiTab
+  tab?: KuiTab
 
   /** state of the Block, e.g. Processing? Active/accepting input? */
-  model: BlockModel
+  model?: BlockModel
 }
+
+type Props = InputOptions & InputProps
 
 interface State {
   /** the execution ID for this prompt, if any */
@@ -104,7 +109,79 @@ interface State {
   spinnerDom?: HTMLSpanElement
 }
 
-export default class Input extends React.PureComponent<Props, State> {
+export abstract class InputProvider extends React.PureComponent<Props, State> {
+  /** this is what the InputProvider needs to provide, minimially */
+  protected abstract input()
+
+  /** rendered to the left of the input element */
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected status() {}
+
+  /** the "xxx" part of "xxx >" of the prompt */
+  protected promptLeft() {
+    return (
+      !this.props.noPromptContext && (
+        <KuiContext.Consumer>
+          {config => !config.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>}
+        </KuiContext.Consumer>
+      )
+    )
+  }
+
+  /** the ">" part of "xxx >" of the prompt */
+  protected promptRight() {
+    // &#x2771; "heavy right-pointing angle bracket ornament"
+    // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
+    return (
+      <KuiContext.Consumer>
+        {config => <span className="repl-prompt-righty">{config.prompt || '/'}</span>}
+      </KuiContext.Consumer>
+    )
+  }
+
+  protected isearchPrompt() {
+    return <div className="repl-prompt">{this.state.isearch.render()}</div>
+  }
+
+  protected normalPrompt() {
+    return (
+      <div className="repl-prompt">
+        {this.promptLeft()}
+        {this.promptRight()}
+      </div>
+    )
+  }
+
+  /** the "xxx >" prompt part of the input section */
+  protected prompt() {
+    if (this.state && this.state.isearch && this.state.prompt) {
+      try {
+        return this.isearchPrompt()
+      } catch (err) {
+        console.error('error rendering i-search', err)
+        return this.normalPrompt()
+      }
+    } else {
+      return this.normalPrompt()
+    }
+  }
+
+  public render() {
+    return (
+      <div className={'repl-input' + (this.state && this.state.isearch ? ' kui--isearch-active' : '')}>
+        <div className="kui--input-and-context">
+          {this.prompt()}
+          {this.props.children}
+          {this.input()}
+          {this.status()}
+        </div>
+        {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
+      </div>
+    )
+  }
+}
+
+export default class Input extends InputProvider {
   public constructor(props: Props) {
     super(props)
 
@@ -168,57 +245,8 @@ export default class Input extends React.PureComponent<Props, State> {
     return state
   }
 
-  /** the "xxx" part of "xxx >" of the prompt */
-  private promptLeft() {
-    return (
-      !this.props.noPromptContext && (
-        <KuiContext.Consumer>
-          {config => !config.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>}
-        </KuiContext.Consumer>
-      )
-    )
-  }
-
-  /** the ">" part of "xxx >" of the prompt */
-  private promptRight() {
-    // &#x2771; "heavy right-pointing angle bracket ornament"
-    // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
-    return (
-      <KuiContext.Consumer>
-        {config => <span className="repl-prompt-righty">{config.prompt || '/'}</span>}
-      </KuiContext.Consumer>
-    )
-  }
-
-  private isearchPrompt() {
-    return <div className="repl-prompt">{this.state.isearch.render()}</div>
-  }
-
-  private normalPrompt() {
-    return (
-      <div className="repl-prompt">
-        {this.promptLeft()}
-        {this.promptRight()}
-      </div>
-    )
-  }
-
-  /** the "xxx >" prompt part of the input section */
-  private prompt() {
-    if (this.state.isearch && this.state.prompt) {
-      try {
-        return this.isearchPrompt()
-      } catch (err) {
-        console.error('error rendering i-search', err)
-        return this.normalPrompt()
-      }
-    } else {
-      return this.normalPrompt()
-    }
-  }
-
   /** the element that represents the command being/having been/going to be executed */
-  private input() {
+  protected input() {
     const active = this.state.prompt !== undefined && isActive(this.props.model)
 
     if (active) {
@@ -358,27 +386,13 @@ export default class Input extends React.PureComponent<Props, State> {
    * in the Input area.
    *
    */
-  private status() {
+  protected status() {
     return (
       <span className="repl-prompt-right-elements">
         {this.spinner()}
         {this.timestamp()}
         {this.dropdown()}
       </span>
-    )
-  }
-
-  public render() {
-    return (
-      <div className={'repl-input' + (this.state.isearch ? ' kui--isearch-active' : '')}>
-        <div className="kui--input-and-context">
-          {this.prompt()}
-          {this.props.children}
-          {this.input()}
-          {this.status()}
-        </div>
-        {this.state.tabCompletion && this.state.tabCompletion.render()}
-      </div>
     )
   }
 }

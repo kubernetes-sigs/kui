@@ -64,7 +64,9 @@ export default class InputStripe extends React.PureComponent<Props, State> {
           noOutput
           noPromptContext
           promptPlaceholder={this.props.promptPlaceholder}
-        />
+        >
+          {this.props.children}
+        </Block>
       </div>
     )
   }

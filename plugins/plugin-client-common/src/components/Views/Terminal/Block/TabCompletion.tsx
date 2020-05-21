@@ -28,7 +28,7 @@ import {
   Split
 } from '@kui-shell/core'
 
-import Input from './Input'
+import { InputProvider as Input } from './Input'
 import '../../../../../web/css/static/TabCompletion.scss'
 
 const debug = Debug('Terminal/Input/TabCompletion')
