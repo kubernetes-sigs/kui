@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Input from './Input'
+import { InputProvider as Input } from './Input'
 
 export default async function onKeyPress(this: Input, event: KeyboardEvent) {
   const char = event.key

@@ -18,7 +18,7 @@ import Debug from 'debug'
 
 import { inBrowser, inElectron, KeyCodes, eventChannelUnsafe, doCancel } from '@kui-shell/core'
 
-import Input from './Input'
+import { InputProvider as Input } from './Input'
 import startTabCompletion from './TabCompletion'
 
 const debug = Debug('Terminal/Block/OnKeyDown')
