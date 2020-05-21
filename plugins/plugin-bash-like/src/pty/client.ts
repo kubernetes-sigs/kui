@@ -582,7 +582,7 @@ async function initOnMessage(
       gotExit = true
 
       if (execOptions.onExit) {
-        execOptions.onExit(job, msg.exitCode)
+        execOptions.onExit(msg.exitCode)
       }
 
       if (terminal) {

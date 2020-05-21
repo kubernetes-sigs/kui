@@ -22,6 +22,7 @@ import {
   allocateNS,
   deleteNS,
   waitForGreen,
+  waitForRed,
   defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -31,7 +32,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-logs-two-containers.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
-const sleepTime = 5
+const sleepTime = 3
 
 /** sleep for N seconds */
 function sleep(N: number) {
@@ -46,6 +47,7 @@ describe(`kubectl container logs ${process.env.MOCHA_RUN_TARGET || ''}`, functio
   allocateNS(this, ns)
 
   const podName = 'kui-two-containers'
+  const allContainers = 'All Containers'
   const containerName1 = 'nginx'
   const containerName2 = 'vim'
 
@@ -102,7 +104,12 @@ describe(`kubectl container logs ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     }
   })
 
-  const switchContainer = (container: string, showInLog: string, notShowInLog: string) => {
+  const switchContainer = (
+    container: string,
+    _showInLog: string[],
+    _notShowInLog: string[],
+    toolbar: { text: string; type: string }
+  ) => {
     it(`should switch to container ${container}`, async () => {
       try {
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
@@ -110,35 +117,126 @@ describe(`kubectl container logs ${process.env.MOCHA_RUN_TARGET || ''}`, functio
         await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
         await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
 
-        await SidecarExpect.toolbarText({ type: 'info', text: container, exact: false })(this.app)
+        await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
       } catch (err) {
         return Common.oops(this, true)(err)
       }
     })
 
-    it(`should show ${showInLog} in log output`, async () => {
-      try {
-        await sleep(sleepTime)
-        const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
-        assert.ok(text.indexOf(showInLog) !== -1, `${text} should have ${showInLog}`)
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
+    _showInLog.forEach(showInLog => {
+      it(`should show ${showInLog} in log output`, async () => {
+        try {
+          await sleep(sleepTime)
+          const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+          assert.ok(text.indexOf(showInLog) !== -1, `${text} should have ${showInLog}`)
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
+      })
     })
 
-    it(`should not show ${notShowInLog} in log output`, async () => {
+    _notShowInLog.forEach(notShowInLog => {
+      it(`should not show ${notShowInLog} in log output`, async () => {
+        try {
+          await sleep(sleepTime)
+          const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+          assert.ok(text.indexOf(notShowInLog) === -1, `${text} should not have ${notShowInLog}`)
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
+      })
+    })
+  }
+
+  const toggleStreaming = (changeToLive: boolean) => {
+    it('should toggle streaming', async () => {
       try {
         await sleep(sleepTime)
-        const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
-        assert.ok(text.indexOf(notShowInLog) === -1, `${text} should not have ${notShowInLog}`)
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
+        if (changeToLive) {
+          await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
+        } else {
+          await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming is paused', exact: false })(this.app)
+        }
       } catch (err) {
         return Common.oops(this, true)(err)
       }
     })
   }
 
-  switchContainer(containerName1, containerName1, containerName2)
-  switchContainer(containerName2, containerName2, containerName1)
+  /** testing various combination here */
+  switchContainer(containerName1, [containerName1], [containerName2], { text: containerName1, type: 'info' })
+
+  switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
+
+  switchContainer(allContainers, [containerName1, containerName2], [], {
+    text: allContainers.toLowerCase(),
+    type: 'info'
+  })
+
+  switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
+
+  switchContainer(allContainers, [containerName1, containerName2], [], {
+    text: allContainers.toLowerCase(),
+    type: 'info'
+  })
+
+  switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
+
+  toggleStreaming(false) // hit pause button
+
+  toggleStreaming(true) // hit resume button
+
+  toggleStreaming(false) // hit pause button
+
+  // switch to container, streaming should be live
+  switchContainer(containerName1, [containerName1], [containerName2], {
+    text: `Logs are live streaming. Showing container ${containerName1}`,
+    type: 'info'
+  })
+
+  switchContainer(allContainers, [containerName1, containerName2], [], {
+    text: allContainers.toLowerCase(),
+    type: 'info'
+  })
+
+  it(`should delete the pod ${podName} by name via kubectl`, () => {
+    return CLI.command(`kubectl delete pod ${podName} -n ${ns}`, this.app)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+      .then(selector => waitForRed(this.app, selector))
+      .catch(Common.oops(this))
+  })
+
+  it('should see log streaming stopped', async () => {
+    try {
+      await sleep(sleepTime)
+
+      await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(this.app)
+
+      const text1 = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+      await sleep(sleepTime)
+      const text2 = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+
+      assert.ok(text1.length === text2.length, `logs streaming should be stopped`)
+    } catch (err) {
+      return Common.oops(this, true)(err)
+    }
+  })
+
+  const showError = 'Log streaming stopped abnormally. Showing'
+  switchContainer(containerName1, ['not found'], [], {
+    text: `${showError} container ${containerName1}`,
+    type: 'error'
+  })
+  switchContainer(containerName2, ['not found'], [], {
+    text: `${showError} container ${containerName2}`,
+    type: 'error'
+  })
+  switchContainer(allContainers, ['not found'], [], {
+    text: `${showError} ${allContainers.toLowerCase()}`,
+    type: 'error'
+  })
 
   deleteNS(this, ns)
 })

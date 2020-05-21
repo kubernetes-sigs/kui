@@ -95,7 +95,7 @@ export interface ExecOptions {
   onReady?: (job: Abortable & FlowControllable) => void | Promise<void>
 
   /** on job exit, pass the exitCode */
-  onExit?: (job: Abortable & FlowControllable, exitCode: number) => void
+  onExit?: (exitCode: number) => void
 
   parameters?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
