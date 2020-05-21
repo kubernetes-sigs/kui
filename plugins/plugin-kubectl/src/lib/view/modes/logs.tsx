@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react'
+import { v4 as uuid } from 'uuid'
 import {
   i18n,
   REPL,
@@ -38,6 +39,8 @@ const strings = i18n('plugin-kubectl', 'logs')
  *
  */
 const HYSTERESIS = 1500
+
+type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error'
 
 interface Props {
   repl: REPL
@@ -64,21 +67,27 @@ interface State {
 
   /** The underlying PTY streaming job. */
   job: Abortable & FlowControllable
+
+  streamUUID: string
 }
 
 class Logs extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
+    const streamUUID = uuid()
+    const container = this.defaultContainer()
+
     this.state = {
       logs: '',
       isLive: false,
-      container: this.defaultContainer(),
+      container,
       waitingForHysteresis: false,
-      job: undefined
+      job: undefined,
+      streamUUID
     }
 
-    this.initStream(true, this.defaultContainer())
+    this.initStream(streamUUID, true, container)
   }
 
   /** When we are going away, make sure to abort the streaming job. */
@@ -89,28 +98,39 @@ class Logs extends React.PureComponent<Props, State> {
   }
 
   /** Text to display in the Toolbar. */
-  private toolbarText(isLive: boolean) {
+  private toolbarText(status: StreamingStatus) {
     // i18n message key for toolbar text
-    const msg1 = isLive ? 'Logs are live streaming.' : 'Log streaming is paused.'
+    const msgAndType = {
+      Live: {
+        message: 'Logs are live streaming.',
+        type: 'info' as const
+      },
+      Paused: {
+        message: 'Log streaming is paused.',
+        type: 'warning' as const
+      },
+      Stopped: {
+        message: 'Log streaming stopped.',
+        type: 'warning' as const
+      },
+      Error: {
+        message: 'Log streaming stopped abnormally.',
+        type: 'error' as const
+      }
+    }
+
+    const msg1 = msgAndType[status].message
     const msg2 = `${msg1} ${this.state.container ? 'Showing container X.' : 'Showing all containers.'}`
 
     return {
-      type: isLive ? ('info' as const) : ('warning' as const),
+      type: msgAndType[status].type,
       text: this.state.container ? strings(msg2, this.state.container) : strings(msg2)
     }
   }
 
   /** Buttons to display in the Toolbar. */
-  private toolbarButtons(isLive: boolean) {
-    return [
-      {
-        mode: 'toggle-streaming',
-        label: isLive ? strings('Pause Streaming') : strings('Resume Streaming'),
-        kind: 'view',
-        icon: <Icons icon={isLive ? 'Pause' : 'Play'} />,
-        command: this.toggleStreaming.bind(this, !isLive)
-      } as Button
-    ].concat(
+  private toolbarButtons(status: StreamingStatus) {
+    const containerList =
       this.props.pod.spec.containers.length <= 1
         ? []
         : [
@@ -122,14 +142,28 @@ class Logs extends React.PureComponent<Props, State> {
               icon: this.containerOptions()
             } as Button
           ]
-    )
+
+    if (status === 'Stopped' || status === 'Error') {
+      return containerList
+    } else {
+      const isLive = status === 'Live'
+      return [
+        {
+          mode: 'toggle-streaming',
+          label: isLive ? strings('Pause Streaming') : strings('Resume Streaming'),
+          kind: 'view',
+          icon: <Icons icon={isLive ? 'Pause' : 'Play'} />,
+          command: this.toggleStreaming.bind(this, !isLive)
+        } as Button
+      ].concat(containerList)
+    }
   }
 
   /** Update Toolbar text and Toolbar buttons. */
-  private updateToolbar(isLive = this.state.isLive) {
+  private updateToolbar(status: StreamingStatus) {
     this.props.toolbarController.willUpdateToolbar(
-      this.toolbarText(isLive),
-      this.toolbarButtons(isLive),
+      this.toolbarText(status),
+      this.toolbarButtons(status),
       true // replace default buttons
     )
   }
@@ -147,10 +181,12 @@ class Logs extends React.PureComponent<Props, State> {
         if (curState.job) {
           setTimeout(() => curState.job.abort(), 5000)
         }
+        const streamUUID = uuid()
 
-        this.initStream(true, container)
+        this.initStream(streamUUID, true, container)
 
         return {
+          streamUUID,
           container,
           logs: ''
         }
@@ -193,7 +229,7 @@ class Logs extends React.PureComponent<Props, State> {
   private toggleStreaming(desiredState: boolean) {
     if (this.state.isLive !== desiredState) {
       this.doFlowControl(desiredState)
-      this.updateToolbar(desiredState)
+      this.updateToolbar(desiredState ? 'Live' : 'Paused')
       this.setState(curState => {
         if (curState.isLive !== desiredState) {
           return { isLive: desiredState }
@@ -203,13 +239,13 @@ class Logs extends React.PureComponent<Props, State> {
   }
 
   /** Set up the PTY stream. */
-  private initStream(isLive: boolean, containerName: string) {
+  private initStream(streamUUID: string, isLive: boolean, containerName: string) {
     setTimeout(async () => {
       const { pod, repl } = this.props
       const container = containerName ? `-c ${containerName}` : '--all-containers'
       const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} ${isLive ? '-f' : ''}`
 
-      this.updateToolbar(isLive)
+      this.updateToolbar(isLive ? 'Live' : 'Paused')
 
       repl.qexec(cmd, undefined, undefined, {
         /** prior to PTY initialization, we provide a streaming consumer */
@@ -218,7 +254,7 @@ class Logs extends React.PureComponent<Props, State> {
           return (_: Streamable) => {
             if (typeof _ === 'string') {
               this.setState(curState => {
-                if (curState.container === containerName) {
+                if (curState.streamUUID === streamUUID) {
                   // concat the new logs data with the prior one
                   const allLogs = curState.logs.concat(_)
                   const charLimit = 1000000
@@ -249,6 +285,14 @@ class Logs extends React.PureComponent<Props, State> {
         onReady: (job: Abortable & FlowControllable) => {
           setTimeout(() => this.setState({ waitingForHysteresis: false }), HYSTERESIS)
           this.setState({ isLive, job, waitingForHysteresis: true })
+        },
+
+        onExit: (exitCode: number) => {
+          this.setState(curState => {
+            if (curState.streamUUID === streamUUID) {
+              this.updateToolbar(exitCode === 0 ? 'Stopped' : 'Error')
+            }
+          })
         }
       })
     })
