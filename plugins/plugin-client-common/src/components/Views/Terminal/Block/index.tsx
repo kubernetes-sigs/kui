@@ -90,9 +90,21 @@ export default class Block extends React.PureComponent<Props, State> {
     })
   }
 
+  private customInput() {
+    if (this.props.children && React.isValidElement(this.props.children)) {
+      return React.cloneElement(this.props.children, {
+        idx: this.props.idx,
+        tab: this.props.tab,
+        uuid: this.props.uuid,
+        block: this.state._block
+      })
+    }
+  }
+
   private input() {
     return (
-      this.state._block && (
+      this.customInput() ||
+      (this.state._block && (
         <Input
           key={this.props.idx}
           uuid={this.props.uuid}
@@ -105,7 +117,7 @@ export default class Block extends React.PureComponent<Props, State> {
         >
           {this.props.children}
         </Input>
-      )
+      ))
     )
   }
 

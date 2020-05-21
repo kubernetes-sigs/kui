@@ -49,7 +49,7 @@ export type Props = Partial<KuiConfiguration> & {
   noBootstrap?: boolean
 
   /** operate in bottom Input mode? rather than as a conventional Input/Output terminal */
-  bottomInput?: boolean
+  bottomInput?: true | React.ReactNode
 
   /** operate in popup mode? */
   isPopup?: boolean
@@ -166,10 +166,12 @@ export class Kui extends React.PureComponent<Props, State> {
         </React.Suspense>
       )
     } else {
+      const bottom = !!this.props.bottomInput && <InputStripe>{this.props.bottomInput}</InputStripe>
+
       return (
         <KuiContext.Provider value={this.state}>
           <div className="kui--full-height">
-            <TabContainer noActiveInput={this.props.bottomInput} bottom={this.props.bottomInput && <InputStripe />}>
+            <TabContainer noActiveInput={!!this.props.bottomInput} bottom={bottom}>
               <ComboSidecar />
             </TabContainer>
             <StatusStripe>{this.props.children}</StatusStripe>
