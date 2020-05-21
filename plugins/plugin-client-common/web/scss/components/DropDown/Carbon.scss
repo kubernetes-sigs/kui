@@ -33,6 +33,9 @@ $option-hover-color: var(--color-base02);
       background-color: $bg-open-color;
     }
   }
+  .bx--overflow-menu--divider {
+    border-top-color: var(--color-base00);
+  }
   .bx--overflow-menu__icon {
     fill: currentColor;
   }
@@ -42,6 +45,10 @@ $option-hover-color: var(--color-base02);
 
     &.bx--overflow-menu-options--open {
       background-color: $bg-open-color;
+    }
+
+    svg[data-mode='selected container'] {
+      padding-right: 2px;
     }
 
     &:after {

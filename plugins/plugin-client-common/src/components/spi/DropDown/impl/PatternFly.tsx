@@ -15,9 +15,10 @@
  */
 
 import * as React from 'react'
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownSeparator, KebabToggle } from '@patternfly/react-core'
 
 import Props, { Action } from '../model'
+import Icons from '../../Icons'
 
 import '../../../../../web/scss/components/DropDown/PatternFly.scss'
 
@@ -27,16 +28,27 @@ interface State {
 
 export default class PatternFlyDropDown extends React.PureComponent<Props, State> {
   private renderDropDownItems(actions: Action[]) {
-    return actions.map(item => (
-      <DropdownItem
-        key="action"
-        component="button"
-        onClick={() => setTimeout(() => item.handler())}
-        data-mode={item.label}
-      >
-        {item.label}
-      </DropdownItem>
-    ))
+    const renderItems = []
+
+    actions.forEach(item => {
+      if (item.hasDivider) {
+        renderItems.push(<DropdownSeparator key="separator" />)
+      }
+
+      renderItems.push(
+        <DropdownItem
+          key="action"
+          component="button"
+          onClick={() => setTimeout(() => item.handler())}
+          data-mode={item.label}
+        >
+          {item.isSelected && <Icons icon="Checkmark" data-mode="selected container" />}
+          {item.label}
+        </DropdownItem>
+      )
+    })
+
+    return renderItems
   }
 
   public render() {

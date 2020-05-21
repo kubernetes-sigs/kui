@@ -17,6 +17,8 @@
 export interface Action {
   label: string
   handler: () => void
+  isSelected?: boolean
+  hasDivider?: boolean
 }
 
 interface Props {

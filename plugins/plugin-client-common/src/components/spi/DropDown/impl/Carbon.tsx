@@ -18,6 +18,7 @@ import * as React from 'react'
 import { OverflowMenu, OverflowMenuItem } from 'carbon-components-react'
 
 import Props from '../model'
+import Icons from '../../Icons'
 
 import '../../../../../web/scss/components/DropDown/Carbon.scss'
 
@@ -30,14 +31,24 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
         className={this.props.className}
         onClose={this.props.onClose && this.props.onClose.bind(this)}
       >
-        {this.props.actions.map((_, idx) => (
-          <OverflowMenuItem
-            key={idx}
-            itemText={_.label}
-            onClick={() => setTimeout(() => _.handler())}
-            data-mode={_.label}
-          />
-        ))}
+        {this.props.actions.map((_, idx) => {
+          const selectedItem = label => (
+            <React.Fragment>
+              <Icons icon="Checkmark" data-mode="selected container" />
+              <div className="bx--overflow-menu-options__option-content">{label}</div>
+            </React.Fragment>
+          )
+
+          return (
+            <OverflowMenuItem
+              hasDivider={_.hasDivider}
+              key={idx}
+              itemText={_.isSelected ? selectedItem(_.label) : _.label}
+              onClick={() => setTimeout(() => _.handler())}
+              data-mode={_.label}
+            />
+          )
+        })}
       </OverflowMenu>
     )
   }
