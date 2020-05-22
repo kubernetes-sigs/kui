@@ -40,10 +40,7 @@ const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) 
 
 /** verify that the monaco editor component contains the given substring */
 const verifyTextExists = async function(this: Common.ISuite, expectedSubstring: string) {
-  await this.app.client.waitUntil(async () => {
-    const actualText = await this.app.client.getText(`${Selectors.SIDECAR} .monaco-editor .view-lines`)
-    return actualText.indexOf(expectedSubstring) >= 0
-  })
+  await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(this.app)
 }
 
 /** wait for the creation to finish, then navigate a bit */

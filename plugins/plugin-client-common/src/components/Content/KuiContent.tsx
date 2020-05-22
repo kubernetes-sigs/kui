@@ -44,6 +44,7 @@ import RadioTableSpi from '../spi/RadioTable'
 export type KuiMMRProps = ToolbarProps & {
   tab: KuiTab
   mode: Content
+  isActive: boolean
   response: MultiModalResponse
   args: {
     argvNoOptions: string[]
@@ -51,8 +52,28 @@ export type KuiMMRProps = ToolbarProps & {
   }
 }
 
-export default class KuiMMRContent extends React.PureComponent<KuiMMRProps> {
+interface State {
+  isRendered: boolean
+}
+
+export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
+  public shouldComponentUpdate(nextProps: KuiMMRProps) {
+    return nextProps.isActive && (!this.state || !this.state.isRendered)
+  }
+
+  public componentDidUpdate() {
+    if (this.props.isActive) {
+      this.setState({
+        isRendered: true
+      })
+    }
+  }
+
   public render() {
+    if (!this.props.isActive) {
+      return <React.Fragment />
+    }
+
     const { tab, mode, response, willUpdateToolbar } = this.props
 
     if (isStringWithOptionalContentType(mode)) {

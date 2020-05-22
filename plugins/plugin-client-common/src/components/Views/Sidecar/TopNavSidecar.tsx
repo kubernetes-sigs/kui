@@ -51,6 +51,7 @@ const debug = Debug('plugin-sidecar/components/TopNavSidecar')
  *
  */
 interface HistoryEntry extends BaseHistoryEntry {
+  execUUID: string
   currentTabIndex: number
 
   buttons: Button[]
@@ -61,6 +62,7 @@ interface HistoryEntry extends BaseHistoryEntry {
 export function getStateFromMMR(
   tab: KuiTab,
   response: MultiModalResponse,
+  execUUID: string,
   argvNoOptions: string[],
   parsedOptions: ParsedOptions
 ): HistoryEntry {
@@ -96,6 +98,7 @@ export function getStateFromMMR(
   const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
 
   return {
+    execUUID,
     cwd: cwd(),
     argvNoOptions,
     parsedOptions,
@@ -146,10 +149,11 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   protected getState(
     tab: KuiTab,
     response: MultiModalResponse,
+    execUUID,
     argvNoOptions: string[],
     parsedOptions: ParsedOptions
   ): HistoryEntry {
-    return getStateFromMMR(tab, response, argvNoOptions, parsedOptions)
+    return getStateFromMMR(tab, response, execUUID, argvNoOptions, parsedOptions)
   }
 
   protected headerBodyStyle() {
@@ -197,7 +201,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
                 handleTabClick={() => false}
                 onMouseDown={event => event.preventDefault()}
               >
-                {idx === this.current.currentTabIndex && this.tabContent(idx)}
+                {this.tabContent(idx)}
               </Tab>
             ))}
           </Tabs>
@@ -209,8 +213,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   protected bodyContent(idx: number) {
     return (
       <KuiContent
-        key={this.state.history.key}
         tab={this.state.tab}
+        isActive={idx === this.current.currentTabIndex}
         mode={this.current.tabs[idx]}
         args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
         response={this.current.response}
@@ -225,6 +229,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       <div className="sidecar-content-container">
         <div className="custom-content">
           <ToolbarContainer
+            key={this.current.execUUID}
             tab={this.state.tab}
             response={this.current.response}
             args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
