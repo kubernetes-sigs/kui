@@ -245,19 +245,24 @@ export default class TabContent extends React.PureComponent<Props, State> {
       return (
         <React.Fragment>
           {this.sessionInitDoneMessage()}
-          <ScrollableTerminal
-            {...this.props}
-            tab={this.state.tab}
-            sidecarIsVisible={this.state.sidecarWidth !== Width.Closed}
-            closeSidecar={() => this.setState({ sidecarWidth: Width.Closed })}
-            onClear={() => {
-              this.setState({ showSessionInitDone: false })
-            }}
-            ref={c => {
-              // so that we can refocus/blur
-              this._terminal = c
-            }}
-          />
+          <KuiContext.Consumer>
+            {config => (
+              <ScrollableTerminal
+                {...this.props}
+                tab={this.state.tab}
+                config={config}
+                sidecarIsVisible={this.state.sidecarWidth !== Width.Closed}
+                closeSidecar={() => this.setState({ sidecarWidth: Width.Closed })}
+                onClear={() => {
+                  this.setState({ showSessionInitDone: false })
+                }}
+                ref={c => {
+                  // so that we can refocus/blur
+                  this._terminal = c
+                }}
+              />
+            )}
+          </KuiContext.Consumer>
         </React.Fragment>
       )
     }
@@ -451,12 +456,19 @@ export default class TabContent extends React.PureComponent<Props, State> {
         className={this.state.primaryHeight === Height.NotSplit ? 'kui--watch-pane-closed' : undefined}
       >
         {this.leftRightSplit()}
-        <WatchPane
-          uuid={this.props.uuid}
-          tab={this.state.tab}
-          openWatchPane={this.openWatchPane.bind(this)}
-          closeWatchPane={this.closeWatchPane.bind(this)}
-        />
+
+        <KuiContext.Consumer>
+          {config =>
+            config.enableWatchPane && (
+              <WatchPane
+                uuid={this.props.uuid}
+                tab={this.state.tab}
+                openWatchPane={this.openWatchPane.bind(this)}
+                closeWatchPane={this.closeWatchPane.bind(this)}
+              />
+            )
+          }
+        </KuiContext.Consumer>
       </SplitPane>
     )
   }

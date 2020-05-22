@@ -17,14 +17,13 @@
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-import * as assert from 'assert'
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/event-generator.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
-const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
+const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
 const podName = 'eventgen'
 const sleepTime = 1
@@ -40,9 +39,7 @@ function sleep(N: number) {
 }
 
 commands.forEach(command => {
-  wdescribe(`${command} get events via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function(
-    this: Common.ISuite
-  ) {
+  wdescribe(`${command} get events via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -70,47 +67,37 @@ commands.forEach(command => {
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('events'))
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('events'))
 
-        console.error('wait for event watcher')
-        await this.app.client.waitForVisible(Selectors.WATCHER_N(1))
-        await this.app.client.waitForExist(Selectors.TERMINAL_SIDECAR_WATCHER_BUTTON)
-        await this.app.client.waitForExist(Selectors.WATCHER_N_TITLE(1)) // or watcher1, assert
-        const title = await this.app.client.getText(Selectors.WATCHER_N_TITLE(1))
-        assert.strictEqual(title, 'Event')
+        await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
 
-        console.error('show event watcher in terminal')
-        // click dropdown
-        await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
-        const showAsTableButton = Selectors.WATCHER_N_DROPDOWN_ITEM(1, 'Show as table')
-        await this.app.client.waitForVisible(showAsTableButton)
-        await this.app.client.click(showAsTableButton)
-
-        await Promise.resolve({ app: this.app, count: res.count + 2 }).then(ReplExpect.okWithAny)
-
-        const table = `${Selectors.OUTPUT_N(res.count + 2)} .bx--data-table`
+        const table = `${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table`
 
         // test events table has correct header
-        const header = ['TYPE', 'REASON', 'LAST SEEN', 'FIRST SEEN', 'MESSAGE']
+        const headerWithSidecarOpen = ['REASON', 'MESSAGE']
         await Promise.all(
-          header.map(async _header => {
-            await this.app.client.waitForExist(`${table} thead th[data-key="${_header}"]`)
+          headerWithSidecarOpen.map(async _header => {
+            await this.app.client.waitForVisible(`${table} thead th[data-key="${_header}"]`)
           })
         )
-
-        await this.app.client.click(`${table} tr:first-child .clickable`)
-
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
       } catch (err) {
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
         await Common.oops(this, true)
       }
     })
 
     it('should click on Show Involved Object', async () => {
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
-      await SidecarExpect.open(this.app)
-        .then(SidecarExpect.showing(podName))
-        .then(SidecarExpect.kind('Pod'))
+      try {
+        const res = await CLI.command('k get events -o wide', this.app)
+
+        const table = `${Selectors.OUTPUT_N(res.count)} .bx--data-table`
+        await this.app.client.click(`${table} tr:first-child .clickable`)
+
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.showing(podName))
+          .then(SidecarExpect.kind('Pod'))
+      } catch (err) {
+        await Common.oops(this, true)
+      }
     })
 
     deleteNS(this, ns)

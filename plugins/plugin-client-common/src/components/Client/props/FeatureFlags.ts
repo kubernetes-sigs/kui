@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import InputProps from './props/Input'
-import SessionProps from './props/Session'
-import BrandingProps from './props/Branding'
-import FeatureFlags from './props/FeatureFlags'
-import { ThemeProperties } from '@kui-shell/core'
+type FeatureFlags = {
+  /** [Optional] Enable WatchPane? */
+  enableWatchPane?: boolean
+}
 
-type KuiConfiguration = Partial<ThemeProperties> &
-  Partial<InputProps> &
-  Partial<SessionProps> &
-  Partial<BrandingProps> &
-  Partial<FeatureFlags>
-
-export default KuiConfiguration
+export default FeatureFlags

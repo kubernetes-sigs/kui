@@ -26,6 +26,7 @@ import {
 } from '@kui-shell/core'
 
 import Block from './Block'
+import KuiConfiguration from '../../Client/KuiConfiguration'
 import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
 
 type Cleaner = () => void
@@ -43,6 +44,9 @@ type Props = TerminalOptions & {
 
   /** handler for terminal clear */
   onClear?: () => void
+
+  /** KuiConfiguration */
+  config: KuiConfiguration
 
   sidecarIsVisible?: boolean
   closeSidecar: () => void
@@ -143,6 +147,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       // response `showInTerminal` is either non-watchable response, or watch response that's forced to show in terminal
       const showInTerminal =
+        !this.props.config.enableWatchPane ||
         !isWatchable(response) ||
         (isWatchable(response) &&
           (evaluatorOptions.alwaysViewIn === 'Terminal' || execOptions.alwaysViewIn === 'Terminal'))

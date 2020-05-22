@@ -16,7 +16,7 @@
 
 import * as assert from 'assert'
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -24,9 +24,9 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-exec.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
 
-const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
+const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -66,13 +66,11 @@ wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || '
     })
   }
 
-  const waitForPod = (podName: string, watcherIndex: number) => {
+  const waitForPod = (podName: string) => {
     it(`should wait for the pod ${podName} to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(async () => {
-          await this.app.client.waitForExist(Selectors.WATCHER_N(watcherIndex))
-          await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(watcherIndex, podName))
-        })
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+        .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
   }
@@ -102,33 +100,16 @@ wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || '
           .catch(Common.oops(this, true))
       })
     }
-
-    if (hasLogs) {
-      /* it('should show logs from sidecar', () => {
-        return CLI.command(`kubectl get pod ${podName} -n ${ns} -o yaml`, this.app)
-          .then(ReplExpect.justOK)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.showing(podName, undefined, undefined, ns))
-          .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs')))
-          .then(() =>
-            this.app.client.waitUntil(async () => {
-              const txt = await this.app.client.getText(Selectors.OUTPUT_LAST_STREAMING)
-              return txt.length > 0
-            })
-          )
-          .catch(Common.oops(this, true))
-      }) */
-    }
   }
 
   allocateNS(this, ns)
-  inputs.forEach((_, idx) => {
+  inputs.forEach(_ => {
     if (_.expectString) {
       createPodExpectingString(_.podName, _.cmdline)
     } else {
       createPodExpectingTable(_.podName, _.cmdline)
     }
-    waitForPod(_.podName, idx + 1)
+    waitForPod(_.podName)
     showLogs(_.podName, _.containerName, _.label, _.hasLogs)
   })
   inputs.forEach(_ => {

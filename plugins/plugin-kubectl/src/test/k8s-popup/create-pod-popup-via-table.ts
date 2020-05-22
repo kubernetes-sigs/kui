@@ -20,9 +20,7 @@
 import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-import * as assert from 'assert'
-
-const wdescribe = process.env.USE_WATCH_PANE ? Common.localDescribe : xdescribe
+const wdescribe = !process.env.USE_WATCH_PANE ? Common.localDescribe : xdescribe
 
 const ns1: string = createNS()
 const ns2: string = createNS()
@@ -42,7 +40,10 @@ const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) 
 
 /** verify that the monaco editor component contains the given substring */
 const verifyTextExists = async function(this: Common.ISuite, expectedSubstring: string) {
-  await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(this.app)
+  await this.app.client.waitUntil(async () => {
+    const actualText = await this.app.client.getText(`${Selectors.SIDECAR} .monaco-editor .view-lines`)
+    return actualText.indexOf(expectedSubstring) >= 0
+  })
 }
 
 /** wait for the creation to finish, then navigate a bit */
@@ -136,14 +137,7 @@ wdescribe(`popup watch pods in ${ns1}`, function(this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'get', 'pods', '-w', '-n', ns1] }))
   after(Common.after(this))
 
-  it(`should watch resource named ${pod} in namespace ${ns1}`, async () => {
-    try {
-      await this.app.client.waitForExist(Selectors.WATCHER_N(1))
-      await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, pod))
-    } catch (err) {
-      Common.oops(this, true)(err)
-    }
-  })
+  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
 })
 
 wdescribe(`popup create pod creating namespace ${ns2}`, function(this: Common.ISuite) {
