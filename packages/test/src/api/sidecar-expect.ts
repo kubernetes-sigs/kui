@@ -199,14 +199,19 @@ export const textPlainContent = (content: string) => async (app: Application) =>
   return app
 }
 
-export const textPlainContentFromMonaco = (expectedText: string) => async (app: Application) => {
+export const textPlainContentFromMonaco = (expectedText: string, exact = true) => async (app: Application) => {
   let idx = 0
   await app.client.waitUntil(async () => {
     const actualText = await getValueFromMonaco(app)
     if (++idx > 5) {
       console.error(`still waiting for plain text from monaco actualText=${actualText} expectedText=${expectedText}`)
     }
-    return actualText === expectedText
+
+    if (exact) {
+      return actualText === expectedText
+    } else {
+      return actualText.indexOf(expectedText) >= 0
+    }
   }, waitTimeout)
 
   return app

@@ -98,12 +98,19 @@ export abstract class BaseSidecar<
   protected abstract getState(
     tab: KuiTab,
     response: R,
+    execUUID: string,
     argvNoOptions: string[],
     parsedOptions: ParsedOptions
   ): HistoryEntry
 
   /** Enter a given `response` into the History model */
-  protected onResponse(tab: KuiTab, response: R, _, argvNoOptions: string[], parsedOptions: ParsedOptions) {
+  protected onResponse(
+    tab: KuiTab,
+    response: R,
+    execUUID: string,
+    argvNoOptions: string[],
+    parsedOptions: ParsedOptions
+  ) {
     this.setState(curState => {
       const existingIdx = curState.history
         ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions, cwd()))
@@ -111,7 +118,7 @@ export abstract class BaseSidecar<
       const current =
         this.idempotent() && existingIdx !== -1
           ? curState.history.peekAt(existingIdx)
-          : this.getState(tab, response, argvNoOptions, parsedOptions)
+          : this.getState(tab, response, execUUID, argvNoOptions, parsedOptions)
 
       if (current) {
         this.props.willChangeSize(this.defaultWidth())

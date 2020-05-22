@@ -81,13 +81,14 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   protected getState(
     tab: Tab,
     response: NavResponse,
+    execUUID: string,
     argvNoOptions: string[],
     parsedOptions: ParsedOptions
   ): HistoryEntry {
     const navigations = []
     // get state from each of the left navigation
     response.menus.forEach(menu => {
-      const state = getStateFromMMR(tab, { modes: menu.items }, argvNoOptions, parsedOptions)
+      const state = getStateFromMMR(tab, { modes: menu.items }, execUUID, argvNoOptions, parsedOptions)
       navigations.push(Object.assign({ title: menu.label }, state))
     })
 
@@ -132,6 +133,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
           key={`${menuIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
           tab={this.state.tab}
           mode={this.current.allNavs[menuIdx].tabs[tabIdx]}
+          isActive={true}
           args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
           response={{ modes: this.current.response.menus[menuIdx].items }}
         />
