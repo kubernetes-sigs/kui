@@ -3,3 +3,13 @@ body {
   --color-sidecar-background-01: var(--color-base01);
   --color-sidecar-background-02: var(--color-base03);
 }
+
+/* see https://github.com/IBM/kui/issues/4667 */
+.kui--sidecar ::-webkit-scrollbar {
+  background-color: transparent;
+  border: 1px solid var(--color-base03);
+  width: 1.125em;
+}
+.kui--sidecar ::-webkit-scrollbar-thumb {
+  background-color: var(--color-base02);
+}
