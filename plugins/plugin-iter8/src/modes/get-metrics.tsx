@@ -19,7 +19,6 @@ import 'carbon-components/scss/components/data-table/_data-table-skeleton.scss'
 
 import '../../src/web/scss/static/metrics.scss'
 
-import ReactErrorDisplay from './error-react'
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
 import { GetMetricConfig, ITER8_METRIC_NAMES } from '../components/metric-config'
@@ -45,11 +44,13 @@ let ratioMetrics: RatioMetrics
 let counterMetricNames: string[]
 let ratioMetricNames: string[]
 
-const newCounterMetricConfig: Partial<CounterMetric> = {}
-const newRatioMetricConfig: Partial<RatioMetric> = {}
-
 let COUNTER_METRIC_REQUIRED_ATTRIBUTES
 let RATIO_METRIC_REQUIRED_ATTRIBUTES
+
+export enum FormTypes {
+  add = 'add',
+  edit = 'edit'
+}
 
 export enum MetricTypes {
   'counter',
@@ -82,7 +83,7 @@ type InputAttributeData = {
   required: boolean
 
   // Assorted data to set up a validation check
-  invalidCheck?: InvalidCheck
+  invalidChecks?: { [key in FormTypes]?: InvalidCheck }
 }
 
 type DropdownAttributeData = {
@@ -115,8 +116,8 @@ type InvalidCheck = {
   // The text to be displayed if the validation check is not successful
   invalidText: string
 
-  // Given the event, return whether the input is valid or not
-  check: (e: any) => boolean
+  // Given the value, return whether the input is valid or not
+  check: (value: any) => boolean
 }
 
 type DropdownOptions = {
@@ -143,10 +144,12 @@ const COUNTER_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
     description: 'Unique identifier for counter metric',
     type: AttributeTypes.input,
     required: true,
-    invalidCheck: {
-      invalidText: 'Another counter metric already has this name',
-      check: e => {
-        return counterMetricNames.includes(e.target.value)
+    invalidChecks: {
+      add: {
+        invalidText: 'Another counter metric already has this name',
+        check: value => {
+          return counterMetricNames.includes(value)
+        }
       }
     }
   },
@@ -189,10 +192,12 @@ const RATIO_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
     description: 'Unique identifier for ratio metric',
     type: AttributeTypes.input,
     required: true,
-    invalidCheck: {
-      invalidText: 'Another ratio metric already has this name',
-      check: e => {
-        return ratioMetricNames.includes(e.target.value)
+    invalidChecks: {
+      add: {
+        invalidText: 'Another ratio metric already has this name',
+        check: value => {
+          return ratioMetricNames.includes(value)
+        }
       }
     }
   },
@@ -459,7 +464,6 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   }
 
   public restore(metric: string, type: MetricTypes) {
-
     const { counterMetricsState, ratioMetricsState } = this.state
 
     if (type === MetricTypes.counter) {
@@ -553,10 +557,10 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   private addMetric = e => {
     console.log('click submitted')
 
-    const { selectedType } = this.state
+    const { selectedType, editedMetric } = this.state
 
     if (selectedType === MetricTypes.counter) {
-      console.log('new counter metric config:', newCounterMetricConfig)
+      console.log('new counter metric config:', editedMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -564,12 +568,12 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
        * This is separate from the invalid check in the form
        */
       const uniqueName = !counterMetrics.some(metric => {
-        return metric.name === newCounterMetricConfig.name
+        return metric.name === editedMetric.name
       })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = COUNTER_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return newCounterMetricConfig[id]
+        return editedMetric[id]
       })
 
       // Final checks
@@ -581,7 +585,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
          * This should be of the correct data type and safe to push at this point
          * with the final checks.
          */
-        counterMetrics.push(newCounterMetricConfig as CounterMetric)
+        counterMetrics.push(editedMetric as CounterMetric)
 
         // Convert new metric config to stringified YAML
         const stringifiedMetrics = safeDump(counterMetrics)
@@ -605,7 +609,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
       }
     } else {
-      console.log('new ratio metric config:', newRatioMetricConfig)
+      console.log('new ratio metric config:', editedMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -613,12 +617,12 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
        * This is separate from the invalid check in the form
        */
       const uniqueName = !ratioMetrics.some(metric => {
-        return metric.name === newRatioMetricConfig.name
+        return metric.name === editedMetric.name
       })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = RATIO_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return newRatioMetricConfig[id]
+        return editedMetric[id]
       })
 
       // Final checks
@@ -630,7 +634,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
          * This should be of the correct data type and safe to push at this point
          * with the final checks.
          */
-        ratioMetrics.push(newRatioMetricConfig as RatioMetric)
+        ratioMetrics.push(editedMetric as RatioMetric)
 
         // Convert new metric config to stringified YAML
         const stringifiedMetrics = safeDump(ratioMetrics)
@@ -892,12 +896,18 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   private renderAttributeForm(
     attribute: AttributeData,
     values: any,
-    updateMetricConfig: (e, attribute: AttributeData) => void
+    updateMetricConfig: (e, attribute: AttributeData) => void,
+    formType: FormTypes
   ) {
     if (attribute.type === AttributeTypes.input) {
-      // Text input
+      const invalid = attribute.invalidChecks && attribute.invalidChecks[formType] &&  attribute.invalidChecks[formType].check 
+        ? attribute.invalidChecks[formType].check(values[attribute.name])
+        : false
+
       const invalidText =
-        attribute.invalidCheck && attribute.invalidCheck.invalidText ? attribute.invalidCheck.invalidText : ''
+        attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].invalidText 
+          ? attribute.invalidChecks[formType].invalidText 
+          : ''
   
       return (
         <FormGroup legendText="">
@@ -906,6 +916,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
             labelText={attribute.printableName}
             helperText={attribute.description}
             value={values[attribute.name]}
+            invalid={invalid}
             invalidText={invalidText}
             onChange={e => {
               return updateMetricConfig(e, attribute)
@@ -960,7 +971,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     }
   }
 
-  private renderMetricForm(selectedType: MetricTypes, submitCallback: (e) => void, counterSubmitButtonDescription: string, ratioSubmitButtonDescription: string) {
+  private renderMetricForm(selectedType: MetricTypes, submitCallback: (e) => void, formType: FormTypes) {
     return (
       <Form style={{ display: 'block' }} onSubmit={submitCallback}>
         {(() => {
@@ -969,7 +980,8 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
               this.renderAttributeForm(
                 attribute,
                 this.state.editedMetric,
-                this.updateAttribute
+                this.updateAttribute,
+                formType
               )
             )
           } else {
@@ -977,14 +989,27 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
               this.renderAttributeForm(
                 attribute,
                 this.state.editedMetric,
-                this.updateAttribute
+                this.updateAttribute,
+                formType
               )
             )
           }
         })()}
         <Button kind="primary" tabIndex={0} type="submit">
           {(() => {
-            return selectedType === MetricTypes.counter ? counterSubmitButtonDescription : ratioSubmitButtonDescription
+            if (formType === FormTypes.add) {
+              if (selectedType === MetricTypes.counter) {
+                return 'Create counter metric'
+              } else {
+                return 'Create ratio metric'
+              }
+            } else {
+              if (selectedType === MetricTypes.counter) {
+                return 'Edit counter metric'
+              } else {
+                return 'Edit ratio metric'
+              }
+            }
           })()}
         </Button>
       </Form>
@@ -1013,35 +1038,9 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       case MetricDetailsModeDisplay.addMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            {/* <Form style={{ display: 'block' }} onSubmit={this.addMetric}>
-              {(() => {
-                if (selectedType === MetricTypes.counter) {
-                  return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttributeForm(
-                      attribute,
-                      this.state.editedMetric,
-                      this.updateAttribute
-                    )
-                  )
-                } else {
-                  return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttributeForm(
-                      attribute,
-                      this.state.editedMetric,
-                      this.updateAttribute
-                    )
-                  )
-                }
-              })()}
-              <Button kind="primary" tabIndex={0} type="submit">
-                {(() => {
-                  return selectedType === MetricTypes.counter ? 'Create counter metric' : 'Create ratio metric'
-                })()}
-              </Button>
-            </Form> */}
             {
               (() => {
-                return this.renderMetricForm(selectedType, this.addMetric, 'Create counter metric', 'Create ratio metric')
+                return this.renderMetricForm(selectedType, this.addMetric, FormTypes.add)
               })()
             }
           </div>
@@ -1050,35 +1049,9 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       case MetricDetailsModeDisplay.editMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            {/* <Form style={{ display: 'block' }} onSubmit={this.editMetric}>
-              {(() => {
-                if (selectedType === MetricTypes.counter) {
-                  return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttributeForm(
-                      attribute,
-                      this.state.editedMetric,
-                      this.updateAttribute
-                    )
-                  )
-                } else {
-                  return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttributeForm(
-                      attribute,
-                      this.state.editedMetric,
-                      this.updateAttribute
-                    )
-                  )
-                }
-              })()}
-              <Button kind="primary" tabIndex={0} type="submit">
-                {(() => {
-                  return selectedType === MetricTypes.counter ? 'Edit counter metric' : 'Edit ratio metric'
-                })()}
-              </Button>
-            </Form> */}
             {
               (() => {
-                return this.renderMetricForm(selectedType, this.editMetric, 'Edit counter metric', 'Edit ratio metric')
+                return this.renderMetricForm(selectedType, this.editMetric, FormTypes.edit)
               })()
             }
           </div>
