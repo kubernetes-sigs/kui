@@ -71,20 +71,6 @@ commands.forEach(command => {
       })
     }
 
-    const cancel = (name: string) => {
-      it('should cancel edit session', async () => {
-        try {
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('cancel'))
-          await SidecarExpect.open(this.app)
-            .then(SidecarExpect.showing(name, undefined, undefined, ns))
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .catch(Common.oops(this, true))
-        } catch (err) {
-          await Common.oops(this, true)(err)
-        }
-      })
-    }
-
     const modifyWithError = (title: string, where: string, expectedError: string) => {
       it(`should modify the content, introducing a ${title}`, async () => {
         try {
@@ -140,7 +126,24 @@ commands.forEach(command => {
         }
       })
 
-      cancel(name)
+      it('should get the modified pod', async () => {
+        try {
+          const selector = await CLI.command(`${command} get pod ${name} ${inNamespace}`, this.app).then(
+            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })
+          )
+
+          // wait for the badge to become green
+          await waitForGreen(this.app, selector)
+
+          // now click on the table row
+          await this.app.client.click(`${selector} .clickable`)
+          await SidecarExpect.open(this.app)
+            .then(SidecarExpect.mode(defaultModeForGet))
+            .then(SidecarExpect.showing(name))
+        } catch (err) {
+          return Common.oops(this, true)
+        }
+      })
 
       it('should switch to yaml tab', async () => {
         try {
@@ -168,9 +171,6 @@ commands.forEach(command => {
     const name2 = 'nginx2'
     create(name2, 'pod2.yaml')
     edit('', 'List', '2 items')
-
-    edit(nginx)
-    cancel(nginx)
 
     edit(nginx)
     modify(nginx)

@@ -106,13 +106,6 @@ export function doEdit(cmd: string) {
           label: strings2('Edit'),
           contentType: 'yaml',
           content: resource.kuiRawData
-        },
-        {
-          mode: 'cancel',
-          label: strings2('Cancel'),
-          order: 100,
-          kind: 'drilldown' as const,
-          command: getCommand
         }
       ]
     }
