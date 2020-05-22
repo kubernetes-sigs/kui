@@ -302,9 +302,21 @@ class Logs extends React.PureComponent<Props, State> {
     })
   }
 
+  private ST: number
+  private SH: number
   /** Scroll to bottom if needed. */
   private doScroll(ref = this.state.ref) {
     ref.scrollTop = ref.scrollHeight
+    this.ST = ref.scrollTop
+    this.SH = ref.scrollHeight
+  }
+
+  /** user (or we) have scrolled */
+  private onScroll() {
+    if (this.state.ref.scrollTop !== this.ST) {
+      // user...
+      this.toggleStreaming(false)
+    }
   }
 
   /** Render the log content in the case we have logs to show. */
@@ -339,6 +351,7 @@ class Logs extends React.PureComponent<Props, State> {
     return (
       <div
         className="padding-content scrollable scrollable-auto scrollable-x kui--sidecar-text-content"
+        onScroll={this.onScroll.bind(this)}
         ref={ref => {
           if (ref) {
             if (this.state.ref !== ref) {
