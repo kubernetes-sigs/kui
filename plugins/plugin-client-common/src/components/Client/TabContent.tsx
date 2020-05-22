@@ -133,6 +133,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
     const onOffline = this.onOffline.bind(this)
     eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
     this.cleaners.push(() => eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
+
+    // see https://github.com/IBM/kui/issues/4683
+    const firstCommandIsExecuted = `/command/start/fromuser/${this.props.uuid}`
+    eventChannelUnsafe.once(firstCommandIsExecuted, () => {
+      this.setState({ showSessionInitDone: false })
+    })
   }
 
   private async onOffline() {
