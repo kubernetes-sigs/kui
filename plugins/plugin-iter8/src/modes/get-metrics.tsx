@@ -528,7 +528,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
   // Display the edit metric form
   public displayEditMetric(metricName: string, type: MetricTypes) {
-    const selectedMetric2 = type === MetricTypes.counter
+    const selectedMetric = type === MetricTypes.counter
         ? counterMetrics.find(counterMetric => {
             return counterMetric.name === metricName
           })
@@ -536,7 +536,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
             return ratioMetric.name === metricName
           })
 
-    const selectedMetricCopy = JSON.parse(JSON.stringify(selectedMetric2))
+    const selectedMetricCopy = JSON.parse(JSON.stringify(selectedMetric))
     const defaultConfig = type === MetricTypes.counter ? DEFAULT_COUNTER_METRIC_CONFIG : DEFAULT_RATIO_METRIC_CONFIG
 
     // Add default config attributes in case
@@ -889,7 +889,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     )
   }
 
-  private renderAttribute(
+  private renderAttributeForm(
     attribute: AttributeData,
     values: any,
     updateMetricConfig: (e, attribute: AttributeData) => void
@@ -960,6 +960,37 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     }
   }
 
+  private renderMetricForm(selectedType: MetricTypes, submitCallback: (e) => void, counterSubmitButtonDescription: string, ratioSubmitButtonDescription: string) {
+    return (
+      <Form style={{ display: 'block' }} onSubmit={submitCallback}>
+        {(() => {
+          if (selectedType === MetricTypes.counter) {
+            return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
+              this.renderAttributeForm(
+                attribute,
+                this.state.editedMetric,
+                this.updateAttribute
+              )
+            )
+          } else {
+            return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
+              this.renderAttributeForm(
+                attribute,
+                this.state.editedMetric,
+                this.updateAttribute
+              )
+            )
+          }
+        })()}
+        <Button kind="primary" tabIndex={0} type="submit">
+          {(() => {
+            return selectedType === MetricTypes.counter ? counterSubmitButtonDescription : ratioSubmitButtonDescription
+          })()}
+        </Button>
+      </Form>
+    )
+  }
+
   public render() {
     const { display, selectedType } = this.state
 
@@ -982,11 +1013,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       case MetricDetailsModeDisplay.addMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            <Form style={{ display: 'block' }} onSubmit={this.addMetric}>
+            {/* <Form style={{ display: 'block' }} onSubmit={this.addMetric}>
               {(() => {
                 if (selectedType === MetricTypes.counter) {
                   return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttribute(
+                    this.renderAttributeForm(
                       attribute,
                       this.state.editedMetric,
                       this.updateAttribute
@@ -994,7 +1025,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
                   )
                 } else {
                   return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttribute(
+                    this.renderAttributeForm(
                       attribute,
                       this.state.editedMetric,
                       this.updateAttribute
@@ -1007,18 +1038,23 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
                   return selectedType === MetricTypes.counter ? 'Create counter metric' : 'Create ratio metric'
                 })()}
               </Button>
-            </Form>
+            </Form> */}
+            {
+              (() => {
+                return this.renderMetricForm(selectedType, this.addMetric, 'Create counter metric', 'Create ratio metric')
+              })()
+            }
           </div>
         )
 
       case MetricDetailsModeDisplay.editMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            <Form style={{ display: 'block' }} onSubmit={this.editMetric}>
+            {/* <Form style={{ display: 'block' }} onSubmit={this.editMetric}>
               {(() => {
                 if (selectedType === MetricTypes.counter) {
                   return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttribute(
+                    this.renderAttributeForm(
                       attribute,
                       this.state.editedMetric,
                       this.updateAttribute
@@ -1026,7 +1062,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
                   )
                 } else {
                   return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                    this.renderAttribute(
+                    this.renderAttributeForm(
                       attribute,
                       this.state.editedMetric,
                       this.updateAttribute
@@ -1039,7 +1075,12 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
                   return selectedType === MetricTypes.counter ? 'Edit counter metric' : 'Edit ratio metric'
                 })()}
               </Button>
-            </Form>
+            </Form> */}
+            {
+              (() => {
+                return this.renderMetricForm(selectedType, this.editMetric, 'Edit counter metric', 'Edit ratio metric')
+              })()
+            }
           </div>
         )
 
