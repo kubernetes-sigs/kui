@@ -1,6 +1,6 @@
 .kui--status-stripe {
   display: flex;
-  flex-basis: 1.875em;
+  flex-basis: 2em;
   background-color: var(--color-sidecar-header);
 
   --color-fg: var(--color-text-01);
@@ -45,11 +45,11 @@
   }
   .kui--status-stripe-context {
     flex: 1;
-    font-size: 0.6875em;
-    padding-left: calc(1em * 0.875 / 0.6875);
+    font-size: 0.75em;
+    padding-left: calc(1em * 0.875 / 0.75);
   }
   .kui--status-stripe-meter {
-    font-size: 0.6875em;
+    font-size: 0.75em;
     padding-left: 1em;
   }
 
@@ -60,7 +60,6 @@
   .kui--status-stripe-element {
     display: flex;
     align-items: center;
-    font-weight: bold;
     margin-right: calc(1em * 0.875);
   }
 
