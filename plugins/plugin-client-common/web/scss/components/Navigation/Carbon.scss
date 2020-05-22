@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+@import './common';
 @import 'carbon-components/scss/components/ui-shell/_side-nav.scss';
 
 [kui-theme-style] {
@@ -95,8 +96,8 @@
 
     &:not(.bx--side-nav--fixed):hover,
     &.bx--side-nav--expanded {
-      width: auto;
-      flex: 2.5;
+      width: 30%;
+      max-width: unset;
     }
 
     &.bx--side-nav--expanded ~ .bx--content {
