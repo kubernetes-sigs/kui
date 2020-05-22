@@ -1,24 +1,18 @@
 import { safeLoad, safeDump } from 'js-yaml'
 import { applyKube } from './traffic-split'
-import { CounterMetric, RatioMetric } from './metric-config-types'
+import { CounterMetric, RatioMetric, CounterMetrics, RatioMetrics } from './metric-config-types'
 import { MetricTypes } from '../modes/get-metrics'
 
 const execSync = require('child_process').execSync
 
-export default function restoreMetric(metric, details: CounterMetric | RatioMetric, type: MetricTypes) {
-  let configmap = {}
+export default function restoreMetric(metric: CounterMetric | RatioMetric, type: MetricTypes): { success?: string } {
   try {
-    configmap = execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
+    const configMap = safeLoad(execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
       encoding: 'utf-8',
       stdio: 'pipe'
-    })
-  } catch (err) {
-    configmap = { error: err }
-  }
-  if (!{}.hasOwnProperty.call(configmap, 'error')) {
-    const rM = safeLoad(safeLoad(configmap)['data']['ratio_metrics.yaml'])
-    const cM = safeLoad(safeLoad(configmap)['data']['counter_metrics.yaml'])
-    const newconfigmap = {
+    }))
+
+    const newConfigMap = {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
@@ -28,22 +22,25 @@ export default function restoreMetric(metric, details: CounterMetric | RatioMetr
           version: '1.0.0'
         }
       },
-      data: {
-        'counter_metrics.yaml': '',
-        'ratio_metrics.yaml': ''
-      }
+      data: {}
     }
-    let restored = ''
+
+    const counterMetrics = safeLoad(configMap['data']['counter_metrics.yaml']) as CounterMetrics
+    const ratioMetrics = safeLoad(configMap['data']['ratio_metrics.yaml']) as RatioMetrics
+
     if (type === MetricTypes.counter) {
-      restored = metric
-      cM.push(details)
+      counterMetrics.push(metric as CounterMetric)
     } else {
-      restored = metric
-      rM.push(details)
+      ratioMetrics.push(metric as RatioMetric)
     }
-    newconfigmap.data['counter_metrics.yaml'] = safeDump(cM)
-    newconfigmap.data['ratio_metrics.yaml'] = safeDump(rM)
-    applyKube(newconfigmap)
-    return { success: restored }
+
+    newConfigMap.data['counter_metrics.yaml'] = safeDump(counterMetrics)
+    newConfigMap.data['ratio_metrics.yaml'] = safeDump(ratioMetrics)
+
+    applyKube(newConfigMap)
+
+    return { success: metric.name }
+  } catch (err) {
+    return {}
   }
 }
