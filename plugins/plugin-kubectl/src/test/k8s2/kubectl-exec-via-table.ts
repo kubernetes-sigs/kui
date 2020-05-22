@@ -15,13 +15,11 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
+const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl exec basic stuff via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function(
-  this: Common.ISuite
-) {
+wdescribe(`kubectl exec basic stuff via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -40,10 +38,8 @@ wdescribe(`kubectl exec basic stuff via watch pane ${process.env.MOCHA_RUN_TARGE
 
   it('should wait for the pod to come up', () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(async () => {
-        await this.app.client.waitForExist(Selectors.WATCHER_N(1))
-        await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, podName))
-      })
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+      .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })
 

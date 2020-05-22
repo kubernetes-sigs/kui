@@ -34,11 +34,7 @@ function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string
     resource.metadata.namespace
   } -n ${resource.metadata.namespace}`
 
-  // mimic the events table shown in the 'kubectl describe' output
-  const customColumns = 'wide'
-  // 'custom-columns=TYPE:type,REASON:reason,LAST SEEN:lastTimestamp,COUNT:count,FIRST SEEN:firstTimestamp,FROM:source.component,MESSAGE:message'
-
-  return `${cmdGetPodEvents} -o "${customColumns}" -w`
+  return cmdGetPodEvents
 }
 
 /**

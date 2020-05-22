@@ -17,11 +17,9 @@
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
+const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function(
-  this: Common.ISuite
-) {
+wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -79,10 +77,10 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
 
       console.error('watch from non-existent namespace 0')
       // start to watch pods in a non-existent namespace
-      await CLI.command(`k get pods -w -n ${ns}`, this.app).then(ReplExpect.justOK)
-
-      console.error('waiting for watcher 1 to exist')
-      await this.app.client.waitForExist(Selectors.WATCHER_N(1), CLI.waitTimeout)
+      const watchResult = await CLI.command(`k get pods -w -n ${ns}`, this.app).then(async result => {
+        await ReplExpect.ok(result)
+        return result
+      })
 
       console.error('watch from non-existent namespace 1')
       // create the namespace
@@ -100,12 +98,10 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
         .then(status => waitForGreen(this.app, status))
 
       console.error('watch from non-existent namespace 3')
-
       // the watch table should have the new pods with online status
-      await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL(1, 'nginx'))
-
-      console.error('watch from non-existent namespace 3.5')
-      await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, 'nginx'))
+      const watchStatus = `${Selectors.OUTPUT_N(watchResult.count)} ${Selectors.BY_NAME('nginx')}`
+      await this.app.client.waitForExist(watchStatus, CLI.waitTimeout)
+      await waitForGreen(this.app, watchStatus)
 
       console.error('watch from non-existent namespace 4')
       // delete the pod
@@ -115,7 +111,7 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
 
       console.error('watch from non-existent namespace 5')
       // the watch table should have the new pods with offline status
-      await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_OFFLINE(1, 'nginx'), CLI.waitTimeout)
+      await waitForRed(this.app, watchStatus)
 
       console.error('watch from non-existent namespace 6')
       // delete the namespace
