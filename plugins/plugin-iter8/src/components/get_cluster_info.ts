@@ -51,7 +51,3 @@ export default class GetKubeInfo {
   	return dataArr;	
   }
 }
-// const ob = new GetKubeInfo()
-// const query = ob.getDeployment('bookinfo-iter8', 'reviews');
-
-// console.log(query)
