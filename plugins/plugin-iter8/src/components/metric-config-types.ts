@@ -6,6 +6,11 @@ type MetricConfigMap = {
   metadata: {
     name: string
     namespace: string
+    annotations?: { [name: string]: string }
+    creationTimestamp?: string
+    resourceVersion?: string
+    selfLink?: string
+    uid?: string
   }
   data: {
     'counter_metrics.yaml': string

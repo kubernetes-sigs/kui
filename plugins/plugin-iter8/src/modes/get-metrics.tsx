@@ -21,10 +21,10 @@ import '../../src/web/scss/static/metrics.scss'
 
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
-import { GetMetricConfig, ITER8_METRIC_NAMES } from '../components/metric-config'
+import { getMetricConfig, ITER8_METRIC_NAMES } from '../components/metric-config'
 import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics, MetricConfigMap } from '../components/metric-config-types'
 
-import { safeLoad, safeDump } from 'js-yaml'
+import { safeDump } from 'js-yaml'
 import { execSync } from 'child_process'
 
 const { 
@@ -37,12 +37,12 @@ const {
   TableExpandedRow,
 } = DataTable
 
-let configMap: MetricConfigMap
+// let configMap: MetricConfigMap
 
-let counterMetrics: CounterMetrics
-let ratioMetrics: RatioMetrics
-let counterMetricNames: string[]
-let ratioMetricNames: string[]
+// let counterMetrics: CounterMetrics
+// let ratioMetrics: RatioMetrics
+// let counterMetricNames: string[]
+// let ratioMetricNames: string[]
 
 let COUNTER_METRIC_REQUIRED_ATTRIBUTES
 let RATIO_METRIC_REQUIRED_ATTRIBUTES
@@ -117,7 +117,7 @@ type InvalidCheck = {
   invalidText: string
 
   // Given the value, return whether the input is valid or not
-  check: (value: any) => boolean
+  check: (value: any, state: any) => boolean
 }
 
 type DropdownOptions = {
@@ -147,8 +147,8 @@ const COUNTER_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
     invalidChecks: {
       add: {
         invalidText: 'Another counter metric already has this name',
-        check: value => {
-          return counterMetricNames.includes(value)
+        check: (value: string, state: MetricDetailsState) => {
+          return state.counterMetricNames.includes(value)
         }
       }
     }
@@ -195,8 +195,8 @@ const RATIO_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
     invalidChecks: {
       add: {
         invalidText: 'Another ratio metric already has this name',
-        check: value => {
-          return ratioMetricNames.includes(value)
+        check: (value: string, state: MetricDetailsState) => {
+          return state.ratioMetricNames.includes(value)
         }
       }
     }
@@ -284,6 +284,12 @@ enum MetricDetailsModeDisplay {
 type MetricDetailsProps = {}
 
 type MetricDetailsState = {
+  configMap: MetricConfigMap
+  counterMetrics: CounterMetrics
+  ratioMetrics: RatioMetrics
+  counterMetricNames: string[]
+  ratioMetricNames: string[]
+
   counterMetricsState: MetricsState
   ratioMetricsState: MetricsState
   display: MetricDetailsModeDisplay
@@ -315,58 +321,53 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
   return rs
 }
 
-/**
- * Query for the iter8 metric config map and update COUNTER_METRIC_ATTRIBUTES_DATA
- * and RATIO_METRIC_ATTRIBUTES_DATA
- *
- * TODO: remove and replace using centralized data store
- */
-function updateMetricAttributesData() {
-  const metricConfig = new GetMetricConfig()
-
-  configMap = safeLoad(execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', { encoding: 'utf-8' }))
-  // configMap = SAMPLE_METRICS
+// /**
+//  * Query for the iter8 metric config map and update COUNTER_METRIC_ATTRIBUTES_DATA
+//  * and RATIO_METRIC_ATTRIBUTES_DATA
+//  *
+//  * TODO: remove and replace using centralized data store
+//  */
+// function updateMetricAttributesData() {
+//   // const { configMap, counterMetrics, ratioMetrics} = getMetricConfig()
     
-  // TODO: Add proper error handling
-  counterMetrics = (metricConfig.getCounterMetrics() as CounterMetrics)
-  counterMetricNames = counterMetrics.map(counterMetric => {
-    return counterMetric.name
-  })
+//   // // TODO: Add proper error handling
+//   // counterMetricNames = counterMetrics.map(counterMetric => {
+//   //   return counterMetric.name
+//   // })
 
-  ratioMetrics = (metricConfig.getRatioMetrics() as RatioMetrics)
-  ratioMetricNames = ratioMetrics.map(ratioMetric => {
-    return ratioMetric.name
-  })
+//   // ratioMetricNames = ratioMetrics.map(ratioMetric => {
+//   //   return ratioMetric.name
+//   // })
 
-  // ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml']) as RatioMetrics
-  ratioMetricNames = ratioMetrics.map(ratioMetric => {
-    return ratioMetric.name
-  })
+//   // // ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml']) as RatioMetrics
+//   // ratioMetricNames = ratioMetrics.map(ratioMetric => {
+//   //   return ratioMetric.name
+//   // })
 
-  // Update the numerators and denominator
-  const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
-  const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-    return attribute.name === 'numerator'
-  })
-  const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-    return attribute.name === 'denominator'
-  })
-  ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
-  ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+//   // Update the numerators and denominator
+//   const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+//   const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+//     return attribute.name === 'numerator'
+//   })
+//   const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+//     return attribute.name === 'denominator'
+//   })
+//   ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+//   ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
 
-  // Required attributes to create counter and ratio metrics
-  COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
-    return attribute.required
-  }).map(attribute => {
-    return attribute.name
-  })
+//   // Required attributes to create counter and ratio metrics
+//   COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+//     return attribute.required
+//   }).map(attribute => {
+//     return attribute.name
+//   })
 
-  RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
-    return attribute.required
-  }).map(attribute => {
-    return attribute.name
-  })
-}
+//   RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+//     return attribute.required
+//   }).map(attribute => {
+//     return attribute.name
+//   })
+// }
 
 class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetailsState> {
   public output = ''
@@ -374,9 +375,50 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   public constructor(props: MetricDetailsProps) {
     super(props)
 
+    const { configMap, counterMetrics, ratioMetrics} = getMetricConfig()
+    
+    // TODO: Add proper error handling
+    const counterMetricNames = counterMetrics.map(counterMetric => {
+      return counterMetric.name
+    })
+
+    const ratioMetricNames = ratioMetrics.map(ratioMetric => {
+      return ratioMetric.name
+    })
+
+    // Update the numerators and denominator
+    const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+    const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+      return attribute.name === 'numerator'
+    })
+    const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+      return attribute.name === 'denominator'
+    })
+    ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+    ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+
+    // Required attributes to create counter and ratio metrics
+    COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+      return attribute.required
+    }).map(attribute => {
+      return attribute.name
+    })
+
+    RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+      return attribute.required
+    }).map(attribute => {
+      return attribute.name
+    })
+
     const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
     this.state = { 
+      configMap,
+      counterMetrics,
+      ratioMetrics,
+      counterMetricNames,
+      ratioMetricNames,
+
       ratioMetricsState: ratioMetricsState,
       counterMetricsState: counterMetricsState,
 
@@ -532,6 +574,8 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
   // Display the edit metric form
   public displayEditMetric(metricName: string, type: MetricTypes) {
+    const { counterMetrics, ratioMetrics } = this.state
+
     const selectedMetric = type === MetricTypes.counter
         ? counterMetrics.find(counterMetric => {
             return counterMetric.name === metricName
@@ -557,7 +601,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   private addMetric = e => {
     console.log('click submitted')
 
-    const { selectedType, editedMetric } = this.state
+    const { configMap, counterMetrics, ratioMetrics, selectedType, editedMetric } = this.state
 
     if (selectedType === MetricTypes.counter) {
       console.log('new counter metric config:', editedMetric)
@@ -666,6 +710,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     console.log('click submitted')
 
     const { selectedType } = this.state
+    let { configMap, counterMetrics, ratioMetrics} = this.state
 
     if (selectedType === MetricTypes.counter) {
       console.log('edited counter metric config:', this.state.editedMetric)
@@ -699,7 +744,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         counterMetrics.push(this.state.editedMetric as CounterMetric)
 
         // Propagate name change to ratio metrics
-        ratioMetrics = ratioMetrics.map(metric => {
+        ratioMetrics.forEach(metric => {
           if (metric.numerator === this.state.selectedMetricName) {
             metric.numerator = this.state.editedMetric.name
           }
@@ -707,8 +752,6 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
           if (metric.denominator === this.state.selectedMetricName) {
             metric.denominator = this.state.editedMetric.name
           }
-
-          return metric
         })
 
         // Convert new metric config to stringified YAML
@@ -901,7 +944,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   ) {
     if (attribute.type === AttributeTypes.input) {
       const invalid = attribute.invalidChecks && attribute.invalidChecks[formType] &&  attribute.invalidChecks[formType].check 
-        ? attribute.invalidChecks[formType].check(values[attribute.name])
+        ? attribute.invalidChecks[formType].check(values[attribute.name], this.state)
         : false
 
       const invalidText =
@@ -1080,11 +1123,23 @@ type MetricState = {
 
 // Outputs the metric config map as a YAML string
 export function getMetricsYaml(): string {
+  const { configMap } = getMetricConfig()
+
   return safeDump(configMap)
 }
 
 // Delete the specified metrics
 export function deleteMetrics(metricNames: string[]): string {
+  const { counterMetrics, ratioMetrics } = getMetricConfig()
+
+  const counterMetricNames = counterMetrics.map((counterMetric) => {
+    return counterMetric.name
+  })
+
+  const ratioMetricNames = ratioMetrics.map((ratioMetric) => {
+    return ratioMetric.name
+  })
+
   // Error checking
   for (let i = 0; i < metricNames.length; i++) {
     const metricName = metricNames[i]
@@ -1120,4 +1175,4 @@ export function getMetricDetailsMode() {
   )
 }
 
-updateMetricAttributesData()
+// updateMetricAttributesData()

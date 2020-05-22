@@ -20,6 +20,36 @@ export const ITER8_METRIC_NAMES = {
   ratio: ['iter8_mean_latency', 'iter8_error_rate']
 }
 
+export function getMetricConfig(): {
+  configMap: MetricConfigMap,
+  counterMetrics: CounterMetrics,
+  ratioMetrics: RatioMetrics
+} {
+  try {
+    const configMap =  safeLoad(execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
+      encoding: 'utf-8',
+      stdio: 'pipe'
+    })) as MetricConfigMap
+  
+    return {
+      configMap,
+      counterMetrics: safeLoad(configMap.data['counter_metrics.yaml']),
+      ratioMetrics: safeLoad(configMap.data['ratio_metrics.yaml'])
+    }
+  } catch (e) {
+    throw new Error('Could not obtain config map.')
+  }
+}
+
+// Only keep the name and namespace metadata fields in the config map
+export function removeExtraneousMetaData(configMap: MetricConfigMap): MetricConfigMap {
+  const { name, namespace } = configMap.metadata
+
+  configMap.metadata = { name, namespace }
+
+  return configMap
+}
+
 export class GetMetricConfig {
   private output: MetricConfigData
 
