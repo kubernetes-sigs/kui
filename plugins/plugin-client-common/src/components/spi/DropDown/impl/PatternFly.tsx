@@ -42,7 +42,9 @@ export default class PatternFlyDropDown extends React.PureComponent<Props, State
           onClick={() => setTimeout(() => item.handler())}
           data-mode={item.label}
         >
-          {item.isSelected && <Icons icon="Checkmark" data-mode="selected container" />}
+          <span className="small-right-pad" style={!item.isSelected ? { opacity: 0 } : undefined}>
+            <Icons icon="Checkmark" data-mode="selected container" />
+          </span>
           {item.label}
         </DropdownItem>
       )
