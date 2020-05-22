@@ -1,8 +1,8 @@
 import { safeLoad, safeDump } from 'js-yaml'
 
-const execSync = require('child_process').execSync
+import { execSync } from 'child_process'
 
-function applyKube(rule) {
+export function kubectlApplyRule(rule) {
   const yamlRule = safeDump(rule)
   const command = `cat <<EOF | kubectl apply -f -\n${yamlRule}\nEOF`
   execSync(command, { encoding: 'utf-8' })
@@ -34,7 +34,7 @@ export function applyDestinationRule(userDecision) {
       continue
     }
     destinationRule['spec']['subsets'].push({ labels: getLabelInfo(value['version_labels']), name: key })
-    applyKube(destinationRule)
+    kubectlApplyRule(destinationRule)
   }
   return destinationRule
 }
@@ -63,7 +63,7 @@ export function applyVirtualService(dr, userDecision) {
       weight: userDecision[subsets[i]['name']]['traffic_percentage']
     })
   }
-  applyKube(virtualService)
+  kubectlApplyRule(virtualService)
 }
 
 export function applyTrafficSplit(userDecision) {

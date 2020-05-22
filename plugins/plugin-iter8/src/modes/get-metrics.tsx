@@ -21,11 +21,11 @@ import '../../src/web/scss/static/metrics.scss'
 
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
-import { getMetricConfig, ITER8_METRIC_NAMES } from '../components/metric-config'
+import { getMetricConfig, removeExtraneousMetaData, ITER8_METRIC_NAMES } from '../components/metric-config'
 import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics, MetricConfigMap } from '../components/metric-config-types'
+import { kubectlApplyRule } from '../components/traffic-split'
 
 import { safeDump } from 'js-yaml'
-import { execSync } from 'child_process'
 
 const { 
   Table, 
@@ -36,13 +36,6 @@ const {
   TableExpandRow, 
   TableExpandedRow,
 } = DataTable
-
-// let configMap: MetricConfigMap
-
-// let counterMetrics: CounterMetrics
-// let ratioMetrics: RatioMetrics
-// let counterMetricNames: string[]
-// let ratioMetricNames: string[]
 
 let COUNTER_METRIC_REQUIRED_ATTRIBUTES
 let RATIO_METRIC_REQUIRED_ATTRIBUTES
@@ -248,7 +241,7 @@ const RATIO_METRIC_ATTRIBUTES_DATA: MetricAttributesData = [
  * Given some metric type, get all default values
  */
 function getDefaultConfig(metricAttributesData: MetricAttributesData): Partial<CounterMetric | RatioMetric> {
-  const rs = {}
+  const result = {}
 
   Object.values(metricAttributesData).forEach(attribute => {
     // TODO: extend for other attribute types
@@ -260,7 +253,7 @@ function getDefaultConfig(metricAttributesData: MetricAttributesData): Partial<C
        */
       if (!attribute.noDefaultDropdownOptionPlaceholder) {
         if (attribute.dropdownOptions.length > 0) {
-          rs[attribute.name] = attribute.dropdownOptions[0].value
+          result[attribute.name] = attribute.dropdownOptions[0].value
         } else {
           throw new Error(`No known dropdown options for attribute '${attribute.name}'`)
         }
@@ -268,7 +261,7 @@ function getDefaultConfig(metricAttributesData: MetricAttributesData): Partial<C
     }
   })
 
-  return rs
+  return result
 }
 
 const DEFAULT_COUNTER_METRIC_CONFIG = getDefaultConfig(COUNTER_METRIC_ATTRIBUTES_DATA)
@@ -299,13 +292,6 @@ type MetricDetailsState = {
   editedMetric?: Partial<CounterMetric | RatioMetric>
 }
 
-// Apply the given config to Kubernetes
-function kubectlApplyConfig(config: string): string {
-  const command = `cat <<"EOF" | kubectl apply -f -\n${config}\nEOF`
-
-  return execSync(command, { encoding: 'utf-8' })
-}
-
 /**
  * Create a simple DropdownOptions from a string array
  *
@@ -321,54 +307,6 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
   return rs
 }
 
-// /**
-//  * Query for the iter8 metric config map and update COUNTER_METRIC_ATTRIBUTES_DATA
-//  * and RATIO_METRIC_ATTRIBUTES_DATA
-//  *
-//  * TODO: remove and replace using centralized data store
-//  */
-// function updateMetricAttributesData() {
-//   // const { configMap, counterMetrics, ratioMetrics} = getMetricConfig()
-    
-//   // // TODO: Add proper error handling
-//   // counterMetricNames = counterMetrics.map(counterMetric => {
-//   //   return counterMetric.name
-//   // })
-
-//   // ratioMetricNames = ratioMetrics.map(ratioMetric => {
-//   //   return ratioMetric.name
-//   // })
-
-//   // // ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml']) as RatioMetrics
-//   // ratioMetricNames = ratioMetrics.map(ratioMetric => {
-//   //   return ratioMetric.name
-//   // })
-
-//   // Update the numerators and denominator
-//   const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
-//   const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-//     return attribute.name === 'numerator'
-//   })
-//   const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-//     return attribute.name === 'denominator'
-//   })
-//   ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
-//   ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
-
-//   // Required attributes to create counter and ratio metrics
-//   COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
-//     return attribute.required
-//   }).map(attribute => {
-//     return attribute.name
-//   })
-
-//   RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
-//     return attribute.required
-//   }).map(attribute => {
-//     return attribute.name
-//   })
-// }
-
 class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetailsState> {
   public output = ''
 
@@ -376,6 +314,8 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     super(props)
 
     const { configMap, counterMetrics, ratioMetrics} = getMetricConfig()
+
+    removeExtraneousMetaData(configMap)
     
     // TODO: Add proper error handling
     const counterMetricNames = counterMetrics.map(counterMetric => {
@@ -638,7 +578,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         configMap.data['counter_metrics.yaml'] = stringifiedMetrics
 
         // Apply new config map
-        console.log(kubectlApplyConfig(safeDump(configMap)))
+        console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
         
@@ -687,7 +627,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
 
         // Apply new config map
-        console.log(kubectlApplyConfig(safeDump(configMap)))
+        console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
         
@@ -763,7 +703,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         configMap.data['ratio_metrics.yaml'] = stringifiedRatioMetrics
 
         // Apply new config map
-        console.log(kubectlApplyConfig(safeDump(configMap)))
+        console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
         
@@ -815,7 +755,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
 
         // Apply new config map
-        console.log(kubectlApplyConfig(safeDump(configMap)))
+        console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
         
@@ -1174,5 +1114,3 @@ export function getMetricDetailsMode() {
     <MetricDetailsMode></MetricDetailsMode>
   )
 }
-
-// updateMetricAttributesData()
