@@ -1,16 +1,13 @@
-import { safeLoad, safeDump } from 'js-yaml'
+import { safeDump } from 'js-yaml'
 import { kubectlApplyRule } from './traffic-split'
-import { CounterMetric, RatioMetric, CounterMetrics, RatioMetrics } from './metric-config-types'
+import { CounterMetric, RatioMetric } from './metric-config-types'
 import { MetricTypes } from '../modes/get-metrics'
 import { getMetricConfig, removeExtraneousMetaData } from './metric-config'
 
-export default function restoreMetric(metric: CounterMetric | RatioMetric, type: MetricTypes): { success?: string } {
+export default function restoreMetric(metric: CounterMetric | RatioMetric, type: MetricTypes): boolean {
   try {
-    const { configMap } = getMetricConfig()
+    const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
     const newConfigMap = removeExtraneousMetaData(configMap)
-
-    const counterMetrics = safeLoad(configMap['data']['counter_metrics.yaml']) as CounterMetrics
-    const ratioMetrics = safeLoad(configMap['data']['ratio_metrics.yaml']) as RatioMetrics
 
     if (type === MetricTypes.counter) {
       counterMetrics.push(metric as CounterMetric)
@@ -23,8 +20,8 @@ export default function restoreMetric(metric: CounterMetric | RatioMetric, type:
 
     kubectlApplyRule(newConfigMap)
 
-    return { success: metric.name }
+    return true
   } catch (err) {
-    return {}
+    return false
   }
 }

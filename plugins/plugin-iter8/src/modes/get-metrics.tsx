@@ -419,12 +419,12 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         return
       }
 
-      if (deleteMetric(metricName, type).success === metricName) {
+      if (deleteMetric(metricName, type)) {
         this.state.counterMetricsState[metricName].isDeleted = true
         console.log('Deleted: ' + metricName)
         const alsoDelete = this.state.counterMetricsState[metricName].alsoDelete
         for (let j = 0; j < alsoDelete.length; j++) {
-          if (deleteMetric(alsoDelete[j], MetricTypes.ratio).success === alsoDelete[j]) {
+          if (deleteMetric(alsoDelete[j], MetricTypes.ratio)) {
             this.state.ratioMetricsState[alsoDelete[j]].isDeleted = true
             console.log('Deleted: ' + alsoDelete[j])
           }
@@ -436,7 +436,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         return
       }
 
-      if (deleteMetric(metricName, type).success === metricName) {
+      if (deleteMetric(metricName, type)) {
         this.state.ratioMetricsState[metricName].isDeleted = true
         console.log('Deleted: ' + metricName)
       }
@@ -449,7 +449,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     const { counterMetricsState, ratioMetricsState } = this.state
 
     if (type === MetricTypes.counter) {
-      if (restoreMetric(counterMetricsState[metricName].details, type).success === metricName) {
+      if (restoreMetric(counterMetricsState[metricName].details, type)) {
         counterMetricsState[metricName].isDeleted = false
         console.log('Restored: ' + metricName)
       }
@@ -460,7 +460,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
       alsoRestore.forEach(restoredMetricName => {
         if (counterMetricsState[restoredMetricName].isDeleted) {
-          if (restoreMetric(counterMetricsState[restoredMetricName].details, MetricTypes.counter).success === restoredMetricName) {
+          if (restoreMetric(counterMetricsState[restoredMetricName].details, MetricTypes.counter)) {
             counterMetricsState[restoredMetricName].isDeleted = false
             console.log('Restored: ' + restoredMetricName)
             deleted.push(restoredMetricName)
@@ -471,7 +471,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       })
 
       if (alsoRestore.length === deleted.length) {
-        if (restoreMetric(ratioMetricsState[metricName].details, type).success === metricName) {
+        if (restoreMetric(ratioMetricsState[metricName].details, type)) {
           ratioMetricsState[metricName].isDeleted = false
           console.log('Restored: ' + metricName)
         }
