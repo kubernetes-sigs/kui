@@ -17,7 +17,10 @@
 import * as React from 'react'
 import { ToolbarText, Button } from '@kui-shell/core'
 
-import Toolbar, { Props } from './Toolbar'
+import Toolbar, { Props as ToolbarProps } from './Toolbar'
+export { Props as ToolbarContainerProps }
+
+export type Props = React.PropsWithChildren<ToolbarProps>
 
 interface State {
   toolbarText: ToolbarText
