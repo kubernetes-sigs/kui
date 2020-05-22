@@ -268,7 +268,9 @@ const renderHelpUnsafe = (
             : `
 ### Usage
 \`\`\`
-${usageSection[0].content.slice(0, usageSection[0].content.indexOf('\n')).trim()}
+${usageSection[0].content
+  .slice(0, usageSection[0].content.includes('\n') ? usageSection[0].content.indexOf('\n') : undefined)
+  .trim()}
 \`\`\`
 `
         )
