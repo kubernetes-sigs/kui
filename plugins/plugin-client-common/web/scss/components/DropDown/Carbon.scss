@@ -31,16 +31,27 @@ $option-hover-color: var(--color-base02);
     }
     &.bx--overflow-menu--open {
       background-color: $bg-open-color;
+      svg {
+        fill: $bg-color;
+      }
     }
   }
   .bx--overflow-menu--divider {
-    border-top-color: var(--color-base00);
+    border-top-color: var(--color-table-border3);
   }
   .bx--overflow-menu__icon {
     fill: currentColor;
   }
+  .bx--tooltip__trigger:hover {
+    .bx--overflow-menu--open svg {
+      fill: $bg-color;
+    }
+    svg {
+      fill: $color;
+    }
+  }
   .bx--overflow-menu-options {
-    width: 10em;
+    width: auto;
     background-color: $bg-color;
 
     &.bx--overflow-menu-options--open {
@@ -74,7 +85,11 @@ $option-hover-color: var(--color-base02);
   .bx--overflow-menu-options__btn {
     font-size: 1em;
     line-height: 1.125em;
-    max-width: 11.25em;
+    max-width: unset;
     color: $color;
+
+    svg {
+      fill: currentColor;
+    }
   }
 }

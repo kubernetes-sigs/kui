@@ -32,9 +32,11 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
         onClose={this.props.onClose && this.props.onClose.bind(this)}
       >
         {this.props.actions.map((_, idx) => {
-          const selectedItem = label => (
+          const selectedItem = (label: string, isSelected: boolean) => (
             <React.Fragment>
-              <Icons icon="Checkmark" data-mode="selected container" />
+              <span className="small-right-pad" style={!isSelected ? { opacity: 0 } : undefined}>
+                <Icons icon="Checkmark" data-mode="selected container" />
+              </span>
               <div className="bx--overflow-menu-options__option-content">{label}</div>
             </React.Fragment>
           )
@@ -43,7 +45,7 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
             <OverflowMenuItem
               hasDivider={_.hasDivider}
               key={idx}
-              itemText={_.isSelected ? selectedItem(_.label) : _.label}
+              itemText={selectedItem(_.label, _.isSelected)}
               onClick={() => setTimeout(() => _.handler())}
               data-mode={_.label}
             />
