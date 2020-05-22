@@ -1,5 +1,5 @@
 import { safeLoad } from 'js-yaml'
-const execSync = require('child_process').execSync
+import { execSync } from 'child_process'
 
 export default class GetKubeInfo {
   private rawOutput = ''

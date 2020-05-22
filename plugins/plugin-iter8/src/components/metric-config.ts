@@ -2,7 +2,7 @@ import { safeLoad } from 'js-yaml'
 
 import { MetricConfigMap, CounterMetrics, RatioMetrics } from './metric-config-types'
 
-const execSync = require('child_process').execSync
+import { execSync } from 'child_process'
 
 // TODO: configmaps to camelCase
 type MetricConfigData = { configmaps: string } | { error: any }
@@ -44,9 +44,11 @@ export function getMetricConfig(): {
 export function removeExtraneousMetaData(configMap: MetricConfigMap): MetricConfigMap {
   const { name, namespace } = configMap.metadata
 
-  configMap.metadata = { name, namespace }
+  const newConfigMap = { ...configMap }
 
-  return configMap
+  newConfigMap.metadata = { name, namespace }
+
+  return newConfigMap
 }
 
 export class GetMetricConfig {
