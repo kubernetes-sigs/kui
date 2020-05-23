@@ -139,8 +139,8 @@ export async function doGetAsMMR(
           },
       onclick: {
         kind: `kubectl get ${kindAndNamespaceOf(resource)}`,
-        name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`,
-        namespace: `kubectl get ns ${resource.metadata.namespace || 'default'}`
+        name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`
+        // namespace: `kubectl get ns ${resource.metadata.namespace || 'default'}`
       },
       modes: [], // this tells Kui that we want the response to be interpreted as a MultiModalResponse
       kuiRawData: resource.kuiRawData // also include the raw, uninterpreted data string we got back
