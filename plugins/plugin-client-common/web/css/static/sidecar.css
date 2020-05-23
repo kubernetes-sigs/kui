@@ -18,11 +18,12 @@
 @import "../../scss/components/Navigation/common";
 
 .kui--sidecar.visible.kui--nav-view {
-  flex: 3.5;
-  font-size: 0.875em;
-
   .sidecar-bottom-stripe-left-bits {
     display: none;
+  }
+
+  .kui--sidecar-header-and-body {
+    font-size: 0.875em;
   }
 
   .sidecar-bottom-stripe {
@@ -30,12 +31,12 @@
     &:not(.kui--sidecar--titlebar-has-breadcrumbs) {
       border: none;
       background: transparent;
+    }
 
-      .sidecar-bottom-stripe-right-bits {
-        /* filler in the window stripe to fill with the content column */
-        flex: 6;
-        justify-content: flex-end;
-      }
+    .sidecar-bottom-stripe-right-bits {
+      /* filler in the window stripe to fill with the content column */
+      flex: 1;
+      justify-content: flex-end;
     }
 
     .kui--sidecar--titlebar-navigation {
