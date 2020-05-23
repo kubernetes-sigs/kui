@@ -57,6 +57,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     this.state = {
       repl: undefined,
       tab: undefined,
+      dom: undefined,
+
       history: undefined,
       current: undefined
     }
@@ -152,7 +154,8 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
 
     return (
       <div
-        className={'kui--sidecar kui--inverted-color-context kui--nav-view kui--screenshotable ' + this.width()}
+        className={'kui--sidecar kui--inverted-color-context kui--nav-view ' + this.width()}
+        ref={dom => this.setState({ dom })}
         data-view="leftnav"
       >
         {' '}

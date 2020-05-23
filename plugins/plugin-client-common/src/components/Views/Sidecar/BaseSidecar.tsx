@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { isPopup, inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
+import { isPopup, inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions, eventChannelUnsafe } from '@kui-shell/core'
 
 import Width from './width'
 import sameCommand from '../util/same'
@@ -59,6 +59,9 @@ export interface BaseState<HistoryEntry extends BaseHistoryEntry> {
   /** TODO investigate removing these */
   repl: REPL
   tab: KuiTab
+
+  /** screenshotable region */
+  dom: HTMLElement
 
   current: HistoryEntry
   history: CircularBuffer<HistoryEntry>
@@ -221,8 +224,22 @@ export abstract class BaseSidecar<
     }
   }
 
+  private onScreenshot() {
+    if (this.props.willLoseFocus) {
+      this.props.willLoseFocus()
+    }
+
+    // async, to allow willLoseFocus() to take affect
+    setTimeout(() => {
+      eventChannelUnsafe.emit('/screenshot/element', this.state.dom)
+    })
+  }
+
   protected title(
-    props?: Omit<TitleBarProps, 'width' | 'fixedWidth' | 'onClose' | 'onRestore' | 'onMaximize' | 'onMinimize' | 'repl'>
+    props?: Omit<
+      TitleBarProps,
+      'width' | 'fixedWidth' | 'onClose' | 'onRestore' | 'onMaximize' | 'onMinimize' | 'willScreenshot' | 'repl'
+    >
   ) {
     return (
       <TitleBar
@@ -233,6 +250,7 @@ export abstract class BaseSidecar<
         onMaximize={this.onMaximize.bind(this)}
         onRestore={this.onRestore.bind(this)}
         onClose={this.onClose.bind(this)}
+        willScreenshot={this.onScreenshot.bind(this)}
         back={
           this.useArrowNavigation() &&
           this.props.width !== Width.Closed &&
