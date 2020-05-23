@@ -1,32 +1,29 @@
 // Overload for Loading Component Label
-.bx--inline-loading__text{
-	color: #FFFFFF !important;
-	font-size: 0.9rem !important;
+.bx--inline-loading__text {
+  color: #ffffff !important;
+  font-size: 0.9rem !important;
 }
 // Overload for Slider Component label
 .bx--slider__range-label {
-	color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
 // Overload for FormGroup
 .bx--fieldset {
-	margin-left: 1rem !important;
+  margin-left: 1rem !important;
 }
 
 // Change the Pie Chart legend
 .apexcharts-legend-text {
-	font-size: 14px !important;
-	color: #FFFFFF !important;
+  font-size: 14px !important;
+  color: #ffffff !important;
 }
-// Reposition refresh button
-.refreshBtn {
-	margin-left: 30px !important;
-}
+
 .formProps {
   overflow-y: auto !important;
   height: 735.53px;
 }
 .formGroupProps {
-	font-size: 1rem !important;
-	font-weight: 600 !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
 }
