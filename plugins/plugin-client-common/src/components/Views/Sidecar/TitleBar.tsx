@@ -15,10 +15,11 @@
  */
 
 import * as React from 'react'
-import { REPL } from '@kui-shell/core'
+import { REPL, inBrowser } from '@kui-shell/core'
 
 import Width from './width'
 import Icons from '../../spi/Icons'
+import DropDown from '../../spi/DropDown'
 import Breadcrumb, { BreadcrumbView } from '../../spi/Breadcrumb'
 
 export interface Props {
@@ -35,6 +36,7 @@ export interface Props {
   onMaximize: () => void
   onRestore: () => void
   onClose: () => void
+  willScreenshot: () => void
 
   back?: { enabled: boolean; onClick: () => void }
   forward?: { enabled?: boolean; onClick: () => void }
@@ -68,6 +70,35 @@ export default class Window extends React.PureComponent<Props> {
 
   private toggleClose() {
     this.props.onClose()
+  }
+
+  private screenshotAction() {
+    if (inBrowser()) {
+      return []
+    } else {
+      return [
+        {
+          label: 'Screenshot',
+          handler: () => this.props.willScreenshot()
+        }
+      ]
+    }
+  }
+
+  private overflowButton() {
+    if (this.props.width !== Width.Closed) {
+      const actions = this.screenshotAction()
+
+      if (actions.length > 0) {
+        return (
+          <div className="sidecar-bottom-stripe-button">
+            <a href="#">
+              <DropDown actions={actions} className="kui--sidecar-overflow kui--repl-block-right-element" />
+            </a>
+          </div>
+        )
+      }
+    }
   }
 
   private maximizeButton() {
@@ -176,6 +207,7 @@ export default class Window extends React.PureComponent<Props> {
 
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">
+            {this.overflowButton()}
             {this.maximizeButton()}
             {this.quitButton()}
           </div>
