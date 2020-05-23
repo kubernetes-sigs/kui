@@ -39,6 +39,11 @@ interface DecisionState {
   haveResults: boolean
   experimentRequest?: any
   experimentResult?: any
+  haveAdvancedStatistics: boolean
+  haveCriteriaComparison: boolean
+  showAdvancedStatistics: boolean
+  selectedAdvancedStatistic: string
+  advancedStatisticsRows: Array<any>
 }
 
 export { CriterionState, Formstate, DecisionState, experimentTypes }
