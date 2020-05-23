@@ -221,7 +221,7 @@ interface ServiceAccount extends KubeResource {
 }
 export function isServiceAccount(resource: KubeResource): resource is ServiceAccount {
   const sa = resource as ServiceAccount
-  return sa.secrets !== undefined
+  return isKubeResource(resource) && sa.secrets !== undefined
 }
 
 export interface CRDResource extends KubeResource {
@@ -263,7 +263,7 @@ export interface Pod extends KubeResource {
  *
  */
 export function isPod(resource: KubeResource): resource is Pod {
-  return resource.apiVersion === 'v1' && resource.kind === 'Pod'
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'Pod'
 }
 
 /**
@@ -280,7 +280,7 @@ export interface Namespace extends KubeResource {
  *
  */
 export function isNamespace(resource: KubeResource): resource is Namespace {
-  return resource.apiVersion === 'v1' && resource.kind === 'Namespace'
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'Namespace'
 }
 
 /**
@@ -297,7 +297,7 @@ export interface Job extends KubeResource {
  *
  */
 export function isJob(resource: KubeResource): resource is Job {
-  return resource.apiVersion === 'batch/v1' && resource.kind === 'Job'
+  return isKubeResource(resource) && resource.apiVersion === 'batch/v1' && resource.kind === 'Job'
 }
 
 /**
@@ -310,11 +310,28 @@ export interface Deployment extends KubeResource {
 }
 
 /**
- * @return whether the given resource is an instance of a Deploymemt
+ * @return whether the given resource is an instance of a Deployment
  *
  */
 export function isDeployment(resource: KubeResource): resource is Deployment {
-  return resource.apiVersion === 'extensions/v1beta1' && resource.kind === 'Deployment'
+  return isKubeResource(resource) && resource.apiVersion === 'extensions/v1beta1' && resource.kind === 'Deployment'
+}
+
+/**
+ * Kubernetes ReplicaSet resource type
+ *
+ */
+export interface ReplicaSet extends KubeResource {
+  apiVersion: 'extensions/v1beta1'
+  kind: 'ReplicaSet'
+}
+
+/**
+ * @return whether the given resource is an instance of a ReplicaSet
+ *
+ */
+export function isReplicaSet(resource: KubeResource): resource is ReplicaSet {
+  return isKubeResource(resource) && resource.apiVersion === 'extensions/v1beta1' && resource.kind === 'ReplicaSet'
 }
 
 /**
@@ -365,7 +382,7 @@ export type Event = KubeResourceWithInvolvedObject & {
  *
  */
 export function isEvent(resource: KubeResource): resource is Event {
-  return resource.apiVersion === 'v1' && resource.kind === 'Event'
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'Event'
 }
 
 /**
@@ -379,7 +396,7 @@ export interface KubeItems<Item extends KubeResource = KubeResource> extends Kub
 }
 
 export function isKubeItems(resource: KubeResource): resource is KubeItems {
-  return resource.apiVersion === 'v1' && resource.kind === 'List'
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'List'
 }
 
 /** Scope */
@@ -412,6 +429,7 @@ export type CustomResourceDefinition = KubeResource & {
  */
 export function isCustomResourceDefinition(resource: KubeResource): resource is CustomResourceDefinition {
   return (
+    isKubeResource(resource) &&
     (resource.apiVersion === 'apiextensions.k8s.io/v1' || resource.apiVersion === 'apiextensions.k8s.io/v1beta1') &&
     resource.kind === 'CustomResourceDefinition'
   )
@@ -432,7 +450,7 @@ export type ConfigMap = KubeResource & {
  *
  */
 export function isConfigMap(resource: KubeResource): resource is ConfigMap {
-  return resource.apiVersion === 'v1' && resource.kind === 'ConfigMap'
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'ConfigMap'
 }
 
 /**

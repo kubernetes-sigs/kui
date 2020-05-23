@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { Tab, ModeRegistration, Table } from '@kui-shell/core'
+import { Arguments, Tab, ModeRegistration, Table } from '@kui-shell/core'
 
-import { selectorToString } from '../../util/selectors'
-import { KubeResource } from '../../model/resource'
 import { getCommandFromArgs } from '../../util/util'
+import { selectorToString } from '../../util/selectors'
+import { KubeOptions } from '../../../controller/kubectl/options'
+import { KubeResource, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
 
 /**
  * Render the tabular pods view
  *
  */
-async function renderPods(tab: Tab, resource: KubeResource, args): Promise<Table> {
+async function renderPods(tab: Tab, resource: KubeResource, args: Arguments<KubeOptions>): Promise<Table> {
   const { selector } = resource.spec
 
   const getPods = selector
@@ -41,9 +42,10 @@ async function renderPods(tab: Tab, resource: KubeResource, args): Promise<Table
  */
 function hasPods(resource: KubeResource) {
   return (
-    resource.kind === 'Deployment' ||
-    resource.kind === 'ReplicaSet' ||
-    (resource.status !== undefined && resource.status.podName !== undefined)
+    isKubeResource(resource) &&
+    (isDeployment(resource) ||
+      isReplicaSet(resource) ||
+      (resource.status !== undefined && resource.status.podName !== undefined))
   )
 }
 
