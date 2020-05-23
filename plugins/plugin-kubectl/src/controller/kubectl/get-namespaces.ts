@@ -58,16 +58,18 @@ export async function doSummarizeNamedNamespace(tab: Tab, ns: string): Promise<T
     attributes: [{ key: 'COUNT', value: 'COUNT' }]
   }
 
-  const body = Object.keys(histogram).map(kind => ({
-    name: kind,
-    onclick: `kubectl get ${kind} -n ${ns}`,
-    attributes: [
-      {
-        key: 'COUNT',
-        value: histogram[kind].toLocaleString()
-      }
-    ]
-  }))
+  const body = Object.keys(histogram)
+    .map(kind => ({
+      name: kind,
+      onclick: `kubectl get ${kind} -n ${ns}`,
+      attributes: [
+        {
+          key: 'COUNT',
+          value: histogram[kind].toLocaleString()
+        }
+      ]
+    }))
+    .sort((a, b) => histogram[b.name] - histogram[a.name]) // sort be decreasing count
 
   return {
     header,
