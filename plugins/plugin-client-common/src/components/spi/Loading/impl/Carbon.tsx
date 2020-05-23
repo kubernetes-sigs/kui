@@ -15,19 +15,21 @@
  */
 
 import * as React from 'react'
-import { InlineLoading } from 'carbon-components-react'
+import { InlineLoading, Loading } from 'carbon-components-react'
 
-import '../../../web/css/static/loading.scss'
+import Props from '../model'
 
-interface Props {
-  description?: string
-}
+import '../../../../../web/scss/components/Loading/Carbon.scss'
 
-export default class Loading extends React.PureComponent<Props> {
+export default class CarbonLoading extends React.PureComponent<Props> {
   public render() {
     return (
-      <div className="flex-layout flex-align-top larger-text">
-        <InlineLoading status="active" className="fade-in" description={this.props.description} />
+      <div className="kui--loading flex-layout flex-align-center flex-align-top larger-text big-top-pad">
+        {this.props.description ? (
+          <InlineLoading status="active" className="flex-align-center fade-in" description={this.props.description} />
+        ) : (
+          <Loading active className="fade-in" withOverlay={false} />
+        )}
       </div>
     )
   }

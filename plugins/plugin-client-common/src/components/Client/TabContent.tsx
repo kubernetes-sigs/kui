@@ -21,7 +21,7 @@ import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSessio
 import Icons from '../spi/Icons'
 import KuiContext from './context'
 import Confirm from '../Views/Confirm'
-import Loading from '../Content/Loading'
+import Loading from '../spi/Loading'
 import Width from '../Views/Sidecar/width'
 import WatchPane, { Height } from '../Views/WatchPane'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'

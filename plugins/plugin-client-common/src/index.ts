@@ -41,7 +41,7 @@ export { ViewLevel, default as TextWithIconWidget } from './components/Client/St
 export { default as KuiContext } from './components/Client/context'
 
 // Content components
-export { default as Loading } from './components/Content/Loading'
+export { default as Loading } from './components/spi/Loading'
 export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 
 // sidecar components

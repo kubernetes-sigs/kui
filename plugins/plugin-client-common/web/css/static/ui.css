@@ -316,6 +316,9 @@ code.fancy-code.hljs {
 .as-column {
   display: grid;
 }
+.flex-align-center {
+  justify-content: center;
+}
 .flex-align-top {
   align-items: flex-start;
 }
@@ -463,6 +466,9 @@ pre.monospace {
   }
   .small-top-pad {
     margin-top: 1ex;
+  }
+  .big-top-pad {
+    margin-top: 2em;
   }
   .top-pad {
     margin-top: 1em;

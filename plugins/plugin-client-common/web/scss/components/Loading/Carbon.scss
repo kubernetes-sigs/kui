@@ -1,0 +1,14 @@
+@import 'carbon-components/scss/components/inline-loading/_inline-loading.scss';
+
+.bx--inline-loading__text {
+  color: var(--color-text-01);
+}
+
+.kui--loading {
+  .bx--loading__background {
+    stroke: var(--color-ui-03);
+  }
+  .bx--loading__stroke {
+    stroke: var(--active-tab-color);
+  }
+}
