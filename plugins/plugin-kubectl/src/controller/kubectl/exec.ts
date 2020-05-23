@@ -109,6 +109,13 @@ export async function doExecWithPty<
     // Otherwise, execute the given command using a pty
     //
     const commandToPTY = args.command.replace(/^k(\s)/, 'kubectl$1')
+
+    if (args.execOptions.onInit) {
+      args.execOptions.quiet = true // don't ever emit anything on your own
+      args.execOptions.replSilence = true // repl: same thing
+      args.execOptions.echo = false // do not even echo "ok"
+    }
+
     return args.REPL.qexec<string | Response>(
       `sendtopty ${commandToPTY}`,
       args.block,
