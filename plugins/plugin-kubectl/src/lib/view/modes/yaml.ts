@@ -18,6 +18,9 @@ import { ModeRegistration } from '@kui-shell/core'
 
 import { WithRawData, hasRawData } from '../../model/resource'
 
+/** we want this to be placed as the last tab */
+export const order = 999
+
 /**
  * The YAML mode applies to all KubeResources, and simply extracts the
  * raw `data` field from the resource; note how we indicate that this
@@ -36,7 +39,7 @@ const yamlMode: ModeRegistration<WithRawData> = {
     }),
 
     // traits:
-    order: 999 // we want this to be placed as the last tab
+    order
   }
 }
 

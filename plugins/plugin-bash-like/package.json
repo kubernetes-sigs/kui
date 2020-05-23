@@ -32,7 +32,8 @@
     "shelljs": "0.8.3",
     "speed-date": "1.0.0",
     "ws": "7.2.3",
-    "xterm": "4.4.0"
+    "xterm": "4.4.0",
+    "xterm-addon-fit": "^0.4.0"
   },
   "kui": {
     "exclude": {

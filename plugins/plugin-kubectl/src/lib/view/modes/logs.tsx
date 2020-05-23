@@ -19,17 +19,22 @@ import { v4 as uuid } from 'uuid'
 import {
   i18n,
   REPL,
+  Arguments,
   Abortable,
   Button,
   FlowControllable,
   Streamable,
   Tab,
   ModeRegistration,
-  ToolbarProps
+  ToolbarProps,
+  ToolbarText
 } from '@kui-shell/core'
 
-import { Pod, isPod } from '../../model/resource'
 import { DropDown, Icons, Loading } from '@kui-shell/plugin-client-common'
+
+import { Pod, isPod } from '../../model/resource'
+import { getCommandFromArgs } from '../../util/util'
+import { KubeOptions } from '../../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl', 'logs')
 
@@ -40,15 +45,32 @@ const strings = i18n('plugin-kubectl', 'logs')
  */
 const HYSTERESIS = 1500
 
-type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error'
+export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error'
 
-interface Props {
+export interface ContainerProps {
+  args: Arguments<KubeOptions>
   repl: REPL
   pod: Pod
   toolbarController: ToolbarProps
 }
 
-interface State {
+export interface ContainerState {
+  /** Are we focused on one container? `undefined` means all containers. */
+  container: string
+
+  /** The underlying PTY streaming job. */
+  job: Abortable & FlowControllable
+
+  /**
+   * To help with races, e.g. switch to container A, then B, then A;
+   * we need to distinguish the PTYs for the first and last, despite
+   * them targeting the same container
+   *
+   */
+  streamUUID: string
+}
+
+interface State extends ContainerState {
   /** Reference to the scrollable region. Allows us to manage scroll-to-bottom. */
   ref?: HTMLElement
 
@@ -58,21 +80,93 @@ interface State {
   /** Are we streaming? */
   isLive: boolean
 
-  /** Are we focused on one container? `undefined` means all containers. */
-  container: string
-
   /** It may take a second or two between establishing the PTY stream
    * and receiving the first log record. */
   waitingForHysteresis: boolean
-
-  /** The underlying PTY streaming job. */
-  job: Abortable & FlowControllable
-
-  streamUUID: string
 }
 
-class Logs extends React.PureComponent<Props, State> {
-  public constructor(props: Props) {
+export abstract class ContainerComponent<State extends ContainerState> extends React.PureComponent<
+  ContainerProps,
+  State
+> {
+  protected abstract toolbarText(status: StreamingStatus): ToolbarText
+
+  /** Buttons to display in the Toolbar. */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected toolbarButtons(status: StreamingStatus): Button[] {
+    return this.containerList()
+  }
+
+  protected supportsAllContainers() {
+    return false
+  }
+
+  /** When we are going away, make sure to abort the streaming job. */
+  public componentWillUnmount() {
+    if (this.state.job) {
+      this.state.job.abort()
+    }
+  }
+
+  /** Update Toolbar text and Toolbar buttons. */
+  protected updateToolbar(status: StreamingStatus) {
+    this.props.toolbarController.willUpdateToolbar(
+      this.toolbarText(status),
+      this.toolbarButtons(status),
+      true // replace default buttons
+    )
+  }
+
+  protected showContainer(container: string) {
+    this.setState({ container })
+  }
+
+  /** Render a selection component that allows user to select a container. */
+  protected containerOptions() {
+    const { containers } = this.props.pod.spec
+    if (containers.length > 1) {
+      const actions = containers
+        .map(_ => ({
+          label: _.name,
+          isSelected: this.state.container === _.name,
+          hasDivider: false,
+          handler: () => this.showContainer(_.name)
+        }))
+        .concat(
+          !this.supportsAllContainers()
+            ? []
+            : [
+                {
+                  label: strings('All Containers'),
+                  isSelected: !this.state.container,
+                  hasDivider: true,
+                  handler: () => this.showContainer(undefined)
+                }
+              ]
+        )
+
+      return <DropDown actions={actions} className="kui--repl-block-right-element" />
+    }
+  }
+
+  /** List of containers that is compatible with toolbar buttons model */
+  protected containerList() {
+    return this.props.pod.spec.containers.length <= 1
+      ? []
+      : [
+          {
+            mode: 'container-list',
+            label: 'Select a container',
+            kind: 'view' as const,
+            command: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+            icon: this.containerOptions()
+          } as Button
+        ]
+  }
+}
+
+export class Logs extends ContainerComponent<State> {
+  public constructor(props: ContainerProps) {
     super(props)
 
     const streamUUID = uuid()
@@ -90,15 +184,12 @@ class Logs extends React.PureComponent<Props, State> {
     this.initStream(streamUUID, true, container)
   }
 
-  /** When we are going away, make sure to abort the streaming job. */
-  public componentWillUnmount() {
-    if (this.state.job) {
-      this.state.job.abort()
-    }
+  protected supportsAllContainers() {
+    return true
   }
 
   /** Text to display in the Toolbar. */
-  private toolbarText(status: StreamingStatus) {
+  protected toolbarText(status: StreamingStatus) {
     // i18n message key for toolbar text
     const msgAndType = {
       Live: {
@@ -129,22 +220,9 @@ class Logs extends React.PureComponent<Props, State> {
   }
 
   /** Buttons to display in the Toolbar. */
-  private toolbarButtons(status: StreamingStatus) {
-    const containerList =
-      this.props.pod.spec.containers.length <= 1
-        ? []
-        : [
-            {
-              mode: 'container-list',
-              label: 'Select a container',
-              kind: 'view' as const,
-              command: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-              icon: this.containerOptions()
-            } as Button
-          ]
-
+  protected toolbarButtons(status: StreamingStatus) {
     if (status === 'Stopped' || status === 'Error') {
-      return containerList
+      return this.containerList()
     } else {
       const isLive = status === 'Live'
       return [
@@ -155,27 +233,18 @@ class Logs extends React.PureComponent<Props, State> {
           icon: <Icons icon={isLive ? 'Pause' : 'Play'} />,
           command: this.toggleStreaming.bind(this, !isLive)
         } as Button
-      ].concat(containerList)
+      ].concat(this.containerList())
     }
   }
 
-  /** Update Toolbar text and Toolbar buttons. */
-  private updateToolbar(status: StreamingStatus) {
-    this.props.toolbarController.willUpdateToolbar(
-      this.toolbarText(status),
-      this.toolbarButtons(status),
-      true // replace default buttons
-    )
-  }
-
   /** Which container should we focus on by default? */
-  private defaultContainer() {
+  protected defaultContainer() {
     // undefined means all containers
     return this.props.pod.spec.containers.length === 1 ? this.props.pod.spec.containers[0].name : undefined
   }
 
   /** Handler to focus on the given container. */
-  private showContainer(container?: string) {
+  protected showContainer(container?: string) {
     this.setState(curState => {
       if (curState.container !== container) {
         if (curState.job) {
@@ -192,30 +261,6 @@ class Logs extends React.PureComponent<Props, State> {
         }
       }
     })
-  }
-
-  /** Render a selection component that allows user to select a container. */
-  private containerOptions() {
-    const { containers } = this.props.pod.spec
-    if (containers.length > 1) {
-      const actions = containers
-        .map(_ => ({
-          label: _.name,
-          isSelected: this.state.container === _.name,
-          hasDivider: false,
-          handler: () => this.showContainer(_.name)
-        }))
-        .concat([
-          {
-            label: strings('All Containers'),
-            isSelected: !this.state.container,
-            hasDivider: true,
-            handler: () => this.showContainer()
-          }
-        ])
-
-      return <DropDown actions={actions} className="kui--repl-block-right-element" />
-    }
   }
 
   /** The part of toggleStreaming that deals with PTY flow control. */
@@ -247,7 +292,9 @@ class Logs extends React.PureComponent<Props, State> {
     setTimeout(async () => {
       const { pod, repl } = this.props
       const container = containerName ? `-c ${containerName}` : '--all-containers'
-      const cmd = `kubectl logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} ${isLive ? '-f' : ''}`
+      const cmd = `${getCommandFromArgs(this.props.args)} logs ${pod.metadata.name} -n ${
+        pod.metadata.namespace
+      } ${container} ${isLive ? '-f' : ''}`
 
       this.updateToolbar(isLive ? 'Live' : 'Paused')
 
@@ -371,10 +418,10 @@ class Logs extends React.PureComponent<Props, State> {
  * The content renderer for the summary tab
  *
  */
-async function content({ REPL }: Tab, pod: Pod) {
+async function content({ REPL }: Tab, pod: Pod, args: Arguments<KubeOptions>) {
   return {
     react: function LogsProvider(toolbarController: ToolbarProps) {
-      return <Logs repl={REPL} pod={pod} toolbarController={toolbarController} />
+      return <Logs repl={REPL} pod={pod} args={args} toolbarController={toolbarController} />
     }
   }
 }

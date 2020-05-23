@@ -1,0 +1,5 @@
+{
+  "The terminal connection has closed.": "The terminal connection has closed.",
+  "Connecting to container X.": "Please wait. Connecting to container **{0}**.",
+  "Connected to container X.": "Connected to container **{0}**."
+}

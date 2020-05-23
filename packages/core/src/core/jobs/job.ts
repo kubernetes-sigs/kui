@@ -21,6 +21,7 @@ export interface Abortable {
 export interface FlowControllable {
   xon(): void
   xoff(): void
+  write(data: string): void
 }
 
 /** in the future, a WatchableJob may be more than Abortable, e.g. Suspendable */
