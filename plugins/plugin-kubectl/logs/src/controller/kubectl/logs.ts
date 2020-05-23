@@ -65,9 +65,6 @@ export async function doLogs(args: Arguments<LogOptions>) {
   // a bit of plumbing: tell the PTY that we will be handling everything
   const myExecOptions = Object.assign({}, args.execOptions, {
     rethrowErrors: true, // we want to handle errors
-    quiet: true, // don't ever emit anything on your own
-    replSilence: true, // repl: same thing
-    echo: false, // do not even echo "ok"
 
     // the PTY will call this when the PTY process is ready; in
     // return, we send it back a consumer of streaming output

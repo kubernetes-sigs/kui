@@ -932,6 +932,7 @@ export const doExec = (
         // command against the websocket/channel
         const init = async (ws: Channel) => {
           const job = {
+            write: (data: string) => ws.send(JSON.stringify({ type: 'data', data, uuid: ourUUID })),
             xon: () => {
               debug('xon requested')
               ws.send(JSON.stringify({ type: 'xon', uuid: ourUUID }))
