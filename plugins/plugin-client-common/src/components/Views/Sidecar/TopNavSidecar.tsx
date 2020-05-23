@@ -139,6 +139,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     this.state = {
       repl: undefined,
       tab: undefined,
+      dom: undefined,
 
       history: undefined,
       current: undefined
@@ -348,7 +349,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       // Note: data-view helps with tests
       return (
         <div
-          className={'kui--sidecar kui--inverted-color-context kui--screenshotable ' + this.width()}
+          className={'kui--sidecar kui--inverted-color-context ' + this.width()}
+          ref={dom => this.setState({ dom })}
           data-view="topnav"
         >
           {this.title({

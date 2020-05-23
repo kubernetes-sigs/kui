@@ -19,8 +19,6 @@ import { Event, NativeImage } from 'electron'
 import { i18n, eventChannelUnsafe } from '@kui-shell/core'
 import { Button, ToastNotification } from 'carbon-components-react'
 
-import Icons from '../spi/Icons'
-
 import '../../../web/css/static/Screenshot.scss'
 
 const strings = i18n('plugin-client-common', 'screenshot')
@@ -301,7 +299,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   }
 
   /** Render the screenshot button */
-  private button() {
+  /* private button() {
     const active = this.state.isActive
     const onClick = this.onScreenshotButtonClick.bind(this)
 
@@ -320,13 +318,13 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         )}
       </a>
     )
-  }
+  } */
 
   public render() {
     return (
       <React.Fragment>
         {this.notification()}
-        {this.button()}
+        {/* this.button() */}
       </React.Fragment>
     )
   }
