@@ -42,6 +42,14 @@ function optionals(commandLine: CommandLine, filter: (key: string) => boolean = 
     .join(' ')
 }
 
+function isPodSpecific(verb: string) {
+  return verb === 'attach' || verb === 'exec' || verb === 'logs'
+}
+
+function isNodeSpecific(verb: string) {
+  return verb === 'cordon' || verb === 'uncordon' || verb === 'drain' || verb === 'taint'
+}
+
 /**
  * Tab completion of kube resource names
  *
@@ -49,6 +57,8 @@ function optionals(commandLine: CommandLine, filter: (key: string) => boolean = 
 async function completeResourceNames(tab: Tab, commandLine: CommandLine, spec: TabCompletionSpec): Promise<string[]> {
   const { argvNoOptions, argv, parsedOptions } = commandLine
   const command = getCommandFromArgs({ argvNoOptions })
+
+  const verb = argvNoOptions[1]
 
   // index of the arg just before the one to be completed
   const previous = spec.toBeCompletedIdx === -1 ? commandLine.argv.length - 1 : spec.toBeCompletedIdx - 1
@@ -60,16 +70,20 @@ async function completeResourceNames(tab: Tab, commandLine: CommandLine, spec: T
     return getMatchingStrings(tab, cmd, spec)
   } else if (
     (argvNoOptions[0] === 'kubectl' || argvNoOptions[0] === 'k' || argvNoOptions[0] === 'oc') &&
-    (argvNoOptions[1] === 'get' ||
-      argvNoOptions[1] === 'describe' ||
-      argvNoOptions[1] === 'annotate' ||
-      argvNoOptions[1] === 'label' ||
-      (argvNoOptions[1] === 'delete' && !parsedOptions.f && !parsedOptions.file))
+    (verb === 'get' ||
+      verb === 'annotate' ||
+      verb === 'describe' ||
+      verb === 'pod' ||
+      verb === 'edit' ||
+      verb === 'label' ||
+      isPodSpecific(verb) ||
+      isNodeSpecific(verb) ||
+      (verb === 'delete' && !parsedOptions.f && !parsedOptions.file))
   ) {
     //
     // then we are being asked to complete a resource name
     //
-    const entityType = argvNoOptions[2]
+    const entityType = isPodSpecific(verb) ? 'pod' : isNodeSpecific(verb) ? 'node' : argvNoOptions[2]
 
     const cmd = `${command} get ${entityType} ${optionals(commandLine)} -o name`
     return getMatchingStrings(tab, cmd, spec)
