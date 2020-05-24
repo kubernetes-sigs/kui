@@ -25,10 +25,11 @@ import {
   Tab,
   ToolbarProps,
   ToolbarText,
-  i18n
+  i18n,
+  eventChannelUnsafe
 } from '@kui-shell/core'
 
-import { Terminal as XTerminal } from 'xterm'
+import { Terminal as XTerminal, ITheme } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 
 import { getCommandFromArgs } from '../../util/util'
@@ -42,6 +43,7 @@ import '@kui-shell/plugin-bash-like/web/css/static/xterm.css'
 const strings = i18n('plugin-kubectl', 'exec')
 
 type Job = Abortable & FlowControllable
+type Cleaner = () => void
 
 interface State extends ContainerState {
   isTerminated: boolean
@@ -49,10 +51,27 @@ interface State extends ContainerState {
   dom: HTMLDivElement
   xterm: XTerminal
   doResize: () => void
+  perTerminalCleaners: Cleaner[]
+}
+
+/**
+ * Take a hex color string and return the corresponding RGBA with the given alpha
+ *
+ */
+function alpha(hex: string, alpha: number): string {
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    const red = parseInt(hex.slice(1, 3), 16)
+    const green = parseInt(hex.slice(3, 5), 16)
+    const blue = parseInt(hex.slice(5, 7), 16)
+
+    return `rgba(${red},${green},${blue},${alpha})`
+  } else {
+    return hex
+  }
 }
 
 class Terminal extends ContainerComponent<State> {
-  private readonly resizeListener: () => void
+  private readonly cleaners: Cleaner[] = []
 
   public constructor(props: ContainerProps) {
     super(props)
@@ -63,6 +82,7 @@ class Terminal extends ContainerComponent<State> {
       dom: undefined,
       xterm: undefined,
       doResize: undefined,
+      perTerminalCleaners: [],
 
       isTerminated: false,
       job: undefined,
@@ -71,8 +91,62 @@ class Terminal extends ContainerComponent<State> {
 
     this.updateToolbar('Paused')
 
-    this.resizeListener = this.onResize.bind(this)
-    window.addEventListener('resize', this.resizeListener)
+    const resizeListener = this.onResize.bind(this)
+    window.addEventListener('resize', resizeListener)
+    this.cleaners.push(() => window.removeEventListener('resize', resizeListener))
+  }
+
+  /**
+   * Convert the current theme to an xterm.js ITheme
+   *
+   */
+  private static injectTheme(xterm: XTerminal, dom: HTMLElement): void {
+    const theme = getComputedStyle(dom)
+    // debug('kui theme for xterm', theme)
+
+    /** helper to extract a kui theme color */
+    const val = (key: string, kind = 'color'): string => theme.getPropertyValue(`--${kind}-${key}`).trim()
+
+    const itheme: ITheme = {
+      foreground: val('text-01'),
+      background: val('base01'),
+      cursor: val('support-01'),
+      selection: alpha(val('selection-background'), 0.3),
+
+      black: val('black'),
+      red: val('red'),
+      green: val('green'),
+      yellow: val('yellow'),
+      blue: val('blue'),
+      magenta: val('magenta'),
+      cyan: val('cyan'),
+      white: val('white'),
+
+      brightBlack: val('black'),
+      brightRed: val('red'),
+      brightGreen: val('green'),
+      brightYellow: val('yellow'),
+      brightBlue: val('blue'),
+      brightMagenta: val('magenta'),
+      brightCyan: val('cyan'),
+      brightWhite: val('white')
+    }
+
+    // debug('itheme for xterm', itheme)
+    xterm.setOption('theme', itheme)
+    xterm.setOption('fontFamily', val('monospace', 'font'))
+
+    try {
+      const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
+      xterm.setOption('fontSize', parseInt(fontTheme.fontSize.replace(/px$/, ''), 10))
+      // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
+
+      // FIXME. not tied to theme
+      xterm.setOption('fontWeight', 400)
+      xterm.setOption('fontWeightBold', 600)
+    } catch (err) {
+      console.error('Error setting terminal font size', err)
+    }
   }
 
   private onResize() {
@@ -84,9 +158,14 @@ class Terminal extends ContainerComponent<State> {
   /** When we are going away, make sure to abort the streaming job. */
   public componentWillUnmount() {
     super.componentWillUnmount()
-    this.state.xterm.dispose()
+    this.disposeTerminal()
+    this.cleaners.forEach(cleaner => cleaner())
+  }
 
-    window.removeEventListener('resize', this.resizeListener)
+  private disposeTerminal() {
+    this.state.xterm.dispose()
+    this.state.perTerminalCleaners.forEach(cleaner => cleaner())
+    this.setState({ xterm: undefined, perTerminalCleaners: [] })
   }
 
   /** Finish up the initialization of the stream */
@@ -149,7 +228,11 @@ class Terminal extends ContainerComponent<State> {
       pod.metadata.namespace
     } sh`
 
-    xterm.clear()
+    // Note: reset, not clear. This will fully clear the xterm screen
+    // as we prepare for a new connection. clear() alone only does a
+    // ctrl+L, and thus the xterm will still show e.g. the CWD part of
+    // the old prompt.
+    xterm.reset()
 
     repl.qexec(cmd, undefined, undefined, {
       onInit: () => {
@@ -194,9 +277,17 @@ class Terminal extends ContainerComponent<State> {
   }
 
   private static initTerminal(dom: HTMLElement) {
-    const xterm = new XTerminal({ fontFamily: 'IBM Plex Mono' })
+    const xterm = new XTerminal()
+    const perTerminalCleaners: Cleaner[] = []
+
+    const inject = () => Terminal.injectTheme(xterm, dom)
+    inject()
+    eventChannelUnsafe.on('/theme/change', inject)
+    perTerminalCleaners.push(() => eventChannelUnsafe.on('/theme/change', inject))
+
     const fitAddon = new FitAddon()
     xterm.loadAddon(fitAddon)
+
     xterm.open(dom)
 
     const doResize = () => {
@@ -208,7 +299,8 @@ class Terminal extends ContainerComponent<State> {
 
     return {
       xterm,
-      doResize
+      doResize,
+      perTerminalCleaners
     }
   }
 
