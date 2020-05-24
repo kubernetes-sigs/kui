@@ -9,6 +9,8 @@
   "contextsTableTitle": "Kubernetes Contexts",
   "deleteResource": "Delete this resource",
   "createResource": "Create this resource",
+  "This resource has been deleted": "This resource has been deleted",
+  "Error fetching resource": "Error fetching resource",
   "summary": "Summary",
   "resources": "Resources",
   "lastApplied": "Last Applied",

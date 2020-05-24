@@ -316,8 +316,15 @@ code.fancy-code.hljs {
 .as-column {
   display: grid;
 }
+.flex-layout.flex-align-stretch {
+  align-items: stretch;
+}
 .flex-align-center {
   justify-content: center;
+}
+.flex-align-end {
+  display: flex;
+  justify-content: flex-end;
 }
 .flex-align-top {
   align-items: flex-start;

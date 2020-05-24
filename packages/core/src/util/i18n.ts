@@ -65,7 +65,7 @@ export default (
       if (!parameters) return str
       else
         return parameters
-          .map(_ => _.toString()) // only needed due to https://github.com/microsoft/TypeScript/issues/7014
+          .map(_ => (_ || '').toString()) // only needed due to https://github.com/microsoft/TypeScript/issues/7014
           .reduce((str: string, param, idx) => {
             // e.g. replace all occurrences of {0} in the str
             return str.replace(new RegExp(`\\{${idx}\\}`, 'g'), param.toString())

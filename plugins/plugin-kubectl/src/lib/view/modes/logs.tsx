@@ -43,7 +43,9 @@ const strings = i18n('plugin-kubectl', 'logs')
  * data to arrive before proclaiming No log data.
  *
  */
-const HYSTERESIS = 1500
+export const HYSTERESIS = 1500
+
+export type Job = Abortable & FlowControllable
 
 export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error'
 
@@ -59,7 +61,7 @@ export interface ContainerState {
   container: string
 
   /** The underlying PTY streaming job. */
-  job: Abortable & FlowControllable
+  job: Job
 
   /**
    * To help with races, e.g. switch to container A, then B, then A;
@@ -333,7 +335,7 @@ export class Logs extends ContainerComponent<State> {
         },
 
         /** when the PTY is up, but before any data has been processed */
-        onReady: (job: Abortable & FlowControllable) => {
+        onReady: (job: Job) => {
           setTimeout(() => this.setState({ waitingForHysteresis: false }), HYSTERESIS)
           this.setState({ isLive, job, waitingForHysteresis: true })
         },

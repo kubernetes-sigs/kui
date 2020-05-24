@@ -160,11 +160,6 @@ export function isKubeResource(entity: KResponse | ResourceWithMetadata): entity
   )
 }
 
-/** is the command response a kube resource that can responds to "kubectl delete", etc.? */
-export function isCrudableKubeResource(entity: ResourceWithMetadata): entity is KubeResource {
-  return isKubeResource(entity) && !(entity as KubeResource).isSimulacrum
-}
-
 export interface WithSummary {
   summary: {
     content: string
@@ -374,7 +369,22 @@ export type Event = KubeResourceWithInvolvedObject & {
   lastTimestamp: string
   count: number
   reason: string
+  message: string
   type: 'Normal' | 'Warning' | 'Error'
+  source: {
+    component: string
+    host: string
+  }
+  metadata: {
+    name: string
+    namespace: string
+  }
+  involvedObject: {
+    apiVersion: string
+    kind: string
+    name: string
+    namespace: string
+  }
 }
 
 /**
@@ -383,6 +393,11 @@ export type Event = KubeResourceWithInvolvedObject & {
  */
 export function isEvent(resource: KubeResource): resource is Event {
   return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'Event'
+}
+
+/** is the command response a kube resource that can responds to "kubectl delete", etc.? */
+export function isCrudableKubeResource(entity: ResourceWithMetadata): entity is KubeResource {
+  return isKubeResource(entity) && !isEvent(entity) && !(entity as KubeResource).isSimulacrum
 }
 
 /**
