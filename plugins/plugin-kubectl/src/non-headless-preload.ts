@@ -31,7 +31,7 @@ import showNodeButton from './lib/view/modes/ShowNodeOfPodButton'
 import deleteResourceButton from './lib/view/modes/DeleteButton'
 import involvedObjectMode from './lib/view/modes/involved-object'
 import showCRDResources from './lib/view/modes/show-crd-managed-resources'
-import { eventsMode, eventsBadge } from './lib/view/modes/events'
+import { eventsMode, eventsBadge } from './lib/view/modes/Events'
 
 import tabCompletionProvider from './lib/tab-completion'
 
@@ -40,11 +40,11 @@ export default async (registrar: PreloadRegistrar) => {
   await registrar.registerModes(
     podMode,
     yamlMode,
-    eventsMode,
     summaryMode,
     crdSummaryMode,
     configmapSummaryMode,
     namespaceSummaryMode,
+    eventsMode,
     logsMode,
     ExecIntoPad,
     lastAppliedMode,

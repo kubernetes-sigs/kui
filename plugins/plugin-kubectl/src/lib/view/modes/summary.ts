@@ -30,16 +30,24 @@ async function renderSummary(tab: Tab, resource: KubeResource) {
     return resource.summary
   }
 
-  // a command that will fetch a single-row table
-  const cmd = `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
+  try {
+    // a command that will fetch a single-row table
+    const cmd = `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
 
-  // in parallel, fetch the table model and the safeDump function from js-yaml
-  const [map, { safeDump }] = await Promise.all([tab.REPL.qexec<Table>(cmd).then(toMap), import('js-yaml')])
+    // in parallel, fetch the table model and the safeDump function from js-yaml
+    const [map, { safeDump }] = await Promise.all([tab.REPL.qexec<Table>(cmd).then(toMap), import('js-yaml')])
 
-  // our content is that map, rendered as yaml
-  return {
-    content: safeDump(map),
-    contentType: 'yaml'
+    // our content is that map, rendered as yaml
+    return {
+      content: safeDump(map),
+      contentType: 'yaml'
+    }
+  } catch (err) {
+    if (err.code === 404) {
+      return strings('This resource has been deleted')
+    } else {
+      return strings('Error fetching resource')
+    }
   }
 }
 
