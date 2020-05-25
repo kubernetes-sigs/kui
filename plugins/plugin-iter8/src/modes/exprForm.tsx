@@ -270,7 +270,7 @@ class ExprBase extends React.Component<{}, Formstate> {
           </FormGroup>
           <FormGroup style={{ width: 350 }}>
             <p>
-              <span className="coralColor"> Candidate Deployment(s) </span>
+              <span> Candidate Deployment(s) </span>
               <br />
               <span className="helper"> The version(s) of the service to be used as experimental candidate(s).</span>
             </p>
@@ -284,17 +284,6 @@ class ExprBase extends React.Component<{}, Formstate> {
               invalid={this.state.invalidCandidate}
               invalidText="Cannot select same version as experimental baseline."
             />
-          </FormGroup>
-          <FormGroup style={{ width: 350 }}>
-            <Button
-              style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
-              size="default"
-              kind="primary"
-              renderIcon={Data132}
-              onClick={this.addCriterion}
-            >
-              Add Criterion
-            </Button>
           </FormGroup>
           {this.state.showCriteria ? (
             <FormGroup>
@@ -366,6 +355,17 @@ class ExprBase extends React.Component<{}, Formstate> {
               </div>
             </FormGroup>
           ) : null}
+          <FormGroup style={{ width: 350 }}>
+            <Button
+              style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
+              size="default"
+              kind="primary"
+              renderIcon={Data132}
+              onClick={this.addCriterion}
+            >
+              Add Criterion
+            </Button>
+          </FormGroup>
           <FormGroup style={{ width: 350 }}>
             <Button
               size="default"
