@@ -20,9 +20,10 @@ import * as React from 'react'
 import { eventChannelUnsafe, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
-import Navigation, { HistoryEntry } from '../../spi/Navigation'
+import { Loading } from '../../..'
 import { getStateFromMMR } from './TopNavSidecar'
 import { BaseSidecar, Props, cwd } from './BaseSidecar'
+import Navigation, { HistoryEntry } from '../../spi/Navigation'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('../../Content/KuiContent'))
@@ -96,6 +97,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
 
     return {
       cwd: cwd(),
+      execUUID,
       argvNoOptions,
       parsedOptions,
       allNavs: navigations,
@@ -124,15 +126,11 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     return <Navigation tab={this.state.tab} current={this.current} changeCurrent={this.changeCurrent.bind(this)} />
   }
 
-  protected headerBodyStyle() {
-    return {}
-  }
-
   protected bodyContent(tabIdx: number, menuIdx = 0) {
     return (
       <React.Suspense fallback={<div />}>
         <KuiContent
-          key={`${menuIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
+          key={`${this.current.execUUID}-${menuIdx}-${tabIdx}`} // helps react distinguish similar KuiContents, see: https://github.com/IBM/kui/issues/3837
           tab={this.state.tab}
           mode={this.current.allNavs[menuIdx].tabs[tabIdx]}
           isActive={true}
@@ -149,7 +147,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
 
   public render() {
     if (!this.current || !this.current.response) {
-      return <div />
+      return <Loading />
     }
 
     return (
@@ -161,7 +159,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
         {' '}
         {/* data-view helps with tests */}
         {this.title({ breadcrumbs: this.current.response.breadcrumbs })}
-        <div className="kui--sidecar-header-and-body zoomable" style={this.headerBodyStyle()}>
+        <div className="kui--sidecar-header-and-body zoomable">
           {this.nav()}
           {this.bodyContainer(this.current.current.tabIdx, this.current.current.menuIdx)}
         </div>
