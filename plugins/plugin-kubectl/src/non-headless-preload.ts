@@ -19,7 +19,7 @@ import { PreloadRegistrar } from '@kui-shell/core'
 
 import podMode from './lib/view/modes/pods'
 import yamlMode from './lib/view/modes/yaml'
-import summaryMode from './lib/view/modes/summary'
+import summaryMode from './lib/view/modes/Summary'
 import crdSummaryMode from './lib/view/modes/crd-summary'
 import configmapSummaryMode from './lib/view/modes/configmap-summary'
 import namespaceSummaryMode from './lib/view/modes/namespace-summary'

@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
+import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
 
-import toMap from './table-to-map'
-import { KubeResource, isSummarizableKubeResource, isKubeResourceWithItsOwnSummary } from '../../model/resource'
+import {
+  KubeResource,
+  isSummarizableKubeResource,
+  isKubeResourceWithItsOwnSummary,
+  isDeployment,
+  isPod,
+  isReplicaSet
+} from '../../../model/resource'
+
+import PodSummary from './impl/Pod'
+import GenericSummary from './impl/Generic'
+import DeploymentSummary from './impl/Deployment'
+import ReplicaSetSummary from './impl/ReplicaSet'
 
 const strings = i18n('plugin-kubectl')
 
@@ -25,28 +36,35 @@ const strings = i18n('plugin-kubectl')
  * The content renderer for the summary tab
  *
  */
-async function renderSummary(tab: Tab, resource: KubeResource) {
+async function renderSummary({ REPL }: Tab, resource: KubeResource) {
   if (isKubeResourceWithItsOwnSummary(resource)) {
     return resource.summary
   }
 
   try {
-    // a command that will fetch a single-row table
-    const cmd = `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
-
-    // in parallel, fetch the table model and the safeDump function from js-yaml
-    const [map, { safeDump }] = await Promise.all([tab.REPL.qexec<Table>(cmd).then(toMap), import('js-yaml')])
+    const jsyaml = import('js-yaml')
+    const map = isPod(resource)
+      ? PodSummary(resource)
+      : isDeployment(resource)
+      ? DeploymentSummary(resource)
+      : isReplicaSet(resource)
+      ? ReplicaSetSummary(resource)
+      : GenericSummary(resource, REPL)
 
     // our content is that map, rendered as yaml
     return {
-      content: safeDump(map),
+      content: (await jsyaml).safeDump(await map),
       contentType: 'yaml'
     }
   } catch (err) {
     if (err.code === 404) {
       return strings('This resource has been deleted')
     } else {
-      return strings('Error fetching resource')
+      console.error(err)
+      return {
+        content: resource.kuiRawData,
+        contentType: 'yaml'
+      }
     }
   }
 }
