@@ -54,7 +54,7 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
     return CLI.command('about', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showingLeftNav('Kui'))
+      .then(SidecarExpect.showingLeftNav('Overview'))
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, CLI.waitTimeout, true)) // back button NOT visible
       .catch(Common.oops(this, true))
   })
