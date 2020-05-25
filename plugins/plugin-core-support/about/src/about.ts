@@ -84,8 +84,8 @@ async function getName(): Promise<string> {
  * @return a `NavResponse`
  *
  */
-const getAbout = async (): Promise<NavResponse> => {
-  return import('@kui-shell/client/config.d/about.json').then(_ => {
+const getAbout = (): Promise<NavResponse> => {
+  return import('@kui-shell/client/config.d/about.json').then(async _ => {
     const _apiVersion = _['apiVersion']
     const _kind = _['kind']
 
@@ -101,12 +101,14 @@ const getAbout = async (): Promise<NavResponse> => {
       items: [{ mode: 'theme', contentFrom: 'themes' }]
     }
 
-    return {
+    const response: NavResponse = {
       apiVersion: _apiVersion || 'kui-shell/v1',
       kind: _kind || 'NavResponse',
+      breadcrumbs: [{ label: await getName() }],
       menus: fullMenus.concat([configureMenu]),
       links: _['links'] || []
     }
+    return response
   })
 }
 
@@ -132,7 +134,7 @@ const translateModesLabel = (modesFromAbout: Mode[]) => {
 }
 
 const aboutWindow = async (): Promise<NavResponse> => {
-  const { apiVersion, kind, menus, links } = await getAbout()
+  const { apiVersion, breadcrumbs, kind, menus, links } = await getAbout()
 
   // translate the label of sidecar modes under each menu
   menus.forEach(menu => {
@@ -152,6 +154,7 @@ const aboutWindow = async (): Promise<NavResponse> => {
 
   return {
     apiVersion,
+    breadcrumbs,
     kind,
     menus,
     links
