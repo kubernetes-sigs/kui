@@ -10,9 +10,11 @@ import {
   Dropdown,
   DataTable,
   InlineNotification,
-  ToastNotification
+  ToastNotification,
+  RadioButtonGroup,
+  RadioButton
 } from 'carbon-components-react'
-import { Renew32, Undo32, Export32, Data_132 as Data132 } from '@carbon/icons-react'
+import { Stop32, Undo32, Export32, Data_132 as Data132, ChartLineData32 } from '@carbon/icons-react'
 import Chart from 'react-apexcharts'
 // Styling imports
 import 'carbon-components/scss/components/loading/_loading.scss'
@@ -189,7 +191,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       haveCriteriaComparison: false,
       selectedAdvancedStatistic: 'Improvement Over Baseline',
       showAdvancedStatistics: false,
-      advancedStatisticsRows: []
+      advancedStatisticsRows: [],
+      hasExperimentEnded: false,
+      experimentDecision: 'rollback'
     }
     eventChannelUnsafe.on('/get/decision', formstate => {
       this.setState({ experimentCreated: true, experimentRequest: formstate })
@@ -201,6 +205,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.handleGetAssessment = this.handleGetAssessment.bind(this)
     this.toggleAdvancedStatistics = this.toggleAdvancedStatistics.bind(this)
     this.getAdvancedStatistics = this.getAdvancedStatistics.bind(this)
+    this.endExperiment = this.endExperiment.bind(this)
   }
 
   /*
@@ -349,10 +354,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Parse the advanced statistics values to be displayed in the table
   private parseAdvancedStatisticsValues(key, val) {
     /*eslint-disable */
-    if (key === 'credible_interval') {
-      return val['lower']
-    } else if (key === 'improvement_over_baseline') {
-      return val['lower']
+    if (key === 'credible_interval' || key === 'improvement_over_baseline') {
+      return JSON.stringify([val['lower'], val['higher']])
     }
     return val
     /* eslint-enable */
@@ -395,7 +398,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           for (let k = 0; k < keys.length; k++) {
             if (!{}.hasOwnProperty.call(tempObject, keys[k])) {
               tempObject[keys[k]] = JSON.parse(JSON.stringify(versionRows))
-              console.log(tempObject)
             }
             tempObject[keys[k]][version][
               criterionAssessments[version][metric].metric_id
@@ -404,7 +406,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         }
       }
     }
-    console.log(tempObject)
     this.advancedStatisticsObject = tempObject
   }
 
@@ -412,9 +413,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   private getAdvancedStatistics(key) {
     this.setState({ selectedAdvancedStatistic: key })
     this.setState({ advancedStatisticsRows: this.advancedStatisticsObject[this.advancedStatisticsNames[key]] })
-    console.log(key)
-    console.log(this.state.advancedStatisticsRows)
-    console.log(this.advancedStatiticsHeaders)
   }
 
   // Toggle Show Advanced Statistics
@@ -501,6 +499,29 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.setState({ notifyUser: false })
   }
 
+  // handle end of experiment
+  private endExperiment() {
+    let winner = ''
+    const baseline = this.state.experimentResult.baseline_assessment.id
+    if (this.state.experimentDecision === 'rollback') {
+      winner = baseline
+    } else if (this.state.experimentDecision === 'rollforward') {
+      winner = this.state.experimentResult.winner_assessment.winning_version_found
+        ? this.state.experimentResult.winner_assessment.current_winner
+        : baseline
+    }
+    const temporarySplit = this.state.trafficSplit
+    for (let i = 0; i < temporarySplit.length; i++) {
+      if (temporarySplit[i]['version'] === winner) {
+        temporarySplit[i]['split'] = 100
+      } else {
+        temporarySplit[i]['split'] = 0
+      }
+    }
+    this.setState({ trafficSplit: temporarySplit, hasExperimentEnded: true })
+    this.handleApply()
+  }
+
   public render() {
     ++this.notifKey // To regenerate notification
     const { trafficSplit } = this.state
@@ -524,7 +545,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             <FormGroup legendText="Win Probabilities" className="formGroupProps">
               <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="400" />
             </FormGroup>
-            <FormGroup legendText="Traffic Split Suggestion" className="formGroupProps">
+            <FormGroup>
               <Dropdown
                 id="analyticsAlgo"
                 label="Analytics Algorithm"
@@ -543,9 +564,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 kind="primary"
                 renderIcon={Export32}
                 onClick={this.handleApply}
-                disabled={this.state.trafficErr}
+                disabled={this.state.trafficErr || this.state.hasExperimentEnded}
               >
-                Apply
+                Apply Traffic Split
               </Button>
               {this.state.notifyUser ? (
                 <ToastNotification
@@ -555,7 +576,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                   title="Virtual Service & Destination Rule Created"
                   subtitle="Traffic is being re-routed. Allow a few seconds for changes to be implemented."
                   onCloseButtonClick={this.handleCloseNotif}
-                  style={{ width: 680 }}
                 />
               ) : null}
             </FormGroup>
@@ -630,7 +650,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             ) : null}
             {this.state.showAdvancedStatistics && !this.state.haveAdvancedStatistics ? (
               <FormGroup legendText="">
-                <h4> Do not have Advanced Statistics</h4>
+                <h4> No Advanced Statistics to show</h4>
               </FormGroup>
             ) : null}
           </div>
@@ -639,13 +659,53 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           <Button
             size="default"
             kind="primary"
-            renderIcon={Renew32}
-            disabled={!this.state.experimentCreated}
+            renderIcon={ChartLineData32}
+            disabled={!this.state.experimentCreated || this.state.hasExperimentEnded}
             onClick={this.handleGetAssessment}
           >
             Get Assessment
           </Button>
         </FormGroup>
+        {this.state.haveResults ? (
+          <div>
+            <FormGroup legendText="">
+              {' '}
+              <h4> End Experiment </h4>{' '}
+            </FormGroup>
+            <FormGroup
+              invalid={false}
+              legendText="End the Experiment by choosing to roll back traffic to baseline or roll forward traffic to winner"
+              message={false}
+              messageText=""
+            >
+              <RadioButtonGroup
+                defaultSelected="rollback"
+                labelPosition="right"
+                legend="Group Legend"
+                name="end-experiment"
+                onChange={value => this.setState({ experimentDecision: value })}
+                orientation="horizontal"
+                valueSelected="rollback"
+                style={{ padding: 10 }}
+              >
+                <RadioButton id="rollback" labelText="Roll Back Traffic" value="rollback" />
+                <RadioButton id="rollforward" labelText="Roll Forward Traffic" value="rollforward" />
+              </RadioButtonGroup>
+            </FormGroup>
+            <FormGroup>
+              <Button
+                size="default"
+                kind="primary"
+                renderIcon={Stop32}
+                onClick={this.endExperiment}
+                disabled={this.state.hasExperimentEnded}
+                style={{ backgroundColor: 'mediumpurple' }}
+              >
+                End Experiment
+              </Button>
+            </FormGroup>
+          </div>
+        ) : null}
       </Form>
     )
   }
