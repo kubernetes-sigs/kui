@@ -47,7 +47,6 @@ export interface KubeStatus {
   startTime?: string
   completionTime?: string
   phase?: string
-  podIP?: string
   podName?: string // e.g. tekton PipelineRun or TaskRun
   qosClass?: string
   replicas?: number
@@ -56,7 +55,6 @@ export interface KubeStatus {
   unavailableReplicas?: number
   updatedReplicas?: number
   loadBalancer?: KubeLoadBalancer
-  containerStatuses?: KubeContainerStatus[]
   conditions?: KubeStatusCondition[]
 }
 export class DefaultKubeStatus implements KubeStatus {
@@ -232,11 +230,18 @@ export interface CRDResource extends KubeResource {
  * Kubernetes Pod resource type
  *
  */
-export interface Pod extends KubeResource {
+interface PodStatus extends KubeStatus {
+  containerStatuses: KubeContainerStatus[]
+  hostIP: string
+  podIP: string
+}
+export interface Pod extends KubeResource<PodStatus> {
   apiVersion: 'v1'
   kind: 'Pod'
   spec: {
     nodeName: string
+    nominatedNodeName?: string
+    readinessGates?: { conditionType: string }[]
     containers: {
       args: string[]
       command: string[]
@@ -247,7 +252,8 @@ export interface Pod extends KubeResource {
       resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
       terminationMessagePath: string
       terminationMessagePolicy: string
-      volumneMounts: { mountPath: string; name: string }[]
+      volumeMounts: { mountPath: string; name: string }[]
+      ports?: { containerPort: string; protocol: string }[]
       workingDir: string
     }[]
   }
