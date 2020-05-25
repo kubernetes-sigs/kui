@@ -28,10 +28,6 @@
 
   .sidecar-bottom-stripe {
     transition: none;
-    &:not(.kui--sidecar--titlebar-has-breadcrumbs) {
-      border: none;
-      background: transparent;
-    }
 
     .sidecar-bottom-stripe-right-bits {
       /* filler in the window stripe to fill with the content column */
@@ -41,7 +37,6 @@
 
     .kui--sidecar--titlebar-navigation {
       /* filler in the window stripe to fill with the sidenav column */
-      width: $nav-width;
       background-color: var(--color-sidecar-header);
       margin: 0;
       border: none;

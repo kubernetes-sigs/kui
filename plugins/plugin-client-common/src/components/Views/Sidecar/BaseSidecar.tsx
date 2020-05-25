@@ -54,8 +54,12 @@ export type Props = SidecarOptions & {
   tab?: KuiTab
 }
 
+export interface SidecarHistoryEntry extends BaseHistoryEntry {
+  execUUID: string
+}
+
 /** Mostly, this State deals with the current "width" of the view. */
-export interface BaseState<HistoryEntry extends BaseHistoryEntry> {
+export interface BaseState<HistoryEntry extends SidecarHistoryEntry> {
   /** TODO investigate removing these */
   repl: REPL
   tab: KuiTab
@@ -76,7 +80,7 @@ export function cwd() {
 
 export abstract class BaseSidecar<
   R extends KResponse,
-  HistoryEntry extends BaseHistoryEntry
+  HistoryEntry extends SidecarHistoryEntry
 > extends React.PureComponent<Props, BaseState<HistoryEntry>> {
   protected cleaners: Cleaner[] = []
 

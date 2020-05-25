@@ -35,8 +35,7 @@ import {
 import Badge from './Badge'
 import ToolbarContainer from './ToolbarContainer'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
-import { BaseSidecar, Props, cwd } from './BaseSidecar'
-import { BaseHistoryEntry } from '../util/CircularBuffer'
+import { BaseSidecar, Props, SidecarHistoryEntry, cwd } from './BaseSidecar'
 
 import '../../../../web/css/static/ToolbarButton.scss'
 
@@ -50,8 +49,7 @@ const debug = Debug('plugin-sidecar/components/TopNavSidecar')
  * out into buttons and tabs, and a pointer to the `currentTabIndex`.
  *
  */
-interface HistoryEntry extends BaseHistoryEntry {
-  execUUID: string
+interface HistoryEntry extends SidecarHistoryEntry {
   currentTabIndex: number
 
   buttons: Button[]
@@ -215,8 +213,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     return (
       <KuiContent
         tab={this.state.tab}
-        isActive={idx === this.current.currentTabIndex}
         mode={this.current.tabs[idx]}
+        isActive={idx === this.current.currentTabIndex}
         args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
         response={this.current.response}
       />

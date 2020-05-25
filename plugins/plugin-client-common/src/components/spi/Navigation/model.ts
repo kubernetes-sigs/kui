@@ -25,6 +25,7 @@ interface Nav {
 }
 
 export interface HistoryEntry extends BaseHistoryEntry {
+  execUUID: string
   current: { menuIdx: number; tabIdx: number }
   allNavs: Nav[]
   allLinks: Link[]
