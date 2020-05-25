@@ -16,6 +16,8 @@
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { productName } from '@kui-shell/client/config.d/name.json'
 
+const Overview = 'Overview'
+
 describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -24,7 +26,8 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     CLI.command('about', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(productName))
+      .then(SidecarExpect.showing(Overview))
+      .then(SidecarExpect.breadcrumbs([productName]))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
       .then(async () => {
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
@@ -58,7 +61,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     CLI.command('about #About Kui', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(productName))
+      .then(SidecarExpect.showing(Overview))
       .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
       .catch(Common.oops(this, true)))
 
@@ -85,7 +88,7 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       CLI.command('getting started', this.app)
         .then(ReplExpect.justOK)
         .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(productName))
+        .then(SidecarExpect.showing(Overview))
         // .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('tutorial')))
         .catch(Common.oops(this, true))
     )

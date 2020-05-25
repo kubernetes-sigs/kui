@@ -20,7 +20,7 @@ import { Application } from 'spectron'
 import { timeout, waitTimeout } from './cli'
 import * as Selectors from './selectors'
 import { keys as Keys } from './keys'
-import { expectSubset, expectStruct, expectText, getValueFromMonaco, expectYAMLSubset } from './util'
+import { expectArray, expectSubset, expectStruct, expectText, getValueFromMonaco, expectYAMLSubset } from './util'
 
 export const open = async (app: Application) => {
   await app.client.waitForVisible(Selectors.SIDECAR, timeout)
@@ -266,7 +266,7 @@ export const showing = (
   expectType?: string,
   waitThisLong?: number,
   which?: 'leftnav' | 'topnav'
-) => async (app: Application) => {
+) => async (app: Application): Promise<Application> => {
   await app.client.waitUntil(
     async () => {
       // check selected name in sidecar
@@ -332,3 +332,13 @@ export const showingTopNav = (expectedName: string) =>
 
 export const showingLeftNav = (expectedName: string) =>
   showing(expectedName, undefined, undefined, undefined, undefined, undefined, 'leftnav')
+
+export function breadcrumbs(breadcrumbs: string[]) {
+  return async (app: Application) => {
+    await app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS)
+    await app.client.getText(Selectors.SIDECAR_BREADCRUMBS)
+    await expectArray(breadcrumbs)
+
+    return app
+  }
+}
