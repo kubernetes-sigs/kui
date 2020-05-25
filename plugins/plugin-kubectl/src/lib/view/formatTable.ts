@@ -59,6 +59,9 @@ const outerCSSForKey = {
 
   COUNT: 'keep-with-sidecar',
 
+  // api-resources
+  APIGROUP: 'hide-with-sidecar',
+
   REVISION: 'hide-with-sidecar', // helm ls
   AGE: 'hide-with-sidecar very-narrow', // e.g. helm status and kubectl get svc
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
