@@ -23,13 +23,19 @@ import Icons from '../../Icons'
 import '../../../../../web/scss/components/DropDown/Carbon.scss'
 
 export default class CarbonDropDown extends React.PureComponent<Props> {
+  private onClose() {
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
+  }
+
   public render() {
     return (
       <OverflowMenu
         flipped
         menuOptionsClass={this.props.className}
         className={this.props.className}
-        onClose={this.props.onClose && this.props.onClose.bind(this)}
+        onClose={this.onClose.bind(this)}
       >
         {this.props.actions.map((_, idx) => {
           const selectedItem = (label: string, isSelected: boolean) => (
