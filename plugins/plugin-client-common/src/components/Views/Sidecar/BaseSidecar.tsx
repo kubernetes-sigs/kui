@@ -258,20 +258,20 @@ export abstract class BaseSidecar<
         back={
           this.useArrowNavigation() &&
           this.props.width !== Width.Closed &&
-          this.state.history.length > 1 && {
-            enabled: true,
+          this.state.history.hasBuffer() && {
+            enabled: this.state.history.hasBefore(),
             onClick: () => {
-              this.setState(curState => ({ current: curState.history.shiftLeft() }))
+              this.state.history.hasBefore() && this.setState(curState => ({ current: curState.history.before() }))
             }
           }
         }
         forward={
           this.useArrowNavigation() &&
           this.props.width !== Width.Closed &&
-          this.state.history.length > 1 && {
-            enabled: true,
+          this.state.history.hasBuffer() && {
+            enabled: this.state.history.hasAfter(),
             onClick: () => {
-              this.setState(curState => ({ current: curState.history.shiftRight() }))
+              this.state.history.hasAfter() && this.setState(curState => ({ current: curState.history.after() }))
             }
           }
         }

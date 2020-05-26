@@ -147,7 +147,7 @@ export default class Window extends React.PureComponent<Props> {
   /** back button */
   private back() {
     if (this.props.back) {
-      return (
+      return this.props.back.enabled ? (
         <span className="sidecar-bottom-stripe-button">
           <a href="#" className="graphical-icon kui--tab-navigable">
             <Icons
@@ -158,6 +158,12 @@ export default class Window extends React.PureComponent<Props> {
             />
           </a>
         </span>
+      ) : (
+        <span className="sidecar-bottom-stripe-button disabled">
+          <a className="disabled graphical-icon">
+            <Icons icon="Back" onClick={this.props.back.onClick} className="kui--sidecar--titlebar-navigation--back" />
+          </a>
+        </span>
       )
     }
   }
@@ -165,13 +171,23 @@ export default class Window extends React.PureComponent<Props> {
   /** forward button */
   private forward() {
     if (this.props.forward) {
-      return (
+      return this.props.forward.enabled ? (
         <span className="sidecar-bottom-stripe-button">
           <a href="#" className="graphical-icon kui--tab-navigable">
             <Icons
               icon="Forward"
               onClick={this.props.forward.onClick}
               onMouseDown={evt => evt.preventDefault()}
+              className="kui--sidecar--titlebar-navigation--forward"
+            />
+          </a>
+        </span>
+      ) : (
+        <span className="sidecar-bottom-stripe-button disabled">
+          <a className="disabled graphical-icon">
+            <Icons
+              icon="Forward"
+              onClick={this.props.forward.onClick}
               className="kui--sidecar--titlebar-navigation--forward"
             />
           </a>

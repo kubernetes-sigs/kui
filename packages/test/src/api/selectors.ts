@@ -70,7 +70,9 @@ export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (mode: string) =>
   `${SIDECAR_MODE_BUTTON_V2(mode)}.bx--side-nav__link--current`
 
 export const SIDECAR_BACK_BUTTON = `${SIDECAR_HEADER_NAVIGATION} .kui--sidecar--titlebar-navigation--back`
+export const SIDECAR_BACK_BUTTON_DISABLED = `${SIDECAR_HEADER_NAVIGATION} .disabled .kui--sidecar--titlebar-navigation--back`
 export const SIDECAR_FORWARD_BUTTON = `${SIDECAR_HEADER_NAVIGATION} .kui--sidecar--titlebar-navigation--forward`
+export const SIDECAR_FORWARD_BUTTON_DISABLED = `${SIDECAR_HEADER_NAVIGATION} .disabled .kui--sidecar--titlebar-navigation--forward`
 
 export const SIDECAR_MAXIMIZE_BUTTON = `${SIDECAR} .toggle-sidecar-maximization-button a` // maximize button in the bottom stripe
 export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
