@@ -181,9 +181,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
             triggerHref="#"
             selected={this.current.currentTabIndex}
             onSelectionChange={(idx: number) =>
-              this.setState(({ current }) => ({
-                current: Object.assign({}, current, { currentTabIndex: idx })
-              }))
+              this.setState(({ current, history }) => {
+                const newCurrent = Object.assign({}, current, { currentTabIndex: idx })
+                history.updateActive(newCurrent)
+                return {
+                  current: newCurrent
+                }
+              })
             }
           >
             {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
