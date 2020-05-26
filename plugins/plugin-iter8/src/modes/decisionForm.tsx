@@ -38,10 +38,11 @@ interface TableProps {
   rows: any
   headers: any
   getHeaderProps: any
+  title: string
 }
 // Functional Component for Data Table rendering
 const renderTable = TableProps => (
-  <TableContainer title="Metrics Comparison" description="Current values of all experimental metrics">
+  <TableContainer title={TableProps.title}>
     <Table>
       <TableHead>
         <TableRow>
@@ -226,6 +227,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Fill pie chart with version probabilities
   private getWinProbs(apiResult) {
     const dataLabels = []
+    this.winProbData = []
 
     const baseRlts = apiResult.baseline_assessment
     this.winProbData.push(baseRlts.win_probability)
@@ -331,7 +333,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     } else {
       this.advancedStatiticsHeaders = [{ header: 'Deployment', key: 'version' }]
       const DisplayDict = new NameDict()
-      const ratioMetrics = this.state.experimentRequest.metric_specs.ratio_metrics
+      const ratioMetrics = JSON.parse(JSON.stringify(this.state.experimentRequest.metric_specs.ratio_metrics))
       for (let i = 0; i < ratioMetrics.length; i++) {
         ratioMetrics[i] = ratioMetrics[i].name
       }
@@ -427,9 +429,13 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Makes an AJAX call to Iter8 API
   private handleGetAssessment() {
     this.setState({ haveResults: false })
+    console.log('Experiment Request')
+    console.log(JSON.stringify(this.state.experimentRequest))
     const AnalyticsAssess = new GetAnalyticsAssessment(this.state.experimentRequest)
     AnalyticsAssess.getAnalyticsAssessment()
       .then(result => {
+        console.log('Experiment Response')
+        console.log(result)
         const jsonrlts = JSON.parse(JSON.parse(result))
         // const jsonrlts = finalans
         this.getWinAnalysis(jsonrlts)
@@ -527,10 +533,13 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const { trafficSplit } = this.state
     return (
       <Form className="formProps" style={{ display: 'block' }}>
-        <FormGroup legendText="">
+        <FormGroup
+          style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+          legendText=""
+        >
           <InlineLoading
             description={
-              !this.state.experimentCreated ? 'Waiting for Experiment Creation Completion...' : 'Experiment Created:'
+              !this.state.experimentCreated ? 'Waiting for iter8 Experiment to be created...' : 'Experiment Created: '
             }
             iconDescription="Active loading indicator"
             status={this.state.experimentCreated ? 'finished' : 'active'}
@@ -540,12 +549,18 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         {this.state.haveResults ? (
           <div>
             <FormGroup legendText="">
-              <h3> {this.winner} </h3>
+              <h4 className="titletexts"> Winner Assessments </h4>
+              <h5> {this.winner} </h5>
             </FormGroup>
-            <FormGroup legendText="Win Probabilities" className="formGroupProps">
+            <FormGroup
+              style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+              legendText="Win Probabilities"
+              className="formGroupProps"
+            >
               <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="400" />
             </FormGroup>
             <FormGroup>
+              <h4 className="titletexts"> Traffic Assessments </h4>
               <Dropdown
                 id="analyticsAlgo"
                 label="Analytics Algorithm"
@@ -556,18 +571,26 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 helperText="Choose the algorithm to view its traffic routing suggestions."
                 onChange={value => this.handleAlgoChange(value.selectedItem)}
               />
-              <Button size="default" kind="danger" renderIcon={Undo32} onClick={this.handleReset}>
-                Reset
-              </Button>
-              <Button
-                size="default"
-                kind="primary"
-                renderIcon={Export32}
-                onClick={this.handleApply}
-                disabled={this.state.trafficErr || this.state.hasExperimentEnded}
-              >
-                Apply Traffic Split
-              </Button>
+              <div>
+                <Button
+                  style={{ backgroundColor: '#e65c00' }}
+                  size="default"
+                  kind="primary"
+                  renderIcon={Undo32}
+                  onClick={this.handleReset}
+                >
+                  Reset Traffic
+                </Button>
+                <Button
+                  size="default"
+                  kind="primary"
+                  renderIcon={Export32}
+                  onClick={this.handleApply}
+                  disabled={this.state.trafficErr || this.state.hasExperimentEnded}
+                >
+                  Apply Traffic Split
+                </Button>
+              </div>
               {this.state.notifyUser ? (
                 <ToastNotification
                   key={this.notifKey}
@@ -579,7 +602,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 />
               ) : null}
             </FormGroup>
-            <FormGroup legendText="">
+            <FormGroup
+              style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+              legendText=""
+            >
               {trafficSplit.map((val, idx) => {
                 const sliderId = `${idx}=${val.split}`
                 return (
@@ -606,18 +632,26 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 />
               ) : null}
             </FormGroup>
-            <FormGroup legendText="">
+            <FormGroup
+              style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+              legendText=""
+            >
+              <h4 className="titletexts"> Criteria Assessments </h4>
               {this.state.haveCriteriaComparison ? (
                 <DataTable
                   headers={this.criteriaTableHeaders}
                   rows={this.criteriaTableRows}
-                  render={({ rows, headers, getHeaderProps }) => renderTable({ rows, headers, getHeaderProps })}
+                  render={({ rows, headers, getHeaderProps }) =>
+                    renderTable({ rows, headers, getHeaderProps, title: 'Metrics Comparison' })
+                  }
+                  style={{ backgroundColor: 'inherit' }}
                 />
               ) : (
                 <h4> No Criteria Assessment to show</h4>
               )}
             </FormGroup>
             <FormGroup legendText="">
+              <h4 className="titletexts"> Advanced Statistics </h4>
               <Button
                 style={{ position: 'relative' }}
                 size="default"
@@ -635,8 +669,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                   label="Advanced Statistics"
                   items={Object.keys(this.advancedStatisticsNames)}
                   initialSelectedItem={this.state.selectedAdvancedStatistic}
-                  titleText="Get Advanced Statistics"
-                  helperText="Choose the statistic to compare"
+                  titleText=""
+                  helperText="Choose a statistic to compare"
                   onChange={value => this.getAdvancedStatistics(value.selectedItem)}
                 />
                 <DataTable
@@ -655,7 +689,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             ) : null}
           </div>
         ) : null}
-        <FormGroup legendText="">
+        <FormGroup
+          style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+          legendText=""
+        >
           <Button
             size="default"
             kind="primary"
@@ -669,8 +706,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         {this.state.haveResults ? (
           <div>
             <FormGroup legendText="">
-              {' '}
-              <h4> End Experiment </h4>{' '}
+              <h4 className="titletexts"> End Experiment </h4>
             </FormGroup>
             <FormGroup
               invalid={false}
@@ -688,18 +724,17 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 valueSelected="rollback"
                 style={{ padding: 10 }}
               >
-                <RadioButton id="rollback" labelText="Roll Back Traffic" value="rollback" />
-                <RadioButton id="rollforward" labelText="Roll Forward Traffic" value="rollforward" />
+                <RadioButton id="rollback" labelText="Roll Back to Baseline" value="rollback" />
+                <RadioButton id="rollforward" labelText="Roll Forward to Winner" value="rollforward" />
               </RadioButtonGroup>
             </FormGroup>
-            <FormGroup>
+            <FormGroup className="endexpbtn">
               <Button
                 size="default"
                 kind="primary"
                 renderIcon={Stop32}
                 onClick={this.endExperiment}
                 disabled={this.state.hasExperimentEnded}
-                style={{ backgroundColor: 'mediumpurple' }}
               >
                 End Experiment
               </Button>
