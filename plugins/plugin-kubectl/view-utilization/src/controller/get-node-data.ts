@@ -202,12 +202,33 @@ export async function topNode(
     value: strings('Allocatable Memory')
   })
 
+  // hide-with-sidecar the memory and cpu columns
+  const cpuIdx = nodeTable.header.attributes.findIndex(_ => _.key === 'CPU(cores)')
+  if (cpuIdx >= 0) {
+    nodeTable.header.attributes[cpuIdx].outerCSS = `${nodeTable.header.attributes[cpuIdx].outerCSS ||
+      ''} hide-with-sidecar`
+  }
+  const memIdx = nodeTable.header.attributes.findIndex(_ => _.key === 'MEMORY(bytes)')
+  if (memIdx >= 0) {
+    nodeTable.header.attributes[memIdx].outerCSS = `${nodeTable.header.attributes[memIdx].outerCSS ||
+      ''} hide-with-sidecar`
+  }
+
   // don't hide-with-sidecar the mem% column
-  nodeTable.header.attributes[3].outerCSS = nodeTable.header.attributes[2].outerCSS.replace(/hide-with-sidecar/, '')
+  const memPercentIdx = nodeTable.header.attributes.findIndex(_ => _.key === 'MEMORY%')
+  nodeTable.header.attributes[memPercentIdx].outerCSS = nodeTable.header.attributes[memPercentIdx].outerCSS.replace(
+    /hide-with-sidecar/,
+    ''
+  )
 
   nodeTable.body.forEach(row => {
     row.onclick = `kubectl top pod --node ${args.REPL.encodeComponent(row.name)}`
     row.onclickSilence = false
+
+    const cpuAttr = row.attributes.find(_ => _.key === 'CPU(cores)')
+    if (cpuAttr) {
+      cpuAttr.outerCSS = `${cpuAttr.outerCSS || ''} hide-with-sidecar`
+    }
 
     const cpuPercentAttr = row.attributes.find(_ => _.key === 'CPU%')
     if (cpuPercentAttr) {
