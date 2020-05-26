@@ -222,3 +222,25 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes) {
     }
   })
 }
+
+/** Selector to extract the Terminal rows */
+const terminalRows = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`
+
+/** Get text from a Terminal-oriented tab */
+exports.getTerminalText = async function() {
+  await this.app.client.waitForExist(terminalRows)
+  return this.app.client.getText(terminalRows)
+}
+
+/** Wait for the given checker to be true, w.r.t. the log text in the view */
+exports.waitForTerminalText = async function(checker) {
+  let idx = 0
+  const get = exports.getTerminalText.bind(this)
+  return this.app.client.waitUntil(async () => {
+    const text = await get()
+    if (++idx > 5) {
+      console.error(`still waiting for terminal text actualText=${text}`)
+    }
+    return checker(text)
+  })
+}

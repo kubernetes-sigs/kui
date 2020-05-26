@@ -23,6 +23,8 @@ import {
   deleteNS,
   waitForGreen,
   waitForRed,
+  getTerminalText,
+  waitForTerminalText,
   defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -39,11 +41,14 @@ function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
-const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
+const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+
+  const getLogText = getTerminalText.bind(this)
+  const waitForLogText = waitForTerminalText.bind(this)
 
   const ns: string = createNS()
   allocateNS(this, ns)
@@ -61,10 +66,8 @@ wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET 
 
   it(`should wait for the pod to come up`, () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(async () => {
-        await this.app.client.waitForExist(Selectors.WATCHER_N(1))
-        await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, podName))
-      })
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+      .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })
 
@@ -96,11 +99,7 @@ wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET 
       await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
 
       await sleep(sleepTime)
-      const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
-      assert.ok(
-        text.includes(containerName1) && text.includes(containerName2),
-        `${text} should have ${containerName1} and ${containerName2}`
-      )
+      await waitForLogText((text: string) => text.includes(containerName1) && text.includes(containerName2))
     } catch (err) {
       return Common.oops(this, true)(err)
     }
@@ -129,8 +128,7 @@ wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET 
       it(`should show ${showInLog} in log output`, async () => {
         try {
           await sleep(sleepTime)
-          const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
-          assert.ok(text.indexOf(showInLog) !== -1, `${text} should have ${showInLog}`)
+          await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
         } catch (err) {
           return Common.oops(this, true)(err)
         }
@@ -141,8 +139,7 @@ wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET 
       it(`should not show ${notShowInLog} in log output`, async () => {
         try {
           await sleep(sleepTime)
-          const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
-          assert.ok(text.indexOf(notShowInLog) === -1, `${text} should not have ${notShowInLog}`)
+          await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
         } catch (err) {
           return Common.oops(this, true)(err)
         }
@@ -216,9 +213,9 @@ wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET 
 
       await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(this.app)
 
-      const text1 = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+      const text1 = await getLogText()
       await sleep(sleepTime)
-      const text2 = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+      const text2 = await getLogText()
 
       assert.ok(text1.length === text2.length, `logs streaming should be stopped`)
     } catch (err) {
@@ -226,17 +223,17 @@ wdescribe(`kubectl container logs via watch pane ${process.env.MOCHA_RUN_TARGET 
     }
   })
 
-  const showError = 'Log streaming stopped abnormally. Showing'
+  const showError = 'Log streaming stopped abnormally.'
   switchContainer(containerName1, ['not found'], [], {
-    text: `${showError} container ${containerName1}`,
+    text: showError,
     type: 'error'
   })
   switchContainer(containerName2, ['not found'], [], {
-    text: `${showError} container ${containerName2}`,
+    text: showError,
     type: 'error'
   })
   switchContainer(allContainers, ['not found'], [], {
-    text: `${showError} ${allContainers.toLowerCase()}`,
+    text: showError,
     type: 'error'
   })
 
