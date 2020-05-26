@@ -56,6 +56,13 @@ interface State {
   blocks: BlockModel[]
 }
 
+/** Is the given `elm` on visible in the current viewport? */
+function isInViewport(elm: HTMLElement) {
+  const rect = elm.getBoundingClientRect()
+  const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight)
+  return !(rect.bottom < 0 || rect.top - viewHeight >= 0)
+}
+
 export default class ScrollableTerminal extends React.PureComponent<Props, State> {
   private readonly cleaners: Cleaner[] = []
   private _scrollRegion: HTMLDivElement
@@ -192,7 +199,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Owner wants us to focus on the current prompt */
   public doFocus() {
     if (this._activeBlock) {
-      this._activeBlock.doFocus()
+      if (this._activeBlock.state._block && isInViewport(this._activeBlock.state._block)) {
+        // re: isInViewport, see https://github.com/IBM/kui/issues/4739
+        this._activeBlock.doFocus()
+      }
     } else {
       // a bit of a data abstraction violation; we should figure out how to solve this better
       // see https://github.com/IBM/kui/issues/3945

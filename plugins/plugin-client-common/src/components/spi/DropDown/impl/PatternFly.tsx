@@ -64,7 +64,7 @@ export default class PatternFlyDropDown extends React.PureComponent<Props, State
         onSelect={() => {
           this.setState(curState => ({ isOpen: !curState.isOpen }))
           if (this.props.onClose) {
-            this.props.onClose.bind(this)
+            this.props.onClose()
           }
         }}
         toggle={

@@ -370,13 +370,7 @@ export default class Input extends InputProvider {
   private dropdown() {
     if (!isActive(this.props.model)) {
       const actions = this.removeAction().concat(this.screenshotAction())
-      return (
-        <DropDown
-          actions={actions}
-          className="kui--repl-block-right-element small-left-pad"
-          onClose={this.props.willLoseFocus && this.props.willLoseFocus.bind(this)}
-        />
-      )
+      return <DropDown actions={actions} className="kui--repl-block-right-element small-left-pad" />
     }
   }
 
