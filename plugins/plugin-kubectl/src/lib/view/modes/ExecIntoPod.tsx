@@ -17,9 +17,7 @@
 import * as React from 'react'
 import { v4 as uuid } from 'uuid'
 import {
-  Abortable,
   Arguments,
-  FlowControllable,
   ModeRegistration,
   Streamable,
   Tab,
@@ -29,6 +27,8 @@ import {
   eventChannelUnsafe
 } from '@kui-shell/core'
 
+import { Loading } from '@kui-shell/plugin-client-common'
+
 import { Terminal as XTerminal, ITheme } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 
@@ -36,17 +36,29 @@ import { getCommandFromArgs } from '../../util/util'
 import { KubeOptions } from '../../../controller/kubectl/options'
 import { KubeResource, Pod, isPod } from '../../model/resource'
 
-import { ContainerProps, ContainerState, ContainerComponent } from './logs'
+import { ContainerProps, ContainerState, ContainerComponent, HYSTERESIS, Job, StreamingStatus } from './ContainerCommon'
 
-import '@kui-shell/plugin-bash-like/web/css/static/xterm.css'
+import '../../../../web/scss/components/Terminal/Terminal.scss'
 
 const strings = i18n('plugin-kubectl', 'exec')
 
-type Job = Abortable & FlowControllable
+/** Cleanup function */
 type Cleaner = () => void
 
-interface State extends ContainerState {
+/** React state for the Terminal */
+export interface TerminalState extends ContainerState {
+  /** Are we streaming? */
+  isLive: StreamingStatus
+
+  /** Has the PTY been terminated? */
   isTerminated: boolean
+
+  /** Have we received any data yet, from the PTY? */
+  gotSomeData: boolean
+
+  /** Are we in the period between pty init and got-some-data before
+   * we want to complain about not having any data? */
+  waitingForHysteresis: boolean
 
   dom: HTMLDivElement
   xterm: XTerminal
@@ -70,7 +82,7 @@ function alpha(hex: string, alpha: number): string {
   }
 }
 
-class Terminal extends ContainerComponent<State> {
+export class Terminal<S extends TerminalState = TerminalState> extends ContainerComponent<S> {
   private readonly cleaners: Cleaner[] = []
 
   public constructor(props: ContainerProps) {
@@ -84,12 +96,15 @@ class Terminal extends ContainerComponent<State> {
       doResize: undefined,
       perTerminalCleaners: [],
 
+      isLive: 'Paused',
       isTerminated: false,
+      waitingForHysteresis: false,
+      gotSomeData: false,
       job: undefined,
       streamUUID: undefined
-    }
+    } as S
 
-    this.updateToolbar('Paused')
+    this.updateToolbar(this.state.isLive)
 
     const resizeListener = this.onResize.bind(this)
     window.addEventListener('resize', resizeListener)
@@ -170,7 +185,7 @@ class Terminal extends ContainerComponent<State> {
 
   /** Finish up the initialization of the stream */
   public componentDidUpdate() {
-    this.updateToolbar('Live')
+    this.updateToolbar(this.state.isLive)
 
     if (!this.state.job && !this.state.isTerminated) {
       this.initStream()
@@ -182,7 +197,8 @@ class Terminal extends ContainerComponent<State> {
 
     this.setState(curState => {
       if (curState.job) {
-        curState.job.abort()
+        // avoid exit-after-spawn races
+        setTimeout(() => curState.job.abort(), 5000)
       }
 
       return {
@@ -193,7 +209,7 @@ class Terminal extends ContainerComponent<State> {
     })
   }
 
-  public static getDerivedStateFromProps(props: ContainerProps, state: State) {
+  public static getDerivedStateFromProps(props: ContainerProps, state: TerminalState) {
     if (state.dom && !state.xterm) {
       return Terminal.initTerminal(state.dom)
     } else {
@@ -201,7 +217,8 @@ class Terminal extends ContainerComponent<State> {
     }
   }
 
-  protected toolbarText(): ToolbarText {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected toolbarText(status: StreamingStatus): ToolbarText {
     if (this.state.isTerminated) {
       return {
         type: 'error',
@@ -220,30 +237,51 @@ class Terminal extends ContainerComponent<State> {
     }
   }
 
-  private initStream() {
-    const streamUUID = uuid()
-    const { pod, repl } = this.props
-    const { container, xterm } = this.state
-    const cmd = `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
+  /** @return the command to issue in order to initialize the pty stream */
+  protected ptyCommand() {
+    const { pod } = this.props
+    const { container } = this.state
+
+    return `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
       pod.metadata.namespace
     } sh`
+  }
 
-    // Note: reset, not clear. This will fully clear the xterm screen
-    // as we prepare for a new connection. clear() alone only does a
-    // ctrl+L, and thus the xterm will still show e.g. the CWD part of
-    // the old prompt.
-    xterm.reset()
+  /** Indicate that we have received some data */
+  private gotSomeData(streamUUID: string) {
+    if (!this.state.gotSomeData) {
+      this.setState(curState => {
+        if (!curState.gotSomeData && curState.streamUUID === streamUUID) {
+          return { gotSomeData: true }
+        }
+      })
+    }
+  }
 
-    repl.qexec(cmd, undefined, undefined, {
+  /** Initialize a PTY stream from the current state's settings */
+  private initStream(): void {
+    const { repl } = this.props
+    const { xterm } = this.state
+
+    const streamUUID = uuid()
+
+    repl.qexec(this.ptyCommand(), undefined, undefined, {
       onInit: () => {
         return (_: Streamable) => {
-          if (typeof _ === 'string') {
+          if (typeof _ === 'string' && this.state.streamUUID === streamUUID) {
+            this.gotSomeData(streamUUID)
             xterm.write(_)
           }
         }
       },
 
       onReady: (job: Job) => {
+        // Note: reset, not clear. This will fully clear the xterm screen
+        // as we prepare for a new connection. clear() alone only does a
+        // ctrl+L, and thus the xterm will still show e.g. the CWD part of
+        // the old prompt.
+        xterm.reset()
+
         xterm.onData((data: string) => {
           if (this.state.streamUUID === streamUUID) {
             job.write(data)
@@ -252,19 +290,34 @@ class Terminal extends ContainerComponent<State> {
 
         xterm.focus()
 
+        setTimeout(() => {
+          if (!this.state.isTerminated) {
+            this.setState(curState => {
+              if (curState.streamUUID === streamUUID) {
+                return { waitingForHysteresis: false }
+              }
+            })
+          }
+        }, HYSTERESIS)
+
         this.setState({
           job,
-          streamUUID
+          streamUUID,
+          isLive: 'Live',
+          waitingForHysteresis: true
         })
       },
 
       onExit: (exitCode: number) => {
         this.setState(curState => {
           if (curState.streamUUID === streamUUID) {
-            this.updateToolbar(exitCode === 0 ? 'Stopped' : 'Error')
+            const isLive = exitCode === 0 ? 'Stopped' : 'Error'
+            this.updateToolbar(isLive)
             return {
               job: undefined,
               streamUUID: undefined,
+              container: undefined,
+              isLive,
               isTerminated: true
             }
           }
@@ -276,8 +329,20 @@ class Terminal extends ContainerComponent<State> {
     }) */
   }
 
-  private static initTerminal(dom: HTMLElement) {
-    const xterm = new XTerminal()
+  /** Are we focusing on all containers? */
+  protected isAllContainers() {
+    return super.isAllContainers() && !this.state.isTerminated
+  }
+
+  private static initTerminal(dom: HTMLElement): Partial<TerminalState> {
+    // for tests, we need to extract the text in the Terminal; for
+    // now, we facilitate this by using the dom renderer
+    const rendererType = process.env.RUNNING_SHELL_TEST || process.env.RUNNING_KUI_TEST ? 'dom' : 'canvas'
+
+    const xterm = new XTerminal({
+      scrollback: 1000,
+      rendererType
+    })
     const perTerminalCleaners: Cleaner[] = []
 
     const inject = () => Terminal.injectTheme(xterm, dom)
@@ -304,11 +369,41 @@ class Terminal extends ContainerComponent<State> {
     }
   }
 
+  /** Should we wait a bit before proclaiming we have no data? */
+  protected needsHysteresis(): boolean {
+    return false
+  }
+
+  /** Render in the case we have received no information from the PTY */
+  protected nothingToShow(): React.ReactNode {
+    return <React.Fragment />
+  }
+
+  /** If needsHysteresis(), and we haven't yet received any data, render as such */
+  protected maybeNothingToShow(): React.ReactNode {
+    if (this.needsHysteresis()) {
+      if (this.state.waitingForHysteresis || !this.state.xterm || !this.state.job) {
+        return <React.Fragment />
+      } else if (!this.state.gotSomeData) {
+        return this.nothingToShow()
+      }
+    }
+  }
+
   public render() {
     if (this.state.dom && !this.state.xterm) {
-      return <React.Fragment />
+      return <Loading />
     } else {
-      return <div className="kui--full-height" ref={dom => this.setState({ dom })} />
+      return (
+        <div
+          className="kui--full-height kui--terminal kui--relative-positioning"
+          data-needs-hysteresis={this.needsHysteresis()}
+          data-got-some-data={this.state.gotSomeData}
+          ref={dom => this.setState({ dom })}
+        >
+          {this.maybeNothingToShow()}
+        </div>
+      )
     }
   }
 }

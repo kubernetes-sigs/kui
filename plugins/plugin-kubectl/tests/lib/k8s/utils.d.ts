@@ -104,3 +104,9 @@ declare var kubectl: headless
  *
  */
 declare function doHelp(this: Common.ISuite, cmd: string, breadcrumbs: string[], modes: string[]): Promise<void>
+
+/** Get text from a Terminal-oriented tab */
+declare function getTerminalText(this: Common.ISuite): Promise<string>
+
+/** Wait for the given checker to be true, w.r.t. the log text in the view */
+declare function waitForTerminalText (checker: (text: string) => boolean): Promise<void>

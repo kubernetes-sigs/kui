@@ -31,6 +31,7 @@
   "conditions": "Conditions",
   "logs": "Logs",
   "containers": "Containers",
+  "All Containers": "All Containers",
   "events": "Events",
   "Show Events": "Show Events",
   "Unable to parse table": "Unable to parse table",

@@ -228,6 +228,16 @@ body.still-loading .repl {
   flex-direction: column;
   overflow-y: hidden;
 }
+.kui--relative-positioning {
+  position: relative;
+}
+.kui--center-absolute {
+  /* assumes parent is position: relative */
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+}
 textarea.not-tabbable,
 input.not-tabbable {
   -webkit-touch-callout: none;
