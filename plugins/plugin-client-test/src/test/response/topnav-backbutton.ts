@@ -20,12 +20,14 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  it('should open TopNavSidecar with "test mmr mode" and not show back button', () => {
+  it('should open TopNavSidecar with "test mmr mode" and not show back buttonm, then go to the second tab', () => {
     return CLI.command('test mmr mode', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showingTopNav('this is the name part'))
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, CLI.waitTimeout, true)) // back button NOT visible (yet)
+      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('text2')))
+      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('text2')))
       .catch(Common.oops(this, true))
   })
 
@@ -40,8 +42,9 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
       .catch(Common.oops(this, true))
   })
 
-  it('should click back button and show the first response', async () => {
+  it('should click back button and show the first response with selected tab', async () => {
     await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON)
+    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('text2'))
     return SidecarExpect.badge('badge1', undefined, true) // absent badge!
   })
 
