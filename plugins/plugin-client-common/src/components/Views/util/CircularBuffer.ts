@@ -25,24 +25,30 @@ export interface BaseHistoryEntry {
 
 type InternalEntry<T extends BaseHistoryEntry> = T & {
   key: string
+  prev: number
+  next: number
 }
 
 export default class CircularBuffer<T extends BaseHistoryEntry> {
   private readonly entries: InternalEntry<T>[]
   private activeIdx: number
+  private prev: number
+  private next: number
   private insertionIdx: number
   private _length: number
 
   public constructor(first: T, capacity = 15) {
     this.entries = new Array<InternalEntry<T>>(capacity)
     this.activeIdx = 0
+    this.prev = -1
+    this.next = -1
     this.insertionIdx = 1 % capacity
     this._length = 1
-    this.entries[0] = this.entry(first)
+    this.entries[0] = this.entry(first, { prev: this.prev, next: this.next })
   }
 
-  private entry(asGiven: T): InternalEntry<T> {
-    return Object.assign(asGiven, { key: uuid() })
+  private entry(asGiven: T, updatePointer: { prev: number; next: number }): InternalEntry<T> {
+    return Object.assign(asGiven, { key: uuid(), prev: updatePointer.prev, next: updatePointer.next })
   }
 
   public get length() {
@@ -58,7 +64,15 @@ export default class CircularBuffer<T extends BaseHistoryEntry> {
   }
 
   public update(idx: number, t: T) {
-    this.entries[idx] = this.entry(t)
+    if (idx !== this.activeIdx) {
+      this.next = -1
+      this.prev = this.activeIdx
+      this.entries[idx] = this.entry(t, { prev: this.prev, next: this.next })
+      this.entries[this.prev].next = idx
+    } else {
+      this.entries[idx] = this.entry(t, { prev: this.entries[idx].prev, next: this.entries[idx].next })
+    }
+
     this.activeIdx = idx
   }
 
@@ -68,8 +82,12 @@ export default class CircularBuffer<T extends BaseHistoryEntry> {
   }
 
   public push(entry: T) {
+    this.next = -1
+    this.prev = this.activeIdx
     const idx = this.insertionIdx
-    this.entries[idx] = this.entry(entry)
+    this.entries[idx] = this.entry(entry, { prev: this.prev, next: this.next })
+    this.entries[this.prev].next = idx
+
     this.activeIdx = idx
     this.insertionIdx = (idx + 1) % this.entries.length
     this._length = Math.min(this._length + 1, this.entries.length)
@@ -78,7 +96,9 @@ export default class CircularBuffer<T extends BaseHistoryEntry> {
   /** pop the entry at idx */
   public popAt(idx: number) {
     while (idx < this._length - 1) {
-      this.entries[idx] = this.entry(this.entries[++idx])
+      const nextEntry = this.entries[idx + 1]
+      this.entries[idx] = this.entry(nextEntry, { prev: nextEntry.prev, next: nextEntry.next })
+      idx += 1
     }
 
     delete this.entries[idx]
@@ -87,35 +107,35 @@ export default class CircularBuffer<T extends BaseHistoryEntry> {
     this._length = this._length - 1
   }
 
+  public before() {
+    this.activeIdx = this.prev
+    this.next = this.entries[this.prev].next
+    this.prev = this.entries[this.prev].prev
+
+    return this.peekAt(this.activeIdx)
+  }
+
+  public hasBefore() {
+    return this.prev >= 0
+  }
+
+  public hasAfter() {
+    return this.next >= 0
+  }
+
+  public hasBuffer() {
+    return this.hasBefore() || this.hasAfter()
+  }
+
+  public after() {
+    this.activeIdx = this.next
+    this.prev = this.entries[this.next].prev
+    this.next = this.entries[this.next].next
+    return this.peekAt(this.activeIdx)
+  }
+
   public hasLeft() {
     return this.activeIdx > 0
-  }
-
-  public shiftLeft() {
-    let idx = this.activeIdx
-    do {
-      // note: javascript doesn't do the expected thing for negative numbers modulo N
-      // ref: https://stackoverflow.com/a/4467559
-      const N = this.entries.length
-      idx = (((idx - 1) % N) + N) % N
-    } while (!this.entries[idx])
-
-    this.activeIdx = idx
-    return this.peek()
-  }
-
-  /* public hasRight() {
-    return this.activeIdx <
-  } */
-
-  public shiftRight() {
-    let idx = this.activeIdx
-    do {
-      idx = (idx + 1) % this.entries.length
-    } while (!this.entries[idx])
-
-    this.activeIdx = idx
-    return this.peek()
   }
 
   public peek() {

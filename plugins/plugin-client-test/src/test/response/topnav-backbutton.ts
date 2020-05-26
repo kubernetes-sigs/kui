@@ -20,38 +20,170 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  it('should open TopNavSidecar with "test mmr mode" and not show back buttonm, then go to the second tab', () => {
-    return CLI.command('test mmr mode', this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showingTopNav('this is the name part'))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, CLI.waitTimeout, true)) // back button NOT visible (yet)
-      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('text2')))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('text2')))
-      .catch(Common.oops(this, true))
-  })
+  const firstCmd = 'test mmr mode'
+  const secondCmd = 'test mmr mode-via-registration'
+  const thirdCmd = 'test mmr namespace'
 
-  it('should open TopNavSidecar with "test mmr mode-via-registration" and DO show back button', () => {
-    return CLI.command('test mmr mode-via-registration', this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showingTopNav('this is the name part'))
-      .then(SidecarExpect.badge('badge1'))
-      .then(SidecarExpect.button({ mode: 'button1', label: 'button1 label' }))
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON)) // back button IS visible
-      .catch(Common.oops(this, true))
-  })
+  const backToFirst = () => {
+    it('should click back button and show the first response with selected tab', async () => {
+      try {
+        await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON)
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('text2'))
 
-  it('should click back button and show the first response with selected tab', async () => {
-    await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON)
-    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('text2'))
-    return SidecarExpect.badge('badge1', undefined, true) // absent badge!
-  })
+        await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON_DISABLED) // back button disabled since we reaches the end of the buffer
+        await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON) // forward button should appear since we just hit back
 
-  it('should click forward button and show the second response', async () => {
-    await this.app.client.click(Selectors.SIDECAR_FORWARD_BUTTON)
-    return SidecarExpect.badge('badge1') // present badge!
-  })
+        return SidecarExpect.badge('badge1', undefined, true) // absent badge!
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const nextToSecond = () => {
+    it('should click forward button and show the second response', async () => {
+      try {
+        await this.app.client.click(Selectors.SIDECAR_FORWARD_BUTTON)
+
+        await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON_DISABLED) // forward button disabled since we reaches the end of the buffer
+        await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON) // back button should appear since we just hit forward
+
+        return SidecarExpect.badge('badge1') // present badge!
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const nextToThird = (nextToEnd = true) => {
+    it('should click forward button and show the third response', async () => {
+      try {
+        await this.app.client.click(Selectors.SIDECAR_FORWARD_BUTTON)
+
+        await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON) // back button should appear since we just hit forward
+        if (nextToEnd) {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON_DISABLED) // forward button should appear since we just hit forward
+        } else {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON)
+        }
+
+        return SidecarExpect.namespace('this is the namespace part')
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const backToThird = () => {
+    it('should click back button and show the third response with selected tab', async () => {
+      try {
+        await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON)
+
+        await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON) // forward button should appear since we just hit back
+        await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON) // back button should appear since we haven't reached the end of buffer
+
+        return SidecarExpect.namespace('this is the namespace part')
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const backToSecond = () => {
+    it('should click back button and show the second response', async () => {
+      try {
+        await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON)
+
+        await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON) // back button should appear since we haven't reach the end of the buffer
+        await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON) // forward button should appear since we just hit back
+
+        return SidecarExpect.badge('badge1') // present badge!
+      } catch (err) {
+        return Common.oops(this)(err)
+      }
+    })
+  }
+
+  const nextToFirst = () => {
+    it('should click forward button and show the second response', async () => {
+      try {
+        await this.app.client.click(Selectors.SIDECAR_FORWARD_BUTTON)
+        return SidecarExpect.badge('badge1', undefined, true) // absent badge!
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const openWithFirstCmd = (startOfBuffer = true) => {
+    it(`should open TopNavSidecar with ${firstCmd} and not show back/forward button, then go to the second tab`, () => {
+      return CLI.command(firstCmd, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showingTopNav('this is the name part'))
+        .then(
+          () =>
+            !startOfBuffer
+              ? this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON)
+              : this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, CLI.waitTimeout, true) // back button NOT visible (yet)
+        )
+        .then(() =>
+          !startOfBuffer
+            ? this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON_DISABLED)
+            : this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON, CLI.waitTimeout, true)
+        ) // forward button NOT visible (yet)
+        .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('text2')))
+        .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('text2')))
+        .catch(Common.oops(this))
+    })
+  }
+
+  const openWithSecondCmd = () => {
+    it(`should open TopNavSidecar with ${secondCmd} and DO show back button, but not forward button`, () => {
+      return CLI.command(secondCmd, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showingTopNav('this is the name part'))
+        .then(SidecarExpect.badge('badge1'))
+        .then(SidecarExpect.button({ mode: 'button1', label: 'button1 label' }))
+        .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON)) // back button IS visible
+        .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON_DISABLED)) // forward button is disabled
+        .catch(Common.oops(this, true))
+    })
+  }
+
+  const openWithThirdCmd = () => {
+    it(`should open TopNavSidecar with "${thirdCmd}" and DO show back button, but not forward button`, () => {
+      return CLI.command(thirdCmd, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.namespace('this is the namespace part'))
+        .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON)) // back button IS visible
+        .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON_DISABLED)) // forward button disabled
+        .catch(Common.oops(this, true))
+    })
+  }
+
+  /* Here comes the tests */
+
+  openWithFirstCmd()
+  openWithSecondCmd()
+
+  backToFirst()
+  nextToSecond()
+  backToFirst()
+
+  openWithThirdCmd()
+
+  backToFirst()
+  nextToThird()
+
+  openWithSecondCmd()
+
+  backToThird()
+  backToFirst()
+  nextToThird(false)
+  nextToSecond()
 
   it('should switch to LeftNav via about command', () => {
     return CLI.command('about', this.app)
@@ -59,26 +191,11 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
       .then(SidecarExpect.open)
       .then(SidecarExpect.showingLeftNav('Overview'))
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, CLI.waitTimeout, true)) // back button NOT visible
+      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON, CLI.waitTimeout, true)) // forward button NOT visible
       .catch(Common.oops(this, true))
   })
 
-  it('should re-open TopNavSidecar and STILL SHOW back button', () => {
-    return CLI.command('test mmr mode', this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showingTopNav('this is the name part'))
-      .then(SidecarExpect.badge('badge1', undefined, true)) // absent badge!
-      .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON))
-      .catch(Common.oops(this, true))
-  })
-
-  it('should click back button and show the first response', async () => {
-    await this.app.client.click(Selectors.SIDECAR_BACK_BUTTON)
-    return SidecarExpect.badge('badge1', undefined, true) // absent badge!
-  })
-
-  it('should click forward button and show the second response', async () => {
-    await this.app.client.click(Selectors.SIDECAR_FORWARD_BUTTON)
-    return SidecarExpect.badge('badge1') // present badge!
-  })
+  openWithFirstCmd(false)
+  backToSecond()
+  nextToFirst()
 })
