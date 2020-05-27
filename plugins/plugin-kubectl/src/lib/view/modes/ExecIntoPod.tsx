@@ -106,7 +106,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     super(props)
 
     this.state = {
-      container: props.pod.spec.containers[0].name,
+      container: this.defaultContainer(),
 
       dom: undefined,
       xterm: undefined,
@@ -157,6 +157,10 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     if (this.state && this.state.xterm) {
       setTimeout(() => this.state.xterm.focus())
     }
+  }
+
+  protected defaultContainer() {
+    return this.props.pod.spec.containers[0].name
   }
 
   /**
@@ -295,6 +299,8 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     const { pod } = this.props
     const { container } = this.state
 
+    console.error('yoyo', container)
+
     return `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
       pod.metadata.namespace
     } -- sh`
@@ -404,7 +410,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
             return {
               job: undefined,
               streamUUID: undefined,
-              container: undefined,
+              container: curState.container,
               isLive,
               isTerminated: true
             }

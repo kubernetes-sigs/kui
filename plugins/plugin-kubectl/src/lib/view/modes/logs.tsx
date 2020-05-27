@@ -82,11 +82,8 @@ export class Logs extends Terminal {
     return `${getCommandFromArgs(args)} logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} -f`
   }
 
-  /** Buttons to display in the Toolbar. */
-  protected toolbarButtons(status: StreamingStatus) {
-    if (status === 'Stopped' || status === 'Error') {
-      return this.containerList()
-    } else {
+  protected toolbarButtonsForStreaming(status: StreamingStatus): Button[] {
+    if (status === 'Live' || status === 'Paused') {
       const isLive = status === 'Live'
       return [
         {
@@ -96,7 +93,9 @@ export class Logs extends Terminal {
           icon: <Icons icon={isLive ? 'Pause' : 'Play'} />,
           command: this.toggleStreaming.bind(this, !isLive)
         } as Button
-      ].concat(this.containerList())
+      ]
+    } else {
+      return []
     }
   }
 
