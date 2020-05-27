@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { DropDown } from '@kui-shell/plugin-client-common'
+import { DropDown, Icons } from '@kui-shell/plugin-client-common'
 import { Abortable, Arguments, Button, FlowControllable, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
 
 import { Pod } from '../../model/resource'
@@ -63,10 +63,31 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
 > {
   protected abstract toolbarText(status: StreamingStatus): ToolbarText
 
+  protected toolbarButtonsForError(status: StreamingStatus): Button[] {
+    if (status === 'Error') {
+      return [
+        {
+          mode: 'retry-streaming',
+          label: strings('Retry'),
+          kind: 'view',
+          icon: <Icons icon="Retry" onClick={() => this.showContainer(this.state.container)} />,
+          command: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
+        } as Button
+      ]
+    } else {
+      return []
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected toolbarButtonsForStreaming(status: StreamingStatus): Button[] {
+    return []
+  }
+
   /** Buttons to display in the Toolbar. */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected toolbarButtons(status: StreamingStatus): Button[] {
-    return this.containerList()
+    return this.toolbarButtonsForError(status).concat(this.toolbarButtonsForStreaming(status), this.containerList())
   }
 
   protected supportsAllContainers() {
