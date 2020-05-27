@@ -1,5 +1,6 @@
 {
   "The terminal connection has closed.": "The terminal connection has closed.",
   "Connecting to container X.": "Please wait. Connecting to container **{0}**.",
+  "Connection is idle, and will expire shortly. Connected to container X.": "Connection is **idle**, and will expire shortly. Connected to container **{0}**.",
   "Connected to container X.": "Connected to container **{0}**."
 }

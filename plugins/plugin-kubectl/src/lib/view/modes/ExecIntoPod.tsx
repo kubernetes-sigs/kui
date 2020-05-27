@@ -42,6 +42,19 @@ import '../../../../web/scss/components/Terminal/Terminal.scss'
 
 const strings = i18n('plugin-kubectl', 'exec')
 
+/**
+ * Interval in milliseconds before we warn the user that we are about
+ * to abort the PTY.
+ */
+const MINUTES = 60 * 1000
+const INTERVAL_TILL_IDLE_COUNTDOWN = 15 * MINUTES
+
+/**
+ * Interval in milliseconds after the first countdown after which we
+ * actually abort the PTY.
+ */
+const INTERVAL_OF_IDLE_COUNTDOWN = 5 * MINUTES
+
 /** Cleanup function */
 type Cleaner = () => void
 
@@ -84,6 +97,10 @@ function alpha(hex: string, alpha: number): string {
 
 export class Terminal<S extends TerminalState = TerminalState> extends ContainerComponent<S> {
   private readonly cleaners: Cleaner[] = []
+
+  /** After some period of receiving no data, auto-abort the PTY */
+  private isIdle = true
+  private idleTimeout?: ReturnType<typeof setTimeout>
 
   public constructor(props: ContainerProps) {
     super(props)
@@ -229,6 +246,11 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
         type: 'warning',
         text: strings('Please wait. Connecting to container X.', this.state.container)
       }
+    } else if (this.state.isLive === 'Idle') {
+      return {
+        type: 'warning',
+        text: strings('Connection is idle, and will expire shortly. Connected to container X.', this.state.container)
+      }
     } else {
       return {
         type: 'info',
@@ -258,6 +280,27 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     }
   }
 
+  /** Tell the user whether or not we are preparing to idle the PTY */
+  private indicate(isLive: 'Idle' | 'Live') {
+    this.updateToolbar(isLive)
+    this.setState({
+      isLive
+    })
+  }
+
+  private initiateIdleCountdown() {
+    this.indicate('Idle')
+    this.idleTimeout = setTimeout(() => {
+      if (this.state.job) {
+        this.state.job.abort()
+      }
+    }, INTERVAL_OF_IDLE_COUNTDOWN)
+  }
+
+  private initiateIdleTimer() {
+    return setTimeout(() => this.initiateIdleCountdown(), INTERVAL_TILL_IDLE_COUNTDOWN)
+  }
+
   /** Initialize a PTY stream from the current state's settings */
   private initStream(): void {
     const { repl } = this.props
@@ -268,6 +311,13 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     repl.qexec(this.ptyCommand(), undefined, undefined, {
       onInit: () => {
         return (_: Streamable) => {
+          if (this.idleTimeout) {
+            this.updateToolbar('Live')
+            clearTimeout(this.idleTimeout)
+            this.indicate('Live')
+            this.idleTimeout = this.initiateIdleTimer()
+          }
+
           if (typeof _ === 'string' && this.state.streamUUID === streamUUID) {
             this.gotSomeData(streamUUID)
             xterm.write(_)
@@ -299,6 +349,11 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
             })
           }
         }, HYSTERESIS)
+
+        if (this.idleTimeout) {
+          clearTimeout(this.idleTimeout)
+        }
+        this.idleTimeout = this.initiateIdleTimer()
 
         this.setState({
           job,
