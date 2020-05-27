@@ -150,10 +150,10 @@ export class Logs extends Terminal {
  * The content renderer for the summary tab
  *
  */
-async function content({ REPL }: Tab, pod: Pod, args: Arguments<KubeOptions>) {
+async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
   return {
     react: function LogsProvider(toolbarController: ToolbarProps) {
-      return <Logs repl={REPL} pod={pod} args={args} toolbarController={toolbarController} />
+      return <Logs tab={tab} pod={pod} args={args} toolbarController={toolbarController} />
     }
   }
 }

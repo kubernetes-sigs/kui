@@ -248,6 +248,6 @@ exports.waitForTerminalText = async function(checker) {
     if (++idx > 5) {
       console.error(`still waiting for terminal text actualText=${text}`)
     }
-    return checker(text)
+    return typeof checker === 'string' ? text.indexOf(checker) >= 0 : checker(text)
   })
 }

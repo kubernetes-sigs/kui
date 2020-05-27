@@ -392,6 +392,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
             this.setState({ tab })
 
             if (tab) {
+              tab.uuid = this.props.uuid
               tab.onActivate = (handler: (isActive: boolean) => void) => {
                 this.activateHandlers.push(handler)
               }

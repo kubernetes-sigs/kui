@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { DropDown } from '@kui-shell/plugin-client-common'
-import { Abortable, Arguments, Button, FlowControllable, REPL, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
+import { Abortable, Arguments, Button, FlowControllable, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
 
 import { Pod } from '../../model/resource'
 import { KubeOptions } from '../../../controller/kubectl/options'
@@ -36,7 +36,7 @@ export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error' | 'Idle'
 
 export interface ContainerProps {
   args: Arguments<KubeOptions>
-  repl: REPL
+  tab: Tab
   pod: Pod
   toolbarController: ToolbarProps
 }

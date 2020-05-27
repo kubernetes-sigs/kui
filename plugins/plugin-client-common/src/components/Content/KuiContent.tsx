@@ -123,3 +123,11 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
     return <div className="oops">Unsupported content</div>
   }
 }
+
+export interface Focusable {
+  doFocus(): void
+}
+
+export function isFocusable(node: React.ReactNode & Partial<Focusable>): node is Focusable {
+  return typeof (node as Focusable).doFocus === 'function'
+}

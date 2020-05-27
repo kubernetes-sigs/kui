@@ -18,6 +18,7 @@ import REPL from '../models/repl'
 import TabState from '../models/tab-state'
 
 export interface Tab extends HTMLDivElement {
+  uuid: string
   REPL: REPL
   state: TabState
   queueListener: EventListener // for input queueing, see queueing.ts

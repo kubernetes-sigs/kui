@@ -171,6 +171,17 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     )
   }
 
+  /** Tell the world that we have changed the focused mode */
+  private broadcastFocusChange(idx: number) {
+    // de-focus the old mode
+    const oldMode = this.current.tabs[this.state.current.currentTabIndex]
+    eventChannelUnsafe.emit(`/mode/focus/off/tab/${this.props.uuid}/mode/${oldMode.mode}`, oldMode)
+
+    // re-focus the new mode
+    const newMode = this.current.tabs[idx]
+    eventChannelUnsafe.emit(`/mode/focus/on/tab/${this.props.uuid}/mode/${newMode.mode}`, newMode)
+  }
+
   // first div used to be sidecar-top-stripe
   private tabs() {
     return (
@@ -180,7 +191,10 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
             className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"
             triggerHref="#"
             selected={this.current.currentTabIndex}
-            onSelectionChange={(idx: number) =>
+            onSelectionChange={(idx: number) => {
+              // tell the views that we have changed focus
+              this.broadcastFocusChange(idx)
+
               this.setState(({ current, history }) => {
                 const newCurrent = Object.assign({}, current, { currentTabIndex: idx })
                 history.updateActive(newCurrent)
@@ -188,7 +202,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
                   current: newCurrent
                 }
               })
-            }
+            }}
           >
             {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
               <Tab

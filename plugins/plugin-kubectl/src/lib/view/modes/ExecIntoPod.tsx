@@ -27,7 +27,7 @@ import {
   eventChannelUnsafe
 } from '@kui-shell/core'
 
-import { Loading } from '@kui-shell/plugin-client-common'
+import { inDebugMode, Loading } from '@kui-shell/plugin-client-common'
 
 import { Terminal as XTerminal, ITheme } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
@@ -123,9 +123,40 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
     this.updateToolbar(this.state.isLive)
 
+    const focus = () => {
+      this.doFocus()
+      this.doXon()
+    }
+    const focusOnEvent = `/mode/focus/on/tab/${this.props.tab.uuid}/mode/terminal`
+    eventChannelUnsafe.on(focusOnEvent, focus)
+    this.cleaners.push(() => eventChannelUnsafe.off(focusOnEvent, focus))
+
+    const xoff = this.doXoff.bind(this)
+    const focusOffEvent = `/mode/focus/off/tab/${this.props.tab.uuid}/mode/terminal`
+    eventChannelUnsafe.on(focusOffEvent, xoff)
+    this.cleaners.push(() => eventChannelUnsafe.off(focusOffEvent, xoff))
+
     const resizeListener = this.onResize.bind(this)
     window.addEventListener('resize', resizeListener)
     this.cleaners.push(() => window.removeEventListener('resize', resizeListener))
+  }
+
+  private doXon() {
+    if (this.state && this.state.job) {
+      setTimeout(() => this.state.job.xon())
+    }
+  }
+
+  private doXoff() {
+    if (this.state && this.state.job) {
+      setTimeout(() => this.state.job.xoff())
+    }
+  }
+
+  private doFocus() {
+    if (this.state && this.state.xterm) {
+      setTimeout(() => this.state.xterm.focus())
+    }
   }
 
   /**
@@ -266,7 +297,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
     return `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
       pod.metadata.namespace
-    } sh`
+    } -- sh`
   }
 
   /** Indicate that we have received some data */
@@ -303,7 +334,9 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
   /** Initialize a PTY stream from the current state's settings */
   private initStream(): void {
-    const { repl } = this.props
+    const {
+      tab: { REPL: repl }
+    } = this.props
     const { xterm } = this.state
 
     const streamUUID = uuid()
@@ -338,7 +371,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
           }
         })
 
-        xterm.focus()
+        this.doFocus()
 
         setTimeout(() => {
           if (!this.state.isTerminated) {
@@ -392,7 +425,8 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
   private static initTerminal(dom: HTMLElement): Partial<TerminalState> {
     // for tests, we need to extract the text in the Terminal; for
     // now, we facilitate this by using the dom renderer
-    const rendererType = process.env.RUNNING_SHELL_TEST || process.env.RUNNING_KUI_TEST ? 'dom' : 'canvas'
+    const rendererType =
+      inDebugMode() || process.env.RUNNING_SHELL_TEST || process.env.RUNNING_KUI_TEST ? 'dom' : 'canvas'
 
     const xterm = new XTerminal({
       scrollback: 1000,
@@ -467,10 +501,10 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
  * The content renderer for the summary tab
  *
  */
-async function content({ REPL }: Tab, pod: Pod, args: Arguments<KubeOptions>) {
+async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
   return {
     react: function TerminalProvider(toolbarController: ToolbarProps) {
-      return <Terminal repl={REPL} pod={pod} args={args} toolbarController={toolbarController} />
+      return <Terminal tab={tab} pod={pod} args={args} toolbarController={toolbarController} />
     }
   }
 }

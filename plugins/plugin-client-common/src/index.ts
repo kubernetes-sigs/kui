@@ -62,3 +62,12 @@ export { onKeyUp as defaultOnKeyUp } from './components/Views/Terminal/Block/Act
 // spi
 export { default as Icons } from './components/spi/Icons'
 export { default as DropDown, DropDownAction } from './components/spi/DropDown'
+
+declare let __KUI_RUNNING_KUI_TEST: boolean
+export function inDebugMode() {
+  return (
+    (typeof __KUI_RUNNING_KUI_TEST !== 'undefined' && __KUI_RUNNING_KUI_TEST) ||
+    process.env.RUNNING_KUI_TEST ||
+    process.env.RUNNING_SHELL_TEST
+  )
+}
