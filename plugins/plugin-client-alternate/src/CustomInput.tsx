@@ -15,15 +15,35 @@
  */
 
 import * as React from 'react'
-import { InputProvider, defaultOnKeyDown, defaultOnKeyPress, defaultOnKeyUp } from '@kui-shell/plugin-client-common'
+import {
+  InputProvider,
+  InputProviderProps,
+  InputProviderState,
+  defaultOnKeyDown,
+  defaultOnKeyPress,
+  defaultOnKeyUp
+} from '@kui-shell/plugin-client-common'
 
 import '../web/scss/CustomInput.scss'
+
+/** intentionally empty for now, to get test coverage of the ability to subclass State */
+interface MyState extends InputProviderState {
+  customCount: number
+}
 
 /**
  * Use DefaultClient configured to run in bottomInput mode.
  *
  */
-export default class CustomInput extends InputProvider {
+export default class CustomInput extends InputProvider<MyState> {
+  public constructor(props: InputProviderProps) {
+    super(props)
+
+    this.state = Object.assign(this.state || {}, {
+      customCount: 0
+    })
+  }
+
   /** This is the "input" that we provide */
   protected input() {
     return (

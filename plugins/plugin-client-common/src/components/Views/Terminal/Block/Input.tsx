@@ -89,9 +89,9 @@ type InputProps = {
   model?: BlockModel
 }
 
-type Props = InputOptions & InputProps
+export type Props = InputOptions & InputProps
 
-interface State {
+export interface State {
   /** the execution ID for this prompt, if any */
   execUUID?: string
 
@@ -105,11 +105,11 @@ interface State {
   tabCompletion?: TabCompletionState
 
   /** spinner? */
-  spinner: ReturnType<typeof setInterval>
+  spinner?: ReturnType<typeof setInterval>
   spinnerDom?: HTMLSpanElement
 }
 
-export abstract class InputProvider extends React.PureComponent<Props, State> {
+export abstract class InputProvider<S extends State = State> extends React.PureComponent<Props, S> {
   /** this is what the InputProvider needs to provide, minimially */
   protected abstract input()
 
