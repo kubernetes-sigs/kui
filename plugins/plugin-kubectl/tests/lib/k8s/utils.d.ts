@@ -103,7 +103,7 @@ declare var kubectl: headless
  * @param modes array of expected nav menus (can be a subset)
  *
  */
-declare function doHelp(this: Common.ISuite, cmd: string, breadcrumbs: string[], modes: string[]): Promise<void>
+declare function doHelp(this: Common.ISuite, cmd: string, breadcrumbs: string[], modes: string[], content?: string): Promise<void>
 
 /** Get text from a Terminal-oriented tab */
 declare function getTerminalText(this: Common.ISuite): Promise<string>

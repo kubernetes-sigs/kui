@@ -205,7 +205,7 @@ exports.kubectl = makeCLI('kubectl kui', bindir)
  * Test Usage
  *
  */
-exports.doHelp = function doHelp(cmd, breadcrumbs, modes) {
+exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
   it(`should give help for known outer command=${cmd} breadcrumbs=${breadcrumbs}`, async () => {
     try {
       await CLI.command(cmd, this.app)
@@ -217,6 +217,13 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes) {
       await expectArray(breadcrumbs.map(_ => _.label))
 
       await Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(_))))
+
+      if (content) {
+        return this.app.client.waitUntil(async () => {
+          const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+          return text.include(content)
+        })
+      }
     } catch (err) {
       await Common.oops(this, true)
     }
