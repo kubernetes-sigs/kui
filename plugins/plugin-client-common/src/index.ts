@@ -50,7 +50,11 @@ export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidec
 export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
 
 // Input components
-export { InputProvider } from './components/Views/Terminal/Block/Input'
+export {
+  InputProvider,
+  State as InputProviderState,
+  Props as InputProviderProps
+} from './components/Views/Terminal/Block/Input'
 export { default as defaultOnKeyDown } from './components/Views/Terminal/Block/OnKeyDown'
 export { default as defaultOnKeyPress } from './components/Views/Terminal/Block/OnKeyPress'
 export { onKeyUp as defaultOnKeyUp } from './components/Views/Terminal/Block/ActiveISearch'
