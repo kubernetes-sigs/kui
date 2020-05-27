@@ -20,6 +20,7 @@ import * as SidecarExpect from './sidecar-expect'
 import * as Selectors from './selectors'
 import { expectArray } from './util'
 import { promiseEach, Breadcrumb } from '@kui-shell/core'
+import { productName } from '@kui-shell/client/config.d/name.json'
 
 interface Param {
   command: string
@@ -101,4 +102,43 @@ export class TestNavResponse {
       }
     })
   }
+}
+
+export const testAbout = (self: Common.ISuite) => {
+  const Overview = 'Overview'
+
+  it('should open the about window via command execution', () =>
+    CLI.command('about', self.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .then(SidecarExpect.showing(Overview))
+      .then(SidecarExpect.breadcrumbs([productName]))
+      .then(() => self.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
+      .then(async () => {
+        if (process.env.MOCHA_RUN_TARGET === 'electron') {
+          return self.app.client.execute(sidecarSelector => {
+            const imageSrc = document
+              .querySelector(sidecarSelector)
+              .querySelector('.marked-content')
+              .querySelector('img')
+              .getAttribute('src')
+            const fs = require('fs')
+            return fs.statSync(`${__dirname}/${imageSrc}`)
+          }, Selectors.SIDECAR)
+        }
+
+        if (process.env.MOCHA_RUN_TARGET === 'webpack') {
+          return self.app.client.execute(sidecarSelector => {
+            const imageSrc = document
+              .querySelector(sidecarSelector)
+              .querySelector('.marked-content')
+              .querySelector('img')
+              .getAttribute('src')
+            const image = new Image()
+            image.src = `${window.location.origin}/${imageSrc}`
+            if (image.height === 0) throw new Error(`image not found: ${window.location.origin}/${imageSrc}`)
+          }, Selectors.SIDECAR)
+        }
+      })
+      .catch(Common.oops(self, true)))
 }
