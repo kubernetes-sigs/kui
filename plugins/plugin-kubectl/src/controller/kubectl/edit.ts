@@ -94,6 +94,11 @@ export function doEdit(cmd: string) {
                 }
               }
             })
+
+            return {
+              type: 'success' as const,
+              text: strings('Successfully Applied')
+            }
           }
         },
         revert: {
