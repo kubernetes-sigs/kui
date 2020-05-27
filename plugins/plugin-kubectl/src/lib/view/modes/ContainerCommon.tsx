@@ -32,7 +32,7 @@ export const HYSTERESIS = 1500
 
 export type Job = Abortable & FlowControllable
 
-export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error'
+export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error' | 'Idle'
 
 export interface ContainerProps {
   args: Arguments<KubeOptions>
@@ -94,31 +94,29 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
   }
 
   /** Render a selection component that allows user to select a container. */
-  protected containerOptions() {
+  private containerOptions() {
     const { containers } = this.props.pod.spec
-    if (containers.length > 1) {
-      const actions = containers
-        .map(_ => ({
-          label: _.name,
-          isSelected: this.state.container === _.name,
-          hasDivider: false,
-          handler: () => this.showContainer(_.name)
-        }))
-        .concat(
-          !this.supportsAllContainers()
-            ? []
-            : [
-                {
-                  label: strings('All Containers'),
-                  isSelected: this.isAllContainers(),
-                  hasDivider: true,
-                  handler: () => this.showContainer(undefined)
-                }
-              ]
-        )
+    const actions = containers
+      .map(_ => ({
+        label: _.name,
+        isSelected: this.state.container === _.name,
+        hasDivider: false,
+        handler: () => this.showContainer(_.name)
+      }))
+      .concat(
+        !this.supportsAllContainers() || containers.length === 1
+          ? []
+          : [
+              {
+                label: strings('All Containers'),
+                isSelected: this.isAllContainers(),
+                hasDivider: true,
+                handler: () => this.showContainer(undefined)
+              }
+            ]
+      )
 
-      return <DropDown actions={actions} className="kui--repl-block-right-element" />
-    }
+    return <DropDown actions={actions} className="kui--repl-block-right-element" />
   }
 
   /** Are we focusing on all containers? */
@@ -128,16 +126,14 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
 
   /** List of containers that is compatible with toolbar buttons model */
   protected containerList() {
-    return this.props.pod.spec.containers.length <= 1
-      ? []
-      : [
-          {
-            mode: 'container-list',
-            label: 'Select a container',
-            kind: 'view' as const,
-            command: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-            icon: this.containerOptions()
-          } as Button
-        ]
+    return [
+      {
+        mode: 'container-list',
+        label: 'Select a container',
+        kind: 'view' as const,
+        command: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+        icon: this.containerOptions()
+      } as Button
+    ]
   }
 }
