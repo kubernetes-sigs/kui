@@ -168,8 +168,23 @@ class Events extends React.PureComponent<Props, State> {
     }
   }
 
-  /** Toolbar buttons to display */
-  protected toolbarButtons(status: StreamingStatus) {
+  protected toolbarButtonsForError(status: StreamingStatus): Button[] {
+    if (status === 'Error') {
+      return [
+        {
+          mode: 'retry-streaming',
+          label: strings('Retry'),
+          kind: 'view',
+          icon: <Icons icon="Retry" onClick={() => this.initStream()} />,
+          command: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
+        } as Button
+      ]
+    } else {
+      return []
+    }
+  }
+
+  protected toolbarButtonsForStreaming(status: StreamingStatus): Button[] {
     const isLive = status === 'Live'
     return [
       {
@@ -180,6 +195,11 @@ class Events extends React.PureComponent<Props, State> {
         command: this.toggleStreaming.bind(this, !isLive)
       } as Button
     ]
+  }
+
+  /** Toolbar buttons to display */
+  protected toolbarButtons(status: StreamingStatus) {
+    return this.toolbarButtonsForError(status).concat(this.toolbarButtonsForStreaming(status))
   }
 
   /** Update Toolbar text and Toolbar buttons. */

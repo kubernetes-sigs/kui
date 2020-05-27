@@ -33,7 +33,8 @@ const containerName = 'nginx'
 
 // we will echo this text to this file
 const ECHO_TEXT = `hello ${uuid()}`
-const ECHO_FILE = '/tmp/kui-terminal-tab-test'
+const ECHO_FILE_1 = '/tmp/kui-terminal-tab-test-1'
+const ECHO_FILE_2 = '/tmp/kui-terminal-tab-test-2'
 
 declare let __KUI_RUNNING_KUI_TEST: boolean
 
@@ -44,6 +45,106 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   const ns: string = createNS()
   allocateNS(this, ns)
 
+  const getPodAndOpenSidecar = () => {
+    it(`should get pods via ${command} then click`, async () => {
+      try {
+        const selector: string = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app).then(
+          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
+        )
+
+        // wait for the badge to become green
+        await waitForGreen(this.app, selector)
+
+        // now click on the table row
+        await this.app.client.click(`${selector} .clickable`)
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.showing(podName))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const switchTo = async (mode: string) => {
+    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(mode))
+    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(mode))
+    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode))
+  }
+
+  /** sleep for the given number of seconds */
+  const sleep = (nSecs: number) => new Promise(resolve => setTimeout(resolve, nSecs * 1000))
+
+  /** switch to terminal tab, echo into file, and confirm echoed text */
+  const echoInTerminalTabAndConfirm = (ECHO_FILE: string) => {
+    it('should show terminal tab', async () => {
+      try {
+        await switchTo('terminal')
+        await SidecarExpect.toolbarText({
+          type: 'info',
+          text: `Connected to container ${containerName}`,
+          exact: false
+        })(this.app)
+
+        await sleep(5)
+
+        this.app.client.keys(`echo ${ECHO_TEXT} > ${ECHO_FILE}${Keys.ENTER}`)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+
+    it(`should confirm echoed text via ${command} exec`, async () => {
+      try {
+        await CLI.command(`${command} exec ${podName} -c ${containerName} -n ${ns} -- cat ${ECHO_FILE}`, this.app)
+          .then(ReplExpect.okWithPtyOutput(ECHO_TEXT))
+          .catch(Common.oops(this, true))
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  /** switch to terminal tab, exit with 1, see error in toolbar and click retry button */
+  const exitTerminalTabAndRetry = () => {
+    it('should show terminal tab and exit with error', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('terminal'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('terminal'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('terminal'))
+
+        await SidecarExpect.toolbarText({
+          type: 'info',
+          text: `Connected to container ${containerName}`,
+          exact: false
+        })(this.app)
+
+        await new Promise(resolve => setTimeout(resolve, 5000))
+
+        this.app.client.keys(`exit 1${Keys.ENTER}`)
+
+        await SidecarExpect.toolbarText({ type: 'error', text: 'has closed', exact: false })(this.app)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+
+    it('should click retry button', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await SidecarExpect.toolbarText({
+          type: 'info',
+          text: `Connected to container ${containerName}`,
+          exact: false
+        })(this.app)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  /* Here comes the tests */
   it('should inject RUNNING_KUI_TEST', () => {
     return this.app.client
       .execute(() => {
@@ -62,58 +163,11 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       .catch(Common.oops(this, true))
   })
 
-  it(`should get pods via ${command} then click`, async () => {
-    try {
-      const selector: string = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app).then(
-        ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
-      )
-
-      // wait for the badge to become green
-      await waitForGreen(this.app, selector)
-
-      // now click on the table row
-      await this.app.client.click(`${selector} .clickable`)
-      await SidecarExpect.open(this.app)
-        .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing(podName))
-    } catch (err) {
-      return Common.oops(this, true)(err)
-    }
-  })
-
-  const switchTo = async (mode: string) => {
-    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(mode))
-    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(mode))
-    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode))
-  }
-
-  /** sleep for the given number of seconds */
-  const sleep = (nSecs: number) => new Promise(resolve => setTimeout(resolve, nSecs * 1000))
-
-  it('should show terminal tab', async () => {
-    try {
-      await switchTo('terminal')
-      await SidecarExpect.toolbarText({ type: 'info', text: `Connected to container ${containerName}`, exact: false })(
-        this.app
-      )
-
-      await sleep(5)
-
-      this.app.client.keys(`echo ${ECHO_TEXT} > ${ECHO_FILE}${Keys.ENTER}`)
-    } catch (err) {
-      return Common.oops(this, true)(err)
-    }
-  })
-
-  it(`should confirm echoed text via ${command} exec`, async () => {
-    try {
-      await CLI.command(`${command} exec ${podName} -c ${containerName} -n ${ns} -- cat ${ECHO_FILE}`, this.app)
-        .then(ReplExpect.okWithPtyOutput(ECHO_TEXT))
-        .catch(Common.oops(this, true))
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
+  getPodAndOpenSidecar()
+  echoInTerminalTabAndConfirm(ECHO_FILE_1)
+  getPodAndOpenSidecar()
+  exitTerminalTabAndRetry()
+  echoInTerminalTabAndConfirm(ECHO_FILE_2)
 
   const getText = getTerminalText.bind(this)
   const waitForText = waitForTerminalText.bind(this)

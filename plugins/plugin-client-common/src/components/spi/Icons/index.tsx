@@ -35,6 +35,7 @@ export type SupportedIcon =
   | 'NextPage'
   | 'Pause'
   | 'Play'
+  | 'Retry'
   | 'PreviousPage'
   | 'Screenshot'
   | 'ScreenshotInProgress'

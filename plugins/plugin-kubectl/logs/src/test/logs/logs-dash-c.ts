@@ -58,57 +58,105 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   const containerName1 = 'nginx'
   const containerName2 = 'vim'
 
-  it(`should create sample pod from URL`, () => {
-    return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(podName))
-      .catch(Common.oops(this, true))
-  })
+  const createPodWithoutWaiting = () => {
+    it(`should create sample pod from URL`, () => {
+      return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
+        .then(ReplExpect.okWithPtyOutput(podName))
+        .catch(Common.oops(this, true))
+    })
+  }
 
-  it(`should wait for the pod to come up`, () => {
-    return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-      .then(selector => waitForGreen(this.app, selector))
-      .catch(Common.oops(this, true))
-  })
+  const waitForPod = () => {
+    it(`should wait for the pod to come up`, () => {
+      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+        .then(selector => waitForGreen(this.app, selector))
+        .catch(Common.oops(this, true))
+    })
+  }
 
-  it(`should get pods via kubectl then click`, async () => {
-    try {
-      const selector: string = await CLI.command(`kubectl get pods ${podName} -n ${ns}`, this.app).then(
-        ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
-      )
+  const getPodViaClick = (wait = true) => {
+    it(`should get pods via kubectl then click`, async () => {
+      try {
+        const selector: string = await CLI.command(`kubectl get pods ${podName} -n ${ns}`, this.app).then(
+          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
+        )
 
-      // wait for the badge to become green
-      await waitForGreen(this.app, selector)
+        if (wait) {
+          // wait for the badge to become green
+          await waitForGreen(this.app, selector)
+        }
 
-      // now click on the table row
-      await this.app.client.click(`${selector} .clickable`)
-      await SidecarExpect.open(this.app)
-        .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing(podName))
-    } catch (err) {
-      return Common.oops(this, true)(err)
+        // now click on the table row
+        await this.app.client.click(`${selector} .clickable`)
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.showing(podName))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const getPodViaYaml = () => {
+    it('should get pods via kubectl get -o yaml', async () => {
+      try {
+        await CLI.command(`kubectl get pods ${podName} -n ${ns} -o yaml`, this.app)
+        await SidecarExpect.open(this.app)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const testLogsContent = (show: string[], notShow?: string[]) => {
+    if (show) {
+      show.forEach(showInLog => {
+        it(`should show ${showInLog} in log output`, async () => {
+          try {
+            await sleep(sleepTime)
+            await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
+          } catch (err) {
+            return Common.oops(this, true)(err)
+          }
+        })
+      })
     }
-  })
 
-  it('should show logs tab', async () => {
-    try {
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
-
-      await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
-
-      await sleep(sleepTime)
-      await waitForLogText((text: string) => text.includes(containerName1) && text.includes(containerName2))
-    } catch (err) {
-      return Common.oops(this, true)(err)
+    if (notShow) {
+      notShow.forEach(notShowInLog => {
+        it(`should not show ${notShowInLog} in log output`, async () => {
+          try {
+            await sleep(sleepTime)
+            await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
+          } catch (err) {
+            return Common.oops(this, true)(err)
+          }
+        })
+      })
     }
-  })
+  }
+
+  const switchToLogsTab = (showInLog: string[], toolbar: { text: string; type: string }) => {
+    it('should show logs tab', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
+
+        await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
+
+        testLogsContent(showInLog)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
 
   const switchContainer = (
     container: string,
-    _showInLog: string[],
-    _notShowInLog: string[],
+    showInLog: string[],
+    notShowInLog: string[],
     toolbar: { text: string; type: string }
   ) => {
     it(`should switch to container ${container}`, async () => {
@@ -124,27 +172,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       }
     })
 
-    _showInLog.forEach(showInLog => {
-      it(`should show ${showInLog} in log output`, async () => {
-        try {
-          await sleep(sleepTime)
-          await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
-        } catch (err) {
-          return Common.oops(this, true)(err)
-        }
-      })
-    })
-
-    _notShowInLog.forEach(notShowInLog => {
-      it(`should not show ${notShowInLog} in log output`, async () => {
-        try {
-          await sleep(sleepTime)
-          await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
-        } catch (err) {
-          return Common.oops(this, true)(err)
-        }
-      })
-    })
+    testLogsContent(showInLog, notShowInLog)
   }
 
   const toggleStreaming = (changeToLive: boolean) => {
@@ -163,6 +191,25 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       }
     })
   }
+
+  const doRetry = (showInLog: string[], toolbar: { text: string; type: string }) => {
+    it('should hit retry', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(this.app)
+        testLogsContent(showInLog)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  /* Here comes the test */
+  createPodWithoutWaiting()
+  waitForPod()
+  getPodViaClick()
+  switchToLogsTab([containerName1, containerName2], { text: 'Logs are live', type: 'info' })
 
   /** testing various combination here */
   switchContainer(containerName1, [containerName1], [containerName2], { text: containerName1, type: 'info' })
@@ -235,6 +282,26 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   switchContainer(allContainers, ['not found'], [], {
     text: showError,
     type: 'error'
+  })
+
+  doRetry(['not found'], {
+    text: showError,
+    type: 'error'
+  })
+
+  createPodWithoutWaiting() // recreate this pod
+  getPodViaYaml() // NOTE: immediately open sidecar when pod is in creation
+
+  switchToLogsTab(['not found'], {
+    text: showError,
+    type: 'error'
+  })
+
+  waitForPod() // wait for pod ready
+
+  doRetry([containerName1, containerName2], {
+    text: 'Logs are live',
+    type: 'info'
   })
 
   deleteNS(this, ns)

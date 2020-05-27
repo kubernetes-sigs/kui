@@ -19,6 +19,7 @@
   "Log streaming stopped abnormally.": "Log streaming **stopped abnormally**.",
   "Pause Streaming": "Pause Streaming",
   "Resume Streaming": "Resume Streaming",
+  "Retry": "Retry",
   "Occurred at": "Occurred at {0}",
   "Stack Trace": "Stack Trace",
   "Error": "Error"
