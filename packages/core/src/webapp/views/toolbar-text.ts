@@ -19,7 +19,7 @@
  *
  */
 
-type ToolbarTextType = 'info' | 'warning' | 'error'
+type ToolbarTextType = 'info' | 'success' | 'warning' | 'error'
 
 type ToolbarTextValue = string | Element
 
