@@ -147,6 +147,9 @@ class Events extends React.PureComponent<Props, State> {
 
   public componentWillUnmount() {
     clearInterval(this.state.timer)
+    if (this.state.job) {
+      this.state.job.abort()
+    }
   }
 
   /** Toolbar text to display */
