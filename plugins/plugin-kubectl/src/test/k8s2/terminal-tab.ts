@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ok } from 'assert'
 import { v4 as uuid } from 'uuid'
 import { Common, CLI, Keys, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import {
@@ -21,55 +22,49 @@ import {
   allocateNS,
   deleteNS,
   waitForGreen,
+  getTerminalText,
+  waitForTerminalText,
   defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-import { readFileSync } from 'fs'
-import { dirname, join } from 'path'
-const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
-const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-logs-two-containers.yaml'))
-const inputEncoded = inputBuffer.toString('base64')
-const podName = 'kui-two-containers'
+const command = 'kubectl'
+const podName = 'nginx'
 const containerName = 'nginx'
 
 // we will echo this text to this file
 const ECHO_TEXT = `hello ${uuid()}`
 const ECHO_FILE = '/tmp/kui-terminal-tab-test'
 
-describe(`kubectl Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+declare let __KUI_RUNNING_KUI_TEST: boolean
+
+describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   const ns: string = createNS()
   allocateNS(this, ns)
 
-  it(`should create sample pod from URL`, () => {
-    return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(podName))
+  it('should inject RUNNING_KUI_TEST', () => {
+    return this.app.client
+      .execute(() => {
+        __KUI_RUNNING_KUI_TEST = true
+      })
       .catch(Common.oops(this, true))
   })
 
-  if (process.env.USE_WATCH_PANE) {
-    it(`should wait for the pod to come up`, () => {
-      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(async () => {
-          await this.app.client.waitForExist(Selectors.WATCHER_N(1))
-          await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, podName))
-        })
-        .catch(Common.oops(this, true))
-    })
-  } else {
-    it(`should wait for the pod to come up`, () => {
-      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-        .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this, true))
-    })
-  }
+  it(`should create sample pod from URL via ${command}`, () => {
+    return CLI.command(
+      `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
+      this.app
+    )
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+      .then((selector: string) => waitForGreen(this.app, selector))
+      .catch(Common.oops(this, true))
+  })
 
-  it(`should get pods via kubectl then click`, async () => {
+  it(`should get pods via ${command} then click`, async () => {
     try {
-      const selector: string = await CLI.command(`kubectl get pods ${podName} -n ${ns}`, this.app).then(
+      const selector: string = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app).then(
         ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
       )
 
@@ -86,31 +81,89 @@ describe(`kubectl Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(
     }
   })
 
+  const switchTo = async (mode: string) => {
+    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(mode))
+    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(mode))
+    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode))
+  }
+
+  /** sleep for the given number of seconds */
+  const sleep = (nSecs: number) => new Promise(resolve => setTimeout(resolve, nSecs * 1000))
+
   it('should show terminal tab', async () => {
     try {
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('terminal'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('terminal'))
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('terminal'))
-
+      await switchTo('terminal')
       await SidecarExpect.toolbarText({ type: 'info', text: `Connected to container ${containerName}`, exact: false })(
         this.app
       )
 
-      await new Promise(resolve => setTimeout(resolve, 5000))
+      await sleep(5)
 
       this.app.client.keys(`echo ${ECHO_TEXT} > ${ECHO_FILE}${Keys.ENTER}`)
-      this.app.client.keys(`exit${Keys.ENTER}`)
-
-      await SidecarExpect.toolbarText({ type: 'error', text: 'has closed', exact: false })(this.app)
     } catch (err) {
       return Common.oops(this, true)(err)
     }
   })
 
-  it('should confirm echoed text via kubectl exec', async () => {
-    await CLI.command(`kubectl exec ${podName} -c ${containerName} -n ${ns} cat ${ECHO_FILE}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(ECHO_TEXT))
-      .catch(Common.oops(this, true))
+  it(`should confirm echoed text via ${command} exec`, async () => {
+    try {
+      await CLI.command(`${command} exec ${podName} -c ${containerName} -n ${ns} -- cat ${ECHO_FILE}`, this.app)
+        .then(ReplExpect.okWithPtyOutput(ECHO_TEXT))
+        .catch(Common.oops(this, true))
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  const getText = getTerminalText.bind(this)
+  const waitForText = waitForTerminalText.bind(this)
+
+  it('should re-focus and xoff the terminal when we switch to a different sidecar tab', async () => {
+    try {
+      console.error('1')
+      await switchTo('raw')
+
+      await sleep(3)
+      console.error('2')
+      await switchTo('terminal')
+      await sleep(3)
+
+      console.error('3')
+      const elts = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`)
+      console.error('3b', elts && elts.value.length)
+      await this.app.client.keys(`while true; do echo hi; sleep 1; done${Keys.ENTER}`)
+
+      console.error('4')
+      await waitForText('hi')
+
+      const textBeforeSwitch = await getText()
+      const nLinesBefore = textBeforeSwitch.split(/\n/).length
+      console.error('5', nLinesBefore)
+
+      await switchTo('raw')
+      await sleep(10)
+      await switchTo('terminal')
+
+      const textAfterSwitch = await getText()
+      const nLinesAfter = textAfterSwitch.split(/\n/).length
+      console.error('6', nLinesAfter)
+
+      // we slept for 10 seconds, and our while loop emits "hi" every
+      // second. we shouldn't have anywhere near 10 new newlines now:
+      ok(nLinesAfter - nLinesBefore < 5)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should properly exit the terminal', async () => {
+    try {
+      await this.app.client.keys(Keys.ctrlC)
+      await this.app.client.keys(`exit${Keys.ENTER}`)
+      await SidecarExpect.toolbarText({ type: 'error', text: 'has closed', exact: false })(this.app)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
   })
 
   deleteNS(this, ns)
