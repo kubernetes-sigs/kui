@@ -45,6 +45,8 @@ export default class Toolbar extends React.PureComponent<Props> {
       switch (type) {
         case 'info':
           return <Icons icon="Info" />
+        case 'success':
+          return <Icons icon="Checkmark" />
         case 'warning':
           return <Icons icon="Warning" />
         case 'error':

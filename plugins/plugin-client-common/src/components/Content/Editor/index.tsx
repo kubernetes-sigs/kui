@@ -38,7 +38,7 @@ interface WithOptions {
     clearable?: boolean
     save?: {
       label: string
-      onSave: (data: string) => Promise<void>
+      onSave: (data: string) => Promise<void | ToolbarText>
     }
     revert?: {
       label: string
@@ -166,8 +166,11 @@ export default class Editor extends React.PureComponent<Props, State> {
           kind: 'view' as const,
           command: async () => {
             try {
-              await onSave(editor.getValue())
-              props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
+              const onSavedText = await onSave(editor.getValue())
+              props.willUpdateToolbar(
+                onSavedText || this.allClean(props),
+                !clearable ? undefined : [ClearButton(editor)]
+              )
             } catch (err) {
               props.willUpdateToolbar(this.error(props, 'errorSavingWithMessage', err.message))
             }

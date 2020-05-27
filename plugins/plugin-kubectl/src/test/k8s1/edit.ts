@@ -120,6 +120,7 @@ commands.forEach(command => {
           await this.app.client.keys(`${Keys.End}${Keys.ENTER}foo: bar${Keys.ENTER}`)
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
+          await SidecarExpect.toolbarText({ type: 'success', text: 'Successfully Applied', exact: true })(this.app)
           await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('Save'), 10000, true)
         } catch (err) {
           await Common.oops(this, true)(err)
