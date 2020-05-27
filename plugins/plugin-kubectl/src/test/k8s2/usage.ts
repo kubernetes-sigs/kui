@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common } from '@kui-shell/test'
+import { Common, testAbout } from '@kui-shell/test'
 import { doHelp } from '../../../tests/lib/k8s/utils'
 
 const commonModes = ['Introduction']
@@ -31,11 +31,14 @@ describe('kubectl dash h', function(this: Common.ISuite) {
 
   // help on kubectl
   it('should refresh', () => Common.refresh(this))
-  help('kubectl', ['kubectl'], kubectlModes)
+  help('kubectl', ['kubectl'], kubectlModes, 'kubectl controls the Kubernetes cluster manager')
+
+  // switch to about, should see correct navigation, breadcrumbs and content
+  testAbout(this)
 
   // help on kubectl
   it('should refresh', () => Common.refresh(this))
-  help('k help', ['kubectl'], kubectlModes)
+  help('k help', ['kubectl'], kubectlModes, 'kubectl controls the Kubernetes cluster manager')
 
   // help on kubectl with intentionally bogus verb that we expect to be a breadcrumb
   it('should refresh', () => Common.refresh(this))
