@@ -34,7 +34,7 @@ function getLastAppliedRaw(resource: KubeResource): string {
  *
  */
 function hasLastApplied(resource: KubeResource): boolean {
-  return getLastAppliedRaw(resource) !== undefined
+  return !resource.isSimulacrum && getLastAppliedRaw(resource) !== undefined
 }
 
 /**

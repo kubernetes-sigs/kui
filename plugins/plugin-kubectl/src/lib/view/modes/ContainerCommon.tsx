@@ -16,10 +16,19 @@
 
 import * as React from 'react'
 import { DropDown, Icons } from '@kui-shell/plugin-client-common'
-import { Abortable, Arguments, Button, FlowControllable, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
+import {
+  Abortable,
+  Arguments,
+  Button,
+  FlowControllable,
+  ParsedOptions,
+  Tab,
+  ToolbarProps,
+  ToolbarText,
+  i18n
+} from '@kui-shell/core'
 
 import { Pod } from '../../model/resource'
-import { KubeOptions } from '../../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl')
 
@@ -35,7 +44,11 @@ export type Job = Abortable & FlowControllable
 export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error' | 'Idle'
 
 export interface ContainerProps {
-  args: Arguments<KubeOptions>
+  args: {
+    argsForMode?: Arguments
+    argvNoOptions: string[]
+    parsedOptions: ParsedOptions
+  }
   tab: Tab
   pod: Pod
   toolbarController: ToolbarProps

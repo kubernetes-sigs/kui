@@ -36,8 +36,6 @@ const ECHO_TEXT = `hello ${uuid()}`
 const ECHO_FILE_1 = '/tmp/kui-terminal-tab-test-1'
 const ECHO_FILE_2 = '/tmp/kui-terminal-tab-test-2'
 
-declare let __KUI_RUNNING_KUI_TEST: boolean
-
 describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -144,14 +142,8 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
     })
   }
 
-  /* Here comes the tests */
-  it('should inject RUNNING_KUI_TEST', () => {
-    return this.app.client
-      .execute(() => {
-        __KUI_RUNNING_KUI_TEST = true
-      })
-      .catch(Common.oops(this, true))
-  })
+  // needed to force the dom renderer for webpack/browser-based tests; see ExecIntoPod
+  Common.setDebugMode.bind(this)()
 
   it(`should create sample pod from URL via ${command}`, () => {
     return CLI.command(

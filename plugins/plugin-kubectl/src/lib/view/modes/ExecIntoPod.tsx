@@ -33,8 +33,8 @@ import { Terminal as XTerminal, ITheme } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 
 import { getCommandFromArgs } from '../../util/util'
-import { KubeOptions } from '../../../controller/kubectl/options'
 import { KubeResource, Pod, isPod } from '../../model/resource'
+import { KubeOptions, getContainer } from '../../../controller/kubectl/options'
 
 import { ContainerProps, ContainerState, ContainerComponent, HYSTERESIS, Job, StreamingStatus } from './ContainerCommon'
 
@@ -141,6 +141,19 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     this.cleaners.push(() => window.removeEventListener('resize', resizeListener))
   }
 
+  /** Which container should we focus on by default? */
+  protected defaultContainer() {
+    if (this.props.args.argsForMode) {
+      const container = getContainer(this.props.args.argsForMode, 'exec')
+      if (container) {
+        // TODO MAYBE? validate container name?
+        return container
+      }
+    }
+
+    return this.props.pod.spec.containers[0].name
+  }
+
   private doXon() {
     if (this.state && this.state.job) {
       setTimeout(() => this.state.job.xon())
@@ -157,10 +170,6 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     if (this.state && this.state.xterm) {
       setTimeout(() => this.state.xterm.focus())
     }
-  }
-
-  protected defaultContainer() {
-    return this.props.pod.spec.containers[0].name
   }
 
   /**
@@ -224,6 +233,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
   /** When we are going away, make sure to abort the streaming job. */
   public componentWillUnmount() {
+    this._unmounted = true
     super.componentWillUnmount()
     this.disposeTerminal()
     this.cleaners.forEach(cleaner => cleaner())
@@ -244,14 +254,22 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     }
   }
 
+  private abortPriorJob() {
+    if (this.state.job) {
+      // the setTimeout helps us avoid exit-after-spawn races
+      setTimeout(() => {
+        if (this.state.job) {
+          this.state.job.abort()
+        }
+      }, 5000)
+    }
+  }
+
   protected showContainer(container: string) {
     super.showContainer(container)
 
-    this.setState(curState => {
-      if (curState.job) {
-        // avoid exit-after-spawn races
-        setTimeout(() => curState.job.abort(), 5000)
-      }
+    this.setState(() => {
+      this.abortPriorJob()
 
       return {
         job: undefined,
@@ -295,15 +313,22 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
   }
 
   /** @return the command to issue in order to initialize the pty stream */
-  protected ptyCommand() {
-    const { pod } = this.props
+  protected ptyCommand(): { command: string; isLive?: 'Live' | 'Paused' } {
+    const { args, pod } = this.props
     const { container } = this.state
 
-    console.error('yoyo', container)
+    const command =
+      (args.argsForMode && args.argsForMode.command) ||
+      `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
+        pod.metadata.namespace
+      } -- sh`
 
-    return `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
-      pod.metadata.namespace
-    } -- sh`
+    // only use argsForMode once
+    if (args.argsForMode && args.argsForMode.command) {
+      args.argsForMode.command = undefined
+    }
+
+    return { command }
   }
 
   /** Indicate that we have received some data */
@@ -318,7 +343,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
   }
 
   /** Tell the user whether or not we are preparing to idle the PTY */
-  private indicate(isLive: 'Idle' | 'Live') {
+  private indicate(isLive: 'Idle' | 'Live' | 'Paused') {
     this.updateToolbar(isLive)
     this.setState({
       isLive
@@ -328,15 +353,17 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
   private initiateIdleCountdown() {
     this.indicate('Idle')
     this.idleTimeout = setTimeout(() => {
-      if (this.state.job) {
-        this.state.job.abort()
-      }
+      this.abortPriorJob()
     }, INTERVAL_OF_IDLE_COUNTDOWN)
   }
 
   private initiateIdleTimer() {
     return setTimeout(() => this.initiateIdleCountdown(), INTERVAL_TILL_IDLE_COUNTDOWN)
   }
+
+  private _unmounted = false
+  private _initInProgressForContainer: string | false = false
+  private _initCount = 0
 
   /** Initialize a PTY stream from the current state's settings */
   private initStream(): void {
@@ -347,80 +374,108 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
     const streamUUID = uuid()
 
-    repl.qexec(this.ptyCommand(), undefined, undefined, {
-      onInit: () => {
-        return (_: Streamable) => {
-          if (this.idleTimeout) {
-            this.updateToolbar('Live')
-            clearTimeout(this.idleTimeout)
-            this.indicate('Live')
-            this.idleTimeout = this.initiateIdleTimer()
+    if (this._initInProgressForContainer === this.state.container) {
+      return
+    } else if (this._initCount++ > 0) {
+      // Note: reset, not clear. This will fully clear the xterm screen
+      // as we prepare for a new connection. clear() alone only does a
+      // ctrl+L, and thus the xterm will still show e.g. the CWD part of
+      // the old prompt.
+      xterm.reset()
+    }
+    this._initInProgressForContainer = this.state.container
+
+    // what command line should we use? and should we default to Live?
+    // or Paused?
+    const { command, isLive = 'Live' } = this.ptyCommand()
+
+    // execute that command, setting up the onInit, onReady, and
+    // onExit lifecycle handlers
+    repl
+      .qexec(command, undefined, undefined, {
+        onInit: () => {
+          if (this._unmounted) {
+            return
           }
 
-          if (typeof _ === 'string' && this.state.streamUUID === streamUUID) {
-            this.gotSomeData(streamUUID)
-            xterm.write(_)
-          }
-        }
-      },
+          this._initInProgressForContainer = false
 
-      onReady: (job: Job) => {
-        // Note: reset, not clear. This will fully clear the xterm screen
-        // as we prepare for a new connection. clear() alone only does a
-        // ctrl+L, and thus the xterm will still show e.g. the CWD part of
-        // the old prompt.
-        xterm.reset()
+          return (_: Streamable) => {
+            if (this.idleTimeout) {
+              clearTimeout(this.idleTimeout)
+              this.indicate(isLive)
+              this.idleTimeout = this.initiateIdleTimer()
+            }
 
-        xterm.onData((data: string) => {
-          if (this.state.streamUUID === streamUUID) {
-            job.write(data)
-          }
-        })
-
-        this.doFocus()
-
-        setTimeout(() => {
-          if (!this.state.isTerminated) {
-            this.setState(curState => {
-              if (curState.streamUUID === streamUUID) {
-                return { waitingForHysteresis: false }
-              }
-            })
-          }
-        }, HYSTERESIS)
-
-        if (this.idleTimeout) {
-          clearTimeout(this.idleTimeout)
-        }
-        this.idleTimeout = this.initiateIdleTimer()
-
-        this.setState({
-          job,
-          streamUUID,
-          isLive: 'Live',
-          waitingForHysteresis: true
-        })
-      },
-
-      onExit: (exitCode: number) => {
-        this.setState(curState => {
-          if (curState.streamUUID === streamUUID) {
-            const isLive = exitCode === 0 ? 'Stopped' : 'Error'
-            this.updateToolbar(isLive)
-            return {
-              job: undefined,
-              streamUUID: undefined,
-              container: curState.container,
-              isLive,
-              isTerminated: true
+            if (typeof _ === 'string' && this.state.streamUUID === streamUUID) {
+              this.gotSomeData(streamUUID)
+              xterm.write(_)
             }
           }
-        })
-      }
-    }) /* .catch(err => {
-      console.error(err)
-      this.updateToolbar('Error')
-    }) */
+        },
+
+        onReady: (job: Job) => {
+          if (this._unmounted) {
+            return
+          }
+
+          xterm.onData((data: string) => {
+            if (!this._unmounted && this.state.streamUUID === streamUUID) {
+              job.write(data)
+            }
+          })
+
+          this.doFocus()
+
+          setTimeout(() => {
+            if (!this.state.isTerminated) {
+              this.setState(curState => {
+                if (curState.streamUUID === streamUUID) {
+                  return { waitingForHysteresis: false }
+                }
+              })
+            }
+          }, HYSTERESIS)
+
+          if (this.idleTimeout) {
+            clearTimeout(this.idleTimeout)
+          }
+          this.idleTimeout = this.initiateIdleTimer()
+
+          this.setState({
+            job,
+            streamUUID,
+            isLive,
+            waitingForHysteresis: true
+          })
+        },
+
+        onExit: (exitCode: number) => {
+          if (this._unmounted) {
+            return
+          }
+
+          this.setState(curState => {
+            if (curState.streamUUID === streamUUID) {
+              const isLive = exitCode === 0 ? 'Stopped' : 'Error'
+              this.updateToolbar(isLive)
+              return {
+                job: undefined,
+                streamUUID: undefined,
+                container: curState.container,
+                isLive,
+                isTerminated: true
+              }
+            }
+          })
+        }
+      })
+      .catch(err => {
+        if (!this._unmounted && this.state.streamUUID === streamUUID) {
+          console.error(err)
+          this.updateToolbar('Error')
+        }
+      })
   }
 
   /** Are we focusing on all containers? */
@@ -521,7 +576,7 @@ async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
  *
  */
 export const terminalMode: ModeRegistration<KubeResource> = {
-  when: isPod,
+  when: (resource: KubeResource) => isPod(resource) && !resource.isSimulacrum,
   mode: {
     mode: 'terminal',
     label: 'Terminal',

@@ -19,7 +19,7 @@ import { ReactElement } from 'react'
 import { Tab } from '../../webapp/tab'
 import { Content } from './content-types'
 import { MetadataBearing } from '../entity'
-import { ParsedOptions } from '../command'
+import { EvaluatorArgs as Arguments, ParsedOptions } from '../command'
 // import { SelectionController } from '../../webapp/bottom-stripe'
 
 /**
@@ -46,7 +46,7 @@ export type MultiModalResponse<Resource = MetadataBearing> = Resource & View<Res
  * multi-modal view.
  *
  */
-interface View<Resource extends MetadataBearing> {
+export interface View<Resource extends MetadataBearing> {
   /**
    * Each `Mode` is a different way to view the resource
    */
@@ -63,6 +63,9 @@ interface View<Resource extends MetadataBearing> {
    *
    */
   defaultMode?: string
+
+  /** Arguments to pass through to the default mode? */
+  argsForMode?: Arguments
 }
 
 export type ModeOrButton<T = MetadataBearing> = Mode<T> | Button<T>
