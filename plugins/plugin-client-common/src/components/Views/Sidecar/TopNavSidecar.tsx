@@ -68,11 +68,11 @@ export function getStateFromMMR(
 
   // consult the view registrar for registered view modes
   // relevant to this resource
-  const command = ''
+  const cmd = ''
   if (isResourceWithMetadata(response)) {
-    addRelevantModes(tab, allModes, command, { resource: response })
+    addRelevantModes(tab, allModes, cmd, { resource: response })
   } else if (isResourceByReference(response)) {
-    addRelevantModes(tab, allModes, command, response)
+    addRelevantModes(tab, allModes, cmd, response)
   }
 
   // obey the `order` constraints of the modes
@@ -228,12 +228,18 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   }
 
   protected bodyContent(idx: number) {
+    const mode = this.current.tabs[idx]
+
     return (
       <KuiContent
         tab={this.state.tab}
-        mode={this.current.tabs[idx]}
+        mode={mode}
         isActive={idx === this.current.currentTabIndex}
-        args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
+        args={{
+          argsForMode: this.current.response.argsForMode,
+          argvNoOptions: this.state.current.argvNoOptions,
+          parsedOptions: this.state.current.parsedOptions
+        }}
         response={this.current.response}
       />
     )

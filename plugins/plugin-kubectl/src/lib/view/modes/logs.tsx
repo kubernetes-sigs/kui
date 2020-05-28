@@ -22,8 +22,8 @@ import { Icons } from '@kui-shell/plugin-client-common'
 import { Terminal } from './ExecIntoPod'
 import { Pod, isPod } from '../../model/resource'
 import { getCommandFromArgs } from '../../util/util'
-import { KubeOptions } from '../../../controller/kubectl/options'
 import { ContainerProps, StreamingStatus } from './ContainerCommon'
+import { KubeOptions, getContainer, hasLabel } from '../../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl', 'logs')
 
@@ -38,6 +38,20 @@ export class Logs extends Terminal {
 
   protected supportsAllContainers() {
     return true
+  }
+
+  /** Which container should we focus on by default? */
+  protected defaultContainer() {
+    if (this.props.args.argsForMode) {
+      const container = getContainer(this.props.args.argsForMode, 'logs')
+      if (container) {
+        // TODO MAYBE? validate container name?
+        return container
+      }
+    }
+
+    // undefined means all containers
+    return this.props.pod.spec.containers.length === 1 ? this.props.pod.spec.containers[0].name : undefined
   }
 
   /** Text to display in the Toolbar. */
@@ -62,6 +76,10 @@ export class Logs extends Terminal {
       }
     }
 
+    if (!msgAndType) {
+      return
+    }
+
     const msg1 = msgAndType[status].message
     const msg2 = this.state.isTerminated
       ? msg1
@@ -73,13 +91,53 @@ export class Logs extends Terminal {
     }
   }
 
+  private isMulti() {
+    return !!(this.props.args.argsForMode && hasLabel(this.props.args.argsForMode))
+  }
+
   /** @return the command to issue in order to initialize the pty stream */
   protected ptyCommand() {
     const { args, pod } = this.props
     const { container: containerName } = this.state
     const container = containerName ? `-c ${containerName}` : '--all-containers'
+    const isMulti = this.isMulti()
 
-    return `${getCommandFromArgs(args)} logs ${pod.metadata.name} -n ${pod.metadata.namespace} ${container} -f`
+    if (args.argsForMode && args.argsForMode.command && (!isMulti || !containerName)) {
+      // 1) if the user specified no container, we will inject
+      // --all-containers for convenience
+      // 2) only use argsForMode once
+      // 3) do not add -f unless the user requested it
+      const command = `${args.argsForMode.command} ${!containerName ? container : ''}`
+
+      if (!isMulti) {
+        args.argsForMode.command = undefined // point 2
+      }
+
+      return { command, isLive: args.parsedOptions.f ? ('Live' as const) : ('Paused' as const) }
+    } else {
+      // pod:container? a sign of a multi-pod view
+      const dashF = !isMulti || (args.argsForMode && args.argsForMode.parsedOptions.f) ? '-f' : ''
+      const isLive = dashF ? ('Live' as const) : undefined
+
+      if (!containerName && args.argsForMode && hasLabel(args.argsForMode)) {
+        // all container... re-execute label-selector
+        return { command: args.argsForMode.command, isLive }
+      }
+
+      const split = isMulti && containerName && containerName.split(/:/)
+      const possibleMulti = split && split.length === 2 && split
+      const podName = possibleMulti ? possibleMulti[0] : pod.metadata.name
+      const theContainer = possibleMulti ? `-c ${possibleMulti[1]}` : container
+
+      const command = `${getCommandFromArgs(args)} logs ${podName} -n ${
+        pod.metadata.namespace
+      } ${theContainer} ${dashF}`
+
+      return {
+        isLive,
+        command
+      }
+    }
   }
 
   protected toolbarButtonsForStreaming(status: StreamingStatus): Button[] {
@@ -97,12 +155,6 @@ export class Logs extends Terminal {
     } else {
       return []
     }
-  }
-
-  /** Which container should we focus on by default? */
-  protected defaultContainer() {
-    // undefined means all containers
-    return this.props.pod.spec.containers.length === 1 ? this.props.pod.spec.containers[0].name : undefined
   }
 
   /** The part of toggleStreaming that deals with PTY flow control. */

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  waitForGreen,
+  waitForTerminalText,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -75,15 +80,13 @@ wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, 
     })
   }
 
+  const waitForLogText = waitForTerminalText.bind(this)
+
   const showLogs = (podName: string, containerName: string, label: string, hasLogs: boolean) => {
     const checkLogs = async (res: ReplExpect.AppAndCount) => {
+      await Promise.resolve(res).then(ReplExpect.justOK)
       if (hasLogs) {
-        await Promise.resolve(res)
-          .then(ReplExpect.okWithCustom({ passthrough: true }))
-          .then(N => this.app.client.getText(Selectors.OUTPUT_N_STREAMING(N)))
-          .then(txt => assert.ok(txt.length > 0))
-      } else {
-        await Promise.resolve(res).then(ReplExpect.justOK)
+        await waitForLogText('hi')
       }
     }
 
