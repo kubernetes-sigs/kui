@@ -24,8 +24,18 @@ const defaultBooleans = [
   'all-namespaces',
   'ignore-not-found',
   'no-headers',
+
+  'i',
+  'it',
+  'ti',
+  'stdin',
+
+  't',
+  'tty',
+
   'R',
   'recursive',
+
   'server-print',
   'show-kind',
   'show-labels'

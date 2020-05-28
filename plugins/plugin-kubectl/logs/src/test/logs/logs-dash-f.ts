@@ -46,6 +46,9 @@ wdescribe(`kubectl logs follow via watch pane ${process.env.MOCHA_RUN_TARGET || 
   before(Common.before(this))
   after(Common.after(this))
 
+  // needed to force the dom renderer for webpack/browser-based tests; see ExecIntoPod
+  Common.setDebugMode.bind(this)()
+
   const ns: string = createNS()
   allocateNS(this, ns)
 
@@ -68,9 +71,9 @@ wdescribe(`kubectl logs follow via watch pane ${process.env.MOCHA_RUN_TARGET || 
 
   it(`should follow the logs`, async () => {
     try {
-      const res = await CLI.command(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app)
+      await CLI.command(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app).then(ReplExpect.justOK)
 
-      const rows = Selectors.OUTPUT_N_STREAMING(res.count)
+      const rows = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`
 
       await sleep(sleepTime)
       const text1 = await getTextContent(this.app, rows)

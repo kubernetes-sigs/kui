@@ -18,6 +18,7 @@ import * as React from 'react'
 import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import {
+  Arguments,
   ParsedOptions,
   Tab as KuiTab,
   Content,
@@ -47,6 +48,7 @@ export type KuiMMRProps = ToolbarProps & {
   isActive: boolean
   response: MultiModalResponse
   args: {
+    argsForMode?: Arguments
     argvNoOptions: string[]
     parsedOptions: ParsedOptions
   }

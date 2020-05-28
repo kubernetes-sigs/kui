@@ -25,7 +25,7 @@ import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeResource, isKubeResource } from '../../lib/model/resource'
+import { KubeResource, isKubeResource, isKubeItems } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
 
@@ -86,10 +86,18 @@ export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawR
     // parse the raw response; the parser we use depends on whether
     // the user asked for JSON or for YAML
     const resource = formatOf(args) === 'json' ? JSON.parse(data) : (await import('js-yaml')).safeLoad(data)
-    return Object.assign(resource, {
+
+    const kuiResponse = Object.assign(resource, {
       isKubeResource: true,
       kuiRawData: data
     })
+
+    if (isKubeItems(kuiResponse)) {
+      // so that isPod() etc. work on the items
+      kuiResponse.items.forEach(_ => (_.isKubeResource = true))
+    }
+
+    return kuiResponse
   } catch (err) {
     console.error('error handling entity response; raw=', response.content.stdout)
     throw err
@@ -252,7 +260,7 @@ export const doGet = (command: string) =>
   }
 
 /** KubeResource -> MultiModalResponse view transformer */
-function viewTransformer(args: Arguments<KubeOptions>, response: KubeResource) {
+export function viewTransformer(args: Arguments<KubeOptions>, response: KubeResource) {
   if (isKubeResource(response)) {
     return doGetAsMMR(args, response)
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, Keys, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS, typeSlowly, waitForGreen } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -25,6 +25,11 @@ const inputEncoded = inputBuffer.toString('base64')
 
 /** we have a custom vimrc, to make sure INSERT shows up */
 // const vimrc = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/marker.json')), 'vimrc')
+
+/** sleep for N seconds */
+function sleep(N: number) {
+  return new Promise(resolve => setTimeout(resolve, N * 1000))
+}
 
 describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -61,6 +66,10 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it('should reload', () => Common.refresh(this))
 
+  // needed to force the dom renderer for webpack/browser-based tests;
+  // see ExecIntoPod; careful to place this after the refresh!!!
+  Common.setDebugMode.bind(this)()
+
   /* it(`should copy the vimrc to the current container`, () => {
     return CLI
       .command(`kubectl cp ${vimrc} -n ${ns} ${ns}/${podName}:/root/.vimrc`, this.app)
@@ -73,9 +82,12 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it(`should use kubectl exec vi through pty`, async () => {
     try {
-      const res = await CLI.command(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app)
+      await CLI.command(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app).then(
+        ReplExpect.justOK
+      )
 
-      const rows = Selectors.xtermRows(res.count)
+      const rows = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`
+      const focusArea = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-helper-textarea`
       const lastRowSelector = `${rows} > div:last-child`
 
       const lastRow = async (): Promise<string> => {
@@ -83,10 +95,12 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       }
 
       // wait for vi to come up
-      await this.app.client.waitForExist(rows)
+      await this.app.client.waitUntil(async () => {
+        await this.app.client.waitForExist(rows)
+        return this.app.client.hasFocus(focusArea)
+      })
 
-      // wait for vi to come up in alt buffer mode
-      await this.app.client.waitForExist(`${Selectors.CURRENT_TAB}.xterm-alt-buffer-mode`)
+      sleep(3)
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       let iter = 0
@@ -120,10 +134,10 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         await typeSlowly(this.app, `:wq${Keys.ENTER}`)
 
         try {
-          await this.app.client.waitForVisible(Selectors.PROMPT_N(res.count + 1), 5000)
+          await SidecarExpect.toolbarText({ type: 'error', text: 'closed', exact: false })(this.app)
           return true
         } catch (err) {
-          console.error(`hmm, prompt block not yet visible at iter ${iter++}`)
+          console.error(`hmm, the view has not yet indicated the pty has closed at iter ${iter++}`)
           return false
         }
       })
@@ -134,7 +148,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it('should use kubectl exec to cat the file we just edited', async () => {
     return CLI.command(`kubectl exec ${podName} -n ${ns} -- cat ${filename}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(typeThisText))
+      .then(ReplExpect.okWithString(typeThisText))
       .catch(Common.oops(this, true))
   })
 

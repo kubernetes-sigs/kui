@@ -377,10 +377,15 @@ class InProcessExecutor implements Executor {
       }
 
       if (evaluator.options.viewTransformer && execType !== ExecType.Nested) {
-        response = await Promise.resolve(response).then(async _ => {
-          const maybeAView = await evaluator.options.viewTransformer(args, _)
-          return maybeAView || _
-        })
+        response = await Promise.resolve(response)
+          .then(async _ => {
+            const maybeAView = await evaluator.options.viewTransformer(args, _)
+            return maybeAView || _
+          })
+          .catch(err => {
+            // view transformer failed; treat this as the response to the user
+            return err
+          })
       }
 
       // the || true part is a safeguard for cases where typescript

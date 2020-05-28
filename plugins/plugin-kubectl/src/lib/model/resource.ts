@@ -151,6 +151,7 @@ export function isNamespaced(resource: KubeResource) {
 export function isKubeResource(entity: KResponse | ResourceWithMetadata): entity is KubeResource {
   const kube = entity as KubeResource
   return (
+    kube !== undefined &&
     kube.isKubeResource === true &&
     kube.apiVersion !== undefined &&
     kube.apiVersion !== kubeuiApiVersion &&
@@ -418,6 +419,13 @@ export interface KubeItems<Item extends KubeResource = KubeResource> extends Kub
 
 export function isKubeItems(resource: KubeResource): resource is KubeItems {
   return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'List'
+}
+
+export function isKubeItemsOfKind<Item extends KubeResource = KubeResource>(
+  resource: KubeResource,
+  isOfKind: (item: KubeResource) => item is Item
+): resource is KubeItems<Item> {
+  return isKubeItems(resource) && resource.items.length > 0 && isOfKind(resource.items[0])
 }
 
 /** Scope */

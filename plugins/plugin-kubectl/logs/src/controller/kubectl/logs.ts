@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-import { Abortable, Arguments, FlowControllable, Registrar, Streamable } from '@kui-shell/core'
+import { Arguments, CodedError, ExecType, MultiModalResponse, Registrar, flatten } from '@kui-shell/core'
 import {
   isUsage,
   doHelp,
@@ -23,7 +22,16 @@ import {
   doExecWithPty,
   doExecWithStdout,
   defaultFlags as flags,
-  isHelpRequest
+  getLabel,
+  getTransformer,
+  getCommandFromArgs,
+  getContainer,
+  getNamespaceForArgv,
+  KubeItems,
+  isKubeItemsOfKind,
+  KubeResource,
+  Pod,
+  isPod
 } from '@kui-shell/plugin-kubectl'
 
 import commandPrefix from '../command-prefix'
@@ -35,68 +43,123 @@ interface LogOptions extends KubeOptions {
   tail: number
 }
 
-const debug = Debug('plugin-kubectl/logs/controller/kubectl/logs')
-
 /**
  * Send the request to a PTY for deeper handling, then (possibly) add
  * some ANSI control codes for coloring.
  *
  */
-export async function doLogs(args: Arguments<LogOptions>) {
-  if (isUsage(args)) {
-    // special case: get --help/-h
-    return doHelp('kubectl', args)
-  }
+function getOrPty(verb: string) {
+  return (args: Arguments<LogOptions>) => {
+    const cmd = getCommandFromArgs(args)
 
-  if (args.execOptions.raw) {
-    return doExecWithStdout(args)
-  }
+    if (isUsage(args)) {
+      // special case: get --help/-h
+      return doHelp(cmd === 'k' ? 'kubectl' : cmd, args)
+    }
 
-  // if the user has not specified a "--tail",
-  // then add one, to prevent the default behavior of
-  // kubectl which fetches quite a bit of history
-  if (!args.parsedOptions.tail) {
-    const tail = 1000
-    args.parsedOptions.tail = tail
-    args.argv.push('--tail=' + tail)
-    args.command = args.command + ' --tail=' + tail
-  }
+    if (args.execOptions.raw) {
+      return doExecWithStdout(args)
+    }
 
-  // a bit of plumbing: tell the PTY that we will be handling everything
-  const myExecOptions = Object.assign({}, args.execOptions, {
-    rethrowErrors: true, // we want to handle errors
-
-    // the PTY will call this when the PTY process is ready; in
-    // return, we send it back a consumer of streaming output
-    onInit: async (ptyJob: Abortable & FlowControllable) => {
-      // set up the PTY stream; we want to stream to this stdout sink
-      const stdout = args.execOptions.onInit ? await args.execOptions.onInit(ptyJob) : await args.createOutputStream()
-
-      // _ is one chunk of streaming output
-      return (_: Streamable) => {
-        if (args.block && args.block['isCancelled']) {
-          ptyJob.abort()
-        } else if (typeof _ === 'string') {
-          // we only know how to handle strings
-          stdout(_)
+    if (args.execOptions.type === ExecType.TopLevel) {
+      if (verb === 'exec') {
+        // special case for kubectl exec cat, ls, pwd, etc.
+        const idx = args.argvNoOptions.indexOf('exec')
+        const execThis = args.argvNoOptions[idx + 2]
+        if (
+          execThis === 'cat' ||
+          execThis === 'ls' ||
+          execThis === 'pwd' ||
+          execThis === 'mv' ||
+          execThis === 'cp' ||
+          execThis === 'ln'
+        ) {
+          return doExecWithStdout(args)
         }
       }
-    }
-  })
 
-  // be careful not to smash the original execOptions!
-  const myArgs = Object.assign({}, args, { execOptions: myExecOptions })
-  return doExecWithPty(myArgs).catch(err => {
-    if (isHelpRequest(args)) {
-      return err
+      const label = getLabel(args)
+
+      if (!label) {
+        const idx = args.argvNoOptions.indexOf(verb)
+        const name = args.argvNoOptions[idx + 1]
+        return args.REPL.qexec(`${cmd} get pod ${name} ${getNamespaceForArgv(args)} -o yaml`)
+      } else {
+        return args.REPL.qexec(`${cmd} get pod -l ${label} ${getNamespaceForArgv(args)} -o json`)
+      }
     } else {
-      debug(err)
-      return true
+      return doExecWithPty(args)
     }
-  })
+  }
 }
 
+/** Single-resource response */
+async function transformSingle(
+  defaultMode: string,
+  args: Arguments<KubeOptions>,
+  response: Pod
+): Promise<MultiModalResponse> {
+  return Object.assign({}, await getTransformer(args, response), { defaultMode, argsForMode: args })
+}
+
+/** Multiple-resource response. We've already assured that we have >= 1 item via isKubeItemsOfKind(). */
+async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>, response: KubeItems<Pod>) {
+  const containers = flatten(
+    response.items.map(pod => {
+      return pod.spec.containers.map(container =>
+        Object.assign({}, container, { name: `${pod.metadata.name}:${container.name}` })
+      )
+    })
+  )
+
+  const container = getContainer(args, 'logs')
+  const owningPod = container && response.items.find(pod => pod.spec.containers.find(_ => _.name === container))
+  const owningPodName = owningPod ? owningPod.metadata.name : undefined
+
+  response.items[0].isSimulacrum = true
+  response.items[0].spec.containers = containers
+
+  const names = response.items.map(_ => _.metadata.name).join(', ')
+  response.items[0].metadata.name = names
+
+  const multi = await transformSingle(defaultMode, args, response.items[0])
+
+  if (owningPodName) {
+    const encoded = `${owningPodName}:${container}`
+    multi.argsForMode.parsedOptions.c = multi.argsForMode.parsedOptions.container = encoded
+  } else if (container) {
+    // couldn't find a pod for the given container
+    const error: CodedError = new Error('Specified container not found')
+    error.code = 404
+    throw error
+  }
+
+  return multi
+}
+
+/** Pod -> MultiModalResponse view transformer */
+function viewTransformer(defaultMode: string) {
+  return async (args: Arguments<KubeOptions>, response: KubeResource | KubeItems<Pod>) => {
+    if (isKubeItemsOfKind(response, isPod)) {
+      return transformMulti(defaultMode, args, response)
+    }
+
+    if (isPod(response)) {
+      return transformSingle(defaultMode, args, response)
+    }
+  }
+}
+
+export const doLogs = getOrPty('logs')
+export const logsFlags = Object.assign({}, flags, { viewTransformer: viewTransformer('logs') })
+
+export const doExec = getOrPty('exec')
+export const execFlags = Object.assign({}, flags, { viewTransformer: viewTransformer('terminal') })
+
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/kubectl/logs`, doLogs, flags)
-  registrar.listen(`/${commandPrefix}/k/logs`, doLogs, flags)
+  registrar.listen(`/${commandPrefix}/kubectl/logs`, doLogs, logsFlags)
+  registrar.listen(`/${commandPrefix}/k/logs`, doLogs, logsFlags)
+
+  registrar.listen(`/${commandPrefix}/kubectl/exec`, doExec, execFlags)
+  registrar.listen(`/${commandPrefix}/k/exec`, doExec, execFlags)
 }

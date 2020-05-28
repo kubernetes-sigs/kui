@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import {
   createNS,
@@ -23,7 +21,6 @@ import {
   deleteNS,
   waitForGreen,
   waitForRed,
-  getTerminalText,
   waitForTerminalText,
   defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
@@ -47,7 +44,6 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   before(Common.before(this))
   after(Common.after(this))
 
-  const getLogText = getTerminalText.bind(this)
   const waitForLogText = waitForTerminalText.bind(this)
 
   const ns: string = createNS()
@@ -251,20 +247,13 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     return CLI.command(`kubectl delete pod ${podName} -n ${ns}`, this.app)
       .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
       .then(selector => waitForRed(this.app, selector))
-      .catch(Common.oops(this))
+      .catch(Common.oops(this, true))
   })
 
   it('should see log streaming stopped', async () => {
     try {
       await sleep(sleepTime)
-
       await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(this.app)
-
-      const text1 = await getLogText()
-      await sleep(sleepTime)
-      const text2 = await getLogText()
-
-      assert.ok(text1.length === text2.length, `logs streaming should be stopped`)
     } catch (err) {
       return Common.oops(this, true)(err)
     }

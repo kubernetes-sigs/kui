@@ -45,13 +45,13 @@ wdescribe(`kubectl exec basic stuff via table ${process.env.MOCHA_RUN_TARGET || 
 
   it('should exec ls through pty', () => {
     return CLI.command(`kubectl exec ${podName} -n ${ns} -- ls`, this.app)
-      .then(ReplExpect.okWithPtyOutput('bin'))
+      .then(ReplExpect.okWithString('bin'))
       .catch(Common.oops(this, true))
   })
 
   it('should exec pwd through pty', () => {
     return CLI.command(`kubectl exec ${podName} -n ${ns} -- pwd`, this.app)
-      .then(ReplExpect.okWithPtyOutput('/'))
+      .then(ReplExpect.okWithString('/'))
       .catch(Common.oops(this, true))
   })
 

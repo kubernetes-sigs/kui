@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ParsedOptions } from '../command'
+import { EvaluatorArgs as Arguments, ParsedOptions } from '../command'
 import { ReactElement } from 'react'
 import { Tab } from '../../webapp/tab'
 import { Table, isTable } from '../../webapp/models/table'
@@ -113,6 +113,7 @@ export type FunctionThatProducesContent<T extends MetadataBearing = MetadataBear
   tab: Tab,
   entity: T,
   args: {
+    argsForMode?: Arguments
     argvNoOptions: string[]
     parsedOptions: ParsedOptions
   }

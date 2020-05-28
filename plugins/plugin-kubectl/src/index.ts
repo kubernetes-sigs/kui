@@ -32,6 +32,7 @@ export {
   isDeployment,
   KubeItems,
   isKubeItems,
+  isKubeItemsOfKind,
   KubeContext,
   Job,
   isJob,
@@ -67,6 +68,7 @@ export {
   getLabel,
   getLabelForArgv,
   isHelpRequest,
+  getContainer,
   getNamespace,
   getNamespaceForArgv,
   isForAllNamespaces
@@ -95,3 +97,5 @@ export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
 export { describer } from './controller/kubectl/describe'
+
+export { viewTransformer as getTransformer } from './controller/kubectl/get'

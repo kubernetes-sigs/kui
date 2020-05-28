@@ -450,8 +450,12 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
   }
 
   // swap these two if you want to debug failures locally
-  // return new Promise((resolve, reject) => setTimeout(() => { reject(err) }, 100000))
-  throw err
+  return new Promise((resolve, reject) =>
+    setTimeout(() => {
+      reject(err)
+    }, 100000)
+  )
+  // throw err
 }
 
 /** restart the app */
@@ -512,3 +516,19 @@ export const pit = (msg: string, func: Func) => {
 
 /** non-headless targets in travis use the clients/default version */
 export const expectedVersion = version
+
+/**
+ * This helps with webpack/browser-based tests, where we can't rely
+ * on env vars to transit "in debug mode". E.g. see ExecIntoPod
+ *
+ */
+declare let __KUI_RUNNING_KUI_TEST: boolean
+export function setDebugMode(this: ISuite) {
+  it('should inject RUNNING_KUI_TEST', () => {
+    return this.app.client
+      .execute(() => {
+        __KUI_RUNNING_KUI_TEST = true
+      })
+      .catch(oops(this, true))
+  })
+}

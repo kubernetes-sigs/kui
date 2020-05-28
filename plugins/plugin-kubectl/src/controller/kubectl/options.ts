@@ -91,8 +91,19 @@ export function isTableWatchRequest(args: Arguments<KubeOptions>) {
 }
 
 export function getLabel(args: Arguments<KubeOptions>) {
-  // TODO, handle -lapp=name, see hasLabel below
-  return args.parsedOptions.l || args.parsedOptions.label
+  const label = args.parsedOptions.l || args.parsedOptions.label
+  if (label) {
+    return label
+  } else {
+    // yargs-parser doesn't handle -lname=nginx without the space
+    // after -l; or least not the way we've configured it
+    for (const key in args.parsedOptions) {
+      if (/^l/.test(key)) {
+        const value = args.parsedOptions[key]
+        return `${key.slice(1)}=${value}`
+      }
+    }
+  }
 }
 
 export function getLabelForArgv(args: Arguments<KubeOptions>) {
@@ -138,6 +149,19 @@ export function getContext(args: Arguments<KubeOptions>) {
   return args.parsedOptions.context
 }
 
+/** e.g. for kubectl logs */
+export function getContainer(args: Arguments<KubeOptions>, verb: string) {
+  const maybe = args.parsedOptions.c || args.parsedOptions.container
+  if (maybe) {
+    // specified via -c
+    return maybe
+  } else {
+    // otherwise, specified as a positional parameter
+    const idx = args.argvNoOptions.indexOf(verb)
+    return args.argvNoOptions[idx + 2]
+  }
+}
+
 export function getContextForArgv(args: Arguments<KubeOptions>) {
   const context = getContext(args)
   if (context) {
@@ -164,6 +188,9 @@ export interface KubeOptions extends ParsedOptions {
 
   n?: string
   namespace?: string
+
+  c?: string
+  container?: string
 
   o?: OutputFormat
   output?: OutputFormat
