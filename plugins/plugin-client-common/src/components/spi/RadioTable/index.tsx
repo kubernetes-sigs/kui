@@ -31,7 +31,9 @@ export interface State {
 
 /** @return the row slice for the current page */
 export function slice(props: Props & State) {
-  return props.table.body.slice((props.page - 1) * props.pageSize, props.page * props.pageSize)
+  return !props.paginate
+    ? props.table.body
+    : props.table.body.slice((props.page - 1) * props.pageSize, props.page * props.pageSize)
 }
 
 export default class RadioTableSpi extends React.PureComponent<Props, State> {
@@ -75,8 +77,15 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
     return this.props.table.body.length
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private isPaginated(pageSize = this.state.pageSize) {
-    return this.numRows() > pageSize
+    return false
+    /**
+     * return this.props.paginate !== undefined &&
+     * this.props.paginate !== false &&
+     * (this.props.paginate === true || this.numRows() > this.props.paginate) &&
+     * this.numRows() > pageSize
+     */
   }
 
   private topToolbar() {
@@ -102,7 +111,7 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
   }
 
   private carbon() {
-    return <Carbon {...this.props} {...this.state} onChange={this.onChange.bind(this)} />
+    return <Carbon {...this.props} paginate={this.isPaginated()} {...this.state} onChange={this.onChange.bind(this)} />
   }
 
   /* private patternfly() {
@@ -127,7 +136,7 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
   public render() {
     return (
       <div className="kui--data-table-wrapper kui--screenshotable">
-        {this.topToolbar()}
+        {this.props.title && this.topToolbar()}
         {this.broker()}
         {this.bottomToolbar()}
       </div>

@@ -151,6 +151,10 @@ export class TestTable {
           self.cmdIdx = res.count
           return res
         })
+        .then(async res => {
+          await res.app.client.waitForExist(Selectors.TABLE_TITLE(res.count - 1), CLI.waitTimeout, true)
+          return res
+        })
         .then(
           ReplExpect.okWithCustom({
             selector: Selectors.TABLE_HEADER_CELL(expectTable.header.name)
