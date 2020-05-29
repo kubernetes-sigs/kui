@@ -155,9 +155,11 @@ commands.forEach(command => {
       let idx = 0
       return this.app.client
         .waitUntil(async () => {
-          const value = await this.app.client.getValue(Selectors.PROMPT_FINAL)
+          const value = await this.app.client.getText(Selectors.PROMPT_LAST)
           if (++idx > 5) {
-            console.error(`kubectl get ${process.env.MOCHA_RUN_TARGET || ''} still waiting for delete command`)
+            console.error(
+              `kubectl get ${process.env.MOCHA_RUN_TARGET || ''} still waiting for delete command actual=${value}`
+            )
           }
 
           return /delete/.test(value)
@@ -167,7 +169,7 @@ commands.forEach(command => {
 
     it('should wait for that click-delete to finish', async () => {
       try {
-        const count = parseInt(await this.app.client.getAttribute(Selectors.PROMPT_BLOCK_FINAL, 'data-input-count'), 10)
+        const count = parseInt(await this.app.client.getAttribute(Selectors.PROMPT_BLOCK_LAST, 'data-input-count'), 10)
         const newResourceSelector = await ReplExpect.okWithCustom({
           selector: Selectors.BY_NAME('nginx')
         })({ app: this.app, count })

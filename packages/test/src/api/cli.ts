@@ -160,3 +160,11 @@ export const expectInput = (selector: string, expectedText: string) => async (ap
   }, waitTimeout)
   return app
 }
+
+export const expectPriorInput = (selector: string, expectedText: string) => async (app: Application) => {
+  await app.client.waitUntil(async () => {
+    const inputText = await app.client.getText(selector)
+    return inputText === expectedText
+  }, waitTimeout)
+  return app
+}
