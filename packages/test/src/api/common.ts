@@ -402,7 +402,7 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
       promises.push(
         ctx.app.client.getMainProcessLogs().then(logs =>
           logs.forEach(log => {
-            if (log.indexOf('INFO:CONSOLE') < 0) {
+            if (log.indexOf('INFO:CONSOLE') < 0 && log.indexOf('FontService') < 0) {
               // don't log console messages, as these will show up in getRenderProcessLogs
               console.log('MAIN'.cyan.bold, log)
             }

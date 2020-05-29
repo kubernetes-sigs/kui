@@ -47,7 +47,7 @@ export class TestMMR {
   public constructor(public readonly param: TestParam) {} // eslint-disable-line no-useless-constructor
 
   private testClickResult = (cmdIdx: number, command: string, expect: string) => async (app: Application) => {
-    await CLI.expectInput(Selectors.PROMPT_N(cmdIdx), command)(app)
+    await CLI.expectPriorInput(Selectors.PROMPT_N(cmdIdx), command)(app)
     if (typeof expect === 'string') {
       await ReplExpect.okWithString(expect, true)({ app: app, count: cmdIdx })
     }
@@ -487,7 +487,7 @@ export class TestMMR {
               }
 
               if (typeof button.command === 'string') {
-                await CLI.expectInput(promptSelector, button.command)(app)
+                await CLI.expectPriorInput(promptSelector, button.command)(app)
               }
             })
           } catch (err) {

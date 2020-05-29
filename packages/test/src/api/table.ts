@@ -197,7 +197,7 @@ export class TestTable {
           const cell = `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
           await ctx.app.client.waitForExist(cell)
           await ctx.app.client.click(cell)
-          await CLI.expectInput(prompt, command)(ctx.app)
+          await CLI.expectPriorInput(prompt, command)(ctx.app)
         } catch (err) {
           await Common.oops(ctx, true)(err)
         }
@@ -221,7 +221,7 @@ export class TestTable {
     // For each row, check the first cell
     expectTable.body.forEach(row => {
       if (!row.onclickSilence) {
-        clickCell(row, row.onclick, `${Selectors.PROMPT_BLOCK_LAST} input`)
+        clickCell(row, row.onclick, Selectors.PROMPT_LAST)
       } else {
         clickCellSilently(row, row.onclick, Selectors.PROMPT_FINAL)
       }

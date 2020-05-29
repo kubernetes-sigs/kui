@@ -85,14 +85,14 @@
 
 .repl-result,
 .repl-result-like,
-.repl-input input,
+.repl-input .repl-input-element,
 .repl-input-like {
   font-size: 0.875em;
 }
 .repl-block:not(.processing) .repl-result-like:last-child {
   margin-bottom: 0.375em;
 }
-.repl-input input,
+.repl-input .repl-input-element,
 .repl-input-like {
   --color-caret: var(--color-support-01);
   color: var(--color-text-01);
@@ -102,6 +102,7 @@
   caret-color: var(--color-caret);
   overflow: hidden;
   white-space: nowrap;
+  padding: 1px; /* to match user-agent styling of <input/> */
   /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
 }
 .kui--prompt-like:empty {
@@ -149,7 +150,7 @@
   /* probably not 100% right, but: for pty output, don't show kui's "caret", since xtermjs has its own */
   display: none;
 }
-.repl-block.processing .repl-input input {
+.repl-block.processing .repl-input .repl-input-element {
   color: var(--color-name);
 }
 .repl-block.processing .repl-result-spinner-inner {
@@ -214,7 +215,7 @@
   flex-direction: column;
 }
 .repl,
-.repl-input input {
+.repl-input .repl-input-element {
   font-family: var(--font-monospace);
 }
 
