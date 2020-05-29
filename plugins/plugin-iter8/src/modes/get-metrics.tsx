@@ -1,15 +1,6 @@
 import * as React from 'react'
-import { ToolbarProps } from '@kui-shell/core'
 import { TrashCan20, Reset20, Add20, Edit20 } from '@carbon/icons-react'
-import { 
-  Button, 
-  DataTable,
-  Form,
-  FormGroup, 
-  Select,
-  SelectItem,
-  TextInput
-} from 'carbon-components-react'
+import { Button, DataTable, Form, FormGroup, Select, SelectItem, TextInput } from 'carbon-components-react'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/data-table/_data-table-expandable.scss'
 import 'carbon-components/scss/components/data-table/_data-table.scss'
@@ -22,20 +13,18 @@ import '../../src/web/scss/static/metrics.scss'
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
 import { getMetricConfig, removeExtraneousMetaData, ITER8_METRIC_NAMES } from '../components/metric-config'
-import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics, MetricConfigMap } from '../components/metric-config-types'
+import {
+  CounterMetric,
+  CounterMetrics,
+  RatioMetric,
+  RatioMetrics,
+  MetricConfigMap
+} from '../components/metric-config-types'
 import { kubectlApplyRule } from '../components/traffic-split'
 
 import { safeDump } from 'js-yaml'
 
-const { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableRow, 
-  TableContainer, 
-  TableExpandRow, 
-  TableExpandedRow,
-} = DataTable
+const { Table, TableBody, TableCell, TableRow, TableContainer, TableExpandRow, TableExpandedRow } = DataTable
 
 let COUNTER_METRIC_REQUIRED_ATTRIBUTES
 let RATIO_METRIC_REQUIRED_ATTRIBUTES
@@ -308,15 +297,13 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
 }
 
 class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetailsState> {
-  public output = ''
-
   public constructor(props: MetricDetailsProps) {
     super(props)
 
-    const { configMap, counterMetrics, ratioMetrics} = getMetricConfig()
+    const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
 
-    removeExtraneousMetaData(configMap)
-    
+    const cleanConfigMap = removeExtraneousMetaData(configMap)
+
     // TODO: Add proper error handling
     const counterMetricNames = counterMetrics.map(counterMetric => {
       return counterMetric.name
@@ -352,8 +339,8 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
     const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
-    this.state = { 
-      configMap,
+    this.state = {
+      configMap: cleanConfigMap,
       counterMetrics,
       ratioMetrics,
       counterMetricNames,
@@ -366,7 +353,10 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     }
   }
 
-  public generateMetricsStates(counterMetrics: CounterMetrics, ratioMetrics: RatioMetrics): { counterMetricsState: MetricsState, ratioMetricsState: MetricsState} {
+  public generateMetricsStates(
+    counterMetrics: CounterMetrics,
+    ratioMetrics: RatioMetrics
+  ): { counterMetricsState: MetricsState; ratioMetricsState: MetricsState } {
     const counterMetricsState: MetricsState = {}
     const ratioMetricsState: MetricsState = {}
 
@@ -406,92 +396,28 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       }
     })
 
-    return { counterMetricsState, ratioMetricsState}
+    return { counterMetricsState, ratioMetricsState }
   }
 
   public getInitialRowsFromObjectKeys(object: object) {
-    return Object.keys(object).map(propertyName => { return { id: propertyName } })
+    return Object.keys(object).map(propertyName => {
+      return { id: propertyName }
+    })
   }
 
-  public updateIsDeleted(metricName: string, type: MetricTypes): void {
-    if (type === MetricTypes.counter) {
-      if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
-        return
-      }
-
-      if (deleteMetric(metricName, type)) {
-        this.state.counterMetricsState[metricName].isDeleted = true
-        console.log('Deleted: ' + metricName)
-        const alsoDelete = this.state.counterMetricsState[metricName].alsoDelete
-        for (let j = 0; j < alsoDelete.length; j++) {
-          if (deleteMetric(alsoDelete[j], MetricTypes.ratio)) {
-            this.state.ratioMetricsState[alsoDelete[j]].isDeleted = true
-            console.log('Deleted: ' + alsoDelete[j])
-          }
-        }
-      }
-
-    } else {
-      if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
-        return
-      }
-
-      if (deleteMetric(metricName, type)) {
-        this.state.ratioMetricsState[metricName].isDeleted = true
-        console.log('Deleted: ' + metricName)
-      }
-    }
-
-    this.setState({ counterMetricsState: this.state.counterMetricsState, ratioMetricsState: this.state.ratioMetricsState })
-  }
-
-  public restore(metricName: string, type: MetricTypes) {
-    const { counterMetricsState, ratioMetricsState } = this.state
-
-    if (type === MetricTypes.counter) {
-      if (restoreMetric(counterMetricsState[metricName].details, type)) {
-        counterMetricsState[metricName].isDeleted = false
-        console.log('Restored: ' + metricName)
-      }
-
-    } else {
-      const alsoRestore = ratioMetricsState[metricName].alsoRestore
-      const deleted = []
-
-      alsoRestore.forEach(restoredMetricName => {
-        if (counterMetricsState[restoredMetricName].isDeleted) {
-          if (restoreMetric(counterMetricsState[restoredMetricName].details, MetricTypes.counter)) {
-            counterMetricsState[restoredMetricName].isDeleted = false
-            console.log('Restored: ' + restoredMetricName)
-            deleted.push(restoredMetricName)
-          }
-        } else {
-          deleted.push(restoredMetricName)
-        }
-      })
-
-      if (alsoRestore.length === deleted.length) {
-        if (restoreMetric(ratioMetricsState[metricName].details, type)) {
-          ratioMetricsState[metricName].isDeleted = false
-          console.log('Restored: ' + metricName)
-        }
-      }
-    }
-
-    this.setState({ counterMetricsState: counterMetricsState, ratioMetricsState: ratioMetricsState })
-  }
-
-  public modifyIter8Metric(mode) {
+  public renderIter8ImmutableMetricWarning(mode) {
     return <div className="warningtext">Warning: Cannot {mode} iter8 metrics</div>
   }
 
-  public renderOnDelete(metricName: string, type: MetricTypes) {
+  public renderDeleteWarning(metricName: string, type: MetricTypes) {
     return (
       <div>
         <div className="deletedtext">Deleted</div>
-        <div className="clickableicon" onClick={() => this.restore(metricName, type)}>
+        <div className="clickableicon" onClick={() => this.restoreMetricHandler(metricName, type)}>
           <Reset20 />
-          {type === MetricTypes.ratio && this.state.ratioMetricsState[metricName].custom && this.state.ratioMetricsState[metricName].alsoRestore.length ? (
+          {type === MetricTypes.ratio &&
+          this.state.ratioMetricsState[metricName].custom &&
+          this.state.ratioMetricsState[metricName].alsoRestore.length ? (
             <div className="warningtext">
               Warning: Will also restore {this.state.ratioMetricsState[metricName].alsoRestore.join(', ')}
             </div>
@@ -505,7 +431,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   public displayAddMetric(type: MetricTypes) {
     const defaultConfig = type === MetricTypes.counter ? DEFAULT_COUNTER_METRIC_CONFIG : DEFAULT_RATIO_METRIC_CONFIG
 
-    this.setState({ 
+    this.setState({
       display: MetricDetailsModeDisplay.addMetrics,
       selectedType: type,
       editedMetric: defaultConfig
@@ -516,7 +442,8 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   public displayEditMetric(metricName: string, type: MetricTypes) {
     const { counterMetrics, ratioMetrics } = this.state
 
-    const selectedMetric = type === MetricTypes.counter
+    const selectedMetric =
+      type === MetricTypes.counter
         ? counterMetrics.find(counterMetric => {
             return counterMetric.name === metricName
           })
@@ -530,7 +457,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     // Add default config attributes in case
     const editedMetric = { ...defaultConfig, ...selectedMetricCopy }
 
-    this.setState({ 
+    this.setState({
       display: MetricDetailsModeDisplay.editMetrics,
       selectedType: type,
       selectedMetricName: metricName,
@@ -538,7 +465,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     })
   }
 
-  private addMetric = e => {
+  private addMetricHandler = e => {
     console.log('click submitted')
 
     const { configMap, counterMetrics, ratioMetrics, selectedType, editedMetric } = this.state
@@ -581,11 +508,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
-        
+
         this.setState({
           display: MetricDetailsModeDisplay.getMetrics,
           counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState, 
+          ratioMetricsState: ratioMetricsState
         })
       } else {
         // TODO: inform user of problems
@@ -630,11 +557,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
-        
+
         this.setState({
           display: MetricDetailsModeDisplay.getMetrics,
           counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState, 
+          ratioMetricsState: ratioMetricsState
         })
       } else {
         // TODO: inform user of problems
@@ -646,11 +573,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     e.preventDefault()
   }
 
-  private editMetric = e => {
+  private editMetricHandler = e => {
     console.log('click submitted')
 
     const { selectedType } = this.state
-    let { configMap, counterMetrics, ratioMetrics} = this.state
+    let { configMap, counterMetrics, ratioMetrics } = this.state
 
     if (selectedType === MetricTypes.counter) {
       console.log('edited counter metric config:', this.state.editedMetric)
@@ -706,11 +633,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
-        
+
         this.setState({
           display: MetricDetailsModeDisplay.getMetrics,
           counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState, 
+          ratioMetricsState: ratioMetricsState
         })
       } else {
         // TODO: inform user of problems
@@ -758,11 +685,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         console.log(kubectlApplyRule(configMap))
 
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
-        
+
         this.setState({
           display: MetricDetailsModeDisplay.getMetrics,
           counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState, 
+          ratioMetricsState: ratioMetricsState
         })
       } else {
         // TODO: inform user of problems
@@ -772,6 +699,110 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     }
 
     e.preventDefault()
+  }
+
+  public deleteMetricHandler(metricName: string, type: MetricTypes): void {
+    if (type === MetricTypes.counter) {
+      // Do not delete iter8 metrics
+      if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
+        return
+      }
+
+      // Delete counter metric
+      if (deleteMetric(metricName, type)) {
+        this.setState({
+          counterMetricsState: {
+            ...this.state.counterMetricsState,
+            [metricName]: {
+              ...this.state.counterMetricsState[metricName],
+              isDeleted: true
+            }
+          }
+        })
+
+        // Delete associated ratio metrics that utilize the counter metric
+        this.state.counterMetricsState[metricName].alsoDelete.forEach(deletedMetric => {
+          if (deleteMetric(deletedMetric, MetricTypes.ratio)) {
+            this.setState({
+              ratioMetricsState: {
+                ...this.state.ratioMetricsState,
+                [deletedMetric]: {
+                  ...this.state.ratioMetricsState[deletedMetric],
+                  isDeleted: true
+                }
+              }
+            })
+          }
+        })
+      }
+    } else {
+      // Do not delete iter8 metrics
+      if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
+        return
+      }
+
+      // Delete ratio metric
+      if (deleteMetric(metricName, type)) {
+        this.setState({
+          ratioMetricsState: {
+            ...this.state.ratioMetricsState,
+            [metricName]: {
+              ...this.state.ratioMetricsState[metricName],
+              isDeleted: true
+            }
+          }
+        })
+      }
+    }
+  }
+
+  public restoreMetricHandler(metricName: string, type: MetricTypes) {
+    const { counterMetricsState, ratioMetricsState } = this.state
+
+    if (type === MetricTypes.counter) {
+      // Restore counter metric
+      if (restoreMetric(counterMetricsState[metricName].details, type)) {
+        this.setState({
+          counterMetricsState: {
+            ...this.state.counterMetricsState,
+            [metricName]: {
+              ...this.state.counterMetricsState[metricName],
+              isDeleted: false
+            }
+          }
+        })
+      }
+    } else {
+      // Restore ratio metric
+      if (restoreMetric(ratioMetricsState[metricName].details, type)) {
+        this.setState({
+          ratioMetricsState: {
+            ...this.state.ratioMetricsState,
+            [metricName]: {
+              ...this.state.ratioMetricsState[metricName],
+              isDeleted: false
+            }
+          }
+        })
+
+        // Restore related counter
+        ratioMetricsState[metricName].alsoRestore.forEach(restoredMetricName => {
+          if (counterMetricsState[restoredMetricName].isDeleted) {
+            if (restoreMetric(counterMetricsState[restoredMetricName].details, MetricTypes.counter)) {
+              this.setState({
+                counterMetricsState: {
+                  ...this.state.counterMetricsState,
+                  [restoredMetricName]: {
+                    ...this.state.counterMetricsState[restoredMetricName],
+                    isDeleted: false
+                  }
+                }
+              })
+            }
+          }
+        })
+      }
+    }
   }
 
   // Callback when an attribute of the selected metric is edited
@@ -793,7 +824,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   public renderTableTitle(title: string, type: MetricTypes) {
     return (
       <div>
-        {title} <Add20 onClick={ () => this.displayAddMetric(type) } className="clickableicon" />
+        {title} <Add20 onClick={() => this.displayAddMetric(type)} className="clickableicon" />
       </div>
     )
   }
@@ -837,24 +868,26 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
                       <TableExpandRow {...getRowProps({ row })}>
                         <TableCell>{row.id}</TableCell>
                         <TableCell>
-                          <div className="clickableicon" onClick={ () => this.displayEditMetric(row.id, type) }>
+                          <div className="clickableicon" onClick={() => this.displayEditMetric(row.id, type)}>
                             <Edit20 />
-                            {!metrics[row.id].custom ? this.modifyIter8Metric('edit') : null}
+                            {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('edit') : null}
                           </div>
                         </TableCell>
                         <TableCell className="width20">
                           <div>
                             {metrics[row.id].isDeleted ? (
-                              <div>{this.renderOnDelete(row.id, type)}</div>
+                              <div>{this.renderDeleteWarning(row.id, type)}</div>
                             ) : (
-                              <div className="clickableicon" onClick={ () => this.updateIsDeleted(row.id, type) }>
+                              <div className="clickableicon" onClick={() => this.deleteMetricHandler(row.id, type)}>
                                 <TrashCan20 />
-                                {type === MetricTypes.counter && metrics[row.id].custom && metrics[row.id].alsoDelete.length ? (
+                                {type === MetricTypes.counter &&
+                                metrics[row.id].custom &&
+                                metrics[row.id].alsoDelete.length ? (
                                   <div className="warningtext">
                                     Warning: Will also delete {metrics[row.id].alsoDelete.join(', ')}
                                   </div>
                                 ) : null}
-                                {!metrics[row.id].custom ? this.modifyIter8Metric('delete') : null}
+                                {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('delete') : null}
                               </div>
                             )}
                           </div>
@@ -883,15 +916,16 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     formType: FormTypes
   ) {
     if (attribute.type === AttributeTypes.input) {
-      const invalid = attribute.invalidChecks && attribute.invalidChecks[formType] &&  attribute.invalidChecks[formType].check 
-        ? attribute.invalidChecks[formType].check(values[attribute.name], this.state)
-        : false
+      const invalid =
+        attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].check
+          ? attribute.invalidChecks[formType].check(values[attribute.name], this.state)
+          : false
 
       const invalidText =
-        attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].invalidText 
-          ? attribute.invalidChecks[formType].invalidText 
+        attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].invalidText
+          ? attribute.invalidChecks[formType].invalidText
           : ''
-  
+
       return (
         <FormGroup legendText="">
           <TextInput
@@ -911,9 +945,9 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       const dropdownOption = attribute.dropdownOptions.find(option => {
         return option.value === values[attribute.name]
       })
-  
+
       const printableValue = dropdownOption ? dropdownOption.printableOption : values[attribute.name]
-  
+
       // Dropdown menu
       return (
         <FormGroup legendText="">
@@ -960,21 +994,11 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         {(() => {
           if (selectedType === MetricTypes.counter) {
             return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-              this.renderAttributeForm(
-                attribute,
-                this.state.editedMetric,
-                this.updateAttribute,
-                formType
-              )
+              this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
             )
           } else {
             return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-              this.renderAttributeForm(
-                attribute,
-                this.state.editedMetric,
-                this.updateAttribute,
-                formType
-              )
+              this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
             )
           }
         })()}
@@ -1002,7 +1026,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   public render() {
     const { display, selectedType } = this.state
 
-    switch(display) {
+    switch (display) {
       case MetricDetailsModeDisplay.getMetrics:
         return (
           <div className="pageStyle">
@@ -1021,27 +1045,23 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       case MetricDetailsModeDisplay.addMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            {
-              (() => {
-                return this.renderMetricForm(selectedType, this.addMetric, FormTypes.add)
-              })()
-            }
+            {(() => {
+              return this.renderMetricForm(selectedType, this.addMetricHandler, FormTypes.add)
+            })()}
           </div>
         )
 
       case MetricDetailsModeDisplay.editMetrics:
         return (
           <div style={{ padding: '10px' }}>
-            {
-              (() => {
-                return this.renderMetricForm(selectedType, this.editMetric, FormTypes.edit)
-              })()
-            }
+            {(() => {
+              return this.renderMetricForm(selectedType, this.editMetricHandler, FormTypes.edit)
+            })()}
           </div>
         )
 
-      default: 
-        return (<div>Cannot determine proper display mode</div>)
+      default:
+        return <div>Cannot determine proper display mode</div>
     }
   }
 }
@@ -1058,7 +1078,7 @@ type MetricState = {
 
   // TODO: rename to config?
   details: CounterMetric | RatioMetric
-  custom: boolean 
+  custom: boolean
 }
 
 // Outputs the metric config map as a YAML string
@@ -1069,21 +1089,19 @@ export function getMetricsYaml(): string {
 }
 
 // Delete the specified metrics
-export function deleteMetrics(metricNames: string[]): string {
+export function deleteMetrics(metricNames: string[]) {
   const { counterMetrics, ratioMetrics } = getMetricConfig()
 
-  const counterMetricNames = counterMetrics.map((counterMetric) => {
+  const counterMetricNames = counterMetrics.map(counterMetric => {
     return counterMetric.name
   })
 
-  const ratioMetricNames = ratioMetrics.map((ratioMetric) => {
+  const ratioMetricNames = ratioMetrics.map(ratioMetric => {
     return ratioMetric.name
   })
 
   // Error checking
-  for (let i = 0; i < metricNames.length; i++) {
-    const metricName = metricNames[i]
-
+  metricNames.forEach(metricName => {
     if (counterMetricNames.includes(metricName)) {
       if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
         return `Cannot delete iter8 counter metric '${metricName}'`
@@ -1095,22 +1113,20 @@ export function deleteMetrics(metricNames: string[]): string {
     } else {
       return `Invalid metric name '${metricName}'`
     }
-  }
+  })
 
   // Execute deletion
-  metricNames.forEach((metricName) => {
-    const type = counterMetricNames.includes(metricName) ?
-      MetricTypes.counter :
-      ratioMetricNames.includes(metricName) ?
-        MetricTypes.ratio :
-        undefined
+  metricNames.forEach(metricName => {
+    const type = counterMetricNames.includes(metricName)
+      ? MetricTypes.counter
+      : ratioMetricNames.includes(metricName)
+      ? MetricTypes.ratio
+      : undefined
 
     deleteMetric(metricName, type)
   })
 }
 
 export function getMetricDetailsMode() {
-  return (
-    <MetricDetailsMode></MetricDetailsMode>
-  )
+  return <MetricDetailsMode></MetricDetailsMode>
 }
