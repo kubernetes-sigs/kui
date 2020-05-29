@@ -100,7 +100,7 @@ export const badge = (title: string, css?: string, absent = false) => async (app
 }
 
 export const button = (button: { mode: string; label?: string }) => async (app: Application) => {
-  await expectText(app, button.label || button.mode)(Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode))
+  await app.client.waitForVisible(Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode))
   return app
 }
 

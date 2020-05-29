@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react'
-import { TooltipIcon } from 'carbon-components-react'
 import {
   Tab as KuiTab,
   Button,
@@ -34,8 +33,6 @@ interface Props {
     parsedOptions: ParsedOptions
   }
 }
-
-import '../../../../web/css/static/Tooltip.scss'
 
 export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWithMetadata> extends React.PureComponent<
   Props
@@ -83,14 +80,8 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
         data-mode={button.mode}
         onClick={this.buttonOnclick.bind(this)}
       >
-        <span role="tab">
-          {button.icon ? (
-            <TooltipIcon className="zoomable" direction="bottom" align="end" tooltipText={button.label || button.mode}>
-              {button.icon}
-            </TooltipIcon>
-          ) : (
-            button.label || button.mode
-          )}
+        <span role="tab" title={button.label || button.mode}>
+          {button.icon ? button.icon : button.label || button.mode}
         </span>
       </a>
     )

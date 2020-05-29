@@ -370,9 +370,10 @@
     a {
       padding: 3px;
       display: flex;
+      color: var(--color-text-01);
 
       svg {
-        fill: var(--color-text-01);
+        fill: currentColor;
       }
     }
 
