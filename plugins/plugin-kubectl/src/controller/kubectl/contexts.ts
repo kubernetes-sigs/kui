@@ -16,7 +16,7 @@
 
 import {
   i18n,
-  Tab,
+  REPL as REPLType,
   RadioTable,
   RadioTableRow,
   radioTableCellToString,
@@ -118,15 +118,31 @@ function valueOf(key: 'NAME' | 'NAMESPACE' | 'AUTHINFO' | 'CLUSTER', row: Row) {
  * @return a `KubeContext` representing the current context
  *
  */
-export async function getCurrentContext(tab: Tab): Promise<KubeContext> {
+export async function getCurrentContext({ REPL }: { REPL: REPLType }): Promise<KubeContext> {
   // fetch both the current context name, and the list of KubeContext objects */
   const [currentContextName, { content: contexts }] = await Promise.all([
-    tab.REPL.qexec<string>(`context`),
-    tab.REPL.rexec<KubeContext[]>(`contexts`)
+    REPL.qexec<string>(`context`),
+    REPL.rexec<KubeContext[]>(`contexts`)
   ])
 
   // the KubeContext object matching the current context name
   return contexts.find(_ => _.metadata.name === currentContextName)
+}
+
+export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
+  const context = await REPL.qexec<string>('kubectl config current-context')
+  return context ? context.trim() : context
+}
+
+/** Extract the namespace from the current context */
+export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }) {
+  const ns = await REPL.qexec<string>(`kubectl config view --minify --output 'jsonpath={..namespace}'`)
+  if (typeof ns !== 'string') {
+    // e.g. microk8s
+    return 'default'
+  } else {
+    return ns ? ns.trim() : ns
+  }
 }
 
 /**

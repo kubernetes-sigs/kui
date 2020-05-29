@@ -51,8 +51,8 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
     }
   }
 
-  private buttonOnclick() {
-    const cmd = this.getCommand()
+  private async buttonOnclick() {
+    const cmd = await this.getCommand()
     const { tab, response, button, args } = this.props
 
     if (typeof cmd === 'string') {

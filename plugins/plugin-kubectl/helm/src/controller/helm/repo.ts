@@ -28,7 +28,7 @@ async function doRepoList(args: Arguments<KubeOptions>) {
   const response = await doExecWithStdout(args)
 
   const preTables = preprocessTable(response.split(/^(?=LAST SEEN|NAMESPACE|NAME\s+)/m))
-  return formatTable('helm', undefined, undefined, args.parsedOptions, preTables[0])
+  return formatTable('helm', undefined, undefined, args, preTables[0])
 }
 
 export default (registrar: Registrar) => {

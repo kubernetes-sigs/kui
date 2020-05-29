@@ -71,7 +71,7 @@ export const dispatchToShell = async ({
       try {
         return JSON.parse(response)
       } catch (err) {
-        debug('response maybe is not JSON', response)
+        // debug('response maybe is not JSON', response)
       }
     }
     return response
