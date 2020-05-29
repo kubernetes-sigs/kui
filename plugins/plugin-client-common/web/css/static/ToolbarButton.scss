@@ -7,11 +7,12 @@
 
   svg,
   .bx--tooltip__trigger svg {
-    fill: var(--color-sidecar-toolbar-foreground);
+    fill: currentColor;
   }
 
   &:hover {
     background-color: var(--color-table-border3);
+
     svg {
       fill: var(--color-text-01);
     }

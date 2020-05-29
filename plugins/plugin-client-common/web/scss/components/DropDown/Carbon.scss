@@ -23,6 +23,12 @@ $button-hover-color: var(--color-table-border3);
 $option-hover-color: var(--color-base02);
 
 [kui-theme-style] {
+  .sidecar-bottom-stripe-button .bx--overflow-menu.bx--overflow-menu--open svg,
+  .sidecar-bottom-stripe-button:hover .bx--overflow-menu.bx--overflow-menu--open svg,
+  .kui--toolbar-button-with-icon:hover .bx--overflow-menu.bx--overflow-menu--open svg {
+    fill: var(--color-base01);
+  }
+
   .bx--overflow-menu {
     width: 1.5em;
     height: 1.5em;
@@ -31,9 +37,6 @@ $option-hover-color: var(--color-base02);
     }
     &.bx--overflow-menu--open {
       background-color: $bg-open-color;
-      svg {
-        fill: $bg-color;
-      }
     }
   }
   .bx--overflow-menu--divider {
@@ -58,10 +61,6 @@ $option-hover-color: var(--color-base02);
       background-color: $bg-open-color;
     }
 
-    svg[data-mode='selected container'] {
-      padding-right: 2px;
-    }
-
     &:after {
       background-color: $bg-open-color;
       top: -0.1875em;
@@ -84,7 +83,7 @@ $option-hover-color: var(--color-base02);
   }
   .bx--overflow-menu-options__btn {
     font-size: 1em;
-    line-height: 1.125em;
+    line-height: 1.25em;
     max-width: unset;
     color: $color;
 
