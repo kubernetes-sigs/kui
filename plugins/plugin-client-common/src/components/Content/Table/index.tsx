@@ -16,6 +16,7 @@
 
 import * as React from 'react'
 import { Tab, REPL, Table, isWatchable } from '@kui-shell/core'
+import { KuiContext } from '../../../'
 
 import PaginatedTable from './PaginatedTable'
 import LivePaginatedTable from './LivePaginatedTable'
@@ -30,25 +31,37 @@ export default function renderTable(
 ) {
   if (isWatchable(response)) {
     return (
-      <LivePaginatedTable
-        tab={tab}
-        repl={repl}
-        response={response}
-        paginate={paginate}
-        toolbars={toolbars}
-        asGrid={asGrid}
-      />
+      <KuiContext.Consumer>
+        {config => (
+          <LivePaginatedTable
+            tab={tab}
+            repl={repl}
+            response={response}
+            paginate={paginate}
+            title={!config.disableTableTitle}
+            toolbars={toolbars}
+            asGrid={asGrid}
+          />
+        )}
+      </KuiContext.Consumer>
     )
   } else {
     return (
-      <PaginatedTable
-        tab={tab}
-        repl={repl}
-        response={response}
-        paginate={paginate}
-        toolbars={toolbars}
-        asGrid={asGrid}
-      />
+      <KuiContext.Consumer>
+        {config => {
+          return (
+            <PaginatedTable
+              tab={tab}
+              repl={repl}
+              response={response}
+              paginate={paginate}
+              title={!config.disableTableTitle}
+              toolbars={toolbars}
+              asGrid={asGrid}
+            />
+          )
+        }}
+      </KuiContext.Consumer>
     )
   }
 }
