@@ -16,9 +16,14 @@
 
 import * as React from 'react'
 
-import { KubeContext, getCurrentContext } from '@kui-shell/plugin-kubectl'
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { getCurrentTab, eventChannelUnsafe, wireToStandardEvents } from '@kui-shell/core'
+import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser } from '@kui-shell/core'
+import {
+  KubeContext,
+  getCurrentDefaultNamespace,
+  onKubectlConfigChangeEvents,
+  offKubectlConfigChangeEvents
+} from '@kui-shell/plugin-kubectl'
 
 interface State {
   text: string
@@ -26,6 +31,8 @@ interface State {
 }
 
 export default class CurrentNamespace extends React.PureComponent<{}, State> {
+  private handler = this.reportCurrentNamespace.bind(this)
+
   public constructor(props = {}) {
     super(props)
 
@@ -43,16 +50,18 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
   private async reportCurrentNamespace() {
     const tab = getCurrentTab()
     if (!tab || !tab.REPL) {
+      if (tab && !tab.REPL) {
+        eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentNamespace())
+      }
       return
     }
 
     try {
-      const currentContext = await getCurrentContext(tab)
-      eventChannelUnsafe.emit('/kubeui/context/current', currentContext)
+      const ns = await getCurrentDefaultNamespace(tab)
 
-      if (currentContext && currentContext.metadata && currentContext.metadata.namespace) {
+      if (ns) {
         this.setState({
-          text: currentContext === undefined ? '' : this.renderNamespace(currentContext),
+          text: ns,
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
         })
       }
@@ -73,7 +82,21 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
    */
   public componentDidMount() {
     this.reportCurrentNamespace()
-    wireToStandardEvents(this.reportCurrentNamespace.bind(this))
+
+    if (inBrowser()) {
+      onKubectlConfigChangeEvents(this.handler)
+    } else {
+      wireToStandardEvents(this.handler)
+    }
+  }
+
+  /** Bye! */
+  public componentWillUnmount() {
+    if (inBrowser()) {
+      offKubectlConfigChangeEvents(this.handler)
+    } else {
+      // FIXME wireToStandardEvents(handler)
+    }
   }
 
   public render() {

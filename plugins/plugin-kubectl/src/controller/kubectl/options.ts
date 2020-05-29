@@ -15,7 +15,9 @@
  */
 
 import { Arguments, ExecOptions, ParsedOptions } from '@kui-shell/core'
+
 import { FinalState } from '../../lib/model/states'
+import { getCurrentDefaultNamespace } from './contexts'
 
 type EntityFormat = 'yaml' | 'json'
 type TableFormat = 'wide' | string // want: 'custom-columns-file=' | 'custom-columns='
@@ -132,17 +134,8 @@ export function hasLabel(args: Arguments<KubeOptions>) {
   return false
 }
 
-export function getNamespace(args: Arguments<KubeOptions>) {
-  return args.parsedOptions.n || args.parsedOptions.namespace
-}
-
-export function getNamespaceForArgv(args: Arguments<KubeOptions>) {
-  const ns = getNamespace(args)
-  if (ns) {
-    return `-n ${ns}`
-  } else {
-    return ''
-  }
+export async function getNamespace(args: Arguments<KubeOptions>): Promise<string> {
+  return args.parsedOptions.n || args.parsedOptions.namespace || (await getCurrentDefaultNamespace(args))
 }
 
 export function getContext(args: Arguments<KubeOptions>) {

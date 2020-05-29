@@ -112,7 +112,7 @@ const usage = (command: string) => ({
 async function getResourcesReferencedByFile(file: string, args: Arguments<FinalStateOptions>): Promise<ResourceRef[]> {
   const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFile(args.REPL, file)])
 
-  const namespaceFromCommandLine = getNamespace(args) || 'default'
+  const namespaceFromCommandLine = await getNamespace(args)
 
   const models: KubeResource[] = safeLoadAll(raw)
   return models
@@ -154,19 +154,21 @@ async function getResourcesReferencedByKustomize(
       })
     )
 
-    return files
-      .map(raw => safeLoad(raw[0]))
-      .map(resource => {
-        const { apiVersion, kind, metadata } = resource
-        const { group, version } = versionOf(apiVersion)
-        return {
-          group,
-          version,
-          kind,
-          name: metadata.name,
-          namespace: metadata.namespace || getNamespace(args) || 'default'
-        }
-      })
+    return await Promise.all(
+      files
+        .map(raw => safeLoad(raw[0]))
+        .map(async resource => {
+          const { apiVersion, kind, metadata } = resource
+          const { group, version } = versionOf(apiVersion)
+          return {
+            group,
+            version,
+            kind,
+            name: metadata.name,
+            namespace: metadata.namespace || (await getNamespace(args))
+          }
+        })
+    )
   }
 
   return []
@@ -176,7 +178,10 @@ async function getResourcesReferencedByKustomize(
  * @param argvRest the argv after `kubectl status`, with options stripped off
  *
  */
-function getResourcesReferencedByCommandLine(argvRest: string[], args: Arguments<FinalStateOptions>): ResourceRef[] {
+async function getResourcesReferencedByCommandLine(
+  argvRest: string[],
+  args: Arguments<FinalStateOptions>
+): Promise<ResourceRef[]> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
   const [kind, nameGroupVersion, nameAlt] = argvRest
 
@@ -184,7 +189,7 @@ function getResourcesReferencedByCommandLine(argvRest: string[], args: Arguments
   const isCreateSecret = !isDelete && /secret(s)?/i.test(kind)
   const [name, group, version] = isCreateSecret ? [nameAlt] : nameGroupVersion.split(/\./)
 
-  const namespace = getNamespace(args) || 'default'
+  const namespace = await getNamespace(args)
 
   return [{ group, version, kind, name, namespace }]
 }
@@ -452,7 +457,7 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
       ? await getResourcesReferencedByFile(file, args)
       : kusto
       ? await getResourcesReferencedByKustomize(kusto, args)
-      : getResourcesReferencedByCommandLine(rest, args)
+      : await getResourcesReferencedByCommandLine(rest, args)
     debug('resourcesToWaitFor', resourcesToWaitFor)
 
     /* if (nResourcesToWaitFor > 1) {

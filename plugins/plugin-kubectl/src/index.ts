@@ -60,7 +60,7 @@ export { default as commandPrefix } from './controller/command-prefix'
 
 export { default as defaultFlags, crudFlags } from './controller/kubectl/flags'
 
-export { getCurrentContext } from './controller/kubectl/contexts'
+export { getCurrentContext, getCurrentContextName, getCurrentDefaultNamespace } from './controller/kubectl/contexts'
 
 export {
   KubeOptions,
@@ -70,7 +70,6 @@ export {
   isHelpRequest,
   getContainer,
   getNamespace,
-  getNamespaceForArgv,
   isForAllNamespaces
 } from './controller/kubectl/options'
 
@@ -97,5 +96,9 @@ export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
 export { describer } from './controller/kubectl/describe'
+export { register as registerConfig } from './controller/kubectl/config'
 
 export { viewTransformer as getTransformer } from './controller/kubectl/get'
+
+/** A channel that covers *possible* changes to kubectl config */
+export { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from './controller/kubectl/config'

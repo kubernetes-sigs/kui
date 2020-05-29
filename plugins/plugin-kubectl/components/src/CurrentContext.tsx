@@ -15,10 +15,14 @@
  */
 
 import * as React from 'react'
-import { KubeContext } from '@kui-shell/plugin-kubectl'
-import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
-import { eventChannelUnsafe, wireToStandardEvents } from '@kui-shell/core'
+import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser } from '@kui-shell/core'
+import {
+  getCurrentContextName,
+  onKubectlConfigChangeEvents,
+  offKubectlConfigChangeEvents
+} from '@kui-shell/plugin-kubectl'
 
 interface State {
   text: string
@@ -26,6 +30,8 @@ interface State {
 }
 
 export default class CurrentContext extends React.PureComponent<{}, State> {
+  private handler = this.reportCurrentContext.bind(this)
+
   public constructor(props = {}) {
     super(props)
 
@@ -37,25 +43,51 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
 
   /** @return e.g. name/uuid -> name; or name:nnnn -> name */
   private renderName(context: string): string {
-    return context.replace(/[/:].*$/, '')
+    // ibmcloud: {clustername}/{uuid}
+    const match1 = context.match(/^([^/]+)[/:][0-9a-z]+$/)
+    if (match1) {
+      return match1[1]
+    }
+
+    // openshift: {namespace}/{clusterhost}:{port}/{user}
+    const match2 = context.match(/^[^/]+\/([^/]+):\d+\/[^/]+$/)
+    if (match2) {
+      return match2[1]
+    }
+
+    // AWS: arn:aws:eks:{region}:{uuid}:cluster/{clustername}
+    // e.g. region us-east-1
+    // e.g. uuid 581274594392
+    const match3 = context.match(/arn:[^:]+:[^:]+:[^:]+:[^:]+:cluster\/(.*)$/)
+    if (match3) {
+      return match3[1]
+    }
+
+    return context
   }
 
   private async reportCurrentContext() {
-    // careful: this impl assumes that current-context is registered
-    // *before* current-namespace (in preload.ts)
-    eventChannelUnsafe.once('/kubeui/context/current', (context: KubeContext) => {
-      try {
-        this.setState({
-          text: this.renderName(context.spec.cluster),
-          viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
-        })
-      } catch (err) {
-        this.setState({
-          text: '',
-          viewLevel: 'hidden'
-        })
+    const tab = getCurrentTab()
+    if (!tab || !tab.REPL) {
+      if (tab && !tab.REPL) {
+        eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentContext())
       }
-    })
+      return
+    }
+
+    try {
+      const context = await getCurrentContextName(tab)
+      this.setState({
+        text: this.renderName(context),
+        viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
+      })
+    } catch (err) {
+      console.error(err)
+      this.setState({
+        text: '',
+        viewLevel: 'hidden'
+      })
+    }
   }
 
   /**
@@ -65,7 +97,21 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
    */
   public componentDidMount() {
     this.reportCurrentContext()
-    wireToStandardEvents(this.reportCurrentContext.bind(this))
+
+    if (inBrowser()) {
+      onKubectlConfigChangeEvents(this.handler)
+    } else {
+      wireToStandardEvents(this.handler)
+    }
+  }
+
+  /** Bye! */
+  public componentWillUnmount() {
+    if (inBrowser()) {
+      offKubectlConfigChangeEvents(this.handler)
+    } else {
+      // FIXME wireToStandardEvents(handler)
+    }
   }
 
   public render() {

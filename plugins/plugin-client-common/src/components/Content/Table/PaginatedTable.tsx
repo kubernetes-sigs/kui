@@ -80,9 +80,12 @@ export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: B
     ? [{ label: response.title, className: 'kui--data-table-title', isCurrentPage: true }]
     : []
 
-  const breadcrumbs = (prefixBreadcrumbs || [])
-    .concat(titleBreadcrumb)
-    .concat((response.breadcrumbs || []).map(_ => Object.assign({}, _, { className: 'kui--secondary-breadcrumb' })))
+  const _responseCrumbs = typeof response.breadcrumbs === 'function' ? response.breadcrumbs() : response.breadcrumbs
+  const responseCrumbs = !_responseCrumbs
+    ? []
+    : _responseCrumbs.map(_ => Object.assign({}, _, { className: 'kui--secondary-breadcrumb' }))
+
+  const breadcrumbs = (prefixBreadcrumbs || []).concat(responseCrumbs).concat(titleBreadcrumb)
 
   return breadcrumbs
 }

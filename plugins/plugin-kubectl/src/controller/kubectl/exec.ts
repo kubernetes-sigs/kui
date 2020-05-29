@@ -31,7 +31,7 @@ import {
 import RawResponse from './response'
 import commandPrefix from '../command-prefix'
 import KubeResource from '../../lib/model/resource'
-import { KubeOptions, getNamespaceForArgv, getContextForArgv, getFileForArgv } from './options'
+import { KubeOptions, getContextForArgv, getFileForArgv, getNamespace } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { stringToTable, KubeTableResponse } from '../../lib/view/formatTable'
@@ -224,7 +224,7 @@ export async function doExecWithTable<O extends KubeOptions>(
     ? { content: { stdout: await doExecWithStdoutViaPty(args, prepare), stderr: undefined } }
     : await doExecWithoutPty(args, prepare, command)
 
-  const table = stringToTable(
+  const table = await stringToTable(
     response.content.stdout,
     response.content.stderr,
     args,
@@ -261,7 +261,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
   } else if (isHeadless()) {
     return response.content.stdout
   } else {
-    const contextArgs = `${getNamespaceForArgv(args)} ${getContextForArgv(args)}`
+    const contextArgs = `-n ${await getNamespace(args)} ${getContextForArgv(args)}`
     const watchArgs = `--final-state ${finalState} --watch`
 
     // this helps with error reporting: if something goes wrong with

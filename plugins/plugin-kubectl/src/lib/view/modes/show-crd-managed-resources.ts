@@ -17,8 +17,7 @@
 import { i18n, Tab, ModeRegistration, encodeComponent } from '@kui-shell/core'
 
 import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
-import { fqn } from '../../../controller/kubectl/fqn'
-import { getCommandFromArgs } from '../../../lib/util/util'
+import { fqn, getCommandFromArgs, getCurrentDefaultNamespace } from '../../..'
 
 const strings = i18n('plugin-kubectl')
 
@@ -26,12 +25,12 @@ const strings = i18n('plugin-kubectl')
  * Extract the events
  *
  */
-export function command(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOptions: string[] }) {
+export async function command(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOptions: string[] }) {
   return `${getCommandFromArgs(args)} get ${fqn(
     crd.apiVersion,
     encodeComponent(crd.kind),
     encodeComponent(crd.metadata.name),
-    encodeComponent(crd.metadata.namespace || 'default')
+    encodeComponent(crd.metadata.namespace || (await getCurrentDefaultNamespace(tab)))
   )}`
 }
 

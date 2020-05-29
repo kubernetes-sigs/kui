@@ -29,7 +29,12 @@ const debug = Debug('plugin-kubectl/helm/controller/helm/status')
  * Format the output of a helm status command
  *
  */
-export const format = async (name: string, options: KubeOptions, response: string, execOptions: ExecOptions) => {
+export const format = async (
+  name: string,
+  args: Arguments<KubeOptions>,
+  response: string,
+  execOptions: ExecOptions
+) => {
   const command = 'kubectl'
   const verb = 'get'
 
@@ -77,7 +82,9 @@ export const format = async (name: string, options: KubeOptions, response: strin
           command,
           verb,
           entityType,
-          Object.assign({}, options, { namespace: namespaceFor() }),
+          Object.assign({}, args, {
+            parsedOptions: Object.assign({}, args.parsedOptions, { namespace: namespaceFor() })
+          }),
           preprocessTable([A.slice(1).join('\n')])[0]
         )
       }
@@ -87,10 +94,13 @@ export const format = async (name: string, options: KubeOptions, response: strin
 
   if (execOptions.nested) {
     debug('returning tables for nested call')
-    return resources.map(({ kind, table }) => {
-      table.title = kind
-      return table
-    })
+    return Promise.all(
+      resources.map(async ({ kind, table }) => {
+        const T = await table
+        T.title = kind
+        return T
+      })
+    )
   } else {
     const notesMatch =
       notesString &&
@@ -162,10 +172,12 @@ ${notesMatch[3]}`
 
     const resourcesMenu = {
       label: 'Resources',
-      items: resources.map(_ => ({
-        mode: _.kind,
-        content: _.table
-      }))
+      items: await Promise.all(
+        resources.map(async _ => ({
+          mode: _.kind,
+          content: await _.table
+        }))
+      )
     }
 
     const response: NavResponse = {
@@ -188,7 +200,7 @@ async function doStatus(args: Arguments<KubeOptions>) {
   const response = await doExecWithStdout(args)
 
   try {
-    return format(name, args.parsedOptions, response, args.execOptions)
+    return format(name, args, response, args.execOptions)
   } catch (err) {
     console.error('error formatting status', err)
     return response

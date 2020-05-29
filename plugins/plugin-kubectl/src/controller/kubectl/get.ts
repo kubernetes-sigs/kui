@@ -54,7 +54,7 @@ export function doGetAsTable(
   response: RawResponse,
   verb = 'get',
   fullKind?: string
-): KubeTableResponse {
+): Promise<KubeTableResponse> {
   const {
     content: { stderr, stdout }
   } = response
@@ -116,14 +116,14 @@ export async function doGetAsMMR(
     // attempt to separate out the app and generated parts of the resource name
     const { name: prettyName, nameHash, version } = extractAppAndName(resource)
 
-    if (resource.kind === 'List') {
+    if (isKubeItems(resource)) {
       // then this is a response to e.g. `kubectl get pods -o yaml`
       return {
         apiVersion: resource.apiVersion,
         kind: resource.kind,
         metadata: {
           name: args.command,
-          namespace: getNamespace(args) || 'default'
+          namespace: await getNamespace(args)
         },
         isSimulacrum: true, // this is not a real crudable resource
         originatingCommand: args.command,
@@ -148,7 +148,7 @@ export async function doGetAsMMR(
       onclick: {
         kind: `kubectl get ${kindAndNamespaceOf(resource)}`,
         name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`,
-        namespace: `kubectl get ns ${resource.metadata.namespace || 'default'} -o yaml`
+        namespace: resource.metadata.namespace ? `kubectl get ns ${resource.metadata.namespace} -o yaml` : undefined
       },
       modes: [], // this tells Kui that we want the response to be interpreted as a MultiModalResponse
       kuiRawData: resource.kuiRawData // also include the raw, uninterpreted data string we got back

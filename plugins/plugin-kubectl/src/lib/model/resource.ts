@@ -502,4 +502,12 @@ export interface Resource<T = KubeResource> {
   resource: T
 }
 
+/**
+ * Is the given resource kind cluster scoped (as opposed to namespace scoped)?
+ * FIXME: apiVersion
+ */
+export function isClusterScoped(kind: string) {
+  return kind === 'CustomResourceDefinition' || kind === 'Namespace' || kind === 'Node'
+}
+
 export default KubeResource

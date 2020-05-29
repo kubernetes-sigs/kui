@@ -20,7 +20,6 @@ import {
   KubeOptions,
   Pod,
   getNamespace,
-  getNamespaceForArgv,
   getLabelForArgv,
   isForAllNamespaces
 } from '@kui-shell/plugin-kubectl'
@@ -123,7 +122,7 @@ interface PodOptions extends KubeOptions {
  */
 async function getPodsInNode(args: Arguments<KubeOptions>, forNode: string): Promise<Record<string, boolean>> {
   const { content } = await args.REPL.rexec<KubeItems<Pod>>(
-    `kubectl get pods -o json ${getNamespaceForArgv(args)} ${getLabelForArgv(args)}`
+    `kubectl get pods -o json -n ${await getNamespace(args)} ${getLabelForArgv(args)}`
   )
 
   const empty = {} as Record<string, boolean>
@@ -175,14 +174,14 @@ function addRow(
   forThisNS.body.push(row)
 }
 
-function addAllNSRow(args: Arguments<KubeOptions>, forThisNS: Table, forAllNS: Table) {
+async function addAllNSRow(args: Arguments<KubeOptions>, forThisNS: Table, forAllNS: Table) {
   if (forThisNS.body && forThisNS.body.length > 0) {
     const cpuTotal = forThisNS.body.reduce((total, row) => total + cpuShare(row.attributes[0].value), 0)
     const memTotal = forThisNS.body.reduce((total, row) => total + memShare(row.attributes[1].value), 0)
     addRow(forThisNS, 'Total', cpuTotal, memTotal)
 
     if (forAllNS.body && forAllNS.body.length > 0) {
-      const thisNS = getNamespace(args) || 'default'
+      const thisNS = await getNamespace(args)
       const otherNS = forAllNS.body.filter(_ => _.name !== thisNS)
 
       const cpuTotal = otherNS.reduce((total, row) => total + cpuShare(row.attributes[1].value), 0)
@@ -269,12 +268,12 @@ export async function topPod(
     throw new Error(strings('No pods found'))
   }
 
+  const ns = await getNamespace(args)
+
   table.body.forEach(row => {
     // don't need to filter by node: ${args.parsedOptions.node ? `--node ${args.REPL.encodeComponent(args.parsedOptions.node)}` : ''}
     if (row.onclick) {
-      row.onclick = `kubectl top container ${args.REPL.encodeComponent(row.name)} ${getNamespaceForArgv(
-        args
-      )} ${getLabelForArgv(args)}`
+      row.onclick = `kubectl top container ${args.REPL.encodeComponent(row.name)} -n ${ns} ${getLabelForArgv(args)}`
       row.onclickSilence = false
     }
   })

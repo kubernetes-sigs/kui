@@ -23,6 +23,7 @@ import {
   getter,
   doDelete,
   describer,
+  registerConfig,
   doEdit,
   doRun
 } from '@kui-shell/plugin-kubectl'
@@ -40,4 +41,5 @@ export default (registrar: Registrar) => {
 
   getter(registrar, command)
   describer(registrar, command)
+  registerConfig(registrar, command)
 }
