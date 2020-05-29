@@ -81,7 +81,7 @@ export async function projectList(args: Arguments<KubeOptions>) {
   return Object.assign(list, {
     metadata: {
       name: args.command,
-      namespace: getNamespace(args) || 'default'
+      namespace: await getNamespace(args)
     },
     modes: [],
     kuiRawData,

@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-import { Table, Row, Cell, isTable, encodeComponent, Arguments, MixedResponse, i18n } from '@kui-shell/core'
+import {
+  Table,
+  Row,
+  Cell,
+  isTable,
+  encodeComponent,
+  Arguments,
+  ExecType,
+  MixedResponse,
+  i18n,
+  inBrowser
+} from '@kui-shell/core'
 
 import TrafficLight from '../model/traffic-light'
+import { isClusterScoped } from '../model/resource'
+import { getCurrentDefaultNamespace } from '../../'
 import KubeOptions, { isForAllNamespaces } from '../../controller/kubectl/options'
 import { RawResponse } from '../../controller/kubectl/response'
 
@@ -165,14 +178,14 @@ function cssForReadyCount(ready: string): string {
   }
 }
 
-export const formatTable = <O extends KubeOptions>(
+export const formatTable = async <O extends KubeOptions>(
   command: string,
   verb: string,
   entityTypeFromCommandLine: string,
-  options: O,
+  { REPL, parsedOptions: options, execOptions }: Arguments<O>,
   preTable: Pair[][],
   nameColumn = 'NAME'
-): Table => {
+): Promise<Table> => {
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -319,12 +332,18 @@ export const formatTable = <O extends KubeOptions>(
     }
   )
 
+  const nsForBreadcrumb = isClusterScoped(entityTypeFromCommandLine)
+    ? undefined
+    : ns ||
+      (isForAllNamespaces(options) && strings('all')) ||
+      (execOptions.type === ExecType.TopLevel && !inBrowser() && (await getCurrentDefaultNamespace({ REPL })))
+
   return {
     header: rows[0],
     body: rows.slice(1),
     noSort: true,
     title: entityTypeFromRows || entityTypeFromCommandLine || '',
-    breadcrumbs: [{ label: ns || (isForAllNamespaces(options) && strings('all')) || 'default' }]
+    breadcrumbs: nsForBreadcrumb ? [{ label: nsForBreadcrumb }] : undefined
   }
 }
 
@@ -379,7 +398,7 @@ function withNotFound(table: Table, stderr: string) {
  * Display the given string as a REPL table
  *
  */
-export const stringToTable = <O extends KubeOptions>(
+export const stringToTable = async <O extends KubeOptions>(
   decodedResult: string,
   stderr: string,
   args: Arguments<O>,
@@ -387,7 +406,7 @@ export const stringToTable = <O extends KubeOptions>(
   verb?: string,
   entityType?: string,
   nameColumn?: string
-): KubeTableResponse => {
+): Promise<KubeTableResponse> => {
   // the ?=\s+ part is a positive lookahead; we want to
   // match only "NAME " but don't want to capture the
   // whitespace
@@ -399,19 +418,21 @@ export const stringToTable = <O extends KubeOptions>(
   } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
     if (preTables.length === 1) {
-      const T = formatTable(command, verb, entityType, args.parsedOptions, preTables[0], nameColumn)
+      const T = await formatTable(command, verb, entityType, args, preTables[0], nameColumn)
       if (args.execOptions.filter) {
         T.body = args.execOptions.filter(T.body)
       }
       return withNotFound(T, stderr)
     } else {
-      return preTables.map(preTable => {
-        const T = formatTable(command, verb, entityType, args.parsedOptions, preTable)
-        if (args.execOptions.filter) {
-          T.body = args.execOptions.filter(T.body)
-        }
-        return withNotFound(T, stderr)
-      })
+      return Promise.all(
+        preTables.map(async preTable => {
+          const T = await formatTable(command, verb, entityType, args, preTable)
+          if (args.execOptions.filter) {
+            T.body = args.execOptions.filter(T.body)
+          }
+          return withNotFound(T, stderr)
+        })
+      )
     }
   } else {
     // otherwise, display the raw output

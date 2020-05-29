@@ -147,7 +147,7 @@ export class Table<RowType extends Row = Row> {
   noEntityColors?: boolean
 
   title?: string
-  breadcrumbs?: Breadcrumb[]
+  breadcrumbs?: Breadcrumb[] | (() => Breadcrumb[])
 
   flexWrap?: number | boolean
 
