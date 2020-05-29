@@ -34,7 +34,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(() => app.client.keys(Keys.ctrlC))
           .then(() => ({ app: app, count: count }))
           .then(ReplExpect.blank)
-          .then(() => app.client.getValue(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
+          .then(() => app.client.getText(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
           .then(input => assert.strictEqual(input, cmd))
       )
       .catch(Common.oops(this, true))

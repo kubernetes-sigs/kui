@@ -247,9 +247,9 @@ export default class Input extends InputProvider {
 
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
-    const active = this.state.prompt !== undefined && isActive(this.props.model)
+    const active = isActive(this.props.model)
 
-    if (active) {
+    if (active || isProcessing(this.props.model)) {
       setTimeout(() => this.state.prompt.focus())
 
       const kp = active && !this.state.isearch ? onKeyPress.bind(this) : undefined
@@ -269,6 +269,7 @@ export default class Input extends InputProvider {
           className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
           aria-label="Command Input"
           tabIndex={1}
+          readOnly={!active}
           placeholder={this.props.promptPlaceholder}
           onBlur={this.props.onInputBlur}
           onFocus={this.props.onInputFocus}
@@ -306,21 +307,7 @@ export default class Input extends InputProvider {
           ? this.props.model.command
           : '')
 
-      return (
-        <input
-          type="text"
-          className="repl-input-element"
-          aria-label="Command Input"
-          readOnly
-          tabIndex={-1}
-          value={value}
-          ref={c => {
-            if (c && !this.state.prompt) {
-              this.setState({ prompt: c })
-            }
-          }}
-        />
-      )
+      return <div className="repl-input-element">{value}</div>
     }
   }
 

@@ -83,14 +83,15 @@ export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
 export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
-export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} input`
-export const PROMPT_N = (N: number) => `${PROMPT_BLOCK_N(N)} input`
+export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} .repl-input-element`
+export const PROMPT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-input-element`
 export const OUTPUT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result`
 export const OUTPUT_N_STREAMING = (N: number) => `${PROMPT_BLOCK_N(N)} [data-stream]`
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
-export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} input`
+export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
+export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
 export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
 export const OUTPUT_LAST_PTY = OUTPUT_LAST_STREAMING
