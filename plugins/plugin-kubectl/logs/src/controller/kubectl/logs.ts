@@ -26,7 +26,7 @@ import {
   getTransformer,
   getCommandFromArgs,
   getContainer,
-  getNamespaceForArgv,
+  getNamespace,
   KubeItems,
   isKubeItemsOfKind,
   KubeResource,
@@ -49,7 +49,7 @@ interface LogOptions extends KubeOptions {
  *
  */
 function getOrPty(verb: string) {
-  return (args: Arguments<LogOptions>) => {
+  return async (args: Arguments<LogOptions>) => {
     const cmd = getCommandFromArgs(args)
 
     if (isUsage(args)) {
@@ -83,9 +83,9 @@ function getOrPty(verb: string) {
       if (!label) {
         const idx = args.argvNoOptions.indexOf(verb)
         const name = args.argvNoOptions[idx + 1]
-        return args.REPL.qexec(`${cmd} get pod ${name} ${getNamespaceForArgv(args)} -o yaml`)
+        return args.REPL.qexec(`${cmd} get pod ${name} -n ${await getNamespace(args)} -o yaml`)
       } else {
-        return args.REPL.qexec(`${cmd} get pod -l ${label} ${getNamespaceForArgv(args)} -o json`)
+        return args.REPL.qexec(`${cmd} get pod -l ${label} -n ${await getNamespace(args)} -o json`)
       }
     } else {
       return doExecWithPty(args)

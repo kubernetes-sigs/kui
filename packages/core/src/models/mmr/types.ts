@@ -105,7 +105,11 @@ export type DrilldownButton<T = MetadataBearing> = Label &
   VisibilityTraits & {
     command:
       | string
-      | ((tab: Tab, resource: T, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) => string)
+      | ((
+          tab: Tab,
+          resource: T,
+          args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+        ) => string | Promise<string>)
     confirm?: boolean
     kind: 'drilldown'
   }

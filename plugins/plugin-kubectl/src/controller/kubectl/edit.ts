@@ -21,7 +21,7 @@ import flags from './flags'
 import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeOptions, getNamespace, getNamespaceForArgv } from './options'
+import { KubeOptions, getNamespace } from './options'
 import { KubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
 
 const strings = i18n('plugin-kubectl')
@@ -37,9 +37,9 @@ export function doEdit(cmd: string) {
     const idx = args.argvNoOptions.indexOf('edit')
     const kindForQuery = args.argvNoOptions[idx + 1] || ''
     const nameForQuery = args.argvNoOptions[idx + 2] || ''
-    const ns = getNamespaceForArgv(args)
+    const ns = await getNamespace(args)
 
-    const getCommand = `${cmd} get ${kindForQuery} ${nameForQuery} ${ns} -o yaml`
+    const getCommand = `${cmd} get ${kindForQuery} ${nameForQuery} -n ${ns} -o yaml`
     const resource = await args.REPL.qexec<KubeResource | KubeItems>(getCommand)
 
     // isKubeItems: did the user ask to edit a collection of resources?
@@ -65,8 +65,7 @@ export function doEdit(cmd: string) {
             const tmp = `/tmp/kui-${uuid()}`
             await args.REPL.rexec(`fwrite ${tmp}`, { data })
 
-            const ns = getNamespace(args) || 'default'
-            const argv = [cmd, 'apply', '-n', ns, '-f', tmp]
+            const argv = [cmd, 'apply', '-n', namespace, '-f', tmp]
             const applyArgs = Object.assign({}, args, {
               command: argv.join(' '),
               argv,
