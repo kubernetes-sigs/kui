@@ -77,7 +77,7 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
   protected abstract toolbarText(status: StreamingStatus): ToolbarText
 
   protected toolbarButtonsForError(status: StreamingStatus): Button[] {
-    if (status === 'Error') {
+    if (status === 'Stopped' || status === 'Error') {
       return [
         {
           mode: 'retry-streaming',
