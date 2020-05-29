@@ -211,6 +211,7 @@ export default class WatchPane extends React.PureComponent<Props, State> {
                         repl={this.props.tab.REPL}
                         response={history.response}
                         asGrid
+                        title={false}
                         toolbars={false}
                         paginate={false}
                       />
