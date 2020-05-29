@@ -209,13 +209,9 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
                 href="#"
                 key={mode.mode}
                 id={mode.mode}
-                tabIndex={0}
                 className="sidecar-bottom-stripe-button"
                 label={mode.label || mode.mode}
                 data-mode={mode.mode}
-                handleTabKeyDown={() => false}
-                handleTabAnchorFocus={() => false}
-                handleTabClick={() => false}
                 onMouseDown={event => event.preventDefault()}
               >
                 {this.tabContent(idx)}

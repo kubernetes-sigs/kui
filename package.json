@@ -74,7 +74,7 @@
     "@kui-shell/proxy": "file:packages/proxy",
     "@kui-shell/test": "file:packages/test",
     "@kui-shell/webpack": "file:packages/webpack",
-    "@types/carbon-components-react": "7.6.15",
+    "@types/carbon-components-react": "7.10.5",
     "@types/debug": "4.1.5",
     "@types/fs-extra": "8.1.0",
     "@types/marked": "0.7.3",
