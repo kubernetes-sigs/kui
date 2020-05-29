@@ -105,6 +105,21 @@ wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, 
     }
   }
 
+  const doRetry = (hasLogs: boolean) => {
+    it('should click retry button', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+
+        if (hasLogs) {
+          await waitForLogText('hi')
+        }
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
   allocateNS(this, ns)
   inputs.forEach(_ => {
     if (_.expectString) {
@@ -114,6 +129,7 @@ wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, 
     }
     waitForPod(_.podName)
     showLogs(_.podName, _.containerName, _.label, _.hasLogs)
+    doRetry(_.hasLogs)
   })
   inputs.forEach(_ => {
     showLogs(_.podName, _.containerName, _.label, _.hasLogs)

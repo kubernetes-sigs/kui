@@ -20,9 +20,9 @@ import {
   allocateNS,
   deleteNS,
   waitForGreen,
-  waitForRed,
   waitForTerminalText,
-  defaultModeForGet
+  defaultModeForGet,
+  deletePodByName
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -243,12 +243,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     type: 'info'
   })
 
-  it(`should delete the pod ${podName} by name via kubectl`, () => {
-    return CLI.command(`kubectl delete pod ${podName} -n ${ns}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-      .then(selector => waitForRed(this.app, selector))
-      .catch(Common.oops(this, true))
-  })
+  deletePodByName(this, podName, ns)
 
   it('should see log streaming stopped', async () => {
     try {
@@ -260,6 +255,12 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   })
 
   const showError = 'Log streaming stopped abnormally.'
+
+  doRetry(['not found'], {
+    text: showError,
+    type: 'error'
+  })
+
   switchContainer(containerName1, ['not found'], [], {
     text: showError,
     type: 'error'

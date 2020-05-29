@@ -57,6 +57,13 @@ declare function allocateNS (ctx: Common.ISuite, ns: string, command?: string, t
 declare function deleteNS (ctx: Common.ISuite, ns: string, command?: string, theCli?: headless): void
 
 /**
+ * Install a mocha test to delete the given pod by name `pod`
+ *
+ */
+declare function deletePodByName (ctx: Common.ISuite, pod: string, ns: string, command?: string, theCli?: headless): void
+
+
+/**
  * Keep poking the given kind till no more such entities exist
  *
  */

@@ -21,6 +21,7 @@ import {
   createNS,
   allocateNS,
   deleteNS,
+  deletePodByName,
   waitForGreen,
   getTerminalText,
   waitForTerminalText,
@@ -103,6 +104,18 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
     })
   }
 
+  const doRetry = (toolbar: { type: string; text: string; exact: boolean }) => {
+    it('should click retry button', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await SidecarExpect.toolbarText(toolbar)(this.app)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
   /** switch to terminal tab, exit with 1, see error in toolbar and click retry button */
   const exitTerminalTabAndRetry = () => {
     it('should show terminal tab and exit with error', async () => {
@@ -127,18 +140,10 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       }
     })
 
-    it('should click retry button', async () => {
-      try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
-        await SidecarExpect.toolbarText({
-          type: 'info',
-          text: `Connected to container ${containerName}`,
-          exact: false
-        })(this.app)
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
+    doRetry({
+      type: 'info',
+      text: `Connected to container ${containerName}`,
+      exact: false
     })
   }
 
@@ -211,6 +216,10 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       await Common.oops(this, true)(err)
     }
   })
+
+  deletePodByName(this, podName, ns)
+
+  doRetry({ type: 'error', text: 'has closed', exact: false })
 
   deleteNS(this, ns)
 })
