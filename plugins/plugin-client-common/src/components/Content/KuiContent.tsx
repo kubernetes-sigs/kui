@@ -40,6 +40,7 @@ import renderTable from './Table'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
+import { KuiContext } from '../../'
 import RadioTableSpi from '../spi/RadioTable'
 
 export type KuiMMRProps = ToolbarProps & {
@@ -109,7 +110,15 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
       } else if (isRadioTable(mode.content)) {
-        return <RadioTableSpi table={mode.content} />
+        const radioTable = mode.content
+        // ^^^ Notes: Even though isRadioTable(mode.content) checks the type of mode.content,
+        // RadioTableSpi in KuiContext.Consumer doesn't know the type of mode.content is RadioTable and throws error
+        // so we have to re-assign mode.content to work around this typescript compile error
+        return (
+          <KuiContext.Consumer>
+            {config => <RadioTableSpi table={radioTable} title={!config.disableTableTitle} />}
+          </KuiContext.Consumer>
+        )
       } else if (isTable(mode.content)) {
         return renderTable(tab, tab.REPL, mode.content, false)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:

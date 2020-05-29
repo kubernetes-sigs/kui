@@ -38,7 +38,7 @@ describe('kubectl api-resources', function(this: Common.ISuite) {
       })
       .catch(Common.oops(this, true)))
 
-  it('should get a list of api resources with pagination', () =>
+  xit('should get a list of api resources with pagination', () =>
     CLI.command('kubectl api-resources', this.app)
       .then(async res => {
         console.error('api-resource table')

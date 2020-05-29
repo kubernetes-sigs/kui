@@ -17,6 +17,9 @@
 type FeatureFlags = {
   /** [Optional] Enable WatchPane? */
   enableWatchPane?: boolean
+
+  /** [Optional] disable table title? */
+  disableTableTitle?: boolean
 }
 
 export default FeatureFlags

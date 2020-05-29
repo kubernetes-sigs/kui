@@ -18,6 +18,15 @@ import { RadioTable } from '@kui-shell/core'
 
 interface Props {
   table: RadioTable
+  /**
+   * paginate: true -> always paginate
+   * paginate: false -> never paginate
+   * paginate: number -> paginate if above the threshold of rows
+   */
+  paginate?: boolean | number
+
+  /** display table title? */
+  title: boolean
 }
 
 export default Props

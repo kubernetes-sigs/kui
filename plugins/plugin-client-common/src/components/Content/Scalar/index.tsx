@@ -29,6 +29,7 @@ import {
 
 import HTMLDom from './HTMLDom'
 import renderTable from '../Table'
+import { KuiContext } from '../../../'
 import RadioTableSpi from '../../spi/RadioTable'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
 
@@ -76,7 +77,11 @@ export default class Scalar extends React.PureComponent<Props, State> {
       if (typeof response === 'number' || typeof response === 'string' || typeof response === 'boolean') {
         return <pre>{response}</pre>
       } else if (isRadioTable(response)) {
-        return <RadioTableSpi table={response} />
+        return (
+          <KuiContext.Consumer>
+            {config => <RadioTableSpi table={response} title={!config.disableTableTitle} />}
+          </KuiContext.Consumer>
+        )
       } else if (isTable(response)) {
         return renderTable(tab, tab.REPL, response, undefined, true)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:

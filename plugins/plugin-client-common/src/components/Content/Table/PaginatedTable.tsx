@@ -59,6 +59,9 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   /** use toolbars? */
   toolbars: boolean
 
+  /** use title? */
+  title: boolean
+
   /** display as grid (versus as regular table)? */
   asGrid: boolean
 
@@ -118,19 +121,22 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private topToolbar() {
-    if (this.props.toolbars) {
+    if (this.props.title) {
       const breadcrumbs = getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
       return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
     }
   }
 
   private isPaginated() {
-    return (
-      this.props.paginate !== undefined &&
-      this.props.paginate !== false &&
-      !this.state.asGrid &&
-      (this.props.paginate === true || this.state.rows.length > this.props.paginate)
-    )
+    return false
+    /**
+     * return (
+     * this.props.paginate !== undefined &&
+     * this.props.paginate !== false &&
+     * !this.state.asGrid &&
+     * (this.props.paginate === true || this.state.rows.length > this.props.paginate)
+     * )
+     */
   }
 
   private bottomToolbar() {
@@ -182,7 +188,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           render={renderOpts => (
             <TableContainer
               className={
-                (this.props.toolbars ? 'kui--data-table-container-with-toolbars' : '') +
+                (this.props.title ? 'kui--data-table-container-with-toolbars' : '') +
                 (this.props.response.title || this.props.response.breadcrumbs
                   ? ' kui--data-table-container-with-title'
                   : '')
