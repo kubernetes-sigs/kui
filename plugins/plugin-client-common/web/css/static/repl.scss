@@ -63,6 +63,7 @@
     flex: 0;
     white-space: nowrap;
     margin-left: 1em;
+    height: 1.25em; /* so kui--repl-block-spinner doesn't cause shift */
   }
   .kui--repl-prompt-buttons {
     margin-right: 1em;
@@ -73,7 +74,7 @@
   .kui--repl-block-spinner {
     color: var(--color-brand-03);
     margin-right: 0.5em;
-    font-size: 0.875em;
+    font-size: 1em;
     font-weight: 700;
   }
 }
