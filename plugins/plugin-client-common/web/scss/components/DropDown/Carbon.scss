@@ -30,8 +30,10 @@ $option-hover-color: var(--color-base02);
   }
 
   .bx--overflow-menu {
-    width: 1.5em;
-    height: 1.5em;
+    width: auto;
+    height: auto;
+    font-size: 1em;
+
     &:hover {
       background-color: $button-hover-color;
     }
@@ -44,6 +46,8 @@ $option-hover-color: var(--color-base02);
   }
   .bx--overflow-menu__icon {
     fill: currentColor;
+    width: 1em;
+    height: 1em;
   }
   .bx--tooltip__trigger:hover {
     .bx--overflow-menu--open svg {

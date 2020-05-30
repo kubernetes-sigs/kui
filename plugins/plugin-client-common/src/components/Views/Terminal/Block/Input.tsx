@@ -15,8 +15,8 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab, inBrowser } from '@kui-shell/core'
 import { dots as spinnerFrames } from 'cli-spinners'
+import { Tab as KuiTab, inBrowser, doCancel } from '@kui-shell/core'
 
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
@@ -249,7 +249,7 @@ export default class Input extends InputProvider {
   protected input() {
     const active = isActive(this.props.model)
 
-    if (active || isProcessing(this.props.model)) {
+    if (active) {
       setTimeout(() => this.state.prompt.focus())
 
       const kp = active && !this.state.isearch ? onKeyPress.bind(this) : undefined
@@ -269,7 +269,6 @@ export default class Input extends InputProvider {
           className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
           aria-label="Command Input"
           tabIndex={1}
-          readOnly={!active}
           placeholder={this.props.promptPlaceholder}
           onBlur={this.props.onInputBlur}
           onFocus={this.props.onInputFocus}
@@ -307,7 +306,28 @@ export default class Input extends InputProvider {
           ? this.props.model.command
           : '')
 
-      return <div className="repl-input-element">{value}</div>
+      if (isProcessing(this.props.model)) {
+        // for processing blocks, we still need an input, albeit
+        // readOnly, to handle ctrl+C
+        return (
+          <span className="flex-layout flex-fill">
+            <input
+              className="repl-input-element"
+              readOnly
+              value={value}
+              onKeyDown={evt => {
+                if (evt.key === 'C' && evt.ctrlKey) {
+                  doCancel(this.props.tab, this.props._block)
+                }
+              }}
+              ref={c => c && c.focus()}
+            />
+          </span>
+        )
+      } else {
+        // for "done" blocks, render the value as a plain div
+        return <div className="repl-input-element">{value}</div>
+      }
     }
   }
 
