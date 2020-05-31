@@ -25,7 +25,7 @@ import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeResource, isKubeResource, isKubeItems } from '../../lib/model/resource'
+import { KubeResource, isKubeResource, isKubeItems, sameResourceVersion } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
 
@@ -137,6 +137,7 @@ export async function doGetAsMMR(
       prettyName,
       nameHash,
       version,
+      comparator: sameResourceVersion,
       originatingCommand: args.command,
       isKubeResource: true,
       toolbarText: !resource.metadata.creationTimestamp

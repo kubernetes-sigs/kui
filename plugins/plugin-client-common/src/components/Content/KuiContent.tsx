@@ -95,7 +95,7 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
           <Editor
             content={mode}
             readOnly={false}
-            willUpdateToolbar={!response.toolbarText && willUpdateToolbar}
+            willUpdateToolbar={willUpdateToolbar}
             response={response}
             repl={tab.REPL}
           />

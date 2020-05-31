@@ -16,6 +16,7 @@
 
 import Debug from 'debug'
 import * as React from 'react'
+import sameCommand from '../util/same'
 import { Tabs, Tab } from 'carbon-components-react'
 
 import {
@@ -142,6 +143,22 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       history: undefined,
       current: undefined
     }
+  }
+
+  /** Consult our History model for a match */
+  protected lookupHistory(
+    response: MultiModalResponse,
+    argvNoOptions: string[],
+    parsedOptions: ParsedOptions,
+    cwd: string
+  ) {
+    const equals = sameCommand(argvNoOptions, parsedOptions, cwd)
+
+    return this.state.history.findIndex((entry: HistoryEntry) => {
+      return entry && response.comparator && response.comparator === entry.response.comparator
+        ? response.comparator(response, entry.response)
+        : equals(entry)
+    })
   }
 
   /** @return a `HistoryEntry` for the given `Response` */
