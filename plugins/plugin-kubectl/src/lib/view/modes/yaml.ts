@@ -18,7 +18,13 @@ import { ModeRegistration } from '@kui-shell/core'
 
 import { WithRawData, hasRawData } from '../../model/resource'
 
-/** we want this to be placed as the last tab */
+/** Mode identifier */
+export const mode = 'raw'
+
+/** Mode label; intentionally no i18n */
+export const label = 'YAML'
+
+/** We want this to be placed as the last tab */
 export const order = 999
 
 /**
@@ -30,8 +36,8 @@ export const order = 999
 const yamlMode: ModeRegistration<WithRawData> = {
   when: hasRawData,
   mode: {
-    mode: 'raw',
-    label: 'YAML',
+    mode,
+    label,
 
     content: (_, resource: WithRawData) => ({
       content: resource.kuiRawData,

@@ -9,6 +9,7 @@ body {
   background-color: transparent;
   border: 1px solid var(--color-base03);
   width: 1.125em;
+  height: 0.5625em;
 }
 .kui--sidecar ::-webkit-scrollbar-thumb {
   background-color: var(--color-base02);
