@@ -31,6 +31,7 @@ import showNodeButton from './lib/view/modes/ShowNodeOfPodButton'
 import deleteResourceButton from './lib/view/modes/DeleteButton'
 import involvedObjectMode from './lib/view/modes/involved-object'
 import showCRDResources from './lib/view/modes/show-crd-managed-resources'
+import EditButton from './lib/view/modes/EditButton'
 import { eventsMode, eventsBadge } from './lib/view/modes/Events'
 
 import tabCompletionProvider from './lib/tab-completion'
@@ -48,6 +49,7 @@ export default async (registrar: PreloadRegistrar) => {
     logsMode,
     ExecIntoPad,
     lastAppliedMode,
+    EditButton,
     showCRDResources,
     showOwnerButton,
     showNodeButton,
