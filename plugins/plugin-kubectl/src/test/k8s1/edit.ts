@@ -52,14 +52,14 @@ commands.forEach(command => {
       })
     }
 
-    const edit = (name: string, kind = 'Pod', nameAsShown = name) => {
+    const edit = (name: string, kind = 'Pod', nameAsShown = name, mode = 'raw') => {
       it(`should edit it via ${command} edit with name=${name || 'no-name'}`, async () => {
         try {
           await CLI.command(`${command} edit pod ${name || ''} ${inNamespace}`, this.app)
             .then(ReplExpect.justOK)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing(nameAsShown, undefined, undefined, ns))
-            .then(SidecarExpect.mode('edit'))
+            .then(SidecarExpect.mode(mode))
             .then(
               SidecarExpect.yaml({
                 kind
@@ -106,7 +106,8 @@ commands.forEach(command => {
     // to find "could not find expected..." in error message
     const parseError = modifyWithError.bind(undefined, 'parse error', Keys.End, 'could not find expected')
 
-    const modify = (name: string) => {
+    /** modify pod {name} so as to add a label of key=value */
+    const modify = (name: string, key = 'foo', value = 'bar') => {
       it('should modify the content', async () => {
         try {
           const actualText = await Util.getValueFromMonaco(this.app)
@@ -117,7 +118,7 @@ commands.forEach(command => {
           await this.app.client.click(lineSelector)
 
           await new Promise(resolve => setTimeout(resolve, 2000))
-          await this.app.client.keys(`${Keys.End}${Keys.ENTER}foo: bar${Keys.ENTER}`)
+          await this.app.client.keys(`${Keys.End}${Keys.ENTER}${key}: ${value}${Keys.ENTER}`)
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
           await SidecarExpect.toolbarText({ type: 'success', text: 'Successfully Applied', exact: true })(this.app)
@@ -157,8 +158,53 @@ commands.forEach(command => {
       })
 
       it('should show the modified content', () => {
-        return SidecarExpect.yaml({ metadata: { labels: { foo: 'bar' } } })(this.app).catch(Common.oops(this, true))
+        return SidecarExpect.yaml({ metadata: { labels: { [key]: value } } })(this.app).catch(Common.oops(this, true))
       })
+    }
+
+    /** kubectl get pod ${name} */
+    const get = (name: string) => {
+      it(`should get pod ${name}`, () => {
+        return CLI.command(`${command} get pod ${name} ${inNamespace} -o yaml`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(name, undefined, undefined, ns))
+          .catch(Common.oops(this, true))
+      })
+    }
+
+    /** click Edit button */
+    const clickToEdit = (name: string) => {
+      it(`should click the edit button to edit ${name}`, async () => {
+        try {
+          // start with the default mode showing
+          await SidecarExpect.mode(defaultModeForGet)
+
+          // click the edit button
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('edit-button'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('edit-button'))
+
+          console.error('1')
+          await new Promise(resolve => setTimeout(resolve, 5000))
+
+          // should still be showing pod {name}, but now with the yaml tab selected
+          console.error('2')
+          await SidecarExpect.showing(name, undefined, undefined, ns)
+          console.error('3')
+          await SidecarExpect.mode('raw')
+
+          // also: no back/forward buttons should be visible
+          console.error('4')
+          await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, 5000, true)
+          console.error('5')
+          await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON, 5000, true)
+          console.error('6')
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+
+      modify(name, 'foo2', 'bar2')
     }
 
     //
@@ -171,7 +217,7 @@ commands.forEach(command => {
 
     const name2 = 'nginx2'
     create(name2, 'pod2.yaml')
-    edit('', 'List', '2 items')
+    edit('', 'List', '2 items', 'edit')
 
     edit(nginx)
     modify(nginx)
@@ -181,6 +227,11 @@ commands.forEach(command => {
 
     edit(nginx)
     parseError()
+
+    it('should refresh', () => Common.refresh(this))
+
+    get(nginx)
+    clickToEdit(nginx)
 
     deleteNS(this, ns)
   })

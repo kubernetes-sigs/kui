@@ -226,8 +226,11 @@ export default class Editor extends React.PureComponent<Props, State> {
   /** Handle Toolbar registrations */
   private static subscribeToChanges(props: Props, editor: Monaco.ICodeEditor) {
     if (props.willUpdateToolbar) {
-      // send an initial update
-      props.willUpdateToolbar(this.allClean(props), !Editor.isClearable(props) ? undefined : [ClearButton(editor)])
+      // send an initial update; note how the initial toolbarText may
+      // be governed by the response
+      const msg = props.response.toolbarText || this.allClean(props)
+      const buttons = props.response.toolbarText ? [] : !Editor.isClearable(props) ? undefined : [ClearButton(editor)]
+      props.willUpdateToolbar(msg, buttons)
 
       // then subscribe to future model change events
       return editor.onDidChangeModelContent(Editor.onChange(props, editor))

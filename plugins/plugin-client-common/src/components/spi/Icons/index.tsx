@@ -26,6 +26,7 @@ export type SupportedIcon =
   | 'Back'
   | 'Checkmark'
   | 'CodeBranch'
+  | 'Edit'
   | 'Error'
   | 'Forward'
   | 'Grid'

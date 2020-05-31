@@ -97,9 +97,9 @@ disabled see https://github.com/IBM/kui/issues/3939
     }
   }
 
-  .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
+  /* .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
     display: none;
-  }
+  } */
 
   .xterm .xterm-rows .xterm-hidden-row {
     display: none;

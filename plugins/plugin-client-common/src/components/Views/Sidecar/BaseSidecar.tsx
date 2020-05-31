@@ -110,6 +110,11 @@ export abstract class BaseSidecar<
     parsedOptions: ParsedOptions
   ): HistoryEntry
 
+  /** Consult our History model for a match */
+  protected lookupHistory(response: R, argvNoOptions: string[], parsedOptions: ParsedOptions, cwd: string) {
+    return this.state.history.findIndex(sameCommand(argvNoOptions, parsedOptions, cwd))
+  }
+
   /** Enter a given `response` into the History model */
   protected onResponse(
     tab: KuiTab,
@@ -119,9 +124,7 @@ export abstract class BaseSidecar<
     parsedOptions: ParsedOptions
   ) {
     this.setState(curState => {
-      const existingIdx = curState.history
-        ? curState.history.findIndex(sameCommand(argvNoOptions, parsedOptions, cwd()))
-        : -1
+      const existingIdx = curState.history ? this.lookupHistory(response, argvNoOptions, parsedOptions, cwd()) : -1
       const current =
         this.idempotent() && existingIdx !== -1
           ? curState.history.peekAt(existingIdx)

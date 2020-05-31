@@ -66,6 +66,9 @@ export interface View<Resource extends MetadataBearing> {
 
   /** Arguments to pass through to the default mode? */
   argsForMode?: Arguments
+
+  /** Optional equality function */
+  comparator?(R1: MultiModalResponse, R2: MultiModalResponse): boolean
 }
 
 export type ModeOrButton<T = MetadataBearing> = Mode<T> | Button<T>

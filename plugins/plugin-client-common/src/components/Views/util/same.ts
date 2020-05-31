@@ -15,6 +15,7 @@
  */
 
 import { ParsedOptions } from '@kui-shell/core'
+import { BaseHistoryEntry } from './CircularBuffer'
 
 /** Helper to confirm equality of two commands, by comparing argvNoOptions */
 function sameArray(A1: string[], A2: string[]) {
@@ -50,7 +51,7 @@ export default function sameCommand(
   expectedParsedOptions: ParsedOptions,
   currentCwd: string
 ) {
-  return (entry: { cwd: string; argvNoOptions: string[]; parsedOptions: ParsedOptions }) => {
+  return (entry: BaseHistoryEntry) => {
     return (
       entry &&
       entry.cwd === currentCwd &&

@@ -90,7 +90,7 @@ export { fqnOf, fqn } from './controller/kubectl/fqn'
  * `kubectl get pods`
  *
  */
-export { doEdit } from './controller/kubectl/edit'
+export { register as registerEdit } from './controller/kubectl/edit'
 export { getter } from './controller/kubectl/get'
 export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'

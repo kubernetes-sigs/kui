@@ -24,6 +24,7 @@ import {
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
   TimesIcon /* WindowCloseIcon */ as WindowClose,
+  EditIcon as Edit,
   ExpandIcon as WindowMaximize,
   CompressIcon as WindowMinimize,
   QuestionCircleIcon /* ToolsIcon */ as Settings,
@@ -73,6 +74,8 @@ export default function PatternFly4Icons(props: Props) {
       return <CodeBranch style={StatusStripe} {...props} />
     case 'Checkmark':
       return <Checkmark {...props} />
+    case 'Edit':
+      return <Edit {...props} />
     case 'Error':
       return <Oops {...props} />
     case 'Forward':

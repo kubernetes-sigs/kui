@@ -24,7 +24,7 @@ import {
   doDelete,
   describer,
   registerConfig,
-  doEdit,
+  registerEdit,
   doRun
 } from '@kui-shell/plugin-kubectl'
 import { doLogs } from '@kui-shell/plugin-kubectl/logs'
@@ -35,11 +35,11 @@ export default (registrar: Registrar) => {
   registrar.listen(`/${commandPrefix}/${command}/apply`, doCreate('apply', command), crudFlags)
   registrar.listen(`/${commandPrefix}/${command}/create`, doCreate('create', command), crudFlags)
   registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), crudFlags)
-  registrar.listen(`/${commandPrefix}/${command}/edit`, doEdit(command), defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/logs`, doLogs, defaultFlags)
   registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), crudFlags)
 
   getter(registrar, command)
   describer(registrar, command)
   registerConfig(registrar, command)
+  registerEdit(registrar, command)
 }

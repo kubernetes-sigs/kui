@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KResponse, ResourceWithMetadata } from '@kui-shell/core'
+import { KResponse, ResourceWithMetadata, MultiModalResponse } from '@kui-shell/core'
 
 import kubeuiApiVersion from '../../controller/kubectl/apiVersion'
 
@@ -69,15 +69,39 @@ export interface WithOwnerReferences {
   }[]
 }
 
-export type KubeMetadata = Partial<WithOwnerReferences> & {
-  name: string
-  namespace?: string
-  labels?: { [key: string]: string }
-  annotations?: object
-  creationTimestamp?: string
-  generation?: string
-  generateName?: string
+interface WithResourceVersion {
+  resourceVersion: string
 }
+
+export type KubeResourceWithResourceVersion = KubeResource<{}, KubeMetadata & Required<WithResourceVersion>>
+
+export function hasResourceVersion(resource: KubeResource): resource is KubeResourceWithResourceVersion {
+  const withVersion = resource as KubeResourceWithResourceVersion
+  return typeof withVersion.metadata.resourceVersion === 'string'
+}
+
+export function sameResourceVersion(a: MultiModalResponse<KubeResource>, b: MultiModalResponse<KubeResource>) {
+  return (
+    a.apiVersion === b.apiVersion &&
+    a.kind === b.kind &&
+    a.metadata.name === b.metadata.name &&
+    a.metadata.namespace === b.metadata.namespace &&
+    hasResourceVersion(a) &&
+    hasResourceVersion(b) &&
+    a.metadata.resourceVersion === b.metadata.resourceVersion
+  )
+}
+
+export type KubeMetadata = Partial<WithOwnerReferences> &
+  Partial<WithResourceVersion> & {
+    name: string
+    namespace?: string
+    labels?: { [key: string]: string }
+    annotations?: object
+    creationTimestamp?: string
+    generation?: string
+    generateName?: string
+  }
 
 export type KubeResourceWithOwnerReferences = KubeResource<{}, KubeMetadata & Required<WithOwnerReferences>>
 
