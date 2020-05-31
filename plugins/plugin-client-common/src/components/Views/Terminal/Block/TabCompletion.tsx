@@ -151,7 +151,7 @@ export abstract class TabCompletionState {
 
     this.input.setState({
       tabCompletion:
-        completions.length === 0
+        !completions || completions.length === 0
           ? undefined
           : completions.length === 1
           ? new TabCompletionStateWithSingleSuggestion(this.input, completions[0])
