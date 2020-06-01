@@ -49,6 +49,10 @@ export const SIDECAR_TOOLBAR_TEXT = (type: string) =>
 export const SIDECAR_TOOLBAR_BUTTON = (mode: string) =>
   `${SIDECAR_TOOLBAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button[data-mode="${mode}"] [role="tab"]`
 
+// sidecar alert
+export const SIDECAR_ALERT = (type: string) =>
+  `${SIDECAR} .bx--tab-content[aria-hidden="false"] .kui--toolbar-alert[data-type="${type}"]`
+
 // sidecar tab content, for visible tab
 export const SIDECAR_TAB_CONTENT = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .custom-content`
 export const SIDECAR_CUSTOM_CONTENT = `${SIDECAR_TAB_CONTENT} .code-highlighting`
