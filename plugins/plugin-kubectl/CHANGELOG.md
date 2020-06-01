@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.1](https://github.com/IBM/kui/compare/v8.8.0...v8.8.1) (2020-06-01)
+
+### Bug Fixes
+
+- eliminate assumptions that "default" is the default kube namespace ([cf0b6de](https://github.com/IBM/kui/commit/cf0b6de)), closes [#4764](https://github.com/IBM/kui/issues/4764)
+
+### Features
+
+- improve kubectl edit experience ([b035bdc](https://github.com/IBM/kui/commit/b035bdc)), closes [#4783](https://github.com/IBM/kui/issues/4783)
+
 # [8.8.0](https://github.com/IBM/kui/compare/v4.5.0...v8.8.0) (2020-05-29)
 
 ### Bug Fixes

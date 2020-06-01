@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.1](https://github.com/IBM/kui/compare/v8.8.0...v8.8.1) (2020-06-01)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Carbon RadioTable can have odd row-hover effect ([b2604ca](https://github.com/IBM/kui/commit/b2604ca)), closes [#4780](https://github.com/IBM/kui/issues/4780)
+- **plugins/plugin-client-common:** Input can appear blank when processing ([c1faf70](https://github.com/IBM/kui/commit/c1faf70)), closes [#4778](https://github.com/IBM/kui/issues/4778)
+- **plugins/plugin-client-common:** TabCompletion can throw a console error ([29d8b11](https://github.com/IBM/kui/commit/29d8b11)), closes [#4785](https://github.com/IBM/kui/issues/4785)
+- eliminate assumptions that "default" is the default kube namespace ([cf0b6de](https://github.com/IBM/kui/commit/cf0b6de)), closes [#4764](https://github.com/IBM/kui/issues/4764)
+
+### Features
+
+- improve kubectl edit experience ([b035bdc](https://github.com/IBM/kui/commit/b035bdc)), closes [#4783](https://github.com/IBM/kui/issues/4783)
+
 # [8.8.0](https://github.com/IBM/kui/compare/v4.5.0...v8.8.0) (2020-05-29)
 
 ### Bug Fixes
