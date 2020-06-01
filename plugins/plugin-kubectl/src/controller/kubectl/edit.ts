@@ -15,7 +15,7 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { Arguments, MultiModalResponse, Registrar, ToolbarText, i18n } from '@kui-shell/core'
+import { Arguments, MultiModalResponse, Registrar, ToolbarAlert, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithStdout } from './exec'
@@ -33,7 +33,7 @@ interface EditableSpec {
   clearable: boolean
   save: {
     label: string
-    onSave(data: string): ToolbarText | Promise<ToolbarText>
+    onSave(data: string): ToolbarAlert | Promise<ToolbarAlert>
   }
   revert: {
     onRevert(): string | Promise<string>
@@ -93,15 +93,28 @@ export function editSpec(
             if (msg && msg.length === 2) {
               throw new Error(msg[1])
             } else {
+              // maybe this was a conflict error
+              if (err.message.indexOf('Error from server (Conflict)') !== -1) {
+                const errorForFile = `for: "${tmp}":`
+                const forFile = err.message.indexOf(errorForFile)
+                const messageForFile = err.message.substring(forFile).replace(errorForFile, '')
+                throw new Error(messageForFile)
+              }
               // hmm, some other random error
-              throw new Error(err.message.replace(tmp, '').slice(0, 40))
+              const msg = err.message.replace(tmp, '')
+              const newLines = msg.split('\n')
+              if (newLines[0].charAt(newLines[0].length - 2) === ':') {
+                throw new Error(newLines.slice(0, 2).join('\n'))
+              } else {
+                throw new Error(newLines[0])
+              }
             }
           }
         })
 
         return {
           type: 'success' as const,
-          text: strings('Successfully Applied')
+          title: strings('Successfully Applied')
         }
       }
     },

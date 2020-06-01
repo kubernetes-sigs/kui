@@ -9,6 +9,7 @@
   "errorSaving": "Error saving file",
   "errorSavingWithMessage": "Error saving file: **{0}**",
   "errorReverting": "Error reverting file",
+  "errorApplying": "Error applying changes",
   "Unable to validate your edits": "Unable to validate your edits",
   "isNew": "You are in edit mode, viewing **undeployed code**",
   "isNewReadOnly": "You are in readonly mode, viewing **undeployed code**",

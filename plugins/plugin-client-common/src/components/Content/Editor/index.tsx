@@ -19,7 +19,16 @@ import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
-import { Button, REPL, StringContent, ToolbarText, ToolbarProps, MultiModalResponse, i18n } from '@kui-shell/core'
+import {
+  Button,
+  REPL,
+  StringContent,
+  ToolbarText,
+  ToolbarProps,
+  ToolbarAlert,
+  MultiModalResponse,
+  i18n
+} from '@kui-shell/core'
 
 import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
@@ -38,7 +47,7 @@ interface WithOptions {
     clearable?: boolean
     save?: {
       label: string
-      onSave: (data: string) => Promise<void | ToolbarText>
+      onSave: (data: string) => Promise<void | ToolbarAlert>
     }
     revert?: {
       label: string
@@ -168,11 +177,15 @@ export default class Editor extends React.PureComponent<Props, State> {
             try {
               const onSavedText = await onSave(editor.getValue())
               props.willUpdateToolbar(
-                onSavedText || this.allClean(props),
-                !clearable ? undefined : [ClearButton(editor)]
+                this.allClean(props),
+                !clearable ? undefined : [ClearButton(editor)],
+                undefined,
+                onSavedText ? [onSavedText] : undefined
               )
             } catch (err) {
-              props.willUpdateToolbar(this.error(props, 'errorSavingWithMessage', err.message))
+              props.willUpdateToolbar({ type: 'warning', text: strings('isModified') }, undefined, undefined, [
+                { type: 'error', title: strings('errorApplying'), body: err.message }
+              ])
             }
           }
         })
