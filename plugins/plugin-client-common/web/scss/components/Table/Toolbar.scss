@@ -25,6 +25,17 @@ $toolbar-height: 1.875em;
   }
 }
 
+body[kui-theme-style] .kui--toolbar-alert.bx--toast-notification {
+  position: unset;
+  width: inherit;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+
+  &.bx--toast-notification__subtitle > p {
+    font-size: 14px;
+  }
+}
+
 body[kui-theme-style] .kui--data-table-toolbar {
   display: flex;
 
