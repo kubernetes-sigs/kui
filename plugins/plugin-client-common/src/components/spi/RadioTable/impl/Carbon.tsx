@@ -93,7 +93,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
         )}
 
         <StructuredListCell>
-          {isSelected && <Icons icon="Checkmark" className="bx--structured-list-svg" />}
+          {!head && <Icons icon="Checkmark" className="bx--structured-list-svg" />}
         </StructuredListCell>
 
         {row.cells.map((cell, cidx) => {

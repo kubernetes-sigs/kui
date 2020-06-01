@@ -16,3 +16,7 @@
 
 @import './common';
 @import '../StructuredList/Carbon';
+
+[kui-theme-style] .bx--structured-list-row:hover .bx--structured-list-svg {
+  fill: var(--color-text-02);
+}
