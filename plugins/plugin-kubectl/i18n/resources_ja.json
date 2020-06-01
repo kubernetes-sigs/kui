@@ -1,6 +1,6 @@
 {
   "startedOn": "開始日時",
-  "createdOn": "作成日: {0}",
+  "createdOn": "作成日: **{0}**",
   "readonly": "読み取り専用表示モードです",
   "contextsTableTitle": "Kubernetes コンテキスト",
   "deleteResource": "このリソースの削除",
