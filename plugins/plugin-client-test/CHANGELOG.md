@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.2](https://github.com/IBM/kui/compare/v8.8.1...v8.8.2) (2020-06-01)
+
+### Bug Fixes
+
+- allow user to disable table title by feature flags, and disable table pagination ([8e3cc9c](https://github.com/IBM/kui/commit/8e3cc9c)), closes [#4640](https://github.com/IBM/kui/issues/4640) [#4655](https://github.com/IBM/kui/issues/4655)
+
 ## [8.8.1](https://github.com/IBM/kui/compare/v8.8.0...v8.8.1) (2020-06-01)
 
 **Note:** Version bump only for package @kui-shell/plugin-test-client
