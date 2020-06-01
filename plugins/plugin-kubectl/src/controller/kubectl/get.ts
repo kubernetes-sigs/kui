@@ -25,9 +25,15 @@ import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeResource, isKubeResource, isKubeItems, sameResourceVersion } from '../../lib/model/resource'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
+import {
+  KubeResource,
+  isKubeResource,
+  isKubeItems,
+  sameResourceVersion,
+  hasResourceVersion
+} from '../../lib/model/resource'
 
 const strings = i18n('plugin-kubectl')
 
@@ -104,6 +110,30 @@ export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawR
   }
 }
 
+/** Pretty-print creationTimestamp */
+function creationTimestamp(resource: KubeResource) {
+  return new Date(resource.metadata.creationTimestamp).toLocaleString()
+}
+
+/** ToolbarText presentation */
+function toolbarText(resource: KubeResource) {
+  const type = 'info' as const
+
+  const hasTimestamp = resource.metadata.creationTimestamp !== undefined
+  const hasVersion = hasResourceVersion(resource)
+
+  if (hasTimestamp && hasVersion) {
+    return {
+      type,
+      text: strings('createdOn=X resourceVersion=Y', creationTimestamp(resource), resource.metadata.resourceVersion)
+    }
+  } else if (hasTimestamp) {
+    return { type, text: strings('createdOn', creationTimestamp(resource)) }
+  } else if (hasVersion) {
+    return { type, text: strings('resourceVersion=Y', creationTimestamp(resource), resource.metadata.resourceVersion) }
+  }
+}
+
 /**
  * `kubectl get` as entity response
  *
@@ -140,12 +170,7 @@ export async function doGetAsMMR(
       comparator: sameResourceVersion,
       originatingCommand: args.command,
       isKubeResource: true,
-      toolbarText: !resource.metadata.creationTimestamp
-        ? undefined
-        : {
-            type: 'info',
-            text: strings('createdOn', new Date(resource.metadata.creationTimestamp).toLocaleString())
-          },
+      toolbarText: toolbarText(resource),
       onclick: {
         kind: `kubectl get ${kindAndNamespaceOf(resource)}`,
         name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`,
