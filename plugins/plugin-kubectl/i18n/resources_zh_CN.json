@@ -1,6 +1,6 @@
 {
   "startedOn": "开始日期",
-  "createdOn": "创建于 {0}",
+  "createdOn": "创建于 **{0}**",
   "readonly": "您处于只读模式",
   "contextsTableTitle": "Kubernetes 上下文",
   "deleteResource": "删除此资源",
