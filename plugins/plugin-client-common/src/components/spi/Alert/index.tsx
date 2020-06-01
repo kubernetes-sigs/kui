@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * Text to be displayed in the sidecar toolbar
- *
- */
+import * as React from 'react'
 
-type ToolbarTextType = 'info' | 'success' | 'warning' | 'error'
+import Carbon from './impl/Carbon'
 
-type ToolbarTextValue = string | Element
+import Props from './model'
+export { Props }
 
-export interface ToolbarText {
-  type: ToolbarTextType
-  text: ToolbarTextValue
-}
-
-export interface ToolbarAlert {
-  type: ToolbarTextType
-  title: string
-  body?: string
+export default function AlertSpi(props: Props): React.ReactElement {
+  return <Carbon {...props} />
 }

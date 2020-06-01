@@ -174,7 +174,7 @@ export {
   isFunctionContent,
   FunctionThatProducesContent
 } from './models/mmr/content-types'
-export { ToolbarText } from './webapp/views/toolbar-text'
+export { ToolbarText, ToolbarAlert } from './webapp/views/toolbar-text'
 
 // low-level UI
 export { default as doCancel } from './webapp/cancel'

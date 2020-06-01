@@ -15,8 +15,9 @@
  */
 
 import * as React from 'react'
-import { ToolbarText, Button } from '@kui-shell/core'
+import { ToolbarText, ToolbarAlert, Button } from '@kui-shell/core'
 
+import Alert from '../../spi/Alert'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
 export { Props as ToolbarContainerProps }
 
@@ -26,6 +27,7 @@ interface State {
   toolbarText: ToolbarText
   extraButtons?: Button[]
   extraButtonsOverride?: boolean
+  alerts?: ToolbarAlert[]
 }
 
 export default class ToolbarContainer extends React.PureComponent<Props, State> {
@@ -38,8 +40,13 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   }
 
   /** Called by children if they desire an update to the Toolbar */
-  private onToolbarUpdate(toolbarText: ToolbarText, extraButtons?: Button[], extraButtonsOverride?: boolean) {
-    this.setState({ toolbarText, extraButtons, extraButtonsOverride })
+  private onToolbarUpdate(
+    toolbarText: ToolbarText,
+    extraButtons?: Button[],
+    extraButtonsOverride?: boolean,
+    alerts?: ToolbarAlert[]
+  ) {
+    this.setState({ toolbarText, extraButtons, extraButtonsOverride, alerts })
   }
 
   /** Graft on the toolbar event management */
@@ -70,6 +77,7 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
             buttons={toolbarButtons}
           />
         )}
+        {this.state.alerts && this.state.alerts.map((alert, id) => <Alert key={id} alert={alert} />)}
         <React.Suspense fallback={<div />}>{this.children()}</React.Suspense>
       </div>
     )

@@ -13,23 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ToolbarAlert } from '@kui-shell/core'
 
-/**
- * Text to be displayed in the sidecar toolbar
- *
- */
-
-type ToolbarTextType = 'info' | 'success' | 'warning' | 'error'
-
-type ToolbarTextValue = string | Element
-
-export interface ToolbarText {
-  type: ToolbarTextType
-  text: ToolbarTextValue
+interface Props {
+  alert: ToolbarAlert
 }
 
-export interface ToolbarAlert {
-  type: ToolbarTextType
-  title: string
-  body?: string
-}
+export default Props

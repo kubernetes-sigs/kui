@@ -138,6 +138,11 @@ export const toolbarText = (expect: { type: string; text: string; exact?: boolea
   return app
 }
 
+export const toolbarAlert = (expect: { type: string; text: string; exact?: boolean }) => async (app: Application) => {
+  await expectText(app, expect.text, expect.exact)(Selectors.SIDECAR_ALERT(expect.type))
+  return app
+}
+
 const show = (expected: string, selector: string) => async (app: Application) => {
   await app.client.waitUntil(async () => {
     return app.client

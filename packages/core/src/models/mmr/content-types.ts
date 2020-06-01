@@ -21,7 +21,7 @@ import { Table, isTable } from '../../webapp/models/table'
 import { Entity, MetadataBearing } from '../entity'
 import { isHTML } from '../../util/types'
 import { ModeOrButton, Button } from './types'
-import { ToolbarText } from '../../webapp/views/toolbar-text'
+import { ToolbarText, ToolbarAlert } from '../../webapp/views/toolbar-text'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -35,7 +35,12 @@ export interface ScalarContent<T = ScalarResource> {
 }
 
 export type ToolbarProps = {
-  willUpdateToolbar?: (toolbarText: ToolbarText, extraButtons?: Button[], extraButtonsOverride?: boolean) => void
+  willUpdateToolbar?: (
+    toolbarText: ToolbarText,
+    extraButtons?: Button[],
+    extraButtonsOverride?: boolean,
+    alerts?: ToolbarAlert[]
+  ) => void
 }
 export type ReactProvider = { react: (props: ToolbarProps) => ReactElement<any> }
 export function isReactProvider(entity: ScalarLike<MetadataBearing>): entity is ReactProvider {
