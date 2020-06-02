@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import * as React from 'react'
-import { eventChannelUnsafe, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
+import { eventBus, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
 import { Loading } from '../../..'
@@ -50,10 +50,9 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
   public constructor(props: Props) {
     super(props)
 
-    const channel = `/command/complete/fromuser/NavResponse/${this.props.uuid}`
     const onResponse = this.onResponse.bind(this)
-    eventChannelUnsafe.on(channel, onResponse)
-    this.cleaners.push(() => eventChannelUnsafe.off(channel, onResponse))
+    eventBus.onNavResponse(this.props.uuid, onResponse)
+    this.cleaners.push(() => eventBus.offNavResponse(this.props.uuid, onResponse))
 
     this.state = {
       repl: undefined,

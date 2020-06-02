@@ -319,7 +319,7 @@ export default class Input extends InputProvider {
               readOnly
               value={value}
               onKeyDown={evt => {
-                if (evt.key === 'C' && evt.ctrlKey) {
+                if (evt.key === 'c' && evt.ctrlKey) {
                   doCancel(this.props.tab, this.props._block)
                 }
               }}

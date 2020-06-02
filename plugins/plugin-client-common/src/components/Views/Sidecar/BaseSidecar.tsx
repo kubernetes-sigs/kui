@@ -15,7 +15,16 @@
  */
 
 import * as React from 'react'
-import { isPopup, inBrowser, REPL, KResponse, Tab as KuiTab, ParsedOptions, eventChannelUnsafe } from '@kui-shell/core'
+import {
+  isPopup,
+  inBrowser,
+  REPL,
+  KResponse,
+  Tab as KuiTab,
+  ParsedOptions,
+  eventChannelUnsafe,
+  CommandCompleteEvent
+} from '@kui-shell/core'
 
 import Width from './width'
 import sameCommand from '../util/same'
@@ -115,13 +124,9 @@ export abstract class BaseSidecar<
   }
 
   /** Enter a given `response` into the History model */
-  protected onResponse(
-    tab: KuiTab,
-    response: R,
-    execUUID: string,
-    argvNoOptions: string[],
-    parsedOptions: ParsedOptions
-  ) {
+  protected onResponse(event: CommandCompleteEvent<R>) {
+    const { tab, response, execUUID, argvNoOptions, parsedOptions } = event
+
     this.setState(curState => {
       const existingIdx = curState.history ? this.lookupHistory(response, argvNoOptions, parsedOptions, cwd()) : -1
       const current =

@@ -22,16 +22,29 @@
  *
  */
 
-import eventChannelUnsafe from '../core/events'
-import { Tab, getTabId } from './tab'
+import { eventBus } from '../core/events'
+import { Tab } from './tab'
 import { Block } from './models/block'
 import { ExecType } from '../models/command'
+import { CommandCompleteEvent } from '../repl/events'
 
 export default function doCancel(tab: Tab, block: Block) {
   block.isCancelled = true
 
   const execUUID = block.getAttribute('data-uuid')
-  const endEvent = { tab, execType: ExecType.TopLevel, cancelled: true, execUUID }
-  eventChannelUnsafe.emit('/command/complete', endEvent)
-  eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent)
+  const endEvent: CommandCompleteEvent = {
+    tab,
+    execType: ExecType.TopLevel,
+    cancelled: true,
+    execUUID,
+    command: undefined,
+    argvNoOptions: undefined,
+    execOptions: undefined,
+    parsedOptions: undefined,
+    echo: true,
+    evaluatorOptions: undefined,
+    response: undefined,
+    responseType: 'Incomplete'
+  }
+  eventBus.emitCommandComplete(endEvent)
 }

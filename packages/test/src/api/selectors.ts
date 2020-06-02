@@ -5,7 +5,8 @@ export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 export const SIDECAR_BASE = `${CURRENT_TAB} .kui--sidecar`
 export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} .kui--sidecar.visible.maximized:not(.minimized)`
 export const TERMINAL_WITH_SIDECAR_VISIBLE = `${CURRENT_TAB} .repl.sidecar-visible`
-export const PROMPT_BLOCK = `${CURRENT_TAB} .repl .repl-block`
+const _PROMPT_BLOCK = '.repl-block'
+export const PROMPT_BLOCK = `${CURRENT_TAB} .repl ${_PROMPT_BLOCK}`
 export const BOTTOM_PROMPT_BLOCK = `${CURRENT_TAB} .kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
 export const STATUS_STRIPE_BLOCK = '.kui--status-stripe .kui--input-stripe .repl-block'
@@ -87,8 +88,9 @@ export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
 export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
-export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} .repl-input-element`
-export const PROMPT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-input-element`
+const _PROMPT = '.repl-input-element'
+export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} ${_PROMPT}`
+export const PROMPT_N = (N: number) => `${PROMPT_BLOCK_N(N)} ${_PROMPT}`
 export const OUTPUT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result`
 export const OUTPUT_N_STREAMING = (N: number) => `${PROMPT_BLOCK_N(N)} [data-stream]`
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
@@ -143,3 +145,18 @@ export const WATCHER_N_DROPDOWN_ITEM = (N: number, label: string) =>
   `${WATCHER_N(N)} .pf-c-dropdown button.pf-c-dropdown__menu-item[data-mode="${label}"]`
 export const WATCHER_N_CLOSE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N, 'Stop watching')
 export const WATCHER_N_SHOW_AS_TABLE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N, 'Show as table')
+
+/**
+ * Terminal splits
+ *
+ */
+export const NEW_SPLIT_BUTTON = '#kui--split-terminal-button'
+export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
+export const SPLIT_N = (N: number) => `${SPLITS}:nth-child(${N})`
+export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (N: number) => `${SPLIT_N(N)} ${_PROMPT_BLOCK}`
+export const CURRENT_PROMPT_FOR_SPLIT = (N: number) => `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_PROMPT}`
+
+/** xterm */
+export const ALT_BUFFER_N = (N: number) => `${CURRENT_TAB} .kui--scrollback:nth-child(${N}).xterm-alt-buffer-mode`
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const NOSPLIT_ALT_BUFFER_N = (N: number) => `${CURRENT_TAB}.xterm-alt-buffer-mode`

@@ -18,7 +18,7 @@ import * as React from 'react'
 import { v4 as uuid } from 'uuid'
 
 import {
-  eventChannelUnsafe,
+  eventBus,
   ExecOptions,
   i18n,
   isWatchable,
@@ -73,9 +73,8 @@ export default class WatchPane extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    const channel = `/command/complete/fromuser/ScalarResponse/${this.props.uuid}`
     const onResponse = this.onResponse.bind(this)
-    eventChannelUnsafe.on(channel, onResponse)
+    eventBus.onScalarResponse(this.props.uuid, onResponse)
 
     this.state = {
       current: undefined,

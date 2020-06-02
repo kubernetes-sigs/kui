@@ -197,7 +197,6 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding-top: 0.5rem;
   flex: 4;
   background-color: var(--color-repl-background);
 }
@@ -247,5 +246,47 @@
       /* oops output often times doesn't word wrap nicely on its own, e.g. help/usage; issue #396 */
       word-break: break-all;
     }
+  }
+}
+
+/** Scrollback */
+.kui--terminal-split-container {
+  display: grid;
+  grid-gap: 1px;
+  overflow: hidden;
+  background-color: var(--color-table-border3);
+  margin: 0.5rem 0;
+}
+.kui--scrollback {
+  background-color: var(--color-repl-background);
+  padding-left: calc(1em * 0.875);
+  padding-right: calc(1em * 0.875 - 0.1875em - 6px);
+}
+.repl:not(.sidecar-visible) .kui--terminal-split-container {
+  &[data-split-count='1'] {
+    grid-template-columns: 1fr;
+  }
+  &[data-split-count='2'] {
+    grid-template-columns: 1fr 1fr;
+  }
+  &[data-split-count='3'] {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  &[data-split-count='4'] {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+.repl.sidecar-visible .kui--terminal-split-container {
+  &[data-split-count='1'] {
+    grid-template-rows: 1fr;
+  }
+  &[data-split-count='2'] {
+    grid-template-rows: 1fr 1fr;
+  }
+  &[data-split-count='3'] {
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+  &[data-split-count='4'] {
+    grid-template-rows: 1fr 1fr 1fr 1fr;
   }
 }

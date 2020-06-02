@@ -35,12 +35,12 @@ disabled see https://github.com/IBM/kui/issues/3939
   transition: width 10ms ease-in-out, height 10ms ease-in-out;
 } */
 
-  .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
+  .kui--scrollback:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
     height: auto !important;
   }
 
   /* alt buffer mode */
-  .kui--tab-content.xterm-alt-buffer-mode {
+  .xterm-alt-buffer-mode {
     .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
       background-color: var(--color-base08);
       color: var(--color-base00);
@@ -50,6 +50,7 @@ disabled see https://github.com/IBM/kui/issues/3939
       display: none;
     }
 
+    &,
     .repl-inner {
       overflow: hidden;
       display: flex;
@@ -58,6 +59,7 @@ disabled see https://github.com/IBM/kui/issues/3939
 
       /* when in alt-buffer mode, hide anything in the REPL not related to the current output */
       .repl-block:not(.processing),
+      .kui--input-stripe,
       .repl-input,
       .repl-result,
       .repl-result-spinner {
@@ -97,7 +99,7 @@ disabled see https://github.com/IBM/kui/issues/3939
     }
   }
 
-  /* .kui--tab-content:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
+  /* .kui--scrollback:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
     display: none;
   } */
 

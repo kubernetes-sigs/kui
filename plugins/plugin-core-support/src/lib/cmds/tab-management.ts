@@ -30,7 +30,7 @@ const usage = {
  *
  */
 function closeTab(tab: Tab) {
-  eventBus.emit('/tab/close/request', tab)
+  eventBus.emitWithTabId('/tab/close/request', tab.uuid, tab)
   return true
 }
 

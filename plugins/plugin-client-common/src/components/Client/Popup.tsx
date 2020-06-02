@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { eventChannelUnsafe, eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
+import { eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
 
 import Width from '../Views/Sidecar/width'
 import { ComboSidecar, ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '../..'
@@ -39,12 +39,14 @@ export default class Popup extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    eventBus.on('/tab/close/request', async (tab: KuiTab) => {
+    const tabModel = new TabModel()
+
+    eventBus.onceWithTabId('/tab/close/request', tabModel.uuid, async (_, tab: KuiTab) => {
       // tab close is window close for the popup client
-      tab.REPL.qexec('window close')
+      tab.REPL.qexec('window close', undefined, undefined, { tab })
     })
 
-    eventChannelUnsafe.on('/command/complete/fromuser', async ({ command, response }) => {
+    eventBus.onCommandComplete(tabModel.uuid, async ({ command, response }) => {
       if (process.env.KUI_TEE_TO_FILE) {
         // tee the response to a file
         // maybe in the future we could do this better
@@ -56,13 +58,13 @@ export default class Popup extends React.PureComponent<Props, State> {
     })
 
     this.state = {
-      model: new TabModel(),
+      model: tabModel,
       promptPlaceholder: ''
     }
   }
 
   private onTabReady(tab: KuiTab) {
-    tab.REPL.pexec(this.props.commandLine.join(' '))
+    tab.REPL.pexec(this.props.commandLine.join(' '), { tab })
   }
 
   public render() {

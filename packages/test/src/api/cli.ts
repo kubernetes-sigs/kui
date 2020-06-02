@@ -54,17 +54,16 @@ export const command = async (
   app: Application,
   noNewline = false,
   noCopyPaste = false,
-  noFocus = false
-) => {
-  const block = process.env.KUI_POPUP ? Selectors.STATUS_STRIPE_BLOCK : Selectors.CURRENT_PROMPT_BLOCK
-  const currentPrompt = process.env.KUI_POPUP
+  noFocus = false,
+  block = process.env.KUI_POPUP ? Selectors.STATUS_STRIPE_BLOCK : Selectors.CURRENT_PROMPT_BLOCK,
+  currentPrompt = process.env.KUI_POPUP
     ? Selectors.STATUS_STRIPE_PROMPT
     : !process.env.BOTTOM_INPUT_MODE
     ? Selectors.CURRENT_PROMPT
     : Selectors.BOTTOM_PROMPT
-
+) => {
   return app.client
-    .waitForExist(block, timeout - 5000)
+    .waitForExist(block, waitTimeout)
     .then(async () => {
       if (process.env.BOTTOM_INPUT_MODE) await app.client.waitForExist(Selectors.BOTTOM_PROMPT_BLOCK, timeout - 5000)
       if (!noFocus) return grabFocus(app)

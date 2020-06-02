@@ -97,16 +97,15 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     })
   }
 
-  const getPodViaYaml = (podName: string) => {
-    it('should get pods via kubectl get -o yaml', async () => {
-      try {
-        await CLI.command(`kubectl get pods ${podName} -n ${ns} -o yaml`, this.app)
-        await SidecarExpect.open(this.app)
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
-  }
+  /* const getPodViaYaml = (podName: string) => {
+    it('should get pods via kubectl get -o yaml', async () =>
+      CLI.command(`kubectl get pods ${podName} -n ${ns} -o yaml`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing(podName, undefined, undefined, ns))
+        .then(SidecarExpect.mode(defaultModeForGet))
+        .catch(Common.oops(this, true)))
+  } */
 
   const testLogsContent = (show: string[], notShow?: string[]) => {
     if (show) {
@@ -288,6 +287,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     type: 'error'
   })
 
+  /*  this part isn't stable, and doesn't really test what we want, reliably: if the create is fast, then "without waiting' won't matter
   createPodWithoutWaiting(inputEncoded1, podName1) // recreate this pod
   getPodViaYaml(podName1) // NOTE: immediately open sidecar when pod is in creation
 
@@ -302,6 +302,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     text: 'Logs are live',
     type: 'info'
   })
+  */
 
   deleteNS(this, ns)
 })

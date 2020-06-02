@@ -86,9 +86,16 @@ function getOrPty(verb: string) {
       if (!label) {
         const idx = args.argvNoOptions.indexOf(verb)
         const name = args.argvNoOptions[idx + 1]
-        return args.REPL.qexec(`${cmd} get pod ${name} -n ${await getNamespace(args)} -o yaml`)
+        return args.REPL.qexec(`${cmd} get pod ${name} -n ${await getNamespace(args)} -o yaml`, undefined, undefined, {
+          tab: args.tab
+        })
       } else {
-        return args.REPL.qexec(`${cmd} get pod -l ${label} -n ${await getNamespace(args)} -o json`)
+        return args.REPL.qexec(
+          `${cmd} get pod -l ${label} -n ${await getNamespace(args)} -o json`,
+          undefined,
+          undefined,
+          { tab: args.tab }
+        )
       }
     } else {
       return doExecWithPty(args)

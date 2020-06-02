@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { getCurrentTab } from '@kui-shell/core'
+import { pexecInCurrentTab } from '@kui-shell/core'
 
 /** variants of how the information should be presented */
 export type ViewLevel = 'removed' | 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error'
@@ -43,7 +43,7 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
         href="#"
         className={iconClassName}
         onMouseDown={evt => evt.preventDefault()}
-        onClick={this.props.iconOnclick ? () => getCurrentTab().REPL.pexec(this.props.iconOnclick) : undefined}
+        onClick={this.props.iconOnclick ? () => pexecInCurrentTab(this.props.iconOnclick) : undefined}
       >
         {this.props.children}
       </a>
@@ -55,7 +55,7 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       <a
         href="#"
         className="clickable kui--status-stripe-text"
-        onClick={() => getCurrentTab().REPL.pexec(this.props.textOnclick)}
+        onClick={() => pexecInCurrentTab(this.props.textOnclick)}
       >
         {this.props.text}
       </a>
