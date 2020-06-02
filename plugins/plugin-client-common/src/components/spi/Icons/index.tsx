@@ -42,6 +42,7 @@ export type SupportedIcon =
   | 'ScreenshotInProgress'
   | 'Server'
   | 'Settings'
+  | 'Split'
   | 'Trash'
   | 'TerminalOnly'
   | 'TerminalPlusSidecar'

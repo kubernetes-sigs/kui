@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { Tab as KuiTab, eventChannelUnsafe } from '@kui-shell/core'
+import { Tab as KuiTab, eventBus } from '@kui-shell/core'
 
 import Block from '../Views/Terminal/Block'
 import { InputOptions } from '../Views/Terminal/Block/Input'
@@ -39,8 +39,7 @@ export default class InputStripe extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    const channel = `/command/complete/fromuser/${this.props.uuid}`
-    eventChannelUnsafe.on(channel, this.onOutputRender.bind(this))
+    eventBus.onCommandComplete(this.props.uuid, this.onOutputRender.bind(this))
 
     this.state = {
       idx: 0,

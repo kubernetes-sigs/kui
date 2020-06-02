@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { inElectron } from '@kui-shell/core'
+import { inElectron, pexecInCurrentTab } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 
@@ -28,8 +28,7 @@ export default class StatusStripe extends React.PureComponent {
    *
    */
   private async doAbout() {
-    const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
-    pexec('about')
+    pexecInCurrentTab('about')
   }
 
   /**

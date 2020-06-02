@@ -15,7 +15,7 @@
  */
 
 import { keys } from './keys'
-import doCancel from './cancel'
+// import doCancel from './cancel'
 import { getCurrentProcessingBlock } from './block'
 import { Tab } from './tab'
 
@@ -37,7 +37,7 @@ export function startInputQueueing(tab: Tab) {
         try {
           const block = getCurrentProcessingBlock(tab)
           if (block) {
-            doCancel(tab, block)
+            // doCancel(tab, block)
           }
         } catch (err) {
           console.error(err)

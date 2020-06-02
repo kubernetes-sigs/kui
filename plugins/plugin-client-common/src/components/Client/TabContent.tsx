@@ -24,6 +24,8 @@ import Confirm from '../Views/Confirm'
 import Loading from '../spi/Loading'
 import Width from '../Views/Sidecar/width'
 import WatchPane, { Height } from '../Views/WatchPane'
+
+import getSize from '../Views/Terminal/getSize'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
 
 import '../../../web/css/static/split-pane.scss'
@@ -135,8 +137,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.cleaners.push(() => eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
 
     // see https://github.com/IBM/kui/issues/4683
-    const firstCommandIsExecuted = `/command/start/fromuser/${this.props.uuid}`
-    eventChannelUnsafe.once(firstCommandIsExecuted, () => {
+    eventBus.onceCommandStarts(this.props.uuid, () => {
       this.setState({ showSessionInitDone: false })
     })
   }
@@ -394,6 +395,11 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
             if (tab) {
               tab.uuid = this.props.uuid
+
+              tab.getSize = getSize.bind(c)
+              tab.scrollToBottom = () => {
+                c.scrollTop = c.scrollHeight
+              }
               tab.onActivate = (handler: (isActive: boolean) => void) => {
                 this.activateHandlers.push(handler)
               }

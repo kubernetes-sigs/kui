@@ -1,0 +1,17 @@
+@mixin kui-rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* notes: editor maximized horizontally overflows without this */
+}
+@mixin kui-columns {
+  flex: 4;
+  display: flex;
+  overflow: hidden; /* notes: chrome doesn't seem to need this; otherwise, repl scrolling will cause sidecar to overflow vertically */
+}
+.kui--rows {
+  @include kui-rows;
+}
+.kui--columns {
+  @include kui-columns;
+}

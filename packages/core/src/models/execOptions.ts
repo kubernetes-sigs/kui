@@ -138,3 +138,5 @@ export class DefaultExecOptionsForTab extends DefaultExecOptions {
     this.block = block
   }
 }
+
+export default ExecOptions

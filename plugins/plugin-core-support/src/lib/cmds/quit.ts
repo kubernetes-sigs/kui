@@ -21,7 +21,7 @@
 
 import { Arguments, Registrar } from '@kui-shell/core'
 
-const doQuit = ({ REPL }: Arguments) => REPL.qexec('tab close')
+const doQuit = ({ tab, REPL }: Arguments) => REPL.qexec('tab close', undefined, undefined, { tab })
 
 const usage = (command: string) => ({
   command,

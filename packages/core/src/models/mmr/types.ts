@@ -170,3 +170,5 @@ export interface VisibilityTraits {
 export interface IconTrait {
   icon: ReactElement
 }
+
+export default MultiModalResponse

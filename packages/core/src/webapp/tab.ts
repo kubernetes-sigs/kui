@@ -29,6 +29,9 @@ export interface Tab extends HTMLDivElement {
 
   addClass(cls: string): void
   removeClass(cls: string): void
+
+  scrollToBottom(): void
+  getSize(): { width: number; height: number }
 }
 
 export function isTab(node: Element | Tab): node is Tab {
@@ -40,7 +43,21 @@ export function isTab(node: Element | Tab): node is Tab {
  *
  */
 export function getTabId(tab: Tab) {
-  return tab.getAttribute('data-tab-id')
+  return tab.uuid
+}
+
+export function getTabIds(tab: Tab) {
+  const uuid = getTabId(tab)
+  if (uuid) {
+    const [u1] = uuid.split(/_/)
+    return u1 === uuid ? [u1] : [u1, uuid]
+  } else {
+    return []
+  }
+}
+
+export function getPrimaryTabId(tab: Tab) {
+  return getTabIds(tab)[0]
 }
 
 export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
@@ -50,3 +67,12 @@ export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
 export const getCurrentTab = (): Tab => {
   return document.querySelector('.kui--tab-content.visible') as Tab
 }
+
+export function pexecInCurrentTab(command: string) {
+  const { facade: tab } = (document.querySelector('.kui--tab-content.visible .kui--scrollback') as any) as {
+    facade: Tab
+  }
+  return tab.REPL.pexec(command, { tab })
+}
+
+export default Tab
