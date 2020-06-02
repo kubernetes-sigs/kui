@@ -236,22 +236,6 @@ class Resizer {
     cleanupTerminalAfterTermination(element)
   }
 
-  static paddingHorizontal(elt: Element) {
-    const style = window.getComputedStyle(elt)
-    return (
-      parseInt(style.getPropertyValue('padding-left') || '0', 10) +
-      parseInt(style.getPropertyValue('padding-right') || '0', 10)
-    )
-  }
-
-  static paddingVertical(elt: Element) {
-    const style = window.getComputedStyle(elt)
-    return (
-      parseInt(style.getPropertyValue('padding-top') || '0', 10) +
-      parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
-    )
-  }
-
   private getSize(forceRecompute: boolean) {
     const cachedSize = getCachedSize(this.tab)
     if (!forceRecompute && cachedSize !== undefined) {
@@ -265,16 +249,7 @@ class Resizer {
     const scaledCharWidth = hack._charSizeService.width * window.devicePixelRatio
     const ratio = scaledCharWidth / dimensions.scaledCharWidth
 
-    const selectorForSize = '.repl-inner'
-    const sizeElement = this.tab.querySelector(selectorForSize)
-    const enclosingRect = sizeElement.getBoundingClientRect()
-
-    const selectorForWidthPad = '.repl-inner .repl-block .repl-output'
-    const widthPadElement = this.tab.querySelector(selectorForWidthPad)
-    const heightPadElement = sizeElement
-
-    const width = enclosingRect.width - Resizer.paddingHorizontal(widthPadElement)
-    const height = enclosingRect.height - Resizer.paddingVertical(heightPadElement)
+    const { width, height } = this.tab.getSize()
 
     const cols = Math.floor(width / dimensions.actualCellWidth / ratio)
     const rows = Math.floor(height / dimensions.actualCellHeight)
@@ -464,10 +439,9 @@ async function initOnMessage(
   //
   // here, we debounce scroll to bottom events
   //
-  const activeDiv = tab.querySelector('.repl-inner')
   const doScroll = () => {
     if (!resizer.inAltBufferMode()) {
-      activeDiv.scrollTop = activeDiv.scrollHeight
+      tab.scrollToBottom()
     }
   }
   const scrollPoll = terminal && setInterval(doScroll, 200)

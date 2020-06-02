@@ -110,7 +110,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       // wait for vi to come up in alt buffer mode
       console.error('CP8')
-      await this.app.client.waitForExist(`${Selectors.CURRENT_TAB}.xterm-alt-buffer-mode`)
+      await this.app.client.waitForExist(Selectors.ALT_BUFFER_N(1))
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       console.error('CP9')

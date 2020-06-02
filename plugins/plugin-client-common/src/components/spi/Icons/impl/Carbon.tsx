@@ -46,6 +46,7 @@ import {
   PlayFilled16 as Play,
   Renew16 as Retry,
   Edit16 as Edit,
+  SplitScreen20 as Split,
   CaretRight20 as NextPage,
   CaretLeft20 as PreviousPage,
   FlashOffFilled20 as Network
@@ -76,6 +77,7 @@ const icons: Record<Exclude<SupportedIcon, 'Up'>, CarbonIconType> = {
   ScreenshotInProgress,
   Server,
   Settings,
+  Split,
   Trash,
   TerminalOnly,
   TerminalPlusSidecar,

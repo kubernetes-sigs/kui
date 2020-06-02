@@ -22,6 +22,7 @@ import TabModel from '../TabModel'
 import KuiContext from '../context'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
+import SplitTerminalButton from './SplitTerminalButton'
 
 import '../../../../web/css/static/TopTabStripe.scss'
 
@@ -133,6 +134,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
               this.props.onNewTab()
             }}
           />
+          <SplitTerminalButton />
         </div>
       </React.Fragment>
     )

@@ -20,6 +20,7 @@ import sameCommand from '../util/same'
 import { Tabs, Tab } from 'carbon-components-react'
 
 import {
+  eventBus,
   eventChannelUnsafe,
   Tab as KuiTab,
   ParsedOptions,
@@ -132,10 +133,9 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   public constructor(props: Props) {
     super(props)
 
-    const channel = `/command/complete/fromuser/MultiModalResponse/${this.props.uuid}`
     const onResponse = this.onResponse.bind(this)
-    eventChannelUnsafe.on(channel, onResponse)
-    this.cleaners.push(() => eventChannelUnsafe.off(channel, onResponse))
+    eventBus.onMultiModalResponse(this.props.uuid, onResponse)
+    this.cleaners.push(() => eventBus.offMultiModalResponse(this.props.uuid, onResponse))
 
     this.state = {
       repl: undefined,

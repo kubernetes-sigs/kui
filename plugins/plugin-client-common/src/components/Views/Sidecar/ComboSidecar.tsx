@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { eventChannelUnsafe, Tab, NavResponse, MultiModalResponse, isMultiModalResponse } from '@kui-shell/core'
+import { eventBus, Tab, NavResponse, MultiModalResponse, CommandCompleteEvent } from '@kui-shell/core'
 
 import { SidecarOptions } from './BaseSidecar'
 import TopNavSidecar from './TopNavSidecar'
@@ -28,7 +28,7 @@ export type Props = SidecarOptions & {
 
 interface State {
   tab: Tab
-  response: MultiModalResponse | NavResponse
+  responseType: 'MultiModalResponse' | 'NavResponse'
 }
 
 export default class ComboSidecar extends React.PureComponent<Props, State> {
@@ -37,14 +37,12 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
 
     this.state = {
       tab: undefined,
-      response: undefined
+      responseType: undefined
     }
 
-    const channel1 = `/command/complete/fromuser/NavResponse/${props.uuid}`
-    const channel2 = `/command/complete/fromuser/MultiModalResponse/${props.uuid}`
     const onResponse = this.onResponse.bind(this)
-    eventChannelUnsafe.on(channel1, onResponse)
-    eventChannelUnsafe.on(channel2, onResponse)
+    eventBus.onMultiModalResponse(props.uuid, onResponse)
+    eventBus.onNavResponse(props.uuid, onResponse)
     // this.cleaners.push(() => eventChannelUnsafe.off(channel1, onResponse))
   }
 
@@ -52,10 +50,12 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
     console.error(error, errorInfo)
   }
 
-  private onResponse(tab: Tab, response: MultiModalResponse | NavResponse) {
+  private onResponse(
+    event: CommandCompleteEvent<MultiModalResponse | NavResponse, 'MultiModalResponse' | 'NavResponse'>
+  ) {
     this.setState({
-      tab,
-      response
+      tab: event.tab,
+      responseType: event.responseType
     })
   }
 
@@ -67,11 +67,11 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const isLeftNav = this.state.response && !isMultiModalResponse(this.state.response)
+    const isLeftNav = this.state.responseType && this.state.responseType === 'NavResponse'
 
     return (
       <div className="kui--full-height">
-        <div className={'kui--full-height' + (isLeftNav || this.state.response === undefined ? ' hide' : '')}>
+        <div className={'kui--full-height' + (isLeftNav || this.state.responseType === undefined ? ' hide' : '')}>
           <TopNavSidecar {...this.props} onClose={this.onClose.bind(this)} />
         </div>
 

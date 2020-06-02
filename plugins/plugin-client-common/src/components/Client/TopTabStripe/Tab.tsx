@@ -17,6 +17,7 @@
 import * as React from 'react'
 import {
   i18n,
+  eventBus,
   eventChannelUnsafe,
   Event,
   ExecType,
@@ -85,8 +86,8 @@ export default class Tab extends React.PureComponent<Props, State> {
   }
 
   private removeCommandEvaluationListeners() {
-    eventChannelUnsafe.off('/command/start', this.onCommandStart)
-    eventChannelUnsafe.off('/command/complete', this.onCommandComplete)
+    eventBus.offCommandStart(this.props.uuid, this.onCommandStart)
+    eventBus.offCommandComplete(this.props.uuid, this.onCommandStart)
     eventChannelUnsafe.off('/theme/change', this.onThemeChange)
   }
 
@@ -132,8 +133,8 @@ export default class Tab extends React.PureComponent<Props, State> {
       })
     }
 
-    eventChannelUnsafe.on('/command/start', this.onCommandStart)
-    eventChannelUnsafe.on('/command/complete', this.onCommandComplete)
+    eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
+    eventBus.onCommandComplete(this.props.uuid, this.onCommandStart)
     eventChannelUnsafe.on('/theme/change', this.onThemeChange)
   }
 

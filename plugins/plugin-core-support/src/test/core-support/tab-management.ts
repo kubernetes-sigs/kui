@@ -278,7 +278,7 @@ describe('core new tab from pty active tab via button click', function(this: Com
 
   it('start vi, then new tab via button click', () =>
     CLI.command('vi', this.app)
-      .then(() => this.app.client.waitForExist(`${Selectors.CURRENT_TAB}.xterm-alt-buffer-mode`))
+      .then(() => this.app.client.waitForExist(Selectors.ALT_BUFFER_N(1)))
       .then(() => this.app.client.click(tabButtonSelector))
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .then(() => CLI.waitForSession(this)) // should have an active repl

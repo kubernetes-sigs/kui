@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-type FeatureFlags = {
-  /** [Optional] Enable WatchPane? */
-  enableWatchPane?: boolean
+import { Arguments, ParsedOptions, getCurrentTab } from '@kui-shell/core'
 
-  /** [Optional] disable table title? */
-  disableTableTitle?: boolean
-
-  /** [Optional] Enable Split Terminals? */
-  splitTerminals?: boolean
+interface Options extends ParsedOptions {
+  debug: boolean
 }
 
-export default FeatureFlags
+/**
+ * This plugin introduces the /split command
+ *
+ */
+export default async function split(args?: Arguments<Options>) {
+  if (args && args.parsedOptions.debug) {
+    // for debugging
+    return args.tab.uuid
+  }
+
+  const { doSplitView } = await import('../components/Views/Terminal/ScrollableTerminal')
+  return doSplitView(args ? args.tab : getCurrentTab())
+}

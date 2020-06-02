@@ -85,8 +85,7 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     if (prompt.value === '') {
       // <-- only if the line is blank
       debug('exit via ctrl+D')
-      const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
-      pexec('exit')
+      tab.REPL.pexec('exit', { tab })
     }
   } else if (char === KeyCodes.PAGEUP) {
     if (inBrowser()) {

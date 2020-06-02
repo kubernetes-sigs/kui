@@ -24,6 +24,7 @@ import {
   ToolbarProps,
   ToolbarText,
   i18n,
+  getPrimaryTabId,
   eventChannelUnsafe
 } from '@kui-shell/core'
 
@@ -127,12 +128,12 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
       this.doFocus()
       this.doXon()
     }
-    const focusOnEvent = `/mode/focus/on/tab/${this.props.tab.uuid}/mode/terminal`
+    const focusOnEvent = `/mode/focus/on/tab/${getPrimaryTabId(this.props.tab)}/mode/terminal`
     eventChannelUnsafe.on(focusOnEvent, focus)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOnEvent, focus))
 
     const xoff = this.doXoff.bind(this)
-    const focusOffEvent = `/mode/focus/off/tab/${this.props.tab.uuid}/mode/terminal`
+    const focusOffEvent = `/mode/focus/off/tab/${getPrimaryTabId(this.props.tab)}/mode/terminal`
     eventChannelUnsafe.on(focusOffEvent, xoff)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOffEvent, xoff))
 
@@ -391,6 +392,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     // onExit lifecycle handlers
     repl
       .qexec(command, undefined, undefined, {
+        tab: this.props.tab,
         onInit: () => {
           if (this._unmounted) {
             return

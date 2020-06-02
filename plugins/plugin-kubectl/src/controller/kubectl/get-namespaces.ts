@@ -143,9 +143,10 @@ async function asRadioTable(
   args: Arguments<KubeOptions>,
   { header, body }: Table
 ): Promise<RadioTable> {
+  const { tab } = args
   const {
     metadata: { namespace: currentNamespace }
-  } = await getCurrentContext(args.tab)
+  } = await getCurrentContext(tab)
 
   const defaultSelectedIdx = body.findIndex(_ => _.name === currentNamespace)
 

@@ -29,8 +29,7 @@ export const doPaste = (text: string, tab: KuiTab, prompt: HTMLInputElement) => 
       return pasteLooper(idx + 1) */
     } else if (idx <= lines.length - 2) {
       // then this is a command line with a trailing newline
-      const { internalBeCarefulPExec: pexec } = await import('@kui-shell/core')
-      await pexec(prompt.value + lines[idx], { tab })
+      tab.REPL.pexec(prompt.value + lines[idx], { tab })
       pasteLooper(idx + 1)
     } else {
       // then this is the last line, but without a trailing newline.

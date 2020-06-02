@@ -52,21 +52,12 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      tabs: [new TabModel()],
+      tabs: [this.newTabModel()],
       activeIdx: 0
     }
 
     eventBus.on('/tab/new/request', () => {
       this.onNewTab()
-    })
-
-    eventBus.on('/tab/close/request', async (tab: Tab) => {
-      if (this.state.tabs.length === 1) {
-        // then we are closing the last tab, so close the window
-        tab.REPL.qexec('window close')
-      } else {
-        this.onCloseTab(this.state.activeIdx)
-      }
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -142,6 +133,23 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     }
   }
 
+  private listenForTabClose(model: TabModel) {
+    eventBus.onceWithTabId('/tab/close/request', model.uuid, async (uuid: string, tab: Tab) => {
+      if (this.state.tabs.length === 1) {
+        // then we are closing the last tab, so close the window
+        tab.REPL.qexec('window close')
+      } else {
+        this.onCloseTab(this.state.activeIdx)
+      }
+    })
+  }
+
+  private newTabModel() {
+    const model = new TabModel()
+    this.listenForTabClose(model)
+    return model
+  }
+
   /**
    * New Tab event
    *
@@ -149,8 +157,10 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   private onNewTab() {
     this.captureState()
 
+    const model = this.newTabModel()
+
     this.setState(curState => ({
-      tabs: curState.tabs.concat(new TabModel()),
+      tabs: curState.tabs.concat(model),
       activeIdx: curState.tabs.length
     }))
   }

@@ -31,6 +31,7 @@ import { split, patterns } from './split'
 import { Executor, ReplEval, DirectReplEval } from './types'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { isNavResponse } from '../models/NavResponse'
+import { CommandStartEvent, CommandCompleteEvent } from './events'
 
 import {
   CommandTreeResolution,
@@ -46,7 +47,7 @@ import {
 import REPL from '../models/repl'
 import { RawContent, RawResponse, isRawResponse, MixedResponse, MixedResponsePart } from '../models/entity'
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
-import eventChannelUnsafe from '../core/events'
+import eventChannelUnsafe, { eventBus } from '../core/events'
 import { CodedError } from '../models/errors'
 import { UsageModel, UsageRow } from '../core/usage-error'
 
@@ -161,6 +162,27 @@ class InProcessExecutor implements Executor {
     }
   }
 
+  /** Notify the world that a command execution has begun */
+  private emitStartEvent(startEvent: CommandStartEvent) {
+    eventBus.emitCommandStart(startEvent)
+  }
+
+  /** Notify the world that a command execution has finished */
+  private emitCompletionEvent<T extends KResponse, O extends ParsedOptions>(
+    presponse: T | Promise<T>,
+    endEvent: Omit<CommandCompleteEvent, 'response' | 'responseType'>
+  ) {
+    return Promise.resolve(presponse).then(response => {
+      const responseType = isMultiModalResponse(response)
+        ? ('MultiModalResponse' as const)
+        : isNavResponse(response)
+        ? ('NavResponse' as const)
+        : ('ScalarResponse' as const)
+
+      eventBus.emitCommandComplete(Object.assign(endEvent, { response, responseType }))
+    })
+  }
+
   /**
    * Split an `argv` into a pair of `argvNoOptions` and `ParsedOptions`.
    *
@@ -262,6 +284,7 @@ class InProcessExecutor implements Executor {
   ): Promise<T | CodedError<number> | HTMLElement | CommandEvaluationError> {
     //
     const tab = execOptions.tab || getCurrentTab()
+
     const execType = (execOptions && execOptions.type) || ExecType.TopLevel
     const REPL = tab.REPL || getImpl(tab)
 
@@ -284,36 +307,29 @@ class InProcessExecutor implements Executor {
       execOptions.execUUID = execUUID
       const evaluatorOptions = evaluator.options
 
-      const startEvent = {
+      this.emitStartEvent({
         tab,
         route: evaluator.route,
         command,
         execType,
         execUUID,
         echo: execOptions.echo
-      }
-      eventChannelUnsafe.emit('/command/start', startEvent)
-      eventChannelUnsafe.emit(`/command/start/${getTabId(tab)}`, startEvent)
-      if (execType !== ExecType.Nested) {
-        eventChannelUnsafe.emit(`/command/start/fromuser/${getTabId(tab)}`, startEvent)
-      }
+      })
 
       if (command.length === 0) {
         // blank line (after stripping off comments)
-        const endEvent = {
+        this.emitCompletionEvent(true, {
           tab,
           execType,
           command: commandUntrimmed,
-          response: true,
+          argvNoOptions,
+          parsedOptions,
+          execOptions,
           execUUID,
           cancelled: true,
           echo: execOptions.echo,
           evaluatorOptions
-        }
-        eventChannelUnsafe.emit('/command/complete', endEvent)
-        if (execType !== ExecType.Nested) {
-          eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
-        }
+        })
         return
       }
 
@@ -323,12 +339,18 @@ class InProcessExecutor implements Executor {
         enforceUsage(argv, evaluator, execOptions)
       } catch (err) {
         debug('usage enforcement failure', err, execType === ExecType.Nested)
-
-        const endEvent = { tab, execType, command: commandUntrimmed, response: err }
-        eventChannelUnsafe.emit('/command/complete', endEvent, execUUID, 'ScalarResponse')
-        if (execType !== ExecType.Nested) {
-          eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, 'ScalarResponse')
-        }
+        this.emitCompletionEvent(err, {
+          tab,
+          execType,
+          command: commandUntrimmed,
+          argvNoOptions,
+          parsedOptions,
+          execOptions,
+          cancelled: false,
+          echo: execOptions.echo,
+          execUUID,
+          evaluatorOptions
+        })
 
         if (execOptions.type === ExecType.Nested) {
           throw err
@@ -396,53 +418,18 @@ class InProcessExecutor implements Executor {
         debug('warning: command handler returned nothing', commandUntrimmed)
       }
 
-      const endEvent = {
+      this.emitCompletionEvent(response || true, {
         tab,
         execType,
         command: commandUntrimmed,
-        response: response || true,
+        argvNoOptions,
+        parsedOptions,
         execUUID,
+        cancelled: false,
         echo: execOptions.echo,
         evaluatorOptions,
         execOptions
-      }
-      eventChannelUnsafe.emit(`/command/complete`, endEvent)
-      eventChannelUnsafe.emit(`/command/complete/${getTabId(tab)}`, endEvent)
-
-      if (execType !== ExecType.Nested) {
-        Promise.resolve(response).then(_ => {
-          const responseType = isMultiModalResponse(_)
-            ? 'MultiModalResponse'
-            : isNavResponse(_)
-            ? 'NavResponse'
-            : 'ScalarResponse'
-
-          eventChannelUnsafe.emit(`/command/complete/fromuser`, endEvent, responseType)
-          eventChannelUnsafe.emit(`/command/complete/fromuser/${getTabId(tab)}`, endEvent, execUUID, responseType)
-          eventChannelUnsafe.emit(
-            `/command/complete/fromuser/${responseType}`,
-            tab,
-            response,
-            execUUID,
-            argvNoOptions,
-            parsedOptions,
-            responseType,
-            evaluatorOptions
-          )
-          eventChannelUnsafe.emit(
-            `/command/complete/fromuser/${responseType}/${getTabId(tab)}`,
-            tab,
-            response,
-            execUUID,
-            argvNoOptions,
-            parsedOptions,
-            responseType,
-            evaluatorOptions,
-            execOptions,
-            commandUntrimmed
-          )
-        })
-      }
+      })
 
       return response
     } else {

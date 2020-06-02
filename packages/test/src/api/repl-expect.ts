@@ -255,3 +255,17 @@ export const okWith = (entityName: string) => async (res: AppAndCount) => expect
 
 /** expect just ok, and no result value */
 export const justOK = async (res: AppAndCount) => expectOK(res, { expectJustOK: true }).then(() => res.app)
+
+/** Expect the given number of terminal splits in the current tab */
+export function splitCount(expectedSplitCount: number) {
+  return (app: Application) => {
+    let idx = 0
+    return app.client.waitUntil(async () => {
+      const { value } = await app.client.elements(Selectors.SPLITS)
+      if (++idx > 5) {
+        console.error(`still waiting for splitCount; actual=${value.length} expected=${expectedSplitCount}`)
+      }
+      return value.length === expectedSplitCount
+    }, waitTimeout)
+  }
+}

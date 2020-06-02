@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { eventChannelUnsafe, getTabId, Registrar, ExecType, UsageModel, i18n } from '@kui-shell/core'
+import { eventChannelUnsafe, getPrimaryTabId, Registrar, ExecType, UsageModel, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -50,7 +50,7 @@ export default async (commandTree: Registrar) => {
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
         const { execUUID } = execOptions
 
-        const requestChannel = `/kui-shell/Confirm/v1/tab/${getTabId(tab)}`
+        const requestChannel = `/kui-shell/Confirm/v1/tab/${getPrimaryTabId(tab)}`
         const responseChannel = `${requestChannel}/execUUID/${execUUID}/confirmed`
 
         const onConfirm = ({ confirmed }: { confirmed: boolean }) => {

@@ -59,3 +59,5 @@ export function isNavResponse(entity: Entity): entity is NavResponse {
   const nav = entity as NavResponse
   return nav.apiVersion === 'kui-shell/v1' && nav.kind === 'NavResponse'
 }
+
+export default NavResponse

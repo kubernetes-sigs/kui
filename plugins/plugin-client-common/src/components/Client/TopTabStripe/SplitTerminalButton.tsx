@@ -18,27 +18,31 @@ import * as React from 'react'
 import { i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
+import KuiContext from '../context'
+import onSplit from '../../../controller/split'
 
 const strings = i18n('plugin-client-common')
 
-interface Props {
-  onNewTab: () => void
-}
-
-export default class NewTabButton extends React.PureComponent<Props> {
+export default class SplitTerminalButtonButton extends React.PureComponent {
   public render() {
     return (
-      <a
-        href="#"
-        className="kui--tab-navigatable kui--top-tab-button kui-new-tab"
-        id="new-tab-button"
-        aria-label="Open a new tab"
-        tabIndex={0}
-        title={strings('New Tab')}
-        onClick={() => this.props.onNewTab()}
-      >
-        <Icons icon="Add" className="kui-new-tab__plus" />
-      </a>
+      <KuiContext.Consumer>
+        {config =>
+          config.splitTerminals && (
+            <a
+              href="#"
+              className="kui--tab-navigatable kui--top-tab-button"
+              id="kui--split-terminal-button"
+              aria-label="Split terminal"
+              tabIndex={0}
+              title={strings('Split the Terminal')}
+              onClick={() => onSplit()}
+            >
+              <Icons icon="Split" />
+            </a>
+          )
+        }
+      </KuiContext.Consumer>
     )
   }
 }
