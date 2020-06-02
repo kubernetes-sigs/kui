@@ -28,8 +28,10 @@ import {
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
-const inputBuffer = readFileSync(join(ROOT, 'data/k8s/kubectl-logs-two-containers.yaml'))
-const inputEncoded = inputBuffer.toString('base64')
+const inputBuffer1 = readFileSync(join(ROOT, 'data/k8s/kubectl-logs-two-containers.yaml'))
+const inputEncoded1 = inputBuffer1.toString('base64')
+const inputBuffer2 = readFileSync(join(ROOT, 'data/k8s/bunch/pod.yaml'))
+const inputEncoded2 = inputBuffer2.toString('base64')
 
 const sleepTime = 3
 
@@ -49,12 +51,13 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   const ns: string = createNS()
   allocateNS(this, ns)
 
-  const podName = 'kui-two-containers'
+  const podName1 = 'kui-two-containers'
   const allContainers = 'All Containers'
   const containerName1 = 'nginx'
   const containerName2 = 'vim'
+  const podName2 = 'nginx'
 
-  const createPodWithoutWaiting = () => {
+  const createPodWithoutWaiting = (inputEncoded: string, podName: string) => {
     it(`should create sample pod from URL`, () => {
       return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
         .then(ReplExpect.okWithPtyOutput(podName))
@@ -62,7 +65,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     })
   }
 
-  const waitForPod = () => {
+  const waitForPod = (podName: string) => {
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
@@ -71,7 +74,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     })
   }
 
-  const getPodViaClick = (wait = true) => {
+  const getPodViaClick = (podName: string, wait = true) => {
     it(`should get pods via kubectl then click`, async () => {
       try {
         const selector: string = await CLI.command(`kubectl get pods ${podName} -n ${ns}`, this.app).then(
@@ -94,7 +97,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     })
   }
 
-  const getPodViaYaml = () => {
+  const getPodViaYaml = (podName: string) => {
     it('should get pods via kubectl get -o yaml', async () => {
       try {
         await CLI.command(`kubectl get pods ${podName} -n ${ns} -o yaml`, this.app)
@@ -202,9 +205,15 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   }
 
   /* Here comes the test */
-  createPodWithoutWaiting()
-  waitForPod()
-  getPodViaClick()
+
+  createPodWithoutWaiting(inputEncoded2, podName2)
+  waitForPod(podName2)
+  getPodViaClick(podName2)
+  switchToLogsTab(['No log data'], { text: 'Logs are live', type: 'info' })
+
+  createPodWithoutWaiting(inputEncoded1, podName1)
+  waitForPod(podName1)
+  getPodViaClick(podName1)
   switchToLogsTab([containerName1, containerName2], { text: 'Logs are live', type: 'info' })
 
   /** testing various combination here */
@@ -243,7 +252,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     type: 'info'
   })
 
-  deletePodByName(this, podName, ns)
+  deletePodByName(this, podName1, ns)
 
   it('should see log streaming stopped', async () => {
     try {
@@ -279,15 +288,15 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     type: 'error'
   })
 
-  createPodWithoutWaiting() // recreate this pod
-  getPodViaYaml() // NOTE: immediately open sidecar when pod is in creation
+  createPodWithoutWaiting(inputEncoded1, podName1) // recreate this pod
+  getPodViaYaml(podName1) // NOTE: immediately open sidecar when pod is in creation
 
   switchToLogsTab(['not found'], {
     text: showError,
     type: 'error'
   })
 
-  waitForPod() // wait for pod ready
+  waitForPod(podName1) // wait for pod ready
 
   doRetry([containerName1, containerName2], {
     text: 'Logs are live',

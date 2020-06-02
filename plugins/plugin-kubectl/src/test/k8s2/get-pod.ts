@@ -59,21 +59,6 @@ commands.forEach(command => {
       assert.ok(!/Initializing/i.test(message))
     } */
 
-    const testLogsTab = async (click = true) => {
-      if (click) {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
-      }
-
-      await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
-
-      return this.app.client.waitUntil(async () => {
-        const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
-        return text === 'No log data'
-      })
-    }
-
     const ns: string = createNS()
     const inNamespace = `-n ${ns}`
     allocateNS(this, ns)
@@ -282,8 +267,6 @@ commands.forEach(command => {
         return Common.oops(this, true)(err)
       }
     })
-
-    it('should show logs tab', testLogsTab)
 
     it('should click on the sidecar maximize button', async () => {
       try {
