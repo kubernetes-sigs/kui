@@ -159,11 +159,6 @@ export const preprocessTable = (raw: string[]): Pair[][][] => {
   })
 }
 
-/** normalize the status badge by capitalization */
-const capitalize = (str: string): string => {
-  return !str ? '' : str[0].toUpperCase() + str.slice(1).toLowerCase()
-}
-
 /**
  * Interpret READY column value "n/m" as a traffic light based on
  * whehter n/m === 1.
@@ -324,7 +319,7 @@ export const formatTable = async <O extends KubeOptions>(
                 ((idx > 0 && cssForKey[key]) || '') +
                 ' ' +
                 (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column)),
-              value: key === 'STATUS' && idx > 0 ? capitalize(column || 'unknown') : column
+              value: key === 'STATUS' && idx > 0 ? column || strings('Unknown') : column
             })
           )
           .concat(fillTo(rows.length, maxColumns))

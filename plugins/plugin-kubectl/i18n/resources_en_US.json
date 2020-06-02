@@ -14,6 +14,7 @@
   "createResource": "Create this resource",
   "This resource has been deleted": "This resource has been deleted",
   "Error fetching resource": "Error fetching resource",
+  "Unknown": "Unknown",
   "summary": "Summary",
   "resources": "Resources",
   "lastApplied": "Last Applied",
