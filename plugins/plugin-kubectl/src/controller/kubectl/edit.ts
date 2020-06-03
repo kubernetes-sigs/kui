@@ -15,7 +15,7 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { Arguments, MultiModalResponse, Registrar, ToolbarAlert, i18n } from '@kui-shell/core'
+import { Arguments, MultiModalResponse, Registrar, ExecOptions, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithStdout } from './exec'
@@ -33,7 +33,7 @@ interface EditableSpec {
   clearable: boolean
   save: {
     label: string
-    onSave(data: string): ToolbarAlert | Promise<ToolbarAlert>
+    onSave(data: string): Promise<void | { noToolbarUpdate: boolean }>
   }
   revert: {
     onRevert(): string | Promise<string>
@@ -112,9 +112,15 @@ export function editSpec(
           }
         })
 
+        // to show the updated resource after apply,
+        // we re-execute the original edit command after applying the changes.
+        // `partOfApply` here is used to signify this execution is part of a chain of controller
+        await args.REPL.pexec(args.command, { echo: false, data: { partOfApply: true } })
+
         return {
-          type: 'success' as const,
-          title: strings('Successfully Applied')
+          // disable editor's auto toolbar update,
+          // since this command will handle the toolbarText by itself
+          noToolbarUpdate: true
         }
       }
     },
@@ -182,12 +188,33 @@ export async function doEdit(cmd: string, args: Arguments<KubeOptions>) {
   }
 }
 
+interface EditAfterApply {
+  data: {
+    partOfApply: boolean
+  }
+}
+
+function isEditAfterApply(options: ExecOptions): options is EditAfterApply {
+  const opts = options as EditAfterApply
+  return opts && opts.data && opts.data.partOfApply !== undefined
+}
+
 export async function editable(cmd: string, args: Arguments<KubeOptions>, response: KubeResource): Promise<Editable> {
   const spec = editSpec(cmd, response.metadata.namespace, args, response)
 
-  const view = Object.assign(await getView(args, response), {
-    spec: Object.assign(response.spec || {}, spec)
+  const baseView = await getView(args, response)
+
+  const view = Object.assign(baseView, {
+    spec: Object.assign(response.spec || {}, spec),
+    toolbarText: !isEditAfterApply(args.execOptions)
+      ? baseView.toolbarText
+      : {
+          type: baseView.toolbarText.type,
+          text: baseView.toolbarText.text,
+          alerts: [{ type: 'success', title: strings('Successfully Applied') }]
+        }
   })
+
   return view
 }
 
