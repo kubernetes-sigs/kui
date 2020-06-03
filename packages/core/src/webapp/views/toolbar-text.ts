@@ -23,13 +23,14 @@ type ToolbarTextType = 'info' | 'success' | 'warning' | 'error'
 
 type ToolbarTextValue = string | Element
 
-export interface ToolbarText {
-  type: ToolbarTextType
-  text: ToolbarTextValue
-}
-
 export interface ToolbarAlert {
   type: ToolbarTextType
   title: string
   body?: string
+}
+
+export interface ToolbarText {
+  type: ToolbarTextType
+  text: ToolbarTextValue
+  alerts?: ToolbarAlert[] /* auto destruct */
 }

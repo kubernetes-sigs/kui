@@ -28,7 +28,7 @@ export interface ExecOptions {
   execUUID?: string
 
   /** pass through uninterpreted data */
-  data?: string | Buffer
+  data?: string | Buffer | Record<string, any>
 
   /** environment variable map */
   env?: Record<string, string>
