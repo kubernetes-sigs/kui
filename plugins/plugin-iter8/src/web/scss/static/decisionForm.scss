@@ -1,6 +1,10 @@
 $mediumpurple: #9370db;
 $teal: #00e6e6;
 $darkteal: #00b3b3;
+$font_courier: 'Courier New', Courier, monospace;
+$dark-purple: #282936;
+$blue: #62d6e8;
+$trans-grey: #5e6367;
 // Overload for Loading Component Label
 .bx--inline-loading__text {
   color: #ffffff !important;
@@ -48,4 +52,77 @@ $darkteal: #00b3b3;
 
 .titletexts {
   color: $teal;
+  fill: $teal;
+}
+
+.tablevalues {
+  cursor: pointer;
+  position: relative;
+}
+.widthlarge {
+  width: 250px;
+  margin-left: -125px;
+}
+.red {
+  color: red !important;
+}
+.tablevalues .warningtext {
+  visibility: hidden;
+  text-align: center;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+
+  /* Design */
+  font-weight: 100;
+  font-family: $font_courier;
+  word-wrap: break-word;
+  color: $blue;
+  font-style: italic;
+
+  background-color: $dark-purple;
+  border-radius: 6px;
+  padding: 5px 5px 5px 5px;
+}
+.tablevalues:hover {
+  color: $darkteal;
+  .warningtext {
+    visibility: visible;
+  }
+}
+
+.advancedstats {
+  div {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -250px;
+    width: 500px;
+
+    /* Design */
+    font-weight: 100;
+    font-family: $font_courier;
+    font-size: 14px;
+    color: $blue;
+    font-style: italic;
+    display: inline;
+    background-color: $dark-purple;
+    border-radius: 6px;
+    padding: 5px 5px 5px 5px;
+  }
+  h4 {
+    color: $teal;
+    fill: $teal;
+    cursor: pointer;
+    position: relative;
+  }
+
+  sup:hover {
+    color: $darkteal;
+    div {
+      visibility: visible;
+    }
+  }
 }

@@ -360,6 +360,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               size="default"
               kind="primary"
               renderIcon={Data132}
+              disabled={this.state.disableResubmit}
               onClick={this.addCriterion}
             >
               Add Criterion
