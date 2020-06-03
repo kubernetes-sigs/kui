@@ -19,16 +19,7 @@ import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
-import {
-  Button,
-  REPL,
-  StringContent,
-  ToolbarText,
-  ToolbarProps,
-  ToolbarAlert,
-  MultiModalResponse,
-  i18n
-} from '@kui-shell/core'
+import { Button, REPL, StringContent, ToolbarText, ToolbarProps, MultiModalResponse, i18n } from '@kui-shell/core'
 
 import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
@@ -47,7 +38,7 @@ interface WithOptions {
     clearable?: boolean
     save?: {
       label: string
-      onSave: (data: string) => Promise<void | ToolbarAlert>
+      onSave: (data: string) => Promise<void | { noToolbarUpdate?: boolean; toolbarText: ToolbarText }>
     }
     revert?: {
       label: string
@@ -175,17 +166,27 @@ export default class Editor extends React.PureComponent<Props, State> {
           kind: 'view' as const,
           command: async () => {
             try {
-              const onSavedText = await onSave(editor.getValue())
-              props.willUpdateToolbar(
-                this.allClean(props),
-                !clearable ? undefined : [ClearButton(editor)],
-                undefined,
-                onSavedText ? [onSavedText] : undefined
-              )
+              const save = await onSave(editor.getValue())
+              if (!(save && save.noToolbarUpdate)) {
+                props.willUpdateToolbar(
+                  (save && save.toolbarText) || this.allClean(props),
+                  !clearable ? undefined : [ClearButton(editor)]
+                )
+              }
             } catch (err) {
-              props.willUpdateToolbar({ type: 'warning', text: strings('isModified') }, undefined, undefined, [
-                { type: 'error', title: strings('errorApplying'), body: err.message }
-              ])
+              const alert = {
+                type: 'warning' as const,
+                text: strings('isModified'),
+                alerts: [
+                  {
+                    type: 'error' as const,
+                    title: strings('errorApplying'),
+                    body: err.message
+                  }
+                ]
+              }
+
+              props.willUpdateToolbar(alert, undefined, undefined)
             }
           }
         })
