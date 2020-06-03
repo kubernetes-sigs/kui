@@ -26,6 +26,7 @@ export type Props = {
   buttons: Button[]
   response: MultiModalResponse
   toolbarText?: ToolbarText
+  noAlerts?: boolean
   args: {
     argvNoOptions: string[]
     parsedOptions: ParsedOptions

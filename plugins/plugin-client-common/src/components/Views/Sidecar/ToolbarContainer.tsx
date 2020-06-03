@@ -40,13 +40,8 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   }
 
   /** Called by children if they desire an update to the Toolbar */
-  private onToolbarUpdate(
-    toolbarText: ToolbarText,
-    extraButtons?: Button[],
-    extraButtonsOverride?: boolean,
-    alerts?: ToolbarAlert[]
-  ) {
-    this.setState({ toolbarText, extraButtons, extraButtonsOverride, alerts })
+  private onToolbarUpdate(toolbarText: ToolbarText, extraButtons?: Button[], extraButtonsOverride?: boolean) {
+    this.setState({ toolbarText, extraButtons, extraButtonsOverride })
   }
 
   /** Graft on the toolbar event management */
@@ -65,6 +60,11 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
         ? this.state.extraButtons
         : this.props.buttons.concat(this.state.extraButtons || [])
     const toolbarHasContent = this.state.toolbarText || toolbarButtons.length !== 0
+    const toolbarHasAlerts =
+      !this.props.noAlerts &&
+      this.state.toolbarText &&
+      this.state.toolbarText.alerts &&
+      this.state.toolbarText.alerts.length !== 0
 
     return (
       <div className="full-height">
@@ -77,7 +77,7 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
             buttons={toolbarButtons}
           />
         )}
-        {this.state.alerts && this.state.alerts.map((alert, id) => <Alert key={id} alert={alert} />)}
+        {toolbarHasAlerts && this.state.toolbarText.alerts.map((alert, id) => <Alert key={id} alert={alert} />)}
         <React.Suspense fallback={<div />}>{this.children()}</React.Suspense>
       </div>
     )

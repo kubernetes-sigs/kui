@@ -71,7 +71,7 @@ commands.forEach(command => {
       })
     }
 
-    const modifyWithError = (title: string, where: string, expectedError: string) => {
+    const modifyWithError = (title: string, where: string, expectedError: string, revert: false) => {
       it(`should modify the content, introducing a ${title}`, async () => {
         try {
           const actualText = await Util.getValueFromMonaco(this.app)
@@ -91,6 +91,17 @@ commands.forEach(command => {
 
           // an error state and the garbage text had better appear in the toolbar text
           await SidecarExpect.toolbarAlert({ type: 'error', text: expectedError || garbage, exact: false })(this.app)
+
+          if (revert) {
+            await this.app.client.click(lineSelector)
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            await this.app.client.keys(
+              where === Keys.Home
+                ? `${where}${Keys.DELETE.repeat(garbage.length)}`
+                : `${where}${Keys.BACKSPACE.repeat(garbage.length)}`
+            )
+            await new Promise(resolve => setTimeout(resolve, 2000))
+          }
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -128,36 +139,7 @@ commands.forEach(command => {
         }
       })
 
-      it('should get the modified pod', async () => {
-        try {
-          const selector = await CLI.command(`${command} get pod ${name} ${inNamespace}`, this.app).then(
-            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })
-          )
-
-          // wait for the badge to become green
-          await waitForGreen(this.app, selector)
-
-          // now click on the table row
-          await this.app.client.click(`${selector} .clickable`)
-          await SidecarExpect.open(this.app)
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.showing(name))
-        } catch (err) {
-          return Common.oops(this, true)
-        }
-      })
-
-      it('should switch to yaml tab', async () => {
-        try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('raw'))
-        } catch (err) {
-          await Common.oops(this, true)(err)
-        }
-      })
-
-      it('should show the modified content', () => {
+      it('should show the modified content in the current yaml tab', () => {
         return SidecarExpect.yaml({ metadata: { labels: { [key]: value } } })(this.app).catch(Common.oops(this, true))
       })
     }
@@ -204,7 +186,23 @@ commands.forEach(command => {
         }
       })
 
-      modify(name, 'foo2', 'bar2')
+      modify(name, 'clickfoo1', 'clickbar1')
+      modify(name, 'clickfoo2', 'clickbar2') // after success, should re-modify the resource in the current tab successfully
+      validationError(true) // do unsupported edits in the current tab, validate the error alert, and then undo the changes
+      modify(name, 'clickfoo3', 'clickbar3') // after error, should re-modify the resource in the current tab successfully
+
+      it('should switch to summary tab and see no alerts', async () => {
+        try {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('summary'))
+
+          // toolbar alert should not exist
+          await this.app.client.waitForExist(Selectors.SIDECAR_ALERT('success'), CLI.waitTimeout, true)
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
     }
 
     //
@@ -221,12 +219,14 @@ commands.forEach(command => {
 
     edit(nginx)
     modify(nginx)
+    modify(nginx, 'foo1', 'bar1') // successfully re-modify the resource in the current tab
+    validationError(true) // do unsupported edits in the current tab, and then undo the changes
+    modify(nginx, 'foo2', 'bar2') // after error, successfully re-modify the resource in the current tab
+    parseError() // after sucess, do unsupported edits
 
     edit(nginx)
-    validationError()
-
-    edit(nginx)
-    parseError()
+    validationError(true) // do unsupported edits in the current tab, then undo the changes
+    parseError() // after error, do another unsupported edits in the current tab
 
     it('should refresh', () => Common.refresh(this))
 

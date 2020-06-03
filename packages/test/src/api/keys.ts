@@ -5,6 +5,7 @@ export const keys = {
   PageDown: '\uE00F',
   End: '\uE010',
   Home: '\uE011',
+  Delete: '\uE017',
   BACKSPACE: '\uE003',
   TAB: '\uE004',
   ENTER: '\uE007',

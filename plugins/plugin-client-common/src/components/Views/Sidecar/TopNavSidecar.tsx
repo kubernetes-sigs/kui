@@ -56,6 +56,7 @@ interface HistoryEntry extends SidecarHistoryEntry {
   buttons: Button[]
   tabs: Readonly<MultiModalMode[]>
   response: Readonly<MultiModalResponse>
+  defaultMode: number
 }
 
 export function getStateFromMMR(
@@ -102,6 +103,7 @@ export function getStateFromMMR(
     argvNoOptions,
     parsedOptions,
     currentTabIndex: defaultMode,
+    defaultMode,
     tabs,
     buttons,
     response
@@ -270,6 +272,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
             response={this.current.response}
             args={{ argvNoOptions: this.state.current.argvNoOptions, parsedOptions: this.state.current.parsedOptions }}
             toolbarText={toolbarText}
+            noAlerts={this.current.currentTabIndex !== this.state.current.defaultMode}
             buttons={this.current.buttons}
           >
             {this.bodyContent(idx)}
