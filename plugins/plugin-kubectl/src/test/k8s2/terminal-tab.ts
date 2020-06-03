@@ -96,7 +96,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
     it(`should confirm echoed text via ${command} exec`, async () => {
       try {
         await CLI.command(`${command} exec ${podName} -c ${containerName} -n ${ns} -- cat ${ECHO_FILE}`, this.app)
-          .then(ReplExpect.okWithPtyOutput(ECHO_TEXT))
+          .then(ReplExpect.okWithString(ECHO_TEXT))
           .catch(Common.oops(this, true))
       } catch (err) {
         await Common.oops(this, true)(err)
