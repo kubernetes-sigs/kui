@@ -170,7 +170,11 @@ describe(`kubectl Logs multiple pods via selector ${process.env.MOCHA_RUN_TARGET
   // testing various combination here
   switchContainer(fqn1, [containerName1], [containerName2, 'hi'])
   switchContainer(fqn2, [containerName2], [containerName1, 'hi'])
-  switchContainer(allContainers, [containerName1, containerName2, 'hi'], [])
+
+  // note: due to the --tail flag, we don't expect to see
+  // containerName1 in the logs -- it probably has flown off the top
+  // of the xtermjs scrollback
+  switchContainer(allContainers, [/* containerName1, */ containerName2, 'hi'], [])
 
   // use k get -lfoo=bar to show the Logs tab, the first container of the first pod
   getLogsViaLabel(`-c ${containerName1}`)

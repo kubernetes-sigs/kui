@@ -27,6 +27,13 @@ import { KubeOptions, getContainer, hasLabel } from '../../../controller/kubectl
 
 const strings = i18n('plugin-kubectl', 'logs')
 
+/**
+ * Default --tail flag, if the user does not specify one. See
+ * https://github.com/IBM/kui/issues/4810
+ *
+ */
+const defaultTail = 1000
+
 export class Logs extends Terminal {
   public constructor(props: ContainerProps) {
     super(props)
@@ -107,7 +114,8 @@ export class Logs extends Terminal {
       // --all-containers for convenience
       // 2) only use argsForMode once
       // 3) do not add -f unless the user requested it
-      const command = `${args.argsForMode.command} ${!containerName ? container : ''}`
+      const tail = !args.argsForMode.parsedOptions.tail ? ` --tail ${defaultTail}` : ''
+      const command = `${args.argsForMode.command} ${!containerName ? container : ''} ${tail}`
 
       if (!isMulti) {
         args.argsForMode.command = undefined // point 2
@@ -131,7 +139,7 @@ export class Logs extends Terminal {
 
       const command = `${getCommandFromArgs(args)} logs ${podName} -n ${
         pod.metadata.namespace
-      } ${theContainer} ${dashF}`
+      } ${theContainer} ${dashF} --tail ${defaultTail}`
 
       return {
         isLive,
