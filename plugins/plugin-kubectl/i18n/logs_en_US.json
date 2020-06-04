@@ -7,6 +7,7 @@
   "Message": "Message",
   "Details": "Details",
   "No log data": "No log data",
+  "No matching pods": "No matching pods",
   "Logs are live streaming. Showing all containers.": "Logs are live **streaming**. Showing **all containers**.",
   "Log streaming is paused. Showing all containers.": "Log streaming is **paused**. Showing **all containers**.",
   "Log streaming stopped. Showing all containers.": "Log streaming **stopped**. Showing **all containers**.",
