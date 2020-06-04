@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, CodedError, ExecType, MultiModalResponse, Registrar, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, ExecType, MultiModalResponse, Registrar, flatten, i18n } from '@kui-shell/core'
 import {
   isUsage,
   doHelp,
@@ -28,6 +28,7 @@ import {
   getContainer,
   getNamespace,
   KubeItems,
+  isKubeItems,
   isKubeItemsOfKind,
   KubeResource,
   Pod,
@@ -35,6 +36,8 @@ import {
 } from '@kui-shell/plugin-kubectl'
 
 import commandPrefix from '../command-prefix'
+
+const strings = i18n('plugin-kubectl', 'logs')
 
 interface LogOptions extends KubeOptions {
   f: string
@@ -142,6 +145,11 @@ function viewTransformer(defaultMode: string) {
   return async (args: Arguments<KubeOptions>, response: KubeResource | KubeItems<Pod>) => {
     if (isKubeItemsOfKind(response, isPod)) {
       return transformMulti(defaultMode, args, response)
+    } else if (isKubeItems(response)) {
+      // otherwise, we have an empty list of items
+      const error: CodedError = new Error(strings('No matching pods'))
+      error.code = 404
+      throw error
     }
 
     if (isPod(response)) {
