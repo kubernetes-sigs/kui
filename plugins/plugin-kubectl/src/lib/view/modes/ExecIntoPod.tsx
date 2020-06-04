@@ -256,12 +256,10 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
   private abortPriorJob() {
     if (this.state.job) {
+      const abortThisJob = this.state.job
+
       // the setTimeout helps us avoid exit-after-spawn races
-      setTimeout(() => {
-        if (this.state.job) {
-          this.state.job.abort()
-        }
-      }, 5000)
+      setTimeout(() => abortThisJob.abort(), 5000)
     }
   }
 
