@@ -189,8 +189,8 @@ async function asRadioTable(args: Arguments<KubeOptions>, { header, body }: Tabl
   const rowIdxForDefaultNS = body.findIndex(_ => _.name === 'default')
   if (rowIdxForDefaultNS !== 0 && rowIdxForDefaultNS !== defaultSelectedIdx && body.length > 2) {
     const defaultRow = radio.body[rowIdxForDefaultNS]
-    radio.body.splice(rowIdxForDefaultNS, 1)
-    radio.body.splice(1, 0, defaultRow)
+    radio.body.splice(rowIdxForDefaultNS, 1) // delete the default row from body
+    radio.body.splice(0, 0, defaultRow) // insert the default row at the top
 
     if (defaultSelectedIdx < rowIdxForDefaultNS) {
       radio.defaultSelectedIdx += 1
