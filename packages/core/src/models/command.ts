@@ -43,6 +43,11 @@ export enum ExecType {
   Nested
 }
 
+export type ViewTransformer<T extends KResponse, O extends ParsedOptions> = (
+  args: EvaluatorArgs<O>,
+  response: T
+) => Promise<T> | void | Promise<void>
+
 export interface CommandOptions extends CapabilityRequirements {
   /** does this command accept no arguments of any sort (neither positional nor optional)? */
   noArgs?: boolean
@@ -86,10 +91,7 @@ export interface CommandOptions extends CapabilityRequirements {
   alwaysViewIn?: 'Terminal'
 
   /** model to view transformer */
-  viewTransformer?<T extends KResponse, O extends ParsedOptions>(
-    args: EvaluatorArgs<O>,
-    response: T
-  ): Promise<T> | void | Promise<void>
+  viewTransformer?: ViewTransformer<KResponse, ParsedOptions>
 }
 
 export interface Event {

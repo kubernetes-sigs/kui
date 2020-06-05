@@ -97,6 +97,7 @@ export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
 export { describer } from './controller/kubectl/describe'
 export { register as registerConfig } from './controller/kubectl/config'
+export { registerApplySubcommands } from './controller/kubectl/apply-subcommands'
 
 export { viewTransformer as getTransformer } from './controller/kubectl/get'
 
