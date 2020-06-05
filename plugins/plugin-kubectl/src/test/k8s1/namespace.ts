@@ -62,7 +62,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     /** switch to default context via command */
     const switchToDefault = () => {
       it('should switch back to default via command', () => {
-        return CLI.command(`namespace switch default`, this.app)
+        return CLI.command(`kubectl config set-context --current --namespace=default`, this.app)
           .then(ReplExpect.okWithAny)
           .catch(Common.oops(this, true))
       })
