@@ -22,6 +22,7 @@ import { Entity, MetadataBearing } from '../entity'
 import { isHTML } from '../../util/types'
 import { ModeOrButton, Button } from './types'
 import { ToolbarText } from '../../webapp/views/toolbar-text'
+import { Editable } from '../editable'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -90,7 +91,8 @@ interface WithOptionalContentType<ContentType = SupportedStringContent> {
  *
  */
 export type StringContent<ContentType = SupportedStringContent> = ScalarContent<string> &
-  WithOptionalContentType<ContentType>
+  WithOptionalContentType<ContentType> &
+  Partial<Editable>
 
 export function isStringWithOptionalContentType<T extends MetadataBearing>(
   entity: Entity | Content<T> | MetadataBearing | ModeOrButton<T>

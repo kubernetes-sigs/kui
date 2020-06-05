@@ -32,26 +32,11 @@ import '../../../../web/scss/components/Editor/Editor.scss'
 
 const strings = i18n('plugin-client-common', 'editor')
 
-interface WithOptions {
-  spec: {
-    readOnly?: boolean
-    clearable?: boolean
-    save?: {
-      label: string
-      onSave: (data: string) => Promise<void | { noToolbarUpdate?: boolean; toolbarText: ToolbarText }>
-    }
-    revert?: {
-      label: string
-      onRevert: () => Promise<string>
-    }
-  }
-}
-
 type Props = MonacoOptions &
   ToolbarProps & {
     repl: REPL
     content: StringContent
-    response: File | (MultiModalResponse & Partial<WithOptions>)
+    response: File | MultiModalResponse
   }
 
 interface State {
@@ -138,7 +123,7 @@ export default class Editor extends React.PureComponent<Props, State> {
   private static isClearable(props: Props) {
     return (
       (isFile(props.response) && !props.readOnly) ||
-      (!isFile(props.response) && props.response.spec && props.response.spec.clearable !== false)
+      (!isFile(props.response) && props.content.spec && props.content.spec.clearable !== false)
     )
   }
 
@@ -158,11 +143,11 @@ export default class Editor extends React.PureComponent<Props, State> {
           }
         })
         buttons.push(save)
-      } else if (props.response.spec && props.response.spec.save) {
-        const { onSave } = props.response.spec.save
+      } else if (props.content.spec && props.content.spec.save) {
+        const { onSave } = props.content.spec.save
         buttons.push({
           mode: 'Save',
-          label: props.response.spec.save.label || strings('saveLocalFile'),
+          label: props.content.spec.save.label || strings('saveLocalFile'),
           kind: 'view' as const,
           command: async () => {
             try {
@@ -203,11 +188,11 @@ export default class Editor extends React.PureComponent<Props, State> {
           }
         })
         buttons.push(revert)
-      } else if (props.response.spec && props.response.spec.revert) {
-        const { onRevert } = props.response.spec.revert
+      } else if (props.content.spec && props.content.spec.revert) {
+        const { onRevert } = props.content.spec.revert
         buttons.push({
           mode: 'Revert',
-          label: props.response.spec.revert.label || strings('revert'),
+          label: props.content.spec.revert.label || strings('revert'),
           kind: 'view' as const,
           command: async () => {
             try {
@@ -259,7 +244,7 @@ export default class Editor extends React.PureComponent<Props, State> {
         value: props.content.content,
         readOnly:
           !isFile(props.response) &&
-          (!props.response.spec || props.response.spec.readOnly !== false) &&
+          (!props.content.spec || props.content.spec.readOnly !== false) &&
           (props.readOnly || !isFile(props.response) || false),
         language:
           props.content.contentType === 'text/plain'

@@ -15,7 +15,15 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { Arguments, MultiModalResponse, Registrar, ExecOptions, i18n } from '@kui-shell/core'
+import {
+  Arguments,
+  MultiModalResponse,
+  Registrar,
+  ExecOptions,
+  i18n,
+  EditableSpec,
+  isStringWithOptionalContentType
+} from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithStdout } from './exec'
@@ -24,34 +32,23 @@ import { viewTransformer as getView } from './get'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, getNamespace } from './options'
 import { KubeResource, isKubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
+import { label as yamlModeLabel, mode as yamlMode, order as yamlModeOrder } from '../../lib/view/modes/yaml'
 
 const strings = i18n('plugin-kubectl')
 const strings2 = i18n('plugin-client-common', 'editor')
 
-interface EditableSpec {
-  readOnly: boolean
-  clearable: boolean
-  save: {
-    label: string
-    onSave(data: string): Promise<void | { noToolbarUpdate: boolean }>
-  }
-  revert: {
-    onRevert(): string | Promise<string>
-  }
-}
+export function isEditable(resource: KubeResource) {
+  const editable = resource as MultiModalResponse<KubeResource>
+  const editableMode = editable.modes.find(mode => isStringWithOptionalContentType(mode) && mode.spec)
 
-interface Editable extends MultiModalResponse<KubeResource> {
-  spec: EditableSpec
-}
-
-export function isEditable(resource: KubeResource): resource is Editable {
-  const editable = resource as Editable
   return (
-    typeof editable.spec === 'object' &&
-    typeof editable.spec.readOnly === 'boolean' &&
-    typeof editable.spec.clearable === 'boolean' &&
-    typeof editable.spec.save === 'object' &&
-    typeof editable.spec.revert === 'object'
+    editableMode &&
+    isStringWithOptionalContentType(editableMode) &&
+    typeof editableMode.spec === 'object' &&
+    typeof editableMode.spec.readOnly === 'boolean' &&
+    typeof editableMode.spec.clearable === 'boolean' &&
+    typeof editableMode.spec.save === 'object' &&
+    typeof editableMode.spec.revert === 'object'
   )
 }
 
@@ -131,6 +128,7 @@ export function editSpec(
 }
 
 function editMode(
+  spec: EditableSpec,
   resource: KubeResource,
   mode = 'edit',
   label = strings2('Edit'),
@@ -142,6 +140,7 @@ function editMode(
     label,
     order,
     priority,
+    spec,
     contentType: 'yaml',
     content: resource.kuiRawData
   }
@@ -179,7 +178,7 @@ export async function doEdit(cmd: string, args: Arguments<KubeOptions>) {
         namespace
       },
       spec,
-      modes: [editMode(resource)]
+      modes: [editMode(spec, resource)]
     }
     return response
   } else {
@@ -199,20 +198,24 @@ function isEditAfterApply(options: ExecOptions): options is EditAfterApply {
   return opts && opts.data && opts.data.partOfApply !== undefined
 }
 
-export async function editable(cmd: string, args: Arguments<KubeOptions>, response: KubeResource): Promise<Editable> {
+export async function editable(
+  cmd: string,
+  args: Arguments<KubeOptions>,
+  response: KubeResource
+): Promise<MultiModalResponse> {
   const spec = editSpec(cmd, response.metadata.namespace, args, response)
 
   const baseView = await getView(args, response)
+  const baseEditToolbar = {
+    type: 'info',
+    text: strings2('isUpToDate')
+  }
 
   const view = Object.assign(baseView, {
-    spec: Object.assign(response.spec || {}, spec),
+    modes: [editMode(spec, response, yamlMode, yamlModeLabel, yamlModeOrder - 1)], // overwrite the pre-registered yaml tab
     toolbarText: !isEditAfterApply(args.execOptions)
-      ? baseView.toolbarText
-      : {
-          type: baseView.toolbarText.type,
-          text: baseView.toolbarText.text,
-          alerts: [{ type: 'success', title: strings('Successfully Applied') }]
-        }
+      ? response.toolbarText
+      : Object.assign(baseEditToolbar, { alerts: [{ type: 'success', title: strings('Successfully Applied') }] })
   })
 
   return view
@@ -225,7 +228,7 @@ function showingMode(defaultMode: string, resource: MultiModalResponse) {
 /** KubeResource -> MultiModalResponse view transformer */
 export async function viewTransformer(cmd: string, args: Arguments<KubeOptions>, response: KubeResource | KubeItems) {
   if (!isKubeItems(response) && isKubeResource(response)) {
-    return showingMode('raw', await editable(cmd, args, response))
+    return showingMode(yamlMode, await editable(cmd, args, response))
   }
 }
 

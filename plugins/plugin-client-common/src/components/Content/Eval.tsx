@@ -26,6 +26,7 @@ import {
   isReactProvider,
   isScalarContent,
   ScalarContent,
+  EditableSpec,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
 
@@ -45,6 +46,7 @@ interface EvalState {
   react: ReactProvider
   content: ScalarResource
   contentType: SupportedStringContent
+  spec?: EditableSpec
 }
 
 /**
@@ -69,6 +71,7 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
       isLoading: true,
       command: props.command,
       react: undefined,
+      spec: undefined,
       content: undefined,
       contentType: props.contentType
     }
@@ -98,7 +101,12 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
           if (isReactProvider(content)) {
             this.setState({ isLoading: false, react: content })
           } else if (isStringWithOptionalContentType(content)) {
-            this.setState({ isLoading: false, content: content.content, contentType: content.contentType })
+            this.setState({
+              isLoading: false,
+              content: content.content,
+              contentType: content.contentType,
+              spec: content.spec
+            })
           } else if (isScalarContent(content)) {
             done(content.content)
           } else {
@@ -116,6 +124,7 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
     const mode = this.state.react
       ? this.state.react
       : {
+          spec: this.state.spec,
           content: this.state.content,
           contentType: this.state.contentType
         }
