@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys, Util } from '@kui-shell/test'
 import {
   waitForGreen,
@@ -169,6 +170,9 @@ commands.forEach(command => {
           console.error('1')
           await new Promise(resolve => setTimeout(resolve, 5000))
 
+          // edit button should not exist
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('edit-button'), 5000, true)
+
           // should still be showing pod {name}, but now with the yaml tab selected
           console.error('2')
           await SidecarExpect.showing(name, undefined, undefined, ns)
@@ -191,7 +195,7 @@ commands.forEach(command => {
       validationError(true) // do unsupported edits in the current tab, validate the error alert, and then undo the changes
       modify(name, 'clickfoo3', 'clickbar3') // after error, should re-modify the resource in the current tab successfully
 
-      it('should switch to summary tab and see no alerts', async () => {
+      it('should switch to summary tab, expect no alerts and not editable', async () => {
         try {
           await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
           await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
@@ -199,6 +203,27 @@ commands.forEach(command => {
 
           // toolbar alert should not exist
           await this.app.client.waitForExist(Selectors.SIDECAR_ALERT('success'), CLI.waitTimeout, true)
+
+          // edit button should not exist
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('edit-button'), 5000, true)
+
+          // try editing the summary mode
+          const actualText = await Util.getValueFromMonaco(this.app)
+          const labelsLineIdx = actualText.split(/\n/).indexOf('Name:')
+
+          // +2 here because nth-child is indexed from 1, and we want the line after that
+          const lineSelector = `.view-lines > .view-line:nth-child(${labelsLineIdx + 2}) .mtk5:last-child`
+          await this.app.client.click(lineSelector)
+
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          await this.app.client.keys('x') // random key
+          await new Promise(resolve => setTimeout(resolve, 2000))
+
+          // should have same text
+          const actualText2 = await Util.getValueFromMonaco(this.app)
+          assert.ok(actualText === actualText2)
+
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('Save'), 10000, true) // should not have apply button
         } catch (err) {
           await Common.oops(this, true)(err)
         }
