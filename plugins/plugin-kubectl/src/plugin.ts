@@ -31,6 +31,7 @@ import run from './controller/kubectl/run'
 import status from './controller/kubectl/status'
 import top from './controller/kubectl/top'
 import config from './controller/kubectl/config'
+import applySubcommands from './controller/kubectl/apply-subcommands'
 
 import fetchFile from './controller/fetch-file'
 import catchall from './controller/kubectl/catchall'
@@ -51,6 +52,7 @@ export default async (registrar: Registrar) => {
   status(registrar)
   top(registrar)
   config(registrar)
+  applySubcommands(registrar)
 
   fetchFile(registrar)
   catchall(registrar)

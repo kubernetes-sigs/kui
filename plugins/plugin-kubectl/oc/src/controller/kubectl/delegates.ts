@@ -25,6 +25,7 @@ import {
   describer,
   registerConfig,
   registerEdit,
+  registerApplySubcommands,
   doRun
 } from '@kui-shell/plugin-kubectl'
 import { doLogs } from '@kui-shell/plugin-kubectl/logs'
@@ -42,4 +43,5 @@ export default (registrar: Registrar) => {
   describer(registrar, command)
   registerConfig(registrar, command)
   registerEdit(registrar, command)
+  registerApplySubcommands(registrar, command)
 }

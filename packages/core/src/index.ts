@@ -40,6 +40,7 @@ export {
   ParsedOptions,
   EvaluatorArgs as Arguments,
   Event,
+  ViewTransformer,
   CommandRegistrar as Registrar
 } from './models/command'
 export { optionsToString as unparse } from './core/utility'

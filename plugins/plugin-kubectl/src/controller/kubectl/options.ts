@@ -138,6 +138,15 @@ export async function getNamespace(args: Arguments<KubeOptions>): Promise<string
   return args.parsedOptions.n || args.parsedOptions.namespace || (await getCurrentDefaultNamespace(args))
 }
 
+/**
+ * A variant of getNamespace where you *only* want to use what was
+ * provided by the user in their command line.
+ */
+export function getNamespaceForArgv(args: Arguments<KubeOptions>): string {
+  const ns = args.parsedOptions.n || args.parsedOptions.namespace
+  return !ns ? '' : `-n ${ns}`
+}
+
 export function getContext(args: Arguments<KubeOptions>) {
   return args.parsedOptions.context
 }
