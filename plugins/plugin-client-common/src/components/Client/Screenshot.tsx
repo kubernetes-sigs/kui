@@ -17,7 +17,8 @@
 import * as React from 'react'
 import { Event, NativeImage } from 'electron'
 import { i18n, eventChannelUnsafe } from '@kui-shell/core'
-import { Button, ToastNotification } from 'carbon-components-react'
+import Alert from '../spi/Alert'
+import { Button } from 'carbon-components-react'
 
 import '../../../web/css/static/Screenshot.scss'
 
@@ -257,26 +258,33 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     )
   }
 
+  private closeNotification() {
+    this.setState({ isActive: false, captured: undefined })
+  }
+
   /** Render a ToastNotification to tell the user what we captured */
   private notification() {
     if (this.state && this.state.captured) {
       const timeout = 10 * 1000
+      const alert = {
+        type: 'success' as const,
+        title: strings('Screenshot'),
+        body: strings('Successfully captured a screenshot to the clipboard')
+      }
+
       return (
-        <ToastNotification
+        <Alert
           id="screenshot-captured"
           timeout={timeout}
-          kind="success"
-          title={strings('Screenshot')}
+          alert={alert}
           className="kui--inverted-color-context"
-          subtitle={strings('Successfully captured a screenshot to the clipboard')}
-          caption=""
-          onCloseButtonClick={() => this.setState({ isActive: false, captured: undefined })}
+          onCloseButtonClick={this.closeNotification.bind(this)}
         >
           <div className="flex-layout">
             <img src={this.state.captured.toDataURL()} className="screenshot-image" />
           </div>
           <div className="kui--screenshot-captured-bottom-message">{this.saveToDiskButton()}</div>
-        </ToastNotification>
+        </Alert>
       )
     }
   }
