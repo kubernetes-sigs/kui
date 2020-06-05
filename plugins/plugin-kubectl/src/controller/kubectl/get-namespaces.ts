@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
 import {
   Arguments,
   Registrar,
@@ -34,8 +33,6 @@ import commandPrefix from '../command-prefix'
 import { doGet, doGetAsMMR, getFlags as flags } from './get'
 import { isKubeResource } from '../../lib/model/resource'
 import { KubeOptions, isTableRequest, isWatchRequest } from './options'
-
-const debug = Debug('plugin-kubectl/controller/kubectl/get/namespace')
 
 /**
  * Summarize the resources in the namespace indicated by the last
@@ -87,33 +84,6 @@ function doSummarizeNamespace(args: Arguments<KubeOptions>): Promise<Table> {
   // summarize this namespace
   const ns = args.argvNoOptions[args.argvNoOptions.length - 1]
   return doSummarizeNamedNamespace(args.tab, ns)
-}
-
-/**
- * Switch to the namespace indicated by the last positional argument,
- * then summarize the resources in that namespace in a table.
- *
- */
-async function doSwitchNamespace(args: Arguments<KubeOptions>): Promise<true | Table> {
-  // switch to this namespace
-  const ns = args.argvNoOptions[args.argvNoOptions.length - 1]
-
-  // this does the actual switch
-  await args.REPL.qexec(`kubectl config set-context --current --namespace=${ns}`)
-
-  let summarizeNamespaceOnSwitch = false
-  try {
-    summarizeNamespaceOnSwitch = require('@kui-shell/client/config.d/kubectl.json').summarizeNamespaceOnSwitch
-  } catch (err) {
-    debug('using default value for summarizeNamespaceOnSwitch', err)
-  }
-
-  if (!summarizeNamespaceOnSwitch) {
-    // client config told us not to summarize namespace on switch
-    return true
-  }
-
-  return doSummarizeNamespace(args)
 }
 
 /**
@@ -178,7 +148,7 @@ async function asRadioTable(args: Arguments<KubeOptions>, { header, body }: Tabl
       Object.assign(rtRow, {
         onSelect: () => {
           const ns = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
-          args.REPL.pexec(`namespace switch ns ${ns}`)
+          args.REPL.pexec(`kubectl config set-context --current --namespace=${ns}`)
         }
       })
     )
@@ -232,6 +202,4 @@ export default (commandTree: Registrar) => {
 
   commandTree.listen(`/${commandPrefix}/namespace/current`, doGetCurrentNamespace, flags)
   commandTree.listen(`/${commandPrefix}/namespace/summarize`, doSummarizeNamespace, flags)
-  commandTree.listen(`/${commandPrefix}/namespace/switch`, doSwitchNamespace, flags)
-  commandTree.listen(`/${commandPrefix}/ns/switch`, doSwitchNamespace, flags)
 }
