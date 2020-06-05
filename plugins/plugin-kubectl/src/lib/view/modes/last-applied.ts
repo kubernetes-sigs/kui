@@ -20,6 +20,9 @@ import { KubeResource } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
+/** Mode identifier. Not a UI string. Only for internal referencing. */
+export const mode = 'last applied'
+
 /**
  * @return The last-applied-configuration annotation, as a raw string
  *
@@ -33,7 +36,7 @@ function getLastAppliedRaw(resource: KubeResource): string {
  * @return whether the given resource has a last applied configuration annotation
  *
  */
-function hasLastApplied(resource: KubeResource): boolean {
+export function hasLastApplied(resource: KubeResource): boolean {
   return !resource.isSimulacrum && getLastAppliedRaw(resource) !== undefined
 }
 
@@ -60,7 +63,7 @@ const renderLastApplied = async (tab: Tab, resource: KubeResource) => {
 export default {
   when: hasLastApplied,
   mode: {
-    mode: 'last applied',
+    mode,
     label: strings('lastApplied'),
     content: renderLastApplied
   }
