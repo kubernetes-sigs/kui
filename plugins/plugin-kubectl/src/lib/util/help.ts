@@ -18,6 +18,7 @@ import Debug from 'debug'
 import {
   Arguments,
   NavResponse,
+  ExecType,
   Table,
   TableStyle,
   KResponse,
@@ -55,6 +56,27 @@ ${docs}
 `
 }
 
+function kuiCommand(kubeCommand: string, verb: string, subcommand: string) {
+  return `${kubeCommand}${verb ? ` ${verb}` : ''} ${subcommand} -h`
+}
+
+function subcommandsAsMarkdown(
+  title: string,
+  rows: { command: string; docs: string }[],
+  kubeCommand: string,
+  verb: string
+) {
+  const header = `### ${title.replace(/:$/, '')}`
+  return rows.reduce(
+    (M, row) =>
+      M +
+      `\n#### [${row.command}](#kuiexec?command=${encodeURIComponent(kuiCommand(kubeCommand, verb, row.command))})\n${
+        row.docs
+      }\n`,
+    header
+  )
+}
+
 const commandDocTable = (
   rows: { command: string; docs: string }[],
   kubeCommand: string,
@@ -71,7 +93,8 @@ const commandDocTable = (
   },
   body: rows.map(({ command, docs }) => ({
     name: command,
-    css: headerKey === 'COMMAND' ? 'clickable semi-bold map-key' : 'sub-text',
+    outerCSS: 'option-width',
+    css: headerKey === 'COMMAND' ? 'clickable sub-text' : 'sub-text',
     onclick: headerKey === 'COMMAND' ? `${kubeCommand}${verb ? ` ${verb}` : ''} ${command} -h` : undefined,
     attributes: [{ key: 'DOCS', value: docs, css: 'map-value' }]
   }))
@@ -96,8 +119,9 @@ function breadcrumb(label: string, hasCommand = true, ...commandContext: string[
  * @param entityType e.g. pod versus deployment
  *
  */
-const renderHelpUnsafe = (
+const renderHelpUnsafe = <O extends KubeOptions>(
   out: string,
+  args: Arguments<O>,
   command: string,
   verb: string,
   entityType?: string
@@ -134,8 +158,10 @@ const renderHelpUnsafe = (
       .split(/[\n\r]/)
       .filter(x => x)
       .map(line => {
-        const [_, thisCommand, docs] = line.match(/\s*(\S+)\s+(.*)/) // eslint-disable-line @typescript-eslint/no-unused-vars
-        if (thisCommand) {
+        const match = line.match(/\s*((.+:)|\S+)\s+(.*)/) // eslint-disable-line @typescript-eslint/no-unused-vars
+        if (match && match.length === 4) {
+          const thisCommand = match[1]
+          const docs = match[3]
           return {
             command: thisCommand.replace(/^\s*-\s+/, '').replace(/:\s*$/, ''),
             docs: docs && docs.replace(/^\s*:\s*/, ''),
@@ -151,7 +177,11 @@ const renderHelpUnsafe = (
   if (verb === 'options') {
     const optionDocs = header.split('\n\n')
     const sections = processSections({ title: optionDocs[0], content: optionDocs[1].replace(/^\n/, '') })
-    return commandDocTable(sections.rows, command, verb, 'OPTIONS', TableStyle.Medium)
+    if (args.execOptions.type === ExecType.TopLevel) {
+      return commandDocTable(sections.rows, command, verb, 'OPTIONS', TableStyle.Medium)
+    } else {
+      return subcommandsAsMarkdown(sections.title, sections.rows, command, verb)
+    }
   }
 
   // for the remaining sections, form a [{ title, content }] model
@@ -285,6 +315,7 @@ ${usageSection[0].content
       return [
         {
           mode: strings('Options'),
+          contentType: 'text/markdown',
           contentFrom: 'kubectl options'
         }
       ]
@@ -294,7 +325,8 @@ ${usageSection[0].content
         .map(section => {
           return {
             mode: section.title.replace(':', ''),
-            content: commandDocTable(section.rows, command, verb, 'OPTIONS', TableStyle.Medium)
+            content: subcommandsAsMarkdown(section.title, section.rows, command, verb),
+            contentType: 'text/markdown'
           }
         })
     } else {
@@ -318,7 +350,8 @@ ${usageSection[0].content
           .map(section => {
             return {
               mode: section.title.replace(/Command(s)/, '').replace(/:$/, '') || strings('Basic'),
-              content: commandDocTable(section.rows, command, verb, 'COMMAND')
+              content: subcommandsAsMarkdown(section.title, section.rows, command, verb),
+              contentType: 'text/markdown'
             }
           })
       }
@@ -334,7 +367,8 @@ ${usageSection[0].content
         label: strings('Miscellaneous'),
         items: randomSections.map(section => ({
           mode: section.title.replace(/:$/, ''),
-          content: commandDocTable(section.rows, command, verb, 'COMMAND')
+          content: subcommandsAsMarkdown(section.title, section.rows, command, verb),
+          contentType: 'text/markdown'
         }))
       }
     }
@@ -397,14 +431,15 @@ ${usageSection[0].content
   }
 }
 
-export const renderHelp = (
+export const renderHelp = <O extends KubeOptions>(
   out: string,
+  args: Arguments<O>,
   command: string,
   verb: string,
   entityType?: string
 ): string | NavResponse | Table => {
   try {
-    return renderHelpUnsafe(out, command, verb, entityType)
+    return renderHelpUnsafe(out, args, command, verb, entityType)
   } catch (err) {
     console.error('Internal Error parsing help output', err)
     return out
@@ -438,5 +473,5 @@ export async function doHelp<O extends KubeOptions>(
   const verb = isXHelpOnSomething ? _entityType : _verb
   const entityType = isXHelp ? undefined : _entityType // k help -h or k help create, in either case, no entityType
 
-  return renderHelp(response.content.stdout || response.content.stderr, command, verb, entityType)
+  return renderHelp(response.content.stdout || response.content.stderr, args, command, verb, entityType)
 }

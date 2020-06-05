@@ -102,12 +102,16 @@ export default class Markdown extends React.PureComponent<Props> {
               props.children && props.children.length === 1
                 ? props.children[0]
                 : props.children.find(_ => _.props.value)
-            const anchor = !valueChild
-              ? undefined
-              : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
+            const anchor =
+              !valueChild || !valueChild.props || !valueChild.props.value
+                ? undefined
+                : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
             return React.createElement(
               `h${props.level}`,
-              Object.assign({}, props, { 'data-markdown-anchor': anchor }),
+              Object.assign({}, props, {
+                'data-markdown-anchor': anchor,
+                'data-is-href': valueChild && valueChild.props && valueChild.props.href
+              }),
               props.children
             )
           },

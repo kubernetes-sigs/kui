@@ -449,6 +449,10 @@ pre.monospace {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.option-width {
+  /* e.g. cells in tables that are presenting --options */
+  width: 10em;
+}
 .pretty-narrow {
   /* please note: used in tandem with not-too-wide */
   width: 7em;
@@ -781,8 +785,10 @@ body.oops-total-catastrophe #restart-needed-warning {
   opacity: 0.875;
   word-break: break-all;
 }
+$kui--page-content-h4-padding: 0.5em;
+$kui--page-content-paragraph-padding: 0.375em;
 .page-content p {
-  padding: 0.375em 0;
+  padding: $kui--page-content-paragraph-padding 0;
 }
 .page-content h1 {
   margin-bottom: 1rem;
@@ -828,9 +834,13 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content h4 {
   color: var(--color-brand-01);
   letter-spacing: 0.32px;
-  padding-bottom: 0.5em;
+  padding-top: $kui--page-content-h4-padding;
   font-size: unset;
   line-height: unset;
+
+  &:not([data-is-href]) + p {
+    padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
+  }
 }
 .page-content h5 {
   font-size: 1.125em;
