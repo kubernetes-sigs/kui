@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from 'react'
 import { ToolbarAlert } from '@kui-shell/core'
 
 interface Props {
   alert: ToolbarAlert
+  id?: string
+  timeout?: number
+  children?: React.ReactNode
+  className?: string
+  onCloseButtonClick?: () => void
 }
 
 export default Props

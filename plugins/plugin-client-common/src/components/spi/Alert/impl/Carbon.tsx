@@ -25,18 +25,21 @@ export default class Alert extends React.PureComponent<Props> {
   public render() {
     return (
       <ToastNotification
-        className="kui--toolbar-alert"
+        id={this.props.id || ''}
+        className={this.props.className || 'kui--toolbar-alert'}
         data-type={this.props.alert.type}
         caption=""
         hideCloseButton={false}
         iconDescription={strings('closeAlert')}
         kind={this.props.alert.type}
-        role="alert"
         statusIconDescription={strings(`${this.props.alert.type} alert`)}
         subtitle={this.props.alert.body || ''}
-        timeout={0}
+        timeout={this.props.timeout}
         title={this.props.alert.title}
-      />
+        onCloseButtonClick={this.props.onCloseButtonClick}
+      >
+        {this.props.children}
+      </ToastNotification>
     )
   }
 }
