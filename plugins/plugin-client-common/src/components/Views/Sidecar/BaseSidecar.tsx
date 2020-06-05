@@ -52,6 +52,7 @@ export interface SidecarOptions {
 export type Props = SidecarOptions & {
   uuid?: string
   tab?: KuiTab
+  active?: boolean
 }
 
 export interface SidecarHistoryEntry extends BaseHistoryEntry {
@@ -88,13 +89,11 @@ export abstract class BaseSidecar<
     super(props)
 
     // Interpret Escape key as a toggle of the view's width
-    if (!this.isFixedWidth()) {
-      const onEscape = this.onEscape.bind(this)
-      document.addEventListener('keydown', onEscape)
-      this.cleaners.push(() => document.removeEventListener('keydown', onEscape))
-      // ^^^ Note! keydown versus keyup is important (for now at
-      // least; @starpit 20200408); see https://github.com/IBM/kui/issues/4215
-    }
+    const onEscape = this.onEscape.bind(this)
+    document.addEventListener('keydown', onEscape)
+    this.cleaners.push(() => document.removeEventListener('keydown', onEscape))
+    // ^^^ Note! keydown versus keyup is important (for now at
+    // least; @starpit 20200408); see https://github.com/IBM/kui/issues/4215
   }
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -189,7 +188,13 @@ export abstract class BaseSidecar<
 
   /** Escape key toggles sidecar visibility */
   private onEscape(evt: KeyboardEvent) {
-    if (evt.key === 'Escape' && !document.getElementById('confirm-dialog') && !isPopup() && this.current) {
+    if (
+      evt.key === 'Escape' &&
+      this.props.active &&
+      !document.getElementById('confirm-dialog') &&
+      !isPopup() &&
+      this.current
+    ) {
       if (this.props.willChangeSize) {
         this.props.willChangeSize(this.props.width === Width.Closed ? this.defaultWidth() : Width.Closed)
       }
