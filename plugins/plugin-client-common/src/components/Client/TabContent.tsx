@@ -341,6 +341,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       return React.cloneElement(node, {
         key,
         uuid: this.props.uuid,
+        active: this.props.active,
         width: this.state.sidecarWidth,
         willChangeSize: this.onWillChangeSize.bind(this),
         willLoseFocus: this.onWillLoseFocus.bind(this)
