@@ -19,7 +19,6 @@ import Debug from 'debug'
 import { basename, dirname, join, resolve } from 'path'
 
 import expandHomeDir from '../util/home'
-import { inBrowser } from './capabilities'
 const debug = Debug('core/find-file')
 debug('loading')
 
@@ -124,31 +123,5 @@ export const viewer = (prefix: string): string | never => {
     throw new Error('bad special prefix')
   } else {
     return special.command || undefined
-  }
-}
-
-/**
- * Augment the module load path
- *
- * @param filepath e.g. /path/to/special
- * @param prefix e.g. @demos/tekton which is a valid extension of `filepath`
- * @param command a command prefix that is used to view files in this special directory
- */
-export const addPath = (filepath: string, { prefix = basename(filepath), command = '' } = {}): void => {
-  if (!inBrowser()) {
-    debug('addPath', filepath)
-    try {
-      // use app-module-path to augment the node module require path
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const appModulePath = require('app-module-path')
-      appModulePath.addPath(resolve(filepath))
-    } catch (err) {
-      console.error('error in addPath', err)
-    }
-  }
-
-  // remember this for self.findFile
-  if (prefix.charAt(0) === '@') {
-    specialPaths.push({ prefix, filepath: dirname(filepath), command })
   }
 }
