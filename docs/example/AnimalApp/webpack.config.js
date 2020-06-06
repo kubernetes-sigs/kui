@@ -36,6 +36,18 @@ module.exports = {
         test: /\.scss$/i,
         use: sassLoaderChain
       },
+      {
+        test: /\.(eot)$/i,
+        use: 'ignore-loader'
+      },
+      { test: /\.ico$/, use: 'file-loader' },
+      { test: /\.jpg$/, use: 'file-loader' },
+      { test: /\.png$/, use: 'file-loader' },
+      { test: /\.svg$/, use: 'svg-inline-loader' },
+      {
+        test: /\.(ttf)$/i,
+        use: 'file-loader'
+      },
       { test: /\.css$/i, exclude: thisPath('web/css/static'), use: ['style-loader', 'css-loader'] }
     ]
   },
