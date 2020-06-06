@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.3](https://github.com/IBM/kui/compare/v8.8.2...v8.8.3) (2020-06-06)
+
+### Bug Fixes
+
+- kubectl edit apply twice does not work ([5fecdf0](https://github.com/IBM/kui/commit/5fecdf0)), closes [#4797](https://github.com/IBM/kui/issues/4797)
+- sidecar toolbar can't due justice to longer error messages ([52c976e](https://github.com/IBM/kui/commit/52c976e)), closes [#4789](https://github.com/IBM/kui/issues/4789)
+
 ## [8.8.2](https://github.com/IBM/kui/compare/v8.8.1...v8.8.2) (2020-06-01)
 
 ### Bug Fixes

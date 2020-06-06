@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.3](https://github.com/IBM/kui/compare/v8.8.2...v8.8.3) (2020-06-06)
+
+### Bug Fixes
+
+- **packages/core:** add missing readline dependence ([6440f0e](https://github.com/IBM/kui/commit/6440f0e)), closes [#4836](https://github.com/IBM/kui/issues/4836)
+- kubectl edit apply twice does not work ([5fecdf0](https://github.com/IBM/kui/commit/5fecdf0)), closes [#4797](https://github.com/IBM/kui/issues/4797)
+- sidecar toolbar can't due justice to longer error messages ([52c976e](https://github.com/IBM/kui/commit/52c976e)), closes [#4789](https://github.com/IBM/kui/issues/4789)
+- summary tab is not read-only for kubectl edit command ([4fb9ccb](https://github.com/IBM/kui/commit/4fb9ccb)), closes [#4809](https://github.com/IBM/kui/issues/4809)
+
+### Features
+
+- kubectl apply view-last-applied ([47a800e](https://github.com/IBM/kui/commit/47a800e)), closes [#4822](https://github.com/IBM/kui/issues/4822)
+
 ## [8.8.2](https://github.com/IBM/kui/compare/v8.8.1...v8.8.2) (2020-06-01)
 
 **Note:** Version bump only for package @kui-shell/core

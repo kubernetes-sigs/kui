@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.3](https://github.com/IBM/kui/compare/v8.8.2...v8.8.3) (2020-06-06)
+
+### Bug Fixes
+
+- **packages/core:** add missing readline dependence ([6440f0e](https://github.com/IBM/kui/commit/6440f0e)), closes [#4836](https://github.com/IBM/kui/issues/4836)
+- **plugins/plugin-client-common:** LeftNavSidecar content section can take over full width ([a27b7ac](https://github.com/IBM/kui/commit/a27b7ac)), closes [#4831](https://github.com/IBM/kui/issues/4831)
+- **plugins/plugin-client-common:** long RadioTables should offer indication as to selectability of rows ([0b5f514](https://github.com/IBM/kui/commit/0b5f514)), closes [#4793](https://github.com/IBM/kui/issues/4793)
+- **plugins/plugin-client-common:** reduce verbosity of logging in Eval.tsx ([8922546](https://github.com/IBM/kui/commit/8922546)), closes [#4829](https://github.com/IBM/kui/issues/4829)
+- **plugins/plugin-client-common:** Screenshot results in a react console error ([b8688fa](https://github.com/IBM/kui/commit/b8688fa)), closes [#4826](https://github.com/IBM/kui/issues/4826)
+- summary tab is not read-only for kubectl edit command ([4fb9ccb](https://github.com/IBM/kui/commit/4fb9ccb)), closes [#4809](https://github.com/IBM/kui/issues/4809)
+- **plugins/plugin-client-common:** sidecar does not resopnd to Escape reliably ([04a041d](https://github.com/IBM/kui/commit/04a041d)), closes [#4774](https://github.com/IBM/kui/issues/4774) [#4804](https://github.com/IBM/kui/issues/4804)
+- avoid using kui-custom command for switching kubectl namespace ([f0ed9b9](https://github.com/IBM/kui/commit/f0ed9b9)), closes [#4806](https://github.com/IBM/kui/issues/4806)
+- **plugins/plugin-kubectl:** get-namespace table sometimes doens't show the correct selected namespace ([644c426](https://github.com/IBM/kui/commit/644c426)), closes [#4812](https://github.com/IBM/kui/issues/4812)
+- **plugins/plugin-kubectl:** kubectl logs -l with no matches yields internal error ([6f49b0b](https://github.com/IBM/kui/commit/6f49b0b)), closes [#4811](https://github.com/IBM/kui/issues/4811)
+- **plugins/plugin-kubectl:** Logs tab should have a default tail limit ([6fc2bb0](https://github.com/IBM/kui/commit/6fc2bb0)), closes [#4810](https://github.com/IBM/kui/issues/4810) [#4818](https://github.com/IBM/kui/issues/4818)
+- kubectl edit apply twice does not work ([5fecdf0](https://github.com/IBM/kui/commit/5fecdf0)), closes [#4797](https://github.com/IBM/kui/issues/4797)
+- **plugins/plugin-kubectl:** status shows as Containercreating when it should be ContainerCreating ([e88f640](https://github.com/IBM/kui/commit/e88f640)), closes [#4798](https://github.com/IBM/kui/issues/4798)
+- **plugins/plugin-kubectl:** Terminal tab test incorrectly verifies k exec output ([13ef49b](https://github.com/IBM/kui/commit/13ef49b)), closes [#4802](https://github.com/IBM/kui/issues/4802)
+- sidecar toolbar can't due justice to longer error messages ([52c976e](https://github.com/IBM/kui/commit/52c976e)), closes [#4789](https://github.com/IBM/kui/issues/4789)
+
+### Features
+
+- **plugins/plugin-kubectl:** optimizing Node summary impl ([948d12c](https://github.com/IBM/kui/commit/948d12c)), closes [#4833](https://github.com/IBM/kui/issues/4833)
+- improve rendering of kubectl subcommand help ([64dd162](https://github.com/IBM/kui/commit/64dd162)), closes [#4824](https://github.com/IBM/kui/issues/4824)
+- kubectl apply view-last-applied ([47a800e](https://github.com/IBM/kui/commit/47a800e)), closes [#4822](https://github.com/IBM/kui/issues/4822)
+- show resource version in toolbar text ([d972f79](https://github.com/IBM/kui/commit/d972f79)), closes [#4790](https://github.com/IBM/kui/issues/4790)
+
 ## [8.8.2](https://github.com/IBM/kui/compare/v8.8.1...v8.8.2) (2020-06-01)
 
 ### Bug Fixes
