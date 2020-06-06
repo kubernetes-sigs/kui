@@ -65,7 +65,9 @@ export default class Markdown extends React.PureComponent<Props> {
     return (
       <ReactMarkdown
         source={this.props.source}
-        className={this.props.className || 'padding-content scrollable scrollable-auto marked-content page-content'}
+        className={
+          this.props.className || 'padding-content scrollable scrollable-x scrollable-auto marked-content page-content'
+        }
         renderers={{
           link: props => {
             const isLocal = !/^http/i.test(props.href)
