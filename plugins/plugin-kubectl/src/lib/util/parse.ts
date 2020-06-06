@@ -55,6 +55,8 @@ export function memShare(str: string): number {
     unit = megabytes
   } else if (/Ki$/.test(str)) {
     unit = kilobytes
+  } else if (/\d+/.test(str)) {
+    return parseInt(str)
   } else {
     end = 1
   }
@@ -76,6 +78,16 @@ export function formatAsBytes(mem: number): string {
   } /* if (mem < 10 * petabytes) */ else {
     return (mem / petabytes).toFixed(0) + 'Pi'
   }
+}
+
+/** Turn e.g. 4041544Ki into 3947Mi */
+export function reformatAsBytes(mem: string): string {
+  return formatAsBytes(memShare(mem))
+}
+
+/** Fraction of two string-form memory figures */
+export function fractionOfMemory(num: string, denom: string): string {
+  return ((memShare(num) / memShare(denom)) * 100).toFixed(1) + '%'
 }
 
 export function formatAsCpu(cpu: number): string {
@@ -128,4 +140,15 @@ export function parseAsSize(str: string): string {
   return bytes(fromSize(str), {})
 }
 
-export default parseAsSize
+/** Rollup export */
+const Parser = {
+  fractionOfMemory,
+  reformatAsBytes,
+  formatAsBytes,
+  formatAsCpu,
+  cpuShare,
+  memShare,
+  cpuFraction
+}
+
+export default Parser
