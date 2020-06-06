@@ -18,7 +18,6 @@ import Debug from 'debug'
 const debug = Debug('core/main/headless-support')
 debug('loading')
 
-import { clearLine, cursorTo } from 'readline'
 import { Streamable } from '../models/streamable'
 
 /**
@@ -29,7 +28,10 @@ import { Streamable } from '../models/streamable'
  *
  */
 export const streamTo = async () => {
-  const { print } = await import('./headless-pretty-print')
+  const [{ clearLine, cursorTo }, { print }] = await Promise.all([
+    import('readline'),
+    import('./headless-pretty-print')
+  ])
 
   return (response: Streamable, killLine?: boolean) => {
     debug('streaming response', killLine)
