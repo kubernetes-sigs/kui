@@ -18,6 +18,10 @@
 @import "../../scss/components/Navigation/common";
 
 .kui--sidecar.visible.kui--nav-view {
+  .kui--sidecar-content {
+    width: 70%;
+  }
+
   .sidecar-bottom-stripe-left-bits {
     display: none;
   }
