@@ -18,16 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/tekton/preload')
 debug('loading')
 
-import { dirname, join } from 'path'
-
-import {
-  isHeadless,
-  inBrowser,
-  ModeFilter,
-  ModeRegistration,
-  PreloadRegistrar,
-  augmentModuleLoadPath
-} from '@kui-shell/core'
+import { isHeadless, ModeFilter, ModeRegistration, PreloadRegistrar } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
 
 import { isPipeline, isPipelineRun, isTask } from './model/resource'
@@ -82,17 +73,6 @@ async function registerModes(registrar: PreloadRegistrar) {
 
 /** on preload, register our sidecar modes */
 export default (registrar: PreloadRegistrar) => {
-  if (!inBrowser()) {
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
-    // register a "special path" that resolves
-    const specialPath = join(
-      dirname(requireFunc.resolve('@kui-shell/plugin-kubectl/tekton/package.json')),
-      'samples/@demos'
-    )
-    augmentModuleLoadPath(specialPath, { prefix: '@demos/tekton', command: 'tekton flow' })
-  }
-
   if (!isHeadless()) {
     return registerModes(registrar)
   }

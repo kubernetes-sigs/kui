@@ -209,7 +209,7 @@ export {
 } from './models/RadioTable'
 
 // Util
-export { findFileWithViewer, findFile, isSpecialDirectory, addPath as augmentModuleLoadPath } from './core/find-file'
+export { findFileWithViewer, findFile, isSpecialDirectory } from './core/find-file'
 export { expandHomeDir } from './util/home'
 export { flatten } from './core/utility'
 export { promiseEach } from './util/async'
