@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react'
-import * as Debug from 'debug'
 
 import {
   ScalarResource,
@@ -32,8 +31,6 @@ import {
 
 import { Loading } from '../../'
 import KuiMMRContent, { KuiMMRProps } from './KuiContent'
-
-const debug = Debug('plugins/sidecar/Eval')
 
 interface EvalProps extends Omit<KuiMMRProps, 'mode'> {
   command: string | FunctionThatProducesContent
@@ -81,7 +78,6 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
 
   private startLoading() {
     const done = (content: ScalarResource) => {
-      debug('eval done', content)
       this.setState({ isLoading: false, content })
     }
 
