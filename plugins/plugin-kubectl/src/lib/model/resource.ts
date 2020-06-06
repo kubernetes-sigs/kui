@@ -534,4 +534,43 @@ export function isClusterScoped(kind: string) {
   return kind === 'CustomResourceDefinition' || kind === 'Namespace' || kind === 'Node'
 }
 
+interface NodeCapacity {
+  cpu: string
+  'ephemeral-storage': string
+  'hugepages-1Gi': string
+  'hugepages-2Mi': string
+  memory: string
+  pods: string
+}
+
+export type AddressType = 'InternalIP' | 'ExternalIP' | 'Hostname'
+interface NodeStatus {
+  addresses: { address: string; type: AddressType }[]
+  allocatable: NodeCapacity
+  capacity: NodeCapacity
+  conditions: KubeStatusCondition[]
+  images: { names: string[]; sizeBytes: number }[]
+  nodeInfo: {
+    architecture: string
+    bootId: string
+    containerRuntimeVersion: string
+    kernelVersion: string
+    kubeProxyVersion: string
+    kubeletVersion: string
+    machineID: string
+    operatingSystem: string
+    osImage: string
+    systemUUID: string
+  }
+}
+
+export interface Node extends KubeResource<NodeStatus> {
+  apiVersion: 'v1'
+  kind: 'Node'
+}
+
+export function isNode(resource: KubeResource): resource is Node {
+  return resource.apiVersion === 'v1' && resource.kind === 'Node'
+}
+
 export default KubeResource

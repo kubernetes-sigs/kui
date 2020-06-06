@@ -16,6 +16,7 @@
 
 import { Arguments, Table, i18n, isTable } from '@kui-shell/core'
 import {
+  Parser,
   KubeItems,
   KubeOptions,
   Pod,
@@ -25,7 +26,6 @@ import {
 } from '@kui-shell/plugin-kubectl'
 
 import { strip, getSystemOverhead } from './get-node-data'
-import { formatAsBytes, formatAsCpu, cpuShare, memShare } from '../lib/parse'
 // import { parseAsTime, parseAsSize } from '../lib/parse'
 
 const strings = i18n('plugin-kubectl', 'view-utilization-table')
@@ -162,8 +162,8 @@ function addRow(
   row.onclick = false
   row.rowKey = key
   row.name = strings(key)
-  row.attributes[0].value = formatAs === 'share' ? formatAsCpu(cpu) : (100 * cpu).toFixed(0) + '%'
-  row.attributes[1].value = formatAs === 'share' ? formatAsBytes(mem) : (100 * mem).toFixed(0) + '%'
+  row.attributes[0].value = formatAs === 'share' ? Parser.formatAsCpu(cpu) : (100 * cpu).toFixed(0) + '%'
+  row.attributes[1].value = formatAs === 'share' ? Parser.formatAsBytes(mem) : (100 * mem).toFixed(0) + '%'
 
   if (css) {
     row.css = css
@@ -176,16 +176,16 @@ function addRow(
 
 async function addAllNSRow(args: Arguments<KubeOptions>, forThisNS: Table, forAllNS: Table) {
   if (forThisNS.body && forThisNS.body.length > 0) {
-    const cpuTotal = forThisNS.body.reduce((total, row) => total + cpuShare(row.attributes[0].value), 0)
-    const memTotal = forThisNS.body.reduce((total, row) => total + memShare(row.attributes[1].value), 0)
+    const cpuTotal = forThisNS.body.reduce((total, row) => total + Parser.cpuShare(row.attributes[0].value), 0)
+    const memTotal = forThisNS.body.reduce((total, row) => total + Parser.memShare(row.attributes[1].value), 0)
     addRow(forThisNS, 'Total', cpuTotal, memTotal)
 
     if (forAllNS.body && forAllNS.body.length > 0) {
       const thisNS = await getNamespace(args)
       const otherNS = forAllNS.body.filter(_ => _.name !== thisNS)
 
-      const cpuTotal = otherNS.reduce((total, row) => total + cpuShare(row.attributes[1].value), 0)
-      const memTotal = otherNS.reduce((total, row) => total + memShare(row.attributes[2].value), 0)
+      const cpuTotal = otherNS.reduce((total, row) => total + Parser.cpuShare(row.attributes[1].value), 0)
+      const memTotal = otherNS.reduce((total, row) => total + Parser.memShare(row.attributes[2].value), 0)
       addRow(forThisNS, 'Other Namespaces', cpuTotal, memTotal, lighterText)
     }
   }
@@ -285,9 +285,9 @@ export async function topPod(
   const otherNSRow = table.body.find(_ => _.rowKey === 'Other Namespaces')
   if (totalRow && otherNSRow) {
     const totalCPU: number =
-      cpuShare(totalRow.attributes[0].value) + cpuShare(otherNSRow.attributes[0].value) + cpuOverhead
+      Parser.cpuShare(totalRow.attributes[0].value) + Parser.cpuShare(otherNSRow.attributes[0].value) + cpuOverhead
     const totalMem: number =
-      memShare(totalRow.attributes[1].value) + memShare(otherNSRow.attributes[1].value) + memOverhead
+      Parser.memShare(totalRow.attributes[1].value) + Parser.memShare(otherNSRow.attributes[1].value) + memOverhead
     // addRow(table, strings('Free Capacity'), 1 - totalCPU / cpuCapacity, 1 - totalMem / memCapacity, lighterText, 'percent')
     addRow(table, strings('Overall Total'), totalCPU, totalMem, lighterText)
   }
