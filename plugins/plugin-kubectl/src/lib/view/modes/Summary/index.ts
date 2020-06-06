@@ -21,13 +21,15 @@ import {
   isSummarizableKubeResource,
   isKubeResourceWithItsOwnSummary,
   isDeployment,
+  isNode,
   isPod,
   isReplicaSet
 } from '../../../model/resource'
 
-import PodSummary from './impl/Pod'
-import GenericSummary from './impl/Generic'
 import DeploymentSummary from './impl/Deployment'
+import GenericSummary from './impl/Generic'
+import NodeSummary from './impl/Node'
+import PodSummary from './impl/Pod'
 import ReplicaSetSummary from './impl/ReplicaSet'
 
 const strings = i18n('plugin-kubectl')
@@ -49,6 +51,8 @@ async function renderSummary({ REPL }: Tab, resource: KubeResource) {
       ? DeploymentSummary(resource)
       : isReplicaSet(resource)
       ? ReplicaSetSummary(resource)
+      : isNode(resource)
+      ? NodeSummary(resource)
       : GenericSummary(resource, REPL)
 
     // our content is that map, rendered as yaml

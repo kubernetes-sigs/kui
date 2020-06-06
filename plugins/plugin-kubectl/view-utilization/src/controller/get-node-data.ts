@@ -15,11 +15,10 @@
  */
 
 import { Arguments, Table, Row, RawResponse, i18n } from '@kui-shell/core'
-import { KubeOptions } from '@kui-shell/plugin-kubectl'
+import { KubeOptions, Parser } from '@kui-shell/plugin-kubectl'
 
 import slash from '../view/slash'
 import { BarColor, singletonBar as bar } from '../view/bar'
-import { formatAsBytes, cpuFraction, cpuShare, memShare } from '../lib/parse'
 
 const strings = i18n('plugin-kubectl', 'view-utilization-table')
 
@@ -106,17 +105,17 @@ export async function getSystemOverhead(
   const detail = await getNodeData(args, onlySchedulable, forNode)
 
   const cpuOverhead = detail.body.reduce((total, row) => {
-    return total + cpuShare(row.attributes[2].value) - cpuShare(row.attributes[0].value)
+    return total + Parser.cpuShare(row.attributes[2].value) - Parser.cpuShare(row.attributes[0].value)
   }, 0)
   const cpuCapacity = detail.body.reduce((total, row) => {
-    return total + cpuShare(row.attributes[2].value)
+    return total + Parser.cpuShare(row.attributes[2].value)
   }, 0)
 
   const memOverhead = detail.body.reduce((total, row) => {
-    return total + memShare(row.attributes[3].value) - memShare(row.attributes[1].value)
+    return total + Parser.memShare(row.attributes[3].value) - Parser.memShare(row.attributes[1].value)
   }, 0)
   const memCapacity = detail.body.reduce((total, row) => {
-    return total + memShare(row.attributes[3].value)
+    return total + Parser.memShare(row.attributes[3].value)
   }, 0)
 
   return { cpuOverhead, memOverhead, cpuCapacity, memCapacity }
@@ -167,9 +166,13 @@ async function summary(
 
   // extract the summary statistics
   const cpuFrac =
-    nodeTable.body.reduce((total, row) => total + cpuFraction(row.attributes[1].value), 0) / nodeTable.body.length / 100
+    nodeTable.body.reduce((total, row) => total + Parser.cpuFraction(row.attributes[1].value), 0) /
+    nodeTable.body.length /
+    100
   const memFrac =
-    nodeTable.body.reduce((total, row) => total + cpuFraction(row.attributes[3].value), 0) / nodeTable.body.length / 100
+    nodeTable.body.reduce((total, row) => total + Parser.cpuFraction(row.attributes[3].value), 0) /
+    nodeTable.body.length /
+    100
 
   // return as a RawResponse
   return { mode: 'raw', content: { cpuFrac, memFrac } }
@@ -245,7 +248,7 @@ export async function topNode(
       row.attributes[0].valueDom = slash(row.attributes[0].value, allocatableInfo.attributes[2].value)
       row.attributes[2].valueDom = slash(
         row.attributes[2].value,
-        formatAsBytes(memShare(allocatableInfo.attributes[3].value))
+        Parser.formatAsBytes(Parser.memShare(allocatableInfo.attributes[3].value))
       )
 
       // don't hide-with-sidecar the mem% column
@@ -259,7 +262,10 @@ export async function topNode(
       row.attributes.push({
         outerCSS: 'not-displayed',
         key: 'Allocatable Memory',
-        value: allocatableInfo === undefined ? '&emdash;' : formatAsBytes(memShare(allocatableInfo.attributes[3].value))
+        value:
+          allocatableInfo === undefined
+            ? '&emdash;'
+            : Parser.formatAsBytes(Parser.memShare(allocatableInfo.attributes[3].value))
       })
     }
   })
@@ -269,12 +275,12 @@ export async function topNode(
     const totalRow = JSON.parse(JSON.stringify(nodeTable.body[0]))
     totalRow.name = strings('Total')
 
-    const cpuTotal = nodeTable.body.reduce((total, row) => total + cpuShare(row.attributes[0].value), 0)
-    const cpuFrac = nodeTable.body.reduce((total, row) => total + cpuFraction(row.attributes[1].value), 0)
-    const memTotal = nodeTable.body.reduce((total, row) => total + memShare(row.attributes[2].value), 0)
-    const memFrac = nodeTable.body.reduce((total, row) => total + cpuFraction(row.attributes[3].value), 0)
-    const cpuAllocTotal = nodeTable.body.reduce((total, row) => total + cpuShare(row.attributes[4].value), 0)
-    const memAllocTotal = nodeTable.body.reduce((total, row) => total + memShare(row.attributes[5].value), 0)
+    const cpuTotal = nodeTable.body.reduce((total, row) => total + Parser.cpuShare(row.attributes[0].value), 0)
+    const cpuFrac = nodeTable.body.reduce((total, row) => total + Parser.cpuFraction(row.attributes[1].value), 0)
+    const memTotal = nodeTable.body.reduce((total, row) => total + Parser.memShare(row.attributes[2].value), 0)
+    const memFrac = nodeTable.body.reduce((total, row) => total + Parser.cpuFraction(row.attributes[3].value), 0)
+    const cpuAllocTotal = nodeTable.body.reduce((total, row) => total + Parser.cpuShare(row.attributes[4].value), 0)
+    const memAllocTotal = nodeTable.body.reduce((total, row) => total + Parser.memShare(row.attributes[5].value), 0)
 
     totalRow.onclick = false
     totalRow.attributes[0].value = formatAsCpu(cpuTotal)
