@@ -139,3 +139,13 @@ body[kui-theme-style] .monaco-editor .selected-text {
   background: var(--color-sidecar-toolbar-background);
   color: var(--color-sidecar-toolbar-foreground);
 }
+
+/** Error desiginations */
+.kui--editor-line-glyph {
+  background-color: var(--color-error);
+}
+
+/** Highlight designations */
+.kui--editor-line-highlight {
+  background-color: var(--color-base03);
+}

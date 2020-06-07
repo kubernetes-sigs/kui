@@ -93,15 +93,15 @@ commands.forEach(command => {
           // an error state and the garbage text had better appear in the toolbar text
           await SidecarExpect.toolbarAlert({ type: 'error', text: expectedError || garbage, exact: false })(this.app)
 
+          // expect line number to be highlighted, and for that line to be visible
+          await this.app.client.waitForVisible(`${Selectors.SIDECAR_TAB_CONTENT} .kui--editor-line-highlight`)
+
           if (revert) {
-            await this.app.client.click(lineSelector)
-            await new Promise(resolve => setTimeout(resolve, 2000))
-            await this.app.client.keys(
-              where === Keys.Home
-                ? `${where}${Keys.DELETE.repeat(garbage.length)}`
-                : `${where}${Keys.BACKSPACE.repeat(garbage.length)}`
-            )
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('Revert'))
+            await this.app.client.waitUntil(async () => {
+              const revertedText = await Util.getValueFromMonaco(this.app)
+              return revertedText === actualText
+            }, CLI.waitTimeout)
           }
         } catch (err) {
           await Common.oops(this, true)(err)

@@ -22,6 +22,7 @@ import {
   ExecOptions,
   i18n,
   EditableSpec,
+  SaveError,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
 
@@ -52,6 +53,61 @@ export function isEditable(resource: KubeResource) {
   )
 }
 
+/**
+ * Reformat the apply error.
+ *
+ * @param tmp the temporary file we used to stage the apply -f ${tmp}
+ * @param data the raw data we attempted to apply
+ *
+ */
+function reportErrorToUser(tmp: string, data: string, err: Error) {
+  console.error('error in apply for edit', err)
+
+  // was this a validation error?
+  const msg = err.message.match(/ValidationError\(.*\): ([^]+) in/)
+  if (msg && msg.length === 2) {
+    const unknownField = err.message.match(/unknown field "(.*)"/)
+    const error: SaveError = new Error(msg[1])
+    if (unknownField) {
+      const regexp = new RegExp(`${unknownField[1]}:`)
+      const lineNumber = data.split(/\n/).findIndex(line => regexp.test(line))
+      if (lineNumber >= 0) {
+        // monaco indexes from 1
+        error.revealLine = lineNumber + 1
+      }
+    }
+    throw error
+  } else {
+    // maybe this was a syntax error?
+    const msg = err.message.match(/error parsing.*(line .*)/)
+    if (msg && msg.length === 2) {
+      const hasLineNumber = err.message.match(/line (\d+):/)
+      const error: SaveError = new Error(msg[1])
+      if (hasLineNumber) {
+        // not sure why, but this line number is off by + 1
+        error.revealLine = parseInt(hasLineNumber[1]) - 1
+      }
+      throw error
+    } else {
+      // maybe this was a conflict error
+      if (err.message.indexOf('Error from server (Conflict)') !== -1) {
+        const errorForFile = `for: "${tmp}":`
+        const forFile = err.message.indexOf(errorForFile)
+        const messageForFile = err.message.substring(forFile).replace(errorForFile, '')
+        throw new Error(messageForFile)
+      }
+      // hmm, some other random error
+      const msg = err.message.replace(tmp, '')
+      const newLines = msg.split('\n')
+      if (newLines[0].charAt(newLines[0].length - 2) === ':') {
+        throw new Error(newLines.slice(0, 2).join('\n'))
+      } else {
+        throw new Error(newLines[0])
+      }
+    }
+  }
+}
+
 export function editSpec(
   cmd: string,
   namespace: string,
@@ -75,44 +131,18 @@ export function editSpec(
           parsedOptions: { n: namespace, f: tmp }
         })
 
-        // execute the apply command, making sure to report any
-        // validation or parse errors to the user
-        await doExecWithStdout(applyArgs, undefined, cmd).catch(err => {
-          console.error('error in apply for edit', err)
+        try {
+          // execute the apply command, making sure to report any
+          // validation or parse errors to the user
+          await doExecWithStdout(applyArgs, undefined, cmd).catch(reportErrorToUser.bind(undefined, tmp, data))
 
-          // was this a validation error?
-          const msg = err.message.match(/ValidationError\(.*\): ([^]+) in/)
-          if (msg && msg.length === 2) {
-            throw new Error(msg[1])
-          } else {
-            // maybe this was a syntax error?
-            const msg = err.message.match(/error parsing.*(line .*)/)
-            if (msg && msg.length === 2) {
-              throw new Error(msg[1])
-            } else {
-              // maybe this was a conflict error
-              if (err.message.indexOf('Error from server (Conflict)') !== -1) {
-                const errorForFile = `for: "${tmp}":`
-                const forFile = err.message.indexOf(errorForFile)
-                const messageForFile = err.message.substring(forFile).replace(errorForFile, '')
-                throw new Error(messageForFile)
-              }
-              // hmm, some other random error
-              const msg = err.message.replace(tmp, '')
-              const newLines = msg.split('\n')
-              if (newLines[0].charAt(newLines[0].length - 2) === ':') {
-                throw new Error(newLines.slice(0, 2).join('\n'))
-              } else {
-                throw new Error(newLines[0])
-              }
-            }
-          }
-        })
-
-        // to show the updated resource after apply,
-        // we re-execute the original edit command after applying the changes.
-        // `partOfApply` here is used to signify this execution is part of a chain of controller
-        await args.REPL.pexec(args.command, { echo: false, data: { partOfApply: true } })
+          // to show the updated resource after apply,
+          // we re-execute the original edit command after applying the changes.
+          // `partOfApply` here is used to signify this execution is part of a chain of controller
+          await args.REPL.pexec(args.command, { echo: false, data: { partOfApply: true } })
+        } finally {
+          args.REPL.qexec(`rm -f ${tmp}`)
+        }
 
         return {
           // disable editor's auto toolbar update,
@@ -198,6 +228,11 @@ function isEditAfterApply(options: ExecOptions): options is EditAfterApply {
   return opts && opts.data && opts.data.partOfApply !== undefined
 }
 
+/**
+ * Variant of `resource` enhanced with an `Editable` impl that saves
+ * via kubectl apply.
+ *
+ */
 export async function editable(
   cmd: string,
   args: Arguments<KubeOptions>,
@@ -221,6 +256,7 @@ export async function editable(
   return view
 }
 
+/** Variant of `resource` that shows the given `defaultMode` upon open */
 function showingMode(defaultMode: string, resource: MultiModalResponse) {
   return Object.assign(resource, { defaultMode })
 }
@@ -239,7 +275,7 @@ export function register(registrar: Registrar, cmd: string) {
   registrar.listen(`/${commandPrefix}/${cmd}/edit`, doEdit.bind(undefined, cmd), editFlags(cmd))
 }
 
-export default (registrar: Registrar) => {
+export default function registerForKubectl(registrar: Registrar) {
   register(registrar, 'kubectl')
   register(registrar, 'k')
 }
