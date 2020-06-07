@@ -146,7 +146,7 @@ export {
   Mode as MultiModalMode,
   MultiModalResponse
 } from './models/mmr/types'
-export { Editable, EditableSpec } from './models/editable'
+export { Editable, EditableSpec, SaveError } from './models/editable'
 export {
   Breadcrumb,
   NavResponse,
