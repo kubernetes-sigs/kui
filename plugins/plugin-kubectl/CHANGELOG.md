@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.4](https://github.com/IBM/kui/compare/v8.8.3...v8.8.4) (2020-06-07)
+
+### Bug Fixes
+
+- remove augmentModuleLoadPath API ([5578129](https://github.com/IBM/kui/commit/5578129)), closes [#4839](https://github.com/IBM/kui/issues/4839)
+
 ## [8.8.3](https://github.com/IBM/kui/compare/v8.8.2...v8.8.3) (2020-06-06)
 
 ### Bug Fixes
