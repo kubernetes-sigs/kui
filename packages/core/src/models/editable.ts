@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ToolbarText } from '../webapp/views/toolbar-text'
 
-export type Editable = { spec: EditableSpec }
+type Save = void | { noToolbarUpdate?: boolean; toolbarText?: ToolbarText }
+
+export interface SaveError extends Error {
+  revealLine?: number
+}
 
 export interface EditableSpec {
+  /** Should the editor be opened in read-only mode? Default: false */
   readOnly: boolean
+
+  /** Should we offer a Clear button? Default: false */
   clearable: boolean
+
+  /** Button and Controller to handle saves */
   save: {
     label: string
     onSave(data: string): Save | Promise<Save>
   }
+
+  /** Button and Controller to handle reverts */
   revert: {
     label?: string
     onRevert(): string | Promise<string>
   }
 }
 
-type Save = void | { noToolbarUpdate?: boolean; toolbarText?: ToolbarText }
+/** The Resource trait */
+export type Editable = { spec: EditableSpec }
