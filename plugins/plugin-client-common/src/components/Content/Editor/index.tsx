@@ -19,7 +19,16 @@ import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
-import { Button, REPL, StringContent, ToolbarText, ToolbarProps, MultiModalResponse, i18n } from '@kui-shell/core'
+import {
+  Button,
+  REPL,
+  SaveError,
+  StringContent,
+  ToolbarText,
+  ToolbarProps,
+  MultiModalResponse,
+  i18n
+} from '@kui-shell/core'
 
 import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
@@ -128,7 +137,14 @@ export default class Editor extends React.PureComponent<Props, State> {
   }
 
   private static onChange(props: Props, editor: Monaco.ICodeEditor) {
+    let currentDecorations: string[]
+
     return () => {
+      if (currentDecorations) {
+        editor.deltaDecorations(currentDecorations, [])
+        currentDecorations = undefined
+      }
+
       const clearable = Editor.isClearable(props)
 
       const buttons: Button[] = []
@@ -158,7 +174,23 @@ export default class Editor extends React.PureComponent<Props, State> {
                   !clearable ? undefined : [ClearButton(editor)]
                 )
               }
-            } catch (err) {
+            } catch (error) {
+              const err = error as SaveError
+
+              if (err.revealLine) {
+                editor.revealLineInCenter(err.revealLine)
+                currentDecorations = editor.deltaDecorations(currentDecorations || [], [
+                  {
+                    range: new Range(err.revealLine, 1, err.revealLine, 1),
+                    options: {
+                      isWholeLine: true,
+                      className: 'kui--editor-line-highlight',
+                      glyphMarginClassName: 'kui--editor-line-glyph'
+                    }
+                  }
+                ])
+              }
+
               const alert = {
                 type: 'warning' as const,
                 text: strings('isModified'),
@@ -171,7 +203,7 @@ export default class Editor extends React.PureComponent<Props, State> {
                 ]
               }
 
-              props.willUpdateToolbar(alert, undefined, undefined)
+              props.willUpdateToolbar(alert, buttons, undefined)
             }
           }
         })
