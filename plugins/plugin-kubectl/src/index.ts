@@ -91,7 +91,7 @@ export { fqnOf, fqn } from './controller/kubectl/fqn'
  *
  */
 export { register as registerEdit } from './controller/kubectl/edit'
-export { getter } from './controller/kubectl/get'
+export { doGet, getter } from './controller/kubectl/get'
 export { doRun } from './controller/kubectl/run'
 export { doCreate } from './controller/kubectl/create'
 export { doDelete } from './controller/kubectl/delete'
@@ -100,6 +100,7 @@ export { register as registerConfig } from './controller/kubectl/config'
 export { registerApplySubcommands } from './controller/kubectl/apply-subcommands'
 
 export { viewTransformer as getTransformer } from './controller/kubectl/get'
+export { viewTransformer as getNamespacesTransformer } from './controller/kubectl/get-namespaces'
 
 /** A channel that covers *possible* changes to kubectl config */
 export { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from './controller/kubectl/config'
