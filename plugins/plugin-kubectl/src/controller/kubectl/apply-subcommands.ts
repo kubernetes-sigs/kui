@@ -31,18 +31,49 @@ import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { getCommandFromArgs } from '../../lib/util/util'
 import { viewTransformer as getTransformer } from './get'
+import { editSpec, formatToolbarText } from './edit'
 import { KubeOptions, getNamespaceForArgv } from './options'
 import KubeResource, { isKubeResource } from '../../lib/model/resource'
-import { hasLastApplied, mode as lastAppliedMode } from '../../lib/view/modes/last-applied'
+import {
+  hasLastApplied,
+  mode as lastAppliedMode,
+  label as lastAppliedModeLabel,
+  order as lastAppliedOrder,
+  renderLastApplied
+} from '../../lib/view/modes/last-applied'
 
 const strings = i18n('plugin-kubectl')
 
-/** View Transformer for view-last-applied */
-export async function viewLastApplied(args: Arguments<KubeOptions>, response: KubeResource) {
+/** View Transformer for view-last-applied and edit-last-applied */
+export const viewLastApplied = (subcommand: 'view-last-applied' | 'edit-last-applied') => async (
+  args: Arguments<KubeOptions>,
+  response: KubeResource
+) => {
   if (isKubeResource(response)) {
     if (hasLastApplied(response)) {
       const baseView = await getTransformer(args, response)
-      return Object.assign(baseView, { defaultMode: lastAppliedMode })
+
+      if (subcommand === 'view-last-applied') {
+        return Object.assign(baseView, { defaultMode: lastAppliedMode })
+      } else {
+        const { content, contentType } = await renderLastApplied(args.tab, response)
+        const spec = editSpec(getCommandFromArgs(args), response.metadata.namespace, args, response, 'set-last-applied')
+
+        const editMode = {
+          mode: lastAppliedMode,
+          label: lastAppliedModeLabel,
+          order: lastAppliedOrder - 1, // overwrite the pre-registered last-applied mode
+          content,
+          contentType,
+          spec
+        }
+
+        return Object.assign(baseView, {
+          modes: [editMode],
+          defaultMode: lastAppliedMode,
+          toolbarText: formatToolbarText(args, response)
+        })
+      }
     } else {
       const error: CodedError = new Error(strings('This resource has no last applied configuration'))
       error.code = 404
@@ -60,10 +91,15 @@ function get(subcommand: string, args: Arguments<KubeOptions>) {
   }
 
   const idx = args.argvNoOptions.indexOf(subcommand)
-  const kind = args.argvNoOptions[idx + 1]
-  const name = args.argvNoOptions[idx + 2]
+  const kind = args.argvNoOptions[idx + 1] || ''
+  const name = args.argvNoOptions[idx + 2] || ''
+  const file = args.parsedOptions.f || args.parsedOptions.filename
 
-  return args.REPL.qexec<KubeResource>(`${command} get ${kind} ${name} ${getNamespaceForArgv(args)} -o yaml`)
+  if (file) {
+    return args.REPL.qexec<KubeResource>(`${command} get -f ${file} ${getNamespaceForArgv(args)} -o yaml`)
+  } else {
+    return args.REPL.qexec<KubeResource>(`${command} get ${kind} ${name} ${getNamespaceForArgv(args)} -o yaml`)
+  }
 }
 
 function withTransformer(viewTransformer: ViewTransformer<KubeResource, KubeOptions>): CommandOptions {
@@ -74,7 +110,13 @@ export function registerApplySubcommands(registrar: Registrar, cmd: string) {
   registrar.listen(
     `/${commandPrefix}/${cmd}/apply/view-last-applied`,
     get.bind(undefined, 'view-last-applied'),
-    withTransformer(viewLastApplied)
+    withTransformer(viewLastApplied('view-last-applied'))
+  )
+
+  registrar.listen(
+    `/${commandPrefix}/${cmd}/apply/edit-last-applied`,
+    get.bind(undefined, 'edit-last-applied'),
+    withTransformer(viewLastApplied('edit-last-applied'))
   )
 
   registrar.listen(`/${commandPrefix}/${cmd}/apply/set-last-applied`, doExecWithPty)
