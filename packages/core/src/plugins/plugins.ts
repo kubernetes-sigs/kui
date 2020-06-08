@@ -24,7 +24,7 @@ import { PrescanModel, unify } from './prescan'
 
 import { KuiPlugin } from '../models/plugin'
 import { userDataDir } from '../core/userdata'
-import { isHeadless, inSandbox } from '../core/capabilities'
+import { isHeadless } from '../core/capabilities'
 import { setPluginResolver } from '../core/command-tree'
 
 debug('modules loaded')
@@ -44,23 +44,13 @@ export const registrar: Record<string, KuiPlugin> = {}
  *
  */
 let basePrescan: PrescanModel // without any user-installed plugins
-let prescan: PrescanModel // the result of unify(basePrescan, userPrescan)
+let prescan: PrescanModel
+try {
+  prescan = require('@kui-shell/prescan.json') as PrescanModel // the result of unify(basePrescan, userPrescan)
+} catch (err) {
+  debug(err)
+}
 export function prescanModel(): PrescanModel {
-  if (!prescan) {
-    try {
-      return require('@kui-shell/prescan.json') as PrescanModel
-    } catch (err) {
-      try {
-        if (inSandbox()) {
-          prescan = require('@kui-shell/plugin-sandbox/prescan.json') as PrescanModel
-          basePrescan = prescan
-          console.log('Using sandbox prescan')
-        }
-      } catch (err) {
-        console.error('Could not find prescan model')
-      }
-    }
-  }
   return prescan
 }
 
@@ -98,26 +88,12 @@ export async function userInstalledHome() {
 export const init = async (): Promise<boolean> => {
   debug('init')
 
-  if (prescan) {
+  if (basePrescan) {
     return false
   }
 
-  // pre-installed pluginds
-  try {
-    prescan = require('@kui-shell/prescan.json') as PrescanModel
-    basePrescan = prescan
-    debug('pre-installed prescan loaded')
-  } catch (err) {
-    try {
-      if (inSandbox()) {
-        prescan = require('@kui-shell/plugin-sandbox/prescan.json') as PrescanModel
-        basePrescan = prescan
-        console.log('Using sandbox prescan')
-      }
-    } catch (err2) {
-      console.error('prescanned does not exist or is not valid JSON', err)
-    }
-  }
+  // pre-installed plugins
+  basePrescan = prescan
 
   if (isHeadless() && prescan) {
     try {
