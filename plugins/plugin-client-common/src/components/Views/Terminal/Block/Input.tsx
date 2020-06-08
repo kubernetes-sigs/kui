@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 import { dots as spinnerFrames } from 'cli-spinners'
-import { Tab as KuiTab, inBrowser, doCancel } from '@kui-shell/core'
+import { Tab as KuiTab, inBrowser, doCancel, i18n } from '@kui-shell/core'
 
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
@@ -27,6 +27,9 @@ import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
 
 import DropDown from '../../../spi/DropDown'
+
+const strings = i18n('plugin-client-common')
+const strings2 = i18n('plugin-client-common', 'screenshot')
 
 export interface InputOptions {
   /** Optional: placeholder value for prompt */
@@ -359,7 +362,7 @@ export default class Input extends InputProvider {
   }
 
   private removeAction() {
-    return !this.props.willRemove ? [] : [{ label: 'Remove', handler: () => this.props.willRemove() }]
+    return !this.props.willRemove ? [] : [{ label: strings('Remove'), handler: () => this.props.willRemove() }]
   }
 
   private screenshotAction() {
@@ -367,7 +370,7 @@ export default class Input extends InputProvider {
       ? []
       : [
           {
-            label: 'Screenshot',
+            label: strings2('Screenshot'),
             handler: () => this.props.willScreenshot()
           }
         ]

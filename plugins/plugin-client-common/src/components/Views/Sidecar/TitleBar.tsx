@@ -15,12 +15,14 @@
  */
 
 import * as React from 'react'
-import { REPL, inBrowser } from '@kui-shell/core'
+import { REPL, inBrowser, i18n } from '@kui-shell/core'
 
 import Width from './width'
 import Icons from '../../spi/Icons'
 import DropDown from '../../spi/DropDown'
 import Breadcrumb, { BreadcrumbView } from '../../spi/Breadcrumb'
+
+const strings = i18n('plugin-client-common', 'screenshot')
 
 export interface Props {
   kind?: string
@@ -78,7 +80,7 @@ export default class Window extends React.PureComponent<Props> {
     } else {
       return [
         {
-          label: 'Screenshot',
+          label: strings('Screenshot'),
           handler: () => this.props.willScreenshot()
         }
       ]
