@@ -26,6 +26,7 @@
 import { Arguments, CodedError, CommandOptions, ViewTransformer, Registrar, i18n } from '@kui-shell/core'
 
 import { flags } from './flags'
+import { doExecWithPty } from './exec'
 import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { getCommandFromArgs } from '../../lib/util/util'
@@ -75,6 +76,8 @@ export function registerApplySubcommands(registrar: Registrar, cmd: string) {
     get.bind(undefined, 'view-last-applied'),
     withTransformer(viewLastApplied)
   )
+
+  registrar.listen(`/${commandPrefix}/${cmd}/apply/set-last-applied`, doExecWithPty)
 }
 
 export default function registerForKubectl(registrar: Registrar) {
