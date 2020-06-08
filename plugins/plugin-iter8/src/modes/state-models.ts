@@ -46,6 +46,8 @@ interface DecisionState {
   advancedStatisticsRows: Array<any>
   hasExperimentEnded: boolean
   experimentDecision: string
+  chartData: Array<any>
+  chartOptions: any
 }
 
 export { CriterionState, Formstate, DecisionState, experimentTypes }

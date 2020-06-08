@@ -14,7 +14,7 @@ import {
   RadioButtonGroup,
   RadioButton
 } from 'carbon-components-react'
-import { Stop32, Undo32, Export32, Data_132 as Data132, ChartLineData32 } from '@carbon/icons-react'
+import { Stop32, Undo32, Export32, ChartLineData32, Help16, FaceCool20, FaceNeutral20 } from '@carbon/icons-react'
 import Chart from 'react-apexcharts'
 // Styling imports
 import 'carbon-components/scss/components/loading/_loading.scss'
@@ -40,7 +40,69 @@ interface TableProps {
   getHeaderProps: any
   title: string
 }
-// Functional Component for Data Table rendering
+// Function for round off
+function roundoff(value, fix = 4) {
+  console.log(value)
+  return parseFloat(value.toFixed(fix))
+}
+// Functional Component for Chart Rendering
+const lineoptions = {
+  chart: {
+    type: 'line',
+    stacked: false,
+    height: 350,
+    zoom: {
+      type: 'x',
+      enabled: true,
+      autoScaleYaxis: true
+    },
+    toolbar: {
+      autoSelected: 'zoom'
+    }
+  },
+  stroke: {
+    width: 2,
+    curve: 'straight',
+    dashArray: [9]
+  },
+  dataLabels: {
+    enabled: false
+  },
+  markers: {
+    size: 3
+  },
+  title: {
+    text: '',
+    align: 'left'
+  },
+  yaxis: {
+    labels: {
+      formatter: function(val) {
+        return (val / 1000000).toFixed(0)
+      }
+    }
+  },
+  xaxis: {
+    type: 'datetime',
+    categories: [],
+    labels: {
+      datetimeFormatter: {
+        year: 'yyyy',
+        month: "MMM 'yy",
+        day: 'dd MMM',
+        hour: 'HH:mm'
+      }
+    }
+  },
+  tooltip: {
+    shared: false,
+    y: {
+      formatter: function(val) {
+        return (val / 1000000).toFixed(0)
+      }
+    }
+  }
+}
 const renderTable = TableProps => (
   <TableContainer title={TableProps.title}>
     <Table>
@@ -57,7 +119,9 @@ const renderTable = TableProps => (
         {TableProps.rows.map(row => (
           <TableRow key={row.id}>
             {row.cells.map(cell => (
-              <TableCell key={cell.id}>{cell.value}</TableCell>
+              <TableCell key={cell.id}>
+                <div>{cell.value}</div>
+              </TableCell>
             ))}
           </TableRow>
         ))}
@@ -66,97 +130,174 @@ const renderTable = TableProps => (
   </TableContainer>
 )
 /*eslint-disable */
-// var finalans = {
-//   "timestamp": "2020-05-22T16:15:10.758576",
-//   "baseline_assessment": {
-//     "id": "reviews_v2",
-//     "request_count": 8,
-//     "criterion_assessments": [
-//       {
-//         "id": "0",
-//         "metric_id": "iter8_mean_latency",
-//         "statistics": {
-//           "value": 0.010749841000000001,
-//           "ratio_statistics": null
-//         },
-//         "threshold_assessment": null
-//       },
-//       {
-//         "id": "1",
-//         "metric_id": "iter8_error_rate",
-//         "statistics": {
-//           "value": 0,
-//           "ratio_statistics": null
-//         },
-//         "threshold_assessment": null
-//       },
-//       {
-//         "id": "2",
-//         "metric_id": "iter8_request_count",
-//         "statistics": {
-//           "value": 8.09915,
-//           "ratio_statistics": null
-//         },
-//         "threshold_assessment": null
-//       }
-//     ],
-//     "win_probability": 0.5
-//   },
-//   "candidate_assessments": [
-//     {
-//       "id": "reviews_v3",
-//       "request_count": 16,
-//       "criterion_assessments": [
-//         {
-//           "id": "0",
-//           "metric_id": "iter8_mean_latency",
-//           "statistics": {
-//             "value": 0.00962141154047805,
-//             "ratio_statistics": null
-//           },
-//           "threshold_assessment": null
-//         },
-//         {
-//           "id": "1",
-//           "metric_id": "iter8_error_rate",
-//           "statistics": {
-//             "value": 0,
-//             "ratio_statistics": null
-//           },
-//           "threshold_assessment": null
-//         },
-//         {
-//           "id": "2",
-//           "metric_id": "iter8_request_count",
-//           "statistics": {
-//             "value": 16.698300000000003,
-//             "ratio_statistics": null
-//           },
-//           "threshold_assessment": null
-//         }
-//       ],
-//       "win_probability": 0.5,
-//       "rollback": false
-//     }
-//   ],
-//   "traffic_split_recommendation": {
-//     "uniform": {
-//       "reviews_v3": 60,
-//       "reviews_v2": 40
-//     },
-//     "random": {
-//       "reviews_v3": 30,
-//       "reviews_v2": 70
-//     }
-//   },
-//   "winner_assessment": {
-//     "winning_version_found": false,
-//     "current_winner": null,
-//     "winning_probability": null
-//   },
-//   "status": [],
-//   "status_interpretations": {},
-//   "last_state": {}}
+function analytics_response() {
+  let resp = {
+    timestamp: '2020-05-22T16:15:10.758576',
+    baseline_assessment: {
+      id: 'reviews_v2',
+      request_count: Math.random() * (1500 - 1000) + 1000,
+      criterion_assessments: [
+        {
+          id: '0',
+          metric_id: 'iter8_error_count',
+          statistics: {
+            value: Math.random() * (25 - 20) + 20,
+            ratio_statistics: {
+              improvement_over_baseline: {
+                lower: 3,
+                upper: 56
+              },
+              probability_of_beating_baseline: 23,
+              probability_of_being_best_version: 54,
+              credible_interval: {
+                lower: 32,
+                upper: 90
+              }
+            }
+          },
+          threshold_assessment: {
+            threshold_breached: false,
+            probability_of_satisfying_threshold: 0.002
+          }
+        },
+        {
+          id: '1',
+          metric_id: 'iter8_mean_latency',
+          statistics: {
+            value: Math.random() * (4 - 2) + 2,
+            ratio_statistics: {
+              improvement_over_baseline: {
+                lower: 7,
+                upper: 5
+              },
+              probability_of_beating_baseline: 0,
+              probability_of_being_best_version: 0,
+              credible_interval: {
+                lower: 5,
+                upper: 30
+              }
+            }
+          },
+          threshold_assessment: {
+            threshold_breached: false,
+            probability_of_satisfying_threshold: 0.04
+          }
+        },
+        {
+          id: '2',
+          metric_id: 'iter8_error_rate',
+          statistics: {
+            value: Math.random() * (0.2 - 0.1) + 0.1,
+            ratio_statistics: {
+              improvement_over_baseline: {
+                lower: 7,
+                upper: 5
+              },
+              probability_of_beating_baseline: 0,
+              probability_of_being_best_version: 0,
+              credible_interval: {
+                lower: 5,
+                upper: 30
+              }
+            }
+          },
+          threshold_assessment: {
+            threshold_breached: true,
+            probability_of_satisfying_threshold: 0.02
+          }
+        }
+      ],
+      win_probability: 0.5
+    },
+    candidate_assessments: [
+      {
+        id: 'reviews_v3',
+        request_count: Math.random() * (1000 - 900) + 900,
+        criterion_assessments: [
+          {
+            id: '0',
+            metric_id: 'iter8_error_count',
+            statistics: {
+              value: Math.random() * (25 - 15) + 15,
+              ratio_statistics: null
+            },
+            threshold_assessment: {
+              threshold_breached: false,
+              probability_of_satisfying_threshold: 0.4
+            }
+          },
+          {
+            id: '1',
+            metric_id: 'iter8_mean_latency',
+            statistics: {
+              value: Math.random() * (2 - 1) + 1,
+              ratio_statistics: {
+                improvement_over_baseline: {
+                  lower: 34,
+                  upper: 54
+                },
+                probability_of_beating_baseline: 0.5,
+                probability_of_being_best_version: 0.7,
+                credible_interval: {
+                  lower: 23,
+                  upper: 30
+                }
+              }
+            },
+            threshold_assessment: {
+              threshold_breached: false,
+              probability_of_satisfying_threshold: 2
+            }
+          },
+          {
+            id: '2',
+            metric_id: 'iter8_error_rate',
+            statistics: {
+              value: Math.random() * (0.09 - 0.08) + 0.08,
+              ratio_statistics: {
+                improvement_over_baseline: {
+                  lower: 0.7,
+                  upper: 53
+                },
+                probability_of_beating_baseline: 32,
+                probability_of_being_best_version: 34,
+                credible_interval: {
+                  lower: 43,
+                  upper: 60
+                }
+              }
+            },
+            threshold_assessment: {
+              threshold_breached: false,
+              probability_of_satisfying_threshold: 0.3
+            }
+          }
+        ],
+        win_probability: 0.5,
+        rollback: false
+      }
+    ],
+    traffic_split_recommendation: {
+      uniform: {
+        reviews_v3: 60,
+        reviews_v2: 40
+      },
+      random: {
+        reviews_v3: 30,
+        reviews_v2: 70
+      }
+    },
+    winner_assessment: {
+      winning_version_found: true,
+      current_winner: 'reviews_v2',
+      winning_probability: 0.34
+    },
+    status: [],
+    status_interpretations: {},
+    last_state: {}
+  }
+  return resp
+}
 /* eslint-enable */
 export class DecisionBase extends React.Component<{}, DecisionState> {
   private winner = ''
@@ -166,9 +307,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // For displaying Traffic Suggestion Section
   private algoList = []
   private trafficRecs = []
-  // For displaying Metric Comparison Section
-  private criteriaTableHeaders = []
-  private criteriaTableRows = []
+
   private notifKey = 0
 
   // For Displaying Advanced Statistics Section
@@ -188,13 +327,15 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       haveResults: false, // true if Iter8 AJAX call has been successful
       experimentRequest: null, // JSON object sent as Iter8 Request
       experimentResult: null, // JSON object returned from Iter8 API
-      haveAdvancedStatistics: false,
-      haveCriteriaComparison: false,
-      selectedAdvancedStatistic: 'Improvement Over Baseline',
-      showAdvancedStatistics: false,
-      advancedStatisticsRows: [],
-      hasExperimentEnded: false,
-      experimentDecision: 'rollback'
+      haveAdvancedStatistics: false, // Bool set to true if ratio Metrics were added when creating experiment
+      haveCriteriaComparison: false, // Bool set to true if any criteria were added when creating expeirment
+      selectedAdvancedStatistic: 'Improvement Over Baseline', // Initial selection for the analytics assessment dropdown
+      showAdvancedStatistics: false, // Toggle to show advanced statistics
+      advancedStatisticsRows: [], // table Row values for Advanced statistics
+      hasExperimentEnded: false, // set to true if experiment has ended
+      experimentDecision: 'rollback', // ID final experiment decision. Defaults to rollback
+      chartData: [], // Stores data for the criteria graphs
+      chartOptions: {} // Stores options for criteria graphs
     }
     eventChannelUnsafe.on('/get/decision', formstate => {
       this.setState({ experimentCreated: true, experimentRequest: formstate })
@@ -216,7 +357,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Sets display with winner information
   private getWinAnalysis(apiResult) {
     if (apiResult.winner_assessment.winning_version_found) {
-      // const assessment = apiResult.winner_assessment
       const prob = apiResult.winner_assessment.winning_probability
       this.winner = `%{assessment.current_winner} is the winner with ${prob} % of winning`
     } else {
@@ -275,54 +415,110 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     return recList
   }
 
-  // Populate the metric table header
-  private getCriteriaHeaders(apiResult) {
-    const DisplayDict = new NameDict()
-    const tempHeaders = [{ header: 'Deployment Name', key: 'version' }]
-
-    const baseAssess = apiResult.baseline_assessment.criterion_assessments
-    for (let i = 0; i < baseAssess.length; i++) {
-      const metricId = baseAssess[i].metric_id
-      const metricName = DisplayDict.getMetricName(metricId)
-      tempHeaders.push({
-        header: metricName,
-        key: metricId
-      })
-    }
-    this.criteriaTableHeaders = tempHeaders
-  }
-
-  // Populate row information for metric table
-  private getCriteriaRows(apiResult) {
-    const baseCriteria = apiResult.baseline_assessment.criterion_assessments
-    const baseId = apiResult.baseline_assessment.id
-
-    const tempRows = []
-    const tempBase = { id: baseId, version: baseId }
-    for (let i = 0; i < baseCriteria.length; i++) {
-      tempBase[baseCriteria[i].metric_id] = baseCriteria[i].statistics.value
-    }
-    tempRows.push(tempBase)
-    // Iterate through every candidate assessment
-    const candList = apiResult.candidate_assessments
-    for (let i = 0; i < candList.length; i++) {
-      const tempCand = { id: candList[i].id, version: candList[i].id }
-      // Iterate through every metric in the candidate
-      const candAssess = candList[i].criterion_assessments
-      for (let j = 0; j < candAssess.length; j++) {
-        tempCand[candAssess[j].metric_id] = candAssess[j].statistics.value
-      }
-      tempRows.push(tempCand)
-    }
-    this.criteriaTableRows = tempRows
-  }
-
   // Returns true if the experiment involves any success/failure criteria
   private haveCriteriaComparison() {
     if (this.state.experimentRequest.criteria.length) {
       return true
     } else {
       return false
+    }
+  }
+
+  // Fill chart data with an initial template
+  private fillchartDataTemplate() {
+    const baselineCriteriaResults = this.state.experimentResult.baseline_assessment.criterion_assessments
+    const tempChartData = []
+    const tempChartOptions = {}
+    // Get chart details from baseline
+    for (let i = 0; i < baselineCriteriaResults.length; i++) {
+      // Getting Chart Options
+      const options = JSON.parse(JSON.stringify(lineoptions))
+      const d = new Date()
+      const time = d.toISOString()
+      options.xaxis.categories.push(time)
+      tempChartOptions[baselineCriteriaResults[i].metric_id] = options
+
+      // Get Chart Data
+      const perMetricData = { title: baselineCriteriaResults[i].metric_id, data: [] }
+      if ({}.hasOwnProperty.call(this.state.experimentRequest.criteria[i], 'threshold')) {
+        if (this.state.experimentRequest.criteria[i].threshold.type === 'absolute') {
+          perMetricData.data.push({
+            name: 'threshold',
+            data: [roundoff(this.state.experimentRequest.criteria[i].threshold.value, 2)]
+          })
+        } else {
+          perMetricData.data.push({
+            name: 'threshold',
+            data: [
+              roundoff(
+                (1 + this.state.experimentRequest.criteria[i].threshold.value) *
+                  baselineCriteriaResults[i].statistics.value
+              )
+            ]
+          })
+        }
+      }
+      perMetricData.data.push({
+        name: this.state.experimentResult.baseline_assessment.id,
+        data: [roundoff(baselineCriteriaResults[i].statistics.value)]
+      })
+      tempChartData.push(perMetricData)
+    }
+
+    // getchart details from candidates
+    const candidateCriteriaResult = this.state.experimentResult.candidate_assessments
+    for (let i = 0; i < candidateCriteriaResult.length; i++) {
+      const candidateVersion = candidateCriteriaResult[i].id
+      for (let j = 0; j < candidateCriteriaResult[i].criterion_assessments.length; j++) {
+        const metricResult = candidateCriteriaResult[i].criterion_assessments[j]
+        tempChartData[j].data.push({ name: candidateVersion, data: [roundoff(metricResult.statistics.value)] })
+      }
+    }
+    this.setState({ chartData: tempChartData, chartOptions: tempChartOptions })
+  }
+
+  // Get details for the criteria charts
+  private getChartData() {
+    // let baselineCriteriaResults = this.state.experimentResult.baseline_assessment.criterion_assessments
+    if (this.state.chartData.length === 0) {
+      this.fillchartDataTemplate()
+    } else {
+      const baselineCriteriaResults = this.state.experimentResult.baseline_assessment.criterion_assessments
+      const tempChartData = JSON.parse(JSON.stringify(this.state.chartData))
+      const tempChartOptions = JSON.parse(JSON.stringify(this.state.chartOptions))
+      // Get chart details from baseline
+      for (let i = 0; i < baselineCriteriaResults.length; i++) {
+        // Get chart options
+        const d = new Date()
+        const time = d.toISOString()
+        tempChartOptions[baselineCriteriaResults[i].metric_id].xaxis.categories.push(time)
+
+        // Get Chart Data
+        if ({}.hasOwnProperty.call(this.state.experimentRequest.criteria[i], 'threshold')) {
+          if (this.state.experimentRequest.criteria[i].threshold.type === 'absolute') {
+            // tempChartData.data.push({name: 'threshold', data: [this.state.experimentRequest.criteria[i].threshold.value]})
+            tempChartData[i].data[0].data.push(roundoff(tempChartData[i].data[0].data[0]))
+          } else {
+            tempChartData[i].data[0].data.push(
+              roundoff(
+                (1 + this.state.experimentRequest.criteria[i].threshold.value) *
+                  baselineCriteriaResults[i].statistics.value
+              )
+            )
+          }
+        }
+        tempChartData[i].data[1].data.push(roundoff(baselineCriteriaResults[i].statistics.value))
+      }
+
+      // get chart details from candidates
+      const candidateCriteriaResult = this.state.experimentResult.candidate_assessments
+      for (let i = 0; i < candidateCriteriaResult.length; i++) {
+        for (let j = 0; j < candidateCriteriaResult[i].criterion_assessments.length; j++) {
+          const metricResult = candidateCriteriaResult[i].criterion_assessments[j]
+          tempChartData[j].data[i + 2].data.push(roundoff(metricResult.statistics.value))
+        }
+      }
+      this.setState({ chartData: tempChartData, chartOptions: tempChartOptions })
     }
   }
 
@@ -357,9 +553,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   private parseAdvancedStatisticsValues(key, val) {
     /*eslint-disable */
     if (key === 'credible_interval' || key === 'improvement_over_baseline') {
-      return JSON.stringify([val['lower'], val['higher']])
+      return JSON.stringify([roundoff(val['lower']), roundoff(val['upper'])])
     }
-    return val
+    return roundoff(val)
     /* eslint-enable */
   }
 
@@ -368,10 +564,20 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const DisplayDict = new NameDict()
     this.advancedStatisticsNames = DisplayDict.advancedStatisticsNames
 
+    // get all version ids and names
     const versionRows = []
-    for (let i = 0; i < this.criteriaTableRows.length; i++) {
-      versionRows.push({ id: this.criteriaTableRows[i].id, version: this.criteriaTableRows[i].version })
+    versionRows.push({
+      id: this.state.experimentResult.baseline_assessment.id,
+      version: this.state.experimentResult.baseline_assessment.id
+    })
+
+    const candList = this.state.experimentResult.candidate_assessments
+    for (let i = 0; i < candList.length; i++) {
+      versionRows.push({ id: candList[i].id, version: candList[i].id })
     }
+
+    // Get baseline assessment
+
     const criterionAssessments = []
     criterionAssessments.push(this.state.experimentResult.baseline_assessment.criterion_assessments)
     for (let i = 0; i < this.state.experimentResult.candidate_assessments.length; i++) {
@@ -429,20 +635,22 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Makes an AJAX call to Iter8 API
   private handleGetAssessment() {
     this.setState({ haveResults: false })
-    console.log('Experiment Request')
-    console.log(JSON.stringify(this.state.experimentRequest))
+
+    // Update last state for next iteration
+    // if (!(this.state.experimentResult === null)) {
+    //   let new_iteration_request = this.state.experimentRequest
+    //   new_iteration_request.last_state = this.state.experimentResult.last_state
+    //   this.setState({experimentRequest: new_iteration_request})
+    // }
     const AnalyticsAssess = new GetAnalyticsAssessment(this.state.experimentRequest)
     AnalyticsAssess.getAnalyticsAssessment()
       .then(result => {
         console.log('Experiment Response')
         console.log(result)
-        const jsonrlts = JSON.parse(JSON.parse(result))
-        // const jsonrlts = finalans
+        const jsonrlts = analytics_response()
         this.getWinAnalysis(jsonrlts)
         this.getWinProbs(jsonrlts)
         this.getAlgo(jsonrlts)
-        this.getCriteriaHeaders(jsonrlts)
-        this.getCriteriaRows(jsonrlts)
         const traffic = this.getTrafficRecs(this.state.selectedAlgo, jsonrlts)
         this.setState({
           haveResults: true,
@@ -451,7 +659,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           haveAdvancedStatistics: this.haveAdvancedStatistics(),
           haveCriteriaComparison: this.haveCriteriaComparison()
         })
-        if (this.haveAdvancedStatistics) {
+        if (this.state.haveCriteriaComparison) {
+          this.getChartData()
+        }
+        if (this.state.haveAdvancedStatistics) {
           this.createadvancedStatisticsObject()
           this.getAdvancedStatistics(this.state.selectedAdvancedStatistic)
         }
@@ -550,14 +761,27 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           <div>
             <FormGroup legendText="">
               <h4 className="titletexts"> Winner Assessments </h4>
-              <h5> {this.winner} </h5>
+              {this.state.experimentResult.winner_assessment.winning_version_found ? (
+                <div>
+                  <h4 className="green">
+                    {' '}
+                    Winner Found! <FaceCool20 />{' '}
+                  </h4>
+                  <h5> {this.winner} </h5>
+                </div>
+              ) : (
+                <h5>
+                  {' '}
+                  {this.winner} <FaceNeutral20 />{' '}
+                </h5>
+              )}
             </FormGroup>
             <FormGroup
               style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
               legendText="Win Probabilities"
               className="formGroupProps"
             >
-              <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="400" />
+              <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="350" />
             </FormGroup>
             <FormGroup>
               <h4 className="titletexts"> Traffic Assessments </h4>
@@ -638,14 +862,23 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             >
               <h4 className="titletexts"> Criteria Assessments </h4>
               {this.state.haveCriteriaComparison ? (
-                <DataTable
-                  headers={this.criteriaTableHeaders}
-                  rows={this.criteriaTableRows}
-                  render={({ rows, headers, getHeaderProps }) =>
-                    renderTable({ rows, headers, getHeaderProps, title: 'Metrics Comparison' })
-                  }
-                  style={{ backgroundColor: 'inherit' }}
-                />
+                <div>
+                  {this.state.chartData.map(data => (
+                    <div key={data.title + ':div'}>
+                      <h5 key={data.title + ':h5'} className="titletexts">
+                        {' '}
+                        {data.title}{' '}
+                      </h5>
+                      <Chart
+                        key={data.title + ':Chart'}
+                        type="line"
+                        options={this.state.chartOptions[data.title]}
+                        series={data.data}
+                        width="400"
+                      />
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <h4> No Criteria Assessment to show</h4>
               )}
