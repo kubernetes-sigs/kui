@@ -66,6 +66,10 @@ $trans-grey: #5e6367;
 .red {
   color: red !important;
 }
+.green {
+  color: green;
+  fill: green;
+}
 .tablevalues .warningtext {
   visibility: hidden;
   text-align: center;
@@ -125,4 +129,25 @@ $trans-grey: #5e6367;
       visibility: visible;
     }
   }
+}
+/*
+foreignObject {
+  background: #ffffff;
+}
+*/
+// span {
+//   .apexcharts-legend-text {
+//       color: $darkteal;
+//   }
+// }
+.apexcharts-yaxis-label {
+  fill: $darkteal;
+}
+
+.apexcharts-xaxis-label {
+  fill: $darkteal;
+}
+
+.apexcharts-active {
+  color: $darkteal;
 }
