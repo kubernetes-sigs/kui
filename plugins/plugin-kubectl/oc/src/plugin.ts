@@ -17,11 +17,13 @@
 import { Registrar } from '@kui-shell/core'
 
 import raw from './controller/raw'
+import getProjects from './controller/oc/get/projects'
 import delegates from './controller/kubectl/delegates'
 import catchall from './controller/kubectl/catchall'
 
 export default (registrar: Registrar) => {
   delegates(registrar)
+  getProjects(registrar)
   raw(registrar)
   catchall(registrar)
 }
