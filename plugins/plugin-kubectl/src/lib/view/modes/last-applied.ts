@@ -23,6 +23,10 @@ const strings = i18n('plugin-kubectl')
 /** Mode identifier. Not a UI string. Only for internal referencing. */
 export const mode = 'last applied'
 
+export const label = strings('lastApplied')
+
+export const order = 998
+
 /**
  * @return The last-applied-configuration annotation, as a raw string
  *
@@ -45,7 +49,7 @@ export function hasLastApplied(resource: KubeResource): boolean {
  * into something we want to display: a yaml string.
  *
  */
-const renderLastApplied = async (tab: Tab, resource: KubeResource) => {
+export const renderLastApplied = async (tab: Tab, resource: KubeResource) => {
   // this module is expensive to load, so we defer that expense
   const { safeDump } = await import('js-yaml')
 
@@ -64,7 +68,8 @@ export default {
   when: hasLastApplied,
   mode: {
     mode,
-    label: strings('lastApplied'),
+    label,
+    order,
     content: renderLastApplied
   }
 }
