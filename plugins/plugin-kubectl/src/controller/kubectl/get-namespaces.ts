@@ -129,8 +129,20 @@ export function t2rt({ name, attributes }: Row): RadioTableRow {
   }
 }
 
+/** Function type that will actuate a namespace switch */
+type SwitchFn = (ns: string, args: Arguments<KubeOptions>) => void
+
+/** SwitchFn impl that uses `kubectl config set-context` */
+const doSwitchViaKubectl: SwitchFn = (ns: string, args: Arguments<KubeOptions>) => {
+  return args.REPL.pexec(`kubectl config set-context --current --namespace=${ns}`)
+}
+
 /** Format as RadioTable */
-async function asRadioTable(args: Arguments<KubeOptions>, { header, body }: Table): Promise<RadioTable> {
+async function asRadioTable(
+  doSwitch: SwitchFn,
+  args: Arguments<KubeOptions>,
+  { header, body }: Table
+): Promise<RadioTable> {
   const {
     metadata: { namespace: currentNamespace }
   } = await getCurrentContext(args.tab)
@@ -148,7 +160,7 @@ async function asRadioTable(args: Arguments<KubeOptions>, { header, body }: Tabl
       Object.assign(rtRow, {
         onSelect: () => {
           const ns = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
-          args.REPL.pexec(`kubectl config set-context --current --namespace=${ns}`)
+          doSwitch(ns, args)
         }
       })
     )
@@ -171,10 +183,10 @@ async function asRadioTable(args: Arguments<KubeOptions>, { header, body }: Tabl
 }
 
 /** Table -> RadioTable view transformer */
-function viewTransformer(args: Arguments<KubeOptions>, response: KResponse) {
+export function viewTransformer(doSwitch: SwitchFn, args: Arguments<KubeOptions>, response: KResponse) {
   if (isTable(response)) {
     if (isTableRequest(args) && !isWatchRequest(args)) {
-      return asRadioTable(args, response)
+      return asRadioTable(doSwitch, args, response)
     } else {
       return response
     }
@@ -190,7 +202,7 @@ function viewTransformer(args: Arguments<KubeOptions>, response: KResponse) {
  * a RadioTable.
  *
  */
-const rtFlags = Object.assign({}, flags, { viewTransformer })
+const rtFlags = Object.assign({}, flags, { viewTransformer: viewTransformer.bind(undefined, doSwitchViaKubectl) })
 
 export default (commandTree: Registrar) => {
   commandTree.listen(`/${commandPrefix}/kubectl/get/namespaces`, doGet('kubectl'), rtFlags)
