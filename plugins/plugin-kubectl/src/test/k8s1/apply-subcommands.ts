@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import * as assert from 'assert'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util, Keys } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { mode as lastAppliedMode } from '../../lib/view/modes/last-applied'
@@ -52,6 +53,48 @@ commands.forEach(command => {
       })
     }
 
+    const editLastApplied = (key: string, value: string, viaFile?: string) => {
+      it(`should edit last applied configuration via ${command} apply edit-last-applied ${viaFile && '-f'}`, () =>
+        CLI.command(`${command} apply edit-last-applied ${viaFile || `pod ${podName}`} ${inNamespace}`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(podName, undefined, undefined, ns))
+          .then(SidecarExpect.mode(lastAppliedMode))
+          .then(async () => {
+            const actualText = await Util.getValueFromMonaco(this.app)
+            const labelsLineIdx = actualText.split(/\n/).indexOf('  labels:')
+
+            // +2 here because nth-child is indexed from 1, and we want the line after that
+            const lineSelector = `.view-lines > .view-line:nth-child(${labelsLineIdx + 2}) .mtk5:last-child`
+            await this.app.client.click(lineSelector)
+
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            await this.app.client.keys(`${Keys.End}${Keys.ENTER}${key}: ${value}${Keys.ENTER}`)
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('Save'))
+            await SidecarExpect.toolbarAlert({ type: 'success', text: 'Successfully Applied', exact: false })(this.app)
+            await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('Save'), 10000, true)
+          })
+          .catch(Common.oops(this, true)))
+    }
+
+    // check that we can view this last applied configuration via "apply view-last-applied"
+    const viewLastApplied = (expectString: string, viaFile?: string) => {
+      it(`view last applied configuration via ${command} apply view-last-applied ${viaFile && '-f'}`, () =>
+        CLI.command(`${command} apply view-last-applied ${viaFile || `pod ${podName}`} ${inNamespace}`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(podName, undefined, undefined, ns))
+          .then(SidecarExpect.mode(lastAppliedMode))
+          .then(async () => {
+            const actualText = await Util.getValueFromMonaco(this.app)
+            assert.ok(actualText.indexOf(expectString) !== -1)
+          })
+          .catch(Common.oops(this, true)))
+    }
+
+    /* Here comes the tests */
+
     doCreate('create')
 
     // no last applied configuration, yet
@@ -73,14 +116,10 @@ commands.forEach(command => {
         .then(ReplExpect.okWithPtyOutput('configured'))
         .catch(Common.oops(this, true)))
 
-    // check that we can view this last applied configuration via "apply view-last-applied"
-    it(`view last applied configuration via ${command} apply view-last-applied`, () =>
-      CLI.command(`${command} apply view-last-applied pod ${podName} ${inNamespace}`, this.app)
-        .then(ReplExpect.justOK)
-        .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(podName, undefined, undefined, ns))
-        .then(SidecarExpect.mode(lastAppliedMode))
-        .catch(Common.oops(this, true)))
+    editLastApplied('foo', 'bar')
+    viewLastApplied('foo: bar', `-f ${sourceFile}`)
+    editLastApplied('foo1', 'bar1', `-f ${sourceFile}`)
+    viewLastApplied('foo1: bar1')
 
     deleteNS(this, ns, command)
   })
