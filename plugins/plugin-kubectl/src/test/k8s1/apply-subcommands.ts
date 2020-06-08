@@ -28,7 +28,7 @@ const podName = 'nginx'
 const sourceFile = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
 
 commands.forEach(command => {
-  describe(`${command} apply view-last-applied ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} apply subcommands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -60,8 +60,18 @@ commands.forEach(command => {
         .then(ReplExpect.error(404))
         .catch(Common.oops(this, true)))
 
-    // now use apply to get us a last applied configuration
-    doCreate('apply')
+    it(`should fail to set last applied configuration via ${command} apply set-last-applied`, () =>
+      CLI.command(`${command} apply set-last-applied pod ${podName} ${inNamespace} -f ${sourceFile}`, this.app)
+        .then(ReplExpect.error(1))
+        .catch(Common.oops(this, true)))
+
+    it(`should succeed to set last applied configuration via ${command} apply set-last-applied --create-annotation`, () =>
+      CLI.command(
+        `${command} apply set-last-applied pod ${podName} ${inNamespace} -f ${sourceFile} --create-annotation`,
+        this.app
+      )
+        .then(ReplExpect.okWithPtyOutput('configured'))
+        .catch(Common.oops(this, true)))
 
     // check that we can view this last applied configuration via "apply view-last-applied"
     it(`view last applied configuration via ${command} apply view-last-applied`, () =>
