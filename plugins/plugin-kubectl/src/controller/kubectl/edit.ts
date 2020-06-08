@@ -112,7 +112,8 @@ export function editSpec(
   cmd: string,
   namespace: string,
   args: Arguments<KubeOptions>,
-  resource: KubeResource | KubeItems
+  resource: KubeResource | KubeItems,
+  applySubCommand = ''
 ): EditableSpec {
   return {
     readOnly: false,
@@ -123,11 +124,13 @@ export function editSpec(
         const tmp = `/tmp/kui-${uuid()}`
         await args.REPL.rexec(`fwrite ${tmp}`, { data })
 
-        const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', '-n', namespace, '-f', tmp]
+        const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', applySubCommand, '-n', namespace, '-f', tmp].filter(
+          x => x
+        )
         const applyArgs = Object.assign({}, args, {
           command: argv.join(' '),
           argv,
-          argvNoOptions: [cmd, 'apply'],
+          argvNoOptions: [cmd, 'apply', applySubCommand].filter(x => x),
           parsedOptions: { n: namespace, f: tmp }
         })
 
@@ -228,6 +231,17 @@ function isEditAfterApply(options: ExecOptions): options is EditAfterApply {
   return opts && opts.data && opts.data.partOfApply !== undefined
 }
 
+export function formatToolbarText(args: Arguments<KubeOptions>, response: KubeResource) {
+  const baseEditToolbar = {
+    type: 'info',
+    text: strings2('isUpToDate')
+  }
+
+  return !isEditAfterApply(args.execOptions)
+    ? response.toolbarText
+    : Object.assign(baseEditToolbar, { alerts: [{ type: 'success', title: strings('Successfully Applied') }] })
+}
+
 /**
  * Variant of `resource` enhanced with an `Editable` impl that saves
  * via kubectl apply.
@@ -241,16 +255,10 @@ export async function editable(
   const spec = editSpec(cmd, response.metadata.namespace, args, response)
 
   const baseView = await getView(args, response)
-  const baseEditToolbar = {
-    type: 'info',
-    text: strings2('isUpToDate')
-  }
 
   const view = Object.assign(baseView, {
     modes: [editMode(spec, response, yamlMode, yamlModeLabel, yamlModeOrder - 1)], // overwrite the pre-registered yaml tab
-    toolbarText: !isEditAfterApply(args.execOptions)
-      ? response.toolbarText
-      : Object.assign(baseEditToolbar, { alerts: [{ type: 'success', title: strings('Successfully Applied') }] })
+    toolbarText: formatToolbarText(args, response)
   })
 
   return view
