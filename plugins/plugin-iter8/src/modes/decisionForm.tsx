@@ -19,6 +19,7 @@ import Chart from 'react-apexcharts'
 // Styling imports
 import 'carbon-components/scss/components/loading/_loading.scss'
 import 'carbon-components/scss/components/form/_form.scss'
+import 'carbon-components/scss/components/list/_list.scss'
 import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/slider/_slider.scss'
 import 'carbon-components/scss/components/dropdown/_dropdown.scss'
@@ -134,7 +135,7 @@ function analytics_response() {
   let resp = {
     timestamp: '2020-05-22T16:15:10.758576',
     baseline_assessment: {
-      id: 'reviews_v2',
+      id: 'reviews-v2',
       request_count: Math.random() * (1500 - 1000) + 1000,
       criterion_assessments: [
         {
@@ -211,7 +212,7 @@ function analytics_response() {
     },
     candidate_assessments: [
       {
-        id: 'reviews_v3',
+        id: 'reviews-v3',
         request_count: Math.random() * (1000 - 900) + 900,
         criterion_assessments: [
           {
@@ -289,7 +290,7 @@ function analytics_response() {
     },
     winner_assessment: {
       winning_version_found: true,
-      current_winner: 'reviews_v2',
+      current_winner: 'reviews-v2',
       winning_probability: 0.34
     },
     status: [],
@@ -319,7 +320,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     super(props)
     this.state = {
       selectedAlgo: 'uniform', // Assumes that uniform is always the first algorithm
-      trafficSplit: [{ version: '', split: 0 }],
+      trafficSplit: [{ version: '', split: 0 }], // Traffic split to be applied to each service (modified by analytics service or on toggle)
+      currentSplit: [], // Current traffic split that has been applied to the service
       trafficErr: false, // true if sum(traffic) != 100
       notifyUser: false, // true if vs has been successfully created
       notifyTime: '', // timestamp assoc. with notification
@@ -708,7 +710,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     applyTrafficSplit(decision)
     const d = new Date()
     const time = d.toISOString()
-    this.setState({ notifyTime: time, notifyUser: true })
+    this.setState({ notifyTime: time, notifyUser: true, currentSplit: this.state.trafficSplit })
   }
 
   // Handle closing toast notification
@@ -744,10 +746,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const { trafficSplit } = this.state
     return (
       <Form className="formProps" style={{ display: 'block' }}>
-        <FormGroup
-          style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
-          legendText=""
-        >
+        <FormGroup className="borderstyle" legendText="">
           <InlineLoading
             description={
               !this.state.experimentCreated ? 'Waiting for iter8 Experiment to be created...' : 'Experiment Created: '
@@ -776,14 +775,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 </h5>
               )}
             </FormGroup>
-            <FormGroup
-              style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
-              legendText="Win Probabilities"
-              className="formGroupProps"
-            >
+            <FormGroup legendText="Win Probabilities" className="borderstyle formGroupProps">
               <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="350" />
             </FormGroup>
-            <FormGroup>
+            <FormGroup legendText="">
               <h4 className="titletexts"> Traffic Assessments </h4>
               <Dropdown
                 id="analyticsAlgo"
@@ -826,10 +821,22 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 />
               ) : null}
             </FormGroup>
-            <FormGroup
-              style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
-              legendText=""
-            >
+            {this.state.currentSplit.length > 0 ? (
+              <FormGroup className="currenttraffic" legendText="">
+                <p> Current Traffic Split: </p>
+                {this.state.currentSplit.map((val, idx) => {
+                  const sliderId = `${idx}=${val.split}`
+                  return (
+                    <p key={sliderId}>
+                      {' '}
+                      {val.version} : {val.split}{' '}
+                    </p>
+                  )
+                })}
+              </FormGroup>
+            ) : null}
+
+            <FormGroup className="borderstyle" legendText="">
               {trafficSplit.map((val, idx) => {
                 const sliderId = `${idx}=${val.split}`
                 return (
@@ -856,10 +863,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 />
               ) : null}
             </FormGroup>
-            <FormGroup
-              style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
-              legendText=""
-            >
+            <FormGroup className="borderstyle" legendText="">
               <h4 className="titletexts"> Criteria Assessments </h4>
               {this.state.haveCriteriaComparison ? (
                 <div>
@@ -922,10 +926,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             ) : null}
           </div>
         ) : null}
-        <FormGroup
-          style={{ paddingBottom: 10, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
-          legendText=""
-        >
+        <FormGroup className="borderstyle" legendText="">
           <Button
             size="default"
             kind="primary"
@@ -961,7 +962,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 <RadioButton id="rollforward" labelText="Roll Forward to Winner" value="rollforward" />
               </RadioButtonGroup>
             </FormGroup>
-            <FormGroup className="endexpbtn">
+            <FormGroup legendText="" className="endexpbtn">
               <Button
                 size="default"
                 kind="primary"

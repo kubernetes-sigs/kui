@@ -33,6 +33,7 @@ interface DecisionState {
   notifyTime: string
   selectedAlgo: string
   trafficSplit: Array<any>
+  currentSplit: Array<any>
   trafficErr: boolean
   notifyUser: boolean
   experimentCreated: boolean

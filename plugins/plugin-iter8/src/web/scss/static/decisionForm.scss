@@ -90,6 +90,21 @@ $darkteal: #00b3b3;
     visibility: visible;
   }
 }
+.borderstyle {
+  padding-bottom: 10;
+  border-bottom: 'gray';
+  border-style: 'dashed';
+  border-bottom-width: 'thin';
+}
+.currenttraffic {
+  /* Design */
+  font-weight: 100;
+  color: $blue;
+  font-style: italic;
+  width: 350px;
+  background-color: $dark-purple;
+  border-radius: 6px;
+}
 
 .advancedstats {
   div {
