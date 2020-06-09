@@ -209,12 +209,12 @@ class ExprBase extends React.Component<{}, Formstate> {
     return (
       <Form className="formProps" onSubmit={this.preventFormRefresh}>
         <div>
-          <FormGroup style={{ width: 600 }}>
+          <FormGroup legendText="" style={{ width: 600 }}>
             <h3>
               <span style={{ fontFamily: 'monospace', fontSize: 'larger' }}>iter8 </span> Experiment Configurations{' '}
             </h3>
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <TextInput
               id="experiment-name"
               labelText="Name"
@@ -224,7 +224,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               type="text"
             ></TextInput>
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <ComboBox
               id="experiment-type-select"
               titleText="Experiment Type"
@@ -234,7 +234,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               onChange={value => this.handleSelectExpType(value.selectedItem)}
             />
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <ComboBox
               id="namespace-select"
               titleText="Service Namespace"
@@ -245,7 +245,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               onChange={value => this.handleAddNs(value.selectedItem)}
             />
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <ComboBox
               id="service-select"
               titleText="Service"
@@ -256,7 +256,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               onChange={value => this.handleAddSvc(value.selectedItem)}
             />
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <ComboBox
               id="baseline-select"
               titleText="Baseline Deployment"
@@ -267,7 +267,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               onChange={value => this.handleAddBase(value.selectedItem)}
             />
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <p>
               <span> Candidate Deployment(s) </span>
               <br />
@@ -285,7 +285,7 @@ class ExprBase extends React.Component<{}, Formstate> {
             />
           </FormGroup>
           {this.state.showCriteria ? (
-            <FormGroup>
+            <FormGroup legendText="">
               <div style={{ position: 'relative' }}>
                 {criteria.map((val, idx) => {
                   const criterionId = `criterion-${idx}`
@@ -354,7 +354,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               </div>
             </FormGroup>
           ) : null}
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <Button
               style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
               size="default"
@@ -366,7 +366,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               Add Criterion
             </Button>
           </FormGroup>
-          <FormGroup style={{ width: 350 }}>
+          <FormGroup legendText="" style={{ width: 350 }}>
             <Button
               size="default"
               kind="primary"
