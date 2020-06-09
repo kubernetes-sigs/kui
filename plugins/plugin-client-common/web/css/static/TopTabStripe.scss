@@ -218,8 +218,7 @@
 #kui--custom-top-tab-stripe-button-container {
   display: flex;
   justify-content: flex-end;
-  position: absolute;
-  z-index: 10000;
+  position: relative;
 
   &[num-button='2'] {
     /* number of buttons in the container */
