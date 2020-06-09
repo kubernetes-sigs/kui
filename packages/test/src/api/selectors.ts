@@ -96,8 +96,9 @@ export const OUTPUT_N_STREAMING = (N: number) => `${PROMPT_BLOCK_N(N)} [data-str
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
-export const PROMPT_BLOCK_LAST_MENU = `${PROMPT_BLOCK_LAST} .kui--repl-block-right-element.kui--toolbar-button-with-icon`
-export const BLOCK_REMOVE_BUTTON = `.kui--repl-block-right-element.kui--toolbar-button-with-icon button[data-mode="Remove"]`
+export const OVERFLOW_MENU = '.kui--repl-block-right-element.kui--toolbar-button-with-icon'
+export const PROMPT_BLOCK_LAST_MENU = `${PROMPT_BLOCK_LAST} ${OVERFLOW_MENU}`
+export const BLOCK_REMOVE_BUTTON = `${OVERFLOW_MENU} button[data-mode="Remove"]`
 export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
@@ -155,8 +156,21 @@ export const WATCHER_N_SHOW_AS_TABLE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N,
 export const NEW_SPLIT_BUTTON = '#kui--split-terminal-button'
 export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
 export const SPLIT_N = (N: number) => `${SPLITS}:nth-child(${N})`
+export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-output`
 export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (N: number) => `${SPLIT_N(N)} ${_PROMPT_BLOCK}`
 export const CURRENT_PROMPT_FOR_SPLIT = (N: number) => `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_PROMPT}`
+
+export const CURRENT_GRID_FOR_SPLIT = (N: number) => `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_PROMPT} ${_TABLE_AS_GRID}`
+export const CURRENT_GRID_BY_NAME_FOR_SPLIT = (N: number, name: string) =>
+  `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_TABLE_AS_GRID} [data-tag="badge"][data-entity-name="${name}"]`
+export const CURRENT_GRID_ONLINE_FOR_SPLIT = (N: number, name: string) =>
+  `${CURRENT_GRID_BY_NAME_FOR_SPLIT(N, name)} .green-background`
+export const CURRENT_GRID_OFFLINE_FOR_SPLIT = (N: number, name: string) =>
+  `${CURRENT_GRID_BY_NAME_FOR_SPLIT(N, name)} .red-background`
+
+export const SPLIT_N_MENU = (N: number) => `${SPLIT_N(N)} ${OVERFLOW_MENU}`
+export const BLOCK_CLOSE_BUTTON = `${OVERFLOW_MENU} button[data-mode="Close watcher"]`
+export const BLOCK_UNPIN_BUTTON = `${OVERFLOW_MENU} button[data-mode="Show as table in terminal"]`
 
 /** xterm */
 export const ALT_BUFFER_N = (N: number) => `${CURRENT_TAB} .kui--scrollback:nth-child(${N}).xterm-alt-buffer-mode`

@@ -21,6 +21,10 @@ import Input, { InputOptions } from './Input'
 import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from './BlockModel'
 
+export type BlockViewTraits = {
+  isPinned?: boolean
+}
+
 type Props = InputOptions & {
   /** block ordinal index */
   idx: number
@@ -38,7 +42,7 @@ type Props = InputOptions & {
 
   noOutput?: boolean
   onOutputRender?: (idx: number) => void
-}
+} & BlockViewTraits
 
 interface State {
   // needed temporarily to make pty/client happy
@@ -73,6 +77,7 @@ export default class Block extends React.PureComponent<Props, State> {
           tab={this.props.tab}
           model={this.props.model}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
+          isPinned={this.props.isPinned}
         />
       )
     }
@@ -131,6 +136,7 @@ export default class Block extends React.PureComponent<Props, State> {
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <div
           className={'repl-block ' + this.props.model.state.toString()}
+          data-pinned={this.props.isPinned || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
           ref={c => this.setState({ _block: c })}

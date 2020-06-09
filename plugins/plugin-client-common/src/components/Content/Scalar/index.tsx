@@ -21,6 +21,7 @@ import {
   Tab as KuiTab,
   ScalarResponse,
   isHTML,
+  isMarkdownResponse,
   isRadioTable,
   isTable,
   isMixedResponse,
@@ -29,6 +30,7 @@ import {
 
 import HTMLDom from './HTMLDom'
 import renderTable from '../Table'
+import Markdown from '../Markdown'
 import { KuiContext } from '../../../'
 import RadioTableSpi from '../../spi/RadioTable'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
@@ -36,7 +38,8 @@ import { isError } from '../../Views/Terminal/Block/BlockModel'
 interface Props {
   tab: KuiTab
   response: ScalarResponse | Error
-  onUpdate?: () => void // content has updates
+  isPinned: boolean
+  onRender: (hasContent: boolean) => void
 }
 
 interface State {
@@ -84,7 +87,9 @@ export default class Scalar extends React.PureComponent<Props, State> {
           </KuiContext.Consumer>
         )
       } else if (isTable(response)) {
-        return renderTable(tab, tab.REPL, response, undefined, true, undefined, this.props.onUpdate)
+        const renderBottomToolbar = !this.props.isPinned
+        const renderGrid = this.props.isPinned
+        return renderTable(tab, tab.REPL, response, undefined, renderBottomToolbar, renderGrid, this.props.onRender)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />
@@ -92,7 +97,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return (
           <div className="result-vertical flex-layout" style={{ flex: 1, alignItems: 'unset' }}>
             {response.map((part, idx) => (
-              <Scalar key={idx} tab={this.props.tab} response={part} onUpdate={this.props.onUpdate} />
+              <Scalar {...this.props} key={idx} response={part} />
             ))}
           </div>
         )
@@ -111,6 +116,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
         // ^^^ intentionally using an "else" so that typescript double
         // checks that we've covered every case of ScalarResponse
         return <HTMLDom content={response} />
+      } else if (isMarkdownResponse(response)) {
+        return <Markdown source={response.content} />
       }
     } catch (err) {
       console.error('catastrophic error rendering Scalar', err)

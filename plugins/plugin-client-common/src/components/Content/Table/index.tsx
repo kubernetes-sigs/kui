@@ -28,7 +28,7 @@ export default function renderTable(
   paginate: boolean | number = 20,
   toolbars = false,
   asGrid = false,
-  onUpdate?: () => void
+  onRender?: (hasContent: boolean) => void
 ) {
   if (isWatchable(response)) {
     return (
@@ -42,7 +42,7 @@ export default function renderTable(
             title={!config.disableTableTitle}
             toolbars={toolbars}
             asGrid={asGrid}
-            onUpdate={onUpdate}
+            onRender={onRender}
           />
         )}
       </KuiContext.Consumer>

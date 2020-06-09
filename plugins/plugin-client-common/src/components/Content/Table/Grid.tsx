@@ -55,6 +55,9 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
           const title = `${kuiRow.name}: ${badgeCell ? badgeCell.value : ''}`
           const css = badgeCell ? badgeCell.css : 'kui--status-unknown'
 
+          // cell label, to be displayed inside of the grid cell
+          const label = <span className="kui--grid-cell-label">{kuiRow.name.slice(0, 2)}</span>
+
           return (
             <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name}>
               <span
@@ -68,7 +71,9 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
                   repl,
                   kuiRow.attributes.find(_ => _.onclick)
                 )}
-              />
+              >
+                {label}
+              </span>
             </span>
           )
         })}
