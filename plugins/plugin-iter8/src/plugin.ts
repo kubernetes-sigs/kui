@@ -15,6 +15,9 @@ export default async (registrar: Registrar) => {
     modes: []
   }))
 
+  // @ts-ignore
   const cmd = registrar.listen('/iter8/delete/metric', metricNames => metricDeleteCommand(metricNames))
+
+  // @ts-ignore
   registrar.synonym('/iter8/delete/metrics', metricNames => metricDeleteCommand(metricNames), cmd)
 }
