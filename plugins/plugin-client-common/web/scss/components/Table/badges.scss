@@ -1,6 +1,8 @@
 @import '../common/narrow-window';
 @import '../common/stippling';
 
+$grid-cell-size: 1.375em;
+
 .bx--data-table,
 .kui--table-like {
   [data-tag='badge'] {
@@ -28,9 +30,12 @@
     --color3: transparent;
     @include kui--crosshatch;
   }
-  [data-tag='badge-circle'].gray-background {
-    background: var(--color-processing);
-    color: var(--color-ui-02);
+  [data-tag='badge-circle'] {
+    &.gray-background,
+    &.kui--status-unknown {
+      background: var(--color-base05);
+      color: var(--color-base07);
+    }
   }
 }
 
@@ -44,21 +49,45 @@
       display: grid;
       grid-column-gap: 1px;
       grid-row-gap: 1px;
-      padding: 0.5em 1em;
+      padding: 0.5em 0;
 
       [data-tag='badge'] [data-tag='badge-circle'] {
+        display: flex;
         margin: 0;
-        width: 1.375em;
-        height: 1.375em;
+        width: $grid-cell-size;
+        height: $grid-cell-size;
         border-radius: 0;
 
         transition-property: filter;
         transition-timing-function: var(--transition-timing-function);
         transition-duration: var(--transition-duration);
+      }
 
-        &:hover {
-          filter: saturate(2) brightness(1.5);
-          cursor: pointer;
+      .kui--grid-cell-label {
+        flex: 1;
+        opacity: 0;
+        display: flex;
+        font-size: 0.6875em;
+        align-items: center;
+        justify-content: center;
+        mix-blend-mode: soft-light;
+        transition-property: opacity, mix-blend-mode;
+      }
+
+      &:hover {
+        .kui--grid-cell-label {
+          opacity: 1;
+        }
+
+        [data-tag='badge'] [data-tag='badge-circle'] {
+          &:hover {
+            filter: saturate(2) brightness(1.5);
+            cursor: pointer;
+
+            .kui--grid-cell-label {
+              mix-blend-mode: hard-light;
+            }
+          }
         }
       }
     }

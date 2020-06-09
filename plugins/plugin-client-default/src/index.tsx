@@ -34,7 +34,7 @@ import { productName } from '@kui-shell/client/config.d/name.json'
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui productName={productName} splitTerminals {...props}>
+    <Kui productName={productName} splitTerminals enableWatcherAutoPin {...props}>
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />

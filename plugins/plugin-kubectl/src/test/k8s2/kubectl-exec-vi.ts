@@ -56,9 +56,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
         .then(async () => {
-          await this.app.client.waitForExist(Selectors.WATCHER_N(1))
-          await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL(1, podName))
-          await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(1, podName))
+          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, podName))
         })
         .catch(Common.oops(this))
     })

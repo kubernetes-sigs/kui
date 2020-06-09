@@ -75,6 +75,7 @@ export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
 // models
 export {
   hasDisplayName,
+  isMarkdownResponse,
   MetadataBearing as ResourceWithMetadata,
   MetadataBearingWithContent as ResourceWithMetadataWithContent,
   isMetadataBearing as isResourceWithMetadata

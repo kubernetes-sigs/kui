@@ -20,7 +20,7 @@
 import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-const wdescribe = !process.env.USE_WATCH_PANE ? Common.localDescribe : xdescribe
+const wdescribe = Common.localDescribe
 
 const ns1: string = createNS()
 const ns2: string = createNS()

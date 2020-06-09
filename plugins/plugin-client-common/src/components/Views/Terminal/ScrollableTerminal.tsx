@@ -18,6 +18,7 @@ import * as React from 'react'
 import { v4 as uuid } from 'uuid'
 
 import {
+  i18n,
   eventBus,
   eventChannelUnsafe,
   ScalarResponse,
@@ -35,6 +36,7 @@ import KuiConfiguration from '../../Client/KuiConfiguration'
 import {
   Active,
   Finished,
+  FinishedBlock,
   Cancelled,
   Processing,
   isActive,
@@ -43,9 +45,17 @@ import {
   BlockModel
 } from './Block/BlockModel'
 
+import '../../../../web/scss/components/Terminal/_index.scss'
+
+const strings = i18n('plugin-client-common')
+
 type Cleaner = () => void
 
-const MAX_SPLITS = 4
+/** Hard limit on the number of Terminal splits */
+const MAX_TERMINALS = 2
+
+/** Hard limit on the number of Pinned splits */
+const MAX_PINNED = 3
 
 export interface TerminalOptions {
   noActiveInput?: boolean
@@ -91,13 +101,21 @@ interface State {
   splits: ScrollbackState[]
 }
 
+function doSplitViewViaId(uuid: string, focusBlock?: FinishedBlock) {
+  const res = new Promise((resolve, reject) => {
+    const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
+    setTimeout(() => eventChannelUnsafe.emit(requestChannel, resolve, reject, focusBlock))
+  }).catch(err => {
+    console.error('doSplitViewViaId', err)
+    throw err
+  })
+  return res
+}
+
 /** Split the given tab uuid */
 export function doSplitView(tab: KuiTab) {
-  return new Promise((resolve, reject) => {
-    const uuid = isScrollback(tab) ? tab.uuid : tab.querySelector('.kui--scrollback').getAttribute('data-scrollback-id')
-    const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
-    setTimeout(() => eventChannelUnsafe.emit(requestChannel, resolve, reject))
-  })
+  const uuid = isScrollback(tab) ? tab.uuid : tab.querySelector('.kui--scrollback').getAttribute('data-scrollback-id')
+  return doSplitViewViaId(uuid)
 }
 
 type SplitHandler = (resolve: (response: true) => void, reject: (err: Error) => void) => void
@@ -137,11 +155,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
-  private scrollback(capturedValue?: string, sbuuid = this.allocateUUIDForScrollback()): ScrollbackState {
+  private scrollback(
+    pinBlock?: FinishedBlock,
+    capturedValue?: string,
+    sbuuid = this.allocateUUIDForScrollback()
+  ): ScrollbackState {
     const state = {
       uuid: sbuuid,
       cleaners: [],
-      blocks: [Active(capturedValue)] // <-- TODO: restore from localStorage for a given tab UUID?
+      blocks: pinBlock ? [pinBlock] : [Active(capturedValue)] // <-- TODO: restore from localStorage for a given tab UUID?
     }
 
     eventBus.onceWithTabId('/tab/close/request', sbuuid, async () => {
@@ -166,7 +188,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.splice(uuid, ({ _activeBlock }) => {
       // capture the value of the last input
       const capturedValue = _activeBlock ? _activeBlock.inputValue() : ''
-      return this.scrollback(capturedValue, uuid)
+      return this.scrollback(undefined, capturedValue, uuid)
     })
   }
 
@@ -202,6 +224,39 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
+  /** Format a MarkdownResponse */
+  private markdown(key: string) {
+    return {
+      content: strings(key),
+      contentType: 'text/markdown' as const
+    }
+  }
+
+  /** is the number of pinned views reached the max limit? */
+  private hasReachedMaxPinnned() {
+    return this.numPinnedSplits() === MAX_PINNED
+  }
+
+  /**
+   * When the following requirements meet, auto-pin the command block:
+   * 1. user has enbaled the splitTerminals anad enableWatcherAutoPin feature flag
+   * 2. not in popup mode
+   * 3. the scalar response is watchable, e.g. watchable table,
+   * 4. the command option or exec options doesn't say alwaysViewIn Terminal,
+   * i.e. crud command may always want to be displayed in terminal even though it's watchable,
+   *
+   */
+  private shouldPinTheBlock(event: CommandCompleteEvent<ScalarResponse>) {
+    return (
+      this.props.config.splitTerminals &&
+      this.props.config.enableWatcherAutoPin &&
+      !isPopup() &&
+      isWatchable(event.response) &&
+      event.evaluatorOptions.alwaysViewIn !== 'Terminal' &&
+      event.execOptions.alwaysViewIn !== 'Terminal'
+    )
+  }
+
   /** the REPL finished executing a command */
   private onExecEnd(uuid = this.current ? this.current.uuid : undefined, event: CommandCompleteEvent<ScalarResponse>) {
     if (event.echo === false) {
@@ -214,33 +269,59 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.splice(uuid, curState => {
       const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === event.execUUID)
 
-      // response `showInTerminal` is either non-watchable response, or watch response that's forced to show in terminal
-      const showInTerminal =
-        !this.props.config.enableWatchPane ||
-        !isWatchable(event.response) ||
-        (isWatchable(event.response) &&
-          (event.evaluatorOptions.alwaysViewIn === 'Terminal' || event.execOptions.alwaysViewIn === 'Terminal'))
-
       if (inProcessIdx >= 0) {
         const inProcess = curState.blocks[inProcessIdx]
         if (isProcessing(inProcess)) {
           try {
-            const blocks = curState.blocks
-              .slice(0, inProcessIdx) // everything before
-              .concat([
-                Finished(
-                  inProcess,
-                  event.responseType === 'ScalarResponse' && showInTerminal ? event.response : true,
-                  event.cancelled
+            if (this.shouldPinTheBlock(event)) {
+              if (this.hasReachedMaxPinnned()) {
+                const blocks = curState.blocks
+                  .slice(0, inProcessIdx) // everything before
+                  .concat([Finished(inProcess, new Error(strings('No more pins allowed')), false)]) // tell the user that we didn't pinned the output
+                  .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
+                  .concat([Active()]) // plus a new block!
+
+                return {
+                  blocks
+                }
+              } else {
+                const pinnedBlock = Object.assign(
+                  {},
+                  Finished(inProcess, event.responseType === 'ScalarResponse' ? event.response : true, event.cancelled),
+                  {
+                    isPinned: true
+                  } /** <--- pin the block, and render the block accordingly e.g. not show timestamp, auto-gridify table */
                 )
-              ]) // mark as finished
-              .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
-              .concat([Active()]) // plus a new block!
-            return {
-              blocks
+
+                // show the response in a split view
+                doSplitViewViaId(uuid, pinnedBlock)
+
+                // signify that the response has been pinned in the original block
+                const blocks = curState.blocks
+                  .slice(0, inProcessIdx) // everything before
+                  .concat([Finished(inProcess, this.markdown('Output has been pinned to a watch pane'), false)]) // tell the user that we pinned the output
+                  .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
+                  .concat([Active()]) // plus a new block!
+
+                return {
+                  blocks
+                }
+              }
+            } else {
+              const blocks = curState.blocks
+                .slice(0, inProcessIdx) // everything before
+                .concat([
+                  Finished(inProcess, event.responseType === 'ScalarResponse' ? event.response : true, event.cancelled)
+                ]) // mark as finished
+                .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
+                .concat([Active()]) // plus a new block!
+              return {
+                blocks
+              }
             }
           } catch (err) {
             console.error('error updating state', err)
+            throw err
           }
         } else {
           console.error('invalid state: got a command completion event for a block that is not processing', event)
@@ -265,7 +346,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Owner wants us to focus on the current prompt */
   public doFocus(scrollback = this.current) {
     const { _activeBlock } = scrollback
-    if (_activeBlock) {
+
+    if (this.hasPinned(scrollback)) {
+      return this.doFocus(this.state.splits.find(_ => !this.hasPinned(_)))
+    } else if (_activeBlock) {
       if (_activeBlock.state._block && isInViewport(_activeBlock.state._block)) {
         // re: isInViewport, see https://github.com/IBM/kui/issues/4739
         _activeBlock.doFocus()
@@ -316,16 +400,25 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return state
   }
 
+  private numPinnedSplits() {
+    return this.state.splits.reduce((N, _) => (N += _.blocks.find(_ => _.isPinned) ? 1 : 0), 0)
+  }
+
   /** Split the view */
-  private onSplit(resolve: (response: true) => void, reject: (err: Error) => void) {
-    if (this.state.splits.length === MAX_SPLITS) {
-      reject(new Error('No more splits allowed'))
+  private onSplit(resolve: (response: true) => void, reject: (err: Error) => void, pinBlock?: FinishedBlock) {
+    const nPinned = this.numPinnedSplits()
+    const nTerminals = this.state.splits.length - nPinned
+
+    if (!pinBlock && nTerminals === MAX_TERMINALS) {
+      reject(new Error(strings('No more splits allowed')))
+    } else if (pinBlock && this.hasReachedMaxPinnned()) {
+      reject(new Error(strings('No more pins allowed')))
     } else {
       this.setState(({ splits, focusedIdx }) => {
         const newFocus = focusedIdx + 1
         const newSplits = splits
           .slice(0, newFocus)
-          .concat(this.scrollback())
+          .concat(this.scrollback(pinBlock))
           .concat(splits.slice(newFocus))
 
         return {
@@ -364,16 +457,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return curState.splits.findIndex(_ => _.uuid === uuid)
   }
 
+  /** does the scrollback has pinned blocks? */
+  private hasPinned(scrollback: ScrollbackState) {
+    return scrollback.blocks.findIndex(block => block.isPinned) !== -1
+  }
+
   /**
    * @return the index of the given scrollback, in the context of the
    * current (given) state
-   * Note: if theres's no scrollback matched the given state,
+   * Note: if theres's no unpinned scrollback matched the given state,
    * e.g. the scrollback has been removed, return 0
    *
    */
   private findAvailableSplit(curState: State, uuid: string): number {
     const focusedIdx = this.findSplit(curState, uuid)
-    return focusedIdx !== -1 ? focusedIdx : 0
+    const availableSplit = focusedIdx !== -1 ? focusedIdx : 0
+
+    return !this.hasPinned(curState.splits[availableSplit]) ? availableSplit : 0
   }
 
   /**
@@ -392,11 +492,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           eventBus.emitWithTabId('/tab/close/request', parent.uuid, parent)
         }
 
-        // const focusedIdx = curState.focusedIdx !== idx ? curState.focusedIdx : idx === 0 ? idx
-
-        return {
-          splits
-        }
+        // if there's no unpinned split remained, make a new split
+        const nonPinnedSplits = splits.filter(_ => !this.hasPinned(_))
+        return nonPinnedSplits.length !== 0 ? { splits } : { splits: [this.scrollback()].concat(splits) }
       }
     })
   }
@@ -416,6 +514,37 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       return {
         splits
+      }
+    })
+  }
+
+  /** remove the pinned block, and show the original response in a non-pinned scrollback */
+  private unPinTheBlock(uuid: string, block: FinishedBlock) {
+    // 1. remove the pin
+    this.removeSplit(uuid)
+
+    // 2. find an available block to show the unpinned response
+    this.splice(uuid, curState => {
+      const unPinnedBlock = Object.assign(block, { isPinned: false })
+      const findOriginalBlock = curState.blocks.findIndex(
+        _ => hasUUID(_) && hasUUID(block) && _.execUUID === block.execUUID
+      )
+      const activeBlockIdx = curState.blocks.findIndex(_ => isActive(_))
+
+      if (findOriginalBlock !== -1) {
+        return {
+          blocks: curState.blocks
+            .slice(0, findOriginalBlock) // everything before the original block
+            .concat([unPinnedBlock]) // add the unpinned block
+            .concat(curState.blocks.slice(findOriginalBlock + 1)) // everything after the original block
+        }
+      } else {
+        return {
+          blocks: curState.blocks
+            .slice(0, activeBlockIdx) // everything before the active block
+            .concat([unPinnedBlock]) // add the unpinned block
+            .concat(curState.blocks.slice(activeBlockIdx)) // everything after
+        }
       }
     })
   }
@@ -476,41 +605,63 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   public render() {
+    const nPinned = this.numPinnedSplits()
+    const nTerminals = this.state.splits.length - nPinned
+
     return (
       <div className={'repl' + (this.props.sidecarIsVisible ? ' sidecar-visible' : '')} id="main-repl">
-        <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={this.state.splits.length}>
+        <div
+          className="repl-inner zoomable kui--terminal-split-container"
+          data-split-count={nTerminals}
+          data-pinned-count={nPinned === 0 ? undefined : nPinned}
+        >
           {this.state.splits.map(scrollback => {
             const tab = this.tabFor(scrollback)
-            return (
-              <div
-                className="kui--scrollback scrollable scrollable-auto"
-                key={tab.uuid}
-                data-scrollback-id={tab.uuid}
-                ref={ref => this.tabRefFor(scrollback, ref)}
-                onClick={this.onClick.bind(this, scrollback)}
-              >
-                {scrollback.blocks.map((_, idx) => (
-                  <Block
-                    key={hasUUID(_) ? _.execUUID : idx}
-                    idx={idx}
-                    model={_}
-                    uuid={scrollback.uuid}
-                    tab={tab}
-                    noActiveInput={this.props.noActiveInput}
-                    onOutputRender={this.onOutputRender.bind(this, scrollback)}
-                    willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
-                    willLoseFocus={() => this.doFocus(scrollback)}
-                    ref={c => {
-                      if (isActive(_)) {
-                        // grab a ref to the active block, to help us maintain focus
-                        scrollback._activeBlock = c
-                      }
-                    }}
-                  />
-                ))}
-              </div>
+            const hasPinned = !!scrollback.blocks.find(_ => _.isPinned)
+            return React.createElement(
+              hasPinned ? 'span' : 'div',
+              {
+                className: 'kui--scrollback scrollable scrollable-auto',
+                'data-has-pinned': hasPinned || undefined,
+                key: tab.uuid,
+                'data-scrollback-id': tab.uuid,
+                ref: ref => this.tabRefFor(scrollback, ref),
+                onClick: this.onClick.bind(this, scrollback)
+              },
+              scrollback.blocks.map((_, idx) => (
+                <Block
+                  key={hasUUID(_) ? _.execUUID : idx}
+                  idx={idx}
+                  model={_}
+                  uuid={scrollback.uuid}
+                  tab={tab}
+                  noActiveInput={this.props.noActiveInput}
+                  onOutputRender={this.onOutputRender.bind(this, scrollback)}
+                  willRemove={
+                    _.isPinned
+                      ? this.removeSplit.bind(this, scrollback.uuid)
+                      : this.willRemoveBlock.bind(this, scrollback.uuid, idx)
+                  }
+                  unPin={this.unPinTheBlock.bind(this, scrollback.uuid, _)}
+                  willLoseFocus={() => this.doFocus(scrollback)}
+                  isPinned={_.isPinned}
+                  ref={c => {
+                    if (isActive(_)) {
+                      // grab a ref to the active block, to help us maintain focus
+                      scrollback._activeBlock = c
+                    }
+                  }}
+                />
+              ))
             )
           })}
+          {nPinned > 0 &&
+            nPinned < MAX_PINNED &&
+            Array(MAX_PINNED - nPinned)
+              .fill(undefined)
+              .map((_, idx) => (
+                <span key={`kui--pinned-blank-${idx}`} data-has-pinned className="kui--scrollback kui--pinned-blank" />
+              ))}
         </div>
       </div>
     )

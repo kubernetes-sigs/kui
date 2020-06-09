@@ -1,0 +1,291 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** Pinned scrollbacks */
+
+$table-grid-cell-size: 1.375em;
+$inset: 0.5em;
+
+/** special styling of the whole scrollback, if it is pinned */
+.kui--scrollback[data-has-pinned='true'] {
+  background-color: var(--color-base03);
+  padding: 0;
+
+  /* css magic for inner scrolling (see below for more magic rules) */
+  display: flex;
+  overflow: hidden;
+}
+
+/** special styling of input area for pinned scrollbacks */
+.repl-block[data-pinned] {
+  margin: 0;
+  position: relative;
+
+  /* css magic for inner scrolling (see above and below for more magic rules) */
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+
+  .repl-output,
+  .repl-result {
+    /* css magic for inner scrolling (see above and below for more magic rules) */
+    flex: 1;
+  }
+
+  /* unset the font-size of kui--hero-text in ui.css */
+  .repl-output .kui--hero-text {
+    font-size: unset;
+    flex: 5; /* approximate centering */
+  }
+
+  .repl-input {
+    position: absolute;
+    top: calc(0.875em / 4);
+    right: 0;
+  }
+
+  .kui--data-table-wrapper {
+    padding: 0;
+
+    /* css magic for inner scrolling (see above and below for more magic rules) */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .kui--data-table-toolbar-filler {
+    display: none;
+  }
+  .kui--data-table-toolbar-top {
+    border-bottom: 1px dashed var(--color-table-border3);
+    padding: 0 $inset;
+  }
+
+  nav[aria-label='Breadcrumb'],
+  .bx--breadcrumb {
+    /* avoid overflow due to long breadcrumbs */
+    overflow: hidden;
+  }
+}
+
+/** grid assignments for NOT-PINNED scrollbacks */
+div.kui--scrollback:nth-of-type(1) {
+  grid-area: T1;
+}
+div.kui--scrollback:nth-of-type(2) {
+  grid-area: T2;
+}
+div.kui--scrollback:nth-of-type(3) {
+  grid-area: T3;
+}
+
+/** grid assignments for PINNED scrollbacks */
+span.kui--scrollback[data-has-pinned]:nth-of-type(1) {
+  grid-area: P1;
+}
+span.kui--scrollback[data-has-pinned]:nth-of-type(2) {
+  grid-area: P2;
+}
+span.kui--scrollback[data-has-pinned]:nth-of-type(3) {
+  grid-area: P3;
+}
+span.kui--scrollback[data-has-pinned]:nth-of-type(4) {
+  grid-area: P4;
+}
+
+/** styling for "blank" pin areas */
+span.kui--scrollback.kui--pinned-blank {
+  background-color: var(--color-repl-background);
+  outline: 1px dashed var(--color-repl-background);
+}
+
+/** special styling of table-as-grid within pinned scrollbacks */
+span.kui--scrollback[data-has-pinned] [data-table-watching] {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+
+  .kui--data-table-as-grid .bx--data-table {
+    padding: $inset;
+    grid-template-columns: repeat(auto-fill, $table-grid-cell-size) !important;
+
+    /* css magic to give inner scrolling of grid */
+    position: absolute;
+    overflow-y: auto;
+    max-height: calc(100% - 1.875em - #{$inset});
+    top: 1.875em;
+
+    [data-tag='badge'] [data-tag='badge-circle'] {
+      width: $table-grid-cell-size;
+      height: $table-grid-cell-size;
+    }
+  }
+}
+.repl.sidecar-visible span.kui--scrollback[data-has-pinned] .kui--data-table-wrapper.kui--data-table-as-grid {
+  flex: 1;
+}
+
+/** Default Case: no splits, no pinned scrollbacks */
+.kui--terminal-split-container[data-split-count='1'] {
+  grid-template-areas: 'T1';
+}
+
+/**
+ * Case: sidecar closed; here we maintain a 3:1 ratio between splits
+   and pinned areas, in terms of height.
+ *
+ */
+.repl:not(.sidecar-visible) .kui--terminal-split-container {
+  &[data-split-count='1'][data-pinned-count] {
+    grid-template-areas:
+      'T1 T1 T1'
+      'T1 T1 T1'
+      'T1 T1 T1'
+      'P1 P2 P3';
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &[data-split-count='2'] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: 'T1 T2';
+
+    &[data-pinned-count] {
+      grid-template-areas:
+        'T1 T1 T1 T2 T2 T2'
+        'T1 T1 T1 T2 T2 T2'
+        'T1 T1 T1 T2 T2 T2'
+        'P1 P1 P2 P2 P3 P3';
+      grid-template-rows: repeat(4, 1fr);
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  &[data-split-count='3'] {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: 'T1 T2 T3';
+
+    &[data-pinned-count] {
+      grid-template-areas:
+        'T1 T2 T3'
+        'T1 T2 T3'
+        'T1 T2 T3'
+        'P1 P2 P3';
+      grid-template-rows: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+/** 
+ * Case: sidecar open; here we maintain a 4:1 ratio between splits and
+ * pinned, in terms of height.
+ *
+ */
+.repl.sidecar-visible .kui--terminal-split-container {
+  /* no point in showing blanks 3 and 4, that would just waste precious vertical real estate */
+  &[data-pinned-count='1'] {
+    span.kui--scrollback.kui--pinned-blank {
+      &:nth-of-type(2),
+      &:nth-of-type(3) {
+        display: none;
+      }
+    }
+  }
+  &[data-pinned-count='2'] {
+    span.kui--scrollback.kui--pinned-blank {
+      &:nth-of-type(3) {
+        display: none;
+      }
+    }
+  }
+
+  grid-template-columns: repeat(1, 1fr);
+
+  /* sidecar open, one terminal */
+  &[data-split-count='1'] {
+    &[data-pinned-count='1'] {
+      grid-template-areas:
+        'T1'
+        'T1'
+        'T1'
+        'T1'
+        'P1';
+      grid-template-rows: repeat(5, 1fr);
+    }
+    &[data-pinned-count='2'] {
+      grid-template-areas:
+        'T1 T1'
+        'T1 T1'
+        'T1 T1'
+        'T1 T1'
+        'P1 P2';
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &[data-pinned-count='3'] {
+      grid-template-areas:
+        'T1 T1'
+        'T1 T1'
+        'T1 T1'
+        'P3 P3'
+        'P1 P2';
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* sidecar open, two terminals */
+  &[data-split-count='2'] {
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas: 'T1' 'T2';
+
+    &[data-pinned-count='1'] {
+      grid-template-areas:
+        'T1 T1'
+        'T1 T1'
+        'T2 T2'
+        'T2 T2'
+        'P1 P1';
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &[data-pinned-count='2'] {
+      grid-template-areas:
+        'T1 T1'
+        'T1 T1'
+        'T2 T2'
+        'T2 T2'
+        'P1 P2';
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &[data-pinned-count='3'] {
+      grid-template-areas:
+        'T1 T1'
+        'T1 T1'
+        'T1 T1'
+        'T2 T2'
+        'T2 T2'
+        'T2 T2'
+        'P3 P3'
+        'P3 P3'
+        'P1 P2'
+        'P1 P2';
+      grid-template-rows: repeat(10, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}

@@ -112,7 +112,20 @@ export function isMetadataBearingByReference<T extends MetadataBearingByReferenc
  * A mostly scalar entity
  *
  */
-export type SimpleEntity = boolean | string | number | HTMLElement | /* MessageBearingEntity | */ Error
+export type SimpleEntity =
+  | boolean
+  | string
+  | number
+  | HTMLElement
+  | /* MessageBearingEntity | */ Error
+  | MarkdownResponse
+
+type MarkdownResponse = { content: string; contentType: 'text/markdown' }
+
+export function isMarkdownResponse(entity: Entity): entity is MarkdownResponse {
+  const md = entity as MarkdownResponse
+  return md && typeof md.content === 'string' && md.contentType === 'text/markdown'
+}
 
 /**
  * The plugin returns a mix of types; e.g. `helm status` returns

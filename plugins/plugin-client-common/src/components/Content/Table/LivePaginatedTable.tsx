@@ -20,7 +20,7 @@ import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 import PaginatedTable, { Props, State } from './PaginatedTable'
 import { kuiHeader2carbonHeader, kuiRow2carbonRow, NamedDataTableRow } from './kui2carbon'
 
-type LiveProps = Props<KuiTable & Watchable>
+type LiveProps = Props<KuiTable & Watchable> & { onRender: (hasContent: boolean) => void }
 
 interface LiveState extends State {
   isWatching: boolean
@@ -47,6 +47,9 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
   /** Render the component */
   public render() {
+    if (this.props.onRender) {
+      setTimeout(() => this.props.onRender(this.state.rows.length > 0))
+    }
     return <div data-table-watching={this.state.isWatching}>{super.render()}</div>
   }
 
@@ -154,8 +157,6 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     } else {
       this._deferredUpdate = newRows
     }
-
-    this.props.onUpdate()
   }
 
   /** End of a deferred batch of updates */

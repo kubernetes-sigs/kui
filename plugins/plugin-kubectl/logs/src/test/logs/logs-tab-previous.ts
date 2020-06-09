@@ -44,7 +44,7 @@ describe(`kubectl Logs previous tab ${process.env.MOCHA_RUN_TARGET || ''}`, func
   allocateNS(this, ns)
 
   createPodWithoutWaiting(inputEncoded, podName)
-  waitForPod()
+  waitForPod(2)
 
   kubectlLogsPrevious()
   clickPreviousToggle('warning', false) // click toggle and expect previous=false

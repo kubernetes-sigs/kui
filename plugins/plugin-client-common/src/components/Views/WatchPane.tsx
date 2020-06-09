@@ -213,6 +213,7 @@ export default class WatchPane extends React.PureComponent<Props, State> {
                         title={false}
                         toolbars={false}
                         paginate={false}
+                        onRender={() => false}
                       />
                     </div>
                   )}
