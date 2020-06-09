@@ -22,13 +22,16 @@ export function uuid() {
   return (_uuidCounter++).toString()
 }
 
-export default class TabModel {
-  private readonly _uuid: string
-  private readonly _state: TabState
+export interface TopTabButton<P extends { key: string } = { key: string }> {
+  icon: React.ReactElement<P>
+}
 
-  public constructor() {
-    this._uuid = uuid()
-    this._state = new TabState(this._uuid)
+export default class TabModel {
+  public constructor(
+    private readonly _uuid = uuid(),
+    private readonly _state = new TabState(_uuid),
+    private readonly _buttons: TopTabButton[] = []
+  ) {
     this._state.capture()
   }
 
@@ -38,5 +41,13 @@ export default class TabModel {
 
   public get state() {
     return this._state
+  }
+
+  public get buttons() {
+    return this._buttons
+  }
+
+  public update(buttons: TopTabButton[]) {
+    return new TabModel(this.uuid, this.state, buttons)
   }
 }

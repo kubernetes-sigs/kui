@@ -163,6 +163,22 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     )
   }
 
+  /** Buttons that appear in the top right */
+  private buttons() {
+    if (this.props.tabs[this.props.activeIdx]) {
+      const { buttons } = this.props.tabs[this.props.activeIdx]
+      return (
+        <div
+          id="kui--custom-top-tab-stripe-button-container"
+          num-button={buttons.length} // helps with css to calculate the right position of the container
+          className="kui--hide-in-narrower-windows" // re: kui--hide-in-narrower-windows, see https://github.com/IBM/kui/issues/4459
+        >
+          {buttons.map(_ => _.icon)}
+        </div>
+      )
+    }
+  }
+
   /**
    * React render handler
    *
@@ -173,6 +189,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
         {/* this.headerMenu(args) */}
         {this.headerName()}
         {this.tabs()}
+        {this.buttons()}
         {/* this.sidenav(args) */}
       </Header>
     )

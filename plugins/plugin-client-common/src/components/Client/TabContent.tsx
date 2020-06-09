@@ -22,6 +22,7 @@ import Icons from '../spi/Icons'
 import KuiContext from './context'
 import Confirm from '../Views/Confirm'
 import Loading from '../spi/Loading'
+import { TopTabButton } from './TabModel'
 import Width from '../Views/Sidecar/width'
 import WatchPane, { Height } from '../Views/WatchPane'
 
@@ -53,6 +54,7 @@ type Props = TabContentOptions &
     active: boolean
     state: TabState
     onTabReady?: (tab: KuiTab) => void
+    willUpdateTopTabButtons?: (buttons: TopTabButton[]) => void
   }
 
 type CurrentlyShowing = 'TerminalOnly' | 'TerminalPlusSidecar' | 'TerminalPlusWatcher' | 'TerminalSidecarWatcher'
@@ -274,7 +276,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       const sidecarWidth = desiredWidth
       const watchPaneOpen = curState.primaryHeight === Height.Split
 
-      const activeView =
+      const activeView: CurrentlyShowing =
         sidecarWidth === Width.Closed
           ? watchPaneOpen
             ? 'TerminalPlusWatcher'
@@ -283,12 +285,15 @@ export default class TabContent extends React.PureComponent<Props, State> {
           ? 'TerminalSidecarWatcher'
           : 'TerminalPlusSidecar'
 
-      return {
+      const newState = {
         sidecarHasContent: true,
         sidecarWidth,
         priorSidecarWidth: curState.sidecarWidth,
         activeView
       }
+
+      this.updateTopTabButtons(newState)
+      return newState
     })
   }
 
@@ -300,8 +305,24 @@ export default class TabContent extends React.PureComponent<Props, State> {
       const sidecarWidth = showSidecar ? Width.Split60 : Width.Closed
       const primaryHeight = showWatchPane ? Height.Split : Height.NotSplit
 
-      return { sidecarWidth, activeView, priorSidecarWidth: curState.sidecarWidth, primaryHeight }
+      const newState = {
+        sidecarWidth,
+        activeView,
+        priorSidecarWidth: curState.sidecarWidth,
+        primaryHeight,
+        sidecarHasContent: curState.sidecarHasContent
+      }
+
+      this.updateTopTabButtons(newState)
+      return newState
     })
+  }
+
+  /** Switch to the given view, if we aren't already there */
+  private showIfNot(desiredView: CurrentlyShowing) {
+    if (this.state.activeView !== desiredView) {
+      this.show(desiredView)
+    }
   }
 
   private openWatchPane() {
@@ -444,8 +465,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
           </div>
           {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
         </div>
-
-        {this.topTabButtons()}
       </React.Fragment>
     )
   }
@@ -505,62 +524,56 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   /**
-   * Buttons that are placed in the TopTabStripe and which controller
-   * the visibility of various views.
+   * If given, use the top tab button controller to provide the
+   * latest button model.
+   *
    */
-  protected topTabButtons() {
-    if (this.props.active && (this.state.sidecarHasContent || this.state.watchPaneHasContent)) {
-      const buttonNum = this.state.sidecarHasContent && this.state.watchPaneHasContent ? 4 : 2
+  private updateTopTabButtons(newState: Pick<State, 'activeView' | 'sidecarHasContent'>) {
+    if (this.props.willUpdateTopTabButtons) {
+      this.props.willUpdateTopTabButtons([this.terminalButton(newState), this.sidecarButton(newState)].filter(_ => _))
+    }
+  }
 
-      return (
-        <div
-          id="kui--custom-top-tab-stripe-button-container"
-          num-button={buttonNum} // helps with css to calculate the right position of the container
-          className="kui--hide-in-narrower-windows" // re: kui--hide-in-narrower-windows, see https://github.com/IBM/kui/issues/4459
-        >
-          <Icons
-            icon="TerminalOnly"
-            data-mode="show only terminal"
-            data-active={this.state.activeView === 'TerminalOnly' || undefined}
-            onClick={this.state.activeView !== 'TerminalOnly' ? () => this.show('TerminalOnly') : undefined}
-          />
+  /**
+   * Note how we use the argument `state` to initialize things, but we
+   * intentionally use this.state in the onClick. The onClick handler
+   * may be invoked after any number of onClicks in this or other
+   * buttons. So it must pay attention to the *current* state, not the
+   * state at the time of creation.
+   *
+   */
+  private terminalButton(state: Pick<State, 'activeView'>): TopTabButton {
+    const key = 'show only terminal'
 
-          {this.state.sidecarHasContent && (
-            <Icons
-              icon="TerminalPlusSidecar"
-              data-mode="show terminal and sidecar"
-              data-active={this.state.activeView === 'TerminalPlusSidecar' || undefined}
-              onClick={
-                this.state.activeView !== 'TerminalPlusSidecar' ? () => this.show('TerminalPlusSidecar') : undefined
-              }
-            />
-          )}
-
-          {this.state.watchPaneHasContent && (
-            <Icons
-              icon="TerminalPlusWatcher"
-              data-mode="show terminal and watcher"
-              data-active={this.state.activeView === 'TerminalPlusWatcher' || undefined}
-              onClick={
-                this.state.activeView !== 'TerminalPlusWatcher' ? () => this.show('TerminalPlusWatcher') : undefined
-              }
-            />
-          )}
-
-          {this.state.watchPaneHasContent && this.state.sidecarHasContent && (
-            <Icons
-              icon="TerminalSidecarWatcher"
-              data-mode="show terminal sidecar and watcher"
-              data-active={this.state.activeView === 'TerminalSidecarWatcher' || undefined}
-              onClick={
-                this.state.activeView !== 'TerminalSidecarWatcher'
-                  ? () => this.show('TerminalSidecarWatcher')
-                  : undefined
-              }
-            />
-          )}
-        </div>
+    return {
+      icon: (
+        <Icons
+          icon="TerminalOnly"
+          key={key}
+          data-mode={key}
+          data-active={state.activeView === 'TerminalOnly' || undefined}
+          onClick={this.showIfNot.bind(this, 'TerminalOnly')}
+        />
       )
+    }
+  }
+
+  /** Caution: see the Note for this.terminalButton, re: `state` versus `this.state` */
+  private sidecarButton(state: Pick<State, 'activeView' | 'sidecarHasContent'>): TopTabButton {
+    if (state.sidecarHasContent) {
+      const key = 'show terminal and sidecar'
+
+      return {
+        icon: (
+          <Icons
+            icon="TerminalPlusSidecar"
+            key={key}
+            data-mode={key}
+            data-active={state.activeView === 'TerminalPlusSidecar' || undefined}
+            onClick={this.showIfNot.bind(this, 'TerminalPlusSidecar')}
+          />
+        )
+      }
     }
   }
 }
