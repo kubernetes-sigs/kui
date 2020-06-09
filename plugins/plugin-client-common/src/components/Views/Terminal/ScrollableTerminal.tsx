@@ -487,7 +487,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     tab={tab}
                     noActiveInput={this.props.noActiveInput}
                     onOutputRender={this.onOutputRender.bind(this)}
-                    willRemove={this.willRemoveBlock.bind(this, idx)}
+                    willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     willLoseFocus={() => this.doFocus(scrollback)}
                     ref={c => {
                       if (isActive(_)) {
