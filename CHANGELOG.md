@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.5](https://github.com/IBM/kui/compare/v8.8.4...v8.8.5) (2020-06-09)
+
+### Bug Fixes
+
+- **packages/core:** eliminate races and buggy fallback in prescan loader ([00716fc](https://github.com/IBM/kui/commit/00716fc)), closes [#4847](https://github.com/IBM/kui/issues/4847)
+- **plugins/plugin-client-common:** missed i18n strings in Dropdown menus ([c516238](https://github.com/IBM/kui/commit/c516238)), closes [#4850](https://github.com/IBM/kui/issues/4850)
+- **plugins/plugin-kubectl:** kubectl apply edit-last-applied freezes in kui ([d6b0b86](https://github.com/IBM/kui/commit/d6b0b86)), closes [#4808](https://github.com/IBM/kui/issues/4808)
+- **plugins/plugin-kubectl:** kubectl apply set-last-applied does not work ([b088466](https://github.com/IBM/kui/commit/b088466)), closes [#4844](https://github.com/IBM/kui/issues/4844)
+- **plugins/plugin-kubectl:** oc get projects does not allow user selection ([f8e9306](https://github.com/IBM/kui/commit/f8e9306)), closes [#4805](https://github.com/IBM/kui/issues/4805)
+- update AnimalApp dependences ([1987d0c](https://github.com/IBM/kui/commit/1987d0c)), closes [#4835](https://github.com/IBM/kui/issues/4835)
+
+### Features
+
+- line highlights on editor save, used for k edit apply errors ([f1eae85](https://github.com/IBM/kui/commit/f1eae85)), closes [#4795](https://github.com/IBM/kui/issues/4795)
+
 ## [8.8.4](https://github.com/IBM/kui/compare/v8.8.3...v8.8.4) (2020-06-07)
 
 ### Bug Fixes

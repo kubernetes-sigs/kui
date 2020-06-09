@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.5](https://github.com/IBM/kui/compare/v8.8.4...v8.8.5) (2020-06-09)
+
+### Bug Fixes
+
+- **packages/core:** eliminate races and buggy fallback in prescan loader ([00716fc](https://github.com/IBM/kui/commit/00716fc)), closes [#4847](https://github.com/IBM/kui/issues/4847)
+
+### Features
+
+- line highlights on editor save, used for k edit apply errors ([f1eae85](https://github.com/IBM/kui/commit/f1eae85)), closes [#4795](https://github.com/IBM/kui/issues/4795)
+
 ## [8.8.4](https://github.com/IBM/kui/compare/v8.8.3...v8.8.4) (2020-06-07)
 
 ### Bug Fixes

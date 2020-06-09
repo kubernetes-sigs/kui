@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.8.5](https://github.com/IBM/kui/compare/v8.8.4...v8.8.5) (2020-06-09)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** missed i18n strings in Dropdown menus ([c516238](https://github.com/IBM/kui/commit/c516238)), closes [#4850](https://github.com/IBM/kui/issues/4850)
+
+### Features
+
+- line highlights on editor save, used for k edit apply errors ([f1eae85](https://github.com/IBM/kui/commit/f1eae85)), closes [#4795](https://github.com/IBM/kui/issues/4795)
+
 ## [8.8.4](https://github.com/IBM/kui/compare/v8.8.3...v8.8.4) (2020-06-07)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common
