@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-ibmcloud",
-  "version": "8.7.0",
+  "version": "8.9.0",
   "description": "ibmcloud kubernetes service kui plugin",
   "license": "Apache-2.0",
   "keywords": [
