@@ -117,6 +117,18 @@ describe(`split terminals ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   const focusOnSplit = focus.bind(this)
 
   // here come the tests
+
+  splitTheTerminalViaCommand(2)
+  focusOnSplit(1, 2)
+  showVersion(2)
+  focusOnSplit(2, 1)
+  closeTheSplit(1)
+  it('should still show version as the command, not exit', () => {
+    return CLI.expectPriorInput(Selectors.PROMPT_N(1), 'version')
+  })
+
+  it('should refresh', () => Common.refresh(this))
+
   showVersion(1)
   splitTheTerminalViaCommand(2)
   showVersion(2)
@@ -143,7 +155,4 @@ describe(`split terminals ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   focusOnSplit(2, 1)
   focusOnSplit(1, 2)
   focusOnSplit(2, 3)
-  /* closeTheSplit(2)
-  focusOnSplit(2)
-  focusOnSplit(1) */
 })
