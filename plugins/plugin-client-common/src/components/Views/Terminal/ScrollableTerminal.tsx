@@ -32,7 +32,16 @@ import {
 import Block from './Block'
 import getSize from './getSize'
 import KuiConfiguration from '../../Client/KuiConfiguration'
-import { Active, Finished, Cancelled, Processing, isActive, isProcessing, BlockModel } from './Block/BlockModel'
+import {
+  Active,
+  Finished,
+  Cancelled,
+  Processing,
+  isActive,
+  isProcessing,
+  hasUUID,
+  BlockModel
+} from './Block/BlockModel'
 
 type Cleaner = () => void
 
@@ -468,19 +477,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           ref={c => (this._scrollRegion = c)}
           data-split-count={this.state.splits.length}
         >
-          {this.state.splits.map((scrollback, sbidx) => {
+          {this.state.splits.map(scrollback => {
             const tab = this.tabFor(scrollback)
             return (
               <div
                 className="kui--scrollback scrollable scrollable-auto"
-                key={sbidx}
+                key={tab.uuid}
                 data-scrollback-id={tab.uuid}
                 ref={ref => this.tabRefFor(scrollback, ref)}
                 onClick={this.onClick.bind(this, scrollback)}
               >
                 {scrollback.blocks.map((_, idx) => (
                   <Block
-                    key={idx}
+                    key={hasUUID(_) ? _.execUUID : idx}
                     idx={idx}
                     model={_}
                     uuid={scrollback.uuid}
