@@ -20,6 +20,7 @@ import {
   i18n,
   isCodedError,
   isHTML,
+  isMarkdownResponse,
   isTable,
   eventChannelUnsafe,
   Tab as KuiTab,
@@ -27,6 +28,8 @@ import {
   Streamable,
   isWatchable
 } from '@kui-shell/core'
+
+import { BlockViewTraits } from './'
 
 import {
   BlockModel,
@@ -45,7 +48,7 @@ import Scalar from '../../../Content/Scalar/'
 
 const strings = i18n('plugin-client-common')
 
-interface Props {
+type Props = {
   /** tab UUID */
   uuid: string
 
@@ -54,11 +57,11 @@ interface Props {
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
-}
+} & BlockViewTraits
 
 interface State {
+  assertHasContent: boolean
   isResultRendered: boolean
-  hasContent?: boolean
 
   streamingOutput: Streamable[]
   streamingConsumer: Stream
@@ -76,6 +79,7 @@ export default class Output extends React.PureComponent<Props, State> {
     }
 
     this.state = {
+      assertHasContent: false,
       isResultRendered: false,
       streamingOutput: [],
       streamingConsumer
@@ -114,12 +118,25 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
+  private onRender(assertHasContent: boolean): void {
+    if (this.props.onRender) {
+      this.props.onRender()
+    }
+    this.setState({ assertHasContent })
+  }
+
   private stream() {
     if (this.state.streamingOutput.length > 0) {
       return (
         <div className="repl-result-like result-vertical" data-stream>
           {this.state.streamingOutput.map((part, idx) => (
-            <Scalar key={idx} tab={this.props.tab} response={part} onUpdate={this.setHasContent.bind(this)} />
+            <Scalar
+              key={idx}
+              tab={this.props.tab}
+              response={part}
+              isPinned={this.props.isPinned}
+              onRender={this.onRender.bind(this)}
+            />
           ))}
         </div>
       )
@@ -149,7 +166,8 @@ export default class Output extends React.PureComponent<Props, State> {
             <Scalar
               tab={this.props.tab}
               response={this.props.model.response}
-              onUpdate={this.setHasContent.bind(this)}
+              isPinned={this.props.isPinned}
+              onRender={this.onRender.bind(this)}
             />
           )}
         </div>
@@ -172,6 +190,7 @@ export default class Output extends React.PureComponent<Props, State> {
       const { response } = block
       return (
         isHTML(response) ||
+        isMarkdownResponse(response) ||
         (typeof response === 'string' && response.length > 0) ||
         (isTable(response) && response.body.length > 0) ||
         this.state.streamingOutput.length > 0
@@ -181,18 +200,16 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
-  private setHasContent() {
-    this.setState({
-      hasContent: true
-    })
-  }
-
   private ok(hasContent: boolean) {
     if (isOk(this.props.model)) {
       if (hasContent) {
         return <div className="ok" />
       } else if (isWatchable(this.props.model.response)) {
-        return <div className="ok">{strings('No resources')}</div>
+        return this.props.isPinned ? (
+          <div className="kui--hero-text">{strings('No resources')}</div>
+        ) : (
+          <div className="ok">{strings('No resources')}</div>
+        )
       } else {
         return <div className="ok">{strings('ok')}</div>
       }
@@ -200,7 +217,10 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const hasContent = this.isShowingSomethingInTerminal(this.props.model) || this.state.hasContent
+    const hasContent =
+      this.state.assertHasContent !== undefined
+        ? this.state.assertHasContent
+        : this.isShowingSomethingInTerminal(this.props.model)
 
     return (
       <div className={'repl-output result-vertical' + (hasContent ? ' repl-result-has-content' : '')}>

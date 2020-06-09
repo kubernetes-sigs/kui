@@ -23,7 +23,6 @@ import {
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { Application } from 'spectron'
-import * as assert from 'assert'
 
 const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
 
@@ -99,12 +98,8 @@ const testDrilldown = async (nsName: string, badgeSelector: string, app: Applica
     .then(SidecarExpect.mode(defaultModeForGet))
     .then(SidecarExpect.showing(nsName))
 
-  await app.client.waitForVisible(Selectors.TERMINAL_SIDECAR_WATCHER_BUTTON)
-
   await app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
   await SidecarExpect.fullyClosed(app)
-
-  await app.client.waitForVisible(Selectors.TERMINAL_AND_WATCHER_BUTTON)
 }
 
 /** k get ns -w */
@@ -129,44 +124,28 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         console.error('wait for create')
         const createBadge = await waitForOnline(await CLI.command(`${kubectl} create ns ${nsNameForIter}`, this.app))
 
-        console.error('start watching')
+        console.error('start watching and split terminal')
         // execute the watch command, and expect ok in repl
-        const watchReplResult = await CLI.command(watchCmd, this.app)
-        await ReplExpect.justOK(watchReplResult)
+        await CLI.command(watchCmd, this.app)
 
         console.error('wait for watcher1')
-        await this.app.client.waitForExist(Selectors.WATCHER_N(1))
 
-        console.error('wait for terminalAndWather button')
-        await this.app.client.waitForExist(Selectors.TERMINAL_AND_WATCHER_BUTTON)
+        /**
+         * console.error('wait for watch title')
+         * // expect watcher1 has title pod
+         * await this.app.client.waitForExist(Selectors.WATCHER_N_TITLE(1)) // or watcher1, assert
+         * const title = await this.app.client.getText(Selectors.WATCHER_N_TITLE(1))
+         * assert.strictEqual(title, 'Namespace')
+         */
 
-        console.error('wait for watch title')
-        // expect watcher1 has title pod
-        await this.app.client.waitForExist(Selectors.WATCHER_N_TITLE(1)) // or watcher1, assert
-        const title = await this.app.client.getText(Selectors.WATCHER_N_TITLE(1))
-        assert.strictEqual(title, 'Namespace')
-
-        const watchBadge = Selectors.WATCHER_N_GRID_CELL_ONLINE(1, nsNameForIter)
-        const watchBadgeButOffline = Selectors.WATCHER_N_GRID_CELL_OFFLINE(1, nsNameForIter)
+        const watchBadge = Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, nsNameForIter)
+        const watchBadgeButOffline = Selectors.CURRENT_GRID_OFFLINE_FOR_SPLIT(2, nsNameForIter)
 
         console.error('wait for badge online')
         await this.app.client.waitForExist(watchBadge)
 
         console.error('drilldown from badge')
         await testDrilldown(nsNameForIter, watchBadge, this.app)
-
-        console.error('click showAsTable')
-        // click dropdown
-        await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
-        const showAsTableButton = Selectors.WATCHER_N_SHOW_AS_TABLE(1)
-        await this.app.client.waitForVisible(showAsTableButton)
-
-        console.error('wait for table shown in terminal')
-        await this.app.client.click(showAsTableButton)
-        await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(nsNameForIter) })({
-          app: this.app,
-          count: watchReplResult.count + 1
-        })
 
         console.error('wait for delete')
         const deleteBadge = await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))
@@ -201,12 +180,6 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
 
         // and, conversely, that watch had better eventually show Offline
         await this.app.client.waitForExist(watchBadgeButOffline)
-
-        await this.app.client.waitForExist(Selectors.WATCHER_N_DROPDOWN(1))
-        await this.app.client.click(Selectors.WATCHER_N_DROPDOWN(1))
-        await this.app.client.waitForVisible(Selectors.WATCHER_N_CLOSE(1))
-        await this.app.client.click(Selectors.WATCHER_N_CLOSE(1))
-        await this.app.client.waitForExist(Selectors.WATCHER_N(1), 500, true)
       } catch (err) {
         await Common.oops(this, false)(err)
       }
@@ -226,9 +199,18 @@ wdescribe(`kubectl watch namespace via watch pane ${process.env.MOCHA_RUN_TARGET
     const createIt: () => Promise<void> = createNS.bind(this, kubectl)
     const deleteIt: () => void = deleteNS.bind(this, kubectl)
     const watchIt: () => void = watchNS.bind(this, kubectl)
+
+    const checkResponseOutput = () => {
+      it(`should emit a helpful message in response to ${kubectl} watch request`, () =>
+        CLI.command(`${kubectl} get pods -w`, this.app)
+          .then(ReplExpect.okWithString('Output has been pinned to a watch pane'))
+          .catch(Common.oops(this, true)))
+    }
+
     //
     // here come the tests
     //
+    checkResponseOutput()
     createIt()
     deleteIt()
     watchIt()

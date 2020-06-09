@@ -25,8 +25,9 @@ import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
+import { BlockViewTraits } from './'
 
-import DropDown from '../../../spi/DropDown'
+import DropDown, { DropDownAction } from '../../../spi/DropDown'
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('plugin-client-common', 'screenshot')
@@ -73,6 +74,9 @@ export interface InputOptions {
 
   /** Block is about to lose focus */
   willLoseFocus?: () => void
+
+  /* unpin the view, e.g. show the view back in terminal */
+  unPin?: () => void
 }
 
 type InputProps = {
@@ -92,7 +96,7 @@ type InputProps = {
   model?: BlockModel
 }
 
-export type Props = InputOptions & InputProps
+export type Props = InputOptions & InputProps & BlockViewTraits
 
 export interface State {
   /** the execution ID for this prompt, if any */
@@ -166,7 +170,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
         console.error('error rendering i-search', err)
         return this.normalPrompt()
       }
-    } else {
+    } else if (!this.props.isPinned) {
       return this.normalPrompt()
     }
   }
@@ -252,6 +256,10 @@ export default class Input extends InputProvider {
 
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
+    if (this.props.isPinned) {
+      return
+    }
+
     const active = isActive(this.props.model)
 
     if (active) {
@@ -338,7 +346,11 @@ export default class Input extends InputProvider {
 
   /** render the time the block started processing */
   private timestamp() {
-    if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
+    if (
+      !this.props.isPinned &&
+      !isEmpty(this.props.model) &&
+      (isProcessing(this.props.model) || isFinished(this.props.model))
+    ) {
       return (
         this.props.model.startTime && (
           <span className="kui--repl-block-timestamp kui--repl-block-right-element">
@@ -363,11 +375,18 @@ export default class Input extends InputProvider {
     }
   }
 
-  private removeAction() {
-    return !this.props.willRemove ? [] : [{ label: strings('Remove'), handler: () => this.props.willRemove() }]
+  private removeAction(): DropDownAction[] {
+    return !this.props.willRemove
+      ? []
+      : [
+          {
+            label: this.props.isPinned ? strings('Close watcher') : strings('Remove'),
+            handler: () => this.props.willRemove()
+          }
+        ]
   }
 
-  private screenshotAction() {
+  private screenshotAction(): DropDownAction[] {
     return !this.props.willScreenshot || inBrowser()
       ? []
       : [
@@ -378,14 +397,29 @@ export default class Input extends InputProvider {
         ]
   }
 
+  private unPinnedAction(): DropDownAction[] {
+    return !this.props.isPinned
+      ? []
+      : [
+          {
+            label: strings2('Show as table in terminal'),
+            hasDivider: true,
+            handler: () => this.props.unPin()
+          }
+        ]
+  }
+
   /** DropDown menu for completed blocks */
   private dropdown() {
     if (!isActive(this.props.model)) {
-      const actions = this.removeAction().concat(this.screenshotAction())
+      const actions = this.screenshotAction()
+        .concat(this.unPinnedAction())
+        .concat(this.removeAction())
       return (
         <DropDown
           actions={actions}
           className="kui--repl-block-right-element small-left-pad kui--toolbar-button-with-icon"
+          onClose={this.props.willLoseFocus}
         />
       )
     }

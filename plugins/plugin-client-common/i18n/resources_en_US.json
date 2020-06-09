@@ -4,6 +4,9 @@
   "No resources": "No resources",
   "New Tab": "New Tab",
   "Split the Terminal": "Split the Terminal",
-  "Show as table": "Show as table",
-  "Stop watching": "Stop watching"
+  "Output has been pinned to a watch pane": "Output has been **pinned** to a watch pane",
+  "No more splits allowed": "No more splits allowed",
+  "No more pins allowed": "You have reached the maximum number of pinned views. Consider either closing one, or re-executing the command in a new tab.",
+  "Show as table in terminal": "Show as table in terminal",
+  "Stop watching": "Close watcher"
 }

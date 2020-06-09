@@ -40,7 +40,7 @@ function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
-const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
+const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
 
 wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -159,12 +159,12 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   /* Here comes the test */
 
   createPodWithoutWaiting(inputEncoded2, podName2)
-  waitForPod(podName2)
+  waitForPod(podName2, 2)
   getPodViaClick(podName2)
   switchToLogsTab(['No log data'], { text: 'Logs are live', type: 'info' })
 
   createPodWithoutWaiting(inputEncoded1, podName1)
-  waitForPod(podName1)
+  waitForPod(podName1, 3)
   getPodViaClick(podName1)
   switchToLogsTab([containerName1, containerName2], { text: 'Logs are live', type: 'info' })
 
@@ -249,7 +249,7 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     type: 'error'
   })
 
-  waitForPod(podName1) // wait for pod ready
+  waitForPod(podName1, 4) // wait for pod ready
 
   doRetry([containerName1, containerName2], {
     text: 'Logs are live',

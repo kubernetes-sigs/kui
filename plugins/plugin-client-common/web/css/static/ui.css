@@ -212,6 +212,7 @@ body.still-loading .repl {
   justify-content: center;
   margin: 1em;
   font-size: 2em;
+  font-family: var(--font-sans-serif);
 }
 .flex-fill {
   flex: 1;

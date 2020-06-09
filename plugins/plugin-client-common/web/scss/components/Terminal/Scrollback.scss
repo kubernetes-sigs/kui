@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-type FeatureFlags = {
-  /** [Optional] Enable WatchPane? */
-  enableWatchPane?: boolean
+/** Scrollback styling */
 
-  /** [Optional] disable table title? */
-  disableTableTitle?: boolean
+@import './Pinned';
 
-  /** [Optional] Enable Split Terminals? */
-  splitTerminals?: boolean
-
-  /** [Optional] automatically pin watchable command ouptut to the WatchPane? */
-  enableWatcherAutoPin?: boolean
+.kui--terminal-split-container {
+  display: grid;
+  grid-gap: 1px;
+  overflow: hidden;
+  background-color: var(--color-table-border3);
 }
 
-export default FeatureFlags
+.kui--scrollback {
+  background-color: var(--color-repl-background);
+  padding-left: calc(1em * 0.875);
+  padding-right: calc(1em * 0.875 - 0.1875em - 6px);
+}

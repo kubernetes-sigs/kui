@@ -65,12 +65,11 @@ wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || '
     })
   }
 
-  const waitForPod = (podName: string, watcherIndex: number) => {
+  const waitForPod = (podName: string, splitIndex: number) => {
     it(`should wait for the pod ${podName} to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
         .then(async () => {
-          await this.app.client.waitForExist(Selectors.WATCHER_N(watcherIndex))
-          await this.app.client.waitForExist(Selectors.WATCHER_N_GRID_CELL_ONLINE(watcherIndex, podName))
+          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(splitIndex, podName))
         })
         .catch(Common.oops(this, true))
     })
@@ -99,23 +98,21 @@ wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || '
           .catch(Common.oops(this, true))
       })
     }
+  }
 
-    if (hasLogs) {
-      /* it('should show logs from sidecar', () => {
-        return CLI.command(`kubectl get pod ${podName} -n ${ns} -o yaml`, this.app)
-          .then(ReplExpect.justOK)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.showing(podName, undefined, undefined, ns))
-          .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs')))
-          .then(() =>
-            this.app.client.waitUntil(async () => {
-              const txt = await this.app.client.getText(Selectors.OUTPUT_LAST_STREAMING)
-              return txt.length > 0
-            })
-          )
-          .catch(Common.oops(this, true))
-      }) */
-    }
+  const doRetry = (hasLogs: boolean) => {
+    it('should click retry button', async () => {
+      try {
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
+
+        if (hasLogs) {
+          await waitForLogText('hi')
+        }
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
   }
 
   allocateNS(this, ns)
@@ -125,8 +122,9 @@ wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || '
     } else {
       createPodExpectingTable(_.podName, _.cmdline)
     }
-    waitForPod(_.podName, idx + 1)
+    waitForPod(_.podName, idx + 2)
     showLogs(_.podName, _.containerName, _.label, _.hasLogs)
+    doRetry(_.hasLogs)
   })
   inputs.forEach(_ => {
     showLogs(_.podName, _.containerName, _.label, _.hasLogs)

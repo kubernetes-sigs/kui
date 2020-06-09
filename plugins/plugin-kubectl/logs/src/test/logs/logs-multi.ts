@@ -15,13 +15,7 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-import {
-  createNS,
-  allocateNS,
-  deleteNS,
-  waitForGreen,
-  waitForTerminalText
-} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS, waitForTerminalText } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -79,11 +73,12 @@ describe(`kubectl Logs multiple pods via selector ${process.env.MOCHA_RUN_TARGET
     })
   }
 
-  const waitForPod = ({ podName }: PodDesc) => {
+  const waitForPod = ({ podName }: PodDesc, waitIndex: number) => {
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-        .then(selector => waitForGreen(this.app, selector))
+        .then(async () => {
+          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
+        })
         .catch(Common.oops(this, true))
     })
   }
@@ -153,9 +148,9 @@ describe(`kubectl Logs multiple pods via selector ${process.env.MOCHA_RUN_TARGET
   /* Here comes the test */
 
   // create and label the pods
-  pods.forEach(pod => {
+  pods.forEach((pod, idx) => {
     createPodWithoutWaiting(pod)
-    waitForPod(pod)
+    waitForPod(pod, idx)
     addLabel(pod)
   })
 

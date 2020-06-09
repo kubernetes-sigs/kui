@@ -25,13 +25,23 @@ export function create(this: Common.ISuite, ns: string, inputEncoded: string, po
   })
 }
 
-export function wait(this: Common.ISuite, ns: string, podName: string) {
-  it(`should wait for the pod to come up`, () => {
-    return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-      .then(selector => waitForGreen(this.app, selector))
-      .catch(Common.oops(this, true))
-  })
+export function wait(this: Common.ISuite, ns: string, podName: string, splitIndex?: number) {
+  if (process.env.USE_WATCH_PANE) {
+    it(`should wait for the pod to come up`, () => {
+      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+        .then(async () => {
+          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(splitIndex, podName))
+        })
+        .catch(Common.oops(this, true))
+    })
+  } else {
+    it(`should wait for the pod to come up`, () => {
+      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+        .then(selector => waitForGreen(this.app, selector))
+        .catch(Common.oops(this, true))
+    })
+  }
 }
 
 export function get(this: Common.ISuite, ns: string, podName: string, wait = true) {

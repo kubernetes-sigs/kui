@@ -34,6 +34,7 @@ type WithStartTime = { startTime: Date }
 type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
+type withPin = { isPinned: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -47,7 +48,7 @@ type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & 
 export type FinishedBlock = OkBlock | ErrorBlock | CancelledBlock | EmptyBlock
 
 // A Block is one of the canonical types
-export type BlockModel = ProcessingBlock | FinishedBlock | CancelledBlock | ActiveBlock
+export type BlockModel = (ProcessingBlock | FinishedBlock | CancelledBlock | ActiveBlock) & Partial<withPin>
 export default BlockModel
 
 /** Capture the current working directory */

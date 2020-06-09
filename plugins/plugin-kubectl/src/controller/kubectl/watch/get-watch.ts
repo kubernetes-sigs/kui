@@ -28,6 +28,7 @@ import {
 } from '@kui-shell/core'
 
 import { kindPart } from '../fqn'
+import { getKind } from '../explain'
 import { formatOf, KubeOptions, KubeExecOptions } from '../options'
 
 import { getCommandFromArgs } from '../../../lib/util/util'
@@ -347,7 +348,9 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
         header: initialTable.header,
         body: initialTable.body,
         breadcrumbs: initialTable.breadcrumbs || (await getNamespaceBreadcrumbs(initialTable.title, args)),
-        title: initialTable.title,
+        title:
+          initialTable.title ||
+          (await getKind(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])),
         watch: new KubectlWatcher(args) // <-- our watcher
       }
     }
