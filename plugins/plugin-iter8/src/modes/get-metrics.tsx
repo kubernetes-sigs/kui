@@ -755,7 +755,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         ratioMetricsState[metricName].alsoRestore.forEach(counterMetricName => {
           if (counterMetricsState[counterMetricName].isDeleted) {
             if (restoreMetric(counterMetricsState[counterMetricName].details, MetricTypes.counter)) {
-              newState.counterMetricsState[counterMetricName].isDeleted = false
+              newState.counterMetricsState[counterMetricName].isDeleted = true
             }
           }
         })
@@ -790,7 +790,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   }
 
   // Displays the details of a metric (all of its properties and its values)
-  public renderMetricDetails(metric: CounterMetric | RatioMetric) {
+  public renderMetricDetails(metric: CounterMetric | RatioMetric, type: MetricTypes) {
     return (
       <DataTable
         rows={this.getInitialRowsFromObjectKeys(metric)}
@@ -799,12 +799,33 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
           <TableContainer>
             <Table {...getTableProps()}>
               <TableBody className="innertable">
-                {rows.map(row => (
-                  <TableRow key={row.id}>
+                {rows.map(row => {
+                  const attributeData = type === MetricTypes.counter ? 
+                    COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => {
+                      return attribute.name === row.id
+                    }) : 
+                    RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+                      return attribute.name === row.id
+                    })
+
+                  // Dropdown options should use the printable version
+                  if (attributeData.type === AttributeTypes.dropdown) {
+
+                    const dropdownOption = attributeData.dropdownOptions.find(option => {
+                      return option.value === metric[row.id]
+                    })
+
+                    return <TableRow key={row.id}>
+                      <TableCell>{row.id}</TableCell>
+                      <TableCell>{dropdownOption.printableOption}</TableCell>
+                    </TableRow>
+                  }
+
+                  return <TableRow key={row.id}>
                     <TableCell>{row.id}</TableCell>
                     <TableCell>{metric[row.id]}</TableCell>
                   </TableRow>
-                ))}
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -855,7 +876,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
                       </TableExpandRow>
                       {row.isExpanded && (
                         <TableExpandedRow colSpan={4}>
-                          <div>{this.renderMetricDetails(metrics[row.id].details)}</div>
+                          <div>{this.renderMetricDetails(metrics[row.id].details, type)}</div>
                         </TableExpandedRow>
                       )}
                     </React.Fragment>
