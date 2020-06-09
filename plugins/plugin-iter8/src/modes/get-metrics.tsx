@@ -702,6 +702,8 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   }
 
   public deleteMetricHandler(metricName: string, type: MetricTypes): void {
+    const newState = { ...this.state }
+
     if (type === MetricTypes.counter) {
       // Do not delete iter8 metrics
       if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
@@ -710,28 +712,12 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
       // Delete counter metric
       if (deleteMetric(metricName, type)) {
-        this.setState({
-          counterMetricsState: {
-            ...this.state.counterMetricsState,
-            [metricName]: {
-              ...this.state.counterMetricsState[metricName],
-              isDeleted: true
-            }
-          }
-        })
+        newState.counterMetricsState[metricName].isDeleted = true
 
         // Delete associated ratio metrics that utilize the counter metric
-        this.state.counterMetricsState[metricName].alsoDelete.forEach(deletedMetric => {
-          if (deleteMetric(deletedMetric, MetricTypes.ratio)) {
-            this.setState({
-              ratioMetricsState: {
-                ...this.state.ratioMetricsState,
-                [deletedMetric]: {
-                  ...this.state.ratioMetricsState[deletedMetric],
-                  isDeleted: true
-                }
-              }
-            })
+        this.state.counterMetricsState[metricName].alsoDelete.forEach(ratioMetricName => {
+          if (deleteMetric(ratioMetricName, MetricTypes.ratio)) {
+            newState.ratioMetricsState[ratioMetricName].isDeleted = true
           }
         })
       }
@@ -743,66 +729,40 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
       // Delete ratio metric
       if (deleteMetric(metricName, type)) {
-        this.setState({
-          ratioMetricsState: {
-            ...this.state.ratioMetricsState,
-            [metricName]: {
-              ...this.state.ratioMetricsState[metricName],
-              isDeleted: true
-            }
-          }
-        })
+        newState.ratioMetricsState[metricName].isDeleted = true
       }
     }
+
+    this.setState(newState)
   }
 
   public restoreMetricHandler(metricName: string, type: MetricTypes) {
     const { counterMetricsState, ratioMetricsState } = this.state
 
+    const newState = { ...this.state }
+
     if (type === MetricTypes.counter) {
       // Restore counter metric
       if (restoreMetric(counterMetricsState[metricName].details, type)) {
-        this.setState({
-          counterMetricsState: {
-            ...this.state.counterMetricsState,
-            [metricName]: {
-              ...this.state.counterMetricsState[metricName],
-              isDeleted: false
-            }
-          }
-        })
+        newState.counterMetricsState[metricName].isDeleted = false
       }
     } else {
       // Restore ratio metric
       if (restoreMetric(ratioMetricsState[metricName].details, type)) {
-        this.setState({
-          ratioMetricsState: {
-            ...this.state.ratioMetricsState,
-            [metricName]: {
-              ...this.state.ratioMetricsState[metricName],
-              isDeleted: false
-            }
-          }
-        })
+        newState.ratioMetricsState[metricName].isDeleted = false
 
         // Restore related counter
-        ratioMetricsState[metricName].alsoRestore.forEach(restoredMetricName => {
-          if (counterMetricsState[restoredMetricName].isDeleted) {
-            if (restoreMetric(counterMetricsState[restoredMetricName].details, MetricTypes.counter)) {
-              this.setState({
-                counterMetricsState: {
-                  ...this.state.counterMetricsState,
-                  [restoredMetricName]: {
-                    ...this.state.counterMetricsState[restoredMetricName],
-                    isDeleted: false
-                  }
-                }
-              })
+        ratioMetricsState[metricName].alsoRestore.forEach(counterMetricName => {
+          if (counterMetricsState[counterMetricName].isDeleted) {
+            if (restoreMetric(counterMetricsState[counterMetricName].details, MetricTypes.counter)) {
+              newState.counterMetricsState[counterMetricName].isDeleted = false
             }
           }
         })
       }
     }
+
+    this.setState(newState)
   }
 
   // Callback when an attribute of the selected metric is edited
@@ -1104,14 +1064,14 @@ export function deleteMetrics(metricNames: string[]) {
   metricNames.forEach(metricName => {
     if (counterMetricNames.includes(metricName)) {
       if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
-        return `Cannot delete iter8 counter metric '${metricName}'`
+        throw new Error(`Cannot delete iter8 counter metric '${metricName}'`)
       }
     } else if (ratioMetricNames.includes(metricName)) {
       if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
-        return `Cannot delete iter8 counter metric '${metricName}'`
+        throw new Error(`Cannot delete iter8 ratio metric '${metricName}'`)
       }
     } else {
-      return `Invalid metric name '${metricName}'`
+      throw new Error(`Invalid metric name '${metricName}'`)
     }
   })
 
