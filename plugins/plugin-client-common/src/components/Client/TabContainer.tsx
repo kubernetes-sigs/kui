@@ -17,7 +17,7 @@
 import * as React from 'react'
 import { inElectron, Tab, eventBus } from '@kui-shell/core'
 
-import TabModel from './TabModel'
+import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 
@@ -202,6 +202,20 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     }
   }
 
+  private willUpdateTopTabButtons(uuid: string, buttons: TopTabButton[]) {
+    this.setState(curState => {
+      const idx = curState.tabs.findIndex(_ => _.uuid === uuid)
+      if (idx >= 0) {
+        return {
+          tabs: curState.tabs
+            .slice(0, idx)
+            .concat([curState.tabs[idx].update(buttons)])
+            .concat(curState.tabs.slice(idx + 1))
+        }
+      }
+    })
+  }
+
   public render() {
     return (
       <div className="kui--full-height">
@@ -216,7 +230,14 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         {this.search()}
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
-            <TabContent key={idx} uuid={_.uuid} active={idx === this.state.activeIdx} state={_.state} {...this.props}>
+            <TabContent
+              key={idx}
+              uuid={_.uuid}
+              active={idx === this.state.activeIdx}
+              willUpdateTopTabButtons={this.willUpdateTopTabButtons.bind(this, _.uuid)}
+              state={_.state}
+              {...this.props}
+            >
               {this.children(_.uuid)}
             </TabContent>
           ))}
