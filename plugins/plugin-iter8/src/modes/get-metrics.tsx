@@ -257,13 +257,12 @@ const DEFAULT_COUNTER_METRIC_CONFIG = getDefaultConfig(COUNTER_METRIC_ATTRIBUTES
 
 const DEFAULT_RATIO_METRIC_CONFIG = getDefaultConfig(RATIO_METRIC_ATTRIBUTES_DATA)
 
-enum MetricDetailsModeDisplay {
-  'getMetrics',
-  'addMetrics',
-  'editMetrics'
+// Determines what page should be displayed
+enum DisplayMode {
+  'getMetrics', // metric details tables
+  'addMetric', // add metric form
+  'editMetric' // edit metric form
 }
-
-type MetricDetailsProps = {}
 
 type MetricDetailsState = {
   configMap: MetricConfigMap
@@ -274,7 +273,7 @@ type MetricDetailsState = {
 
   counterMetricsState: MetricsState
   ratioMetricsState: MetricsState
-  display: MetricDetailsModeDisplay
+  display: DisplayMode
 
   selectedType?: MetricTypes
   selectedMetricName?: string
@@ -296,10 +295,17 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
   return rs
 }
 
-class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetailsState> {
-  public constructor(props: MetricDetailsProps) {
+class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
+  public constructor(props) {
     super(props)
 
+    this.state = {
+      ...this.constructorHelper(),
+      display: DisplayMode.getMetrics
+    }
+  }
+
+  private constructorHelper = () => {
     const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
 
     const cleanConfigMap = removeExtraneousMetaData(configMap)
@@ -339,7 +345,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
 
     const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
-    this.state = {
+    return {
       configMap: cleanConfigMap,
       counterMetrics,
       ratioMetrics,
@@ -347,16 +353,21 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
       ratioMetricNames,
 
       ratioMetricsState: ratioMetricsState,
-      counterMetricsState: counterMetricsState,
-
-      display: MetricDetailsModeDisplay.getMetrics
+      counterMetricsState: counterMetricsState
     }
   }
 
-  public generateMetricsStates(
+  private refreshState = () => {
+    this.setState({
+      ...this.constructorHelper(),
+      display: DisplayMode.getMetrics
+    })
+  }
+
+  private generateMetricsStates = (
     counterMetrics: CounterMetrics,
     ratioMetrics: RatioMetrics
-  ): { counterMetricsState: MetricsState; ratioMetricsState: MetricsState } {
+  ): { counterMetricsState: MetricsState; ratioMetricsState: MetricsState } => {
     const counterMetricsState: MetricsState = {}
     const ratioMetricsState: MetricsState = {}
 
@@ -399,17 +410,17 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     return { counterMetricsState, ratioMetricsState }
   }
 
-  public getInitialRowsFromObjectKeys(object: object) {
+  private getInitialRowsFromObjectKeys = (object: object) => {
     return Object.keys(object).map(propertyName => {
       return { id: propertyName }
     })
   }
 
-  public renderIter8ImmutableMetricWarning(mode) {
+  private renderIter8ImmutableMetricWarning = (mode: string) => {
     return <div className="warningtext">Warning: Cannot {mode} iter8 metrics</div>
   }
 
-  public renderDeleteWarning(metricName: string, type: MetricTypes) {
+  private renderDeleteWarning = (metricName: string, type: MetricTypes) => {
     return (
       <div>
         <div className="deletedtext">Deleted</div>
@@ -427,19 +438,29 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     )
   }
 
+  // Display the metric details tables
+  private displayGetMetrics = () => {
+    this.setState({
+      display: DisplayMode.getMetrics,
+      selectedType: undefined,
+      selectedMetricName: undefined,
+      editedMetric: undefined
+    })
+  }
+
   // Display the add metric form
-  public displayAddMetric(type: MetricTypes) {
+  private displayAddMetric = (type: MetricTypes) => {
     const defaultConfig = type === MetricTypes.counter ? DEFAULT_COUNTER_METRIC_CONFIG : DEFAULT_RATIO_METRIC_CONFIG
 
     this.setState({
-      display: MetricDetailsModeDisplay.addMetrics,
+      display: DisplayMode.addMetric,
       selectedType: type,
       editedMetric: defaultConfig
     })
   }
 
   // Display the edit metric form
-  public displayEditMetric(metricName: string, type: MetricTypes) {
+  private displayEditMetric = (metricName: string, type: MetricTypes) => {
     const { counterMetrics, ratioMetrics } = this.state
 
     const selectedMetric =
@@ -458,7 +479,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     const editedMetric = { ...defaultConfig, ...selectedMetricCopy }
 
     this.setState({
-      display: MetricDetailsModeDisplay.editMetrics,
+      display: DisplayMode.editMetric,
       selectedType: type,
       selectedMetricName: metricName,
       editedMetric
@@ -510,7 +531,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
-          display: MetricDetailsModeDisplay.getMetrics,
+          display: DisplayMode.getMetrics,
           counterMetricsState: counterMetricsState,
           ratioMetricsState: ratioMetricsState
         })
@@ -559,7 +580,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
-          display: MetricDetailsModeDisplay.getMetrics,
+          display: DisplayMode.getMetrics,
           counterMetricsState: counterMetricsState,
           ratioMetricsState: ratioMetricsState
         })
@@ -635,7 +656,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
-          display: MetricDetailsModeDisplay.getMetrics,
+          display: DisplayMode.getMetrics,
           counterMetricsState: counterMetricsState,
           ratioMetricsState: ratioMetricsState
         })
@@ -687,7 +708,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
-          display: MetricDetailsModeDisplay.getMetrics,
+          display: DisplayMode.getMetrics,
           counterMetricsState: counterMetricsState,
           ratioMetricsState: ratioMetricsState
         })
@@ -701,7 +722,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     e.preventDefault()
   }
 
-  public deleteMetricHandler(metricName: string, type: MetricTypes): void {
+  private deleteMetricHandler = (metricName: string, type: MetricTypes): void => {
     const newState = { ...this.state }
 
     if (type === MetricTypes.counter) {
@@ -736,7 +757,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     this.setState(newState)
   }
 
-  public restoreMetricHandler(metricName: string, type: MetricTypes) {
+  private restoreMetricHandler = (metricName: string, type: MetricTypes) => {
     const { counterMetricsState, ratioMetricsState } = this.state
 
     const newState = { ...this.state }
@@ -755,7 +776,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
         ratioMetricsState[metricName].alsoRestore.forEach(counterMetricName => {
           if (counterMetricsState[counterMetricName].isDeleted) {
             if (restoreMetric(counterMetricsState[counterMetricName].details, MetricTypes.counter)) {
-              newState.counterMetricsState[counterMetricName].isDeleted = true
+              newState.counterMetricsState[counterMetricName].isDeleted = false
             }
           }
         })
@@ -781,7 +802,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     this.setState({ editedMetric: { ...this.state.editedMetric, ...tempMetric } })
   }
 
-  public renderTableTitle(title: string, type: MetricTypes) {
+  private renderTableTitle = (title: string, type: MetricTypes) => {
     return (
       <div>
         {title} <Add20 onClick={() => this.displayAddMetric(type)} className="clickableicon" />
@@ -790,7 +811,7 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
   }
 
   // Displays the details of a metric (all of its properties and its values)
-  public renderMetricDetails(metric: CounterMetric | RatioMetric, type: MetricTypes) {
+  private renderMetricDetails = (metric: CounterMetric | RatioMetric, type: MetricTypes) => {
     return (
       <DataTable
         rows={this.getInitialRowsFromObjectKeys(metric)}
@@ -800,31 +821,35 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
             <Table {...getTableProps()}>
               <TableBody className="innertable">
                 {rows.map(row => {
-                  const attributeData = type === MetricTypes.counter ? 
-                    COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => {
-                      return attribute.name === row.id
-                    }) : 
-                    RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-                      return attribute.name === row.id
-                    })
+                  const attributeData =
+                    type === MetricTypes.counter
+                      ? COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => {
+                          return attribute.name === row.id
+                        })
+                      : RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+                          return attribute.name === row.id
+                        })
 
                   // Dropdown options should use the printable version
                   if (attributeData.type === AttributeTypes.dropdown) {
-
                     const dropdownOption = attributeData.dropdownOptions.find(option => {
                       return option.value === metric[row.id]
                     })
 
-                    return <TableRow key={row.id}>
-                      <TableCell>{row.id}</TableCell>
-                      <TableCell>{dropdownOption.printableOption}</TableCell>
-                    </TableRow>
+                    return (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.id}</TableCell>
+                        <TableCell>{dropdownOption.printableOption}</TableCell>
+                      </TableRow>
+                    )
                   }
 
-                  return <TableRow key={row.id}>
-                    <TableCell>{row.id}</TableCell>
-                    <TableCell>{metric[row.id]}</TableCell>
-                  </TableRow>
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell>{row.id}</TableCell>
+                      <TableCell>{metric[row.id]}</TableCell>
+                    </TableRow>
+                  )
                 })}
               </TableBody>
             </Table>
@@ -834,9 +859,9 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     )
   }
 
-  public renderMetricTable(metrics: MetricsState, type: MetricTypes, title: string) {
+  private renderMetricTable = (metrics: MetricsState, type: MetricTypes, title: string) => {
     return (
-      <div className="metricTable">
+      <div>
         <DataTable
           rows={this.getInitialRowsFromObjectKeys(metrics)}
           headers={[]}
@@ -890,12 +915,12 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     )
   }
 
-  private renderAttributeForm(
+  private renderAttributeForm = (
     attribute: AttributeData,
     values: any,
     updateMetricConfig: (e, attribute: AttributeData) => void,
     formType: FormTypes
-  ) {
+  ) => {
     if (attribute.type === AttributeTypes.input) {
       const invalid =
         attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].check
@@ -969,72 +994,79 @@ class MetricDetailsMode extends React.Component<MetricDetailsProps, MetricDetail
     }
   }
 
-  private renderMetricForm(selectedType: MetricTypes, submitCallback: (e) => void, formType: FormTypes) {
+  private renderMetricForm = (selectedType: MetricTypes, submitCallback: (e) => void, formType: FormTypes) => {
     return (
-      <Form style={{ display: 'block' }} onSubmit={submitCallback}>
-        {(() => {
-          if (selectedType === MetricTypes.counter) {
-            return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-              this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
-            )
-          } else {
-            return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-              this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
-            )
-          }
-        })()}
-        <Button kind="primary" tabIndex={0} type="submit">
+      <div>
+        <Form style={{ display: 'block' }} onSubmit={submitCallback}>
           {(() => {
-            if (formType === FormTypes.add) {
-              if (selectedType === MetricTypes.counter) {
-                return 'Create counter metric'
-              } else {
-                return 'Create ratio metric'
-              }
+            if (selectedType === MetricTypes.counter) {
+              return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
+                this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
+              )
             } else {
-              if (selectedType === MetricTypes.counter) {
-                return 'Edit counter metric'
-              } else {
-                return 'Edit ratio metric'
-              }
+              return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
+                this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
+              )
             }
           })()}
-        </Button>
-      </Form>
+          <Button style={{ display: 'inline-block' }} kind="primary" type="submit">
+            {(() => {
+              if (formType === FormTypes.add) {
+                if (selectedType === MetricTypes.counter) {
+                  return 'Create counter metric'
+                } else {
+                  return 'Create ratio metric'
+                }
+              } else {
+                if (selectedType === MetricTypes.counter) {
+                  return 'Edit counter metric'
+                } else {
+                  return 'Edit ratio metric'
+                }
+              }
+            })()}
+          </Button>
+          <Button
+            style={{ display: 'inline-block', 'margin-left': '10px' }}
+            kind="primary"
+            type="button"
+            onClick={this.displayGetMetrics}
+          >
+            Back
+          </Button>
+        </Form>
+      </div>
     )
   }
 
-  public render() {
+  public render = () => {
     const { display, selectedType } = this.state
 
     switch (display) {
-      case MetricDetailsModeDisplay.getMetrics:
+      case DisplayMode.getMetrics:
         return (
           <div className="pageStyle">
             {this.renderMetricTable(this.state.counterMetricsState, MetricTypes.counter, 'Counter Metrics')}
             {this.renderMetricTable(this.state.ratioMetricsState, MetricTypes.ratio, 'Ratio Metrics')}
-            <div className="center">
-              <div className="inner">
-                <Button size="default" kind="primary">
-                  Refresh
-                </Button>
-              </div>
-            </div>
+
+            <Button style={{ display: 'block', margin: '10px' }} kind="primary" onClick={this.refreshState}>
+              Refresh
+            </Button>
           </div>
         )
 
-      case MetricDetailsModeDisplay.addMetrics:
+      case DisplayMode.addMetric:
         return (
-          <div style={{ padding: '10px' }}>
+          <div style={{ margin: '10px' }}>
             {(() => {
               return this.renderMetricForm(selectedType, this.addMetricHandler, FormTypes.add)
             })()}
           </div>
         )
 
-      case MetricDetailsModeDisplay.editMetrics:
+      case DisplayMode.editMetric:
         return (
-          <div style={{ padding: '10px' }}>
+          <div style={{ margin: '10px' }}>
             {(() => {
               return this.renderMetricForm(selectedType, this.editMetricHandler, FormTypes.edit)
             })()}
