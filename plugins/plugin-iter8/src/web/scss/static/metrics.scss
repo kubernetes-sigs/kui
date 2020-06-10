@@ -6,14 +6,6 @@ $grey: #dddddd;
 .listouter {
   padding: 10px;
 }
-.center {
-  margin: auto;
-  width: 70%;
-}
-.inner {
-  display: inline-block;
-  padding: 10px;
-}
 
 .clickableicon {
   cursor: pointer;
@@ -36,15 +28,18 @@ $grey: #dddddd;
   word-wrap: break-word;
   color: $blue;
 }
+
 .clickableicon:hover {
   fill: $dark-purple;
   .warningtext {
     visibility: visible;
   }
 }
+
 .width20 {
   width: 20%;
 }
+
 .deletedtext {
   font-style: italic;
   color: #bfbfbf;
@@ -88,9 +83,11 @@ svg.bx--table-expand__svg {
     padding: 3px;
   }
 }
+
 .ratio-metric-table::before {
   content: '' !important;
 }
+
 .Collapsible {
   cursor: pointer;
 }
@@ -102,6 +99,7 @@ svg.bx--table-expand__svg {
 .listinner {
   padding: 0 0 5px 10px;
 }
+
 .metrictext {
   color: #b3d9ff; //blue-ish
   font-size: 24;
@@ -126,6 +124,7 @@ svg.bx--table-expand__svg {
   overflow: auto;
   margin-top: 4px;
 }
+
 .infotext {
   color: $grey;
   font-weight: 100;
