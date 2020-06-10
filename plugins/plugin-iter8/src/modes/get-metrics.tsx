@@ -726,11 +726,6 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
     const newState = { ...this.state }
 
     if (type === MetricTypes.counter) {
-      // Do not delete iter8 metrics
-      if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
-        return
-      }
-
       // Delete counter metric
       if (deleteMetric(metricName, type)) {
         newState.counterMetricsState[metricName].isDeleted = true
@@ -743,11 +738,6 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         })
       }
     } else {
-      // Do not delete iter8 metrics
-      if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
-        return
-      }
-
       // Delete ratio metric
       if (deleteMetric(metricName, type)) {
         newState.ratioMetricsState[metricName].isDeleted = true
@@ -874,7 +864,15 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
                       <TableExpandRow {...getRowProps({ row })}>
                         <TableCell>{row.id}</TableCell>
                         <TableCell>
-                          <div className="clickableicon" onClick={() => this.displayEditMetric(row.id, type)}>
+                          <div
+                            className="clickableicon"
+                            onClick={() => {
+                              // Only allow editing if the metric is custom (not part of iter8)
+                              if (metrics[row.id].custom) {
+                                this.displayEditMetric(row.id, type)
+                              }
+                            }}
+                          >
                             <Edit20 />
                             {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('edit') : null}
                           </div>
@@ -884,11 +882,19 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
                             {metrics[row.id].isDeleted ? (
                               <div>{this.renderDeleteWarning(row.id, type)}</div>
                             ) : (
-                              <div className="clickableicon" onClick={() => this.deleteMetricHandler(row.id, type)}>
+                              <div
+                                className="clickableicon"
+                                onClick={() => {
+                                  // Only allow deletion if the metric is custom (not part of iter8)
+                                  if (metrics[row.id].custom) {
+                                    this.deleteMetricHandler(row.id, type)
+                                  }
+                                }}
+                              >
                                 <TrashCan20 />
                                 {type === MetricTypes.counter &&
                                 metrics[row.id].custom &&
-                                metrics[row.id].alsoDelete.length ? (
+                                metrics[row.id].alsoDelete.length > 0 ? (
                                   <div className="warningtext">
                                     Warning: Will also delete {metrics[row.id].alsoDelete.join(', ')}
                                   </div>
@@ -933,9 +939,9 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
           : ''
 
       return (
-        <FormGroup legendText="">
+        <FormGroup key={attribute.name} legendText="">
           <TextInput
-            id={name}
+            id={attribute.name}
             labelText={attribute.printableName}
             helperText={attribute.description}
             value={values[attribute.name]}
@@ -956,9 +962,9 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
       // Dropdown menu
       return (
-        <FormGroup legendText="">
+        <FormGroup key={attribute.name} legendText="">
           <Select
-            id={name}
+            id={attribute.name}
             labelText={attribute.printableName}
             helperText={attribute.description}
             value={printableValue}
@@ -1027,7 +1033,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
             })()}
           </Button>
           <Button
-            style={{ display: 'inline-block', 'margin-left': '10px' }}
+            style={{ display: 'inline-block', marginLeft: '10px' }}
             kind="primary"
             type="button"
             onClick={this.displayGetMetrics}
