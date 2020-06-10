@@ -92,6 +92,9 @@ type DropdownAttributeData = {
    * element of dropdown options will be selected.
    */
   noDefaultDropdownOptionPlaceholder?: string
+
+  // Assorted data to set up a validation check
+  invalidChecks?: { [key in FormTypes]?: InvalidCheck }
 }
 
 type InvalidCheck = {
@@ -233,8 +236,9 @@ function getDefaultConfig(metricAttributesData: MetricAttributesData): Partial<C
   const result = {}
 
   Object.values(metricAttributesData).forEach(attribute => {
-    // TODO: extend for other attribute types
-    if (attribute.type === AttributeTypes.dropdown) {
+    if (attribute.type === AttributeTypes.input) {
+      result[attribute.name] = ''
+    } else {
       /**
        * If there is no default dropdown option placeholder, then that means
        * the default option should be the first entry among the dropdown
@@ -259,25 +263,28 @@ const DEFAULT_RATIO_METRIC_CONFIG = getDefaultConfig(RATIO_METRIC_ATTRIBUTES_DAT
 
 // Determines what page should be displayed
 enum DisplayMode {
-  'getMetrics', // metric details tables
-  'addMetric', // add metric form
-  'editMetric' // edit metric form
+  'getMetrics', // Metric details tables
+  'addMetric', // Add metric form
+  'editMetric' // Edit metric form
 }
 
 type MetricDetailsState = {
   configMap: MetricConfigMap
   counterMetrics: CounterMetrics
   ratioMetrics: RatioMetrics
+
   counterMetricNames: string[]
   ratioMetricNames: string[]
 
   counterMetricsState: MetricsState
   ratioMetricsState: MetricsState
-  display: DisplayMode
 
-  selectedType?: MetricTypes
-  selectedMetricName?: string
-  editedMetric?: Partial<CounterMetric | RatioMetric>
+  display: DisplayMode // Controls the page that should be displayed
+
+  selectedMetricName?: string // Selected metric to be edited
+  selectedType?: MetricTypes // Selected type of metric to be added/edited
+  newMetric?: Partial<CounterMetric | RatioMetric> // Metric to be added/replaced (edited)
+  formSubmitted: boolean // Whether the add/edit form has been submitted (used for reporting errors)
 }
 
 /**
@@ -301,7 +308,8 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
     this.state = {
       ...this.constructorHelper(),
-      display: DisplayMode.getMetrics
+      display: DisplayMode.getMetrics,
+      formSubmitted: undefined
     }
   }
 
@@ -358,9 +366,12 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   }
 
   private refreshState = () => {
+    console.log('Refreshed state')
+
     this.setState({
       ...this.constructorHelper(),
-      display: DisplayMode.getMetrics
+      display: DisplayMode.getMetrics,
+      formSubmitted: undefined
     })
   }
 
@@ -442,9 +453,10 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   private displayGetMetrics = () => {
     this.setState({
       display: DisplayMode.getMetrics,
-      selectedType: undefined,
       selectedMetricName: undefined,
-      editedMetric: undefined
+      selectedType: undefined,
+      newMetric: undefined,
+      formSubmitted: undefined
     })
   }
 
@@ -455,7 +467,8 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
     this.setState({
       display: DisplayMode.addMetric,
       selectedType: type,
-      editedMetric: defaultConfig
+      newMetric: defaultConfig,
+      formSubmitted: false
     })
   }
 
@@ -480,16 +493,21 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
     this.setState({
       display: DisplayMode.editMetric,
-      selectedType: type,
       selectedMetricName: metricName,
-      editedMetric
+      selectedType: type,
+      newMetric: editedMetric,
+      formSubmitted: false
     })
   }
 
   private addMetricHandler = e => {
     console.log('click submitted')
 
-    const { configMap, counterMetrics, ratioMetrics, selectedType, editedMetric } = this.state
+    this.setState({
+      formSubmitted: true
+    })
+
+    const { configMap, counterMetrics, ratioMetrics, selectedType, newMetric: editedMetric } = this.state
 
     if (selectedType === MetricTypes.counter) {
       console.log('new counter metric config:', editedMetric)
@@ -528,12 +546,16 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         // Apply new config map
         console.log(kubectlApplyRule(configMap))
 
-        const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
+        const { counterMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
+          configMap,
+          counterMetrics,
           display: DisplayMode.getMetrics,
           counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState
+          selectedType: undefined,
+          newMetric: undefined,
+          formSubmitted: undefined
         })
       } else {
         // TODO: inform user of problems
@@ -577,12 +599,16 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         // Apply new config map
         console.log(kubectlApplyRule(configMap))
 
-        const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
+        const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
+          configMap,
+          ratioMetrics,
           display: DisplayMode.getMetrics,
-          counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState
+          ratioMetricsState: ratioMetricsState,
+          selectedType: undefined,
+          newMetric: undefined,
+          formSubmitted: undefined
         })
       } else {
         // TODO: inform user of problems
@@ -597,11 +623,15 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   private editMetricHandler = e => {
     console.log('click submitted')
 
+    this.setState({
+      formSubmitted: true
+    })
+
     const { selectedType } = this.state
     let { configMap, counterMetrics, ratioMetrics } = this.state
 
     if (selectedType === MetricTypes.counter) {
-      console.log('edited counter metric config:', this.state.editedMetric)
+      console.log('edited counter metric config:', this.state.newMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -613,12 +643,12 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
           return metric.name !== this.state.selectedMetricName
         })
         .some(metric => {
-          return metric.name === this.state.editedMetric.name
+          return metric.name === this.state.newMetric.name
         })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = COUNTER_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return this.state.editedMetric[id]
+        return this.state.newMetric[id]
       })
 
       // Final checks
@@ -629,16 +659,16 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         })
 
         // Add edited metric
-        counterMetrics.push(this.state.editedMetric as CounterMetric)
+        counterMetrics.push(this.state.newMetric as CounterMetric)
 
         // Propagate name change to ratio metrics
         ratioMetrics.forEach(metric => {
           if (metric.numerator === this.state.selectedMetricName) {
-            metric.numerator = this.state.editedMetric.name
+            metric.numerator = this.state.newMetric.name
           }
 
           if (metric.denominator === this.state.selectedMetricName) {
-            metric.denominator = this.state.editedMetric.name
+            metric.denominator = this.state.newMetric.name
           }
         })
 
@@ -653,12 +683,17 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         // Apply new config map
         console.log(kubectlApplyRule(configMap))
 
-        const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
+        const { counterMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
+          configMap,
+          counterMetrics,
           display: DisplayMode.getMetrics,
           counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState
+          selectedMetricName: undefined,
+          selectedType: undefined,
+          newMetric: undefined,
+          formSubmitted: undefined
         })
       } else {
         // TODO: inform user of problems
@@ -666,7 +701,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
       }
     } else {
-      console.log('edited ratio metric config:', this.state.editedMetric)
+      console.log('edited ratio metric config:', this.state.newMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -678,12 +713,12 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
           return metric.name !== this.state.selectedMetricName
         })
         .some(metric => {
-          return metric.name === this.state.editedMetric.name
+          return metric.name === this.state.newMetric.name
         })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = RATIO_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return this.state.editedMetric[id]
+        return this.state.newMetric[id]
       })
 
       // Final checks
@@ -694,7 +729,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         })
 
         // Add edited metric
-        ratioMetrics.push(this.state.editedMetric as RatioMetric)
+        ratioMetrics.push(this.state.newMetric as RatioMetric)
 
         // Convert new metric config to stringified YAML
         const stringifiedMetrics = safeDump(ratioMetrics)
@@ -705,12 +740,17 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         // Apply new config map
         console.log(kubectlApplyRule(configMap))
 
-        const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
+        const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
+          configMap,
+          ratioMetrics,
           display: DisplayMode.getMetrics,
-          counterMetricsState: counterMetricsState,
-          ratioMetricsState: ratioMetricsState
+          ratioMetricsState: ratioMetricsState,
+          selectedMetricName: undefined,
+          selectedType: undefined,
+          newMetric: undefined,
+          formSubmitted: undefined
         })
       } else {
         // TODO: inform user of problems
@@ -789,7 +829,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
     const tempMetric = {}
     tempMetric[attribute.name] = editedAttributeValue
 
-    this.setState({ editedMetric: { ...this.state.editedMetric, ...tempMetric } })
+    this.setState({ newMetric: { ...this.state.newMetric, ...tempMetric } })
   }
 
   private renderTableTitle = (title: string, type: MetricTypes) => {
@@ -921,22 +961,24 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
     )
   }
 
-  private renderAttributeForm = (
-    attribute: AttributeData,
-    values: any,
-    updateMetricConfig: (e, attribute: AttributeData) => void,
-    formType: FormTypes
-  ) => {
+  private renderAttributeForm = (attribute: AttributeData, formType: FormTypes) => {
+    const { newMetric, formSubmitted } = this.state
+
     if (attribute.type === AttributeTypes.input) {
       const invalid =
-        attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].check
-          ? attribute.invalidChecks[formType].check(values[attribute.name], this.state)
+        // Check if the form has been submitted and if this attribute is required
+        !newMetric[attribute.name] && formSubmitted && attribute.required
+          ? true
+          : // Run the invalid check, if applicable
+          attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].check
+          ? attribute.invalidChecks[formType].check(newMetric[attribute.name], this.state)
           : false
 
-      const invalidText =
-        attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].invalidText
-          ? attribute.invalidChecks[formType].invalidText
-          : ''
+      const invalidText = !newMetric[attribute.name]
+        ? 'This is a required attribute'
+        : attribute.invalidChecks
+        ? attribute.invalidChecks[formType].invalidText
+        : ''
 
       return (
         <FormGroup key={attribute.name} legendText="">
@@ -944,21 +986,36 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
             id={attribute.name}
             labelText={attribute.printableName}
             helperText={attribute.description}
-            value={values[attribute.name]}
+            value={newMetric[attribute.name]}
             invalid={invalid}
             invalidText={invalidText}
             onChange={e => {
-              return updateMetricConfig(e, attribute)
+              return this.updateAttribute(e, attribute)
             }}
           ></TextInput>
         </FormGroup>
       )
     } else {
       const dropdownOption = attribute.dropdownOptions.find(option => {
-        return option.value === values[attribute.name]
+        return option.value === newMetric[attribute.name]
       })
 
-      const printableValue = dropdownOption ? dropdownOption.printableOption : values[attribute.name]
+      const printableValue = dropdownOption ? dropdownOption.printableOption : newMetric[attribute.name]
+
+      const invalid =
+        // Check if the form has been submitted and if this attribute is required
+        !newMetric[attribute.name] && formSubmitted && attribute.required
+          ? true
+          : // Run the invalid check, if applicable
+          attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].check
+          ? attribute.invalidChecks[formType].check(newMetric[attribute.name], this.state)
+          : false
+
+      const invalidText = !newMetric[attribute.name]
+        ? 'This is a required attribute. An option must be selected.'
+        : attribute.invalidChecks
+        ? attribute.invalidChecks[formType].invalidText
+        : ''
 
       // Dropdown menu
       return (
@@ -968,8 +1025,10 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
             labelText={attribute.printableName}
             helperText={attribute.description}
             value={printableValue}
+            invalid={invalid}
+            invalidText={invalidText}
             onChange={e => {
-              return updateMetricConfig(e, attribute)
+              return this.updateAttribute(e, attribute)
             }}
           >
             {// Adding the default dropdown option if applicable
@@ -1006,13 +1065,9 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         <Form style={{ display: 'block' }} onSubmit={submitCallback}>
           {(() => {
             if (selectedType === MetricTypes.counter) {
-              return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
-              )
+              return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute => this.renderAttributeForm(attribute, formType))
             } else {
-              return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute =>
-                this.renderAttributeForm(attribute, this.state.editedMetric, this.updateAttribute, formType)
-              )
+              return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute => this.renderAttributeForm(attribute, formType))
             }
           })()}
           <Button style={{ display: 'inline-block' }} kind="primary" type="submit">
@@ -1046,14 +1101,14 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   }
 
   public render = () => {
-    const { display, selectedType } = this.state
+    const { display, selectedType, counterMetricsState, ratioMetricsState } = this.state
 
     switch (display) {
       case DisplayMode.getMetrics:
         return (
           <div className="pageStyle">
-            {this.renderMetricTable(this.state.counterMetricsState, MetricTypes.counter, 'Counter Metrics')}
-            {this.renderMetricTable(this.state.ratioMetricsState, MetricTypes.ratio, 'Ratio Metrics')}
+            {this.renderMetricTable(counterMetricsState, MetricTypes.counter, 'Counter Metrics')}
+            {this.renderMetricTable(ratioMetricsState, MetricTypes.ratio, 'Ratio Metrics')}
 
             <Button style={{ display: 'block', margin: '10px' }} kind="primary" onClick={this.refreshState}>
               Refresh
