@@ -49,6 +49,7 @@ interface DecisionState {
   experimentDecision: string
   chartData: Array<any>
   chartOptions: any
+  endExperimentWinner: string
 }
 
 export { CriterionState, Formstate, DecisionState, experimentTypes }
