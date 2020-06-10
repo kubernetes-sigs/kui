@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kui-crashy
+spec:
+  containers:
+  - name: crashy
+    image: nginx
+    command: ["/bin/sh", "-c", "echo logtest; sleep 5; echo exiting; exit"]

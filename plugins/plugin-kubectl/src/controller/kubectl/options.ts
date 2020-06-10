@@ -203,6 +203,9 @@ export interface KubeOptions extends ParsedOptions {
 
   wait?: boolean
 
+  p?: boolean
+  previous?: boolean
+
   l?: string
   label?: string
 

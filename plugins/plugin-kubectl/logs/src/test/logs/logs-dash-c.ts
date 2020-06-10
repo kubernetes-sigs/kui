@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, Selectors, SidecarExpect } from '@kui-shell/test'
 import {
   createNS,
   allocateNS,
   deleteNS,
-  waitForGreen,
   waitForTerminalText,
-  defaultModeForGet,
   deletePodByName
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+
+import { create, get, clickRetry, wait } from './helpers'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -46,66 +46,20 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   before(Common.before(this))
   after(Common.after(this))
 
-  const waitForLogText = waitForTerminalText.bind(this)
-
   const ns: string = createNS()
   allocateNS(this, ns)
+
+  const waitForLogText = waitForTerminalText.bind(this)
+  const createPodWithoutWaiting = create.bind(this, ns)
+  const waitForPod = wait.bind(this, ns)
+  const getPodViaClick = get.bind(this, ns)
+  const click = clickRetry.bind(this)
 
   const podName1 = 'kui-two-containers'
   const allContainers = 'All Containers'
   const containerName1 = 'nginx'
   const containerName2 = 'vim'
   const podName2 = 'nginx'
-
-  const createPodWithoutWaiting = (inputEncoded: string, podName: string) => {
-    it(`should create sample pod from URL`, () => {
-      return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-        .then(ReplExpect.okWithPtyOutput(podName))
-        .catch(Common.oops(this, true))
-    })
-  }
-
-  const waitForPod = (podName: string) => {
-    it(`should wait for the pod to come up`, () => {
-      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-        .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this, true))
-    })
-  }
-
-  const getPodViaClick = (podName: string, wait = true) => {
-    it(`should get pods via kubectl then click`, async () => {
-      try {
-        const selector: string = await CLI.command(`kubectl get pods ${podName} -n ${ns}`, this.app).then(
-          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
-        )
-
-        if (wait) {
-          // wait for the badge to become green
-          await waitForGreen(this.app, selector)
-        }
-
-        // now click on the table row
-        await this.app.client.click(`${selector} .clickable`)
-        await SidecarExpect.open(this.app)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing(podName))
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
-  }
-
-  /* const getPodViaYaml = (podName: string) => {
-    it('should get pods via kubectl get -o yaml', async () =>
-      CLI.command(`kubectl get pods ${podName} -n ${ns} -o yaml`, this.app)
-        .then(ReplExpect.justOK)
-        .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(podName, undefined, undefined, ns))
-        .then(SidecarExpect.mode(defaultModeForGet))
-        .catch(Common.oops(this, true)))
-  } */
 
   const testLogsContent = (show: string[], notShow?: string[]) => {
     if (show) {
@@ -133,6 +87,18 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         })
       })
     }
+  }
+
+  const doRetry = (showInLog: string[], toolbar: { text: string; type: string }) => {
+    it('should hit retry', async () => {
+      try {
+        await click()
+        await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(this.app)
+        testLogsContent(showInLog)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
   }
 
   const switchToLogsTab = (showInLog: string[], toolbar: { text: string; type: string }) => {
@@ -184,19 +150,6 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         } else {
           await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming is paused', exact: false })(this.app)
         }
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
-  }
-
-  const doRetry = (showInLog: string[], toolbar: { text: string; type: string }) => {
-    it('should hit retry', async () => {
-      try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('retry-streaming'))
-        await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(this.app)
-        testLogsContent(showInLog)
       } catch (err) {
         return Common.oops(this, true)(err)
       }

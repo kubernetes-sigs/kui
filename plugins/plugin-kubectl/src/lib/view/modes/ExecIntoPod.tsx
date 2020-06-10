@@ -264,17 +264,19 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     }
   }
 
-  protected showContainer(container: string) {
-    super.showContainer(container)
-
-    this.setState(() => {
+  protected showContainer(container: string, extraState?: (curState: S) => Partial<S>) {
+    this.setState(curState => {
       this.abortPriorJob()
 
-      return {
-        job: undefined,
-        streamUUID: undefined,
-        isTerminated: false
-      }
+      return Object.assign(
+        {
+          container,
+          job: undefined,
+          streamUUID: undefined,
+          isTerminated: false
+        },
+        extraState ? extraState(curState) : {}
+      )
     })
   }
 

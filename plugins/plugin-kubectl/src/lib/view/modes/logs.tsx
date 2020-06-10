@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import * as React from 'react'
 import { i18n, Arguments, Button, Tab, ModeRegistration, ToolbarProps } from '@kui-shell/core'
 
 import { Icons } from '@kui-shell/plugin-client-common'
 
-import { Terminal } from './ExecIntoPod'
 import { Pod, isPod } from '../../model/resource'
 import { getCommandFromArgs } from '../../util/util'
+import { Terminal, TerminalState } from './ExecIntoPod'
 import { ContainerProps, StreamingStatus } from './ContainerCommon'
 import { KubeOptions, getContainer, hasLabel } from '../../../controller/kubectl/options'
 
+const debug = Debug('plugin-kubectl/Logs')
 const strings = i18n('plugin-kubectl', 'logs')
 
 /**
@@ -34,11 +36,20 @@ const strings = i18n('plugin-kubectl', 'logs')
  */
 const defaultTail = 1000
 
-export class Logs extends Terminal {
+interface State extends TerminalState {
+  showingPrevious: boolean
+}
+
+export function showingPrevious(args: Arguments<KubeOptions>) {
+  return args && (!!args.parsedOptions.p || !!args.parsedOptions.previous)
+}
+
+export class Logs extends Terminal<State> {
   public constructor(props: ContainerProps) {
     super(props)
 
     this.state = Object.assign(this.state, {
+      showingPrevious: showingPrevious(this.props.args.argsForMode),
       container: this.defaultContainer()
     })
   }
@@ -88,9 +99,11 @@ export class Logs extends Terminal {
     }
 
     const msg1 = msgAndType[status].message
-    const msg2 = this.state.isTerminated
-      ? msg1
-      : `${msg1} ${this.state.container ? 'Showing container X.' : 'Showing all containers.'}`
+    const msg2 = this.previousMessage(
+      this.state.isTerminated
+        ? msg1
+        : `${msg1} ${this.state.container ? 'Showing container X.' : 'Showing all containers.'}`
+    )
 
     return {
       type: msgAndType[status].type,
@@ -98,11 +111,26 @@ export class Logs extends Terminal {
     }
   }
 
-  private isMulti() {
+  /** Addendum to toolbar text to denote whether we are showingPrevious */
+  private previousMessage(baseMsg: string): string {
+    return this.state.showingPrevious ? `${baseMsg} Showing previous instance.` : baseMsg
+  }
+
+  /**
+   *
+   * @return whether we are showing logs for multiple containers,
+   * e.g. via a label selector
+   *
+   */
+  private isMulti(): boolean {
     return !!(this.props.args.argsForMode && hasLabel(this.props.args.argsForMode))
   }
 
-  /** @return the command to issue in order to initialize the pty stream */
+  /**
+   *
+   * @return the command to issue in order to initialize the pty stream
+   *
+   */
   protected ptyCommand() {
     const { args, pod } = this.props
     const { container: containerName } = this.state
@@ -114,8 +142,9 @@ export class Logs extends Terminal {
       // --all-containers for convenience
       // 2) only use argsForMode once
       // 3) do not add -f unless the user requested it
+      const previous = showingPrevious(args.argsForMode) ? '--previous' : ''
       const tail = !args.argsForMode.parsedOptions.tail ? ` --tail ${defaultTail}` : ''
-      const command = `${args.argsForMode.command} ${!containerName ? container : ''} ${tail}`
+      const command = `${args.argsForMode.command} ${!containerName ? container : ''} ${tail} ${previous}`
 
       if (!isMulti) {
         args.argsForMode.command = undefined // point 2
@@ -124,6 +153,8 @@ export class Logs extends Terminal {
       return { command, isLive: args.parsedOptions.f ? ('Live' as const) : ('Paused' as const) }
     } else {
       // pod:container? a sign of a multi-pod view
+      const previous =
+        this.state.showingPrevious || (args.argsForMode && showingPrevious(args.argsForMode)) ? '--previous' : ''
       const dashF = !isMulti || (args.argsForMode && args.argsForMode.parsedOptions.f) ? '-f' : ''
       const isLive = dashF ? ('Live' as const) : undefined
 
@@ -139,7 +170,8 @@ export class Logs extends Terminal {
 
       const command = `${getCommandFromArgs(args)} logs ${podName} -n ${
         pod.metadata.namespace
-      } ${theContainer} ${dashF} --tail ${defaultTail}`
+      } ${theContainer} ${dashF} ${previous} --tail ${defaultTail}`
+      debug('log command', command)
 
       return {
         isLive,
@@ -163,6 +195,23 @@ export class Logs extends Terminal {
     } else {
       return []
     }
+  }
+
+  /** Previous logs button */
+  private previous(): Button {
+    return {
+      mode: 'kubectl-logs-previous-toggle',
+      label: this.state.showingPrevious ? strings('Show Current') : strings('Show Previous'),
+      kind: 'view',
+      command: () =>
+        this.showContainer(undefined, curState => ({
+          showingPrevious: !curState.showingPrevious
+        }))
+    }
+  }
+
+  protected toolbarButtons(status: StreamingStatus): Button[] {
+    return [this.previous()].concat(super.toolbarButtons(status))
   }
 
   /** The part of toggleStreaming that deals with PTY flow control. */

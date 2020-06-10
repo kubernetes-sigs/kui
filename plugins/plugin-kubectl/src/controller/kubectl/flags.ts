@@ -25,11 +25,11 @@ const defaultBooleans = [
   'ignore-not-found',
   'no-headers',
 
+  // exec
   'i',
   'it',
   'ti',
   'stdin',
-
   't',
   'tty',
 

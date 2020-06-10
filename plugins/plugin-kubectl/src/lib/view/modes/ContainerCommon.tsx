@@ -98,7 +98,6 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
   }
 
   /** Buttons to display in the Toolbar. */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected toolbarButtons(status: StreamingStatus): Button[] {
     return this.toolbarButtonsForError(status).concat(this.toolbarButtonsForStreaming(status), this.containerList())
   }
