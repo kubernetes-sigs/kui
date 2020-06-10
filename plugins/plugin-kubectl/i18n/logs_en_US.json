@@ -8,16 +8,37 @@
   "Details": "Details",
   "No log data": "No log data",
   "No matching pods": "No matching pods",
+
   "Logs are live streaming. Showing all containers.": "Logs are live **streaming**. Showing **all containers**.",
+  "Logs are live streaming. Showing all containers. Showing previous instance.": "Logs are live **streaming**. Showing **all containers** of **previous instance**.",
+
   "Log streaming is paused. Showing all containers.": "Log streaming is **paused**. Showing **all containers**.",
+  "Log streaming is paused. Showing all containers. Showing previous instance.": "Log streaming is **paused**. Showing **all containers** of **previous instance**.",
+
   "Log streaming stopped. Showing all containers.": "Log streaming **stopped**. Showing **all containers**.",
+  "Log streaming stopped. Showing all containers. Showing previous instance.": "Log streaming **stopped**. Showing **all containers** of **previous instance**.",
+
   "Log streaming stopped abnormally. Showing all containers.": "Log streaming **stopped abnormally**. Showing **all containers**.",
+  "Log streaming stopped abnormally. Showing all containers. Showing previous instance.": "Log streaming **stopped abnormally**. Showing **all containers** of **previous instance**.",
+
   "Logs are live streaming. Showing container X.": "Logs are live **streaming**. Showing container **{0}**.",
+  "Logs are live streaming. Showing container X. Showing previous instance.": "Logs are live **streaming**. Showing container **{0}** of **previous instance**.",
+
   "Log streaming is paused. Showing container X.": "Log streaming is **paused**. Showing container **{0}**.",
+  "Log streaming is paused. Showing container X. Showing previous instance.": "Log streaming is **paused**. Showing container **{0}** of **previous instance**.",
+
   "Log streaming stopped. Showing container X.": "Log streaming **stopped**. Showing container **{0}**.",
+  "Log streaming stopped. Showing container X. Showing previous instance.": "Log streaming **stopped**. Showing container **{0}** of **previous instance**.",
+
   "Log streaming stopped abnormally. Showing container X.": "Log streaming **stopped abnormally**. Showing container **{0}**.",
+  "Log streaming stopped abnormally. Showing container X. Showing previous instance.": "Log streaming **stopped abnormally**. Showing container **{0}** of **previous instance**.",
+
   "Log streaming stopped.": "Log streaming **stopped**.",
+  "Log streaming stopped. Showing previous instance.": "Log streaming **stopped**. Showing **previous instance**.",
+
   "Log streaming stopped abnormally.": "Log streaming **stopped abnormally**.",
+  "Log streaming stopped abnormally. Showing previous instance.": "Log streaming **stopped abnormally**. Showing **previous instance**.",
+
   "Pause Streaming": "Pause Streaming",
   "Resume Streaming": "Resume Streaming",
   "Retry": "Retry",

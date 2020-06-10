@@ -21,7 +21,8 @@ import {
   KubeOptions,
   doExecWithPty,
   doExecWithStdout,
-  defaultFlags as flags,
+  defaultFlags,
+  flags,
   getLabel,
   getTransformer,
   getCommandFromArgs,
@@ -40,11 +41,15 @@ import commandPrefix from '../command-prefix'
 const strings = i18n('plugin-kubectl', 'logs')
 
 interface LogOptions extends KubeOptions {
-  f: string
-  follow: string
+  // f: boolean
+  follow: boolean
+  p: boolean
   previous: boolean
   tail: number
 }
+
+/** for command registration, which of those options is a boolean? */
+const booleans = ['p', 'previous', 'f', 'follow']
 
 /**
  * Send the request to a PTY for deeper handling, then (possibly) add
@@ -166,10 +171,10 @@ function viewTransformer(defaultMode: string) {
 }
 
 export const doLogs = getOrPty('logs')
-export const logsFlags = Object.assign({}, flags, { viewTransformer: viewTransformer('logs') })
+export const logsFlags = Object.assign({}, flags(booleans), { viewTransformer: viewTransformer('logs') })
 
 export const doExec = getOrPty('exec')
-export const execFlags = Object.assign({}, flags, { viewTransformer: viewTransformer('terminal') })
+export const execFlags = Object.assign({}, defaultFlags, { viewTransformer: viewTransformer('terminal') })
 
 export default (registrar: Registrar) => {
   registrar.listen(`/${commandPrefix}/kubectl/logs`, doLogs, logsFlags)
