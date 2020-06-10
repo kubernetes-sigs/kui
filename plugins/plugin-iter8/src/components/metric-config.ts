@@ -1,5 +1,4 @@
 import { safeLoad } from 'js-yaml'
-import { MetricConfigMap } from './metric-config-types'
 
 import { MetricConfigMap, CounterMetrics, RatioMetrics } from './metric-config-types'
 

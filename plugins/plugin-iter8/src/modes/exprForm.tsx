@@ -175,11 +175,26 @@ class ExprBase extends React.Component<{}, Formstate> {
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ criteria: newMetric })
   }
-  	/*
-  	* ==== Sets the basic experiment state attributes =====
-  	*/
-    private handleNameChange(event){
-    	this.setState({name: event.target.value.toLowerCase().replace(" ", "_")});
+
+  /*
+   * ==== Sets the basic experiment state attributes =====
+   */
+  private handleNameChange(event) {
+    this.setState({ name: event.target.value.toLowerCase() })
+  }
+
+  private handleAddCand = value => {
+    // Convert all input into an iterable array
+    const versionValue = value.map(data => {
+      return data.text
+    })
+    this.setState({ invalidCand: false })
+    // Check for invalid selections
+    for (let i = 0; i < versionValue.length; i++) {
+      if (this.state.base === versionValue[i]) {
+        this.setState({ invalidCand: true })
+        versionValue.splice(i, 1)
+      }
     }
 
     handleSubmit(event){
@@ -427,6 +442,13 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 }
 
+  private handleLimitValChange = (value, idx) => {
+    const limitValue = value === '' ? 0 : parseInt(value)
+    console.log(limitValue)
+    const newMetric = [...this.state.metric]
+    newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
+    this.setState({ metric: newMetric })
+  }
 
 export function renderForm(){
 	return {
