@@ -4,7 +4,7 @@ import { execSync } from 'child_process'
 
 export function kubectlApplyRule(rule) {
   const yamlRule = safeDump(rule)
-  const command = `cat <<EOF | kubectl apply -f -\n${yamlRule}\nEOF`
+  const command = `cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`
   execSync(command, { encoding: 'utf-8' })
 }
 
