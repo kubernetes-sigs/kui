@@ -12,7 +12,8 @@ import {
   InlineNotification,
   ToastNotification,
   RadioButtonGroup,
-  RadioButton
+  RadioButton,
+  ComboBox
 } from 'carbon-components-react'
 import { Stop32, Undo32, Export32, ChartLineData32, Help16, FaceCool20, FaceNeutral20 } from '@carbon/icons-react'
 import Chart from 'react-apexcharts'
@@ -280,18 +281,18 @@ function analytics_response() {
     ],
     traffic_split_recommendation: {
       uniform: {
-        reviews_v3: 60,
-        reviews_v2: 40
+        'reviews-v3': 60,
+        'reviews-v2': 40
       },
       random: {
-        reviews_v3: 30,
-        reviews_v2: 70
+        'reviews-v3': 30,
+        'reviews-v2': 70
       }
     },
     winner_assessment: {
-      winning_version_found: true,
-      current_winner: 'reviews-v2',
-      winning_probability: 0.34
+      winning_version_found: false,
+      current_winner: '',
+      winning_probability: 0.0
     },
     status: [],
     status_interpretations: {},
@@ -308,6 +309,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // For displaying Traffic Suggestion Section
   private algoList = []
   private trafficRecs = []
+  // Get list of deployments
+  private deployList = []
 
   private notifKey = 0
 
@@ -336,6 +339,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       advancedStatisticsRows: [], // table Row values for Advanced statistics
       hasExperimentEnded: false, // set to true if experiment has ended
       experimentDecision: 'rollback', // ID final experiment decision. Defaults to rollback
+      endExperimentWinner: '', // Name of the service/deployment which gets all the traffic when experiment ends
       chartData: [], // Stores data for the criteria graphs
       chartOptions: {} // Stores options for criteria graphs
     }
@@ -659,7 +663,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           experimentResult: jsonrlts,
           trafficSplit: traffic,
           haveAdvancedStatistics: this.haveAdvancedStatistics(),
-          haveCriteriaComparison: this.haveCriteriaComparison()
+          haveCriteriaComparison: this.haveCriteriaComparison(),
+          endExperimentWinner: jsonrlts.baseline_assessment.id
         })
         if (this.state.haveCriteriaComparison) {
           this.getChartData()
@@ -668,10 +673,20 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
           this.createadvancedStatisticsObject()
           this.getAdvancedStatistics(this.state.selectedAdvancedStatistic)
         }
+        this.getdeployList()
       })
       .catch(failure => {
         console.log(failure)
       })
+  }
+
+  // Get list of deployments
+  private getdeployList() {
+    this.deployList.push(this.state.experimentRequest.baseline.id)
+    const candidates = this.state.experimentRequest.candidates
+    for (let i = 0; i < candidates.length; i++) {
+      this.deployList.push(candidates[i].id)
+    }
   }
 
   // Get new traffic recommendations for the selected algorithm type
@@ -718,20 +733,28 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.setState({ notifyUser: false })
   }
 
-  // handle end of experiment
-  private endExperiment() {
+  // Update winner
+  private updateEndExperimentWinner(value) {
     let winner = ''
+    this.setState({ experimentDecision: value })
     const baseline = this.state.experimentResult.baseline_assessment.id
-    if (this.state.experimentDecision === 'rollback') {
+    if (value === 'rollback') {
       winner = baseline
-    } else if (this.state.experimentDecision === 'rollforward') {
+    } else if (value === 'rollforwardwinner') {
       winner = this.state.experimentResult.winner_assessment.winning_version_found
         ? this.state.experimentResult.winner_assessment.current_winner
         : baseline
+    } else {
+      winner = value
     }
+    this.setState({ endExperimentWinner: winner })
+  }
+
+  // handle end of experiment
+  private endExperiment() {
     const temporarySplit = this.state.trafficSplit
     for (let i = 0; i < temporarySplit.length; i++) {
-      if (temporarySplit[i]['version'] === winner) {
+      if (temporarySplit[i]['version'] === this.state.endExperimentWinner) {
         temporarySplit[i]['split'] = 100
       } else {
         temporarySplit[i]['split'] = 0
@@ -746,7 +769,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const { trafficSplit } = this.state
     return (
       <Form className="formProps" style={{ display: 'block' }}>
-        <FormGroup className="borderstyle" legendText="">
+        <FormGroup legendText="">
           <InlineLoading
             description={
               !this.state.experimentCreated ? 'Waiting for iter8 Experiment to be created...' : 'Experiment Created: '
@@ -769,13 +792,15 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                   <h5> {this.winner} </h5>
                 </div>
               ) : (
-                <h5>
-                  {' '}
-                  {this.winner} <FaceNeutral20 />{' '}
-                </h5>
+                <div>
+                  <h4 className="red">
+                    {' '}
+                    {this.winner} <FaceNeutral20 />{' '}
+                  </h4>
+                </div>
               )}
             </FormGroup>
-            <FormGroup legendText="Win Probabilities" className="borderstyle formGroupProps">
+            <FormGroup legendText="Win Probabilities" className="formGroupProps">
               <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="350" />
             </FormGroup>
             <FormGroup legendText="">
@@ -836,7 +861,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               </FormGroup>
             ) : null}
 
-            <FormGroup className="borderstyle" legendText="">
+            <FormGroup legendText="">
               {trafficSplit.map((val, idx) => {
                 const sliderId = `${idx}=${val.split}`
                 return (
@@ -863,7 +888,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 />
               ) : null}
             </FormGroup>
-            <FormGroup className="borderstyle" legendText="">
+            <FormGroup legendText="">
               <h4 className="titletexts"> Criteria Assessments </h4>
               {this.state.haveCriteriaComparison ? (
                 <div>
@@ -926,7 +951,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             ) : null}
           </div>
         ) : null}
-        <FormGroup className="borderstyle" legendText="">
+        <FormGroup legendText="">
           <Button
             size="default"
             kind="primary"
@@ -953,14 +978,28 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 labelPosition="right"
                 legend="Group Legend"
                 name="end-experiment"
-                onChange={value => this.setState({ experimentDecision: value })}
-                orientation="horizontal"
+                onChange={value => this.updateEndExperimentWinner(value)}
+                orientation="vertical"
                 valueSelected="rollback"
                 style={{ padding: 10 }}
               >
                 <RadioButton id="rollback" labelText="Roll Back to Baseline" value="rollback" />
-                <RadioButton id="rollforward" labelText="Roll Forward to Winner" value="rollforward" />
+                <RadioButton id="rollforwardwinner" labelText="Roll Forward to Winner" value="rollforwardwinner" />
+                <RadioButton
+                  id="rollforwardother"
+                  labelText="Roll Forward to Another Service"
+                  value="rollforwardother"
+                />
               </RadioButtonGroup>
+              {this.state.experimentDecision === 'rollforwardother' ? (
+                <ComboBox
+                  id="winner-select"
+                  helperText="Select the winner of the experiment"
+                  placeholder="Select"
+                  items={this.deployList}
+                  onChange={value => this.updateEndExperimentWinner(value)}
+                />
+              ) : null}
             </FormGroup>
             <FormGroup legendText="" className="endexpbtn">
               <Button

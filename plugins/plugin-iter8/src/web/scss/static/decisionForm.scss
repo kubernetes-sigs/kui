@@ -60,13 +60,14 @@ $darkteal: #00b3b3;
   margin-left: -125px;
 }
 .red {
-  color: red !important;
+  fill: red;
+  color: red;
 }
 .green {
-  color: green;
   fill: green;
+  color: red;
 }
-.tablevalues .warningtext {
+.orange .tablevalues .warningtext {
   visibility: hidden;
   text-align: center;
   z-index: 1;
@@ -90,12 +91,7 @@ $darkteal: #00b3b3;
     visibility: visible;
   }
 }
-.borderstyle {
-  padding-bottom: 10;
-  border-bottom: 'gray';
-  border-style: 'dashed';
-  border-bottom-width: 'thin';
-}
+
 .currenttraffic {
   /* Design */
   font-weight: 100;
