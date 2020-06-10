@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.1](https://github.com/IBM/kui/compare/v8.9.0...v8.9.1) (2020-06-10)
+
+### Bug Fixes
+
+- split screen terminals sometimes incorrect handle exit ([6aac96a](https://github.com/IBM/kui/commit/6aac96a)), closes [#4860](https://github.com/IBM/kui/issues/4860)
+
 # [8.9.0](https://github.com/IBM/kui/compare/v4.5.0...v8.9.0) (2020-06-09)
 
 ### Bug Fixes
