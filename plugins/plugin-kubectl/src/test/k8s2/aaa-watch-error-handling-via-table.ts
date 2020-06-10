@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert'
+
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -79,6 +81,13 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
       // start to watch pods in a non-existent namespace
       const watchResult = await CLI.command(`k get pods -w -n ${ns}`, this.app).then(async result => {
         await ReplExpect.ok(result)
+
+        const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(result.count))
+        assert.strictEqual(actualTitle, 'Pod')
+
+        const actualSecondaryTitle = await this.app.client.getText(Selectors.TABLE_TITLE_SECONDARY(result.count))
+        assert.strictEqual(actualSecondaryTitle, ns)
+
         return result
       })
 

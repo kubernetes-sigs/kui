@@ -28,7 +28,8 @@ import {
 } from '@kui-shell/core'
 
 import { kindPart } from '../fqn'
-import { formatOf, KubeOptions, KubeExecOptions } from '../options'
+import { getKind } from '../explain'
+import { formatOf, KubeOptions, KubeExecOptions, getNamespace } from '../options'
 
 import { Pair } from '../../../lib/view/formatTable'
 import { getCommandFromArgs } from '../../../lib/util/util'
@@ -295,15 +296,25 @@ class KubectlWatcher implements Abortable, Watcher {
  * Start watching for changes to the resources of the given table.
  *
  */
-export default async function doGetWatchTable(args: Arguments<KubeOptions>): Promise<string | (Table & Watchable)> {
+export default async function doGetWatchTable(
+  args: Arguments<KubeOptions>,
+  command: string
+): Promise<string | (Table & Watchable)> {
   try {
     // we do a get, then (above) a --watch; this is the get part;
     // observe how we strip off any --watch requests from the user's
     // command line
-    const cmd = args.command
+    let cmd = args.command
       .replace(/^k(\s)/, 'kubectl$1')
       .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '') // strip --watch
-    const initialTable = await args.REPL.qexec<Table>(cmd).catch((err: CodedError) => {
+
+    const ns = await getNamespace(args)
+
+    if (!args.parsedOptions.n && !args.parsedOptions.namespace) {
+      cmd = `${cmd} -n ${ns}` // append the namespace to the underlying get command, so the initial table can have correct namespace
+    }
+
+    const initialTable = await args.REPL.qexec<Table>(cmd).catch(async (err: CodedError) => {
       if (err.code !== 404) {
         throw err
       } else {
@@ -315,7 +326,7 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
         //
         const argv = args.argvNoOptions
         const idx = argv.indexOf('get') + 1
-        const kind = argv[idx] // <-- <kind>
+        const kind = await getKind(command, args, args.argvNoOptions[idx]) // <-- <kind>
         const name = argv[idx + 1] // <-- <name>
 
         if (/doesn't have a resource type/i.test(err.message)) {
@@ -327,7 +338,9 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
         } else {
           // case b
           return {
-            body: []
+            body: [],
+            title: kind || '',
+            breadcrumbs: ns ? [{ label: ns }] : undefined // we want to display breadcrumbs for empty watchable table
           } as Table
         }
       }

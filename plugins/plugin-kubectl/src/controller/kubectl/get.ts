@@ -257,7 +257,7 @@ export const doGet = (command: string) =>
         if ((await fullKind) === 'Event' && output !== 'wide') {
           return overrideEventCommand(args, output)
         } else {
-          return doGetWatchTable(args)
+          return doGetWatchTable(args, command)
         }
       }
     }
