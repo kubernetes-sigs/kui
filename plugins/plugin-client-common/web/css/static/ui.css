@@ -696,7 +696,11 @@ input.repl-partial,
   animation: pulse 1000ms 1;
 }
 body {
-  --animation-repeating-pulse: pulse 1000ms infinite alternate-reverse;
+  --animation-short-repeating-pulse: pulse 1000ms 3 alternate-reverse;
+  --animation-medium-repeating-pulse: pulse 1000ms 6 alternate-reverse;
+  --animation-long-repeating-pulse: pulse 1000ms 20 alternate-reverse;
+  --animation-infinite-repeating-pulse: pulse 1000ms infinite alternate-reverse;
+  --animation-repeating-pulse: var(--animation-infinite-repeating-pulse);
 }
 .repeating-pulse {
   animation: var(--animation-repeating-pulse);
