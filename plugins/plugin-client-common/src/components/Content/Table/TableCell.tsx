@@ -17,7 +17,7 @@
 import { Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
 
 import * as React from 'react'
-import { TableCell, DataTableRow, DataTableCell } from 'carbon-components-react'
+import { TableCell, DataTableCell } from 'carbon-components-react'
 
 /**
  * Generate an onclick handler for a cell
@@ -58,7 +58,7 @@ export function onClickForCell(
  * Render a TableCell part
  *
  */
-export default function renderCell(kuiRow: KuiRow, row: DataTableRow, tab: Tab, repl: REPL) {
+export default function renderCell(kuiRow: KuiRow, justUpdated: boolean, tab: Tab, repl: REPL) {
   return function KuiTableCell(cell: DataTableCell, cidx: number) {
     // e.g. is this a badge/status-like cell?
     const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
@@ -95,7 +95,13 @@ export default function renderCell(kuiRow: KuiRow, row: DataTableRow, tab: Tab, 
           className={outerClassName}
         >
           {tag === 'badge' && (
-            <span title={innerText} data-tag="badge-circle" className={kuiRow.attributes[cidx - 1].css} />
+            <span
+              key={kuiRow.attributes[cidx - 1].css /* force restart of animation if color changes */}
+              title={innerText}
+              data-tag="badge-circle"
+              className={kuiRow.attributes[cidx - 1].css}
+              data-just-updated={justUpdated || undefined}
+            />
           )}
           <span className="kui--cell-inner-text">{innerText}</span>
         </span>

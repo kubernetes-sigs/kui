@@ -20,6 +20,7 @@ import { DataTableHeader, DataTableRow } from 'carbon-components-react'
 export interface NamedDataTableRow extends DataTableRow {
   NAME: string
   rowKey: string
+  justUpdated: boolean
 }
 
 /** attempt to infer header model from body model */
@@ -56,11 +57,11 @@ export function kuiHeader2carbonHeader(header: KuiRow): DataTableHeader[] {
  * DataTable.
  *
  */
-export function kuiRow2carbonRow(headers: DataTableHeader[]) {
+export function kuiRow2carbonRow(headers: DataTableHeader[], justUpdated = false) {
   return (row: KuiRow, ridx: number): NamedDataTableRow => {
     const isSelected = row.rowCSS ? row.rowCSS.includes('selected-row') : false
 
-    const rowData = { id: ridx.toString(), rowKey: row.rowKey, isSelected, NAME: '' }
+    const rowData = { id: ridx.toString(), rowKey: row.rowKey, isSelected, NAME: '', justUpdated }
     rowData[headers[0].key] = row.name
 
     if (!row.key) {

@@ -103,7 +103,13 @@
 }
 
 [data-table-watching='true'] .bx--data-table {
-  [data-tag='badge-circle'].yellow-background {
-    animation: var(--animation-repeating-pulse);
+  [data-tag='badge-circle'][data-just-updated] {
+    &.yellow-background {
+      animation: var(--animation-infinite-repeating-pulse);
+    }
+
+    &.red-background {
+      animation: pulse 1000ms 6 alternate-reverse;
+    }
   }
 }

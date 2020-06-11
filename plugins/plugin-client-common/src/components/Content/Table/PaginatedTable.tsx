@@ -204,7 +204,17 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(response.body, renderOpts, tab, repl, offset)}
+                {renderBody(
+                  response.body,
+                  this.state.rows.reduce((M, _) => {
+                    if (_.justUpdated) M[_.rowKey] = true
+                    return M
+                  }, {} as Record<string, boolean>),
+                  renderOpts,
+                  tab,
+                  repl,
+                  offset
+                )}
               </Table>
             </TableContainer>
           )}
