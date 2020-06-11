@@ -219,13 +219,6 @@ function mac {
             mv "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/" "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
 	fi
 
-        echo "Add kubectl-kui to electron build darwin"
-        (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64" && touch kubectl-kui && chmod +x kubectl-kui \
-          && echo '#!/usr/bin/env sh
-export KUI_POPUP_WINDOW_RESIZE=true
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-"$SCRIPTDIR"/Kui.app/Contents/MacOS/Kui kubectl $@ &' >> kubectl-kui)
-
         # create the installers
         #if [ -n "$ZIP_INSTALLER" ]; then
         #node ./builders/zip.js
@@ -242,6 +235,36 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 	            --overwrite) &
                 MAC_DMG_PID=$!
             fi
+
+            echo "Add kubectl-kui to electron build darwin"
+            (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/" \
+            && touch kubectl-kui && chmod +x kubectl-kui \
+            && echo '#!/usr/bin/env bash
+export KUI_POPUP_WINDOW_RESIZE=true
+
+# credit: https://unix.stackexchange.com/a/521984
+bash_realpath() {
+  # print the resolved path
+  # @params
+  # 1: the path to resolve
+  # @return
+  # &1: the resolved link path
+
+  local path="${1}"
+  while [[ -L ${path} && "$(ls -l "${path}")" =~ -\>\ (.*) ]]
+  do
+    path="${BASH_REMATCH[1]}"
+  done
+  echo "${path}"
+}
+
+APP_RESOURCES_DIR="$(dirname "$(bash_realpath "$0")")"
+if [ "$KUI" != "true" ]; then
+    "$APP_RESOURCES_DIR/../MacOS/Kui" kubectl $@ &
+else
+    "$APP_RESOURCES_DIR/../MacOS/Kui" kubectl $@
+fi
+' >> kubectl-kui)
 
             echo "TGZ build for darwin"
             tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-x64.tar.bz2" "${CLIENT_NAME}-darwin-x64" &
