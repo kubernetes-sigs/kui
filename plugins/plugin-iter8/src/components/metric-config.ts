@@ -20,23 +20,26 @@ export const ITER8_METRIC_NAMES = {
 }
 
 export function getMetricConfig(): {
-  configMap: MetricConfigMap,
-  counterMetrics: CounterMetrics,
+  configMap: MetricConfigMap
+  counterMetrics: CounterMetrics
   ratioMetrics: RatioMetrics
 } {
   try {
-    const configMap =  safeLoad(execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
-      encoding: 'utf-8',
-      stdio: 'pipe'
-    })) as MetricConfigMap
-  
+    const configMap = safeLoad(
+      execSync('kubectl get configmaps -n iter8 iter8config-metrics -o yaml', {
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      })
+    ) as MetricConfigMap
+
     return {
       configMap,
       counterMetrics: safeLoad(configMap.data['counter_metrics.yaml']),
       ratioMetrics: safeLoad(configMap.data['ratio_metrics.yaml'])
     }
   } catch (e) {
-    throw new Error('Could not obtain config map.')
+    // throw new Error('Could not obtain config map.')
+    return null
   }
 }
 
@@ -111,12 +114,14 @@ export class GetMetricConfig {
   }
 
   // Return list of names of counter and ratio metrics in the config map
-  public getMetricList(): { counter: string[], ratio: string[]} | ErrorData {
+  public getMetricList(): { counter: string[]; ratio: string[] } | ErrorData {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
       return this.errorResponse()
     }
 
-    const counterMetrics = safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml']) as CounterMetrics
+    const counterMetrics = safeLoad(
+      safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml']
+    ) as CounterMetrics
     const ratioMetrics = safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml']) as RatioMetrics
 
     return {
