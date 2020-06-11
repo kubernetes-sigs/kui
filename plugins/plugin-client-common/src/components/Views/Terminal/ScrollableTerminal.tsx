@@ -371,6 +371,18 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /**
+   * @return the index of the given scrollback, in the context of the
+   * current (given) state
+   * Note: if theres's no scrollback matched the given state,
+   * e.g. the scrollback has been removed, return 0
+   *
+   */
+  private findAvailableSplit(curState: State, uuid: string): number {
+    const focusedIdx = this.findSplit(curState, uuid)
+    return focusedIdx !== -1 ? focusedIdx : 0
+  }
+
+  /**
    * Remove the given split (identified by `sbuuid`) from the state.
    *
    */
@@ -402,7 +414,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private splice(sbuuid: string, mutator: (state: ScrollbackState) => Pick<ScrollbackState, 'blocks'>) {
     this.setState(curState => {
-      const focusedIdx = this.findSplit(curState, sbuuid)
+      const focusedIdx = this.findAvailableSplit(curState, sbuuid)
       const splits = curState.splits
         .slice(0, focusedIdx)
         .concat([Object.assign({}, curState.splits[focusedIdx], mutator(curState.splits[focusedIdx]))])
