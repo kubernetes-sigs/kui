@@ -20,6 +20,7 @@ import * as React from 'react'
 import { DataTableCustomRenderProps, TableBody, TableRow } from 'carbon-components-react'
 
 import renderCell from './TableCell'
+import { NamedDataTableRow } from './kui2carbon'
 
 /**
  * Render the TableBody part
@@ -29,24 +30,30 @@ import renderCell from './TableCell'
  */
 export default function renderBody(
   kuiBody: KuiRow[],
-  renderOpts: DataTableCustomRenderProps,
+  justUpdated: Record<string, boolean>, // rowKey index
+  renderOpts: DataTableCustomRenderProps<NamedDataTableRow>,
   tab: Tab,
   repl: REPL,
   offset: number
 ) {
   return (
     <TableBody>
-      {renderOpts.rows.map((row, ridx) => (
-        <TableRow
-          key={row.id}
-          {...renderOpts.getRowProps({
-            row,
-            'data-name': kuiBody[offset + ridx].name
-          })}
-        >
-          {row.cells.map(renderCell(kuiBody[offset + ridx], row, tab, repl))}
-        </TableRow>
-      ))}
+      {renderOpts.rows.map((row, ridx) => {
+        const kuiRow = kuiBody[offset + ridx]
+        const updated = justUpdated[kuiRow.rowKey]
+
+        return (
+          <TableRow
+            key={row.id}
+            {...renderOpts.getRowProps({
+              row,
+              'data-name': kuiBody[offset + ridx].name
+            })}
+          >
+            {row.cells.map(renderCell(kuiRow, updated, tab, repl))}
+          </TableRow>
+        )
+      })}
     </TableBody>
   )
 }
