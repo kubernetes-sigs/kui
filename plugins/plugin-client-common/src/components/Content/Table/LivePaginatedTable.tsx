@@ -91,7 +91,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
         }
       })
 
-      const newRow = kuiRow2carbonRow(this.state.headers)(kuiRow, foundIndex)
+      const newRow = kuiRow2carbonRow(this.state.headers, true)(kuiRow, foundIndex)
       const newRows = existingRows
         .slice(0, foundIndex)
         .concat([newRow])
@@ -116,8 +116,8 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    * update consumes the update notification and apply it to the table view
    *
    */
-  private update(newKuiRow: KuiRow, batch = false) {
-    const existingRows = this.state.rows
+  private update(newKuiRow: KuiRow, batch = false, justUpdated = true) {
+    const existingRows = this._deferredUpdate || this.state.rows
     const nRowsBefore = existingRows.length
 
     const foundIndex = existingRows.findIndex(
@@ -129,7 +129,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
     const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex
 
-    const newRow = kuiRow2carbonRow(this.state.headers)(newKuiRow, insertionIndex)
+    const newRow = kuiRow2carbonRow(this.state.headers, justUpdated)(newKuiRow, insertionIndex)
 
     // Notes: since PaginatedTable is a React.PureComponent, we will
     // need to create a new array, rather than mutating the existing
@@ -151,8 +151,6 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
     if (!batch) {
       this.setState({ rows: newRows })
-    } else if (this._deferredUpdate) {
-      this._deferredUpdate = newRows
     } else {
       this._deferredUpdate = newRows
     }

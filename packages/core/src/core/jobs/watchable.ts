@@ -33,13 +33,32 @@ export interface Watchable {
 
 /** callbacks to indicate state changes */
 export interface WatchPusher {
-  update: (response: Row, batch?: boolean) => void
+  /**
+   *
+   * @param response Updated row model
+   *
+   * @param batch? is this part of a batch update? Updates to the view
+   * will be deferred until a call to batchUpdateDone()
+   *
+   * @param changed? allows push provider to specify whether this
+   * update should be visualized as a change to the model [default:
+   * true]
+   */
+  update: (response: Row, batch?: boolean, changed?: boolean) => void
+
+  /** A batch of calls to `update` is complete */
   batchUpdateDone: () => void
 
+  /** The given keyed row is gone */
   offline: (rowKey: string) => void
 
+  /** No more updates will be performed */
   done: () => void
+
+  /** The entire underlying model has disappared */
   allOffline: () => void
+
+  /** The header model has changed */
   header: (response: Row) => void
 }
 

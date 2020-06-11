@@ -238,13 +238,16 @@ class KubectlWatcher implements Abortable, Watcher {
           // based on the information we got back, 1) we push updates to
           // the table model; and 2) we may be able to discern that we
           // can stop watching
+          const apiVersion = rows[0][2].value
+          const kind = rows[0][1].value
+          const isEvent = apiVersion === 'v1' && kind === 'Event'
           table.body.forEach(row => {
             // push an update to the table model
             // true means we want to do a batch update
             if (row.isDeleted) {
               this.pusher.offline(row.name)
             } else {
-              this.pusher.update(row, true)
+              this.pusher.update(row, true, !isEvent)
             }
           })
 
