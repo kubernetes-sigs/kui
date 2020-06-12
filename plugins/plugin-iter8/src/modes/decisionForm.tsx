@@ -31,80 +31,26 @@ import '../../src/web/scss/static/decisionForm.scss'
 // Functional imports
 import { DecisionState } from '../modes/state-models'
 import GetAnalyticsAssessment from '../utility/get-analytics-assessment'
+import { getAnalyticsResponse } from '../utility/get-response'
 import NameDict from '../utility/get-display-name'
+import { criteriaChartDesign } from '../utility/variables'
 import { trafficCheck, getUserDecision, applyTrafficSplit } from '../components/traffic-split'
 // Deconstructs the DataTable component
 const { TableContainer, Table, TableHead, TableRow, TableBody, TableCell, TableHeader } = DataTable
 
+// Function for round off
+function roundoff(value, fix = 4) {
+  return parseFloat(value.toFixed(fix))
+}
+
+// Model for exprForm.tsx state
 interface TableProps {
   rows: any
   headers: any
   getHeaderProps: any
   title: string
 }
-// Function for round off
-function roundoff(value, fix = 4) {
-  console.log(value)
-  return parseFloat(value.toFixed(fix))
-}
-// Functional Component for Chart Rendering
-const lineoptions = {
-  chart: {
-    type: 'line',
-    stacked: false,
-    height: 350,
-    zoom: {
-      type: 'x',
-      enabled: true,
-      autoScaleYaxis: true
-    },
-    toolbar: {
-      autoSelected: 'zoom'
-    }
-  },
-  stroke: {
-    width: 2,
-    curve: 'straight',
-    dashArray: [9]
-  },
-  dataLabels: {
-    enabled: false
-  },
-  markers: {
-    size: 3
-  },
-  title: {
-    text: '',
-    align: 'left'
-  },
-  yaxis: {
-    labels: {
-      formatter: function(val) {
-        return (val / 1000000).toFixed(0)
-      }
-    }
-  },
-  xaxis: {
-    type: 'datetime',
-    categories: [],
-    labels: {
-      datetimeFormatter: {
-        year: 'yyyy',
-        month: "MMM 'yy",
-        day: 'dd MMM',
-        hour: 'HH:mm'
-      }
-    }
-  },
-  tooltip: {
-    shared: false,
-    y: {
-      formatter: function(val) {
-        return (val / 1000000).toFixed(0)
-      }
-    }
-  }
-}
+
 const renderTable = TableProps => (
   <TableContainer title={TableProps.title}>
     <Table>
@@ -131,176 +77,7 @@ const renderTable = TableProps => (
     </Table>
   </TableContainer>
 )
-/*eslint-disable */
-function analytics_response() {
-  let resp = {
-    timestamp: '2020-05-22T16:15:10.758576',
-    baseline_assessment: {
-      id: 'reviews-v2',
-      request_count: Math.random() * (1500 - 1000) + 1000,
-      criterion_assessments: [
-        {
-          id: '0',
-          metric_id: 'iter8_error_count',
-          statistics: {
-            value: Math.random() * (25 - 20) + 20,
-            ratio_statistics: {
-              improvement_over_baseline: {
-                lower: 3,
-                upper: 56
-              },
-              probability_of_beating_baseline: 23,
-              probability_of_being_best_version: 54,
-              credible_interval: {
-                lower: 32,
-                upper: 90
-              }
-            }
-          },
-          threshold_assessment: {
-            threshold_breached: false,
-            probability_of_satisfying_threshold: 0.002
-          }
-        },
-        {
-          id: '1',
-          metric_id: 'iter8_mean_latency',
-          statistics: {
-            value: Math.random() * (4 - 2) + 2,
-            ratio_statistics: {
-              improvement_over_baseline: {
-                lower: 7,
-                upper: 5
-              },
-              probability_of_beating_baseline: 0,
-              probability_of_being_best_version: 0,
-              credible_interval: {
-                lower: 5,
-                upper: 30
-              }
-            }
-          },
-          threshold_assessment: {
-            threshold_breached: false,
-            probability_of_satisfying_threshold: 0.04
-          }
-        },
-        {
-          id: '2',
-          metric_id: 'iter8_error_rate',
-          statistics: {
-            value: Math.random() * (0.2 - 0.1) + 0.1,
-            ratio_statistics: {
-              improvement_over_baseline: {
-                lower: 7,
-                upper: 5
-              },
-              probability_of_beating_baseline: 0,
-              probability_of_being_best_version: 0,
-              credible_interval: {
-                lower: 5,
-                upper: 30
-              }
-            }
-          },
-          threshold_assessment: {
-            threshold_breached: true,
-            probability_of_satisfying_threshold: 0.02
-          }
-        }
-      ],
-      win_probability: 0.5
-    },
-    candidate_assessments: [
-      {
-        id: 'reviews-v3',
-        request_count: Math.random() * (1000 - 900) + 900,
-        criterion_assessments: [
-          {
-            id: '0',
-            metric_id: 'iter8_error_count',
-            statistics: {
-              value: Math.random() * (25 - 15) + 15,
-              ratio_statistics: null
-            },
-            threshold_assessment: {
-              threshold_breached: false,
-              probability_of_satisfying_threshold: 0.4
-            }
-          },
-          {
-            id: '1',
-            metric_id: 'iter8_mean_latency',
-            statistics: {
-              value: Math.random() * (2 - 1) + 1,
-              ratio_statistics: {
-                improvement_over_baseline: {
-                  lower: 34,
-                  upper: 54
-                },
-                probability_of_beating_baseline: 0.5,
-                probability_of_being_best_version: 0.7,
-                credible_interval: {
-                  lower: 23,
-                  upper: 30
-                }
-              }
-            },
-            threshold_assessment: {
-              threshold_breached: false,
-              probability_of_satisfying_threshold: 2
-            }
-          },
-          {
-            id: '2',
-            metric_id: 'iter8_error_rate',
-            statistics: {
-              value: Math.random() * (0.09 - 0.08) + 0.08,
-              ratio_statistics: {
-                improvement_over_baseline: {
-                  lower: 0.7,
-                  upper: 53
-                },
-                probability_of_beating_baseline: 32,
-                probability_of_being_best_version: 34,
-                credible_interval: {
-                  lower: 43,
-                  upper: 60
-                }
-              }
-            },
-            threshold_assessment: {
-              threshold_breached: false,
-              probability_of_satisfying_threshold: 0.3
-            }
-          }
-        ],
-        win_probability: 0.5,
-        rollback: false
-      }
-    ],
-    traffic_split_recommendation: {
-      uniform: {
-        'reviews-v3': 60,
-        'reviews-v2': 40
-      },
-      random: {
-        'reviews-v3': 30,
-        'reviews-v2': 70
-      }
-    },
-    winner_assessment: {
-      winning_version_found: false,
-      current_winner: '',
-      winning_probability: 0.0
-    },
-    status: [],
-    status_interpretations: {},
-    last_state: {}
-  }
-  return resp
-}
-/* eslint-enable */
+
 export class DecisionBase extends React.Component<{}, DecisionState> {
   private winner = ''
   // For displaying Pie Chart
@@ -438,7 +215,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     // Get chart details from baseline
     for (let i = 0; i < baselineCriteriaResults.length; i++) {
       // Getting Chart Options
-      const options = JSON.parse(JSON.stringify(lineoptions))
+      const options = JSON.parse(JSON.stringify(criteriaChartDesign))
       const d = new Date()
       const time = d.toISOString()
       options.xaxis.categories.push(time)
@@ -653,7 +430,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       .then(result => {
         console.log('Experiment Response')
         console.log(result)
-        const jsonrlts = analytics_response()
+        const jsonrlts = getAnalyticsResponse()
         this.getWinAnalysis(jsonrlts)
         this.getWinProbs(jsonrlts)
         this.getAlgo(jsonrlts)
@@ -682,10 +459,12 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
 
   // Get list of deployments
   private getdeployList() {
-    this.deployList.push(this.state.experimentRequest.baseline.id)
-    const candidates = this.state.experimentRequest.candidates
-    for (let i = 0; i < candidates.length; i++) {
-      this.deployList.push(candidates[i].id)
+    if (this.deployList.length === 0) {
+      this.deployList.push(this.state.experimentRequest.baseline.id)
+      const candidates = this.state.experimentRequest.candidates
+      for (let i = 0; i < candidates.length; i++) {
+        this.deployList.push(candidates[i].id)
+      }
     }
   }
 
@@ -733,21 +512,23 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.setState({ notifyUser: false })
   }
 
-  // Update winner
-  private updateEndExperimentWinner(value) {
-    let winner = ''
+  // update decision
+  private updateExperimentDecision(value) {
     this.setState({ experimentDecision: value })
     const baseline = this.state.experimentResult.baseline_assessment.id
     if (value === 'rollback') {
-      winner = baseline
+      this.updateEndExperimentWinner(baseline)
     } else if (value === 'rollforwardwinner') {
-      winner = this.state.experimentResult.winner_assessment.winning_version_found
+      const winner = this.state.experimentResult.winner_assessment.winning_version_found
         ? this.state.experimentResult.winner_assessment.current_winner
         : baseline
-    } else {
-      winner = value
+      this.updateEndExperimentWinner(winner)
     }
-    this.setState({ endExperimentWinner: winner })
+  }
+
+  // Update winner
+  private updateEndExperimentWinner(value) {
+    this.setState({ endExperimentWinner: value.selectedItem })
   }
 
   // handle end of experiment
@@ -761,6 +542,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       }
     }
     this.setState({ trafficSplit: temporarySplit, hasExperimentEnded: true })
+    console.log(temporarySplit)
     this.handleApply()
   }
 
@@ -978,7 +760,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 labelPosition="right"
                 legend="Group Legend"
                 name="end-experiment"
-                onChange={value => this.updateEndExperimentWinner(value)}
+                onChange={value => this.updateExperimentDecision(value)}
                 orientation="vertical"
                 valueSelected="rollback"
                 style={{ padding: 10 }}

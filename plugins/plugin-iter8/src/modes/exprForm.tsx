@@ -15,7 +15,9 @@ import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 import GetKubeInfo from '../components/cluster-info'
 import GetMetricConfig from '../components/metric-config'
 import getRequestModel from '../utility/get-iter8-req'
-import { Formstate, experimentTypes } from '../modes/state-models'
+import { Formstate } from '../modes/state-models'
+
+import { experimentTypes } from '../utility/variables'
 
 /*
  * Data models for the state object in ExprForm
@@ -40,7 +42,7 @@ class ExprBase extends React.Component<{}, Formstate> {
       showCriteria: false, // determines the visibility of metric config section
       invalidCandidate: false, // determines whether candidates values are valid
       name: '', // name of the experiment
-      type: experimentTypes.HIL, // type of experiment: HIL vs automated
+      type: experimentTypes.hil, // type of experiment: HIL vs automated
       namespace: '', // namespace of microservice
       service: '', // service name of microservice
       baseline: '', // baseline deployment of microservice
@@ -289,7 +291,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               titleText="Experiment Type"
               helperText="Type of experiment to be conducted"
               placeholder="Select an Experiment Type"
-              items={[experimentTypes.HIL]}
+              items={[experimentTypes.hil]}
               onChange={value => this.handleSelectExpType(value.selectedItem)}
             />
           </FormGroup>
