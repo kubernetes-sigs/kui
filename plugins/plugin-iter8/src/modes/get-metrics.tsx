@@ -10,6 +10,7 @@ import 'carbon-components/scss/components/data-table/_data-table-skeleton.scss'
 
 import '../../src/web/scss/static/metrics.scss'
 
+import { ErrorDisplay } from './error-react'
 import deleteMetric from '../components/delete-metric'
 import restoreMetric from '../components/restore-metric'
 import { getMetricConfig, removeExtraneousMetaData, ITER8_METRIC_NAMES } from '../components/metric-config'
@@ -265,7 +266,8 @@ const DEFAULT_RATIO_METRIC_CONFIG = getDefaultConfig(RATIO_METRIC_ATTRIBUTES_DAT
 enum DisplayMode {
   'getMetrics', // Metric details tables
   'addMetric', // Add metric form
-  'editMetric' // Edit metric form
+  'editMetric', // Edit metric form
+  'error'
 }
 
 type MetricDetailsState = {
@@ -285,6 +287,8 @@ type MetricDetailsState = {
   selectedType?: MetricTypes // Selected type of metric to be added/edited
   newMetric?: Partial<CounterMetric | RatioMetric> // Metric to be added/replaced (edited)
   formSubmitted: boolean // Whether the add/edit form has been submitted (used for reporting errors)
+
+  errorString: string
 }
 
 /**
@@ -306,62 +310,82 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   public constructor(props) {
     super(props)
 
-    this.state = {
-      ...this.constructorHelper(),
-      display: DisplayMode.getMetrics,
-      formSubmitted: undefined
+    try {
+      this.state = {
+        ...this.constructorHelper(),
+        display: DisplayMode.getMetrics,
+        formSubmitted: undefined,
+        errorString: undefined
+      }
+    } catch (error) {
+      this.state = {
+        configMap: undefined,
+        counterMetrics: undefined,
+        ratioMetrics: undefined,
+        counterMetricNames: undefined,
+        ratioMetricNames: undefined,
+        counterMetricsState: undefined,
+        ratioMetricsState: undefined,
+        formSubmitted: undefined,
+        display: DisplayMode.getMetrics,
+        errorString: error
+      }
     }
   }
 
   private constructorHelper = () => {
-    const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
+    try {
+      const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
 
-    const cleanConfigMap = removeExtraneousMetaData(configMap)
+      const cleanConfigMap = removeExtraneousMetaData(configMap)
 
-    // TODO: Add proper error handling
-    const counterMetricNames = counterMetrics.map(counterMetric => {
-      return counterMetric.name
-    })
+      // TODO: Add proper error handling
+      const counterMetricNames = counterMetrics.map(counterMetric => {
+        return counterMetric.name
+      })
 
-    const ratioMetricNames = ratioMetrics.map(ratioMetric => {
-      return ratioMetric.name
-    })
+      const ratioMetricNames = ratioMetrics.map(ratioMetric => {
+        return ratioMetric.name
+      })
 
-    // Update the numerators and denominator
-    const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
-    const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-      return attribute.name === 'numerator'
-    })
-    const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-      return attribute.name === 'denominator'
-    })
-    ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
-    ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+      // Update the numerators and denominator
+      const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+      const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+        return attribute.name === 'numerator'
+      })
+      const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+        return attribute.name === 'denominator'
+      })
+      ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+      ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
 
-    // Required attributes to create counter and ratio metrics
-    COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
-      return attribute.required
-    }).map(attribute => {
-      return attribute.name
-    })
+      // Required attributes to create counter and ratio metrics
+      COUNTER_METRIC_REQUIRED_ATTRIBUTES = COUNTER_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+        return attribute.required
+      }).map(attribute => {
+        return attribute.name
+      })
 
-    RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
-      return attribute.required
-    }).map(attribute => {
-      return attribute.name
-    })
+      RATIO_METRIC_REQUIRED_ATTRIBUTES = RATIO_METRIC_ATTRIBUTES_DATA.filter(attribute => {
+        return attribute.required
+      }).map(attribute => {
+        return attribute.name
+      })
 
-    const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
+      const { counterMetricsState, ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
-    return {
-      configMap: cleanConfigMap,
-      counterMetrics,
-      ratioMetrics,
-      counterMetricNames,
-      ratioMetricNames,
+      return {
+        configMap: cleanConfigMap,
+        counterMetrics,
+        ratioMetrics,
+        counterMetricNames,
+        ratioMetricNames,
 
-      ratioMetricsState: ratioMetricsState,
-      counterMetricsState: counterMetricsState
+        ratioMetricsState: ratioMetricsState,
+        counterMetricsState: counterMetricsState
+      }
+    } catch (error) {
+      throw new Error('Could not obtain metric config')
     }
   }
 
@@ -1101,7 +1125,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   }
 
   public render = () => {
-    const { display, selectedType, counterMetricsState, ratioMetricsState } = this.state
+    const { display, selectedType, counterMetricsState, ratioMetricsState, errorString } = this.state
 
     switch (display) {
       case DisplayMode.getMetrics:
@@ -1134,6 +1158,9 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
           </div>
         )
 
+      case DisplayMode.error:
+        return <ErrorDisplay errorString={errorString}></ErrorDisplay>
+
       default:
         return <div>Cannot determine proper display mode</div>
     }
@@ -1157,48 +1184,56 @@ type MetricState = {
 
 // Outputs the metric config map as a YAML string
 export function getMetricsYaml(): string {
-  const { configMap } = getMetricConfig()
+  try {
+    const { configMap } = getMetricConfig()
 
-  return safeDump(configMap)
+    return safeDump(configMap)
+  } catch (error) {
+    return 'Could not obtain metric config map'
+  }
 }
 
 // Delete the specified metrics
 export function deleteMetrics(metricNames: string[]) {
-  const { counterMetrics, ratioMetrics } = getMetricConfig()
+  try {
+    const { counterMetrics, ratioMetrics } = getMetricConfig()
 
-  const counterMetricNames = counterMetrics.map(counterMetric => {
-    return counterMetric.name
-  })
+    const counterMetricNames = counterMetrics.map(counterMetric => {
+      return counterMetric.name
+    })
 
-  const ratioMetricNames = ratioMetrics.map(ratioMetric => {
-    return ratioMetric.name
-  })
+    const ratioMetricNames = ratioMetrics.map(ratioMetric => {
+      return ratioMetric.name
+    })
 
-  // Error checking
-  metricNames.forEach(metricName => {
-    if (counterMetricNames.includes(metricName)) {
-      if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
-        throw new Error(`Cannot delete iter8 counter metric '${metricName}'`)
+    // Error checking
+    metricNames.forEach(metricName => {
+      if (counterMetricNames.includes(metricName)) {
+        if (ITER8_METRIC_NAMES.counter.includes(metricName)) {
+          throw new Error(`Cannot delete iter8 counter metric '${metricName}'`)
+        }
+      } else if (ratioMetricNames.includes(metricName)) {
+        if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
+          throw new Error(`Cannot delete iter8 ratio metric '${metricName}'`)
+        }
+      } else {
+        throw new Error(`Invalid metric name '${metricName}'`)
       }
-    } else if (ratioMetricNames.includes(metricName)) {
-      if (ITER8_METRIC_NAMES.ratio.includes(metricName)) {
-        throw new Error(`Cannot delete iter8 ratio metric '${metricName}'`)
-      }
-    } else {
-      throw new Error(`Invalid metric name '${metricName}'`)
-    }
-  })
+    })
 
-  // Execute deletion
-  metricNames.forEach(metricName => {
-    const type = counterMetricNames.includes(metricName)
-      ? MetricTypes.counter
-      : ratioMetricNames.includes(metricName)
-      ? MetricTypes.ratio
-      : undefined
+    // Execute deletion
+    metricNames.forEach(metricName => {
+      const type = counterMetricNames.includes(metricName)
+        ? MetricTypes.counter
+        : ratioMetricNames.includes(metricName)
+        ? MetricTypes.ratio
+        : undefined
 
-    deleteMetric(metricName, type)
-  })
+      deleteMetric(metricName, type)
+    })
+  } catch (error) {
+    return 'Could not obtain metric config map'
+  }
 }
 
 export function getMetricDetailsMode() {

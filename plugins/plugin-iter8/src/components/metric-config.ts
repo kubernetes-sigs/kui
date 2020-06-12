@@ -38,8 +38,7 @@ export function getMetricConfig(): {
       ratioMetrics: safeLoad(configMap.data['ratio_metrics.yaml'])
     }
   } catch (e) {
-    // throw new Error('Could not obtain config map.')
-    return null
+    throw new Error('Could not obtain config map.')
   }
 }
 
