@@ -1,12 +1,7 @@
 /*
  * Data models for the state object in React Components
  */
-
-// Model for exprForm.tsx state
-enum experimentTypes {
-  HIL = 'Human In the Loop',
-  automated = 'Automated'
-}
+import { experimentTypes } from '../utility/variables'
 
 interface CriterionState {
   name: string
@@ -52,4 +47,4 @@ interface DecisionState {
   endExperimentWinner: string
 }
 
-export { CriterionState, Formstate, DecisionState, experimentTypes }
+export { CriterionState, Formstate, DecisionState }
