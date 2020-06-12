@@ -30,8 +30,8 @@ import {
 import { kindPart } from '../fqn'
 import { formatOf, KubeOptions, KubeExecOptions } from '../options'
 
-import { Pair } from '../../../lib/view/formatTable'
 import { getCommandFromArgs } from '../../../lib/util/util'
+import { Pair, getNamespaceBreadcrumbs } from '../../../lib/view/formatTable'
 
 const debug = Debug('plugin-kubectl/controller/watch/watcher')
 
@@ -346,7 +346,7 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
       return {
         header: initialTable.header,
         body: initialTable.body,
-        breadcrumbs: initialTable.breadcrumbs,
+        breadcrumbs: initialTable.breadcrumbs || (await getNamespaceBreadcrumbs(initialTable.title, args)),
         title: initialTable.title,
         watch: new KubectlWatcher(args) // <-- our watcher
       }
