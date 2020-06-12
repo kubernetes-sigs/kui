@@ -15,6 +15,7 @@
  */
 
 import {
+  Breadcrumb,
   Table,
   Row,
   Cell,
@@ -30,8 +31,8 @@ import {
 import TrafficLight from '../model/traffic-light'
 import { isClusterScoped } from '../model/resource'
 import { getCurrentDefaultNamespace } from '../../'
-import KubeOptions, { isForAllNamespaces } from '../../controller/kubectl/options'
 import { RawResponse } from '../../controller/kubectl/response'
+import KubeOptions, { isForAllNamespaces, getNamespaceAsExpressed } from '../../controller/kubectl/options'
 
 import cssForValue from './css-for-value'
 
@@ -173,14 +174,27 @@ function cssForReadyCount(ready: string): string {
   }
 }
 
+/** @return a namespace breadcrumb, either from the one given by args, or using the default from context */
+export async function getNamespaceBreadcrumbs(entityType: string, args: Arguments<KubeOptions>): Promise<Breadcrumb[]> {
+  const ns = await (isClusterScoped(entityType)
+    ? undefined
+    : getNamespaceAsExpressed(args) ||
+      (isForAllNamespaces(args.parsedOptions) && strings('all')) ||
+      (args.execOptions.type === ExecType.TopLevel && !inBrowser() && (await getCurrentDefaultNamespace(args))))
+
+  return ns ? [{ label: ns }] : undefined
+}
+
 export const formatTable = async <O extends KubeOptions>(
   command: string,
   verb: string,
   entityTypeFromCommandLine: string,
-  { REPL, parsedOptions: options, execOptions }: Arguments<O>,
+  args: Arguments<O>,
   preTable: Pair[][],
   nameColumn = 'NAME'
 ): Promise<Table> => {
+  const { parsedOptions: options } = args
+
   // for helm status, table clicks should dispatch to kubectl;
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
@@ -327,18 +341,14 @@ export const formatTable = async <O extends KubeOptions>(
     }
   )
 
-  const nsForBreadcrumb = isClusterScoped(entityTypeFromCommandLine)
-    ? undefined
-    : ns ||
-      (isForAllNamespaces(options) && strings('all')) ||
-      (execOptions.type === ExecType.TopLevel && !inBrowser() && (await getCurrentDefaultNamespace({ REPL })))
+  const breadcrumbs = await getNamespaceBreadcrumbs(entityTypeFromCommandLine, args)
 
   return {
     header: rows[0],
     body: rows.slice(1),
     noSort: true,
     title: entityTypeFromRows || entityTypeFromCommandLine || '',
-    breadcrumbs: nsForBreadcrumb ? [{ label: nsForBreadcrumb }] : undefined
+    breadcrumbs
   }
 }
 

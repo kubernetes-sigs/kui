@@ -134,6 +134,12 @@ export function hasLabel(args: Arguments<KubeOptions>) {
   return false
 }
 
+/** @return the namespace as expressed in the command line, or undefined if not */
+export function getNamespaceAsExpressed(args: Arguments<KubeOptions>): string {
+  return args.parsedOptions.n || args.parsedOptions.namespace
+}
+
+/** @return the namespace as expressed in the command line, or the default from context */
 export async function getNamespace(args: Arguments<KubeOptions>): Promise<string> {
   return args.parsedOptions.n || args.parsedOptions.namespace || (await getCurrentDefaultNamespace(args))
 }
