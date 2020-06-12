@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.2](https://github.com/IBM/kui/compare/v8.9.1...v8.9.2) (2020-06-12)
+
+### Bug Fixes
+
+- don't blink yellow forever for kubectl events ([6c95119](https://github.com/IBM/kui/commit/6c95119)), closes [#4869](https://github.com/IBM/kui/issues/4869)
+
 ## [8.9.1](https://github.com/IBM/kui/compare/v8.9.0...v8.9.1) (2020-06-10)
 
 **Note:** Version bump only for package @kui-shell/core

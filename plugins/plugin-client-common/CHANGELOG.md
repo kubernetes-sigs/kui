@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.2](https://github.com/IBM/kui/compare/v8.9.1...v8.9.2) (2020-06-12)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** split button errors are not reported to the user ([49990cf](https://github.com/IBM/kui/commit/49990cf)), closes [#4876](https://github.com/IBM/kui/issues/4876)
+- don't blink yellow forever for kubectl events ([6c95119](https://github.com/IBM/kui/commit/6c95119)), closes [#4869](https://github.com/IBM/kui/issues/4869)
+- pexecs serviced by now-removed splits fail ([eb88576](https://github.com/IBM/kui/commit/eb88576)), closes [#4875](https://github.com/IBM/kui/issues/4875)
+- **plugins/plugin-client-common:** table container should only be width:100% for table not display-as-grid ([2ab3a75](https://github.com/IBM/kui/commit/2ab3a75)), closes [#4871](https://github.com/IBM/kui/issues/4871)
+
 ## [8.9.1](https://github.com/IBM/kui/compare/v8.9.0...v8.9.1) (2020-06-10)
 
 ### Bug Fixes

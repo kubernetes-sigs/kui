@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.2](https://github.com/IBM/kui/compare/v8.9.1...v8.9.2) (2020-06-12)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl watch tables may lack namespace breadcrumb ([29c0e48](https://github.com/IBM/kui/commit/29c0e48)), closes [#4870](https://github.com/IBM/kui/issues/4870)
+- don't blink yellow forever for kubectl events ([6c95119](https://github.com/IBM/kui/commit/6c95119)), closes [#4869](https://github.com/IBM/kui/issues/4869)
+- pexecs serviced by now-removed splits fail ([eb88576](https://github.com/IBM/kui/commit/eb88576)), closes [#4875](https://github.com/IBM/kui/issues/4875)
+
+### Features
+
+- **plugins/plugin-kubectl:** Show Previous option for Logs tab ([b92ee26](https://github.com/IBM/kui/commit/b92ee26)), closes [#4864](https://github.com/IBM/kui/issues/4864)
+
 ## [8.9.1](https://github.com/IBM/kui/compare/v8.9.0...v8.9.1) (2020-06-10)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl
