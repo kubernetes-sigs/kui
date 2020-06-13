@@ -17,18 +17,21 @@
 import * as React from 'react'
 import { Tab as KuiTab, eventBus } from '@kui-shell/core'
 
+import KuiContext from './context'
 import Block from '../Views/Terminal/Block'
+import KuiConfiguration from './KuiConfiguration'
 import { InputOptions } from '../Views/Terminal/Block/Input'
 import BlockModel, { Active } from '../Views/Terminal/Block/BlockModel'
 
 import '../../../web/css/static/InputStripe.scss'
 
-type Props = InputOptions & {
-  tab?: KuiTab
+type Props = Partial<KuiConfiguration> &
+  InputOptions & {
+    tab?: KuiTab
 
-  /** tab uuid; this is grafted in for you, by TabContent */
-  uuid?: string
-}
+    /** tab uuid; this is grafted in for you, by TabContent */
+    uuid?: string
+  }
 
 interface State {
   idx: number
@@ -54,19 +57,21 @@ export default class InputStripe extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <div className="kui--input-stripe repl">
-        <Block
-          idx={this.state.idx}
-          uuid={this.props.uuid}
-          tab={this.props.tab}
-          model={this.state.model}
-          noOutput
-          noPromptContext
-          promptPlaceholder={this.props.promptPlaceholder}
-        >
-          {this.props.children}
-        </Block>
-      </div>
+      <KuiContext.Provider value={{ prompt: this.props.prompt || '\u276f' }}>
+        <div className="kui--input-stripe repl">
+          <Block
+            idx={this.state.idx}
+            uuid={this.props.uuid}
+            tab={this.props.tab}
+            model={this.state.model}
+            noOutput
+            noPromptContext
+            promptPlaceholder={this.props.promptPlaceholder}
+          >
+            {this.props.children}
+          </Block>
+        </div>
+      </KuiContext.Provider>
     )
   }
 }

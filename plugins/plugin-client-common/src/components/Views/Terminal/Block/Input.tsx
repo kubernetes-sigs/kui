@@ -125,7 +125,9 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     return (
       !this.props.noPromptContext && (
         <KuiContext.Consumer>
-          {config => !config.noPromptContext && <span className="repl-context">{this.props.model.cwd}</span>}
+          {config =>
+            !config.noPromptContext && this.props.model && <span className="repl-context">{this.props.model.cwd}</span>
+          }
         </KuiContext.Consumer>
       )
     )
