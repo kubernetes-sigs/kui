@@ -134,7 +134,7 @@ export default class Tab extends React.PureComponent<Props, State> {
     }
 
     eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
-    eventBus.onCommandComplete(this.props.uuid, this.onCommandStart)
+    eventBus.onCommandComplete(this.props.uuid, this.onCommandComplete)
     eventChannelUnsafe.on('/theme/change', this.onThemeChange)
   }
 
