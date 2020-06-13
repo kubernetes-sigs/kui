@@ -4,7 +4,7 @@
    see https://github.com/xtermjs/xterm.js/pull/2067
    see https://github.com/IBM/kui/issues/1518
 */
-[kui-theme-style] .tab-container {
+[kui-theme-style] .kui--tab-content {
   .xterm-screen,
   .xterm-rows > div {
     width: 100% !important;
@@ -171,6 +171,7 @@ disabled see https://github.com/IBM/kui/issues/3939
   .xterm-rows {
     font-size: 1em;
     font-family: var(--font-monospace);
+    background-color: var(--color-repl-background);
     color: var(--color-text-01);
     transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
   }
