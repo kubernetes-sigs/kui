@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.3](https://github.com/IBM/kui/compare/v8.9.2...v8.9.3) (2020-06-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** in Popup mode, use > rather than / for prompt in bottom input ([e4651d8](https://github.com/IBM/kui/commit/e4651d8)), closes [#4887](https://github.com/IBM/kui/issues/4887)
+- **plugins/plugn-client-common:** TopTabStripe stays blue after command execution completes ([79675c3](https://github.com/IBM/kui/commit/79675c3)), closes [#4883](https://github.com/IBM/kui/issues/4883)
+
 ## [8.9.2](https://github.com/IBM/kui/compare/v8.9.1...v8.9.2) (2020-06-12)
 
 ### Bug Fixes

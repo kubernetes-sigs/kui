@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.3](https://github.com/IBM/kui/compare/v8.9.2...v8.9.3) (2020-06-14)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** in Popup mode, active PTY is not themed, has flashing effect ([c76c428](https://github.com/IBM/kui/commit/c76c428)), closes [#4889](https://github.com/IBM/kui/issues/4889)
+
 ## [8.9.2](https://github.com/IBM/kui/compare/v8.9.1...v8.9.2) (2020-06-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
