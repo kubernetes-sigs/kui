@@ -19,6 +19,7 @@ import * as React from 'react'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
+import { UpdateChecker } from '@kui-shell/plugin-core-support'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 // import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
@@ -43,6 +44,7 @@ export default function renderMain(props: KuiProps) {
       <MeterWidgets>
         {/* <ClusterUtilization /> */}
         <ProxyOfflineIndicator />
+        <UpdateChecker />
       </MeterWidgets>
     </Kui>
   )

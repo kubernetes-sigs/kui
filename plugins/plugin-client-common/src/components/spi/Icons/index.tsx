@@ -34,6 +34,7 @@ export type SupportedIcon =
   | 'List'
   | 'Network'
   | 'NextPage'
+  | 'Notification'
   | 'Pause'
   | 'Play'
   | 'Retry'

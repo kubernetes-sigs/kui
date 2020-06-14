@@ -45,6 +45,7 @@ import {
   NetworkWiredIcon as Network,
   PauseCircleIcon as Pause,
   RebootingIcon as Retry,
+  BellIcon as Notification,
   PlayCircleIcon as Play
 } from '@patternfly/react-icons'
 
@@ -101,6 +102,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Network {...props} />
     case 'NextPage':
       return <NextPage style={Pagination} {...props} />
+    case 'Notification':
+      return <Notification {...props} />
     case 'Server':
       return <Server {...props} />
     case 'Settings':
