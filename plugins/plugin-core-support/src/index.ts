@@ -15,3 +15,5 @@
  */
 
 // this file defines the external API
+
+export { default as UpdateChecker } from './components/UpdateChecker'
