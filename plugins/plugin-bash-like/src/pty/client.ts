@@ -484,6 +484,7 @@ async function initOnMessage(
     first = false
   }
   if (terminal) {
+    resizer.hideTrailingEmptyBlanks()
     disposeOnRender = terminal.onRender(onRefresh)
   }
 
