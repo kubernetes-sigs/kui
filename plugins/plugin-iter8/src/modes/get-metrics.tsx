@@ -531,10 +531,10 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
       formSubmitted: true
     })
 
-    const { configMap, counterMetrics, ratioMetrics, selectedType, newMetric: editedMetric } = this.state
+    const { configMap, counterMetrics, ratioMetrics, selectedType, newMetric } = this.state
 
     if (selectedType === MetricTypes.counter) {
-      console.log('new counter metric config:', editedMetric)
+      console.log('new counter metric config:', newMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -542,16 +542,30 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
        * This is separate from the invalid check in the form
        */
       const uniqueName = !counterMetrics.some(metric => {
-        return metric.name === editedMetric.name
+        return metric.name === newMetric.name
       })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = COUNTER_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return editedMetric[id]
+        return newMetric[id]
       })
 
       // Final checks
       if (allRequiredFieldsPresent && uniqueName) {
+        const cleanNewMetric: Partial<CounterMetric> = {}
+
+        Object.entries(newMetric).forEach(([attributeName, attributeValue]) => {
+          const attribute = COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => attribute.name === attributeName)
+
+          if (attribute.type === AttributeTypes.input) {
+            if ((attributeValue as string).length > 0) {
+              cleanNewMetric[attributeName] = attributeValue
+            }
+          } else {
+            cleanNewMetric[attributeName] = attributeValue
+          }
+        })
+
         /**
          * TS ignore because writing with proper typing would result in lots of
          * code duplication and greatly enhance complexity.
@@ -559,7 +573,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
          * This should be of the correct data type and safe to push at this point
          * with the final checks.
          */
-        counterMetrics.push(editedMetric as CounterMetric)
+        counterMetrics.push(cleanNewMetric as CounterMetric)
 
         // Convert new metric config to stringified YAML
         const stringifiedMetrics = safeDump(counterMetrics)
@@ -568,7 +582,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         configMap.data['counter_metrics.yaml'] = stringifiedMetrics
 
         // Apply new config map
-        console.log(kubectlApplyRule(configMap))
+        kubectlApplyRule(configMap)
 
         const { counterMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
@@ -587,7 +601,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
       }
     } else {
-      console.log('new ratio metric config:', editedMetric)
+      console.log('new ratio metric config:', newMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -595,16 +609,30 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
        * This is separate from the invalid check in the form
        */
       const uniqueName = !ratioMetrics.some(metric => {
-        return metric.name === editedMetric.name
+        return metric.name === newMetric.name
       })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = RATIO_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return editedMetric[id]
+        return newMetric[id]
       })
 
       // Final checks
       if (allRequiredFieldsPresent && uniqueName) {
+        const cleanNewMetric: Partial<CounterMetric> = {}
+
+        Object.entries(newMetric).forEach(([attributeName, attributeValue]) => {
+          const attribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => attribute.name === attributeName)
+
+          if (attribute.type === AttributeTypes.input) {
+            if ((attributeValue as string).length > 0) {
+              cleanNewMetric[attributeName] = attributeValue
+            }
+          } else {
+            cleanNewMetric[attributeName] = attributeValue
+          }
+        })
+
         /**
          * TS ignore because writing with proper typing would result in lots of
          * code duplication and greatly enhance complexity.
@@ -612,7 +640,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
          * This should be of the correct data type and safe to push at this point
          * with the final checks.
          */
-        ratioMetrics.push(editedMetric as RatioMetric)
+        ratioMetrics.push(cleanNewMetric as RatioMetric)
 
         // Convert new metric config to stringified YAML
         const stringifiedMetrics = safeDump(ratioMetrics)
@@ -621,7 +649,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
 
         // Apply new config map
-        console.log(kubectlApplyRule(configMap))
+        kubectlApplyRule(configMap)
 
         const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
@@ -652,10 +680,10 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
     })
 
     const { selectedType } = this.state
-    let { configMap, counterMetrics, ratioMetrics } = this.state
+    let { configMap, counterMetrics, ratioMetrics, selectedMetricName, newMetric } = this.state
 
     if (selectedType === MetricTypes.counter) {
-      console.log('edited counter metric config:', this.state.newMetric)
+      console.log('edited counter metric config:', newMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -664,35 +692,49 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
        */
       const uniqueName = !counterMetrics
         .filter(metric => {
-          return metric.name !== this.state.selectedMetricName
+          return metric.name !== selectedMetricName
         })
         .some(metric => {
-          return metric.name === this.state.newMetric.name
+          return metric.name === newMetric.name
         })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = COUNTER_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return this.state.newMetric[id]
+        return newMetric[id]
       })
 
       // Final checks
       if (allRequiredFieldsPresent && uniqueName) {
+        const cleanNewMetric: Partial<CounterMetric> = {}
+
+        Object.entries(newMetric).forEach(([attributeName, attributeValue]) => {
+          const attribute = COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => attribute.name === attributeName)
+
+          if (attribute.type === AttributeTypes.input) {
+            if ((attributeValue as string).length > 0) {
+              cleanNewMetric[attributeName] = attributeValue
+            }
+          } else {
+            cleanNewMetric[attributeName] = attributeValue
+          }
+        })
+
         // Remove metric corresponding to edit
         counterMetrics = counterMetrics.filter(metric => {
-          return metric.name !== this.state.selectedMetricName
+          return metric.name !== selectedMetricName
         })
 
         // Add edited metric
-        counterMetrics.push(this.state.newMetric as CounterMetric)
+        counterMetrics.push(cleanNewMetric as CounterMetric)
 
         // Propagate name change to ratio metrics
         ratioMetrics.forEach(metric => {
-          if (metric.numerator === this.state.selectedMetricName) {
-            metric.numerator = this.state.newMetric.name
+          if (metric.numerator === selectedMetricName) {
+            metric.numerator = newMetric.name
           }
 
-          if (metric.denominator === this.state.selectedMetricName) {
-            metric.denominator = this.state.newMetric.name
+          if (metric.denominator === selectedMetricName) {
+            metric.denominator = newMetric.name
           }
         })
 
@@ -705,7 +747,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         configMap.data['ratio_metrics.yaml'] = stringifiedRatioMetrics
 
         // Apply new config map
-        console.log(kubectlApplyRule(configMap))
+        kubectlApplyRule(configMap)
 
         const { counterMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
@@ -725,7 +767,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         console.log('allRequiredFieldsPresent:', allRequiredFieldsPresent)
       }
     } else {
-      console.log('edited ratio metric config:', this.state.newMetric)
+      console.log('edited ratio metric config:', newMetric)
 
       /**
        * Ensure that there are no name collisions
@@ -734,26 +776,40 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
        */
       const uniqueName = !ratioMetrics
         .filter(metric => {
-          return metric.name !== this.state.selectedMetricName
+          return metric.name !== selectedMetricName
         })
         .some(metric => {
-          return metric.name === this.state.newMetric.name
+          return metric.name === newMetric.name
         })
 
       // Ensure all required fields are present
       const allRequiredFieldsPresent = RATIO_METRIC_REQUIRED_ATTRIBUTES.every(id => {
-        return this.state.newMetric[id]
+        return newMetric[id]
       })
 
       // Final checks
       if (allRequiredFieldsPresent && uniqueName) {
+        const cleanNewMetric: Partial<CounterMetric> = {}
+
+        Object.entries(newMetric).forEach(([attributeName, attributeValue]) => {
+          const attribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => attribute.name === attributeName)
+
+          if (attribute.type === AttributeTypes.input) {
+            if ((attributeValue as string).length > 0) {
+              cleanNewMetric[attributeName] = attributeValue
+            }
+          } else {
+            cleanNewMetric[attributeName] = attributeValue
+          }
+        })
+
         // Remove metric corresponding to edit
         ratioMetrics = ratioMetrics.filter(metric => {
-          return metric.name !== this.state.selectedMetricName
+          return metric.name !== selectedMetricName
         })
 
         // Add edited metric
-        ratioMetrics.push(this.state.newMetric as RatioMetric)
+        ratioMetrics.push(cleanNewMetric as RatioMetric)
 
         // Convert new metric config to stringified YAML
         const stringifiedMetrics = safeDump(ratioMetrics)
@@ -762,7 +818,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
 
         // Apply new config map
-        console.log(kubectlApplyRule(configMap))
+        kubectlApplyRule(configMap)
 
         const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
