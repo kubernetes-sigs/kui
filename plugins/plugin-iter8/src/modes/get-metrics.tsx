@@ -749,7 +749,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
       if (allRequiredFieldsPresent && uniqueName) {
         // Remove metric corresponding to edit
         ratioMetrics = ratioMetrics.filter(metric => {
-          return metric.name === this.state.selectedMetricName
+          return metric.name !== this.state.selectedMetricName
         })
 
         // Add edited metric
@@ -765,6 +765,8 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         console.log(kubectlApplyRule(configMap))
 
         const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
+
+        console.log(ratioMetrics)
 
         this.setState({
           configMap,
@@ -1000,7 +1002,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
       const invalidText = !newMetric[attribute.name]
         ? 'This is a required attribute'
-        : attribute.invalidChecks
+        : attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].invalidText
         ? attribute.invalidChecks[formType].invalidText
         : ''
 
@@ -1037,7 +1039,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
       const invalidText = !newMetric[attribute.name]
         ? 'This is a required attribute. An option must be selected.'
-        : attribute.invalidChecks
+        : attribute.invalidChecks && attribute.invalidChecks[formType] && attribute.invalidChecks[formType].invalidText
         ? attribute.invalidChecks[formType].invalidText
         : ''
 
