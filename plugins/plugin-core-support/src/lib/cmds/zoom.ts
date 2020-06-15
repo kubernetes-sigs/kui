@@ -18,6 +18,9 @@ import { UsageError, Arguments, Registrar } from '@kui-shell/core'
 
 import '../../../web/css/static/zoom.css'
 
+const MAX_ZOOM_IN = 12
+const MAX_ZOOM_OUT = -2
+
 /**
  * Keyboard event character codes
  *
@@ -52,7 +55,7 @@ const usage = {
         name: 'level',
         numeric: true,
         docs: 'A zoom level',
-        allowed: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, -2],
+        allowed: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, -1, -2],
         defaultValue: 1
       }
     ]
@@ -64,9 +67,9 @@ const usage = {
  *
  */
 const _set = newZoom => {
-  const main = document.querySelector('body > .page')
+  const main = document.querySelector('html')
 
-  if (newZoom <= 10 && newZoom >= -2) {
+  if (newZoom <= MAX_ZOOM_IN && newZoom >= MAX_ZOOM_OUT) {
     // zoom, if we are within the supported zoom extent
     main.setAttribute('data-zoom', newZoom)
     // maybe? repl.scrollIntoView()
@@ -126,7 +129,7 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
     event.preventDefault()
-    const main = document.querySelector('body > .page')
+    const main = document.querySelector('html')
     const factor = char === keys.ZOOM_IN ? 1 : -1
     const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
     _set(newZoom)
@@ -142,7 +145,7 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
  *
  */
 const get = () => {
-  const main = document.querySelector('body > .page')
+  const main = document.querySelector('html')
   return parseInt(main.getAttribute('data-zoom') || '1', 10)
 }
 

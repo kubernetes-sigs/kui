@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+@import "carbon-components/scss/components/tabs/_tabs.scss";
 @import "../../scss/components/common/narrow-window";
 
 /* override the carbon color when tabbing through sidecar tabs */
@@ -42,12 +43,10 @@
   a.bx--tabs__nav-link:active {
     outline: none;
     width: unset;
-    min-width: 8em;
+    min-width: 8rem;
   }
 
   .bx--tabs {
-    font-size: 0.875em;
-    line-height: 1.125em;
     overflow-x: auto;
     .bx--tabs__nav {
       background: none;
@@ -64,16 +63,6 @@
   }
   .bx--tabs__nav-item {
     background: transparent;
-    height: 2.5em;
-    margin-left: 0.125em;
-  }
-
-  a.bx--tabs__nav-link {
-    letter-spacing: 0.16px;
-    padding: 0.5em 1em;
-    height: 2.5em;
-    line-height: 1.125em;
-    margin: 0;
   }
 
   .bx--tabs__nav-item--selected:not(.bx--tabs__nav-item--disabled) {

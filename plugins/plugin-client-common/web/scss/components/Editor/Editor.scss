@@ -36,7 +36,7 @@
   flex-direction: column;
 }
 .code-highlighting > .monaco-editor {
-  padding: 1em 0;
+  padding: 1rem 0;
   flex: 1;
   min-width: 0;
 }
@@ -113,10 +113,10 @@
 
 /* gutter and inline decorations */
 .editor.parse-error-gutter-marker {
-  border-radius: 0.9375em;
+  border-radius: 0.9375rem;
   background-color: var(--color-support-01);
-  width: 1em !important;
-  height: 1em !important;
+  width: 1rem !important;
+  height: 1rem !important;
 }
 .editor.parse-error-before-marker:hover {
   cursor: default;
@@ -125,7 +125,7 @@
   content: '^';
   font-weight: bold;
   position: absolute;
-  bottom: -1em;
+  bottom: -1rem;
   color: var(--color-support-01);
 }
 

@@ -34,13 +34,12 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   scrollBeyondLastColumn: 2,
   // cursorStyle: 'block',
   fontFamily: 'var(--font-monospace)',
-  fontSize:
-    parseInt(
-      getComputedStyle(document.querySelector('.repl-inner'))
-        .getPropertyValue('font-size')
-        .replace(/px$/, ''),
-      10
-    ) * (document.body.classList.contains('subwindow') ? 1 : 0.875),
+  fontSize: parseInt(
+    getComputedStyle(document.querySelector('.repl-inner'))
+      .getPropertyValue('font-size')
+      .replace(/px$/, ''),
+    10
+  ),
 
   // specifics for readOnly mode
   glyphMargin: !options.readOnly, // needed for error indicators

@@ -1,8 +1,8 @@
-$font-size: 0.75em;
+$font-size: 0.875rem;
 
 .kui--status-stripe {
   display: flex;
-  flex-basis: 2em;
+  flex-basis: 2.25rem;
   background-color: var(--color-sidecar-header);
 
   --color-fg: var(--color-text-01);
@@ -56,12 +56,12 @@ $font-size: 0.75em;
     flex: 1;
     font-size: $font-size;
     .kui--status-stripe-element {
-      padding-left: calc(1em * 0.875 / 0.75);
-      padding-right: 1em;
+      padding-left: calc(1rem * 0.875 / 0.75);
+      padding-right: 1rem;
     }
     .kui--status-stripe-element:not(:first-child) {
       border-left: 1px solid var(--color-table-border3);
-      padding-left: 1em;
+      padding-left: 1rem;
     }
     .kui--status-stripe-element:last-child {
       border-right: 1px solid var(--color-table-border3);
@@ -69,10 +69,10 @@ $font-size: 0.75em;
   }
   .kui--status-stripe-meter {
     font-size: $font-size;
-    padding-left: 1em;
+    padding-left: 1rem;
     .kui--status-stripe-element {
-      padding-right: 1em;
-      padding-left: 1em;
+      padding-right: 1rem;
+      padding-left: 1rem;
       border-left: 1px solid var(--color-table-border3);
       border-right: 1px solid var(--color-table-border3);
     }
@@ -108,7 +108,7 @@ $font-size: 0.75em;
   }
 
   .kui--status-stripe-button .kui--status-stripe-element {
-    padding: 0 1em;
+    padding: 0 1rem;
   }
 
   .kui--status-stripe-icon {

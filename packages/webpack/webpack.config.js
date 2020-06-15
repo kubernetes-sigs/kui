@@ -239,6 +239,11 @@ plugins.push(
 const clientOptions = requireAll(path.resolve(path.join(clientBase, 'config.d')))
 
 clientOptions.style.bodyCss = (inBrowser ? ['not-electron'] : ['in-electron']).concat(clientOptions.style.bodyCss)
+clientOptions.style.htmlCss = !clientOptions.style.htmlCss
+  ? []
+  : typeof clientOptions.style.htmlCss === 'string'
+  ? [clientOptions.style.htmlCss]
+  : clientOptions.style.htmlCss
 
 if (contentSecurityPolicyForDevServer) {
   // only override the CSP when running webpack-dev-server;

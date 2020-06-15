@@ -25,13 +25,10 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
     font-size: unset;
     flex-wrap: nowrap;
     font-family: var(--font-sans-serif);
-    padding: 0 1em;
     padding-left: 0;
     line-height: unset;
 
     .bx--breadcrumb-item {
-      margin-right: 0.5em;
-
       &.kui--version-breadcrumb .bx--link {
         color: var(--color-base0F);
       }
@@ -76,7 +73,6 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
       }
 
       &:after {
-        margin-left: 0.5em;
         color: var(--color-text-02);
       }
     }

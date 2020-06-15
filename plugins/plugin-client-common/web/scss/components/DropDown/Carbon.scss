@@ -30,10 +30,6 @@ $option-hover-color: var(--color-base02);
   }
 
   .bx--overflow-menu {
-    width: auto;
-    height: auto;
-    font-size: 1em;
-
     &:hover {
       background-color: $button-hover-color;
     }
@@ -46,8 +42,6 @@ $option-hover-color: var(--color-base02);
   }
   .bx--overflow-menu__icon {
     fill: currentColor;
-    width: 1em;
-    height: 1em;
   }
   .bx--tooltip__trigger:hover {
     .bx--overflow-menu--open svg {
@@ -67,9 +61,6 @@ $option-hover-color: var(--color-base02);
 
     &:after {
       background-color: $bg-open-color;
-      top: -0.1875em;
-      width: 1.4em;
-      height: 0.1875em;
     }
     &:active,
     &:focus {
@@ -77,7 +68,6 @@ $option-hover-color: var(--color-base02);
     }
   }
   .bx--overflow-menu-options__option {
-    height: 2.5em;
     &:hover {
       background-color: $option-hover-color;
     }
@@ -86,8 +76,6 @@ $option-hover-color: var(--color-base02);
     justify-content: flex-end;
   }
   .bx--overflow-menu-options__btn {
-    font-size: 1em;
-    line-height: 1.25em;
     max-width: unset;
     color: $color;
 
