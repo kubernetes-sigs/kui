@@ -31,6 +31,7 @@ import { HeaderMenuItem } from 'carbon-components-react'
 import Icons from '../../spi/Icons'
 
 const strings = i18n('plugin-core-support')
+const strings2 = i18n('plugin-client-common')
 
 export interface TabConfiguration {
   topTabNames?: 'command' | 'fixed' // was { topTabs } from '@kui-shell/client/config.d/style.json'
@@ -172,6 +173,7 @@ export default class Tab extends React.PureComponent<Props, State> {
         {this.props.closeable && (
           <div
             className="kui--tab-close"
+            title={strings2('Close this tab')}
             onClick={evt => {
               evt.stopPropagation()
               evt.preventDefault()

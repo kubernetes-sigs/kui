@@ -47,7 +47,8 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
         onClick={
           !this.props.iconOnclick
             ? undefined
-            : () => {
+            : (evt: React.MouseEvent) => {
+                evt.stopPropagation()
                 if (typeof this.props.iconOnclick === 'string') {
                   pexecInCurrentTab(this.props.iconOnclick)
                 } else {
@@ -62,10 +63,18 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       <span className={iconClassName}>{this.props.children}</span>
     )
 
-    const textPart = this.props.textOnclick ? (
-      <a
-        href="#"
-        className="clickable kui--status-stripe-text"
+    const textPart = <span className="kui--status-stripe-text">{this.props.text}</span>
+
+    return (
+      <div
+        className={
+          'kui--status-stripe-element' +
+          (this.props.textOnclick ? ' kui--status-stripe-element-clickable' : '') +
+          (!this.props.id ? '' : ' ' + this.props.id) +
+          (this.props.className ? ' ' + this.props.className : '')
+        }
+        title={this.props.title}
+        data-view={this.props.viewLevel}
         onClick={
           !this.props.textOnclick
             ? undefined
@@ -77,22 +86,6 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
                 }
               }
         }
-      >
-        {this.props.text}
-      </a>
-    ) : (
-      <span className="kui--status-stripe-text">{this.props.text}</span>
-    )
-
-    return (
-      <div
-        className={
-          'kui--status-stripe-element' +
-          (!this.props.id ? '' : ' ' + this.props.id) +
-          (this.props.className ? ' ' + this.props.className : '')
-        }
-        title={this.props.title}
-        data-view={this.props.viewLevel}
       >
         {iconPart}
         {textPart}

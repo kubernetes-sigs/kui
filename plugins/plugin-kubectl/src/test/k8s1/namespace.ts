@@ -43,7 +43,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
             if (!errOk) {
-              return Common.oops(this)(err)
+              return Common.oops(this, true)(err)
             }
           })
       })
@@ -55,7 +55,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         return CLI.command(`${kubectl} create namespace ${name}`, this.app)
           .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(Common.oops(this))
+          .catch(Common.oops(this, true))
       })
     }
 
@@ -104,7 +104,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
             this.app.client.waitUntil(async () => {
               await this.app.client.click(selector)
               const actualNamespace = await this.app.client.getText(
-                '#kui--status-stripe .kui--plugin-kubeui--current-namespace .kui--status-stripe-text'
+                Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace')
               )
               await this.app.client.waitForExist(selector.replace(radioButton, radioButtonSelected))
               return actualNamespace === ns1
@@ -128,7 +128,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         const res = await CLI.command('echo hi', this.app)
         await ReplExpect.okWithPtyOutput('hi')(res)
 
-        await this.app.client.click('#kui--status-stripe .kui--plugin-kubeui--current-namespace .clickable')
+        await this.app.client.click(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
 
         // await ReplExpect.okWith('default')({ app: this.app, count: res.count + 1 })
         await this.app.client.waitForExist(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
@@ -159,7 +159,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         )
           .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
-          .catch(Common.oops(this))
+          .catch(Common.oops(this, true))
       })
 
       it(`should show the sample pod in namespace ${ns} in sidecar via ${kubectl}`, () => {
@@ -167,7 +167,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(ReplExpect.justOK)
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
-          .catch(Common.oops(this))
+          .catch(Common.oops(this, true))
       })
     }
 
@@ -192,7 +192,7 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
             return waitForRed(this.app, deletionEntitySelector)
           })
-          .catch(Common.oops(this))
+          .catch(Common.oops(this, true))
       })
     }
 

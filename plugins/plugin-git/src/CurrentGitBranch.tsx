@@ -20,6 +20,7 @@ import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-c
 import { wireToStandardEvents, getCurrentTab, i18n, CodedError } from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
+const strings2 = i18n('plugin-git')
 
 interface Props {
   className?: string
@@ -98,6 +99,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
         text={this.state.text}
         viewLevel={this.state.viewLevel}
         id="kui--plugin-git--current-git-branch"
+        title={strings2('Your current git branch')}
         iconOnclick="git status"
         textOnclick="git branch"
       >
