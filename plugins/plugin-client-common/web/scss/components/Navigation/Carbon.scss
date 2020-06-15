@@ -25,8 +25,6 @@
     background-color: var(--color-sidecar-header);
 
     .bx--side-nav__items {
-      padding-top: 1em;
-
       a.bx--side-nav__link:focus,
       .bx--side-nav a.bx--header__menu-item:focus {
         outline-color: var(--color-brand-03);
@@ -41,20 +39,10 @@
           }
         }
       }
-      .bx--side-nav__menu .bx--side-nav__link {
-        height: 2em;
-        padding-left: 2em;
-      }
       .bx--side-nav__link {
-        & {
-          min-height: 2em;
-          font-size: 1em;
-        }
         &,
         &:hover {
           .bx--side-nav__link-text {
-            font-size: 1em;
-            line-height: 1.25em;
             color: var(--color-text-01);
           }
         }
@@ -109,9 +97,6 @@
     }
 
     .bx--side-nav__item--active .bx--side-nav__submenu {
-      font-size: 1em;
-      height: 2em;
-      line-height: 1.125em;
       &.entity-name .bx--side-nav__submenu-title {
         color: var(--color-brand-03);
       }

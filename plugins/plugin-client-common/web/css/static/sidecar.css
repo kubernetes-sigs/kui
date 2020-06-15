@@ -27,7 +27,7 @@
   }
 
   .kui--sidecar-header-and-body {
-    font-size: 0.875em;
+    font-size: 0.875rem;
   }
 
   .sidecar-bottom-stripe {
@@ -90,14 +90,6 @@
     &[aria-hidden="true"] {
       display: none;
     }
-
-    .code-highlighting {
-      font-size: 0.875em;
-    }
-
-    .bx--data-table-container {
-      font-size: 0.875em;
-    }
   }
 
   .kui--sidecar-content {
@@ -128,26 +120,15 @@
       background: var(--color-sidecar-background-02);
       border-color: transparent;
       color: var(--color-text-01);
-      line-height: 1em;
-      min-width: 20em;
-      margin-bottom: 1em;
+      min-width: 20rem;
       font-family: var(--font-monospace);
-      font-size: 0.875em;
     }
 
     &.bx--snippet--single {
-      max-width: 47.5em;
-      height: 2.5em;
-      font-size: 0.875em;
-      padding: 0 2.5em 0 0;
-
       &:after {
         display: none;
       }
       .bx--snippet-container {
-        padding-left: 1em;
-        border-right-width: 1em;
-
         &:focus {
           outline-color: var(--color-brand-03);
         }
@@ -155,7 +136,6 @@
         code {
           pre {
             font-family: unset;
-            padding-right: 0.5em;
 
             &:after {
               display: none;
@@ -168,24 +148,16 @@
     code {
       font-family: unset;
       font-size: unset;
-      line-height: 1em;
       pre {
-        line-height: 1.25em;
         font-size: unset;
         --color-selection-background: var(--color-base0C);
       }
     }
 
     &.bx--snippet--multi {
-      padding: 1em;
-
       .bx--snippet-container {
-        max-height: 14.875em;
-        min-height: 3.5em;
-
         code {
           pre {
-            padding-bottom: 1.5em;
             white-space: pre-wrap;
 
             &:after {
@@ -198,8 +170,6 @@
 
     .bx--snippet__icon {
       fill: var(--color-text-01);
-      height: 1em;
-      width: 1em;
     }
   }
 }
@@ -213,8 +183,6 @@
 }
 
 [kui-theme-style] .bx--copy-btn {
-  height: 2.5em;
-  width: 2.5em;
   border-color: transparent;
   background-color: transparent;
   font-family: var(--font-sans-serif);
@@ -229,7 +197,6 @@
 
   .bx--copy-btn__feedback {
     font-size: inherit;
-    padding: 0.1875em 1em;
     background-color: var(--color-base03);
   }
 }

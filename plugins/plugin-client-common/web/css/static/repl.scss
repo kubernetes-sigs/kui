@@ -14,15 +14,14 @@
   flex-direction: column;
 }
 .repl-result > p:not(:first-child) {
-  padding-top: 1em;
+  padding-top: 1rem;
 }
 .repl.sidecar-visible p {
   white-space: normal;
 }
 .repl {
   .repl-prompt {
-    font-size: 0.875em;
-    margin-right: 0.25em;
+    margin-right: 0.25rem;
     --color-prompt-text: var(--color-brand-01);
     --color-prompt-background: transparent;
     color: var(--color-prompt-text);
@@ -53,40 +52,40 @@
     align-items: center;
     flex: 0;
     white-space: nowrap;
-    margin-left: 1em;
-    height: 1.25em; /* so kui--repl-block-spinner doesn't cause shift */
+    margin-left: 1rem;
+    height: 1.25rem; /* so kui--repl-block-spinner doesn't cause shift */
   }
   .kui--repl-prompt-buttons {
-    margin-right: 1em;
+    margin-right: 1rem;
   }
   .kui--repl-prompt-buttons .graphical-icon {
     opacity: 0.0375;
   }
   .kui--repl-block-spinner {
     color: var(--color-brand-03);
-    margin-right: 0.5em;
-    font-size: 1em;
+    margin-right: 0.5rem;
+    font-size: 1rem;
     font-weight: 700;
   }
   .kui--repl-block-error-icon {
     fill: var(--color-error);
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
   }
 }
 
 [kui-theme-style] .kui--repl-block-right-element {
   color: inherit;
-  font-size: 0.75em;
+  font-size: 0.875rem;
 }
 
 .repl-result,
 .repl-result-like,
 .repl-input .repl-input-element,
 .repl-input-like {
-  font-size: 0.875em;
+  font-size: 1rem;
 }
 .repl-block:not(.processing) .repl-result-like:last-child {
-  margin-bottom: 0.375em;
+  margin-bottom: 0.375rem;
 }
 .repl-input .repl-input-element,
 .repl-input-like {
@@ -140,7 +139,7 @@
   align-items: stretch;
 }
 .repl-result-spinner {
-  font-size: 0.875em;
+  font-size: 0.875rem;
 }
 .repl-block .repl-output [data-stream] ~ .repl-result-spinner {
   /* probably not 100% right, but: for pty output, don't show kui's "caret", since xtermjs has its own */
@@ -157,7 +156,7 @@
   transition-delay: 100ms; /* only show the spinner block if the command takes a bit longer */
   display: inline-block;
   background-color: var(--color-processing);
-  margin-bottom: 0.25em;
+  margin-bottom: 0.25rem;
 }
 .repl-block.processing .repl-result-spinner-inner:after {
   content: '\00a0';
@@ -173,7 +172,11 @@
   color: var(--color-text-01);
 }
 
-/* when sidecar is visible */
+/* timestamp */
+.kui--repl-block-timestamp {
+  margin-right: 0.5em;
+}
+/* timestamp when sidecar is visible */
 .repl.sidecar-visible .repl-block {
   .kui--repl-block-timestamp {
     /* hide repl timestamp  */
@@ -204,7 +207,7 @@
   flex: 1;
 }
 .repl-block {
-  margin: 0.5em 0 0; /* margin vs padding to help with screenshot rubber banding */
+  margin: 0.5rem 0 0; /* margin vs padding to help with screenshot rubber banding */
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -233,7 +236,6 @@
     }
 
     .ok {
-      font-size: 0.875em;
       color: var(--color-ok);
     }
 

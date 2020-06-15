@@ -1,0 +1,26 @@
+html.kui {
+  &.kui--12px {
+    --kui--master-font-size: 12px;
+    --kui--master-font-scale: calc(12 / 14);
+    font-size: var(--kui--master-font-size);
+  }
+
+  &,
+  &.kui--14px {
+    --kui--master-font-size: 14px;
+    --kui--master-font-scale: 1;
+    font-size: var(--kui--master-font-size);
+  }
+
+  &.kui--16px {
+    --kui--master-font-size: 16px;
+    --kui--master-font-scale: calc(16 / 14);
+    font-size: var(--kui--master-font-size);
+  }
+
+  &.kui--18px {
+    --kui--master-font-size: 18px;
+    --kui--master-font-scale: calc(18 / 14);
+    font-size: var(--kui--master-font-size);
+  }
+}
