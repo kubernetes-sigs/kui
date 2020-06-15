@@ -386,6 +386,7 @@ export default class Input extends InputProvider {
         <DropDown
           actions={actions}
           className="kui--repl-block-right-element small-left-pad kui--toolbar-button-with-icon"
+          onClose={this.props.willLoseFocus}
         />
       )
     }

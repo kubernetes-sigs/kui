@@ -271,7 +271,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Owner wants us to focus on the current prompt */
   public doFocus(scrollback = this.current) {
     const { _activeBlock } = scrollback
-    if (_activeBlock) {
+
+    if (this.hasPinned(scrollback)) {
+      return this.doFocus(this.state.splits.find(_ => !this.hasPinned(_)))
+    } else if (_activeBlock) {
       if (_activeBlock.state._block && isInViewport(_activeBlock.state._block)) {
         // re: isInViewport, see https://github.com/IBM/kui/issues/4739
         _activeBlock.doFocus()
