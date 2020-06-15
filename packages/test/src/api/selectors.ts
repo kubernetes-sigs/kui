@@ -176,3 +176,14 @@ export const BLOCK_UNPIN_BUTTON = `${OVERFLOW_MENU} button[data-mode="Show as ta
 export const ALT_BUFFER_N = (N: number) => `${CURRENT_TAB} .kui--scrollback:nth-child(${N}).xterm-alt-buffer-mode`
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const NOSPLIT_ALT_BUFFER_N = (N: number) => `${CURRENT_TAB}.xterm-alt-buffer-mode`
+
+/** Status Stripe widgets */
+const STATUS_STRIPE = '#kui--status-stripe'
+export const STATUS_STRIPE_WIDGET = (which: string) => `${STATUS_STRIPE} .${which}`
+export const STATUS_STRIPE_WIDGET_WITH_ATTR = (which: string, key: string, value: string) =>
+  `${STATUS_STRIPE_WIDGET(which)}[data-${key}="${value}"]`
+export const STATUS_STRIPE_WIDGET_LABEL = (which: string) => `${STATUS_STRIPE_WIDGET(which)} .kui--status-stripe-text`
+export const STATUS_STRIPE_WIDGET_ICON_WITH_ATTR = (which: string, key: string, value: string) =>
+  `${STATUS_STRIPE_WIDGET_WITH_ATTR(which, key, value)} .kui--status-stripe-icon`
+export const STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR = (which: string, key: string, value: string) =>
+  `${STATUS_STRIPE_WIDGET_WITH_ATTR(which, key, value)} .kui--status-stripe-text`
