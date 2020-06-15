@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017-2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import "SidecarCommon.css";
 
 .kui--sidecar {
@@ -18,24 +34,16 @@
   .header-top-bits {
     display: flex;
     padding-left: 1em;
-    margin: 0.75em 0 0;
+    margin: 0.75rem 0 0;
   }
 
   .sidecar-header-text {
-    margin: 0 0 0.75em 0;
+    margin: 0 0 0.75rem 0;
     font-size: 22px;
   }
 
-  .kui--sidecar-overflow {
-    font-size: 1em;
-  }
-
-  .kui--sidecar-text-content {
-    font-size: 0.875em;
-  }
-
   .sidecar-bottom-stripe {
-    flex-basis: 2.5em;
+    flex-basis: 2.5rem;
     display: flex;
     z-index: 5;
     background-color: var(--color-stripe-02);
@@ -59,7 +67,7 @@
     .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-back-bits.has-back-button {
     flex: initial;
     margin-right: 0;
-    padding: 0 calc(1em - 0.375em); /* the button inside has 0.375em padding left-right */
+    padding: 0 calc(1rem - 0.375rem); /* the button inside has 0.375em padding left-right */
   }
   .sidecar-bottom-stripe-close-icon {
     letter-spacing: -1ex;
@@ -95,8 +103,8 @@
   .sidecar-bottom-stripe-mode-bits {
     background-color: var(--color-sidecar-toolbar-background);
     color: var(--color-sidecar-toolbar-foreground);
-    height: 1.5em;
-    line-height: 1.5em;
+    height: 1.5rem;
+    line-height: 1.5rem;
     display: flex;
     align-items: center;
     flex: 1;
@@ -132,8 +140,8 @@
     opacity: 0.875;
   }
   .sidecar-toolbar-text-icon {
-    margin-right: 0.375em;
-    padding-left: 1em;
+    margin-right: 0.375rem;
+    padding-left: 1rem;
   }
   .sidecar-toolbar-text-icon > svg {
     display: none;
@@ -142,7 +150,7 @@
     display: block;
   }
   .sidecar-toolbar-text .sidecar-toolbar-text-content {
-    font-size: 0.75em;
+    font-size: 0.6875rem;
     display: block;
     letter-spacing: 0.32px;
     white-space: nowrap;
@@ -151,8 +159,8 @@
   }
   .sidecar-bottom-stripe-button {
     display: flex;
-    line-height: 1.5em;
-    padding: 0 0.5em;
+    line-height: 1.5rem;
+    padding: 0 0.5rem;
     color: inherit;
 
     &:hover {
@@ -164,7 +172,7 @@
 
     [role="tab"] {
       display: flex;
-      font-size: 0.875em;
+      font-size: 0.875rem;
     }
   }
   .graphical-icon svg {
@@ -194,7 +202,7 @@
 .kui--sidecar .sidecar-header {
   display: flex;
   background-color: var(--color-sidecar-header);
-  min-height: 1em;
+  min-height: 1rem;
 
   .header-main-content {
     flex: 1;
@@ -208,7 +216,7 @@
   }
   .header-right-bits {
     white-space: nowrap;
-    margin: 0 1em;
+    margin: 0 1rem;
 
     .custom-header-content {
       display: flex;
@@ -247,7 +255,7 @@
 .kui--sidecar .custom-content pre > code,
 .kui--sidecar .padding-content {
   display: block;
-  padding: 1em 1em;
+  padding: 1rem 1rem;
 }
 .kui--sidecar .custom-content > .scrollable {
   /* for scrollable padding-content, we want the scrollbar to be flush-right */
@@ -270,9 +278,9 @@
   flex: 1;
 }
 .kui--sidecar .activation-result .log-line .log-field code {
-  font-size: 1em;
-  margin: 0.375em 0.375em 0 0;
-  padding: 1em;
+  font-size: 1rem;
+  margin: 0.375rem 0.375rem 0 0;
+  padding: 1rem;
   background: var(--color-ui-01);
   border: 1px solid var(--color-ui-04);
   box-shadow: 0 0 2px var(--color-ui-04);
@@ -304,7 +312,7 @@
 }
 
 .kui--sidecar .sidecar-header-icon-wrapper > span {
-  padding: 0 0.5em;
+  padding: 0 0.5rem;
 }
 
 /* grabbable elements */
@@ -374,7 +382,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 0.1875em;
+    margin: 0 0.1875rem;
 
     a {
       padding: 3px;
@@ -402,7 +410,7 @@
 }
 
 .kui--sidecar .custom-content .log-field pre > code {
-  padding: 1em;
+  padding: 1rem;
 }
 
 .kui--sidecar.visible .kui--sidecar-header-and-body {
@@ -426,16 +434,16 @@
   display: flex;
   align-items: center;
   overflow-x: hidden;
-  font-size: 0.875em;
-  padding-left: 1em;
+  font-size: 0.875rem;
+  padding-left: 1rem;
 
   .sidecar-bottom-stripe-button:nth-child(2) {
-    margin-right: 1em;
+    margin-right: 1rem;
   }
 }
 
 .kui--sidecar[data-view="topnav"] {
   .kui--data-table-wrapper {
-    margin: 1em 0;
+    margin: 1rem 0;
   }
 }

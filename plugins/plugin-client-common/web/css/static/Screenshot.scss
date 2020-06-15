@@ -1,5 +1,3 @@
-@import './Button';
-
 @import 'carbon-components/scss/components/tooltip/_tooltip.scss';
 @import 'carbon-components/scss/components/notification/_toast-notification.scss';
 
@@ -54,17 +52,9 @@ body .bx--toast-notification {
       }
     }
 
-    .bx--toast-notification__title {
-      margin-top: 1em;
-    }
-    .bx--toast-notification__subtitle {
-      margin-bottom: 1.5em;
-    }
     .bx--toast-notification__title,
     .bx--toast-notification__subtitle {
       color: var(--color-screenshot-foreground);
-      font-size: 0.875em;
-      line-height: 1.125em;
     }
 
     &.bx--toast-notification--success {
@@ -82,11 +72,6 @@ body .bx--toast-notification {
     }
 
     .bx--toast-notification__close-button {
-      height: 3em;
-      width: 3em;
-      min-height: 3em;
-      min-width: 3em;
-
       &:focus {
         outline-color: var(--color-screenshot-foreground);
       }
@@ -102,9 +87,9 @@ body .bx--toast-notification {
     &.bx--toast-notification--info,
     &.bx--toast-notification--success {
       position: absolute;
-      bottom: 2em;
+      bottom: 2.25rem;
       right: 0em;
-      width: 28em;
+      width: 30rem;
       height: auto;
       z-index: 5;
 
@@ -120,7 +105,7 @@ body .bx--toast-notification {
       .screenshot-image {
         max-width: 100%;
         height: auto;
-        max-height: 17em;
+        max-height: 17rem;
         object-fit: contain;
         object-position: top left;
         box-shadow: 0 0 2px var(--color-base05);
