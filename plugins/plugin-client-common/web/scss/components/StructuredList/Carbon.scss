@@ -58,24 +58,7 @@
     font-size: inherit;
   }
 
-  .bx--structured-list-th {
-    height: 2.5em;
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-top: 1em;
-    padding-bottom: 0.5em;
-    line-height: 1.1125em;
-  }
-
   .bx--structured-list-td {
-    line-height: 1.25em;
-    padding-top: 1em;
-    padding-right: 1em;
-    padding-bottom: 1.5em;
-    padding-left: 1em;
-    line-height: 1.3125em;
-    max-width: 36em;
-
     &.sub-text {
       color: var(--color-text-02);
     }
@@ -86,9 +69,8 @@
   }
 
   &.kui--radio-table .bx--structured-list-td {
-    line-height: 1.125em;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 
     /* only for RadioTable? */
     white-space: normal;

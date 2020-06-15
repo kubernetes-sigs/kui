@@ -19,10 +19,14 @@
  *
  */
 
-/* when sidecar is minimized, don't listen to data-zoom */
-[data-zoom] #sidecar.minimized .sidecar-bottom-stripe {
-  font-size: 0.875em;
-}
+/* percentage increase with progressively higher zoom levels */
+$step: 0.0625;
+
+/* match this with MAX_ZOOM_IN in zoom.ts; k gives k-1 zoom levels */
+$MAX_ZOOM_IN: 12;
+
+/* match this with -MAX_ZOOM_OUT in zoom.ts; k gives k+1 zoom levels */
+$MAX_ZOOM_OUT: 2;
 
 /* transition effects for font zooming */
 .repl-inner,
@@ -30,223 +34,45 @@
 #sidecar .custom-content {
   transition: font-size 10ms ease-in-out;
 }
-.page[data-zoom] .repl-result-prefix {
-  transition: none;
+
+/* zooming in */
+@for $i from 1 through $MAX_ZOOM_IN {
+  html.kui[data-zoom="#{$i}"] {
+    font-size: calc(var(--kui--master-font-size) * (1 + #{$step} * #{$i - 1}));
+
+    svg[width="16"] {
+      width: calc(16px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
+      height: calc(16px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
+    }
+
+    .graphical-icon > svg,
+    svg[width="20"] {
+      width: calc(20px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
+      height: calc(20px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
+    }
+  }
 }
 
-/* finally, these rules define the zoom levels */
-/*.page[data-zoom="1"] .zoomable .view-lines > div,
-.page[data-zoom="1"] .zoomable { font-size: 100% !important; }*/
-.page[data-zoom="1"] svg.zoomable {
-  transform: scale(1);
-}
-.page[data-zoom="2"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 106.25% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 17px;
-    height: 17px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 21.25px;
-    height: 21.25px;
+/* zooming out */
+@for $i from 0 through $MAX_ZOOM_OUT {
+  html.kui[data-zoom="#{-$i}"] {
+    font-size: calc(var(--kui--master-font-size) * (1 - #{$step} * #{$i + 1}));
+
+    svg[width="16"] {
+      width: calc(16px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
+      height: calc(16px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
+    }
+
+    .graphical-icon > svg,
+    svg[width="20"] {
+      width: calc(20px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
+      height: calc(20px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
+    }
   }
 }
-.page[data-zoom="3"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 18px;
-    height: 18px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 22.25px;
-    height: 22.25px;
-  }
-}
-.page[data-zoom="4"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 118.75% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 19px;
-    height: 19px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 23.75px;
-    height: 23.75px;
-  }
-}
-.page[data-zoom="5"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 125% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 20px;
-    height: 20px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 25px;
-    height: 25px;
-  }
-}
-.page[data-zoom="6"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 131.25% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 21px;
-    height: 21px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 26.25px;
-    height: 26.25px;
-  }
-}
-.page[data-zoom="7"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 137.5% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 22px;
-    height: 22px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 27.5px;
-    height: 27.5px;
-  }
-}
-.page[data-zoom="8"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 143.75% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 23px;
-    height: 23px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 28.75px;
-    height: 28.75px;
-  }
-}
-.page[data-zoom="9"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 150% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 24px;
-    height: 24px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 30px;
-    height: 30px;
-  }
-}
-.page[data-zoom="10"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 156.25% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 112.5% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 25px;
-    height: 25px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="16"] {
-    width: 31.25px;
-    height: 31.25px;
-  }
-}
-.page[data-zoom="0"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 93.75% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 100% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 15px;
-    height: 15px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 18.75px;
-    height: 18.75px;
-  }
-}
-.page[data-zoom="-1"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 87.5% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 100% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 14px;
-    height: 14px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 17.5px;
-    height: 17.5px;
-  }
-}
-.page[data-zoom="-2"] {
-  .zoomable .view-lines > div,
-  .zoomable {
-    font-size: 81.25% !important;
-  }
-  .zoomable[data-bounded-zoom] {
-    font-size: 100% !important;
-  }
-  .zoomable svg[width="16"] {
-    width: 13px;
-    height: 13px;
-  }
-  .graphical-icon > svg,
-  .zoomable svg[width="20"] {
-    width: 16.25px;
-    height: 16.25px;
+
+html {
+  &[data-zoom="1"] svg.zoomable {
+    transform: scale(1);
   }
 }
