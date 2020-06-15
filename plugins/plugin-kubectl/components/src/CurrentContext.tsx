@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser } from '@kui-shell/core'
+import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser, i18n } from '@kui-shell/core'
 import {
   getCurrentContextName,
   onKubectlConfigChangeEvents,
@@ -28,6 +28,8 @@ interface State {
   text: string
   viewLevel: ViewLevel
 }
+
+const strings = i18n('plugin-kubectl')
 
 export default class CurrentContext extends React.PureComponent<{}, State> {
   private handler = this.reportCurrentContext.bind(this)
@@ -120,7 +122,8 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
       <TextWithIconWidget
         text={this.state.text}
         viewLevel={this.state.viewLevel}
-        id="'kui--plugin-kubeui--current-context"
+        id="kui--plugin-kubeui--current-context"
+        title={strings('Kubernetes context')}
         textOnclick="contexts"
       >
         <div className="current-context-button" onClick={() => false}>

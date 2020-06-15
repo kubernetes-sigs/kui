@@ -15,14 +15,13 @@
  */
 
 import * as assert from 'assert'
-import { Common } from '@kui-shell/test'
+import { Common, Selectors } from '@kui-shell/test'
 
 /** see CounterWidget */
 const colors = ['ok' as const, 'warn' as const, 'error' as const, 'normal' as const]
-const rawId = (idx: number) => `test-client-counter-fragment-${idx}`
 
-/** turn id into a selector */
-const id = `.${rawId(0)}`
+/** id for our test widget */
+const id = 'test-client-counter-fragment-0'
 
 describe('status stripe', function(this: Common.ISuite) {
   before(Common.before(this))
@@ -33,9 +32,9 @@ describe('status stripe', function(this: Common.ISuite) {
 
   it('should show as ok', async () => {
     console.error('A')
-    await this.app.client.waitForVisible(id)
+    await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET(id))
     console.error('B')
-    const text = await this.app.client.getText(`${id} .kui--status-stripe-text`)
+    const text = await this.app.client.getText(Selectors.STATUS_STRIPE_WIDGET_LABEL(id))
     console.error('C', text)
 
     const match = text.match(/^count: (\d+)$/)
@@ -44,7 +43,7 @@ describe('status stripe', function(this: Common.ISuite) {
 
     const color = colors[count]
     console.error('D', count, color)
-    await this.app.client.waitForVisible(`${id}[data-view="${color}"]`)
+    await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', color))
   })
 
   it('should click on the icon part and show count+1', async () => {
@@ -52,20 +51,23 @@ describe('status stripe', function(this: Common.ISuite) {
     const nextColor = colors[count + 1]
     console.error('E', count, currColor, nextColor)
 
-    await this.app.client.click(`${id}[data-view="${currColor}"] .kui--status-stripe-icon`)
-    await this.app.client.waitForVisible(`${id}[data-view="${nextColor}"]`)
-    const text = await this.app.client.getText(`${id}[data-view="${nextColor}"] .kui--status-stripe-text`)
-    console.error('F', text)
+    await this.app.client.click(Selectors.STATUS_STRIPE_WIDGET_ICON_WITH_ATTR(id, 'view', currColor))
+    console.error('F1')
+    await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
+    console.error('F2')
+    const text = await this.app.client.getText(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
+    console.error('F3', text)
     assert.strictEqual(text, `count: ${++count}`)
+    console.error('F4')
   })
 
   it('should click on the text part and show count+2', async () => {
     const currColor = colors[count]
     const nextColor = colors[count + 1]
 
-    await this.app.client.click(`${id}[data-view="${currColor}"] .kui--status-stripe-text`)
-    await this.app.client.waitForVisible(`${id}[data-view="${nextColor}"]`)
-    const text = await this.app.client.getText(`${id}[data-view="${nextColor}"] .kui--status-stripe-text`)
+    await this.app.client.click(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', currColor))
+    await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
+    const text = await this.app.client.getText(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
     assert.strictEqual(text, `count: ${++count}`)
   })
 })

@@ -18,9 +18,11 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { inElectron, pexecInCurrentTab } from '@kui-shell/core'
+import { inElectron, pexecInCurrentTab, i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
+
+const strings = i18n('plugin-client-common')
 
 export default class StatusStripe extends React.PureComponent {
   /**
@@ -75,18 +77,17 @@ export default class StatusStripe extends React.PureComponent {
         {this.screenshot()}
 
         <div className="kui--status-stripe-button">
-          <div className="kui--status-stripe-element">
-            <a
-              href="#"
-              className="kui--tab-navigatable clickable"
-              id="help-button"
-              aria-label="Help"
-              tabIndex={0}
-              onClick={() => this.doAbout()}
-            >
-              <Icons icon="Settings" />
-            </a>
-          </div>
+          <a
+            href="#"
+            className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
+            id="help-button"
+            aria-label="Help"
+            tabIndex={0}
+            title={strings('Click to view configuration options')}
+            onClick={() => this.doAbout()}
+          >
+            <Icons icon="Settings" />
+          </a>
         </div>
       </div>
     )

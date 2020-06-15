@@ -1,3 +1,5 @@
+$font-size: 0.75em;
+
 .kui--status-stripe {
   display: flex;
   flex-basis: 2em;
@@ -43,14 +45,37 @@
   & > div {
     display: flex;
   }
+
+  .kui--status-stripe-element.kui--status-stripe-element-clickable:hover,
+  .kui--status-stripe-button .kui--status-stripe-element:hover {
+    cursor: pointer;
+    background-color: var(--color-table-border3);
+  }
+
   .kui--status-stripe-context {
     flex: 1;
-    font-size: 0.75em;
-    padding-left: calc(1em * 0.875 / 0.75);
+    font-size: $font-size;
+    .kui--status-stripe-element {
+      padding-left: calc(1em * 0.875 / 0.75);
+      padding-right: 1em;
+    }
+    .kui--status-stripe-element:not(:first-child) {
+      border-left: 1px solid var(--color-table-border3);
+      padding-left: 1em;
+    }
+    .kui--status-stripe-element:last-child {
+      border-right: 1px solid var(--color-table-border3);
+    }
   }
   .kui--status-stripe-meter {
-    font-size: 0.75em;
+    font-size: $font-size;
     padding-left: 1em;
+    .kui--status-stripe-element {
+      padding-right: 1em;
+      padding-left: 1em;
+      border-left: 1px solid var(--color-table-border3);
+      border-right: 1px solid var(--color-table-border3);
+    }
   }
 
   .kui--status-stripe-right {
@@ -60,7 +85,6 @@
   .kui--status-stripe-element {
     display: flex;
     align-items: center;
-    margin-right: calc(1em * 0.875);
   }
 
   .kui--status-stripe-element > a {
@@ -79,16 +103,12 @@
     text-decoration: none;
   }
 
-  .kui--status-stripe-button .kui--status-stripe-element {
-    padding: 3px;
-    margin-right: calc(1em * 0.875 - 2 * 3px);
+  .kui--status-stripe-button {
+    font-size: $font-size;
+  }
 
-    &:hover {
-      background-color: var(--color-table-border1);
-      svg {
-        fill: var(--color-text-01) !important;
-      }
-    }
+  .kui--status-stripe-button .kui--status-stripe-element {
+    padding: 0 1em;
   }
 
   .kui--status-stripe-icon {

@@ -2,11 +2,13 @@
   "Remove": "Remove",
   "ok": "ok",
   "No resources": "No resources",
-  "New Tab": "New Tab",
+  "New Tab": "Open a new tab",
+  "Close this tab": "Close this tab",
   "Split the Terminal": "Split the Terminal",
   "Output has been pinned to a watch pane": "Output has been **pinned** to a watch pane",
   "No more splits allowed": "No more splits allowed",
   "No more pins allowed": "You have reached the maximum number of pinned views. Consider either closing one, or re-executing the command in a new tab.",
+  "Click to view configuration options": "Click to view configuration options",
   "Show as table in terminal": "Show as table in terminal",
   "Stop watching": "Close watcher"
 }

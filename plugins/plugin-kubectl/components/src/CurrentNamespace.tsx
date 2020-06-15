@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser } from '@kui-shell/core'
+import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser, i18n } from '@kui-shell/core'
 import {
   KubeContext,
   getCurrentDefaultNamespace,
@@ -29,6 +29,8 @@ interface State {
   text: string
   viewLevel: ViewLevel
 }
+
+const strings = i18n('plugin-kubectl')
 
 export default class CurrentNamespace extends React.PureComponent<{}, State> {
   private handler = this.reportCurrentNamespace.bind(this)
@@ -107,6 +109,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
         viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-namespace"
         textOnclick="kubectl get namespaces"
+        title={strings('Kubernetes namespace')}
       >
         <div className="current-namesapce-button" onClick={() => false}>
           <Icons icon="At" />
