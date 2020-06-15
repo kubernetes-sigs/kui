@@ -286,9 +286,9 @@ type MetricDetailsState = {
   selectedMetricName?: string // Selected metric to be edited
   selectedType?: MetricTypes // Selected type of metric to be added/edited
   newMetric?: Partial<CounterMetric | RatioMetric> // Metric to be added/replaced (edited)
-  formSubmitted: boolean // Whether the add/edit form has been submitted (used for reporting errors)
+  formSubmitted?: boolean // Whether the add/edit form has been submitted (used for reporting errors)
 
-  errorString: string
+  errorString?: string
 }
 
 /**
@@ -392,11 +392,27 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   private refreshState = () => {
     console.log('Refreshed state')
 
-    this.setState({
-      ...this.constructorHelper(),
-      display: DisplayMode.getMetrics,
-      formSubmitted: undefined
-    })
+    try {
+      this.setState({
+        ...this.constructorHelper(),
+        display: DisplayMode.getMetrics,
+        formSubmitted: undefined,
+        errorString: undefined
+      })
+    } catch (error) {
+      this.setState({
+        configMap: undefined,
+        counterMetrics: undefined,
+        ratioMetrics: undefined,
+        counterMetricNames: undefined,
+        ratioMetricNames: undefined,
+        counterMetricsState: undefined,
+        ratioMetricsState: undefined,
+        formSubmitted: undefined,
+        display: DisplayMode.getMetrics,
+        errorString: error
+      })
+    }
   }
 
   private generateMetricsStates = (
@@ -584,6 +600,23 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         // Apply new config map
         kubectlApplyRule(configMap)
 
+        // TODO: Add proper error handling
+        const counterMetricNames = counterMetrics.map(counterMetric => {
+          return counterMetric.name
+        })
+
+        // Update the numerators and denominator
+        const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+
+        const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'numerator'
+        })
+        const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'denominator'
+        })
+        ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+        ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+
         const { counterMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
@@ -650,6 +683,23 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
         // Apply new config map
         kubectlApplyRule(configMap)
+
+        // TODO: Add proper error handling
+        const counterMetricNames = counterMetrics.map(counterMetric => {
+          return counterMetric.name
+        })
+
+        // Update the numerators and denominator
+        const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+
+        const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'numerator'
+        })
+        const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'denominator'
+        })
+        ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+        ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
 
         const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
@@ -749,6 +799,23 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
         // Apply new config map
         kubectlApplyRule(configMap)
 
+        // TODO: Add proper error handling
+        const counterMetricNames = counterMetrics.map(counterMetric => {
+          return counterMetric.name
+        })
+
+        // Update the numerators and denominator
+        const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+
+        const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'numerator'
+        })
+        const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'denominator'
+        })
+        ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+        ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+
         const { counterMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
         this.setState({
@@ -819,6 +886,23 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
         // Apply new config map
         kubectlApplyRule(configMap)
+
+        // TODO: Add proper error handling
+        const counterMetricNames = counterMetrics.map(counterMetric => {
+          return counterMetric.name
+        })
+
+        // Update the numerators and denominator
+        const counterMetricDropdownOptions = createBasicStringDropdownOptions(counterMetricNames)
+
+        const numeratorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'numerator'
+        })
+        const denominatorAttribute = RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+          return attribute.name === 'denominator'
+        })
+        ;(numeratorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
+        ;(denominatorAttribute as DropdownAttributeData).dropdownOptions = counterMetricDropdownOptions
 
         const { ratioMetricsState } = this.generateMetricsStates(counterMetrics, ratioMetrics)
 
