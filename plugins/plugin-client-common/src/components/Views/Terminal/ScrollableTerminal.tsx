@@ -120,8 +120,6 @@ function isInViewport(elm: HTMLElement) {
 }
 
 export default class ScrollableTerminal extends React.PureComponent<Props, State> {
-  private _scrollRegion: HTMLDivElement
-
   public constructor(props: Props) {
     super(props)
 
@@ -173,12 +171,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Output.tsx finished rendering something */
-  private onOutputRender() {
-    setTimeout(() => {
-      if (this._scrollRegion) {
-        this._scrollRegion.scrollTop = this._scrollRegion.scrollHeight
-      }
-    }, 0)
+  private onOutputRender(scrollback: ScrollbackState) {
+    setTimeout(() => scrollback.facade.scrollToBottom())
   }
 
   /** the REPL started executing a command */
@@ -484,11 +478,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   public render() {
     return (
       <div className={'repl' + (this.props.sidecarIsVisible ? ' sidecar-visible' : '')} id="main-repl">
-        <div
-          className="repl-inner zoomable kui--terminal-split-container"
-          ref={c => (this._scrollRegion = c)}
-          data-split-count={this.state.splits.length}
-        >
+        <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={this.state.splits.length}>
           {this.state.splits.map(scrollback => {
             const tab = this.tabFor(scrollback)
             return (
@@ -507,7 +497,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     uuid={scrollback.uuid}
                     tab={tab}
                     noActiveInput={this.props.noActiveInput}
-                    onOutputRender={this.onOutputRender.bind(this)}
+                    onOutputRender={this.onOutputRender.bind(this, scrollback)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     willLoseFocus={() => this.doFocus(scrollback)}
                     ref={c => {
