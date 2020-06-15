@@ -1,4 +1,5 @@
 @import "ansi_up";
+@import "master-font-size";
 
 * {
   box-sizing: border-box;
@@ -18,7 +19,6 @@ body[kui-theme-style],
   overflow-x: hidden;
 }
 body[kui-theme-style] {
-  font-size: 1em;
   font-weight: 400;
   margin: 0;
   overflow: hidden;
@@ -1104,8 +1104,8 @@ body {
   --color-secondary-button-background: var(--color-base04);
   --color-secondary-button-border: none;
   --color-secondary-button-border-hover: none;
-  --color-primary-button-background-hover: var(--color-primary-button);
-  --color-secondary-button-background-hover: var(--color-secondary-button);
+  --color-primary-button-background-hover: var(--color-primary-button-background);
+  --color-secondary-button-background-hover: var(--color-secondary-button-background);
 
   --color-field-01: var(--color-base01);
 

@@ -48,8 +48,10 @@
     --color-name-sidecar: var(--color-name);
 
     --color-screenshot-background: #3d3d3d; /* $ui-01 */
-    --color-screenshot-primary-button-background: #0062ff; /* $interactive-01 */
-    --color-screenshot-secondary-button-background: #6f6f6f; /* $interactive-02 */
+    --color-screenshot-primary-button-background: #0f62fe; /* $ibm-color__blue-60 */
+    --color-screenshot-primary-button-background-hover: #0043ce; /* $ibm-color__blue-70 */
+    --color-screenshot-secondary-button-background: #6f6f6f; /* $ibm-color__gray-60 */
+    --color-screenshot-secondary-button-background-hover: #525252; /* $ibm-color__gray-50 */
 
     --color-table-border1: rgba(255, 255, 255, 0.35);
     --color-table-border2: rgba(255, 255, 255, 0.5);
