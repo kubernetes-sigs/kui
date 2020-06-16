@@ -67,6 +67,9 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 
   /** prefix breadcrumbs? */
   prefixBreadcrumbs?: BreadcrumbView[]
+
+  /** table finished updates */
+  onUpdate?: () => void
 }
 
 /** state of PaginatedTable component */
