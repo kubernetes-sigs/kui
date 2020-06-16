@@ -91,6 +91,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
 
   private notifKey = 0
 
+  // for the table displaying deployment information
+  private basicStatsHeader = []
+  private basicStatsRows = []
+
   // For Displaying Advanced Statistics Section
   private advancedStatisticsObject = {}
   private advancedStatisticsNames = {}
@@ -148,20 +152,41 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   }
 
   // Fill pie chart with version probabilities
-  private getWinProbs(apiResult) {
+  private getWinProbAndBasicStats(apiResult) {
     const dataLabels = []
     this.winProbData = []
-
+    this.basicStatsHeader = [
+      { header: 'Deployment', key: 'version' },
+      { header: 'Type', key: 'type' },
+      { header: 'Request Count', key: 'count' },
+      { header: 'Roll Back Recommended', key: 'rollback' }
+    ]
     const baseRlts = apiResult.baseline_assessment
+    this.basicStatsRows.push({
+      id: baseRlts.id,
+      version: baseRlts.id,
+      type: 'Baseline',
+      count: baseRlts.request_count,
+      rollback: 'Does not apply'
+    })
     this.winProbData.push(baseRlts.win_probability)
     dataLabels.push(baseRlts.id)
 
     const candRlts = apiResult.candidate_assessments
     for (let i = 0; i < candRlts.length; i++) {
       this.winProbData.push(candRlts[i].win_probability)
+      this.basicStatsRows.push({
+        id: candRlts[i].id,
+        version: candRlts[i].id,
+        type: 'Candidate',
+        count: candRlts[i].request_count,
+        rollback: candRlts[i].rollback.toString()
+      })
       dataLabels.push(candRlts[i].id)
     }
     this.winProbLabels = { labels: dataLabels }
+    console.log(this.basicStatsHeader)
+    console.log(this.basicStatsRows)
   }
 
   // Get the list of algorithms available
@@ -432,7 +457,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         console.log(result)
         const jsonrlts = getAnalyticsResponse()
         this.getWinAnalysis(jsonrlts)
-        this.getWinProbs(jsonrlts)
+        this.getWinProbAndBasicStats(jsonrlts)
         this.getAlgo(jsonrlts)
         const traffic = this.getTrafficRecs(this.state.selectedAlgo, jsonrlts)
         this.setState({
@@ -584,6 +609,23 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
             </FormGroup>
             <FormGroup legendText="Win Probabilities" className="formGroupProps">
               <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="350" />
+            </FormGroup>
+            <FormGroup legendText="">
+              <h4 className="titletexts"> High level Review </h4>
+              <DataTable
+                headers={this.basicStatsHeader}
+                rows={this.basicStatsRows}
+                render={({ rows, headers, getHeaderProps }) =>
+                  renderTable({
+                    rows,
+                    headers,
+                    getHeaderProps,
+                    title: '',
+                    id: 'basic',
+                    params: {}
+                  })
+                }
+              />
             </FormGroup>
             <FormGroup legendText="">
               <h4 className="titletexts"> Traffic Assessments </h4>
