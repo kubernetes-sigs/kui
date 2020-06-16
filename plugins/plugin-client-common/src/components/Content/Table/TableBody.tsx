@@ -40,7 +40,7 @@ export default function renderBody(
     <TableBody>
       {renderOpts.rows.map((row, ridx) => {
         const kuiRow = kuiBody[offset + ridx]
-        const updated = justUpdated[kuiRow.rowKey]
+        const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
 
         return (
           <TableRow
