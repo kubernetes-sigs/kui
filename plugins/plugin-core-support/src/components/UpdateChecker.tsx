@@ -135,7 +135,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
   /** Text for update available notification */
   private text() {
-    return this.isUpdateAvailable() ? strings('versionX available', this.state.latestVersion) : ''
+    return this.isUpdateAvailable() ? strings('Update available', this.state.latestVersion) : ''
   }
 
   /** Icon decoration for update available notification */
@@ -169,7 +169,10 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
         text={this.text()}
         viewLevel={this.viewLevel()}
         id="kui--plugin-core-support--update-checker"
-        title="Click to see the changelog and download the new release"
+        title={strings(
+          'Version X is available. Click to see the changelog and download the new release.',
+          this.state.latestVersion
+        )}
         iconOnclick={() => this.dulyNoted()}
         textOnclick={() => this.dulyNoted()}
       >
