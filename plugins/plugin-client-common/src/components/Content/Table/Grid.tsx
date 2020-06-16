@@ -27,6 +27,7 @@ export type Props<T extends KuiTable = KuiTable> = {
   repl: REPL
   response: T
   visibleRows: NamedDataTableRow[]
+  justUpdated: Record<string, boolean> // rowKey index
 }
 
 export const findGridableColumn = (response: KuiTable) => {
@@ -59,6 +60,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
               <span
                 title={title}
                 data-tag="badge-circle"
+                data-just-updated={this.props.justUpdated[kuiRow.rowKey || kuiRow.name]}
                 className={css}
                 onClick={onClickForCell(
                   kuiRow,

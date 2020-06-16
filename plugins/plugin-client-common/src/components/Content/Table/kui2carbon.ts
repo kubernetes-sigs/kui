@@ -61,7 +61,7 @@ export function kuiRow2carbonRow(headers: DataTableHeader[], justUpdated = false
   return (row: KuiRow, ridx: number): NamedDataTableRow => {
     const isSelected = row.rowCSS ? row.rowCSS.includes('selected-row') : false
 
-    const rowData = { id: ridx.toString(), rowKey: row.rowKey, isSelected, NAME: '', justUpdated }
+    const rowData = { id: ridx.toString(), rowKey: row.rowKey || row.name, isSelected, NAME: '', justUpdated }
     rowData[headers[0].key] = row.name
 
     if (!row.key) {

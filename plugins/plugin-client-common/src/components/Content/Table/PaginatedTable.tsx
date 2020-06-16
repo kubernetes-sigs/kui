@@ -165,10 +165,23 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return (
       <div className="kui--data-table-wrapper kui--data-table-as-grid kui--screenshotable">
         {this.topToolbar()}
-        <Grid tab={this.props.tab} repl={this.props.repl} response={this.props.response} visibleRows={visibleRows} />
+        <Grid
+          tab={this.props.tab}
+          repl={this.props.repl}
+          response={this.props.response}
+          visibleRows={visibleRows}
+          justUpdated={this.justUpdatedMap()}
+        />
         {this.bottomToolbar()}
       </div>
     )
+  }
+
+  private justUpdatedMap() {
+    return this.state.rows.reduce((M, _) => {
+      if (_.justUpdated) M[_.rowKey] = true
+      return M
+    }, {} as Record<string, boolean>)
   }
 
   public render() {
@@ -207,17 +220,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(
-                  response.body,
-                  this.state.rows.reduce((M, _) => {
-                    if (_.justUpdated) M[_.rowKey] = true
-                    return M
-                  }, {} as Record<string, boolean>),
-                  renderOpts,
-                  tab,
-                  repl,
-                  offset
-                )}
+                {renderBody(response.body, this.justUpdatedMap(), renderOpts, tab, repl, offset)}
               </Table>
             </TableContainer>
           )}
