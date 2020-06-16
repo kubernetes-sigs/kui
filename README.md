@@ -20,12 +20,14 @@ We offer prebuilt images that provide Kubernetes enhancements:
 
 To run Kui as a [kubectl
 plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
-(for `kubectl` 1.12+), add the unpacked directory to your PATH;
-e.g. on MacOS:
+(for `kubectl` 1.12+). These distributions contain a `kubectl-kui`
+script that serves as a `kubectl` plugin for Kui. For Windows and
+Linux, add the unpacked directory to your PATH; for MacOS, the script
+is nested inside of the application:
 
 ```bash
 curl -L https://macos-tarball.kui-shell.org/ | tar jxf -
-export PATH=$PWD/Kui-darwin-x64:$PATH
+export PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH
 kubectl kui get pods
 ```
 
