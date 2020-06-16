@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert'
+
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -70,6 +72,16 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
     'error: the server doesn\'t have a resource type "shouldNotExist"'
   )
 
+  const resultHasEmptyWatchText = async (count: number, positive = true) => {
+    await this.app.client.waitForExist(Selectors.OK_N(count), CLI.waitTimeout)
+    const emptyWatchText = await this.app.client.getText(Selectors.OK_N(count))
+    if (positive) {
+      return assert.ok(emptyWatchText.includes('No resources'))
+    } else {
+      return assert.ok(!emptyWatchText.includes('No resources'))
+    }
+  }
+
   // here comes the tests should start watching successfully
   it(`should watch pods, starting from an non-existent namespace`, async () => {
     try {
@@ -81,6 +93,8 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
         await ReplExpect.ok(result)
         return result
       })
+
+      await resultHasEmptyWatchText(watchResult.count)
 
       console.error('watch from non-existent namespace 1')
       // create the namespace
@@ -104,6 +118,9 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
       await waitForGreen(this.app, watchStatus)
 
       console.error('watch from non-existent namespace 4')
+
+      await resultHasEmptyWatchText(watchResult.count, false)
+
       // delete the pod
       await CLI.command(`k delete pods nginx -n ${ns}`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))

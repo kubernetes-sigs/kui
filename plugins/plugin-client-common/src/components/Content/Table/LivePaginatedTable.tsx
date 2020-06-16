@@ -154,6 +154,8 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     } else {
       this._deferredUpdate = newRows
     }
+
+    this.props.onUpdate()
   }
 
   /** End of a deferred batch of updates */

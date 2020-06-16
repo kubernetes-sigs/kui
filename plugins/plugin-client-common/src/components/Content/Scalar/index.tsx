@@ -36,6 +36,7 @@ import { isError } from '../../Views/Terminal/Block/BlockModel'
 interface Props {
   tab: KuiTab
   response: ScalarResponse | Error
+  onUpdate?: () => void // content has updates
 }
 
 interface State {
@@ -83,7 +84,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
           </KuiContext.Consumer>
         )
       } else if (isTable(response)) {
-        return renderTable(tab, tab.REPL, response, undefined, true)
+        return renderTable(tab, tab.REPL, response, undefined, true, undefined, this.props.onUpdate)
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />
@@ -91,7 +92,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return (
           <div className="result-vertical flex-layout" style={{ flex: 1, alignItems: 'unset' }}>
             {response.map((part, idx) => (
-              <Scalar key={idx} tab={this.props.tab} response={part} />
+              <Scalar key={idx} tab={this.props.tab} response={part} onUpdate={this.props.onUpdate} />
             ))}
           </div>
         )
