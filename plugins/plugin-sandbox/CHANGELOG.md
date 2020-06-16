@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.4](https://github.com/IBM/kui/compare/v8.9.3...v8.9.4) (2020-06-16)
+
+**Note:** Version bump only for package @kui-shell/plugin-sandbox
+
 ## [8.9.3](https://github.com/IBM/kui/compare/v8.9.2...v8.9.3) (2020-06-14)
 
 **Note:** Version bump only for package @kui-shell/plugin-sandbox
