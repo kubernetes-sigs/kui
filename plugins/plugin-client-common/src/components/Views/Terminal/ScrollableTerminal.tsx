@@ -148,7 +148,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private allocateUUIDForScrollback() {
-    if (this.props.config.splitTerminals) {
+    if (this.props.config.splitTerminals && !isPopup()) {
       return `${this.props.uuid}_${uuid()}`
     } else {
       return this.props.uuid
@@ -391,7 +391,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       eventChannelUnsafe.off(`/terminal/clear/${state.uuid}`, clear)
     })
 
-    if (this.props.config.splitTerminals) {
+    if (this.props.config.splitTerminals && !isPopup()) {
       const split = this.onSplit.bind(this)
       onSplit(state.uuid, split)
       state.cleaners.push(() => offSplit(state.uuid, split))
