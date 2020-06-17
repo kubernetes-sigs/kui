@@ -156,6 +156,8 @@ const show = (expected: string, selector: string) => async (app: Application) =>
 
 export const name = (expectedName: string) => show(expectedName, Selectors.SIDECAR_TITLE)
 
+export const heroName = (expectedName: string) => show(expectedName, Selectors.SIDECAR_HERO_TITLE)
+
 export const namehash = (expectedNameHash: string) => show(expectedNameHash, Selectors.SIDECAR_ACTIVATION_TITLE)
 
 export const namespace = (expectedNamespace: string) => show(expectedNamespace, Selectors.SIDECAR_PACKAGE_NAME_TITLE)
@@ -241,7 +243,7 @@ export const yaml = (content: object) => async (app: Application) => {
 
 export async function popupTitle(app: Application, expectedTitle: string) {
   return app.client.waitUntil(async () => {
-    const actualTitle = await app.client.getText(Selectors.SIDECAR_POPUP_TITLE)
+    const actualTitle = await app.client.getText(Selectors.SIDECAR_POPUP_HERO_TITLE)
     return actualTitle === expectedTitle
   }, waitTimeout)
 }

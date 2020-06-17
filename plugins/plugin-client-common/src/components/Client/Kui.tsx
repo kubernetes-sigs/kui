@@ -101,7 +101,7 @@ export class Kui extends React.PureComponent<Props, State> {
     }
 
     try {
-      this.state = Object.assign({}, this.defaultSessionBehavior(), props, {
+      this.state = Object.assign({}, this.defaultSessionBehavior(), this.defaultFeatureFlag(), props, {
         isBootstrapped: !!props.noBootstrap
       })
       debug('initial state', this.state)
@@ -110,6 +110,12 @@ export class Kui extends React.PureComponent<Props, State> {
       this.state = {
         isBootstrapped: !!props.noBootstrap
       }
+    }
+  }
+
+  private defaultFeatureFlag() {
+    return {
+      sidecarName: 'breadcrumb'
     }
   }
 
@@ -161,9 +167,11 @@ export class Kui extends React.PureComponent<Props, State> {
 
     if (this.props.isPopup && this.props.commandLine) {
       return (
-        <React.Suspense fallback={<div />}>
-          <Popup commandLine={this.props.commandLine}>{this.props.children}</Popup>
-        </React.Suspense>
+        <KuiContext.Provider value={this.state}>
+          <React.Suspense fallback={<div />}>
+            <Popup commandLine={this.props.commandLine}>{this.props.children}</Popup>
+          </React.Suspense>
+        </KuiContext.Provider>
       )
     } else {
       const bottom = !!this.props.bottomInput && <InputStripe>{this.props.bottomInput}</InputStripe>

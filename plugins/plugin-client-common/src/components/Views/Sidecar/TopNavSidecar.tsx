@@ -38,6 +38,7 @@ import Badge from './Badge'
 import ToolbarContainer from './ToolbarContainer'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
 import { BaseSidecar, Props, SidecarHistoryEntry, cwd } from './BaseSidecar'
+import KuiContext from '../../Client/context'
 
 import '../../../../web/css/static/ToolbarButton.scss'
 
@@ -130,6 +131,8 @@ export function getStateFromMMR(
  *
  */
 export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, HistoryEntry> {
+  public static contextType = KuiContext
+
   public constructor(props: Props) {
     super(props)
 
@@ -178,16 +181,29 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     return { 'flex-direction': 'column' }
   }
 
-  private namePart() {
+  /** return the name from the response */
+  private name(): string {
     return (
-      <div className="header-left-bits">
-        <div className="sidecar-header-text">
-          <div className="sidecar-header-name" data-base-class="sidecar-header-name">
-            <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content"></div>
+      this.current.response &&
+      (this.current.response.prettyName ||
+        (this.current.response.metadata ? this.current.response.metadata.name : undefined))
+    )
+  }
+
+  private namePart() {
+    if (this.context.sidecarName === 'heroText') {
+      return (
+        <div className="header-left-bits">
+          <div className="sidecar-header-text">
+            <div className="sidecar-header-name" data-base-class="sidecar-header-name">
+              <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
+                {this.name()}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    )
+      )
+    }
   }
 
   /** Tell the world that we have changed the focused mode */
@@ -326,18 +342,17 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     return { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' }
   }
 
+  /** show name as breadcrumb when not showing context as hero text in sidecar header  */
   private nameBreadcrumb(): BreadcrumbView {
-    const name =
-      this.current.response &&
-      (this.current.response.prettyName ||
-        (this.current.response.metadata ? this.current.response.metadata.name : undefined))
-    const { onclick } = this.current.response
+    if (this.context.sidecarName === 'breadcrumb') {
+      const { onclick } = this.current.response
 
-    return {
-      label: name,
-      command: onclick && onclick.name,
-      isCurrentPage: true,
-      className: 'kui--sidecar-entity-name'
+      return {
+        label: this.name(),
+        command: onclick && onclick.name,
+        isCurrentPage: true,
+        className: 'kui--sidecar-entity-name'
+      }
     }
   }
 

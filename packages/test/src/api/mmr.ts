@@ -61,9 +61,10 @@ export class TestMMR {
     nameHash?: string
     prettyName?: string
     onclick?: {
-      name: ClickExpect
+      name?: ClickExpect
       nameHash?: ClickExpect
     }
+    heroName?: boolean
   }) {
     const { command, testName, metadata } = this.param
     const testClickResult = this.testClickResult
@@ -73,7 +74,7 @@ export class TestMMR {
       before(Common.before(this))
       after(Common.after(this))
 
-      const { nameHash, prettyName, onclick } = opt
+      const { nameHash, prettyName, onclick, heroName } = opt
 
       let cmdIdx = 0 // keep track of the command execution number
 
@@ -86,11 +87,11 @@ export class TestMMR {
           })
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(SidecarExpect.name(showName))
+          .then(heroName ? SidecarExpect.heroName(showName) : SidecarExpect.name(showName))
           .then(app => (nameHash ? SidecarExpect.namehash(nameHash) : app))
           .catch(Common.oops(this, true)))
 
-      if (onclick.name) {
+      if (onclick && onclick.name) {
         it('should click the name part of sidecar and expect the command shows in repl', async () => {
           try {
             await this.app.client.click(Selectors.SIDECAR_TITLE)
@@ -101,7 +102,7 @@ export class TestMMR {
         })
       }
 
-      if (onclick.nameHash) {
+      if (onclick && onclick.nameHash) {
         it('should click the namehash part of sidecar and expect the command shows in repl', async () => {
           try {
             await this.app.client.click(Selectors.SIDECAR_ACTIVATION_TITLE)
