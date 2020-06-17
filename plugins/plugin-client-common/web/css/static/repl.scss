@@ -37,15 +37,6 @@
     filter: grayscale(20%);
   }
 
-  .repl-block.error {
-    .repl-prompt,
-    .repl-prompt-right-elements,
-    .kui--repl-block-timestamp {
-      color: var(--color-error);
-      font-weight: 700;
-    }
-  }
-
   .repl-prompt-righty {
     font-weight: 700;
     text-shadow: 0 0 1px var(--color-text-02);
@@ -76,6 +67,10 @@
     margin-right: 0.5em;
     font-size: 1em;
     font-weight: 700;
+  }
+  .kui--repl-block-error-icon {
+    fill: var(--color-error);
+    margin-right: 0.5em;
   }
 }
 
