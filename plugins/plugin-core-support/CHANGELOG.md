@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.5](https://github.com/IBM/kui/compare/v8.9.4...v8.9.5) (2020-06-17)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** UpdateChecker tooltip should show available version ([9ce092f](https://github.com/IBM/kui/commit/9ce092f)), closes [#4905](https://github.com/IBM/kui/issues/4905)
+
 ## [8.9.4](https://github.com/IBM/kui/compare/v8.9.3...v8.9.4) (2020-06-16)
 
 ### Features

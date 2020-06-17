@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.5](https://github.com/IBM/kui/compare/v8.9.4...v8.9.5) (2020-06-17)
+
+### Bug Fixes
+
+- erratic scroll region behavior ([3c5da98](https://github.com/IBM/kui/commit/3c5da98)), closes [#4898](https://github.com/IBM/kui/issues/4898)
+- **plugins/plugin-client-common:** status cells of live tables do not always blink ([bb6496e](https://github.com/IBM/kui/commit/bb6496e)), closes [#4903](https://github.com/IBM/kui/issues/4903)
+
 ## [8.9.4](https://github.com/IBM/kui/compare/v8.9.3...v8.9.4) (2020-06-16)
 
 ### Features
