@@ -148,7 +148,7 @@ testReact.toolbarText({
   text: 'hello this is iter',
   exact: false
 })
-testDefault.name({ onclick: { name: { command: 'test string', expect: 'hello world' } } })
+testDefault.name({ heroName: true })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault2.modes(expectModes2, expectModes2[0])
 testDefault3.modes(expectModes3, expectModes3[0])

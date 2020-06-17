@@ -21,6 +21,11 @@
     margin: 0.75em 0 0;
   }
 
+  .sidecar-header-text {
+    margin: 0 0 0.75em 0;
+    font-size: 22px;
+  }
+
   .kui--sidecar-overflow {
     font-size: 1em;
   }
