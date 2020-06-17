@@ -120,7 +120,7 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
       return CLI.command(firstCmd, this.app)
         .then(ReplExpect.justOK)
         .then(SidecarExpect.open)
-        .then(SidecarExpect.showingTopNav('this is the name part'))
+        .then(SidecarExpect.heroName('this is the name part'))
         .then(
           () =>
             !startOfBuffer
@@ -143,7 +143,7 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
       return CLI.command(secondCmd, this.app)
         .then(ReplExpect.justOK)
         .then(SidecarExpect.open)
-        .then(SidecarExpect.showingTopNav('this is the name part'))
+        .then(SidecarExpect.heroName('this is the name part'))
         .then(SidecarExpect.badge('badge1'))
         .then(SidecarExpect.button({ mode: 'button1', label: 'button1 label' }))
         .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON)) // back button IS visible
