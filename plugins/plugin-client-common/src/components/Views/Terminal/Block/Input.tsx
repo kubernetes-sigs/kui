@@ -24,10 +24,21 @@ import onKeyPress from './OnKeyPress'
 import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
-import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
+import {
+  BlockModel,
+  isActive,
+  isProcessing,
+  isFinished,
+  hasCommand,
+  isEmpty,
+  isOops,
+  hasUUID,
+  hasValue
+} from './BlockModel'
 import { BlockViewTraits } from './'
 
 import DropDown, { DropDownAction } from '../../../spi/DropDown'
+import Icons from '../../../spi/Icons'
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('plugin-client-common', 'screenshot')
@@ -375,6 +386,13 @@ export default class Input extends InputProvider {
     }
   }
 
+  /** error icon for error blocks */
+  private errorIcon() {
+    if (isOops(this.props.model)) {
+      return <Icons className="kui--repl-block-error-icon" icon="Error" data-mode="error" />
+    }
+  }
+
   private removeAction(): DropDownAction[] {
     return !this.props.willRemove
       ? []
@@ -435,6 +453,7 @@ export default class Input extends InputProvider {
     return (
       <span className="repl-prompt-right-elements">
         {this.spinner()}
+        {this.errorIcon()}
         {this.timestamp()}
         {this.dropdown()}
       </span>
