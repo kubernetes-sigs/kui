@@ -59,6 +59,16 @@ interface State {
   dulyNoted: string
 }
 
+/**
+ * GitHub gives back "v8.10.0" and the Kui version command gives back "8.10.0".
+ *
+ * @see https://github.com/IBM/kui/issues/4918
+ *
+ */
+function stripOffPrefixV(githubVersionString: string): string {
+  return githubVersionString.replace(/^v/, '')
+}
+
 export default class UpdateChecker extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
@@ -86,6 +96,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
       .then(res => {
         return res.body.children.filter(_ => _.name === 'entry')[0].children.find(_ => _.name === 'title').value
       })
+      .then(stripOffPrefixV) // see https://github.com/IBM/kui/issues/4918
       .then(latestVersion =>
         this.setState(curState => ({
           latestVersion,
