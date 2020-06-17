@@ -21,7 +21,15 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export CLIENT_HOME=$(cd "$SCRIPTDIR"/../../ && pwd)
-MODULE_HOME=$(cd "$SCRIPTDIR"/../@kui-shell && pwd)
+
+if [ -d "$SCRIPTDIR"/../@kui-shell ]; then
+    # normally, this is in node_modules/.bin
+    MODULE_HOME=$(cd "$SCRIPTDIR"/../@kui-shell && pwd)
+else
+    # except e.g. on windows where symlinks don't work; then this is
+    # in node_modules/@kui-shell/webpack/bin
+    MODULE_HOME=$(cd "$SCRIPTDIR"/../.. && pwd)
+fi
 BUILDER_HOME="$MODULE_HOME"/builder
 
 CONFIG="$MODULE_HOME"/webpack/webpack.config.js

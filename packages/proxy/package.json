@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "./build.sh",
-    "postinstall": "if [ -d app ]; then cd app && npm ci; fi",
+    "postinstall": "bash -c \"if [ -d app ]; then cd app && npm ci; fi\"",
     "start": "./app/bin/run-proxy.sh"
   },
   "kui": {
