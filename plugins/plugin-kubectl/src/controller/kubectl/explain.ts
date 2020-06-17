@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Arguments, Registrar, i18n } from '@kui-shell/core'
+import { Arguments, Breadcrumb, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import { KubeOptions } from './options'
@@ -37,10 +37,13 @@ function formatHref(href: string) {
 function formatDocumentation(description: string) {
   return description
     .replace(/\n/g, ' ')
-    .replace(/(More info:\s+)?(https:\/\/.*)/, (_, _2, href) => `\n\n[More info](${formatHref(href)})`)
+    .replace(
+      /(More info:\s+)?(https:\/\/.*)/,
+      (_, _2, href) => `\n\n[Consult official Kubernetes documentation](${formatHref(href)})`
+    )
 }
 
-function formatField(_: string[]) {
+function formatField(cmdline: string, _: string[]) {
   return {
     mode: _[1],
     contentType: 'text/markdown',
@@ -48,13 +51,16 @@ function formatField(_: string[]) {
 ${_[2]}
 ### Documentation
 ${formatDocumentation(_[4])}
+
+[Explain this field](#kuiexec?command=${encodeURIComponent(cmdline + '.' + _[1])})
 `
   }
 }
 
 /** alternate patterns to match against */
-const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
-const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
+const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)(\n\nRESOURCE:\s+(\S+).*)?\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
+const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)(\n\nRESOURCE:\s+(\S+).*)?\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
+const kvfd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nFIELD:\s+(\S+)\s+(.*)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
 
 export const doExplain = (command = 'kubectl') =>
   async function(args: Arguments<KubeOptions>) {
@@ -70,10 +76,19 @@ export const doExplain = (command = 'kubectl') =>
       // look first for a full Kind Version Description Fields;
       // otherwise, look for just Kind Version Description
       const match = response.match(kvdf) || response.match(kvd)
+      const match2 = !match && response.match(kvfd)
 
-      if (match) {
+      if (match || match2) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [_, kind, version, isDeprecated, description, fields] = match
+        const kind = match ? match[1] : match2[1]
+        const version = match ? match[2] : match2[2]
+        const resource = match && match[4]
+        const field = match2 && match2[3]
+        const fieldType = match2 && match2[4]
+        const isDeprecated = match ? match[5] : match2[5]
+        const description = match ? match[6] : match2[6]
+        const fields = match && match[7]
+        // const [_, kind, version, _2, resource, isDeprecated, description, fields] = match
 
         const fieldSections = !fields
           ? []
@@ -86,26 +101,45 @@ export const doExplain = (command = 'kubectl') =>
         const requiredFields = fieldSections.filter(_ => _[3])
         const notRequiredFields = fieldSections.filter(_ => !_[3])
 
+        const topBreadcrumb: Breadcrumb = { label: 'API Resources', command: 'kubectl api-resources' }
+
         const apiGroup = version ? version.match(/^([^/]+)\//) : undefined
-        const apiGroupBreadcrumb = !apiGroup
+        const apiGroupBreadcrumb: Breadcrumb[] = !apiGroup
           ? []
           : [{ label: apiGroup[1], command: `kubectl api-resources --api-group ${apiGroup[1]}` }]
+
+        const resourceBreadcrumb: Breadcrumb[] = !resource ? [] : [{ label: resource }]
+
+        const fieldBreadcrumb: Breadcrumb[] = !match2 ? [] : [{ label: field }]
+
+        const format = formatField.bind(undefined, args.command)
 
         return {
           apiVersion: 'kui-shell/v1',
           kind: 'NavResponse',
-          breadcrumbs: [{ label: 'API Resources', command: 'kubectl api-resources' }]
+          breadcrumbs: [topBreadcrumb]
             .concat(apiGroupBreadcrumb)
-            .concat([{ label: kind, command: undefined }]),
+            .concat([{ label: kind, command: resource || field ? `kubectl explain ${kind}` : '' }])
+            .concat(resourceBreadcrumb)
+            .concat(fieldBreadcrumb),
           menus: [
             {
-              label: kind,
+              label: resource || kind,
               items: [
                 {
                   mode: 'Overview',
                   contentType: 'text/markdown',
                   content: `### Description
 #### ${description.replace(/\n/g, ' ')}
+${
+  match2
+    ? `### Type\n${fieldType
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\[/g, '&#91;')
+        .replace(/\]/g, '&#93;')}`
+    : ''
+}
 ### Version
 ${version}
 ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` : ''}
@@ -115,11 +149,9 @@ ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` :
             }
           ]
             .concat(
-              requiredFields.length === 0 ? [] : [{ label: 'Required Fields', items: requiredFields.map(formatField) }]
+              requiredFields.length === 0 ? [] : [{ label: 'Required Fields', items: requiredFields.map(format) }]
             )
-            .concat(
-              notRequiredFields.length === 0 ? [] : [{ label: 'Fields', items: notRequiredFields.map(formatField) }]
-            )
+            .concat(notRequiredFields.length === 0 ? [] : [{ label: 'Fields', items: notRequiredFields.map(format) }])
         }
       }
     } catch (err) {

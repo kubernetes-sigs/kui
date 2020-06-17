@@ -40,4 +40,14 @@ describe('kubectl explain', function(this: Common.ISuite) {
     ['API Resources', 'Secret'],
     ['Overview', 'apiVersion', 'data', 'kind', 'metadata', 'stringData', 'type']
   )
+  help(
+    'kubectl explain deploy.metadata',
+    ['API Resources', 'extensions', 'Deployment', 'metadata'],
+    ['Overview', 'annotations', 'name']
+  )
+  help(
+    'kubectl explain deploy.metadata.annotations',
+    ['API Resources', 'extensions', 'Deployment', 'annotations'],
+    ['Overview']
+  )
 })
