@@ -21,7 +21,7 @@
     "kui-prescan": "./bin/prescan.sh"
   },
   "scripts": {
-    "preinstall": "if [ ! -d build ]; then mkdir build; fi && touch ./build/kui-dist-init.js",
+    "preinstall": "bash -c \"if [ ! -d build ]; then mkdir build; fi && touch ./build/kui-dist-init.js\"",
     "prepack": "chmod +x ./build/kui-dist-init.js"
   },
   "dependencies": {
