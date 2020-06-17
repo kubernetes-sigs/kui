@@ -60,7 +60,7 @@ type Props = {
 } & BlockViewTraits
 
 interface State {
-  assertHasContent: boolean
+  assertHasContent?: boolean
   isResultRendered: boolean
 
   streamingOutput: Streamable[]
@@ -79,7 +79,6 @@ export default class Output extends React.PureComponent<Props, State> {
     }
 
     this.state = {
-      assertHasContent: false,
       isResultRendered: false,
       streamingOutput: [],
       streamingConsumer
