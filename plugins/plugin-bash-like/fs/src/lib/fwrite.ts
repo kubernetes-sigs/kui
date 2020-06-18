@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import { writeFile } from 'fs'
+import { Arguments, CodedError, RawResponse, Registrar } from '@kui-shell/core'
 
-import { Arguments, Registrar, CodedError } from '@kui-shell/core'
+async function _fwrite(fullpath: string, data: string | Buffer) {
+  const { writeFile } = await import('fs')
 
-/**
- * Kui command for fs.write
- *
- */
-const fwrite = ({ argvNoOptions, execOptions }: Arguments) => {
   return new Promise<boolean>((resolve, reject) => {
-    const fullpath = argvNoOptions[1]
-    const data = execOptions.data
-
     writeFile(fullpath, data, err => {
       if (err) {
         if (err.code === 'ENOENT') {
@@ -45,11 +38,37 @@ const fwrite = ({ argvNoOptions, execOptions }: Arguments) => {
 }
 
 /**
+ * Kui command for fs.write
+ *
+ */
+const fwrite = async ({ argvNoOptions, execOptions }: Arguments) => {
+  const fullpath = argvNoOptions[1]
+  const data = execOptions.data as string | Buffer
+
+  return _fwrite(fullpath, data)
+}
+
+async function fwriteTemp(args: Arguments): Promise<RawResponse<string>> {
+  const { mkTemp } = await import('./mkTemp')
+  const data = args.execOptions.data as string | Buffer
+
+  const { content: tmp } = await mkTemp()
+  await _fwrite(tmp, data)
+
+  return { mode: 'raw', content: tmp }
+}
+
+/**
  * Register command handlers
  *
  */
 export default (registrar: Registrar) => {
   registrar.listen('/fwrite', fwrite, {
+    hidden: true,
+    requiresLocal: true
+  })
+
+  registrar.listen('/fwriteTemp', fwriteTemp, {
     hidden: true,
     requiresLocal: true
   })
