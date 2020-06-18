@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Tomorrow Night"
  * author: "Chris Kempson (http://chriskempson.com)"
  */
-body[kui-theme="Dark"] {
+body[kui-theme='Dark'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #13171a; /* Default Background */
   --color-base01: #202529; /* Lighter Background (Used for status bars) */
   --color-base02: #272c30; /* Selection Background */
@@ -47,6 +50,6 @@ body[kui-theme="Dark"] {
   --active-tab-color: var(--color-base05);
 }
 
-body[kui-theme="Dark"] .header-cell {
+body[kui-theme='Dark'] .header-cell {
   color: #d8dce3;
 }
