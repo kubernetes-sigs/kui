@@ -20,6 +20,7 @@ import edit from './lib/edit'
 import open from './lib/open'
 import fstat from './lib/fstat'
 import fwrite from './lib/fwrite'
+import mkTemp from './lib/mkTemp'
 import { plugin as tabCompletion } from './lib/tab-completion'
 
 import { Registrar } from '@kui-shell/core'
@@ -34,6 +35,7 @@ export default async (registrar: Registrar) => {
   open(registrar)
   fstat(registrar)
   fwrite(registrar)
+  mkTemp(registrar)
   glob(registrar)
   tabCompletion(registrar)
 }
