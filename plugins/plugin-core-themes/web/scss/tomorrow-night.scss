@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Tomorrow Night"
  * author: "Chris Kempson (http://chriskempson.com)"
  */
-body[kui-theme="tomorrow-night"] {
+body[kui-theme='tomorrow-night'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #1d1f21; /* Default Background */
   --color-base01: #282a2e; /* Lighter Background (Used for status bars) */
   --color-base02: #373b41; /* Selection Background */

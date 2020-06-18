@@ -2,31 +2,31 @@
   "themes": [
     {
       "name": "Light",
-      "css": "light.css",
+      "css": "light.scss",
       "description": "Default Light",
       "style": "light"
     },
     {
       "name": "Dark",
-      "css": "dark.css",
+      "css": "dark.scss",
       "description": "Default Dark",
       "style": "dark"
     },
-    { "name": "Atelier", "css": "atelier-seaside.css", "style": "dark" },
-    { "name": "Dracula", "css": "dracula.css", "style": "dark" },
+    { "name": "Atelier", "css": "atelier-seaside.scss", "style": "dark" },
+    { "name": "Dracula", "css": "dracula.scss", "style": "dark" },
     {
       "name": "Gruvbox",
-      "css": "gruvbox-dark-medium.css",
+      "css": "gruvbox-dark-medium.scss",
       "style": "dark"
     },
-    { "name": "Lucario", "css": "lucario.css", "style": "dark" },
-    { "name": "Monokai", "css": "monokai.css", "style": "dark" },
-    { "name": "Nord", "css": "nord.css", "style": "dark" },
-    { "name": "Paraiso", "css": "paraiso.css", "style": "dark" },
-    { "name": "Solarized", "css": "solarized-dark.css", "style": "dark" },
+    { "name": "Lucario", "css": "lucario.scss", "style": "dark" },
+    { "name": "Monokai", "css": "monokai.scss", "style": "dark" },
+    { "name": "Nord", "css": "nord.scss", "style": "dark" },
+    { "name": "Paraiso", "css": "paraiso.scss", "style": "dark" },
+    { "name": "Solarized", "css": "solarized-dark.scss", "style": "dark" },
     {
       "name": "tomorrow-night",
-      "css": "tomorrow-night.css",
+      "css": "tomorrow-night.scss",
       "description": "Tomorrow Night",
       "style": "dark"
     }

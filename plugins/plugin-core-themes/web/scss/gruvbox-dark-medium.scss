@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Gruvbox dark, medium"
  * author: "Dawid Kurek (dawikur@gmail.com), morhetz (https://github.com/morhetz/gruvbox)"
  */
-body[kui-theme="Gruvbox"] {
+body[kui-theme='Gruvbox'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #282828;
   --color-base01: #3c3836;
   --color-base02: #504945;

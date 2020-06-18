@@ -1,7 +1,10 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /* inverted sidecar */
-body[kui-theme="Light"] .kui--inverted-color-context {
+body[kui-theme='Light'] .kui--inverted-color-context {
+  @include kui-patternfly-alignment-light;
+
   --color-base00: #13171a; /* Default Background */
   --color-base01: #202529; /* Lighter Background (Used for status bars) */
   --color-base02: #272c30; /* Selection Background */
@@ -71,7 +74,7 @@ body[kui-theme="Light"] .kui--inverted-color-context {
 }
 
 /* color variables */
-body[kui-theme="Light"] {
+body[kui-theme='Light'] {
   --color-base00: #ffffff;
   --color-base01: #ffffff;
   --color-base02: #868d95;

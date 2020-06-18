@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Atelier Seaside"
  * author: "Bram de Haan (http://atelierbramdehaan.nl)"
  */
-body[kui-theme="Atelier"] {
+body[kui-theme='Atelier'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #131513;
   --color-base01: #242924;
   --color-base02: hsl(120, 8%, 30%); /* dialed L from 40% #5e6e5e */

@@ -1,4 +1,5 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Lucario"
@@ -6,7 +7,9 @@
  * author: "Rapha Amorim (https://github.com/raphamorim)
  * with tweaks by @starpit
  */
-body[kui-theme="Lucario"] {
+body[kui-theme='Lucario'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #19242f;
   --color-base01: hsl(209, 30%, 18%);
   --color-base02: #2b3e50;

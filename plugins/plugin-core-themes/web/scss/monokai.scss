@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Monokai"
  * author: "Wimer Hazenberg (http://www.monokai.nl)"
  */
-body[kui-theme="Monokai"] {
+body[kui-theme='Monokai'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #272822;
   --color-base01: #383830;
   --color-base02: #49483e;
