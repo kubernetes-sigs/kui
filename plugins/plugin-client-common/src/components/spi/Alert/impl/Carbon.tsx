@@ -19,6 +19,8 @@ import { i18n } from '@kui-shell/core'
 import { ToastNotification } from 'carbon-components-react'
 import { Props } from '..'
 
+import 'carbon-components/scss/components/notification/_toast-notification.scss'
+
 const strings = i18n('plugin-client-common', 'editor')
 
 export default class Alert extends React.PureComponent<Props> {
