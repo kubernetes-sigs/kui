@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { v4 as uuid } from 'uuid'
 import {
   Arguments,
   MultiModalResponse,
@@ -121,20 +120,19 @@ export function editSpec(
     save: {
       label: strings('Apply Changes'),
       onSave: async (data: string) => {
-        const tmp = `/tmp/kui-${uuid()}`
-        await args.REPL.rexec(`fwrite ${tmp}`, { data })
-
-        const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', applySubCommand, '-n', namespace, '-f', tmp].filter(
-          x => x
-        )
-        const applyArgs = Object.assign({}, args, {
-          command: argv.join(' '),
-          argv,
-          argvNoOptions: [cmd, 'apply', applySubCommand].filter(x => x),
-          parsedOptions: { n: namespace, f: tmp }
-        })
+        const tmp = (await args.REPL.rexec(`fwriteTemp`, { data })).content
 
         try {
+          const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', applySubCommand, '-n', namespace, '-f', tmp].filter(
+            x => x
+          )
+          const applyArgs = Object.assign({}, args, {
+            command: argv.join(' '),
+            argv,
+            argvNoOptions: [cmd, 'apply', applySubCommand].filter(x => x),
+            parsedOptions: { n: namespace, f: tmp }
+          })
+
           // execute the apply command, making sure to report any
           // validation or parse errors to the user
           await doExecWithStdout(applyArgs, undefined, cmd).catch(reportErrorToUser.bind(undefined, tmp, data))
@@ -144,7 +142,7 @@ export function editSpec(
           // `partOfApply` here is used to signify this execution is part of a chain of controller
           await args.REPL.pexec(args.command, { echo: false, data: { partOfApply: true } })
         } finally {
-          args.REPL.qexec(`rm -f ${tmp}`)
+          args.REPL.rexec(`rmTemp ${tmp}`)
         }
 
         return {
