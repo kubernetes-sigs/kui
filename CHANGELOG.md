@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** kubectl edit saves can result in unstyled notification ([f763d94](https://github.com/IBM/kui/commit/f763d94)), closes [#4930](https://github.com/IBM/kui/issues/4930)
+- avoid hard-coded use of /tmp in kubectl edit ([724b760](https://github.com/IBM/kui/commit/724b760)), closes [#4928](https://github.com/IBM/kui/issues/4928)
+- **packages/builder:** fixes for building kui on windows ([a276f9b](https://github.com/IBM/kui/commit/a276f9b)), closes [#4920](https://github.com/IBM/kui/issues/4920)
+- **plugins/plugin-client-common:** add error icon for error blocks ([b1bd048](https://github.com/IBM/kui/commit/b1bd048)), closes [#4907](https://github.com/IBM/kui/issues/4907)
+- **plugins/plugin-client-common:** regression: non-empty repl output has 'ok' at the end ([4e763c1](https://github.com/IBM/kui/commit/4e763c1)), closes [#4924](https://github.com/IBM/kui/issues/4924)
+- **plugins/plugin-core-support:** UpdateChecker always reports that an update is available ([f6eba47](https://github.com/IBM/kui/commit/f6eba47)), closes [#4918](https://github.com/IBM/kui/issues/4918)
+- **plugins/plugin-kubectl:** kubectl explain subfields ([e85c1c6](https://github.com/IBM/kui/commit/e85c1c6)), closes [#4921](https://github.com/IBM/kui/issues/4921)
+- **plugins/plugin-kubectl:** windows powershell fails to get default namespace ([647ba75](https://github.com/IBM/kui/commit/647ba75)), closes [#4912](https://github.com/IBM/kui/issues/4912)
+- page-content p should not use text-align: justify ([30c8851](https://github.com/IBM/kui/commit/30c8851)), closes [#4908](https://github.com/IBM/kui/issues/4908)
+
+### Features
+
+- **plugins/plugin-client-common:** support client option for hero names in sidecar ([6b930d9](https://github.com/IBM/kui/commit/6b930d9)), closes [#4909](https://github.com/IBM/kui/issues/4909)
+
 # [8.10.0](https://github.com/IBM/kui/compare/v4.5.0...v8.10.0) (2020-06-17)
 
 ### Bug Fixes

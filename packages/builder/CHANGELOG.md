@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
+
+### Bug Fixes
+
+- **packages/builder:** fixes for building kui on windows ([a276f9b](https://github.com/IBM/kui/commit/a276f9b)), closes [#4920](https://github.com/IBM/kui/issues/4920)
+
 # [8.10.0](https://github.com/IBM/kui/compare/v4.5.0...v8.10.0) (2020-06-17)
 
 ### Bug Fixes
