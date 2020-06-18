@@ -1,0 +1,188 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@mixin kui-patternfly-alignment-base {
+  --pf-global--palette--blue-50: var(--color-blue);
+  --pf-global--palette--blue-100: var(--color-blue);
+  --pf-global--palette--blue-200: var(--color-blue);
+  --pf-global--palette--blue-300: var(--color-blue);
+  --pf-global--palette--blue-400: var(--color-blue);
+  --pf-global--palette--blue-500: var(--color-blue);
+  --pf-global--palette--blue-600: var(--color-blue);
+  --pf-global--palette--blue-700: var(--color-blue);
+  --pf-global--palette--cyan-100: var(--color-cyan);
+  --pf-global--palette--cyan-200: var(--color-cyan);
+  --pf-global--palette--cyan-300: var(--color-cyan);
+  --pf-global--palette--cyan-400: var(--color-cyan);
+  --pf-global--palette--cyan-500: var(--color-cyan);
+  --pf-global--palette--cyan-600: var(--color-cyan);
+  --pf-global--palette--cyan-700: var(--color-cyan);
+  --pf-global--palette--gold-100: var(--color-yellow);
+  --pf-global--palette--gold-200: var(--color-yellow);
+  --pf-global--palette--gold-300: var(--color-yellow);
+  --pf-global--palette--gold-400: var(--color-yellow);
+  --pf-global--palette--gold-500: var(--color-yellow);
+  --pf-global--palette--gold-600: var(--color-yellow);
+  --pf-global--palette--gold-700: var(--color-yellow);
+  --pf-global--palette--green-100: var(--color-green);
+  --pf-global--palette--green-200: var(--color-green);
+  --pf-global--palette--green-300: var(--color-green);
+  --pf-global--palette--green-400: var(--color-green);
+  --pf-global--palette--green-500: var(--color-green);
+  --pf-global--palette--green-600: var(--color-green);
+  --pf-global--palette--green-700: var(--color-green);
+  --pf-global--palette--light-blue-100: var(--color-blue);
+  --pf-global--palette--light-blue-200: var(--color-blue);
+  --pf-global--palette--light-blue-300: var(--color-blue);
+  --pf-global--palette--light-blue-400: var(--color-blue);
+  --pf-global--palette--light-blue-500: var(--color-blue);
+  --pf-global--palette--light-blue-600: var(--color-blue);
+  --pf-global--palette--light-blue-700: var(--color-blue);
+  --pf-global--palette--light-green-100: var(--color-green);
+  --pf-global--palette--light-green-200: var(--color-green);
+  --pf-global--palette--light-green-300: var(--color-green);
+  --pf-global--palette--light-green-400: var(--color-green);
+  --pf-global--palette--light-green-500: var(--color-green);
+  --pf-global--palette--light-green-600: var(--color-green);
+  --pf-global--palette--light-green-700: var(--color-green);
+  --pf-global--palette--orange-100: var(--color-base09);
+  --pf-global--palette--orange-200: var(--color-base09);
+  --pf-global--palette--orange-300: var(--color-base09);
+  --pf-global--palette--orange-400: var(--color-base09);
+  --pf-global--palette--orange-500: var(--color-base09);
+  --pf-global--palette--orange-600: var(--color-base09);
+  --pf-global--palette--orange-700: var(--color-base09);
+  --pf-global--palette--purple-100: var(--color-base0F);
+  --pf-global--palette--purple-200: var(--color-base0F);
+  --pf-global--palette--purple-300: var(--color-base0F);
+  --pf-global--palette--purple-400: var(--color-base0F);
+  --pf-global--palette--purple-500: var(--color-base0F);
+  --pf-global--palette--purple-600: var(--color-base0F);
+  --pf-global--palette--purple-700: var(--color-base0F);
+  --pf-global--palette--red-100: var(--color-red);
+  --pf-global--palette--red-200: var(--color-red);
+  --pf-global--palette--red-300: var(--color-red);
+  --pf-global--palette--red-400: var(--color-red);
+  --pf-global--palette--red-500: var(--color-red);
+  --pf-global--palette--white: var(--color-white);
+  --pf-global--BackgroundColor--100: var(--color-ui-01);
+  --pf-global--BackgroundColor--150: var(--color-ui-02);
+  --pf-global--BackgroundColor--200: var(--color-ui-03);
+  --pf-global--BackgroundColor--300: var(--color-ui-04);
+  --pf-global--BackgroundColor--light-100: var(--color-ui-01);
+  --pf-global--BackgroundColor--light-200: var(--color-ui-02);
+  --pf-global--BackgroundColor--light-300: var(--color-ui-03);
+  --pf-global--BackgroundColor--dark-100: var(--color-ui-01);
+  --pf-global--BackgroundColor--dark-200: var(--color-ui-02);
+  --pf-global--BackgroundColor--dark-300: var(--color-ui-03);
+  --pf-global--BackgroundColor--dark-400: var(--color-ui-04);
+  --pf-global--BackgroundColor--dark-transparent-100: rgba(3, 3, 3, 0.62);
+  --pf-global--BackgroundColor--dark-transparent-200: rgba(3, 3, 3, 0.32);
+  --pf-global--Color--100: var(--color-ui-01);
+  --pf-global--Color--200: var(--color-ui-02);
+  --pf-global--Color--300: var(--color-ui-03);
+  --pf-global--Color--400: var(--color-ui-04);
+  --pf-global--Color--light-100: var(--color-ui-01);
+  --pf-global--Color--light-200: var(--color-ui-02);
+  --pf-global--Color--light-300: var(--color-ui-03);
+  --pf-global--Color--dark-100: var(--color-ui-01);
+  --pf-global--Color--dark-200: var(--color-ui-03);
+  --pf-global--active-color--100: var(--active-tab-color);
+  --pf-global--active-color--200: var(--active-tab-color);
+  --pf-global--active-color--300: var(--active-tab-color);
+  --pf-global--active-color--400: var(--active-tab-color);
+  --pf-global--disabled-color--100: var(--active-base03);
+  --pf-global--disabled-color--200: var(--active-base04);
+  --pf-global--disabled-color--300: var(--active-base05);
+  --pf-global--primary-color--100: var(--color-brand-01);
+  --pf-global--primary-color--200: var(--color-brand-03);
+  --pf-global--primary-color--light-100: var(--color-brand-01);
+  --pf-global--primary-color--dark-100: var(--color-brand-01);
+  --pf-global--secondary-color--100: var(--color-brand-02);
+  --pf-global--default-color--100: #73c5c5;
+  --pf-global--default-color--200: #009596;
+  --pf-global--default-color--300: #003737;
+  --pf-global--success-color--100: var(--color-ok);
+  --pf-global--success-color--200: var(--color-ok);
+  --pf-global--info-color--100: var(--color-processing);
+  --pf-global--info-color--200: var(--color-processing);
+  --pf-global--warning-color--100: var(--color-warning);
+  --pf-global--warning-color--200: var(--color-warning);
+  --pf-global--danger-color--100: var(--color-error);
+  --pf-global--danger-color--200: var(--color-error);
+  --pf-global--FontWeight--semi-bold: 500;
+  --pf-global--FontWeight--light: 300;
+  --pf-global--FontWeight--normal: 400;
+  --pf-global--FontWeight--semi-bold: 500;
+  --pf-global--FontWeight--bold: 600;
+  --pf-global--FontWeight--redhatfont--bold: 700;
+
+  --pf-global--link--Color: #06c;
+  --pf-global--link--Color--hover: #004080;
+  --pf-global--link--Color--light: #73bcf7;
+  --pf-global--link--Color--light--hover: #2b9af3;
+  --pf-global--link--Color--dark: #06c;
+  --pf-global--link--Color--dark--hover: #004080;
+
+  --pf-global--BorderColor--100: #d2d2d2;
+  --pf-global--BorderColor--200: #8a8d90;
+  --pf-global--BorderColor--300: #ededed;
+  --pf-global--BorderColor--dark-100: #d2d2d2;
+  --pf-global--BorderColor--light-100: #b8bbbe;
+
+  --pf-global--icon--Color--light: #737679;
+  --pf-global--icon--Color--dark: #151515;
+
+  --pf-global--BorderRadius--sm: 3px;
+  --pf-global--BorderRadius--lg: 30em;
+
+  --pf-global--BorderWidth--sm: 1px;
+  --pf-global--BorderWidth--md: 2px;
+  --pf-global--BorderWidth--lg: 3px;
+}
+
+@mixin kui-patternfly-alignment-light {
+  @include kui-patternfly-alignment-base;
+
+  --pf-global--palette--black-100: var(--color-base06);
+  --pf-global--palette--black-150: var(--color-base06);
+  --pf-global--palette--black-200: var(--color-base05);
+  --pf-global--palette--black-300: var(--color-base04);
+  --pf-global--palette--black-400: var(--color-base04);
+  --pf-global--palette--black-500: var(--color-base03);
+  --pf-global--palette--black-600: var(--color-base03);
+  --pf-global--palette--black-700: var(--color-base03);
+  --pf-global--palette--black-800: var(--color-base02);
+  --pf-global--palette--black-850: var(--color-base01);
+  --pf-global--palette--black-900: var(--color-base01);
+  --pf-global--palette--black-1000: var(--color-base00);
+}
+
+@mixin kui-patternfly-alignment-dark {
+  @include kui-patternfly-alignment-base;
+  --pf-global--palette--black-100: var(--color-base00);
+  --pf-global--palette--black-150: var(--color-base00);
+  --pf-global--palette--black-200: var(--color-base01);
+  --pf-global--palette--black-300: var(--color-base02);
+  --pf-global--palette--black-400: var(--color-base02);
+  --pf-global--palette--black-500: var(--color-base03);
+  --pf-global--palette--black-600: var(--color-base03);
+  --pf-global--palette--black-700: var(--color-base03);
+  --pf-global--palette--black-800: var(--color-base04);
+  --pf-global--palette--black-850: var(--color-base05);
+  --pf-global--palette--black-900: var(--color-base06);
+  --pf-global--palette--black-1000: var(--color-base06);
+}

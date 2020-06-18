@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Zenburn"
  * author: "elnawe"
  */
-body[kui-theme="Zenburn"] {
+body[kui-theme='Zenburn'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #383838;
   --color-base01: #404040;
   --color-base02: #606060;
