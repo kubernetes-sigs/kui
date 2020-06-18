@@ -1,11 +1,14 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * # Base16 Builder scheme by Jan T. Sott
  * scheme: "Paraiso"
  * author: "Jan T. Sott"
  */
-body[kui-theme="Paraiso"] {
+body[kui-theme='Paraiso'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #2f1e2e;
   --color-base01: hsl(308, 13%, 20%); /* #41323f; */
   --color-base02: hsl(314, 9%, 24%); /* #4f424c; */

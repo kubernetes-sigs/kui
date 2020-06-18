@@ -1,10 +1,13 @@
-@import "fonts.css";
+@import 'fonts';
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/kui-alignment';
 
 /**
  * scheme: "Dracula"
  * author: "Mike Barkmin (http://github.com/mikebarkmin) based on Dracula Theme (http://github.com/dracula)"
  */
-body[kui-theme="Dracula"] {
+body[kui-theme='Dracula'] {
+  @include kui-patternfly-alignment-dark;
+
   --color-base00: #282936;
   --color-base01: #3a3c4e;
   --color-base02: #4d4f68;
