@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
-
 import * as React from 'react'
 import { TableCell, DataTableCell } from 'carbon-components-react'
+import { Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
+
+import ErrorCell from './ErrorCell'
 
 /**
  * Generate an onclick handler for a cell
@@ -79,6 +80,8 @@ export default function renderCell(kuiRow: KuiRow, justUpdated: boolean, tab: Ta
         ? (kuiRow.css || '') + (kuiRow.onclick ? ' clickable' : '')
         : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
 
+    const css = cidx > 0 ? kuiRow.attributes[cidx - 1].css : undefined
+
     // the text value of the cell
     const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
 
@@ -96,12 +99,14 @@ export default function renderCell(kuiRow: KuiRow, justUpdated: boolean, tab: Ta
         >
           {tag === 'badge' && (
             <span
-              key={kuiRow.attributes[cidx - 1].css /* force restart of animation if color changes */}
+              key={css /* force restart of animation if color changes */}
               title={innerText}
+              className={css || 'kui--status-unknown'}
               data-tag="badge-circle"
-              className={kuiRow.attributes[cidx - 1].css}
               data-just-updated={justUpdated || undefined}
-            />
+            >
+              {/red-background/.test(css) ? <ErrorCell /> : undefined}
+            </span>
           )}
           <span className="kui--cell-inner-text">{innerText}</span>
         </span>

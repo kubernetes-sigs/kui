@@ -18,6 +18,7 @@ import { Tab, REPL, Table as KuiTable } from '@kui-shell/core'
 
 import * as React from 'react'
 
+import ErrorCell from './ErrorCell'
 import { onClickForCell } from './TableCell'
 import { NamedDataTableRow } from './kui2carbon'
 
@@ -52,28 +53,29 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
           const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
-          const title = `${kuiRow.name}: ${badgeCell ? badgeCell.value : ''}`
+          const title = `${kuiRow.name}\n${badgeCell ? badgeCell.value : ''}`
           const css = badgeCell ? badgeCell.css : 'kui--status-unknown'
 
           // cell label, to be displayed inside of the grid cell
           const label = <span className="kui--grid-cell-label">{kuiRow.name.slice(0, 2)}</span>
 
+          const props = {
+            title,
+            key: kuiRow.attributes[gridableColumn].css, // force restart of animation if color changes
+            'data-tag': 'badge-circle',
+            'data-just-updated': this.props.justUpdated[kuiRow.rowKey || kuiRow.name],
+            className: css,
+            onClick: onClickForCell(
+              kuiRow,
+              tab,
+              repl,
+              kuiRow.attributes.find(_ => _.onclick)
+            )
+          }
+
           return (
             <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name}>
-              <span
-                title={title}
-                data-tag="badge-circle"
-                data-just-updated={this.props.justUpdated[kuiRow.rowKey || kuiRow.name]}
-                className={css}
-                onClick={onClickForCell(
-                  kuiRow,
-                  tab,
-                  repl,
-                  kuiRow.attributes.find(_ => _.onclick)
-                )}
-              >
-                {label}
-              </span>
+              <span {...props}>{/red-background/.test(css) ? <ErrorCell /> : label}</span>
             </span>
           )
         })}
