@@ -374,6 +374,9 @@ code.fancy-code.hljs {
 .smaller-text {
   font-size: 0.875em;
 }
+.semi-transparent {
+  opacity: 0.7;
+}
 .somewhat-smaller-text {
   font-size: 0.925em;
 }
