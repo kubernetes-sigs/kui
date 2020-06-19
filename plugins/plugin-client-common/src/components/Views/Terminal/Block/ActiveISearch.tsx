@@ -23,11 +23,6 @@ import Input from './Input'
 
 const debug = Debug('core-support/history/reverse-i-search')
 
-// TODO externalize
-const strings = {
-  prompt: "(reverse-i-search$1)`$2':"
-}
-
 /** state of the reverse-i-search */
 export default class ActiveISearch {
   // eslint-disable-next-line no-useless-constructor
@@ -39,7 +34,6 @@ export default class ActiveISearch {
   ) {}
 
   private fixedPart() {
-    const text = strings.prompt.replace(/\$1/, '').replace(/\$2/, this.input.state.prompt.value)
     const className = 'small-right-pad' + (this.reachedTheEnd ? ' alert-pulse' : '')
 
     if (this.reachedTheEnd) {
@@ -51,7 +45,15 @@ export default class ActiveISearch {
       )
     }
 
-    return <span className={className}>{text}</span>
+    return (
+      <span className={className}>
+        (reverse-i-search
+        <span className="sub-text semi-transparent">
+          {this.currentSearchIdx === -1 ? '' : ' ' + this.currentSearchIdx.toString()}
+        </span>
+        ){!this.input.state.prompt.value ? '' : '`' + this.input.state.prompt.value + '`:'}
+      </span>
+    )
   }
 
   private matchedPrefixPart(newValue: string, caretPosition: number) {
@@ -69,11 +71,15 @@ export default class ActiveISearch {
     return <strong className="red-text kui--prompt-like">{this.input.state.prompt.value.replace(/ /g, '_')}</strong>
   }
 
+  private matchAt(idx = this.currentSearchIdx): string {
+    return this.history.line(idx).raw
+  }
+
   public currentMatch(): string {
     if (this.currentSearchIdx === -1) {
       return ''
     } else {
-      return this.history.line(this.currentSearchIdx).raw
+      return this.matchAt()
     }
   }
 
@@ -103,6 +109,28 @@ export default class ActiveISearch {
   }
 
   /**
+   * Search command history for a match, skipping over identicals.
+   *
+   * @return a command history index, or -1 if not match is found
+   *
+   */
+  private findPrevious(startIdx: number): number {
+    if (startIdx < 0) {
+      return -1
+    }
+
+    const { prompt } = this.input.state
+
+    const newSearchIdx = prompt.value ? this.history.findIndex(prompt.value, startIdx) : -1
+    if (newSearchIdx < 0 || this.currentSearchIdx < 0 || this.matchAt(newSearchIdx) !== this.matchAt()) {
+      return newSearchIdx
+    } else {
+      // skip this match because it is the same as the current match
+      return this.findPrevious(newSearchIdx - 1)
+    }
+  }
+
+  /**
    * Attempt to initiate or extend a search
    *
    */
@@ -112,23 +140,19 @@ export default class ActiveISearch {
     // typing, then start from the end of history; if the user hit
     // ctrl+r, then they want to search for the next match
     const userHitCtrlR = evt.ctrlKey && evt.key === 'r'
-    const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : -1
+    const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : undefined
 
     const { prompt } = this.input.state
-    const newSearchIdx = prompt.value && this.history.findIndex(prompt.value, startIdx)
+    const newSearchIdx = this.findPrevious(startIdx)
     debug('search index', prompt.value, newSearchIdx)
 
     if (newSearchIdx > 0) {
       this.input.setState({ isearch: new ActiveISearch(this.input, this.history, newSearchIdx) })
-    } else if (!userHitCtrlR) {
+    } else if (userHitCtrlR) {
       // if we found no match, reset the match text, unless the user
       // is using repeated ctrl+R to search backwards; in this case,
       // let's continue to display the previous match if no new match
       // is found
-      /* this.placeholderTypedPart.innerText = ''
-      this.placeholderMatchedPrefixPart.innerText = ''
-      this.placeholderMatchedSuffixPart.innerText = ''
-      this.placeholderFixedPart.innerText = strings.prompt.replace(/\$1/, ``).replace(/\$2/, this.prompt.value) */
     } else {
       this.input.setState({ isearch: new ActiveISearch(this.input, this.history, newSearchIdx, true) })
     }
