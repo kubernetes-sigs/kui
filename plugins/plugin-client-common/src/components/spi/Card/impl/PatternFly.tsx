@@ -19,8 +19,8 @@ import {
   Card,
   CardActions,
   CardBody,
-  CardHead,
-  CardHeadMain,
+  CardHeader,
+  CardHeaderMain,
   Dropdown,
   DropdownItem,
   KebabToggle
@@ -78,10 +78,10 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
       <Card className={this.props.className}>
         {React.Children.count(this.props.children) > 0 && (
           <React.Fragment>
-            <CardHead>
-              <CardHeadMain>{this.props.header}</CardHeadMain>
+            <CardHeader>
+              <CardHeaderMain>{this.props.header}</CardHeaderMain>
               {this.props.actions && this.cardActions()}
-            </CardHead>
+            </CardHeader>
             <CardBody>{this.props.children}</CardBody>
           </React.Fragment>
         )}
