@@ -394,11 +394,11 @@ export default class Input extends InputProvider {
   }
 
   private removeAction(): DropDownAction[] {
-    return !this.props.willRemove
+    return !this.props.willRemove || this.props.isPinned
       ? []
       : [
           {
-            label: this.props.isPinned ? strings('Close watcher') : strings('Remove'),
+            label: strings('Remove'),
             handler: () => this.props.willRemove()
           }
         ]
@@ -421,7 +421,6 @@ export default class Input extends InputProvider {
       : [
           {
             label: strings2('Show as table in terminal'),
-            hasDivider: true,
             handler: () => this.props.unPin()
           }
         ]
@@ -436,11 +435,28 @@ export default class Input extends InputProvider {
       return (
         <DropDown
           actions={actions}
-          className="kui--repl-block-right-element small-left-pad kui--toolbar-button-with-icon"
+          className="kui--repl-block-right-element kui--toolbar-button-with-icon"
           onClose={this.props.willLoseFocus}
         />
       )
     }
+  }
+
+  /** Close button. Only for pinned blocks for now. */
+  private close() {
+    return (
+      this.props.willRemove &&
+      this.props.isPinned && (
+        <a
+          href="#"
+          onClick={this.props.willRemove}
+          className="kui--repl-block-right-element kui--toolbar-button-with-icon kui--pinned-close-button"
+          title={strings('Close watcher')}
+        >
+          <Icons icon="WindowClose" />
+        </a>
+      )
+    )
   }
 
   /**
@@ -456,6 +472,7 @@ export default class Input extends InputProvider {
         {this.errorIcon()}
         {this.timestamp()}
         {this.dropdown()}
+        {this.close()}
       </span>
     )
   }

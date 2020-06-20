@@ -16,8 +16,9 @@
 
 /** Pinned scrollbacks */
 
+$inset: 1em;
+$breadcrumb-height: 2.5em;
 $table-grid-cell-size: 1.375em;
-$inset: 0.5em;
 
 /** special styling of the whole scrollback, if it is pinned */
 .kui--scrollback[data-has-pinned='true'] {
@@ -53,8 +54,8 @@ $inset: 0.5em;
 
   .repl-input {
     position: absolute;
-    top: calc(0.875em / 4);
-    right: 0;
+    top: calc((#{$breadcrumb-height} - 0.875em - 6px) / 2);
+    right: 2px;
   }
 
   .kui--data-table-wrapper {
@@ -69,8 +70,11 @@ $inset: 0.5em;
     display: none;
   }
   .kui--data-table-toolbar-top {
-    border-bottom: 1px dashed var(--color-table-border3);
     padding: 0 $inset;
+  }
+
+  nav[aria-label='Breadcrumb']:not(:empty) {
+    height: $breadcrumb-height;
   }
 
   nav[aria-label='Breadcrumb'],
@@ -124,8 +128,8 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
     /* css magic to give inner scrolling of grid */
     position: absolute;
     overflow-y: auto;
-    max-height: calc(100% - 1.875em - #{$inset});
-    top: 1.875em;
+    max-height: calc(100% - #{$breadcrumb-height} - #{$inset});
+    top: $breadcrumb-height;
 
     [data-tag='badge'] [data-tag='badge-circle'] {
       width: $table-grid-cell-size;
@@ -153,8 +157,9 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
       'T1 T1 T1'
       'T1 T1 T1'
       'T1 T1 T1'
+      'T1 T1 T1'
       'P1 P2 P3';
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -167,8 +172,9 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
         'T1 T1 T1 T2 T2 T2'
         'T1 T1 T1 T2 T2 T2'
         'T1 T1 T1 T2 T2 T2'
+        'T1 T1 T1 T2 T2 T2'
         'P1 P1 P2 P2 P3 P3';
-      grid-template-rows: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr);
       grid-template-columns: repeat(6, 1fr);
     }
   }
@@ -182,8 +188,9 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
         'T1 T2 T3'
         'T1 T2 T3'
         'T1 T2 T3'
+        'T1 T2 T3'
         'P1 P2 P3';
-      grid-template-rows: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr);
       grid-template-columns: repeat(3, 1fr);
     }
   }

@@ -271,8 +271,8 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
       await watchPod(NUM_PIN)
 
       await this.app.client.click(Selectors.SPLIT_N_MENU(2))
-      await this.app.client.waitForVisible(Selectors.BLOCK_CLOSE_BUTTON)
-      await this.app.client.click(Selectors.BLOCK_CLOSE_BUTTON)
+      await this.app.client.waitForVisible(Selectors.WATCHER_CLOSE_BUTTON(2))
+      await this.app.client.click(Selectors.WATCHER_CLOSE_BUTTON(2))
 
       // should only have one split when sidecar open
       await ReplExpect.splitCount(1)(this.app)

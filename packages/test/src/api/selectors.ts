@@ -171,6 +171,7 @@ export const CURRENT_GRID_OFFLINE_FOR_SPLIT = (N: number, name: string) =>
   `${CURRENT_GRID_BY_NAME_FOR_SPLIT(N, name)} .red-background`
 
 export const SPLIT_N_MENU = (N: number) => `${SPLIT_N(N)} ${OVERFLOW_MENU}`
+export const WATCHER_CLOSE_BUTTON = (N: number) => `${SPLIT_N(N)} .kui--pinned-close-button`
 export const BLOCK_CLOSE_BUTTON = `${OVERFLOW_MENU} button[data-mode="Close watcher"]`
 export const BLOCK_UNPIN_BUTTON = `${OVERFLOW_MENU} button[data-mode="Show as table in terminal"]`
 
