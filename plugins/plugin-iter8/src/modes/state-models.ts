@@ -11,7 +11,6 @@ interface CriterionState {
   limitValue: number
 }
 interface Formstate {
-  disableResubmit: boolean
   showCriteria: boolean
   invalidCandidate: boolean
   name: string
