@@ -48,13 +48,21 @@ $font-size: 0.875rem;
 
   .kui--status-stripe-element.kui--status-stripe-element-clickable:hover,
   .kui--status-stripe-button .kui--status-stripe-element:hover {
+    &:not(.kui--status-stripe-tag-element) {
+      cursor: pointer;
+      background-color: var(--color-table-border3);
+    }
+  }
+
+  .kui--status-stripe-tag-element .kui--tag:hover {
     cursor: pointer;
-    background-color: var(--color-table-border3);
+    filter: brightness(1.15); /* TODO */
   }
 
   .kui--status-stripe-context {
     flex: 1;
     font-size: $font-size;
+
     .kui--status-stripe-element {
       padding-left: calc(1rem * 0.875 / 0.75);
       padding-right: 1rem;
@@ -75,6 +83,14 @@ $font-size: 0.875rem;
       padding-left: 1rem;
       border-left: 1px solid var(--color-table-border3);
       border-right: 1px solid var(--color-table-border3);
+
+      &.kui--status-stripe-tag-element {
+        padding-left: 0;
+        border-left: none;
+        &:not(:last-child) {
+          border-right: none;
+        }
+      }
     }
   }
 
