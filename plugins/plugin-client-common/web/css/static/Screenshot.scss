@@ -24,7 +24,7 @@ body .bx--toast-notification {
 }
 
 [kui-theme-style] {
-  .bx--toast-notification {
+  #screenshot-captured.bx--toast-notification {
     flex-direction: row;
 
     &:not(.bx--toast-notification--low-contrast) a {

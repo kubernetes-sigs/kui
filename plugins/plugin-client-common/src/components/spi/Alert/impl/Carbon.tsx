@@ -19,7 +19,7 @@ import { i18n } from '@kui-shell/core'
 import { ToastNotification } from 'carbon-components-react'
 import { Props } from '..'
 
-import 'carbon-components/scss/components/notification/_toast-notification.scss'
+import '../../../../../web/scss/components/Alert/Carbon.scss'
 
 const strings = i18n('plugin-client-common', 'editor')
 
