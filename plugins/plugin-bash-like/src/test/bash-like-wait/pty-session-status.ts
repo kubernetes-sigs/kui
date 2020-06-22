@@ -38,7 +38,7 @@ describe('pty session status offline after start', function(this: Common.ISuite)
 
   pit('should not be showing an offline indicator', () => {
     return this.app.client
-      .waitForExist('.kui--plugin-bash-like--pty-offline-indicator', 5000, true)
+      .waitForExist('#kui--plugin-bash-like--pty-offline-indicator', 5000, true)
       .catch(Common.oops(this))
   })
 
@@ -47,9 +47,9 @@ describe('pty session status offline after start', function(this: Common.ISuite)
       const proxyPid = (await readFile('/tmp/kuiproxy.pid')).toString()
       execSync(`kill -HUP ${proxyPid}`)
 
-      await this.app.client.waitForExist('.kui--plugin-bash-like--pty-offline-indicator')
+      await this.app.client.waitForExist('#kui--plugin-bash-like--pty-offline-indicator')
       await this.app.client.waitForExist(
-        '.kui--plugin-bash-like--pty-offline-indicator',
+        '#kui--plugin-bash-like--pty-offline-indicator',
         timeItTakesForProxyToComeBack,
         true
       )
@@ -78,13 +78,13 @@ describe('pty session status offline at start', function(this: Common.ISuite) {
 
   // we expect the offline indicator initially
   pit('should be showing an offline indicator at startup because we killed the proxy', () => {
-    return this.app.client.waitForExist('.kui--plugin-bash-like--pty-offline-indicator').catch(Common.oops(this, true))
+    return this.app.client.waitForExist('#kui--plugin-bash-like--pty-offline-indicator').catch(Common.oops(this, true))
   })
 
   // but we also expect it to go away eventually
   pit('should eventually not show an offline indicator', async () => {
     try {
-      await this.app.client.waitForExist('.kui--plugin-bash-like--pty-offline-indicator', 20000, true)
+      await this.app.client.waitForExist('#kui--plugin-bash-like--pty-offline-indicator', 20000, true)
 
       await CLI.waitForRepl(this.app)
     } catch (err) {
@@ -95,7 +95,7 @@ describe('pty session status offline at start', function(this: Common.ISuite) {
   pit('should be not showing an offline indicator at startup because the proxy auto-restarts', () => {
     // then it should come back online within 10 seconds; add a few seconds of slop
     return this.app.client
-      .waitForExist('.kui--plugin-bash-like--pty-offline-indicator', timeItTakesForProxyToComeBack, true)
+      .waitForExist('#kui--plugin-bash-like--pty-offline-indicator', timeItTakesForProxyToComeBack, true)
       .catch(Common.oops(this, true))
   })
 

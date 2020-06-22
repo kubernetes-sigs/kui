@@ -15,10 +15,12 @@
  */
 
 import * as React from 'react'
-import { eventChannelUnsafe, inBrowser } from '@kui-shell/core'
-import { Icons, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { eventChannelUnsafe, inBrowser, i18n } from '@kui-shell/core'
+import { TagWidget } from '@kui-shell/plugin-client-common'
 
 import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
+
+const strings = i18n('plugin-proxy-support')
 
 /** class designation for our offline indicator */
 const buttonDesignation = 'kui--plugin-bash-like--pty-offline-indicator'
@@ -50,9 +52,9 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
       return <React.Fragment />
     } else {
       return (
-        <TextWithIconWidget text="" viewLevel="error" id={buttonDesignation}>
-          <Icons icon="Network" />
-        </TextWithIconWidget>
+        <TagWidget id={buttonDesignation} type="error">
+          {strings('Offline')}
+        </TagWidget>
       )
     }
   }
