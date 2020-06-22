@@ -38,6 +38,7 @@ export { default as StatusStripe } from './components/Client/StatusStripe'
 export { default as MeterWidgets } from './components/Client/StatusStripe/MeterWidgets'
 export { default as ContextWidgets } from './components/Client/StatusStripe/ContextWidgets'
 export { ViewLevel, default as TextWithIconWidget } from './components/Client/StatusStripe/TextWithIconWidget'
+export { default as TagWidget } from './components/Client/StatusStripe/TagWidget'
 export { default as KuiContext } from './components/Client/context'
 
 // Content components
@@ -48,6 +49,9 @@ export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 export { default as ComboSidecar } from './components/Views/Sidecar/ComboSidecar'
 export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecar'
 export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
+
+// SPI
+export { default as Tag } from './components/spi/Tag'
 
 // Input components
 export {
