@@ -22,6 +22,7 @@ import {
   ScalarResponse,
   isHTML,
   isMarkdownResponse,
+  isReactResponse,
   isRadioTable,
   isTable,
   isMixedResponse,
@@ -112,6 +113,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
         }
       } else if (isError(response)) {
         return <div className="oops">{response.message}</div>
+      } else if (isReactResponse(response)) {
+        return response.react
       } else if (isHTML(response)) {
         // ^^^ intentionally using an "else" so that typescript double
         // checks that we've covered every case of ScalarResponse

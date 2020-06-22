@@ -20,5 +20,6 @@ export default async (registrar: Registrar) => {
   if (!isHeadless()) {
     await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
     await import(/* webpackMode: "lazy" */ './controller/split').then(_ => registrar.listen('/split', _.default))
+    await import(/* webpackMode: "lazy" */ './controller/alert').then(_ => _.default(registrar))
   }
 }

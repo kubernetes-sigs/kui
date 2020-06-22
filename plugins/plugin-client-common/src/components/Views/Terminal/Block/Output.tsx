@@ -20,6 +20,7 @@ import {
   i18n,
   isCodedError,
   isHTML,
+  isReactResponse,
   isMarkdownResponse,
   isTable,
   eventChannelUnsafe,
@@ -188,6 +189,7 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isFinished(block) && !isCancelled(block) && !isEmpty(block)) {
       const { response } = block
       return (
+        isReactResponse(response) ||
         isHTML(response) ||
         isMarkdownResponse(response) ||
         (typeof response === 'string' && response.length > 0) ||

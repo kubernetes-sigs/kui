@@ -76,6 +76,8 @@ export { fromMap as i18nFromMap, default as i18n } from './util/i18n'
 export {
   hasDisplayName,
   isMarkdownResponse,
+  ReactResponse,
+  isReactResponse,
   MetadataBearing as ResourceWithMetadata,
   MetadataBearingWithContent as ResourceWithMetadataWithContent,
   isMetadataBearing as isResourceWithMetadata
@@ -178,7 +180,7 @@ export {
   isFunctionContent,
   FunctionThatProducesContent
 } from './models/mmr/content-types'
-export { ToolbarText, ToolbarAlert } from './webapp/views/toolbar-text'
+export { ToolbarText, ToolbarAlert, isSupportedToolbarTextType } from './webapp/views/toolbar-text'
 
 // low-level UI
 export { default as doCancel } from './webapp/cancel'
