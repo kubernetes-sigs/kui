@@ -22,6 +22,7 @@ import { MultiModalResponse } from './mmr/types'
 import { NavResponse } from './NavResponse'
 import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
+import { ReactNode, isValidElement } from 'react'
 
 export interface MessageBearingEntity {
   message: string
@@ -119,12 +120,20 @@ export type SimpleEntity =
   | HTMLElement
   | /* MessageBearingEntity | */ Error
   | MarkdownResponse
+  | ReactResponse
 
 type MarkdownResponse = { content: string; contentType: 'text/markdown' }
 
 export function isMarkdownResponse(entity: Entity): entity is MarkdownResponse {
   const md = entity as MarkdownResponse
   return md && typeof md.content === 'string' && md.contentType === 'text/markdown'
+}
+
+export type ReactResponse = { react: ReactNode }
+
+export function isReactResponse(entity: Entity): entity is ReactResponse {
+  const response = entity as ReactResponse
+  return response && response.react && isValidElement(response.react)
 }
 
 /**

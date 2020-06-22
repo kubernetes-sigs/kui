@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 export const CURRENT_TAB = '.kui--tab-content.visible'
 export const TAB_N = (N: number) => `.kui--tab-content:nth-child(${N})`
 export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
@@ -55,6 +56,9 @@ export const SIDECAR_TOOLBAR_BUTTON = (mode: string) =>
 // sidecar alert
 export const SIDECAR_ALERT = (type: string) =>
   `${SIDECAR} .bx--tab-content[aria-hidden="false"] .kui--toolbar-alert[data-type="${type}"]`
+
+// terminal alert
+export const TERMINAl_ALERT = (type: string) => `.kui--terminal-alert[data-type="${type}"]`
 
 // sidecar tab content, for visible tab
 export const SIDECAR_TAB_CONTENT = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .custom-content`
