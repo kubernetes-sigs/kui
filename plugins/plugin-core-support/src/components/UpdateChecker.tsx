@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
+/*
+ * For debugging, this will reset the dulyNoted bit:
+ *
+ * localStorage.removeItem('kui-shell.org/UpdateChecker/DulyNoted')
+ *
+ */
+
 import * as React from 'react'
 import * as needle from 'needle'
 
 import { eventChannelUnsafe, getCurrentTab, i18n } from '@kui-shell/core'
-import { Icons, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { TagWidget } from '@kui-shell/plugin-client-common'
 
 const strings = i18n('plugin-core-support')
 
 /** Releases page */
-const RELEASE = (tag: string) => `https://github.com/IBM/kui/releases/tag/${tag}`
+const RELEASE = (tag: string) => `https://github.com/IBM/kui/releases/tag/v${tag}`
 
 /** Releases feed */
 const FEED = 'https://github.com/IBM/kui/releases.atom'
@@ -149,16 +156,6 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
     return this.isUpdateAvailable() ? strings('Update available', this.state.latestVersion) : ''
   }
 
-  /** Icon decoration for update available notification */
-  private viewLevel() {
-    return this.isUpdateAvailable() ? 'ok' : 'hidden'
-  }
-
-  /** Icon for update available notification */
-  private icon() {
-    return this.isUpdateAvailable() && <Icons icon="Notification" />
-  }
-
   /** User has acknoledged the notification  */
   private async dulyNoted() {
     try {
@@ -175,20 +172,21 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    return (
-      <TextWithIconWidget
-        text={this.text()}
-        viewLevel={this.viewLevel()}
-        id="kui--plugin-core-support--update-checker"
-        title={strings(
-          'Version X is available. Click to see the changelog and download the new release.',
-          this.state.latestVersion
-        )}
-        iconOnclick={() => this.dulyNoted()}
-        textOnclick={() => this.dulyNoted()}
-      >
-        {this.icon()}
-      </TextWithIconWidget>
-    )
+    if (this.isUpdateAvailable()) {
+      return (
+        <TagWidget
+          id="kui--plugin-core-support--update-checker"
+          title={strings(
+            'Version X is available. Click to see the changelog and download the new release.',
+            this.state.latestVersion
+          )}
+          onClick={() => this.dulyNoted()}
+        >
+          {this.text()}
+        </TagWidget>
+      )
+    } else {
+      return <React.Fragment />
+    }
   }
 }
