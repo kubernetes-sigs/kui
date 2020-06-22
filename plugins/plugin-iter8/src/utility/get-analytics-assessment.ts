@@ -1,10 +1,23 @@
 // var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const path = require('path')
+
 export default class GetAnalyticsAssessment {
   public data = {}
-  // URL used by the local Iter8 analytics service (should adapt to the svc running in cluster)
   public url = ''
-  public constructor(data, url = 'http://0.0.0.0:8000/assessment') {
-    this.url = url
+  public constructor(data) {
+    this.url = ''
+    // If Iter8 Analytics URL is not defined as an Environment Variable- Use default
+    if (process.env.ITER8_ANALYTICS_URL === undefined) {
+      console.log('URL not defined')
+      this.url = 'http://0.0.0.0:8000/assessment'
+      console.log(this.url)
+    }
+    // If Iter8 Analytics URL is defined as an Environment Variable
+    else {
+      console.log('URL defined')
+      this.url = path.join(process.env.ITER8_ANALYTICS_URL, 'assessment')
+      console.log(this.url)
+    }
     this.data = data
   }
 

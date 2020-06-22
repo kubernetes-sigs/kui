@@ -37,7 +37,6 @@ class ExprBase extends React.Component<{}, Formstate> {
   public constructor(props) {
     super(props)
     this.state = {
-      disableResubmit: false, // prevents form resubmission
       showCriteria: false, // determines the visibility of metric config section
       invalidCandidate: false, // determines whether candidates values are valid
       name: '', // name of the experiment
@@ -198,12 +197,13 @@ class ExprBase extends React.Component<{}, Formstate> {
     const jsonOutput = getRequestModel(time, this.state)
     // Transmit data to Decision form using eventBus
     eventChannelUnsafe.emit('/get/decision', jsonOutput)
-    this.setState({ disableResubmit: true })
   }
 
   // Cancels form submission event caused by "Enter" press
   private preventFormRefresh(event) {
     event.preventDefault()
+    document.getElementById('submitform').setAttribute('disabled', '')
+    document.getElementById('addcriterion').setAttribute('disabled', '')
   }
 
   public render() {
@@ -224,6 +224,8 @@ class ExprBase extends React.Component<{}, Formstate> {
               placeholder="Eg: experiment_v1_v2"
               onChange={this.handleNameChange}
               type="text"
+              invalidText="This is a required field."
+              required
             ></TextInput>
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
@@ -234,6 +236,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               placeholder="Select an Experiment Type"
               items={[experimentTypes.hil]}
               onChange={value => this.handleSelectExpType(value.selectedItem)}
+              required
             />
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
@@ -245,6 +248,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               items={this.nsList}
               itemToString={item => (item ? item.text : '')}
               onChange={value => this.handleAddNs(value.selectedItem)}
+              required
             />
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
@@ -256,6 +260,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               items={this.svcList}
               itemToString={item => (item ? item.text : '')}
               onChange={value => this.handleAddSvc(value.selectedItem)}
+              required
             />
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
@@ -267,6 +272,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}
               onChange={value => this.handleAddBase(value.selectedItem)}
+              required
             />
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
@@ -358,25 +364,18 @@ class ExprBase extends React.Component<{}, Formstate> {
           ) : null}
           <FormGroup legendText="" style={{ width: 350 }}>
             <Button
+              id="addcriterion"
               style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
               size="default"
               kind="primary"
               renderIcon={Data132}
-              disabled={this.state.disableResubmit}
               onClick={this.addCriterion}
             >
               Add Criterion
             </Button>
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
-            <Button
-              size="default"
-              kind="primary"
-              renderIcon={View32}
-              disabled={this.state.invalidCandidate || this.state.disableResubmit}
-              onClick={this.submitForm}
-              style={{ fontSize: 'medium' }}
-            >
+            <Button id="submitform" type="submit" size="default" renderIcon={View32} onClick={this.submitForm}>
               Create Experiment
             </Button>
           </FormGroup>
