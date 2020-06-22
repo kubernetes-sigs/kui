@@ -8,34 +8,36 @@ body.kui--patternfly4[kui-theme-style] {
   --color-secondary-button-border: 1px solid var(--pf-global--primary-color--100);
   --color-secondary-button-border-hover: 2px solid var(--pf-global--primary-color--100);
 
-  /* attribution: @patternfly/react-core/dist/styles/base.css version 3.153.13; license MIT */
+  /* attribution: @patternfly/react-core/dist/styles/base.css version 4.18.5; license MIT */
   --pf-global--palette--black-100: #fafafa;
   --pf-global--palette--black-150: #f5f5f5;
-  --pf-global--palette--black-200: #ededed;
+  --pf-global--palette--black-200: #f0f0f0;
   --pf-global--palette--black-300: #d2d2d2;
   --pf-global--palette--black-400: #b8bbbe;
   --pf-global--palette--black-500: #8a8d90;
-  --pf-global--palette--black-600: #737679;
+  --pf-global--palette--black-600: #6a6e73;
   --pf-global--palette--black-700: #4f5255;
   --pf-global--palette--black-800: #3c3f42;
   --pf-global--palette--black-850: #212427;
   --pf-global--palette--black-900: #151515;
   --pf-global--palette--black-1000: #030303;
-  --pf-global--palette--blue-50: #def3ff;
+  --pf-global--palette--blue-50: #e7f1fa;
   --pf-global--palette--blue-100: #bee1f4;
   --pf-global--palette--blue-200: #73bcf7;
   --pf-global--palette--blue-300: #2b9af3;
   --pf-global--palette--blue-400: #06c;
   --pf-global--palette--blue-500: #004080;
-  --pf-global--palette--blue-600: #004368;
-  --pf-global--palette--blue-700: #002235;
+  --pf-global--palette--blue-600: #002952;
+  --pf-global--palette--blue-700: #001223;
+  --pf-global--palette--cyan-50: #f2f9f9;
   --pf-global--palette--cyan-100: #a2d9d9;
   --pf-global--palette--cyan-200: #73c5c5;
   --pf-global--palette--cyan-300: #009596;
   --pf-global--palette--cyan-400: #005f60;
   --pf-global--palette--cyan-500: #003737;
-  --pf-global--palette--cyan-600: #003d44;
-  --pf-global--palette--cyan-700: #001f22;
+  --pf-global--palette--cyan-600: #002323;
+  --pf-global--palette--cyan-700: #000f0f;
+  --pf-global--palette--gold-50: #fdf7e7;
   --pf-global--palette--gold-100: #f9e0a2;
   --pf-global--palette--gold-200: #f6d173;
   --pf-global--palette--gold-300: #f4c145;
@@ -43,11 +45,12 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--palette--gold-500: #c58c00;
   --pf-global--palette--gold-600: #795600;
   --pf-global--palette--gold-700: #3d2c00;
+  --pf-global--palette--green-50: #f3faf2;
   --pf-global--palette--green-100: #bde5b8;
   --pf-global--palette--green-200: #95d58e;
   --pf-global--palette--green-300: #6ec664;
   --pf-global--palette--green-400: #5ba352;
-  --pf-global--palette--green-500: #467f40;
+  --pf-global--palette--green-500: #3e8635;
   --pf-global--palette--green-600: #1e4f18;
   --pf-global--palette--green-700: #0f280d;
   --pf-global--palette--light-blue-100: #beedf9;
@@ -78,6 +81,7 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--palette--purple-500: #6753ac;
   --pf-global--palette--purple-600: #40199a;
   --pf-global--palette--purple-700: #1f0066;
+  --pf-global--palette--red-50: #faeae8;
   --pf-global--palette--red-100: #c9190b;
   --pf-global--palette--red-200: #a30000;
   --pf-global--palette--red-300: #7d1007;
@@ -85,12 +89,10 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--palette--red-500: #2c0000;
   --pf-global--palette--white: #fff;
   --pf-global--BackgroundColor--100: #fff;
-  --pf-global--BackgroundColor--150: #f5f5f5;
-  --pf-global--BackgroundColor--200: #fafafa;
-  --pf-global--BackgroundColor--300: #ededed;
+  --pf-global--BackgroundColor--200: #f0f0f0;
   --pf-global--BackgroundColor--light-100: #fff;
   --pf-global--BackgroundColor--light-200: #fafafa;
-  --pf-global--BackgroundColor--light-300: #ededed;
+  --pf-global--BackgroundColor--light-300: #f0f0f0;
   --pf-global--BackgroundColor--dark-100: #151515;
   --pf-global--BackgroundColor--dark-200: #3c3f42;
   --pf-global--BackgroundColor--dark-300: #212427;
@@ -98,43 +100,54 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--BackgroundColor--dark-transparent-100: rgba(3, 3, 3, 0.62);
   --pf-global--BackgroundColor--dark-transparent-200: rgba(3, 3, 3, 0.32);
   --pf-global--Color--100: #151515;
-  --pf-global--Color--200: #737679;
+  --pf-global--Color--200: #6a6e73;
   --pf-global--Color--300: #3c3f42;
   --pf-global--Color--400: #8a8d90;
   --pf-global--Color--light-100: #fff;
-  --pf-global--Color--light-200: #ededed;
+  --pf-global--Color--light-200: #f0f0f0;
   --pf-global--Color--light-300: #d2d2d2;
   --pf-global--Color--dark-100: #151515;
-  --pf-global--Color--dark-200: #737679;
+  --pf-global--Color--dark-200: #6a6e73;
   --pf-global--active-color--100: #06c;
   --pf-global--active-color--200: #bee1f4;
   --pf-global--active-color--300: #73bcf7;
   --pf-global--active-color--400: #2b9af3;
-  --pf-global--disabled-color--100: #737679;
+  --pf-global--disabled-color--100: #6a6e73;
   --pf-global--disabled-color--200: #d2d2d2;
-  --pf-global--disabled-color--300: #ededed;
+  --pf-global--disabled-color--300: #f0f0f0;
   --pf-global--primary-color--100: #06c;
   --pf-global--primary-color--200: #004080;
   --pf-global--primary-color--light-100: #73bcf7;
   --pf-global--primary-color--dark-100: #06c;
-  --pf-global--secondary-color--100: #737679;
+  --pf-global--secondary-color--100: #6a6e73;
   --pf-global--default-color--100: #73c5c5;
   --pf-global--default-color--200: #009596;
   --pf-global--default-color--300: #003737;
-  --pf-global--success-color--100: #92d400;
-  --pf-global--success-color--200: #486b00;
-  --pf-global--info-color--100: #73bcf7;
-  --pf-global--info-color--200: #004368;
+  --pf-global--success-color--100: #3e8635;
+  --pf-global--success-color--200: #0f280d;
+  --pf-global--info-color--100: #2b9af3;
+  --pf-global--info-color--200: #002952;
   --pf-global--warning-color--100: #f0ab00;
   --pf-global--warning-color--200: #795600;
   --pf-global--danger-color--100: #c9190b;
   --pf-global--danger-color--200: #a30000;
-  --pf-global--FontWeight--semi-bold: 500;
-  --pf-global--FontWeight--light: 300;
-  --pf-global--FontWeight--normal: 400;
-  --pf-global--FontWeight--semi-bold: 500;
-  --pf-global--FontWeight--bold: 600;
-  --pf-global--FontWeight--redhatfont--bold: 700;
+  --pf-global--danger-color--300: #470000;
+
+  --pf-global--link--Color: #06c;
+  --pf-global--link--Color--hover: #004080;
+  --pf-global--link--Color--light: #73bcf7;
+  --pf-global--link--Color--light--hover: #2b9af3;
+  --pf-global--link--Color--dark: #06c;
+  --pf-global--link--Color--dark--hover: #004080;
+
+  --pf-global--BorderColor--100: #d2d2d2;
+  --pf-global--BorderColor--200: #8a8d90;
+  --pf-global--BorderColor--300: #f0f0f0;
+  --pf-global--BorderColor--dark-100: #d2d2d2;
+  --pf-global--BorderColor--light-100: #b8bbbe;
+
+  --pf-global--icon--Color--light: #6a6e73;
+  --pf-global--icon--Color--dark: #151515;
 
   --pf-global--link--Color: #06c;
   --pf-global--link--Color--hover: #004080;
@@ -151,13 +164,6 @@ body.kui--patternfly4[kui-theme-style] {
 
   --pf-global--icon--Color--light: #737679;
   --pf-global--icon--Color--dark: #151515;
-
-  --pf-global--BorderRadius--sm: 3px;
-  --pf-global--BorderRadius--lg: 30em;
-
-  --pf-global--BorderWidth--sm: 1px;
-  --pf-global--BorderWidth--md: 2px;
-  --pf-global--BorderWidth--lg: 3px;
 }
 
 @mixin patternfly-sidecar {
