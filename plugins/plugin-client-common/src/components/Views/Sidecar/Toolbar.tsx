@@ -98,7 +98,7 @@ export default class Toolbar extends React.PureComponent<Props> {
           </div>
 
           <div className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container">
-            <div className="fill-container flush-right">{this.buttons()}</div>
+            <div className="fill-container flex-layout flush-right">{this.buttons()}</div>
           </div>
         </div>
       )
