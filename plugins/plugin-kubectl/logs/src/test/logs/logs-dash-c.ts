@@ -42,205 +42,216 @@ function sleep(N: number) {
 
 const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
-  before(Common.before(this))
-  after(Common.after(this))
+const commands = ['kubectl']
+if (process.env.NEEDS_OC) {
+  commands.push('oc')
+}
 
-  const ns: string = createNS()
-  allocateNS(this, ns)
+commands.forEach(command => {
+  wdescribe(`${command} Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    before(Common.before(this))
+    after(Common.after(this))
 
-  const waitForLogText = waitForTerminalText.bind(this)
-  const createPodWithoutWaiting = create.bind(this, ns)
-  const waitForPod = wait.bind(this, ns)
-  const getPodViaClick = get.bind(this, ns)
-  const click = clickRetry.bind(this)
+    const ns: string = createNS()
+    allocateNS(this, ns, command)
 
-  const podName1 = 'kui-two-containers'
-  const allContainers = 'All Containers'
-  const containerName1 = 'nginx'
-  const containerName2 = 'vim'
-  const podName2 = 'nginx'
+    // needed to force the dom renderer for webpack/browser-based tests; see ExecIntoPod
+    Common.setDebugMode.bind(this)()
 
-  const testLogsContent = (show: string[], notShow?: string[]) => {
-    if (show) {
-      show.forEach(showInLog => {
-        it(`should show ${showInLog} in log output`, async () => {
-          try {
-            await sleep(sleepTime)
-            await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
-          } catch (err) {
-            return Common.oops(this, true)(err)
-          }
+    const waitForLogText = waitForTerminalText.bind(this)
+    const createPodWithoutWaiting = create.bind(this, ns, command)
+    const waitForPod = wait.bind(this, ns, command)
+    const getPodViaClick = get.bind(this, ns, command)
+    const click = clickRetry.bind(this)
+
+    const podName1 = 'kui-two-containers'
+    const allContainers = 'All Containers'
+    const containerName1 = 'nginx'
+    const containerName2 = 'vim'
+    const podName2 = 'nginx'
+
+    const testLogsContent = (show: string[], notShow?: string[]) => {
+      if (show) {
+        show.forEach(showInLog => {
+          it(`should show ${showInLog} in log output`, async () => {
+            try {
+              await sleep(sleepTime)
+              await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
+            } catch (err) {
+              return Common.oops(this, true)(err)
+            }
+          })
         })
+      }
+
+      if (notShow) {
+        notShow.forEach(notShowInLog => {
+          it(`should not show ${notShowInLog} in log output`, async () => {
+            try {
+              await sleep(sleepTime)
+              await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
+            } catch (err) {
+              return Common.oops(this, true)(err)
+            }
+          })
+        })
+      }
+    }
+
+    const doRetry = (showInLog: string[], toolbar: { text: string; type: string }) => {
+      it('should hit retry', async () => {
+        try {
+          await click()
+          await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(this.app)
+          testLogsContent(showInLog)
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
       })
     }
 
-    if (notShow) {
-      notShow.forEach(notShowInLog => {
-        it(`should not show ${notShowInLog} in log output`, async () => {
-          try {
-            await sleep(sleepTime)
-            await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
-          } catch (err) {
-            return Common.oops(this, true)(err)
-          }
-        })
+    const switchToLogsTab = (showInLog: string[], toolbar: { text: string; type: string }) => {
+      it('should show logs tab', async () => {
+        try {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
+
+          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
+
+          testLogsContent(showInLog)
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
       })
     }
-  }
 
-  const doRetry = (showInLog: string[], toolbar: { text: string; type: string }) => {
-    it('should hit retry', async () => {
-      try {
-        await click()
-        await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(this.app)
-        testLogsContent(showInLog)
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
+    const switchContainer = (
+      container: string,
+      showInLog: string[],
+      notShowInLog: string[],
+      toolbar: { text: string; type: string }
+    ) => {
+      it(`should switch to container ${container}`, async () => {
+        try {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('container-list'))
+          await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
+          await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
+
+          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
+      })
+
+      testLogsContent(showInLog, notShowInLog)
+    }
+
+    const toggleStreaming = (changeToLive: boolean) => {
+      it('should toggle streaming', async () => {
+        try {
+          await sleep(sleepTime)
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
+          if (changeToLive) {
+            await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
+          } else {
+            await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming is paused', exact: false })(
+              this.app
+            )
+          }
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
+      })
+    }
+
+    /* Here comes the test */
+
+    createPodWithoutWaiting(inputEncoded2, podName2)
+    waitForPod(podName2, 2)
+    getPodViaClick(podName2)
+    switchToLogsTab(['No log data'], { text: 'Logs are live', type: 'info' })
+
+    createPodWithoutWaiting(inputEncoded1, podName1)
+    waitForPod(podName1, 3)
+    getPodViaClick(podName1)
+    switchToLogsTab([containerName1, containerName2], { text: 'Logs are live', type: 'info' })
+
+    /** testing various combination here */
+    switchContainer(containerName1, [containerName1], [containerName2], { text: containerName1, type: 'info' })
+
+    switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
+
+    switchContainer(allContainers, [containerName1, containerName2], [], {
+      text: allContainers.toLowerCase(),
+      type: 'info'
     })
-  }
 
-  const switchToLogsTab = (showInLog: string[], toolbar: { text: string; type: string }) => {
-    it('should show logs tab', async () => {
-      try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
+    switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
 
-        await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
-
-        testLogsContent(showInLog)
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
-  }
-
-  const switchContainer = (
-    container: string,
-    showInLog: string[],
-    notShowInLog: string[],
-    toolbar: { text: string; type: string }
-  ) => {
-    it(`should switch to container ${container}`, async () => {
-      try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-        await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
-        await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
-
-        await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
+    switchContainer(allContainers, [containerName1, containerName2], [], {
+      text: allContainers.toLowerCase(),
+      type: 'info'
     })
 
-    testLogsContent(showInLog, notShowInLog)
-  }
+    switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
 
-  const toggleStreaming = (changeToLive: boolean) => {
-    it('should toggle streaming', async () => {
+    toggleStreaming(false) // hit pause button
+
+    toggleStreaming(true) // hit resume button
+
+    toggleStreaming(false) // hit pause button
+
+    // switch to container, streaming should be live
+    switchContainer(containerName1, [containerName1], [containerName2], {
+      text: `Logs are live streaming. Showing container ${containerName1}`,
+      type: 'info'
+    })
+
+    switchContainer(allContainers, [containerName1, containerName2], [], {
+      text: allContainers.toLowerCase(),
+      type: 'info'
+    })
+
+    deletePodByName(this, podName1, ns, command)
+
+    it('should see log streaming stopped', async () => {
       try {
         await sleep(sleepTime)
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
-        if (changeToLive) {
-          await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
-        } else {
-          await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming is paused', exact: false })(this.app)
-        }
+        await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(this.app)
       } catch (err) {
         return Common.oops(this, true)(err)
       }
     })
-  }
 
-  /* Here comes the test */
+    const showError = 'Log streaming stopped abnormally.'
 
-  createPodWithoutWaiting(inputEncoded2, podName2)
-  waitForPod(podName2, 2)
-  getPodViaClick(podName2)
-  switchToLogsTab(['No log data'], { text: 'Logs are live', type: 'info' })
+    doRetry(['not found'], {
+      text: showError,
+      type: 'error'
+    })
 
-  createPodWithoutWaiting(inputEncoded1, podName1)
-  waitForPod(podName1, 3)
-  getPodViaClick(podName1)
-  switchToLogsTab([containerName1, containerName2], { text: 'Logs are live', type: 'info' })
+    switchContainer(containerName1, ['not found'], [], {
+      text: showError,
+      type: 'error'
+    })
+    switchContainer(containerName2, ['not found'], [], {
+      text: showError,
+      type: 'error'
+    })
+    switchContainer(allContainers, ['not found'], [], {
+      text: showError,
+      type: 'error'
+    })
 
-  /** testing various combination here */
-  switchContainer(containerName1, [containerName1], [containerName2], { text: containerName1, type: 'info' })
+    doRetry(['not found'], {
+      text: showError,
+      type: 'error'
+    })
 
-  switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
-
-  switchContainer(allContainers, [containerName1, containerName2], [], {
-    text: allContainers.toLowerCase(),
-    type: 'info'
-  })
-
-  switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
-
-  switchContainer(allContainers, [containerName1, containerName2], [], {
-    text: allContainers.toLowerCase(),
-    type: 'info'
-  })
-
-  switchContainer(containerName2, [containerName2], [containerName1], { text: containerName2, type: 'info' })
-
-  toggleStreaming(false) // hit pause button
-
-  toggleStreaming(true) // hit resume button
-
-  toggleStreaming(false) // hit pause button
-
-  // switch to container, streaming should be live
-  switchContainer(containerName1, [containerName1], [containerName2], {
-    text: `Logs are live streaming. Showing container ${containerName1}`,
-    type: 'info'
-  })
-
-  switchContainer(allContainers, [containerName1, containerName2], [], {
-    text: allContainers.toLowerCase(),
-    type: 'info'
-  })
-
-  deletePodByName(this, podName1, ns)
-
-  it('should see log streaming stopped', async () => {
-    try {
-      await sleep(sleepTime)
-      await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(this.app)
-    } catch (err) {
-      return Common.oops(this, true)(err)
-    }
-  })
-
-  const showError = 'Log streaming stopped abnormally.'
-
-  doRetry(['not found'], {
-    text: showError,
-    type: 'error'
-  })
-
-  switchContainer(containerName1, ['not found'], [], {
-    text: showError,
-    type: 'error'
-  })
-  switchContainer(containerName2, ['not found'], [], {
-    text: showError,
-    type: 'error'
-  })
-  switchContainer(allContainers, ['not found'], [], {
-    text: showError,
-    type: 'error'
-  })
-
-  doRetry(['not found'], {
-    text: showError,
-    type: 'error'
-  })
-
-  /*  this part isn't stable, and doesn't really test what we want, reliably: if the create is fast, then "without waiting' won't matter
+    /*  this part isn't stable, and doesn't really test what we want, reliably: if the create is fast, then "without waiting' won't matter
   createPodWithoutWaiting(inputEncoded1, podName1) // recreate this pod
   getPodViaYaml(podName1) // NOTE: immediately open sidecar when pod is in creation
 
@@ -257,5 +268,6 @@ wdescribe(`kubectl Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   })
   */
 
-  deleteNS(this, ns)
+    deleteNS(this, ns, command)
+  })
 })

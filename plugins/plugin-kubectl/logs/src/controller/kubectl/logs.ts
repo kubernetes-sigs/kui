@@ -66,7 +66,7 @@ function getOrPty(verb: string) {
     }
 
     if (args.execOptions.raw) {
-      return doExecWithStdout(args)
+      return doExecWithStdout(args, undefined, cmd)
     }
 
     if (args.execOptions.type === ExecType.TopLevel) {
@@ -82,7 +82,7 @@ function getOrPty(verb: string) {
           execThis === 'cp' ||
           execThis === 'ln'
         ) {
-          return doExecWithStdout(args)
+          return doExecWithStdout(args, undefined, cmd)
         }
       }
 
@@ -170,16 +170,23 @@ function viewTransformer(defaultMode: string) {
   }
 }
 
-export const doLogs = getOrPty('logs')
-export const logsFlags = Object.assign({}, flags(booleans), { viewTransformer: viewTransformer('logs') })
+const doLogs = getOrPty('logs')
+const logsFlags = Object.assign({}, flags(booleans), { viewTransformer: viewTransformer('logs') })
 
-export const doExec = getOrPty('exec')
-export const execFlags = Object.assign({}, defaultFlags, { viewTransformer: viewTransformer('terminal') })
+const doExec = getOrPty('exec')
+const execFlags = Object.assign({}, defaultFlags, { viewTransformer: viewTransformer('terminal') })
+
+export function registerLogs(registrar: Registrar, cmd: string) {
+  registrar.listen(`/${commandPrefix}/${cmd}/logs`, doLogs, logsFlags)
+}
+
+export function registerExec(registrar: Registrar, cmd: string) {
+  registrar.listen(`/${commandPrefix}/${cmd}/exec`, doExec, execFlags)
+}
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/kubectl/logs`, doLogs, logsFlags)
-  registrar.listen(`/${commandPrefix}/k/logs`, doLogs, logsFlags)
-
-  registrar.listen(`/${commandPrefix}/kubectl/exec`, doExec, execFlags)
-  registrar.listen(`/${commandPrefix}/k/exec`, doExec, execFlags)
+  ;['kubectl', 'k'].forEach(cmd => {
+    registerLogs(registrar, cmd)
+    registerExec(registrar, cmd)
+  })
 }
