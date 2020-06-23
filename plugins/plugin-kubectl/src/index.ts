@@ -103,7 +103,11 @@ export { viewTransformer as getTransformer } from './controller/kubectl/get'
 export { viewTransformer as getNamespacesTransformer } from './controller/kubectl/get-namespaces'
 
 /** A channel that covers *possible* changes to kubectl config */
-export { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from './controller/kubectl/config'
+export {
+  onKubectlConfigChangeEvents,
+  offKubectlConfigChangeEvents,
+  emitKubectlConfigChangeEvent
+} from './controller/kubectl/config'
 
 /** memory and cpu parsing */
 export { default as Parser } from './lib/util/parse'
