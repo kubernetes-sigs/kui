@@ -155,6 +155,9 @@ export const WATCHER_N_DROPDOWN_ITEM = (N: number, label: string) =>
 export const WATCHER_N_CLOSE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N, 'Stop watching')
 export const WATCHER_N_SHOW_AS_TABLE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N, 'Show as table')
 
+// terminal card
+export const TERMINAl_CARD = `.kui--card`
+
 /**
  * Terminal splits
  *
