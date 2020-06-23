@@ -418,7 +418,7 @@ ${usageSection[0].content
   // entityType; e.g. `kubectl create` -> the second breadcrumb should
   // not be a clickable; whereas with `kubectl create clusterrole` ->
   // the second breadcrumb should be clickable
-  const breadcrumbs = breadcrumb(command)
+  const breadcrumbs = breadcrumb(command, !!verb || !!entityType)
     .concat(breadcrumb(verb, !!entityType, command))
     .concat(breadcrumb(entityType, false, command, verb))
 
