@@ -56,6 +56,10 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
 
         &[href] {
           color: var(--color-brand-01);
+
+          &:hover {
+            cursor: pointer;
+          }
         }
       }
 
