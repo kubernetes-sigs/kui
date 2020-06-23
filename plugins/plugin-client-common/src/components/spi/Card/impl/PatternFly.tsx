@@ -16,11 +16,13 @@
 
 import * as React from 'react'
 import {
+  Brand,
   Card,
   CardActions,
   CardBody,
   CardHeader,
   CardHeaderMain,
+  CardTitle,
   Dropdown,
   DropdownItem,
   KebabToggle
@@ -29,7 +31,7 @@ import {
 import Props from '../model'
 import { DropDownAction } from '../../DropDown'
 
-import '../../../../../web/scss/components/Card/Patternfly.scss'
+import '../../../../../web/scss/components/Card/PatternFly.scss'
 
 interface State {
   isOpen: boolean
@@ -73,16 +75,41 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     )
   }
 
+  private icon() {
+    return <Brand src={this.props.icon} alt="card icon" className="kui--card-icon" />
+  }
+
+  /** card actions, icon and custom header node will be situated in Card Head */
+  private header() {
+    if (this.props.header || this.props.actions || this.props.icon) {
+      return (
+        <CardHeader>
+          <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
+          {this.props.actions && this.cardActions()}
+        </CardHeader>
+      )
+    }
+  }
+
+  private title() {
+    if (this.props.title) {
+      return <CardTitle> {this.props.title} </CardTitle>
+    }
+  }
+
   public render() {
+    const basicClassName = 'kui--card small-top-pad small-bottom-pad'
     return (
-      <Card className={this.props.className}>
+      <Card className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}>
         {React.Children.count(this.props.children) > 0 && (
           <React.Fragment>
-            <CardHeader>
-              <CardHeaderMain>{this.props.header}</CardHeaderMain>
-              {this.props.actions && this.cardActions()}
-            </CardHeader>
-            <CardBody>{this.props.children}</CardBody>
+            {this.header()}
+            {this.title()}
+            {Array.isArray(this.props.children) ? (
+              this.props.children.map((child, idx) => <CardBody key={idx}>{child}</CardBody>)
+            ) : (
+              <CardBody>{this.props.children}</CardBody>
+            )}
           </React.Fragment>
         )}
       </Card>
