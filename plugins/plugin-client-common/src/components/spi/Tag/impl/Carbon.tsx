@@ -24,7 +24,7 @@ import '../../../../../web/scss/components/Tag/Carbon.scss'
 export default function CarbonTag(props: Props) {
   return (
     <span title={props.title}>
-      <Tag {...props} type={props.type === 'error' ? 'red' : 'gray'} />
+      <Tag {...props} type={props.type === 'error' ? 'red' : 'blue'} />
     </span>
   )
 }
