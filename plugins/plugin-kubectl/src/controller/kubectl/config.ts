@@ -21,7 +21,7 @@ import { doExecWithPty } from './exec'
 import { KubeOptions } from './options'
 import commandPrefix from '../command-prefix'
 
-const CHANNEL = '/kubectl/config/change'
+const kubectlConfigChangeChannel = '/kubectl/config/change'
 type Handler = (args: Arguments<KubeOptions>) => void
 
 const mutators = [
@@ -36,12 +36,16 @@ const mutators = [
   'use-context'
 ]
 
+export function emitKubectlConfigChangeEvent(args: Arguments<KubeOptions>) {
+  eventChannelUnsafe.emit(kubectlConfigChangeChannel, args)
+}
+
 export function onKubectlConfigChangeEvents(handler: Handler) {
-  eventChannelUnsafe.on(CHANNEL, handler)
+  eventChannelUnsafe.on(kubectlConfigChangeChannel, handler)
 }
 
 export function offKubectlConfigChangeEvents(handler: Handler) {
-  eventChannelUnsafe.off(CHANNEL, handler)
+  eventChannelUnsafe.off(kubectlConfigChangeChannel, handler)
 }
 
 /**
@@ -51,7 +55,7 @@ export function offKubectlConfigChangeEvents(handler: Handler) {
  */
 async function doConfig(args: Arguments<KubeOptions>) {
   const response = await doExecWithPty(args)
-  eventChannelUnsafe.emit(CHANNEL, args)
+  emitKubectlConfigChangeEvent(args)
   return response
 }
 
