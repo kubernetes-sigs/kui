@@ -20,8 +20,6 @@ import Debug from 'debug'
 const debug = Debug('core/usage-error')
 debug('loading')
 
-import * as Marked from 'marked'
-
 import { isHeadless } from './capabilities'
 import { CodedError } from '../models/errors'
 import { Entity } from '../models/entity'
@@ -350,14 +348,14 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
       if (!isHeadless()) {
         try {
-          const renderer = new Marked.Renderer()
+          /* const renderer = new Marked.Renderer()
           const marked = (_: string): string => Marked(_, { renderer })
           renderer.link = (href: string, title: string, text: string) => {
             return `<a class='bx--link' target='_blank' title="${title}" href="${href}">${text}</a>`
-          }
+          } */
 
           headerDiv = div('', 'normal-text sans-serif marked-content')
-          headerDiv.innerHTML = marked(header)
+          headerDiv.innerText = header // marked(header)
         } catch (err) {
           debug('error using marked', err)
         }
