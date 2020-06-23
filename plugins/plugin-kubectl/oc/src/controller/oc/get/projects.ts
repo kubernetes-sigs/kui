@@ -15,7 +15,15 @@
  */
 
 import { Arguments, Registrar } from '@kui-shell/core'
-import { defaultFlags, KubeOptions, commandPrefix, doGet, getNamespacesTransformer } from '@kui-shell/plugin-kubectl'
+import {
+  defaultFlags,
+  KubeOptions,
+  commandPrefix,
+  doGet,
+  doExecWithStdout,
+  getNamespacesTransformer,
+  emitKubectlConfigChangeEvent
+} from '@kui-shell/plugin-kubectl'
 
 /** Actuate a project switch by using `oc project set` */
 function doSwitchViaOc(ns: string, args: Arguments<KubeOptions>) {
@@ -26,11 +34,24 @@ function doSwitchViaOc(ns: string, args: Arguments<KubeOptions>) {
 export default function registerOcProjectGet(registrar: Registrar) {
   const viewTransformer = getNamespacesTransformer.bind(undefined, doSwitchViaOc)
 
+  registrar.listen(`/${commandPrefix}/oc/project`, async args => {
+    const response = await doExecWithStdout(args, undefined, 'oc')
+    emitKubectlConfigChangeEvent(args)
+    return response
+  })
+
+  registrar.listen(
+    `/${commandPrefix}/oc/projects`,
+    args => args.REPL.qexec('oc get projects', undefined, undefined, args.execOptions),
+    Object.assign({}, defaultFlags, { viewTransformer })
+  )
+
   registrar.listen(
     `/${commandPrefix}/oc/get/project`,
     doGet('oc'),
     Object.assign({}, defaultFlags, { viewTransformer })
   )
+
   registrar.listen(
     `/${commandPrefix}/oc/get/projects`,
     doGet('oc'),
