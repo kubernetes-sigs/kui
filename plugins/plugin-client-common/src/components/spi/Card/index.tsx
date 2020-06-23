@@ -15,12 +15,21 @@
  */
 
 import * as React from 'react'
-
-import PatternFly4 from './impl/PatternFly'
-
 import Props from './model'
+
+/**
+ * PatternFly4 Card Component. We use React.lazy import here because
+ * the @patternfly/react-core/src/components/Card code import css files,
+ * which will result in the `card` command fails at kui-prescan stage.
+ *
+ */
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
 // FIXME There's no ideal Card component in Carbon Component Libary, so we use Patternfly
 export default function CardSpi(props: Props): React.ReactElement {
-  return <PatternFly4 {...props} />
+  return (
+    <React.Suspense fallback={<div />}>
+      <PatternFly4 {...props} />
+    </React.Suspense>
+  )
 }
