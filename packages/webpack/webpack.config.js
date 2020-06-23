@@ -230,10 +230,12 @@ console.log('webpack plugins', plugins)
 const clientBase = path.join(stageDir, 'node_modules/@kui-shell/client')
 
 plugins.push(
-  new CopyPlugin([
-    { from: path.join(clientBase, 'icons'), to: 'icons/' },
-    { from: path.join(clientBase, 'images'), to: 'images/' }
-  ])
+  new CopyPlugin({
+    patterns: [
+      { from: path.join(clientBase, 'icons'), to: 'icons/' },
+      { from: path.join(clientBase, 'images'), to: 'images/' }
+    ]
+  })
 )
 
 const clientOptions = requireAll(path.resolve(path.join(clientBase, 'config.d')))

@@ -39,7 +39,7 @@
     "elkjs": "0.3.0",
     "es6-promise-pool": "2.5.0",
     "jquery": "3.5.0",
-    "tmp": "0.1.0"
+    "tmp": "0.2.1"
   },
   "kui": {
     "headless": false,

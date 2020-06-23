@@ -30,7 +30,7 @@
     "monaco-editor-webpack-plugin": "1.9.0",
     "react-markdown": "4.3.1",
     "react-split-pane": "0.1.91",
-    "tmp": "0.1.0"
+    "tmp": "0.2.1"
   },
   "kui": {
     "webpack": {
