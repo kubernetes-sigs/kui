@@ -28,6 +28,14 @@ const inputEncoded2 = inputBuffer2.toString('base64')
 
 const sleepTime = 3
 
+const commands = []
+
+// not testing against oc until this bug (in oc) is fixed:
+// https://github.com/openshift/oc/issues/365
+/* if (process.env.NEEDS_OC) {
+  commands.push('oc')
+} */
+
 /** sleep for N seconds */
 function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
@@ -39,145 +47,150 @@ interface PodDesc {
   containers: string[]
 }
 
-describe(`kubectl Logs multiple pods via selector ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
-  before(Common.before(this))
-  after(Common.after(this))
+commands.forEach(command => {
+  describe(`${command} Logs multiple pods via selector ${process.env.MOCHA_RUN_TARGET ||
+    ''}`, function(this: Common.ISuite) {
+    before(Common.before(this))
+    after(Common.after(this))
 
-  const waitForLogText = waitForTerminalText.bind(this)
+    const waitForLogText = waitForTerminalText.bind(this)
 
-  const ns: string = createNS()
-  allocateNS(this, ns)
+    const ns: string = createNS()
+    allocateNS(this, ns, command)
 
-  const allContainers = 'All Containers'
+    // needed to force the dom renderer for webpack/browser-based tests; see ExecIntoPod
+    Common.setDebugMode.bind(this)()
 
-  const pods: PodDesc[] = [
-    { input: inputEncoded, podName: 'kui-two-containers', containers: ['nginx', 'vim'] },
-    { input: inputEncoded2, podName: 'vim', containers: ['alpine'] }
-  ]
+    const allContainers = 'All Containers'
 
-  const fqn1 = `${pods[0].podName}:${pods[0].containers[0]}`
-  const fqn2 = `${pods[0].podName}:${pods[0].containers[1]}`
-  const containerName1 = pods[0].containers[0]
-  const containerName2 = pods[0].containers[1]
+    const pods: PodDesc[] = [
+      { input: inputEncoded, podName: 'kui-two-containers', containers: ['nginx', 'vim'] },
+      { input: inputEncoded2, podName: 'vim', containers: ['alpine'] }
+    ]
 
-  // this is the name we expect to represent all of the pods, when
-  // queried by the label we will add in `addLabel()` below
-  const allPods = pods.map(_ => _.podName).join(', ')
+    const fqn1 = `${pods[0].podName}:${pods[0].containers[0]}`
+    const fqn2 = `${pods[0].podName}:${pods[0].containers[1]}`
+    const containerName1 = pods[0].containers[0]
+    const containerName2 = pods[0].containers[1]
 
-  const createPodWithoutWaiting = ({ input, podName }: PodDesc) => {
-    it(`should create sample pod from URL`, () => {
-      return CLI.command(`echo ${input} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
-        .then(ReplExpect.okWithPtyOutput(podName))
-        .catch(Common.oops(this, true))
-    })
-  }
+    // this is the name we expect to represent all of the pods, when
+    // queried by the label we will add in `addLabel()` below
+    const allPods = pods.map(_ => _.podName).join(', ')
 
-  const waitForPod = ({ podName }: PodDesc, waitIndex: number) => {
-    it(`should wait for the pod to come up`, () => {
-      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(async () => {
-          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
-        })
-        .catch(Common.oops(this, true))
-    })
-  }
-
-  const addLabel = ({ podName }: PodDesc) => {
-    it(`should add a label to pod ${podName}`, () => {
-      return CLI.command(`kubectl label pod ${podName} -n ${ns} foo=bar`, this.app)
-        .then(ReplExpect.okWithPtyOutput('labeled'))
-        .catch(Common.oops(this, true))
-    })
-  }
-
-  const getLogsViaLabel = (containers: string) => {
-    it(`should show the Logs tab via k logs -lfoo=bar`, async () => {
-      return CLI.command(`kubectl logs -lfoo=bar -n ${ns} ${containers}`, this.app)
-        .then(ReplExpect.justOK)
-        .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(allPods))
-        .then(SidecarExpect.mode('logs'))
-        .catch(Common.oops(this, true))
-    })
-  }
-
-  const testLogsContent = (show: string[], notShow?: string[]) => {
-    if (show) {
-      show.forEach(showInLog => {
-        it(`should show ${showInLog} in log output`, async () => {
-          try {
-            await sleep(sleepTime)
-            await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
-          } catch (err) {
-            return Common.oops(this, true)(err)
-          }
-        })
+    const createPodWithoutWaiting = ({ input, podName }: PodDesc) => {
+      it(`should create sample pod from URL`, () => {
+        return CLI.command(`echo ${input} | base64 --decode | ${command} create -f - -n ${ns}`, this.app)
+          .then(ReplExpect.okWithPtyOutput(podName))
+          .catch(Common.oops(this, true))
       })
     }
 
-    if (notShow) {
-      notShow.forEach(notShowInLog => {
-        it(`should not show ${notShowInLog} in log output`, async () => {
-          try {
-            await sleep(sleepTime)
-            await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
-          } catch (err) {
-            return Common.oops(this, true)(err)
-          }
-        })
+    const waitForPod = ({ podName }: PodDesc, waitIndex: number) => {
+      it(`should wait for the pod to come up`, () => {
+        return CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
+          .then(async () => {
+            await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
+          })
+          .catch(Common.oops(this, true))
       })
     }
-  }
 
-  const switchContainer = (container: string, showInLog: string[], notShowInLog: string[]) => {
-    it(`should switch to container ${container}`, async () => {
-      try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-        await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
-        await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
-      } catch (err) {
-        return Common.oops(this, true)(err)
+    const addLabel = ({ podName }: PodDesc) => {
+      it(`should add a label to pod ${podName}`, () => {
+        return CLI.command(`${command} label pod ${podName} -n ${ns} foo=bar`, this.app)
+          .then(ReplExpect.okWithPtyOutput('labeled'))
+          .catch(Common.oops(this, true))
+      })
+    }
+
+    const getLogsViaLabel = (containers: string) => {
+      it(`should show the Logs tab via k logs -lfoo=bar`, async () => {
+        return CLI.command(`${command} logs -lfoo=bar -n ${ns} ${containers}`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.showing(allPods))
+          .then(SidecarExpect.mode('logs'))
+          .catch(Common.oops(this, true))
+      })
+    }
+
+    const testLogsContent = (show: string[], notShow?: string[]) => {
+      if (show) {
+        show.forEach(showInLog => {
+          it(`should show ${showInLog} in log output`, async () => {
+            try {
+              await sleep(sleepTime)
+              await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
+            } catch (err) {
+              return Common.oops(this, true)(err)
+            }
+          })
+        })
       }
+
+      if (notShow) {
+        notShow.forEach(notShowInLog => {
+          it(`should not show ${notShowInLog} in log output`, async () => {
+            try {
+              await sleep(sleepTime)
+              await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
+            } catch (err) {
+              return Common.oops(this, true)(err)
+            }
+          })
+        })
+      }
+    }
+
+    const switchContainer = (container: string, showInLog: string[], notShowInLog: string[]) => {
+      it(`should switch to container ${container}`, async () => {
+        try {
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('container-list'))
+          await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
+          await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
+        } catch (err) {
+          return Common.oops(this, true)(err)
+        }
+      })
+
+      testLogsContent(showInLog, notShowInLog)
+    }
+
+    /* Here comes the test */
+
+    // create and label the pods
+    pods.forEach((pod, idx) => {
+      createPodWithoutWaiting(pod)
+      waitForPod(pod, idx)
+      addLabel(pod)
     })
 
-    testLogsContent(showInLog, notShowInLog)
-  }
+    // use k get -lfoo=bar to show the Logs tab, all containers across all pods
+    getLogsViaLabel('--all-containers')
 
-  /* Here comes the test */
+    // expect the log messages for all containers across all pods
+    // note how pod 0 uses the container names as the log messages
+    // whereas pod 1 uses "hi"
+    testLogsContent([containerName1, containerName2, 'hi'])
 
-  // create and label the pods
-  pods.forEach((pod, idx) => {
-    createPodWithoutWaiting(pod)
-    waitForPod(pod, idx)
-    addLabel(pod)
+    // testing various combination here
+    switchContainer(fqn1, [containerName1], [containerName2, 'hi'])
+    switchContainer(fqn2, [containerName2], [containerName1, 'hi'])
+
+    // note: due to the --tail flag, we don't expect to see
+    // containerName1 in the logs -- it probably has flown off the top
+    // of the xtermjs scrollback
+    switchContainer(allContainers, [/* containerName1, */ containerName2, 'hi'], [])
+
+    // use k get -lfoo=bar to show the Logs tab, the first container of the first pod
+    getLogsViaLabel(`-c ${containerName1}`)
+    testLogsContent([containerName1])
+
+    // use k get -lfoo=bar to show the Logs tab, the second container of the first pod
+    getLogsViaLabel(`-c ${containerName2}`)
+    testLogsContent([containerName2])
+
+    deleteNS(this, ns, command)
   })
-
-  // use k get -lfoo=bar to show the Logs tab, all containers across all pods
-  getLogsViaLabel('--all-containers')
-
-  // expect the log messages for all containers across all pods
-  // note how pod 0 uses the container names as the log messages
-  // whereas pod 1 uses "hi"
-  testLogsContent([containerName1, containerName2, 'hi'])
-
-  // testing various combination here
-  switchContainer(fqn1, [containerName1], [containerName2, 'hi'])
-  switchContainer(fqn2, [containerName2], [containerName1, 'hi'])
-
-  // note: due to the --tail flag, we don't expect to see
-  // containerName1 in the logs -- it probably has flown off the top
-  // of the xtermjs scrollback
-  switchContainer(allContainers, [/* containerName1, */ containerName2, 'hi'], [])
-
-  // use k get -lfoo=bar to show the Logs tab, the first container of the first pod
-  getLogsViaLabel(`-c ${containerName1}`)
-  testLogsContent([containerName1])
-
-  // use k get -lfoo=bar to show the Logs tab, the second container of the first pod
-  getLogsViaLabel(`-c ${containerName2}`)
-  testLogsContent([containerName2])
-
-  deleteNS(this, ns)
 })

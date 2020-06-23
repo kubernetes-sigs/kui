@@ -28,29 +28,36 @@ const inputEncoded = inputBuffer.toString('base64')
 const podName = 'kui-crashy'
 const containerName = 'crashy'
 
-describe(`kubectl Logs previous tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
-  before(Common.before(this))
-  after(Common.after(this))
+const commands = ['kubectl']
+if (process.env.NEEDS_OC) {
+  commands.push('oc')
+}
 
-  const ns = createNS()
+commands.forEach(command => {
+  describe(`${command} Logs previous tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    before(Common.before(this))
+    after(Common.after(this))
 
-  const createPodWithoutWaiting = create.bind(this, ns)
-  const waitForPod = wait.bind(this, ns, podName)
-  const kubectlLogs = logs.bind(this, ns, podName, containerName, 'warning', false)
-  const kubectlLogsPrevious = logs.bind(this, ns, podName, containerName, 'warning', true)
-  const clickPreviousToggle = clickPrevious.bind(this)
+    const ns = createNS()
 
-  /* Here comes the test */
-  allocateNS(this, ns)
+    const createPodWithoutWaiting = create.bind(this, ns, command)
+    const waitForPod = wait.bind(this, ns, command, podName)
+    const kubectlLogs = logs.bind(this, ns, podName, containerName, 'warning', false)
+    const kubectlLogsPrevious = logs.bind(this, ns, command, podName, containerName, 'warning', true)
+    const clickPreviousToggle = clickPrevious.bind(this)
 
-  createPodWithoutWaiting(inputEncoded, podName)
-  waitForPod(2)
+    /* Here comes the test */
+    allocateNS(this, ns, command)
 
-  kubectlLogsPrevious()
-  clickPreviousToggle('warning', false) // click toggle and expect previous=false
+    createPodWithoutWaiting(inputEncoded, podName)
+    waitForPod(2)
 
-  kubectlLogs()
-  clickPreviousToggle('warning', true) // click toggle and expect previous=true
+    kubectlLogsPrevious()
+    clickPreviousToggle('warning', false) // click toggle and expect previous=false
 
-  deleteNS(this, ns)
+    kubectlLogs()
+    clickPreviousToggle('warning', true) // click toggle and expect previous=true
+
+    deleteNS(this, ns, command)
+  })
 })
