@@ -15,4 +15,4 @@
  */
 
 // this file defines the external API
-export { doLogs } from './controller/kubectl/logs'
+export { registerLogs, registerExec } from './controller/kubectl/logs'

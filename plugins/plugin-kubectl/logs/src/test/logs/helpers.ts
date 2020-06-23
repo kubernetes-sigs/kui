@@ -17,18 +17,18 @@
 import { CLI, Common, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { defaultModeForGet, waitForGreen } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-export function create(this: Common.ISuite, ns: string, inputEncoded: string, podName: string) {
+export function create(this: Common.ISuite, ns: string, command: string, inputEncoded: string, podName: string) {
   it(`should create sample pod from URL`, () => {
-    return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - -n ${ns}`, this.app)
+    return CLI.command(`echo ${inputEncoded} | base64 --decode | ${command} create -f - -n ${ns}`, this.app)
       .then(ReplExpect.okWithPtyOutput(podName))
       .catch(Common.oops(this, true))
   })
 }
 
-export function wait(this: Common.ISuite, ns: string, podName: string, splitIndex?: number) {
+export function wait(this: Common.ISuite, ns: string, command: string, podName: string, splitIndex?: number) {
   if (process.env.USE_WATCH_PANE) {
     it(`should wait for the pod to come up`, () => {
-      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+      return CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
         .then(async () => {
           await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(splitIndex, podName))
         })
@@ -36,7 +36,7 @@ export function wait(this: Common.ISuite, ns: string, podName: string, splitInde
     })
   } else {
     it(`should wait for the pod to come up`, () => {
-      return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
+      return CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
@@ -44,10 +44,10 @@ export function wait(this: Common.ISuite, ns: string, podName: string, splitInde
   }
 }
 
-export function get(this: Common.ISuite, ns: string, podName: string, wait = true) {
-  it(`should get pod ${podName} via kubectl then click`, async () => {
+export function get(this: Common.ISuite, ns: string, command: string, podName: string, wait = true) {
+  it(`should get pod ${podName} via ${command} then click`, async () => {
     try {
-      const selector: string = await CLI.command(`kubectl get pods ${podName} -n ${ns}`, this.app).then(
+      const selector: string = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app).then(
         ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
       )
 
@@ -90,6 +90,7 @@ async function waitUntilPreviousIs(this: Common.ISuite, type: 'info' | 'warning'
 export function logs(
   this: Common.ISuite,
   ns: string,
+  command: string,
   podName: string,
   containerName: string,
   type: 'info' | 'warning',
@@ -100,7 +101,7 @@ export function logs(
   it(`should get logs for ${podName} with previous=${previous} via command`, async () => {
     try {
       await CLI.command(
-        `kubectl logs ${podName} -c ${containerName} -n ${ns} ${previous ? '--previous' : ''}`,
+        `${command} logs ${podName} -c ${containerName} -n ${ns} ${previous ? '--previous' : ''}`,
         this.app
       )
         .then(ReplExpect.justOK)

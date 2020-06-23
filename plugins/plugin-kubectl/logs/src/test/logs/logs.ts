@@ -116,6 +116,10 @@ wdescribe(`kubectl logs getty via watch pane ${process.env.MOCHA_RUN_TARGET || '
   }
 
   allocateNS(this, ns)
+
+  // needed to force the dom renderer for webpack/browser-based tests; see ExecIntoPod
+  Common.setDebugMode.bind(this)()
+
   inputs.forEach((_, idx) => {
     if (_.expectString) {
       createPodExpectingString(_.podName, _.cmdline)

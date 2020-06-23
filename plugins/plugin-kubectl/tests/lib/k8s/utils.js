@@ -116,7 +116,7 @@ exports.deleteNS = (ctx, ns, command = 'kubectl', theCli = CLI) => {
 exports.deletePodByName = (ctx, pod, ns, command = 'kubectl', theCli = CLI) => {
   it(`should delete the pod ${pod} by name via ${command}`, () => {
     return theCli
-      .command(`kubectl delete pod ${pod} -n ${ns}`, ctx.app)
+      .command(`${command} delete pod ${pod} -n ${ns}`, ctx.app)
       .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(pod) }))
       .then(selector => exports.waitForRed(ctx.app, selector))
       .catch(Common.oops(ctx, true))
