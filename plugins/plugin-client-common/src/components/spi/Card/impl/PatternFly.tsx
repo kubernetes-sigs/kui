@@ -30,6 +30,7 @@ import {
 
 import Props from '../model'
 import { DropDownAction } from '../../DropDown'
+import Markdown from '../../../Content/Markdown'
 
 import '../../../../../web/scss/components/Card/PatternFly.scss'
 
@@ -108,7 +109,13 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
             {Array.isArray(this.props.children) ? (
               this.props.children.map((child, idx) => <CardBody key={idx}>{child}</CardBody>)
             ) : (
-              <CardBody>{this.props.children}</CardBody>
+              <CardBody>
+                {typeof this.props.children === 'string' ? (
+                  <Markdown source={this.props.children} repl={this.props.repl} />
+                ) : (
+                  this.props.children
+                )}
+              </CardBody>
             )}
           </React.Fragment>
         )}

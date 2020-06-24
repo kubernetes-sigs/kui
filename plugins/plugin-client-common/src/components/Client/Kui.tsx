@@ -31,12 +31,13 @@ import {
   ThemeProperties
 } from '@kui-shell/core'
 
+import Card from '../spi/Card'
 import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
 import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '../..'
 
 const debug = Debug('<Kui/>')
-const strings = i18n('plugin-bash-like')
+const strings = i18n('plugin-client-common')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
 const defaultThemeProperties: ThemeProperties = {
@@ -132,12 +133,9 @@ export class Kui extends React.PureComponent<Props, State> {
           reinit: <div className="kui--hero-text">Connection broken...</div>,
           loadingError: err => <div className="kui--hero-text">Error connecting to your cloud: {err.toString()}</div>,
           loadingDone: (repl: REPL) => (
-            <span>
-              {strings('Successfully connected to your cloud. For next steps, try this command: ')}{' '}
-              <a href="#" className="bx--link" onClick={() => repl.pexec('getting started')}>
-                getting started
-              </a>
-            </span>
+            <Card title={strings('Successfully connected to your cloud')} repl={repl}>
+              {strings('To learn more, try getting started')}
+            </Card>
           )
         }
   }
