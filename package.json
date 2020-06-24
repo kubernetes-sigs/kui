@@ -63,6 +63,7 @@
     "@kui-shell/plugin-git": "file:plugins/plugin-git",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-client-common": "file:plugins/plugin-client-common",
+    "@kui-shell/plugin-electron-components": "file:plugins/plugin-electron-components",
     "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
     "@kui-shell/plugin-ibmcloud": "file:plugins/plugin-ibmcloud",

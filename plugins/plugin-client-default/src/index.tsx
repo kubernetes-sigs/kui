@@ -24,6 +24,7 @@ import { UpdateChecker } from '@kui-shell/plugin-core-support'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 // import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
+import { Screenshot, Search } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
@@ -49,7 +50,14 @@ function loadingDone(repl: REPL) {
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui productName={productName} splitTerminals enableWatcherAutoPin {...props} loadingDone={loadingDone}>
+    <Kui
+      productName={productName}
+      splitTerminals
+      enableWatcherAutoPin
+      {...props}
+      loadingDone={loadingDone}
+      toplevel={<Search />}
+    >
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
@@ -60,6 +68,7 @@ export default function renderMain(props: KuiProps) {
         {/* <ClusterUtilization /> */}
         <ProxyOfflineIndicator />
         <UpdateChecker />
+        <Screenshot />
       </MeterWidgets>
     </Kui>
   )

@@ -14,6 +14,9 @@
       "path": "plugins/plugin-client-common"
     },
     {
+      "path": "plugins/plugin-electron-components"
+    },
+    {
       "path": "plugins/plugin-core-support"
     },
     {
@@ -48,9 +51,6 @@
     },
     {
       "path": "plugins/plugin-ibmcloud"
-    },
-    {
-      "path": "plugins/plugin-sandbox"
     }
   ]
 }

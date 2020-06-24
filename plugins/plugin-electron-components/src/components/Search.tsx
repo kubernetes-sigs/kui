@@ -15,11 +15,11 @@
  */
 
 import * as React from 'react'
-import { inElectron, i18n } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core'
 import { Event, FoundInPageResult } from 'electron'
 import { Search as CarbonSearch } from 'carbon-components-react'
 
-import '../../../web/css/static/Search.scss'
+import '../../web/scss/components/Search/Search.scss'
 
 const strings = i18n('plugin-client-common', 'search')
 
@@ -154,7 +154,7 @@ export default class Search extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (!this.state.isActive || !inElectron()) {
+    if (!this.state.isActive) {
       this._input = undefined
       return <React.Fragment />
     } else {

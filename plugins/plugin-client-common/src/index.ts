@@ -29,7 +29,6 @@ import '../web/css/static/status-stripe.css'
 export { default as Kui, Props as KuiProps } from './components/Client/Kui'
 
 // Client components
-export { default as Search } from './components/Client/Search'
 export { default as InputStripe } from './components/Client/InputStripe'
 export { default as TabContainer } from './components/Client/TabContainer'
 export { default as TabContent } from './components/Client/TabContent'
@@ -53,6 +52,7 @@ export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSid
 // SPI
 export { default as Card } from './components/spi/Card'
 export { default as Tag } from './components/spi/Tag'
+export { default as Alert } from './components/spi/Alert'
 
 // Input components
 export {
