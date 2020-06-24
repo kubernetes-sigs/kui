@@ -265,7 +265,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   /** Render a ToastNotification to tell the user what we captured */
   private notification() {
     if (this.state && this.state.captured) {
-      const timeout = 100000 * 1000
+      const timeout = 10 * 1000
       const alert = {
         type: 'success' as const,
         title: strings('Screenshot'),
