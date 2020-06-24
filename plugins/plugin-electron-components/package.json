@@ -1,0 +1,25 @@
+{
+  "name": "@kui-shell/plugin-electron-components",
+  "version": "8.10.0",
+  "description": "Kui plugin that houses electron-specific React components",
+  "license": "Apache-2.0",
+  "author": "@starpit",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "keywords": [
+    "kui",
+    "plugin"
+  ],
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  }
+}
