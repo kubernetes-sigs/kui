@@ -99,10 +99,10 @@ function squashRow(row: IBufferLine, previous: IBufferCell, current: IBufferCell
 }
 
 function lastFullLineIdx(terminal: Terminal, current: IBufferCell): number {
-  let ridx = terminal.buffer.length - 1
+  let ridx = terminal.buffer.active.length - 1
 
   while (ridx >= 0) {
-    const line = terminal.buffer.getLine(ridx)
+    const line = terminal.buffer.active.getLine(ridx)
     for (let cidx = 0; cidx < line.length; cidx++) {
       line.getCell(cidx, current)
       if (current.getCode() !== 0) {
@@ -121,13 +121,13 @@ export default function copy(terminal: Terminal): HTMLElement {
   rows.classList.add('xterm-rows')
 
   // templates, to avoid creating lots of temporary objects
-  const previous = terminal.buffer.getNullCell()
-  const current = terminal.buffer.getNullCell()
+  const previous = terminal.buffer.active.getNullCell()
+  const current = terminal.buffer.active.getNullCell()
 
   const nLines = lastFullLineIdx(terminal, current) + 1
   let prevRow: HTMLElement
   for (let idx = 0; idx < nLines; idx++) {
-    const line = terminal.buffer.getLine(idx)
+    const line = terminal.buffer.active.getLine(idx)
 
     if (line.isWrapped && prevRow !== undefined) {
       squashRow(line, previous, current, prevRow)
