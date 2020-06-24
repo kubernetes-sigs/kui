@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import * as React from 'react'
-import { inElectron, pexecInCurrentTab, i18n } from '@kui-shell/core'
+import { pexecInCurrentTab, i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 
@@ -54,27 +54,10 @@ export default class StatusStripe extends React.PureComponent {
     }
   }
 
-  /**
-   * Screenshot button. We only want this live in electron builds,
-   * because the Search.tsx code imports 'electron'. So 1) hide behind
-   * React.lazy; and 2) we still need an empty shim for non-electron
-   * mode.
-   *
-   */
-  private screenshot() {
-    const Screenshot = React.lazy(() => (inElectron() ? import('../Screenshot') : import('../Empty')))
-    return (
-      <React.Suspense fallback={<div />}>
-        <Screenshot />
-      </React.Suspense>
-    )
-  }
-
   public render() {
     return (
       <div className="kui--status-stripe kui--inverted-color-context zoomable" id="kui--status-stripe">
         {this.widgets()}
-        {this.screenshot()}
 
         <div className="kui--status-stripe-button">
           <a
