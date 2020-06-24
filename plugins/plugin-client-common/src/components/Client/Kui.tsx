@@ -52,6 +52,9 @@ export type Props = Partial<KuiConfiguration> & {
   /** operate in bottom Input mode? rather than as a conventional Input/Output terminal */
   bottomInput?: true | React.ReactNode
 
+  /** Elements to place between TabContainer and StatusStripe */
+  toplevel?: React.ReactNode | React.ReactNode[]
+
   /** operate in popup mode? */
   isPopup?: boolean
 
@@ -180,6 +183,7 @@ export class Kui extends React.PureComponent<Props, State> {
             <TabContainer noActiveInput={!!this.props.bottomInput} bottom={bottom}>
               <ComboSidecar />
             </TabContainer>
+            {this.props.toplevel}
             <StatusStripe>{this.props.children}</StatusStripe>
           </div>
         </KuiContext.Provider>

@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { inElectron, Tab, eventBus } from '@kui-shell/core'
+import { Tab, eventBus } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
@@ -37,7 +37,7 @@ import '../../../web/css/static/TabContainer.scss'
  */
 
 type TabContainerOptions = TabContentOptions
-type Props = TabContainerOptions & TopTabStripeConfiguration
+type Props = TabContentOptions & TopTabStripeConfiguration
 
 interface State {
   /** list of current tabs; one TabContent for each */
@@ -165,22 +165,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     }))
   }
 
-  /**
-   * Search component. We only want this live in electron builds,
-   * because the Search.tsx code imports 'electron'. So 1) hide behind
-   * React.lazy; and 2) we still need an empty shim for non-electron
-   * mode.
-   *
-   */
-  private search() {
-    const Search = React.lazy(() => (inElectron() ? import('./Search') : import('./Empty')))
-    return (
-      <React.Suspense fallback={<div />}>
-        <Search />
-      </React.Suspense>
-    )
-  }
-
   private graft(node: React.ReactNode | {}, uuid: string, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
@@ -227,7 +211,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
           onCloseTab={(idx: number) => this.onCloseTab(idx)}
           onSwitchTab={(idx: number) => this.onSwitchTab(idx)}
         />
-        {this.search()}
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
             <TabContent

@@ -14,10 +14,5 @@
  * limitations under the License.
  */
 
-import { inSandbox, Registrar } from '@kui-shell/core'
-
-export default async (registrar: Registrar) => {
-  if (inSandbox()) {
-    registrar.listen('help', (await import('./controller/help')).default)
-  }
-}
+export { default as Search } from './components/Search'
+export { default as Screenshot } from './components/Screenshot'

@@ -16,11 +16,11 @@
 
 import * as React from 'react'
 import { Event, NativeImage } from 'electron'
-import { i18n, eventChannelUnsafe } from '@kui-shell/core'
-import Alert from '../spi/Alert'
 import { Button } from 'carbon-components-react'
+import { Alert } from '@kui-shell/plugin-client-common'
+import { i18n, eventChannelUnsafe } from '@kui-shell/core'
 
-import '../../../web/css/static/Screenshot.scss'
+import '../../web/scss/components/Screenshot/Screenshot.scss'
 
 const strings = i18n('plugin-client-common', 'screenshot')
 
