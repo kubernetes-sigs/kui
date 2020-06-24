@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** make Close a top-level button in watch panes ([6027968](https://github.com/IBM/kui/commit/6027968)), closes [#4945](https://github.com/IBM/kui/issues/4945)
+- **plugins/plugin-kubectl:** changing ns via oc does not update ns widget, in browser clients ([4be867b](https://github.com/IBM/kui/commit/4be867b)), closes [#4953](https://github.com/IBM/kui/issues/4953)
+- **plugins/plugin-kubectl:** oc logs does not work ([0d9dab3](https://github.com/IBM/kui/commit/0d9dab3)), closes [#4965](https://github.com/IBM/kui/issues/4965)
+- **plugins/plugin-kubectl:** singleton breadcrumbs in kubectl help should not be clickable ([ee9da8e](https://github.com/IBM/kui/commit/ee9da8e)), closes [#4961](https://github.com/IBM/kui/issues/4961)
+
 ## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
 
 ### Bug Fixes

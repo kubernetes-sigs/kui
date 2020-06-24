@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** spurious warning in the console re: Tag ([5440458](https://github.com/IBM/kui/commit/5440458)), closes [#4959](https://github.com/IBM/kui/issues/4959)
+- **plugins/plugin-proxy-support:** improved display of ProxyOffline state ([f6a4659](https://github.com/IBM/kui/commit/f6a4659)), closes [#4955](https://github.com/IBM/kui/issues/4955)
+
 ## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
 
 **Note:** Version bump only for package @kui-shell/plugin-proxy-support

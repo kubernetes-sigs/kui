@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-patternfly-themes:** update theme alignment to patternfly v4 ([cac1ad3](https://github.com/IBM/kui/commit/cac1ad3)), closes [#4948](https://github.com/IBM/kui/issues/4948)
+- support for using patternfly components with non-patternfly themes ([b6d34ba](https://github.com/IBM/kui/commit/b6d34ba)), closes [#4934](https://github.com/IBM/kui/issues/4934)
+- upgrade @patternfly/react-core to latest ([04e4668](https://github.com/IBM/kui/commit/04e4668)), closes [#4937](https://github.com/IBM/kui/issues/4937)
+
 ## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
 
 **Note:** Version bump only for package @kui-shell/plugin-patternfly4-themes

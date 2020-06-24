@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
+
+### Bug Fixes
+
+- **packages/webpack:** allow imports of markdown and image assets ([5a8f550](https://github.com/IBM/kui/commit/5a8f550)), closes [#4983](https://github.com/IBM/kui/issues/4983)
+- **plugins/plugin-client-common:** <Markdown/> component misparses certain markdown source ([1f8157c](https://github.com/IBM/kui/commit/1f8157c)), closes [#4941](https://github.com/IBM/kui/issues/4941)
+- **plugins/plugin-client-common:** carbon breadcrumbs may not have proper hover effect ([b8ab712](https://github.com/IBM/kui/commit/b8ab712)), closes [#4962](https://github.com/IBM/kui/issues/4962)
+- **plugins/plugin-client-common:** improve Terminal screenshots by adding padding ([6764be3](https://github.com/IBM/kui/commit/6764be3)), closes [#4981](https://github.com/IBM/kui/issues/4981)
+- **plugins/plugin-client-common:** make Close a top-level button in watch panes ([6027968](https://github.com/IBM/kui/commit/6027968)), closes [#4945](https://github.com/IBM/kui/issues/4945)
+- **plugins/plugin-client-common:** poor alignment of sidecar toolbar elements ([9fd411c](https://github.com/IBM/kui/commit/9fd411c)), closes [#4970](https://github.com/IBM/kui/issues/4970)
+- **plugins/plugin-client-common:** reverse-i-search does not properly report no matches ([ad947fc](https://github.com/IBM/kui/commit/ad947fc)), closes [#4943](https://github.com/IBM/kui/issues/4943)
+- **plugins/plugin-client-common:** Screenshot modal never goes away ([334f921](https://github.com/IBM/kui/commit/334f921)), closes [#4979](https://github.com/IBM/kui/issues/4979)
+- **plugins/plugin-client-common:** spurious warning in the console re: Tag ([5440458](https://github.com/IBM/kui/commit/5440458)), closes [#4959](https://github.com/IBM/kui/issues/4959)
+- **plugins/plugin-client-common:** UpdateNotification widget has invisible background color ([7542e85](https://github.com/IBM/kui/commit/7542e85)), closes [#4968](https://github.com/IBM/kui/issues/4968)
+- **plugins/plugin-kubectl:** changing ns via oc does not update ns widget, in browser clients ([4be867b](https://github.com/IBM/kui/commit/4be867b)), closes [#4953](https://github.com/IBM/kui/issues/4953)
+- **plugins/plugin-kubectl:** oc logs does not work ([0d9dab3](https://github.com/IBM/kui/commit/0d9dab3)), closes [#4965](https://github.com/IBM/kui/issues/4965)
+- **plugins/plugin-kubectl:** singleton breadcrumbs in kubectl help should not be clickable ([ee9da8e](https://github.com/IBM/kui/commit/ee9da8e)), closes [#4961](https://github.com/IBM/kui/issues/4961)
+- **plugins/plugin-patternfly-themes:** update theme alignment to patternfly v4 ([cac1ad3](https://github.com/IBM/kui/commit/cac1ad3)), closes [#4948](https://github.com/IBM/kui/issues/4948)
+- **plugins/plugin-proxy-support:** improved display of ProxyOffline state ([f6a4659](https://github.com/IBM/kui/commit/f6a4659)), closes [#4955](https://github.com/IBM/kui/issues/4955)
+- support for using patternfly components with non-patternfly themes ([b6d34ba](https://github.com/IBM/kui/commit/b6d34ba)), closes [#4934](https://github.com/IBM/kui/issues/4934)
+- upgrade @patternfly/react-core to latest ([04e4668](https://github.com/IBM/kui/commit/04e4668)), closes [#4937](https://github.com/IBM/kui/issues/4937)
+
+### Features
+
+- add a command to return the Card Component in Terminal ([da9ab17](https://github.com/IBM/kui/commit/da9ab17)), closes [#4973](https://github.com/IBM/kui/issues/4973)
+- add alert command to display Alert component in Terminal ([27dd17e](https://github.com/IBM/kui/commit/27dd17e)), closes [#4957](https://github.com/IBM/kui/issues/4957)
+- **plugins/plugin-client-common:** add support for Tags in StatusStripe ([738ec22](https://github.com/IBM/kui/commit/738ec22)), closes [#4951](https://github.com/IBM/kui/issues/4951)
+- **plugins/plugin-client-common:** improve accessibility of "red" error grid cells ([22f8db8](https://github.com/IBM/kui/commit/22f8db8)), closes [#4938](https://github.com/IBM/kui/issues/4938)
+
 ## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
 
 ### Bug Fixes

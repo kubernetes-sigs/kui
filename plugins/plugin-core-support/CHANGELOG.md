@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
+
+### Features
+
+- add a command to return the Card Component in Terminal ([da9ab17](https://github.com/IBM/kui/commit/da9ab17)), closes [#4973](https://github.com/IBM/kui/issues/4973)
+- add alert command to display Alert component in Terminal ([27dd17e](https://github.com/IBM/kui/commit/27dd17e)), closes [#4957](https://github.com/IBM/kui/issues/4957)
+- **plugins/plugin-client-common:** add support for Tags in StatusStripe ([738ec22](https://github.com/IBM/kui/commit/738ec22)), closes [#4951](https://github.com/IBM/kui/issues/4951)
+
 ## [8.10.1](https://github.com/IBM/kui/compare/v8.10.0...v8.10.1) (2020-06-18)
 
 ### Bug Fixes
