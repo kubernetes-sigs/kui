@@ -484,7 +484,7 @@ module.exports = {
       { test: /\.ico$/, use: 'url-loader' },
       { test: /\.jpg$/, use: 'url-loader' },
       { test: /\.png$/, use: 'url-loader' },
-      { test: /\.svg$/, use: 'svg-inline-loader' },
+      { test: /\.svg$/, use: 'svg-url-loader' },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, use: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },

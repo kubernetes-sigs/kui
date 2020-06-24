@@ -16,6 +16,7 @@
 
 import { ReactNode } from 'react'
 
+import { REPL } from '@kui-shell/core'
 import { DropDownAction } from '../DropDown'
 
 interface Props {
@@ -28,14 +29,18 @@ interface Props {
   /** Place the given icon image at the top of the Card */
   icon?: string
 
-  /** Force children to be a required property */
-  children: ReactNode
+  /** Body of the Card. If given a string, it will be passed through as the source <Markdown source="..." /> */
+  children: string | ReactNode
 
   /** [Optional] Actions to be rendered in an overflow menu associated with the Card */
   actions?: DropDownAction[]
 
   /** [Optional] CSS class to associate with the outermost Card element */
   className?: string
+
+  /** [Optional] REPL controller, but required if you want your Card
+   * to have functional kuiexec?command=... links via Markdown */
+  repl?: REPL
 }
 
 export default Props
