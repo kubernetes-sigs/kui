@@ -28,15 +28,14 @@ import { Screenshot, Search } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
-// const KuiIcon = require('../icons/svg/kui-dark.svg')
-import KuiIcon from '../icons/svg/kui-dark.svg'
+import KuiIcon from '../icons/png/KUI-Welcome_Light.png'
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('client', 'about')
 
 function loadingDone(repl: REPL) {
   return (
-    <Card title={strings('Successfully connected to your cloud')} icon={KuiIcon} repl={repl}>
+    <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cloud')} icon={KuiIcon} repl={repl}>
       {strings2('loadingDone:content')}
     </Card>
   )
