@@ -212,23 +212,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
     return <Loading description={strings('Please wait while we connect to your cloud')} />
   }
 
-  private sessionInitDoneMessage() {
-    return (
-      this.state.showSessionInitDone &&
-      this.state.sidecarWidth === Width.Closed && (
-        <KuiContext.Consumer>
-          {config =>
-            config.loadingDone && (
-              <div className="kui--repl-message kui--session-init-done">
-                <span className="repl-block">{config.loadingDone(this.state.tab.REPL)}</span>
-              </div>
-            )
-          }
-        </KuiContext.Consumer>
-      )
-    )
-  }
-
   private terminal() {
     if (this.state.sessionInit !== 'Done') {
       return (
@@ -247,7 +230,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
     } else {
       return (
         <React.Fragment>
-          {this.sessionInitDoneMessage()}
           <KuiContext.Consumer>
             {config => (
               <ScrollableTerminal

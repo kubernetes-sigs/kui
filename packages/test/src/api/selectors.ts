@@ -8,6 +8,7 @@ export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} .kui--sidecar.visible.maximize
 export const TERMINAL_WITH_SIDECAR_VISIBLE = `${CURRENT_TAB} .repl.sidecar-visible`
 const _PROMPT_BLOCK = '.repl-block'
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl ${_PROMPT_BLOCK}`
+export const WELCOME_BLOCK = `${PROMPT_BLOCK} .kui--repl-message.kui--session-init-done`
 export const BOTTOM_PROMPT_BLOCK = `${CURRENT_TAB} .kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
 export const STATUS_STRIPE_BLOCK = '.kui--status-stripe .kui--input-stripe .repl-block'
@@ -103,8 +104,8 @@ export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
 export const OVERFLOW_MENU = '.kui--repl-block-right-element.kui--toolbar-button-with-icon'
-export const PROMPT_BLOCK_LAST_MENU = `${PROMPT_BLOCK_LAST} ${OVERFLOW_MENU}`
-export const BLOCK_REMOVE_BUTTON = `${OVERFLOW_MENU} button[data-mode="Remove"]`
+export const PROMPT_BLOCK_MENU = (N: number) => `${PROMPT_BLOCK_N(N)} ${OVERFLOW_MENU}`
+export const BLOCK_REMOVE_BUTTON = `${OVERFLOW_MENU} button[data-mode="Remove"]` // in carbon, this is a global
 export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`

@@ -16,22 +16,19 @@
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
-function doEcho(this: Common.ISuite, idx: number) {
-  it(`should echo ${idx}`, () =>
-    CLI.command(`echo ${idx}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(idx.toString()))
-      .catch(Common.oops(this)))
-}
-
-function doRemoveLastCommand(this: Common.ISuite) {
-  it('should remove the last command and expect clear screen', async () => {
+function doEchoThenRemove(this: Common.ISuite, idx: number) {
+  it(`should echo ${idx} then remove that block`, async () => {
     try {
-      this.app.client.click(Selectors.PROMPT_BLOCK_LAST_MENU)
+      const res = await CLI.command(`echo ${idx}`, this.app)
+      await ReplExpect.okWithPtyOutput(idx.toString())(res)
+
+      const N = res.count
+      this.app.client.click(Selectors.PROMPT_BLOCK_MENU(N))
       await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON)
-      this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON)
-      return ReplExpect.consoleToBeClear(this.app)
+      await this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON)
+      await this.app.client.waitForExist(Selectors.PROMPT_BLOCK_N(N), 5000, true)
     } catch (err) {
-      return Common.oops(this, true)
+      await Common.oops(this, true)
     }
   })
 }
@@ -40,12 +37,9 @@ describe(`remove command output ${process.env.MOCHA_RUN_TARGET || ''}`, function
   before(Common.before(this))
   after(Common.after(this))
 
-  const echo = doEcho.bind(this)
-  const removeLastCommand = doRemoveLastCommand.bind(this)
+  const echo = doEchoThenRemove.bind(this)
 
   // here come the tests
   echo(1)
-  removeLastCommand()
   echo(2)
-  removeLastCommand()
 })

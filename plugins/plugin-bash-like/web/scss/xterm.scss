@@ -1,4 +1,4 @@
-@import "~xterm/css/xterm.css";
+@import '~xterm/css/xterm.css';
 
 /* Explanation for width hacks:
    see https://github.com/xtermjs/xterm.js/pull/2067
@@ -39,8 +39,10 @@ disabled see https://github.com/IBM/kui/issues/3939
     height: auto !important;
   }
 
-/* alt buffer mode */
-  &.xterm-alt-buffer-mode, .xterm-alt-buffer-mode { /* no-splitTerminal and splitTerminal variants */
+  /* alt buffer mode */
+  &.visible.xterm-alt-buffer-mode,
+  .xterm-alt-buffer-mode {
+    /* no-splitTerminal and splitTerminal variants */
     .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
       background-color: var(--color-base08);
       color: var(--color-base00);
@@ -265,7 +267,7 @@ disabled see https://github.com/IBM/kui/issues/3939
   .xterm-is-wrapped-with-prefix-break:before {
     /* see https://github.com/IBM/kui/issues/1605 */
     display: block;
-    content: "";
+    content: '';
 
     /* see https://github.com/IBM/kui/issues/2681 */
     height: 0;
@@ -287,6 +289,6 @@ disabled see https://github.com/IBM/kui/issues/3939
 }
 
 /* selection */
-[kui-theme-style="light"] .xterm-container .xterm-screen .xterm-selection div {
+[kui-theme-style='light'] .xterm-container .xterm-screen .xterm-selection div {
   background-color: rgba(0, 0, 0, 0.3);
 }
