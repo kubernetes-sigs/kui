@@ -29,6 +29,15 @@ type FeatureFlags = {
 
   /** [Optional] automatically pin watchable command ouptut to the WatchPane? */
   enableWatcherAutoPin?: boolean
+
+  /**
+   * [Optional] maximum number of times to show `loadingDone` to users
+   * if set to -1, always show welcome;
+   * if not 0, not show welcome
+   * default: -1
+   *
+   */
+  showWelcomeMax?: number
 }
 
 export default FeatureFlags

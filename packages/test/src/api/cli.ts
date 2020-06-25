@@ -68,7 +68,9 @@ export const command = async (
       if (process.env.BOTTOM_INPUT_MODE) await app.client.waitForExist(Selectors.BOTTOM_PROMPT_BLOCK, timeout - 5000)
       if (!noFocus) return grabFocus(app)
     })
-    .then(() => app.client.getAttribute(block, 'data-input-count'))
+    .then(() =>
+      app.client.getAttribute(process.env.BOTTOM_INPUT_MODE ? Selectors.BOTTOM_PROMPT_BLOCK : block, 'data-input-count')
+    )
     .then(async count => {
       if (!noCopyPaste && cmd.length > 1) {
         // use the clipboard for a fast path
@@ -120,6 +122,7 @@ export const waitForSession = async (ctx: Common.ISuite, noProxySessionWait = fa
     // wait for the proxy session to be established
     try {
       await ctx.app.client.waitForExist(`${Selectors.CURRENT_TAB}.kui--session-init-done`)
+      await ctx.app.client.waitForVisible(Selectors.WELCOME_BLOCK)
     } catch (err) {
       throw new Error('error waiting for proxy session init')
     }

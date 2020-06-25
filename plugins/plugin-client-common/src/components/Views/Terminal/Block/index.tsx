@@ -19,7 +19,7 @@ import { Tab as KuiTab, eventChannelUnsafe } from '@kui-shell/core'
 
 import Input, { InputOptions } from './Input'
 import Output from './Output'
-import { BlockModel, isActive, isEmpty, isFinished, isProcessing, hasUUID } from './BlockModel'
+import { BlockModel, isActive, isEmpty, isFinished, isProcessing, isAnnouncement, hasUUID } from './BlockModel'
 
 export type BlockViewTraits = {
   isPinned?: boolean
@@ -137,11 +137,14 @@ export default class Block extends React.PureComponent<Props, State> {
         <div
           className={'repl-block ' + this.props.model.state.toString()}
           data-pinned={this.props.isPinned || undefined}
+          data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
           ref={c => this.setState({ _block: c })}
         >
-          {isActive(this.props.model) || isEmpty(this.props.model) ? (
+          {isAnnouncement(this.props.model) ? (
+            this.output()
+          ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
             this.input()
           ) : (
             <React.Fragment>

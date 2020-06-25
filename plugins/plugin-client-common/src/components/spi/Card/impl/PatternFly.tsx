@@ -82,18 +82,16 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
 
   /** card actions, icon and custom header node will be situated in Card Head */
   private header() {
-    if (this.props.header || this.props.actions || this.props.icon) {
-      return (
-        <CardHeader>
-          <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
-          {this.props.actions && this.cardActions()}
-          <div>
-            {this.props.titleInHeader && this.title()}
-            {this.props.bodyInHeader && this.body()}
-          </div>
-        </CardHeader>
-      )
-    }
+    return (
+      <CardHeader>
+        <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
+        {this.props.actions && this.cardActions()}
+        <div>
+          {this.props.titleInHeader && this.title()}
+          {this.props.bodyInHeader && this.body()}
+        </div>
+      </CardHeader>
+    )
   }
 
   private title() {

@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 
-import { i18n, REPL } from '@kui-shell/core'
+import { i18n, inBrowser, REPL } from '@kui-shell/core'
 import { Kui, KuiProps, Card, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
@@ -34,7 +34,9 @@ const strings = i18n('plugin-client-common')
 const strings2 = i18n('client', 'about')
 
 function loadingDone(repl: REPL) {
-  return (
+  return !inBrowser() ? (
+    undefined
+  ) : (
     <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cloud')} icon={KuiIcon} repl={repl}>
       {strings2('loadingDone:content')}
     </Card>

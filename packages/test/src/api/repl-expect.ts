@@ -172,7 +172,7 @@ export const blank = (res: AppAndCount) => blankWithOpts()(res)
 export const consoleToBeClear = (app: Application) => {
   return app.client.waitUntil(async () => {
     return app.client.elements(Selectors.PROMPT_BLOCK).then(elements => elements.value.length === 1)
-  })
+  }, waitTimeout)
 }
 
 /** as long as its ok, accept anything */

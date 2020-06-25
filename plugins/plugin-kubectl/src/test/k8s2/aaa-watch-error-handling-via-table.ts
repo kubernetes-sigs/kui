@@ -74,12 +74,15 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
 
   const resultHasEmptyWatchText = async (count: number, positive = true) => {
     await this.app.client.waitForExist(Selectors.OK_N(count), CLI.waitTimeout)
-    const emptyWatchText = await this.app.client.getText(Selectors.OK_N(count))
-    if (positive) {
-      return assert.ok(emptyWatchText.includes('No resources'))
-    } else {
-      return assert.ok(!emptyWatchText.includes('No resources'))
-    }
+
+    await this.app.client.waitUntil(async () => {
+      const emptyWatchText = await this.app.client.getText(Selectors.OK_N(count))
+      if (positive) {
+        return emptyWatchText.includes('No resources')
+      } else {
+        return !emptyWatchText.includes('No resources')
+      }
+    }, CLI.waitTimeout)
   }
 
   // here comes the tests should start watching successfully
