@@ -32,6 +32,12 @@ interface Props {
   /** Body of the Card. If given a string, it will be passed through as the source <Markdown source="..." /> */
   children: string | ReactNode
 
+  /* [Optional] Display title in header? */
+  titleInHeader?: boolean
+
+  /** [Optional] Display body in header? */
+  bodyInHeader?: boolean
+
   /** [Optional] Actions to be rendered in an overflow menu associated with the Card */
   actions?: DropDownAction[]
 
