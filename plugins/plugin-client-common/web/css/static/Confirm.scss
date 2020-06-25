@@ -4,12 +4,21 @@ body[kui-theme-style] {
   /* provide default values for these color classes */
   --color-confirm-background: var(--color-base01);
   --color-confirm-foreground: var(--color-base06);
+  --color-confirm-danger: var(--color-red);
 }
 
 #confirm-dialog {
   .bx--modal-container {
     background-color: var(--color-confirm-background);
     color: var(--color-confirm-foreground);
+  }
+
+  .bx--modal-header__heading,
+  .bx--modal-content {
+    color: currentColor;
+  }
+  .bx--modal-close__icon {
+    fill: var(--color-confirm-foreground);
   }
 
   .bx--modal-close:focus {
@@ -21,8 +30,12 @@ body[kui-theme-style] {
   }
 
   .bx--btn--danger {
-    background-color: var(--color-red);
-    border-color: var(--color-red);
-    color: var(--color-text-01);
+    background-color: var(--color-confirm-danger);
+    border-color: var(--color-confirm-danger);
+    color: var(--color-base00);
   }
+}
+
+body[kui-theme-style='dark'] #confirm-dialog .bx--btn--danger {
+  color: var(--color-text-01);
 }
