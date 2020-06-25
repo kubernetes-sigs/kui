@@ -53,7 +53,7 @@ const exitAltBufferPattern = /\x1b\[\??(47|1047|1049)l/
 
 import copy from './copy'
 
-import '../../web/css/static/xterm.css'
+import '../../web/scss/xterm.scss'
 
 interface Size {
   resizeGeneration: number

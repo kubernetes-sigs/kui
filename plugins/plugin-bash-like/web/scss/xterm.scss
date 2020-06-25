@@ -39,8 +39,8 @@ disabled see https://github.com/IBM/kui/issues/3939
     height: auto !important;
   }
 
-  /* alt buffer mode */
-  .xterm-alt-buffer-mode {
+/* alt buffer mode */
+  &.xterm-alt-buffer-mode, .xterm-alt-buffer-mode { /* no-splitTerminal and splitTerminal variants */
     .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
       background-color: var(--color-base08);
       color: var(--color-base00);
