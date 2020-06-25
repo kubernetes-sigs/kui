@@ -136,7 +136,7 @@ export class Kui extends React.PureComponent<Props, State> {
           reinit: <div className="kui--hero-text">Connection broken...</div>,
           loadingError: err => <div className="kui--hero-text">Error connecting to your cloud: {err.toString()}</div>,
           loadingDone: (repl: REPL) => (
-            <Card title={strings('Successfully connected to your cloud')} repl={repl}>
+            <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cloud')} repl={repl}>
               {strings('To learn more, try getting started')}
             </Card>
           )

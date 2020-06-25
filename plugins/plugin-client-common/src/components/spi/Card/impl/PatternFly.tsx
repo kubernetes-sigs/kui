@@ -87,6 +87,10 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
         <CardHeader>
           <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
           {this.props.actions && this.cardActions()}
+          <div>
+            {this.props.titleInHeader && this.title()}
+            {this.props.bodyInHeader && this.body()}
+          </div>
         </CardHeader>
       )
     }
@@ -98,25 +102,31 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     }
   }
 
+  private body() {
+    if (Array.isArray(this.props.children)) {
+      return this.props.children.map((child, idx) => <CardBody key={idx}>{child}</CardBody>)
+    } else {
+      return (
+        <CardBody>
+          {typeof this.props.children === 'string' ? (
+            <Markdown source={this.props.children} repl={this.props.repl} />
+          ) : (
+            this.props.children
+          )}
+        </CardBody>
+      )
+    }
+  }
+
   public render() {
     const basicClassName = 'kui--card small-top-pad small-bottom-pad'
     return (
-      <Card className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}>
+      <Card isCompact className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}>
         {React.Children.count(this.props.children) > 0 && (
           <React.Fragment>
             {this.header()}
-            {this.title()}
-            {Array.isArray(this.props.children) ? (
-              this.props.children.map((child, idx) => <CardBody key={idx}>{child}</CardBody>)
-            ) : (
-              <CardBody>
-                {typeof this.props.children === 'string' ? (
-                  <Markdown source={this.props.children} repl={this.props.repl} />
-                ) : (
-                  this.props.children
-                )}
-              </CardBody>
-            )}
+            {!this.props.titleInHeader && this.title()}
+            {!this.props.bodyInHeader && this.body()}
           </React.Fragment>
         )}
       </Card>
