@@ -85,10 +85,10 @@
   --pf-global--BackgroundColor--light-100: var(--color-ui-01);
   --pf-global--BackgroundColor--light-200: var(--color-ui-02);
   --pf-global--BackgroundColor--light-300: var(--color-ui-03);
-  --pf-global--BackgroundColor--dark-100: var(--color-ui-01);
-  --pf-global--BackgroundColor--dark-200: var(--color-ui-02);
-  --pf-global--BackgroundColor--dark-300: var(--color-ui-03);
-  --pf-global--BackgroundColor--dark-400: var(--color-ui-04);
+  --pf-global--BackgroundColor--dark-100: var(--color-ui-04);
+  --pf-global--BackgroundColor--dark-200: var(--color-ui-03);
+  --pf-global--BackgroundColor--dark-300: var(--color-ui-02);
+  --pf-global--BackgroundColor--dark-400: var(--color-ui-01);
   --pf-global--BackgroundColor--dark-transparent-100: rgba(3, 3, 3, 0.62);
   --pf-global--BackgroundColor--dark-transparent-200: rgba(3, 3, 3, 0.32);
   --pf-global--Color--100: var(--color-ui-01);
@@ -98,8 +98,8 @@
   --pf-global--Color--light-100: var(--color-ui-01);
   --pf-global--Color--light-200: var(--color-ui-02);
   --pf-global--Color--light-300: var(--color-ui-03);
-  --pf-global--Color--dark-100: var(--color-ui-01);
-  --pf-global--Color--dark-200: var(--color-ui-03);
+  --pf-global--Color--dark-100: var(--color-ui-03);
+  --pf-global--Color--dark-200: var(--color-ui-01);
   --pf-global--active-color--100: var(--active-tab-color);
   --pf-global--active-color--200: var(--active-tab-color);
   --pf-global--active-color--300: var(--active-tab-color);
@@ -169,6 +169,15 @@
   --pf-global--palette--black-850: var(--color-base01);
   --pf-global--palette--black-900: var(--color-base01);
   --pf-global--palette--black-1000: var(--color-base00);
+
+  /* .pf-t-light */
+  --pf-global--Color--100: var(--pf-global--Color--dark-100);
+  --pf-global--Color--200: var(--pf-global--Color--dark-200);
+  --pf-global--BorderColor--100: var(--pf-global--BorderColor--dark-100);
+  --pf-global--primary-color--100: var(--pf-global--primary-color--dark-100);
+  --pf-global--link--Color: var(--pf-global--link--Color--dark);
+  --pf-global--link--Color--hover: var(--pf-global--link--Color--dark--hover);
+  --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--light-100);
 }
 
 @mixin kui-patternfly-alignment-dark {
@@ -185,4 +194,13 @@
   --pf-global--palette--black-850: var(--color-base05);
   --pf-global--palette--black-900: var(--color-base06);
   --pf-global--palette--black-1000: var(--color-base06);
+
+  /* .pf-t-dark */
+  --pf-global--Color--100: var(--pf-global--Color--light-100);
+  --pf-global--Color--200: var(--pf-global--Color--light-200);
+  --pf-global--BorderColor--100: var(--pf-global--BorderColor--light-100);
+  --pf-global--primary-color--100: var(--pf-global--primary-color--light-100);
+  --pf-global--link--Color: var(--pf-global--link--Color--light);
+  --pf-global--link--Color--hover: var(--pf-global--link--Color--light);
+  --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--dark-100);
 }
