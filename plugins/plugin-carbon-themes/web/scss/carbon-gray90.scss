@@ -24,6 +24,8 @@ body[kui-theme='Carbon Gray90'][kui-theme-style] {
   @include charts-dark;
   @include colors-dark;
 
+  --color-confirm-danger: #da1e28;
+
   /* some carbon-overrides */
   .bx--modal-close__icon {
     fill: #ebebeb;
