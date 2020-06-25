@@ -96,21 +96,25 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
   }
 
   /** wait for the pod */
-  const watchPod = (splitCount: number) => {
+  const watchPod = async (splitCount: number) => {
     // start to watch pods in a non-existent namespace
-    return CLI.command(`k get pods -w -n ${ns}`, this.app)
-      .then(ReplExpect.okWithString('Output has been pinned to a watch pane'))
-      .then(() => ReplExpect.splitCount(splitCount))
+    const res = await CLI.command(`k get pods -w -n ${ns}`, this.app)
+    await ReplExpect.okWithString('Output has been pinned to a watch pane')(res)
+    await ReplExpect.splitCount(splitCount)(this.app)
+    return res.count
   }
 
   const resultHasEmptyWatchText = async (count: number, positive = true) => {
     await this.app.client.waitForExist(Selectors.SPLIT_N_OUTPUT(count), CLI.waitTimeout)
-    const emptyWatchText = await this.app.client.getText(Selectors.SPLIT_N_OUTPUT(count))
-    if (positive) {
-      return assert.ok(emptyWatchText.includes('No resources'))
-    } else {
-      return assert.ok(!emptyWatchText.includes('No resources'))
-    }
+
+    await this.app.client.waitUntil(async () => {
+      const emptyWatchText = await this.app.client.getText(Selectors.SPLIT_N_OUTPUT(count))
+      if (positive) {
+        return emptyWatchText.includes('No resources')
+      } else {
+        return !emptyWatchText.includes('No resources')
+      }
+    }, CLI.waitTimeout)
   }
 
   it('should reload', () => Common.refresh(this))
@@ -218,7 +222,7 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
   it('should open sidecar via watch pane, and click the sidecar title to pexec in terminal', async () => {
     try {
       await createPod()
-      await watchPod(NUM_PIN)
+      const N = await watchPod(NUM_PIN)
 
       // click grid to open sidecar
       await this.app.client.click(Selectors.CURRENT_GRID_BY_NAME_FOR_SPLIT(2, 'nginx'))
@@ -229,7 +233,7 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
 
       // click sidecar title: nginx
       await this.app.client.click(Selectors.SIDECAR_TITLE)
-      await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })({ app: this.app, count: 2 })
+      await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })({ app: this.app, count: N + 1 })
 
       // still have four splits
       await ReplExpect.splitCount(NUM_PIN)(this.app)
@@ -245,10 +249,10 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
 
   it('should watch pod, remove the original block and unpin the watcher', async () => {
     try {
-      await watchPod(NUM_PIN)
+      const N = await watchPod(NUM_PIN)
 
       // remove the original block
-      this.app.client.click(Selectors.PROMPT_BLOCK_LAST_MENU)
+      this.app.client.click(Selectors.PROMPT_BLOCK_MENU(N))
       await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON)
       this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON)
 
@@ -259,7 +263,7 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
       await this.app.client.waitForExist(Selectors.CURRENT_GRID_BY_NAME_FOR_SPLIT(2, 'nginx'), 500, true)
 
       // should have the third output
-      await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })({ app: this.app, count: 0 })
+      await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })({ app: this.app, count: N })
     } catch (err) {
       await Common.oops(this, true)(err)
     }

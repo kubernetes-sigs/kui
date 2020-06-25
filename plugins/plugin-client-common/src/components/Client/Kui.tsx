@@ -119,7 +119,8 @@ export class Kui extends React.PureComponent<Props, State> {
 
   private defaultFeatureFlag() {
     return {
-      sidecarName: 'breadcrumb'
+      sidecarName: 'breadcrumb',
+      showWelcomeMax: -1
     }
   }
 
