@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '~@kui-shell/plugin-bash-like/web/css/static/xterm.css';
+@import '~@kui-shell/plugin-bash-like/web/scss/xterm';
 
 .kui--terminal[data-needs-hysteresis='true'][data-got-some-data='false'] .xterm {
   opacity: 0;
