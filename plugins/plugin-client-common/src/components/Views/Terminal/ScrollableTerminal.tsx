@@ -147,8 +147,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
-  private allocateUUIDForScrollback() {
-    if (this.props.config.splitTerminals && !isPopup()) {
+  private allocateUUIDForScrollback(forSplit = false) {
+    if (forSplit || (this.props.config.splitTerminals && !isPopup())) {
       return `${this.props.uuid}_${uuid()}`
     } else {
       return this.props.uuid
@@ -158,7 +158,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private scrollback(
     pinBlock?: FinishedBlock,
     capturedValue?: string,
-    sbuuid = this.allocateUUIDForScrollback()
+    sbuuid = this.allocateUUIDForScrollback(!!pinBlock)
   ): ScrollbackState {
     const state = {
       uuid: sbuuid,
@@ -239,7 +239,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /**
    * When the following requirements meet, auto-pin the command block:
-   * 1. user has enbaled the splitTerminals anad enableWatcherAutoPin feature flag
+   * 1. user has enabled the enableWatcherAutoPin feature flag
    * 2. not in popup mode
    * 3. the scalar response is watchable, e.g. watchable table,
    * 4. the command option or exec options doesn't say alwaysViewIn Terminal,
@@ -248,7 +248,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private shouldPinTheBlock(event: CommandCompleteEvent<ScalarResponse>) {
     return (
-      this.props.config.splitTerminals &&
       this.props.config.enableWatcherAutoPin &&
       !isPopup() &&
       isWatchable(event.response) &&
@@ -391,7 +390,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       eventChannelUnsafe.off(`/terminal/clear/${state.uuid}`, clear)
     })
 
-    if (this.props.config.splitTerminals && !isPopup()) {
+    if ((this.props.config.splitTerminals || this.props.config.enableWatcherAutoPin) && !isPopup()) {
       const split = this.onSplit.bind(this)
       onSplit(state.uuid, split)
       state.cleaners.push(() => offSplit(state.uuid, split))
