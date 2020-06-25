@@ -55,6 +55,7 @@ export default function renderMain(props: KuiProps) {
       enableWatcherAutoPin
       {...props}
       loadingDone={loadingDone}
+      showWelcomeMax={0}
       toplevel={<Search />}
     >
       <ContextWidgets>

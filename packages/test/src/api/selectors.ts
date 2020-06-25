@@ -8,6 +8,7 @@ export const SIDECAR_FULLSCREEN = `${CURRENT_TAB} .kui--sidecar.visible.maximize
 export const TERMINAL_WITH_SIDECAR_VISIBLE = `${CURRENT_TAB} .repl.sidecar-visible`
 const _PROMPT_BLOCK = '.repl-block'
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl ${_PROMPT_BLOCK}`
+export const WELCOME_BLOCK = `${PROMPT_BLOCK} .kui--repl-message.kui--session-init-done`
 export const BOTTOM_PROMPT_BLOCK = `${CURRENT_TAB} .kui--input-stripe .repl-block`
 export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
 export const STATUS_STRIPE_BLOCK = '.kui--status-stripe .kui--input-stripe .repl-block'

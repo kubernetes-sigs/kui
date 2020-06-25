@@ -63,9 +63,9 @@ jobs:
     - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
     - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
 
-    - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
+    - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true WELCOME=true
     - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="electron" LAYERS="response"
-    - env: N="bottom-input" CLIENT="alternate" MOCHA_RUN_TARGET="webpack" LAYERS="bottom-input"
+    - env: N="bottom-input" CLIENT="alternate" MOCHA_RUN_TARGET="webpack" LAYERS="bottom-input" BOTTOM_INPUT_MODE=true WELCOME=true
 
     # CLIENT=default | os=Darwin | TARGET=electron | core, core-support, editor, core-support2
     - os: osx

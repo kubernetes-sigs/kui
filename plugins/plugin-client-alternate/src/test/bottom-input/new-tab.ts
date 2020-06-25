@@ -60,7 +60,14 @@ describe('core new tab from pty active tab via button click', function(this: Com
 
   it('should report proper version', () =>
     CLI.command('version', this.app)
-      .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
+      .then(async res => {
+        if (!process.env.WELCOME) {
+          return ReplExpect.okWithCustom({ expect: Common.expectedVersion })(res)
+        } else {
+          await this.app.client.waitForVisible(Selectors.WELCOME_BLOCK)
+          return ReplExpect.okWithCustom({ expect: Common.expectedVersion })({ app: res.app, count: res.count + 1 })
+        }
+      })
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
       .catch(Common.oops(this)))
 })
