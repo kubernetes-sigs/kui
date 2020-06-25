@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
+
+**Note:** Version bump only for package @kui-shell/plugin-git
+
 ## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
 
 **Note:** Version bump only for package @kui-shell/plugin-git

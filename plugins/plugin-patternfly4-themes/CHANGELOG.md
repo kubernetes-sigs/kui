@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
+
+### Bug Fixes
+
+- move patternfly alignment out of patternfly themes plugin ([ef048a7](https://github.com/IBM/kui/commit/ef048a7)), closes [#4988](https://github.com/IBM/kui/issues/4988)
+
 ## [8.10.2](https://github.com/IBM/kui/compare/v8.10.1...v8.10.2) (2020-06-24)
 
 ### Bug Fixes
