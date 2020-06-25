@@ -24,6 +24,7 @@ import {
   ScalarResponse,
   Tab as KuiTab,
   ExecOptions,
+  ExecType,
   isPopup,
   CommandStartEvent,
   CommandCompleteEvent,
@@ -37,6 +38,7 @@ import {
   Active,
   Finished,
   FinishedBlock,
+  Announcement,
   Cancelled,
   Processing,
   isActive,
@@ -56,6 +58,9 @@ const MAX_TERMINALS = 2
 
 /** Hard limit on the number of Pinned splits */
 const MAX_PINNED = 3
+
+/** Remember the welcomed count in localStorage, using this key */
+const NUM_WELCOMED = 'kui-shell.org/ScrollableTerminal/NumWelcomed'
 
 export interface TerminalOptions {
   noActiveInput?: boolean
@@ -143,8 +148,55 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     this.state = {
       focusedIdx: 0,
-      splits: [this.scrollback()]
+      splits: [this.scrollbackWithWelcome()]
     }
+  }
+
+  /** add welcome blocks at the top of scrollback */
+  private scrollbackWithWelcome() {
+    const scrollback = this.scrollback()
+    const welcomeMax = this.props.config.showWelcomeMax
+
+    if (this.props.config.loadingDone && welcomeMax !== undefined) {
+      const welcomed = parseInt(localStorage.getItem(NUM_WELCOMED)) || 0
+
+      if ((welcomeMax === -1 || welcomed < welcomeMax) && this.props.config.loadingDone) {
+        const announcement = this.props.config.loadingDone(this.props.tab.REPL)
+        if (announcement) {
+          eventBus.emitCommandComplete({
+            tab: this.props.tab,
+            command: 'welcome',
+            argvNoOptions: ['welcome'],
+            parsedOptions: {},
+            execOptions: {},
+            execUUID: '',
+            execType: ExecType.TopLevel,
+            cancelled: false,
+            echo: true,
+            evaluatorOptions: {},
+            response: { react: announcement },
+            responseType: 'ScalarResponse'
+          })
+        }
+        const welcomeBlocks: BlockModel[] = !announcement
+          ? []
+          : [
+              Announcement({
+                react: this.props.config.loadingDone && (
+                  <div className="kui--repl-message kui--session-init-done">{announcement}</div>
+                )
+              })
+            ]
+
+        scrollback.blocks = welcomeBlocks.concat(scrollback.blocks)
+
+        if (welcomeMax !== -1) {
+          localStorage.setItem(NUM_WELCOMED, (welcomed + 1).toString())
+        }
+      }
+    }
+
+    return scrollback
   }
 
   private allocateUUIDForScrollback(forSplit = false) {
