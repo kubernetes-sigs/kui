@@ -26,5 +26,5 @@ import '../web/scss/components/TopTabStripe/Carbon.scss'
  */
 export default function BottomInputClient(props: KuiProps) {
   // prompt is unicode for "heavy right-pointing angle quotation mark ornament"
-  return <Kui {...props} bottomInput={<CustomInput />} noPromptContext prompt="&#x276f;" />
+  return <Kui {...props} enableWatcherAutoPin bottomInput={<CustomInput />} noPromptContext prompt="&#x276f;" />
 }
