@@ -32,11 +32,11 @@ const test = new TestMMR({
 })
 
 test.name({
-  nameHash: 'this is the namehash part',
+//  nameHash: 'this is the namehash part',
   heroName: true,
-  onclick: {
-    nameHash: { command: 'test string --grumble 3', expect: 'hello world 3' }
-  }
+//  onclick: {
+//    nameHash: { command: 'test string --grumble 3', expect: 'hello world 3' }
+//  }
 })
 
 test.namespace({
