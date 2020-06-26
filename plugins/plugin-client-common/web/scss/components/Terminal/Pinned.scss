@@ -33,6 +33,7 @@ $table-grid-cell-size: 1.375em;
 /** special styling of input area for pinned scrollbacks */
 .repl-block[data-pinned] {
   margin: 0;
+  padding: 0;
   position: relative;
 
   /* css magic for inner scrolling (see above and below for more magic rules) */
