@@ -181,8 +181,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     return { 'flex-direction': 'column' }
   }
 
-  /** return the name from the response */
-  private name(): string {
+  /** return the pretty name or unadulterated name from the response */
+  private prettyName(): string {
     return (
       this.current.response &&
       (this.current.response.prettyName ||
@@ -190,6 +190,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     )
   }
 
+  /** display the unadulterated name from the response as sidecar header */
   private namePart() {
     if (this.context.sidecarName === 'heroText') {
       return (
@@ -197,7 +198,9 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
           <div className="sidecar-header-text">
             <div className="sidecar-header-name" data-base-class="sidecar-header-name">
               <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
-                {this.name()}
+                {this.current.response && this.current.response.metadata
+                  ? this.current.response.metadata.name
+                  : undefined}
               </div>
             </div>
           </div>
@@ -344,15 +347,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
 
   /** show name as breadcrumb when not showing context as hero text in sidecar header  */
   private nameBreadcrumb(): BreadcrumbView {
-    if (this.context.sidecarName === 'breadcrumb') {
-      const { onclick } = this.current.response
+    const { onclick } = this.current.response
 
-      return {
-        label: this.name(),
-        command: onclick && onclick.name,
-        isCurrentPage: true,
-        className: 'kui--sidecar-entity-name'
-      }
+    return {
+      label: this.prettyName(),
+      command: onclick && onclick.name,
+      isCurrentPage: true,
+      className: 'kui--sidecar-entity-name'
     }
   }
 
@@ -390,14 +391,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       return <div />
     }
 
+    const nameBreadCrumbs =
+      this.context.sidecarName === 'breadcrumb'
+        ? [this.nameBreadcrumb(), this.versionBreadcrumb(), this.nameHashBreadcrumb()]
+        : []
+
     try {
-      const breadcrumbs = [
-        this.namespaceBreadcrumb(),
-        this.kindBreadcrumb(),
-        this.nameBreadcrumb(),
-        this.versionBreadcrumb(),
-        this.nameHashBreadcrumb()
-      ].filter(_ => _)
+      const breadcrumbs = [this.namespaceBreadcrumb(), this.kindBreadcrumb()].concat(nameBreadCrumbs).filter(_ => _)
 
       // Note: data-view helps with tests
       return (
