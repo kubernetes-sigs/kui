@@ -22,7 +22,7 @@ $table-grid-cell-size: 1.375em;
 
 /** special styling of the whole scrollback, if it is pinned */
 .kui--scrollback[data-has-pinned='true'] {
-  background-color: var(--color-base03);
+  background-color: var(--color-base02);
   padding: 0;
 
   /* css magic for inner scrolling (see below for more magic rules) */
