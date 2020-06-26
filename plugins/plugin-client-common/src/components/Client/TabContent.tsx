@@ -16,8 +16,9 @@
 
 import SplitPane from 'react-split-pane'
 import * as React from 'react'
-import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession, i18n } from '@kui-shell/core'
+import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
 
+import Alert from '../spi/Alert'
 import Icons from '../spi/Icons'
 import KuiContext from './context'
 import Confirm from '../Views/Confirm'
@@ -32,8 +33,6 @@ import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/Scrollabl
 import '../../../web/css/static/split-pane.scss'
 
 type Cleaner = () => void
-
-const strings = i18n('client')
 
 interface WithTabUUID {
   uuid: string
@@ -209,7 +208,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   private defaultLoading() {
-    return <Loading description={strings('Please wait while we connect to your cloud')} />
+    // this is a failsafe
+    return 'Please wait while we connect to your cluster'
   }
 
   private terminal() {

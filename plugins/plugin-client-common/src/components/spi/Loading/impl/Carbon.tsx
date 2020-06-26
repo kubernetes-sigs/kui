@@ -22,13 +22,19 @@ import Props from '../model'
 import '../../../../../web/scss/components/Loading/Carbon.scss'
 
 export default class CarbonLoading extends React.PureComponent<Props> {
+  private className(base: string) {
+    return base + this.props.className ? ` ${this.props.className}` : ''
+  }
+  
   public render() {
     return (
-      <div className="kui--loading flex-layout flex-align-center flex-align-top larger-text big-top-pad">
+      <div className="kui--loading">
         {this.props.description ? (
-          <InlineLoading status="active" className="flex-align-center fade-in" description={this.props.description} />
+          <div className="flex-layout flex-align-center flex-align-top big-top-pad">
+            <InlineLoading status={this.props.status || 'active'} className={this.className('flex-align-center fade-in')} description={this.props.description} />
+          </div>
         ) : (
-          <Loading active className="fade-in" withOverlay={false} />
+          <Loading small active className={this.className('fade-in')} withOverlay={false} />
         )}
       </div>
     )

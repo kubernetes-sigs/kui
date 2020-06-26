@@ -31,7 +31,7 @@ export default class Alert extends React.PureComponent<Props> {
         className={this.props.className || 'kui--toolbar-alert'}
         data-type={this.props.alert.type}
         caption=""
-        hideCloseButton={false}
+        hideCloseButton={this.props.hideCloseButton}
         iconDescription={strings('closeAlert')}
         kind={this.props.alert.type}
         statusIconDescription={strings(`${this.props.alert.type} alert`)}

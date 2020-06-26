@@ -30,15 +30,14 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 
 import KuiIcon from '../icons/png/KUI-Welcome_Light.png'
 
-const strings = i18n('plugin-client-common')
-const strings2 = i18n('client', 'about')
+const strings = i18n('client')
 
 function loadingDone(repl: REPL) {
   return !inBrowser() ? (
     undefined
   ) : (
-    <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cloud')} icon={KuiIcon} repl={repl}>
-      {strings2('loadingDone:content')}
+    <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} icon={KuiIcon} repl={repl}>
+      {strings('loadingDone:content')}
     </Card>
   )
 }

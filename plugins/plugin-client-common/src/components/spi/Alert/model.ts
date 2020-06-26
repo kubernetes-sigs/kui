@@ -22,6 +22,7 @@ interface Props {
   timeout?: number
   children?: React.ReactNode
   className?: string
+  hideCloseButton?: boolean
   onCloseButtonClick?: () => void
 }
 
