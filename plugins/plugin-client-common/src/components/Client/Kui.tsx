@@ -34,10 +34,10 @@ import {
 import Card from '../spi/Card'
 import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
-import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading } from '../..'
+import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading, Alert } from '../..'
 
 const debug = Debug('<Kui/>')
-const strings = i18n('plugin-client-common')
+const strings = i18n('client')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
 const defaultThemeProperties: ThemeProperties = {
@@ -124,6 +124,26 @@ export class Kui extends React.PureComponent<Props, State> {
     }
   }
 
+  private defaultLoading() {
+    return <Loading className="somewhat-larger-text" description={strings('Please wait while we connect to your cluster')} />
+  }
+
+  private defaultReinit() {
+    return <Alert hideCloseButton alert={{type: 'error', title: strings('Lost connection to your cluster'), body: strings('Attempting to reconnect...') }} />
+  }
+
+  private defaultLoadingDone() {
+    return (repl: REPL) => !inBrowser() ? undefined : (
+            <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} repl={repl}>
+              {strings('To learn more, try getting started')}
+            </Card>
+    )
+  }
+
+  private defaultLoadingError() {
+    return err => <Alert alert={{type: 'error', title: strings('Error connecting to your cluster'), body: err.toString()}} />
+  }
+  
   /**
    * For browser-based clients, this defines the default UI for
    * session initialization.
@@ -133,14 +153,10 @@ export class Kui extends React.PureComponent<Props, State> {
     return !inBrowser()
       ? {}
       : {
-          loading: <div className="kui--hero-text">Connecting to your cloud...</div>,
-          reinit: <div className="kui--hero-text">Connection broken...</div>,
-          loadingError: err => <div className="kui--hero-text">Error connecting to your cloud: {err.toString()}</div>,
-          loadingDone: (repl: REPL) => (
-            <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cloud')} repl={repl}>
-              {strings('To learn more, try getting started')}
-            </Card>
-          )
+          loading: this.defaultLoading(),
+          reinit: this.defaultReinit(),
+          loadingError: this.defaultLoadingError(),
+          loadingDone: this.defaultLoadingDone()
         }
   }
 
