@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
+
+### Bug Fixes
+
+- Card component does not render well in dark themes ([f3c9b89](https://github.com/IBM/kui/commit/f3c9b89)), closes [#4996](https://github.com/IBM/kui/issues/4996)
+
+### Features
+
+- add capability to show welcome widget to new users in Terminal ([332627f](https://github.com/IBM/kui/commit/332627f)), closes [#4990](https://github.com/IBM/kui/issues/4990) [#5007](https://github.com/IBM/kui/issues/5007)
+- Update default loadingDone to use Card component ([73d6dd7](https://github.com/IBM/kui/commit/73d6dd7)), closes [#4986](https://github.com/IBM/kui/issues/4986)
+
 ## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
 
 **Note:** Version bump only for package @kui-shell/plugin-client

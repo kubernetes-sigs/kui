@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
+
+### Bug Fixes
+
+- Card component does not render well in dark themes ([f3c9b89](https://github.com/IBM/kui/commit/f3c9b89)), closes [#4996](https://github.com/IBM/kui/issues/4996)
+
 ## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
 
 ### Bug Fixes

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
+
+### Bug Fixes
+
+- still see name-related breadcrumbs and short-name header with feature flag sidecarName 'heroText' ([71c3f06](https://github.com/IBM/kui/commit/71c3f06)), closes [#5013](https://github.com/IBM/kui/issues/5013)
+- **packages/builder:** headless build should not rebuild node-pty ([a367407](https://github.com/IBM/kui/commit/a367407)), closes [#5011](https://github.com/IBM/kui/issues/5011)
+- **plugins/plugin-carbon-themes:** regression in status stripe borders for carbon themes ([eb4f264](https://github.com/IBM/kui/commit/eb4f264)), closes [#5009](https://github.com/IBM/kui/issues/5009)
+- **plugins/plugin-client-common:** WatchPane has incorrect padding ([51eeedf](https://github.com/IBM/kui/commit/51eeedf)), closes [#5015](https://github.com/IBM/kui/issues/5015)
+- Card component does not render well in dark themes ([f3c9b89](https://github.com/IBM/kui/commit/f3c9b89)), closes [#4996](https://github.com/IBM/kui/issues/4996)
+- clients should be able to enable watcher auto pinning without enabling splitTerminals ([1126316](https://github.com/IBM/kui/commit/1126316)), closes [#5002](https://github.com/IBM/kui/issues/5002)
+- Confirm dialog color contrast issues ([5681983](https://github.com/IBM/kui/commit/5681983)), closes [#4995](https://github.com/IBM/kui/issues/4995)
+- increase contrast in watch pane ([f443886](https://github.com/IBM/kui/commit/f443886)), closes [#5000](https://github.com/IBM/kui/issues/5000) [#5001](https://github.com/IBM/kui/issues/5001)
+- xterm alt buffer mode behaves oddly for clients that do not enable splitTerminals ([3786986](https://github.com/IBM/kui/commit/3786986)), closes [#5003](https://github.com/IBM/kui/issues/5003)
+
+### Features
+
+- add capability to show welcome widget to new users in Terminal ([332627f](https://github.com/IBM/kui/commit/332627f)), closes [#4990](https://github.com/IBM/kui/issues/4990) [#5007](https://github.com/IBM/kui/issues/5007)
+- Update default loadingDone to use Card component ([73d6dd7](https://github.com/IBM/kui/commit/73d6dd7)), closes [#4986](https://github.com/IBM/kui/issues/4986)
+
 ## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
 
 ### Bug Fixes

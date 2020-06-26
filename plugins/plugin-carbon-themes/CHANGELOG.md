@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
+
+### Bug Fixes
+
+- **plugins/plugin-carbon-themes:** regression in status stripe borders for carbon themes ([eb4f264](https://github.com/IBM/kui/commit/eb4f264)), closes [#5009](https://github.com/IBM/kui/issues/5009)
+- Confirm dialog color contrast issues ([5681983](https://github.com/IBM/kui/commit/5681983)), closes [#4995](https://github.com/IBM/kui/issues/4995)
+- increase contrast in watch pane ([f443886](https://github.com/IBM/kui/commit/f443886)), closes [#5000](https://github.com/IBM/kui/issues/5000) [#5001](https://github.com/IBM/kui/issues/5001)
+
 ## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
 
 ### Bug Fixes

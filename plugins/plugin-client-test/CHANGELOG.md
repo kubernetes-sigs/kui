@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
+
+### Bug Fixes
+
+- still see name-related breadcrumbs and short-name header with feature flag sidecarName 'heroText' ([71c3f06](https://github.com/IBM/kui/commit/71c3f06)), closes [#5013](https://github.com/IBM/kui/issues/5013)
+
+### Features
+
+- add capability to show welcome widget to new users in Terminal ([332627f](https://github.com/IBM/kui/commit/332627f)), closes [#4990](https://github.com/IBM/kui/issues/4990) [#5007](https://github.com/IBM/kui/issues/5007)
+
 ## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
 
 **Note:** Version bump only for package @kui-shell/plugin-test-client

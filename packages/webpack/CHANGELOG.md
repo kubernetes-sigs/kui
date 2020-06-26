@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
+
+### Features
+
+- Update default loadingDone to use Card component ([73d6dd7](https://github.com/IBM/kui/commit/73d6dd7)), closes [#4986](https://github.com/IBM/kui/issues/4986)
+
 ## [8.10.3](https://github.com/IBM/kui/compare/v8.10.2...v8.10.3) (2020-06-25)
 
 **Note:** Version bump only for package @kui-shell/webpack
