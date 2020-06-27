@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.5](https://github.com/IBM/kui/compare/v8.10.4...v8.10.5) (2020-06-27)
+
+### Features
+
+- allow clients to modify the session lifecycle UI by providing custom strings ([1d1ebcc](https://github.com/IBM/kui/commit/1d1ebcc)), closes [#5019](https://github.com/IBM/kui/issues/5019)
+
 ## [8.10.4](https://github.com/IBM/kui/compare/v8.10.3...v8.10.4) (2020-06-26)
 
 ### Bug Fixes
