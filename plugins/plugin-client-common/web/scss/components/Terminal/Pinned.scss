@@ -16,9 +16,10 @@
 
 /** Pinned scrollbacks */
 
-$inset: 1em;
-$breadcrumb-height: 2.5em;
-$table-grid-cell-size: 1.375em;
+$inset-v: 0.5rem;
+$inset-h: 1rem;
+$breadcrumb-height: 2.5rem;
+$table-grid-cell-size: 1.375rem;
 
 /** special styling of the whole scrollback, if it is pinned */
 .kui--scrollback[data-has-pinned='true'] {
@@ -71,7 +72,7 @@ $table-grid-cell-size: 1.375em;
     display: none;
   }
   .kui--data-table-toolbar-top {
-    padding: 0 $inset;
+    padding: 0 $inset-h;
   }
 
   nav[aria-label='Breadcrumb']:not(:empty) {
@@ -123,13 +124,13 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
   overflow: hidden;
 
   .kui--data-table-as-grid .bx--data-table {
-    padding: $inset;
+    padding: $inset-v $inset-h;
     grid-template-columns: repeat(auto-fill, $table-grid-cell-size) !important;
 
     /* css magic to give inner scrolling of grid */
     position: absolute;
     overflow-y: auto;
-    max-height: calc(100% - #{$breadcrumb-height} - #{$inset});
+    max-height: calc(100% - #{$breadcrumb-height} - #{$inset-v});
     top: $breadcrumb-height;
 
     [data-tag='badge'] [data-tag='badge-circle'] {
