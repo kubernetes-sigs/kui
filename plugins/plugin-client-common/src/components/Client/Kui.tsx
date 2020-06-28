@@ -125,25 +125,41 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private defaultLoading() {
-    return <Loading className="somewhat-larger-text" description={strings('Please wait while we connect to your cluster')} />
-  }
-
-  private defaultReinit() {
-    return <Alert hideCloseButton alert={{type: 'error', title: strings('Lost connection to your cluster'), body: strings('Attempting to reconnect...') }} />
-  }
-
-  private defaultLoadingDone() {
-    return (repl: REPL) => !inBrowser() ? undefined : (
-            <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} repl={repl}>
-              {strings('To learn more, try getting started')}
-            </Card>
+    return (
+      <Loading className="somewhat-larger-text" description={strings('Please wait while we connect to your cluster')} />
     )
   }
 
-  private defaultLoadingError() {
-    return err => <Alert alert={{type: 'error', title: strings('Error connecting to your cluster'), body: err.toString()}} />
+  private defaultReinit() {
+    return (
+      <Alert
+        hideCloseButton
+        alert={{
+          type: 'error',
+          title: strings('Lost connection to your cluster'),
+          body: strings('Attempting to reconnect...')
+        }}
+      />
+    )
   }
-  
+
+  private defaultLoadingDone() {
+    return (repl: REPL) =>
+      !inBrowser() ? (
+        undefined
+      ) : (
+        <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} repl={repl}>
+          {strings('To learn more, try getting started')}
+        </Card>
+      )
+  }
+
+  private defaultLoadingError() {
+    return err => (
+      <Alert alert={{ type: 'error', title: strings('Error connecting to your cluster'), body: err.toString() }} />
+    )
+  }
+
   /**
    * For browser-based clients, this defines the default UI for
    * session initialization.
