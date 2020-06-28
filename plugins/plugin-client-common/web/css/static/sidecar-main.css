@@ -434,7 +434,6 @@
   display: flex;
   align-items: center;
   overflow-x: hidden;
-  font-size: 0.875rem;
   padding-left: 1rem;
 
   .sidecar-bottom-stripe-button:nth-child(2) {

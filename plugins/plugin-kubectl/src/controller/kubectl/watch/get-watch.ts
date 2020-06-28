@@ -182,10 +182,12 @@ class KubectlWatcher implements Abortable, Watcher {
       )
     ).filter(notEmpty)
 
-    return {
-      title: tables[0].title,
-      header: tables[0].header,
-      body: flatten(tables.map(_ => _.body))
+    if (tables.length > 0) {
+      return {
+        title: tables[0].title,
+        header: tables[0].header,
+        body: flatten(tables.map(_ => _.body))
+      }
     }
   }
 
