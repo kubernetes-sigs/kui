@@ -25,13 +25,17 @@ export default class CarbonLoading extends React.PureComponent<Props> {
   private className(base: string) {
     return base + this.props.className ? ` ${this.props.className}` : ''
   }
-  
+
   public render() {
     return (
       <div className="kui--loading">
         {this.props.description ? (
           <div className="flex-layout flex-align-center flex-align-top big-top-pad">
-            <InlineLoading status={this.props.status || 'active'} className={this.className('flex-align-center fade-in')} description={this.props.description} />
+            <InlineLoading
+              status={this.props.status || 'active'}
+              className={this.className('flex-align-center fade-in')}
+              description={this.props.description}
+            />
           </div>
         ) : (
           <Loading small active className={this.className('fade-in')} withOverlay={false} />
