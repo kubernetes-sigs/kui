@@ -47,7 +47,7 @@ function headerFromBody(table: KuiTable) {
  *
  */
 export function kuiHeader2carbonHeader(header: KuiRow): DataTableHeader[] {
-  return [{ key: header.name, header: header.name }].concat(
+  return [{ key: header.key || header.name, header: header.name }].concat(
     header.attributes.map(({ key, value }) => ({ key: key || value, header: value }))
   )
 }

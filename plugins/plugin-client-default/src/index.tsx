@@ -36,7 +36,13 @@ function loadingDone(repl: REPL) {
   return !inBrowser() ? (
     undefined
   ) : (
-    <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} icon={KuiIcon} repl={repl}>
+    <Card
+      titleInHeader
+      bodyInHeader
+      title={strings('Successfully connected to your cluster')}
+      icon={KuiIcon}
+      repl={repl}
+    >
       {strings('loadingDone:content')}
     </Card>
   )

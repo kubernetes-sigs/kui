@@ -11,11 +11,9 @@ body[kui-theme-style] {
 
 body .bx--data-table-container {
   min-width: unset;
-  padding-top: 0.125em;
 
   .bx--data-table-header {
     background-color: var(--color-stripe-01);
-    padding: 1em 0 1.5em 1em;
 
     .bx--data-table-header__title {
       color: var(--color-text-02);
@@ -24,55 +22,17 @@ body .bx--data-table-container {
 
   .bx--data-table {
     font-family: var(--font-sans-serif);
-    padding: 0.875em 1em;
-    padding-bottom: 0.8125em;
 
-    td:last-of-type {
-      padding-right: 1em;
-    }
-    td:first-of-type,
-    th:first-of-type:not(.bx--table-expand) {
-      padding-left: 1em;
+    &,
+    thead,
+    tbody {
+      font-size: 1rem;
     }
 
-    th,
-    td {
-      padding-left: 1em;
-      padding-right: 1em;
-    }
-
-    td [data-key='NAME'],
+    /* td [data-key='NAME'],
     td .kui--table-cell-is-name {
       font-weight: 700;
-    }
-
-    &.bx--data-table--short {
-      thead tr,
-      tbody tr,
-      tbody tr th {
-        height: 2em;
-      }
-    }
-
-    &.bx--data-table--compact {
-      thead tr,
-      tbody tr,
-      tbody tr th {
-        height: 1.875em;
-      }
-
-      td,
-      tbody tr th {
-        padding-top: 0.125em;
-        padding-bottom: 0.125em;
-      }
-    }
-
-    tbody,
-    thead {
-      line-height: 1.125em;
-      font-size: 1em;
-    }
+    } */
 
     tbody,
     td {
@@ -91,16 +51,11 @@ body .bx--data-table-container {
 
     th,
     .bx--table-sort {
-      background-color: transparent;
-      vertical-align: middle;
+      vertical-align: middle; /* why do we need this? (we do, currently) */
     }
 
     .bx--table-sort {
       padding: 0;
-    }
-
-    td {
-      border-color: var(--color-table-border3);
     }
 
     td,
@@ -115,31 +70,27 @@ body .bx--data-table-container {
     .bx--table-sort__icon-unsorted {
       fill: var(--color-text-01);
     }
-
-    tbody {
-      .bx--data-table--selected {
-        background-color: var(--color-ui-03);
-        td {
-          color: var(--color-text-01);
-          background-color: var(--color-ui-03);
-          border-color: transparent;
-        }
-      }
-    }
   }
 }
 
 body .bx--data-table {
+  th {
+    /* font-weight: 300; */
+    vertical-align: middle;
+  }
+
   th,
   .bx--table-sort {
-    font-weight: 300;
-    background-color: transparent;
-    vertical-align: middle;
-    border-bottom: 1px solid var(--color-base03);
+    background-color: var(--color-base03);
   }
 
   thead {
     background-color: transparent;
+  }
+
+  td {
+    border-top-color: var(--color-base01);
+    border-bottom-color: var(--color-base02);
   }
 
   tr:hover,

@@ -4,13 +4,15 @@
   color: var(--color-text-01);
 }
 .somewhat-larger-text {
-    .bx--inline-loading__text {
-        font-size: 1rem;
-    }
-    .bx--inline-loading__animation, .bx--loading--small, .bx--inline-loading--error {
-        width: 3rem;
-        height: 3rem;
-    }
+  .bx--inline-loading__text {
+    font-size: 1rem;
+  }
+  .bx--inline-loading__animation,
+  .bx--loading--small,
+  .bx--inline-loading--error {
+    width: 3rem;
+    height: 3rem;
+  }
 }
 
 .bx--inline-loading--error {
@@ -21,7 +23,8 @@
   .bx--loading__background {
     stroke: var(--color-ui-03);
   }
-  .bx--loading--small .bx--loading__svg, .bx--loading__stroke {
+  .bx--loading--small .bx--loading__svg,
+  .bx--loading__stroke {
     stroke: var(--active-tab-color);
   }
 }

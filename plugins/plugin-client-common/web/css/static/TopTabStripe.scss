@@ -6,10 +6,6 @@
   border-bottom: none;
   transition-property: background-color;
   position: unset;
-  width: 100%;
-
-  font-size: 0.875rem;
-  height: 2.75rem;
 
   .bx--header__action {
     .bx--header__action--active {
@@ -32,10 +28,24 @@
   }
 
   .bx--header__name {
-    font-size: 0.875rem;
-    line-height: 1.125rem;
-    padding: 0 2rem 0 1rem;
+    position: relative;
+    border: none;
+    font-size: 1rem;
+  }
 
+  .bx--header__name,
+  .kui--tab:not(:last-child) {
+    &:after {
+      box-shadow: 1px 0 0px 0 var(--color-table-border1);
+      content: '';
+      height: 60%;
+      width: 1px;
+      right: 1px;
+      position: absolute;
+    }
+  }
+
+  .bx--header__name {
     &,
     &:hover {
       color: var(--color-text-02);
@@ -62,14 +72,11 @@
     position: relative;
     min-width: 12rem;
     max-width: 20rem;
-
-    &:only-of-type .bx--header__menu-item {
-      padding-right: 1.125rem;
-    }
+    margin-left: 1rem;
 
     &.kui--tab--active {
-      background: var(--color-repl-background);
-      box-shadow: inset 0 2px 0 0 var(--active-tab-color);
+      /* background: var(--color-repl-background); */
+      box-shadow: inset 0 -2px 0 0 var(--active-tab-color);
     }
 
     &.processing {
@@ -82,7 +89,7 @@
     }
 
     &:not(.kui--tab--active) {
-      box-shadow: -1px 0 0 0 var(--color-table-border1);
+      /*      box-shadow: 1px 0 0 0 var(--color-table-border1);*/
     }
     &.kui--tab--active + .kui--tab {
       box-shadow: none;
@@ -93,8 +100,6 @@
       .kui--tab--label:after {
         content: counter(tab-index);
         transition: font-size 150ms ease-in-out;
-        padding-right: 1rem;
-        padding-left: 0.375rem;
       }
     }
 
@@ -115,10 +120,9 @@
       }
     }
     .bx--header__menu-item {
-      font-size: 0.875rem;
-      padding: 0 0 0 1.125rem;
-      line-height: 1.125rem;
       color: var(--color-text-02);
+      padding: 0;
+      font-size: 1rem;
       flex: 1;
 
       &:hover {
@@ -232,11 +236,11 @@
     right: calc(-1.875rem * #{$numButtons - 1} - 3px);
   }
 
-  &:not(:hover) {
+  /*  &:not(:hover) {
     svg[data-active='true'] {
       margin-right: 6px;
     }
-  }
+  } */
 
   /* 2.75: height of header; 0.875: font size of header; 24px height of icons */
   $headerHeight: 2.75rem;

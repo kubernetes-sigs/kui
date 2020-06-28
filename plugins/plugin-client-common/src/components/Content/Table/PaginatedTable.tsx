@@ -29,6 +29,7 @@ import { BreadcrumbView } from '../../spi/Breadcrumb'
 
 /** carbon styling */
 import 'carbon-components/scss/components/data-table/_data-table-core.scss'
+import 'carbon-components/scss/components/data-table/_data-table-sort.scss'
 
 /** hack (see comments in file) */
 import '../../../../web/scss/components/Table/hack-select.scss'
@@ -196,7 +197,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         <DataTable
           rows={visibleRows}
           headers={headers}
-          isSortable={false} // until we figure out how to handle sort+pagination and TableHeader className
+          isSortable
           sortRow={sortRow}
           render={renderOpts => (
             <TableContainer
@@ -213,7 +214,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                     ? 'tall'
                     : this.props.response.style === TableStyle.Medium
                     ? 'short'
-                    : 'compact'
+                    : 'short'
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}

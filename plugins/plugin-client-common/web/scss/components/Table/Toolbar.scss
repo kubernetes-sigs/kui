@@ -4,11 +4,6 @@ $toolbar-height: 1.875em;
   padding-top: 0;
 }
 
-.kui--data-table-wrapper {
-  /* so that captured screenshots have some padding away from the breadcrumbs */
-  padding: 0 0.1875em;
-}
-
 .kui--toolbar-button-with-icon {
   &[data-enabled='true'] {
     svg {
@@ -43,10 +38,6 @@ body[kui-theme-style] .kui--data-table-toolbar {
     overflow-x: unset;
   }
 
-  &[data-frame='true'] {
-    border-top: 1px solid var(--color-base03);
-  }
-
   & > div:not(:empty),
   & > nav:not(:empty) {
     height: $toolbar-height;
@@ -60,6 +51,7 @@ body[kui-theme-style] .kui--data-table-toolbar {
     display: flex;
     align-items: center;
     flex: 1;
+    height: 2.5rem;
   }
 
   .kui--toolbar-button-with-icon {
@@ -88,7 +80,7 @@ body[kui-theme-style] .kui--data-table-toolbar {
       white-space: pre; /* see padStart in Toolbar.tsx */
       color: var(--color-text-02);
       flex: 1;
-      padding: 0 1.25em;
+      padding: 0 1.25rem;
       display: flex;
       justify-content: flex-end;
       align-items: center;
