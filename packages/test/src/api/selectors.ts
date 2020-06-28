@@ -114,7 +114,7 @@ export const OUTPUT_LAST_PTY = OUTPUT_LAST_STREAMING
 export const LIST_RESULTS_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result tbody tr`
 export const LIST_RESULTS_BY_NAME_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result [data-name]`
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string) => `${LIST_RESULTS_N(N)}[data-name="${name}"]`
-export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th[data-key="${cellKey}"]`
+export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th button[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
