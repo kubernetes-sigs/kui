@@ -36,6 +36,8 @@ import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
 import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading, Alert } from '../..'
 
+import KuiIcon from '../../../icons/png/WelcomeLight.png'
+
 const debug = Debug('<Kui/>')
 const strings = i18n('client')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
@@ -148,8 +150,14 @@ export class Kui extends React.PureComponent<Props, State> {
       !inBrowser() ? (
         undefined
       ) : (
-        <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} repl={repl}>
-          {strings('To learn more, try getting started')}
+        <Card
+          titleInHeader
+          bodyInHeader
+          title={strings('Successfully connected to your cluster')}
+          repl={repl}
+          icon={KuiIcon}
+        >
+          {strings('loadingDone:content')}
         </Card>
       )
   }
