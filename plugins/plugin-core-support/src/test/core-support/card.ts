@@ -40,8 +40,8 @@ describe('card command', function(this: Common.ISuite) {
       })
       .catch(Common.oops(this)))
 
-  it('should execute the command and show card with image: card foo --title=bar --icon="icons/png/KUI-Welcome_Light.png"', () =>
-    CLI.command('card foo --title=bar --icon="icons/png/KUI-Welcome_Light.png"', this.app)
+  it('should execute the command and show card with image: card foo --title=bar --icon="icons/png/TestIcon.png"', () =>
+    CLI.command('card foo --title=bar --icon="icons/png/TestIcon.png"', this.app)
       .then(async () => {
         await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
         const text = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
