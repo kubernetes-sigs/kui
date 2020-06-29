@@ -38,7 +38,6 @@ function sortBySize(cellA: string, cellB, dir: number): number {
 }
 
 function sortRowWithDir(cellA: string, cellB: string, key: string, state: DataTableSortState): number {
-  console.error('SS', cellA, cellB, key)
   const dir = state === 'ASC' ? 1 : state === 'NONE' ? 0 : -1
 
   if (key === 'SIZE') {
