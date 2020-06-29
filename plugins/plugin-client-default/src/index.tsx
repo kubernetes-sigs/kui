@@ -28,25 +28,7 @@ import { Screenshot, Search } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
-import KuiIcon from '../icons/png/KUI-Welcome_Light.png'
-
 const strings = i18n('client')
-
-function loadingDone(repl: REPL) {
-  return !inBrowser() ? (
-    undefined
-  ) : (
-    <Card
-      titleInHeader
-      bodyInHeader
-      title={strings('Successfully connected to your cluster')}
-      icon={KuiIcon}
-      repl={repl}
-    >
-      {strings('loadingDone:content')}
-    </Card>
-  )
-}
 
 /**
  * Format our body, with extra status stripe widgets
@@ -56,14 +38,7 @@ function loadingDone(repl: REPL) {
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui
-      productName={productName}
-      splitTerminals
-      enableWatcherAutoPin
-      {...props}
-      loadingDone={loadingDone}
-      toplevel={<Search />}
-    >
+    <Kui productName={productName} splitTerminals enableWatcherAutoPin {...props} toplevel={<Search />}>
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
