@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.6](https://github.com/IBM/kui/compare/v8.10.5...v8.10.6) (2020-06-30)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** disableTableTitle also disables title of watch panes ([06cd62b](https://github.com/IBM/kui/commit/06cd62b)), closes [#5036](https://github.com/IBM/kui/issues/5036)
+- **plugins/plugin-client-common:** double watch panes may open up ([874291c](https://github.com/IBM/kui/commit/874291c)), closes [#5034](https://github.com/IBM/kui/issues/5034)
+- **plugins/plugin-client-common:** leftover debug printfs in table sorting ([5db023a](https://github.com/IBM/kui/commit/5db023a)), closes [#5030](https://github.com/IBM/kui/issues/5030)
+- move default loadingDone icon into plugin-client-common ([708a058](https://github.com/IBM/kui/commit/708a058)), closes [#5026](https://github.com/IBM/kui/issues/5026)
+- reduce custom CSS rules for table UI ([c24dbc2](https://github.com/IBM/kui/commit/c24dbc2)), closes [#5024](https://github.com/IBM/kui/issues/5024)
+
+### Features
+
+- **plugins/plugin-client-common:** use Cards to wrap kube tables and grids ([8b824d4](https://github.com/IBM/kui/commit/8b824d4)), closes [#5032](https://github.com/IBM/kui/issues/5032)
+
 ## [8.10.5](https://github.com/IBM/kui/compare/v8.10.4...v8.10.5) (2020-06-27)
 
 ### Features

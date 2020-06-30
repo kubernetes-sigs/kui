@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.6](https://github.com/IBM/kui/compare/v8.10.5...v8.10.6) (2020-06-30)
+
+### Bug Fixes
+
+- reduce custom CSS rules for table UI ([c24dbc2](https://github.com/IBM/kui/commit/c24dbc2)), closes [#5024](https://github.com/IBM/kui/issues/5024)
+
 ## [8.10.5](https://github.com/IBM/kui/compare/v8.10.4...v8.10.5) (2020-06-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

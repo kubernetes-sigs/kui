@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.6](https://github.com/IBM/kui/compare/v8.10.5...v8.10.6) (2020-06-30)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** remove old "window" commands ([4b7ff87](https://github.com/IBM/kui/commit/4b7ff87)), closes [#5038](https://github.com/IBM/kui/issues/5038)
+- move default loadingDone icon into plugin-client-common ([708a058](https://github.com/IBM/kui/commit/708a058)), closes [#5026](https://github.com/IBM/kui/issues/5026)
+
+### BREAKING CHANGES
+
+- **plugins/plugin-core-support:** removes window commands
+
+also make quit and exit for electron only
+
 ## [8.10.5](https://github.com/IBM/kui/compare/v8.10.4...v8.10.5) (2020-06-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-support
