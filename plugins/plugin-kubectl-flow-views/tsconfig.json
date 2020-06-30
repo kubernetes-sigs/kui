@@ -13,28 +13,7 @@
   },
   "references": [
     {
-      "path": "src"
-    },
-    {
-      "path": "components"
-    },
-    {
-      "path": "helm"
-    },
-    {
-      "path": "krew"
-    },
-    {
-      "path": "logs"
-    },
-    {
-      "path": "oc"
-    },
-    {
-      "path": "odo"
-    },
-    {
-      "path": "view-utilization"
+      "path": "tekton"
     }
   ]
 }
