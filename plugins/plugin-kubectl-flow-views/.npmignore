@@ -1,0 +1,10 @@
+build
+src
+tests/data/*
+tests/data/k8s/*
+!tests/data/k8s/headless/*
+dist/test/*
+dist/test/k8s2/*
+!dist/test/k8s2/headless-create-pod.js
+tsconfig*
+/*.tgz
