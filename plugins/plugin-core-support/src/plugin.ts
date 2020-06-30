@@ -46,7 +46,6 @@ export default async (commandTree: Registrar) => {
   if (!isHeadless()) {
     await Promise.all([
       import('./lib/cmds/zoom').then(_ => _.plugin(commandTree)),
-      import('./lib/cmds/window').then(_ => _.default(commandTree)),
       import('./lib/cmds/theme').then(_ => _.plugin(commandTree))
     ])
   }
