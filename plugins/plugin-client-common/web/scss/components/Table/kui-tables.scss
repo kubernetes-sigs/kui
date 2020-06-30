@@ -1,5 +1,5 @@
 body[kui-theme-style] {
-  .kui--paginated-table .bx--data-table-container .bx--data-table.bx--data-table--compact tr:last-child td {
+  .kui--paginated-table .bx--data-table-container .bx--data-table.bx--data-table--short tr:last-child td {
     border-bottom: none;
   }
 
@@ -13,7 +13,7 @@ body[kui-theme-style] {
         }
       }
 
-      &.bx--data-table--compact {
+      &.bx--data-table--short {
         td {
           vertical-align: middle;
         }
@@ -25,6 +25,6 @@ body[kui-theme-style] {
   }
 }
 
-body[kui-theme-style='light'] .bx--data-table-container .bx--data-table.bx--data-table--compact td {
+body[kui-theme-style='light'] .bx--data-table-container .bx--data-table.bx--data-table--short td {
   border-color: rgba(0, 0, 0, 0.0375);
 }

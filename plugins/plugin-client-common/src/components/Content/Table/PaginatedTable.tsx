@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable, TableStyle } from '@kui-shell/core'
+import { Tab, REPL, Table as KuiTable, TableStyle, i18n } from '@kui-shell/core'
 
 import * as React from 'react'
 import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-components-react'
 
 import sortRow from './sort'
+import Card from '../../spi/Card'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
@@ -39,6 +40,8 @@ import '../../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
 
 import '../../../../web/css/static/ToolbarButton.scss'
 import '../../../../web/scss/components/Table/Toolbar.scss'
+
+const strings = i18n('plugin-client-common')
 
 interface PaginationConfiguration {
   pageSize?: number
@@ -123,8 +126,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   private topToolbar() {
     if (this.props.title) {
-      const breadcrumbs = getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
-      return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+      // if we started as a table, and are now a grid, then show
+      // "Status Grid", otherwise show a breadcrumb
+      const breadcrumbs = !this.props.asGrid && this.state.asGrid
+        ? [{ label: strings('Status Grid') }]
+        : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
+      if (breadcrumbs.length > 0) {
+        return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+      }
     }
   }
 
@@ -141,13 +150,16 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private bottomToolbar() {
+    const gridableColumn = findGridableColumn(this.props.response)
+
     return (
-      this.props.toolbars && (
+      this.props.toolbars &&
+      (this.isPaginated() || gridableColumn >= 0) && (
         <Toolbar
           framed
           className="kui--data-table-toolbar-bottom"
           asGrid={this.state.asGrid}
-          gridableColumn={findGridableColumn(this.props.response)}
+          gridableColumn={gridableColumn}
           setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
           paginate={this.isPaginated()}
           setPage={(page: number) => this.setState({ page })}
@@ -161,17 +173,13 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   private grid(visibleRows: NamedDataTableRow[]) {
     return (
-      <div className="kui--data-table-wrapper kui--data-table-as-grid kui--screenshotable">
-        {this.topToolbar()}
-        <Grid
-          tab={this.props.tab}
-          repl={this.props.repl}
-          response={this.props.response}
-          visibleRows={visibleRows}
-          justUpdated={this.justUpdatedMap()}
-        />
-        {this.bottomToolbar()}
-      </div>
+      <Grid
+        tab={this.props.tab}
+        repl={this.props.repl}
+        response={this.props.response}
+        visibleRows={visibleRows}
+        justUpdated={this.justUpdatedMap()}
+      />
     )
   }
 
@@ -182,18 +190,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     }, {} as Record<string, boolean>)
   }
 
-  public render() {
-    if (!this.state) {
-      return <div className="oops">Internal Error</div>
-    }
-
+  private table() {
     const { tab, repl, response } = this.props
     const { headers, rows, page } = this.state
 
-    // the view
     const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
-      <div className="kui--data-table-wrapper kui--screenshotable">
-        {this.topToolbar()}
+      <React.Fragment>
         <DataTable
           rows={visibleRows}
           headers={headers}
@@ -223,16 +225,39 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             </TableContainer>
           )}
         />
-        {this.bottomToolbar()}
-      </div>
+      </React.Fragment>
     )
 
     const paginated = this.isPaginated()
-    return this.state.asGrid
-      ? this.grid(rows)
-      : dataTable(
-          !paginated ? rows : rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
-          !paginated ? 0 : (page - 1) * this.state.pageSize
-        )
+    return dataTable(
+      !paginated ? rows : rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
+      !paginated ? 0 : (page - 1) * this.state.pageSize
+    )
+  }
+
+  private content(includeToolbars = false) {
+    return (
+      <React.Fragment>
+        {includeToolbars && this.topToolbar()}
+        {this.state.asGrid ? this.grid(this.state.rows) : this.table()}
+        {includeToolbars && this.bottomToolbar()}
+      </React.Fragment>
+    )
+  }
+
+  public render() {
+    if (!this.state) {
+      return <div className="oops">Internal Error</div>
+    } else {
+      const className =
+        'kui--data-table-wrapper kui--screenshotable' + (this.state.asGrid ? ' kui--data-table-as-grid' : '')
+      return this.props.response.style === TableStyle.Light || this.props.asGrid ? (
+        <div className={className}>{this.content(true)}</div>
+      ) : (
+        <Card header={this.topToolbar()} footer={this.bottomToolbar()} className={className}>
+          {this.content()}
+        </Card>
+      )
+    }
   }
 }
