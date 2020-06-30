@@ -125,15 +125,18 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private topToolbar() {
-    if (this.props.title) {
-      // if we started as a table, and are now a grid, then show
-      // "Status Grid", otherwise show a breadcrumb
-      const breadcrumbs = !this.props.asGrid && this.state.asGrid
+    // 1) If we started as a table, and are now a grid, then show
+    // "Status Grid", otherwise:
+    // 2) only for client w/o disableTableTitle, show a breadcrumb
+    const breadcrumbs =
+      !this.props.asGrid && this.state.asGrid
         ? [{ label: strings('Status Grid') }]
+        : !this.props.asGrid && !this.props.title
+        ? []
         : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
-      if (breadcrumbs.length > 0) {
-        return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
-      }
+
+    if (breadcrumbs.length > 0) {
+      return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
     }
   }
 
