@@ -89,8 +89,8 @@ body .bx--data-table {
   }
 
   td {
-    border-top-color: var(--color-base01);
-    border-bottom-color: var(--color-base02);
+    border-top-color: var(--color-table-border1);
+    border-bottom-color: var(--color-table-border3);
   }
 
   tr:hover,
@@ -145,8 +145,25 @@ body[kui-theme-style] .repl.sidecar-visible {
   @include full-width-tables;
 }
 
-.kui--data-table-wrapper {
+body[kui-theme-style] .kui--data-table-wrapper {
   overflow-x: auto;
+
+  .kui--card-header {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+    .kui--card-footer {
+      border-top: 1px solid var(--color-base03);
+      padding-top: calc(var(--pf-c-card--child--PaddingBottom) / 2);
+      padding-bottom: calc(var(--pf-c-card--child--PaddingBottom) / 2);
+    }
+  &:not(.kui--data-table-as-grid) {
+    .kui--card-body {
+      padding-left: 0;
+      padding-right: 0;
+      padding-bottom: 0;
+    }
+  }
 }
 
 .kui--paginated-table {

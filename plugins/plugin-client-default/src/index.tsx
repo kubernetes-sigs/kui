@@ -48,7 +48,7 @@ export default function renderMain(props: KuiProps) {
       <MeterWidgets>
         {/* <ClusterUtilization /> */}
         <ProxyOfflineIndicator />
-        <UpdateChecker />
+        {!inBrowser() && <UpdateChecker />}
         <Screenshot />
       </MeterWidgets>
     </Kui>

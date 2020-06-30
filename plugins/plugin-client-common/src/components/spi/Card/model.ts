@@ -23,6 +23,9 @@ interface Props {
   /** Place the given header node at the top of the Card */
   header?: ReactNode
 
+  /** Place the given footer node at the bottom of the Card */
+  footer?: ReactNode
+
   /** Content rendered inside the CardTitle */
   title?: string
 
@@ -38,8 +41,11 @@ interface Props {
   /** [Optional] Display body in header? */
   bodyInHeader?: boolean
 
-  /** [Optional] Actions to be rendered in an overflow menu associated with the Card */
+  /** [Optional] Overflow menu actions; rendered in the upper right corner */
   actions?: DropDownAction[]
+
+  /** [Optional] Options to be rendered in the upper right corner (not in an overflow menu) */
+  inlineActions?: ReactNode[]
 
   /** [Optional] CSS class to associate with the outermost Card element */
   className?: string

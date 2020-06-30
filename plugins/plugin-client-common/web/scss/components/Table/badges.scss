@@ -1,7 +1,7 @@
 @import '../common/narrow-window';
 @import '../common/stippling';
 
-$grid-cell-size: 1.375em;
+$grid-cell-size: 1.5rem;
 
 .bx--data-table,
 .kui--table-like {
@@ -11,8 +11,8 @@ $grid-cell-size: 1.375em;
   }
   [data-tag='badge-circle'] {
     margin-right: 1ex;
-    width: 0.875em;
-    height: 0.875em;
+    width: 0.875rem;
+    height: 0.875rem;
     background-color: var(--color-ui-05);
   }
   [data-tag='badge-circle'].green-background {
@@ -45,11 +45,17 @@ $grid-cell-size: 1.375em;
   }
 
   .kui--data-table-as-grid {
+    .kui--card-header {
+      border-bottom: 1px solid var(--color-base03);
+    }
+    .kui--card-body {
+      padding-top: var(--pf-c-card--child--PaddingBottom);
+    }
+
     .bx--data-table {
       display: grid;
-      grid-column-gap: 1px;
-      grid-row-gap: 1px;
-      padding: 0.5em 0;
+      grid-column-gap: 3px;
+      grid-row-gap: 3px;
 
       [data-tag='badge'] [data-tag='badge-circle'] {
         display: flex;

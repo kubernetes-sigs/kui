@@ -28,7 +28,7 @@ export default class CarbonBreadcrumb extends React.PureComponent<Props> {
     const currentPageIdx = getCurrentPageIdx(this.props)
 
     return (
-      <Breadcrumb noTrailingSlash={breadcrumbs.length > 1}>
+      <Breadcrumb noTrailingSlash={breadcrumbs.length >= 1}>
         {breadcrumbs.map((_, idx) => {
           const onClick = _.command && (() => this.props.repl.pexec(_.command))
           return (

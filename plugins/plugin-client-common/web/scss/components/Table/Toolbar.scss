@@ -43,10 +43,6 @@ body[kui-theme-style] .kui--data-table-toolbar {
     height: $toolbar-height;
   }
 
-  &.kui--data-table-toolbar-bottom {
-    padding-top: 0.1875em;
-  }
-
   nav[aria-label='Breadcrumb'] {
     display: flex;
     align-items: center;

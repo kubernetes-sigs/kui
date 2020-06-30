@@ -20,6 +20,7 @@ import {
   Card,
   CardActions,
   CardBody,
+  CardFooter,
   CardHeader,
   CardHeaderMain,
   CardTitle,
@@ -58,7 +59,8 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   private cardActions() {
     return (
       <CardActions>
-        <Dropdown
+        {...this.props.inlineActions}
+        {this.props.actions && <Dropdown
           onSelect={() => this.setState({ isOpen: !this.state.isOpen })}
           toggle={
             <KebabToggle
@@ -71,7 +73,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
           isPlain
           dropdownItems={this.renderDropDownItems(this.props.actions)}
           position={'right'}
-        />
+       />}
       </CardActions>
     )
   }
@@ -83,15 +85,22 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   /** card actions, icon and custom header node will be situated in Card Head */
   private header() {
     return (
-      <CardHeader>
-        <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
-        {this.props.actions && this.cardActions()}
-        <div>
-          {this.props.titleInHeader && this.title()}
-          {this.props.bodyInHeader && this.body()}
-        </div>
-      </CardHeader>
+      (this.props.header || this.props.icon || this.props.titleInHeader || this.props.bodyInHeader || this.props.inlineActions || this.props.actions) && (
+        <CardHeader className="kui--card-header">
+          <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
+          {(this.props.inlineActions || this.props.actions) && this.cardActions()}
+          <div>
+            {this.props.titleInHeader && this.title()}
+            {this.props.bodyInHeader && this.body()}
+          </div>
+        </CardHeader>
+      )
     )
+  }
+
+  /** card footer */
+  private footer() {
+    return this.props.footer && <CardFooter className="kui--card-footer">{this.props.footer}</CardFooter>
   }
 
   private title() {
@@ -102,10 +111,14 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
 
   private body() {
     if (Array.isArray(this.props.children)) {
-      return this.props.children.map((child, idx) => <CardBody key={idx}>{child}</CardBody>)
+      return this.props.children.map((child, idx) => (
+        <CardBody className="kui--card-body" key={idx}>
+          {child}
+        </CardBody>
+      ))
     } else {
       return (
-        <CardBody>
+        <CardBody className="kui--card-body">
           {typeof this.props.children === 'string' ? (
             <Markdown source={this.props.children} repl={this.props.repl} />
           ) : (
@@ -125,6 +138,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
             {this.header()}
             {!this.props.titleInHeader && this.title()}
             {!this.props.bodyInHeader && this.body()}
+            {this.footer()}
           </React.Fragment>
         )}
       </Card>
