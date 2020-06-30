@@ -66,6 +66,7 @@
     "@kui-shell/plugin-electron-components": "file:plugins/plugin-electron-components",
     "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
+    "@kui-shell/plugin-kubectl-flow-views": "file:plugins/plugin-kubectl-flow-views",
     "@kui-shell/plugin-ibmcloud": "file:plugins/plugin-ibmcloud",
     "@kui-shell/plugin-skeleton": "file:plugins/plugin-skeleton",
     "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow"
