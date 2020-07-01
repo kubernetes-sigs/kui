@@ -43,7 +43,7 @@
   a.bx--tabs__nav-link:active {
     outline: none;
     width: unset;
-    min-width: 8rem;
+    min-width: 7rem;
   }
 
   .bx--tabs {
@@ -96,7 +96,7 @@ body[kui-theme-style] a.bx--tabs__nav-link {
   [kui-theme-style] .kui--sidecar {
     a.bx--tabs__nav-link,
     a.bx--tabs__nav-link:active {
-      min-width: 6em;
+      min-width: 5em;
     }
   }
 }
@@ -105,7 +105,7 @@ body[kui-theme-style] a.bx--tabs__nav-link {
   [kui-theme-style] .kui--sidecar {
     a.bx--tabs__nav-link,
     a.bx--tabs__nav-link:active {
-      min-width: 7em;
+      min-width: 6em;
     }
   }
 }

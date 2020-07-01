@@ -47,7 +47,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
 
     const nCells = visibleRows.length
     const nColumns = Math.ceil(Math.sqrt(nCells))
-    const style = { gridTemplateColumns: `repeat(${nColumns}, 1.5rem)` }
+    const style = { gridTemplateColumns: `repeat(${nColumns}, 1.25rem)` }
 
     return (
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
