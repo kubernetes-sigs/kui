@@ -202,7 +202,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         <DataTable
           rows={visibleRows}
           headers={headers}
-          isSortable
+          isSortable={response.body.length > 1}
           sortRow={sortRow}
           render={renderOpts => (
             <TableContainer
