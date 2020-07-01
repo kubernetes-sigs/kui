@@ -23,12 +23,6 @@ body .bx--data-table-container {
   .bx--data-table {
     font-family: var(--font-sans-serif);
 
-    &,
-    thead,
-    tbody {
-      font-size: 1rem;
-    }
-
     /* td [data-key='NAME'],
     td .kui--table-cell-is-name {
       font-weight: 700;
