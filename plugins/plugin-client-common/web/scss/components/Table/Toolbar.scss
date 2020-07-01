@@ -1,5 +1,3 @@
-$toolbar-height: 1.875em;
-
 .bx--data-table-container.kui--data-table-container-with-toolbars.kui--data-table-container-with-title {
   padding-top: 0;
 }
@@ -38,16 +36,11 @@ body[kui-theme-style] .kui--data-table-toolbar {
     overflow-x: unset;
   }
 
-  & > div:not(:empty),
-  & > nav:not(:empty) {
-    height: $toolbar-height;
-  }
-
   nav[aria-label='Breadcrumb'] {
     display: flex;
     align-items: center;
     flex: 1;
-    height: 2.5rem;
+    height: 2.1875rem;
   }
 
   .kui--toolbar-button-with-icon {
