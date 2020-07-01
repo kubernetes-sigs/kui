@@ -64,7 +64,7 @@
   .kui--repl-block-spinner {
     color: var(--color-brand-03);
     margin-right: 0.5rem;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 700;
   }
   .kui--repl-block-error-icon {
@@ -82,7 +82,7 @@
 .repl-result-like,
 .repl-input .repl-input-element,
 .repl-input-like {
-  font-size: 1rem;
+  font-size: 0.875rem;
 }
 .repl-block:not(.processing) .repl-result-like:last-child {
   margin-bottom: 0.375rem;

@@ -56,9 +56,8 @@ body[kui-theme-style] .page > .header {
   flex-basis: 0;
   display: flex;
   align-items: center;
-  padding: 0 1.1875em;
+  padding: 0 1.1875rem;
   font-weight: 300;
-  font-size: 1rem;
 }
 .header .deemphasize {
   font-size: 55%;
@@ -359,32 +358,32 @@ code.fancy-code.hljs {
   color: var(--color-text-01);
   font-weight: 400;
   opacity: 1;
-  font-size: 1em;
+  font-size: 0.875rem;
 }
 .normal-text svg path {
   fill: var(--color-text-01);
 }
 .even-larger-text {
-  font-size: 2em;
-  line-height: 1em;
+  font-size: 2rem;
+  line-height: 1rem;
 }
 .larger-text {
-  font-size: 1.5em;
+  font-size: 1.5rem;
 }
 .somewhat-larger-text {
-  font-size: 1.125em;
+  font-size: 1.125rem;
 }
 .even-smaller-text {
-  font-size: 0.75em;
+  font-size: 0.75rem;
 }
 .smaller-text {
-  font-size: 0.875em;
+  font-size: 0.875rem;
 }
 .semi-transparent {
   opacity: 0.7;
 }
 .somewhat-smaller-text {
-  font-size: 0.925em;
+  font-size: 0.925rem;
 }
 [kui-theme-style] .sub-text {
   color: var(--color-text-02);
@@ -404,7 +403,7 @@ code.fancy-code.hljs {
 }
 .deemphasize {
   color: var(--color-text-02);
-  font-size: 0.75em;
+  font-size: 0.75rem;
   opacity: 0.7;
   vertical-align: middle;
 }
@@ -767,7 +766,7 @@ body.oops-total-catastrophe #restart-needed-warning {
   flex: 1;
 }
 .page-content hr {
-  margin: 2em 0;
+  margin: 2rem 0;
   border: 0.5px solid var(--color-content-divider);
 }
 .page-content img {
@@ -776,18 +775,18 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content blockquote {
   background-color: var(--color-table-border3);
   border-left: 3px solid var(--color-table-border1);
-  padding: 0.375em 0.5em;
+  padding: 0.375rem 0.5rem;
   text-align: justify;
-  margin-bottom: 0.5em;
-  font-size: 0.925em;
+  margin-bottom: 0.5rem;
+  font-size: 0.925rem;
 }
 .page-content img[align="right"] {
   padding-left: 20px;
 }
 .page-content p {
-  font-size: 1em;
+  font-size: 0.875rem;
   font-weight: 400;
-  line-height: 1.25em;
+  line-height: 1.25rem;
 }
 .page-content code {
   font-family: var(--font-monospace);
@@ -798,21 +797,21 @@ body.oops-total-catastrophe #restart-needed-warning {
   opacity: 0.875;
   word-break: break-all;
 }
-$kui--page-content-h4-padding: 0.5em;
-$kui--page-content-paragraph-padding: 0.375em;
+$kui--page-content-h4-padding: 0.5rem;
+$kui--page-content-paragraph-padding: 0.375rem;
 .page-content p {
   padding: $kui--page-content-paragraph-padding 0;
 }
 .page-content h1 {
   margin-bottom: 1rem;
-  font-size: 2.375em;
+  font-size: 2.375rem;
   letter-spacing: 0;
   line-height: 1.25;
   padding: 0;
 }
 .page-content h2,
 .page-h2 {
-  font-size: 1.75em;
+  font-size: 1.75rem;
   font-weight: 300;
   margin: 1em 0;
   position: relative;
@@ -838,11 +837,11 @@ $kui--page-content-paragraph-padding: 0.375em;
 .page-content h3,
 .page-h3 {
   color: var(--color-text-01);
-  font-size: 1.25em;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0;
-  padding: 1em 0 0.5em;
-  line-height: 1.625em;
+  padding: 1em 0 0.5rem;
+  line-height: 1.625rem;
 }
 .page-content h4 {
   color: var(--color-brand-01);
@@ -852,18 +851,17 @@ $kui--page-content-paragraph-padding: 0.375em;
   line-height: unset;
 
   &:not([data-is-href]) + p {
-    padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
+    padding-top: calc(0.5rem + #{$kui--page-content-paragraph-padding});
   }
 }
 .page-content h5 {
-  font-size: 1.125em;
-  line-height: 2em;
+  font-size: 1.125rem;
+  line-height: 2rem;
 }
 .page-content ol,
 .page-content ul {
-  font-size: 1em;
-  margin-left: 2em;
-  line-height: 1.125em;
+  margin-left: 2rem;
+  line-height: 1.125rem;
   letter-spacing: 0.16px;
 }
 .page-content li {
@@ -871,12 +869,12 @@ $kui--page-content-paragraph-padding: 0.375em;
   list-style-type: none;
   position: relative;
   &:not(:first-child) {
-    margin-top: 0.5em;
+    margin-top: 0.5rem;
   }
 }
 .page-content li:before {
   content: "\002013";
-  left: -1em;
+  left: -1rem;
   position: absolute;
 }
 
@@ -888,8 +886,8 @@ $kui--page-content-paragraph-padding: 0.375em;
 }
 .icon-container .deemphasize {
   white-space: nowrap;
-  font-size: 0.5em;
-  margin-top: 0.5ex;
+  font-size: 0.5rem;
+  margin-top: 0.375rem;
 }
 
 body[kui-theme-style] {
@@ -935,12 +933,12 @@ badge,
     background-color: transparent;
   }
   &.badge-as-image img {
-    width: 5em;
+    width: 5rem;
     height: auto;
   }
   &.badge-as-fontawesome {
     padding: 0;
-    font-size: 1.5em;
+    font-size: 1.5rem;
     color: var(--color-name);
   }
   &.is-title-like,

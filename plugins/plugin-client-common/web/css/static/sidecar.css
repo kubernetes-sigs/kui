@@ -48,6 +48,10 @@
   }
 
   /* tables in sidecar */
+  .kui--data-table-wrapper {
+    margin: 0;
+    background-color: inherit;
+  }
   .result-table-outer,
   .kui--data-table-wrapper,
   .bx--data-table {
