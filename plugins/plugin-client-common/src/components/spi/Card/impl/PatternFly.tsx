@@ -60,20 +60,22 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     return (
       <CardActions>
         {...this.props.inlineActions}
-        {this.props.actions && <Dropdown
-          onSelect={() => this.setState({ isOpen: !this.state.isOpen })}
-          toggle={
-            <KebabToggle
-              onToggle={isOpen => {
-                this.setState({ isOpen })
-              }}
-            />
-          }
-          isOpen={this.state.isOpen}
-          isPlain
-          dropdownItems={this.renderDropDownItems(this.props.actions)}
-          position={'right'}
-       />}
+        {this.props.actions && (
+          <Dropdown
+            onSelect={() => this.setState({ isOpen: !this.state.isOpen })}
+            toggle={
+              <KebabToggle
+                onToggle={isOpen => {
+                  this.setState({ isOpen })
+                }}
+              />
+            }
+            isOpen={this.state.isOpen}
+            isPlain
+            dropdownItems={this.renderDropDownItems(this.props.actions)}
+            position={'right'}
+          />
+        )}
       </CardActions>
     )
   }
@@ -85,7 +87,12 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   /** card actions, icon and custom header node will be situated in Card Head */
   private header() {
     return (
-      (this.props.header || this.props.icon || this.props.titleInHeader || this.props.bodyInHeader || this.props.inlineActions || this.props.actions) && (
+      (this.props.header ||
+        this.props.icon ||
+        this.props.titleInHeader ||
+        this.props.bodyInHeader ||
+        this.props.inlineActions ||
+        this.props.actions) && (
         <CardHeader className="kui--card-header">
           <CardHeaderMain>{this.props.header || (this.props.icon && this.icon())}</CardHeaderMain>
           {(this.props.inlineActions || this.props.actions) && this.cardActions()}
@@ -130,9 +137,13 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const basicClassName = 'kui--card small-top-pad small-bottom-pad'
+    const basicClassName = 'kui--card'
     return (
-      <Card isCompact className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}>
+      <Card
+        isCompact
+        {...this.props}
+        className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}
+      >
         {React.Children.count(this.props.children) > 0 && (
           <React.Fragment>
             {this.header()}
