@@ -35,7 +35,7 @@
   .bx--header__name,
   .kui--tab:not(:last-child) {
     &:after {
-      box-shadow: 1px 0 0px 0 var(--color-table-border1);
+      box-shadow: 1px 0 0px 0 var(--color-table-border3);
       content: '';
       height: 60%;
       width: 1px;
@@ -165,7 +165,7 @@
         fill: var(--color-text-01);
       }
       &:hover {
-        background: var(--color-table-border1);
+        background: var(--color-table-border3);
       }
     }
 
