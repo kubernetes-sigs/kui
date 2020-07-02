@@ -136,12 +136,21 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     }
   }
 
+  private dataProps() {
+    return Object.keys(this.props)
+      .filter(_ => /^data-/.test(_))
+      .reduce((M, key) => {
+        M[key] = this.props[key]
+        return M
+      }, {})
+  }
+
   public render() {
     const basicClassName = 'kui--card'
     return (
       <Card
         isCompact
-        {...this.props}
+        {...this.dataProps()}
         className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}
       >
         {React.Children.count(this.props.children) > 0 && (
