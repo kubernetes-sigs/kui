@@ -51,7 +51,6 @@ $table-grid-cell-size: 1.375rem;
   /* unset the font-size of kui--hero-text in ui.css */
   .repl-output .kui--hero-text {
     font-size: unset;
-    flex: 5; /* approximate centering */
   }
 
   .repl-input {
@@ -123,8 +122,11 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
   flex: 1;
   overflow: hidden;
 
-  .kui--data-table-as-grid .bx--data-table {
+  .kui--data-table-as-grid .bx--data-table:not(:empty) {
     padding: $inset-v $inset-h;
+  }
+
+  .kui--data-table-as-grid .bx--data-table {
     grid-template-columns: repeat(auto-fill, $table-grid-cell-size) !important;
 
     /* css magic to give inner scrolling of grid */
