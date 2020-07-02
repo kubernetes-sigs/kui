@@ -148,8 +148,8 @@ body[kui-theme-style] .kui--data-table-wrapper {
   }
   .kui--card-footer {
     border-top: 1px solid var(--color-base03);
-    padding-top: calc(var(--pf-c-card--child--PaddingBottom) / 2);
-    padding-bottom: calc(var(--pf-c-card--child--PaddingBottom) / 2);
+    padding-top: calc(var(--pf-c-card--child--PaddingBottom) / 4);
+    padding-bottom: calc(var(--pf-c-card--child--PaddingBottom) / 4);
   }
   &:not(.kui--data-table-as-grid) {
     .kui--card-body {
