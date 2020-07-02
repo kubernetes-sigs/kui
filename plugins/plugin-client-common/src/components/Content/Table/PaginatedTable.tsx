@@ -217,9 +217,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 size={
                   this.props.response.style === TableStyle.Heavy
                     ? 'tall'
-                    : this.props.response.style === TableStyle.Medium
+                    : this.props.response.style === undefined || this.props.response.style === TableStyle.Medium
                     ? 'short'
-                    : 'short'
+                    : 'compact'
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
