@@ -207,14 +207,14 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     container.appendChild(frag)
     return container
   } else {
-    const perms = [{ value: 'PERMISSIONS', outerCSS: outerCSSSecondary }]
-    const uid = [{ value: 'USER', outerCSS: outerCSSSecondary }]
-    const gid = [{ value: 'GROUP', outerCSS: outerCSSSecondary }]
-    const size = [{ value: 'SIZE', outerCSS: `${outerCSSSecondary} text-right` }]
-    const lastMod = [{ value: 'LAST MODIFIED', outerCSS: outerCSSLesser, css: cssLesser }]
+    const perms = [{ value: 'Permissions', outerCSS: outerCSSSecondary }]
+    const uid = [{ value: 'User', outerCSS: outerCSSSecondary }]
+    const gid = [{ value: 'Group', outerCSS: outerCSSSecondary }]
+    const size = [{ value: 'Size', outerCSS: `${outerCSSSecondary} text-right` }]
+    const lastMod = [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }]
 
     const header = {
-      name: 'NAME',
+      name: 'Name',
       attributes: perms
         .concat(uid)
         .concat(gid)

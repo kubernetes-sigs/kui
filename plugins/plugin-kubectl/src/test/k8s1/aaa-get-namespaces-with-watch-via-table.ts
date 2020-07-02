@@ -61,7 +61,7 @@ const createNS = async function(this: Common.ISuite, kubectl: string) {
     try {
       await waitForOnline(await CLI.command(`${kubectl} create ns ${nsName}`, this.app))
     } catch (err) {
-      await Common.oops(this, false)(err)
+      await Common.oops(this, true)(err)
     }
   })
 }
@@ -80,7 +80,7 @@ const deleteNS = function(this: Common.ISuite, kubectl: string) {
 
       await waitForOffline(res)
     } catch (err) {
-      await Common.oops(this, false)(err)
+      await Common.oops(this, true)(err)
     }
   })
 }
@@ -163,7 +163,7 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         // and, conversely, that watch had better eventually show Offline
         await this.app.client.waitForExist(watchBadgeButOffline)
       } catch (err) {
-        await Common.oops(this, false)(err)
+        await Common.oops(this, true)(err)
       }
     })
   })

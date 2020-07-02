@@ -69,7 +69,6 @@ body .bx--data-table-container {
 
 body .bx--data-table {
   th {
-    /* font-weight: 300; */
     vertical-align: middle;
   }
 
@@ -107,26 +106,27 @@ body .bx--data-table {
   .repl-result {
     width: 100%;
 
-    [data-table-watching] {
+    [data-table-watching]:not([data-table-as-grid='true']) {
       width: 100%;
     }
-    .bx--data-table-container {
+  }
+
+  .bx--data-table-container {
+    width: 100%;
+    .bx--data-table {
       width: 100%;
-      .bx--data-table {
+
+      td.entity-name,
+      td.kui--entity-name-secondary {
         width: 100%;
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
 
-        td.entity-name,
-        td.kui--entity-name-secondary {
-          width: 100%;
-          max-width: 0;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
-
-        .hide-with-sidecar {
-          display: none;
-        }
+      .hide-with-sidecar {
+        display: none;
       }
     }
   }
@@ -142,14 +142,10 @@ body[kui-theme-style] .repl.sidecar-visible {
 body[kui-theme-style] .kui--data-table-wrapper {
   overflow-x: auto;
 
-  .kui--card-header {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
   .kui--card-footer {
     border-top: 1px solid var(--color-base03);
-    padding-top: calc(var(--pf-c-card--child--PaddingBottom) / 4);
-    padding-bottom: calc(var(--pf-c-card--child--PaddingBottom) / 4);
+    padding-top: 0;
+    padding-bottom: 0;
   }
   &:not(.kui--data-table-as-grid) {
     .kui--card-body {

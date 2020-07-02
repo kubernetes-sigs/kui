@@ -1095,9 +1095,9 @@ body {
    badges, and a darker yellow for text */
   --color-yellow-text: var(--color-yellow);
 
-  --color-table-border1: rgba(255, 255, 255, 0.35);
-  --color-table-border2: rgba(255, 255, 255, 0.5);
-  --color-table-border3: var(--color-ui-04);
+  --color-table-border1: rgba(255, 255, 255, 0.3);
+  --color-table-border2: rgba(255, 255, 255, 0.4);
+  --color-table-border3: rgba(255, 255, 255, 0.175);
 
   --color-brand-01: var(--color-blue);
   --color-brand-02: var(--color-magenta);

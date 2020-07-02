@@ -135,7 +135,8 @@ export default class Output extends React.PureComponent<Props, State> {
               key={idx}
               tab={this.props.tab}
               response={part}
-              isPinned={this.props.isPinned}
+              prefersTerminalPresentation={this.props.prefersTerminalPresentation}
+              isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               onRender={this.onRender.bind(this)}
             />
           ))}
@@ -167,7 +168,8 @@ export default class Output extends React.PureComponent<Props, State> {
             <Scalar
               tab={this.props.tab}
               response={this.props.model.response}
-              isPinned={this.props.isPinned}
+              prefersTerminalPresentation={this.props.prefersTerminalPresentation}
+              isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               onRender={this.onRender.bind(this)}
             />
           )}
@@ -208,9 +210,8 @@ export default class Output extends React.PureComponent<Props, State> {
       if (hasContent) {
         return <div className="ok" />
       } else if (isWatchable(this.props.model.response)) {
-        return this.props.isPinned ? (
-          <div className="kui--hero-text">{strings('No resources')}</div>
-        ) : (
+        return (
+          //          <div className="kui--hero-text">{strings('No resources')}</div>
           <div className="ok">{strings('No resources')}</div>
         )
       } else {
