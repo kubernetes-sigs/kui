@@ -32,6 +32,7 @@ import {
 
 import { flags } from './flags'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
+import { initialCapital } from '../../lib/view/formatTable'
 import { KubeOptions as Options, fileOf, kustomizeOf, getNamespace, getContextForArgv } from './options'
 import commandPrefix from '../command-prefix'
 
@@ -425,8 +426,13 @@ class StatusWatcher implements Abortable, Watcher {
     })
 
     const initialHeader = {
-      name: 'NAME',
-      attributes: this.initialBody[0].attributes.map(({ key, outerCSS }) => ({ key, value: key, outerCSS }))
+      key: 'NAME',
+      name: 'Name',
+      attributes: this.initialBody[0].attributes.map(({ key, outerCSS }) => ({
+        key,
+        value: initialCapital(key),
+        outerCSS
+      }))
     }
 
     return {
