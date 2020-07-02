@@ -135,7 +135,11 @@ export default class Markdown extends React.PureComponent<Props> {
             )
           },
           listItem: props => <ListItem className={props.className}>{props.children}</ListItem>,
-          table: props => <StructuredListWrapper className={props.className}>{props.children}</StructuredListWrapper>,
+          table: props => (
+            <StructuredListWrapper className={props.className + ' kui--table-like'}>
+              {props.children}
+            </StructuredListWrapper>
+          ),
           tableHead: props => <StructuredListHead className={props.className}>{props.children}</StructuredListHead>,
           tableBody: props => <StructuredListBody className={props.className}>{props.children}</StructuredListBody>,
           tableRow: props => (
