@@ -288,7 +288,7 @@ const renderHelpUnsafe = <O extends KubeOptions>(
               .join('\n')}\n`
         )
         .concat('\n\n')
-        .replace(/(--\S+)/g, '`$1`')
+        .replace(/(\s--\S+)/g, '`$1`')
         .replace(/^\n*([^\n.]+)(\.?)/, '### About\n#### $1')
         .replace(/\n\s*(Find more information at:)\s+([^\n]+)/, '') // [Find more information] will be in links below the menus
         .concat(!aliasesSection ? '' : `### Aliases\n${aliasesSection.content}`)
