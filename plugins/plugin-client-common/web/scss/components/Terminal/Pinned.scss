@@ -18,8 +18,8 @@
 
 $inset-v: 0.5rem;
 $inset-h: 1rem;
-$breadcrumb-height: 2.5rem;
-$table-grid-cell-size: 1.375rem;
+$breadcrumb-height: 2.1875rem;
+$table-grid-cell-size: 1.25rem;
 
 /** special styling of the whole scrollback, if it is pinned */
 .kui--scrollback[data-has-pinned='true'] {
@@ -159,9 +159,8 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
       'T1 T1 T1'
       'T1 T1 T1'
       'T1 T1 T1'
-      'T1 T1 T1'
       'P1 P2 P3';
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-rows: repeat(4, 1fr);
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -174,9 +173,8 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
         'T1 T1 T1 T2 T2 T2'
         'T1 T1 T1 T2 T2 T2'
         'T1 T1 T1 T2 T2 T2'
-        'T1 T1 T1 T2 T2 T2'
         'P1 P1 P2 P2 P3 P3';
-      grid-template-rows: repeat(5, 1fr);
+      grid-template-rows: repeat(4, 1fr);
       grid-template-columns: repeat(6, 1fr);
     }
   }
@@ -190,9 +188,8 @@ span.kui--scrollback[data-has-pinned] [data-table-watching] {
         'T1 T2 T3'
         'T1 T2 T3'
         'T1 T2 T3'
-        'T1 T2 T3'
         'P1 P2 P3';
-      grid-template-rows: repeat(5, 1fr);
+      grid-template-rows: repeat(4, 1fr);
       grid-template-columns: repeat(3, 1fr);
     }
   }
