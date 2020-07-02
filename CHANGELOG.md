@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.8](https://github.com/IBM/kui/compare/v8.10.7...v8.10.8) (2020-07-02)
+
+### Bug Fixes
+
+- kubectl help misformats helm help tables ([356e1c0](https://github.com/IBM/kui/commit/356e1c0)), closes [#5080](https://github.com/IBM/kui/issues/5080)
+- **plugins/plugin-client-common:** "No resources" in watch pane can occlude watch pane title ([ce00dd6](https://github.com/IBM/kui/commit/ce00dd6)), closes [#5064](https://github.com/IBM/kui/issues/5064)
+- **plugins/plugin-client-common:** decrease height of table footer ([365b819](https://github.com/IBM/kui/commit/365b819)), closes [#5072](https://github.com/IBM/kui/issues/5072)
+- **plugins/plugin-kubectl:** kubectl apply/create/delete tables still have ALLCAPS headers ([fba17fe](https://github.com/IBM/kui/commit/fba17fe)), closes [#5068](https://github.com/IBM/kui/issues/5068)
+
 ## [8.10.7](https://github.com/IBM/kui/compare/v8.10.6...v8.10.7) (2020-07-01)
 
 **Note:** Version bump only for package kui-shell
